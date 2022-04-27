@@ -2,121 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E97C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 11:38:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D160C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 11:39:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232905AbiD0Llk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 07:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35112 "EHLO
+        id S232890AbiD0Lmi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 07:42:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232808AbiD0Lli (ORCPT
+        with ESMTP id S232855AbiD0Lmg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 07:41:38 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76CA641F9F
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 04:38:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651059507; x=1682595507;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5TCsS4H2FgSYiKzRFMy/PRIxIgDmsoFmuDlmsLxXLrU=;
-  b=QjwhB/In2GbNzGyjUk/EqsRYs5cwMJ/30/xHeVDRdkJ6QyalSaUME0ki
-   mJNGCUSJOJ9Trz5BR43EeDiA3Z0bPXmg3gT7oTNJXBj3tokQG157ERTA0
-   uyi0RitjR6qFMJU73KbGXqWRa0tzAxzq93fO8MoRjEpWqKZFexax4+rEh
-   1Opg9w6nh51MtoYdXUtWije4+icpYfBEZhwPwgmCpRk5ZHHPtHfD5W+T3
-   /rMuZIBepSYEu+ilpWc93FtAgkw6Je7eXho22XEsmMO8TecDWLogaV1KV
-   crB2IUjOLgN041m2uuMCW2i+R/IM5MPcyY5RRI4ejfjzVDOHzllfh5eGR
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="266059587"
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="266059587"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 04:38:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="617465323"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 27 Apr 2022 04:38:24 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1njfzz-0004dC-Ch;
-        Wed, 27 Apr 2022 11:38:23 +0000
-Date:   Wed, 27 Apr 2022 19:37:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     cgel.zte@gmail.com, glider@google.com, elver@google.com,
-        akpm@linux-foundation.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, dvyukov@google.com,
-        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, xu xin <xu.xin16@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] mm/kfence: fix a potential NULL pointer dereference
-Message-ID: <202204271916.aTcNyVdc-lkp@intel.com>
-References: <20220427071100.3844081-1-xu.xin16@zte.com.cn>
+        Wed, 27 Apr 2022 07:42:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5631443FF;
+        Wed, 27 Apr 2022 04:39:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59BDAB82661;
+        Wed, 27 Apr 2022 11:39:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8164CC385A7;
+        Wed, 27 Apr 2022 11:39:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651059563;
+        bh=2sWnLCR+U6Be8jUQ4LsxtzrdL5oobmBn93Gw4sAdZKU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VnsJfc82XM9uRr35ILSZsetBkTvhm2NdcP3ufkx3/Ayk8er14pdR6y1v72tX8bUSd
+         G2xO/m9DHcLUQRBfCbTF0ayJJ0SU+hku9gWQa9HmQlCiXtjTH+rtWssGkKK/5pF2xn
+         XtIabWKeA0zVFQU3zcbc0WS1pIyRL8i/6GwbH88E=
+Date:   Wed, 27 Apr 2022 13:39:19 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Pavel Machek <pavel@denx.de>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 4.19 00/53] 4.19.240-rc1 review
+Message-ID: <YmkrZ5t2cb1JSHR8@kroah.com>
+References: <20220426081735.651926456@linuxfoundation.org>
+ <20220426200000.GB9427@duo.ucw.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220427071100.3844081-1-xu.xin16@zte.com.cn>
+In-Reply-To: <20220426200000.GB9427@duo.ucw.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Tue, Apr 26, 2022 at 10:00:00PM +0200, Pavel Machek wrote:
+> Hi!
+> 
+> > This is the start of the stable review cycle for the 4.19.240 release.
+> > There are 53 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> > 
+> > Responses should be made by Thu, 28 Apr 2022 08:17:22 +0000.
+> > Anything received after that time might be too late.
+> 
+> I still see problems on socfpga:
+> 
+> [    1.227759]  mmcblk0: p1 p2 p3
+> [    1.269825] Micrel KSZ9031 Gigabit PHY stmmac-0:01: attached PHY driver [Micrel KSZ9031 Gigabit PHY] (mii_bus:phy_addr=stmmac-0:01, irq=POLL)
+> [    1.284600] socfpga-dwmac ff702000.ethernet eth0: No Safety Features support found
+> [    1.292374] socfpga-dwmac ff702000.ethernet eth0: registered PTP clock
+> [    1.299247] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+> [    5.444552] Unable to handle kernel NULL pointer dereference at virtual address 00000000
+> [    5.452609] pgd = (ptrval)
+> [    5.455322] [00000000] *pgd=00000000
+> [    5.458890] Internal error: Oops: 805 [#1] SMP ARM
+> [    5.463660] Modules linked in:
+> [    5.466708] CPU: 0 PID: 766 Comm: kworker/0:2 Not tainted 4.19.240-rc1-g5e5c9d690926 #1
+> [    5.474674] Hardware name: Altera SOCFPGA
+> [    5.478679] Workqueue: events_power_efficient phy_state_machine
+> [    5.484579] PC is at socfpga_dwmac_fix_mac_speed+0x3c/0xbc
+> [    5.490044] LR is at arm_heavy_mb+0x2c/0x48
+> [    5.494208] pc : [<c05d9a2c>]    lr : [<c01182e8>]    psr: 60000013
+> [    5.500446] sp : ee84de58  ip : ee84de48  fp : ee84de7c
+> [    5.505648] r10: 00000001  r9 : ee8fb800  r8 : 00000000
+> [    5.510848] r7 : 00000000  r6 : 000003e8  r5 : eebe4000  r4 : eeb0a880
+> [    5.517343] r3 : 00000001  r2 : 00000730  r1 : 00000000  r0 : eeb0a880
+> [    5.523842] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+> [    5.530945] Control: 10c5387d  Table: 0000404a  DAC: 00000051
+> [    5.536665] Process kworker/0:2 (pid: 766, stack limit = 0x(ptrval))
+> [    5.542989] Stack: (0xee84de58 to 0xee84e000)
+> [    5.547328] de40:                                                       ee8fb800 eebe4000
+> [    5.555470] de60: eebe5000 eebe4538 00610c8c eebe4500 ee84deb4 ee84de80 c05cd084 c05d99fc
+> [    5.563613] de80: c07058f0 c018fabc eebe4000 ee8fb800 eebe4000 ee8fba90 00000000 00000000
+> [    5.571756] dea0: c0c77830 00000000 ee84decc ee84deb8 c05baf3c c05ccef0 ee8fba64 ee8fb800
+> [    5.579899] dec0: ee84def4 ee84ded0 c05b921c c05baf08 ee8fba64 ef1cda80 ef7d2fc0 ef7d6500
+> [    5.588041] dee0: 00000000 c0c77830 ee84df34 ee84def8 c013e18c c05b8ee0 ef7d2fc0 ef7d2fc0
+> [    5.596183] df00: 00000008 ef7d2fd8 c0c02d00 ef1cda80 ef1cda94 ef7d2fc0 00000008 ef7d2fd8
+> [    5.604327] df20: c0c02d00 ef7d2fc0 ee84df74 ee84df38 c013f178 c013df74 c013f118 c09e2128
+> [    5.612469] df40: c0c77250 ffffe000 ee84df74 ef375140 ef3b9900 00000000 ee84c000 ef1cda80
+> [    5.620612] df60: c013f118 ef127e74 ee84dfac ee84df78 c0144ac8 c013f124 ef37515c ef37515c
+> [    5.628754] df80: ee84dfac ef3b9900 c014495c 00000000 00000000 00000000 00000000 00000000
+> [    5.636896] dfa0: 00000000 ee84dfb0 c01010e8 c0144968 00000000 00000000 00000000 00000000
+> [    5.645038] dfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> [    5.653180] dfe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
+> [    5.661317] Backtrace: 
+> [    5.663767] [<c05d99f0>] (socfpga_dwmac_fix_mac_speed) from [<c05cd084>] (stmmac_adjust_link+0x1a0/0x21c)
+> [    5.673294]  r9:eebe4500 r8:00610c8c r7:eebe4538 r6:eebe5000 r5:eebe4000 r4:ee8fb800
+> [    5.681009] [<c05ccee4>] (stmmac_adjust_link) from [<c05baf3c>] (phy_link_change+0x40/0x4c)
+> [    5.689323]  r10:00000000 r9:c0c77830 r8:00000000 r7:00000000 r6:ee8fba90 r5:eebe4000
+> [    5.697116]  r4:ee8fb800
+> [    5.699644] [<c05baefc>] (phy_link_change) from [<c05b921c>] (phy_state_machine+0x348/0x580)
+> [    5.708042]  r5:ee8fb800 r4:ee8fba64
+> [    5.711610] [<c05b8ed4>] (phy_state_machine) from [<c013e18c>] (process_one_work+0x224/0x518)
+> [    5.720098]  r9:c0c77830 r8:00000000 r7:ef7d6500 r6:ef7d2fc0 r5:ef1cda80 r4:ee8fba64
+> [    5.727811] [<c013df68>] (process_one_work) from [<c013f178>] (worker_thread+0x60/0x5ac)
+> [    5.735866]  r10:ef7d2fc0 r9:c0c02d00 r8:ef7d2fd8 r7:00000008 r6:ef7d2fc0 r5:ef1cda94
+> [    5.743658]  r4:ef1cda80
+> [    5.746187] [<c013f118>] (worker_thread) from [<c0144ac8>] (kthread+0x16c/0x174)
+> [    5.753551]  r10:ef127e74 r9:c013f118 r8:ef1cda80 r7:ee84c000 r6:00000000 r5:ef3b9900
+> [    5.761342]  r4:ef375140
+> [    5.763869] [<c014495c>] (kthread) from [<c01010e8>] (ret_from_fork+0x14/0x2c)
+> [    5.771057] Exception stack(0xee84dfb0 to 0xee84dff8)
+> [    5.776087] dfa0:                                     00000000 00000000 00000000 00000000
+> [    5.784229] dfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> [    5.792370] dfe0: 00000000 00000000 00000000 00000000 00000013 00000000
+> [    5.798955]  r10:00000000 r9:00000000 r8:00000000 r7:00000000 r6:00000000 r5:c014495c
+> [    5.806747]  r4:ef3b9900
+> [    5.809273] Code: e59394b8 f57ff04e ebecfa24 e3a03001 (e1c830b0) 
+> [    5.815374] ---[ end trace 922ea6407635ba6b ]---
+> 
+> https://lava.ciplatform.org/scheduler/job/669257
+> https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/jobs/2377419824
 
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on hnaz-mm/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/cgel-zte-gmail-com/mm-kfence-fix-a-potential-NULL-pointer-dereference/20220427-151258
-base:   https://github.com/hnaz/linux-mm master
-config: arm-buildonly-randconfig-r004-20220427 (https://download.01.org/0day-ci/archive/20220427/202204271916.aTcNyVdc-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/intel-lab-lkp/linux/commit/920e9e639493bc72bee803c763f09760e3acd063
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review cgel-zte-gmail-com/mm-kfence-fix-a-potential-NULL-pointer-dereference/20220427-151258
-        git checkout 920e9e639493bc72bee803c763f09760e3acd063
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash mm/kfence/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   mm/kfence/core.c:1067:23: error: use of undeclared identifier 'addr'
-                   kfence_guarded_free(addr, meta, false);
-                                       ^
->> mm/kfence/core.c:1075:23: warning: incompatible pointer to integer conversion passing 'void *' to parameter of type 'unsigned long' [-Wint-conversion]
-                   kfence_report_error(addr, false, NULL, NULL, KFENCE_ERROR_INVALID);
-                                       ^~~~
-   mm/kfence/kfence.h:129:40: note: passing argument to parameter 'address' here
-   void kfence_report_error(unsigned long address, bool is_write, struct pt_regs *regs,
-                                          ^
-   1 warning and 1 error generated.
-
-
-vim +1075 mm/kfence/core.c
-
-  1069	
-  1070	void __kfence_free(void *addr)
-  1071	{
-  1072		struct kfence_metadata *meta = addr_to_metadata((unsigned long)addr);
-  1073	
-  1074		if (!meta) {
-> 1075			kfence_report_error(addr, false, NULL, NULL, KFENCE_ERROR_INVALID);
-  1076			return;
-  1077		}
-  1078	
-  1079		__try_free_kfence_meta(meta);
-  1080	}
-  1081	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Can you run git bisect?
