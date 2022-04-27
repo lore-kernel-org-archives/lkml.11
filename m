@@ -2,76 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8BF0C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B920DC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:56:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241315AbiD0P7G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57978 "EHLO
+        id S241249AbiD0P7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:59:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241088AbiD0P63 (ORCPT
+        with ESMTP id S240995AbiD0P6Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 11:58:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D91C737BD;
-        Wed, 27 Apr 2022 08:55:06 -0700 (PDT)
+        Wed, 27 Apr 2022 11:58:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F7D57379A;
+        Wed, 27 Apr 2022 08:54:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 950EC61B0C;
-        Wed, 27 Apr 2022 15:55:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C325CC385AC;
-        Wed, 27 Apr 2022 15:55:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12A87B82887;
+        Wed, 27 Apr 2022 15:54:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8E9CC385B2;
+        Wed, 27 Apr 2022 15:54:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651074904;
-        bh=Piko2fouUlHnnl1uG5umbKhIYMeTrewPG6CLc18H38o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SRtRFUxFKtCdBTtyse0uGH/a7eJz+F73+BB1OV8HvPvfXjks7MS3J/ViyoWllU5jk
-         uHVJ6aVDQlgc+v+gsNDzYoCnj8uxFX4anMZlCDL+j7Pj3m+frmrGn3t3ji69RH/wKG
-         0JIpTJJ87NqotwhpZg2ulvrAAWJngXByonMKI2j1WddU+bhAAsDfme51MbXliUwEy3
-         GB6wcD3wH1GcVrDmA+574OsOdDHiWLklmzq2buYznqINMy6N5TrTkGH1Dl3XjA25uz
-         dnnlFDTupCxHYfRimfwJ5p5piFR0wfqYv8I5woNuP5FJKFOiI6uK33G6ITjcf3Tpdl
-         MuCMWly4yRyUQ==
-Date:   Wed, 27 Apr 2022 08:55:02 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Min Li <min.li.xe@renesas.com>
-Cc:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "lee.jones@linaro.org" <lee.jones@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net 1/2] ptp: ptp_clockmatrix: Add PTP_CLK_REQ_EXTTS
- support
-Message-ID: <20220427085502.719366ad@kernel.org>
-In-Reply-To: <OS3PR01MB6593BE917485C87E32D1E5FDBAFA9@OS3PR01MB6593.jpnprd01.prod.outlook.com>
-References: <1651001574-32457-1-git-send-email-min.li.xe@renesas.com>
-        <20220426142150.47b057a3@kernel.org>
-        <OS3PR01MB6593BE917485C87E32D1E5FDBAFA9@OS3PR01MB6593.jpnprd01.prod.outlook.com>
+        s=k20201202; t=1651074877;
+        bh=QtB4FLTGl2FYMU5SExiHr2416mWxcRNtxJ+kWgPShxU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MFGm+7e46cBwtMzSkDBwBib5xHwwSFOkzc8NGqmixZTrr8Zay1Z9fNQALheLTD+hQ
+         5ryim66O6PC7txliyuVxefzrwEYOUbKgcJbb8Z0Z+j8Fa82YyJYWDLZ44Lk2bhJiS9
+         imNrkC/KbVf1fJpKC8OqpYHsbc1Q9pg3KnN/q/36vLk0lQ/0UB+PT9wstvV1pJ9nzk
+         dNa5PWipD2NWQVKLWPOLEsKJi52FKfOvVrwpxQLa2pIDxCDMhfYfI8AttrxG3k0LDV
+         mJzUeyLC1QQuI3rpAgr25rPDCaM/Vd4eFWFfvK6mUleELH2TDtVmcWnVjq9oxabzXt
+         lLL/IO0+VMCnQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.10 3/4] KVM: x86/mmu: avoid NULL-pointer dereference on page freeing bugs
+Date:   Wed, 27 Apr 2022 11:54:34 -0400
+Message-Id: <20220427155435.19554-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220427155435.19554-1-sashal@kernel.org>
+References: <20220427155435.19554-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Apr 2022 14:32:03 +0000 Min Li wrote:
-> > On Tue, 26 Apr 2022 15:32:53 -0400 Min Li wrote:  
-> > > Use TOD_READ_SECONDARY for extts to keep TOD_READ_PRIMARY for  
-> > gettime  
-> > > and settime exclusively  
-> > 
-> > Does not build on 32 bit.
-> >   
-> 
-> Hi Jakub
-> 
-> I compiled with arm-linux-gnueabi-
-> 
-> By 32 bit, did you mean x86?
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-Yup! I think arm does not have the 64b division problems x86 has.
-We hit the dreaded 
+[ Upstream commit 9191b8f0745e63edf519e4a54a4aaae1d3d46fbd ]
 
-ERROR: modpost: "__divdi3" [drivers/ptp/ptp_clockmatrix.ko] undefined!
-ERROR: modpost: "__udivdi3" [drivers/ptp/ptp_clockmatrix.ko] undefined!
+WARN and bail if KVM attempts to free a root that isn't backed by a shadow
+page.  KVM allocates a bare page for "special" roots, e.g. when using PAE
+paging or shadowing 2/3/4-level page tables with 4/5-level, and so root_hpa
+will be valid but won't be backed by a shadow page.  It's all too easy to
+blindly call mmu_free_root_page() on root_hpa, be nice and WARN instead of
+crashing KVM and possibly the kernel.
 
-on 32b x86 builds. Sorry for lack of clarity.
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/kvm/mmu/mmu.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 99ea1ec12ffe..70ef5b542681 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3140,6 +3140,8 @@ static void mmu_free_root_page(struct kvm *kvm, hpa_t *root_hpa,
+ 		return;
+ 
+ 	sp = to_shadow_page(*root_hpa & PT64_BASE_ADDR_MASK);
++	if (WARN_ON(!sp))
++		return;
+ 
+ 	if (kvm_mmu_put_root(kvm, sp)) {
+ 		if (sp->tdp_mmu_page)
+-- 
+2.35.1
+
