@@ -2,112 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E03C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 20:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B192C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 20:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236180AbiD0UMe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 16:12:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33770 "EHLO
+        id S236504AbiD0UNM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 16:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236002AbiD0UL7 (ORCPT
+        with ESMTP id S230154AbiD0UM4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 16:11:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B2C50939F9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 13:06:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651089966;
+        Wed, 27 Apr 2022 16:12:56 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A20A972B5;
+        Wed, 27 Apr 2022 13:06:51 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651090009;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=lggN3RfeBWkcrXGP2XX4hq9ENBmADwLyyEqxgrx+HuM=;
-        b=TY2uqEX6lE76WCXt9eLZ4pQ6o62lEI0EN7H+a2WWxuQPTZIdFwbW1Uon/RVQbCqtmSuaVX
-        E8B2gB0WK29+8FMybLNFisdQXcEyh7pmJ002YiYYdQE4ic7f6W8XhpJ80A3j2xbVoHbBEd
-        U5IqXWpyG0hR3PVZpbZJ8hbpydvUP/w=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-104-Gz4Bkn4gMvCnTjdaHLk12w-1; Wed, 27 Apr 2022 16:05:59 -0400
-X-MC-Unique: Gz4Bkn4gMvCnTjdaHLk12w-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 389A43834C16;
-        Wed, 27 Apr 2022 20:05:58 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.192.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C3AE49E74;
-        Wed, 27 Apr 2022 20:05:51 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
+        bh=TeFBJ6BMGAy+Ewq+CYjwj4kASBe/7C6TdEh8x9Z5Ous=;
+        b=37Rm74dwmyP9+Bs9sPwVcBKLY+b5VjDVcnyI4bPCwOHOj5eqGhNcfMBvh3OBnvyTRl4b1h
+        S7YtDDWaqchUQy2Ddg+qbNRF9EagewIc/KZuy4+90/r3N9DQjRUg+j+RzxmUhOH2bquvvo
+        TyzqirUSLYSFVve9DzGcz6Ynkz+E07PEPB2VBBofqxf5cqsqnzNoluKHBIaQhqlhT9Cw71
+        2qc2Hq2SkpRuNfAmFpwVEhs0/pFIIixFfCpGbK71etA3D/ghvmzOelm9bmR7n7G+vec6l9
+        fo39Wq2J2AN52+HZYku3/UymZjw3iBeoH/ATkB+eCiEFl2sIgHKmrQoPTAZemQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651090009;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TeFBJ6BMGAy+Ewq+CYjwj4kASBe/7C6TdEh8x9Z5Ous=;
+        b=LU/WZ930oEEcYwjgAFTNYGBSJMy4wpTKnoYBDWEymfOcY9LETvGI2oDXv4zFTg19MEMv7U
+        LM7kKyQiHGBB/mBQ==
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
         Ingo Molnar <mingo@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        intel-gfx@lists.freedesktop.org,
-        Sean Christopherson <seanjc@google.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
-        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [RFC PATCH v3 19/19] KVM: x86: nSVM: expose the nested AVIC to the guest
-Date:   Wed, 27 Apr 2022 23:03:14 +0300
-Message-Id: <20220427200314.276673-20-mlevitsk@redhat.com>
-In-Reply-To: <20220427200314.276673-1-mlevitsk@redhat.com>
-References: <20220427200314.276673-1-mlevitsk@redhat.com>
+        Jonathan Corbet <corbet@lwn.net>,
+        Richard Cochran <richardcochran@gmail.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] timekeeping: Introduce fast accessor to clock tai
+In-Reply-To: <20220427112759.1cedda69@gandalf.local.home>
+References: <20220414091805.89667-1-kurt@linutronix.de>
+ <20220414091805.89667-2-kurt@linutronix.de>
+ <20220426175338.3807ca4f@gandalf.local.home> <87r15i9azg.fsf@kurt>
+ <20220427112759.1cedda69@gandalf.local.home>
+Date:   Wed, 27 Apr 2022 22:06:49 +0200
+Message-ID: <87pml2wasm.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch enables and exposes to the nested guest
-the support for the nested AVIC.
+On Wed, Apr 27 2022 at 11:27, Steven Rostedt wrote:
+>> >             less-5071    [000] d.h2. 498087876.351330: do_raw_spin_trylock <-_raw_spin_lock
+>> >             less-5071    [000] d.h4. 498087876.351334: ktime_get_mono_fast_ns <-ktime_get_tai_fast_ns
+>> >             less-5071    [000] d.h5. 498087876.351334: ktime_get_mono_fast_ns <-ktime_get_tai_fast_ns
+>> >             less-5071    [000] d.h3. 498087876.351334: rcu_read_lock_sched_held <-lock_acquired
+>> >             less-5071    [000] d.h5. 498087876.351337: ktime_get_mono_fast_ns <-ktime_get_tai_fast_ns
+>> >     kworker/u8:1-45      [003] d.h7. 1651009380.982749: ktime_get_mono_fast_ns <-ktime_get_tai_fast_ns
+>> >     kworker/u8:1-45      [003] d.h7. 1651009380.982749: ktime_get_mono_fast_ns <-ktime_get_tai_fast_ns
+>> >     kworker/u8:1-45      [003] d.h5. 1651009380.982749: rcu_read_lock_held_common <-rcu_read_lock_sched_held
+>> >     kworker/u8:1-45      [003] d.h7. 498087876.375905: ktime_get_mono_fast_ns <-ktime_get_tai_fast_ns
+>> >     kworker/u8:1-45      [003] d.h7. 498087876.375905: ktime_get_mono_fast_ns <-ktime_get_tai_fast_ns
+>> >     kworker/u8:1-45      [003] d.h5. 498087876.375905: update_cfs_group <-task_tick_fair
+>> >     kworker/u8:1-45      [003] d.h7. 498087876.375909: ktime_get_mono_fast_ns <-ktime_get_tai_fast_ns
+>> >
+>> > The clock seems to be toggling between 1651009380 and 498087876 causing the
+>> > ftrace ring buffer to shutdown (it doesn't allow for time to go backwards).
+>> >
+>> > This is running on a 32 bit x86.  
+>> 
+>> Hm. The only problem is that the TAI offset may change. That should only
+>> happen if the time is set or similar. For the TSN use case I've ran
+>> ptp4l and phc2sys. phc2sys in the default configuration sets the offset
+>> hard once and uses frequency adjustments from that point on. I didn't
+>> observe any time jumps. Nevertheless, my test systems is based on
+>> arm64. I'll do some testing on x86.
+>
+> I'm able to trigger this on x86 64bit too.
+>
+> One thing I noticed, is that the two numbers I have (from a different
+> trace, but very similar to the above)
+>
+> $ printf "%llx\n" 498151194674148935
+> 6e9c9df4afd3647
+>
+> $ printf "%llx\n" 1651072699280995911
+> 16e9c9df4afd3647
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/kvm/svm/svm.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+TAI offset after boot is somewhere in this region:
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 099329711ad13..431281ccc40ef 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4087,6 +4087,9 @@ static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 		if (guest_cpuid_has(vcpu, X86_FEATURE_X2APIC))
- 			kvm_set_apicv_inhibit(kvm, APICV_INHIBIT_REASON_X2APIC);
- 	}
-+
-+	svm->avic_enabled = enable_apicv && guest_cpuid_has(vcpu, X86_FEATURE_AVIC);
-+
- 	init_vmcb_after_set_cpuid(vcpu);
- }
- 
-@@ -4827,6 +4830,9 @@ static __init void svm_set_cpu_caps(void)
- 		if (vgif)
- 			kvm_cpu_cap_set(X86_FEATURE_VGIF);
- 
-+		if (enable_apicv)
-+			kvm_cpu_cap_set(X86_FEATURE_AVIC);
-+
- 		/* Nested VM can receive #VMEXIT instead of triggering #GP */
- 		kvm_cpu_cap_set(X86_FEATURE_SVME_ADDR_CHK);
- 	}
--- 
-2.26.3
+It's 16e9d5dca2e7ac57 here. Converted to ctime:
+
+Wed Apr 27 20:58:02 2022
+
+and that does not change after booting on the VM I'm testing. But then
+ftrace suddenly throws this warning:
+
+[  456.444350] Delta way too big! 1152921504606861182
+   ts=1651087617720667106 before=498166113113805924
+   after=498166113113820130 write stamp=498166113113820130
+
+I first set tai as trace clock and then enabled a trace point. It seems
+the first hit on this trace point ended up there.
+
+> That is, the last nibble either is 0 or 1, causing the change?
+>
+> 06e9c9df4afd3647
+> 16e9c9df4afd3647
+
+I added debug into ktime_get_tai_fast_ns() to emit a pr_warn() when
+either the TAI offset or the result is less than 1 << 60.
+
+That does not trigger, but ftrace still confuses itself....
+
+There is some mumble about timestamps only requiring 59 bits and the
+check which triggers the warning has:
+
+      if (unlikely(info->delta > (1ULL << 59))) {
+
+So something cuts off bit 60 somewhere and then the whole thing goes
+into confusion mode.
+
+When I set wall time to something before 1985, it works.
+
+ctime(0x06e9c9df4afd3647/1e9) = Mon Oct 14 16:19:54 1985
+
+Haven't found where ftrace loses the upper bit, but it does so
+somewhere.
+
+Thanks,
+
+        tglx
+
+
 
