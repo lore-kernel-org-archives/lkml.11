@@ -2,97 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63010C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 06:36:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C066C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 06:37:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358171AbiD0Gjx (ORCPT
+        id S1358180AbiD0GkK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 02:39:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59548 "EHLO
+        Wed, 27 Apr 2022 02:40:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358180AbiD0Gis (ORCPT
+        with ESMTP id S1358167AbiD0Gjw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 02:38:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC82DAC;
-        Tue, 26 Apr 2022 23:35:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A48A9B82504;
-        Wed, 27 Apr 2022 06:35:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53DE8C385AF;
-        Wed, 27 Apr 2022 06:35:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651041335;
-        bh=S7L7LCfQw9ybG+HTyJrxZ9N79OTqInjfPScQ2OGVp+Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Aw/hwbhuNiAjclNMtdRoTPB/EuKV8w/i9HhU75hQvcpQnRi975vAk904voio6LY3e
-         97U+eP03pUzkl+a29/PzZA7K5H0s7jWlo2QsWVcEIiSw++JlNGoxrVg+e5DCM77ESu
-         ROsL0egHLEpo5f55H/WyvFxaCVGTQGt1C6kE0E2sat6cO/k+m3zb5poUDyKd+B3WCK
-         HNs2SoJkjeBDkdHAeVpoMglvvonXHjsXLhuq1c6rEeO/aMzHNLuIVpFzn/SfbIWiSK
-         kIRkQkOrx6/l34MieqhhWkghjDnLgFZNn6g2+X96lv3FLNnhsuVlUVf3wpVIjxaSNB
-         QaRfeOCLNcPmQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1njbGz-0008VZ-3R; Wed, 27 Apr 2022 08:35:37 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH v2 3/3] phy: qcom-qmp: switch to explicit reset helpers
-Date:   Wed, 27 Apr 2022 08:32:43 +0200
-Message-Id: <20220427063243.32576-4-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220427063243.32576-1-johan+linaro@kernel.org>
-References: <20220427063243.32576-1-johan+linaro@kernel.org>
+        Wed, 27 Apr 2022 02:39:52 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE97F1CFD8
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 23:36:41 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kp8C56QRkzfbHl;
+        Wed, 27 Apr 2022 14:35:45 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Apr 2022 14:36:39 +0800
+Subject: Re: [PATCH v3 3/6] mm/vmscan: activate swap-backed executable folios
+ after first usage
+To:     "ying.huang@intel.com" <ying.huang@intel.com>,
+        Joonsoo Kim <js1304@gmail.com>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oscar Salvador <osalvador@suse.de>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220425111232.23182-1-linmiaohe@huawei.com>
+ <20220425111232.23182-4-linmiaohe@huawei.com>
+ <20220425140711.0c1898862fc817135bbbc56e@linux-foundation.org>
+ <6b74e6f3799032d4f12bae0d97a453dc85d03028.camel@intel.com>
+ <5a108252-4eb8-e353-da3d-a96b8799fadf@huawei.com>
+ <CAAmzW4NV9_LiGsN3Qn3uv19ZLFn9zZ3hdLFy1HOgbec5Or0Ccw@mail.gmail.com>
+ <75adcfe33483d5e30855226b6efcd8dcd2f52925.camel@intel.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <b41d51c2-5ff9-024e-34ff-0c9652f30a1c@huawei.com>
+Date:   Wed, 27 Apr 2022 14:36:38 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <75adcfe33483d5e30855226b6efcd8dcd2f52925.camel@intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Switch to consistently using the explicit reset-controller API which
-makes it clear that the reset controllers are used exclusively by the
-PHY driver.
+On 2022/4/27 14:10, ying.huang@intel.com wrote:
+> On Wed, 2022-04-27 at 13:08 +0900, Joonsoo Kim wrote:
+>> Hello,
+>>
+>> 2022년 4월 26일 (화) 오후 3:58, Miaohe Lin <linmiaohe@huawei.com>님이 작성:
+>>>
+>>> On 2022/4/26 10:02, ying.huang@intel.com wrote:
+>>>> On Mon, 2022-04-25 at 14:07 -0700, Andrew Morton wrote:
+>>>>> On Mon, 25 Apr 2022 19:12:29 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
+>>>>>
+>>>>>> We should activate swap-backed executable folios (e.g. tmpfs) after first
+>>>>>> usage so that executable code gets yet better chance to stay in memory.
+>>
+>> Missing activation for swap-backed executable page is the intended operation.
+>> So, I disagree with this patch until some numbers are provided.
+>> See following discussion.
+>>
+>> https://lore.kernel.org/all/20200316161208.GB67986@cmpxchg.org/T/#u
+> 
+> Thanks for your pointer.  Now I understood more about this.  I agree to
+> keep the original behavior unless we can prove the change with numbers.
+> 
 
-Note that the deprecated of_reset_control_get() and
-devm_reset_control_get() are just transitional wrappers for the explicit
-API so there's no functional change.
+Many thanks both! I will keep the original behavior. :)
 
-Suggested-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/phy/qualcomm/phy-qcom-qmp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
-index 3f77830921f5..160d723fc773 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
-@@ -5701,7 +5701,7 @@ static int qcom_qmp_phy_reset_init(struct device *dev, const struct qmp_phy_cfg
- 		struct reset_control *rst;
- 		const char *name = cfg->reset_list[i];
- 
--		rst = devm_reset_control_get(dev, name);
-+		rst = devm_reset_control_get_exclusive(dev, name);
- 		if (IS_ERR(rst)) {
- 			dev_err(dev, "failed to get %s reset\n", name);
- 			return PTR_ERR(rst);
-@@ -6099,7 +6099,7 @@ int qcom_qmp_phy_create(struct device *dev, struct device_node *np, int id,
- 	/* Get lane reset, if any */
- 	if (cfg->has_lane_rst) {
- 		snprintf(prop_name, sizeof(prop_name), "lane%d", id);
--		qphy->lane_rst = of_reset_control_get(np, prop_name);
-+		qphy->lane_rst = of_reset_control_get_exclusive(np, prop_name);
- 		if (IS_ERR(qphy->lane_rst)) {
- 			dev_err(dev, "failed to get lane%d reset\n", id);
- 			return PTR_ERR(qphy->lane_rst);
--- 
-2.35.1
+> Best Regards,
+> Huang, Ying
+> 
+> 
+> .
+> 
 
