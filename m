@@ -2,110 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C199C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:14:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:14:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242751AbiD0QRM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:17:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49958 "EHLO
+        id S242304AbiD0QRV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243766AbiD0QPY (ORCPT
+        with ESMTP id S244526AbiD0QQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:15:24 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69FCEC42C3
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:11:43 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id l7so4421342ejn.2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:11:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=JKLzCL9GRVwGSc0r2wworp9J5CsZD53o2CgTBmT+PEI=;
-        b=ZBb8Sbv/8yazigfumcrHKn3jqhnSD4csRjnITAkp2hHyD6uZh1coAbcZLoKsNiHJSh
-         sgaggV8ataQA3Audmu7ecawSpOaaQ5iz7/Bgc4ihOy5KW6GjEJGAC7w3Mflk/UuGsBwL
-         JudgVfogSEgNSVQSElo3yX6ChPh8olEfY3mHxuIXTFVT2udJfcIHKUBFj+edA9YAl2W7
-         ZYQHRIP9czJeaUP+3LmS+30xiQMdxR51iylGZX2Efk4QHDm7WlHZzVAgDyeIg8pa0Rwo
-         C3K1JiXvYjoHEVAgVOQJqXcuB5tTK6vnwDNldYjkmkUbuNLmIBpDVzx3NSXdtiuZutqR
-         CXFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=JKLzCL9GRVwGSc0r2wworp9J5CsZD53o2CgTBmT+PEI=;
-        b=4C1B4LVU0O29ECpZXw9b5ILF2PqRy5FEKko8MPMZDX6T86j5zspRY8rMWCFaRw13dk
-         kG72K8564XOPkLKzelanBjubGhKFnuEAiDD9aD9SHYc2XaqPs4X1mGMrUS4IjUGP23NH
-         VEl08S27qqdPzNA9yroP7k39NGrJdxEqguN31LWaKyGo+bWxglExhv154s9nKOXu7R61
-         7cX4dy4JSQEqxVHlcXlMvviH/SLeXiLdZFGYuCTmOaumylATt9Br6L0Mb8JgpBy3i2j5
-         dZN1YJaOMZFwnFsvxMz2oXl8mBX2Gn1JMnybaoOfw3gpnmyEs2fdTlLP/CBFm1kFbkah
-         u8cg==
-X-Gm-Message-State: AOAM532yxug+ZX2Rbf4J0v6DIGBCdQs7UdiTKmzbbFAvjGOv23qlrIkV
-        C9lonl/8rpI23zkz79pk/HbJpg==
-X-Google-Smtp-Source: ABdhPJyMP/J5GpCo0ncYqIKuqqPzoIIXiaYX3cIMzzq6c6IdI3lhr0fAM8UwM9/VTiJul7+YCDs1UQ==
-X-Received: by 2002:a17:907:2d93:b0:6f3:8524:6f92 with SMTP id gt19-20020a1709072d9300b006f385246f92mr19238744ejc.556.1651075901602;
-        Wed, 27 Apr 2022 09:11:41 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id m1-20020a170906234100b006ef83025804sm7124610eja.87.2022.04.27.09.11.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 09:11:40 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Vinod Koul <vkoul@kernel.org>, linux-usb@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        dmaengine@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 1/6] dt-bindings: usb: am33xx-usb: deprecate '#dma-channels'
-Date:   Wed, 27 Apr 2022 18:11:21 +0200
-Message-Id: <20220427161126.647073-2-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220427161126.647073-1-krzysztof.kozlowski@linaro.org>
-References: <20220427161126.647073-1-krzysztof.kozlowski@linaro.org>
+        Wed, 27 Apr 2022 12:16:10 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42F723BD05D;
+        Wed, 27 Apr 2022 09:12:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651075973; x=1682611973;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bvX0aGm4IOnIEg2n6XV2jCB1sY63SGnfB3nZcvk7UT8=;
+  b=NEaSuShCBYthK3Nz3ooFbmqDyKjdRNyml0AeZ+Z0905qcqin9ZxixoG1
+   F0FwWJRQymhdCVRtTSMuEWRjOKgJ8z9G+vuTO8t3aLGD96zW/mhve4wr7
+   5xykQT7RHaNl9NkvrnloaYvQWsfvTM3sQEUHCoGCIBdlk4p3q3DaEX9MQ
+   Fx7JK+ntkEUltcoFHDTj3P9S3fwu6IolWGLIcbD6MOtyVoXAVasAxnN2c
+   FK36dKNW74hutgxv7kl6uet0/jj+76xaPE0y7D0mtLKBG3ZQ7W3tYF5Gn
+   ORi4CvnDoE3Rmq2MysIe47o4ficjwYnvsF0Kswc/l0dBzjDK0KurGHfMv
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="264829595"
+X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
+   d="scan'208";a="264829595"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 09:06:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
+   d="scan'208";a="650769561"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 27 Apr 2022 09:06:35 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1njkBW-0004lU-GQ;
+        Wed, 27 Apr 2022 16:06:34 +0000
+Date:   Thu, 28 Apr 2022 00:06:19 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Matthias Kaehlcke <mka@chromium.org>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org, dm-devel@redhat.com,
+        linux-raid@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Song Liu <song@kernel.org>,
+        Matthias Kaehlcke <mka@chromium.org>
+Subject: Re: [PATCH v2 2/3] LoadPin: Enable loading from trusted dm-verity
+ devices
+Message-ID: <202204272332.Ro5WIkwF-lkp@intel.com>
+References: <20220426143059.v2.2.I01c67af41d2f6525c6d023101671d7339a9bc8b5@changeid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220426143059.v2.2.I01c67af41d2f6525c6d023101671d7339a9bc8b5@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The generic property, used in most of the drivers and defined in generic
-dma-common DT bindings, is 'dma-channels'.
+Hi Matthias,
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/usb/am33xx-usb.txt | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Thank you for the patch! Yet something to improve:
 
-diff --git a/Documentation/devicetree/bindings/usb/am33xx-usb.txt b/Documentation/devicetree/bindings/usb/am33xx-usb.txt
-index 7a198a30408a..654ffc62d013 100644
---- a/Documentation/devicetree/bindings/usb/am33xx-usb.txt
-+++ b/Documentation/devicetree/bindings/usb/am33xx-usb.txt
-@@ -61,8 +61,9 @@ DMA
-   endpoint number (0 … 14 for endpoints 1 … 15 on instance 0 and 15 … 29
-   for endpoints 1 … 15 on instance 1). The second number is 0 for RX and
-   1 for TX transfers.
--- #dma-channels: should be set to 30 representing the 15 endpoints for
-+- dma-channels: should be set to 30 representing the 15 endpoints for
-   each USB instance.
-+- #dma-channels: deprecated
- 
- Example:
- ~~~~~~~~
-@@ -193,7 +194,7 @@ usb: usb@47400000 {
- 		interrupts = <17>;
- 		interrupt-names = "glue";
- 		#dma-cells = <2>;
--		#dma-channels = <30>;
--		#dma-requests = <256>;
-+		dma-channels = <30>;
-+		dma-requests = <256>;
- 	};
- };
+[auto build test ERROR on device-mapper-dm/for-next]
+[also build test ERROR on song-md/md-next kees/for-next/pstore v5.18-rc4 next-20220427]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Matthias-Kaehlcke/LoadPin-Enable-loading-from-trusted-dm-verity-devices/20220427-053314
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/device-mapper/linux-dm.git for-next
+config: sh-buildonly-randconfig-r004-20220427 (https://download.01.org/0day-ci/archive/20220427/202204272332.Ro5WIkwF-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/f3a54909bcd78b9f7f006d7e78acd03987031fae
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Matthias-Kaehlcke/LoadPin-Enable-loading-from-trusted-dm-verity-devices/20220427-053314
+        git checkout f3a54909bcd78b9f7f006d7e78acd03987031fae
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   sh4-linux-ld: security/loadpin/loadpin.o: in function `loadpin_read_file':
+   loadpin.c:(.text+0x2ac): undefined reference to `dm_get_md'
+>> sh4-linux-ld: loadpin.c:(.text+0x2b0): undefined reference to `dm_put'
+
 -- 
-2.32.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
