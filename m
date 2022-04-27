@@ -2,222 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DA5CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:36:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EECEFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:36:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236475AbiD0Nj1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60406 "EHLO
+        id S236498AbiD0Njf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:39:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236419AbiD0NjE (ORCPT
+        with ESMTP id S236141AbiD0NjS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:39:04 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACB0A4B1D8
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:35:52 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id p6so1553221plf.9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:35:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fevsh/rbhcrhbIfP+Wn54QROEdpICy0URFQLH/DB8j4=;
-        b=mMsAae1YBt+0tG01LiX3Ugj6TWIm+3o9pXGpxewc+8RJ0Ju3Acfo77c+tVGAqt1xrb
-         QRbH5mDCmedkuaMIJ7j4O/ZhCHHtLD4k8TsENcT/Ia2aKCiqJxc49MC5JAxe6XNx2xxX
-         keXvJokiLRmolr+lzWOgisfhU/CyvzfguQ/e82YjsAL8kliEd61XCYJ+wVILtBEGp8AL
-         qMhFeo0FPQ02WqTrXRryKRJ5sZwADG6rwFwy12OmUsHiP/sgrANj3P40wBR3+WU0NXmS
-         VK/RUju2sc6dD7BNvrNj9tCCSRJe6GOHE+ND4aLXZWQ2cfvMz7sLuCltEYBR9URWhDSC
-         arfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fevsh/rbhcrhbIfP+Wn54QROEdpICy0URFQLH/DB8j4=;
-        b=YggRp1ivbUXBrMeIhzRuoREZGorTD2sfRKE10v7Jb5ymBgHOCyNqEHS+dqO1wqA0sE
-         MOHdsNpeRg4eFq1vR3ISv3zI+QP/HtS8f2cKdc19KfIuWulTEcbp34O15CVlUdp3+lcK
-         pfSsUp8b7esMr7u8Ims1yfV6iDzwBh6h3G7CAxeXKXVS6iCfVgfE+PU+Xbv+l9IMQdN0
-         k1AUi6G1PsupYt5yLIsuMBwWbAiin+Q2fQWCnrDDDGQMKJ1+v+6PtCboRIhtCmP6qTUT
-         wqsTtMGMZ1cTWjurJSU9vx6ZKUJhJcnDFmG7IEHObhKbxKEsY+cVgENkq+5GpZgR+z4j
-         FThw==
-X-Gm-Message-State: AOAM531HQXOhxdayW55hBRM+IEIIYlGrmFoLQpL7Jp4lxY18NrmkXDcC
-        5JRqv9384oWy0rzIVYBhzxwDvVzeb+TO/A0VPsQwQA==
-X-Google-Smtp-Source: ABdhPJzAUAhRdF8NeipUDVixjh55zQ2zwqQbhWs7tKcIIcGjNttOwv1qVwl6XYaD60KKN31mA4lVManPplIdiXyqnms=
-X-Received: by 2002:a17:90b:1c10:b0:1d2:a7c4:3cf with SMTP id
- oc16-20020a17090b1c1000b001d2a7c403cfmr33259489pjb.100.1651066552080; Wed, 27
- Apr 2022 06:35:52 -0700 (PDT)
+        Wed, 27 Apr 2022 09:39:18 -0400
+Received: from smtpout1.mo528.mail-out.ovh.net (smtpout1.mo528.mail-out.ovh.net [46.105.34.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8A549F91;
+        Wed, 27 Apr 2022 06:36:06 -0700 (PDT)
+Received: from pro2.mail.ovh.net (unknown [10.109.156.243])
+        by mo528.mail-out.ovh.net (Postfix) with ESMTPS id 233C6F98ACFB;
+        Wed, 27 Apr 2022 15:36:04 +0200 (CEST)
+Received: from [192.168.1.42] (88.125.132.16) by DAG1EX2.emp2.local
+ (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 27 Apr
+ 2022 15:36:04 +0200
+Message-ID: <f3bb1c5d-1583-995e-213a-5eebc632c7bf@traphandler.com>
+Date:   Wed, 27 Apr 2022 15:36:03 +0200
 MIME-Version: 1.0
-References: <20220408134144.1532704-1-sudeep.holla@arm.com>
- <CAFA6WYNbwqNqK89ZCWWpAT5HCR59A+J873_5Odyjyb9qu00nsg@mail.gmail.com> <20220426144545.6qkn6iwayuwpvi7g@bogus>
-In-Reply-To: <20220426144545.6qkn6iwayuwpvi7g@bogus>
-From:   Sumit Garg <sumit.garg@linaro.org>
-Date:   Wed, 27 Apr 2022 19:05:38 +0530
-Message-ID: <CAFA6WYMCTn-YQrA-GixYu6OG8Qr_xsZ7xuk4LfFA-1PHgus3RQ@mail.gmail.com>
-Subject: Re: [PATCH] tee: Add Arm FF-A TEE driver
-To:     Sudeep Holla <sudeep.holla@arm.com>
-Cc:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Balint Dobszay <balint.dobszay@arm.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v6 2/2] watchdog: Add Renesas RZ/N1 Watchdog driver
+Content-Language: en-US
+To:     Guenter Roeck <linux@roeck-us.net>, <wim@linux-watchdog.org>,
+        <geert+renesas@glider.be>, <tzungbi@kernel.org>,
+        <linux-watchdog@vger.kernel.org>
+CC:     <linux-renesas-soc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+References: <20220413082527.155740-1-jjhiblot@traphandler.com>
+ <20220413082527.155740-3-jjhiblot@traphandler.com>
+ <79a5ec82-da71-57c3-d7bb-11607cb71bb4@roeck-us.net>
+From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+In-Reply-To: <79a5ec82-da71-57c3-d7bb-11607cb71bb4@roeck-us.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [88.125.132.16]
+X-ClientProxiedBy: DAG1EX1.emp2.local (172.16.2.1) To DAG1EX2.emp2.local
+ (172.16.2.2)
+X-Ovh-Tracer-Id: 5099482153730914805
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudehgdeifecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfevfhfhjggtgfhisehtkeertddtfeejnecuhfhrohhmpeflvggrnhdqlfgrtghquhgvshcujfhisghlohhtuceojhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmqeenucggtffrrghtthgvrhhnpedvfeekudegkeeuuedvueeuveejffdtvdethfelkefhfefftdetteffiefgvddtieenucfkpheptddrtddrtddrtddpkeekrdduvdehrddufedvrdduieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepjhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmpdhnsggprhgtphhtthhopedupdhrtghpthhtohepphhhihhlrdgvugifohhrthhhhiesrhgvnhgvshgrshdrtghomh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 26 Apr 2022 at 20:15, Sudeep Holla <sudeep.holla@arm.com> wrote:
->
-> On Fri, Apr 22, 2022 at 12:29:26PM +0530, Sumit Garg wrote:
-> > Hi Sudeep,
-> >
-> > On Fri, 8 Apr 2022 at 19:11, Sudeep Holla <sudeep.holla@arm.com> wrote:
-> > >
-> > > The Arm FF-A provides mechanism for Linux kernel and modules to
-> > > communicate with the secure partitions. This is useful for some
-> > > Trusted-OS driver that are kernel resident or modules.
-> > >
-> > > We would also like to avoid adding kernel drivers to communicate with
-> > > each and every service provided by these secure partitions. In order to
-> > > achieve the same with FF-A, it would be better to provide user-space
-> > > interface to access the FF-A functionalities. TEE subsystem seems to be
-> > > the best suited to meet those requirements without having to create a
-> > > new solution custom to FF-A alone.
-> >
-> > Yeah, this interface sounds interesting.
-> >
->
-> Good to hear that.
->
-> > >
-> > > All FF-A partitions that user-space access can be associated with this
-> > > new FF-A TEE driver and represented by a single TEE device. Though the
-> > > various secure services are generally distributed across multiple secure
-> > > partitions, all of these can be made accessible through this single FF-A
-> > > TEE device.
-> > >
-> > > The minimal functionality needed by the user space application is
-> > > implemented, namely:
-> > >  - Query all partition IDs for a specific FF-A UUID
-> > >  - Sending synchronous message to a partition
-> > >  - Share/unshare buffer with the partition
-> > >
-> >
-> > Are there any corresponding user-space applications/libraries
-> > available to get hands-on with this interface?
-> >
->
-> Not sure if the changes to make use of this new interface is publicly
-> available yet as these APIs are subject to change. I will see if something
-> can be shared, but this is the project[2] I am using to test with relevant
-> changes to use these TEE APIs.
->
 
-AFAIR, there is a concept of trusted services being launched by OP-TEE
-as well [1]. Is it the environment you are testing this interface
-with?
+On 27/04/2022 15:03, Guenter Roeck wrote:
+> On 4/13/22 01:25, Jean-Jacques Hiblot wrote:
+>> From: Phil Edworthy <phil.edworthy@renesas.com>
+>>
+>> This is a driver for the standard WDT on the RZ/N1 devices. This WDT has
+>> very limited timeout capabilities. However, it can reset the device.
+>> To do so, the corresponding bits in the SysCtrl RSTEN register need to
+>> be enabled. This is not done by this driver.
+>>
+>> Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+>> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+>> Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
+>> ---
+>>   drivers/watchdog/Kconfig    |   8 ++
+>>   drivers/watchdog/Makefile   |   1 +
+>>   drivers/watchdog/rzn1_wdt.c | 203 ++++++++++++++++++++++++++++++++++++
+>>   3 files changed, 212 insertions(+)
+>>   create mode 100644 drivers/watchdog/rzn1_wdt.c
+>>
+>> diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
+>> index c4e82a8d863f..4d5e503c8950 100644
+>> --- a/drivers/watchdog/Kconfig
+>> +++ b/drivers/watchdog/Kconfig
+>> @@ -883,6 +883,14 @@ config RENESAS_RZAWDT
+>>         This driver adds watchdog support for the integrated 
+>> watchdogs in the
+>>         Renesas RZ/A SoCs. These watchdogs can be used to reset a 
+>> system.
+>>   +config RENESAS_RZN1WDT
+>> +    tristate "Renesas RZ/N1 watchdog"
+>> +    depends on ARCH_RENESAS || COMPILE_TEST
+>> +    select WATCHDOG_CORE
+>> +    help
+>> +      This driver adds watchdog support for the integrated watchdogs 
+>> in the
+>> +      Renesas RZ/N1 SoCs. These watchdogs can be used to reset a 
+>> system.
+>> +
+>>   config RENESAS_RZG2LWDT
+>>       tristate "Renesas RZ/G2L WDT Watchdog"
+>>       depends on ARCH_RENESAS || COMPILE_TEST
+>> diff --git a/drivers/watchdog/Makefile b/drivers/watchdog/Makefile
+>> index f7da867e8782..38d38564f47b 100644
+>> --- a/drivers/watchdog/Makefile
+>> +++ b/drivers/watchdog/Makefile
+>> @@ -84,6 +84,7 @@ obj-$(CONFIG_LPC18XX_WATCHDOG) += lpc18xx_wdt.o
+>>   obj-$(CONFIG_BCM7038_WDT) += bcm7038_wdt.o
+>>   obj-$(CONFIG_RENESAS_WDT) += renesas_wdt.o
+>>   obj-$(CONFIG_RENESAS_RZAWDT) += rza_wdt.o
+>> +obj-$(CONFIG_RENESAS_RZN1WDT) += rzn1_wdt.o
+>>   obj-$(CONFIG_RENESAS_RZG2LWDT) += rzg2l_wdt.o
+>>   obj-$(CONFIG_ASPEED_WATCHDOG) += aspeed_wdt.o
+>>   obj-$(CONFIG_STM32_WATCHDOG) += stm32_iwdg.o
+>> diff --git a/drivers/watchdog/rzn1_wdt.c b/drivers/watchdog/rzn1_wdt.c
+>> new file mode 100644
+>> index 000000000000..fa32716727b7
+>> --- /dev/null
+>> +++ b/drivers/watchdog/rzn1_wdt.c
+>> @@ -0,0 +1,203 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/*
+>> + * Renesas RZ/N1 Watchdog timer.
+>> + * This is a 12-bit timer driver from a (62.5/16384) MHz clock. It 
+>> can't even
+>> + * cope with 2 seconds.
+>> + *
+>> + * Copyright 2018 Renesas Electronics Europe Ltd.
+>> + *
+>> + * Derived from Ralink RT288x watchdog timer.
+>> + */
+>> +
+>> +#include <linux/clk.h>
+>> +#include <linux/interrupt.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/module.h>
+>> +#include <linux/of_address.h>
+>> +#include <linux/of_irq.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/reboot.h>
+>> +#include <linux/watchdog.h>
+>> +
+>> +#define DEFAULT_TIMEOUT        60
+>> +
+>> +#define RZN1_WDT_RETRIGGER            0x0
+>> +#define RZN1_WDT_RETRIGGER_RELOAD_VAL        0
+>> +#define RZN1_WDT_RETRIGGER_RELOAD_VAL_MASK    0xfff
+>> +#define RZN1_WDT_RETRIGGER_PRESCALE        BIT(12)
+>> +#define RZN1_WDT_RETRIGGER_ENABLE        BIT(13)
+>> +#define RZN1_WDT_RETRIGGER_WDSI            (0x2 << 14)
+>> +
+>> +#define RZN1_WDT_PRESCALER            16384
+>> +#define RZN1_WDT_MAX                4095
+>> +
+>> +struct rzn1_watchdog {
+>> +    struct watchdog_device        wdtdev;
+>> +    void __iomem            *base;
+>> +    unsigned long            clk_rate;
+>
+> Nit: Whenever clk_rate is used, it is divided by 1000.
+> It might be better to store and use clk_rate_khz instead.
 
-[1] https://developer.trustedfirmware.org/w/trusted-services/op-tee-spmc/
+OK. I'll change this.
 
-> > > Cc: Jens Wiklander <jens.wiklander@linaro.org>
-> > > Cc: Sumit Garg <sumit.garg@linaro.org>
-> > > Co-developed-by: Balint Dobszay <balint.dobszay@arm.com>
-> > > Signed-off-by: Balint Dobszay <balint.dobszay@arm.com>
-> > > Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-> > > ---
-> > >  drivers/tee/Kconfig                       |   1 +
-> > >  drivers/tee/Makefile                      |   1 +
-> > >  drivers/tee/arm_ffa_tee/Kconfig           |  15 +
-> > >  drivers/tee/arm_ffa_tee/Makefile          |   6 +
-> > >  drivers/tee/arm_ffa_tee/core.c            | 460 ++++++++++++++++++++++
-> > >  drivers/tee/arm_ffa_tee/ffa_tee_private.h |  39 ++
-> > >  drivers/tee/arm_ffa_tee/shm_pool.c        |  94 +++++
-> > >  drivers/tee/arm_ffa_tee/ts_msg.c          | 133 +++++++
-> > >  drivers/tee/arm_ffa_tee/ts_msg.h          |  75 ++++
-> > >  include/uapi/linux/arm_ffa_tee.h          | 116 ++++++
-> > >  include/uapi/linux/tee.h                  |   1 +
-> > >  11 files changed, 941 insertions(+)
-> > >  create mode 100644 drivers/tee/arm_ffa_tee/Kconfig
-> > >  create mode 100644 drivers/tee/arm_ffa_tee/Makefile
-> > >  create mode 100644 drivers/tee/arm_ffa_tee/core.c
-> > >  create mode 100644 drivers/tee/arm_ffa_tee/ffa_tee_private.h
-> > >  create mode 100644 drivers/tee/arm_ffa_tee/shm_pool.c
-> > >  create mode 100644 drivers/tee/arm_ffa_tee/ts_msg.c
-> > >  create mode 100644 drivers/tee/arm_ffa_tee/ts_msg.h
-> > >  create mode 100644 include/uapi/linux/arm_ffa_tee.h
-> > >
-> > > Hi All,
-> > >
-> > > This is the initial version of FF-A TEE driver to get the feedback on the
-> > > overall design/approach.
-> > >
-> > > Few TODOs I plan to do before we finalise:
-> > > 1. Need to decouple the driver from few Trusted Service protocols currently
-> > >    implemented. I have WIP, but couldn't get all the tests working(yet to
-> > >    figure out whether the issue is in driver or tests themselves). Just
-> > >    posting it as is to get initial feedback on other areas.
-> >
-> > Yes I would be in favor of this.
-> >
->
-> I am too, but Balint had some concerns which I need to discuss with him yet.
->
-> > >
-> > > 2. Based on the way FF-A spec changes/discussions, does it make sense to
-> > >    make search based on UUID + partitionID instead of just partitionID or
-> > >    leave that for userspace.
-> >
-> > IIUC, the UUID is the one identifying the trusted service. So what
-> > purpose does partionID solves for user-space program?
-> >
->
-> Sorry for not giving complete picture here. In the context of FF-A and secure
-> partitions, there were discussions to allow single partition implementing
-> multiple services/protocols(each associated with UUID) and on a system with
-> multiple SPs, 2 different SPs can be implementing same protocol/service.
-> Sorry if I am missing something here or if that is impossible, this is just
-> my understanding and hence I was check if UUID + something(vm_id as per FF-A
-> spec) need to be used to identify which partition and service we would want to
-> talk to.
->
+Thanks,
 
-Okay, I see this explanation coming from FF-A spec but currently FF-A
-bus in the kernel only enumerates secure partitions via UUIDs only. I
-guess that needs to change first.
+JJ
 
--Sumit
-
-> > >
-> > > 3. While I definitely want to move the protocol specifics from the driver
-> > >    (as mentioned in (1)), do we even try to remove adding UUID of each service
-> > >    we would like to use this driver.
-> >
-> > Yes, we shouldn't hardcode any UUIDs for trusted services within the
-> > driver (it isn't scalable) but rather during open sessions we should
-> > search if a particular UUID is available on FF-A bus to communicate
-> > with?
-> >
 >
-> Yes it is not scalable and I am aware of that. I haven't explored the
-> options to get rid of them yet. Thanks for the suggestion.
->
-> > >    I haven't thought through that yet,
-> > >    but the idea I have is to just have a blocked UUID list which can
-> > >    contain UUID for OPTEE and other in-kernel users.
-> > >    That may need changes in FF-A bus match but something to consider ?
-> > >
-> >
-> > Currently in the case of OP-TEE we depend on an open session login
-> > method where the particular trusted application decides whether a
-> > particular login method is allowed or not, refer here [1] for more
-> > details. I guess similar access control checks can be implemented by a
-> > particular trusted service during an open session. This will allow us
-> > to not maintain any allowed or blocked list.
-> >
->
-> Thanks for the details, I will explore and see how we can use something
-> similar. I will ping you if I get stuck or need more info or need more
-> discussion on that.
->
-> --
-> Regards,
-> Sudeep
->
-> [2] https://git.trustedfirmware.org/TS/trusted-services.git
->
+> Guenter
