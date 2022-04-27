@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85718C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B049C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:13:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242511AbiD0QOE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:14:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49682 "EHLO
+        id S242658AbiD0QON (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:14:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242154AbiD0QMB (ORCPT
+        with ESMTP id S242219AbiD0QMR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:12:01 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5533D494BE4;
-        Wed, 27 Apr 2022 09:08:17 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id r13so4370068ejd.5;
-        Wed, 27 Apr 2022 09:08:17 -0700 (PDT)
+        Wed, 27 Apr 2022 12:12:17 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8895F4692FD;
+        Wed, 27 Apr 2022 09:08:29 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id gh6so4451433ejb.0;
+        Wed, 27 Apr 2022 09:08:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JrLemglUST4WORuuuukktAwV8TRd9yLyGflAl3xl1zc=;
-        b=P7ArfueFfqb+nsrBlYp2Z856X99lZCDM/QPiYaspWe/aoZAfnFhi0ej7wLBT4hCcfL
-         77k4+v50MSgxLOvjNPnIhYfOBW4FQFYVlZiYujNH+pqRygBvfUrRQ3FV/jFtqBJKS/2b
-         Lx93egMHRueiT7MNxTOXGno/PUsnNMD3V7O++/DXMseaGxU16Wm96460Dus2hzo+sGA0
-         +bJ6hDMpHDm4BqEA3s2WCFCDC6qlZiwzBTRuauQoibdYSZYp81HTcc3V4uhwItLxrziD
-         VaUpGDXAGkwEXQIB658hbO3HrqsFXij7V0DZUhMsQ5/sihqgnJtuLyZupaLA8yDcY1MF
-         Xbug==
+        bh=yEn2KXl6YaWL8lEsoeTa0NhbbIFQf0W1A7EAGx1tWC4=;
+        b=j9VN3560QziYTFS6d7J5Qq58hDCrTHjdmjOyr5NqrbaJEKStDuM4vruZjymlSyiLMc
+         Dh8INfUNhWcjaH37Z/xtK+hpI+Reivc925N29H3notA/4MG5STF7Y/S8UULAjLrvAk3x
+         tQn1C8WCge5lQNlQTq2kdY8XDgx8f0A9p9ySxSQKzu7jp7FN1JqTunv95UrEld8tjPJ6
+         VRtqjtn30d1MvYY4uxLZ1e/4kHIF/t7sayeN4qAuNESeiGnOPggh5aeNzHUApnNASKpY
+         U2rFXGyJBscsO38UWjuCkyg5A6HAurFoW4JUoqmcrmYZbpbtGpqoy5En4hTB6XKRCff/
+         jCgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JrLemglUST4WORuuuukktAwV8TRd9yLyGflAl3xl1zc=;
-        b=MifsBbGYumA9Nj4UdRyDN3zyR67nOHOWCrY6pWtbuk+zLC05ZdC+ivIE7iEf79/mQj
-         QgqWZ3hLPcb0koyDMmBCYAfNz8rWeBLxdqMeA4W8o2CAbJNyRCx2nHo+ruoMD1uZYmfQ
-         oGbYKVksxa6UjgvWey5QQdqTaj1neYKgb8B7qY++DgMFndgM1HPKB91+KoERmau1ujSU
-         +PjH0qFeK89vQYG94WD8T7SrVrC7iPzqjlGcLE9CVtCTu9Dkp1fSachNkp8pLOVZ36oP
-         slayyGlin90z4cvdiG8kvB3f/7OonkughpN5M5bKsjh/4jyO9TJZrKJXQY6HYFnTfRDl
-         /2+A==
-X-Gm-Message-State: AOAM531R7pMG5zVF5a1jv6i9JNC4xdd8QfCx5LNPDEuw6dOPIpowbibt
-        xZ+6s5AbPDG0vtFLmlau/Mw=
-X-Google-Smtp-Source: ABdhPJymUyAuP9S3z9f8SGZ0ibdaRIW+1KvXVMPgBEGCfB3jsk37oMAvhNa2911ZCug37bA6orWp7w==
-X-Received: by 2002:a17:907:97cd:b0:6f3:aeb8:6002 with SMTP id js13-20020a17090797cd00b006f3aeb86002mr9157397ejc.530.1651075648894;
-        Wed, 27 Apr 2022 09:07:28 -0700 (PDT)
+        bh=yEn2KXl6YaWL8lEsoeTa0NhbbIFQf0W1A7EAGx1tWC4=;
+        b=bm/IFafEfdyMrLNegEnQV5fKJujnfBVf+IAi1dKmvW8v+zcTyvxMOOyYxpQN7DapcP
+         jraYaLDw4tP+Wt8zPpWayrP0+aqDcH2bIuDVBHEY0RB16b6moe/NXe3L0xOQMF+Qf4SV
+         ZcVF1EEDWNMyS+tU14OmiU/4hpZZX0cDfQfzeLNviWUj3YloXJ9HFZvbam9OV4shG+QO
+         FXqYNpZNQRmo5BiAK4WNm/dP8tbyhCmcpAydWi6YdxywPhUju2it35B1Hp6pOZZIas0L
+         7dEFNu63SJTJeMLbi9mHnc/ggEb46xahrz9l0rqXzb4OcEemBV3K79IfATupnlBsffXH
+         oyug==
+X-Gm-Message-State: AOAM5311hSnP4l7LIRyhgbU+jQmqstUUC8DItuQiz8BkUgFiup+D1TAl
+        gKPmXGDs7gJD0dotNPD0m64=
+X-Google-Smtp-Source: ABdhPJyMZ+IgV1RXVOMRtwqWm4DRsNx2pj45I590H75mGqMsBCpfqP0l0qRvqSkNr3e05xJ3Sk+wew==
+X-Received: by 2002:a17:907:eab:b0:6dd:e8fe:3dc with SMTP id ho43-20020a1709070eab00b006dde8fe03dcmr26843254ejc.165.1651075657398;
+        Wed, 27 Apr 2022 09:07:37 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id n5-20020a170906378500b006efb4ab6f59sm6984098ejc.86.2022.04.27.09.07.27
+        by smtp.googlemail.com with ESMTPSA id n5-20020a170906378500b006efb4ab6f59sm6984098ejc.86.2022.04.27.09.07.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 09:07:28 -0700 (PDT)
+        Wed, 27 Apr 2022 09:07:37 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -85,9 +85,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next v5 11/18] qed: Remove usage of list iterator variable after the loop
-Date:   Wed, 27 Apr 2022 18:06:28 +0200
-Message-Id: <20220427160635.420492-12-jakobkoschel@gmail.com>
+Subject: [PATCH net-next v5 17/18] ipvlan: Remove usage of list iterator variable for the loop body
+Date:   Wed, 27 Apr 2022 18:06:34 +0200
+Message-Id: <20220427160635.420492-18-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220427160635.420492-1-jakobkoschel@gmail.com>
 References: <20220427160635.420492-1-jakobkoschel@gmail.com>
@@ -97,45 +97,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+In preparation to limit the scope of the list iterator variable to the
+list traversal loop, use a dedicated pointer to iterate through the
+list [1].
 
-Since "found" and "p_ent" need to be equal, "found" should be used
-consistently to limit the scope of "p_ent" to the list traversal in
-the future.
+Since that variable should not be used past the loop iteration, a
+separate variable is used to 'remember the current location within the
+loop'.
 
+To either continue iterating from that position or start a new
+iteration (if the previous iteration was complete) list_prepare_entry()
+is used.
+
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/net/ethernet/qlogic/qed/qed_spq.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ipvlan/ipvlan_main.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_spq.c b/drivers/net/ethernet/qlogic/qed/qed_spq.c
-index d01b9245f811..cbaa2abed660 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_spq.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_spq.c
-@@ -934,10 +934,10 @@ int qed_spq_completion(struct qed_hwfn *p_hwfn,
- 		       u8 fw_return_code,
- 		       union event_ring_data *p_data)
+diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
+index 696e245f6d00..063d7c30e944 100644
+--- a/drivers/net/ipvlan/ipvlan_main.c
++++ b/drivers/net/ipvlan/ipvlan_main.c
+@@ -9,7 +9,7 @@
+ static int ipvlan_set_port_mode(struct ipvl_port *port, u16 nval,
+ 				struct netlink_ext_ack *extack)
  {
-+	struct qed_spq_entry	*found = NULL;
- 	struct qed_spq		*p_spq;
--	struct qed_spq_entry	*p_ent = NULL;
-+	struct qed_spq_entry	*p_ent;
- 	struct qed_spq_entry	*tmp;
--	struct qed_spq_entry	*found = NULL;
+-	struct ipvl_dev *ipvlan;
++	struct ipvl_dev *ipvlan, *tmp = NULL;
+ 	unsigned int flags;
+ 	int err;
  
- 	if (!p_hwfn)
- 		return -EINVAL;
-@@ -980,7 +980,7 @@ int qed_spq_completion(struct qed_hwfn *p_hwfn,
- 	DP_VERBOSE(p_hwfn, QED_MSG_SPQ,
- 		   "Complete EQE [echo %04x]: func %p cookie %p)\n",
- 		   le16_to_cpu(echo),
--		   p_ent->comp_cb.function, p_ent->comp_cb.cookie);
-+		   found->comp_cb.function, found->comp_cb.cookie);
- 	if (found->comp_cb.function)
- 		found->comp_cb.function(p_hwfn, found->comp_cb.cookie, p_data,
- 					fw_return_code);
+@@ -26,8 +26,10 @@ static int ipvlan_set_port_mode(struct ipvl_port *port, u16 nval,
+ 						       flags & ~IFF_NOARP,
+ 						       extack);
+ 			}
+-			if (unlikely(err))
++			if (unlikely(err)) {
++				tmp = ipvlan;
+ 				goto fail;
++			}
+ 		}
+ 		if (nval == IPVLAN_MODE_L3S) {
+ 			/* New mode is L3S */
+@@ -43,6 +45,7 @@ static int ipvlan_set_port_mode(struct ipvl_port *port, u16 nval,
+ 	return 0;
+ 
+ fail:
++	ipvlan = list_prepare_entry(tmp, &port->ipvlans, pnode);
+ 	/* Undo the flags changes that have been done so far. */
+ 	list_for_each_entry_continue_reverse(ipvlan, &port->ipvlans, pnode) {
+ 		flags = ipvlan->dev->flags;
 -- 
 2.25.1
 
