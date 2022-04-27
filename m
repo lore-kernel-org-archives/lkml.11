@@ -2,177 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64463C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 11:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78CC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 11:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232131AbiD0LKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 07:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34346 "EHLO
+        id S232106AbiD0LKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 07:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232179AbiD0LHo (ORCPT
+        with ESMTP id S231996AbiD0LKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 07:07:44 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C61E222A6;
-        Wed, 27 Apr 2022 03:59:32 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 3B736210E8;
-        Wed, 27 Apr 2022 09:41:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1651052467; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TuraDcwXXKi2cRnXfRzWlMeYV5vNom2TtBxlGkwTBtM=;
-        b=OhaACAbnzlQzYj3kadKxn23D86fCwFIVEw4Ilz4OvUjPxnWYYZoRpMM19uCnkAo75xHO9t
-        RmjHWD+I/rlxXWuBzEJ8jM9Q2jqGaFgKx4CtngGJ0k1evb/AYzMRmvfVNj9IotZYxhpUJ0
-        rfxU/ckvRGf7BXSWiaN/nHxbU8TTtpM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1651052467;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TuraDcwXXKi2cRnXfRzWlMeYV5vNom2TtBxlGkwTBtM=;
-        b=Q08CHfZpCFR6XTWhfxUoKV+sZm6RsUm2xPblimsRIua3OuMo5hPBSE80QRvW4lvAJW6+ve
-        uQNYjh4+jK650LAw==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id E998D2C141;
-        Wed, 27 Apr 2022 09:41:06 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 79407A0620; Wed, 27 Apr 2022 11:41:06 +0200 (CEST)
-Date:   Wed, 27 Apr 2022 11:41:06 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     yebin <yebin10@huawei.com>
-Cc:     tytso@mit.edu, adilger.kernel@dilger.ca,
-        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jack@suse.cz
-Subject: Re: [PATCH -next v2] jbd2: Fix null-ptr-deref when process reserved
- list in jbd2_journal_commit_transaction
-Message-ID: <20220427094106.5lmyockklpckkbs3@quack3.lan>
-References: <20220317142137.1821590-1-yebin10@huawei.com>
- <6268B72A.6080506@huawei.com>
+        Wed, 27 Apr 2022 07:10:31 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6B43D1F4;
+        Wed, 27 Apr 2022 04:06:48 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23RB6fXU110776;
+        Wed, 27 Apr 2022 06:06:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1651057601;
+        bh=J3BSiLTEkISmMAngFf+J6ctLyGDu9f3n26evJysgDxA=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=f+F2BdVyzGucCbj5uZr5P+poDizuqvHdUNclxGlT1T/dVwubuhXpuMnfFdinXUoVR
+         D1HbSlgTBdYN2msCnK4JGRtVLkk53xuDnhhTXNDQU6W9935UjJ3FNHXXSCwM0mopGW
+         Ju2q+xCudLZ3RRia2f+uDIWtlFxlalFIqm4bg0NE=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23RB6f4o095407
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 27 Apr 2022 06:06:41 -0500
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 27
+ Apr 2022 06:06:41 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 27 Apr 2022 06:06:41 -0500
+Received: from [172.24.145.198] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23RB6bTx019427;
+        Wed, 27 Apr 2022 06:06:38 -0500
+Message-ID: <96894353-2b4e-52a7-bd48-c65eb674d6f5@ti.com>
+Date:   Wed, 27 Apr 2022 16:36:37 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6268B72A.6080506@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] arm64: dts: ti: k3-am62-mcu: Enable MCU GPIO module
+Content-Language: en-US
+To:     Vignesh Raghavendra <vigneshr@ti.com>, Nishanth Menon <nm@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+References: <20220421061938.122317-1-vigneshr@ti.com>
+From:   Aswath Govindraju <a-govindraju@ti.com>
+In-Reply-To: <20220421061938.122317-1-vigneshr@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 27-04-22 11:23:22, yebin wrote:
-> Friendly ping...
-
-Ted probably forgot to send his standard email but your patch is already in
-with a slightly edited message: 23e3d7f7061f86 ("jbd2: fix a potential race
-while discarding reserved buffers after an abort")
-
-								Honza
-
+On 21/04/22 11:49, Vignesh Raghavendra wrote:
+> AM62 has x1 GPIO module and associated interrupt router in MCU Domain.
+> Add DT nodes for the same.
 > 
-> On 2022/3/17 22:21, Ye Bin wrote:
-> > we got issue as follows:
-> > [   72.796117] EXT4-fs error (device sda): ext4_journal_check_start:83: comm fallocate: Detected aborted journal
-> > [   72.826847] EXT4-fs (sda): Remounting filesystem read-only
-> > fallocate: fallocate failed: Read-only file system
-> > [   74.791830] jbd2_journal_commit_transaction: jh=0xffff9cfefe725d90 bh=0x0000000000000000 end delay
-> > [   74.793597] ------------[ cut here ]------------
-> > [   74.794203] kernel BUG at fs/jbd2/transaction.c:2063!
-> > [   74.794886] invalid opcode: 0000 [#1] PREEMPT SMP PTI
-> > [   74.795533] CPU: 4 PID: 2260 Comm: jbd2/sda-8 Not tainted 5.17.0-rc8-next-20220315-dirty #150
-> > [   74.798327] RIP: 0010:__jbd2_journal_unfile_buffer+0x3e/0x60
-> > [   74.801971] RSP: 0018:ffffa828c24a3cb8 EFLAGS: 00010202
-> > [   74.802694] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> > [   74.803601] RDX: 0000000000000001 RSI: ffff9cfefe725d90 RDI: ffff9cfefe725d90
-> > [   74.804554] RBP: ffff9cfefe725d90 R08: 0000000000000000 R09: ffffa828c24a3b20
-> > [   74.805471] R10: 0000000000000001 R11: 0000000000000001 R12: ffff9cfefe725d90
-> > [   74.806385] R13: ffff9cfefe725d98 R14: 0000000000000000 R15: ffff9cfe833a4d00
-> > [   74.807301] FS:  0000000000000000(0000) GS:ffff9d01afb00000(0000) knlGS:0000000000000000
-> > [   74.808338] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [   74.809084] CR2: 00007f2b81bf4000 CR3: 0000000100056000 CR4: 00000000000006e0
-> > [   74.810047] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > [   74.810981] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > [   74.811897] Call Trace:
-> > [   74.812241]  <TASK>
-> > [   74.812566]  __jbd2_journal_refile_buffer+0x12f/0x180
-> > [   74.813246]  jbd2_journal_refile_buffer+0x4c/0xa0
-> > [   74.813869]  jbd2_journal_commit_transaction.cold+0xa1/0x148
-> > [   74.817550]  kjournald2+0xf8/0x3e0
-> > [   74.819056]  kthread+0x153/0x1c0
-> > [   74.819963]  ret_from_fork+0x22/0x30
-> > 
-> > Above issue may happen as follows:
-> >          write                   truncate                   kjournald2
-> > generic_perform_write
-> >   ext4_write_begin
-> >    ext4_walk_page_buffers
-> >     do_journal_get_write_access ->add BJ_Reserved list
-> >   ext4_journalled_write_end
-> >    ext4_walk_page_buffers
-> >     write_end_fn
-> >      ext4_handle_dirty_metadata
-> >                  ***************JBD2 ABORT**************
-> >       jbd2_journal_dirty_metadata
-> >   -> return -EROFS, jh in reserved_list
-> >                                                     jbd2_journal_commit_transaction
-> >                                                      while (commit_transaction->t_reserved_list)
-> >                                                        jh = commit_transaction->t_reserved_list;
-> >                          truncate_pagecache_range
-> >                           do_invalidatepage
-> > 			  ext4_journalled_invalidatepage
-> > 			   jbd2_journal_invalidatepage
-> > 			    journal_unmap_buffer
-> > 			     __dispose_buffer
-> > 			      __jbd2_journal_unfile_buffer
-> > 			       jbd2_journal_put_journal_head ->put last ref_count
-> > 			        __journal_remove_journal_head
-> > 				 bh->b_private = NULL;
-> > 				 jh->b_bh = NULL;
-> > 				                      jbd2_journal_refile_buffer(journal, jh);
-> > 							bh = jh2bh(jh);
-> > 							->bh is NULL, later will trigger null-ptr-deref
-> > 				 journal_free_journal_head(jh);
-> > 
-> > As after 96f1e0974575 commit, handle reserved list will not hold "journal->j_state_lock"
-> > when kjournald2 commit transaction. So journal_unmap_buffer maybe free
-> > journal_head when handle reserved list. And lead to null-ptr-deref or some
-> > strange errors.
-> > As reserved list almost time is empty. Use "journal->j_state_lock" to protect
-> > handle reserved list can simply solve above issue.
-> > 
-> > Fixes: 96f1e0974575("jbd2: avoid long hold times of j_state_lock while committing a transaction")
-> > Signed-off-by: Ye Bin <yebin10@huawei.com>
-> > ---
-> >   fs/jbd2/commit.c | 4 +++-
-> >   1 file changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/fs/jbd2/commit.c b/fs/jbd2/commit.c
-> > index 5b9408e3b370..ac7f067b7bdd 100644
-> > --- a/fs/jbd2/commit.c
-> > +++ b/fs/jbd2/commit.c
-> > @@ -488,7 +488,6 @@ void jbd2_journal_commit_transaction(journal_t *journal)
-> >   	jbd2_journal_wait_updates(journal);
-> >   	commit_transaction->t_state = T_SWITCH;
-> > -	write_unlock(&journal->j_state_lock);
-> >   	J_ASSERT (atomic_read(&commit_transaction->t_outstanding_credits) <=
-> >   			journal->j_max_transaction_buffers);
-> > @@ -508,6 +507,8 @@ void jbd2_journal_commit_transaction(journal_t *journal)
-> >   	 * has reserved.  This is consistent with the existing behaviour
-> >   	 * that multiple jbd2_journal_get_write_access() calls to the same
-> >   	 * buffer are perfectly permissible.
-> > +	 * We use journal->j_state_lock here to serialize processing of
-> > +	 * t_reserved_list with eviction of buffers from journal_unmap_buffer().
-> >   	 */
-> >   	while (commit_transaction->t_reserved_list) {
-> >   		jh = commit_transaction->t_reserved_list;
-> > @@ -527,6 +528,7 @@ void jbd2_journal_commit_transaction(journal_t *journal)
-> >   		jbd2_journal_refile_buffer(journal, jh);
-> >   	}
-> > +	write_unlock(&journal->j_state_lock);
-> >   	/*
-> >   	 * Now try to drop any written-back buffers from the journal's
-> >   	 * checkpoint lists.  We do this *before* commit because it potentially
+> Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+> ---
+>  arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi | 28 +++++++++++++++++++++++++
+>  1 file changed, 28 insertions(+)
 > 
+> diff --git a/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi b/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
+> index d103824c963f..45343381ad0b 100644
+> --- a/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
+> +++ b/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
+> @@ -53,4 +53,32 @@ mcu_spi1: spi@4b10000 {
+>  		power-domains = <&k3_pds 148 TI_SCI_PD_EXCLUSIVE>;
+>  		clocks = <&k3_clks 148 0>;
+>  	};
+> +
+> +	mcu_gpio_intr: interrupt-controller@4210000 {
+> +		compatible = "ti,sci-intr";
+> +		reg = <0x00 0x04210000 0x00 0x200>;
+> +		ti,intr-trigger-type = <1>;
+> +		interrupt-controller;
+> +		interrupt-parent = <&gic500>;
+> +		#interrupt-cells = <1>;
+> +		ti,sci = <&dmsc>;
+> +		ti,sci-dev-id = <5>;
+> +		ti,interrupt-ranges = <0 104 4>;
+> +	};
+> +
+> +	mcu_gpio0: gpio@4201000 {
+> +		compatible = "ti,am64-gpio", "ti,keystone-gpio";
+> +		reg = <0x0 0x4201000 0x0 0x100>;
+
+nitpick: reg = <0x00 0x04201000 0x00 0x100>;
+
+> +		gpio-controller;
+> +		#gpio-cells = <2>;
+> +		interrupt-parent = <&mcu_gpio_intr>;
+> +		interrupts = <30>, <31>;
+> +		interrupt-controller;
+> +		#interrupt-cells = <2>;
+> +		ti,ngpio = <24>;
+> +		ti,davinci-gpio-unbanked = <0>;
+> +		power-domains = <&k3_pds 79 TI_SCI_PD_EXCLUSIVE>;
+> +		clocks = <&k3_clks 79 0>;
+> +		clock-names = "gpio";
+> +	};
+>  };
+
+
+Aside from the above minor change,
+
+Reviewed-by: Aswath Govindraju <a-govindraju@ti.com>
+
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+Thanks,
+Aswath
