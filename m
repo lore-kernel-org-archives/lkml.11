@@ -2,201 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C10DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:58:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2723AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:58:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231609AbiD0LBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 07:01:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37652 "EHLO
+        id S231544AbiD0LB5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 07:01:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231416AbiD0LAq (ORCPT
+        with ESMTP id S231791AbiD0LBm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 07:00:46 -0400
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E727F295A74
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:39:24 -0700 (PDT)
-Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220427092033epoutp0116cda0f2b5dc9fd8cfaed4f29ce85f28~ptlldZ4qK3174831748epoutp01h
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:20:33 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220427092033epoutp0116cda0f2b5dc9fd8cfaed4f29ce85f28~ptlldZ4qK3174831748epoutp01h
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1651051233;
-        bh=uHuk2jzRv4faPDHj7/LQeeM7U/vi7yJfEjSidx0RGcs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=USweGqhDzocveI7Qkx2rPrchi1dkUQXaBIOGQO4hRJLMw/YX5ROQDBiN6v8QoQHTO
-         99MGni1JmNqaKIxfUBbaFrS6/z3IPf8Elc7XpcZu5qp75ArCkeHWG8QnU2whIvMgA+
-         CrAnDnxQ8fQxpXiFuvpluvL8OJgJh9UGYG7+UT8w=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
-        20220427092032epcas2p2bb5bd42490885cdf3e33c8bf99916cd8~ptlk97piN2894828948epcas2p2z;
-        Wed, 27 Apr 2022 09:20:32 +0000 (GMT)
-Received: from epsmges2p1.samsung.com (unknown [182.195.36.92]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4KpCsB2ydFz4x9Py; Wed, 27 Apr
-        2022 09:20:30 +0000 (GMT)
-Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
-        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        61.81.10069.EDA09626; Wed, 27 Apr 2022 18:20:30 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220427092030epcas2p4331983f6be56984568c628ee298d4a4a~ptliZrECX2509325093epcas2p4q;
-        Wed, 27 Apr 2022 09:20:30 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220427092030epsmtrp1d76f803eeb8d7d3527ac646031ff9f17~ptliYURO52762627626epsmtrp1f;
-        Wed, 27 Apr 2022 09:20:30 +0000 (GMT)
-X-AuditID: b6c32a45-a8fff70000002755-06-62690ade5443
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        C8.86.08853.DDA09626; Wed, 27 Apr 2022 18:20:29 +0900 (KST)
-Received: from ubuntu (unknown [10.229.95.128]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220427092029epsmtip10ed5c5b596d5c874b10c3198cedeeb61~ptliMOlp62491024910epsmtip1_;
-        Wed, 27 Apr 2022 09:20:29 +0000 (GMT)
-Date:   Wed, 27 Apr 2022 18:19:01 +0900
-From:   Jung Daehwan <dh10.jung@samsung.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Mathias Nyman <mathias.nyman@intel.com>,
-        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Howard Yen <howardyen@google.com>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH v4 4/5] usb: host: add some to xhci overrides for
- xhci-exynos
-Message-ID: <20220427091901.GC145620@ubuntu>
+        Wed, 27 Apr 2022 07:01:42 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29DF12C8C2E;
+        Wed, 27 Apr 2022 03:46:49 -0700 (PDT)
+Received: from mail-yb1-f174.google.com ([209.85.219.174]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MOm9H-1nVh3d2eJr-00Q8kt; Wed, 27 Apr 2022 11:37:30 +0200
+Received: by mail-yb1-f174.google.com with SMTP id m128so2318775ybm.5;
+        Wed, 27 Apr 2022 02:37:30 -0700 (PDT)
+X-Gm-Message-State: AOAM5300N9y4NIA3ZxiFB/HOsO0zUvGEV3wrP8+da6a7nms/KtAHgCig
+        eswCwv7bdFeWygj5ZNOd704c5ck1zZROp7LNgwY=
+X-Google-Smtp-Source: ABdhPJwMD5Lw3Bh3sc+tRxCDiyxDUA/bVOD95lZnoBKjAv6b5qPuX9adwocawLYlqU46kbpYQGayPpUktNNEeSX9iGg=
+X-Received: by 2002:a25:d3c2:0:b0:645:74df:f43d with SMTP id
+ e185-20020a25d3c2000000b0064574dff43dmr24429740ybf.394.1651052249361; Wed, 27
+ Apr 2022 02:37:29 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <YmfIIo6d1CkhkQS3@kroah.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrIJsWRmVeSWpSXmKPExsWy7bCmhe49rswkg71/hC2eHFnEbtG8eD2b
-        xfU/7xktzp/fwG5xedccNotFy1qZLZo3TWG1mLlW2aLr7g1GB06PBZtKPRbvecnksWlVJ5vH
-        /rlr2D36tqxi9Pi8SS6ALSrbJiM1MSW1SCE1Lzk/JTMv3VbJOzjeOd7UzMBQ19DSwlxJIS8x
-        N9VWycUnQNctMwfoJiWFssScUqBQQGJxsZK+nU1RfmlJqkJGfnGJrVJqQUpOgXmBXnFibnFp
-        XrpeXmqJlaGBgZEpUGFCdsaCaTIF+6Qr7l/oZWlgPC7WxcjBISFgIrFqfUIXIyeHkMAORonJ
-        szW6GLmA7E+MEn1PbzNCON8YJZ6eOcsGUgXScPvaDVaIxF5Gid0T9jFDOE8YJSZcOMcCUsUi
-        oCrR838tO4jNJqAlce/HCWYQW0TAWKL/7Cx2kAZmga1MEveb37KCJIQFgiXaHq8Aa+YV0JFY
-        ePA7M4QtKHFy5hMWkFs5BTQlDp0yBDFFBVQkXh2sBxkjIdDLIfGiYTsjxHUuEte+HIK6VFji
-        1fEt7BC2lMTL/jYou1hi16dWJojmBkaJxgcQx0kAHTfrWTvYIGaBDIlpZ88xQsJIWeLILRaI
-        MJ9Ex+G/7BBhXomONiGITmWJ6ZcnsELYkhIHX5+DmughcfD7JEZI8AJD8cge/wmM8rOQPDYL
-        yTIIW0diwe5PbLOANjALSEss/8cBYWpKrN+lv4CRdRWjWGpBcW56arFRgSE8ppPzczcxgtOq
-        lusOxslvP+gdYmTiYDzEKMHBrCTC+2V3RpIQb0piZVVqUX58UWlOavEhRlNgNE1klhJNzgcm
-        9rySeEMTSwMTMzNDcyNTA3MlcV6vlA2JQgLpiSWp2ampBalFMH1MHJxSDUxGkYI84j8W9L7I
-        FjmV3TpVxvOGza3jrWIiZ0sWXlP7WNrYrKwgv2yl+jWdK0XHWkXUjV1TL8o6v7zas69QReur
-        uJDQTv1TRcsKz+w06b4qv22bR6PMPd4p9VcSirs3x4sxzvxyxcu2mb+db8u0l788lC8YFuT2
-        /djxwjEzdVLrmhU/ZhueYD7xqDLsRMKyj+dq3q5n3LZjhWX/2peeRUsPfK+o+ebQc4e/zvn/
-        n/Tu17m1+p+S1fO3Jb3KOum2LmBlV9zX6oOWchWWrfL7O+K0v056pzGpOdbY413DRu01R5x0
-        nHd82dOXdGPGyeobMnkJE3eWG+84/uicaL+47aFmB/44zT0T3zo9jnrc91CJpTgj0VCLuag4
-        EQBWKlzZNAQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrBLMWRmVeSWpSXmKPExsWy7bCSnO5drswkg8tbLSyeHFnEbtG8eD2b
-        xfU/7xktzp/fwG5xedccNotFy1qZLZo3TWG1mLlW2aLr7g1GB06PBZtKPRbvecnksWlVJ5vH
-        /rlr2D36tqxi9Pi8SS6ALYrLJiU1J7MstUjfLoEr4/LZ7WwF/yQqdn76ztbAuECki5GTQ0LA
-        ROL2tRusXYxcHEICuxklbtxYywKRkJRYOvcGO4QtLHG/5QhU0SNGib6dr8CKWARUJXr+rwUr
-        YhPQkrj34wQziC0iYCzRf3YWWJxZYDuTxNaWSBBbWCBYou3xCrBeXgEdiYUHv4PVCwl8Y5S4
-        /kgOIi4ocXLmExaIXi2JG/9eMnUxcgDZ0hLL/3GAmJwCmhKHThmCmKICKhKvDtZPYBSchaR3
-        FpLeWQi9CxiZVzFKphYU56bnFhsWGOallusVJ+YWl+al6yXn525iBEeGluYOxu2rPugdYmTi
-        YDzEKMHBrCTC+2V3RpIQb0piZVVqUX58UWlOavEhRmkOFiVx3gtdJ+OFBNITS1KzU1MLUotg
-        skwcnFINTLZXDR2WXnwtL6VtnZKjd/dgule/sP2yRY+q3T6tPvhNljXicdela+nie09nF052
-        ORu+k/dO17xJ/z5WaX160zzbbZnF9ElZ233bvhTwPXxcUSZ36RP/8907Kua9dnNpEzp04+jD
-        idK2Yh39W1Pq6wo0/zqvz/uz4Kj47UdmPxkm77voP6F9hcFFxhUFSl9f/z3/gm+PyLXnrZ9l
-        hM5WqS87V3NsxkZfA2vt5cLMYbsbC7I/vjmdfiSx1+Nc3eGfLfNfWimWXAl+OVX3bEPJ4r0z
-        OU83icRs2Xzg+iRWnUXr3p9rk1xQ3b426Mm+yfYVYTrtPdrLksXK6ha1cnqLT9ZcUvpry2s2
-        B+/1EWYnJwcqsRRnJBpqMRcVJwIAxwehCfsCAAA=
-X-CMS-MailID: 20220427092030epcas2p4331983f6be56984568c628ee298d4a4a
-X-Msg-Generator: CA
-Content-Type: multipart/mixed;
-        boundary="----kYpNrMA5Q_pRug.oZbu8Kwk_59qkkrrEmQqQB0Vp_jfuzgSx=_26d0c_"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220426092022epcas2p2c016c83b21e41c7bcd4bdfbb95e464c0
-References: <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
-        <CGME20220426092022epcas2p2c016c83b21e41c7bcd4bdfbb95e464c0@epcas2p2.samsung.com>
-        <1650964728-175347-5-git-send-email-dh10.jung@samsung.com>
-        <YmfIIo6d1CkhkQS3@kroah.com>
+References: <FA654A0D-29B7-4B6B-B613-73598A92ADA8@goldelico.com> <YmkBAsa+fKlp/GcV@atomide.com>
+In-Reply-To: <YmkBAsa+fKlp/GcV@atomide.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 27 Apr 2022 11:37:13 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3N9WBWC_ECB0pSRHUCT4iz=tdT+Dt9Cyd5Wh3qEaVqqA@mail.gmail.com>
+Message-ID: <CAK8P3a3N9WBWC_ECB0pSRHUCT4iz=tdT+Dt9Cyd5Wh3qEaVqqA@mail.gmail.com>
+Subject: Re: kernel panic with v5.18-rc1 on OpenPandora (only)
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Discussions about the Letux Kernel 
+        <letux-kernel@openphoenux.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-OMAP <linux-omap@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Ard Biesheuvel <ardb@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:3EX3mYX6KEXjhQgHkDZWS3QeX8xjxcCpdZo4zBbMrRE7iXkjm6H
+ JTOhu01vRZPmjNAeyADH7vVynVZ4tq98tHTNlPIgZmvMdMI1mK1vZQToaK1kFybINhrUNA0
+ wJyyiLZzm2DDDU2iZyFtb7X12UzqaH2U+yvLF116ouy2iU+E0M6eju9Y8YQBHL7kRMGkXEQ
+ FxgV9rsIkBoxAuXlw8FPg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:fjivupKgZ08=:3In3UonnUB55Oqi5Tc3nXz
+ XcTywYTLQ2S8ISSHeggOzNFcNYVHW6RNG36hUP78VkiJhvXj+S1zvDyC+WIxWpj/c/wrm0Bhq
+ X73qSZkaRDR0PpOIkeEE03t0SeZehUG83OeKZetTRCf00UM40ft+K6DggXwwuL9YSiAXmHL7g
+ uAumSa5RF06J374r530FGWOPIqq9sJKLq76Pl+F2+1vGsRKAeiN89zgaQYW9l/ThX/vI3jLBe
+ riDlpNc400kyiF/o/1//hr+TRHoQok4aUrQbTDChdGVWbb51CKsO356UlLYCYDdCtDnuwG+4a
+ Ei5knPERLepkZBYYgmGMqtSIpo+9CKo7S1XZP2UltQUizbUdBPJE6JyaTYLnovZoKawcf8okI
+ LLdQWaBWIlxwRdFQ27HvxKlvidAzSQKL7TRzdVnOSKRO6EPzG4VhGYZEjOUp7Q8k7OKUY+6f+
+ xE1kfrBPVrBNtzzvLQj35w6DJNGJs+zMoqPDdkmVlPHS1ybWgpkq/bHqkVzMkPedZF3FhS4PH
+ 3IJ19gEOBgud7kE0F1Pf+w3mmU88JllCytg++IIiE+Cb5jzNpFAtmuFDIA6b2fOKoh4dBkiFD
+ 7/kE1PmvEw6oWcVmbXZ45cNgJHCnRzpshr0JvAqhAX2qS1YkGD2T9xJ6JamvN1mwXO+UJ6UGX
+ pcpUhxhA+tyoD4XAAy66BLnXkYhQw/w3gXBlMdNRCmiiPS3tCENZsOvqBpYP3t3AwLWE=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------kYpNrMA5Q_pRug.oZbu8Kwk_59qkkrrEmQqQB0Vp_jfuzgSx=_26d0c_
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
+On Wed, Apr 27, 2022 at 10:38 AM Tony Lindgren <tony@atomide.com> wrote:
+> * H. Nikolaus Schaller <hns@goldelico.com> [220426 20:16]:
+> > [   28.245727] [<c0100b60>] (__irq_svc) from [<c0905de0>] (_raw_spin_unlock_irq+0x20/0x4c)
+> > [   28.254150] [<c0905de0>] (_raw_spin_unlock_irq) from [<c0902e94>] (do_wait_for_common+0xa8/0x138)
+> > [   28.263488] [<c0902e94>] (do_wait_for_common) from [<c0902f54>] (wait_for_common+0x30/0x48)
+> > [   28.272277] [<c0902f54>] (wait_for_common) from [<c074edf8>] (mmc_wait_for_req_done+0x1c/0x90)
+> > [   28.281341] [<c074edf8>] (mmc_wait_for_req_done) from [<c075a72c>] (mmc_io_rw_extended+0x1c0/0x2f4)
+> > [   28.290893] [<c075a72c>] (mmc_io_rw_extended) from [<c075bd00>] (sdio_io_rw_ext_helper+0x118/0x140)
+> > [   28.300415] [<c075bd00>] (sdio_io_rw_ext_helper) from [<c075bdd0>] (sdio_memcpy_toio+0x18/0x20)
+> > [   28.309570] [<c075bdd0>] (sdio_memcpy_toio) from [<bf3de1ec>] (wl1251_sdio_write+0x34/0x54 [wl1251_sdio])
+> > [   28.319702] [<bf3de1ec>] (wl1251_sdio_write [wl1251_sdio]) from [<bf40fc8c>] (wl1251_set_partition+0x90/0x404 [wl1251])
+> > [   28.331207] [<bf40fc8c>] (wl1251_set_partition [wl1251]) from [<bf4074ec>] (wl1251_init_ieee80211+0x1c0/0x3dc [wl1251])
 
-On Tue, Apr 26, 2022 at 12:23:30PM +0200, Greg Kroah-Hartman wrote:
-> On Tue, Apr 26, 2022 at 06:18:47PM +0900, Daehwan Jung wrote:
-> > Co-processor needs some information about connected usb device.
-> > It's proper to pass information after usb device gets address when
-> > getting "Set Address" command. It supports vendors to implement it
-> > using xhci overrides. There're several power scenarios depending
-> > on vendors. It gives vendors flexibilty to meet their power requirement.
-> > They can override suspend and resume of root hub.
-> > 
-> > Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
-> > ---
-> >  drivers/usb/host/xhci.c | 6 ++++++
-> >  drivers/usb/host/xhci.h | 4 ++++
-> >  2 files changed, 10 insertions(+)
-> > 
-> > diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
-> > index 5ccf1bbe8732..8b3df1302650 100644
-> > --- a/drivers/usb/host/xhci.c
-> > +++ b/drivers/usb/host/xhci.c
-> > @@ -5555,6 +5555,12 @@ void xhci_init_driver(struct hc_driver *drv,
-> >  			drv->check_bandwidth = over->check_bandwidth;
-> >  		if (over->reset_bandwidth)
-> >  			drv->reset_bandwidth = over->reset_bandwidth;
-> > +		if (over->address_device)
-> > +			drv->address_device = over->address_device;
-> > +		if (over->bus_suspend)
-> > +			drv->bus_suspend = over->bus_suspend;
-> > +		if (over->bus_resume)
-> > +			drv->bus_resume = over->bus_resume;
-> >  	}
-> >  }
-> >  EXPORT_SYMBOL_GPL(xhci_init_driver);
-> > diff --git a/drivers/usb/host/xhci.h b/drivers/usb/host/xhci.h
-> > index 3a414a2f41f0..5bc621e77762 100644
-> > --- a/drivers/usb/host/xhci.h
-> > +++ b/drivers/usb/host/xhci.h
-> > @@ -1947,6 +1947,9 @@ struct xhci_driver_overrides {
-> >  			     struct usb_host_endpoint *ep);
-> >  	int (*check_bandwidth)(struct usb_hcd *, struct usb_device *);
-> >  	void (*reset_bandwidth)(struct usb_hcd *, struct usb_device *);
-> > +	int (*address_device)(struct usb_hcd *hcd, struct usb_device *udev);
-> > +	int (*bus_suspend)(struct usb_hcd *hcd);
-> > +	int (*bus_resume)(struct usb_hcd *hcd);
-> >  };
-> >  
-> >  #define	XHCI_CFC_DELAY		10
-> > @@ -2103,6 +2106,7 @@ int xhci_drop_endpoint(struct usb_hcd *hcd, struct usb_device *udev,
-> >  		       struct usb_host_endpoint *ep);
-> >  int xhci_check_bandwidth(struct usb_hcd *hcd, struct usb_device *udev);
-> >  void xhci_reset_bandwidth(struct usb_hcd *hcd, struct usb_device *udev);
-> > +int xhci_address_device(struct usb_hcd *hcd, struct usb_device *udev);
-> 
-> You do not use this function in this change, why include it in here?
-> 
-> Please reorganize your patch series to only include what you need for
-> each step, as-is it's kind of out-of-order and might not build at each
-> step along the way (or it might, it's hard to determine...)
-> 
+I think the problem is here: wl1251_set_partition() passes a local
+stack variable into
+an SDIO API function that is given to the hardware. This was never
+safe and could
+cause a corrupted stack because of the cache management, but with vmap stacks
+it turns into a reliable DMA error, which I guess is what the l3
+interrupt is about.
 
-This patch is to add function pointers. xhci-exynos or other user could use it.
-If I reorganize them as you said, all patches depend on xhci-exynos.
-That's because hooks and override are only used in xhci-exynos for now.
-I don't want user driver effects common files like xhci platform.
-I've tried removing dependancies.. That's why I split patches like that.
+Can you change wl1251_set_partition() to use kmalloc()/kfree() to allocate the
+partitions[] array? You said that it still crashes without the wl1251
+driver, so I assume
+there is at least one more related bug. If you get a different call
+chain without the
+driver, or with the kmalloc() call, can you post that as well?
 
-Best Regards,
-Jung Daehwan.
-
-> thanks,
-> 
-> greg k-h
-> 
-
-------kYpNrMA5Q_pRug.oZbu8Kwk_59qkkrrEmQqQB0Vp_jfuzgSx=_26d0c_
-Content-Type: text/plain; charset="utf-8"
-
-
-------kYpNrMA5Q_pRug.oZbu8Kwk_59qkkrrEmQqQB0Vp_jfuzgSx=_26d0c_--
+       Arnd
