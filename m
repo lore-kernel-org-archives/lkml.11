@@ -2,172 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 21:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13AECC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 21:21:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231338AbiD0VYc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 17:24:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
+        id S237722AbiD0VYu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 17:24:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbiD0VYU (ORCPT
+        with ESMTP id S229745AbiD0VYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 17:24:20 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4F0E6E8F9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 14:21:06 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id s4so2335112qkh.0
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 14:21:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HO69GAZWB5ZNDpZdF5+7qBeyAdQ2ziZHjagMLd+xkN0=;
-        b=5W7SEFXUw6PNxrAXqi0ncsTH0FzFFYHStI+dwhrp0hF7U6GJFbv/sx3XO72IuBcV+F
-         W9J+YYs/DLYjU6qP0rVKlFL4mk/jrQ4jfITtCJEm5HndT6slVEo64n64mX40Lr0F5jfc
-         1QMKRxmC5RfbskkX2EgJaswtYkp8m/E3HG0Tv9N5rz0ytd5+9bDtotoj07hPPJAs80Me
-         TtoOmnsAXwD34zxpMJu1gHKmF4bheYT5h3p5Qddrdk0UiE/7qaZ7hNRgP1AIVvH24qqF
-         UCf3j8vqEpCFAmVeKl3Iw4i/5q9pJjAtRIprUh6/1rsxucu80pPFFznY6rCMiY64gOJE
-         NndA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HO69GAZWB5ZNDpZdF5+7qBeyAdQ2ziZHjagMLd+xkN0=;
-        b=5L15WIuJEtis9bIst3R7XexI96npUobeF4SAbT2SG1m54R8n7vIncF2Kms6cAxADYw
-         QjWnwwxghqImFyKFWiShTtgx2/dO8gBnikeRtDJdn/+Y0AKdPXpJao5/xwgQVr6Ef4bq
-         Ulgty9MHs9QJtlh64Gi6YIkYp3hNesaedI579jcQkez4EYpsCnuy317EaZX/Ns38dclA
-         q66DGo5XiLBRCKEprRZ+taRtD5y6uql0iOHg3zpkFHc77KsMrn9enWICgE8o1XLMZJ2c
-         i4263VRs5jPuhOEr+gM5bSgclhLyFQ/v+8Bu9wyTlqLFg2KDtoaLQTOfMbbJD6wrdEV7
-         N5sw==
-X-Gm-Message-State: AOAM533fkb50pMqsczOJRhW2UnfGs4A2wR5hczIN1k4HtKQcLvNzATeN
-        dmz8KXCdPzQPyZq4E2bdTPutUdEof8a2Nw==
-X-Google-Smtp-Source: ABdhPJzevvqFTCD5Jevk1/UP1ZG0Oy84NOUFU4sf4OZmyEtUbtFDT3W/k1LXxyGdV2+eTrx+h/Vdnw==
-X-Received: by 2002:a05:620a:40d4:b0:69f:60ac:b958 with SMTP id g20-20020a05620a40d400b0069f60acb958mr9579444qko.609.1651094465863;
-        Wed, 27 Apr 2022 14:21:05 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1:d588])
-        by smtp.gmail.com with ESMTPSA id s12-20020ac85ecc000000b002f3874bfecbsm574562qtx.5.2022.04.27.14.21.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 14:21:05 -0700 (PDT)
-Date:   Wed, 27 Apr 2022 17:20:29 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Minchan Kim <minchan@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Seth Jennings <sjenning@redhat.com>,
-        Dan Streetman <ddstreet@ieee.org>, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
-Message-ID: <YmmznQ8AO5RLxicA@cmpxchg.org>
-References: <20220427160016.144237-1-hannes@cmpxchg.org>
- <20220427160016.144237-5-hannes@cmpxchg.org>
- <Ymmnrkn0mSWcuvmH@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ymmnrkn0mSWcuvmH@google.com>
+        Wed, 27 Apr 2022 17:24:36 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADDD6E8D0;
+        Wed, 27 Apr 2022 14:21:19 -0700 (PDT)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23RLDsI8020643;
+        Wed, 27 Apr 2022 21:21:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=Kb8QQD4rsJqSzMlQCv657F8recoXzj3ZXDDxMpxp/YM=;
+ b=Q+Sj4OEBwpXuMkY2uEpbT75VqT+DgdHbNRkv6aH9I2Juqri5itqYoRgz6TOWB7WhhPwy
+ w6QZneXyMoODgc+eC9YJuGO+zhuFK2ozxZ52STmYfIUkOeAK1tt3GwnU1TODigEhmgOm
+ Lqf94u9V4EKf2RSnA9qvEh6XQXPUg/0h2Gk9C8pG6ou6RgIWDO2oEfiGKNtEsl51NFkA
+ k6jqDz9Z3xHBI02zSHyDXN7hotI0NoITZ5YdCwxcc20acKvuWPKcmkX6qW6xdwRbVTrk
+ PsE2UoiuGoRMm8QuSzIyH9zHtQWrZFU4KeN/YcoeG2RHn/Q9KcGudhs1eLv+7YARhfZQ Jw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqdjf039j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Apr 2022 21:21:07 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23RLDsCI020638;
+        Wed, 27 Apr 2022 21:21:06 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqdjf0390-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Apr 2022 21:21:06 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23RL3bCk017390;
+        Wed, 27 Apr 2022 21:21:04 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma06fra.de.ibm.com with ESMTP id 3fm8qhn56j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Apr 2022 21:21:04 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23RLL2cj49349036
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 27 Apr 2022 21:21:02 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1011FA405B;
+        Wed, 27 Apr 2022 21:21:02 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 16A88A4054;
+        Wed, 27 Apr 2022 21:21:01 +0000 (GMT)
+Received: from sig-9-65-70-226.ibm.com (unknown [9.65.70.226])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 27 Apr 2022 21:21:00 +0000 (GMT)
+Message-ID: <9a9a6cb0b3f2e643a17743250f4a137baaea7a7e.camel@linux.ibm.com>
+Subject: Re: [PATCH] integrity: Allow ima_appraise bootparam to be set when
+ SB is enabled
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Eric Snowberg <eric.snowberg@oracle.com>
+Cc:     "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "serge@hallyn.com" <serge@hallyn.com>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date:   Wed, 27 Apr 2022 17:21:00 -0400
+In-Reply-To: <48467663-5CD6-49C5-B43F-9FA0887D0575@oracle.com>
+References: <20220425222120.1998888-1-eric.snowberg@oracle.com>
+         <d7ba004bd2ce2a8ce2ff0601b4bca921a5301ece.camel@linux.ibm.com>
+         <48467663-5CD6-49C5-B43F-9FA0887D0575@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: wVpVvyL4cW6tz6CMaPfFc-lRyfkYKU_E
+X-Proofpoint-ORIG-GUID: N87tiXpPTrCWlLzWfsOUB04elZ7Ur81-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-27_04,2022-04-27_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
+ malwarescore=0 clxscore=1015 lowpriorityscore=0 suspectscore=0
+ priorityscore=1501 mlxscore=0 spamscore=0 phishscore=0 bulkscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204270129
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 01:29:34PM -0700, Minchan Kim wrote:
-> Hi Johannes,
+On Wed, 2022-04-27 at 16:12 +0000, Eric Snowberg wrote:
 > 
-> On Wed, Apr 27, 2022 at 12:00:15PM -0400, Johannes Weiner wrote:
-> > Currently it requires poking at debugfs to figure out the size and
-> > population of the zswap cache on a host. There are no counters for
-> > reads and writes against the cache. As a result, it's difficult to
-> > understand zswap behavior on production systems.
+> > On Apr 26, 2022, at 12:18 PM, Mimi Zohar <zohar@linux.ibm.com> wrote:
 > > 
-> > Print zswap memory consumption and how many pages are zswapped out in
-> > /proc/meminfo. Count zswapouts and zswapins in /proc/vmstat.
+> > On Mon, 2022-04-25 at 18:21 -0400, Eric Snowberg wrote:
+> >> The IMA_APPRAISE_BOOTPARM config allows enabling different "ima_appraise="
+> >> modes (log, fix, enforce) to be configured at boot time.  When booting
+> >> with Secure Boot enabled, all modes are ignored except enforce.  To use
+> >> log or fix, Secure Boot must be disabled.
+> >> 
+> >> With a policy such as:
+> >> 
+> >> appraise func=BPRM_CHECK appraise_type=imasig
+> >> 
+> >> A user may just want to audit signature validation. Not all users
+> >> are interested in full enforcement and find the audit log appropriate
+> >> for their use case.
+> >> 
+> >> Add a new IMA_APPRAISE_SB_BOOTPARAM config allowing "ima_appraise="
+> >> to work when Secure Boot is enabled.
+> >> 
+> >> Signed-off-by: Eric Snowberg <eric.snowberg@oracle.com>
 > > 
-> > Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
-> > ---
-> >  fs/proc/meminfo.c             |  7 +++++++
-> >  include/linux/swap.h          |  5 +++++
-> >  include/linux/vm_event_item.h |  4 ++++
-> >  mm/vmstat.c                   |  4 ++++
-> >  mm/zswap.c                    | 13 ++++++-------
-> >  5 files changed, 26 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
-> > index 6fa761c9cc78..6e89f0e2fd20 100644
-> > --- a/fs/proc/meminfo.c
-> > +++ b/fs/proc/meminfo.c
-> > @@ -86,6 +86,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
-> >  
-> >  	show_val_kb(m, "SwapTotal:      ", i.totalswap);
-> >  	show_val_kb(m, "SwapFree:       ", i.freeswap);
-> > +#ifdef CONFIG_ZSWAP
-> > +	seq_printf(m,  "Zswap:          %8lu kB\n",
-> > +		   (unsigned long)(zswap_pool_total_size >> 10));
-> > +	seq_printf(m,  "Zswapped:       %8lu kB\n",
-> > +		   (unsigned long)atomic_read(&zswap_stored_pages) <<
-> > +		   (PAGE_SHIFT - 10));
-> > +#endif
+> > Since the IMA architecture specific policy rules were first
+> > upstreamed, either enabling IMA_APPRAISE_BOOTPARAM or IMA_ARCH_POLICY
+> > was permitted, but not both.  
 > 
-> I agree it would be very handy to have the memory consumption in meminfo
+> I don’t see code preventing this and just created a config with both of them
+> enabled.  Is this an assumption everyone is supposed to understand?
+
+This was very clear in the original patch upstreamed.  Refer to the
+IMA_APPRAISE_BOOTPRAM in commit d958083a8f64 ("x86/ima: define
+arch_get_ima_policy() for x86").  This subsequently changed to be based
+on  the secureboot runtime state.  Refer to commit 311aa6aafea4 ("ima:
+move APPRAISE_BOOTPARAM dependency on ARCH_POLICY to runtime").
+
 > 
-> https://lore.kernel.org/all/YYwZXrL3Fu8%2FvLZw@google.com/
+> > This Kconfig negates the assumptions on
+> > which the CONFIG_IMA_ARCH_POLICY and the ima_appraise_signature() are
+> > based without any indication of the ramifications.   This impacts the
+> > kexec file syscall lockdown LSM assumptions as well.
 > 
-> If we really go this Zswap only metric instead of general term
-> "Compressed", I'd like to post maybe "Zram:" with same reason
-> in this patchset. Do you think that's better idea instead of
-> introducing general term like "Compressed:" or something else?
+> I will fix this in the next round.
 
-I'm fine with changing it to Compressed. If somebody cares about a
-more detailed breakdown, we can add Zswap, Zram subsets as needed.
+Either secureboot is or isn't enabled.  When it is enabled, then IMA
+must be in enforcing mode.
 
-From 8e9e2d6490b7082c41743fbdb9ffd2db4e3ce962 Mon Sep 17 00:00:00 2001
-From: Johannes Weiner <hannes@cmpxchg.org>
-Date: Wed, 27 Apr 2022 17:15:15 -0400
-Subject: [PATCH] mm: zswap: add basic meminfo and vmstat coverage fix fix
+> > A fuller, more complete explanation for needing "log" mode when secure
+> > boot is enabled is required.
+> 
+> and add a more thorough explanation.  Thanks.
 
-Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
----
- Documentation/filesystems/proc.rst | 7 ++++---
- fs/proc/meminfo.c                  | 2 +-
- 2 files changed, 5 insertions(+), 4 deletions(-)
+Normally "log" mode is needed during development.
 
-diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
-index 8b5a94cfa722..93edcf233464 100644
---- a/Documentation/filesystems/proc.rst
-+++ b/Documentation/filesystems/proc.rst
-@@ -964,7 +964,7 @@ Example output. You may not have all of these fields.
-     Mlocked:               0 kB
-     SwapTotal:             0 kB
-     SwapFree:              0 kB
--    Zswap:              1904 kB
-+    Compressed:         1904 kB
-     Zswapped:           7792 kB
-     Dirty:                12 kB
-     Writeback:             0 kB
-@@ -1057,8 +1057,9 @@ SwapTotal
- SwapFree
-               Memory which has been evicted from RAM, and is temporarily
-               on the disk
--Zswap
--              Memory consumed by the zswap backend (compressed size)
-+Compressed
-+              Memory consumed by compression backends, such as zswap
-+              (compressed size)
- Zswapped
-               Amount of anonymous memory stored in zswap (original size)
- Dirty
-diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
-index 6e89f0e2fd20..554d6f230e67 100644
---- a/fs/proc/meminfo.c
-+++ b/fs/proc/meminfo.c
-@@ -87,7 +87,7 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
- 	show_val_kb(m, "SwapTotal:      ", i.totalswap);
- 	show_val_kb(m, "SwapFree:       ", i.freeswap);
- #ifdef CONFIG_ZSWAP
--	seq_printf(m,  "Zswap:          %8lu kB\n",
-+	seq_printf(m,  "Compressed:     %8lu kB\n",
- 		   (unsigned long)(zswap_pool_total_size >> 10));
- 	seq_printf(m,  "Zswapped:       %8lu kB\n",
- 		   (unsigned long)atomic_read(&zswap_stored_pages) <<
--- 
-2.35.3
+thanks,
+
+Mimi
+
