@@ -2,145 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31204C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:24:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72226C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232377AbiD0W14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 18:27:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44380 "EHLO
+        id S232818AbiD0Wcw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 18:32:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232353AbiD0W1z (ORCPT
+        with ESMTP id S230270AbiD0Wcu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 18:27:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 965012E0BA
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:24:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651098281;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Qr4MU4/s4LvUq27SfddGnKVd9R5tIj+q1sHUP3u3fiM=;
-        b=QmKekI113Xcmc8IF9hw+XncC+d/bglPabYXgM9ze+dJkrJRYLNmKtJX1CJZMG5uH7J0vB4
-        jTZriP6AKgx23+c2zdmWsyDjBGtYR7n4+QLECMQrwvtohq7EA6UGumy7app4CcOSqYPQM/
-        W2Aylypz9IWgfjT4YgG/k5QIPVMliQo=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-656-giruKvJsOwin5w5dxWY5jQ-1; Wed, 27 Apr 2022 18:24:40 -0400
-X-MC-Unique: giruKvJsOwin5w5dxWY5jQ-1
-Received: by mail-lf1-f71.google.com with SMTP id bt27-20020a056512261b00b004720e026d4dso1180817lfb.16
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:24:40 -0700 (PDT)
+        Wed, 27 Apr 2022 18:32:50 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21DB65400
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:29:38 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id p6so2634010pjm.1
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:29:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5hA8Xq3m1wbXqH/a0qmeDa8TEICOu26xCCl40xL9zKg=;
+        b=Herq3K81McYpTzvqFagSy1plhq9FEVLAQJ8qC9KUf2XMhZskLHV+XWGU0n9cS2agrU
+         D6RecRZ2Jyfts5heQzpiDSjrRR9yonolcoSQa443BAV7XZEIXu68BLoZMXCDeHcLBn5A
+         vfFKGPQchZCaphz6AWPPGj9aO/w9OMOMNKPMkktWvyZDkfK7NZjzEf+T8SbzT+ln1uvB
+         vEiK5SGg6/OKPeqYdRumwdTnaQgsS+8TNm+xEHlqSfsJVY2mE2RSGGc4iXI7z01gm5Fg
+         cmsuRvENz6YUo7aMZv7ltCb+c/uBoGKV+Ine5BIA1cY7/L1wI0dM4j/O0fw0xrKzABv6
+         dvLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Qr4MU4/s4LvUq27SfddGnKVd9R5tIj+q1sHUP3u3fiM=;
-        b=pIDa2EkaONaZX1s0rUNEzV6oEXzOh+E1PXowx+JNyl+bre/Ip/pe2WIXsV5ZH8LviQ
-         Gl0rBLRkPFdt9IwxqlOh7QIhTNrXoXpt/11OKE3M0w28v6hVPEo5oNObwhHZ/b2vw/fw
-         6Ce/ZJvIYOb34UEsqv9g1E/NZNLuJ6DJZpZybxlhRtN+K1CuD3lfI9Z13R5VcWpV2OAj
-         CUyDuht6bgL8go2toDvOQjpAHxMYfmcpuzit6DtEaxAH+6gCkNQjYW4SScPWKDIs45FY
-         ylqtyUfbNoMRbTX6rY6BC5nLcYHTk2g/dYgvZl0xSpjhlI0Q3YdXNv9RV3DURIaFIhFP
-         woEg==
-X-Gm-Message-State: AOAM530/KBMllJHeli0L4KRWhxTVN203OEt9pAeCjjzEFuKTaeOqOYsU
-        8QhWsFf6v46DSpBIy4R1jFmyu9S75YzrnkYPyKZ1L0CWIfAbJDim1OpzK5FNHGosFjTW1WcRB6S
-        z9kO5zntM07SSZt1T2LIJMksqsTJAJzkyGe1BhmOsReZdBNKb87SoXUzlp6w5eU/MCs7hTepGU0
-        Q=
-X-Received: by 2002:a05:6512:1319:b0:44a:c200:61e5 with SMTP id x25-20020a056512131900b0044ac20061e5mr21990117lfu.550.1651098278727;
-        Wed, 27 Apr 2022 15:24:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzRP5NVvfVLFQtoQbpfc/PozRMwNi4jv7Z/n1MdceTR2qQBqzUinnuR5+PQZQaDcs93GP369A==
-X-Received: by 2002:adf:ef01:0:b0:20a:8068:ca5e with SMTP id e1-20020adfef01000000b0020a8068ca5emr23634532wro.661.1651096541322;
-        Wed, 27 Apr 2022 14:55:41 -0700 (PDT)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id b5-20020adff905000000b0020a8781be70sm14377139wrr.12.2022.04.27.14.55.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 14:55:41 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Lyude Paul <lyude@redhat.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH v2] drm/display: Select DP helper for DRM_DP_AUX_CHARDEV and DRM_DP_CEC
-Date:   Wed, 27 Apr 2022 23:55:28 +0200
-Message-Id: <20220427215528.237861-1-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5hA8Xq3m1wbXqH/a0qmeDa8TEICOu26xCCl40xL9zKg=;
+        b=a1a9VI9iIAmyeO9EbLI/1V37kx5IEjL3JQg/Z1prSDTYagTOEqSbUeXzA4WtEObNHP
+         jYseeKdAoSx9elmYzGS327MLSMcIjmrs8tee8MDfD7ZYdJlkSJ9CbjMSNLWZJvZB8FF0
+         Wx3ZXm/X/1LSxomsEQjPbvivVsvEr5ZVq9yh/SRrle0jPqpd4gifgvGcvlDLvSP1KfTB
+         Gr3jBJYHBWAA3pKaf2gqG5BWaRXsRDsktfJs9luJjdnO+49Pw+6HOZkGduaXgGJJkyll
+         d2tONryB8NuPQEks7zJ7ZEszNhfpGcvCE9YFQxZVssNLApH4azQDNVLVveZKkaZg5But
+         cNIg==
+X-Gm-Message-State: AOAM532gzgHTPnj307JsvHngqffpb7oqvlfGoOF6aDv7Z82jM/LX8JQ1
+        Ig6nFCm1uSJ06djjAHMMUJwzre6wA8aZ2sScMv4JTgroKGA=
+X-Google-Smtp-Source: ABdhPJxXGAMdkbpoJkYXcXbM4mJ3u4915SZ/ZExCjr10hG0A0gbchKsFGHeRE5A4+UcYOsXETcMs1KPF7CUx29sBu9E=
+X-Received: by 2002:a17:903:32d2:b0:15d:ea5:3e0f with SMTP id
+ i18-20020a17090332d200b0015d0ea53e0fmr18844184plr.117.1651098578376; Wed, 27
+ Apr 2022 15:29:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220317065024.2635069-1-maobibo@loongson.cn> <20220427134843.576f0a18bea28de9e798004a@linux-foundation.org>
+In-Reply-To: <20220427134843.576f0a18bea28de9e798004a@linux-foundation.org>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Wed, 27 Apr 2022 15:29:25 -0700
+Message-ID: <CAHbLzkoVdxyxKopu7D=VzvnHoiA=KYgxVWwwZwahzTcfXfcg5g@mail.gmail.com>
+Subject: Re: [PATCH v3] mm/khugepaged: sched to numa node when collapse huge page
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Bibo Mao <maobibo@loongson.cn>, Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        David Hildenbrand <david@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DRM_DP_AUX_CHARDEV and DRM_DP_CEC Kconfig symbols enable code that use
-DP helper functions, that are only present if CONFIG_DRM_DISPLAY_DP_HELPER
-is also enabled.
+On Wed, Apr 27, 2022 at 1:48 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+>
+> On Thu, 17 Mar 2022 02:50:24 -0400 Bibo Mao <maobibo@loongson.cn> wrote:
+>
+> > collapse huge page will copy huge page from general small pages,
+> > dest node is calculated from most one of source pages, however
+> > THP daemon is not scheduled on dest node. The performance may be
+> > poor since huge page copying across nodes, also cache is not used
+> > for target node. With this patch, khugepaged daemon switches to
+> > the same numa node with huge page. It saves copying time and makes
+> > use of local cache better.
+> >
+> > With this patch, specint 2006 base performance is improved with 6%
+> > on Loongson 3C5000L platform with 32 cores and 8 numa nodes.
+> >
+>
+> Are there any acks for this one please?
 
-But these don't select the DRM_DISPLAY_DP_HELPER symbol, meaning that it
-is possible to enable any of them without CONFIG_DRM_DISPLAY_DP_HELPER.
+TBH, I'm a little bit reluctant to this patch. I agree running
+khugepaged on the same node with the source and dest pages could
+reduce cross socket traffic and use cache more efficiently. But I'm
+not sure whether it is really worth it or not. For example, on a busy
+system, khugepaged may jump from cpus to cpus, that may interfere with
+the scheduler, and khugepaged has to wait to run on the target cpu, it
+may take indefinite time. In addition the yield also depends on the
+locality of source pages (how many of them are on the same node), how
+often khugepaged is woken up on a different node, etc.
 
-That will lead to the following linking errors with the mentioned config:
+Even though it was proved worth it, I'd prefer set_cpus_allowed_ptr()
+is called between mmap_read_unlock() and mmap_write_lock() in order to
+avoid waste effort for some error paths.
 
-  LD      vmlinux.o
-  MODPOST vmlinux.symvers
-  MODINFO modules.builtin.modinfo
-  GEN     modules.builtin
-  LD      .tmp_vmlinux.kallsyms1
-  KSYMS   .tmp_vmlinux.kallsyms1.S
-  AS      .tmp_vmlinux.kallsyms1.S
-  LD      .tmp_vmlinux.kallsyms2
-  KSYMS   .tmp_vmlinux.kallsyms2.S
-  AS      .tmp_vmlinux.kallsyms2.S
-  LD      vmlinux
-  SYSMAP  System.map
-  SORTTAB vmlinux
-  OBJCOPY arch/arm64/boot/Image
-  MODPOST modules-only.symvers
-ERROR: modpost: "drm_dp_dpcd_write" [drivers/gpu/drm/display/drm_display_helper.ko] undefined!
-ERROR: modpost: "drm_dp_read_desc" [drivers/gpu/drm/display/drm_display_helper.ko] undefined!
-ERROR: modpost: "drm_dp_dpcd_read" [drivers/gpu/drm/display/drm_display_helper.ko] undefined!
-make[1]: *** [scripts/Makefile.modpost:134: modules-only.symvers] Error 1
-make[1]: *** Deleting file 'modules-only.symvers'
-make: *** [Makefile:1749: modules] Error 2
-
-Note: It seems this has been an issue for a long time but was made easier
-to reproduce after the commit 1e0f66420b13 ("drm/display: Introduce a DRM
-display-helper module"). Adding a Fixes: tag just to make sure that this
-fix will be picked for stable once the mentioned change also lands there.
-
-Fixes: 1e0f66420b13 ("drm/display: Introduce a DRM display-helper module")
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
----
-
-Changes in v2:
-- Explain better the issue in the change description.
-- Only select DRM_DISPLAY_DP_HELPER and not DRM_DISPLAY_HELPER.
-
- drivers/gpu/drm/display/Kconfig | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/gpu/drm/display/Kconfig b/drivers/gpu/drm/display/Kconfig
-index f84f1b0cd23f..9fe80c4e555c 100644
---- a/drivers/gpu/drm/display/Kconfig
-+++ b/drivers/gpu/drm/display/Kconfig
-@@ -32,6 +32,7 @@ config DRM_DISPLAY_HDMI_HELPER
- config DRM_DP_AUX_CHARDEV
- 	bool "DRM DP AUX Interface"
- 	depends on DRM
-+	select DRM_DISPLAY_DP_HELPER
- 	help
- 	  Choose this option to enable a /dev/drm_dp_auxN node that allows to
- 	  read and write values to arbitrary DPCD registers on the DP aux
-@@ -40,6 +41,7 @@ config DRM_DP_AUX_CHARDEV
- config DRM_DP_CEC
- 	bool "Enable DisplayPort CEC-Tunneling-over-AUX HDMI support"
- 	depends on DRM
-+	select DRM_DISPLAY_DP_HELPER
- 	select CEC_CORE
- 	help
- 	  Choose this option if you want to enable HDMI CEC support for
--- 
-2.35.1
-
+>
+> > --- a/mm/khugepaged.c
+> > +++ b/mm/khugepaged.c
+> > @@ -1066,6 +1066,7 @@ static void collapse_huge_page(struct mm_struct *mm,
+> >       struct vm_area_struct *vma;
+> >       struct mmu_notifier_range range;
+> >       gfp_t gfp;
+> > +     const struct cpumask *cpumask;
+> >
+> >       VM_BUG_ON(address & ~HPAGE_PMD_MASK);
+> >
+> > @@ -1079,6 +1080,13 @@ static void collapse_huge_page(struct mm_struct *mm,
+> >        * that. We will recheck the vma after taking it again in write mode.
+> >        */
+> >       mmap_read_unlock(mm);
+> > +
+> > +     /* sched to specified node before huage page memory copy */
+> > +     if (task_node(current) != node) {
+> > +             cpumask = cpumask_of_node(node);
+> > +             if (!cpumask_empty(cpumask))
+> > +                     set_cpus_allowed_ptr(current, cpumask);
+> > +     }
+> >       new_page = khugepaged_alloc_page(hpage, gfp, node);
+> >       if (!new_page) {
+> >               result = SCAN_ALLOC_HUGE_PAGE_FAIL;
+> > --
+> > 2.31.1
+> >
