@@ -2,97 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57E28C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37725C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:45:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233163AbiD0Wrp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 18:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43382 "EHLO
+        id S233267AbiD0Wsd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 18:48:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233279AbiD0WrW (ORCPT
+        with ESMTP id S233204AbiD0Ws3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 18:47:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502C6255AF;
-        Wed, 27 Apr 2022 15:44:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8B5F61E41;
-        Wed, 27 Apr 2022 22:44:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F29B5C385AA;
-        Wed, 27 Apr 2022 22:44:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651099449;
-        bh=OeoXLpSjFFW6YXYpM+6X1nCwuoz/C5wuMa1J1bJYg/o=;
-        h=Date:From:To:Cc:Subject:From;
-        b=mZYO1TnlG1jhH6wwXv7uGnA2tmATzmBfcvQCkMPaaVVojbu0+4O11HvMgieSLnNBn
-         HnBBftQJkegNqvIOJUYFoWDLGkphWjYeC3WQLhPxgzZL0v31oYwCTaIrdVZyGHqJbk
-         gJFYxMNz2uAuUDyX3oaBo0n12t/eCT9bZoishwc++Nj+ah4IKroF4rp6UbUlY4sZb8
-         7RAiCxJR7ZmvO0n7II3qcrjSRnPb7mWxpeDBwrerc8qIXHzgXmKXNBldulrRKEO3zO
-         aaqGKJ8IcGX+Id2sF+ARH6ByQ3V2ZHjk+tJQAqBGaC9eRs5OZ6NEfnrYyu9frrF7kB
-         ufYknbLSKYW+A==
-Date:   Wed, 27 Apr 2022 17:53:01 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] drm/i915: Fix -Wstringop-overflow warning in call to
- intel_read_wm_latency()
-Message-ID: <20220427225301.GA24406@embeddedor>
+        Wed, 27 Apr 2022 18:48:29 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41871BEBF;
+        Wed, 27 Apr 2022 15:45:14 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id y3so6093367ejo.12;
+        Wed, 27 Apr 2022 15:45:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ULuEHFX75GMwmo8k2GzRUntcH3yDcucdCP1qTc/I1I4=;
+        b=ml8uzSNJMVs1/c6qGisCf+ClB3pqZe7KZtcX9j50z3ZpwAqed+4ReF/LBsDS6MEa13
+         fcf1XXRgzmoNG60h+AX1FFwo1w3N5Tx84W0KYKYDSSlXYm07xf9MyW27uXcw47ArSttb
+         y5ZNDJXdKgUbVHtLIUGnhraNOoSizkDT6oyHxJX+vTNrze3tUJbsrpWdGv5SHa+rfhV/
+         HjrKmJlCwBbH1WMxtq8+MV4qOvHavNuK4UhqXC+SW5rIgSNenYyv/tofybFkaLG466bw
+         ogRBcnYhJHXDhZWM0nAClK0PTcjEZnd5XEPs5//E5udmm8/hj3ueTWnesQsv/zssDiFp
+         GLdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ULuEHFX75GMwmo8k2GzRUntcH3yDcucdCP1qTc/I1I4=;
+        b=thPNRPrwDdRLGc7U9/PMQUNue5wNyVLA9b6MpETf5DfzXMsOspSL1NJap976WpJqG0
+         ewkSvbgbslcL7vAZT32xUPbMl8FRj7n/67KF6GaA/GD9kM4qVSASTAotTkFl96CM2wCs
+         jpoKFeHYzLNJh/4qPk2S5uzRLCvIoJfJULROGKbiouYIC+p6BEE/rKdAX0qrYPPltugs
+         2o2YrpYD4bza9NGpc/dwTvzFQvcZqgj+QsBDYBIGsKZJlHCnG+5qaxLitzMBGrHAsPXT
+         r6jAwo/pSWAxjkeUDxZjGlCTIL2fpnMZTztpSw7usEFZaseP14qEfq3RXWtRWE8gFEJ2
+         OeHQ==
+X-Gm-Message-State: AOAM531zaL2+hFq24znZKUzlpy6chD9YuETDGG9zCN7B6kXU4Klz6kI9
+        kuxV5NzlD5O0FQmWpnb+WnM=
+X-Google-Smtp-Source: ABdhPJw/kmkRb4ECwQsyT2nZLTfzWQIwaBKXnJ04SiQk3nK6jZlCQaiwz131OR/BDU6OGu6woJ2hCg==
+X-Received: by 2002:a17:907:c06:b0:6e0:9149:8047 with SMTP id ga6-20020a1709070c0600b006e091498047mr27930716ejc.765.1651099513153;
+        Wed, 27 Apr 2022 15:45:13 -0700 (PDT)
+Received: from localhost.localdomain (84-72-105-84.dclient.hispeed.ch. [84.72.105.84])
+        by smtp.gmail.com with ESMTPSA id t27-20020a1709063e5b00b006f3a94f5194sm3762594eji.77.2022.04.27.15.45.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 15:45:12 -0700 (PDT)
+From:   Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Liang Chen <cl@rock-chips.com>
+Cc:     Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+Subject: [PATCH 0/3] Enable JPEG Encoder on RK3566/RK3568
+Date:   Thu, 28 Apr 2022 00:44:35 +0200
+Message-Id: <20220427224438.335327-1-frattaroli.nicolas@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following -Wstringop-overflow warnings when building with GCC-11:
+Hello,
 
-drivers/gpu/drm/i915/intel_pm.c:3106:9: warning: ‘intel_read_wm_latency’ accessing 16 bytes in a region of size 10 [-Wstringop-overflow=]
- 3106 |         intel_read_wm_latency(dev_priv, dev_priv->wm.pri_latency);
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/i915/intel_pm.c:3106:9: note: referencing argument 2 of type ‘u16 *’ {aka ‘short unsigned int *’}
-drivers/gpu/drm/i915/intel_pm.c:2861:13: note: in a call to function ‘intel_read_wm_latency’
- 2861 | static void intel_read_wm_latency(struct drm_i915_private *dev_priv,
-      |             ^~~~~~~~~~~~~~~~~~~~~
+the following series adds support for and enables the hardware JPEG
+encoder on the RK3566 and RK3568 line of SoCs by Rockchip.
 
-by removing the over-specified array size from the argument declarations.
+The JPEG encoder is its own little Hantro instance with seemingly just
+the encode functionality.
 
-It seems that this code is actually safe because the size of the
-array depends on the hardware generation, and the function checks
-for that.
+The first patch modifies the bindings with a new compatible, and adds
+the ability to just have a vepu interrupt without a vdpu interrupt.
 
-This helps with the ongoing efforts to globally enable
--Wstringop-overflow.
+The second patch makes the actual driver changes to support this variant.
 
-Link: https://github.com/KSPP/linux/issues/181
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/gpu/drm/i915/intel_pm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The third and final patch makes the necessary device tree changes for
+the rk356x device tree file to add both the node for the encoder and
+its MMU.
 
-diff --git a/drivers/gpu/drm/i915/intel_pm.c b/drivers/gpu/drm/i915/intel_pm.c
-index ee0047fdc95d..5735915facc5 100644
---- a/drivers/gpu/drm/i915/intel_pm.c
-+++ b/drivers/gpu/drm/i915/intel_pm.c
-@@ -2862,7 +2862,7 @@ static void ilk_compute_wm_level(const struct drm_i915_private *dev_priv,
- }
- 
- static void intel_read_wm_latency(struct drm_i915_private *dev_priv,
--				  u16 wm[8])
-+				  u16 wm[])
- {
- 	struct intel_uncore *uncore = &dev_priv->uncore;
- 
+The series has been tested on a PINE64 Quartz64 Model A with an RK3566
+SoC using GStreamer.
+
+Regards,
+Nicolas Frattaroli
+
+Nicolas Frattaroli (3):
+  dt-bindings: media: rockchip-vpu: Add RK3568 JPEG compatible
+  media: hantro: Add support for RK356x JPEG encoder
+  arm64: dts: rockchip: Add JPEG encoder node to rk356x
+
+ .../bindings/media/rockchip-vpu.yaml          |  2 +
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi      | 21 +++++++
+ drivers/staging/media/hantro/hantro_drv.c     |  1 +
+ drivers/staging/media/hantro/hantro_hw.h      |  1 +
+ .../staging/media/hantro/rockchip_vpu_hw.c    | 62 +++++++++++++++++++
+ 5 files changed, 87 insertions(+)
+
 -- 
-2.27.0
+2.36.0
 
