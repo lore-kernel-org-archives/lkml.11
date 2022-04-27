@@ -2,122 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6C48C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 09:02:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0C97C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 09:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232347AbiD0JFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 05:05:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
+        id S234146AbiD0JGH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 05:06:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiD0JFX (ORCPT
+        with ESMTP id S231301AbiD0JGF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 05:05:23 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E019F8E45;
-        Wed, 27 Apr 2022 02:02:07 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 295195FD13;
-        Wed, 27 Apr 2022 12:02:05 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1651050125;
-        bh=FlibZqz6Vs1KJA6OMN0S2VlRcGFGa/xmoTfPjJuhQtg=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=ekZbxxmsobxMJgoGh2uXEX8tsgy6L0NPWFygmbcNWajfzrV7bV80uov37EXsiv3EH
-         dz/ZKapovctI//fIG11BvoygCqTr2jQlG2Y1h4aAt6+dfWh4fsJ4Qsni16AK3pBnC4
-         k5/1BoOoHZDd2I3HlOf3rHkFMSWp/cUlvVGgxpJc0BPuAjUMl+3WPSOFxCSZH/4cee
-         2nY1/b2jBICu6QQwYE4S4caduOctJAdmFlXCxyeuoSc2gkn67I4a8xwx6o1RAbLWq3
-         zbvSVAQmz9LbeNaVCnitaiA7Xc7OvXv8tHfulVc4Xo0qJmoEX6+4ZXSd+rEr4VNNgk
-         AXCjSyNvl18zQ==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Wed, 27 Apr 2022 12:02:05 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     Rob Herring <robh@kernel.org>
-CC:     "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 1/3] dt-bindings: vendor-prefixes: add MEMSensing
- Microsystems Co., Ltd.
-Thread-Topic: [PATCH v1 1/3] dt-bindings: vendor-prefixes: add MEMSensing
- Microsystems Co., Ltd.
-Thread-Index: AQHYVASMsRh3FoyxH0G3KQJPx6YT3q0Cfe6AgADSqIA=
-Date:   Wed, 27 Apr 2022 09:01:13 +0000
-Message-ID: <20220427090201.og6gwed364zr3cmd@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220419154555.24191-1-ddrokosov@sberdevices.ru>
- <20220419154555.24191-2-ddrokosov@sberdevices.ru>
- <YmhV08V2jTeB448O@robh.at.kernel.org>
-In-Reply-To: <YmhV08V2jTeB448O@robh.at.kernel.org>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <E31A6B890C3DC14C992872EDBF3A6437@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        Wed, 27 Apr 2022 05:06:05 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3BB2203DEE
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 02:02:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651050164; x=1682586164;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=eTKRV3FLLJi18VaM5IFq5+mRfzOJV8/U9LUE7CdXXSc=;
+  b=WB9bhf/Xi/4u6keu6Qsupp1xUgLy3WC675wPDCO33yfLeQNCfrbLPSPP
+   BbhjEbL5vzWC4XBMbUymINU8GGj6LxZWtG14RYpNGmgSNZHM536ZQALiP
+   oH1fkR3E3psP8ZfLl3b4NSLA7KeFprwXEYiXStOWHbflIfREF8r8A6VOc
+   4vy/daMhKQXzpkVkAFHB9wCEsfIfaIfH0/TlI8L7utUnd/KxjyfVq/evV
+   c+M4/bWpAyJTvJXIZu/oKeDJaIAqOGQ9hv5hmwdrdksIcoDtJ8sNMLVX4
+   b0wNNatB2heWxo+fM7IEWKUGj+D8ojktXIJDIS1D0UE6XDLy/EOv46uXR
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="326358453"
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="326358453"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 02:02:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="564992012"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 27 Apr 2022 02:02:34 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1njdZB-0004X9-WD;
+        Wed, 27 Apr 2022 09:02:33 +0000
+Date:   Wed, 27 Apr 2022 17:01:56 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Thierry Reding <treding@nvidia.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [thierryreding:for-5.19/work 141/141]
+ drivers/gpio/gpio-tegra186.c:170:15: error: implicit declaration of function
+ 'pinctrl_gpio_direction_input'; did you mean
+ 'tegra186_gpio_direction_input'?
+Message-ID: <202204271656.UqVmYgYg-lkp@intel.com>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/04/27 03:59:00 #19365489
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rob,
+tree:   https://github.com/thierryreding/linux for-5.19/work
+head:   a39ec325554470289e8384e30d06a22960d1dd7b
+commit: a39ec325554470289e8384e30d06a22960d1dd7b [141/141] WIP
+config: xtensa-randconfig-r004-20220425 (https://download.01.org/0day-ci/archive/20220427/202204271656.UqVmYgYg-lkp@intel.com/config)
+compiler: xtensa-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/thierryreding/linux/commit/a39ec325554470289e8384e30d06a22960d1dd7b
+        git remote add thierryreding https://github.com/thierryreding/linux
+        git fetch --no-tags thierryreding for-5.19/work
+        git checkout a39ec325554470289e8384e30d06a22960d1dd7b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=xtensa SHELL=/bin/bash drivers/gpio/
 
-You are right, I've missed memsic definition, sorry for that. I'll move
-memsensing vendor prefix to proper place on the v2 then.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-On Tue, Apr 26, 2022 at 03:28:03PM -0500, Rob Herring wrote:
-> On Tue, Apr 19, 2022 at 03:45:51PM +0000, Rokosov Dmitry Dmitrievich wrot=
-e:
-> > MEMSensing Microsystems (Suzhou, China) Co., Ltd. operates as a micro
-> > electromechanical system technology company which produces micro
-> > electromechanical system microphones and sensors.
-> > MEMSensing Microsystems (Suzhou, China) Co., Ltd. applies its products
-> > in consumer electronics, industrial control, medical electronics
-> > and automotive, and other fields.
-> >=20
-> > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-> > ---
-> >  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/D=
-ocumentation/devicetree/bindings/vendor-prefixes.yaml
-> > index 294093d..d8f29ad 100644
-> > --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> > +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> > @@ -737,6 +737,8 @@ patternProperties:
-> >      description: Mellanox Technologies
-> >    "^memsic,.*":
-> >      description: MEMSIC Inc.
-> > +  "^memsensing,.*":
-> > +    description: MEMSensing Microsystems Co., Ltd.
->=20
-> Alphabetical order. This needs to be before memsic.
->=20
+All errors (new ones prefixed by >>):
 
-Ack
+   drivers/gpio/gpio-tegra186.c: In function 'tegra186_gpio_direction_input':
+>> drivers/gpio/gpio-tegra186.c:170:15: error: implicit declaration of function 'pinctrl_gpio_direction_input'; did you mean 'tegra186_gpio_direction_input'? [-Werror=implicit-function-declaration]
+     170 |         err = pinctrl_gpio_direction_input(chip->base + offset);
+         |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |               tegra186_gpio_direction_input
+   cc1: some warnings being treated as errors
 
-> >    "^menlo,.*":
-> >      description: Menlo Systems GmbH
-> >    "^mentor,.*":
-> > --=20
-> > 2.9.5
-> >=20
 
---=20
-Thank you,
-Dmitry=
+vim +170 drivers/gpio/gpio-tegra186.c
+
+   145	
+   146	static int tegra186_gpio_direction_input(struct gpio_chip *chip,
+   147						 unsigned int offset)
+   148	{
+   149		struct tegra_gpio *gpio = gpiochip_get_data(chip);
+   150		void __iomem *base;
+   151		u32 value;
+   152		int err;
+   153	
+   154		dev_info(gpio->gpio.parent, "> %s(chip=%px, offset=%u)\n", __func__, chip, offset);
+   155		dev_info(gpio->gpio.parent, "  GPIO: %s\n", gpio->gpio.names[offset]);
+   156	
+   157		base = tegra186_gpio_get_base(gpio, offset);
+   158		if (WARN_ON(base == NULL))
+   159			return -ENODEV;
+   160	
+   161		value = readl(base + TEGRA186_GPIO_OUTPUT_CONTROL);
+   162		value |= TEGRA186_GPIO_OUTPUT_CONTROL_FLOATED;
+   163		writel(value, base + TEGRA186_GPIO_OUTPUT_CONTROL);
+   164	
+   165		value = readl(base + TEGRA186_GPIO_ENABLE_CONFIG);
+   166		value |= TEGRA186_GPIO_ENABLE_CONFIG_ENABLE;
+   167		value &= ~TEGRA186_GPIO_ENABLE_CONFIG_OUT;
+   168		writel(value, base + TEGRA186_GPIO_ENABLE_CONFIG);
+   169	
+ > 170		err = pinctrl_gpio_direction_input(chip->base + offset);
+   171		if (err < 0)
+   172			dev_err(gpio->gpio.parent, "failed to set pinctrl input direction of GPIO %u: %d\n",
+   173				chip->base + offset, err);
+   174	
+   175		dev_info(gpio->gpio.parent, "< %s() = %d\n", __func__, err);
+   176		return err;
+   177	}
+   178	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
