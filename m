@@ -2,123 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 940E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:21:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86617C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244781AbiD0SYO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 14:24:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59194 "EHLO
+        id S237319AbiD0SYT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 14:24:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244782AbiD0SYF (ORCPT
+        with ESMTP id S244789AbiD0SYN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 14:24:05 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A7C5AA4E
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:20:49 -0700 (PDT)
-Received: from mail-yw1-f174.google.com ([209.85.128.174]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1Mspy4-1nz6Ep3T1k-00t8Zv for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022
- 20:20:48 +0200
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-2ef5380669cso28336387b3.9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:20:47 -0700 (PDT)
-X-Gm-Message-State: AOAM533JQw/gKkymZv4K96LKPX/UFEo5u67tJ++oO0BvKJgPGA94M1oc
-        jpNu8wHFzHPHXHWtQ830FuaDI6i4QWdK2ZXqT8Y=
-X-Google-Smtp-Source: ABdhPJwvEoSUguhdRwTP+lohWXQtYJ9DDg1Zn7qIjSsaEiGfg1kkd2iKF2q7oFkNsz/JpP2X/5Hv5gVbR3gnWZxOUM4=
-X-Received: by 2002:a81:2305:0:b0:2f7:dadb:2162 with SMTP id
- j5-20020a812305000000b002f7dadb2162mr17396473ywj.42.1651083646618; Wed, 27
- Apr 2022 11:20:46 -0700 (PDT)
+        Wed, 27 Apr 2022 14:24:13 -0400
+Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A6E5674C;
+        Wed, 27 Apr 2022 11:21:00 -0700 (PDT)
+Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-e9027efe6aso2816101fac.10;
+        Wed, 27 Apr 2022 11:21:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+BHUxYTTDXYb9OdRF4eEEFDPiomx/yfHMZ5ecBQ9Ajo=;
+        b=h/MuxgrLxIv4VmgeQQkOVWcS8g0kvgtJzA8oJx6TzF5+pQl9q2GaTnRBbUUBtlTGDw
+         5wfkQXVTtqBva+6Fa2hByaJuFWv1U2FSSfpnumoHqzQUHE6RVMB2B6wiywF6XGDIQpxv
+         IiEzvsXr77a6+xzX3I7+ZUljJEzdZbxnSEV2kNeXoiOjPd2QJgGNBRu0BMnK0zohNzLo
+         XVs5r+bA1LIoibSnWoMEiM2XIopMYlu0CRcbHCMWOcAmtKDOvRAu8dh7djgsE67/nvny
+         We92OAkdIohuqW7heya4j6HkkKO7ShPRn2qAy9vtLC8DYFWq/fOih5T1T8xhQ7f78e88
+         hvqA==
+X-Gm-Message-State: AOAM5313ChRYUE4BldsV/eT8UjeVowz7ug2dEWSQQnRgUtp4ytDgE3q0
+        006wrfEoByZYq4t+J83SEw==
+X-Google-Smtp-Source: ABdhPJwIhqiGXySbX37U6to8+OJfwMtRsj/HEBb1Gw1N28SEagZgN2P/sg6TK42K0Ovwu9+60jZxSQ==
+X-Received: by 2002:a05:6870:a10b:b0:e9:6898:ee1f with SMTP id m11-20020a056870a10b00b000e96898ee1fmr4364895oae.274.1651083659845;
+        Wed, 27 Apr 2022 11:20:59 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id j17-20020a4a92d1000000b0035ea6671d8esm203128ooh.35.2022.04.27.11.20.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 11:20:59 -0700 (PDT)
+Received: (nullmailer pid 400981 invoked by uid 1000);
+        Wed, 27 Apr 2022 18:20:58 -0000
+Date:   Wed, 27 Apr 2022 13:20:58 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        Tony Lindgren <tony@atomide.com>, devicetree@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>, linux-usb@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, Sekhar Nori <nsekhar@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 1/6] dt-bindings: usb: am33xx-usb: deprecate
+ '#dma-channels'
+Message-ID: <YmmJirlaaCha3+vY@robh.at.kernel.org>
+References: <20220427161126.647073-1-krzysztof.kozlowski@linaro.org>
+ <20220427161126.647073-2-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-References: <20220427121413.168468-1-wangkefeng.wang@huawei.com> <20220427121413.168468-3-wangkefeng.wang@huawei.com>
-In-Reply-To: <20220427121413.168468-3-wangkefeng.wang@huawei.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 27 Apr 2022 20:20:30 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1E1vP-vS=-aH-XP=5taSTy8EUTfNSpQk9x47WLRMCOzQ@mail.gmail.com>
-Message-ID: <CAK8P3a1E1vP-vS=-aH-XP=5taSTy8EUTfNSpQk9x47WLRMCOzQ@mail.gmail.com>
-Subject: Re: [PATCH 2/4] mm: ioremap: Add arch_ioremap/iounmap_check()
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:Py9c6L8yk4Q+u/Ah/U4yqNG58vF9Vui/iwrdfbE1xO+IcAxVelg
- WfkrrCffOdx2DTbqy59soc4/tCN3xmG1SPp5ACwCCx4ppq+CoTLMvNlkY+MHXm0pH1JFtJ4
- 4K2hMrERDwyBThIlOMPSonMr47Kq+C037LICDMMcGVmdKS28BXKkgFtwVN5gChkhN6rnw02
- ncDaL0Pq8ZZvkCQOHusNw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:X4H1rwttH/k=:Gi7FBhMS0HESqzXcIydzOy
- OSg3pSWdg97bTqWTKHP9Biuzf+6xNpzVH7CLVNmwzmFH97QEi/qpvdSdKTuoWDHD15EZ4rjCw
- igScqUIdXj2oC6uavt1GTL+VqShDV9lEfrMTetXkRnhJBA6u2pbs78HRfN1CH6ME6nDuR/0Lq
- HRxmXDFR64kHpzyCyOZA0sZUEFeEtL6WFdjHINrk6EHwC1lIRmI/bSf1ZOE3C9eoEz9AA3K1n
- oe21c9TFyxK9puxDBaMxwbNXgiqS5cROyYDFm6wc0lVs2sc+4RUh3GrJP2g7x0GJoZ+Ydns8Y
- Y3uKoeL1Z/+jJ9vhH4QoB7lpiH7sZuACns63jkGCGBKYcJCPnKsJLAuz5/SRGRzQf/Zk8hao/
- sMv7I3IDdCk/jrFk69fRnOQS8OHRcGc5X4OOASkhCMd5kJwwQ3y1wkAKOjFoTLpIrc1T8zlC4
- CXXnYmNgitlT+H8alsr9FHmDjWRLq1gGpLPd6wlRzWNtjK1NFH5uBTtYW9jNq+B1pNlBwLjUU
- VUxrDQNdIzJM6i8WjfgLR+wc3ks5LHIUyQRB4/l+L+0Ak6Gdi8zcojGrnZ1nDb2V+G2uT/pFm
- B8aM5nfopwCK4jtk/3BsYA0P/jCXpbZXsp2hWzBNd5jHmjz1Y88JrOx+lxWm83CginrmdDr/9
- I51mPe42LT7k0JqVFM4oXRxIo8fz1cU7DyB4CGl20ABJ9btUlnhuo+crbWiqSjVhVMN/YIzUk
- HYdLayU4k9ftezAdSJJfqx8jiN9FpLWWxazLcVV7F6whbWrgTa6hvloEE0RG8ChMDyU7NOUED
- dzkGpo9td+UxqlXDoF/NmSknvJoGkcJ8r+79Ok9Otb1OfwoGKs=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220427161126.647073-2-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 2:14 PM Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
-> @@ -964,6 +964,9 @@ static inline void iounmap(volatile void __iomem *addr)
->  #elif defined(CONFIG_GENERIC_IOREMAP)
->  #include <linux/pgtable.h>
->
-> +bool arch_ioremap_check(phys_addr_t addr, size_t size, unsigned long prot);
-> +bool arch_iounmap_check(void __iomem *addr);
-> +
->  void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot);
->  void iounmap(volatile void __iomem *addr);
->
-> diff --git a/mm/ioremap.c b/mm/ioremap.c
-> index 522ef899c35f..d1117005dcc7 100644
-> --- a/mm/ioremap.c
-> +++ b/mm/ioremap.c
-> @@ -11,6 +11,16 @@
->  #include <linux/io.h>
->  #include <linux/export.h>
->
-> +bool __weak arch_ioremap_check(phys_addr_t addr, size_t size, unsigned long prot)
-> +{
-> +       return true;
-> +}
-> +
-> +bool __weak arch_iounmap_check(void __iomem *addr)
-> +{
-> +       return true;
-> +}
-> +
+On Wed, 27 Apr 2022 18:11:21 +0200, Krzysztof Kozlowski wrote:
+> The generic property, used in most of the drivers and defined in generic
+> dma-common DT bindings, is 'dma-channels'.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/usb/am33xx-usb.txt | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
 
-I don't really like the weak functions. The normal way to do this in
-asm-generic headers
-is to have something like
-
-#ifndef arch_ioremap_check
-static inline bool arch_ioremap_check(phys_addr_t addr, size_t size,
-unsigned long prot)
-{
-       return true;
-}
-#endif
-
-and then in architectures that actually do some checking, have these
-bits in asm/io.h
-
-bool arch_ioremap_check(phys_addr_t addr, size_t size, unsigned long prot);
-#define arch_ioremap_check arch_ioremap_check
-
-(or alternatively an extern declaration, if the implementation is nontrivial)
-
-It may be worth pointing out that either way requires including
-asm-generic/io.h,
-which most architectures don't. This is probably fine, as only csky, riscv and
-now arm64 use CONFIG_GENERIC_IOREMAP, and we can probably require
-that any further architectures using this symbol also have to use
-asm-generic/io.h.
-
-      Arnd
+Reviewed-by: Rob Herring <robh@kernel.org>
