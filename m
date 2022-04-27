@@ -2,106 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C58BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 11:20:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1579CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 11:20:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232561AbiD0LXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 07:23:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34070 "EHLO
+        id S232583AbiD0LX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 07:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232502AbiD0LXG (ORCPT
+        with ESMTP id S232502AbiD0LX0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 07:23:06 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD80E2FFD2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 04:19:55 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23R9VQS3101909;
-        Wed, 27 Apr 2022 04:31:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651051886;
-        bh=Q41u8TDrDC1yLEFN/TIxA0jpFdoBJn+r1/gn1QKCFK4=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=zPFY1wPUevqBJ2CUe4AzbuKbvSebm3utdT5kpWXAndvOk2UED1UmMOyQwm/1FKFZ+
-         i+sooC9ihsIN8saV4BFioj3ww/OR2fqWkZ/JQTM8zK9axTIeMbK0V1uI2brVSwSYJM
-         e7xeaCvq5XaDNYVMvKf/TSv4/JUzyBOQ/o6GgqQM=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23R9VQAb096923
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 27 Apr 2022 04:31:26 -0500
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 27
- Apr 2022 04:31:26 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 27 Apr 2022 04:31:26 -0500
-Received: from pratyush-4F-325.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23R9VKtR033801;
-        Wed, 27 Apr 2022 04:31:23 -0500
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     <michael@walle.cc>, Tudor Ambarus <tudor.ambarus@microchip.com>
-CC:     <richard@nod.at>, <vigneshr@ti.com>,
-        <linux-mtd@lists.infradead.org>, <Takahiro.Kuwano@infineon.com>,
-        <linux-kernel@vger.kernel.org>, <miquel.raynal@bootlin.com>
-Subject: Re: [PATCH v4 00/11] mtd: spi-nor: Rework Octal DTR methods
-Date:   Wed, 27 Apr 2022 15:01:19 +0530
-Message-ID: <165105175023.2301505.5047546691256262839.b4-ty@ti.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220420103427.47867-1-tudor.ambarus@microchip.com>
-References: <20220420103427.47867-1-tudor.ambarus@microchip.com>
-MIME-Version: 1.0
+        Wed, 27 Apr 2022 07:23:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317F830F55;
+        Wed, 27 Apr 2022 04:20:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D44ADB8261B;
+        Wed, 27 Apr 2022 11:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 64265C385AA;
+        Wed, 27 Apr 2022 11:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651058412;
+        bh=l53XzaWwKba3OJW6HFGuebym4/RWTvktNA+PgO3IgHE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Ucdokk1b9Bx01ozICt01o0aEmWJxdHNoWij09FFFaYICrGv8rAlH+BpGkter3peOI
+         ktLj3AR4YJspEvkwIGeaUrx/xw7Sh5Z9eGINYAS+ZP/puMfnFO9LUprA1V770EXPxa
+         13NOCczXBJU9dcpWO2gSXzWMsOtpKaNlWOGJhCwZTcrwRbx5DYp/1jGd5OzMDNL45v
+         9JZu0oPhZd6oTH5sjeq9Qvei7NW+JqMgdTjDXS9XQEIxBv5MtyX/rXfw1lksImqeos
+         3Uh7yxKcBDf+hpYS7rCP/4+xkbdSv7R9/AoshJhTpXagRx19a6p4s4AzEPwZ2F6SbS
+         SR+LirWTbODOQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 47353E5D087;
+        Wed, 27 Apr 2022 11:20:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Subject: Re: [PATCH net-next v2 0/5] net: lan966x: Add support for PTP
+ programmable pins
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165105841228.27586.15571101022871593482.git-patchwork-notify@kernel.org>
+Date:   Wed, 27 Apr 2022 11:20:12 +0000
+References: <20220427065127.3765659-1-horatiu.vultur@microchip.com>
+In-Reply-To: <20220427065127.3765659-1-horatiu.vultur@microchip.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, UNGLinuxDriver@microchip.com,
+        richardcochran@gmail.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Apr 2022 13:34:16 +0300, Tudor Ambarus wrote:
-> v4:
-> - s/spi_nor_read_reg/spi_nor_read_any_reg and
-> s/spi_nor_write_reg/spi_nor_write_any_volatile_reg to comply with Micron
-> and Cypress's naming scheme. Update documentation description on
-> spi_nor_write_any_volatile_reg.
-> - 2 new patches, the last ones, where I remove status polling on write
-> volatile registers
-> - collect R-bs
-> v3:
-> - queue patch: "mtd: spi-nor: Introduce templates for SPI NOR operations"
-> from
-> https://lore.kernel.org/lkml/20220304093011.198173-1-tudor.ambarus@microchip.com/
-> The dependency chain between patches was too long and hard to follow.
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Wed, 27 Apr 2022 08:51:22 +0200 you wrote:
+> Lan966x has 8 PTP programmable pins. The last pin is hardcoded to be used
+> by PHC0 and all the rest are shareable between the PHCs. The PTP pins can
+> implement both extts and perout functions.
+> 
+> v1->v2:
+> - use ptp_find_pin_unlocked instead of ptp_find_pin inside the irq handler.
 > 
 > [...]
 
-Applied to https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git spi-nor/next, thanks!
-[01/11] mtd: spi-nor: Rename method, s/spi_nor_match_id/spi_nor_match_name
-        https://git.kernel.org/mtd/c/b1145d6f1e
-[02/11] mtd: spi-nor: Introduce spi_nor_match_id()
-        https://git.kernel.org/mtd/c/d0ddd88438
-[03/11] mtd: spi-nor: core: Use auto-detection only once
-        https://git.kernel.org/mtd/c/bffabd1c72
-[04/11] mtd: spi-nor: core: Introduce method for RDID op
-        https://git.kernel.org/mtd/c/86b6b55ffb
-[05/11] mtd: spi-nor: manufacturers: Use spi_nor_read_id() core method
-        https://git.kernel.org/mtd/c/a007d81aa5
-[06/11] mtd: spi-nor: core: Add helpers to read/write any register
-        https://git.kernel.org/mtd/c/a604ab33cb
-[07/11] mtd: spi-nor: micron-st: Rework spi_nor_micron_octal_dtr_enable()
-        https://git.kernel.org/mtd/c/4629adaff7
-[08/11] mtd: spi-nor: spansion: Rework spi_nor_cypress_octal_dtr_enable()
-        https://git.kernel.org/mtd/c/27ff0d34fb
-[09/11] mtd: spi-nor: Introduce templates for SPI NOR operations
-        https://git.kernel.org/mtd/c/c0abb861c5
-[10/11] mtd: spi-nor: spansion: Remove status polling on volatile registers write
-        https://git.kernel.org/mtd/c/467f0e8381
-[11/11] mtd: spi-nor: micron-st: Remove status polling on volatile registers write
-        https://git.kernel.org/mtd/c/37841975b3
+Here is the summary with links:
+  - [net-next,v2,1/5] dt-bindings: net: lan966x: Extend with the ptp external interrupt.
+    https://git.kernel.org/netdev/net-next/c/c1a519919d04
+  - [net-next,v2,2/5] net: lan966x: Change the PTP pin used to read/write the PHC.
+    https://git.kernel.org/netdev/net-next/c/77f2accb501a
+  - [net-next,v2,3/5] net: lan966x: Add registers used to configure the PTP pin
+    https://git.kernel.org/netdev/net-next/c/3adc11e5fc5f
+  - [net-next,v2,4/5] net: lan966x: Add support for PTP_PF_PEROUT
+    https://git.kernel.org/netdev/net-next/c/2b7ff2588ec2
+  - [net-next,v2,5/5] net: lan966x: Add support for PTP_PF_EXTTS
+    https://git.kernel.org/netdev/net-next/c/f3d8e0a9c28b
 
---
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
