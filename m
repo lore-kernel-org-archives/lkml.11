@@ -2,149 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74C9AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 12:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE40C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 12:33:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234167AbiD0Mf4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 08:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56164 "EHLO
+        id S234254AbiD0Mga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 08:36:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234069AbiD0Mfx (ORCPT
+        with ESMTP id S234069AbiD0MgX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 08:35:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCD04C7A2;
-        Wed, 27 Apr 2022 05:32:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A7B3EB82666;
-        Wed, 27 Apr 2022 12:32:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19409C385A9;
-        Wed, 27 Apr 2022 12:32:35 +0000 (UTC)
-Date:   Wed, 27 Apr 2022 13:32:32 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
-        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        kexec@lists.infradead.org, Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        John Donnelly <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: Re: [PATCH v22 5/9] arm64: kdump: Reimplement crashkernel=X
-Message-ID: <Ymk34NsIFqUgfk3b@arm.com>
-References: <20220414115720.1887-1-thunder.leizhen@huawei.com>
- <20220414115720.1887-6-thunder.leizhen@huawei.com>
- <YmgzxsrrMlCDYsWp@arm.com>
- <ee8daaa9-3258-e7e8-e5c4-c51dc9841580@huawei.com>
+        Wed, 27 Apr 2022 08:36:23 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73371FD31;
+        Wed, 27 Apr 2022 05:33:12 -0700 (PDT)
+Received: from kwepemi100003.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KpJ6S1Wf3zfZrg;
+        Wed, 27 Apr 2022 20:32:16 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100003.china.huawei.com (7.221.188.122) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Apr 2022 20:33:10 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 27 Apr
+ 2022 20:33:09 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <jack@suse.cz>, <tj@kernel.org>, <axboe@kernel.dk>,
+        <paolo.valente@linaro.org>
+CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
+        <yi.zhang@huawei.com>
+Subject: [PATCH -next v3 1/3] block, bfq: record how many queues are busy in bfq_group
+Date:   Wed, 27 Apr 2022 20:47:20 +0800
+Message-ID: <20220427124722.48465-2-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220427124722.48465-1-yukuai3@huawei.com>
+References: <20220427124722.48465-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ee8daaa9-3258-e7e8-e5c4-c51dc9841580@huawei.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 02:54:52PM +0800, Leizhen (ThunderTown) wrote:
-> On 2022/4/27 2:02, Catalin Marinas wrote:
-> > On Thu, Apr 14, 2022 at 07:57:16PM +0800, Zhen Lei wrote:
-> >>  /*
-> >>   * reserve_crashkernel() - reserves memory for crash kernel
-> >>   *
-> >>   * This function reserves memory area given in "crashkernel=" kernel command
-> >>   * line parameter. The memory reserved is used by dump capture kernel when
-> >>   * primary kernel is crashing.
-> >> + *
-> >> + * NOTE: Reservation of crashkernel,low is special since its existence
-> >> + * is not independent, need rely on the existence of crashkernel,high.
-> >> + * Here, four cases of crashkernel low memory reservation are summarized:
-> >> + * 1) crashkernel=Y,low is specified explicitly, the size of crashkernel low
-> >> + *    memory takes Y;
-> >> + * 2) crashkernel=,low is not given, while crashkernel=,high is specified,
-> >> + *    take the default crashkernel low memory size;
-> >> + * 3) crashkernel=X is specified, while fallback to get a memory region
-> >> + *    in high memory, take the default crashkernel low memory size;
-> >> + * 4) crashkernel='invalid value',low is specified, failed the whole
-> >> + *    crashkernel reservation and bail out.
-> > 
-> > Following the x86 behaviour made sense when we were tried to get that
-> > code generic. Now that we moved the logic under arch/arm64, we can
-> > diverge a bit. I lost track of the original (v1/v2) proposal but I
-> > wonder whether we still need the fallback to high for crashkernel=Y.
-> 
-> I don't think anyone has raised this demand yet! If it weren't for the
-> fact that crashkernel=X appeared earlier, it would probably have been
-> enough for a combination of crashkernel=X,high and crashkernel=Y,low.
-> 
-> In fact, I also tend not to support "fallback to high for crashkernel=Y".
-> I took over this from Chen Zhou. In the absence of any objection, I had
-> to inherit. Now that you've brought it up, I'm happy to delete it.
-> Supporting this feature complicates the code logic a lot. The point is,
-> it's not fully backwards compatible yet. For example, someone may want
-> crashkernel=3G to report failure, but the the new support make it work.
+Prepare to refactor the counting of 'num_groups_with_pending_reqs'.
 
-BTW, prior to v20, this patch had this line:
+Add a counter 'busy_queues' in bfq_group, and update it in
+bfq_add/del_bfqq_busy().
 
-	crashk_low_res.name = "Crash kernel (low)";
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ block/bfq-cgroup.c  |  1 +
+ block/bfq-iosched.h |  2 ++
+ block/bfq-wf2q.c    | 14 ++++++++++++++
+ 3 files changed, 17 insertions(+)
 
-I can't find it anymore. Do the kexec tools need to distinguish between
-low and high or they can cope with multiple "Crash kernel" entries?
-
-> > Maybe simpler, no fallbacks:
-> > 
-> > 	crashkernel=Y - keep the current behaviour, ignore high,low
-> > 	crashkernel=Y,high - allocate above ZONE_DMA
-> > 	crashkernel=Y,low - allocate within ZONE_DMA
-> > 
-> > From your proposal, the difference is that the Y,high option won't
-> > have any default ZONE_DMA fallback, one would have to explicitly pass
-> > the Y,low option if needed.
-> 
-> I agree with you. Now we don't need code generic, so there is no need to
-> carry the historical burden of other ARCHs. arm64 does not need to delve
-> into that empirical value(the default size of crash low memory).
-> 
-> > Just a thought, maybe it makes the code simpler. But I'm open to
-> > discussion if there are good arguments for the proposed (x86-like)
-> > behaviour. One argument could be for crashkernel=Y to fall back to high
-> > if distros don't want to bother with high/low settings.
-> 
-> I think distros should take precedence over "crashkernel=Y,high". After all,
-> ZONE_DMA memory is more valuable than high memory.
-
-My point is whether an admin configuring the kernel command line needs
-to know the layout of ZONE_DMA etc. to figure out how much to pass in
-high and low. The fallbacks in this case have some value but they also
-complicate the code logic. The 4GB limit does not always make sense
-either for some platforms (RPi4 has a ZONE_DMA limit of 1GB).
-
-I think one could always pass a default command line like:
-
-	crashkernel=1G,high crashkernel=128M,low
-
-without much knowledge of the SoC memory layout.
-
-Another option is to only introduce crashkernel=Y,low and, when that is
-passed, crashkernel=Y can go above arm64_dma_phys_limit. We won't need a
-'high' option at all:
-
-	crashkernel=1G				- all within ZONE_DMA
-	crashkernel=1G crashkernel=128M,low	- 128M in ZONE_DMA
-						  1G above ZONE_DMA
-
-If ZONE_DMA is not present or it extends to the whole RAM, we can ignore
-the 'low' option.
-
+diff --git a/block/bfq-cgroup.c b/block/bfq-cgroup.c
+index 09574af83566..4d516879d9fa 100644
+--- a/block/bfq-cgroup.c
++++ b/block/bfq-cgroup.c
+@@ -557,6 +557,7 @@ static void bfq_pd_init(struct blkg_policy_data *pd)
+ 				   */
+ 	bfqg->bfqd = bfqd;
+ 	bfqg->active_entities = 0;
++	bfqg->busy_queues = 0;
+ 	bfqg->online = true;
+ 	bfqg->rq_pos_tree = RB_ROOT;
+ }
+diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
+index 978ef5d6fe6a..3847f4ab77ac 100644
+--- a/block/bfq-iosched.h
++++ b/block/bfq-iosched.h
+@@ -906,6 +906,7 @@ struct bfq_group_data {
+  *                   are groups with more than one active @bfq_entity
+  *                   (see the comments to the function
+  *                   bfq_bfqq_may_idle()).
++ * @busy_queues: number of busy bfqqs.
+  * @rq_pos_tree: rbtree sorted by next_request position, used when
+  *               determining if two or more queues have interleaving
+  *               requests (see bfq_find_close_cooperator()).
+@@ -942,6 +943,7 @@ struct bfq_group {
+ 	struct bfq_entity *my_entity;
+ 
+ 	int active_entities;
++	int busy_queues;
+ 
+ 	struct rb_root rq_pos_tree;
+ 
+diff --git a/block/bfq-wf2q.c b/block/bfq-wf2q.c
+index f8eb340381cf..53826797430f 100644
+--- a/block/bfq-wf2q.c
++++ b/block/bfq-wf2q.c
+@@ -218,6 +218,14 @@ static bool bfq_no_longer_next_in_service(struct bfq_entity *entity)
+ 	return false;
+ }
+ 
++static void bfq_update_busy_queues(struct bfq_queue *bfqq, bool is_add)
++{
++	if (is_add)
++		bfqq_group(bfqq)->busy_queues++;
++	else
++		bfqq_group(bfqq)->busy_queues--;
++}
++
+ #else /* CONFIG_BFQ_GROUP_IOSCHED */
+ 
+ static bool bfq_update_parent_budget(struct bfq_entity *next_in_service)
+@@ -230,6 +238,10 @@ static bool bfq_no_longer_next_in_service(struct bfq_entity *entity)
+ 	return true;
+ }
+ 
++static void bfq_update_busy_queues(struct bfq_queue *bfqq, bool is_add)
++{
++}
++
+ #endif /* CONFIG_BFQ_GROUP_IOSCHED */
+ 
+ /*
+@@ -1660,6 +1672,7 @@ void bfq_del_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ 	bfq_clear_bfqq_busy(bfqq);
+ 
+ 	bfqd->busy_queues[bfqq->ioprio_class - 1]--;
++	bfq_update_busy_queues(bfqq, false);
+ 
+ 	if (bfqq->wr_coeff > 1)
+ 		bfqd->wr_busy_queues--;
+@@ -1683,6 +1696,7 @@ void bfq_add_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq)
+ 
+ 	bfq_mark_bfqq_busy(bfqq);
+ 	bfqd->busy_queues[bfqq->ioprio_class - 1]++;
++	bfq_update_busy_queues(bfqq, true);
+ 
+ 	if (!bfqq->dispatched)
+ 		if (bfqq->wr_coeff == 1)
 -- 
-Catalin
+2.31.1
+
