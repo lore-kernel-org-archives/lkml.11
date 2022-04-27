@@ -2,210 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F28C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43058C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:07:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241888AbiD0QKM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:10:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50538 "EHLO
+        id S242057AbiD0QKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:10:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242591AbiD0QJp (ORCPT
+        with ESMTP id S242595AbiD0QJq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:09:45 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA26487030;
-        Wed, 27 Apr 2022 09:05:40 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Wed, 27 Apr 2022 12:09:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A2B3E4FBA;
+        Wed, 27 Apr 2022 09:05:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id CE17A210F4;
-        Wed, 27 Apr 2022 15:56:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1651074995; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=VbuwhezlBXBYLp3X69XKiAVLFYF1/JeJ3YUoPXX4k7U=;
-        b=t11KpoQtzlWU0GhMvKkj6v4n6B4QJUrB0NAWBnFfEzAnMlI+sNNVrpr403O42ZYTF8bpxc
-        egXySPu87etU1K/z35uv/u85wClABemH3IZRVHtdsFSx0tD1XfCKi4xehVa8jAjx2eHniL
-        iaAX2YIj+5ysZkWTPL11mk0SuFnMdVM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1651074995;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=VbuwhezlBXBYLp3X69XKiAVLFYF1/JeJ3YUoPXX4k7U=;
-        b=6fuRGT+SZGpND11MoC/2Yrj1m79gSgAsXDHTfkbTajZF8U4QkB3Zcu4fts7haa680rgbEs
-        mH7ZyBxoOdv3gdBQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5A97A1323E;
-        Wed, 27 Apr 2022 15:56:35 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 8+1WE7NnaWLTIAAAMHmgww
-        (envelope-from <lhenriques@suse.de>); Wed, 27 Apr 2022 15:56:35 +0000
-Received: from localhost (brahms.olymp [local])
-        by brahms.olymp (OpenSMTPD) with ESMTPA id a6c62b0f;
-        Wed, 27 Apr 2022 15:57:05 +0000 (UTC)
-From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
-        Ryan Taylor <rptaylor@uvic.ca>
-Subject: [PATCH v3] ceph: fix statfs for subdir mounts
-Date:   Wed, 27 Apr 2022 16:57:04 +0100
-Message-Id: <20220427155704.4758-1-lhenriques@suse.de>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3663661BE9;
+        Wed, 27 Apr 2022 16:04:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25C52C385A9;
+        Wed, 27 Apr 2022 16:04:25 +0000 (UTC)
+Date:   Wed, 27 Apr 2022 17:04:22 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
+        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        kexec@lists.infradead.org, Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        John Donnelly <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>
+Subject: Re: [PATCH v22 5/9] arm64: kdump: Reimplement crashkernel=X
+Message-ID: <YmlphvZVMsGfFksp@arm.com>
+References: <20220414115720.1887-1-thunder.leizhen@huawei.com>
+ <20220414115720.1887-6-thunder.leizhen@huawei.com>
+ <YmgzxsrrMlCDYsWp@arm.com>
+ <ee8daaa9-3258-e7e8-e5c4-c51dc9841580@huawei.com>
+ <Ymk34NsIFqUgfk3b@arm.com>
+ <ae7211ad-e2ac-f5b1-5aa0-701802132e73@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ae7211ad-e2ac-f5b1-5aa0-701802132e73@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When doing a mount using as base a directory that has 'max_bytes' quotas
-statfs uses that value as the total; if a subdirectory is used instead,
-the same 'max_bytes' too in statfs, unless there is another quota set.
+On Wed, Apr 27, 2022 at 09:49:20PM +0800, Leizhen (ThunderTown) wrote:
+> On 2022/4/27 20:32, Catalin Marinas wrote:
+> > I think one could always pass a default command line like:
+> > 
+> > 	crashkernel=1G,high crashkernel=128M,low
+> > 
+> > without much knowledge of the SoC memory layout.
+> 
+> Yes, that's what the end result is. The user specify crashkernel=128M,low
+> and the implementation ensure the 128M low memory is allocated from DMA zone.
+> We use arm64_dma_phys_limit as the upper limit for crash low memory.
+> 
+> +#define CRASH_ADDR_LOW_MAX             arm64_dma_phys_limit
+> +       unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
+> +       crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
+>                                                crash_base, crash_max);
+> 
+> > Another option is to only introduce crashkernel=Y,low and, when that is
+> > passed, crashkernel=Y can go above arm64_dma_phys_limit. We won't need a
+> > 'high' option at all:
+> > 
+> > 	crashkernel=1G				- all within ZONE_DMA
+> > 	crashkernel=1G crashkernel=128M,low	- 128M in ZONE_DMA
+> > 						  1G above ZONE_DMA
+> > 
+> > If ZONE_DMA is not present or it extends to the whole RAM, we can ignore
+> > the 'low' option.
+> 
+> I think although the code is hard to make generic, the interface is better to
+> be relatively uniform. A user might have to maintain both x86 and arm64, and
+> so on. It's not a good thing that the difference is too big.
 
-Unfortunately, if this subdirectory only has the 'max_files' quota set,
-then statfs uses the filesystem total.  Fix this by making sure we only
-lookup realms that contain the 'max_bytes' quota.
+There will be some difference as the 4G limit doesn't always hold for
+arm64 (though it's true in most cases). Anyway, we can probably simplify
+things a bit while following the documented behaviour:
 
-Link: https://tracker.ceph.com/issues/55090
-Cc: Ryan Taylor <rptaylor@uvic.ca>
-Signed-off-by: Luís Henriques <lhenriques@suse.de>
----
-Changes since v2:
-Renamed function __ceph_has_any_quota() to __ceph_has_quota()
+	crashkernel=Y		- current behaviour within ZONE_DMA
+	crashkernel=Y,high	- allocate from above ZONE_DMA
+	crashkernel=Y,low	- allocate within ZONE_DMA
 
-Changes since v1:
-Moved some more logic into __ceph_has_any_quota() function.
+There is no fallback from crashkernel=Y.
 
- fs/ceph/inode.c |  2 +-
- fs/ceph/quota.c | 19 +++++++++++--------
- fs/ceph/super.h | 28 ++++++++++++++++++++++++----
- 3 files changed, 36 insertions(+), 13 deletions(-)
+The question is whether we still want a default low allocation if
+crashkernel=Y,low is missing but 'high' is present. If we add this, I
+think we'd be consistent with kernel-parameters.txt for the 'low'
+description. A default 'low' is probably not that bad but I'm tempted to
+always mandate both 'high' and 'low'.
 
-diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
-index 5de7bb9048b7..1067209cf6f6 100644
---- a/fs/ceph/inode.c
-+++ b/fs/ceph/inode.c
-@@ -691,7 +691,7 @@ void ceph_evict_inode(struct inode *inode)
- 
- 	__ceph_remove_caps(ci);
- 
--	if (__ceph_has_any_quota(ci))
-+	if (__ceph_has_quota(ci, QUOTA_GET_ANY))
- 		ceph_adjust_quota_realms_count(inode, false);
- 
- 	/*
-diff --git a/fs/ceph/quota.c b/fs/ceph/quota.c
-index a338a3ec0dc4..64592adfe48f 100644
---- a/fs/ceph/quota.c
-+++ b/fs/ceph/quota.c
-@@ -195,9 +195,9 @@ void ceph_cleanup_quotarealms_inodes(struct ceph_mds_client *mdsc)
- 
- /*
-  * This function walks through the snaprealm for an inode and returns the
-- * ceph_snap_realm for the first snaprealm that has quotas set (either max_files
-- * or max_bytes).  If the root is reached, return the root ceph_snap_realm
-- * instead.
-+ * ceph_snap_realm for the first snaprealm that has quotas set (max_files,
-+ * max_bytes, or any, depending on the 'which_quota' argument).  If the root is
-+ * reached, return the root ceph_snap_realm instead.
-  *
-  * Note that the caller is responsible for calling ceph_put_snap_realm() on the
-  * returned realm.
-@@ -209,7 +209,9 @@ void ceph_cleanup_quotarealms_inodes(struct ceph_mds_client *mdsc)
-  * will be restarted.
-  */
- static struct ceph_snap_realm *get_quota_realm(struct ceph_mds_client *mdsc,
--					       struct inode *inode, bool retry)
-+					       struct inode *inode,
-+					       enum quota_get_realm which_quota,
-+					       bool retry)
- {
- 	struct ceph_inode_info *ci = NULL;
- 	struct ceph_snap_realm *realm, *next;
-@@ -248,7 +250,7 @@ static struct ceph_snap_realm *get_quota_realm(struct ceph_mds_client *mdsc,
- 		}
- 
- 		ci = ceph_inode(in);
--		has_quota = __ceph_has_any_quota(ci);
-+		has_quota = __ceph_has_quota(ci, which_quota);
- 		iput(in);
- 
- 		next = realm->parent;
-@@ -279,8 +281,8 @@ bool ceph_quota_is_same_realm(struct inode *old, struct inode *new)
- 	 * dropped and we can then restart the whole operation.
- 	 */
- 	down_read(&mdsc->snap_rwsem);
--	old_realm = get_quota_realm(mdsc, old, true);
--	new_realm = get_quota_realm(mdsc, new, false);
-+	old_realm = get_quota_realm(mdsc, old, QUOTA_GET_ANY, true);
-+	new_realm = get_quota_realm(mdsc, new, QUOTA_GET_ANY, false);
- 	if (PTR_ERR(new_realm) == -EAGAIN) {
- 		up_read(&mdsc->snap_rwsem);
- 		if (old_realm)
-@@ -483,7 +485,8 @@ bool ceph_quota_update_statfs(struct ceph_fs_client *fsc, struct kstatfs *buf)
- 	bool is_updated = false;
- 
- 	down_read(&mdsc->snap_rwsem);
--	realm = get_quota_realm(mdsc, d_inode(fsc->sb->s_root), true);
-+	realm = get_quota_realm(mdsc, d_inode(fsc->sb->s_root),
-+				QUOTA_GET_MAX_BYTES, true);
- 	up_read(&mdsc->snap_rwsem);
- 	if (!realm)
- 		return false;
-diff --git a/fs/ceph/super.h b/fs/ceph/super.h
-index a2e1c83ab29a..0ecde1c12fee 100644
---- a/fs/ceph/super.h
-+++ b/fs/ceph/super.h
-@@ -1317,9 +1317,29 @@ extern void ceph_fs_debugfs_init(struct ceph_fs_client *client);
- extern void ceph_fs_debugfs_cleanup(struct ceph_fs_client *client);
- 
- /* quota.c */
--static inline bool __ceph_has_any_quota(struct ceph_inode_info *ci)
-+
-+enum quota_get_realm {
-+	QUOTA_GET_MAX_FILES,
-+	QUOTA_GET_MAX_BYTES,
-+	QUOTA_GET_ANY
-+};
-+
-+static inline bool __ceph_has_quota(struct ceph_inode_info *ci,
-+				    enum quota_get_realm which)
- {
--	return ci->i_max_files || ci->i_max_bytes;
-+	bool has_quota = false;
-+
-+	switch (which) {
-+	case QUOTA_GET_MAX_BYTES:
-+		has_quota = !!ci->i_max_bytes;
-+		break;
-+	case QUOTA_GET_MAX_FILES:
-+		has_quota = !!ci->i_max_files;
-+		break;
-+	default:
-+		has_quota = !!(ci->i_max_files || ci->i_max_bytes);
-+	}
-+	return has_quota;
- }
- 
- extern void ceph_adjust_quota_realms_count(struct inode *inode, bool inc);
-@@ -1328,10 +1348,10 @@ static inline void __ceph_update_quota(struct ceph_inode_info *ci,
- 				       u64 max_bytes, u64 max_files)
- {
- 	bool had_quota, has_quota;
--	had_quota = __ceph_has_any_quota(ci);
-+	had_quota = __ceph_has_quota(ci, QUOTA_GET_ANY);
- 	ci->i_max_bytes = max_bytes;
- 	ci->i_max_files = max_files;
--	has_quota = __ceph_has_any_quota(ci);
-+	has_quota = __ceph_has_quota(ci, QUOTA_GET_ANY);
- 
- 	if (had_quota != has_quota)
- 		ceph_adjust_quota_realms_count(&ci->vfs_inode, has_quota);
+-- 
+Catalin
