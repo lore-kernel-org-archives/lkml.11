@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F32BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:38:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C53DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244255AbiD0RlX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 13:41:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53738 "EHLO
+        id S244301AbiD0Rl1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 13:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230371AbiD0RlO (ORCPT
+        with ESMTP id S244136AbiD0RlO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 13:41:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0D07042483
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 10:38:01 -0700 (PDT)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8C56B42492
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 10:38:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1651081081;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=FCEYz9iiBoLYp3MC39QvQcLFQE/JiMBJg4nT2bv7piQ=;
-        b=NFdJsML1PmJL7WEcL3cTUeBWaFbUJGAemaa9/Fzv9VENnccz5RvaNAzBPJyTyEQiXCVFT5
-        VNZwS42RkyOgQipjJLYqhpJzrCeTN7QQOLJwNfkEzbB0YkGgQNZ0TjLasAoFK7mDRh9gsv
-        VbBlcNP3jNbllCpGFuQV7npDkrqXoqM=
+        bh=NrnrIbR3L39VOrIgvRZkUaU80AMLT3lel5AFpVPIXhk=;
+        b=KNrIcW1ToEAnlVb86VPqqMW5Rw05Y+rd5IEO3EXK30zcbkJ3BiMftccl7yUNZReAOt7j1q
+        55tAACMpaPXUa9J1K67ztnCuvKIeKx5sdpaKgOw96gqe0olYZZrXYN6kjokNCm7ykCAr3c
+        Y78wNB0cVnNjhshY4qTMsXMdfYEH2pQ=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-442-SPR1-pTnOS-M4R1bFzKV9Q-1; Wed, 27 Apr 2022 13:37:59 -0400
-X-MC-Unique: SPR1-pTnOS-M4R1bFzKV9Q-1
+ us-mta-617-YckeZTk2M4S3Fq1wKK3kTA-1; Wed, 27 Apr 2022 13:38:00 -0400
+X-MC-Unique: YckeZTk2M4S3Fq1wKK3kTA-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3E1AD101AA46;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9F925802812;
         Wed, 27 Apr 2022 17:37:59 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 163A5407DEC3;
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 773C4407DEC3;
         Wed, 27 Apr 2022 17:37:59 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     mlevitsk@redhat.com, seanjc@google.com, stable@vger.kernel.org
-Subject: [PATCH 1/3] KVM: x86: make vendor code check for all nested events
-Date:   Wed, 27 Apr 2022 13:37:56 -0400
-Message-Id: <20220427173758.517087-2-pbonzini@redhat.com>
+Subject: [PATCH 3/3] KVM: x86: never write to memory from kvm_vcpu_check_block
+Date:   Wed, 27 Apr 2022 13:37:58 -0400
+Message-Id: <20220427173758.517087-4-pbonzini@redhat.com>
 In-Reply-To: <20220427173758.517087-1-pbonzini@redhat.com>
 References: <20220427173758.517087-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -54,89 +54,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Right now, the VMX preemption timer is special cased via the
-hv_timer_pending, but the purpose of the callback can be easily
-extended to observing any event that can occur only in non-root
-mode.  Interrupts, NMIs etc. are already handled properly by
-the *_interrupt_allowed callbacks, so what is missing is only
-MTF.  Check it in the newly-renamed callback, so that
-kvm_vcpu_running's call to kvm_check_nested_events
-becomes redundant.
+kvm_vcpu_check_block is called while not in TASK_RUNNING, and therefore
+cannot sleep.  Writing to guest memory is therefore forbidden, but it
+can happen if kvm_check_nested_events causes a vmexit.
+
+Fortunately, all events that are caught by kvm_check_nested_events are
+also handled by kvm_vcpu_has_events through vendor callbacks such as
+kvm_x86_interrupt_allowed or kvm_x86_ops.nested_ops->has_events, so
+remove the call.
 
 Cc: stable@vger.kernel.org
 Reported-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h | 2 +-
- arch/x86/kvm/vmx/nested.c       | 7 ++++++-
- arch/x86/kvm/x86.c              | 8 ++++----
- 3 files changed, 11 insertions(+), 6 deletions(-)
+ arch/x86/kvm/x86.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 4ff36610af6a..e2e4f60159e9 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1504,7 +1504,7 @@ struct kvm_x86_ops {
- struct kvm_x86_nested_ops {
- 	void (*leave_nested)(struct kvm_vcpu *vcpu);
- 	int (*check_events)(struct kvm_vcpu *vcpu);
--	bool (*hv_timer_pending)(struct kvm_vcpu *vcpu);
-+	bool (*has_events)(struct kvm_vcpu *vcpu);
- 	void (*triple_fault)(struct kvm_vcpu *vcpu);
- 	int (*get_state)(struct kvm_vcpu *vcpu,
- 			 struct kvm_nested_state __user *user_kvm_nested_state,
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 856c87563883..54672025c3a1 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -3857,6 +3857,11 @@ static bool nested_vmx_preemption_timer_pending(struct kvm_vcpu *vcpu)
- 	       to_vmx(vcpu)->nested.preemption_timer_expired;
- }
- 
-+static bool vmx_has_nested_events(struct kvm_vcpu *vcpu)
-+{
-+	return nested_vmx_preemption_timer_pending(vcpu) || vmx->nested.mtf_pending;
-+}
-+
- static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_vmx *vmx = to_vmx(vcpu);
-@@ -6809,7 +6814,7 @@ __init int nested_vmx_hardware_setup(int (*exit_handlers[])(struct kvm_vcpu *))
- struct kvm_x86_nested_ops vmx_nested_ops = {
- 	.leave_nested = vmx_leave_nested,
- 	.check_events = vmx_check_nested_events,
--	.hv_timer_pending = nested_vmx_preemption_timer_pending,
-+	.has_events = vmx_has_nested_events,
- 	.triple_fault = nested_vmx_triple_fault,
- 	.get_state = vmx_get_nested_state,
- 	.set_state = vmx_set_nested_state,
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index a6ab19afc638..0e73607b02bd 100644
+index d563812ca229..90b4f50b9a84 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -9471,8 +9471,8 @@ static int inject_pending_event(struct kvm_vcpu *vcpu, bool *req_immediate_exit)
- 	}
+@@ -10341,9 +10341,6 @@ static inline int vcpu_block(struct kvm_vcpu *vcpu)
  
- 	if (is_guest_mode(vcpu) &&
--	    kvm_x86_ops.nested_ops->hv_timer_pending &&
--	    kvm_x86_ops.nested_ops->hv_timer_pending(vcpu))
-+	    kvm_x86_ops.nested_ops->has_events &&
-+	    kvm_x86_ops.nested_ops->has_events(vcpu))
- 		*req_immediate_exit = true;
- 
- 	WARN_ON(vcpu->arch.exception.pending);
-@@ -12183,8 +12183,8 @@ static inline bool kvm_vcpu_has_events(struct kvm_vcpu *vcpu)
- 		return true;
- 
- 	if (is_guest_mode(vcpu) &&
--	    kvm_x86_ops.nested_ops->hv_timer_pending &&
--	    kvm_x86_ops.nested_ops->hv_timer_pending(vcpu))
-+	    kvm_x86_ops.nested_ops->has_events &&
-+	    kvm_x86_ops.nested_ops->has_events(vcpu))
- 		return true;
- 
- 	return false;
+ static inline bool kvm_vcpu_running(struct kvm_vcpu *vcpu)
+ {
+-	if (is_guest_mode(vcpu))
+-		kvm_check_nested_events(vcpu);
+-
+ 	return (vcpu->arch.mp_state == KVM_MP_STATE_RUNNABLE &&
+ 		!vcpu->arch.apf.halted);
+ }
 -- 
 2.31.1
-
 
