@@ -2,283 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F562C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 11:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7DA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 11:45:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232922AbiD0LsT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 07:48:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57870 "EHLO
+        id S233089AbiD0Lse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 07:48:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233005AbiD0LsI (ORCPT
+        with ESMTP id S233055AbiD0LsV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 07:48:08 -0400
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB8048334
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 04:44:56 -0700 (PDT)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220427114452euoutp01cd6249d8613ead8917bad668a4dbb451~pvjmVJ0Jb1668916689euoutp012
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:44:52 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220427114452euoutp01cd6249d8613ead8917bad668a4dbb451~pvjmVJ0Jb1668916689euoutp012
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1651059892;
-        bh=Rnaim7SrYTNkdIa6u+GiTXMQG22ohz+VE5CTQJTyB2s=;
-        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-        b=p5HjNQmGZd8NfK7scDj7vY9J0nsY9vzEn+d3YTeXxIUyPDLIvwkkATdEXEp/uHVv6
-         tDSVKF3UgXMxjs1A4RSROHU6S2KiXf9JE5EW6fdrVOo/I35v6khOn2zl4jWPvM3+6j
-         msm70J2/+G6073eBk76PhK5jEtI8Wh/VemQFpzTY=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20220427114452eucas1p272e4ad2628b9ed38b7091dcb234c52eb~pvjl_aEal0247502475eucas1p2-;
-        Wed, 27 Apr 2022 11:44:52 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id 4B.3D.10260.4BC29626; Wed, 27
-        Apr 2022 12:44:52 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220427114452eucas1p1ffa9335daa4d0666cbb5da3e8752264f~pvjlnUGgk2387223872eucas1p1E;
-        Wed, 27 Apr 2022 11:44:52 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220427114452eusmtrp1cd84a379556c658c46334fb9bf66384a~pvjlmivyL1823118231eusmtrp1A;
-        Wed, 27 Apr 2022 11:44:52 +0000 (GMT)
-X-AuditID: cbfec7f5-bf3ff70000002814-f3-62692cb44599
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 8D.8D.09522.4BC29626; Wed, 27
-        Apr 2022 12:44:52 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220427114451eusmtip115ef2bc072518c95f53296939db71a18~pvjlHJCXF2564225642eusmtip1O;
-        Wed, 27 Apr 2022 11:44:51 +0000 (GMT)
-Message-ID: <b6c1a8ac-c691-a84d-d3a1-f99984d32f06@samsung.com>
-Date:   Wed, 27 Apr 2022 13:44:52 +0200
+        Wed, 27 Apr 2022 07:48:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 860474888A;
+        Wed, 27 Apr 2022 04:45:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10B14B82661;
+        Wed, 27 Apr 2022 11:45:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 709EBC385AC;
+        Wed, 27 Apr 2022 11:45:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651059904;
+        bh=lMurLAOYVTBeB+E1Jh26hmEyXHbd36mBuNw9asDhjnw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=MCkW2foYnDGCWdCnFXL7dJbaiYV4Cu6YnkKvvS1OTbRECMRf6Ees5TnBGdXp7VTBX
+         GpvnlwMirzMWzvCLx3Uf2glD4i4649M4pduvswgFoenOpw5RHYafudCN8BRnf5NxIR
+         AG/bI3RrdXaVYSvR9LVgmGkWVqHlA9rf6yRL/jb0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, stable@vger.kernel.org
+Cc:     lwn@lwn.net, jslaby@suse.cz,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Linux 4.19.240
+Date:   Wed, 27 Apr 2022 13:44:40 +0200
+Message-Id: <1651059881157206@kroah.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
-        Gecko/20100101 Thunderbird/91.8.0
-Subject: Re: [PATCH printk v5 1/1] printk: extend console_lock for
- per-console locking
-Content-Language: en-US
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-amlogic@lists.infradead.org
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <Ymjy3rHRenba7r7R@alley>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrOKsWRmVeSWpSXmKPExsWy7djP87pbdDKTDLYdlLVoXryezWLblfmM
-        Fgtmc1tc3jWHzeL/46+sFvs6HjBZ7N64iM1i86apzA4cHrMbLrJ4tOy7xe7x7tw5do/9c9ew
-        e2xeUu+xfstVFo/Pm+QC2KO4bFJSczLLUov07RK4MjYu7GUq+GFZcWTzXcYGxtu6XYycHBIC
-        JhJXb7SwdjFycQgJrGCU2PX6OBOE84VR4tTZSWwQzmdGiak/LzDBtDxet4IVxBYSWM4oseJ2
-        MkTRR0aJ18duMYMkeAXsJPbN72AHsVkEVCUuf3nNAhEXlDg58wmYLSqQJDF33z2geg4OYYEI
-        iba9oSBhZgFxiVtP5oPtEhFQkng1/y4zRHwBk0RrQxqIzSZgKNH1tosNxOYEGv9qylN2iBp5
-        ie1v5zCD3CMh8IFD4sWDbjaIo10klt2/xQphC0u8Or6FHcKWkTg9uYcF5AYJgXyJvzOMIcIV
-        Etder2GGsK0l7pz7xQZSwiygKbF+lz5E2FFiyq8+dohOPokbbwUhLuCTmLRtOjNEmFeio00I
-        olpNYtbxdXA7D164xDyBUWkWUpDMQvL7LCS/zELYu4CRZRWjeGppcW56arFxXmq5XnFibnFp
-        Xrpecn7uJkZgWjr97/jXHYwrXn3UO8TIxMF4iFGCg1lJhPfL7owkId6UxMqq1KL8+KLSnNTi
-        Q4zSHCxK4rzJmRsShQTSE0tSs1NTC1KLYLJMHJxSDUxRd5O3aPjN+vp1hV7pfqs7rsF8K03O
-        H3yd9XWtwcHVf2NNwn1OLnxQaHxmx7X5J307TnhbOJ68ypXIuGP2effngvLqDZNMf6rMvH9e
-        w8Wdd/2fdbM13/2dqN6eqezlWb+y4qe01IzUDvkfojVOubZPcqKvX7CRWVDUfbhzll3d9pN7
-        g86WyV99f7KMefXafYE9TK8//zhwQErQdMOcoollOovntN7sdb3T5DtDwq+dr68uYe1CuSO5
-        Zo32a843HTxXsVhW75aUyTHn+adj7rm235u1gj3zwb7+PoYzasxcrn7vpbSy6w2uRd/RLdFh
-        VLlxTMCEY959gQJlc53Nz6W6TA6fP8vWkmn8cfGZN9uVWIozEg21mIuKEwGRrLA1ugMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrHIsWRmVeSWpSXmKPExsVy+t/xu7pbdDKTDH5/YrFoXryezWLblfmM
-        Fgtmc1tc3jWHzeL/46+sFvs6HjBZ7N64iM1i86apzA4cHrMbLrJ4tOy7xe7x7tw5do/9c9ew
-        e2xeUu+xfstVFo/Pm+QC2KP0bIryS0tSFTLyi0tslaINLYz0DC0t9IxMLPUMjc1jrYxMlfTt
-        bFJSczLLUov07RL0MjYu7GUq+GFZcWTzXcYGxtu6XYycHBICJhKP161g7WLk4hASWMoocW7e
-        NGaIhIzEyWkNrBC2sMSfa11sEEXvGSUm3pnPCJLgFbCT2De/gx3EZhFQlbj85TULRFxQ4uTM
-        J2C2qECSxIttz4HqOTiEBSIk3veChZkFxCVuPZnPBGKLCChJvJp/lxlkPrPAAiaJdYvWMEIs
-        +8okMbnlJ9gVbAKGEl1vQa7g5OAEWvZqylN2iElmEl1buxghbHmJ7W/nME9gFJqF5I5ZSBbO
-        QtIyC0nLAkaWVYwiqaXFuem5xYZ6xYm5xaV56XrJ+bmbGIERue3Yz807GOe9+qh3iJGJg/EQ
-        owQHs5II75fdGUlCvCmJlVWpRfnxRaU5qcWHGE2BgTGRWUo0OR+YEvJK4g3NDEwNTcwsDUwt
-        zYyVxHk9CzoShQTSE0tSs1NTC1KLYPqYODilGphYds3YtTvUVa9k88zF5rlN32Yn2KusDozR
-        2TitK3573vl91rWpz8TXVFad2dXHHNlbF81lyS4fxZR+jrUx49yO189FrEsyFa1LqtQZ2RnF
-        p/5UypjH/XR6wJ83VjuUOO8YhB7u9hViuPXzXN3rB3uaO/K3t5mdv/Fz0bQnloHFyVPn3jko
-        6R+VsUfU0Veiu2ITW/w0tQ4OlsiXVf1Na05xzlh6pyvsmfqthCmvW/6qyu+5+9JZlZMjeFXa
-        mfvswh9fKf3zyfI9KepxYOJRM/UIHq/ytYe2OjQwVBqHGC07euTk3AJPj1mdJudS97bx/NnA
-        9ufdzdnxs5x5umzFAmOesiwz/3Az9Qa/3OaCLUosxRmJhlrMRcWJAM1IO3dRAwAA
-X-CMS-MailID: 20220427114452eucas1p1ffa9335daa4d0666cbb5da3e8752264f
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20220427070833eucas1p27a32ce7c41c0da26f05bd52155f0031c
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220427070833eucas1p27a32ce7c41c0da26f05bd52155f0031c
-References: <20220421212250.565456-1-john.ogness@linutronix.de>
-        <20220421212250.565456-15-john.ogness@linutronix.de>
-        <878rrs6ft7.fsf@jogness.linutronix.de> <Ymfgis0EAw0Oxoa5@alley>
-        <Ymfwk+X0CHq6ex3s@alley>
-        <CGME20220427070833eucas1p27a32ce7c41c0da26f05bd52155f0031c@eucas1p2.samsung.com>
-        <2a82eae7-a256-f70c-fd82-4e510750906e@samsung.com> <Ymjy3rHRenba7r7R@alley>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+I'm announcing the release of the 4.19.240 kernel.
 
-On 27.04.2022 09:38, Petr Mladek wrote:
-> On Wed 2022-04-27 09:08:33, Marek Szyprowski wrote:
->> On 26.04.2022 15:16, Petr Mladek wrote:
->>> On Tue 2022-04-26 14:07:42, Petr Mladek wrote:
->>>> On Mon 2022-04-25 23:04:28, John Ogness wrote:
->>>>> Currently threaded console printers synchronize against each
->>>>> other using console_lock(). However, different console drivers
->>>>> are unrelated and do not require any synchronization between
->>>>> each other. Removing the synchronization between the threaded
->>>>> console printers will allow each console to print at its own
->>>>> speed.
->>>>>
->>>>> But the threaded consoles printers do still need to synchronize
->>>>> against console_lock() callers. Introduce a per-console mutex
->>>>> and a new console boolean field @blocked to provide this
->>>>> synchronization.
->>>>>
->>>>> console_lock() is modified so that it must acquire the mutex
->>>>> of each console in order to set the @blocked field. Console
->>>>> printing threads will acquire their mutex while printing a
->>>>> record. If @blocked was set, the thread will go back to sleep
->>>>> instead of printing.
->>>>>
->>>>> The reason for the @blocked boolean field is so that
->>>>> console_lock() callers do not need to acquire multiple console
->>>>> mutexes simultaneously, which would introduce unnecessary
->>>>> complexity due to nested mutex locking. Also, a new field
->>>>> was chosen instead of adding a new @flags value so that the
->>>>> blocked status could be checked without concern of reading
->>>>> inconsistent values due to @flags updates from other contexts.
->>>>>
->>>>> Threaded console printers also need to synchronize against
->>>>> console_trylock() callers. Since console_trylock() may be
->>>>> called from any context, the per-console mutex cannot be used
->>>>> for this synchronization. (mutex_trylock() cannot be called
->>>>> from atomic contexts.) Introduce a global atomic counter to
->>>>> identify if any threaded printers are active. The threaded
->>>>> printers will also check the atomic counter to identify if the
->>>>> console has been locked by another task via console_trylock().
->>>>>
->>>>> Note that @console_sem is still used to provide synchronization
->>>>> between console_lock() and console_trylock() callers.
->>>>>
->>>>> A locking overview for console_lock(), console_trylock(), and the
->>>>> threaded printers is as follows (pseudo code):
->>>>>
->>>>> console_lock()
->>>>> {
->>>>>           down(&console_sem);
->>>>>           for_each_console(con) {
->>>>>                   mutex_lock(&con->lock);
->>>>>                   con->blocked = true;
->>>>>                   mutex_unlock(&con->lock);
->>>>>           }
->>>>>           /* console_lock acquired */
->>>>> }
->>>>>
->>>>> console_trylock()
->>>>> {
->>>>>           if (down_trylock(&console_sem) == 0) {
->>>>>                   if (atomic_cmpxchg(&console_kthreads_active, 0, -1) == 0) {
->>>>>                           /* console_lock acquired */
->>>>>                   }
->>>>>           }
->>>>> }
->>>>>
->>>>> threaded_printer()
->>>>> {
->>>>>           mutex_lock(&con->lock);
->>>>>           if (!con->blocked) {
->>>>> 		/* console_lock() callers blocked */
->>>>>
->>>>>                   if (atomic_inc_unless_negative(&console_kthreads_active)) {
->>>>>                           /* console_trylock() callers blocked */
->>>>>
->>>>>                           con->write();
->>>>>
->>>>>                           atomic_dec(&console_lock_count);
->>>>>                   }
->>>>>           }
->>>>>           mutex_unlock(&con->lock);
->>>>> }
->>>>>
->>>>> The console owner and waiter logic now only applies between contexts
->>>>> that have taken the console_lock via console_trylock(). Threaded
->>>>> printers never take the console_lock, so they do not have a
->>>>> console_lock to handover. Tasks that have used console_lock() will
->>>>> block the threaded printers using a mutex and if the console_lock
->>>>> is handed over to an atomic context, it would be unable to unblock
->>>>> the threaded printers. However, the console_trylock() case is
->>>>> really the only scenario that is interesting for handovers anyway.
->>>>>
->>>>> @panic_console_dropped must change to atomic_t since it is no longer
->>>>> protected exclusively by the console_lock.
->>>>>
->>>>> Since threaded printers remain asleep if they see that the console
->>>>> is locked, they now must be explicitly woken in __console_unlock().
->>>>> This means wake_up_klogd() calls following a console_unlock() are
->>>>> no longer necessary and are removed.
->>>>>
->>>>> Also note that threaded printers no longer need to check
->>>>> @console_suspended. The check for the @blocked field implicitly
->>>>> covers the suspended console case.
->>>>>
->>>>> Signed-off-by: John Ogness <john.ogness@linutronix.de>
->>>> Nice, it it better than v4. I am going to push this for linux-next.
->>>>
->>>> Reviewed-by: Petr Mladek <pmladek@suse.com>
->>> JFYI, I have just pushed this patch instead of the one
->>> from v4 into printk/linux.git, branch rework/kthreads.
->>>
->>> It means that this branch has been rebased. It will be
->>> used in the next refresh of linux-next.
->> This patchset landed in linux next-20220426. In my tests I've found that
->> it causes deadlock on all my Amlogic Meson G12B/SM1 based boards: Odroid
->> C4/N2 and Khadas VIM3/VIM3l. The deadlock happens when system boots to
->> userspace and getty (with automated login) is executed. I even see the
->> bash prompt, but then the console is freezed. Reverting this patch
->> (e00cc0e1cbf4) on top of linux-next (together with 6b3d71e87892 to make
->> revert clean) fixes the issue.
-> Thanks a lot for the report!
->
-> Just by chance, do you have the log from the dead-locked boot stored
-> in userspace and can you share it? I mean the log stored in
-> /var/log/dmesg or journaltctl.
+All users of the 4.19 kernel series must upgrade.
 
-If there would be any messages, I expect them to be visible on the 
-serial kernel console.
+The updated 4.19.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.19.y
+and can be browsed at the normal kernel.org git web browser:
+	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
-> In the worst case, it might help to see log from the boot with
-> the reverted patch. I would help us to see the ordering of various
-> console-related operations on your system.
->
-> And regarding the console. Is it the graphics console (ttyX)
-> or a serial one (ttyS) or yet another one?
+thanks,
 
-Serial console, /dev/ttyAML0 with kernel console enabled. Later a DRM 
-driver is loaded (meson_drm), which initializes its fbdev emulation with 
-its console.
+greg k-h
 
-However it looks that I've trusted automatic bisect a bit too much and 
-had a bit of luck while checking the reverts on top of linux-next. The 
-issue is not 100% reproducible, so I've did this bisection again 
-manually with more tries. The real commit causing the issue is 
-09c5ba0aa2fc ("printk: add kthread console printers"). Reverting the 
-following 3 commits 6b3d71e878920b085dd823bc422951bb6f143505, 
-e00cc0e1cbf4ea5a63d66c8de8d79519855fb231 and 
-09c5ba0aa2fcfdadb17d045c3ee6f86d69270df7 on top of linux-next makes the 
-system fully operational again.
+------------
 
-I've also tried to disable the DRM driver and its fbdev and console (by 
-adding modprobe.blacklist=meson_drm to kernel cmdline), but this didn't 
-help. Here is the full serial console log:
+ Makefile                                                |    2 
+ arch/arc/kernel/entry.S                                 |    1 
+ arch/arm/mach-vexpress/spc.c                            |    2 
+ arch/powerpc/perf/power9-pmu.c                          |    8 -
+ arch/x86/include/asm/compat.h                           |    6 -
+ block/compat_ioctl.c                                    |    2 
+ drivers/ata/pata_marvell.c                              |    2 
+ drivers/dma/at_xdmac.c                                  |   12 +-
+ drivers/dma/imx-sdma.c                                  |    4 
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c              |    3 
+ drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c   |   13 ++-
+ drivers/md/dm-integrity.c                               |    7 +
+ drivers/net/can/usb/usb_8dev.c                          |   30 +++----
+ drivers/net/ethernet/cadence/macb_main.c                |    8 +
+ drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c      |    8 +
+ drivers/net/ethernet/intel/e1000e/ich8lan.c             |    4 
+ drivers/net/ethernet/micrel/Kconfig                     |    1 
+ drivers/net/vxlan.c                                     |    4 
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c |    2 
+ drivers/net/wireless/mediatek/mt76/mt76x2_pci.c         |    2 
+ drivers/perf/arm_pmu.c                                  |   10 --
+ drivers/platform/x86/samsung-laptop.c                   |    2 
+ drivers/reset/tegra/reset-bpmp.c                        |    9 +-
+ drivers/staging/android/ion/ion.c                       |    3 
+ fs/cifs/cifsfs.c                                        |    2 
+ fs/ext4/inode.c                                         |   11 ++
+ fs/ext4/page-io.c                                       |    4 
+ fs/ext4/super.c                                         |   19 +++-
+ fs/gfs2/rgrp.c                                          |    9 +-
+ fs/stat.c                                               |   19 ++--
+ include/linux/etherdevice.h                             |    5 -
+ include/net/ax25.h                                      |   12 ++
+ include/net/inet_hashtables.h                           |    5 -
+ kernel/trace/trace_events_trigger.c                     |    9 +-
+ mm/page_alloc.c                                         |    2 
+ net/ax25/af_ax25.c                                      |   38 +++++++-
+ net/ax25/ax25_dev.c                                     |   28 +++++-
+ net/ax25/ax25_route.c                                   |   13 ++-
+ net/ax25/ax25_subr.c                                    |   20 +++-
+ net/dccp/ipv4.c                                         |    2 
+ net/dccp/ipv6.c                                         |    2 
+ net/ipv4/inet_connection_sock.c                         |    2 
+ net/ipv4/inet_hashtables.c                              |   68 ++++++++++++++--
+ net/ipv4/tcp_ipv4.c                                     |   13 ++-
+ net/ipv6/tcp_ipv6.c                                     |   13 ++-
+ net/netlink/af_netlink.c                                |    7 +
+ net/openvswitch/flow_netlink.c                          |    2 
+ net/packet/af_packet.c                                  |   13 ++-
+ net/rxrpc/net_ns.c                                      |    2 
+ net/sched/cls_u32.c                                     |    8 -
+ sound/soc/atmel/sam9g20_wm8731.c                        |   61 --------------
+ sound/soc/codecs/msm8916-wcd-digital.c                  |    9 +-
+ sound/soc/soc-dapm.c                                    |    6 -
+ sound/usb/midi.c                                        |    1 
+ sound/usb/usbaudio.h                                    |    2 
+ 55 files changed, 358 insertions(+), 194 deletions(-)
 
-https://pastebin.com/E5CDH88L
+Athira Rajeev (1):
+      powerpc/perf: Fix power9 event alternatives
 
-If there is anything you would like me to try, let me know.
+Bob Peterson (1):
+      gfs2: assign rgrp glock before compute_bitstructs
 
+Borislav Petkov (3):
+      ALSA: usb-audio: Fix undefined behavior due to shift overflowing the constant
+      mt76: Fix undefined behavior due to shift overflowing the constant
+      brcmfmac: sdio: Fix undefined behavior due to shift overflowing the constant
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Daniel Bristot de Oliveira (1):
+      tracing: Dump stacktrace trigger to the corresponding instance
+
+Dave Stevenson (2):
+      drm/panel/raspberrypi-touchscreen: Avoid NULL deref if not initialised
+      drm/panel/raspberrypi-touchscreen: Initialise the bridge in prepare
+
+David Howells (2):
+      rxrpc: Restore removed timer deletion
+      cifs: Check the IOCB_DIRECT flag, not O_DIRECT
+
+Duoming Zhou (8):
+      ax25: add refcount in ax25_dev to avoid UAF bugs
+      ax25: fix reference count leaks of ax25_dev
+      ax25: fix UAF bugs of net_device caused by rebinding operation
+      ax25: Fix refcount leaks caused by ax25_cb_del()
+      ax25: fix UAF bug in ax25_send_control()
+      ax25: fix NPD bug in ax25_disconnect
+      ax25: Fix NULL pointer dereferences in ax25 timers
+      ax25: Fix UAF bugs in ax25 timers
+
+Eric Dumazet (2):
+      net/sched: cls_u32: fix possible leak in u32_init_knode()
+      netlink: reset network and mac headers in netlink_dump()
+
+Greg Kroah-Hartman (1):
+      Linux 4.19.240
+
+Hangbin Liu (1):
+      net/packet: fix packet_sock xmit return value checking
+
+Hangyu Hua (1):
+      can: usb_8dev: usb_8dev_start_xmit(): fix double dev_kfree_skb() in error path
+
+Hongbin Wang (1):
+      vxlan: fix error return code in vxlan_fdb_append
+
+Jiapeng Chong (1):
+      platform/x86: samsung-laptop: Fix an unsigned comparison which can never be negative
+
+Kees Cook (2):
+      etherdevice: Adjust ether_addr* prototypes to silence -Wstringop-overead
+      ARM: vexpress/spc: Avoid negative array index when !SMP
+
+Khazhismel Kumykov (1):
+      block/compat_ioctl: fix range check in BLKGETSIZE
+
+Kuniyuki Iwashima (1):
+      tcp: Fix potential use-after-free due to double kfree()
+
+Lee Jones (1):
+      staging: ion: Prevent incorrect reference counting behavour
+
+Lv Ruyi (1):
+      dpaa_eth: Fix missing of_node_put in dpaa_get_ts_info()
+
+Marek Vasut (1):
+      Revert "net: micrel: fix KS8851_MLL Kconfig"
+
+Mark Brown (1):
+      ASoC: atmel: Remove system clock tree configuration for at91sam9g20ek
+
+Miaoqian Lin (2):
+      ASoC: msm8916-wcd-digital: Check failure for devm_snd_soc_register_component
+      dmaengine: imx-sdma: Fix error checking in sdma_event_remap
+
+Mikulas Patocka (2):
+      dm integrity: fix memory corruption when tag_size is less than digest size
+      stat: fix inconsistency between struct stat and struct compat_stat
+
+Paolo Valerio (1):
+      openvswitch: fix OOB access in reserve_sfa_size()
+
+Ricardo Dias (1):
+      tcp: fix race condition when creating child sockets from syncookies
+
+Rob Herring (1):
+      arm_pmu: Validate single/group leader events
+
+Sameer Pujar (1):
+      reset: tegra-bpmp: Restore Handle errors in BPMP response
+
+Sasha Neftin (1):
+      e1000e: Fix possible overflow in LTR decoding
+
+Sergey Matyukevich (1):
+      ARC: entry: fix syscall_trace_exit argument
+
+Tadeusz Struk (1):
+      ext4: limit length to bitmap_maxbytes - blocksize in punch_hole
+
+Takashi Iwai (1):
+      ALSA: usb-audio: Clear MIDI port active flag after draining
+
+Theodore Ts'o (2):
+      ext4: fix overhead calculation to account for the reserved gdt blocks
+      ext4: force overhead calculation if the s_overhead_cluster makes no sense
+
+Tomas Melin (1):
+      net: macb: Restart tx only if queue pointer is lagging
+
+Xiaoke Wang (1):
+      drm/msm/mdp5: check the return of kzalloc()
+
+Xiaomeng Tong (2):
+      dma: at_xdmac: fix a missing check on list iterator
+      ASoC: soc-dapm: fix two incorrect uses of list iterator
+
+Xiongwei Song (1):
+      mm: page_alloc: fix building error on -Werror=array-compare
+
+Ye Bin (1):
+      ext4: fix symlink file size not match to file content
+
+Zheyu Ma (1):
+      ata: pata_marvell: Check the 'bmdma_addr' beforing reading
 
