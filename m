@@ -2,265 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6340AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 02:00:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2889C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 02:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357032AbiD0CDa (ORCPT
+        id S1357039AbiD0CE1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 22:03:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
+        Tue, 26 Apr 2022 22:04:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244895AbiD0CD2 (ORCPT
+        with ESMTP id S1349881AbiD0CER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 22:03:28 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2059.outbound.protection.outlook.com [40.107.244.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFA5BC18
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 19:00:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n3nGWVS8PNa5DDJ5u+dH9r4KMDvGH4oN1jYX8EFqb/3PVWfC3Q7zPYuAormtUulBo+0PoIphbxB8Yfq9uPMv/VOWroaGU3hrOwvMgpZDgi0l/lHS6RNj/qU28w/ube4jp86+lqQVwNJ6QIY6vRSlHbz6jnNgAwhQy/hIpf8mF7FTI2w2hRc8bpNeSnqZBKTi+fuqBnva23idzgi8HBYlXNu0JsULag+c5HV59uQwtWyU6XFYKJylWEocDVZJ5f1eZL4EzzXHZzdGcHQWebTVelfht1RKIBpYxJ/gR2Nt7M1NTjx9kWTZ4MlmYZHiXlQiZTXbznLjcZioLMzkjlI5qQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OIFiiBGpN52HtOdpfrnyo/94HWew5wUk9JbGJv3rDFc=;
- b=fM+7eoyHIqqzj0C97UtCzdgZHdrW/ixCGRw6+m3sild+PDwtUNyxv2znI/m6kOFYbm8nN1AtVO1pnDNbTmA+kAlqkUlGGbWe9Hli0UJmI550T5QY8iF4NkU5jfmHs6nlh6zgXLWUmBpk7usNN1x9hveP/zM35df8o/vrSCOKLKSQ5j93uGAsknYwS1/z1AjEOHzUfyZ9S7RVx89xqOHTIjiJd4GYaP0mGFaHvzQNOweZX0uolBURt0Y2AL87v1TIf6jCS5uOOtDujhsd9Ro8gjYOiPyU2YOJHLLT4I9BcB3O5VJ3MC0RsskfzhkqSgrTy+DosgDLsLcAoWa6ru3fYQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linux.ie smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OIFiiBGpN52HtOdpfrnyo/94HWew5wUk9JbGJv3rDFc=;
- b=cIgqXRiRDcoIxhSQ8aF9KU21JIRCPY4c3gW0zEi+bD1As9GdPI7vdoR/1lplXt7+/iTohe6Bqn8VZXqYznQF1DJZdoEesw/AIvkDt10d6Kh5l77GiRoYHP5Z4YrG8zEDXm2q4sdDG/bD3ywESi3yyIniblngeSeuCLdZRBd1n/w=
-Received: from MW4PR04CA0318.namprd04.prod.outlook.com (2603:10b6:303:82::23)
- by DM5PR1201MB2537.namprd12.prod.outlook.com (2603:10b6:3:eb::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Wed, 27 Apr
- 2022 02:00:15 +0000
-Received: from CO1NAM11FT059.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:82:cafe::76) by MW4PR04CA0318.outlook.office365.com
- (2603:10b6:303:82::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.12 via Frontend
- Transport; Wed, 27 Apr 2022 02:00:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com;
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- CO1NAM11FT059.mail.protection.outlook.com (10.13.174.160) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5206.12 via Frontend Transport; Wed, 27 Apr 2022 02:00:15 +0000
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 26 Apr
- 2022 21:00:11 -0500
-Received: from Ryan-AMD.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Tue, 26 Apr 2022 21:00:04 -0500
-From:   Ryan Lin <tsung-hua.lin@amd.com>
-To:     <leon.li@amd.com>, <ching-shih.li@amd.com>,
-        <tsung-hua.lin@amd.com>, <alexander.deucher@amd.com>,
-        <christian.koenig@amd.com>, <Xinhui.Pan@amd.com>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <harry.wentland@amd.com>,
-        <sunpeng.li@amd.com>, <seanpaul@chromium.org>,
-        <Pratik.Vishwakarma@amd.com>, <lijo.lazar@amd.com>,
-        <sathishkumar.sundararaju@amd.com>, <rdunlap@infradead.org>,
-        <linux-patches-robot@chromeos-missing-patches.google.com.iam.gserviceaccount.com>,
-        <Hawking.Zhang@amd.com>, <andrey.grodzovsky@amd.com>,
-        <shaoyun.liu@amd.com>, <Jack.Zhang1@amd.com>,
-        <horace.chen@amd.com>, <haonan.wang2@amd.com>,
-        <Anthony.Koo@amd.com>, <qingqing.zhuo@amd.com>,
-        <wyatt.wood@amd.com>, <robin.chen@amd.com>,
-        <amd-gfx@lists.freedesktop.org>, <dri-devel@lists.freedesktop.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3] drm/amdgpu: Disable ABM when AC mode
-Date:   Wed, 27 Apr 2022 09:50:14 +0800
-Message-ID: <20220427015014.1574848-1-tsung-hua.lin@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220324231000.4072275-1-tsung-hua.lin@amd.com>
-References: <20220324231000.4072275-1-tsung-hua.lin@amd.com>
+        Tue, 26 Apr 2022 22:04:17 -0400
+Received: from esa4.hgst.iphmx.com (esa4.hgst.iphmx.com [216.71.154.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 802A611C23
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 19:01:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1651024868; x=1682560868;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=aVEYVQf35+Uh7XzM6a1kJevWBsv5Uf3EWaUSl6Zi8N0=;
+  b=UocUzM1qIfxCSJF7NWfoqXYekFW684jLBtzH2jlb2RWBGcCrVcdMPJ9F
+   XiEFqrc0D3rXpOuRIe7xmKl/p437JlT5OfCrFUqAEjAI+TsmIXYyF4rYI
+   M0qyp8TPiyUqlvd9bGRFvu1TkCrxGrlpxHCf95nyi6S4G2m5xvPiGB4cY
+   FciILnk/Sb4D4JxOI9s10JJJNiLvLiy6MTG69/zdbFQIqs3s2n0/w+qb5
+   hMs8lu5kGRGq6YSHg5CYMXRDDNZsY2uFpUKUzlJGHO/LD4MolpCsMU0YI
+   Am3cDZOFkGV7NnKXLtOZhdykUHAHrW+vcIPWqSl6SkXKPg2W44xn0rMbU
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,292,1643644800"; 
+   d="scan'208";a="197753711"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 27 Apr 2022 10:01:06 +0800
+IronPort-SDR: KmSwHkVVMX6zPKYGZTwazbbH5nJkXirJXdo5QLBGrIq2rVEAiaarWuh3WkYCaQDKwc1ujwni4W
+ GdvqAdXm9S6ctQtAfgWA0W2/oIPYCSA6IYOBKUw4d5EF6Yonot0mePxiB6epDphbQr/T5jyQSz
+ NZumnUDok454zOzznBA5HU8WZ0b5gZWuPDGpWJ6V86Q3da0BdhcqVxtfGXHUf75SThq6fTH5Y4
+ P1h+FGU28FgZ2Lg/OlmnmkeRuyI9M6yHhBLd+7AsJjiNT7e3LcTAjXk7j1vZLTGJd9i+IZKVGs
+ 4XoSkgi9Fxwy7NqT5KmaAQ9V
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 26 Apr 2022 18:32:00 -0700
+IronPort-SDR: Xk5xSXGOZHjJQmG5okrqXGTE/IhgrDpTfQserdeiJTuB3l6i8piaSrQDbtz/osvR6phUiDY7x+
+ mAt0BRle8QeOfvnS/QyXjzWGxZyFm1jGwexTNIhIsYuhu4Bzl+g3ROmiKt7pYz060VHzcJkqhQ
+ NwHXzwPSmrklHedgFKfaD5FZm+Cp0AQZHX5EWyIz28cykS3KHfS4L0VXKDLrUM6Bxw122s7LJG
+ vzxmNjQexP29jcC3gsbfY7SBo3IFtpyNTTs8cIUNi7JEMXXlMsVTpv/1Y5lkiRr81Tk0U+rjnT
+ 5Gc=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 26 Apr 2022 19:01:06 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4Kp2694qRHz1SHwl
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 19:01:05 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1651024864; x=1653616865; bh=aVEYVQf35+Uh7XzM6a1kJevWBsv5Uf3EWaU
+        Sl6Zi8N0=; b=ZeDu48TMfnVRErQO6FzvxanT5ICopH9ORrv5SXtzpLS+TiS0T1L
+        EslfKXJQX2/T9xqFy13DS5nGg7dJk8rDtOsBGPPKHcJJI+m7qA1MLvDaIJ998MgH
+        pkygMtaPu/DXgGLux0zswiFie054ZB7iv3BT5mE/YBREugGO9xdrOgdEaf/dmqvB
+        72o8h+CGsfiWyOv75mY/aKeyV0zqngz0FPYSa68ifoXAbXUoa7Gju5gS3swYI1cO
+        oewUYT/UGVPUfenfsXFN51gWKa7q3FgurVlWK29TzRw0BM4jlt75vWJUNhN9Gb0i
+        gzdM0ndxIZDSjQm+VOEsWjcQE1YiHf6F9sA==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id vCeM9lp0059W for <linux-kernel@vger.kernel.org>;
+        Tue, 26 Apr 2022 19:01:04 -0700 (PDT)
+Received: from [10.225.163.27] (unknown [10.225.163.27])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4Kp25z67Pcz1Rvlc;
+        Tue, 26 Apr 2022 19:00:55 -0700 (PDT)
+Message-ID: <76a89205-f4f1-1e51-aa23-c8082bfefd3c@opensource.wdc.com>
+Date:   Wed, 27 Apr 2022 11:00:54 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f6202813-9432-4767-7566-08da27f1ac0c
-X-MS-TrafficTypeDiagnostic: DM5PR1201MB2537:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR1201MB2537B0A845F498983B6A8F0AB2FA9@DM5PR1201MB2537.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dLLre3jFLjLbtd2l9zL/GFOi9XQfeb2so8VTWl6w//rb84SVB9ohFatdA/Y5luBOH7ce4PwpBmPhm3W2ZPyVZ1Vrwq0l9coSfVYkdz8r30+7zg7uN8BzA0wsxiKg0ZxhtVfpYc+tutEK+OsJooF7ydmnK65C7Ca4OcvMb2dM0gngSpsBr7IZCWTVQ0q+Vf8d5XFtqaqBx+bFvfUflW7TF/TdbfwCQ7rfNZnRNQwxPIPM9P0BhGdwf7/6oeboUSJHtyoVzrxBFgzN7PemeVIZi/radQDFj5y5jSXge68GH9lIlR/khsqE6BqagpoAV0DwAOD8ySf0pmHlvJo0jLKiEic86eS2g0EWipc/aek55baS6KH2+T511mHVPaxL3nHIKE3nTnpc41R22reqk5xw+cyNM40UJuRqzTdzCHytrOa8hkVbNhyuiKMtIFhmo03K+Hv4w42lvUWjVWyG2VsxOMR/Ax/fQOhpi5unI8wPbZrPKT3Fv9qSO5zKq6Z44f9pv0e5FesiPl4NSeF0ufma0O8wRL+851aaP23NR2qJI9gd9DWyP1wPTXPoGT399aGtIStag+vxxY3DZ7emSKjB7Chsm7QvOOKuCj4+qEo1aBHF0XQPpT8+5+rAAzDL43iFx4t0AFqQfCgrlbpHe3EGdZpBQ4YRIkmnqhg34rn5mirD/p0JOjBV/IjnklAHgrURvKMi19nPk0wdzrHPz3cLT/eMnhdTuX1uEdCFrgT1NXiPub68PlOIgZFY5jHl8ZzSwqEhhMHueL1R7nw7fa5Bug==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(70206006)(508600001)(81166007)(2616005)(86362001)(7696005)(921005)(2906002)(356005)(6666004)(83380400001)(5660300002)(336012)(1076003)(426003)(47076005)(8676002)(70586007)(186003)(26005)(82310400005)(40460700003)(8936002)(36860700001)(110136005)(36756003)(316002)(36900700001)(2101003)(83996005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2022 02:00:15.1570
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f6202813-9432-4767-7566-08da27f1ac0c
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT059.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB2537
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v4 00/10] Add Copy offload support
+Content-Language: en-US
+To:     Nitesh Shetty <nj.shetty@samsung.com>
+Cc:     chaitanyak@nvidia.com, linux-block@vger.kernel.org,
+        linux-scsi@vger.kernel.org, dm-devel@redhat.com,
+        linux-nvme@lists.infradead.org, linux-fsdevel@vger.kernel.org,
+        axboe@kernel.dk, msnitzer@redhat.com, bvanassche@acm.org,
+        martin.petersen@oracle.com, hare@suse.de, kbusch@kernel.org,
+        hch@lst.de, Frederick.Knight@netapp.com, osandov@fb.com,
+        lsf-pc@lists.linux-foundation.org, djwong@kernel.org,
+        josef@toxicpanda.com, clm@fb.com, dsterba@suse.com, tytso@mit.edu,
+        jack@suse.com, nitheshshetty@gmail.com, gost.dev@samsung.com,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        James Smart <james.smart@broadcom.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        Johannes Thumshirn <jth@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-kernel@vger.kernel.org
+References: <CGME20220426101804epcas5p4a0a325d3ce89e868e4924bbdeeba6d15@epcas5p4.samsung.com>
+ <20220426101241.30100-1-nj.shetty@samsung.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220426101241.30100-1-nj.shetty@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Disable ABM feature when the system is running on AC mode to get the more
-perfect contrast of the display.
+On 4/26/22 19:12, Nitesh Shetty wrote:
+> The patch series covers the points discussed in November 2021 virtual c=
+all
+> [LSF/MM/BFP TOPIC] Storage: Copy Offload[0].
+> We have covered the Initial agreed requirements in this patchset.
+> Patchset borrows Mikulas's token based approach for 2 bdev
+> implementation.
 
-v2: remove "UPSTREAM" from the subject.
+Please reduce the distribution list. List servers (and email clients) are
+complaining about it being too large.
 
-v3: adv->pm.ac_power updating by amd gpu_acpi_event_handler.
+>=20
+> Overall series supports =E2=80=93
+>=20
+> 1. Driver
+> - NVMe Copy command (single NS), including support in nvme-target (for
+>     block and file backend)
+>=20
+> 2. Block layer
+> - Block-generic copy (REQ_COPY flag), with interface accommodating
+>     two block-devs, and multi-source/destination interface
+> - Emulation, when offload is natively absent
+> - dm-linear support (for cases not requiring split)
+>=20
+> 3. User-interface
+> - new ioctl
+> - copy_file_range for zonefs
+>=20
+> 4. In-kernel user
+> - dm-kcopyd
+> - copy_file_range in zonefs
+>=20
+> For zonefs copy_file_range - Seems we cannot levearge fstest here. Limi=
+ted
+> testing is done at this point using a custom application for unit testi=
+ng.
+>=20
+> Appreciate the inputs on plumbing and how to test this further?
+> Perhaps some of it can be discussed during LSF/MM too.
+>=20
+> [0] https://lore.kernel.org/linux-nvme/CA+1E3rJ7BZ7LjQXXTdX+-0Edz=3DzT1=
+4mmPGMiVCzUgB33C60tbQ@mail.gmail.com/
+>=20
+> Changes in v4:
+> - added copy_file_range support for zonefs
+> - added documentaion about new sysfs entries
+> - incorporated review comments on v3
+> - minor fixes
+>=20
+>=20
+> Arnav Dawn (2):
+>   nvmet: add copy command support for bdev and file ns
+>   fs: add support for copy file range in zonefs
+>=20
+> Nitesh Shetty (7):
+>   block: Introduce queue limits for copy-offload support
+>   block: Add copy offload support infrastructure
+>   block: Introduce a new ioctl for copy
+>   block: add emulation for copy
+>   nvme: add copy offload support
+>   dm: Add support for copy offload.
+>   dm: Enable copy offload for dm-linear target
+>=20
+> SelvaKumar S (1):
+>   dm kcopyd: use copy offload support
+>=20
+>  Documentation/ABI/stable/sysfs-block |  83 +++++++
+>  block/blk-lib.c                      | 358 +++++++++++++++++++++++++++
+>  block/blk-map.c                      |   2 +-
+>  block/blk-settings.c                 |  59 +++++
+>  block/blk-sysfs.c                    | 138 +++++++++++
+>  block/blk.h                          |   2 +
+>  block/ioctl.c                        |  32 +++
+>  drivers/md/dm-kcopyd.c               |  55 +++-
+>  drivers/md/dm-linear.c               |   1 +
+>  drivers/md/dm-table.c                |  45 ++++
+>  drivers/md/dm.c                      |   6 +
+>  drivers/nvme/host/core.c             | 116 ++++++++-
+>  drivers/nvme/host/fc.c               |   4 +
+>  drivers/nvme/host/nvme.h             |   7 +
+>  drivers/nvme/host/pci.c              |  25 ++
+>  drivers/nvme/host/rdma.c             |   6 +
+>  drivers/nvme/host/tcp.c              |  14 ++
+>  drivers/nvme/host/trace.c            |  19 ++
+>  drivers/nvme/target/admin-cmd.c      |   8 +-
+>  drivers/nvme/target/io-cmd-bdev.c    |  65 +++++
+>  drivers/nvme/target/io-cmd-file.c    |  49 ++++
+>  fs/zonefs/super.c                    | 178 ++++++++++++-
+>  fs/zonefs/zonefs.h                   |   1 +
+>  include/linux/blk_types.h            |  21 ++
+>  include/linux/blkdev.h               |  17 ++
+>  include/linux/device-mapper.h        |   5 +
+>  include/linux/nvme.h                 |  43 +++-
+>  include/uapi/linux/fs.h              |  23 ++
+>  28 files changed, 1367 insertions(+), 15 deletions(-)
+>=20
+>=20
+> base-commit: e7d6987e09a328d4a949701db40ef63fbb970670
 
-Signed-off-by: Ryan Lin <tsung-hua.lin@amd.com>
 
----
- drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c      |  3 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_device.c    |  1 +
- drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c | 61 +++++++++++--------
- drivers/gpu/drm/amd/include/amd_acpi.h        |  1 +
- 4 files changed, 41 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-index 4811b0faafd9a..6ac331ee4255d 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-@@ -822,7 +822,8 @@ static int amdgpu_acpi_event(struct notifier_block *nb,
- 	struct amdgpu_device *adev = container_of(nb, struct amdgpu_device, acpi_nb);
- 	struct acpi_bus_event *entry = (struct acpi_bus_event *)data;
- 
--	if (strcmp(entry->device_class, ACPI_AC_CLASS) == 0) {
-+	if (strcmp(entry->device_class, ACPI_AC_CLASS) == 0 ||
-+	    strcmp(entry->device_class, ACPI_BATTERY_CLASS) == 0) {
- 		if (power_supply_is_system_supplied() > 0)
- 			DRM_DEBUG_DRIVER("pm: AC\n");
- 		else
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-index abfcc1304ba0c..3a0afe7602727 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-@@ -3454,6 +3454,7 @@ int amdgpu_device_init(struct amdgpu_device *adev,
- 
- 	adev->gfx.gfx_off_req_count = 1;
- 	adev->pm.ac_power = power_supply_is_system_supplied() > 0;
-+	adev->pm.old_ac_power = true;
- 
- 	atomic_set(&adev->throttling_logging_enabled, 1);
- 	/*
-diff --git a/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c b/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c
-index 54a1408c8015c..090bd23410b45 100644
---- a/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c
-+++ b/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c
-@@ -22,7 +22,8 @@
-  * Authors: AMD
-  *
-  */
--
-+#include <linux/power_supply.h>
-+#include "amdgpu.h"
- #include "dmub_abm.h"
- #include "dce_abm.h"
- #include "dc.h"
-@@ -50,7 +51,7 @@
- 
- #define DISABLE_ABM_IMMEDIATELY 255
- 
--
-+extern uint amdgpu_dm_abm_level;
- 
- static void dmub_abm_enable_fractional_pwm(struct dc_context *dc)
- {
-@@ -117,28 +118,6 @@ static void dmub_abm_init(struct abm *abm, uint32_t backlight)
- 	dmub_abm_enable_fractional_pwm(abm->ctx);
- }
- 
--static unsigned int dmub_abm_get_current_backlight(struct abm *abm)
--{
--	struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
--	unsigned int backlight = REG_READ(BL1_PWM_CURRENT_ABM_LEVEL);
--
--	/* return backlight in hardware format which is unsigned 17 bits, with
--	 * 1 bit integer and 16 bit fractional
--	 */
--	return backlight;
--}
--
--static unsigned int dmub_abm_get_target_backlight(struct abm *abm)
--{
--	struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
--	unsigned int backlight = REG_READ(BL1_PWM_TARGET_ABM_LEVEL);
--
--	/* return backlight in hardware format which is unsigned 17 bits, with
--	 * 1 bit integer and 16 bit fractional
--	 */
--	return backlight;
--}
--
- static bool dmub_abm_set_level(struct abm *abm, uint32_t level)
- {
- 	union dmub_rb_cmd cmd;
-@@ -147,6 +126,10 @@ static bool dmub_abm_set_level(struct abm *abm, uint32_t level)
- 	int i;
- 	int edp_num;
- 	uint8_t panel_mask = 0;
-+	struct amdgpu_device *dev = dc->driver_context;
-+
-+	if (dev->pm.ac_power)
-+		level = 0;
- 
- 	get_edp_links(dc->dc, edp_links, &edp_num);
- 
-@@ -170,6 +153,36 @@ static bool dmub_abm_set_level(struct abm *abm, uint32_t level)
- 	return true;
- }
- 
-+static unsigned int dmub_abm_get_current_backlight(struct abm *abm)
-+{
-+	struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
-+	unsigned int backlight = REG_READ(BL1_PWM_CURRENT_ABM_LEVEL);
-+	struct dc_context *dc = abm->ctx;
-+	struct amdgpu_device *adev = dc->driver_context;
-+
-+	if (adev->pm.ac_power != adev->pm.old_ac_power) {
-+		dmub_abm_set_level(abm, amdgpu_dm_abm_level);
-+		adev->pm.ac_power = power_supply_is_system_supplied() > 0;
-+		adev->pm.old_ac_power = adev->pm.ac_power;
-+	}
-+
-+	/* return backlight in hardware format which is unsigned 17 bits, with
-+	 * 1 bit integer and 16 bit fractional
-+	 */
-+	return backlight;
-+}
-+
-+static unsigned int dmub_abm_get_target_backlight(struct abm *abm)
-+{
-+	struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
-+	unsigned int backlight = REG_READ(BL1_PWM_TARGET_ABM_LEVEL);
-+
-+	/* return backlight in hardware format which is unsigned 17 bits, with
-+	 * 1 bit integer and 16 bit fractional
-+	 */
-+	return backlight;
-+}
-+
- static bool dmub_abm_init_config(struct abm *abm,
- 	const char *src,
- 	unsigned int bytes,
-diff --git a/drivers/gpu/drm/amd/include/amd_acpi.h b/drivers/gpu/drm/amd/include/amd_acpi.h
-index 2d089d30518f3..5a62e580668e4 100644
---- a/drivers/gpu/drm/amd/include/amd_acpi.h
-+++ b/drivers/gpu/drm/amd/include/amd_acpi.h
-@@ -25,6 +25,7 @@
- #define AMD_ACPI_H
- 
- #define ACPI_AC_CLASS           "ac_adapter"
-+#define ACPI_BATTERY_CLASS  "battery"
- 
- struct atif_verify_interface {
- 	u16 size;		/* structure size in bytes (includes size field) */
--- 
-2.25.1
-
+--=20
+Damien Le Moal
+Western Digital Research
