@@ -2,110 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75BA3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:14:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E995EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:15:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358674AbiD0HRo (ORCPT
+        id S1358683AbiD0HSU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 03:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47962 "EHLO
+        Wed, 27 Apr 2022 03:18:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358669AbiD0HRe (ORCPT
+        with ESMTP id S242672AbiD0HSS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 03:17:34 -0400
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 709FD4B1D6;
-        Wed, 27 Apr 2022 00:14:24 -0700 (PDT)
-Received: by mail-qt1-f173.google.com with SMTP id t16so542512qtr.9;
-        Wed, 27 Apr 2022 00:14:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1mvUlrTirU9klnitg8TwDGH+tVvlE6Lo8EZa9hr0GIw=;
-        b=e9ZmajDgZ/7jQVApNUA0/JMJ24Otyi0XhG2iNMRupVMuPcsGh5ATNibPYGrgyP0b1C
-         UGYRkLCEsBXAZIpHEJbok8rzjWZ4ePE2XiZ11HCuV0518dv6UAM/fPrc+wG8GUc8o5+L
-         LFwK/Z0ti482txpd/+JARJ9Y6pVhje9sJ5Q3JOhZ1mfJLuYMcxxWXtBd8UcbWxdM1VG8
-         vq6fhPvX3RORob6XxhO25g+ov2OhqtsN0qZVANPVS5tsJe46TI/8DnA0xisfc9yqy+P2
-         WVlqdu5ZA1m2EuCnjYWA04zT/iBSUUwA0GiHp0P+Bnz5ccCfz7j8k4u8TTKUJLCD7tog
-         JSKw==
-X-Gm-Message-State: AOAM531PsUzcKakfkKBs1PfIvtptbDvFE4eS9IEFAHfwiXf5iVI9DxO5
-        1MuTqk1TVk5fwDmrdeEp714dpg7n24tGPA==
-X-Google-Smtp-Source: ABdhPJxlOWa55m+1hstWZnHF/1z6+9yCfsZu+RhdCKKDJSHMuZdFct+KSkQ8gdhKmcG62slG7Iz0UQ==
-X-Received: by 2002:ac8:5894:0:b0:2f3:7266:e378 with SMTP id t20-20020ac85894000000b002f37266e378mr6568661qta.631.1651043663435;
-        Wed, 27 Apr 2022 00:14:23 -0700 (PDT)
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
-        by smtp.gmail.com with ESMTPSA id 22-20020ac85916000000b002f3402e34a3sm9820192qty.55.2022.04.27.00.14.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 00:14:22 -0700 (PDT)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-2ec42eae76bso8455087b3.10;
-        Wed, 27 Apr 2022 00:14:21 -0700 (PDT)
-X-Received: by 2002:a81:e10d:0:b0:2f7:bb2a:6529 with SMTP id
- w13-20020a81e10d000000b002f7bb2a6529mr22442009ywh.62.1651043661690; Wed, 27
- Apr 2022 00:14:21 -0700 (PDT)
+        Wed, 27 Apr 2022 03:18:18 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834B5140D4;
+        Wed, 27 Apr 2022 00:15:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651043707; x=1682579707;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=fXJkbxDf0qd9gW+A5tjOWCA9l6X90L85cXDE1FuuhiU=;
+  b=gjAaRAarpDtX5g4WR3l822MezjoClULZb4FAhfqYXJCGxiOHcXh5T6fQ
+   SYXgCt3lbgbVPJm+BfHDQ/rF3qZxMpeom1pACpx1cp6uEiuWBCO7KRdzT
+   mR0JQIdiwlE+oV9YwRsxIRXCybZGWaF+9HoKaY2tfYH2xdepoWvEbDBdd
+   001RczP97SRiIr1JeVC+P4z7fX5qBXbcAbUs41d7PEI4M4+4/8+luawFN
+   hMBCycXPSJq9K35UjLP+2ZI/c8TCery+ZARftFnW/Aax58XVRu6RifDPO
+   s0jl3h3vteKVIcmYOpRCy4YjFIj3RX2kwBbxkg4NJeivyGDE2wFtOr1LW
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="328786668"
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="328786668"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 00:15:07 -0700
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="580431679"
+Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 00:15:05 -0700
+From:   Zqiang <qiang1.zhang@intel.com>
+To:     paulmck@kernel.org, frederic@kernel.org
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] rcutorture: Fix kmemleak in rcu_test_debug_objects()
+Date:   Wed, 27 Apr 2022 15:15:20 +0800
+Message-Id: <20220427071520.2239030-1-qiang1.zhang@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220427001226.1224704-1-keescook@chromium.org>
-In-Reply-To: <20220427001226.1224704-1-keescook@chromium.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 27 Apr 2022 09:14:10 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWJczJGLxbFUyO8YDOAcCqdVQmo1zHj5PYtxruL9MzeOg@mail.gmail.com>
-Message-ID: <CAMuHMdWJczJGLxbFUyO8YDOAcCqdVQmo1zHj5PYtxruL9MzeOg@mail.gmail.com>
-Subject: Re: [PATCH] lkdtm: cfi: Fix type width for masking PAC bits
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel test robot <lkp@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Dan Li <ashimida@linux.alibaba.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-hardening@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kees,
+The kmemleak kthread scan to the following:
 
-On Wed, Apr 27, 2022 at 2:12 AM Kees Cook <keescook@chromium.org> wrote:
-> The masking for PAC bits wasn't handling 32-bit architectures correctly.
-> Replace the u64 cast with uintptr_t.
->
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Link: https://lore.kernel.org/lkml/CAMuHMdVz-J-1ZQ08u0bsQihDkcRmEPrtX5B_oRJ+Ns5jrasnUw@mail.gmail.com
-> Fixes: 2e53b877dc12 ("lkdtm: Add CFI_BACKWARD to test ROP mitigations")
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+unreferenced object 0xffff95d941135b50 (size 16):
+  comm "swapper/0", pid 1, jiffies 4294667610 (age 1367.451s)
+  hex dump (first 16 bytes):
+    f0 c6 c2 bd d9 95 ff ff 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<00000000bc81d9b1>] kmem_cache_alloc_trace+0x2f6/0x500
+    [<00000000d28be229>] rcu_torture_init+0x1235/0x1354
+    [<0000000032c3acd9>] do_one_initcall+0x51/0x210
+    [<000000003c117727>] kernel_init_freeable+0x205/0x259
+    [<000000003961f965>] kernel_init+0x1a/0x120
+    [<000000001998f890>] ret_from_fork+0x22/0x30
 
-Thank you, that fixes the m68k allmodconfig build, so
-Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+the rhp object is not released after use, so call kfree() to
+release it.
 
-> --- a/drivers/misc/lkdtm/cfi.c
-> +++ b/drivers/misc/lkdtm/cfi.c
-> @@ -59,7 +59,7 @@ static void lkdtm_CFI_FORWARD_PROTO(void)
->  #endif
->
->  #define no_pac_addr(addr)      \
-> -       ((__force __typeof__(addr))((__force u64)(addr) | PAGE_OFFSET))
-> +       ((__force __typeof__(addr))((uintptr_t)(addr) | PAGE_OFFSET))
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+---
+ kernel/rcu/rcutorture.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Not related to this patch, but "| PAGE_OFFSET" is not identical
-to "+ PAGE_OFFSET" for large kernel sizes.
+diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
+index 0885a66f9d76..f3f9f97c3c1f 100644
+--- a/kernel/rcu/rcutorture.c
++++ b/kernel/rcu/rcutorture.c
+@@ -3183,6 +3183,7 @@ static void rcu_test_debug_objects(void)
+ 	pr_alert("%s: WARN: Duplicate call_rcu() test complete.\n", KBUILD_MODNAME);
+ 	destroy_rcu_head_on_stack(&rh1);
+ 	destroy_rcu_head_on_stack(&rh2);
++	kfree(rhp);
+ #else /* #ifdef CONFIG_DEBUG_OBJECTS_RCU_HEAD */
+ 	pr_alert("%s: !CONFIG_DEBUG_OBJECTS_RCU_HEAD, not testing duplicate call_rcu()\n", KBUILD_MODNAME);
+ #endif /* #else #ifdef CONFIG_DEBUG_OBJECTS_RCU_HEAD */
+-- 
+2.25.1
 
-More specifically, I'm thinking about platforms where "large" would
-be >= 32 MiB:
-arch/mips/include/asm/mach-ar7/spaces.h:#define PAGE_OFFSET
-_AC(0x94000000, UL)
-or >= 128 MiB:
-arch/x86/Kconfig:         default 0x78000000 if VMSPLIT_2G_OPT
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
