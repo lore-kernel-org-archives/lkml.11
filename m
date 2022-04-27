@@ -2,362 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EDD9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9077AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237602AbiD0OXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39606 "EHLO
+        id S237665AbiD0OX7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:23:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237492AbiD0OXB (ORCPT
+        with ESMTP id S237618AbiD0OX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 10:23:01 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D67431A921A
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:19:49 -0700 (PDT)
+        Wed, 27 Apr 2022 10:23:56 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F15E22DF90;
+        Wed, 27 Apr 2022 07:20:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651069189; x=1682605189;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=pIWY/z+Ufq043o7X2cdcCRk/WmAfJMJxxbg5nxLDFP8=;
-  b=R24P7DmgeCH+6m363k9+a672wncm0S+FktbJBYDFgxC4sSjdhVQucP55
-   ikBMIyudd26ku04lNt9ED6h/K5eiBX4fcw0zFMr7n0jjKLRXbuwv5Y3/9
-   o362CSPhtkBuVGonIWX9eg6ZzW0cuaY/JwUCiJ1DxlCs3WYvHj74bfDBX
-   IcIcbPnh26H2a/mspnh+Z3vPncwWvGogBDtD7ebvEW5vXP/OzSjRGRRIs
-   4LKtBPBXfatWclJtweVVNlWhllnDXqVjLSbgotsYYhK3tAoGf/miuYkYU
-   MW+YkIKQ5e9GBEjBUrlmf4En1uU8XNtmjqOOr09Y9AubBWaM0F5B7kkcR
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="245862715"
+  t=1651069244; x=1682605244;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=FF9dZMsdhcirHLT0yX4WRrKdmuQYa58gNDfW0zo81+Q=;
+  b=eUOPG2lZk3Lu1Kt0pX3CbEA6EB1X9P3JPzw0R7bDNcYNx6Zw1sxCgmfG
+   Dq1Z8Q4/mnLTrJP9Ve1qpGw9NyMNHmDx3uxYC+JfV4gsrBz9LiZtf2CMd
+   ASURZUGu69iZnaDzU4J9mY3zBX84KTaubYCqxCl9rDlZQs3lFX3kVvvRE
+   o0rIo9+akUYgyj3x3QNDmWWBn1Ypn3Q8IfT0BqI0BJzaKH0T/ZBjrr9Zz
+   LlpC7ebd+lWsNWQ6J3zYwu47kwNYQxWw1q5VYbm4q03VyGxLSvYiBXyJL
+   p+qGgxlCoatJAiwdqygsY86OAt/bKvKt2fXTWTGsdTS583mLk6egYpUbR
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="265752153"
 X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
-   d="scan'208";a="245862715"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 07:19:49 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="265752153"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 07:20:44 -0700
 X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
-   d="scan'208";a="650721408"
-Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by FMSMGA003.fm.intel.com with ESMTP; 27 Apr 2022 07:19:47 -0700
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH] perf tools: Delete perf-with-kcore.sh script
-Date:   Wed, 27 Apr 2022 17:19:46 +0300
-Message-Id: <20220427141946.269523-1-adrian.hunter@intel.com>
-X-Mailer: git-send-email 2.25.1
+   d="scan'208";a="533227804"
+Received: from pcurcohe-mobl.amr.corp.intel.com (HELO [10.212.68.237]) ([10.212.68.237])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 07:20:42 -0700
+Message-ID: <49cc6848-47ae-9c25-f479-c5aed8c892df@intel.com>
+Date:   Wed, 27 Apr 2022 07:24:03 -0700
 MIME-Version: 1.0
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 05/21] x86/virt/tdx: Detect P-SEAMLDR and TDX module
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+References: <cover.1649219184.git.kai.huang@intel.com>
+ <b9f4d4afd244d685182ce9ab5ffdd0bf245be6e2.1649219184.git.kai.huang@intel.com>
+ <104a6959-3bd4-1e75-5e3d-5dc3ef025ed0@intel.com>
+ <98af78402861b1982607c5fd14b0c89403c042a6.camel@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <98af78402861b1982607c5fd14b0c89403c042a6.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It has been obsolete since the introduction of the perf record --kcore
-option.
+On 4/26/22 17:01, Kai Huang wrote:
+> On Tue, 2022-04-26 at 13:56 -0700, Dave Hansen wrote:
+>> On 4/5/22 21:49, Kai Huang wrote:
+>>> The P-SEAMLDR (persistent SEAM loader) is the first software module that
+>>> runs in SEAM VMX root, responsible for loading and updating the TDX
+>>> module.  Both the P-SEAMLDR and the TDX module are expected to be loaded
+>>> before host kernel boots.
+>>
+>> Why bother with the P-SEAMLDR here at all?  The kernel isn't loading the
+>> TDX module in this series.  Why not just call into the TDX module directly?
+> 
+> It's not absolutely needed in this series.  I choose to detect P-SEAMLDR because
+> detecting it can also detect the TDX module, and eventually we will need to
+> support P-SEAMLDR because the TDX module runtime update uses P-SEAMLDR's
+> SEAMCALL to do that.
+> 
+> Also, even for this series, detecting the P-SEAMLDR allows us to provide the P-
+> SEAMLDR information to user at a basic level in dmesg:
+> 
+> [..] tdx: P-SEAMLDR: version 0x0, vendor_id: 0x8086, build_date: 20211209,
+> build_num 160, major 1, minor 0
+> 
+> This may be useful to users, but it's not a hard requirement for this series.
 
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
----
- tools/perf/.gitignore         |   1 -
- tools/perf/Makefile.perf      |   5 +-
- tools/perf/perf-with-kcore.sh | 247 ----------------------------------
- 3 files changed, 1 insertion(+), 252 deletions(-)
- delete mode 100644 tools/perf/perf-with-kcore.sh
+We've had a lot of problems in general with this code trying to do too
+much at once.  I thought we agreed that this was going to only contain
+the minimum code to make TDX functional.  It seems to be creeping to
+grow bigger and bigger.
 
-diff --git a/tools/perf/.gitignore b/tools/perf/.gitignore
-index 20b8ab984d5f..4b9c71faa01a 100644
---- a/tools/perf/.gitignore
-+++ b/tools/perf/.gitignore
-@@ -19,7 +19,6 @@ perf.data
- perf.data.old
- output.svg
- perf-archive
--perf-with-kcore
- perf-iostat
- tags
- TAGS
-diff --git a/tools/perf/Makefile.perf b/tools/perf/Makefile.perf
-index 69473a836bae..6e5aded855cc 100644
---- a/tools/perf/Makefile.perf
-+++ b/tools/perf/Makefile.perf
-@@ -286,7 +286,6 @@ PYRF_OBJS =
- SCRIPT_SH =
- 
- SCRIPT_SH += perf-archive.sh
--SCRIPT_SH += perf-with-kcore.sh
- SCRIPT_SH += perf-iostat.sh
- 
- grep-libs = $(filter -l%,$(1))
-@@ -973,8 +972,6 @@ ifndef NO_LIBBPF
- endif
- 	$(call QUIET_INSTALL, perf-archive) \
- 		$(INSTALL) $(OUTPUT)perf-archive -t '$(DESTDIR_SQ)$(perfexec_instdir_SQ)'
--	$(call QUIET_INSTALL, perf-with-kcore) \
--		$(INSTALL) $(OUTPUT)perf-with-kcore -t '$(DESTDIR_SQ)$(perfexec_instdir_SQ)'
- 	$(call QUIET_INSTALL, perf-iostat) \
- 		$(INSTALL) $(OUTPUT)perf-iostat -t '$(DESTDIR_SQ)$(perfexec_instdir_SQ)'
- ifndef NO_LIBAUDIT
-@@ -1088,7 +1085,7 @@ bpf-skel-clean:
- 	$(call QUIET_CLEAN, bpf-skel) $(RM) -r $(SKEL_TMP_OUT) $(SKELETONS)
- 
- clean:: $(LIBTRACEEVENT)-clean $(LIBAPI)-clean $(LIBBPF)-clean $(LIBSUBCMD)-clean $(LIBPERF)-clean fixdep-clean python-clean bpf-skel-clean
--	$(call QUIET_CLEAN, core-objs)  $(RM) $(LIBPERF_A) $(OUTPUT)perf-archive $(OUTPUT)perf-with-kcore $(OUTPUT)perf-iostat $(LANG_BINDINGS)
-+	$(call QUIET_CLEAN, core-objs)  $(RM) $(LIBPERF_A) $(OUTPUT)perf-archive $(OUTPUT)perf-iostat $(LANG_BINDINGS)
- 	$(Q)find $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\.*.cmd' -delete -o -name '\.*.d' -delete
- 	$(Q)$(RM) $(OUTPUT).config-detected
- 	$(call QUIET_CLEAN, core-progs) $(RM) $(ALL_PROGRAMS) perf perf-read-vdso32 perf-read-vdsox32 $(OUTPUT)pmu-events/jevents $(OUTPUT)$(LIBJVMTI).so
-diff --git a/tools/perf/perf-with-kcore.sh b/tools/perf/perf-with-kcore.sh
-deleted file mode 100644
-index 0b96545c8184..000000000000
---- a/tools/perf/perf-with-kcore.sh
-+++ /dev/null
-@@ -1,247 +0,0 @@
--#!/bin/bash
--# SPDX-License-Identifier: GPL-2.0-only
--# perf-with-kcore: use perf with a copy of kcore
--# Copyright (c) 2014, Intel Corporation.
--#
--
--set -e
--
--usage()
--{
--        echo "Usage: perf-with-kcore <perf sub-command> <perf.data directory> [<sub-command options> [ -- <workload>]]" >&2
--        echo "       <perf sub-command> can be record, script, report or inject" >&2
--        echo "   or: perf-with-kcore fix_buildid_cache_permissions" >&2
--        exit 1
--}
--
--find_perf()
--{
--	if [ -n "$PERF" ] ; then
--		return
--	fi
--	PERF=`which perf || true`
--	if [ -z "$PERF" ] ; then
--		echo "Failed to find perf" >&2
--	        exit 1
--	fi
--	if [ ! -x "$PERF" ] ; then
--		echo "Failed to find perf" >&2
--	        exit 1
--	fi
--	echo "Using $PERF"
--	"$PERF" version
--}
--
--copy_kcore()
--{
--	echo "Copying kcore"
--
--	if [ $EUID -eq 0 ] ; then
--		SUDO=""
--	else
--		SUDO="sudo"
--	fi
--
--	rm -f perf.data.junk
--	("$PERF" record -o perf.data.junk "${PERF_OPTIONS[@]}" -- sleep 60) >/dev/null 2>/dev/null &
--	PERF_PID=$!
--
--	# Need to make sure that perf has started
--	sleep 1
--
--	KCORE=$(($SUDO "$PERF" buildid-cache -v -f -k /proc/kcore >/dev/null) 2>&1)
--	case "$KCORE" in
--	"kcore added to build-id cache directory "*)
--		KCORE_DIR=${KCORE#"kcore added to build-id cache directory "}
--	;;
--	*)
--		kill $PERF_PID
--		wait >/dev/null 2>/dev/null || true
--		rm perf.data.junk
--		echo "$KCORE"
--		echo "Failed to find kcore" >&2
--		exit 1
--	;;
--	esac
--
--	kill $PERF_PID
--	wait >/dev/null 2>/dev/null || true
--	rm perf.data.junk
--
--	$SUDO cp -a "$KCORE_DIR" "$(pwd)/$PERF_DATA_DIR"
--	$SUDO rm -f "$KCORE_DIR/kcore"
--	$SUDO rm -f "$KCORE_DIR/kallsyms"
--	$SUDO rm -f "$KCORE_DIR/modules"
--	$SUDO rmdir "$KCORE_DIR"
--
--	KCORE_DIR_BASENAME=$(basename "$KCORE_DIR")
--	KCORE_DIR="$(pwd)/$PERF_DATA_DIR/$KCORE_DIR_BASENAME"
--
--	$SUDO chown $UID "$KCORE_DIR"
--	$SUDO chown $UID "$KCORE_DIR/kcore"
--	$SUDO chown $UID "$KCORE_DIR/kallsyms"
--	$SUDO chown $UID "$KCORE_DIR/modules"
--
--	$SUDO chgrp $GROUPS "$KCORE_DIR"
--	$SUDO chgrp $GROUPS "$KCORE_DIR/kcore"
--	$SUDO chgrp $GROUPS "$KCORE_DIR/kallsyms"
--	$SUDO chgrp $GROUPS "$KCORE_DIR/modules"
--
--	ln -s "$KCORE_DIR_BASENAME" "$PERF_DATA_DIR/kcore_dir"
--}
--
--fix_buildid_cache_permissions()
--{
--	if [ $EUID -ne 0 ] ; then
--		echo "This script must be run as root via sudo " >&2
--		exit 1
--	fi
--
--	if [ -z "$SUDO_USER" ] ; then
--		echo "This script must be run via sudo" >&2
--		exit 1
--	fi
--
--	USER_HOME=$(bash <<< "echo ~$SUDO_USER")
--
--	echo "Fixing buildid cache permissions"
--
--	find "$USER_HOME/.debug" -xdev -type d          ! -user "$SUDO_USER" -ls -exec chown    "$SUDO_USER" \{\} \;
--	find "$USER_HOME/.debug" -xdev -type f -links 1 ! -user "$SUDO_USER" -ls -exec chown    "$SUDO_USER" \{\} \;
--	find "$USER_HOME/.debug" -xdev -type l          ! -user "$SUDO_USER" -ls -exec chown -h "$SUDO_USER" \{\} \;
--
--	if [ -n "$SUDO_GID" ] ; then
--		find "$USER_HOME/.debug" -xdev -type d          ! -group "$SUDO_GID" -ls -exec chgrp    "$SUDO_GID" \{\} \;
--		find "$USER_HOME/.debug" -xdev -type f -links 1 ! -group "$SUDO_GID" -ls -exec chgrp    "$SUDO_GID" \{\} \;
--		find "$USER_HOME/.debug" -xdev -type l          ! -group "$SUDO_GID" -ls -exec chgrp -h "$SUDO_GID" \{\} \;
--	fi
--
--	echo "Done"
--}
--
--check_buildid_cache_permissions()
--{
--	if [ $EUID -eq 0 ] ; then
--		return
--	fi
--
--	PERMISSIONS_OK+=$(find "$HOME/.debug" -xdev -type d          ! -user "$USER" -print -quit)
--	PERMISSIONS_OK+=$(find "$HOME/.debug" -xdev -type f -links 1 ! -user "$USER" -print -quit)
--	PERMISSIONS_OK+=$(find "$HOME/.debug" -xdev -type l          ! -user "$USER" -print -quit)
--
--	PERMISSIONS_OK+=$(find "$HOME/.debug" -xdev -type d          ! -group "$GROUPS" -print -quit)
--	PERMISSIONS_OK+=$(find "$HOME/.debug" -xdev -type f -links 1 ! -group "$GROUPS" -print -quit)
--	PERMISSIONS_OK+=$(find "$HOME/.debug" -xdev -type l          ! -group "$GROUPS" -print -quit)
--
--	if [ -n "$PERMISSIONS_OK" ] ; then
--		echo "*** WARNING *** buildid cache permissions may need fixing" >&2
--	fi
--}
--
--record()
--{
--	echo "Recording"
--
--	if [ $EUID -ne 0 ] ; then
--
--		if [ "$(cat /proc/sys/kernel/kptr_restrict)" -ne 0 ] ; then
--			echo "*** WARNING *** /proc/sys/kernel/kptr_restrict prevents access to kernel addresses" >&2
--		fi
--
--		if echo "${PERF_OPTIONS[@]}" | grep -q ' -a \|^-a \| -a$\|^-a$\| --all-cpus \|^--all-cpus \| --all-cpus$\|^--all-cpus$' ; then
--			echo "*** WARNING *** system-wide tracing without root access will not be able to read all necessary information from /proc" >&2
--		fi
--
--		if echo "${PERF_OPTIONS[@]}" | grep -q 'intel_pt\|intel_bts\| -I\|^-I' ; then
--			if [ "$(cat /proc/sys/kernel/perf_event_paranoid)" -gt -1 ] ; then
--				echo "*** WARNING *** /proc/sys/kernel/perf_event_paranoid restricts buffer size and tracepoint (sched_switch) use" >&2
--			fi
--
--			if echo "${PERF_OPTIONS[@]}" | grep -q ' --per-thread \|^--per-thread \| --per-thread$\|^--per-thread$' ; then
--				true
--			elif echo "${PERF_OPTIONS[@]}" | grep -q ' -t \|^-t \| -t$\|^-t$' ; then
--				true
--			elif [ ! -r /sys/kernel/debug -o ! -x /sys/kernel/debug ] ; then
--				echo "*** WARNING *** /sys/kernel/debug permissions prevent tracepoint (sched_switch) use" >&2
--			fi
--		fi
--	fi
--
--	if [ -z "$1" ] ; then
--		echo "Workload is required for recording" >&2
--		usage
--	fi
--
--	if [ -e "$PERF_DATA_DIR" ] ; then
--		echo "'$PERF_DATA_DIR' exists" >&2
--		exit 1
--	fi
--
--	find_perf
--
--	mkdir "$PERF_DATA_DIR"
--
--	echo "$PERF record -o $PERF_DATA_DIR/perf.data ${PERF_OPTIONS[@]} -- $@"
--	"$PERF" record -o "$PERF_DATA_DIR/perf.data" "${PERF_OPTIONS[@]}" -- "$@" || true
--
--	if rmdir "$PERF_DATA_DIR" > /dev/null 2>/dev/null ; then
--		exit 1
--	fi
--
--	copy_kcore
--
--	echo "Done"
--}
--
--subcommand()
--{
--	find_perf
--	check_buildid_cache_permissions
--	echo "$PERF $PERF_SUB_COMMAND -i $PERF_DATA_DIR/perf.data --kallsyms=$PERF_DATA_DIR/kcore_dir/kallsyms $@"
--	"$PERF" $PERF_SUB_COMMAND -i "$PERF_DATA_DIR/perf.data" "--kallsyms=$PERF_DATA_DIR/kcore_dir/kallsyms" "$@"
--}
--
--if [ "$1" = "fix_buildid_cache_permissions" ] ; then
--	fix_buildid_cache_permissions
--	exit 0
--fi
--
--PERF_SUB_COMMAND=$1
--PERF_DATA_DIR=$2
--shift || true
--shift || true
--
--if [ -z "$PERF_SUB_COMMAND" ] ; then
--	usage
--fi
--
--if [ -z "$PERF_DATA_DIR" ] ; then
--	usage
--fi
--
--case "$PERF_SUB_COMMAND" in
--"record")
--	while [ "$1" != "--" ] ; do
--		PERF_OPTIONS+=("$1")
--		shift || break
--	done
--	if [ "$1" != "--" ] ; then
--		echo "Options and workload are required for recording" >&2
--		usage
--	fi
--	shift
--	record "$@"
--;;
--"script")
--	subcommand "$@"
--;;
--"report")
--	subcommand "$@"
--;;
--"inject")
--	subcommand "$@"
--;;
--*)
--	usage
--;;
--esac
--- 
-2.25.1
-
+Am I remembering this wrong?
