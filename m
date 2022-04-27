@@ -2,102 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5144EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 08:02:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40EA7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 08:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359255AbiD0IFQ (ORCPT
+        id S1359239AbiD0IHM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 04:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34080 "EHLO
+        Wed, 27 Apr 2022 04:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243567AbiD0IFM (ORCPT
+        with ESMTP id S243567AbiD0IHL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 04:05:12 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B8507152485
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 01:02:01 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 82D52ED1;
-        Wed, 27 Apr 2022 01:02:01 -0700 (PDT)
-Received: from [10.57.7.196] (unknown [10.57.7.196])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D1F6E3F5A1;
-        Wed, 27 Apr 2022 01:01:59 -0700 (PDT)
-Message-ID: <ed131800-dac5-0d2a-206e-5e2b5a104e87@arm.com>
-Date:   Wed, 27 Apr 2022 09:01:58 +0100
+        Wed, 27 Apr 2022 04:07:11 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A70151585
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 01:04:00 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651046639;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NVrj/IozLz+YLWMa6Aoyk1/gX+kCZfAflMvOSoBkH+U=;
+        b=hRfN7NDAQ6mU9wp5eFxj+DYfCHPs9azOITyD2BKrRWG0JFePx7KCJTmu+rNLr5KB3sXW5m
+        vD/VA9RgieHmpARGPQt4YAUGCf0frQwHN3SPu+ooQNKpBLtV0wEgIGpF5mEEq0Jpw+mBOG
+        +bCQM8MpHbOGL61wq2Iru3KuEqA5ZaRI1f+1RhkI6xuO2jDNkldnVpBIu/ertS1HOUp+xB
+        vH1KfL8RhmkqWeLBMeKAUFX5CT72lcolpIDSGbWepumi2Onr8hsbJK3SLPmTp1jtxV+Xyk
+        i+Q2GSF6aEMASPkWEzy2NYL5DM8vwRCievUk/6Xh4aoaqAUl7eqh+2b/sERsIQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651046639;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NVrj/IozLz+YLWMa6Aoyk1/gX+kCZfAflMvOSoBkH+U=;
+        b=IPl5zJQ4XmUiSpIBPJlMNPVh+Fw5TE3wmL6lz2+trLDTLAUelYj15SAtSOpdktYrXScZCb
+        eP50UJN3nNpdjkAw==
+To:     Marcelo Tosatti <mtosatti@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     Nitesh Lal <nilal@redhat.com>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Oscar Shiang <oscar0225@livemail.tw>,
+        Marcelo Tosatti <mtosatti@redhat.com>
+Subject: Re: [patch v12 07/13] task isolation: sync vmstats conditional on
+ changes
+In-Reply-To: <20220315153314.042469218@fedora.localdomain>
+References: <20220315153132.717153751@fedora.localdomain>
+ <20220315153314.042469218@fedora.localdomain>
+Date:   Wed, 27 Apr 2022 10:03:58 +0200
+Message-ID: <87tuafx89d.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3] arch_topology: Trace the update thermal pressure
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, sudeep.holla@arm.com,
-        dietmar.eggemann@arm.com, vincent.guittot@linaro.org,
-        rafael@kernel.org, rostedt@goodmis.org, mingo@redhat.com
-References: <20220427073551.19032-1-lukasz.luba@arm.com>
- <Ymj0ZZeUnhq4W/Ws@kroah.com> <38c8a684-5fcc-cfb3-424c-d353a7bafe03@arm.com>
- <Ymj3l6cdxfmQ+hb0@kroah.com>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <Ymj3l6cdxfmQ+hb0@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Mar 15 2022 at 12:31, Marcelo Tosatti wrote:
+>  
+> +#ifdef CONFIG_TASK_ISOLATION
+> +struct static_key vmstat_sync_enabled;
 
+jump_label.h:
 
-On 4/27/22 08:58, Greg KH wrote:
-> On Wed, Apr 27, 2022 at 08:52:50AM +0100, Lukasz Luba wrote:
->>
->>
->> On 4/27/22 08:44, Greg KH wrote:
->>> On Wed, Apr 27, 2022 at 08:35:51AM +0100, Lukasz Luba wrote:
->>>> Add trace event to capture the moment of the call for updating the thermal
->>>> pressure value. It's helpful to investigate how often those events occur
->>>> in a system dealing with throttling. This trace event is needed since the
->>>> old 'cdev_update' might not be used by some drivers.
->>>>
->>>> The old 'cdev_update' trace event only provides a cooling state
->>>> value: [0, n]. That state value then needs additional tools to translate
->>>> it: state -> freq -> capacity -> thermal pressure. This new trace event
->>>> just stores proper thermal pressure value in the trace buffer, no need
->>>> for additional logic. This is helpful for cooperation when someone can
->>>> simply sends to the list the trace buffer output from the platform (no
->>>> need from additional information from other subsystems).
->>>>
->>>> There are also platforms which due to some design reasons don't use
->>>> cooling devices and thus don't trigger old 'cdev_update' trace event.
->>>> They are also important and measuring latency for the thermal signal
->>>> raising/decaying characteristics is in scope. This new trace event
->>>> would cover them as well.
->>>>
->>>> We already have a trace point 'pelt_thermal_tp' which after a change to
->>>> trace event can be paired with this new 'thermal_pressure_update' and
->>>> derive more insight what is going on in the system under thermal pressure
->>>> (and why).
->>>>
->>>> Reported-by: kernel test robot <lkp@intel.com>
->>>
->>> The kernel test robot did not report that you needed to add a new trace
->>> event :(
->>>
->>
->> I got feedback from the test robot for v1, which figured out that
->> the riscv configuration is broken. You can find it here
->> https://lore.kernel.org/lkml/202204201654.vcszVDGb-lkp@intel.com/
->>
->> So, I've added that tag following:
->> "If you fix the issue, kindly add following tag as appropriate"
->>
->> Should this only be honored when a patch actually got into next
->> and then following patch with a fix would have that tag?
-> 
-> Yes.  And you can mention it in the version information about what
-> changed between each patch version below the --- line, but as is, you
-> can see how this does not make sense.
-> 
+"The use of 'struct static_key' directly, is now DEPRECATED."
 
-Thank you Greg for the explanation. I'll remove the tag in v4.
+> +DEFINE_PER_CPU_ALIGNED(bool, vmstat_dirty);
+> +
+> +static inline void mark_vmstat_dirty(void)
+> +{
+> +	if (!static_key_false(&vmstat_sync_enabled))
+> +		return;
+> +
+> +	raw_cpu_write(vmstat_dirty, true);
 
-Regards,
-Lukasz
+What's the justification for raw_cpu_write()?
+
+>  
+> @@ -1512,6 +1543,7 @@ static void pagetypeinfo_showfree_print(
+>  		}
+>  		seq_putc(m, '\n');
+>  	}
+> +	mark_vmstat_dirty();
+
+Why does a function which just dumps information via /proc/pagetypeinfo
+make vmstats dirty?
+
+Thanks,
+
+        tglx
