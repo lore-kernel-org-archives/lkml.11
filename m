@@ -2,90 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB15EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 20:23:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7BF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 20:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236153AbiD0U0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 16:26:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44888 "EHLO
+        id S236523AbiD0U3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 16:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235960AbiD0U0r (ORCPT
+        with ESMTP id S236564AbiD0U2l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 16:26:47 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2043AD10D
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 13:23:32 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id d23-20020a17090a115700b001d2bde6c234so4437401pje.1
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 13:23:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Lf9in1R/IyB6rX6jUJyTZ+zPOwsufKTBlApv7ttWWfI=;
-        b=mkxmR1CbEjd7T2oSqQlrgTQGHLlxZ+wMChlXJfbXaJrep9GBLX60uCfKBbyXYGwQyY
-         KDeQaI/saGyf/LQwrsxRc4jpYpOJDNAOWSHS6RjaaHaFYnWhyYzY0WUVLU0fnQ65rQ1L
-         +IFWWit2h/ta/ZKMcHoXuZFGd2pAt9kJ0eIVPm2WL/+Y2ya5kO2EVd89BcXV+C2iWt2k
-         8j9H7dPQ2goG7B4GUDT7ajgoo8khiZPhogewkTSA26dLrc9B4lyzV5SLazc217D393SB
-         UOkHV1x8I5ReHmCKZvlenNboSq2xb/YT0q/ccK4jrEv5Sn8UVrX+fSmKgtGjVNIe16lI
-         URhw==
+        Wed, 27 Apr 2022 16:28:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1B22B18A4
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 13:25:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651091120;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=DWkcC1Mw2kGsDS6+CAaSOc7PdrzllYlAOUnL4kSDScE=;
+        b=SzGQQII8i5ZjOrdpkhW6N5DvWZwjAuKqw0koUZQEh4+B8I79YEPwbB2g7xojimOfqX9NnI
+        guj586IV91epcQ0/ok/vu1PdL4fYaI3OX55hgLdXcdcfsIak4vp8qzCZoD5RFW4n8DYhHf
+        IImUWZoD28e1kXOJR2ExadK+Kk9i50M=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-413-1ik5oXm6Pz-gKhopaSSKNA-1; Wed, 27 Apr 2022 16:25:19 -0400
+X-MC-Unique: 1ik5oXm6Pz-gKhopaSSKNA-1
+Received: by mail-wr1-f70.google.com with SMTP id e21-20020adfa455000000b0020ae075cf35so1151329wra.11
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 13:25:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Lf9in1R/IyB6rX6jUJyTZ+zPOwsufKTBlApv7ttWWfI=;
-        b=6YKLAVIfDOLkGH8+vN6AYlNtJRNPiZQr/xbesIOT2wqdQ/qDXR43h01dd5mUNDV9I7
-         ayFlnWLp38WP7VH4JTS3wk3Yoe55Wmu2p6ulAKG63lhOonQuzYuz9asYxd0Kf1akztO0
-         mf2Fak4iF/DH15aGY11QrwhXfhALtzhHJPZtlo+oUAMYekaR4XLXUcs9zqgno+vnh2VY
-         xG/id9+a1T1zVzfPKSK8zf9ek3tzzcN5i9ogm5/j0xyia9deLKX8Ut4IGqaHs2PyYoz6
-         GtCJV+z3cM3m/ehqBlL8X/laqtw79v/2IDpb5dQGoH54f92dkzlo85+RXjOysznuhnsH
-         /+dQ==
-X-Gm-Message-State: AOAM531/xZ0OeKwXWEhNL0VfJMUeqKmpgN7p63IPua5C4PeIryz/H53u
-        9dbtRqRT3oIYwzZZj1A/ytkf2g==
-X-Google-Smtp-Source: ABdhPJw3HiHU2l0Zxdnl8FI3SE8UUCEm63BOmZlO5wTWpPxNDy3Afc0ad7VVfEKZ63cdvh+uY/IWNA==
-X-Received: by 2002:a17:902:e8cf:b0:156:36e0:6bcb with SMTP id v15-20020a170902e8cf00b0015636e06bcbmr29286930plg.105.1651091012280;
-        Wed, 27 Apr 2022 13:23:32 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id i23-20020a056a00225700b0050d38d0f58dsm12888790pfu.213.2022.04.27.13.23.31
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DWkcC1Mw2kGsDS6+CAaSOc7PdrzllYlAOUnL4kSDScE=;
+        b=rnzP6OVu8m2Nu9c//66M6KMsXXVltlkzWozNctrfiRtCLnuUz8C25VYH8SSeDl7E//
+         p6NJZMj7DyQ0OjjaKewrkYWUK8Ucumu/50TLXSkgvpRLD93o6uc/sdQtG9GT4UP7aBE+
+         7AdEZf6KahDn7mKYHb2N/nc89xKr09+cj7bpoHD6QmmDJsNkVakW89ivlaVJC4HbLdiT
+         q0MbJd5CcN7odKMqkdDfj1miV9Ne1CD+0NCfqDbA7MoTA9nDZgA9PAZkOP0w1+9CkyCr
+         fH8/m6wl2gnMvWbMZa5zypZSlBZghsk+9qbn1ajvATVP0RqWclWQNUYp3AETbjh44zyU
+         W+AQ==
+X-Gm-Message-State: AOAM532BkF2gsttdc916VxOx0tfTCtxrjmrAxRmKUk1XssAnicItmBdu
+        +NbTFN4UX8Ur8iC8xmT01sTiLI+q5V3jkVjiweaNfP/4r3sQ3NVW94+g5DyM2kybGqT75qd5b4g
+        vR7BXudBcCk9/SJIW6sjHFqCy04NpTs+WKrpcIqcdq0w5vTx62ZfnCqWCDMiNr5PY3/iVjvuzej
+        8=
+X-Received: by 2002:a05:6000:178f:b0:20a:8009:7cd3 with SMTP id e15-20020a056000178f00b0020a80097cd3mr23927710wrg.532.1651091118348;
+        Wed, 27 Apr 2022 13:25:18 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyeyUQBNyusRg7cR3OhmiRejZFOBGxuVFHcl4pM81Q6ah77SVWgTi13DCfSIVex/7kUiivQwQ==
+X-Received: by 2002:a05:6000:178f:b0:20a:8009:7cd3 with SMTP id e15-20020a056000178f00b0020a80097cd3mr23927684wrg.532.1651091118025;
+        Wed, 27 Apr 2022 13:25:18 -0700 (PDT)
+Received: from minerva.home ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id v2-20020adf8b42000000b0020aa790a258sm15147634wra.8.2022.04.27.13.25.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 13:23:31 -0700 (PDT)
-Date:   Wed, 27 Apr 2022 20:23:27 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     David Woodhouse <dwmw2@infradead.org>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mingwei Zhang <mizhang@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: Re: [PATCH v2 8/8] DO NOT MERGE: Hack-a-test to verify gpc
- invalidation+refresh
-Message-ID: <YmmmP0TSmj5CxV06@google.com>
-References: <20220427014004.1992589-1-seanjc@google.com>
- <20220427014004.1992589-9-seanjc@google.com>
- <68b3f18e156391e20aed8e10e974fdf8052b7f47.camel@infradead.org>
+        Wed, 27 Apr 2022 13:25:17 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Lyude Paul <lyude@redhat.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH] drm/display: Select DP helpers for DRM_DP_AUX_CHARDEV and DRM_DP_CEC
+Date:   Wed, 27 Apr 2022 22:25:13 +0200
+Message-Id: <20220427202513.46996-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <68b3f18e156391e20aed8e10e974fdf8052b7f47.camel@infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022, David Woodhouse wrote:
-> On Wed, 2022-04-27 at 01:40 +0000, Sean Christopherson wrote:
-> > Add a VM-wide gfn=>pfn cache and a fake MSR to let userspace control the
-> > cache.  On writes, reflect the value of the MSR into the backing page of
-> > a gfn=>pfn cache so that userspace can detect if a value was written to
-> > the wrong page, i.e. to a stale mapping.
-> > 
-> > Spin up 16 vCPUs (arbitrary) to use/refresh the cache, and another thread
-> > to trigger mmu_notifier events and memslot updates.
-> 
-> Do you need the MSR hack? Can't you exercise this using Xen interrupt
-> delivery or runstate information and the same kind of thread setup?
+The DRM_DP_AUX_CHARDEV and DRM_DP_CEC boolean Kconfig symbols enable code
+that use DP helper functions, exported by the display-helper module.
 
-Yeah, I asumme it's possible, and medium/long term I definitely want to have a
-proper test.  I went the hack route to get something that could hammer a cache
-with minimal chance of a test bug.  I only have a rough idea of what the Xen stuff
-does.
+But these don't select the DRM_DISPLAY_DP_HELPER and DRM_DISPLAY_HELPER
+symbols, to make sure that the functions used will be present. This leads
+to the following linking errors if CONFIG_DRM_DISPLAY_HELPER is set to m:
+
+  LD      vmlinux.o
+  MODPOST vmlinux.symvers
+  MODINFO modules.builtin.modinfo
+  GEN     modules.builtin
+  LD      .tmp_vmlinux.kallsyms1
+  KSYMS   .tmp_vmlinux.kallsyms1.S
+  AS      .tmp_vmlinux.kallsyms1.S
+  LD      .tmp_vmlinux.kallsyms2
+  KSYMS   .tmp_vmlinux.kallsyms2.S
+  AS      .tmp_vmlinux.kallsyms2.S
+  LD      vmlinux
+  SYSMAP  System.map
+  SORTTAB vmlinux
+  OBJCOPY arch/arm64/boot/Image
+  MODPOST modules-only.symvers
+ERROR: modpost: "drm_dp_dpcd_write" [drivers/gpu/drm/display/drm_display_helper.ko] undefined!
+ERROR: modpost: "drm_dp_read_desc" [drivers/gpu/drm/display/drm_display_helper.ko] undefined!
+ERROR: modpost: "drm_dp_dpcd_read" [drivers/gpu/drm/display/drm_display_helper.ko] undefined!
+make[1]: *** [scripts/Makefile.modpost:134: modules-only.symvers] Error 1
+make[1]: *** Deleting file 'modules-only.symvers'
+make: *** [Makefile:1749: modules] Error 2
+
+Note: It seems this has been an issue for a long time but was made easier
+to reproduce after the commit 1e0f66420b13 ("drm/display: Introduce a DRM
+display-helper module"). Adding a Fixes: tag just to make sure that this
+fix will be picked for stable once the mentioned change also lands there.
+
+Fixes: 1e0f66420b13 ("drm/display: Introduce a DRM display-helper module")
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+---
+
+ drivers/gpu/drm/display/Kconfig | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/gpu/drm/display/Kconfig b/drivers/gpu/drm/display/Kconfig
+index f84f1b0cd23f..d7a413a2c6cc 100644
+--- a/drivers/gpu/drm/display/Kconfig
++++ b/drivers/gpu/drm/display/Kconfig
+@@ -32,6 +32,8 @@ config DRM_DISPLAY_HDMI_HELPER
+ config DRM_DP_AUX_CHARDEV
+ 	bool "DRM DP AUX Interface"
+ 	depends on DRM
++	select DRM_DISPLAY_DP_HELPER
++	select DRM_DISPLAY_HELPER
+ 	help
+ 	  Choose this option to enable a /dev/drm_dp_auxN node that allows to
+ 	  read and write values to arbitrary DPCD registers on the DP aux
+@@ -40,6 +42,8 @@ config DRM_DP_AUX_CHARDEV
+ config DRM_DP_CEC
+ 	bool "Enable DisplayPort CEC-Tunneling-over-AUX HDMI support"
+ 	depends on DRM
++	select DRM_DISPLAY_DP_HELPER
++	select DRM_DISPLAY_HELPER
+ 	select CEC_CORE
+ 	help
+ 	  Choose this option if you want to enable HDMI CEC support for
+-- 
+2.35.1
+
