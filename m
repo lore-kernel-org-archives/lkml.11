@@ -2,211 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD82C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B237C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241505AbiD0QGf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57702 "EHLO
+        id S241531AbiD0QGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242419AbiD0QEn (ORCPT
+        with ESMTP id S243373AbiD0QFw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:04:43 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F7453A0F87
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:01:22 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id bz24so1463455qtb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:01:22 -0700 (PDT)
+        Wed, 27 Apr 2022 12:05:52 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AFBC3C305F
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:02:34 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id q23so3178692wra.1
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:02:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZBgzXdZ466rlUwUQs0EI6DMIFSVYYfxcwIa0A3d1nko=;
-        b=fhTowtKO2j1gIyehsLjMg/Ft2943puC7KRcfEZIVbM5qcRk82f1+ST9TguF/qrnxuX
-         a9bXww4C8aR196N7uarXdk5H0jokAohUVeAKI/HORyHGmZ//sbuDt6+a4Qwp1azl2rUE
-         JIbm07to9H1IyQkS8DuWRRfE++12PUX7Sghe34t7kNHf57BKJBB1N2CWsKgZ9C2CMBZ7
-         e422CKVuaMPKW92Hel8KMu/yHBGk762q8V3UB3iN2J1MjkSaZaEcKTsvc7W5hDRyVK07
-         WHsfe42LQ8R/fNSho0yYxEdItM0KgOI//PeSkQ2WQ4B8zqqSFuNG6r4uzD/9r/CZiWcC
-         0SSA==
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tuXdH3mbYd4Gnl44e//+j/klraKOvkpgOliwGw+YZ7s=;
+        b=BnT4/TnG/yQ41vtWz0BFedhJxhOAqjpLvHN9LNyXhyV8m+8PnZpCz0iC3bfWLFc8PQ
+         Jxw2c4EagSdCNgndlDqapohrwulYpJAwBMaP3C6yZpshJxRG6Sd92TyOVPOVZloVMfo1
+         grZekdjRWmzxzm7BLam6dnAFrfMnghKS5GrLT32H8wSh5EbfG+4gXEvNzkcpEwnMqrk6
+         sUCctJvhvEeGZJXctjBr06vKK30nynGDVRhNXBjTLUBENOBiXnKBsX0DmtPbi6Mwi5Rs
+         JEnp1p5+QxWZusg6F/RzyB1pyHNHvhIymslg5vMAabB6TXqTlwYj2F5oMN9pM3f1trzw
+         p5dA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZBgzXdZ466rlUwUQs0EI6DMIFSVYYfxcwIa0A3d1nko=;
-        b=FMhZ7oZKX1ir4b2ne7AT++haLVthdzBwXv0Evxug/HT/kNLF7nHLvEdG9pTqHDRDvW
-         Tf6+UvN54nzy6DIYgBBsaky6pX1L0Tnc5yM1e/0gFvMEpY6zAEP+4bjHviyRIAQ4jz0I
-         DF0MPDN7suuZYvRtIBoYJPtM82/hE3teLGUex4S0oaRyNSsjSYdxqxokD4eZJTFK8g8u
-         OkmH7flAVvDBM71ieVOavAgHdEeEvaX8LG1TPaVQQtEK/ySH33ZqZE8mjjrJMuqU9pti
-         ubW4iWJm4iwyA8ExuDQhw8WknQPWBGo4GLmn1iHOLq2VM0ysOyiAi4dxa0G6/hC0Lrfi
-         GbLg==
-X-Gm-Message-State: AOAM533ccpVFkKcYKRhhTCLP/qYIwWTGQrZ7XqIf0iqKj6gqAzlO0uKk
-        IWEiMPtySRia3cSMG9KP08xO4g==
-X-Google-Smtp-Source: ABdhPJxXvzVjG81fUfBnZdK0tLhIy90Z/zLg6n1UAWZwTJ3z7Kz21ZTF6uUj9GZ0GVWofbPhgz5MPQ==
-X-Received: by 2002:a05:622a:342:b0:2f3:5c21:1bed with SMTP id r2-20020a05622a034200b002f35c211bedmr17432648qtw.123.1651075263679;
-        Wed, 27 Apr 2022 09:01:03 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1:f617])
-        by smtp.gmail.com with ESMTPSA id y7-20020a05620a0e0700b00699a30d6d10sm7837059qkm.111.2022.04.27.09.01.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 09:01:03 -0700 (PDT)
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Seth Jennings <sjenning@redhat.com>,
-        Dan Streetman <ddstreet@ieee.org>, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com
-Subject: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
-Date:   Wed, 27 Apr 2022 12:00:15 -0400
-Message-Id: <20220427160016.144237-5-hannes@cmpxchg.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220427160016.144237-1-hannes@cmpxchg.org>
-References: <20220427160016.144237-1-hannes@cmpxchg.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tuXdH3mbYd4Gnl44e//+j/klraKOvkpgOliwGw+YZ7s=;
+        b=UmeB2g4Dx4WB1Ek4oGmlcXhi8CsbJYWEHCoFcnJkhHcm6dDFfo7wHQf2A1UpHFAV/G
+         AIy9Wh5xKTcSe2WSNiqQCyH2WQ6Ba0GHseObjIpjhgVPiCNUdPs1kft7R7g9TsK7q953
+         3cSMUlp62jLSBWz+63CFJ/8LfCHOpWHeKgnK/o+Gvb8kenIe1PyseAK3PWlWYS7eC2O9
+         yi3XzteOnaxnCbxzypdXTxZi3k7JyBZGfSpGlU6cM9HUSyVJ8UF3UDEnTUfn+RG4V2c3
+         WpeUqHqR5/Sk8qIVh88RHYs+dILALZXQ2dPV7h2cTFJZdG8OMXoCqd+Z7OZFr8putZ04
+         9mnw==
+X-Gm-Message-State: AOAM533zyviVhz+Zzhk2azHzxOyQtLVRoIZAw6deliQLiuDIQjxzTSYu
+        4LwdQ4czBgYpoSBwEykjLVAqhNyqb5LrAfYfnWv5
+X-Google-Smtp-Source: ABdhPJzYoyxpMLnD9ubmid4unahg+b0PsIWIS3wxLIoFgmxDjN1rv/qVRxVkpAaGGwTHUHfo5yOg/ZMc8seG7EODIqc=
+X-Received: by 2002:a5d:590d:0:b0:20a:c3eb:2584 with SMTP id
+ v13-20020a5d590d000000b0020ac3eb2584mr22239195wrd.18.1651075352543; Wed, 27
+ Apr 2022 09:02:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220418145945.38797-1-casey@schaufler-ca.com>
+ <20220418145945.38797-24-casey@schaufler-ca.com> <a1702622-5980-1eb4-1cf8-b6fc6cd98b25@canonical.com>
+ <CAHC9VhRzJKAARW1rnUMu0Y6RVo_uq=i=Jzh4LmA9grtQ1W2C1Q@mail.gmail.com>
+ <26eca0aa-111a-9473-8925-e4b12cadbd79@canonical.com> <CAHC9VhQQysL8aEt8w5G-nemJzapY-Q4pYKn0TCdnVjpuiTKqhw@mail.gmail.com>
+ <4ec176c6-1f66-3951-f40f-1eb0d5b66a09@schaufler-ca.com>
+In-Reply-To: <4ec176c6-1f66-3951-f40f-1eb0d5b66a09@schaufler-ca.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Wed, 27 Apr 2022 12:02:21 -0400
+Message-ID: <CAHC9VhQow5MaC0O-YJHxXh_=SR5eo3+97pznVyUq4YhkTuBBmg@mail.gmail.com>
+Subject: Re: [PATCH v35 23/29] Audit: Create audit_stamp structure
+To:     Casey Schaufler <casey@schaufler-ca.com>
+Cc:     John Johansen <john.johansen@canonical.com>, jmorris@namei.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-audit@redhat.com, keescook@chromium.org,
+        penguin-kernel@i-love.sakura.ne.jp, stephen.smalley.work@gmail.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently it requires poking at debugfs to figure out the size and
-population of the zswap cache on a host. There are no counters for
-reads and writes against the cache. As a result, it's difficult to
-understand zswap behavior on production systems.
+On Wed, Apr 27, 2022 at 11:49 AM Casey Schaufler <casey@schaufler-ca.com> wrote:
+>
+> On 4/26/2022 12:18 PM, Paul Moore wrote:
+> > On Tue, Apr 26, 2022 at 2:58 PM John Johansen
+> > <john.johansen@canonical.com> wrote:
+> >> On 4/26/22 11:03, Paul Moore wrote:
+> >>> On Mon, Apr 25, 2022 at 7:31 PM John Johansen
+> >>> <john.johansen@canonical.com> wrote:
+> >>>> On 4/18/22 07:59, Casey Schaufler wrote:
+> >>>>> Replace the timestamp and serial number pair used in audit records
+> >>>>> with a structure containing the two elements.
+> >>>>>
+> >>>>> Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+> >>>>> Acked-by: Paul Moore <paul@paul-moore.com>
+> >>>>> ---
+> >>>>>   kernel/audit.c   | 17 +++++++++--------
+> >>>>>   kernel/audit.h   | 12 +++++++++---
+> >>>>>   kernel/auditsc.c | 22 +++++++++-------------
+> >>>>>   3 files changed, 27 insertions(+), 24 deletions(-)
+> >>> ...
+> >>>
+> >>>>> diff --git a/kernel/audit.h b/kernel/audit.h
+> >>>>> index 4af63e7dde17..260dab6e0e15 100644
+> >>>>> --- a/kernel/audit.h
+> >>>>> +++ b/kernel/audit.h
+> >>>>> @@ -108,10 +114,10 @@ struct audit_context {
+> >>>>>                AUDIT_CTX_URING,        /* in use by io_uring */
+> >>>>>        } context;
+> >>>>>        enum audit_state    state, current_state;
+> >>>>> +     struct audit_stamp  stamp;      /* event identifier */
+> >>>>>        unsigned int        serial;     /* serial number for record */
+> >>>> shouldn't we be dropping serial from the audit_context, since we have
+> >>>> moved it into the audit_stamp?
+> >>> Unless we make some significant changes to audit_log_start() we still
+> >>> need to preserve a timestamp in the audit_context so that regularly
+> >>> associated audit records can share a common timestamp (which is what
+> >>> groups multiple records into a single "event").
+> >>>
+> >> sure, but the patch changes things to use ctx->stamp.serial instead of
+> >> ctx->serial ...
+> > My apologies, I read your original comment wrong; I was thinking you
+> > were suggesting removing the timestamp info from audit_context in
+> > favor of using the timestamp info contained in the audit_buffer.
+> >
+> > Yes, audit_context:serial is no longer needed with audit_context:stamp.
+>
+> Thank you for catching that. Easy (I expect) fix.
+> BTW, I'm not supposed to be working the next few weeks,
+> but I should be able to sneak v36 in before the next merge
+> window.
 
-Print zswap memory consumption and how many pages are zswapped out in
-/proc/meminfo. Count zswapouts and zswapins in /proc/vmstat.
+Enjoy the time away :)
 
-Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
----
- fs/proc/meminfo.c             |  7 +++++++
- include/linux/swap.h          |  5 +++++
- include/linux/vm_event_item.h |  4 ++++
- mm/vmstat.c                   |  4 ++++
- mm/zswap.c                    | 13 ++++++-------
- 5 files changed, 26 insertions(+), 7 deletions(-)
+FWIW, this isn't my call to make, but I would strongly prefer if this
+got a *full* run in linux-next before it was merged into Linus' tree
+during the merge window.  For example, get this into the LSM -next
+tree at -rc1 instead of -rc6.
 
-diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
-index 6fa761c9cc78..6e89f0e2fd20 100644
---- a/fs/proc/meminfo.c
-+++ b/fs/proc/meminfo.c
-@@ -86,6 +86,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
- 
- 	show_val_kb(m, "SwapTotal:      ", i.totalswap);
- 	show_val_kb(m, "SwapFree:       ", i.freeswap);
-+#ifdef CONFIG_ZSWAP
-+	seq_printf(m,  "Zswap:          %8lu kB\n",
-+		   (unsigned long)(zswap_pool_total_size >> 10));
-+	seq_printf(m,  "Zswapped:       %8lu kB\n",
-+		   (unsigned long)atomic_read(&zswap_stored_pages) <<
-+		   (PAGE_SHIFT - 10));
-+#endif
- 	show_val_kb(m, "Dirty:          ",
- 		    global_node_page_state(NR_FILE_DIRTY));
- 	show_val_kb(m, "Writeback:      ",
-diff --git a/include/linux/swap.h b/include/linux/swap.h
-index b82c196d8867..07074afa79a7 100644
---- a/include/linux/swap.h
-+++ b/include/linux/swap.h
-@@ -632,6 +632,11 @@ static inline int mem_cgroup_swappiness(struct mem_cgroup *mem)
- }
- #endif
- 
-+#ifdef CONFIG_ZSWAP
-+extern u64 zswap_pool_total_size;
-+extern atomic_t zswap_stored_pages;
-+#endif
-+
- #if defined(CONFIG_SWAP) && defined(CONFIG_MEMCG) && defined(CONFIG_BLK_CGROUP)
- extern void __cgroup_throttle_swaprate(struct page *page, gfp_t gfp_mask);
- static inline  void cgroup_throttle_swaprate(struct page *page, gfp_t gfp_mask)
-diff --git a/include/linux/vm_event_item.h b/include/linux/vm_event_item.h
-index 5e80138ce624..1ce8fadb2b1c 100644
---- a/include/linux/vm_event_item.h
-+++ b/include/linux/vm_event_item.h
-@@ -132,6 +132,10 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
- #ifdef CONFIG_KSM
- 		COW_KSM,
- #endif
-+#ifdef CONFIG_ZSWAP
-+		ZSWPIN,
-+		ZSWPOUT,
-+#endif
- #ifdef CONFIG_X86
- 		DIRECT_MAP_LEVEL2_SPLIT,
- 		DIRECT_MAP_LEVEL3_SPLIT,
-diff --git a/mm/vmstat.c b/mm/vmstat.c
-index 4a2aa2fa88db..da7e389cf33c 100644
---- a/mm/vmstat.c
-+++ b/mm/vmstat.c
-@@ -1392,6 +1392,10 @@ const char * const vmstat_text[] = {
- #ifdef CONFIG_KSM
- 	"cow_ksm",
- #endif
-+#ifdef CONFIG_ZSWAP
-+	"zswpin",
-+	"zswpout",
-+#endif
- #ifdef CONFIG_X86
- 	"direct_map_level2_splits",
- 	"direct_map_level3_splits",
-diff --git a/mm/zswap.c b/mm/zswap.c
-index 2c5db4cbedea..e3c16a70f533 100644
---- a/mm/zswap.c
-+++ b/mm/zswap.c
-@@ -42,9 +42,9 @@
- * statistics
- **********************************/
- /* Total bytes used by the compressed storage */
--static u64 zswap_pool_total_size;
-+u64 zswap_pool_total_size;
- /* The number of compressed pages currently stored in zswap */
--static atomic_t zswap_stored_pages = ATOMIC_INIT(0);
-+atomic_t zswap_stored_pages = ATOMIC_INIT(0);
- /* The number of same-value filled pages currently stored in zswap */
- static atomic_t zswap_same_filled_pages = ATOMIC_INIT(0);
- 
-@@ -1243,6 +1243,7 @@ static int zswap_frontswap_store(unsigned type, pgoff_t offset,
- 	/* update stats */
- 	atomic_inc(&zswap_stored_pages);
- 	zswap_update_total_size();
-+	count_vm_event(ZSWPOUT);
- 
- 	return 0;
- 
-@@ -1285,11 +1286,10 @@ static int zswap_frontswap_load(unsigned type, pgoff_t offset,
- 		zswap_fill_page(dst, entry->value);
- 		kunmap_atomic(dst);
- 		ret = 0;
--		goto freeentry;
-+		goto stats;
- 	}
- 
- 	if (!zpool_can_sleep_mapped(entry->pool->zpool)) {
--
- 		tmp = kmalloc(entry->length, GFP_ATOMIC);
- 		if (!tmp) {
- 			ret = -ENOMEM;
-@@ -1304,10 +1304,8 @@ static int zswap_frontswap_load(unsigned type, pgoff_t offset,
- 		src += sizeof(struct zswap_header);
- 
- 	if (!zpool_can_sleep_mapped(entry->pool->zpool)) {
--
- 		memcpy(tmp, src, entry->length);
- 		src = tmp;
--
- 		zpool_unmap_handle(entry->pool->zpool, entry->handle);
- 	}
- 
-@@ -1326,7 +1324,8 @@ static int zswap_frontswap_load(unsigned type, pgoff_t offset,
- 		kfree(tmp);
- 
- 	BUG_ON(ret);
--
-+stats:
-+	count_vm_event(ZSWPIN);
- freeentry:
- 	spin_lock(&tree->lock);
- 	zswap_entry_put(tree, entry);
 -- 
-2.35.3
-
+paul-moore.com
