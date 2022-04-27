@@ -2,114 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF7AFC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E42D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231215AbiD0K7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:59:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34390 "EHLO
+        id S231701AbiD0LAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 07:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231871AbiD0K7T (ORCPT
+        with ESMTP id S231684AbiD0K72 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 06:59:19 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4775F4184C1;
-        Wed, 27 Apr 2022 03:49:43 -0700 (PDT)
-Received: from relay1-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::221])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 806BFC139B;
-        Wed, 27 Apr 2022 09:48:16 +0000 (UTC)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3C889240005;
-        Wed, 27 Apr 2022 09:46:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651052809;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Wed, 27 Apr 2022 06:59:28 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7036D22C3C1;
+        Wed, 27 Apr 2022 03:37:09 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id DE5591F747;
+        Wed, 27 Apr 2022 10:37:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1651055827; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Lo0sS2FamHTxkgucmXZLA8+CDYrMlYUMiwprP2QNxYs=;
-        b=b8rym0FHvT+aDTJ1IxQd17RW7oC4z2hYhxZW1NOm7sm6arDCaW4fTWK4SDOfrs2NNBIpxa
-        Y76MFcE/SmzMVSnPoIjoQEyU5FKqG/8DKxe59ceJdB+pOj7clvrVe3FbHTBuX+ekQRvDAU
-        QRrwwFStrynfMiXEMg3msLr2jtgqb5R7nhTznaxmVdqDWwXwvMI5yMDu2wKCUDLcv/Thk+
-        VzBLwJdSqeW4NQoAVvlcTyDnihjuVSW+1vHlkaZkycDx5cCGHrE1pY6BhyOPc0gASt2HUG
-        8zyOJSc5ovNj8z/hVrTfixCiTXfu6b/LZPp74PaoeFr3eucxF9xZSGfyu6PWqQ==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Pantelis Antoniou <pantelis.antoniou@konsulko.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Thomas Petazzoni <thomas.petazonni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 1/3] of: always populate a root node
-Date:   Wed, 27 Apr 2022 11:45:00 +0200
-Message-Id: <20220427094502.456111-2-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220427094502.456111-1-clement.leger@bootlin.com>
-References: <20220427094502.456111-1-clement.leger@bootlin.com>
+        bh=EwRuU3lN9KI8hyzt5BRGcUdxQu2aFhndVDrcib1zzbI=;
+        b=feYJC2od1AKLT8mJSoDbAoyzHedIgJQwZvNS3KNVkgnc7RzT6txrdyC7qHmbKtqm0eHZ1C
+        nwtyIUFNi9tG48N+Y74qTSYSX6kwlgGkYQd3TgrHBB36BxazEEJwyWSiqJG/CA/Henk0as
+        Q442kgxgzolK1QTcIhmgJfFSnVSSaYE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1651055827;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EwRuU3lN9KI8hyzt5BRGcUdxQu2aFhndVDrcib1zzbI=;
+        b=Z5DGjHUwr8LqYy6Y4hmCD5vvVYHZlNaZpZ9cOR3X70LSGdN3HKPIIQ+uUPD5pElrFfGesW
+        b/jCF0GqeLUhBNBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 942411323E;
+        Wed, 27 Apr 2022 10:37:07 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id VQRnI9McaWJTBQAAMHmgww
+        (envelope-from <hare@suse.de>); Wed, 27 Apr 2022 10:37:07 +0000
+Message-ID: <a885def5-7373-28d9-6ed6-bc836864c67c@suse.de>
+Date:   Wed, 27 Apr 2022 12:37:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Content-Language: en-US
+To:     Nitesh Shetty <nj.shetty@samsung.com>
+Cc:     chaitanyak@nvidia.com, linux-block@vger.kernel.org,
+        linux-scsi@vger.kernel.org, dm-devel@redhat.com,
+        linux-nvme@lists.infradead.org, linux-fsdevel@vger.kernel.org,
+        axboe@kernel.dk, msnitzer@redhat.com, bvanassche@acm.org,
+        martin.petersen@oracle.com, kbusch@kernel.org, hch@lst.de,
+        Frederick.Knight@netapp.com, osandov@fb.com,
+        lsf-pc@lists.linux-foundation.org, djwong@kernel.org,
+        josef@toxicpanda.com, clm@fb.com, dsterba@suse.com, tytso@mit.edu,
+        jack@suse.com, nitheshshetty@gmail.com, gost.dev@samsung.com,
+        =?UTF-8?Q?Javier_Gonz=c3=a1lez?= <javier.gonz@samsung.com>,
+        Arnav Dawn <arnav.dawn@samsung.com>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        James Smart <james.smart@broadcom.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        Johannes Thumshirn <jth@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-kernel@vger.kernel.org
+References: <20220426101241.30100-1-nj.shetty@samsung.com>
+ <CGME20220426101938epcas5p291690dd1f0e931cd9f8139daaf3f9296@epcas5p2.samsung.com>
+ <20220426101241.30100-4-nj.shetty@samsung.com>
+From:   Hannes Reinecke <hare@suse.de>
+Subject: Re: [PATCH v4 03/10] block: Introduce a new ioctl for copy
+In-Reply-To: <20220426101241.30100-4-nj.shetty@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When enabling CONFIG_OF on a platform where of_root is not populated by
-firmware, we end up without a root node. In order to apply overlays and
-create subnodes of the root node, we need one. This commit creates an
-empty root node if not present.
+On 4/26/22 12:12, Nitesh Shetty wrote:
+> Add new BLKCOPY ioctl that offloads copying of one or more sources ranges
+> to one or more destination in a device. COPY ioctl accepts a 'copy_range'
+> structure that contains no of range, a reserved field , followed by an
+> array of ranges. Each source range is represented by 'range_entry' that
+> contains source start offset, destination start offset and length of
+> source ranges (in bytes)
+> 
+> MAX_COPY_NR_RANGE, limits the number of entries for the IOCTL and
+> MAX_COPY_TOTAL_LENGTH limits the total copy length, IOCTL can handle.
+> 
+> Example code, to issue BLKCOPY:
+> /* Sample example to copy three entries with [dest,src,len],
+> * [32768, 0, 4096] [36864, 4096, 4096] [40960,8192,4096] on same device */
+> 
+> int main(void)
+> {
+> 	int i, ret, fd;
+> 	unsigned long src = 0, dst = 32768, len = 4096;
+> 	struct copy_range *cr;
+> 	cr = (struct copy_range *)malloc(sizeof(*cr)+
+> 					(sizeof(struct range_entry)*3));
+> 	cr->nr_range = 3;
+> 	cr->reserved = 0;
+> 	for (i = 0; i< cr->nr_range; i++, src += len, dst += len) {
+> 		cr->range_list[i].dst = dst;
+> 		cr->range_list[i].src = src;
+> 		cr->range_list[i].len = len;
+> 		cr->range_list[i].comp_len = 0;
+> 	}
+> 	fd = open("/dev/nvme0n1", O_RDWR);
+> 	if (fd < 0) return 1;
+> 	ret = ioctl(fd, BLKCOPY, cr);
+> 	if (ret != 0)
+> 	       printf("copy failed, ret= %d\n", ret);
+> 	for (i=0; i< cr->nr_range; i++)
+> 		if (cr->range_list[i].len != cr->range_list[i].comp_len)
+> 			printf("Partial copy for entry %d: requested %llu, completed %llu\n",
+> 								i, cr->range_list[i].len,
+> 								cr->range_list[i].comp_len);
+> 	close(fd);
+> 	free(cr);
+> 	return ret;
+> }
+> 
+> Signed-off-by: Nitesh Shetty <nj.shetty@samsung.com>
+> Signed-off-by: Javier González <javier.gonz@samsung.com>
+> Signed-off-by: Arnav Dawn <arnav.dawn@samsung.com>
+> ---
+>   block/ioctl.c           | 32 ++++++++++++++++++++++++++++++++
+>   include/uapi/linux/fs.h |  9 +++++++++
+>   2 files changed, 41 insertions(+)
+> 
+Reviewed-by: Hannes Reinecke <hare@suse.de>
 
-Co-developed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- drivers/of/base.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+Cheers,
 
-diff --git a/drivers/of/base.c b/drivers/of/base.c
-index e7d92b67cb8a..6b8584c39f73 100644
---- a/drivers/of/base.c
-+++ b/drivers/of/base.c
-@@ -177,6 +177,19 @@ void __init of_core_init(void)
- 		pr_err("failed to register existing nodes\n");
- 		return;
- 	}
-+
-+	if (!of_root) {
-+		of_root = kzalloc(sizeof(*of_root), GFP_KERNEL);
-+		if (!of_root) {
-+			mutex_unlock(&of_mutex);
-+			pr_err("failed to create root node\n");
-+			return;
-+		}
-+
-+		of_root->full_name = "/";
-+		of_node_init(of_root);
-+	}
-+
- 	for_each_of_allnodes(np) {
- 		__of_attach_node_sysfs(np);
- 		if (np->phandle && !phandle_cache[of_phandle_cache_hash(np->phandle)])
-@@ -185,8 +198,7 @@ void __init of_core_init(void)
- 	mutex_unlock(&of_mutex);
- 
- 	/* Symlink in /proc as required by userspace ABI */
--	if (of_root)
--		proc_symlink("device-tree", NULL, "/sys/firmware/devicetree/base");
-+	proc_symlink("device-tree", NULL, "/sys/firmware/devicetree/base");
- }
- 
- static struct property *__of_find_property(const struct device_node *np,
+Hannes
 -- 
-2.34.1
-
+Dr. Hannes Reinecke		           Kernel Storage Architect
+hare@suse.de			                  +49 911 74053 688
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
