@@ -2,185 +2,350 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C43C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 01:12:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E55C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 01:15:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356596AbiD0BPp (ORCPT
+        id S1356538AbiD0BSV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 21:15:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39638 "EHLO
+        Tue, 26 Apr 2022 21:18:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232354AbiD0BPm (ORCPT
+        with ESMTP id S233379AbiD0BST (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 21:15:42 -0400
-Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF503E5D5
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 18:12:32 -0700 (PDT)
-Received: by mail-vs1-xe2c.google.com with SMTP id a127so417951vsa.3
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 18:12:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0OB4iCXtxiKbS3NMWNYxYIAROlGFdL0Wkd5J0MHv91A=;
-        b=Bp9dT2NsWeXsrortAGIE6Vx0R7SGr+A/O59m+DJngXiWhnvAv4m8qbxVl4TUtOJQY5
-         bAmLUMBUoJocnLAu4lLnTOo5zkNupj3UnX7QkNy45lihtzmQbwIdNBHV08x4R0xmEECs
-         RHOOGe9FvdObHDrXgCsZGk886CHiL8Mvv/8I/3JeNmEJBjskYzLheGO/bCFQfgdYE8wx
-         4/n80TAzYbqYYRM294NyAu8H8roXt4mF8a1JXWwVzzD+bSmgY1wQCgAeAWiStF7eoYXW
-         /Ec0TvS1b2RbTQiLUA1gTqUxmZh8oiMj/QKw1CLegC52kGpb8aLHwXgU/6srNFGYZd2B
-         J0oQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0OB4iCXtxiKbS3NMWNYxYIAROlGFdL0Wkd5J0MHv91A=;
-        b=GmCBolUg6a1Omq52xeTEt+PZFRAaF80p0aAZM2kRF8wEHVXceoIxK+CJWg6XkrVes3
-         QmooM8iByZM8B3jazlGZKXgEvUPxBWEinr7yNJQj7Kb6Yo+/23cVpFgPG7xmLS67oHKb
-         RPslntQZgksaSr2shTeGOcqJk2ctorZQi1XhnLgrIi+qboMvAzg9Vqel2KrqCTsmwwrD
-         fUfrDQ0lzmJai/vXH6gpaCtuPfHHKXq4gEyiCr+dFkhJfB/wvuDo8nU3MVhi7sRyc90b
-         8Gc9Y6cT/n906LC+g1DlLDL4AkZpgjS9eC+nPE/APsbjfvZvma95S7EmgtvwRybKysHu
-         sj7Q==
-X-Gm-Message-State: AOAM532rQc4zpBhxnYk7csToyslurnON5O595luEpnJoxahbr885V7v6
-        ci+HxO2ElZiDHsT8YKbEBGIiq8BgrVrDczmZyh1F8g==
-X-Google-Smtp-Source: ABdhPJwy/MRAp4oC6Hi1ll9gS9jBkgqQtmNi88ADT/C3NJcTx+Bes6COrB45hWc8WPeVFid4VYYYZG1IRGGt4+/7Wgg=
-X-Received: by 2002:a05:6102:158a:b0:32a:56ea:3fba with SMTP id
- g10-20020a056102158a00b0032a56ea3fbamr7630158vsv.84.1651021951811; Tue, 26
- Apr 2022 18:12:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220407031525.2368067-1-yuzhao@google.com> <20220407031525.2368067-11-yuzhao@google.com>
- <20220411191627.629f21de83cd0a520ef4a142@linux-foundation.org>
- <CAOUHufbtFj0Hez7wkw3DHGDwo6wudCzCvACt2GfgrFcubW_DYg@mail.gmail.com> <20220426152237.21d3f173eded69c0f63911f0@linux-foundation.org>
-In-Reply-To: <20220426152237.21d3f173eded69c0f63911f0@linux-foundation.org>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Tue, 26 Apr 2022 19:11:54 -0600
-Message-ID: <CAOUHufZ3fRcDqyFPSL9buqcE_sZsZQE+fUW7XkiwubNSD0Zb5g@mail.gmail.com>
-Subject: Re: [PATCH v10 10/14] mm: multi-gen LRU: kill switch
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Tejun Heo <tj@kernel.org>, Stephen Rothwell <sfr@rothwell.id.au>,
-        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <21cnbao@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
+        Tue, 26 Apr 2022 21:18:19 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C5291149;
+        Tue, 26 Apr 2022 18:15:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651022108; x=1682558108;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=0xF4u6bKIDATfFpiOZZrcYPm39KiEoiEAhQO1VPQtS0=;
+  b=mARk5qKHTOw4n0X4nroRVcRPjoN/PnZTSHEKBon9Fd9cR/sXHgqA7xVr
+   TkMjjobXAxzLPxqPBS+bNvrLFtwkjBfU2Gfs2sgv6mnpkgEtNGONoOO+j
+   hb9p0mLjMr+YaPoBZb55rx40eonFcI42CV/m40IKWlAINpAlCquzbHIGt
+   f6f13q1ahsVCmkWCYDwxYzh6xtJ1/dq5Xs+OcJWODNzSyOGX/ZlF4k1Q7
+   nl7sI1fc6FgHJtZ+KJiZd3D5MO6Ij9vGwDSTFdELLbM+NusPAlH2vpfLE
+   tUpfc9dZxcp6YgaBUAyojefK+rPw1TdLm2gW3Dpjg9LVgcQPW9NqMhldj
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="328715771"
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="328715771"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 18:15:08 -0700
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="564846008"
+Received: from ssaride-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.0.221])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 18:15:04 -0700
+Message-ID: <ecf718abf864bbb2366209f00d4315ada090aedc.camel@intel.com>
+Subject: Re: [PATCH v3 00/21] TDX host kernel support
+From:   Kai Huang <kai.huang@intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+Date:   Wed, 27 Apr 2022 13:15:02 +1200
+In-Reply-To: <522e37eb-68fc-35db-44d5-479d0088e43f@intel.com>
+References: <cover.1649219184.git.kai.huang@intel.com>
+         <522e37eb-68fc-35db-44d5-479d0088e43f@intel.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 4:22 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Tue, 26 Apr 2022 14:57:15 -0600 Yu Zhao <yuzhao@google.com> wrote:
->
-> > On Mon, Apr 11, 2022 at 8:16 PM Andrew Morton <akpm@linux-foundation.org> wrote:
-> > >
-> > > On Wed,  6 Apr 2022 21:15:22 -0600 Yu Zhao <yuzhao@google.com> wrote:
-> > >
-> > > > Add /sys/kernel/mm/lru_gen/enabled as a kill switch. Components that
-> > > > can be disabled include:
-> > > >   0x0001: the multi-gen LRU core
-> > > >   0x0002: walking page table, when arch_has_hw_pte_young() returns
-> > > >           true
-> > > >   0x0004: clearing the accessed bit in non-leaf PMD entries, when
-> > > >           CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG=y
-> > > >   [yYnN]: apply to all the components above
-> > > > E.g.,
-> > > >   echo y >/sys/kernel/mm/lru_gen/enabled
-> > > >   cat /sys/kernel/mm/lru_gen/enabled
-> > > >   0x0007
-> > > >   echo 5 >/sys/kernel/mm/lru_gen/enabled
-> > > >   cat /sys/kernel/mm/lru_gen/enabled
-> > > >   0x0005
-> > >
-> > > I'm shocked that this actually works.  How does it work?  Existing
-> > > pages & folios are drained over time or synchrnously?
-> >
-> > Basically we have a double-throw way, and once flipped, new (isolated)
-> > pages can only be added to the lists of the current implementation.
-> > Existing pages on the lists of the previous implementation are
-> > synchronously drained (isolated and then re-added), with
-> > cond_resched() of course.
-> >
-> > > Supporting
-> > > structures remain allocated, available for reenablement?
-> >
-> > Correct.
-> >
-> > > Why is it thought necessary to have this?  Is it expected to be
-> > > permanent?
-> >
-> > This is almost a must for large scale deployments/experiments.
-> >
-> > For deployments, we need to keep fix rollout (high priority) and
-> > feature enabling (low priority) separate. Rolling out multiple
-> > binaries works but will make the process slower and more painful. So
-> > generally for each release, there is only one binary to roll out, and
-> > unless it's impossible, new features are disabled by default. Once a
-> > rollout completes, i.e., reaches enough population and remains stable,
-> > new features are turned on gradually. If something goes wrong with a
-> > new feature, we turn off that feature rather than roll back the
-> > kernel.
-> >
-> > Similarly, for A/B experiments, we don't want to use two binaries.
->
-> Please let's spell out this sort of high-level thinking in the
-> changelogging.
+On Tue, 2022-04-26 at 13:13 -0700, Dave Hansen wrote:
+> On 4/5/22 21:49, Kai Huang wrote:
+> > SEAM VMX root operation is designed to host a CPU-attested, software
+> > module called the 'TDX module' which implements functions to manage
+> > crypto protected VMs called Trust Domains (TD).  SEAM VMX root is also
+> 
+> "crypto protected"?  What the heck is that?
 
-Will do.
+How about "crypto-protected"?  I googled and it seems it is used by someone
+else.
 
-> From what you're saying, this is a transient thing.  It sounds that
-> this enablement is only needed when mglru is at an early stage.  Once
-> it has matured more then successive rollouts will have essentially the
-> same mglru implementation and being able to disable mglru at runtime
-> will no longer be required?
+> 
+> > designed to host a CPU-attested, software module called the 'Intel
+> > Persistent SEAMLDR (Intel P-SEAMLDR)' to load and update the TDX module.
+> > 
+> > Host kernel transits to either the P-SEAMLDR or the TDX module via a new
+> 
+>  ^ The
 
-I certainly hope so. But realistically this switch is here to stay,
-just like anything else added after careful planning or on a whim.
+Thanks.
 
-> I guess the capability is reasonable simple/small and is livable with,
-> but does it have a long-term future?
+> 
+> > SEAMCALL instruction.  SEAMCALLs are host-side interface functions
+> > defined by the P-SEAMLDR and the TDX module around the new SEAMCALL
+> > instruction.  They are similar to a hypercall, except they are made by
+> > host kernel to the SEAM software modules.
+> 
+> This is still missing some important high-level things, like that the
+> TDX module is protected from the untrusted VMM.  Heck, it forgets to
+> mention that the VMM itself is untrusted and the TDX module replaces
+> things that the VMM usually does.
+> 
+> It would also be nice to mention here how this compares with SEV-SNP.
+> Where is the TDX module in that design?  Why doesn't SEV need all this code?
+> 
+> > TDX leverages Intel Multi-Key Total Memory Encryption (MKTME) to crypto
+> > protect TD guests.  TDX reserves part of MKTME KeyID space as TDX private
+> > KeyIDs, which can only be used by software runs in SEAM.  The physical
+> 
+> 					    ^ which
 
-I see it as a necessary evil.
+Thanks.
 
-> I mean, when organizations such as google start adopting the mglru
-> implementation which is present in Linus's tree we're, what, a year or
-> more into the future?  Will they still need a kill switch then?
+> 
+> > address bits for encoding TDX private KeyID are treated as reserved bits
+> > when not in SEAM operation.  The partitioning of MKTME KeyIDs and TDX
+> > private KeyIDs is configured by BIOS.
+> > 
+> > Before being able to manage TD guests, the TDX module must be loaded
+> > and properly initialized using SEAMCALLs defined by TDX architecture.
+> > This series assumes both the P-SEAMLDR and the TDX module are loaded by
+> > BIOS before the kernel boots.
+> > 
+> > There's no CPUID or MSR to detect either the P-SEAMLDR or the TDX module.
+> > Instead, detecting them can be done by using P-SEAMLDR's SEAMLDR.INFO
+> > SEAMCALL to detect P-SEAMLDR.  The success of this SEAMCALL means the
+> > P-SEAMLDR is loaded.  The P-SEAMLDR information returned by this
+> > SEAMCALL further tells whether TDX module is loaded.
+> 
+> There's a bit of information missing here.  The kernel might not know
+> the state of things being loaded.  A previous kernel might have loaded
+> it and left it in an unknown state.
+> 
+> > The TDX module is initialized in multiple steps:
+> > 
+> >         1) Global initialization;
+> >         2) Logical-CPU scope initialization;
+> >         3) Enumerate the TDX module capabilities;
+> >         4) Configure the TDX module about usable memory ranges and
+> >            global KeyID information;
+> >         5) Package-scope configuration for the global KeyID;
+> >         6) Initialize TDX metadata for usable memory ranges based on 4).
+> > 
+> > Step 2) requires calling some SEAMCALL on all "BIOS-enabled" (in MADT
+> > table) logical cpus, otherwise step 4) will fail.  Step 5) requires
+> > calling SEAMCALL on at least one cpu on all packages.
+> > 
+> > TDX module can also be shut down at any time during module's lifetime, by
+> > calling SEAMCALL on all "BIOS-enabled" logical cpus.
+> > 
+> > == Design Considerations ==
+> > 
+> > 1. Lazy TDX module initialization on-demand by caller
+> 
+> This doesn't really tell us what "lazy" is or what the alternatives are.
+> 
+> There are basically two ways the TDX module could be loaded.  Either:
+>   * In early boot
+> or
+>   * At runtime just before the first TDX guest is run
+> 
+> This series implements the runtime loading.
 
-There are two distinct possibilities:
-1. Naturally the number of caps would grow. Old caps that have been
-proven remain the same values. New caps need to be flipped on/off for
-deployments/experiments.
-2. The worst case scenario: this file becomes something like
-/sys/kernel/mm/transparent_hugepage/enabled. For different workloads,
-it's set to different values. Otherwise we'd have to build multiple
-kernel binaries.
+OK will do.
+
+> 
+> > None of the steps in the TDX module initialization process must be done
+> > during kernel boot.  This series doesn't initialize TDX at boot time, but
+> > instead, provides two functions to allow caller to detect and initialize
+> > TDX on demand:
+> > 
+> >         if (tdx_detect())
+> >                 goto no_tdx;
+> >         if (tdx_init())
+> >                 goto no_tdx;
+> > 
+> > This approach has below pros:
+> > 
+> > 1) Initializing the TDX module requires to reserve ~1/256th system RAM as
+> > metadata.  Enabling TDX on demand allows only to consume this memory when
+> > TDX is truly needed (i.e. when KVM wants to create TD guests).
+> > 
+> > 2) Both detecting and initializing the TDX module require calling
+> > SEAMCALL.  However, SEAMCALL requires CPU being already in VMX operation
+> > (VMXON has been done).  So far, KVM is the only user of TDX, and it
+> > already handles VMXON/VMXOFF.  Therefore, letting KVM to initialize TDX
+> > on-demand avoids handling VMXON/VMXOFF (which is not that trivial) in
+> > core-kernel.  Also, in long term, likely a reference based VMXON/VMXOFF
+> > approach is needed since more kernel components will need to handle
+> > VMXON/VMXONFF.
+> > 
+> > 3) It is more flexible to support "TDX module runtime update" (not in
+> > this series).  After updating to the new module at runtime, kernel needs
+> > to go through the initialization process again.  For the new module,
+> > it's possible the metadata allocated for the old module cannot be reused
+> > for the new module, and needs to be re-allocated again.
+> > 
+> > 2. Kernel policy on TDX memory
+> > 
+> > Host kernel is responsible for choosing which memory regions can be used
+> > as TDX memory, and configuring those memory regions to the TDX module by
+> > using an array of "TD Memory Regions" (TDMR), which is a data structure
+> > defined by TDX architecture.
+> 
+> 
+> This is putting the cart before the horse.  Don't define the details up
+> front.
+> 
+> 	The TDX architecture allows the VMM to designate specific memory
+> 	as usable for TDX private memory.  This series chooses to
+> 	designate _all_ system RAM as TDX to avoid having to modify the
+> 	page allocator to distinguish TDX and non-TDX-capable memory
+> 
+> ... then go on to explain the details.
+
+Thanks.  Will update.
+
+> 
+> > The first generation of TDX essentially guarantees that all system RAM
+> > memory regions (excluding the memory below 1MB) can be used as TDX
+> > memory.  To avoid having to modify the page allocator to distinguish TDX
+> > and non-TDX allocation, this series chooses to use all system RAM as TDX
+> > memory.
+> > 
+> > E820 table is used to find all system RAM entries.  Following
+> > e820__memblock_setup(), both E820_TYPE_RAM and E820_TYPE_RESERVED_KERN
+> > types are treated as TDX memory, and contiguous ranges in the same NUMA
+> > node are merged together (similar to memblock_add()) before trimming the
+> > non-page-aligned part.
+> 
+> This e820 cruft is too much detail for a cover letter.  In general, once
+> you start talking about individual functions, you've gone too far in the
+> cover letter.
+
+Will remove.
+
+> 
+> > 3. Memory hotplug
+> > 
+> > The first generation of TDX architecturally doesn't support memory
+> > hotplug.  And the first generation of TDX-capable platforms don't support
+> > physical memory hotplug.  Since it physically cannot happen, this series
+> > doesn't add any check in ACPI memory hotplug code path to disable it.
+> > 
+> > A special case of memory hotplug is adding NVDIMM as system RAM using
+> > kmem driver.  However the first generation of TDX-capable platforms
+> > cannot enable TDX and NVDIMM simultaneously, so in practice this cannot
+> > happen either.
+> 
+> What prevents this code from today's code being run on tomorrow's
+> platforms and breaking these assumptions?
+
+I forgot to add below (which is in the documentation patch):
+
+"This can be enhanced when future generation of TDX starts to support ACPI
+memory hotplug, or NVDIMM and TDX can be enabled simultaneously on the
+same platform."
+
+Is this acceptable?
+
+> 
+> > Another case is admin can use 'memmap' kernel command line to create
+> > legacy PMEMs and use them as TD guest memory, or theoretically, can use
+> > kmem driver to add them as system RAM.  To avoid having to change memory
+> > hotplug code to prevent this from happening, this series always include
+> > legacy PMEMs when constructing TDMRs so they are also TDX memory.
+> > 
+> > 4. CPU hotplug
+> > 
+> > The first generation of TDX architecturally doesn't support ACPI CPU
+> > hotplug.  All logical cpus are enabled by BIOS in MADT table.  Also, the
+> > first generation of TDX-capable platforms don't support ACPI CPU hotplug
+> > either.  Since this physically cannot happen, this series doesn't add any
+> > check in ACPI CPU hotplug code path to disable it.
+> > 
+> > Also, only TDX module initialization requires all BIOS-enabled cpus are
+> > online.  After the initialization, any logical cpu can be brought down
+> > and brought up to online again later.  Therefore this series doesn't
+> > change logical CPU hotplug either.
+> > 
+> > 5. TDX interaction with kexec()
+> > 
+> > If TDX is ever enabled and/or used to run any TD guests, the cachelines
+> > of TDX private memory, including PAMTs, used by TDX module need to be
+> > flushed before transiting to the new kernel otherwise they may silently
+> > corrupt the new kernel.  Similar to SME, this series flushes cache in
+> > stop_this_cpu().
+> 
+> What does this have to do with kexec()?  What's a PAMT?
+
+The point is the dirty cachelines of TDX private memory must be flushed
+otherwise they may slightly corrupt the new kexec()-ed kernel.
+
+Will use "TDX metadata" instead of "PAMT".  The former has already been
+mentioned above.
+
+> 
+> > The TDX module can be initialized only once during its lifetime.  The
+> > first generation of TDX doesn't have interface to reset TDX module to
+> 
+> 				      ^ an
+
+Thanks.
+
+> 
+> > uninitialized state so it can be initialized again.
+> > 
+> > This implies:
+> > 
+> >   - If the old kernel fails to initialize TDX, the new kernel cannot
+> >     use TDX too unless the new kernel fixes the bug which leads to
+> >     initialization failure in the old kernel and can resume from where
+> >     the old kernel stops. This requires certain coordination between
+> >     the two kernels.
+> 
+> OK, but what does this *MEAN*?
+
+This means we need to extend the information which the old kernel passes to the
+new kernel.  But I don't think it's feasible.  I'll refine this kexec() section
+to make it more concise next version.
+
+> 
+> >   - If the old kernel has initialized TDX successfully, the new kernel
+> >     may be able to use TDX if the two kernels have the exactly same
+> >     configurations on the TDX module. It further requires the new kernel
+> >     to reserve the TDX metadata pages (allocated by the old kernel) in
+> >     its page allocator. It also requires coordination between the two
+> >     kernels.  Furthermore, if kexec() is done when there are active TD
+> >     guests running, the new kernel cannot use TDX because it's extremely
+> >     hard for the old kernel to pass all TDX private pages to the new
+> >     kernel.
+> > 
+> > Given that, this series doesn't support TDX after kexec() (except the
+> > old kernel doesn't attempt to initialize TDX at all).
+> > 
+> > And this series doesn't shut down TDX module but leaves it open during
+> > kexec().  It is because shutting down TDX module requires CPU being in
+> > VMX operation but there's no guarantee of this during kexec().  Leaving
+> > the TDX module open is not the best case, but it is OK since the new
+> > kernel won't be able to use TDX anyway (therefore TDX module won't run
+> > at all).
+> 
+> tl;dr: kexec() doesn't work with this code.
+> 
+> Right?
+> 
+> That doesn't seem good.
+
+It can work in my understanding.  We just need to flush cache before booting to
+the new kernel.
+
+
+-- 
+Thanks,
+-Kai
+
+
