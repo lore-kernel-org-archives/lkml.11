@@ -2,139 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35553C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 06:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F6F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 06:47:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358315AbiD0GsP (ORCPT
+        id S1358247AbiD0GuM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 02:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39116 "EHLO
+        Wed, 27 Apr 2022 02:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358261AbiD0Grz (ORCPT
+        with ESMTP id S233526AbiD0GuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 02:47:55 -0400
-Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EEB414AF41;
-        Tue, 26 Apr 2022 23:44:45 -0700 (PDT)
-Received: from hatter.bewilderbeest.net (174-21-163-222.tukw.qwest.net [174.21.163.222])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 94A401BA;
-        Tue, 26 Apr 2022 23:44:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1651041884;
-        bh=Pc/P965/OJeehYyicfBvk821lPIWQ3ALNZy/rCj/WUw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=foeAGPh8IshQudsNi3FtMgXt5RQKupidc5utcg6pJ0R1r6FjqNlVtUXQW5xwSijDa
-         0moau1aY1QU0jWseodPxgoHK2iBADT0ddLoE1DGzFdwhqgVagZ3y3fymCG2D1rMCUU
-         yGZSzchECmBbKnbjx4tklTDTakXcwJVWwyqn3Wnk=
-Date:   Tue, 26 Apr 2022 23:44:40 -0700
-From:   Zev Weiss <zev@bewilderbeest.net>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Renze Nicolai <renze@rnplus.nl>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/7] dt-bindings: hwmon: Add nuvoton,nct6775
-Message-ID: <YmjmWNUpCAFYesyk@hatter.bewilderbeest.net>
-References: <20220427010154.29749-1-zev@bewilderbeest.net>
- <20220427010154.29749-2-zev@bewilderbeest.net>
- <178b9310-a854-dfa6-a4f3-f971b608abe3@linaro.org>
+        Wed, 27 Apr 2022 02:50:10 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C466E4F44F;
+        Tue, 26 Apr 2022 23:46:59 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23R6kte7058373;
+        Wed, 27 Apr 2022 01:46:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1651042015;
+        bh=ltmqJfmKEgeBcMnx1ndgzNfG+vhgSs/dz39mj7pbFVI=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=JmRlTSRqM6CwFNAKxS0mzb2xtg+/KYwjlwGOwwKV3oQ0SarmcOWBzUgK/lqCXWkXh
+         lZm6TMO+3/yGWnfpr/voHan7fPrnLEFOVKOuwEzg3+qbKuVwrIZ7g80ZxII1zajbzz
+         DXct3io9FKWsAoixnPcx5sT+q/gA82+RI0C4D3cg=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23R6kt3m042465
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 27 Apr 2022 01:46:55 -0500
+Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 27
+ Apr 2022 01:46:55 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 27 Apr 2022 01:46:55 -0500
+Received: from keerthy.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23R6kjX7031550;
+        Wed, 27 Apr 2022 01:46:51 -0500
+From:   Keerthy <j-keerthy@ti.com>
+To:     <robh+dt@kernel.org>, <daniel.lezcano@linaro.org>,
+        <rui.zhang@intel.com>, <amitk@kernel.org>, <kristo@kernel.org>,
+        <vigneshr@ti.com>, <krzysztof.kozlowski@linaro.org>
+CC:     <j-keerthy@ti.com>, <linux-pm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v6 1/4] dt-bindings: thermal: k3-j72xx: Add VTM bindings documentation
+Date:   Wed, 27 Apr 2022 12:16:32 +0530
+Message-ID: <20220427064635.24898-2-j-keerthy@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220427064635.24898-1-j-keerthy@ti.com>
+References: <20220427064635.24898-1-j-keerthy@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <178b9310-a854-dfa6-a4f3-f971b608abe3@linaro.org>
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 11:04:30PM PDT, Krzysztof Kozlowski wrote:
->On 27/04/2022 03:01, Zev Weiss wrote:
->> These Super I/O chips have an i2c interface that some systems expose
->> to a BMC; the BMC's device tree can now describe that via this
->> binding.
->>
->> Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
->
->I already reviewed it so I guess you did not include the tag because of
->significant changes?
->
+Add VTM bindings documentation. In the Voltage Thermal
+Management Module(VTM), K3 J72XX supplies a voltage
+reference and a temperature sensor feature that are gathered in the band
+gap voltage and temperature sensor (VBGAPTS) module. The band
+gap provides current and voltage reference for its internal
+circuits and other analog IP blocks. The analog-to-digital
+converter (ADC) produces an output value that is proportional
+to the silicon temperature.
 
-Yeah, the nuvoton,tsi-channel-mask property is new this round, so I 
-dropped the previous R-B -- and since it looks like I missed some stuff, 
-thanks for taking another look (though perhaps some of it could have 
-been avoided if I'd remembered to run 'make dt_binding_check').
+Signed-off-by: Keerthy <j-keerthy@ti.com>
+---
+ .../bindings/thermal/ti,j72xx-thermal.yaml    | 64 +++++++++++++++++++
+ 1 file changed, 64 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml
 
->> ---
->>  .../bindings/hwmon/nuvoton,nct6775.yaml       | 56 +++++++++++++++++++
->>  1 file changed, 56 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.yaml b/Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.yaml
->> new file mode 100644
->> index 000000000000..418477374fdb
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.yaml
->> @@ -0,0 +1,56 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +
->> +$id: http://devicetree.org/schemas/hwmon/nuvoton,nct6775.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Nuvoton NCT6775 and compatible Super I/O chips
->> +
->> +maintainers:
->> +  - Zev Weiss <zev@bewilderbeest.net>
->> +
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - nuvoton,nct6106
->> +      - nuvoton,nct6116
->> +      - nuvoton,nct6775
->> +      - nuvoton,nct6776
->> +      - nuvoton,nct6779
->> +      - nuvoton,nct6791
->> +      - nuvoton,nct6792
->> +      - nuvoton,nct6793
->> +      - nuvoton,nct6795
->> +      - nuvoton,nct6796
->> +      - nuvoton,nct6797
->> +      - nuvoton,nct6798
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  nuvoton,tsi-channel-mask:
->> +    description:
->> +      Bitmask indicating which TSI temperature sensor channels are
->> +      active.  LSB is TSI0, bit 1 is TSI1, etc.
->
->Need a type/ref.
->
-
-Ack, thanks.
-
->> +    maximum: 0xff
->> +    default: 0
->
->Since by default it is disabled, doesn't it make a required property?
->IOW, if you add a node without this mask, will the device operate
->properly and usefully?
->
-
-Yeah, zero active TSI channels is a totally legitimate way for these 
-devices to operate.  TSI is just an optional source of additional 
-temperature readings that's used on some (AMD) systems; all the basic 
-Super I/O functionality works fine without it.
-
-
-Thanks,
-Zev
+diff --git a/Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml b/Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml
+new file mode 100644
+index 000000000000..84b70fb108da
+--- /dev/null
++++ b/Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml
+@@ -0,0 +1,64 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/thermal/ti,j72xx-thermal.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Texas Instruments J72XX VTM (DTS) binding
++
++maintainers:
++  - Keerthy <j-keerthy@ti.com>
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - ti,j721e-vtm
++          - ti,j7200-vtm
++
++  reg:
++    maxItems: 3
++    description:
++      Must be 3, in order to specify three register spaces for VTM cfg1, cfg2
++      and efuse register space.
++
++  power-domains:
++    maxItems: 1
++
++  "#thermal-sensor-cells":
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - power-domains
++  - "#thermal-sensor-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/soc/ti,sci_pm_domain.h>
++    wkup_vtm0: thermal-sensor@42040000 {
++        compatible = "ti,j721e-vtm";
++        reg = <0x42040000 0x350>,
++            <0x42050000 0x350>,
++            <0x43000300 0x10>;
++        power-domains = <&k3_pds 154 TI_SCI_PD_EXCLUSIVE>;
++        #thermal-sensor-cells = <1>;
++    };
++
++    mpu_thermal: mpu-thermal {
++        polling-delay-passive = <250>; /* milliseconds */
++        polling-delay = <500>; /* milliseconds */
++        thermal-sensors = <&wkup_vtm0 0>;
++
++        trips {
++                mpu_crit: mpu-crit {
++                        temperature = <125000>; /* milliCelsius */
++                        hysteresis = <2000>; /* milliCelsius */
++                        type = "critical";
++                };
++        };
++    };
++...
+-- 
+2.17.1
 
