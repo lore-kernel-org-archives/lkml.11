@@ -2,45 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD42CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:12:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D2B7C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229717AbiD0KPv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:15:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59050 "EHLO
+        id S229549AbiD0KSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 06:18:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229568AbiD0KPs (ORCPT
+        with ESMTP id S229437AbiD0KSP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 06:15:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A0C2FF8FA;
-        Wed, 27 Apr 2022 03:08:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id F389ECE2425;
-        Wed, 27 Apr 2022 09:51:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C822C385A9;
-        Wed, 27 Apr 2022 09:51:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651053106;
-        bh=8wR5U0Lo7t/lof4mVVlPPXUXiVd+FoYZJSHjiQ3mwDQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=is+AxdK0OLdpUzJf63o/GYRDmsUOosvXINqt2avnTeJDTUxBaEHmJdA+VgacQE6w0
-         VMOa0LJhsRcBud0e3yvos599W8VTo5Ou4fBqttnObZBr/0yV8L/GGChMFOvl3QVBmR
-         Zw0fyHoHucVO0ZPuTFswx5rb8kmsTRqC5mXMzCbgqs78G9NyOmvjZrgtnEc+/JMHPW
-         glfkoCVTnIN/DxlaoQtxCQUhhUMZEVira98rRVEykVyDSQchkj7Ju8UkvvKhFWCXVd
-         eQClSGJhOV9ijE0DvY8/3h22PQylMLGtt0oDMRZrsx0VDRjq3TaTyZ2l2ty4JQ4Xia
-         d4vslQEB4FD3A==
-From:   Chao Yu <chao@kernel.org>
-To:     jaegeuk@kernel.org
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
-        Chao Yu <chao.yu@oppo.com>
-Subject: [PATCH] f2fs: fix to do sanity check on block address in f2fs_do_zero_range()
-Date:   Wed, 27 Apr 2022 17:51:40 +0800
-Message-Id: <20220427095140.227316-1-chao@kernel.org>
+        Wed, 27 Apr 2022 06:18:15 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B1931316E;
+        Wed, 27 Apr 2022 03:13:45 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id q8so1137839plx.3;
+        Wed, 27 Apr 2022 03:13:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1C1O4qQcGaAVxBHfYfmRjgPqtuMUIW3qAkaHngqvDes=;
+        b=NlE9mJ5p7PFfL2h8xzZtuCRTGWvpzPKaA1aFLOoH9Ktft0+MBAqiMLe9WR9zZ+q1tG
+         M2hj910wONU/0LgyvpOkBj/o8KoCenPqXS6p7SMBU17RP92WX27hKFpCFwSQLGf8PO0r
+         UOUp1geb3AK11zri/1W0EYN3Eh9y8RmQyGnaLbdhZ6lNcz+PCKOKA+JsXw14bdPcHMQF
+         w+inUUtuNakbrJ2b7ZsdLSv6PPMuniBSx79OmDdr50Bpn7NDj/b56neoaAlgo/Kn3Fhy
+         YoGnNb/VpokgIRhgWhzRWoScdi1iwTvKj1QZIzlmss146M3Rrl5/ICnnx7RgiA9P79lY
+         SLbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1C1O4qQcGaAVxBHfYfmRjgPqtuMUIW3qAkaHngqvDes=;
+        b=53oW5IyMJbKiMDG02lOD9aMAbR/HwSs9G1mfATFCPwJIFu2Iw1iPvs6wrrWEIW8S5C
+         H6R1uBD2tPil5PoC7E49JF+0MmpdKcrfuRdq7kSNX6FgXJmqqzMB3NQCCPlTzmC1NlV+
+         UVuABzcrnwGv5OuYy568k+H2HrR0KlQtAykh5mkFiZMFrECcr38TC/JEL9Mfd5xOOPDK
+         Hk9DRuzqPWSI5wEAtkMoMwgvsayoM6LsqbBzwkfSl4fKwVwegC4pfg59W5JeRJr7+aCr
+         knI0+W+fjvR8YxfDOMkW8ML5slJLWy8p363+cfqSDGMRCxis0xMDRBhCXeLRqloQH2Fh
+         Lpjw==
+X-Gm-Message-State: AOAM533Ux0CwP/xYm/bd5s5vMd3vBYnsgpeK9+S7Jgj1/giZ2BGtKi+a
+        0f6EmTxg0tmfPb/TGknMzw52BFGf6gQGZg==
+X-Google-Smtp-Source: ABdhPJzz9M4sSrRhLl/SVH2jOIGF0Fae8qCGPAcsCMAJ6QlQWlTDkHN6EP6kfL6MBcOG4iYcm0V59w==
+X-Received: by 2002:a17:90b:164b:b0:1d1:b0b7:9033 with SMTP id il11-20020a17090b164b00b001d1b0b79033mr32105321pjb.164.1651054142386;
+        Wed, 27 Apr 2022 03:09:02 -0700 (PDT)
+Received: from tj10039pcu.spreadtrum.com ([117.18.48.102])
+        by smtp.gmail.com with ESMTPSA id h7-20020aa786c7000000b00505bf336385sm18260649pfo.124.2022.04.27.03.08.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 03:09:01 -0700 (PDT)
+From:   Cixi Geng <gengcixi@gmail.com>
+To:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, orsonzhai@gmail.com,
+        baolin.wang7@gmail.com, zhang.lyra@gmail.com, lee.jones@linaro.org
+Cc:     linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V4 0/4] Add ums512 clocks and relative bindings file
+Date:   Wed, 27 Apr 2022 18:08:44 +0800
+Message-Id: <20220427100848.3525710-1-gengcixi@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -48,70 +64,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As Yanming reported in bugzilla:
+From: Cixi Geng <cixi.geng1@unisoc.com>
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215894
+This patchset is add the UMS512 clocks support
 
-I have encountered a bug in F2FS file system in kernel v5.17.
+v2 changes:
+  adjust description and add the "sprd,ums512-glbregs,syscon,simple-mfd"
+  compatibles to fix match failed logs in the dt_binding_check.
+  add the property license and copyright notice.
 
-I have uploaded the system call sequence as case.c, and a fuzzed image can
-be found in google net disk
+v3 changes:
+  fix wrong indentation and hint: "maxItems" is not needed with an "items"
+  list when use the latest dtschema.
 
-The kernel should enable CONFIG_KASAN=y and CONFIG_KASAN_INLINE=y. You can
-reproduce the bug by running the following commands:
+v4 changes:
+  move the syscon bindins from clk to glbreg yaml file by pickup 
+  chunyan's patch for global registers bindings
+  fix the comments from Krzysztof in v3 patchset
+  add the Acked-by: Krzysztof in patch v4 3/4
+  fix the  warning Prefer "GPL" over "GPL v2"
 
-kernel BUG at fs/f2fs/segment.c:2291!
-Call Trace:
- f2fs_invalidate_blocks+0x193/0x2d0
- f2fs_fallocate+0x2593/0x4a70
- vfs_fallocate+0x2a5/0xac0
- ksys_fallocate+0x35/0x70
- __x64_sys_fallocate+0x8e/0xf0
- do_syscall_64+0x3b/0x90
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Chunyan Zhang (1):
+  dt-bindings: mfd: sprd: Add bindings for ums512 global registers
 
-The root cause is, after image was fuzzed, block mapping info in inode
-will be inconsistent with SIT table, so in f2fs_fallocate(), it will cause
-panic when updating SIT with invalid blkaddr.
+Cixi Geng (3):
+  dt-bindings: clk: sprd: Add bindings for ums512 clock controller
+  clk: sprd: Add dt-bindings include file for UMS512
+  clk: sprd: Add clocks support for UMS512
 
-Let's fix the issue by adding sanity check on block address before updating
-SIT table with it.
+ .../bindings/clock/sprd,ums512-clk.yaml       |   71 +
+ .../bindings/mfd/sprd,ums512-glbreg.yaml      |   68 +
+ drivers/clk/sprd/Kconfig                      |    6 +
+ drivers/clk/sprd/Makefile                     |    1 +
+ drivers/clk/sprd/ums512-clk.c                 | 2199 +++++++++++++++++
+ include/dt-bindings/clock/sprd,ums512-clk.h   |  397 +++
+ 6 files changed, 2742 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/sprd,ums512-clk.yaml
+ create mode 100644 Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml
+ create mode 100644 drivers/clk/sprd/ums512-clk.c
+ create mode 100644 include/dt-bindings/clock/sprd,ums512-clk.h
 
-Cc: stable@vger.kernel.org
-Reported-by: Ming Yan <yanming@tju.edu.cn>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
----
- fs/f2fs/file.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
-
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index f08e6208e183..342b1f17a033 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -1437,11 +1437,19 @@ static int f2fs_do_zero_range(struct dnode_of_data *dn, pgoff_t start,
- 			ret = -ENOSPC;
- 			break;
- 		}
--		if (dn->data_blkaddr != NEW_ADDR) {
--			f2fs_invalidate_blocks(sbi, dn->data_blkaddr);
--			dn->data_blkaddr = NEW_ADDR;
--			f2fs_set_data_blkaddr(dn);
-+
-+		if (dn->data_blkaddr == NEW_ADDR)
-+			continue;
-+
-+		if (!f2fs_is_valid_blkaddr(sbi, dn->data_blkaddr,
-+					DATA_GENERIC_ENHANCE)) {
-+			ret = -EFSCORRUPTED;
-+			break;
- 		}
-+
-+		f2fs_invalidate_blocks(sbi, dn->data_blkaddr);
-+		dn->data_blkaddr = NEW_ADDR;
-+		f2fs_set_data_blkaddr(dn);
- 	}
- 
- 	f2fs_update_extent_cache_range(dn, start, 0, index - start);
 -- 
 2.25.1
 
