@@ -2,112 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B221C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:07:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:08:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241685AbiD0QKl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49448 "EHLO
+        id S242202AbiD0QL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242700AbiD0QJu (ORCPT
+        with ESMTP id S241941AbiD0QKO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:09:50 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E5B748DEC5
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:05:57 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id be20so2473639edb.12
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:05:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7ILgIEY7wMcCopOsdlDifUioNzWZT1dVF0DliY6j2xA=;
-        b=T4DB5lG9R3O3sQ3sn7pnH85cLUhqn6/RQbZSW20dj27Fq+ppgwj/lT1PLj6My5eb6j
-         NYXwfLz610MvYk+drQvhzFa6IGwgfFwynowPQM4VlRX6pNwZ1zTZ8EMwGbPn5tUh2wZU
-         OEkYPjl29hnRk8P6ZZgd33ebUC5CeVsKz+XzFQ8YtByrGjLSX+GrtgtSrU9pyPr9bW6U
-         YFV3eI+XdBhWkv8XFBQuRganjmAMdLvKcBBZXiWgqPIow4pyLNU3xRDyjciaMwXYUt5t
-         b+V75SjlOyPNhGeWQWCcBEATtUXfGAgO5w2X7vpyc6XUTJef/lpJ6XSu86YMlIKizp/3
-         0S2Q==
+        Wed, 27 Apr 2022 12:10:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 99DA84928A0
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:06:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651075469;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KnIiu4aHbqX/cEMaulV4w/SJ9uqmiCPjBFKvPiEFRe0=;
+        b=ZbM/bSao9pb6CIyufmGWRbOYzGhbLIef3frQ9X1tGTYW+3npTBwObhtXj4skWlzQXUX+bP
+        eLX25AbfoZy7jOiwabf2+uHI5CAyzth621QjgcMF5xFHSfViXLDVkq4pvlsCDdme2nH7Xc
+        kVpxpUXrMFmrQKPbQRgP6qnMZ51OtYU=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-402-MRH8tKArMmmMWd6vgyN90Q-1; Wed, 27 Apr 2022 12:04:27 -0400
+X-MC-Unique: MRH8tKArMmmMWd6vgyN90Q-1
+Received: by mail-ej1-f71.google.com with SMTP id nd34-20020a17090762a200b006e0ef16745cso1403704ejc.20
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:04:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7ILgIEY7wMcCopOsdlDifUioNzWZT1dVF0DliY6j2xA=;
-        b=jTI7T4k6WMzaLmr0ngocUyUCepLBLD/SdsHvDBEu6y70FGvTzWi0QwzUH31xSdnAJ1
-         u8qcuZwnuTidS4Wb71gvMP/0PBRn6luZabsJRYseFcG0cPWMrlFVdMLYzlAt42rEHnim
-         kWS+CGnxXKbEjUpZYGZ3zitpyKyxYjJ1Mea21VZcqUebaXj/d3MTdby0y9qNQjPhnT/h
-         +/cV4XWAe/pWCWVfUpgFyrg7K3ZvzT8WjZG53bKdhmaMd83uZEnCHQjaKQpxiCCQUQys
-         z7rsgXAVCpQdjSl+8qV6rKwmmDfQ+S5HBojmLEnnEqgjj8L4dvEtB+/nggQXjTIhbVh+
-         0Dcg==
-X-Gm-Message-State: AOAM531WoKRXcpBdFRpaHZ2kUu2L5euqnIg8RZtCw8fIZC9RTt52aJ2s
-        7Z5Ea8kNxjv2b7oKqfuEvbQkKQ==
-X-Google-Smtp-Source: ABdhPJyvfsYi1ZhGhQXgeyMBsvg1zdskaGmnft5bTfbYhAiF0ltL3Fl0UMCLahVB1o006y6tgoWprw==
-X-Received: by 2002:a05:6402:1d4e:b0:423:fd93:6466 with SMTP id dz14-20020a0564021d4e00b00423fd936466mr31112598edb.304.1651075550613;
-        Wed, 27 Apr 2022 09:05:50 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id b17-20020aa7dc11000000b00412ae7fda95sm8571437edu.44.2022.04.27.09.05.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 09:05:50 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sekhar Nori <nsekhar@ti.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>, linux-usb@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 3/3] ARM: dts: dm81xx: use new 'dma-channels/requests' properties
-Date:   Wed, 27 Apr 2022 18:05:38 +0200
-Message-Id: <20220427160538.646044-4-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220427160538.646044-1-krzysztof.kozlowski@linaro.org>
-References: <20220427160538.646044-1-krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=KnIiu4aHbqX/cEMaulV4w/SJ9uqmiCPjBFKvPiEFRe0=;
+        b=STezYEe0da2Bn2f6bBUbQ+SHTKa3eCZc+lOX7cHBN2Wse1avOWsnSNgwCb2Pg1adm0
+         FvY/NzAJXr6XOL7yXlNYhqXzRtUwQgR2AjX3dUU2R1VV7vD2lIvqbkN6nWQWVfeSNV/8
+         LWib6aGwSy090VgoVQA90/AQobk1s0Y+RZV4PcBeyIMuXXVE7lza+eLipYIyhn1kLdV+
+         ix+G2XPrRq2kSj3cU3ZT48l/VmbKvM5Ad+M2p9aWdqMl4K1EWv9g8YQ+E+zno1xyjTvl
+         SffB8Dd5GYmX8JfAGAtKz0aW+Gu+rmKYbYexYWJ14l4kDAxum7x7qPDjmPeaSrM3u0Ag
+         ZX+w==
+X-Gm-Message-State: AOAM530Pd53kadlx0PLkN5CeQsHWaVkfSW/77ZucouOzaJvGuiqTCrm0
+        gRfY51eEN4yaJsH7D+jLjrIYotWuGh+ktrS7w1o0n6xAFioQjPv2651tGGBF/B2Gr2P+nRhP0C/
+        85/7O8uCKmIYzR5zx+L04ch90
+X-Received: by 2002:a17:907:7ea3:b0:6e8:92eb:3dcc with SMTP id qb35-20020a1709077ea300b006e892eb3dccmr27624645ejc.75.1651075466149;
+        Wed, 27 Apr 2022 09:04:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzqNSR4hVvkXBeP+K+imWXt9ZGbaPI48pJcmDVu7PsJz8M+Q4F+vXJ4MZ3xBab8Khy6a1oUhg==
+X-Received: by 2002:a17:907:7ea3:b0:6e8:92eb:3dcc with SMTP id qb35-20020a1709077ea300b006e892eb3dccmr27624614ejc.75.1651075465846;
+        Wed, 27 Apr 2022 09:04:25 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
+        by smtp.googlemail.com with ESMTPSA id z12-20020a50f14c000000b00425d61cbb0esm6345687edl.22.2022.04.27.09.04.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Apr 2022 09:04:24 -0700 (PDT)
+Message-ID: <4c0edc90-36a1-4f4c-1923-4b20e7bdbb4c@redhat.com>
+Date:   Wed, 27 Apr 2022 18:04:23 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Peter Gonda <pgonda@google.com>
+Cc:     John Sperbeck <jsperbeck@google.com>,
+        kvm list <kvm@vger.kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220407195908.633003-1-pgonda@google.com>
+ <CAFNjLiXC0AdOw5f8Ovu47D==ex7F0=WN_Ocirymz4xL=mWvC5A@mail.gmail.com>
+ <CAMkAt6r-Mc_YN-gVHuCpTj4E1EmcvyYpP9jhtHo5HRHnoNJAdA@mail.gmail.com>
+ <CAMkAt6r+OMPWCbV_svUyGWa0qMzjj2UEG29G6P7jb6uH6yko2w@mail.gmail.com>
+ <62e9ece1-5d71-f803-3f65-2755160cf1d1@redhat.com>
+ <CAMkAt6q6YLBfo2RceduSXTafckEehawhD4K4hUEuB4ZNqe2kKg@mail.gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v3] KVM: SEV: Mark nested locking of vcpu->lock
+In-Reply-To: <CAMkAt6q6YLBfo2RceduSXTafckEehawhD4K4hUEuB4ZNqe2kKg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The '#dma-channels' and '#dma-requests' properties were deprecated in
-favor of these defined by generic dma-common DT bindings.
+On 4/26/22 21:06, Peter Gonda wrote:
+> On Thu, Apr 21, 2022 at 9:56 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
+>>
+>> On 4/20/22 22:14, Peter Gonda wrote:
+>>>>>> svm_vm_migrate_from() uses sev_lock_vcpus_for_migration() to lock all
+>>>>>> source and target vcpu->locks. Mark the nested subclasses to avoid false
+>>>>>> positives from lockdep.
+>>>> Nope. Good catch, I didn't realize there was a limit 8 subclasses:
+>>> Does anyone have thoughts on how we can resolve this vCPU locking with
+>>> the 8 subclass max?
+>>
+>> The documentation does not have anything.  Maybe you can call
+>> mutex_release manually (and mutex_acquire before unlocking).
+>>
+>> Paolo
+> 
+> Hmm this seems to be working thanks Paolo. To lock I have been using:
+> 
+> ...
+>                    if (mutex_lock_killable_nested(
+>                                &vcpu->mutex, i * SEV_NR_MIGRATION_ROLES + role))
+>                            goto out_unlock;
+>                    mutex_release(&vcpu->mutex.dep_map, _THIS_IP_);
+> ...
+> 
+> To unlock:
+> ...
+>                    mutex_acquire(&vcpu->mutex.dep_map, 0, 0, _THIS_IP_);
+>                    mutex_unlock(&vcpu->mutex);
+> ...
+> 
+> If I understand correctly we are fully disabling lockdep by doing
+> this. If this is the case should I just remove all the '_nested' usage
+> so switch to mutex_lock_killable() and remove the per vCPU subclass?
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm/boot/dts/dm814x.dtsi | 4 ++--
- arch/arm/boot/dts/dm816x.dtsi | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+Yes, though you could also do:
 
-diff --git a/arch/arm/boot/dts/dm814x.dtsi b/arch/arm/boot/dts/dm814x.dtsi
-index 7702e048e110..ab2572482ba9 100644
---- a/arch/arm/boot/dts/dm814x.dtsi
-+++ b/arch/arm/boot/dts/dm814x.dtsi
-@@ -167,8 +167,8 @@ cppi41dma: dma-controller@47402000 {
- 				interrupts = <17>;
- 				interrupt-names = "glue";
- 				#dma-cells = <2>;
--				#dma-channels = <30>;
--				#dma-requests = <256>;
-+				dma-channels = <30>;
-+				dma-requests = <256>;
- 			};
- 		};
- 
-diff --git a/arch/arm/boot/dts/dm816x.dtsi b/arch/arm/boot/dts/dm816x.dtsi
-index a9e7274806f4..317b7c74e32c 100644
---- a/arch/arm/boot/dts/dm816x.dtsi
-+++ b/arch/arm/boot/dts/dm816x.dtsi
-@@ -655,8 +655,8 @@ cppi41dma: dma-controller@47402000 {
- 				interrupts = <17>;
- 				interrupt-names = "glue";
- 				#dma-cells = <2>;
--				#dma-channels = <30>;
--				#dma-requests = <256>;
-+				dma-channels = <30>;
-+				dma-requests = <256>;
- 			};
- 		};
- 
--- 
-2.32.0
+	bool acquired = false;
+	kvm_for_each_vcpu(...) {
+		if (acquired)
+			mutex_release(&vcpu->mutex.dep_map, _THIS_IP_);
+		if (mutex_lock_killable_nested(&vcpu->mutex, role)
+			goto out_unlock;
+		acquired = true;
+		...
+
+and to unlock:
+
+	bool acquired = true;
+	kvm_for_each_vcpu(...) {
+		if (!acquired)
+			mutex_acquire(&vcpu->mutex.dep_map, 0, role, _THIS_IP_);
+		mutex_unlock(&vcpu->mutex);
+		acquired = false;
+	}
+
+where role is either 0 or SINGLE_DEPTH_NESTING and is passed to 
+sev_{,un}lock_vcpus_for_migration.
+
+That coalesces all the mutexes for a vm in a single subclass, essentially.
+
+Paolo
 
