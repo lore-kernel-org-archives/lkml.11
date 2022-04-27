@@ -2,181 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C418FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:48:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC14C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:49:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230259AbiD0Kvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:51:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39814 "EHLO
+        id S230356AbiD0Kwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 06:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230286AbiD0Kve (ORCPT
+        with ESMTP id S230211AbiD0Kwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 06:51:34 -0400
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CAA3AB7CF;
-        Wed, 27 Apr 2022 03:22:57 -0700 (PDT)
-Received: by mail-qv1-f51.google.com with SMTP id ke5so733441qvb.5;
-        Wed, 27 Apr 2022 03:22:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DFvDs4UX2zax4adbziwn0RYfIrK/tqgpmI5wyJl9xWk=;
-        b=txl9N971Mitb19L/rporh9pX+gSFiofYsUEsWQqmAP8yoWcvMfaiKi0HoyXVykX9YZ
-         +BVFExqw44qOaaUGTGPFgGsoZAAXlnhsT5fnc8/c3iMQJjWJ1gcKbNW5isoK/0ed9a1b
-         mwZFgZW4D/xhp6dg6tRjHzCNE0fvbrW0PVeReKZ86PIzkjJ62+uQDDjd13yID1y7rgh0
-         jh2EvZt07FXfG5Ifg0KIiw0NjqR5xgMV05b08n6HiwsVYmmC2NEeqmxF2inFogQrb/k6
-         3lepXM4uGARxFNsaXcicxgi49dphhOZZPDSvttlPoIZYo7AzgPgLL26ZxY4aQDlUykCy
-         abHA==
-X-Gm-Message-State: AOAM530unhwEdaKc69mkv3lc8vhloUsAkN+WoZkhGEIadOmoln2zpnhq
-        qFdW2V/89CK7ahJkCjNVzhtZt5Xkje/Fag==
-X-Google-Smtp-Source: ABdhPJz6UTZZL4BURTn67KGPUyleLdhEDIehR5hbmEP7UX3/qw0Fi0yopLbmmzlkt/pHta1qP3CD8w==
-X-Received: by 2002:a05:6214:248c:b0:441:2a61:659d with SMTP id gi12-20020a056214248c00b004412a61659dmr19331590qvb.59.1651054976735;
-        Wed, 27 Apr 2022 03:22:56 -0700 (PDT)
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com. [209.85.128.174])
-        by smtp.gmail.com with ESMTPSA id q17-20020a05622a031100b002f1d478c218sm10090861qtw.62.2022.04.27.03.22.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 03:22:56 -0700 (PDT)
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-2f7bb893309so12858617b3.12;
-        Wed, 27 Apr 2022 03:22:56 -0700 (PDT)
-X-Received: by 2002:a81:8489:0:b0:2f7:edff:239f with SMTP id
- u131-20020a818489000000b002f7edff239fmr14119456ywf.256.1651054976217; Wed, 27
- Apr 2022 03:22:56 -0700 (PDT)
+        Wed, 27 Apr 2022 06:52:32 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C681A49409D;
+        Wed, 27 Apr 2022 03:24:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651055048; x=1682591048;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=oOBwk0JvX4Hq4ln24agEjKLp6VWg/8zMYq4wKqzU1aE=;
+  b=RmfaLN90jWuAtwy5HMxFVCEGzWohdVcZG/REmdHYLKzgLU6HeSNFfrxR
+   X/NcSrcVYPX61qEUBMPpCm9JxFWE5ESAZKRQNx/DLLNcT5om96znkFzdI
+   XLxCy0wc2IuR83aihkav2FyVE5qbQ/MOZToGzBQhJghDyu4qJ/jCqUp/e
+   rE6KVUY2gW5spY3A4xBPiRT8b4XmP1bChY9QfS+q2FtVXGWfsiFmmvJzM
+   mB6VsEUOOcyyJO/2Vhj7UsO1NUx9fSpg0V9rACEphrSDmj4FZEPse6KOb
+   Wpuq+ZTaxnt0xz4QxugDBNwO56+oGkV2kFUMijkqo1ZRiqe4OIozrilsk
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="265406485"
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="265406485"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 03:04:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="596211348"
+Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
+  by orsmga001.jf.intel.com with ESMTP; 27 Apr 2022 03:04:25 -0700
+From:   Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     hdegoede@redhat.com, markgross@kernel.org
+Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH v2] platform/x86: intel-uncore-freq: Prevent driver loading in guests
+Date:   Wed, 27 Apr 2022 03:03:04 -0700
+Message-Id: <20220427100304.2562990-1-srinivas.pandruvada@linux.intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210922091007.5516-1-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20210922091007.5516-1-wsa+renesas@sang-engineering.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 27 Apr 2022 12:22:43 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWJZM=-Py=W+qKUfCQU=Y5=G6qdp9uubNv56o+5JztaGA@mail.gmail.com>
-Message-ID: <CAMuHMdWJZM=-Py=W+qKUfCQU=Y5=G6qdp9uubNv56o+5JztaGA@mail.gmail.com>
-Subject: Re: [RFC PATCH] memory: renesas-rpc-if: Correct QSPI data transfer in
- Manual mode
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Wolfram,
+Loading this driver in guests results in unchecked MSR access error for
+MSR 0x620.
 
-On Wed, Sep 22, 2021 at 11:10 AM Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
-> This patch fixes 2 problems:
-> [1] The output warning logs and data loss when performing
-> mount/umount then remount the device with jffs2 format.
-> [2] The access width of SMWDR[0:1]/SMRDR[0:1] register is wrong.
+There is no use of reading and modifying package/die scope uncore MSRs
+in guests. So check for CPU feature X86_FEATURE_HYPERVISOR to prevent
+loading of this driver in guests.
 
-Revisiting commit fff53a551db50f5e ("memory: renesas-rpc-if: Correct
-QSPI data transfer in Manual mode") in  v5.16-rc1...
+Fixes: dbce412a7733 ("platform/x86/intel-uncore-freq: Split common and enumeration part")
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215870
+Suggested-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+v2
+	Add Fixes tag
 
-> --- a/drivers/memory/renesas-rpc-if.c
-> +++ b/drivers/memory/renesas-rpc-if.c
+ drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
->  int rpcif_manual_xfer(struct rpcif *rpc)
->  {
-> -       u32 smenr, smcr, pos = 0, max = 4;
-> +       u32 smenr, smcr, pos = 0, max = rpc->bus_size == 2 ? 8 : 4;
->         int ret = 0;
->
-> -       if (rpc->bus_size == 2)
-> -               max = 8;
-> -
->         pm_runtime_get_sync(rpc->dev);
->
->         regmap_update_bits(rpc->regmap, RPCIF_PHYCNT,
-> @@ -378,37 +424,36 @@ int rpcif_manual_xfer(struct rpcif *rpc)
->         regmap_write(rpc->regmap, RPCIF_SMOPR, rpc->option);
->         regmap_write(rpc->regmap, RPCIF_SMDMCR, rpc->dummy);
->         regmap_write(rpc->regmap, RPCIF_SMDRENR, rpc->ddr);
-> +       regmap_write(rpc->regmap, RPCIF_SMADR, rpc->smadr);
->         smenr = rpc->enable;
->
->         switch (rpc->dir) {
->         case RPCIF_DATA_OUT:
->                 while (pos < rpc->xferlen) {
-> -                       u32 nbytes = rpc->xferlen - pos;
-> -                       u32 data[2];
-> +                       u32 bytes_left = rpc->xferlen - pos;
-> +                       u32 nbytes, data[2];
->
->                         smcr = rpc->smcr | RPCIF_SMCR_SPIE;
-> -                       if (nbytes > max) {
-> -                               nbytes = max;
-> +
-> +                       /* nbytes may only be 1, 2, 4, or 8 */
-> +                       nbytes = bytes_left >= max ? max : (1 << ilog2(bytes_left));
-> +                       if (bytes_left > nbytes)
->                                 smcr |= RPCIF_SMCR_SSLKP;
-> -                       }
-> +
-> +                       smenr |= RPCIF_SMENR_SPIDE(rpcif_bits_set(rpc, nbytes));
-> +                       regmap_write(rpc->regmap, RPCIF_SMENR, smenr);
->
->                         memcpy(data, rpc->buffer + pos, nbytes);
-> -                       if (nbytes > 4) {
-> +                       if (nbytes == 8) {
->                                 regmap_write(rpc->regmap, RPCIF_SMWDR1,
->                                              data[0]);
->                                 regmap_write(rpc->regmap, RPCIF_SMWDR0,
->                                              data[1]);
-> -                       } else if (nbytes > 2) {
-> +                       } else {
->                                 regmap_write(rpc->regmap, RPCIF_SMWDR0,
->                                              data[0]);
-> -                       } else  {
-> -                               regmap_write(rpc->regmap, RPCIF_SMWDR0,
-> -                                            data[0] << 16);
->                         }
->
-> -                       regmap_write(rpc->regmap, RPCIF_SMADR,
-> -                                    rpc->smadr + pos);
+diff --git a/drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c b/drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c
+index c61f804dd44e..8f9c571d7257 100644
+--- a/drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c
++++ b/drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c
+@@ -212,6 +212,9 @@ static int __init intel_uncore_init(void)
+ 	const struct x86_cpu_id *id;
+ 	int ret;
+ 
++	if (cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
++		return -ENODEV;
++
+ 	id = x86_match_cpu(intel_uncore_cpu_ids);
+ 	if (!id)
+ 		return -ENODEV;
+-- 
+2.31.1
 
-Removing this implies SMADR is auto-incrementing for writes...
-
-> -                       regmap_write(rpc->regmap, RPCIF_SMENR, smenr);
->                         regmap_write(rpc->regmap, RPCIF_SMCR, smcr);
->                         ret = wait_msg_xfer_end(rpc);
->                         if (ret)
-> @@ -448,14 +493,16 @@ int rpcif_manual_xfer(struct rpcif *rpc)
->                         break;
->                 }
->                 while (pos < rpc->xferlen) {
-> -                       u32 nbytes = rpc->xferlen - pos;
-> -                       u32 data[2];
-> +                       u32 bytes_left = rpc->xferlen - pos;
-> +                       u32 nbytes, data[2];
->
-> -                       if (nbytes > max)
-> -                               nbytes = max;
-> +                       /* nbytes may only be 1, 2, 4, or 8 */
-> +                       nbytes = bytes_left >= max ? max : (1 << ilog2(bytes_left));
->
->                         regmap_write(rpc->regmap, RPCIF_SMADR,
->                                      rpc->smadr + pos);
-
-... while keeping this assumes SMADR is not auto-incrementing for
-reads?
-
-Figure 62.17 "Example of Data Transfer Setting Flow in Manual Operating
-Mode" does show writing SMADR in each loop iteration.
-I cannot find anything about auto-incrementing in the documentation,
-except for Figure 62.28 "Write Buffer Usage Sequence", which does
-not apply as Linux does not support the write buffer yet.
-
-Given you tested this, and the BSP commit 0d37f69cacb33435 ("memory:
-renesas-rpc-if: Correct QSPI data transfer in Manual mode") does the
-same, I assume it's working fine?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
