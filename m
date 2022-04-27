@@ -2,135 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4A93C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63486C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242004AbiD0QMR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48824 "EHLO
+        id S242043AbiD0QMV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241922AbiD0QLy (ORCPT
+        with ESMTP id S242230AbiD0QLy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 12:11:54 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCFF49A14C;
-        Wed, 27 Apr 2022 09:08:02 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id y3so4325550ejo.12;
-        Wed, 27 Apr 2022 09:08:02 -0700 (PDT)
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A244490544
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:07:57 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id z21so1817674pgj.1
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:07:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uXZUMLY6oT5/pgJ3JE+0g8SiU8XVYCT+G02CN/YaIC8=;
-        b=fOg0kwucAT7Z1tCyzoXxHJk7ZWXzD71f/n3w9jXO9wukuuAReuE3yVOT24ZTZv+vZm
-         JVCT9LA60wN3RiFubbL0xNXDlmIptbiIcweT5+Iq+pQQ6rKMStHVdmh8zMziwlhhLDEp
-         o8LUjUr464P844d7LmXXYYURuZtwf7n778EPPFFl38Vs2y7Bk3MTfaIhIp0UGGuvWsZB
-         V0yaz+aX0zbM+kSLR5p0i1zfdWN4mxLTilWZrPILmf3nz43NVBsr/tdaBHWDSesveLIV
-         1IUaZlZjgjBxaddfiVtdP4ZDhvL2E1w47LgWAFMxtgcfPowPl68x/5o2vcZ6UJ411GuY
-         2b3w==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QP5fbP0o4ObiS/A7F3GioEbyOQdz26p2Gp7z2o45zNw=;
+        b=72Nadj560kDsUIYRvmzLx2S+9X2ghE/tDx/74qnxOxicYmTwCCzzl0DlJxwzr6LiW/
+         yx0xplbvoU/9v3Lp50/zs3TTKxtbBNietK7A/CG0C+KiZ1zcMA1XKWFheW2xKLWm50nc
+         2knNg7p6oZW6UZvEAmfFFHwyjYA4AaEbvbgwTtQu9JqqpwKXX9jThpVAYkhtoPGiD99I
+         ECAa8v6skWi8j6egbhHKH44q/7ryJJRNfqa8ROV6IKNouT80rfCZWbdQ9R1+D/RIYPWk
+         M49BKhAiFURQc4RV2jk0lmX7ecb5r/m2dGgV7xdu6aB8NdFTbeMRqQB+emYydKYZRd6c
+         W8cA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uXZUMLY6oT5/pgJ3JE+0g8SiU8XVYCT+G02CN/YaIC8=;
-        b=hwjTw+nQ93aGdLgdzdK4Rn/IjXnq8xeAW6iQA6tE08Pa1JHGHdWXxJJFYLJ1szlQDl
-         YORIYrODJknuj9NzkSDtUbC+uzqyCepsAWo80gElMi2h3RTzbZzdFJxZ3nTlWQ1LES0s
-         O/7KbWm1qsqIzDveYcxJ1xciboGwqABjn+Fb1UQlgduuUbHa1+Gi0OhqfVamC/sgByfg
-         SPVlcUJVqhLRYFWAjj6Syd6Wony9ebHNl2YsF5qQmqq0Xpih4V+1HPJsv9Io25BsVthX
-         ESBwjCA7RtAifuHHg9CKkHFBvXy2GM5vIy1jIQNR5GlJUzPwBh8TM19o09zXie+OxtBq
-         FhfQ==
-X-Gm-Message-State: AOAM530fx9BkysXPCfNMMz16BcE1nBqYJK5z8w3rR6y8amwl8wqxBdCe
-        s2Oo+0NG6FPmWMDZ7W9Q4QA=
-X-Google-Smtp-Source: ABdhPJxJlxuNbQqjV45PE6cobcBsqISDpGtNtIgUKkVpPXa5SbB8VitgJHOwbhD0WzWZbMVXZ0mgIQ==
-X-Received: by 2002:a17:906:a05a:b0:6ef:a44d:2f46 with SMTP id bg26-20020a170906a05a00b006efa44d2f46mr27868498ejb.192.1651075640777;
-        Wed, 27 Apr 2022 09:07:20 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id n5-20020a170906378500b006efb4ab6f59sm6984098ejc.86.2022.04.27.09.07.19
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QP5fbP0o4ObiS/A7F3GioEbyOQdz26p2Gp7z2o45zNw=;
+        b=MRTNNGIoHZobPTs2Uc/Cmr17Y2GEFig9MGWD+lRinKO/eEC3u2MdDlphV6B0qS5hO6
+         S7Di3QTvigvGADlWBg/IggbneAPMrlQ2XHoVV+bpCUY4aUKmZFHSklXTI1qApieIEu63
+         jWWYbcGtxV9PvkmRTfNXDtmHrjzca7TK2uNWBVAM3J7sHpq1MRXb3x23ri8mR3tftBva
+         Kf8xsf4AGTQ0Wg64hXwIp1zen3rowulxQVrysHWgxQm2Bc7gbFAi41pNwAkppLt07a72
+         ked6dNZUtXPzDgsdKW9vnL2xpTnVICovIruUnJYPAY/YMrFToQ++/UwM9nfrFzkfJr4G
+         GWMA==
+X-Gm-Message-State: AOAM531rTTnJXlF53qQSlOx9LTWLvdwcpkKx7QN6ff+OH413j1J70OO6
+        hhZCN4ZwpviFM7ogJNas5xPDSw==
+X-Google-Smtp-Source: ABdhPJzqopogfWchjysPltoEFtsBYnSwkqkUJYZWsviYQXnFncNa6tzbOu8W2H1EGUHbFncHRW4Dvg==
+X-Received: by 2002:aa7:8605:0:b0:50d:46d4:a1ad with SMTP id p5-20020aa78605000000b0050d46d4a1admr14110303pfn.66.1651075639852;
+        Wed, 27 Apr 2022 09:07:19 -0700 (PDT)
+Received: from localhost.localdomain ([139.177.225.239])
+        by smtp.gmail.com with ESMTPSA id b13-20020a056a00114d00b004c122b90703sm19685859pfm.27.2022.04.27.09.07.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 09:07:20 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Casper Andersson <casper.casan@gmail.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Colin Ian King <colin.king@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Xu Wang <vulab@iscas.ac.cn>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, bpf@vger.kernel.org,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v5 05/18] net: dsa: mv88e6xxx: remove redundant check in mv88e6xxx_port_vlan()
-Date:   Wed, 27 Apr 2022 18:06:22 +0200
-Message-Id: <20220427160635.420492-6-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220427160635.420492-1-jakobkoschel@gmail.com>
-References: <20220427160635.420492-1-jakobkoschel@gmail.com>
+        Wed, 27 Apr 2022 09:07:19 -0700 (PDT)
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com
+Cc:     linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
+        songmuchun@bytedance.com, zhengqi.arch@bytedance.com,
+        Chengming Zhou <zhouchengming@bytedance.com>
+Subject: [PATCH] sched/fair: optimize and simplify rq leaf_cfs_rq_list
+Date:   Thu, 28 Apr 2022 00:05:44 +0800
+Message-Id: <20220427160544.40309-1-zhouchengming@bytedance.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+We notice the rq leaf_cfs_rq_list has two problems when do bugfix
+backports and some test profiling.
 
-We know that "dev > dst->last_switch" in the "else" block.
-In other words, that "dev - dst->last_switch" is > 0.
+1. cfs_rqs under throttled subtree could be added to the list, and
+   make their fully decayed ancestors on the list, even though not needed.
 
-dsa_port_bridge_num_get(dp) can be 0, but the check
-"if (bridge_num + dst->last_switch != dev) continue", rewritten as
-"if (bridge_num != dev - dst->last_switch) continue", aka
-"if (bridge_num != something which cannot be 0) continue",
-makes it redundant to have the extra "if (!bridge_num) continue" logic,
-since a bridge_num of zero would have been skipped anyway.
+2. #1 also make the leaf_cfs_rq_list management complex and error prone,
+   this is the list of related bugfix so far:
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+   commit 31bc6aeaab1d ("sched/fair: Optimize update_blocked_averages()")
+   commit fe61468b2cbc ("sched/fair: Fix enqueue_task_fair warning")
+   commit b34cb07dde7c ("sched/fair: Fix enqueue_task_fair() warning some more")
+   commit 39f23ce07b93 ("sched/fair: Fix unthrottle_cfs_rq() for leaf_cfs_rq list")
+   commit 0258bdfaff5b ("sched/fair: Fix unfairness caused by missing load decay")
+   commit a7b359fc6a37 ("sched/fair: Correctly insert cfs_rq's to list on unthrottle")
+   commit fdaba61ef8a2 ("sched/fair: Ensure that the CFS parent is added after unthrottling")
+   commit 2630cde26711 ("sched/fair: Add ancestors of unthrottled undecayed cfs_rq")
+
+commit 31bc6aeaab1d ("sched/fair: Optimize update_blocked_averages()")
+delete every cfs_rq under throttled subtree from rq->leaf_cfs_rq_list,
+and delete the throttled_hierarchy() test in update_blocked_averages(),
+which optimized update_blocked_averages().
+
+But those later bugfix add cfs_rqs under throttled subtree back to
+rq->leaf_cfs_rq_list again, with their fully decayed ancestors, for
+the integrity of rq->leaf_cfs_rq_list.
+
+This patch takes another method, skip all cfs_rqs under throttled
+hierarchy when list_add_leaf_cfs_rq(), to completely make cfs_rqs
+under throttled subtree off the leaf_cfs_rq_list.
+
+So we don't need to consider throttled related things in
+enqueue_entity(), unthrottle_cfs_rq() and enqueue_task_fair(),
+which simplify the code a lot. Also optimize update_blocked_averages()
+since cfs_rqs under throttled hierarchy and their ancestors
+won't be on the leaf_cfs_rq_list.
+
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 3 ---
- 1 file changed, 3 deletions(-)
+ kernel/sched/fair.c | 72 ++++++++++-----------------------------------
+ 1 file changed, 16 insertions(+), 56 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 64f4fdd02902..b3aa0e5bc842 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1404,9 +1404,6 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
- 		list_for_each_entry(dp, &dst->ports, list) {
- 			unsigned int bridge_num = dsa_port_bridge_num_get(dp);
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 1ad18b5cc1b8..083c3d32c899 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -309,6 +309,8 @@ const struct sched_class fair_sched_class;
  
--			if (!bridge_num)
--				continue;
+ #ifdef CONFIG_FAIR_GROUP_SCHED
+ 
++static inline int throttled_hierarchy(struct cfs_rq *cfs_rq);
++
+ /* Walk up scheduling entities hierarchy */
+ #define for_each_sched_entity(se) \
+ 		for (; se; se = se->parent)
+@@ -331,7 +333,7 @@ static inline bool list_add_leaf_cfs_rq(struct cfs_rq *cfs_rq)
+ 	struct rq *rq = rq_of(cfs_rq);
+ 	int cpu = cpu_of(rq);
+ 
+-	if (cfs_rq->on_list)
++	if (cfs_rq->on_list || throttled_hierarchy(cfs_rq))
+ 		return rq->tmp_alone_branch == &rq->leaf_cfs_rq_list;
+ 
+ 	cfs_rq->on_list = 1;
+@@ -3242,8 +3244,6 @@ static long calc_group_shares(struct cfs_rq *cfs_rq)
+ }
+ #endif /* CONFIG_SMP */
+ 
+-static inline int throttled_hierarchy(struct cfs_rq *cfs_rq);
 -
- 			if (bridge_num + dst->last_switch != dev)
- 				continue;
+ /*
+  * Recomputes the group entity based on the current state of its group
+  * runqueue.
+@@ -4356,16 +4356,10 @@ enqueue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
+ 		__enqueue_entity(cfs_rq, se);
+ 	se->on_rq = 1;
  
+-	/*
+-	 * When bandwidth control is enabled, cfs might have been removed
+-	 * because of a parent been throttled but cfs->nr_running > 1. Try to
+-	 * add it unconditionally.
+-	 */
+-	if (cfs_rq->nr_running == 1 || cfs_bandwidth_used())
++	if (cfs_rq->nr_running == 1) {
+ 		list_add_leaf_cfs_rq(cfs_rq);
+-
+-	if (cfs_rq->nr_running == 1)
+ 		check_enqueue_throttle(cfs_rq);
++	}
+ }
+ 
+ static void __clear_buddies_last(struct sched_entity *se)
+@@ -4980,11 +4974,18 @@ void unthrottle_cfs_rq(struct cfs_rq *cfs_rq)
+ 	/* update hierarchical throttle state */
+ 	walk_tg_tree_from(cfs_rq->tg, tg_nop, tg_unthrottle_up, (void *)rq);
+ 
+-	/* Nothing to run but something to decay (on_list)? Complete the branch */
+ 	if (!cfs_rq->load.weight) {
+-		if (cfs_rq->on_list)
+-			goto unthrottle_throttle;
+-		return;
++		if (!cfs_rq->on_list)
++			return;
++		/*
++		 * Nothing to run but something to decay (on_list)?
++		 * Complete the branch.
++		 */
++		for_each_sched_entity(se) {
++			if (list_add_leaf_cfs_rq(cfs_rq_of(se)))
++				break;
++		}
++		goto unthrottle_throttle;
+ 	}
+ 
+ 	task_delta = cfs_rq->h_nr_running;
+@@ -5022,31 +5023,12 @@ void unthrottle_cfs_rq(struct cfs_rq *cfs_rq)
+ 		/* end evaluation on encountering a throttled cfs_rq */
+ 		if (cfs_rq_throttled(qcfs_rq))
+ 			goto unthrottle_throttle;
+-
+-		/*
+-		 * One parent has been throttled and cfs_rq removed from the
+-		 * list. Add it back to not break the leaf list.
+-		 */
+-		if (throttled_hierarchy(qcfs_rq))
+-			list_add_leaf_cfs_rq(qcfs_rq);
+ 	}
+ 
+ 	/* At this point se is NULL and we are at root level*/
+ 	add_nr_running(rq, task_delta);
+ 
+ unthrottle_throttle:
+-	/*
+-	 * The cfs_rq_throttled() breaks in the above iteration can result in
+-	 * incomplete leaf list maintenance, resulting in triggering the
+-	 * assertion below.
+-	 */
+-	for_each_sched_entity(se) {
+-		struct cfs_rq *qcfs_rq = cfs_rq_of(se);
+-
+-		if (list_add_leaf_cfs_rq(qcfs_rq))
+-			break;
+-	}
+-
+ 	assert_list_leaf_cfs_rq(rq);
+ 
+ 	/* Determine whether we need to wake up potentially idle CPU: */
+@@ -5701,13 +5683,6 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+ 		/* end evaluation on encountering a throttled cfs_rq */
+ 		if (cfs_rq_throttled(cfs_rq))
+ 			goto enqueue_throttle;
+-
+-               /*
+-                * One parent has been throttled and cfs_rq removed from the
+-                * list. Add it back to not break the leaf list.
+-                */
+-               if (throttled_hierarchy(cfs_rq))
+-                       list_add_leaf_cfs_rq(cfs_rq);
+ 	}
+ 
+ 	/* At this point se is NULL and we are at root level*/
+@@ -5731,21 +5706,6 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+ 		update_overutilized_status(rq);
+ 
+ enqueue_throttle:
+-	if (cfs_bandwidth_used()) {
+-		/*
+-		 * When bandwidth control is enabled; the cfs_rq_throttled()
+-		 * breaks in the above iteration can result in incomplete
+-		 * leaf list maintenance, resulting in triggering the assertion
+-		 * below.
+-		 */
+-		for_each_sched_entity(se) {
+-			cfs_rq = cfs_rq_of(se);
+-
+-			if (list_add_leaf_cfs_rq(cfs_rq))
+-				break;
+-		}
+-	}
+-
+ 	assert_list_leaf_cfs_rq(rq);
+ 
+ 	hrtick_update(rq);
 -- 
-2.25.1
+2.35.2
 
