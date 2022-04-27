@@ -2,419 +2,515 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20BD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 01:41:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4730AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 01:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356884AbiD0BoX (ORCPT
+        id S1352807AbiD0Bpg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 21:44:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
+        Tue, 26 Apr 2022 21:45:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356876AbiD0Bnd (ORCPT
+        with ESMTP id S229754AbiD0Bpd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 21:43:33 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 370D0140CC
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 18:40:24 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id b198-20020a6334cf000000b003ab23ccd0cbso170374pga.14
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 18:40:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=tdAby1TGlV1h8nD87XtrVih1Pygj0UJbvJREenj9JnE=;
-        b=ivkOoyYRCDwEv7I3kjEmBzKP6ALUjVb9oC8s04GcxHKSOoF9jV57s+M/xvmCOuZ5Yg
-         k40c1NhbKEZ2seHy59bKbLcsUw6Rdz3MuX5i9gug7+X87B3tVpe2wP9dTzva/K1IxLtt
-         I26MHaiA2rwTf1ZSIne2Yttolv+dAgzE5eL24RrjNyqLKt0DV37qo+El5ZftIedOh09l
-         xM7aae0kzHaAg+xUvOcMLjKaobcUyClomh6hC8XbMtv08PwP+klerPRKCOf/GmWUUgAO
-         Hy07rOqiLxmHuuVGMJF3nYBt0Ha9v/OQ5ckdJ+qEQsW8et6TScrzww4o6kVtW0iR+kIi
-         ReaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=tdAby1TGlV1h8nD87XtrVih1Pygj0UJbvJREenj9JnE=;
-        b=Pd+Hcofw+5hYN8kN2OYD1IJqcd/IuU+VUrbyxdm//qlDEOopDQ5KBk9XZn+HW9zwaw
-         MBUgtfm7kbZstDZ2Vzt5JxaMB9LfHrmpbGgTTfqOlg9NyQcYaOikUPif2Ns5jR1T6Z/3
-         9hixaSVO6aKI1YmgB6FQnibEKZL8TEDay7XLPNC/MD+THVb8859TLY+/isqfDbt9CY/a
-         eAIvST/3cNf2xuWosYcd8BWP69FGip8FY6/M15dKsQXEDytdq3l+YxVlFAzhmd/fWWne
-         mYMB9YhLQEYSnX+Gytimg6IeTyit/s3t4cs8tHgJrwxhNfxQ/wvjNCpGkx/NhoYzn5by
-         h+9A==
-X-Gm-Message-State: AOAM533icSPLG36/oEOnsyOt+NqRvnKOmZ/xRC+JT03V5ui3y3Ir1OCl
-        92u9XqG6RRBeLTiFxl3ImnNVaAzjdRc=
-X-Google-Smtp-Source: ABdhPJzTNiP/xXqBgporbK59dMQrSzIVhqlhXvoYgY2x5e1mB/xWz+rutzl+rGM9cviXD5nxxb0Mo5Ef3D4=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:1702:b0:50a:8181:fed7 with SMTP id
- h2-20020a056a00170200b0050a8181fed7mr27400903pfc.56.1651023623746; Tue, 26
- Apr 2022 18:40:23 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed, 27 Apr 2022 01:40:04 +0000
-In-Reply-To: <20220427014004.1992589-1-seanjc@google.com>
-Message-Id: <20220427014004.1992589-9-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220427014004.1992589-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v2 8/8] DO NOT MERGE: Hack-a-test to verify gpc invalidation+refresh
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Woodhouse <dwmw@amazon.co.uk>,
-        Mingwei Zhang <mizhang@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 26 Apr 2022 21:45:33 -0400
+Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE142F032
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 18:42:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1651023743; x=1682559743;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=eQ7XBnug6z28Gc0LOiGVTTqObhpPTVEc1gKirvGGTx4=;
+  b=QR6HcOT8UtteoSSSUl2adFrw7kxlNjWi3DiGncsu6a4144nDWkB/QLQy
+   HRTh44oRG22dUVWtkSYl2fdPl2v1vss7B+sWN0thPE2O7DxwrOeR1u9Zp
+   JTKgo/1JlF832fiQ5ALEKlrhVqdioSVlD2gHVr+kqhRof7II6xxVUzuie
+   s2Ok/VoDS5FVBOoKbU+mGP4XNhAORBLfgA6Nh3h01GwT8On+gqu2h/92k
+   +o/xbYWkHVq9DDErkZ8XANavLemdTpXDQOIQkRy47bjnTTUg3twhoe+lO
+   rVUML1CHylatovq3f9rEnNkvkzYz7zIMBUNVCbIIWA8DXyt/GTP1Z6GbH
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,292,1643644800"; 
+   d="scan'208";a="199800854"
+Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 27 Apr 2022 09:42:22 +0800
+IronPort-SDR: fnxbiK4n3joaEorYY/4IFMGw5duzpmef0r8CqNr6MAmc9sPn3d9nURuy0jc7oRErkE9OZxukyG
+ 4EBrM5Iu5bwQkbutDqfB06hG2cocy/5gDdvj4BlpHR5UQE5GT5UZ4hRx8oqgXv0KUw3oYpP8RF
+ bC3xRkf1vUpyO1PNqNITLYpODwuXUmYeCZ30FPBp/3d6savyq6iJ3wybyWtO/ldwqt1hl5lZZ7
+ A7Bdj4kz/5ixw+/4DxZY7Ese3Abg1A9UBOK5ZrjPdjFTmZRpWnN3FVOktvjYHQda/HyW9cjjiX
+ lNBUzXIHIEKlCqsEoi1uCtcv
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 26 Apr 2022 18:12:32 -0700
+IronPort-SDR: D1kY0U/kyec+gC++LEosva0j0M9c85spmyu5mX+KD2ruxVSTPL0qR4W+sdTIe6s10YJBo2PJAj
+ +UJ644wqAzcFwNSBE18wHUpdRq0Za6UfegnHRSrt25k7rtQxw7A/Ml9yJuJsv48qqcCRbUjq11
+ 9SL2JCvWd6RgG7mty3/ahPqlKhaGm76JFpoFzp9oSpvSELEnqaJw8lhk5wh1Jp0uiQt11HEA9y
+ o6fybLvpj0JopWpq7CJKq4oOhZmvaKFdyxgoRo36zQxBYAO/YqJ1QlW/9UgInsvlhIUu3PTNi5
+ TKM=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 26 Apr 2022 18:42:22 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4Kp1hX6TH5z1SHwl
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 18:42:20 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1651023737; x=1653615738; bh=eQ7XBnug6z28Gc0LOiGVTTqObhpPTVEc1gK
+        irvGGTx4=; b=q5RCzTSzhw7PCoj7EcWmWe0wWvOuSq8N8ONwWocdUau5zScSQGn
+        m0Z5PsmSgkhM2iWuDo/u2S109kK6yrpSPIsR4nTauDgKFHfuNET7mnwgTL/1D6VX
+        ttI7FeDDGtDf4H+QYqdxgdDNVLoNCREHm5/G7p1e7W6jnIikIN8Rz8V6YWnrDYA2
+        2rUxnD2y7//huIjflokbA06ga1XqxN0hhO5VXkCgze1a8zI9PRm6Pl02O6+fhVXX
+        UIjjHpTYQJaU32F/g5YaIOL9JKWcX7uUnK4YcpEHVzipR+4sqwEKHl01x8g0W74V
+        X8FSzmk4GbrhzzlA/1W2HNtkxhDZwuIrHbA==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id JLY6LCrzLxvi for <linux-kernel@vger.kernel.org>;
+        Tue, 26 Apr 2022 18:42:17 -0700 (PDT)
+Received: from [10.225.163.27] (unknown [10.225.163.27])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4Kp1hK3pPvz1Rvlc;
+        Tue, 26 Apr 2022 18:42:09 -0700 (PDT)
+Message-ID: <ab926e49-1fe6-fe10-2377-079268bc2d44@opensource.wdc.com>
+Date:   Wed, 27 Apr 2022 10:42:07 +0900
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v4 10/10] fs: add support for copy file range in zonefs
+Content-Language: en-US
+To:     Nitesh Shetty <nj.shetty@samsung.com>
+Cc:     chaitanyak@nvidia.com, linux-block@vger.kernel.org,
+        linux-scsi@vger.kernel.org, dm-devel@redhat.com,
+        linux-nvme@lists.infradead.org, linux-fsdevel@vger.kernel.org,
+        axboe@kernel.dk, msnitzer@redhat.com, bvanassche@acm.org,
+        martin.petersen@oracle.com, hare@suse.de, kbusch@kernel.org,
+        hch@lst.de, Frederick.Knight@netapp.com, osandov@fb.com,
+        lsf-pc@lists.linux-foundation.org, djwong@kernel.org,
+        josef@toxicpanda.com, clm@fb.com, dsterba@suse.com, tytso@mit.edu,
+        jack@suse.com, nitheshshetty@gmail.com, gost.dev@samsung.com,
+        Arnav Dawn <arnav.dawn@samsung.com>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        James Smart <james.smart@broadcom.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        Johannes Thumshirn <jth@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-kernel@vger.kernel.org
+References: <20220426101241.30100-1-nj.shetty@samsung.com>
+ <CGME20220426102042epcas5p201aa0d9143d7bc650ae7858383b69288@epcas5p2.samsung.com>
+ <20220426101241.30100-11-nj.shetty@samsung.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220426101241.30100-11-nj.shetty@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a VM-wide gfn=>pfn cache and a fake MSR to let userspace control the
-cache.  On writes, reflect the value of the MSR into the backing page of
-a gfn=>pfn cache so that userspace can detect if a value was written to
-the wrong page, i.e. to a stale mapping.
+On 4/26/22 19:12, Nitesh Shetty wrote:
+> From: Arnav Dawn <arnav.dawn@samsung.com>
+> 
+> copy_file_range is implemented using copy offload,
+> copy offloading to device is always enabled.
+> To disable copy offloading mount with "no_copy_offload" mount option.
+> At present copy offload is only used, if the source and destination files
+> are on same block device, otherwise copy file range is completed by
+> generic copy file range.
 
-Spin up 16 vCPUs (arbitrary) to use/refresh the cache, and another thread
-to trigger mmu_notifier events and memslot updates.
+Why not integrate copy offload inside generic_copy_file_range() ?
 
-Not-signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/x86.c                     |  30 ++++
- include/linux/kvm_host.h               |   2 +
- tools/testing/selftests/kvm/.gitignore |   1 +
- tools/testing/selftests/kvm/Makefile   |   2 +
- tools/testing/selftests/kvm/gpc_test.c | 217 +++++++++++++++++++++++++
- virt/kvm/pfncache.c                    |   2 +
- 6 files changed, 254 insertions(+)
- create mode 100644 tools/testing/selftests/kvm/gpc_test.c
+> 
+> copy file range implemented as following:
+> 	- write pending writes on the src and dest files
+> 	- drop page cache for dest file if its conv zone
+> 	- copy the range using offload
+> 	- update dest file info
+> 
+> For all failure cases we fallback to generic file copy range
+> At present this implementation does not support conv aggregation
+> 
+> Signed-off-by: Arnav Dawn <arnav.dawn@samsung.com>
+> ---
+>  fs/zonefs/super.c  | 178 ++++++++++++++++++++++++++++++++++++++++++++-
+>  fs/zonefs/zonefs.h |   1 +
+>  2 files changed, 178 insertions(+), 1 deletion(-)
+> 
+> diff --git a/fs/zonefs/super.c b/fs/zonefs/super.c
+> index b3b0b71fdf6c..60563b592bf2 100644
+> --- a/fs/zonefs/super.c
+> +++ b/fs/zonefs/super.c
+> @@ -901,6 +901,7 @@ static ssize_t zonefs_file_dio_write(struct kiocb *iocb, struct iov_iter *from)
+>  	else
+>  		ret = iomap_dio_rw(iocb, from, &zonefs_iomap_ops,
+>  				   &zonefs_write_dio_ops, 0, 0);
+> +
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 951d0a78ccda..7afdb7f39821 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -3473,6 +3473,20 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 		return kvm_xen_write_hypercall_page(vcpu, data);
- 
- 	switch (msr) {
-+	case 0xdeadbeefu: {
-+		struct gfn_to_pfn_cache *gpc = &vcpu->kvm->test_cache;
-+		unsigned long flags;
-+
-+		if (kvm_gfn_to_pfn_cache_refresh(vcpu->kvm, gpc, data, 8))
-+			break;
-+
-+		read_lock_irqsave(&gpc->lock, flags);
-+		if (kvm_gfn_to_pfn_cache_check(vcpu->kvm, gpc, data, 8))
-+			*(u64 *)(gpc->khva) = data;
-+		read_unlock_irqrestore(&gpc->lock, flags);
-+		break;
-+	}
-+
- 	case MSR_AMD64_NB_CFG:
- 	case MSR_IA32_UCODE_WRITE:
- 	case MSR_VM_HSAVE_PA:
-@@ -3825,6 +3839,19 @@ static int get_msr_mce(struct kvm_vcpu *vcpu, u32 msr, u64 *pdata, bool host)
- int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- {
- 	switch (msr_info->index) {
-+	case 0xdeadbeefu: {
-+		struct gfn_to_pfn_cache *gpc = &vcpu->kvm->test_cache;
-+		unsigned long flags;
-+
-+		read_lock_irqsave(&gpc->lock, flags);
-+		if (kvm_gfn_to_pfn_cache_check(vcpu->kvm, gpc, gpc->gpa, 8))
-+			msr_info->data = gpc->gpa;
-+		else
-+			msr_info->data = 0xdeadbeefu;
-+		read_unlock_irqrestore(&gpc->lock, flags);
-+		return 0;
-+	}
-+
- 	case MSR_IA32_PLATFORM_ID:
- 	case MSR_IA32_EBL_CR_POWERON:
- 	case MSR_IA32_LASTBRANCHFROMIP:
-@@ -11794,6 +11821,9 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
- 	kvm_hv_init_vm(kvm);
- 	kvm_xen_init_vm(kvm);
- 
-+	kvm_gfn_to_pfn_cache_init(kvm, &kvm->test_cache, NULL,
-+				  KVM_HOST_USES_PFN, 0, 0);
-+
- 	return static_call(kvm_x86_vm_init)(kvm);
- 
- out_page_track:
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 252ee4a61b58..88ed76ad8bc7 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -718,6 +718,8 @@ struct kvm {
- 	spinlock_t gpc_lock;
- 	struct list_head gpc_list;
- 
-+	struct gfn_to_pfn_cache test_cache;
-+
- 	/*
- 	 * created_vcpus is protected by kvm->lock, and is incremented
- 	 * at the beginning of KVM_CREATE_VCPU.  online_vcpus is only
-diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
-index 56140068b763..0310a57a1a4f 100644
---- a/tools/testing/selftests/kvm/.gitignore
-+++ b/tools/testing/selftests/kvm/.gitignore
-@@ -70,3 +70,4 @@
- /steal_time
- /kvm_binary_stats_test
- /system_counter_offset_test
-+/gpc_test
-diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-index af582d168621..0adc9ac954d1 100644
---- a/tools/testing/selftests/kvm/Makefile
-+++ b/tools/testing/selftests/kvm/Makefile
-@@ -104,6 +104,8 @@ TEST_GEN_PROGS_x86_64 += steal_time
- TEST_GEN_PROGS_x86_64 += kvm_binary_stats_test
- TEST_GEN_PROGS_x86_64 += system_counter_offset_test
- 
-+TEST_GEN_PROGS_x86_64 += gpc_test
-+
- TEST_GEN_PROGS_aarch64 += aarch64/arch_timer
- TEST_GEN_PROGS_aarch64 += aarch64/debug-exceptions
- TEST_GEN_PROGS_aarch64 += aarch64/get-reg-list
-diff --git a/tools/testing/selftests/kvm/gpc_test.c b/tools/testing/selftests/kvm/gpc_test.c
-new file mode 100644
-index 000000000000..5c509e7bb4da
---- /dev/null
-+++ b/tools/testing/selftests/kvm/gpc_test.c
-@@ -0,0 +1,217 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#define _GNU_SOURCE /* for program_invocation_short_name */
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <pthread.h>
-+#include <sched.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <signal.h>
-+#include <syscall.h>
-+#include <sys/ioctl.h>
-+#include <sys/sysinfo.h>
-+#include <asm/barrier.h>
-+#include <linux/atomic.h>
-+#include <linux/rseq.h>
-+#include <linux/unistd.h>
-+
-+#include "kvm_util.h"
-+#include "processor.h"
-+#include "test_util.h"
-+
-+#define NR_VCPUS 16
-+
-+#define NR_ITERATIONS	1000
-+
-+#define PAGE_SIZE 4096
-+
-+#ifndef MAP_FIXED_NOREPLACE
-+#define MAP_FIXED_NOREPLACE	0x100000
-+#endif
-+
-+static const uint64_t gpa_base = (4ull * (1 << 30));
-+
-+static struct kvm_vm *vm;
-+
-+static pthread_t memory_thread;
-+static pthread_t vcpu_threads[NR_VCPUS];
-+
-+static bool fight;
-+
-+static uint64_t per_vcpu_gpa_aligned(int vcpu_id)
-+{
-+	return gpa_base + (vcpu_id * PAGE_SIZE);
-+}
-+
-+static uint64_t per_vcpu_gpa(int vcpu_id)
-+{
-+	return per_vcpu_gpa_aligned(vcpu_id) + vcpu_id;
-+}
-+
-+static void guest_code(int vcpu_id)
-+{
-+	uint64_t this_vcpu_gpa;
-+	int i;
-+
-+	this_vcpu_gpa = per_vcpu_gpa(vcpu_id);
-+
-+	for (i = 0; i < NR_ITERATIONS; i++)
-+		wrmsr(0xdeadbeefu, this_vcpu_gpa);
-+	GUEST_SYNC(0);
-+}
-+
-+static void *memory_worker(void *ign)
-+{
-+	int i, x, r, k;
-+	uint64_t *hva;
-+	uint64_t gpa;
-+	void *mem;
-+
-+	while (!READ_ONCE(fight))
-+		cpu_relax();
-+
-+	for (k = 0; k < 50; k++) {
-+		i = (unsigned int)random() % NR_VCPUS;
-+
-+		gpa = per_vcpu_gpa_aligned(i);
-+		hva = (void *)gpa;
-+
-+		x = (unsigned int)random() % 5;
-+		switch (x) {
-+		case 0:
-+			r = munmap(hva, PAGE_SIZE);
-+			TEST_ASSERT(!r, "Failed to mumap (hva = %lx), errno = %d (%s)",
-+				    (unsigned long)hva, errno, strerror(errno));
-+
-+			mem = mmap(hva, PAGE_SIZE, PROT_READ | PROT_WRITE,
-+				MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-+			TEST_ASSERT(mem != MAP_FAILED || mem != hva,
-+				    "Failed to mmap (hva = %lx), errno = %d (%s)",
-+				    (unsigned long)hva, errno, strerror(errno));
-+			break;
-+		case 1:
-+			vm_set_user_memory_region(vm, i + 1, KVM_MEM_LOG_DIRTY_PAGES,
-+						  gpa, PAGE_SIZE, hva);
-+			vm_set_user_memory_region(vm, i + 1, 0, gpa, PAGE_SIZE, hva);
-+			break;
-+		case 2:
-+			r = mprotect(hva, PAGE_SIZE, PROT_NONE);
-+			TEST_ASSERT(!r, "Failed to mprotect (hva = %lx), errno = %d (%s)",
-+				    (unsigned long)hva, errno, strerror(errno));
-+
-+			r = mprotect(hva, PAGE_SIZE, PROT_READ | PROT_WRITE);
-+			TEST_ASSERT(!r, "Failed to mprotect (hva = %lx), errno = %d (%s)",
-+				    (unsigned long)hva, errno, strerror(errno));
-+			break;
-+		case 3:
-+			r = mprotect(hva, PAGE_SIZE, PROT_READ);
-+			TEST_ASSERT(!r, "Failed to mprotect (hva = %lx), errno = %d (%s)",
-+				    (unsigned long)hva, errno, strerror(errno));
-+
-+			r = mprotect(hva, PAGE_SIZE, PROT_READ | PROT_WRITE);
-+			TEST_ASSERT(!r, "Failed to mprotect (hva = %lx), errno = %d (%s)",
-+				    (unsigned long)hva, errno, strerror(errno));
-+			break;
-+		case 4:
-+			vm_set_user_memory_region(vm, i + 1, 0, gpa, 0, 0);
-+			vm_set_user_memory_region(vm, i + 1, 0, gpa, PAGE_SIZE,
-+						  (void *)per_vcpu_gpa_aligned(NR_VCPUS));
-+			vm_set_user_memory_region(vm, i + 1, 0, gpa, 0, 0);
-+			vm_set_user_memory_region(vm, i + 1, 0, gpa, PAGE_SIZE, hva);
-+			break;
-+		}
-+	}
-+	return NULL;
-+}
-+
-+static void sync_guest(int vcpu_id)
-+{
-+	struct ucall uc;
-+
-+	switch (get_ucall(vm, vcpu_id, &uc)) {
-+	case UCALL_SYNC:
-+		TEST_ASSERT(uc.args[1] == 0,
-+			   "Unexpected sync ucall, got %lx", uc.args[1]);
-+		break;
-+	case UCALL_ABORT:
-+			TEST_FAIL("%s at %s:%ld\n\tvalues: %#lx, %#lx",
-+		(const char *)uc.args[0],
-+		__FILE__, uc.args[1], uc.args[2], uc.args[3]);
-+		break;
-+	default:
-+		TEST_FAIL("Unexpected userspace exit, reason = %s\n",
-+			  exit_reason_str(vcpu_state(vm, vcpu_id)->exit_reason));
-+		break;
-+	}
-+}
-+
-+static void *vcpu_worker(void *data)
-+{
-+	int vcpu_id = (unsigned long)data;
-+
-+	vcpu_args_set(vm, vcpu_id, 1, vcpu_id);
-+
-+	while (!READ_ONCE(fight))
-+		cpu_relax();
-+
-+	usleep(10);
-+
-+	vcpu_run(vm, vcpu_id);
-+
-+	sync_guest(vcpu_id);
-+
-+	return NULL;
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	uint64_t *hva;
-+	uint64_t gpa;
-+	void *r;
-+	int i;
-+
-+	srandom(time(0));
-+
-+	vm = vm_create_default_with_vcpus(NR_VCPUS, 0, 0, guest_code, NULL);
-+	ucall_init(vm, NULL);
-+
-+	pthread_create(&memory_thread, NULL, memory_worker, 0);
-+
-+	for (i = 0; i < NR_VCPUS; i++) {
-+		pthread_create(&vcpu_threads[i], NULL, vcpu_worker, (void *)(unsigned long)i);
-+
-+		gpa = per_vcpu_gpa_aligned(i);
-+		hva = (void *)gpa;
-+		r = mmap(hva, PAGE_SIZE, PROT_READ | PROT_WRITE,
-+			 MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-+		TEST_ASSERT(r != MAP_FAILED, "mmap() '%lx' failed, errno = %d (%s)",
-+			    gpa, errno, strerror(errno));
-+
-+		vm_set_user_memory_region(vm, i + 1, 0, gpa, PAGE_SIZE, hva);
-+	}
-+
-+	WRITE_ONCE(fight, true);
-+
-+	for (i = 0; i < NR_VCPUS; i++)
-+		pthread_join(vcpu_threads[i], NULL);
-+
-+	pthread_join(memory_thread, NULL);
-+
-+	for (i = 0; i < NR_VCPUS; i++) {
-+		gpa = per_vcpu_gpa(i);
-+		hva = (void *)gpa;
-+
-+		TEST_ASSERT(*hva == 0 || *hva == gpa,
-+			    "Want '0' or '%lx', got '%lx'\n", gpa, *hva);
-+	}
-+
-+	gpa = vcpu_get_msr(vm, 0, 0xdeadbeefu);
-+	hva = (void *)gpa;
-+	if (gpa != 0xdeadbeefu)
-+		TEST_ASSERT(*hva == gpa, "Want '%lx', got '%lx'\n", gpa, *hva);
-+
-+	kvm_vm_free(vm);
-+
-+	return 0;
-+}
-diff --git a/virt/kvm/pfncache.c b/virt/kvm/pfncache.c
-index 3cb439b505b4..7881e6e6d91a 100644
---- a/virt/kvm/pfncache.c
-+++ b/virt/kvm/pfncache.c
-@@ -372,6 +372,8 @@ int kvm_gfn_to_pfn_cache_init(struct kvm *kvm, struct gfn_to_pfn_cache *gpc,
- 		list_add(&gpc->list, &kvm->gpc_list);
- 		spin_unlock(&kvm->gpc_lock);
- 	}
-+	if (!len)
-+		return -EINVAL;
- 	return kvm_gfn_to_pfn_cache_refresh(kvm, gpc, gpa, len);
- }
- EXPORT_SYMBOL_GPL(kvm_gfn_to_pfn_cache_init);
+Unnecessary white line change.
+
+>  	if (zi->i_ztype == ZONEFS_ZTYPE_SEQ &&
+>  	    (ret > 0 || ret == -EIOCBQUEUED)) {
+>  		if (ret > 0)
+> @@ -1189,6 +1190,171 @@ static int zonefs_file_release(struct inode *inode, struct file *file)
+>  	return 0;
+>  }
+>  
+> +static int zonefs_is_file_size_ok(struct inode *src_inode, struct inode *dst_inode,
+> +			   loff_t src_off, loff_t dst_off, size_t len)
+
+This function is badly named. It is not checking if the size of files is
+OK, is is checking if the copy offsets are OK.
+
+> +{
+> +	loff_t size, endoff;
+> +
+> +	size = i_size_read(src_inode);
+> +	/* Don't copy beyond source file EOF. */
+> +	if (src_off + len > size) {
+> +		zonefs_err(src_inode->i_sb, "Copy beyond EOF (%llu + %zu > %llu)\n",
+> +		     src_off, len, size);
+> +		return -EOPNOTSUPP;
+
+Reading beyond EOF returns 0, not an error, for any FS, including zonefs.
+So why return an error here ?
+
+> +	}
+> +
+> +	endoff = dst_off + len;
+> +	if (inode_newsize_ok(dst_inode, endoff))
+> +		return -EOPNOTSUPP;
+
+This is not EOPNOTSUPP. This is EINVAL since the user is asking for
+something that we know will fail due to the unaligned destination.
+
+Furthermore, this code does not consider the zone type for the file. Since
+the dest file could be a an aggregated conventional zone file which is
+larger than a sequential zone file, this is not using the right limit.
+This must be checked against i_max_size of struct zonefs_inode_info.
+
+Note that inode_newsize_ok() must be called with inode->i_mutex held but
+you never took that lock.
+
+Also, the dest file could be a conventional zone file used for swap. And
+you are not checking that. You have plenty of other checks missing. See
+generic_copy_file_checks(). Calling that function should be fine for
+zonefs too.
+
+> +
+> +
+> +	return 0;
+> +}
+> +static ssize_t __zonefs_send_copy(struct zonefs_inode_info *src_zi, loff_t src_off,
+> +				struct zonefs_inode_info *dst_zi, loff_t dst_off, size_t len)
+
+Please rename this zonefs_issue_copy().
+
+> +{
+> +	struct block_device *src_bdev = src_zi->i_vnode.i_sb->s_bdev;
+> +	struct block_device *dst_bdev = dst_zi->i_vnode.i_sb->s_bdev;
+> +	struct range_entry *rlist;
+> +	int ret = -EIO;
+
+Initializing ret is not needed.
+
+> +
+> +	rlist = kmalloc(sizeof(*rlist), GFP_KERNEL);
+
+No NULL check ?
+
+> +	rlist[0].dst = (dst_zi->i_zsector << SECTOR_SHIFT) + dst_off;
+> +	rlist[0].src = (src_zi->i_zsector << SECTOR_SHIFT) + src_off;
+> +	rlist[0].len = len;
+> +	rlist[0].comp_len = 0;
+> +	ret = blkdev_issue_copy(src_bdev, 1, rlist, dst_bdev, GFP_KERNEL);
+> +	if (ret) {
+> +		if (rlist[0].comp_len != len) {
+
+Pack this condition with the previous if using &&.
+
+> +			ret = rlist[0].comp_len;
+> +			kfree(rlist);
+> +			return ret;
+
+These 2 lines are not needed, the same is done below.
+
+> +		}
+> +	}
+> +	kfree(rlist);
+> +	return len;
+
+And how do you handle this failing ? Where is zonefs_io_error() called ?
+Without a call to that function, there is no way to guarantee that the
+destination file state is still in sync with the zone state. This can fail
+for all sorts of reasons (e.g. zone went offline), and that needs to be
+checked.
+
+> +}
+> +static ssize_t __zonefs_copy_file_range(struct file *src_file, loff_t src_off,
+> +				      struct file *dst_file, loff_t dst_off,
+> +				      size_t len, unsigned int flags)
+> +{
+> +	struct inode *src_inode = file_inode(src_file);
+> +	struct inode *dst_inode = file_inode(dst_file);
+> +	struct zonefs_inode_info *src_zi = ZONEFS_I(src_inode);
+> +	struct zonefs_inode_info *dst_zi = ZONEFS_I(dst_inode);
+> +	struct block_device *src_bdev = src_inode->i_sb->s_bdev;
+> +	struct block_device *dst_bdev = dst_inode->i_sb->s_bdev;
+> +	struct super_block *src_sb = src_inode->i_sb;
+> +	struct zonefs_sb_info *src_sbi = ZONEFS_SB(src_sb);
+> +	struct super_block *dst_sb = dst_inode->i_sb;
+> +	struct zonefs_sb_info *dst_sbi = ZONEFS_SB(dst_sb);
+> +	ssize_t ret = -EIO, bytes;
+> +
+> +	if (src_bdev != dst_bdev) {
+> +		zonefs_err(src_sb, "Copying files across two devices\n");
+> +			return -EXDEV;
+
+Weird indentation. And the error message is not needed.
+The test can also be simplified to
+
+if (src_inode->i_sb != dst_inode->i_sb)
+
+> +	}
+> +
+> +	/*
+> +	 * Some of the checks below will return -EOPNOTSUPP,
+> +	 * which will force a generic copy
+> +	 */
+> +
+> +	if (!(src_sbi->s_mount_opts & ZONEFS_MNTOPT_COPY_FILE)
+> +		|| !(dst_sbi->s_mount_opts & ZONEFS_MNTOPT_COPY_FILE))
+> +		return -EOPNOTSUPP;
+
+I do not see the point of having this option. See below.
+
+> +
+> +	/* Start by sync'ing the source and destination files ifor conv zones */
+> +	if (src_zi->i_ztype == ZONEFS_ZTYPE_CNV) {
+> +		ret = file_write_and_wait_range(src_file, src_off, (src_off + len));
+> +		if (ret < 0) {
+> +			zonefs_err(src_sb, "failed to write source file (%zd)\n", ret);
+> +			goto out;
+> +		}
+> +	}
+> +	if (dst_zi->i_ztype == ZONEFS_ZTYPE_CNV) {
+> +		ret = file_write_and_wait_range(dst_file, dst_off, (dst_off + len));
+> +		if (ret < 0) {
+> +			zonefs_err(dst_sb, "failed to write destination file (%zd)\n", ret);
+> +			goto out;
+> +		}
+> +	}
+
+And what about inode_dio_wait() for sequential dst file ? Not needed ?
+
+> +	mutex_lock(&dst_zi->i_truncate_mutex);
+> +	if (len > dst_zi->i_max_size - dst_zi->i_wpoffset) {
+> +		/* Adjust length */
+> +		len -= dst_zi->i_max_size - dst_zi->i_wpoffset;
+> +		if (len <= 0) {
+> +			mutex_unlock(&dst_zi->i_truncate_mutex);
+> +			return -EOPNOTSUPP;
+
+If len is 0, return 0.
+
+> +		}
+> +	}
+> +	if (dst_off != dst_zi->i_wpoffset) {
+> +		mutex_unlock(&dst_zi->i_truncate_mutex);
+> +		return -EOPNOTSUPP; /* copy not at zone write ptr */
+
+This must be an EINVAL. See zonefs_file_dio_write().
+The condition is also invalid since the file can be a conventional zone
+file which allows to write anywhere. Did you really test this code properly ?
+
+> +	}
+> +	mutex_lock(&src_zi->i_truncate_mutex);
+> +	ret = zonefs_is_file_size_ok(src_inode, dst_inode, src_off, dst_off, len);
+> +	if (ret < 0) {
+> +		mutex_unlock(&src_zi->i_truncate_mutex);
+> +		mutex_unlock(&dst_zi->i_truncate_mutex);
+> +		goto out;
+> +	}
+> +	mutex_unlock(&src_zi->i_truncate_mutex);
+> +
+> +	/* Drop dst file cached pages for a conv zone*/
+> +	if (dst_zi->i_ztype == ZONEFS_ZTYPE_CNV) {
+> +		ret = invalidate_inode_pages2_range(dst_inode->i_mapping,
+> +						    dst_off >> PAGE_SHIFT,
+> +						    (dst_off + len) >> PAGE_SHIFT);
+> +		if (ret < 0) {
+> +			zonefs_err(dst_sb, "Failed to invalidate inode pages (%zd)\n", ret);
+> +			ret = 0;
+
+And you still go on ? That will corrupt data. No way. This error must be
+returned to fail the copy.
+
+> +		}
+> +	}
+> +	bytes = __zonefs_send_copy(src_zi, src_off, dst_zi, dst_off, len);
+> +	ret += bytes;
+
+You cannot hold i_truncate_mutex while doing IOs because if there is an
+error, there will be a deadlock. Also, __zonefs_send_copy() can return an
+error and that is not checked.
+
+> +
+> +	file_update_time(dst_file);
+> +	zonefs_update_stats(dst_inode, dst_off + bytes);
+> +	zonefs_i_size_write(dst_inode, dst_off + bytes);
+> +	dst_zi->i_wpoffset += bytes;
+> +	mutex_unlock(&dst_zi->i_truncate_mutex);
+> +
+> +
+> +
+
+2 extra uneeded blank lines.
+
+> +	/*
+> +	 * if we still have some bytes left, do splice copy
+> +	 */
+
+This comment fits on a single line.
+
+> +	if (bytes && (bytes < len)) {
+> +		zonefs_info(src_sb, "Final partial copy of %zu bytes\n", len);
+> +		bytes = do_splice_direct(src_file, &src_off, dst_file,
+> +					 &dst_off, len, flags);
+
+And this can fail because other writes may be coming in since you never
+locked inode->i_mutex.
+
+> +		if (bytes > 0)
+> +			ret += bytes;
+> +		else
+> +			zonefs_info(src_sb, "Failed partial copy (%zd)\n", bytes);
+
+Error message not needed.
+
+> +	}
+> +
+> +out:
+> +
+> +	return ret;
+> +}
+> +
+> +static ssize_t zonefs_copy_file_range(struct file *src_file, loff_t src_off,
+> +				    struct file *dst_file, loff_t dst_off,
+> +				    size_t len, unsigned int flags)
+> +{
+> +	ssize_t ret;
+> +
+> +	ret = __zonefs_copy_file_range(src_file, src_off, dst_file, dst_off,
+> +				     len, flags);
+> +
+
+Useless blank line. __zonefs_copy_file_range() needs to be split into
+zonefs_copy_file_checks() and zonefs_copy_file(). The below call to
+generic_copy_file_range() should go into zonefs_copy_file().
+zonefs_copy_file() calling either generic_copy_file_range() if the device
+does not have copy offload or zonefs_issue_copy() if it does.
+
+> +	if (ret == -EOPNOTSUPP || ret == -EXDEV)> +		ret = generic_copy_file_range(src_file, src_off, dst_file,
+> +					      dst_off, len, flags);
+
+This function is not taking the inode_lock() for source and est files.
+This means that this can run with concurent regular writes and truncate
+and that potentially can result in some very weird results, unaligned
+write errors and the FS going read-only.
+
+
+> +	return ret;
+> +}
+> +
+>  static const struct file_operations zonefs_file_operations = {
+>  	.open		= zonefs_file_open,
+>  	.release	= zonefs_file_release,
+> @@ -1200,6 +1366,7 @@ static const struct file_operations zonefs_file_operations = {
+>  	.splice_read	= generic_file_splice_read,
+>  	.splice_write	= iter_file_splice_write,
+>  	.iopoll		= iocb_bio_iopoll,
+> +	.copy_file_range = zonefs_copy_file_range,
+>  };
+>  
+>  static struct kmem_cache *zonefs_inode_cachep;
+> @@ -1262,7 +1429,7 @@ static int zonefs_statfs(struct dentry *dentry, struct kstatfs *buf)
+>  
+>  enum {
+>  	Opt_errors_ro, Opt_errors_zro, Opt_errors_zol, Opt_errors_repair,
+> -	Opt_explicit_open, Opt_err,
+> +	Opt_explicit_open, Opt_no_copy_offload, Opt_err,
+
+This mount option does not make much sense. Copy file range was not
+supported until now. Existing applications are thus not using it. Adding
+support for copy_file_range op will not break these applications so it can
+be unconditionally supported.
+
+
+>  };
+>  
+>  static const match_table_t tokens = {
+> @@ -1271,6 +1438,7 @@ static const match_table_t tokens = {
+>  	{ Opt_errors_zol,	"errors=zone-offline"},
+>  	{ Opt_errors_repair,	"errors=repair"},
+>  	{ Opt_explicit_open,	"explicit-open" },
+> +	{ Opt_no_copy_offload,	"no_copy_offload" },
+>  	{ Opt_err,		NULL}
+>  };
+>  
+> @@ -1280,6 +1448,7 @@ static int zonefs_parse_options(struct super_block *sb, char *options)
+>  	substring_t args[MAX_OPT_ARGS];
+>  	char *p;
+>  
+> +	sbi->s_mount_opts |= ZONEFS_MNTOPT_COPY_FILE;
+>  	if (!options)
+>  		return 0;
+>  
+> @@ -1310,6 +1479,9 @@ static int zonefs_parse_options(struct super_block *sb, char *options)
+>  		case Opt_explicit_open:
+>  			sbi->s_mount_opts |= ZONEFS_MNTOPT_EXPLICIT_OPEN;
+>  			break;
+> +		case Opt_no_copy_offload:
+> +			sbi->s_mount_opts &= ~ZONEFS_MNTOPT_COPY_FILE;
+> +			break;
+>  		default:
+>  			return -EINVAL;
+>  		}
+> @@ -1330,6 +1502,8 @@ static int zonefs_show_options(struct seq_file *seq, struct dentry *root)
+>  		seq_puts(seq, ",errors=zone-offline");
+>  	if (sbi->s_mount_opts & ZONEFS_MNTOPT_ERRORS_REPAIR)
+>  		seq_puts(seq, ",errors=repair");
+> +	if (sbi->s_mount_opts & ZONEFS_MNTOPT_COPY_FILE)
+> +		seq_puts(seq, ",copy_offload");
+>  
+>  	return 0;
+>  }
+> @@ -1769,6 +1943,8 @@ static int zonefs_fill_super(struct super_block *sb, void *data, int silent)
+>  	atomic_set(&sbi->s_active_seq_files, 0);
+>  	sbi->s_max_active_seq_files = bdev_max_active_zones(sb->s_bdev);
+>  
+> +	/* set copy support by default */
+> +	sbi->s_mount_opts |= ZONEFS_MNTOPT_COPY_FILE;
+>  	ret = zonefs_read_super(sb);
+>  	if (ret)
+>  		return ret;
+> diff --git a/fs/zonefs/zonefs.h b/fs/zonefs/zonefs.h
+> index 4b3de66c3233..efa6632c4b6a 100644
+> --- a/fs/zonefs/zonefs.h
+> +++ b/fs/zonefs/zonefs.h
+> @@ -162,6 +162,7 @@ enum zonefs_features {
+>  	(ZONEFS_MNTOPT_ERRORS_RO | ZONEFS_MNTOPT_ERRORS_ZRO | \
+>  	 ZONEFS_MNTOPT_ERRORS_ZOL | ZONEFS_MNTOPT_ERRORS_REPAIR)
+>  #define ZONEFS_MNTOPT_EXPLICIT_OPEN	(1 << 4) /* Explicit open/close of zones on open/close */
+> +#define ZONEFS_MNTOPT_COPY_FILE		(1 << 5) /* enable copy file range offload to kernel */
+>  
+>  /*
+>   * In-memory Super block information.
+
+
 -- 
-2.36.0.rc2.479.g8af0fa9b8e-goog
-
+Damien Le Moal
+Western Digital Research
