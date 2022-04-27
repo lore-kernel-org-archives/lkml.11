@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:02:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 539F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241376AbiD0QF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36098 "EHLO
+        id S240898AbiD0QGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242350AbiD0QEh (ORCPT
+        with ESMTP id S242398AbiD0QEl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:04:37 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A487A37A903
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:01:15 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id b17so1341597qvf.12
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:01:15 -0700 (PDT)
+        Wed, 27 Apr 2022 12:04:41 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B719C39DE9B
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:01:20 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id n185so1612088qke.5
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:01:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=bsj16Ee0guBN0gpdXp2AuLzbDIq1BETjMO2kD2xZlKg=;
-        b=xi8WITLcAxwkSdTOuZL5LSJbzMRqu28W9ukS7yVDQ8SJy5Neabs9pQJOQ3iK1+e8FY
-         NdIdJ9ggDKHPS/HSOBpDp6kjIYsmL+fLdAQICPOJJFmnlnh92CvZK5RZkvDYlmD05Xh9
-         vEixjTl/uHsygAbohQm+HoKc9nk7cGrcyWoVSNrEfNYiZZtMrlbqAW+uTczPRJGSCDTm
-         ClTVAFYUMgRydj0oOKOPLkCleCYl8J5At648Erjc496dnGgfHg9YCJyt4kCFPGRAbuJu
-         16KbgJrA5NqyF4ktmStgevvE9dOM0RoW0wkWCXt3XSKUXovHFI2N+v4JoIBrVHv3n6Zd
-         uxrg==
+        bh=vinZWgoZEojVZkBqAXTBbUFaPvnoX78F1BhFbj27rbo=;
+        b=ZFL07umLq+hzQI4JolWQKoGpTL0cqgEy7zHkI4QwTmDPIsOs1WMGvS7YKH6pyMPPxP
+         UDKKdA1rtfogn3yQj8wj+jjyPk5ABVEcfAZYXVUsDsIrVEgPqWCDmxa71Lf1xkrJfYFn
+         dh1oWnFrnf6S/5Ok7DskR7ExlS/0oJ42h+aEi7TG0jLCb9E2yQAtyGS5JPjx+CE9kOku
+         U73pXh265MAmidgNSHGd4assyIkcTVYgjYAuN24Xt2l31JS3jXVQJVnM/XNry4qtPkr7
+         Cwb54hSIIw959Ok1y0OGpocs6mYukblcRcQkqv3Lmy7oZkOLxZmQ65fW2zrNWY63dR2K
+         u1Ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=bsj16Ee0guBN0gpdXp2AuLzbDIq1BETjMO2kD2xZlKg=;
-        b=NtU4Gu1/zzG6PCQ40oaeIgunfxakm9NVON/450ktIzHZgGavhmcZ+y2/pH2BkbE2Oa
-         bkAWIShaWt01OD7w5ltXR/OPvWNW4G1ZYhQONG/0LhMsh3//MkOLnuQw6UWNyipHfMCw
-         Yb331cYzjZT7+ZvqWQV0AFrNrpjZnWpsncgVL7XEauh4z4GoBlRkWpSKQIlhktbrhmXN
-         utWb7f/LXLkIWOT7fzTGJIOc8+HJARm6AKoYT42S53zNUtxBk7EfSH8jKi65+vvGVs0H
-         d9OkpSt7srcPhYkwQK82kzTEgblRihwUb0feQTNTmzVF1V8dzqLlV30alAozAdKr74mc
-         qPjQ==
-X-Gm-Message-State: AOAM53306WTII8KAQNMTCOC6bmHMlj/5Ue71c2jMfLVULv9UaiGiAADJ
-        3RK7+xFujeuvKz0fDtzhMMc7ng==
-X-Google-Smtp-Source: ABdhPJyjurGv9Lq7dXVCqefkV3eZHt7gPYatEbi29JWj+LdhbdS7AAmtti+5rWfR4063T8UB7XIL/A==
-X-Received: by 2002:ad4:5d48:0:b0:456:446e:4595 with SMTP id jk8-20020ad45d48000000b00456446e4595mr6623480qvb.62.1651075257824;
-        Wed, 27 Apr 2022 09:00:57 -0700 (PDT)
+        bh=vinZWgoZEojVZkBqAXTBbUFaPvnoX78F1BhFbj27rbo=;
+        b=M6dVBUPLNpqEyvvjrMp8dswV9AaKEzJhznrxNV1zNqGSlsTVPASslzdWYv/hAimpxG
+         6OrM7BjLbr48Gu5FC21jNS0gtEO0yYbwVqHNHQVtBipzKaZ+FEwVBaaXTs/73+zJob9s
+         P/YS4+8ZSYyocIVx9yGnBr1fx87vnDUvlWnV9CIc+GE55HHk4ewb63Pa896H5yN5+XFL
+         aX+590j8g/c0G2gAWcaIf3zXHax2k9MR67uitnKGpo+eeL9STaFavzv/N9RN4obWShzR
+         HxGqK/OVScdCyeN616qQoZQdLCzSb+My6+CBAkWEig9EzS2lMW2xlTSdd/hm6JHexc6E
+         YEog==
+X-Gm-Message-State: AOAM533rDE/uB45+6HCYlRnIHIQpBzklKgrFrjs5mLqmZLHr2pW1PgeA
+        w472DbTe12c4vpHJX1picAfXGQ==
+X-Google-Smtp-Source: ABdhPJzRBAx6aLov/suPqj6dRMHWr7HI8Dkvw0gLToUQyrwMqcKGOlz+ixNHNMGVvP7o8B/92dk1GA==
+X-Received: by 2002:a05:620a:bd4:b0:47b:4c75:894e with SMTP id s20-20020a05620a0bd400b0047b4c75894emr16456770qki.425.1651075261659;
+        Wed, 27 Apr 2022 09:01:01 -0700 (PDT)
 Received: from localhost ([2620:10d:c091:480::1:f617])
-        by smtp.gmail.com with ESMTPSA id 11-20020a05620a040b00b0069f95b27869sm605867qkp.125.2022.04.27.09.00.57
+        by smtp.gmail.com with ESMTPSA id v12-20020a05620a0a8c00b0069eabadd6dasm7954916qkg.41.2022.04.27.09.01.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 09:00:57 -0700 (PDT)
+        Wed, 27 Apr 2022 09:01:01 -0700 (PDT)
 From:   Johannes Weiner <hannes@cmpxchg.org>
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
@@ -56,9 +56,9 @@ Cc:     Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
         Dan Streetman <ddstreet@ieee.org>, linux-mm@kvack.org,
         cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
         kernel-team@fb.com
-Subject: [PATCH 1/5] mm: Kconfig: move swap and slab config options to the MM section
-Date:   Wed, 27 Apr 2022 12:00:12 -0400
-Message-Id: <20220427160016.144237-2-hannes@cmpxchg.org>
+Subject: [PATCH 3/5] mm: Kconfig: simplify zswap configuration
+Date:   Wed, 27 Apr 2022 12:00:14 -0400
+Message-Id: <20220427160016.144237-4-hannes@cmpxchg.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220427160016.144237-1-hannes@cmpxchg.org>
 References: <20220427160016.144237-1-hannes@cmpxchg.org>
@@ -68,289 +68,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These are currently under General Setup. MM seems like a better fit.
+- CONFIG_ZRAM: Zram is a user-facing feature, whereas zsmalloc is
+  not. Don't make the user chase down a technical dependency like
+  that, just select it in automatically when zram is requested. The
+  CONFIG_CRYPTO dependency is redundant due to more specific deps.
+
+- CONFIG_ZPOOL: This is not a user-facing feature. Hide the symbol and
+  have it selected in as needed.
+
+- CONFIG_ZSWAP: Select CRYPTO instead of depend. Common pattern.
+
+- Make the ZSWAP suboptions and their descriptions (compression,
+  allocation backend) a bit more straight-forward for the user.
 
 Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
 ---
- init/Kconfig | 123 ---------------------------------------------------
- mm/Kconfig   | 123 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 123 insertions(+), 123 deletions(-)
+ drivers/block/zram/Kconfig |  3 ++-
+ mm/Kconfig                 | 55 +++++++++++++++++---------------------
+ 2 files changed, 27 insertions(+), 31 deletions(-)
 
-diff --git a/init/Kconfig b/init/Kconfig
-index 4489416f1e5c..468fe27cec0b 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -375,23 +375,6 @@ config DEFAULT_HOSTNAME
- 	  but you may wish to use a different default here to make a minimal
- 	  system more usable with less configuration.
- 
--#
--# For some reason microblaze and nios2 hard code SWAP=n.  Hopefully we can
--# add proper SWAP support to them, in which case this can be remove.
--#
--config ARCH_NO_SWAP
--	bool
--
--config SWAP
--	bool "Support for paging of anonymous memory (swap)"
--	depends on MMU && BLOCK && !ARCH_NO_SWAP
--	default y
--	help
--	  This option allows you to choose whether you want to have support
--	  for so called swap devices or swap files in your kernel that are
--	  used to provide more virtual memory than the actual RAM present
--	  in your computer.  If unsure say Y.
--
- config SYSVIPC
- 	bool "System V IPC"
+diff --git a/drivers/block/zram/Kconfig b/drivers/block/zram/Kconfig
+index 668c6bf2554d..e4163d4b936b 100644
+--- a/drivers/block/zram/Kconfig
++++ b/drivers/block/zram/Kconfig
+@@ -1,8 +1,9 @@
+ # SPDX-License-Identifier: GPL-2.0
+ config ZRAM
+ 	tristate "Compressed RAM block device support"
+-	depends on BLOCK && SYSFS && ZSMALLOC && CRYPTO
++	depends on BLOCK && SYSFS
+ 	depends on CRYPTO_LZO || CRYPTO_ZSTD || CRYPTO_LZ4 || CRYPTO_LZ4HC || CRYPTO_842
++	select ZSMALLOC
  	help
-@@ -1909,112 +1892,6 @@ config COMPAT_BRK
- 
- 	  On non-ancient distros (post-2000 ones) N is usually a safe choice.
- 
--choice
--	prompt "Choose SLAB allocator"
--	default SLUB
--	help
--	   This option allows to select a slab allocator.
--
--config SLAB
--	bool "SLAB"
--	depends on !PREEMPT_RT
--	select HAVE_HARDENED_USERCOPY_ALLOCATOR
--	help
--	  The regular slab allocator that is established and known to work
--	  well in all environments. It organizes cache hot objects in
--	  per cpu and per node queues.
--
--config SLUB
--	bool "SLUB (Unqueued Allocator)"
--	select HAVE_HARDENED_USERCOPY_ALLOCATOR
--	help
--	   SLUB is a slab allocator that minimizes cache line usage
--	   instead of managing queues of cached objects (SLAB approach).
--	   Per cpu caching is realized using slabs of objects instead
--	   of queues of objects. SLUB can use memory efficiently
--	   and has enhanced diagnostics. SLUB is the default choice for
--	   a slab allocator.
--
--config SLOB
--	depends on EXPERT
--	bool "SLOB (Simple Allocator)"
--	depends on !PREEMPT_RT
--	help
--	   SLOB replaces the stock allocator with a drastically simpler
--	   allocator. SLOB is generally more space efficient but
--	   does not perform as well on large systems.
--
--endchoice
--
--config SLAB_MERGE_DEFAULT
--	bool "Allow slab caches to be merged"
--	default y
--	depends on SLAB || SLUB
--	help
--	  For reduced kernel memory fragmentation, slab caches can be
--	  merged when they share the same size and other characteristics.
--	  This carries a risk of kernel heap overflows being able to
--	  overwrite objects from merged caches (and more easily control
--	  cache layout), which makes such heap attacks easier to exploit
--	  by attackers. By keeping caches unmerged, these kinds of exploits
--	  can usually only damage objects in the same cache. To disable
--	  merging at runtime, "slab_nomerge" can be passed on the kernel
--	  command line.
--
--config SLAB_FREELIST_RANDOM
--	bool "Randomize slab freelist"
--	depends on SLAB || SLUB
--	help
--	  Randomizes the freelist order used on creating new pages. This
--	  security feature reduces the predictability of the kernel slab
--	  allocator against heap overflows.
--
--config SLAB_FREELIST_HARDENED
--	bool "Harden slab freelist metadata"
--	depends on SLAB || SLUB
--	help
--	  Many kernel heap attacks try to target slab cache metadata and
--	  other infrastructure. This options makes minor performance
--	  sacrifices to harden the kernel slab allocator against common
--	  freelist exploit methods. Some slab implementations have more
--	  sanity-checking than others. This option is most effective with
--	  CONFIG_SLUB.
--
--config SHUFFLE_PAGE_ALLOCATOR
--	bool "Page allocator randomization"
--	default SLAB_FREELIST_RANDOM && ACPI_NUMA
--	help
--	  Randomization of the page allocator improves the average
--	  utilization of a direct-mapped memory-side-cache. See section
--	  5.2.27 Heterogeneous Memory Attribute Table (HMAT) in the ACPI
--	  6.2a specification for an example of how a platform advertises
--	  the presence of a memory-side-cache. There are also incidental
--	  security benefits as it reduces the predictability of page
--	  allocations to compliment SLAB_FREELIST_RANDOM, but the
--	  default granularity of shuffling on the "MAX_ORDER - 1" i.e,
--	  10th order of pages is selected based on cache utilization
--	  benefits on x86.
--
--	  While the randomization improves cache utilization it may
--	  negatively impact workloads on platforms without a cache. For
--	  this reason, by default, the randomization is enabled only
--	  after runtime detection of a direct-mapped memory-side-cache.
--	  Otherwise, the randomization may be force enabled with the
--	  'page_alloc.shuffle' kernel command line parameter.
--
--	  Say Y if unsure.
--
--config SLUB_CPU_PARTIAL
--	default y
--	depends on SLUB && SMP
--	bool "SLUB per cpu partial cache"
--	help
--	  Per cpu partial caches accelerate objects allocation and freeing
--	  that is local to a processor at the price of more indeterminism
--	  in the latency of the free. On overflow these caches will be cleared
--	  which requires the taking of locks that may cause latency spikes.
--	  Typically one would choose no for a realtime system.
--
- config MMAP_ALLOW_UNINITIALIZED
- 	bool "Allow mmapped anonymous memory to be uninitialized"
- 	depends on EXPERT && !MMU
+ 	  Creates virtual block devices called /dev/zramX (X = 0, 1, ...).
+ 	  Pages written to these disks are compressed and stored in memory
 diff --git a/mm/Kconfig b/mm/Kconfig
-index c2141dd639e3..675a6be43739 100644
+index 2c5935a28edf..c87ffd0d98b3 100644
 --- a/mm/Kconfig
 +++ b/mm/Kconfig
-@@ -2,6 +2,129 @@
+@@ -9,6 +9,9 @@ menu "Memory Management options"
+ config ARCH_NO_SWAP
+ 	bool
  
- menu "Memory Management options"
- 
-+#
-+# For some reason microblaze and nios2 hard code SWAP=n.  Hopefully we can
-+# add proper SWAP support to them, in which case this can be remove.
-+#
-+config ARCH_NO_SWAP
++config ZPOOL
 +	bool
 +
-+config SWAP
-+	bool "Support for paging of anonymous memory (swap)"
-+	depends on MMU && BLOCK && !ARCH_NO_SWAP
-+	default y
+ menuconfig SWAP
+ 	bool "Support for paging of anonymous memory (swap)"
+ 	depends on MMU && BLOCK && !ARCH_NO_SWAP
+@@ -21,8 +24,9 @@ menuconfig SWAP
+ 
+ config ZSWAP
+ 	bool "Compressed cache for swap pages (EXPERIMENTAL)"
+-	depends on SWAP && CRYPTO=y
++	depends on SWAP
+ 	select FRONTSWAP
++	select CRYPTO
+ 	select ZPOOL
+ 	help
+ 	  A lightweight compressed cache for swap pages.  It takes
+@@ -38,8 +42,18 @@ config ZSWAP
+ 	  they have not be fully explored on the large set of potential
+ 	  configurations and workloads that exist.
+ 
++config ZSWAP_DEFAULT_ON
++	bool "Enable the compressed cache for swap pages by default"
++	depends on ZSWAP
 +	help
-+	  This option allows you to choose whether you want to have support
-+	  for so called swap devices or swap files in your kernel that are
-+	  used to provide more virtual memory than the actual RAM present
-+	  in your computer.  If unsure say Y.
++	  If selected, the compressed cache for swap pages will be enabled
++	  at boot, otherwise it will be disabled.
 +
-+choice
-+	prompt "Choose SLAB allocator"
-+	default SLUB
-+	help
-+	   This option allows to select a slab allocator.
++	  The selection made here can be overridden by using the kernel
++	  command line 'zswap.enabled=' option.
 +
-+config SLAB
-+	bool "SLAB"
-+	depends on !PREEMPT_RT
-+	select HAVE_HARDENED_USERCOPY_ALLOCATOR
-+	help
-+	  The regular slab allocator that is established and known to work
-+	  well in all environments. It organizes cache hot objects in
-+	  per cpu and per node queues.
-+
-+config SLUB
-+	bool "SLUB (Unqueued Allocator)"
-+	select HAVE_HARDENED_USERCOPY_ALLOCATOR
-+	help
-+	   SLUB is a slab allocator that minimizes cache line usage
-+	   instead of managing queues of cached objects (SLAB approach).
-+	   Per cpu caching is realized using slabs of objects instead
-+	   of queues of objects. SLUB can use memory efficiently
-+	   and has enhanced diagnostics. SLUB is the default choice for
-+	   a slab allocator.
-+
-+config SLOB
-+	depends on EXPERT
-+	bool "SLOB (Simple Allocator)"
-+	depends on !PREEMPT_RT
-+	help
-+	   SLOB replaces the stock allocator with a drastically simpler
-+	   allocator. SLOB is generally more space efficient but
-+	   does not perform as well on large systems.
-+
-+endchoice
-+
-+config SLAB_MERGE_DEFAULT
-+	bool "Allow slab caches to be merged"
-+	default y
-+	depends on SLAB || SLUB
-+	help
-+	  For reduced kernel memory fragmentation, slab caches can be
-+	  merged when they share the same size and other characteristics.
-+	  This carries a risk of kernel heap overflows being able to
-+	  overwrite objects from merged caches (and more easily control
-+	  cache layout), which makes such heap attacks easier to exploit
-+	  by attackers. By keeping caches unmerged, these kinds of exploits
-+	  can usually only damage objects in the same cache. To disable
-+	  merging at runtime, "slab_nomerge" can be passed on the kernel
-+	  command line.
-+
-+config SLAB_FREELIST_RANDOM
-+	bool "Randomize slab freelist"
-+	depends on SLAB || SLUB
-+	help
-+	  Randomizes the freelist order used on creating new pages. This
-+	  security feature reduces the predictability of the kernel slab
-+	  allocator against heap overflows.
-+
-+config SLAB_FREELIST_HARDENED
-+	bool "Harden slab freelist metadata"
-+	depends on SLAB || SLUB
-+	help
-+	  Many kernel heap attacks try to target slab cache metadata and
-+	  other infrastructure. This options makes minor performance
-+	  sacrifices to harden the kernel slab allocator against common
-+	  freelist exploit methods. Some slab implementations have more
-+	  sanity-checking than others. This option is most effective with
-+	  CONFIG_SLUB.
-+
-+config SHUFFLE_PAGE_ALLOCATOR
-+	bool "Page allocator randomization"
-+	default SLAB_FREELIST_RANDOM && ACPI_NUMA
-+	help
-+	  Randomization of the page allocator improves the average
-+	  utilization of a direct-mapped memory-side-cache. See section
-+	  5.2.27 Heterogeneous Memory Attribute Table (HMAT) in the ACPI
-+	  6.2a specification for an example of how a platform advertises
-+	  the presence of a memory-side-cache. There are also incidental
-+	  security benefits as it reduces the predictability of page
-+	  allocations to compliment SLAB_FREELIST_RANDOM, but the
-+	  default granularity of shuffling on the "MAX_ORDER - 1" i.e,
-+	  10th order of pages is selected based on cache utilization
-+	  benefits on x86.
-+
-+	  While the randomization improves cache utilization it may
-+	  negatively impact workloads on platforms without a cache. For
-+	  this reason, by default, the randomization is enabled only
-+	  after runtime detection of a direct-mapped memory-side-cache.
-+	  Otherwise, the randomization may be force enabled with the
-+	  'page_alloc.shuffle' kernel command line parameter.
-+
-+	  Say Y if unsure.
-+
-+config SLUB_CPU_PARTIAL
-+	default y
-+	depends on SLUB && SMP
-+	bool "SLUB per cpu partial cache"
-+	help
-+	  Per cpu partial caches accelerate objects allocation and freeing
-+	  that is local to a processor at the price of more indeterminism
-+	  in the latency of the free. On overflow these caches will be cleared
-+	  which requires the taking of locks that may cause latency spikes.
-+	  Typically one would choose no for a realtime system.
-+
- config SELECT_MEMORY_MODEL
- 	def_bool y
- 	depends on ARCH_SELECT_MEMORY_MODEL
+ choice
+-	prompt "Compressed cache for swap pages default compressor"
++	prompt "Default compressor"
+ 	depends on ZSWAP
+ 	default ZSWAP_COMPRESSOR_DEFAULT_LZO
+ 	help
+@@ -105,7 +119,7 @@ config ZSWAP_COMPRESSOR_DEFAULT
+        default ""
+ 
+ choice
+-	prompt "Compressed cache for swap pages default allocator"
++	prompt "Default allocator"
+ 	depends on ZSWAP
+ 	default ZSWAP_ZPOOL_DEFAULT_ZBUD
+ 	help
+@@ -145,26 +159,9 @@ config ZSWAP_ZPOOL_DEFAULT
+        default "zsmalloc" if ZSWAP_ZPOOL_DEFAULT_ZSMALLOC
+        default ""
+ 
+-config ZSWAP_DEFAULT_ON
+-	bool "Enable the compressed cache for swap pages by default"
+-	depends on ZSWAP
+-	help
+-	  If selected, the compressed cache for swap pages will be enabled
+-	  at boot, otherwise it will be disabled.
+-
+-	  The selection made here can be overridden by using the kernel
+-	  command line 'zswap.enabled=' option.
+-
+-config ZPOOL
+-	tristate "Common API for compressed memory storage"
+-	depends on ZSWAP
+-	help
+-	  Compressed memory storage API.  This allows using either zbud or
+-	  zsmalloc.
+-
+ config ZBUD
+-	tristate "Low (Up to 2x) density storage for compressed pages"
+-	depends on ZPOOL
++	tristate "2:1 compression allocator (zbud)"
++	depends on ZSWAP
+ 	help
+ 	  A special purpose allocator for storing compressed pages.
+ 	  It is designed to store up to two compressed pages per physical
+@@ -173,8 +170,8 @@ config ZBUD
+ 	  density approach when reclaim will be used.
+ 
+ config Z3FOLD
+-	tristate "Up to 3x density storage for compressed pages"
+-	depends on ZPOOL
++	tristate "3:1 compression allocator (z3fold)"
++	depends on ZSWAP
+ 	help
+ 	  A special purpose allocator for storing compressed pages.
+ 	  It is designed to store up to three compressed pages per physical
+@@ -182,15 +179,13 @@ config Z3FOLD
+ 	  still there.
+ 
+ config ZSMALLOC
+-	tristate "Memory allocator for compressed pages"
++	tristate
++	prompt "N:1 compression allocator (zsmalloc)" if ZSWAP
+ 	depends on MMU
+ 	help
+ 	  zsmalloc is a slab-based memory allocator designed to store
+-	  compressed RAM pages.  zsmalloc uses virtual memory mapping
+-	  in order to reduce fragmentation.  However, this results in a
+-	  non-standard allocator interface where a handle, not a pointer, is
+-	  returned by an alloc().  This handle must be mapped in order to
+-	  access the allocated space.
++	  pages of various compression levels efficiently. It achieves
++	  the highest storage density with the least amount of fragmentation.
+ 
+ config ZSMALLOC_STAT
+ 	bool "Export zsmalloc statistics"
 -- 
 2.35.3
 
