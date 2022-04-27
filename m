@@ -2,222 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB3DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31204C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:24:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232336AbiD0W1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 18:27:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43856 "EHLO
+        id S232377AbiD0W14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 18:27:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232182AbiD0W1R (ORCPT
+        with ESMTP id S232353AbiD0W1z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 18:27:17 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842432E69C;
-        Wed, 27 Apr 2022 15:24:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651098244; x=1682634244;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=KgvhYzBvbKYkKQMBNMqzHSJ+tzwkX0jj6FKwxER+9jw=;
-  b=CxcfpxGBXgCSbNnRWwf7DZndzbXqvQbNLF2IKwfVtInOK3tyCODt9ozo
-   axmmUcAuReLE7PQY+1xug/8yEwmDuuarJ+aQTW5lQ3URLOzJJ/FS3XEeD
-   Zd21z1OmUzFkGRDC1FV8Ux8Cx1x26URVGvhUFq3vjzWDY0yr/LsXFC64/
-   ViBsLxGskpbBpknfd6GGrHEAGMfXzOOW9ZB+bR62sJDAE1IGQmNACPQhm
-   j1gsz5+Rwfupn/LUeJSdaDg+SqlX0v/Jyiiluvz/Jf3XKt3nKuluBXJYq
-   0YQBTENMvFPBPyw5iIJVgn0pfwFbVUOTJLBjekmAa2Zv+E3yJueNuN16B
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="266250518"
-X-IronPort-AV: E=Sophos;i="5.90,294,1643702400"; 
-   d="scan'208";a="266250518"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 15:23:58 -0700
-X-IronPort-AV: E=Sophos;i="5.90,294,1643702400"; 
-   d="scan'208";a="513914748"
-Received: from lcdaughe-mobl1.amr.corp.intel.com (HELO [10.212.72.252]) ([10.212.72.252])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 15:23:56 -0700
-Message-ID: <d69c08da-80fa-2001-bbe8-8c45552e74ae@intel.com>
-Date:   Wed, 27 Apr 2022 15:24:12 -0700
+        Wed, 27 Apr 2022 18:27:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 965012E0BA
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:24:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651098281;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Qr4MU4/s4LvUq27SfddGnKVd9R5tIj+q1sHUP3u3fiM=;
+        b=QmKekI113Xcmc8IF9hw+XncC+d/bglPabYXgM9ze+dJkrJRYLNmKtJX1CJZMG5uH7J0vB4
+        jTZriP6AKgx23+c2zdmWsyDjBGtYR7n4+QLECMQrwvtohq7EA6UGumy7app4CcOSqYPQM/
+        W2Aylypz9IWgfjT4YgG/k5QIPVMliQo=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-656-giruKvJsOwin5w5dxWY5jQ-1; Wed, 27 Apr 2022 18:24:40 -0400
+X-MC-Unique: giruKvJsOwin5w5dxWY5jQ-1
+Received: by mail-lf1-f71.google.com with SMTP id bt27-20020a056512261b00b004720e026d4dso1180817lfb.16
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:24:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Qr4MU4/s4LvUq27SfddGnKVd9R5tIj+q1sHUP3u3fiM=;
+        b=pIDa2EkaONaZX1s0rUNEzV6oEXzOh+E1PXowx+JNyl+bre/Ip/pe2WIXsV5ZH8LviQ
+         Gl0rBLRkPFdt9IwxqlOh7QIhTNrXoXpt/11OKE3M0w28v6hVPEo5oNObwhHZ/b2vw/fw
+         6Ce/ZJvIYOb34UEsqv9g1E/NZNLuJ6DJZpZybxlhRtN+K1CuD3lfI9Z13R5VcWpV2OAj
+         CUyDuht6bgL8go2toDvOQjpAHxMYfmcpuzit6DtEaxAH+6gCkNQjYW4SScPWKDIs45FY
+         ylqtyUfbNoMRbTX6rY6BC5nLcYHTk2g/dYgvZl0xSpjhlI0Q3YdXNv9RV3DURIaFIhFP
+         woEg==
+X-Gm-Message-State: AOAM530/KBMllJHeli0L4KRWhxTVN203OEt9pAeCjjzEFuKTaeOqOYsU
+        8QhWsFf6v46DSpBIy4R1jFmyu9S75YzrnkYPyKZ1L0CWIfAbJDim1OpzK5FNHGosFjTW1WcRB6S
+        z9kO5zntM07SSZt1T2LIJMksqsTJAJzkyGe1BhmOsReZdBNKb87SoXUzlp6w5eU/MCs7hTepGU0
+        Q=
+X-Received: by 2002:a05:6512:1319:b0:44a:c200:61e5 with SMTP id x25-20020a056512131900b0044ac20061e5mr21990117lfu.550.1651098278727;
+        Wed, 27 Apr 2022 15:24:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzRP5NVvfVLFQtoQbpfc/PozRMwNi4jv7Z/n1MdceTR2qQBqzUinnuR5+PQZQaDcs93GP369A==
+X-Received: by 2002:adf:ef01:0:b0:20a:8068:ca5e with SMTP id e1-20020adfef01000000b0020a8068ca5emr23634532wro.661.1651096541322;
+        Wed, 27 Apr 2022 14:55:41 -0700 (PDT)
+Received: from minerva.home ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id b5-20020adff905000000b0020a8781be70sm14377139wrr.12.2022.04.27.14.55.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 14:55:41 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Lyude Paul <lyude@redhat.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH v2] drm/display: Select DP helper for DRM_DP_AUX_CHARDEV and DRM_DP_CEC
+Date:   Wed, 27 Apr 2022 23:55:28 +0200
+Message-Id: <20220427215528.237861-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 10/21] x86/virt/tdx: Add placeholder to coveret all
- system RAM as TDX memory
-Content-Language: en-US
-To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
-        tony.luck@intel.com, rafael.j.wysocki@intel.com,
-        reinette.chatre@intel.com, dan.j.williams@intel.com,
-        peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com
-References: <cover.1649219184.git.kai.huang@intel.com>
- <6230ef28be8c360ab326c8f592acf1964ac065c1.1649219184.git.kai.huang@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <6230ef28be8c360ab326c8f592acf1964ac065c1.1649219184.git.kai.huang@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 21:49, Kai Huang wrote:
-> TDX provides increased levels of memory confidentiality and integrity.
-> This requires special hardware support for features like memory
-> encryption and storage of memory integrity checksums.  Not all memory
-> satisfies these requirements.
-> 
-> As a result, TDX introduced the concept of a "Convertible Memory Region"
-> (CMR).  During boot, the firmware builds a list of all of the memory
-> ranges which can provide the TDX security guarantees.  The list of these
-> ranges, along with TDX module information, is available to the kernel by
-> querying the TDX module.
-> 
-> In order to provide crypto protection to TD guests, the TDX architecture
+The DRM_DP_AUX_CHARDEV and DRM_DP_CEC Kconfig symbols enable code that use
+DP helper functions, that are only present if CONFIG_DRM_DISPLAY_DP_HELPER
+is also enabled.
 
-There's that "crypto protection" thing again.  I'm not really a fan of
-the changes made to this changelog since I wrote it. :)
+But these don't select the DRM_DISPLAY_DP_HELPER symbol, meaning that it
+is possible to enable any of them without CONFIG_DRM_DISPLAY_DP_HELPER.
 
-> also needs additional metadata to record things like which TD guest
-> "owns" a given page of memory.  This metadata essentially serves as the
-> 'struct page' for the TDX module.  The space for this metadata is not
-> reserved by the hardware upfront and must be allocated by the kernel
+That will lead to the following linking errors with the mentioned config:
 
-			    ^ "up front"
+  LD      vmlinux.o
+  MODPOST vmlinux.symvers
+  MODINFO modules.builtin.modinfo
+  GEN     modules.builtin
+  LD      .tmp_vmlinux.kallsyms1
+  KSYMS   .tmp_vmlinux.kallsyms1.S
+  AS      .tmp_vmlinux.kallsyms1.S
+  LD      .tmp_vmlinux.kallsyms2
+  KSYMS   .tmp_vmlinux.kallsyms2.S
+  AS      .tmp_vmlinux.kallsyms2.S
+  LD      vmlinux
+  SYSMAP  System.map
+  SORTTAB vmlinux
+  OBJCOPY arch/arm64/boot/Image
+  MODPOST modules-only.symvers
+ERROR: modpost: "drm_dp_dpcd_write" [drivers/gpu/drm/display/drm_display_helper.ko] undefined!
+ERROR: modpost: "drm_dp_read_desc" [drivers/gpu/drm/display/drm_display_helper.ko] undefined!
+ERROR: modpost: "drm_dp_dpcd_read" [drivers/gpu/drm/display/drm_display_helper.ko] undefined!
+make[1]: *** [scripts/Makefile.modpost:134: modules-only.symvers] Error 1
+make[1]: *** Deleting file 'modules-only.symvers'
+make: *** [Makefile:1749: modules] Error 2
 
-...
-> diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
-> index 482e6d858181..ec27350d53c1 100644
-> --- a/arch/x86/virt/vmx/tdx/tdx.c
-> +++ b/arch/x86/virt/vmx/tdx/tdx.c
-> @@ -13,6 +13,7 @@
->  #include <linux/cpu.h>
->  #include <linux/smp.h>
->  #include <linux/atomic.h>
-> +#include <linux/slab.h>
->  #include <asm/msr-index.h>
->  #include <asm/msr.h>
->  #include <asm/cpufeature.h>
-> @@ -594,8 +595,29 @@ static int tdx_get_sysinfo(void)
->  	return sanitize_cmrs(tdx_cmr_array, cmr_num);
->  }
->  
-> +static void free_tdmrs(struct tdmr_info **tdmr_array, int tdmr_num)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < tdmr_num; i++) {
-> +		struct tdmr_info *tdmr = tdmr_array[i];
-> +
-> +		/* kfree() works with NULL */
-> +		kfree(tdmr);
-> +		tdmr_array[i] = NULL;
-> +	}
-> +}
-> +
-> +static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
-> +{
-> +	/* Return -EFAULT until constructing TDMRs is done */
-> +	return -EFAULT;
-> +}
-> +
->  static int init_tdx_module(void)
->  {
-> +	struct tdmr_info **tdmr_array;
-> +	int tdmr_num;
->  	int ret;
->  
->  	/* TDX module global initialization */
-> @@ -613,11 +635,36 @@ static int init_tdx_module(void)
->  	if (ret)
->  		goto out;
->  
-> +	/*
-> +	 * Prepare enough space to hold pointers of TDMRs (TDMR_INFO).
-> +	 * TDX requires TDMR_INFO being 512 aligned.  Each TDMR is
+Note: It seems this has been an issue for a long time but was made easier
+to reproduce after the commit 1e0f66420b13 ("drm/display: Introduce a DRM
+display-helper module"). Adding a Fixes: tag just to make sure that this
+fix will be picked for stable once the mentioned change also lands there.
 
-					 ^ "512-byte aligned"
+Fixes: 1e0f66420b13 ("drm/display: Introduce a DRM display-helper module")
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+---
 
-Right?
+Changes in v2:
+- Explain better the issue in the change description.
+- Only select DRM_DISPLAY_DP_HELPER and not DRM_DISPLAY_HELPER.
 
-> +	 * allocated individually within construct_tdmrs() to meet
-> +	 * this requirement.
-> +	 */
-> +	tdmr_array = kcalloc(tdx_sysinfo.max_tdmrs, sizeof(struct tdmr_info *),
-> +			GFP_KERNEL);
+ drivers/gpu/drm/display/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Where, exactly is that alignment provided?  A 'struct tdmr_info *' is 8
-bytes so a tdx_sysinfo.max_tdmrs=8 kcalloc() would only guarantee
-64-byte alignment.
-
-Also, I'm surprised that this is an array of virtual address pointers.
-The previous interactions with the TDX module seemed to all take
-physical addresses.  How is it that this hardware structure which has
-hardware alignment constraints is holding virtual addresses?
-
-> +	if (!tdmr_array) {
-> +		ret = -ENOMEM;
-> +		goto out;
-> +	}
-> +
-> +	/* Construct TDMRs to build TDX memory */
-> +	ret = construct_tdmrs(tdmr_array, &tdmr_num);
-> +	if (ret)
-> +		goto out_free_tdmrs;
-> +
->  	/*
->  	 * Return -EFAULT until all steps of TDX module
->  	 * initialization are done.
->  	 */
->  	ret = -EFAULT;
-
-There's the -EFAULT again.  I'd replace these with a better error code.
-
-> +out_free_tdmrs:
-> +	/*
-> +	 * TDMRs are only used during initializing TDX module.  Always
-> +	 * free them no matter the initialization was successful or not.
-> +	 */
-> +	free_tdmrs(tdmr_array, tdmr_num);
-> +	kfree(tdmr_array);
->  out:
->  	return ret;
->  }
-> diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
-> index 2f21c45df6ac..05bf9fe6bd00 100644
-> --- a/arch/x86/virt/vmx/tdx/tdx.h
-> +++ b/arch/x86/virt/vmx/tdx/tdx.h
-> @@ -89,6 +89,29 @@ struct tdsysinfo_struct {
->  	};
->  } __packed __aligned(TDSYSINFO_STRUCT_ALIGNMENT);
->  
-> +struct tdmr_reserved_area {
-> +	u64 offset;
-> +	u64 size;
-> +} __packed;
-> +
-> +#define TDMR_INFO_ALIGNMENT	512
-> +
-> +struct tdmr_info {
-> +	u64 base;
-> +	u64 size;
-> +	u64 pamt_1g_base;
-> +	u64 pamt_1g_size;
-> +	u64 pamt_2m_base;
-> +	u64 pamt_2m_size;
-> +	u64 pamt_4k_base;
-> +	u64 pamt_4k_size;
-> +	/*
-> +	 * Actual number of reserved areas depends on
-> +	 * 'struct tdsysinfo_struct'::max_reserved_per_tdmr.
-> +	 */
-> +	struct tdmr_reserved_area reserved_areas[0];
-> +} __packed __aligned(TDMR_INFO_ALIGNMENT);
-> +
->  /*
->   * P-SEAMLDR SEAMCALL leaf function
->   */
+diff --git a/drivers/gpu/drm/display/Kconfig b/drivers/gpu/drm/display/Kconfig
+index f84f1b0cd23f..9fe80c4e555c 100644
+--- a/drivers/gpu/drm/display/Kconfig
++++ b/drivers/gpu/drm/display/Kconfig
+@@ -32,6 +32,7 @@ config DRM_DISPLAY_HDMI_HELPER
+ config DRM_DP_AUX_CHARDEV
+ 	bool "DRM DP AUX Interface"
+ 	depends on DRM
++	select DRM_DISPLAY_DP_HELPER
+ 	help
+ 	  Choose this option to enable a /dev/drm_dp_auxN node that allows to
+ 	  read and write values to arbitrary DPCD registers on the DP aux
+@@ -40,6 +41,7 @@ config DRM_DP_AUX_CHARDEV
+ config DRM_DP_CEC
+ 	bool "Enable DisplayPort CEC-Tunneling-over-AUX HDMI support"
+ 	depends on DRM
++	select DRM_DISPLAY_DP_HELPER
+ 	select CEC_CORE
+ 	help
+ 	  Choose this option if you want to enable HDMI CEC support for
+-- 
+2.35.1
 
