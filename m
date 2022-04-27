@@ -2,153 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2C55C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:27:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ABC5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:28:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243173AbiD0QbD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37540 "EHLO
+        id S243212AbiD0QbM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243701AbiD0Q3I (ORCPT
+        with ESMTP id S244587AbiD0Q3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:29:08 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70F28580F7;
-        Wed, 27 Apr 2022 09:24:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651076681; x=1682612681;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fUZVTNEK+ZzSBGo/CLd/jGBkWZYuNOvhG78Dm9No89s=;
-  b=RpUYWp8FoLASB0/00pIr0argib/ePYX4urp2tZQUFHZHiY3vPRfJf+hW
-   YtsFUiTgzZnHUCVLlzYsJznEBLn0FUJX/vgiFJpUTb8krGJE2jEspUx8H
-   4TAW/vP9WFX36cPpEPfhbBq9++wdsDq8kW7nr9sydyvG8ww+Ft/lix2xc
-   40oF89wUmD3Be5+mkHbd0p01gmdrYoolxwJ+VdoLp6q76iKt+AnMv9LFx
-   qhPW5ITpvV3lyBmTEJppy2EGyhIZ75ilnXYuZmPs8tcTER0TfQr1+EfPJ
-   +g3hffZDxtVweVWK7wRPOa95ieh2iUH++VLQzSnfbC6X71AJfM2DqcZm+
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,293,1643698800"; 
-   d="scan'208";a="171138160"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Apr 2022 09:24:40 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 27 Apr 2022 09:24:39 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 27 Apr 2022 09:24:30 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [RFC patch net-next 2/3] net: dsa: ksz: remove duplicate ksz_cfg and ksz_port_cfg
-Date:   Wed, 27 Apr 2022 21:53:42 +0530
-Message-ID: <20220427162343.18092-3-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220427162343.18092-1-arun.ramadoss@microchip.com>
-References: <20220427162343.18092-1-arun.ramadoss@microchip.com>
+        Wed, 27 Apr 2022 12:29:52 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19AA1638B;
+        Wed, 27 Apr 2022 09:25:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1651076741;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=yCpWmVR6dk2+oovSw1y9OOXytQ1pCTE8knB7PaU+qWU=;
+    b=dSmJGcmxOgUVhJklI1OU8Jo83gTZWM2ql9f0eEnzf46RH+mi5Ty7BpQwU3V4L17f9c
+    def5tkkb0X25D+2SqzuHc0W69Bpxw3OQS6JWy7MCwTCAVg2guCsttTykoGZHv8DNvWE2
+    d1HTEOBuMi39PchmxH2thF5xkbCdKoWNG/Z6NusSnHFtjiAfhR2N/8RPACCVGlwTT9aH
+    3hasz7dFMoTYTx3A5eSmHgFuG4HvI8qkH5auDlBvJxcJWUA99ORr4SUWEfrfb07sEEGd
+    /PyBylMrrrd3AkFxqjQw7SgSkQIKjCRB0VqDXCXgeverFXeSdIc/RX7PYMw3IWkoATc7
+    XRWA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2krLEWFUg=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cff:5b00::b82]
+    by smtp.strato.de (RZmta 47.42.2 AUTH)
+    with ESMTPSA id 4544c9y3RGPeNFh
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 27 Apr 2022 18:25:40 +0200 (CEST)
+Message-ID: <9717187f-9fa2-8787-7771-8127e752e6f1@hartkopp.net>
+Date:   Wed, 27 Apr 2022 18:25:40 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH net] drivers: net: can: Fix deadlock in grcan_close()
+Content-Language: en-US
+To:     Andreas Larsson <andreas@gaisler.com>,
+        Duoming Zhou <duoming@zju.edu.cn>, linux-kernel@vger.kernel.org
+Cc:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220425042400.66517-1-duoming@zju.edu.cn>
+ <caaa6059-6172-e562-e48e-5987884052b9@hartkopp.net>
+ <2f5295c1-d787-84a5-1b3e-813f96dd4ae2@gaisler.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <2f5295c1-d787-84a5-1b3e-813f96dd4ae2@gaisler.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ksz8795.c and ksz9477.c has individual ksz_cfg and ksz_port_cfg
-function, both are same. Hence moving it to ksz_common.c. And removed
-the individual references.
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz8795.c    | 12 ------------
- drivers/net/dsa/microchip/ksz9477.c    | 12 ------------
- drivers/net/dsa/microchip/ksz_common.h | 13 +++++++++++++
- 3 files changed, 13 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index f91deea9368e..33453060fa71 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -211,18 +211,6 @@ static bool ksz_is_ksz88x3(struct ksz_device *dev)
- 	return dev->chip_id == 0x8830;
- }
- 
--static void ksz_cfg(struct ksz_device *dev, u32 addr, u8 bits, bool set)
--{
--	regmap_update_bits(dev->regmap[0], addr, bits, set ? bits : 0);
--}
--
--static void ksz_port_cfg(struct ksz_device *dev, int port, int offset, u8 bits,
--			 bool set)
--{
--	regmap_update_bits(dev->regmap[0], PORT_CTRL_ADDR(port, offset),
--			   bits, set ? bits : 0);
--}
--
- static int ksz8_ind_write8(struct ksz_device *dev, u8 table, u16 addr, u8 data)
- {
- 	struct ksz8 *ksz8 = dev->priv;
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 90ce789107eb..f762120ce3fd 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -159,18 +159,6 @@ static void ksz9477_get_stats64(struct dsa_switch *ds, int port,
- 	spin_unlock(&mib->stats64_lock);
- }
- 
--static void ksz_cfg(struct ksz_device *dev, u32 addr, u8 bits, bool set)
--{
--	regmap_update_bits(dev->regmap[0], addr, bits, set ? bits : 0);
--}
--
--static void ksz_port_cfg(struct ksz_device *dev, int port, int offset, u8 bits,
--			 bool set)
--{
--	regmap_update_bits(dev->regmap[0], PORT_CTRL_ADDR(port, offset),
--			   bits, set ? bits : 0);
--}
--
- static void ksz9477_cfg32(struct ksz_device *dev, u32 addr, u32 bits, bool set)
- {
- 	regmap_update_bits(dev->regmap[2], addr, bits, set ? bits : 0);
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 4d978832c448..4f049e9d8952 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -246,6 +246,11 @@ static inline int ksz_write64(struct ksz_device *dev, u32 reg, u64 value)
- 	return regmap_bulk_write(dev->regmap[2], reg, val, 2);
- }
- 
-+static inline void ksz_cfg(struct ksz_device *dev, u32 addr, u8 bits, bool set)
-+{
-+	regmap_update_bits(dev->regmap[0], addr, bits, set ? bits : 0);
-+}
-+
- static inline void ksz_pread8(struct ksz_device *dev, int port, int offset,
- 			      u8 *data)
- {
-@@ -282,6 +287,14 @@ static inline void ksz_pwrite32(struct ksz_device *dev, int port, int offset,
- 	ksz_write32(dev, dev->dev_ops->get_port_addr(port, offset), data);
- }
- 
-+static inline void ksz_port_cfg(struct ksz_device *dev, int port, int offset,
-+				u8 bits, bool set)
-+{
-+	regmap_update_bits(dev->regmap[0],
-+			   dev->dev_ops->get_port_addr(port, offset),
-+			   bits, set ? bits : 0);
-+}
-+
- static inline void ksz_regmap_lock(void *__mtx)
- {
- 	struct mutex *mtx = __mtx;
--- 
-2.33.0
+On 27.04.22 14:47, Andreas Larsson wrote:
+> On 2022-04-26 21:12, Oliver Hartkopp wrote:
+>> On 25.04.22 06:24, Duoming Zhou wrote:
+>>> There are deadlocks caused by del_timer_sync(&priv->hang_timer)
+>>> and del_timer_sync(&priv->rr_timer) in grcan_close(), one of
+>>> the deadlocks are shown below:
+>>>
+>>>     (Thread 1)              |      (Thread 2)
+>>>                             | grcan_reset_timer()
+>>> grcan_close()              |  mod_timer()
+>>>   spin_lock_irqsave() //(1) |  (wait a time)
+>>>   ...                       | grcan_initiate_running_reset()
+>>>   del_timer_sync()          |  spin_lock_irqsave() //(2)
+>>>   (wait timer to stop)      |  ...
+>>>
+>>> We hold priv->lock in position (1) of thread 1 and use
+>>> del_timer_sync() to wait timer to stop, but timer handler
+>>> also need priv->lock in position (2) of thread 2.
+>>> As a result, grcan_close() will block forever.
+>>>
+>>> This patch extracts del_timer_sync() from the protection of
+>>> spin_lock_irqsave(), which could let timer handler to obtain
+>>> the needed lock.
+>>>
+>>> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+>>> ---
+>>>   drivers/net/can/grcan.c | 2 ++
+>>>   1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/drivers/net/can/grcan.c b/drivers/net/can/grcan.c
+>>> index d0c5a7a60da..1189057b5d6 100644
+>>> --- a/drivers/net/can/grcan.c
+>>> +++ b/drivers/net/can/grcan.c
+>>> @@ -1102,8 +1102,10 @@ static int grcan_close(struct net_device *dev)
+>>>       priv->closing = true;
+>>>       if (priv->need_txbug_workaround) {
+>>> +        spin_unlock_irqrestore(&priv->lock, flags);
+>>>           del_timer_sync(&priv->hang_timer);
+>>>           del_timer_sync(&priv->rr_timer);
+>>> +        spin_lock_irqsave(&priv->lock, flags);
+>>
+>> It looks weird to unlock and re-lock the operations like this. This 
+>> breaks the intended locking for the closing process.
+>>
+>> Isn't there any possibility to e.g. move that entire if-section before 
+>> the lock?
+> 
+> All functions wishing to start the timers both check priv->closing and
+> then, if false, start the timer within the priv->lock spinlock. Given
+> that, it should be ok that del_timer_sync is not done within the
+> spinlock as therefore no one can restart any timers after priv->closing
+> has been set to true.
+> 
+> It looks a bit weird, but setting priv->closing to true needs to happen
+> within the priv->lock spinlock protection and needs to happen before
+> del_timer_sync to avoid a race between grcan_close and someone starting
+> the timer.
+> 
+> Reviewed-by: Andreas Larsson <andreas@gaisler.com>
+> 
 
+Thanks Andreas!
+
+Best regards,
+Oliver
