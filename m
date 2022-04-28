@@ -2,75 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F86CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:00:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B02C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:00:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229641AbiD1KDM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44006 "EHLO
+        id S233166AbiD1KDr convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:03:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232496AbiD1KC7 (ORCPT
+        with ESMTP id S231760AbiD1KDH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:02:59 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C052B53CD;
-        Thu, 28 Apr 2022 02:49:34 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KprLy3RFtzCsJF;
-        Thu, 28 Apr 2022 17:44:58 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Apr 2022 17:49:32 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Apr
- 2022 17:49:31 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <ioana.ciornei@nxp.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <robert-ionut.alexa@nxp.com>
-Subject: [PATCH] net: dpaa2-mac: add missing of_node_put() in dpaa2_mac_get_node()
-Date:   Thu, 28 Apr 2022 18:01:27 +0800
-Message-ID: <20220428100127.542399-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 28 Apr 2022 06:03:07 -0400
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7BDB6469;
+        Thu, 28 Apr 2022 02:49:42 -0700 (PDT)
+Received: by mail-qk1-f170.google.com with SMTP id e128so3167366qkd.7;
+        Thu, 28 Apr 2022 02:49:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=WDmfPpadZf0LBFbdDJYdxQ5ahsqbbrqVM35oCxvqkdU=;
+        b=QRLIGin6HvtekZfg3fQ0LDqqEBawaEnOLMqRB1OCg/oStzxRH7zX7rr9IT264MyFeR
+         /APy8eq4UB0w4WvVoP9G/cTFNjCx5TVzaGY4eJCkuXGpUzhahIcdwYJAMLqiEFZFVw4P
+         c+dnz4DWeapZ3mqRDLdRn7wd6t+owcuL9W8oX7W/oHbONYaXpOp4wAErtqOLmObWYRF5
+         Q23gGzZHolU5q1j8h5RAqyDCksU8Wv+FpxY+fM0HAeiTV24sBNtN74GbXuDJRWFyO2Kb
+         44AID8aObrAPSUY621a9UQ0DsWV9aIpBw6JgSkXWI1Vx0dZsoUr4FDHYZn5wtMpukRN9
+         0qTA==
+X-Gm-Message-State: AOAM533gZMxvJHzLQ7s9v1d3gIy+rF42EyZIy5vQS8l/VUw1G8ZavwJe
+        L80RR7eJRU7UfIJD8hWFmeoWeehWuV4msg==
+X-Google-Smtp-Source: ABdhPJzEgp776Kf5FOKXJ1wlPqwsx9CFCvBqF0vZwU9mVicqmEv42VOJUhleQanhAYqWL2PhOfeCHA==
+X-Received: by 2002:a05:620a:1981:b0:507:4a52:f310 with SMTP id bm1-20020a05620a198100b005074a52f310mr19186194qkb.611.1651139381708;
+        Thu, 28 Apr 2022 02:49:41 -0700 (PDT)
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com. [209.85.128.173])
+        by smtp.gmail.com with ESMTPSA id r83-20020a37a856000000b0069ed4436a49sm9458658qke.87.2022.04.28.02.49.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 02:49:41 -0700 (PDT)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-2f7ca2ce255so46509367b3.7;
+        Thu, 28 Apr 2022 02:49:41 -0700 (PDT)
+X-Received: by 2002:a81:1cd5:0:b0:2f4:c3fc:2174 with SMTP id
+ c204-20020a811cd5000000b002f4c3fc2174mr32391381ywc.512.1651139380892; Thu, 28
+ Apr 2022 02:49:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+References: <20220422120850.769480-1-herve.codina@bootlin.com> <20220422120850.769480-7-herve.codina@bootlin.com>
+In-Reply-To: <20220422120850.769480-7-herve.codina@bootlin.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 28 Apr 2022 11:49:28 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWfbbQ64CipqoVPEOGhE08HYckhyOaeSi+V7ar+F45PMw@mail.gmail.com>
+Message-ID: <CAMuHMdWfbbQ64CipqoVPEOGhE08HYckhyOaeSi+V7ar+F45PMw@mail.gmail.com>
+Subject: Re: [PATCH v3 6/8] ARM: dts: r9a06g032: Add internal PCI bridge node
+To:     Herve Codina <herve.codina@bootlin.com>
+Cc:     Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Rob Herring <robh@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add missing of_node_put() in error path in dpaa2_mac_get_node().
+Hi Hervé
 
-Fixes: 5b1e38c0792c ("dpaa2-mac: bail if the dpmacs fwnode is not found")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+On Fri, Apr 22, 2022 at 2:09 PM Herve Codina <herve.codina@bootlin.com> wrote:
+> Add the device node for the r9a06g032 internal PCI bridge device.
+>
+> Signed-off-by: Herve Codina <herve.codina@bootlin.com>
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index c48811d3bcd5..a91446685526 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -108,8 +108,11 @@ static struct fwnode_handle *dpaa2_mac_get_node(struct device *dev,
- 		return ERR_PTR(-EPROBE_DEFER);
- 	}
- 
--	if (!parent)
-+	if (!parent) {
-+		if (dpmacs)
-+			of_node_put(dpmacs);
- 		return NULL;
-+	}
- 
- 	fwnode_for_each_child_node(parent, child) {
- 		err = -EINVAL;
--- 
-2.25.1
+Thanks for your patch!
 
+> --- a/arch/arm/boot/dts/r9a06g032.dtsi
+> +++ b/arch/arm/boot/dts/r9a06g032.dtsi
+> @@ -212,6 +212,35 @@ gic: interrupt-controller@44101000 {
+>                         interrupts =
+>                                 <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>;
+>                 };
+> +
+> +               pci_usb: pci@40030000 {
+> +                       compatible = "renesas,pci-r9a06g032", "renesas,pci-rzn1";
+> +                       device_type = "pci";
+> +                       clocks = <&sysctrl R9A06G032_HCLK_USBH>,
+> +                                <&sysctrl R9A06G032_HCLK_USBPM>,
+> +                                <&sysctrl R9A06G032_CLK_PCI_USB>;
+> +                       clock-names = "hclk_usbh", "hclk_usbpm", "clk_pci_usb";
+
+The clock names need an update, cfr. my comment on the bindings.
+
+The rest LGTM, so with the above fixed:
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
