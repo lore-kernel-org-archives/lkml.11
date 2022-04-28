@@ -2,57 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4204C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:12:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C149DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:17:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345024AbiD1JMV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 05:12:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50632 "EHLO
+        id S233093AbiD1JRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 05:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344972AbiD1JMB (ORCPT
+        with ESMTP id S1344880AbiD1JLU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 05:12:01 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 453B753E19
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:08:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Nr3EW08QcY2FGP18WwgBhQtNIE2zBp0aUeKcrHOynmM=; b=oywOchgoz1yVCmHP152iFQ65z9
-        eTcv5VKYmC1Zf1NaA6nati1neDOaJSHiHEdvfnkoOtg8ilR7Shgv/XkhQDXU7F6BOO3CZiVT5MtFt
-        YgkOQLEfnhDucY6Oi0/Z5gv91qMtuk9MO/quSySVQJrqgjpAu+oyLPTNLUd/SoMqCVo6Qln/jdoJO
-        pVymNFE5nlVMiX3+8qPM37AK1mn1Nq+nWlCk3eBCWemwZAMH7rb80Oziwra2xbibrU2dPYvNQM1Uf
-        8Umd3NytBiKm2mhO20dzbsM+hnWtzXFHiyPSx2NmUiZb5plj6sTcdASL/MB7a2PeNGSTDv+tVVg+E
-        hniOlErg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nk08c-009JCw-Pp; Thu, 28 Apr 2022 09:08:39 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 9FC43981710; Thu, 28 Apr 2022 11:08:36 +0200 (CEST)
-Date:   Thu, 28 Apr 2022 11:08:36 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     LKML <linux-kernel@vger.kernel.org>, tglx@linutronix.de
-Subject: Re: [PATCH] task_work: allow TWA_SIGNAL without a rescheduling IPI
-Message-ID: <20220428090836.GQ2731@worktop.programming.kicks-ass.net>
-References: <543452ca-f82e-4f00-cd51-88bb9723a975@kernel.dk>
- <33a6de15-f487-b12b-8ffe-af978ebb03c3@kernel.dk>
+        Thu, 28 Apr 2022 05:11:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D282D69CED
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:08:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651136881;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5XKqEEIr9kJBptfBVef+dHOuVb/hhsd6Gokxzb68HiE=;
+        b=dzHO3O8r5SWfSKgJbjKMpFaKkvruxdrCurwU24mVpM0F7lp5nUjcFMUqfI2WYP5XI1Xr4M
+        AeHsy0BdZEl59+gw9WJiyNHkgwVT8RDYZFQOGAxwGCgqxzAXnxdIfd+Gd6sPXOEEpzbXKM
+        D3acCKEHvu4LufFUkzudS7SzKAC8ats=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-627-kOlSZFeDPvazKU6UZIQyVA-1; Thu, 28 Apr 2022 05:07:50 -0400
+X-MC-Unique: kOlSZFeDPvazKU6UZIQyVA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 313BE1C05AAE;
+        Thu, 28 Apr 2022 09:07:50 +0000 (UTC)
+Received: from localhost (unknown [10.39.193.199])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6DA45C2811E;
+        Thu, 28 Apr 2022 09:07:49 +0000 (UTC)
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>, jasowang@redhat.com,
+        mst@redhat.com, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Cc:     sgarzare@redhat.com, eperezma@redhat.com, lulu@redhat.com,
+        tglx@linutronix.de, peterz@infradead.org, paulmck@kernel.org,
+        maz@kernel.org, pasic@linux.ibm.com
+Subject: Re: [PATCH V3 2/9] virtio: use virtio_reset_device() when possible
+In-Reply-To: <20220425024418.8415-3-jasowang@redhat.com>
+Organization: Red Hat GmbH
+References: <20220425024418.8415-1-jasowang@redhat.com>
+ <20220425024418.8415-3-jasowang@redhat.com>
+User-Agent: Notmuch/0.34 (https://notmuchmail.org)
+Date:   Thu, 28 Apr 2022 11:07:46 +0200
+Message-ID: <87tuadlgnx.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <33a6de15-f487-b12b-8ffe-af978ebb03c3@kernel.dk>
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 07:52:31PM -0600, Jens Axboe wrote:
-> On 4/22/22 8:34 AM, Jens Axboe wrote:
-> > Some use cases don't always need an IPI when sending a TWA_SIGNAL
-> > notification. Add TWA_SIGNAL_NO_IPI, which is just like TWA_SIGNAL,
-> > except it doesn't send an IPI to the target task. It merely sets
-> > TIF_NOTIFY_SIGNAL and wakes up the task.
+On Mon, Apr 25 2022, Jason Wang <jasowang@redhat.com> wrote:
 
-Could you perphaps elaborate on those use-cases? How do they guarantee
-the task_work is ran before userspace?
+> This allows us to do common extension without duplicating code.
+>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Halil Pasic <pasic@linux.ibm.com>
+> Cc: Cornelia Huck <cohuck@redhat.com>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  drivers/virtio/virtio.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+
