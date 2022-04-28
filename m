@@ -2,153 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E687DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:41:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6970EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346506AbiD1MpB (ORCPT
+        id S1346408AbiD1Mpz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 08:45:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49794 "EHLO
+        Thu, 28 Apr 2022 08:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346554AbiD1Mot (ORCPT
+        with ESMTP id S1346478AbiD1Mps (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 08:44:49 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A36F710FC5;
-        Thu, 28 Apr 2022 05:41:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651149690; x=1682685690;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=jDaoso8XSbsD6Q5i89/pk/Xi3K1DdLaMWFukTg8hKeQ=;
-  b=mTcux2E7ZLul7MpCZLIMfoDriwNJqnMz08/1yY6N7lUQOdpSzQlRi2CR
-   XjwiKL17tL2EoGizi8SGPBxtO5mwy0vXEILR3KOD3OmuKa5T60/aArtms
-   uoKLMaoga72Lyl3+fDW2KsCAjYd7U4rmVIIEHhzAoHIPema68eVdxNhWf
-   +EGhhHkh36orMeUZUh7VvGllZ7CcIkvOj2hY2N+zN10NIGL9Shb2TMz5C
-   ejMydCXr/rM8xB/dmkTC2CprTYklu+G+84dySdNZtXcEj09+ItL2k4VJJ
-   bSSXlAcsEIlKlDltX+qXwtzF5b0WrCyygI6s5wc1q0gCQztlSeeOQk0KC
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="352710663"
-X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="352710663"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 05:41:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="706039981"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by fmsmga001.fm.intel.com with ESMTP; 28 Apr 2022 05:41:23 -0700
-Date:   Thu, 28 Apr 2022 20:37:51 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: Re: [PATCH v5 08/13] KVM: Use memfile_pfn_ops to obtain pfn for
- private pages
-Message-ID: <20220428123751.GB10508@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
- <20220310140911.50924-9-chao.p.peng@linux.intel.com>
- <YkJLFu98hZOvTSrL@google.com>
+        Thu, 28 Apr 2022 08:45:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C811AB0D0E
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 05:42:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58918B82CEB
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 12:42:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FFB2C385A0;
+        Thu, 28 Apr 2022 12:42:24 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="hZmprpak"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1651149742;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2K05YkZhpOuMhgr/oncdSXk/GQQMhwmWcgULc5ceX9k=;
+        b=hZmprpak9Ywzz2wdBB6rNoLcdPOidG7yeoMlWxICXLsXO1SjNXFzJDPB8cawTsGS7t+V68
+        1NQ+l/BryRStpTiKym34Y3Xh6DP6sdoiDwE5n4I/sTftqrLWXDAdUGI/gd30LxXeIk+bV4
+        I0RzJy/xurTIn7WcuHcad4veUIXwh9k=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d25154e0 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Thu, 28 Apr 2022 12:42:21 +0000 (UTC)
+Date:   Thu, 28 Apr 2022 14:42:20 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Stafford Horne <shorne@gmail.com>
+Cc:     openrisc@lists.librecores.org, linux-kernel@vger.kernel.org,
+        Peter Maydell <peter.maydell@linaro.org>
+Subject: Re: [PATCH] openrisc: define nop command for simulator reboot
+Message-ID: <YmqLrDfbEGP659EO@zx2c4.com>
+References: <20220428111139.1330966-1-Jason@zx2c4.com>
+ <YmqAx31dtXCaNn7R@antec>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YkJLFu98hZOvTSrL@google.com>
+In-Reply-To: <YmqAx31dtXCaNn7R@antec>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 11:56:06PM +0000, Sean Christopherson wrote:
-> On Thu, Mar 10, 2022, Chao Peng wrote:
-> > @@ -2217,4 +2220,34 @@ static inline void kvm_handle_signal_exit(struct kvm_vcpu *vcpu)
-> >  /* Max number of entries allowed for each kvm dirty ring */
-> >  #define  KVM_DIRTY_RING_MAX_ENTRIES  65536
+On Thu, Apr 28, 2022 at 08:55:51PM +0900, Stafford Horne wrote:
+> On Thu, Apr 28, 2022 at 01:11:39PM +0200, Jason A. Donenfeld wrote:
+> > The simulator defines `l.nop 1` for shutdown, but doesn't have anything
+> > for reboot. Use 13 for this, which is currently unused, dubbed
+> > `NOP_REBOOT`.
+> > 
+> > Cc: Stafford Horne <shorne@gmail.com>
+> > Cc: Peter Maydell <peter.maydell@linaro.org>
+> > Link: https://lore.kernel.org/all/YmnaDUpVI5ihgvg6@zx2c4.com/
+> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> > ---
+> >  arch/openrisc/kernel/process.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/arch/openrisc/kernel/process.c b/arch/openrisc/kernel/process.c
+> > index 3c0c91bcdcba..4cce95fa6eb5 100644
+> > --- a/arch/openrisc/kernel/process.c
+> > +++ b/arch/openrisc/kernel/process.c
+> > @@ -52,6 +52,8 @@ void machine_restart(char *cmd)
+> >  {
+> >  	do_kernel_restart(cmd);
 > >  
-> > +#ifdef CONFIG_MEMFILE_NOTIFIER
-> > +static inline long kvm_memfile_get_pfn(struct kvm_memory_slot *slot, gfn_t gfn,
-> > +				       int *order)
-> > +{
-> > +	pgoff_t index = gfn - slot->base_gfn +
-> > +			(slot->private_offset >> PAGE_SHIFT);
+> > +	__asm__("l.nop 13");
+> > +
+> >  	/* Give a grace period for failure to restart of 1s */
+> >  	mdelay(1000);
+> >  
+> > -- 
+> > 2.35.1
 > 
-> This is broken for 32-bit kernels, where gfn_t is a 64-bit value but pgoff_t is a
-> 32-bit value.  There's no reason to support this for 32-bit kernels, so...
+> This seems fair, probably it would be good to have a comment mentioninmg what
+> the nop is for, fyi for context these are the nop numbers used to control
+> simulations.
 > 
-> The easiest fix, and likely most maintainable for other code too, would be to
-> add a dedicated CONFIG for private memory, and then have KVM check that for all
-> the memfile stuff.  x86 can then select it only for 64-bit kernels, and in turn
-> select MEMFILE_NOTIFIER iff private memory is supported.
-> 
-> diff --git a/arch/x86/kvm/Kconfig b/arch/x86/kvm/Kconfig
-> index ca7b2a6a452a..ee9c8c155300 100644
-> --- a/arch/x86/kvm/Kconfig
-> +++ b/arch/x86/kvm/Kconfig
-> @@ -48,7 +48,9 @@ config KVM
->         select SRCU
->         select INTERVAL_TREE
->         select HAVE_KVM_PM_NOTIFIER if PM
-> -       select MEMFILE_NOTIFIER
-> +       select HAVE_KVM_PRIVATE_MEM if X86_64
-> +       select MEMFILE_NOTIFIER if HAVE_KVM_PRIVATE_MEM
-> +
->         help
->           Support hosting fully virtualized guest machines using hardware
->           virtualization extensions.  You will need a fairly recent
-> 
-> And in addition to replacing checks on CONFIG_MEMFILE_NOTIFIER, the probing of
-> whether or not KVM_MEM_PRIVATE is allowed can be:
-> 
-> @@ -1499,23 +1499,19 @@ static void kvm_replace_memslot(struct kvm *kvm,
->         }
->  }
-> 
-> -bool __weak kvm_arch_private_memory_supported(struct kvm *kvm)
-> -{
-> -       return false;
-> -}
-> -
->  static int check_memory_region_flags(struct kvm *kvm,
->                                 const struct kvm_userspace_memory_region *mem)
->  {
->         u32 valid_flags = KVM_MEM_LOG_DIRTY_PAGES;
-> 
-> -       if (kvm_arch_private_memory_supported(kvm))
-> -               valid_flags |= KVM_MEM_PRIVATE;
-> -
->  #ifdef __KVM_HAVE_READONLY_MEM
->         valid_flags |= KVM_MEM_READONLY;
->  #endif
-> 
-> +#ifdef CONFIG_KVM_HAVE_PRIVATE_MEM
-> +       valid_flags |= KVM_MEM_PRIVATE;
-> +#endif
+>     #define NOP_NOP          0x0000      /* Normal nop instruction */
+>     #define NOP_EXIT         0x0001      /* End of simulation */
+>     #define NOP_REPORT       0x0002      /* Simple report */
+>     /*#define NOP_PRINTF       0x0003       Simprintf instruction (obsolete)*/
+>     #define NOP_PUTC         0x0004      /* JPB: Simputc instruction */
+>     #define NOP_CNT_RESET    0x0005      /* Reset statistics counters */
+>     #define NOP_GET_TICKS    0x0006      /* JPB: Get # ticks running */
+>     #define NOP_GET_PS       0x0007      /* JPB: Get picosecs/cycle */
+>     #define NOP_TRACE_ON     0x0008      /* Turn on tracing */
+>     #define NOP_TRACE_OFF    0x0009      /* Turn off tracing */
+>     #define NOP_RANDOM       0x000a      /* Return 4 random bytes */
+>     #define NOP_OR1KSIM      0x000b      /* Return non-zero if this is Or1ksim */
+>     #define NOP_EXIT_SILENT  0x000c      /* End of simulation, quiet version */
+>     /* New! */
+>     #define NOP_RESET        0x000d      /* Reset the cpu */
 
-One thing to mention is CONFIG_KVM_HAVE_PRIVATE_MEM is build-time thing.
-Do you think we should or not do that for runtime? E.g. expose by vm_type
-so only when TDX is enabled KVM_MEM_PRIVATE is exposed.
+Right, that's where I got 13 from. By the way, the .tex file only
+mentions ones up to 11, so at first I chose 12, and then saw this file.
 
-Chao
+> 
+> I will queue this once we update the spec to define some of these, I am thinking
+> if qemu should allow for the shutdown to work in user mode.
+> 
+> BTW, are you working specifically on openrisc? Or just setting up test
+> environments for all architectures?
+
+Trying to get OpenRISC up on https://build.wireguard.com/ . The other
+architectures were simple, but OpenRISC is requiring some work...
+
+Jason
