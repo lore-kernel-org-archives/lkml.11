@@ -2,330 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:46:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 085EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:46:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346622AbiD1Mtn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 08:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59612 "EHLO
+        id S245604AbiD1Mtt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 08:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346601AbiD1Msr (ORCPT
+        with ESMTP id S1346616AbiD1Mti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 08:48:47 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C8527CC7;
-        Thu, 28 Apr 2022 05:45:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651149921; x=1682685921;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=QplCjvmIZQdhDrIUwsGK+u+vwQWD5oz5DRbIoplQm/c=;
-  b=GWLSkNiLH3wvIIwBghY6YHzyg4TVHpkgn61Pf2Va1OFMHyx4ZKJ00H9a
-   YPgL+cgd+Z89HRil0HJxPyN1UL0sFpwkmJwRvBp71yZMSz1ek2sN3SB4t
-   sT1j+UtjLexReOZJ4gbaFrGtmlwzLph0lq35Qj0nuP68VVIRQq6wyPVkH
-   M=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 28 Apr 2022 05:45:20 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 05:45:20 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 28 Apr 2022 05:45:19 -0700
-Received: from blr-ubuntu-253.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 28 Apr 2022 05:45:15 -0700
-From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-To:     <arnd@arndb.de>, <catalin.marinas@arm.com>,
-        <gregkh@linuxfoundation.org>, <rostedt@goodmis.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <maz@kernel.org>, <quic_psodagud@quicinc.com>,
-        <quic_tsoni@quicinc.com>, <will@kernel.org>,
-        Prasad Sodagudi <psodagud@codeaurora.org>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Subject: [PATCHv13 5/9] lib: Add register read/write tracing support
-Date:   Thu, 28 Apr 2022 18:14:08 +0530
-Message-ID: <9827bae40f6f319f294d06859c9e3c7442f067f2.1651149615.git.quic_saipraka@quicinc.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <cover.1651149615.git.quic_saipraka@quicinc.com>
-References: <cover.1651149615.git.quic_saipraka@quicinc.com>
+        Thu, 28 Apr 2022 08:49:38 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA272AE0E
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 05:46:23 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nk3XG-0002Ri-G9; Thu, 28 Apr 2022 14:46:18 +0200
+Received: from pengutronix.de (2a03-f580-87bc-d400-6c64-eec7-9c08-9d9e.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:6c64:eec7:9c08:9d9e])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 9BB016FB14;
+        Thu, 28 Apr 2022 12:46:17 +0000 (UTC)
+Date:   Thu, 28 Apr 2022 14:46:17 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Andreas Larsson <andreas@gaisler.com>
+Cc:     linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        linux-kernel@vger.kernel.org, software@gaisler.com
+Subject: Re: [PATCH 0/3] can: grcan: Bug fixes
+Message-ID: <20220428124617.xj7fguwf3dg42wls@pengutronix.de>
+References: <20220427134307.22981-1-andreas@gaisler.com>
+ <20220428065058.mf76kmhamddsqsvk@pengutronix.de>
+ <3ab60c35-a207-287d-32fc-a958d0e33230@gaisler.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="6zpuylmscbbwpcxd"
+Content-Disposition: inline
+In-Reply-To: <3ab60c35-a207-287d-32fc-a958d0e33230@gaisler.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Prasad Sodagudi <psodagud@codeaurora.org>
 
-Generic MMIO read/write i.e., __raw_{read,write}{b,l,w,q} accessors
-are typically used to read/write from/to memory mapped registers
-and can cause hangs or some undefined behaviour in following few
-cases,
+--6zpuylmscbbwpcxd
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-* If the access to the register space is unclocked, for example: if
-  there is an access to multimedia(MM) block registers without MM
-  clocks.
+On 28.04.2022 14:22:17, Andreas Larsson wrote:
+> On 2022-04-28 08:50, Marc Kleine-Budde wrote:
+> > On 27.04.2022 15:43:04, Andreas Larsson wrote:
+> > > These patches
+> > > * makes sure that DMA memory is allocated properly
+> > > * avoids the tx errata workaround needlessly being applied
+> > > * fixes a bug where the driver can be left hanging without interrupts=
+ enabled
+> > >=20
+> > > Andreas Larsson (2):
+> > >    can: grcan: Fix broken system id check for errata workaround needs
+> > >    can: grcan: Only use the napi poll budget for rx
+> > >=20
+> > > Daniel Hellstrom (1):
+> > >    can: grcan: use ofdev->dev when allocating DMA memory
+> >=20
+> > Thanks for the patches. Can you please add a "Fixes:" tag to each patch.
+> >  From the description it seems they should be backported to the stable
+> > kernels, correct?
+>=20
+> For patch 1 I can add a Fixes: that points to 53b7670e5735, which is the
+> patch after which the patch is needed (even though that commit is not
+> bad in itself, but merely exposes a wrongly used device pointer in the
+> grcan driver).
 
-* If the register space is protected and not set to be accessible from
-  non-secure world, for example: only EL3 (EL: Exception level) access
-  is allowed and any EL2/EL1 access is forbidden.
+The Fixes tag should point to the patch the introduced the problem, not
+the patch the exposes the problem :)
 
-* If xPU(memory/register protection units) is controlling access to
-  certain memory/register space for specific clients.
+| 53b7670e5735 sparc: factor the dma coherent mapping into helper
 
-and more...
+> For patch 2 though I am not sure. I don't think the problem has always
+> been there, but I am not really sure what commit to point to.
 
-Such cases usually results in instant reboot/SErrors/NOC or interconnect
-hangs and tracing these register accesses can be very helpful to debug
-such issues during initial development stages and also in later stages.
+Point the Fixes tag to the commit that introduced the problem, if it was
+always there, use the commit where the patch was added.
 
-So use ftrace trace events to log such MMIO register accesses which
-provides rich feature set such as early enablement of trace events,
-filtering capability, dumping ftrace logs on console and many more.
+> The fix is at least needed for 4.9 and onward and 4.9 is the oldest
+> stable branch still under maintenance. Seems not to be worth the
+> effort to find exactly from which commit the grcan driver's quirky use
+> of the napi budget actually lead to problems just to make sure that it
+> gets applied to all currently maintained stable branches. Suggestions?
 
-Sample output:
+See above.
 
-rwmmio_write: __qcom_geni_serial_console_write+0x160/0x1e0 width=32 val=0xa0d5d addr=0xfffffbfffdbff700
-rwmmio_post_write: __qcom_geni_serial_console_write+0x160/0x1e0 width=32 val=0xa0d5d addr=0xfffffbfffdbff700
-rwmmio_read: qcom_geni_serial_poll_bit+0x94/0x138 width=32 addr=0xfffffbfffdbff610
-rwmmio_post_read: qcom_geni_serial_poll_bit+0x94/0x138 width=32 val=0x0 addr=0xfffffbfffdbff610
+> For patch 3 I can point to the driver's original commit for the grcan
+> driver as the problem has been there all along.
 
-Signed-off-by: Prasad Sodagudi <psodagud@codeaurora.org>
-Co-developed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
----
- arch/Kconfig                  |  3 ++
- arch/arm64/Kconfig            |  1 +
- include/trace/events/rwmmio.h | 97 +++++++++++++++++++++++++++++++++++
- lib/Kconfig                   |  7 +++
- lib/Makefile                  |  2 +
- lib/trace_readwrite.c         | 47 +++++++++++++++++
- 6 files changed, 157 insertions(+)
- create mode 100644 include/trace/events/rwmmio.h
- create mode 100644 lib/trace_readwrite.c
+Fine.
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 31c4fdc4a4ba..5e7aa17ed609 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -1369,6 +1369,9 @@ config ARCH_HAS_ELFCORE_COMPAT
- config ARCH_HAS_PARANOID_L1D_FLUSH
- 	bool
- 
-+config ARCH_HAVE_TRACE_MMIO_ACCESS
-+	bool
-+
- config DYNAMIC_SIGFRAME
- 	bool
- 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 20ea89d9ac2f..926e1a252b6f 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -48,6 +48,7 @@ config ARM64
- 	select ARCH_HAS_ZONE_DMA_SET if EXPERT
- 	select ARCH_HAVE_ELF_PROT
- 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
-+	select ARCH_HAVE_TRACE_MMIO_ACCESS
- 	select ARCH_INLINE_READ_LOCK if !PREEMPTION
- 	select ARCH_INLINE_READ_LOCK_BH if !PREEMPTION
- 	select ARCH_INLINE_READ_LOCK_IRQ if !PREEMPTION
-diff --git a/include/trace/events/rwmmio.h b/include/trace/events/rwmmio.h
-new file mode 100644
-index 000000000000..82edee9bf716
---- /dev/null
-+++ b/include/trace/events/rwmmio.h
-@@ -0,0 +1,97 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
-+ */
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM rwmmio
-+
-+#if !defined(_TRACE_RWMMIO_H) || defined(TRACE_HEADER_MULTI_READ)
-+#define _TRACE_RWMMIO_H
-+
-+#include <linux/tracepoint.h>
-+
-+DECLARE_EVENT_CLASS(rwmmio_rw_template,
-+
-+	TP_PROTO(unsigned long caller, u64 val, u8 width, volatile void __iomem *addr),
-+
-+	TP_ARGS(caller, val, width, addr),
-+
-+	TP_STRUCT__entry(
-+		__field(unsigned long, caller)
-+		__field(unsigned long, addr)
-+		__field(u64, val)
-+		__field(u8, width)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->caller = caller;
-+		__entry->val = val;
-+		__entry->addr = (unsigned long)(void *)addr;
-+		__entry->width = width;
-+	),
-+
-+	TP_printk("%pS width=%d val=%#llx addr=%#lx",
-+		(void *)(unsigned long)__entry->caller, __entry->width,
-+		__entry->val, __entry->addr)
-+);
-+
-+DEFINE_EVENT(rwmmio_rw_template, rwmmio_write,
-+	TP_PROTO(unsigned long caller, u64 val, u8 width, volatile void __iomem *addr),
-+	TP_ARGS(caller, val, width, addr)
-+);
-+
-+DEFINE_EVENT(rwmmio_rw_template, rwmmio_post_write,
-+	TP_PROTO(unsigned long caller, u64 val, u8 width, volatile void __iomem *addr),
-+	TP_ARGS(caller, val, width, addr)
-+);
-+
-+TRACE_EVENT(rwmmio_read,
-+
-+	TP_PROTO(unsigned long caller, u8 width, const volatile void __iomem *addr),
-+
-+	TP_ARGS(caller, width, addr),
-+
-+	TP_STRUCT__entry(
-+		__field(unsigned long, caller)
-+		__field(unsigned long, addr)
-+		__field(u8, width)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->caller = caller;
-+		__entry->addr = (unsigned long)(void *)addr;
-+		__entry->width = width;
-+	),
-+
-+	TP_printk("%pS width=%d addr=%#lx",
-+		 (void *)(unsigned long)__entry->caller, __entry->width, __entry->addr)
-+);
-+
-+TRACE_EVENT(rwmmio_post_read,
-+
-+	TP_PROTO(unsigned long caller, u64 val, u8 width, const volatile void __iomem *addr),
-+
-+	TP_ARGS(caller, val, width, addr),
-+
-+	TP_STRUCT__entry(
-+		__field(unsigned long, caller)
-+		__field(unsigned long, addr)
-+		__field(u64, val)
-+		__field(u8, width)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->caller = caller;
-+		__entry->val = val;
-+		__entry->addr = (unsigned long)(void *)addr;
-+		__entry->width = width;
-+	),
-+
-+	TP_printk("%pS width=%d val=%#llx addr=%#lx",
-+		 (void *)(unsigned long)__entry->caller, __entry->width,
-+		 __entry->val, __entry->addr)
-+);
-+
-+#endif /* _TRACE_RWMMIO_H */
-+
-+#include <trace/define_trace.h>
-diff --git a/lib/Kconfig b/lib/Kconfig
-index 087e06b4cdfd..5e2fd075724f 100644
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -118,6 +118,13 @@ config INDIRECT_IOMEM_FALLBACK
- 	  mmio accesses when the IO memory address is not a registered
- 	  emulated region.
- 
-+config TRACE_MMIO_ACCESS
-+	bool "Register read/write tracing"
-+	depends on TRACING && ARCH_HAVE_TRACE_MMIO_ACCESS
-+	help
-+	  Create tracepoints for MMIO read/write operations. These trace events
-+	  can be used for logging all MMIO read/write operations.
-+
- source "lib/crypto/Kconfig"
- 
- config CRC_CCITT
-diff --git a/lib/Makefile b/lib/Makefile
-index 6b9ffc1bd1ee..3df7d24e65d2 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -151,6 +151,8 @@ lib-y += logic_pio.o
- 
- lib-$(CONFIG_INDIRECT_IOMEM) += logic_iomem.o
- 
-+obj-$(CONFIG_TRACE_MMIO_ACCESS) += trace_readwrite.o
-+
- obj-$(CONFIG_GENERIC_HWEIGHT) += hweight.o
- 
- obj-$(CONFIG_BTREE) += btree.o
-diff --git a/lib/trace_readwrite.c b/lib/trace_readwrite.c
-new file mode 100644
-index 000000000000..88637038b30c
---- /dev/null
-+++ b/lib/trace_readwrite.c
-@@ -0,0 +1,47 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Register read and write tracepoints
-+ *
-+ * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
-+ */
-+
-+#include <linux/ftrace.h>
-+#include <linux/module.h>
-+#include <asm-generic/io.h>
-+
-+#define CREATE_TRACE_POINTS
-+#include <trace/events/rwmmio.h>
-+
-+#ifdef CONFIG_TRACE_MMIO_ACCESS
-+void log_write_mmio(u64 val, u8 width, volatile void __iomem *addr,
-+		    unsigned long caller_addr)
-+{
-+	trace_rwmmio_write(caller_addr, val, width, addr);
-+}
-+EXPORT_SYMBOL_GPL(log_write_mmio);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_write);
-+
-+void log_post_write_mmio(u64 val, u8 width, volatile void __iomem *addr,
-+			 unsigned long caller_addr)
-+{
-+	trace_rwmmio_post_write(caller_addr, val, width, addr);
-+}
-+EXPORT_SYMBOL_GPL(log_post_write_mmio);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_post_write);
-+
-+void log_read_mmio(u8 width, const volatile void __iomem *addr,
-+		   unsigned long caller_addr)
-+{
-+	trace_rwmmio_read(caller_addr, width, addr);
-+}
-+EXPORT_SYMBOL_GPL(log_read_mmio);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_read);
-+
-+void log_post_read_mmio(u64 val, u8 width, const volatile void __iomem *addr,
-+			unsigned long caller_addr)
-+{
-+	trace_rwmmio_post_read(caller_addr, val, width, addr);
-+}
-+EXPORT_SYMBOL_GPL(log_post_read_mmio);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_post_read);
-+#endif /* CONFIG_TRACE_MMIO_ACCESS */
--- 
-2.33.1
+regards
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--6zpuylmscbbwpcxd
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJqjJYACgkQrX5LkNig
+013digf/UJaIvBH4LP4Cg4DNBOYMwuZK0rNWnA2viAX93nkIRElKaINCVexNprRe
+7PD12V62iDHhV9P+GoMC77NG+OMpIWVeCXy6FmFqccsl8slxctvunlibuPcfd/ev
+kKsu8nB2mcGVeQtuC/q72Kfc/FjjG8e/bTXBbcegiskHPWXKrkohKYKUFWX4KbBk
+ovbv0hmHwb+MidQxpc7p5vzVcVRSQh6WXx2AaPehLBNNL1JBYv7Ss3/OzE+/ArI3
+QLVhXgn2QXT1+Rwb0w3Ly7xCvkKxoXe1ImprFBr8b878kUjq98CYIh7PSlYD3BDA
+3vqQWlLYhU+lkkvFSUIpkLgbsl9LgA==
+=pjF+
+-----END PGP SIGNATURE-----
+
+--6zpuylmscbbwpcxd--
