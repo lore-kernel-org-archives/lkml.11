@@ -2,111 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D09EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:43:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CA9C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349531AbiD1Pq3 (ORCPT
+        id S1349548AbiD1Pqc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 11:46:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35994 "EHLO
+        Thu, 28 Apr 2022 11:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349466AbiD1PqU (ORCPT
+        with ESMTP id S1349500AbiD1PqU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 28 Apr 2022 11:46:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 201BEB8207;
-        Thu, 28 Apr 2022 08:42:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C12CAB82DAA;
-        Thu, 28 Apr 2022 15:42:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C982EC385BF;
-        Thu, 28 Apr 2022 15:42:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651160575;
-        bh=tmemQG01tDxaffG/Pfuw0hVRBBqMxYFA4QXgyJ9KyB4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tNVbFGWj4w+O8XJzSS3u5R9zNz+eNvMzluHnAROJ8PEHSppWkxC/Kb1EazourJU6V
-         4Pf1K0SgnT2l+azMe/3RAD14dhoQshgKCeVlL0FfDqoA7B4tVNV8aLs7zAkN33q04u
-         +154IftS0pcbXeIt6+h5JRXfRcpSHmYNhcPmr5JA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Muchun Song <songmuchun@bytedance.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Lars Persson <lars.persson@axis.com>,
-        Peter Xu <peterx@redhat.com>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Zi Yan <ziy@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH AUTOSEL 05/14] mm: shmem: fix missing cache flush in shmem_mfill_atomic_pte()
-Date:   Thu, 28 Apr 2022 17:42:13 +0200
-Message-Id: <20220428154222.1230793-5-gregkh@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220428154222.1230793-1-gregkh@linuxfoundation.org>
-References: <20220428154222.1230793-1-gregkh@linuxfoundation.org>
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF289B1A9F;
+        Thu, 28 Apr 2022 08:42:57 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651160576;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rnMkrEHxL7tcsjFuW+K1zq3QhquJH/R43AmLLdfMdcA=;
+        b=N03I2ddNLi7GD8ZRfz7/TYFT7DjtoZwLgZyUF99N6VXg67ZN0AMXE4ZuPZuM1vUlPde+xS
+        M+4bQyMFz1vMqXVzlGMBli7O1rAQ9XHqThXNEA9W/v/A6+cNyNQTzD0zJy3/x1VJy+v3dI
+        aOUr7hfJl5KZrnGQIT9+ArBjnjDRH7YDuqEPwnnT2NYdXUyNMUPbcGX3ofjOYWVUVM6AAj
+        nxMhiQR4W7d95fdreCxkPrnAMdyDRQ0/BNYNKcDl3Jecez4l7bg3EnhkVny2RTivqjJZeZ
+        nMimq+4Brfb76LsSY4p/ydMYnz3QqGVmAE4yG+inox8BzE9v8f7ZFprmLMkRDQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651160576;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rnMkrEHxL7tcsjFuW+K1zq3QhquJH/R43AmLLdfMdcA=;
+        b=tN+6DcJDG5jxKhXmlZP3w7aojECgAsZzh5xQxkfjPkSG4DjF9uGLVyGP9vsl9e2NNZXzIi
+        v3BhvEsCActT/GAg==
+To:     Thomas Pfaff <tpfaff@pcs.com>, linux-kernel@vger.kernel.org
+Cc:     linux-rt-users@vger.kernel.org, Marc Zyngier <maz@kernel.org>
+Subject: Re: [PATCH] irq: synchronize irq_thread startup
+In-Reply-To: <f18798-9e66-66e7-8c9d-cb8eeda364c4@pcs.com>
+References: <f18798-9e66-66e7-8c9d-cb8eeda364c4@pcs.com>
+Date:   Thu, 28 Apr 2022 17:42:55 +0200
+Message-ID: <87r15huscg.ffs@tglx>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1949; i=gregkh@linuxfoundation.org; h=from:subject; bh=Zpdi/DUYbYcHJZrH6XatoKk6jiOZB35pe/zLcwmmE6k=; b=owGbwMvMwCRo6H6F97bub03G02pJDElZW+8I7V/+7fotz2mnl0RMZRSeptb7+8HX9sc9WQ8Dz9v+ 4Y/m6IhlYRBkYpAVU2T5so3n6P6KQ4pehranYeawMoEMYeDiFICJvH/GME/XkV/0Z52gvsadlwwHQk K/Z987IsIwT1X64LHvwY/O7N29c9sv8zo+sbrDrQA=
-X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+Thomas,
 
-commit 19b482c29b6f3805f1d8e93015847b89e2f7f3b1 upstream.
+On Thu, Apr 28 2022 at 12:49, Thomas Pfaff wrote:
 
-userfaultfd calls shmem_mfill_atomic_pte() which does not do any cache
-flushing for the target page.  Then the target page will be mapped to
-the user space with a different address (user address), which might have
-an alias issue with the kernel address used to copy the data from the
-user to.  Insert flush_dcache_page() in non-zero-page case.  And replace
-clear_highpage() with clear_user_highpage() which already considers the
-cache maintenance.
+please always Cc maintainers when sending patches and please also have a
+look at:
 
-Link: https://lkml.kernel.org/r/20220210123058.79206-6-songmuchun@bytedance.com
-Fixes: 8d1039634206 ("userfaultfd: shmem: add shmem_mfill_zeropage_pte for userfaultfd support")
-Fixes: 4c27fe4c4c84 ("userfaultfd: shmem: add shmem_mcopy_atomic_pte for userfaultfd support")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Axel Rasmussen <axelrasmussen@google.com>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Fam Zheng <fam.zheng@bytedance.com>
-Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Lars Persson <lars.persson@axis.com>
-Cc: Peter Xu <peterx@redhat.com>
-Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- mm/shmem.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+https://www.kernel.org/doc/html/latest/process/maintainer-tip.html#patch-submission-notes
 
-diff --git a/mm/shmem.c b/mm/shmem.c
-index a09b29ec2b45..7a46419d331d 100644
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -2357,8 +2357,10 @@ int shmem_mfill_atomic_pte(struct mm_struct *dst_mm,
- 				/* don't free the page */
- 				goto out_unacct_blocks;
- 			}
-+
-+			flush_dcache_page(page);
- 		} else {		/* ZEROPAGE */
--			clear_highpage(page);
-+			clear_user_highpage(page, dst_addr);
- 		}
- 	} else {
- 		page = *pagep;
--- 
-2.36.0
+> While running
+> "while /bin/true; do setserial /dev/ttyS0 uart none;
+> setserial /dev/ttyS0 uart 16550A; done"
+> on a kernel with threaded irqs, setserial is hung after some calls.
+>
+> setserial opens the device, this will install an irq handler if the uart is
+> not none, followed by TIOCGSERIAL and TIOCSSERIAL ioctls.
+> Then the device is closed. On close, synchronize_irq() is called by
+> serial_core.
+>
+> If the close comes too fast, the irq_thread does not really start,
+> it is terminated immediately without going into irq_thread().
+> But an interrupt might already been handled by
+> irq_default_primary_handler(), going to __irq_wake_thread() and
+> incrementing threads_active.
+> If this happens, synchronize_irq() will hang forever, because the
+> irq_thread is already dead, and threads_active will never be decremented.
+>
+> The fix is to make sure that the irq_thread is really started
+> during __setup_irq().
 
+Right. Nice detective work.
+
+> @@ -127,6 +129,8 @@ struct irqaction {
+>  	unsigned int		flags;
+>  	unsigned long		thread_flags;
+>  	unsigned long		thread_mask;
+> +	atomic_t		thread_is_up;
+> +	wait_queue_head_t	wait_for_thread;
+
+I don't think we need any of this extra ballast per irqaction.
+
+irqaction::thread_flags is already there and can be used as indicator.
+There are enough bits left.
+
+irq_desc already has a wait queue, which is used for synchronize_irq()
+to wait for threads to complete. That wait queue is unused at the point
+where an interrupt is set up, so there is no reason to introduce a new
+one which is only used once.
+
+This is not a problem in the rare case that the interrupt fires and
+wakes the thread which then in consequence might wake the waiter via
+wake_threads_waitq().
+
+> -	if (new->thread)
+> +	if (new->thread) {
+>  		wake_up_process(new->thread);
+> -	if (new->secondary)
+> +		wait_event(new->wait_for_thread,
+> +			   atomic_read(&new->thread_is_up));
+
+Please stick this into a helper function.
+
+Thanks,
+
+        tglx
