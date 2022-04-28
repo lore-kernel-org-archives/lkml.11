@@ -2,115 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF00C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:42:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 610ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:44:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245633AbiD1Hpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:45:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37280 "EHLO
+        id S245665AbiD1HrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 03:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245623AbiD1Hph (ORCPT
+        with ESMTP id S245494AbiD1HrU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:45:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ED123220CB
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:42:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651131743;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ma9q9NfHZgQzwDwsNAsEAp8GMR2Aw0rkaNjfoUxgzjA=;
-        b=bbnUx8vCLxZavRb8dh9qpexUYtFNKzlqF/mJwPEAvuoUA3XCHKlit4xPwiN3JdlILInwkp
-        NoFuIpMmJpOFVZBmP7E5D0ymLuUwju+/htBaWA5LIUdfnQWSx+HSRrqDO9gYnxQdabIHtQ
-        9fhOybV0rcu9xltDCKe8JI+WL2TkxRM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-313-A4wupFJ8M4u7aoDXIuCY9w-1; Thu, 28 Apr 2022 03:42:19 -0400
-X-MC-Unique: A4wupFJ8M4u7aoDXIuCY9w-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 28 Apr 2022 03:47:20 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB7D49D05D;
+        Thu, 28 Apr 2022 00:44:06 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 48213185A7BA;
-        Thu, 28 Apr 2022 07:42:19 +0000 (UTC)
-Received: from localhost (unknown [10.39.193.199])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id EF41341136EF;
-        Thu, 28 Apr 2022 07:42:18 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Halil Pasic <pasic@linux.ibm.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        eperezma <eperezma@redhat.com>, Cindy Lu <lulu@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Marc Zyngier <maz@kernel.org>
-Subject: Re: [PATCH V3 6/9] virtio-ccw: implement synchronize_cbs()
-In-Reply-To: <CACGkMEutdd=9c-2h5ijMkgUzEqNPtUCXAum7bm8W7a6m62i_Mg@mail.gmail.com>
-Organization: Red Hat GmbH
-References: <ba0c3977-c471-3275-2327-c5910cdd506a@redhat.com>
- <20220425235134-mutt-send-email-mst@kernel.org>
- <20220425235415-mutt-send-email-mst@kernel.org>
- <87o80n7soq.fsf@redhat.com>
- <20220426124243-mutt-send-email-mst@kernel.org>
- <87ilqu7u6w.fsf@redhat.com> <20220428044315.3945e660.pasic@linux.ibm.com>
- <CACGkMEudDf=XXhV2tV+xZ586AnDyrQEotGAiSQZ4k1CTAWHZJQ@mail.gmail.com>
- <20220428012156-mutt-send-email-mst@kernel.org>
- <CACGkMEsd+WHp=LN0BnnDKfzv+nbS2hjgVC-tdemZWuPTc60HBQ@mail.gmail.com>
- <20220428015318-mutt-send-email-mst@kernel.org>
- <CACGkMEutdd=9c-2h5ijMkgUzEqNPtUCXAum7bm8W7a6m62i_Mg@mail.gmail.com>
-User-Agent: Notmuch/0.34 (https://notmuchmail.org)
-Date:   Thu, 28 Apr 2022 09:42:17 +0200
-Message-ID: <87zgk5lkme.fsf@redhat.com>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KpngN6jzpz4xNl;
+        Thu, 28 Apr 2022 17:44:00 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1651131842;
+        bh=amNapjCLjURLE0UVrVvkvdsxtrh346rHjxYHltNNEeY=;
+        h=Date:From:To:Cc:Subject:From;
+        b=ZLcRj0w8WNV3FzPMqwSXsHgKIYpt6MkiHWqaSkxfEGMUcxeO5/J/ByOxobTk/9OQ+
+         jzLO2wcPEnCItilFVAXbBDXJOppJLS6lhs0ACRKGL2r3zO2ZScRpx8Vn1ebL8lR1PK
+         6eO3XfXYR2xPyfrQzW3JLKvorfUwhkXTwo0BEQGmwn0CNgTL69oECFqqz+OiuU+bSE
+         Zj1dsBIN30lm3rDzl40ZtpucWURxl1zTDXvLHcAhccfdF7z8yoE3BNK+vaZPwR2UGc
+         bPF46cN0VLyhO80Wqn1tv+qYD75bQjlr9tZkRj3nP0gxWVNv13x5ZtjrppcePSeFP0
+         ewZo0Docus5TA==
+Date:   Thu, 28 Apr 2022 17:44:00 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Jiajian Ye <yejiajian2018@email.szu.edu.cn>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warning after merge of the mm tree
+Message-ID: <20220428174400.5b1a4b9b@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Type: multipart/signed; boundary="Sig_/Yr0Yq6fdL165bm17a.+CqnV";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28 2022, Jason Wang <jasowang@redhat.com> wrote:
+--Sig_/Yr0Yq6fdL165bm17a.+CqnV
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-> On Thu, Apr 28, 2022 at 1:55 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->>
->> On Thu, Apr 28, 2022 at 01:51:59PM +0800, Jason Wang wrote:
->> > On Thu, Apr 28, 2022 at 1:24 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->> > >
->> > > On Thu, Apr 28, 2022 at 11:04:41AM +0800, Jason Wang wrote:
->> > > > > But my guess is that rwlock + some testing for the legacy indicator case
->> > > > > just to double check if there is a heavy regression despite of our
->> > > > > expectations to see none should do the trick.
->> > > >
->> > > > I suggest this, rwlock (for not airq) seems better than spinlock, but
->> > > > at worst case it will cause cache line bouncing. But I wonder if it's
->> > > > noticeable (anyhow it has been used for airq).
->> > > >
->> > > > Thanks
->> > >
->> > > Which existing rwlock does airq use right now? Can we take it to sync?
->> >
->> > It's the rwlock in airq_info, it has already been used in this patch.
->> >
->> >                 write_lock(&info->lock);
->> >                 write_unlock(&info->lock);
->> >
->> > But the problem is, it looks to me there could be a case that airq is
->> > not used, (virtio_ccw_int_hander()). That's why the patch use a
->> > spinlock, it could be optimized with using a rwlock as well.
->> >
->> > Thanks
->>
->> Ah, right. So let's take that on the legacy path too and Halil promises
->> to test to make sure performance isn't impacted too badly?
->
-> I think what you meant is using a dedicated rwlock instead of trying
-> to reuse one of the airq_info locks.
->
-> If this is true, it should be fine.
+Hi all,
 
-FWIW, that approach makes sense to me as well.
+After merging the mm tree, today's linux-next build (htmldocs) produced
+this warning:
 
+Documentation/vm/page_owner.rst:176: WARNING: Literal block expected; none =
+found.
+
+Introduced by commit
+
+  0613ea580918 ("tools/vm/page_owner_sort.c: support sorting blocks by mult=
+iple keys")
+
+or commit
+
+  0996cc55c8e3 ("Merge branch 'linus' into mm-stable")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/Yr0Yq6fdL165bm17a.+CqnV
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJqRcAACgkQAVBC80lX
+0Gz3igf8DaXC/bODXD1VTuoT5LAOy3dQGZ77BKhm+XPXUoiN1UQdA+UG+ReVfKKF
+YcbTk72SRVnROfKGgPYUtcxQEuqIz92f632P1a+J2XbDHQZCRkKDUU+5ngMUaDu1
+3jft1cywCaugeMRP8aMRZrmcp5Y4JfU6LM+nWmJTkQur+ot4sIstHpVlDOvwXpgJ
+lFEu9Gdy4TJXebYGnmpBZRtZdfuSiz+eiLHbbk6GUqGlXfRLhamhRdqOiGLXr4ix
+iNTduWnMkZkJlcnWHSSYsRvjXCGxvlzfQXq7qBLmg1b6vwtOEKGlvtrmtxXrhRuh
+l2ukDUtnlS9Rt3SZsPqMHq2ftfCHVg==
+=z3+1
+-----END PGP SIGNATURE-----
+
+--Sig_/Yr0Yq6fdL165bm17a.+CqnV--
