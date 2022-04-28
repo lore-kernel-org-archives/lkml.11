@@ -2,158 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE4F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:26:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96BBEC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:27:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348339AbiD1O3x (ORCPT
+        id S1348349AbiD1OaT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 10:29:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47128 "EHLO
+        Thu, 28 Apr 2022 10:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347045AbiD1O3w (ORCPT
+        with ESMTP id S1347045AbiD1OaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 10:29:52 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF373EF38
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:26:36 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id j9so3736340qkg.1
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:26:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=k2xk0VfPUZZR4PgPEBFE7KbYEWH+FmFopnCFIlm7PdU=;
-        b=BV94KuxAotFnCW2rpxR5ikP/WxESDoIazAhKPFkO1eGzDxo7hawOoKkHC0UbhoIeQy
-         kZg8jfkxgeybcxSbVkPKyf/R8j319H1hEEjldKPErEBwufuhSw5mT4aclDQzGTGmOQ4z
-         vfMoivqIpG4ELDuBcZ0Lo3UjNSF9EOuclEjFk4kMkAuHZnXHnZGbiU71bRjNAWpZoXdE
-         OVtUxqBbeYfV85GYLzG9DEZSYCi7JYWgpRIAP4TxPtab35D28kaePo90gYcCyWnoTDSJ
-         nh0zCTTwNRYmmxH3C3h+6DAcalHEbjnTNIOcg75fSF6dIHkflMcrL1mdWIN+kjqV2eZ+
-         euow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=k2xk0VfPUZZR4PgPEBFE7KbYEWH+FmFopnCFIlm7PdU=;
-        b=po7guxZyGOQcfBjnb9LYEZzYozD7X5FFL/uZvipGHZg0l7L0m8HrSzHmVSp/D2UKjT
-         0AUoG4t4uRI0P7uv8LBOFGQQcmZ3jWM2nwNsZoXYd288mfyzy/Kv8Hc03IEA1AnaNars
-         6zRJX+MPpW0MWgWEcix0xqrpWr/kF2fmxFGnpGd0SVOotDl0cA3DfKjV9z4ZKvEQfavi
-         BWge4rH1fqaofF/MrdcwG/nYtPlu5ylU1xBEP32K7GY/xZP7gkpdvx31VqLL1HzMyHmk
-         WePxnFq9XG3r56q8YkIwJ6irlsGaZFTML4w6cAGhEc3PLZ0nicEyZqg8oK6d1YEKWtH7
-         u5LA==
-X-Gm-Message-State: AOAM5325udXzXTEzTNpX2PElxKB3RKrfid3mh0BkqMiDxFcZih2B12mC
-        BzOQ4bHoIgBTE3qfYMIJjcRiYA==
-X-Google-Smtp-Source: ABdhPJxHZfOb9UMTvMfY0TOYnsyNy3pAynw8UhikG/kgqUZQDoSwCT+rqvbeUsQFKMN84pGDPsTDfQ==
-X-Received: by 2002:a05:620a:d85:b0:67b:a4:2036 with SMTP id q5-20020a05620a0d8500b0067b00a42036mr19369088qkl.112.1651155995814;
-        Thu, 28 Apr 2022 07:26:35 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1:d588])
-        by smtp.gmail.com with ESMTPSA id 21-20020ac85755000000b002f390bd8ac0sm84027qtx.53.2022.04.28.07.26.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 07:26:35 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 10:25:59 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Minchan Kim <minchan@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Seth Jennings <sjenning@redhat.com>,
-        Dan Streetman <ddstreet@ieee.org>, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
-Message-ID: <Ymqj93gEEzu2Gb3U@cmpxchg.org>
-References: <20220427160016.144237-1-hannes@cmpxchg.org>
- <20220427160016.144237-5-hannes@cmpxchg.org>
- <Ymmnrkn0mSWcuvmH@google.com>
- <YmmznQ8AO5RLxicA@cmpxchg.org>
- <YmnA0Da90IURbxrM@google.com>
+        Thu, 28 Apr 2022 10:30:17 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851F5427C6;
+        Thu, 28 Apr 2022 07:27:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651156022; x=1682692022;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=1TTI2/iHO5RXgsAytHz7L5iHVv4ElQrAH3SAtwKGs0o=;
+  b=IwMqB1ujI9TkrGwbFJDdsnlUZWOJdzznK6ICINWrIXIKyx8LuV/CFy9s
+   Bk3YCZpMnNOj5xpqd2ikgD8NBIByZDfG+L3UYTL2GfV/uTwIXnC9f62fn
+   FznL7V1yYuq2h1ZtEYx24V3FSY0Qs0ZD48HpbCMyO1xEnAqfCJGGd9+Vq
+   f8ceVwQEPxc2DoWX+lBYRkHu9gLXqGtnBlU/TrpyOLw1O1w/mhbdTdzXe
+   i5ZP56ZK8Us7U3lP3DsqFed/3fDssXcYUEFsVLqIJoOyoyE/1xr12D/B5
+   j3uYy4slFbmNNjtS2gX5BQySrwK3k9v6piuem5v+YHLikteIKp1Sm6cRD
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="263893606"
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="263893606"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 07:26:47 -0700
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="559692964"
+Received: from mpoursae-mobl2.amr.corp.intel.com (HELO [10.212.0.84]) ([10.212.0.84])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 07:26:45 -0700
+Message-ID: <3731a852-71b8-b081-2426-3b0a650e174c@intel.com>
+Date:   Thu, 28 Apr 2022 07:27:01 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmnA0Da90IURbxrM@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 04/21] x86/virt/tdx: Add skeleton for detecting and
+ initializing TDX on demand
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+References: <cover.1649219184.git.kai.huang@intel.com>
+ <32dcf4c7acc95244a391458d79cd6907125c5c29.1649219184.git.kai.huang@intel.com>
+ <ac482f2b-d2d1-0643-faa4-1b36340268c5@intel.com>
+ <22e3adf42b8ea2cae3aabc26f762acb983133fea.camel@intel.com>
+ <c833aff2-b459-a1d7-431f-bce5c5f29182@intel.com>
+ <37efe2074eba47c51bf5c1a2369a05ddf9082885.camel@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <37efe2074eba47c51bf5c1a2369a05ddf9082885.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 03:16:48PM -0700, Minchan Kim wrote:
-> On Wed, Apr 27, 2022 at 05:20:29PM -0400, Johannes Weiner wrote:
-> > On Wed, Apr 27, 2022 at 01:29:34PM -0700, Minchan Kim wrote:
-> > > Hi Johannes,
-> > > 
-> > > On Wed, Apr 27, 2022 at 12:00:15PM -0400, Johannes Weiner wrote:
-> > > > Currently it requires poking at debugfs to figure out the size and
-> > > > population of the zswap cache on a host. There are no counters for
-> > > > reads and writes against the cache. As a result, it's difficult to
-> > > > understand zswap behavior on production systems.
-> > > > 
-> > > > Print zswap memory consumption and how many pages are zswapped out in
-> > > > /proc/meminfo. Count zswapouts and zswapins in /proc/vmstat.
-> > > > 
-> > > > Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
-> > > > ---
-> > > >  fs/proc/meminfo.c             |  7 +++++++
-> > > >  include/linux/swap.h          |  5 +++++
-> > > >  include/linux/vm_event_item.h |  4 ++++
-> > > >  mm/vmstat.c                   |  4 ++++
-> > > >  mm/zswap.c                    | 13 ++++++-------
-> > > >  5 files changed, 26 insertions(+), 7 deletions(-)
-> > > > 
-> > > > diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
-> > > > index 6fa761c9cc78..6e89f0e2fd20 100644
-> > > > --- a/fs/proc/meminfo.c
-> > > > +++ b/fs/proc/meminfo.c
-> > > > @@ -86,6 +86,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
-> > > >  
-> > > >  	show_val_kb(m, "SwapTotal:      ", i.totalswap);
-> > > >  	show_val_kb(m, "SwapFree:       ", i.freeswap);
-> > > > +#ifdef CONFIG_ZSWAP
-> > > > +	seq_printf(m,  "Zswap:          %8lu kB\n",
-> > > > +		   (unsigned long)(zswap_pool_total_size >> 10));
-> > > > +	seq_printf(m,  "Zswapped:       %8lu kB\n",
-> > > > +		   (unsigned long)atomic_read(&zswap_stored_pages) <<
-> > > > +		   (PAGE_SHIFT - 10));
-> > > > +#endif
-> > > 
-> > > I agree it would be very handy to have the memory consumption in meminfo
-> > > 
-> > > https://lore.kernel.org/all/YYwZXrL3Fu8%2FvLZw@google.com/
-> > > 
-> > > If we really go this Zswap only metric instead of general term
-> > > "Compressed", I'd like to post maybe "Zram:" with same reason
-> > > in this patchset. Do you think that's better idea instead of
-> > > introducing general term like "Compressed:" or something else?
-> > 
-> > I'm fine with changing it to Compressed. If somebody cares about a
-> > more detailed breakdown, we can add Zswap, Zram subsets as needed.
+On 4/27/22 17:00, Kai Huang wrote:
+> On Wed, 2022-04-27 at 07:49 -0700, Dave Hansen wrote:
+> I think we can use pr_info_once() when all_cpus_booted() returns false, and get
+> rid of printing "SEAMRR not enabled" in seamrr_enabled().  How about below?
 > 
-> Thanks! Please consider ZSWPIN to rename more general term, too.
+> static bool seamrr_enabled(void)
+> {
+> 	if (!all_cpus_booted())
+> 		pr_info_once("Not all present CPUs have been booted.  Report
+> SEAMRR as not enabled");
+> 
+> 	return __seamrr_enabled();
+> }
+> 
+> And we don't print "SEAMRR not enabled".
 
-That doesn't make sense to me.
+That's better, but even better than that would be removing all that
+SEAMRR gunk in the first place.
 
-Zram is a swap backend, its traffic is accounted in PSWPIN/OUT. Zswap
-is a writeback cache on top of the swap backend. It has pages
-entering, refaulting, and being written back to the swap backend
-(PSWPOUT). A zswpout and a zramout are different things.
+>>>>> +	/*
+>>>>> +	 * TDX requires at least two KeyIDs: one global KeyID to
+>>>>> +	 * protect the metadata of the TDX module and one or more
+>>>>> +	 * KeyIDs to run TD guests.
+>>>>> +	 */
+>>>>> +	return tdx_keyid_num >= 2;
+>>>>> +}
+>>>>> +
+>>>>> +static int __tdx_detect(void)
+>>>>> +{
+>>>>> +	/* The TDX module is not loaded if SEAMRR is disabled */
+>>>>> +	if (!seamrr_enabled()) {
+>>>>> +		pr_info("SEAMRR not enabled.\n");
+>>>>> +		goto no_tdx_module;
+>>>>> +	}
+>>>>
+>>>> Why even bother with the SEAMRR stuff?  It sounded like you can "ping"
+>>>> the module with SEAMCALL.  Why not just use that directly?
+>>>
+>>> SEAMCALL will cause #GP if SEAMRR is not enabled.  We should check whether
+>>> SEAMRR is enabled before making SEAMCALL.
+>>
+>> So...  You could actually get rid of all this code.  if SEAMCALL #GP's,
+>> then you say, "Whoops, the firmware didn't load the TDX module
+>> correctly, sorry."
+> 
+> Yes we can just use the first SEAMCALL (TDH.SYS.INIT) to detect whether TDX
+> module is loaded.  If SEAMCALL is successful, the module is loaded.
+> 
+> One problem is currently the patch to flush cache for kexec() uses
+> seamrr_enabled() and tdx_keyid_sufficient() to determine whether we need to
+> flush the cache.  The reason is, similar to SME, the flush is done in
+> stop_this_cpu(), but the status of TDX module initialization is protected by
+> mutex, so we cannot use TDX module status in stop_this_cpu() to determine
+> whether to flush.
+> 
+> If that patch makes sense, I think we still need to detect SEAMRR?
 
-> > From 8e9e2d6490b7082c41743fbdb9ffd2db4e3ce962 Mon Sep 17 00:00:00 2001
-> > From: Johannes Weiner <hannes@cmpxchg.org>
-> > Date: Wed, 27 Apr 2022 17:15:15 -0400
-> > Subject: [PATCH] mm: zswap: add basic meminfo and vmstat coverage fix fix
-> > 
-> > Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
+Please go look at stop_this_cpu() closely.  What are the AMD folks doing
+for SME exactly?  Do they, for instance, do the WBINVD when the kernel
+used SME?  No, they just use a pretty low-level check if the processor
+supports SME.
 
-Just for completeness,
+Doing the same kind of thing for TDX is fine.  You could check the MTRR
+MSR bits that tell you if SEAMRR is supported and then read the MSR
+directly.  You could check the CPUID enumeration for MKTME or
+CPUID.B.0.EDX (I'm not even sure what this is but the SEAMCALL spec says
+it is part of SEAMCALL operation).
 
-Nacked-by: Johannes Weiner <hannes@cmxpchg.org>
+Just like the SME test, it doesn't even need to be precise.  It just
+needs to be 100% accurate in that it is *ALWAYS* set for any system that
+might have dirtied cache aliases.
 
-> > @@ -87,7 +87,7 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
-> >  	show_val_kb(m, "SwapTotal:      ", i.totalswap);
-> >  	show_val_kb(m, "SwapFree:       ", i.freeswap);
-> >  #ifdef CONFIG_ZSWAP
-> > -	seq_printf(m,  "Zswap:          %8lu kB\n",
-> > +	seq_printf(m,  "Compressed:     %8lu kB\n",
-> >  		   (unsigned long)(zswap_pool_total_size >> 10));
-> >  	seq_printf(m,  "Zswapped:       %8lu kB\n",
-> >  		   (unsigned long)atomic_read(&zswap_stored_pages) <<
-> > -- 
-> > 2.35.3
-> > 
+I'm not sure why you are so fixated on SEAMRR specifically for this.
+
+
+...
+> "During initializing the TDX module, one step requires some SEAMCALL must be
+> done on all logical cpus enabled by BIOS, otherwise a later step will fail. 
+> Disable CPU hotplug during the initialization process to prevent any CPU going
+> offline during initializing the TDX module.  Note it is caller's responsibility
+> to guarantee all BIOS-enabled CPUs are in cpu_present_mask and all present CPUs
+> are online."
+
+But, what if a CPU went offline just before this lock was taken?  What
+if the caller make sure all present CPUs are online, makes the call,
+then a CPU is taken offline.  The lock wouldn't do any good.
+
+What purpose does the lock serve?
