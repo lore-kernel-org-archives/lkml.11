@@ -2,274 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2152BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:38:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B991CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:38:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347478AbiD1Nl2 (ORCPT
+        id S1347468AbiD1Nlm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:41:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49574 "EHLO
+        Thu, 28 Apr 2022 09:41:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235759AbiD1NlS (ORCPT
+        with ESMTP id S1347513AbiD1Nlf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:41:18 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C789FA0BC7;
-        Thu, 28 Apr 2022 06:38:03 -0700 (PDT)
-X-UUID: 1d5cccb3290041eabd259e4a26d24d88-20220428
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:37a250c0-03a1-45cb-9515-15c8422d1047,OB:0,LO
-        B:0,IP:0,URL:25,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:5
-X-CID-META: VersionHash:faefae9,CLOUDID:62450e2f-6199-437e-8ab4-9920b4bc5b76,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 1d5cccb3290041eabd259e4a26d24d88-20220428
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2027890787; Thu, 28 Apr 2022 21:37:55 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 28 Apr 2022 21:37:54 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 28 Apr 2022 21:37:54 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 28 Apr 2022 21:37:54 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>
-CC:     <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>,
-        <jitao.shi@mediatek.com>, <xinlei.lee@mediatek.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v5 1/4] dt-bindings: display: mediatek: dsi: Convert dsi_dtbinding to .yaml
-Date:   Thu, 28 Apr 2022 21:37:50 +0800
-Message-ID: <20220428133753.8348-2-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220428133753.8348-1-rex-bc.chen@mediatek.com>
-References: <20220428133753.8348-1-rex-bc.chen@mediatek.com>
+        Thu, 28 Apr 2022 09:41:35 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7459B3C41;
+        Thu, 28 Apr 2022 06:38:20 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id A6BB21F458A7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651153099;
+        bh=cmIfSy8CafEA7WKzM2siN0tevY6CnBZ1OIjAqjL90Co=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=bt4Q8bVE5cw+o5ezxzLR/F6y/Suo6+8SwvV5DVnTXw0ZJ5inAli4PziK4OhL7eH1T
+         gxycmkloO9rgd4t7ACEOIVzKWompfyvDJpECT2xCsE3dqO7mtPSPtkSsuk6cLI2ZeU
+         PzpQZFP2mpiZfeI4thXumVDg/VvmCyhwwNKA4pRsjwWzW6dxM40pt0/28EnlHc2lJy
+         QAmFz1gayjcBfaHYU+KWB58mPpQ2hBil4dlb9uk1WotJ7VOv2T3la0jd+LQ18gG3xn
+         88xImrSs7MBLUJZTe8fF9rIsumT43J3LfG/sQI7V1/8YuIJmAXw08gk1IR4/oF6gEO
+         29uLM0zKmRUBA==
+Message-ID: <79b2bdef-37b5-9b15-3739-5281d4bc8c9e@collabora.com>
+Date:   Thu, 28 Apr 2022 15:38:16 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V5 07/16] clk: mediatek: reset: Support nonsequence base
+ offsets of reset registers
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, mturquette@baylibre.com,
+        sboyd@kernel.org, matthias.bgg@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     p.zabel@pengutronix.de, chun-jie.chen@mediatek.com,
+        wenst@chromium.org, runyang.chen@mediatek.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220428115620.13512-1-rex-bc.chen@mediatek.com>
+ <20220428115620.13512-8-rex-bc.chen@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220428115620.13512-8-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xinlei Lee <xinlei.lee@mediatek.com>
+Il 28/04/22 13:56, Rex-BC Chen ha scritto:
+> The bank offsets are not serial for all reset registers.
+> For example, there are five infra reset banks for MT8192: 0x120, 0x130,
+> 0x140, 0x150 and 0x730.
+> 
+> To support this,
+> - Change reg_ofs to rst_bank_ofs which is a pointer to base offsets of
+>    the reset register.
+> - Add a new define RST_NR_PER_BANK to define reset number for each
+>    reset bank.
+> 
+> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
-Convert mediatek,dsi.txt to mediatek,dsi.yaml format
-
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
----
- .../display/mediatek/mediatek,dsi.txt         |  62 ---------
- .../display/mediatek/mediatek,dsi.yaml        | 122 ++++++++++++++++++
- 2 files changed, 122 insertions(+), 62 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
- create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
-deleted file mode 100644
-index 36b01458f45c..000000000000
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
-+++ /dev/null
-@@ -1,62 +0,0 @@
--Mediatek DSI Device
--===================
--
--The Mediatek DSI function block is a sink of the display subsystem and can
--drive up to 4-lane MIPI DSI output. Two DSIs can be synchronized for dual-
--channel output.
--
--Required properties:
--- compatible: "mediatek,<chip>-dsi"
--- the supported chips are mt2701, mt7623, mt8167, mt8173 and mt8183.
--- reg: Physical base address and length of the controller's registers
--- interrupts: The interrupt signal from the function block.
--- clocks: device clocks
--  See Documentation/devicetree/bindings/clock/clock-bindings.txt for details.
--- clock-names: must contain "engine", "digital", and "hs"
--- phys: phandle link to the MIPI D-PHY controller.
--- phy-names: must contain "dphy"
--- port: Output port node with endpoint definitions as described in
--  Documentation/devicetree/bindings/graph.txt. This port should be connected
--  to the input port of an attached DSI panel or DSI-to-eDP encoder chip.
--
--Optional properties:
--- resets: list of phandle + reset specifier pair, as described in [1].
--
--[1] Documentation/devicetree/bindings/reset/reset.txt
--
--MIPI TX Configuration Module
--============================
--
--See phy/mediatek,dsi-phy.yaml
--
--Example:
--
--mipi_tx0: mipi-dphy@10215000 {
--	compatible = "mediatek,mt8173-mipi-tx";
--	reg = <0 0x10215000 0 0x1000>;
--	clocks = <&clk26m>;
--	clock-output-names = "mipi_tx0_pll";
--	#clock-cells = <0>;
--	#phy-cells = <0>;
--	drive-strength-microamp = <4600>;
--	nvmem-cells= <&mipi_tx_calibration>;
--	nvmem-cell-names = "calibration-data";
--};
--
--dsi0: dsi@1401b000 {
--	compatible = "mediatek,mt8173-dsi";
--	reg = <0 0x1401b000 0 0x1000>;
--	interrupts = <GIC_SPI 192 IRQ_TYPE_LEVEL_LOW>;
--	clocks = <&mmsys MM_DSI0_ENGINE>, <&mmsys MM_DSI0_DIGITAL>,
--		 <&mipi_tx0>;
--	clock-names = "engine", "digital", "hs";
--	resets = <&mmsys MT8173_MMSYS_SW0_RST_B_DISP_DSI0>;
--	phys = <&mipi_tx0>;
--	phy-names = "dphy";
--
--	port {
--		dsi0_out: endpoint {
--			remote-endpoint = <&panel_in>;
--		};
--	};
--};
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-new file mode 100644
-index 000000000000..2ca9229ef69e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-@@ -0,0 +1,122 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/display/mediatek/mediatek,dsi.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek DSI Controller Device Tree Bindings
-+
-+maintainers:
-+  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
-+  - Philipp Zabel <p.zabel@pengutronix.de>
-+  - Jitao Shi <jitao.shi@mediatek.com>
-+  - Xinlei Lee <xinlei.lee@mediatek.com>
-+
-+description: |
-+  The MediaTek DSI function block is a sink of the display subsystem and can
-+  drive up to 4-lane MIPI DSI output. Two DSIs can be synchronized for dual-
-+  channel output.
-+
-+allOf:
-+  - $ref: /schemas/display/dsi-controller.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - mediatek,mt2701-dsi
-+      - mediatek,mt7623-dsi
-+      - mediatek,mt8167-dsi
-+      - mediatek,mt8173-dsi
-+      - mediatek,mt8183-dsi
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: Engine Clock
-+      - description: Digital Clock
-+      - description: HS Clock
-+
-+  clock-names:
-+    items:
-+      - const: engine
-+      - const: digital
-+      - const: hs
-+
-+  resets:
-+    maxItems: 1
-+
-+  phys:
-+    maxItems: 1
-+
-+  phy-names:
-+    items:
-+      - const: dphy
-+
-+  port:
-+    $ref: /schemas/graph.yaml#/properties/port
-+    description:
-+      Output port node. This port should be connected to the input
-+      port of an attached DSI panel or DSI-to-eDP encoder chip.
-+
-+
-+  "#address-cells":
-+    const: 2
-+
-+  "#size-cells":
-+    const: 2
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - power-domains
-+  - clocks
-+  - clock-names
-+  - phys
-+  - phy-names
-+  - port
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/mt8183-clk.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/power/mt8183-power.h>
-+    #include <dt-bindings/phy/phy.h>
-+    #include <dt-bindings/reset/mt8183-resets.h>
-+
-+    soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        dsi0: dsi@14014000 {
-+            compatible = "mediatek,mt8183-dsi";
-+            reg = <0 0x14014000 0 0x1000>;
-+            interrupts = <GIC_SPI 236 IRQ_TYPE_LEVEL_LOW>;
-+            power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
-+            clocks = <&mmsys CLK_MM_DSI0_MM>,
-+                <&mmsys CLK_MM_DSI0_IF>,
-+                <&mipi_tx0>;
-+            clock-names = "engine", "digital", "hs";
-+            resets = <&mmsys MT8183_MMSYS_SW0_RST_B_DISP_DSI0>;
-+            phys = <&mipi_tx0>;
-+            phy-names = "dphy";
-+            port {
-+                dsi0_out: endpoint {
-+                    remote-endpoint = <&panel_in>;
-+                };
-+            };
-+        };
-+    };
-+
-+...
--- 
-2.18.0
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
