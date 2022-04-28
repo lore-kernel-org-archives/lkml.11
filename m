@@ -2,172 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3990C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:52:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9BF5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:53:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344653AbiD1I4D (ORCPT
+        id S1344721AbiD1I4P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:56:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43346 "EHLO
+        Thu, 28 Apr 2022 04:56:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344512AbiD1I4A (ORCPT
+        with ESMTP id S1344512AbiD1I4M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:56:00 -0400
-Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BED723165;
-        Thu, 28 Apr 2022 01:52:46 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 44DADDF75A;
-        Thu, 28 Apr 2022 01:52:16 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 6X5VlkxIGCtY; Thu, 28 Apr 2022 01:52:15 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 10:52:11 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1651135935; bh=ohE/IebwBN77RT1W4hsybc9tmsQEIEDdP++Soon6lDM=;
-        h=Date:From:To:Subject:From;
-        b=ssm+Caqw19pEA+VIsRGzYk2wLUCbQo5MRYZIHPy1rv6p6INwzTyr43rnTISXq3iOA
-         bKTgUZrZEaw19MXRid5CqDKqK24IM/8iljdafA1wo68VKm3dkLIBbWsOkDqmTWGhuF
-         uGGoeCtmN9t5gLN72dmBtmDBCIY90uC4HfnXYEB2sAtyeAB/uPAB3XanpIGJucXx6X
-         5Syo4nYGCu1Y06t1OBpMGNarkRiAEyjhbnQXHYBhtT4vUQHYpMwVYq+xOeixJOjAWT
-         DrxJKseVSeOUBZnEl60XjfnKHjjMdVlfjHB7N8F8lL3DnLlOCjwFU0nhjUftDvDfh/
-         CFUKy3tVqnNPQ==
-From:   Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@puri.sm
-Subject: [PATCHv2 1/2] doc/media api: Try to make enum usage clearer
-Message-ID: <20220428105211.7106ce6a.dorota.czaplejewicz@puri.sm>
-Organization: Purism
+        Thu, 28 Apr 2022 04:56:12 -0400
+Received: from out203-205-251-53.mail.qq.com (out203-205-251-53.mail.qq.com [203.205.251.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF482F3BC;
+        Thu, 28 Apr 2022 01:52:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1651135973;
+        bh=1YZv1zOYWKRjF1huRVXlo6mKgvTSjTUBeoIV4b4PtvQ=;
+        h=From:To:Cc:Subject:Date;
+        b=URXeEyQ169qjK2AVCYY0d/XzLz74WxA4OADySh5wJfWFL1b7tsqRJErCRLMGRWa3i
+         urZmdiwpEhOhm/SHyR2IqwA6zQXjFBat9JVh2BUT100b1ySEbThnPX8iygzwzkqZkN
+         1d9XcPbjR5etSyLzQwk2DSlUoHqXS9/I+4Ntrqkg=
+Received: from localhost.localdomain ([59.172.176.242])
+        by newxmesmtplogicsvrszb6.qq.com (NewEsmtp) with SMTP
+        id D3137827; Thu, 28 Apr 2022 16:52:49 +0800
+X-QQ-mid: xmsmtpt1651135969t5qiwrf7v
+Message-ID: <tencent_EDB94B1C7E14B4E1974A66FF4D2029CC6D08@qq.com>
+X-QQ-XMAILINFO: MQ+wLuVvI2LQULY0Prs9k+SYrCIJ25n+J1FFbPzFDaLOs58lBVFosbs9muNjZO
+         UkC5FRYale8I0tJQhZMnD/nNF1Vz++RhAUQPQYY1kxbAC/i3UeS57nhtQHjiGPTEXUIC9sgQ/vj0
+         6pFCBZeTgpBCCwyN7nfohxjPOPs2KV5S66KuGJph61XB3D47DQudC+wkfULr7i7INNE1IbcAKsF7
+         z5mQdiC1fpWt4ABJnM+UP82qL80FsyftAmZ4GzSIodBKxV0foXSoPbQM8pbdEXNXOj4y/nEUyNAk
+         gMXE8OR5f1XLUHxCwUC9fBFx9L94N1ar7g8mycekJj5CMpYwWzHTuWcEFfHw17iXC6+hDfWz/dzn
+         dVx/DsqNegIxEh8UznNw1NhxOVfm/tSYfGwpLNvFg24xszvB3N1Q7xVOtw/lsjitmm2Zn14N14x9
+         T0ovUmfrXcIKQwKIwjyRpU5lGFJeMu0frDtVaojrqzm1skPkmY14BSyoHwxqwbxT6GpBZZMu9rrc
+         1kSs5rUXHTxQvP2yS1cJFFrXpcMDc4Qay6bI3xKaKeVctigZKhyAwM60O5vK5rZiQYDE4yjf0KTo
+         dzfYRbMZe1T9N14lsta04Vxpl9f0TrT/Uok5hjGXJ4xhL/AYMJnUkiFyfWREVPx61+pAgwXCznmu
+         ySklUpDQultSP6YmOh+BOek5XzN8wG4JDpZCBf0iiP3QkEjOuJ/V8YumjfNpkkPczzZIBDDK+lZz
+         TBlxIecqwwT+V0thIWg8ec/eWoFmS4qJAIoBfcOvDKIdLbrYkghw3Mgw+qWt3m2hp7tRcfnq73x4
+         A1MjnJcoE2I92Gvp644tKRuTuSPpWZmLqSU3EsV9mbuuV86BnQoTjTi3s6Hh07u0XuqjUXV59qen
+         oL8kyD/o20G2Wfyn3GwLAjoH3TG7ROERDv+4RVGjWclqoPXrqlia0oNmgr5+yysKzNm0REgkYUxP
+         y0L3KWasBRa46yrBaytg==
+From:   xkernel.wang@foxmail.com
+To:     agross@kernel.org, bjorn.andersson@linaro.org, joro@8bytes.org,
+        will@kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH v2] iommu/msm: add a check for the return of kzalloc()
+Date:   Thu, 28 Apr 2022 16:52:39 +0800
+X-OQ-MSGID: <20220428085239.1287-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/e.DoWQfsDpUUtXTZemZU8Pq";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/e.DoWQfsDpUUtXTZemZU8Pq
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Added: mbus codes must not repeat
-Added: no holes in the enumeration
-Added: enumerations per what?
-Added: who fills in what in calls
-Changed: "zero" -> "0"
-Changed: "given" -> "specified"
+kzalloc() is a memory allocation function which can return NULL when
+some internal memory errors happen. So it is better to check it to
+prevent potential wrong memory access.
 
-Signed-off-by: Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
+Besides, to propagate the error to the caller, the type of
+insert_iommu_master() is changed to `int`. Several instructions related
+to it are also updated.
+
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
 ---
-Hello,
+ChangeLog:
+v1->v2 propagate the error to the caller.
+ drivers/iommu/msm_iommu.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-this is the second attempt at updating the media documentation.
-
-Differences from previous: "selected" is now "specified", "array" is now "e=
-numeration", and "caller" is now "application".
-
-No differences: I haven't used the frame intervals calls and haven't gather=
-ed practical knowledge about where docs may be insufficient, so I didn't to=
-uch its documentation.
-
-Regards,
-Dorota
-
- .../v4l/vidioc-subdev-enum-mbus-code.rst      | 39 +++++++++++++------
- 1 file changed, 27 insertions(+), 12 deletions(-)
-
-diff --git a/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbus-=
-code.rst b/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbus-co=
-de.rst
-index 417f1a19bcc4..87572de0fd26 100644
---- a/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbus-code.rst
-+++ b/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbus-code.rst
-@@ -31,15 +31,29 @@ Arguments
- Description
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-=20
--To enumerate media bus formats available at a given sub-device pad
--applications initialize the ``pad``, ``which`` and ``index`` fields of
--struct
--:c:type:`v4l2_subdev_mbus_code_enum` and
--call the :ref:`VIDIOC_SUBDEV_ENUM_MBUS_CODE` ioctl with a pointer to this
--structure. Drivers fill the rest of the structure or return an ``EINVAL``
--error code if either the ``pad`` or ``index`` are invalid. All media bus
--formats are enumerable by beginning at index zero and incrementing by
--one until ``EINVAL`` is returned.
-+This call is used by the application to access the enumeration of bus form=
-ats
-+for the selected pad.
-+
-+The enumerations are defined by the driver, and indexed using the ``index`=
-` field
-+of struct :c:type:`v4l2_subdev_mbus_code_enum`.
-+Each value of ``pad`` corresponds to a separate enumeration.
-+Each enumeration starts with the ``index`` of 0, and
-+the lowest invalid index marks the end of enumeration.
-+
-+Therefore, to enumerate media bus formats available at a given sub-device =
-pad,
-+initialize the ``pad``, and ``which`` fields to desired values,
-+and set ``index`` to 0.
-+Then call the :ref:`VIDIOC_SUBDEV_ENUM_MBUS_CODE` ioctl
-+with a pointer to this structure.
-+
-+A successful call will return with the ``code`` field filled in
-+with a mbus format value.
-+Repeat with increasing ``index`` until ``EINVAL`` is received.
-+``EINVAL`` means that either ``pad`` is invalid,
-+or that there are no more codes available at this pad.
-+
-+The driver must not return the same value of ``code`` for different indices
-+at the same pad.
-=20
- Available media bus formats may depend on the current 'try' formats at
- other pads of the sub-device, as well as on the current active links.
-@@ -57,14 +71,15 @@ information about the try formats.
-=20
-     * - __u32
-       - ``pad``
--      - Pad number as reported by the media controller API.
-+      - Pad number as reported by the media controller API. Filled in by t=
-he application.
-     * - __u32
-       - ``index``
--      - Number of the format in the enumeration, set by the application.
-+      - Index of the mbus code in the enumeration belonging to the given p=
-ad.
-+    Filled in by the application.
-     * - __u32
-       - ``code``
-       - The media bus format code, as defined in
--	:ref:`v4l2-mbus-format`.
-+	:ref:`v4l2-mbus-format`. Filled in by the driver.
-     * - __u32
-       - ``which``
-       - Media bus format codes to be enumerated, from enum
---=20
-2.35.1
-
-
---Sig_/e.DoWQfsDpUUtXTZemZU8Pq
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEExKRqtqfFqmh+lu1oADBpX4S8ZncFAmJqVbsACgkQADBpX4S8
-ZncNnQ/7BWFK+LkIIBRQefdCUmp2vcmXBtC+DohmJgX6hHPbZtO0BGhssjuSS6Cy
-b81Z7ujEyT9Lv2zOqEa+tHFR/zAjaqo5NxbiGhMdsFgDLEg7A5T+UZcRqNeruBNM
-zKU2SGvFauukf2+wTwctBni0mLUAnpQA9cxzKEww+XNMGIftnjR1eX4APZylBX+D
-ET5tR5iw8prcHzzuEQEM1cSNmzUhR49XcvJQXVSS+6kjjFViUeEaImxlfPbVvmvY
-nf3JwcvRpJkNrJyVHFkVaul/ezzG4Pq0l6A/swlmUXErgHrBoado1bhtDoZpy7Ez
-CuFRUioNk5yI7QrIX5tq+7bWMaVVxd9gbPqN1lvZU1MJ2V2PyqxbpmC+umXSTg1v
-cuXLDSkHqO6p9Gdum2bsPkEhOIpgzzirYaEyDpxLhxMrHXuatt+2v2GxkeK4xuw+
-Ghc6JczAYDcFYLjJpiZqMPr7oXBSGdIU6D8zlGX2jOfHTRVotzKEHT2tiCh17Hcq
-RA22RlXEjWAg92YWfz/Qv+r/5VW9EvG3lQ5Tr17m0RIaXo0N5ygK5CKvBxFvpDuT
-3fDs4J0wKnCjQ+00B4yzh2xF45JcHdOQ+T4IGgM0Mew61r8UCnJAlKzBWJsYLuap
-0CY+n4obCRZJTHm6GJr/0Qj04nDuWhBgPWLmFfMu8iT1ZZp3k7g=
-=AivM
------END PGP SIGNATURE-----
-
---Sig_/e.DoWQfsDpUUtXTZemZU8Pq--
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 3a38352..e3d109b 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -588,7 +588,7 @@ static void print_ctx_regs(void __iomem *base, int ctx)
+ 	       GET_SCTLR(base, ctx), GET_ACTLR(base, ctx));
+ }
+ 
+-static void insert_iommu_master(struct device *dev,
++static int insert_iommu_master(struct device *dev,
+ 				struct msm_iommu_dev **iommu,
+ 				struct of_phandle_args *spec)
+ {
+@@ -597,6 +597,10 @@ static void insert_iommu_master(struct device *dev,
+ 
+ 	if (list_empty(&(*iommu)->ctx_list)) {
+ 		master = kzalloc(sizeof(*master), GFP_ATOMIC);
++		if (!master) {
++			dev_err(dev, "Failed to allocate iommu_master\n");
++			return -ENOMEM;
++		}
+ 		master->of_node = dev->of_node;
+ 		list_add(&master->list, &(*iommu)->ctx_list);
+ 		dev_iommu_priv_set(dev, master);
+@@ -606,10 +610,11 @@ static void insert_iommu_master(struct device *dev,
+ 		if (master->mids[sid] == spec->args[0]) {
+ 			dev_warn(dev, "Stream ID 0x%hx repeated; ignoring\n",
+ 				 sid);
+-			return;
++			return 0;
+ 		}
+ 
+ 	master->mids[master->num_mids++] = spec->args[0];
++	return 0;
+ }
+ 
+ static int qcom_iommu_of_xlate(struct device *dev,
+@@ -629,7 +634,7 @@ static int qcom_iommu_of_xlate(struct device *dev,
+ 		goto fail;
+ 	}
+ 
+-	insert_iommu_master(dev, &iommu, spec);
++	ret = insert_iommu_master(dev, &iommu, spec);
+ fail:
+ 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
+ 
+-- 
