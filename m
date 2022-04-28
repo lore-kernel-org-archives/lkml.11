@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:18:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9891BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:18:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346993AbiD1NVu (ORCPT
+        id S1347001AbiD1NVz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:21:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44294 "EHLO
+        Thu, 28 Apr 2022 09:21:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346977AbiD1NVn (ORCPT
+        with ESMTP id S1346998AbiD1NVu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:21:43 -0400
+        Thu, 28 Apr 2022 09:21:50 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9438D939E3
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:18:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A12E28D69D
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:18:34 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5B97D1477;
-        Thu, 28 Apr 2022 06:18:28 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 61E7B1477;
+        Thu, 28 Apr 2022 06:18:34 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 30E3F3F73B;
-        Thu, 28 Apr 2022 06:18:26 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 0F8653F73B;
+        Thu, 28 Apr 2022 06:18:31 -0700 (PDT)
 From:   Robin Murphy <robin.murphy@arm.com>
 To:     joro@8bytes.org, will@kernel.org
 Cc:     iommu@lists.linux-foundation.org, sven@svenpeter.dev,
@@ -31,9 +31,9 @@ Cc:     iommu@lists.linux-foundation.org, sven@svenpeter.dev,
         zhang.lyra@gmail.com, thierry.reding@gmail.com, vdumpa@nvidia.com,
         jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 01/14] iommu/vt-d: Temporarily reject probing non-PCI devices
-Date:   Thu, 28 Apr 2022 14:18:02 +0100
-Message-Id: <5e5e36fa489967c405a51b9371de17be32c5a0d8.1650890638.git.robin.murphy@arm.com>
+Subject: [PATCH v2 03/14] iommu: Move bus setup to IOMMU device registration
+Date:   Thu, 28 Apr 2022 14:18:04 +0100
+Message-Id: <1faba5b5c094379df3d99b8fec924ab50ad75482.1650890638.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.35.3.dirty
 In-Reply-To: <cover.1650890638.git.robin.murphy@arm.com>
 References: <cover.1650890638.git.robin.murphy@arm.com>
@@ -43,35 +43,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Although the driver has some support implemented for non-PCI devices via
-ANDD, it only registers itself for pci_bus_type, so has never actually
-seen probe_device for a non-PCI device. Once the bus details move into
-the IOMMU core, it appears there may be some issues with correctly
-rejecting non-ANDD platform devices, so let's temporarily enforce the
-current behaviour of only considering PCI devices until that can be
-investigated properly.
+Move the bus setup to iommu_device_register(). This should allow
+bus_iommu_probe() to be correctly replayed for multiple IOMMU instances,
+and leaves bus_set_iommu() as a glorified no-op to be cleaned up next.
 
-Reported-by: Lu Baolu <baolu.lu@linux.intel.com>
+At this point we can also handle cleanup better than just rolling back
+the most-recently-touched bus upon failure - which may release devices
+owned by other already-registered instances, and still leave devices on
+other buses with dangling pointers to the failed instance. Now it's easy
+to clean up the exact footprint of a given instance, no more, no less.
+
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/intel/iommu.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iommu/iommu.c | 51 +++++++++++++++++++++++--------------------
+ 1 file changed, 27 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 0edf6084dc14..9507b64fdf6b 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4565,6 +4565,10 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
- 	unsigned long flags;
- 	u8 bus, devfn;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 6c4621afc8cf..c89af4dc54c2 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -175,6 +175,14 @@ static int __init iommu_subsys_init(void)
+ }
+ subsys_initcall(iommu_subsys_init);
  
-+	/* ANDD platform device support needs fixing */
-+	if (!pdev)
-+		return ERR_PTR(-ENODEV);
++static int remove_iommu_group(struct device *dev, void *data)
++{
++	if (dev->iommu && dev->iommu->iommu_dev == data)
++		iommu_release_device(dev);
 +
- 	iommu = device_to_iommu(dev, &bus, &devfn);
- 	if (!iommu)
- 		return ERR_PTR(-ENODEV);
++	return 0;
++}
++
+ /**
+  * iommu_device_register() - Register an IOMMU hardware instance
+  * @iommu: IOMMU handle for the instance
+@@ -197,12 +205,29 @@ int iommu_device_register(struct iommu_device *iommu,
+ 	spin_lock(&iommu_device_lock);
+ 	list_add_tail(&iommu->list, &iommu_device_list);
+ 	spin_unlock(&iommu_device_lock);
++
++	for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
++		struct bus_type *bus = iommu_buses[i];
++		int err;
++
++		WARN_ON(bus->iommu_ops && bus->iommu_ops != ops);
++		bus->iommu_ops = ops;
++		err = bus_iommu_probe(bus);
++		if (err) {
++			iommu_device_unregister(iommu);
++			return err;
++		}
++	}
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(iommu_device_register);
+ 
+ void iommu_device_unregister(struct iommu_device *iommu)
+ {
++	for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++)
++		bus_for_each_dev(iommu_buses[i], NULL, iommu, remove_iommu_group);
++
+ 	spin_lock(&iommu_device_lock);
+ 	list_del(&iommu->list);
+ 	spin_unlock(&iommu_device_lock);
+@@ -1655,13 +1680,6 @@ static int probe_iommu_group(struct device *dev, void *data)
+ 	return ret;
+ }
+ 
+-static int remove_iommu_group(struct device *dev, void *data)
+-{
+-	iommu_release_device(dev);
+-
+-	return 0;
+-}
+-
+ static int iommu_bus_notifier(struct notifier_block *nb,
+ 			      unsigned long action, void *data)
+ {
+@@ -1884,27 +1902,12 @@ static int iommu_bus_init(struct bus_type *bus)
+  */
+ int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
+ {
+-	int err;
+-
+-	if (ops == NULL) {
+-		bus->iommu_ops = NULL;
+-		return 0;
+-	}
+-
+-	if (bus->iommu_ops != NULL)
++	if (bus->iommu_ops && ops && bus->iommu_ops != ops)
+ 		return -EBUSY;
+ 
+ 	bus->iommu_ops = ops;
+ 
+-	/* Do IOMMU specific setup for this bus-type */
+-	err = bus_iommu_probe(bus);
+-	if (err) {
+-		/* Clean up */
+-		bus_for_each_dev(bus, NULL, NULL, remove_iommu_group);
+-		bus->iommu_ops = NULL;
+-	}
+-
+-	return err;
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(bus_set_iommu);
+ 
 -- 
 2.35.3.dirty
 
