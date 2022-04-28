@@ -2,116 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 398B1C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 20:12:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E04C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 20:12:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351644AbiD1UPd (ORCPT
+        id S1350278AbiD1UPj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 16:15:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40586 "EHLO
+        Thu, 28 Apr 2022 16:15:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350278AbiD1UPb (ORCPT
+        with ESMTP id S1350178AbiD1UPa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 16:15:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2162BF951;
-        Thu, 28 Apr 2022 13:12:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7CE361E6F;
-        Thu, 28 Apr 2022 20:12:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 631E6C385A9;
-        Thu, 28 Apr 2022 20:12:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651176733;
-        bh=USzTIupdkBrsDQSL+6xRswGFdJbrbgR4b6LoVA7sLNw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=uvZDxLNa1oB7p/BTPVvyqs+XQZlN+BqVqmzM0QNIxhlwqaXISSH7I4TJddyNemyq/
-         LtETGhfDNzJ7BPlSCUll4XZVqP+qBsUdhnPZZ1U/hxNRg7t+dg58OExnlZvN3VSn5f
-         TDIiK8dGcWWQP3eNGFhfvCayFFB8yY8uMOLSK9nJPQoIHff78HxJZ5TloUdxy7m5QJ
-         Qj+rhxrsCUqNS80R+227pzLmVfEU6EyuSpiPoJ3rnFFHxxY37kKWqgQ3yiqrouIfy0
-         PPOSxbUD9Rbf3AeyE3Aa9X6kAyXPN41x/F96CQHYjqGfmr2Bp+qnp49uuaVnYMCxUW
-         aLZFyXDXA0qJg==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCHv4 bpf-next 0/5] bpf: Speed up symbol resolving in kprobe multi link
-Date:   Thu, 28 Apr 2022 22:12:02 +0200
-Message-Id: <20220428201207.954552-1-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Thu, 28 Apr 2022 16:15:30 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A77BAB83
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 13:12:14 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: bbeckett)
+        with ESMTPSA id 6CEF41F45C28
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651176733;
+        bh=OFZJNy5wYWNqNEPg/dD6oQZwof/EPOJOolCUKpef6b4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZC6Kdv02ijN89ohNJR9iZST0Aw3erEe2ug6OlSm26b1Jka+GF/mAhhmNuid7Wrrc8
+         K3/fS36inyr3nhAhLdUk71fCR7Uk3JFqR90mtVJy6+s+gC6g0zlHHEeOwIu8HNHlb6
+         vsB50VZaKT0vcyUmbMhJ7T753h1VcYWxmjpNtluFzgYNBI5n1YSP/q1o+vSFCJvbrt
+         /7MdY550zJ8AldOKxT1SzeFJ/6rgjyOrFR6wLUQLKwQXooyvnDX7MdrKnrBWt87mj5
+         PqMevoxI0Jca5EmZImzlqRckTb+24DEKSr0/Xftw8a83f0xkMuZlHtZ6FEhKg8gMiD
+         czd0fwVVhxqUg==
+From:   Robert Beckett <bob.beckett@collabora.com>
+To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Robert Beckett <bob.beckett@collabora.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 2/6] drm/i915: sanitize mem_flags for stolen buffers
+Date:   Thu, 28 Apr 2022 20:11:21 +0000
+Message-Id: <20220428201125.412896-3-bob.beckett@collabora.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220428201125.412896-1-bob.beckett@collabora.com>
+References: <20220428201125.412896-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hi,
-sending additional fix for symbol resolving in kprobe multi link
-requested by Alexei and Andrii [1].
+Stolen regions are not page backed or considered iomem.
+Prevent flags indicating such.
+This correctly prevents stolen buffers from attempting to directly map
+them.
 
-This speeds up bpftrace kprobe attachment, when using pure symbols
-(3344 symbols) to attach:
+See i915_gem_object_has_struct_page() and i915_gem_object_has_iomem()
+usage for where it would break otherwise.
 
-Before:
-
-  # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
-  ...
-  6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
-
-After:
-
-  # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
-  ...
-  0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
-
-v4 changes:
-  - fix compile issue [kernel test robot]
-  - added acks [Andrii]
-
-v3 changes:
-  - renamed kallsyms_lookup_names to ftrace_lookup_symbols
-    and moved it to ftrace.c [Masami]
-  - added ack [Andrii]
-  - couple small test fixes [Andrii]
-
-v2 changes (first version [2]):
-  - removed the 2 seconds check [Alexei]
-  - moving/forcing symbols sorting out of kallsyms_lookup_names function [Alexei]
-  - skipping one array allocation and copy_from_user [Andrii]
-  - several small fixes [Masami,Andrii]
-  - build fix [kernel test robot]
-
-thanks,
-jirka
-
-
-[1] https://lore.kernel.org/bpf/CAEf4BzZtQaiUxQ-sm_hH2qKPRaqGHyOfEsW96DxtBHRaKLoL3Q@mail.gmail.com/
-[2] https://lore.kernel.org/bpf/20220407125224.310255-1-jolsa@kernel.org/
+Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
 ---
-Jiri Olsa (5):
-      kallsyms: Fully export kallsyms_on_each_symbol function
-      ftrace: Add ftrace_lookup_symbols function
-      fprobe: Resolve symbols with ftrace_lookup_symbols
-      bpf: Resolve symbols with ftrace_lookup_symbols for kprobe multi link
-      selftests/bpf: Add attach bench test
+ drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
- include/linux/ftrace.h                                     |   6 ++++++
- include/linux/kallsyms.h                                   |   7 ++++++-
- kernel/kallsyms.c                                          |   3 +--
- kernel/trace/bpf_trace.c                                   | 112 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----------------------------------------------
- kernel/trace/fprobe.c                                      |  32 ++++++++++++--------------------
- kernel/trace/ftrace.c                                      |  62 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c | 133 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- tools/testing/selftests/bpf/progs/kprobe_multi_empty.c     |  12 ++++++++++++
- 8 files changed, 298 insertions(+), 69 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+index 358f8a1a30ce..48046cfd8c4b 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+@@ -14,6 +14,7 @@
+ #include "gem/i915_gem_region.h"
+ #include "gem/i915_gem_ttm.h"
+ #include "gem/i915_gem_ttm_move.h"
++#include "gem/i915_gem_stolen.h"
+ 
+ #include "gt/intel_engine_pm.h"
+ #include "gt/intel_gt.h"
+@@ -122,8 +123,9 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
+ 
+ 	obj->mem_flags &= ~(I915_BO_FLAG_STRUCT_PAGE | I915_BO_FLAG_IOMEM);
+ 
+-	obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
+-		I915_BO_FLAG_STRUCT_PAGE;
++	if (!i915_gem_object_is_stolen(obj))
++		obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
++			I915_BO_FLAG_STRUCT_PAGE;
+ 
+ 	cache_level = i915_ttm_cache_level(to_i915(bo->base.dev), bo->resource,
+ 					   bo->ttm);
+-- 
+2.25.1
+
