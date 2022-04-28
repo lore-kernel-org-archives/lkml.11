@@ -2,152 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38BFFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:33:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB10FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344303AbiD1Igh (ORCPT
+        id S1344308AbiD1Ih0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
+        Thu, 28 Apr 2022 04:37:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344178AbiD1IgF (ORCPT
+        with ESMTP id S1344461AbiD1Igh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:36:05 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 188E3A66DB;
-        Thu, 28 Apr 2022 01:29:13 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id q12so3391489pgj.13;
-        Thu, 28 Apr 2022 01:29:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fVM62GyHltSE0ionm6SdLetw0VDoqMgiKzSssxmigAY=;
-        b=QAg/+pe8G9Sc1mDs8zVzp2hV9mfGq78LAOAd66G/6sLc/MF0CQzJ+bcaT+w90Jh2Av
-         8HNDkJ3nqfhlCnkcwEmEpxoPBuZYl+bg4oAGMUv+lHlqdU5B+7U81PP648+Yp3LFWan2
-         P21d/yeqp3wWUW9qrIholko+vTlpsdc7JFWCIaMc+X3Xk+llOP1UjzKEB7ABeH5PVukb
-         zUycFoHjS6PqN+FO/soY2wkuuvzG/vccsNhDQpW4zC5sE+dNYAIVpYjZXDbv5gluvKxw
-         VOWM6/HpQ+dl+L0G7Al0ETAMQAnC35i/vMB48RkbhXVKP5rD+rw3fvMiNiO2hqNyyy0w
-         IY3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=fVM62GyHltSE0ionm6SdLetw0VDoqMgiKzSssxmigAY=;
-        b=icbFEHYnApDcsowDGYdsqXAMQnq8BjVuyYemrRD/XxNBnn2yaKr7Y2onIxBpoIgPPs
-         Knb9XFn94NaGF3fJQMruxvI5JnWg6Bw7yIzHwzt6wBTaxfz5/TpCos/B0AgJEwco4vlB
-         is113rpQqDP1a06EtZELkupPLDnyXlft11XjcaFV+LaJq3T/R8iMTuYff2lDoTaiew+e
-         uSgL4NRFXZDwofK+tJU/vWFtTwUjq0MUod1JcQ22dAKYl4kCNXuGEHiG4jFawhCg22iA
-         fMtf5IIA2GHaTf2g0gRZpIFYSBbHKN2Nl+nuWCqKQAIBimks2QLHQCVqS+J59rTGINgZ
-         j92A==
-X-Gm-Message-State: AOAM5318dWVu9gmi3Qfsu1xY/5n+Tbo9gL+damTgnR0n4ecOLeK6HcpI
-        Dq6mTsTRYKK3+Cqq4VNR4PM=
-X-Google-Smtp-Source: ABdhPJyTwDWftDHCcw6uVgNjozxu/y8Z4nCvbradyfoQcJDA2hYLwD/0AaZAp85aHF8Lo+WyhP0sgg==
-X-Received: by 2002:a63:42:0:b0:3a8:47f7:bf0d with SMTP id 63-20020a630042000000b003a847f7bf0dmr27515113pga.276.1651134552242;
-        Thu, 28 Apr 2022 01:29:12 -0700 (PDT)
-Received: from voyager.ozlabs.ibm.com (pa49-178-80-133.pa.nsw.optusnet.com.au. [49.178.80.133])
-        by smtp.gmail.com with ESMTPSA id i62-20020a639d41000000b003c14af50627sm1827176pgd.63.2022.04.28.01.29.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 01:29:11 -0700 (PDT)
-Sender: "joel.stan@gmail.com" <joel.stan@gmail.com>
-From:   Joel Stanley <joel@jms.id.au>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Dylan Hung <dylan_hung@aspeedtech.com>,
-        David Wilder <dwilder@us.ibm.com>
-Cc:     openbmc@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Wilder <wilder@us.ibm.com>
-Subject: [PATCH net] net: ftgmac100: Disable hardware checksum on AST2600
-Date:   Thu, 28 Apr 2022 17:58:58 +0930
-Message-Id: <20220428082858.545176-1-joel@jms.id.au>
-X-Mailer: git-send-email 2.35.1
+        Thu, 28 Apr 2022 04:36:37 -0400
+X-Greylist: delayed 675 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Apr 2022 01:29:25 PDT
+Received: from mail.profitbizdesign.com.pl (mail.profitbizdesign.com.pl [94.177.252.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30AB0A146A
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:29:25 -0700 (PDT)
+Received: by mail.profitbizdesign.com.pl (Postfix, from userid 1001)
+        id 8FE1DA2B13; Thu, 28 Apr 2022 09:11:40 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=profitbizdesign.com.pl; s=mail; t=1651133547;
+        bh=Rfzvu4C+yJ1wyuJ4V+t/udh6cgYEQVnY6S5ltO4wdNg=;
+        h=Date:From:To:Subject:From;
+        b=wAhHvLgnTbw/BNXpVYAMEFVMz8DlQaLdIID4a4FgjNeLDmoAXUYM9X3hWku9mMLOS
+         Fjz6k5Rf0fbhKfwXGfD9vKUvP/vZuSjVLoDaBC30YeL8Ce95OFoJUlWz+9Y97W8DSY
+         w/+2kLPaX5TiFj6tMQjtUJJPBD8FDn+t5eG9jbVHPeBPeQGVr/sV042A0r670xsW/q
+         goo2oy3UfDgN6hvY+eC7QG1DB1JXF7VLm0VmTL7sNSv+LjbWoJNTpDmMXol/urwqU3
+         TDEHFhGXm1twEMcnbySZ3OFvEeJ2xmE9o+bgpSHvelV0XlQz5M54XQcTu3beiaHnsz
+         8DfQYTGeq0sEQ==
+Received: by mail.profitbizdesign.com.pl for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 08:10:19 GMT
+Message-ID: <20220428074503-0.1.1z.5zgu.0.gibocixagf@profitbizdesign.com.pl>
+Date:   Thu, 28 Apr 2022 08:10:19 GMT
+From:   =?UTF-8?Q? "Arkadiusz_Soko=C5=82owski" ?= 
+        <arkadiusz.sokolowski@profitbizdesign.com.pl>
+To:     <linux-kernel@vger.kernel.org>
+Subject: Koszty instalacji fotowoltaicznej
+X-Mailer: mail.profitbizdesign.com.pl
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The AST2600 when using the i210 NIC over NC-SI has been observed to
-produce incorrect checksum results with specific MTU values. This was
-first observed when sending data across a long distance set of networks.
+Dzie=C5=84 dobry,
 
-On a local network, the following test was performed using a 1MB file of
-random data.
+stworzyli=C5=9Bmy specjaln=C4=85 ofert=C4=99 dla firm, na kompleksow=C4=85=
+ obs=C5=82ug=C4=99 inwestycji w fotowoltaik=C4=99. =20
 
-On the receiver run this script:
+Specjalizujemy si=C4=99 w zakresie doboru, monta=C5=BCu i serwisie instal=
+acji fotowoltaicznych, dysponujemy najnowocze=C5=9Bniejszymi rozwi=C4=85z=
+ania, kt=C3=B3re zapewni=C4=85 Pa=C5=84stwu oczekiwane rezultaty.
 
- #!/bin/bash
- while [ 1 ]; do
-        # Zero the stats
-        nstat -r  > /dev/null
-        nc -l 9899 > test-file
-        # Check for checksum errors
-        TcpInCsumErrors=$(nstat | grep TcpInCsumErrors)
-        if [ -z "$TcpInCsumErrors" ]; then
-                echo No TcpInCsumErrors
-        else
-                echo TcpInCsumErrors = $TcpInCsumErrors
-        fi
- done
+Mo=C5=BCemy przygotowa=C4=87 dla Pa=C5=84stwa wst=C4=99pn=C4=85 kalkulacj=
+=C4=99 i przeanalizowa=C4=87 efekty mo=C5=BCliwe do osi=C4=85gni=C4=99cia=
+=2E
 
-On an AST2600 system:
+Czy s=C4=85 Pa=C5=84stwo otwarci na wst=C4=99pn=C4=85 rozmow=C4=99 w tym =
+temacie?
 
- # nc <IP of  receiver host> 9899 < test-file
-
-The test was repeated with various MTU values:
-
- # ip link set mtu 1410 dev eth0
-
-The observed results:
-
- 1500 - good
- 1434 - bad
- 1400 - good
- 1410 - bad
- 1420 - good
-
-The test was repeated after disabling tx checksumming:
-
- # ethtool -K eth0 tx-checksumming off
-
-And all MTU values tested resulted in transfers without error.
-
-An issue with the driver cannot be ruled out, however there has been no
-bug discovered so far.
-
-David has done the work to take the original bug report of slow data
-transfer between long distance connections and triaged it down to this
-test case.
-
-Fixes: 39bfab8844a0 ("net: ftgmac100: Add support for DT phy-handle property")
-Reported-by: David Wilder <wilder@us.ibm.com>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
----
-Net maintainers, if no one has a counter proposal I would like this
-merged as a fix. Please give Dylan from Aspeed a chance to reply before
-applying the patch.
-
- drivers/net/ethernet/faraday/ftgmac100.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
-index caf48023f8ea..5231818943c6 100644
---- a/drivers/net/ethernet/faraday/ftgmac100.c
-+++ b/drivers/net/ethernet/faraday/ftgmac100.c
-@@ -1928,6 +1928,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
- 	/* AST2400  doesn't have working HW checksum generation */
- 	if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac")))
- 		netdev->hw_features &= ~NETIF_F_HW_CSUM;
-+
-+	/* AST2600 tx checksum with NCSI is broken */
-+	if (priv->use_ncsi && of_device_is_compatible(np, "aspeed,ast2600-mac"))
-+		netdev->hw_features &= ~NETIF_F_HW_CSUM;
-+
- 	if (np && of_get_property(np, "no-hw-checksum", NULL))
- 		netdev->hw_features &= ~(NETIF_F_HW_CSUM | NETIF_F_RXCSUM);
- 	netdev->features |= netdev->hw_features;
--- 
-2.35.1
-
+Pozdrawiam
+Arkadiusz Soko=C5=82owski
