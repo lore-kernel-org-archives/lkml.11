@@ -2,142 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EED5EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 071C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:23:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235189AbiD1L06 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 07:26:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34326 "EHLO
+        id S235063AbiD1L1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 07:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235063AbiD1L0y (ORCPT
+        with ESMTP id S245064AbiD1L1B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 07:26:54 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A505E16C;
-        Thu, 28 Apr 2022 04:23:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651145020; x=1682681020;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=YSpDATXy/AEnQCqNpDDdMNwfxMpapZmzIYX8S6XiNuc=;
-  b=Meg06O/KeVEOvbcvwHOkss7GumVYJbLxc7P6jPEMBnqpwHb/QLaA6cgV
-   O5K1DarW7M96UkAn6pPR19Ajk+0uAjvYBE+PVtdj9vSTKsHgovLKg6yAM
-   7oVH33UaGpGYGUxDOtTES+uhH/5+t4OHzEGCkl+JSYYrbcmUujm3JMrs2
-   eqy6VWYmVRbak3YIZlcumeibMrbOyQk9bnwXIxIwjkvNwAss4JfeO9/JM
-   S40mPfl6MM5wYCcZYRhGFaARym7sxnII1RC10yfGnNXDt+N6/XUCuR1/u
-   A2/7x2saHMNYbo2IMD7qj7uTXSzzWxb0LZhiNnLIic3qhMOIUk8feNvzq
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="352692120"
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="352692120"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 04:23:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="541152152"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga002.jf.intel.com with ESMTP; 28 Apr 2022 04:23:37 -0700
-Received: from lincoln.igk.intel.com (lincoln.igk.intel.com [10.102.21.235])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 23SBNZi8003960;
-        Thu, 28 Apr 2022 12:23:35 +0100
-From:   Larysa Zaremba <larysa.zaremba@intel.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Larysa Zaremba <larysa.zaremba@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: [PATCH RESEND bpf-next] bpftool: Use sysfs vmlinux when dumping BTF by ID
-Date:   Thu, 28 Apr 2022 13:14:42 +0200
-Message-Id: <20220428111442.111805-1-larysa.zaremba@intel.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 28 Apr 2022 07:27:01 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D1266D971;
+        Thu, 28 Apr 2022 04:23:46 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23SBNRXm112466;
+        Thu, 28 Apr 2022 06:23:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1651145007;
+        bh=5t3OzA0Rw/NGVThHMxQu6xew1IgZchZszoPZC/r7wwY=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=U3WwLaFQKcA8juoBzoJ6Y6E5ReyXXClgnmOv/P5Wr+nyQehNI/8L0F0MTE8pKV8eS
+         3D9gHclMZ2i5RG26Kvpp+Vkw4rtfUK5sfXAm+C3plcXYfLmBrAZ/x9bq7l66npIImz
+         Wo5aZCw9wmOgBy+CebCN6trSVY8+u4AF8UySDj40=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23SBNRFQ011008
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 28 Apr 2022 06:23:27 -0500
+Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 28
+ Apr 2022 06:23:27 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 28 Apr 2022 06:23:27 -0500
+Received: from [10.24.69.24] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23SBNNd4068230;
+        Thu, 28 Apr 2022 06:23:23 -0500
+Message-ID: <ee1c1601-6db9-70d7-401a-8f67ec406ffc@ti.com>
+Date:   Thu, 28 Apr 2022 16:53:22 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 0/5] Introduce PRU remoteproc consumer API
+Content-Language: en-US
+To:     <linux-kernel@vger.kernel.org>
+CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
+        <linux-arm-kernel@lists.infradead.org>, <rogerq@kernel.org>,
+        <grygorii.strashko@ti.com>, <vigneshr@ti.com>, <kishon@ti.com>
+References: <20220418104118.12878-1-p-mohan@ti.com>
+From:   Puranjay Mohan <p-mohan@ti.com>
+In-Reply-To: <20220418104118.12878-1-p-mohan@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, dumping almost all BTFs specified by id requires
-using the -B option to pass the base BTF. For most cases
-the vmlinux BTF sysfs path should work.
+Hi Bjorn,
+Hi Mathieu,
 
-This patch simplifies dumping by ID usage by attempting to
-use vmlinux BTF from sysfs, if the first try of loading BTF by ID
-fails with certain conditions.
+I am writing to follow up on this patch series.
+This has been on the list for the last 10 days and I have not received
+any comments on it. So, does this look good to everyone?
 
-Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- tools/bpf/bpftool/btf.c | 35 ++++++++++++++++++++++++++---------
- 1 file changed, 26 insertions(+), 9 deletions(-)
+I had solved the minor checkpatch issues from v2 so I guess this series
+should be good now?
 
-diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
-index a2c665beda87..557f65e2de5c 100644
---- a/tools/bpf/bpftool/btf.c
-+++ b/tools/bpf/bpftool/btf.c
-@@ -459,6 +459,22 @@ static int dump_btf_c(const struct btf *btf,
- 	return err;
- }
- 
-+static const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
-+
-+static struct btf *get_vmlinux_btf_from_sysfs(void)
-+{
-+	struct btf *base;
-+
-+	base = btf__parse(sysfs_vmlinux, NULL);
-+	if (libbpf_get_error(base)) {
-+		p_err("failed to parse vmlinux BTF at '%s': %ld\n",
-+		      sysfs_vmlinux, libbpf_get_error(base));
-+		base = NULL;
-+	}
-+
-+	return base;
-+}
-+
- static int do_dump(int argc, char **argv)
- {
- 	struct btf *btf = NULL, *base = NULL;
-@@ -536,18 +552,11 @@ static int do_dump(int argc, char **argv)
- 		NEXT_ARG();
- 	} else if (is_prefix(src, "file")) {
- 		const char sysfs_prefix[] = "/sys/kernel/btf/";
--		const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
- 
- 		if (!base_btf &&
- 		    strncmp(*argv, sysfs_prefix, sizeof(sysfs_prefix) - 1) == 0 &&
--		    strcmp(*argv, sysfs_vmlinux) != 0) {
--			base = btf__parse(sysfs_vmlinux, NULL);
--			if (libbpf_get_error(base)) {
--				p_err("failed to parse vmlinux BTF at '%s': %ld\n",
--				      sysfs_vmlinux, libbpf_get_error(base));
--				base = NULL;
--			}
--		}
-+		    strcmp(*argv, sysfs_vmlinux))
-+			base = get_vmlinux_btf_from_sysfs();
- 
- 		btf = btf__parse_split(*argv, base ?: base_btf);
- 		err = libbpf_get_error(btf);
-@@ -593,6 +602,14 @@ static int do_dump(int argc, char **argv)
- 	if (!btf) {
- 		btf = btf__load_from_kernel_by_id_split(btf_id, base_btf);
- 		err = libbpf_get_error(btf);
-+		if (err == -EINVAL && !base_btf) {
-+			btf__free(base);
-+			base = get_vmlinux_btf_from_sysfs();
-+			p_info("Warning: valid base BTF was not specified with -B option, falling back on standard base BTF (sysfs vmlinux)");
-+			btf = btf__load_from_kernel_by_id_split(btf_id, base);
-+			err = libbpf_get_error(btf);
-+		}
-+
- 		if (err) {
- 			p_err("get btf by id (%u): %s", btf_id, strerror(err));
- 			goto done;
--- 
-2.35.1
+Looking forward to your comments.
 
+Thanks
+Puranjay Mohan
+
+On 18/04/22 16:11, Puranjay Mohan wrote:
+> This is the v3 of the patch series [1]. The v2 had some minor comments
+> which have been addressed here.
+> 
+> I will be posting two more patch series which depend on this series, one to
+> the soc tree and another to the networking tree. I had sent all the 3
+> series, including this one as RFC [2] to get comments and to explain the
+> dependencies.
+> 
+> The Programmable Real-Time Unit and Industrial Communication Subsystem
+> (PRU-ICSS or simply PRUSS) on various TI SoCs consists of dual 32-bit
+> RISC cores (Programmable Real-Time Units, or PRUs) for program execution.
+> 
+> There are 3 foundation components for PRUSS subsystem: the PRUSS platform
+> driver, the PRUSS INTC driver and the PRUSS remoteproc driver. All were
+> already merged and can be found under:
+> 1) drivers/soc/ti/pruss.c
+>    Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
+> 2) drivers/irqchip/irq-pruss-intc.c
+>    Documentation/devicetree/bindings/interrupt-controller/ti,pruss-intc.yaml
+> 3) drivers/remoteproc/pru_rproc.c
+>    Documentation/devicetree/bindings/remoteproc/ti,pru-rproc.yaml
+> 
+> The programmable nature of the PRUs provide flexibility to implement custom
+> peripheral interfaces, fast real-time responses, or specialized data handling.
+> Example of a PRU consumer drivers will be:
+>   - Software UART over PRUSS
+>   - PRU-ICSS Ethernet EMAC
+> 
+> In order to make usage of common PRU resources and allow the consumer drivers to
+> configure the PRU hardware for specific usage the PRU API is introduced.
+> 
+> [1] https://patchwork.kernel.org/project/linux-remoteproc/cover/20201216165239.2744-1-grzegorz.jaszczyk@linaro.org/
+> [2] https://patchwork.kernel.org/project/linux-remoteproc/cover/20220406094358.7895-1-p-mohan@ti.com/
+> 
+> Thanks,
+> Puranjay Mohan
+> 
+> Roger Quadros (1):
+>   remoteproc: pru: Add pru_rproc_set_ctable() function
+> 
+> Suman Anna (2):
+>   dt-bindings: remoteproc: Add PRU consumer bindings
+>   remoteproc: pru: Make sysfs entries read-only for PRU client driven
+>     boots
+> 
+> Tero Kristo (2):
+>   remoteproc: pru: Add APIs to get and put the PRU cores
+>   remoteproc: pru: Configure firmware based on client setup
+> 
+>  .../bindings/remoteproc/ti,pru-consumer.yaml  |  70 ++++++
+>  drivers/remoteproc/pru_rproc.c                | 234 +++++++++++++++++-
+>  include/linux/pruss.h                         |  78 ++++++
+>  3 files changed, 377 insertions(+), 5 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml
+>  create mode 100644 include/linux/pruss.h
+> 
