@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F5DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:57:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F164C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345974AbiD1MAZ (ORCPT
+        id S1345940AbiD1MA1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 08:00:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36578 "EHLO
+        Thu, 28 Apr 2022 08:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345836AbiD1L7s (ORCPT
+        with ESMTP id S1345832AbiD1L7q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 07:59:48 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA34988B1C;
+        Thu, 28 Apr 2022 07:59:46 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F81288B18;
         Thu, 28 Apr 2022 04:56:31 -0700 (PDT)
-X-UUID: 93c02dac41eb48389fd4d6f119e2e127-20220428
+X-UUID: 31662e2d33b849ad958f7742fa68bc61-20220428
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:aa7bb79a-c7ce-4799-8a61-f7be834e1f52,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:-20
-X-CID-META: VersionHash:faefae9,CLOUDID:8165d4c6-85ee-4ac1-ac05-bd3f1e72e732,C
+X-CID-O-INFO: VERSION:1.1.4,REQID:5e58e555-a95c-4048-a777-f67e3e4c71bd,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:faefae9,CLOUDID:7065d4c6-85ee-4ac1-ac05-bd3f1e72e732,C
         OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 93c02dac41eb48389fd4d6f119e2e127-20220428
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw02.mediatek.com
+X-UUID: 31662e2d33b849ad958f7742fa68bc61-20220428
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 815750933; Thu, 28 Apr 2022 19:56:24 +0800
+        with ESMTP id 693078785; Thu, 28 Apr 2022 19:56:25 +0800
 Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 28 Apr 2022 19:56:23 +0800
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 28 Apr 2022 19:56:24 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
  mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 28 Apr 2022 19:56:23 +0800
+ 15.0.1497.2; Thu, 28 Apr 2022 19:56:24 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 28 Apr 2022 19:56:22 +0800
+ Transport; Thu, 28 Apr 2022 19:56:24 +0800
 From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
 To:     <mturquette@baylibre.com>, <sboyd@kernel.org>,
         <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
@@ -51,9 +51,9 @@ CC:     <p.zabel@pengutronix.de>,
         <linux-mediatek@lists.infradead.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH V5 08/16] clk: mediatek: reset: Change return type for clock reset register function
-Date:   Thu, 28 Apr 2022 19:56:11 +0800
-Message-ID: <20220428115620.13512-9-rex-bc.chen@mediatek.com>
+Subject: [PATCH V5 15/16] arm64: dts: mediatek: Add infra #reset-cells property for MT8192
+Date:   Thu, 28 Apr 2022 19:56:18 +0800
+Message-ID: <20220428115620.13512-16-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220428115620.13512-1-rex-bc.chen@mediatek.com>
 References: <20220428115620.13512-1-rex-bc.chen@mediatek.com>
@@ -64,90 +64,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To deal with error handling, we change the function return type from
-void to int for mtk_clk_register_rst_ctrl().
+To support reset of infra, we add property of #reset-cells.
 
 Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/clk/mediatek/reset.c | 15 +++++++++------
- drivers/clk/mediatek/reset.h |  6 ++++--
- 2 files changed, 13 insertions(+), 8 deletions(-)
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
-index 11b2f74f121d..a1d281d2a2d5 100644
---- a/drivers/clk/mediatek/reset.c
-+++ b/drivers/clk/mediatek/reset.c
-@@ -98,8 +98,8 @@ static const struct reset_control_ops mtk_reset_ops_set_clr = {
- 	.reset = mtk_reset_set_clr,
- };
+diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+index 411feb294613..79803420d8ef 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+@@ -269,6 +269,7 @@
+ 			compatible = "mediatek,mt8192-infracfg", "syscon";
+ 			reg = <0 0x10001000 0 0x1000>;
+ 			#clock-cells = <1>;
++			#reset-cells = <1>;
+ 		};
  
--void mtk_register_reset_controller(struct device_node *np,
--				   const struct mtk_clk_rst_desc *desc)
-+int mtk_register_reset_controller(struct device_node *np,
-+				  const struct mtk_clk_rst_desc *desc)
- {
- 	struct regmap *regmap;
- 	const struct reset_control_ops *rcops = NULL;
-@@ -108,7 +108,7 @@ void mtk_register_reset_controller(struct device_node *np,
- 
- 	if (!desc) {
- 		pr_err("mtk clock reset desc is NULL\n");
--		return;
-+		return -EINVAL;
- 	}
- 
- 	switch (desc->version) {
-@@ -120,18 +120,18 @@ void mtk_register_reset_controller(struct device_node *np,
- 		break;
- 	default:
- 		pr_err("Unknown reset version %d\n", desc->version);
--		return;
-+		return -EINVAL;
- 	}
- 
- 	regmap = device_node_to_regmap(np);
- 	if (IS_ERR(regmap)) {
- 		pr_err("Cannot find regmap for %pOF: %pe\n", np, regmap);
--		return;
-+		return -EINVAL;
- 	}
- 
- 	data = kzalloc(sizeof(*data), GFP_KERNEL);
- 	if (!data)
--		return;
-+		return -ENOMEM;
- 
- 	data->desc = desc;
- 	data->regmap = regmap;
-@@ -144,7 +144,10 @@ void mtk_register_reset_controller(struct device_node *np,
- 	if (ret) {
- 		pr_err("could not register reset controller: %d\n", ret);
- 		kfree(data);
-+		return ret;
- 	}
-+
-+	return 0;
- }
- 
- MODULE_LICENSE("GPL");
-diff --git a/drivers/clk/mediatek/reset.h b/drivers/clk/mediatek/reset.h
-index 482df8012c5c..bbd269b0a797 100644
---- a/drivers/clk/mediatek/reset.h
-+++ b/drivers/clk/mediatek/reset.h
-@@ -51,8 +51,10 @@ struct mtk_clk_rst_data {
-  * mtk_register_reset_controller - Register MediaTek clock reset controller
-  * @np: Pointer to device node.
-  * @desc: Constant pointer to description of clock reset.
-+ *
-+ * Return: 0 on success and errorno otherwise.
-  */
--void mtk_register_reset_controller(struct device_node *np,
--				   const struct mtk_clk_rst_desc *desc);
-+int mtk_register_reset_controller(struct device_node *np,
-+				  const struct mtk_clk_rst_desc *desc);
- 
- #endif /* __DRV_CLK_MTK_RESET_H */
+ 		pericfg: syscon@10003000 {
 -- 
 2.18.0
 
