@@ -2,116 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA5ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 17:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4DC9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 17:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345611AbiD1RZ1 (ORCPT
+        id S1345828AbiD1R0I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 13:25:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50592 "EHLO
+        Thu, 28 Apr 2022 13:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343575AbiD1RZW (ORCPT
+        with ESMTP id S239066AbiD1R0G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 13:25:22 -0400
+        Thu, 28 Apr 2022 13:26:06 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B34685BE7B
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 10:22:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F2C5B5BE5A
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 10:22:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651166526;
+        s=mimecast20190719; t=1651166571;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+3LdEdkdoLKwdyJRw9U/ij8FGS03kA2dkuIR6qlHtPI=;
-        b=SyvShgxkITSkUYtLop193a253A3m7PHLPqw5dZ9AS+PSH4bQDWSx5G68WNAmv2xqyOmcjt
-        hcheFYFX0ddGbYZiEfcOBumrezUiBd5o081A5JpyLrXQg5wuajIomotaMVxC101Of/I5oJ
-        C/tX507ssDrab6/CGlmyMGnPhRj4XdE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=CYHJD6E6HfiYbx2PKHbXV03lbbkE9/yKMQwwlCTMLzs=;
+        b=PmFWh8CnSs/IOAMw6zIFB0SMI/tjFFkCe5IMMghB8ygKBuwcbXYSW1aV0g7zMbq+CU/a+d
+        pMZve2gAxdHsQJJc5vhJw3xI8uriGBV8barxWpY64EJMK+Jb/zY5HqXEnwf2rR5sBAw63E
+        C3VDgp6xvJOHiUjitSJFOnaF1jSZlEg=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-615-RaGUCpt0NaGLulKogK1Acw-1; Thu, 28 Apr 2022 13:22:01 -0400
-X-MC-Unique: RaGUCpt0NaGLulKogK1Acw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CE6C8101AA45;
-        Thu, 28 Apr 2022 17:22:00 +0000 (UTC)
-Received: from starship (unknown [10.40.192.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 82500C15D40;
-        Thu, 28 Apr 2022 17:21:57 +0000 (UTC)
-Message-ID: <cfa024924eb3be66f94a2c59e164b9a1fa16653e.camel@redhat.com>
+ us-mta-645-ovGE1g9HPkOzeVd8C7AJ1w-1; Thu, 28 Apr 2022 13:22:49 -0400
+X-MC-Unique: ovGE1g9HPkOzeVd8C7AJ1w-1
+Received: by mail-ed1-f69.google.com with SMTP id cw28-20020a056402229c00b00425dda4b67dso3120524edb.10
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 10:22:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=CYHJD6E6HfiYbx2PKHbXV03lbbkE9/yKMQwwlCTMLzs=;
+        b=zFrCgnZ3GYsjXiLJ6rBJ6QlwUuL8zRm1ZugoljdbLzItvbTWbwKZxerA12b3SBEnGt
+         Sf2rPfRfhveTV77BejMW4pu9QNvRJkuT0H7QnFGLYZUL57yVbDJ9MaujldFI4wpQdqZd
+         40oibR77Qr1/NOZvTYgG/dpEULt1nMN3+34KBNvTGAT9SoyOT7GXdwLx/WWyOrOfQJTf
+         lfOyU8Y1+4sUcoPtEd4d+FuPcHhkdndiK6z5DVU4cXU5252iqG56k6hWuf7vgoQM8e5v
+         AZlG6a0bETIAz42PnHpT7YHzSIifyZUh3Pj8hoIsTgy++rWAdBGgtTsfD1/PPkftFlao
+         izEg==
+X-Gm-Message-State: AOAM533HNeo59zvu/N5CD557LbSBkXsQkAvtPUvrfMNuQQXun+bx8cR6
+        NRVwQEiogRTNF6Y+Q8m8gEn+/KB/gBvZXxxZerVrrtyq1BTFy8eCXhgLMBhXM0UsbNhYvug+t9B
+        y/A2lxtUQlVRCDoSO+FEMpLBS
+X-Received: by 2002:a05:6402:84a:b0:426:262d:967e with SMTP id b10-20020a056402084a00b00426262d967emr5335108edz.286.1651166568320;
+        Thu, 28 Apr 2022 10:22:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwBq/kWkr4CtJmNaMdPgNDfkiNjwLZz6U/M46LKSjVacOdKNe9Z0Ou/LgFutM5fhzK8BIB98w==
+X-Received: by 2002:a05:6402:84a:b0:426:262d:967e with SMTP id b10-20020a056402084a00b00426262d967emr5335079edz.286.1651166568059;
+        Thu, 28 Apr 2022 10:22:48 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
+        by smtp.googlemail.com with ESMTPSA id q8-20020aa7cc08000000b0042617ba637esm1880806edt.8.2022.04.28.10.22.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 10:22:47 -0700 (PDT)
+Message-ID: <d1e4eaba-2dcd-ec08-4e23-98ab8ea6c37b@redhat.com>
+Date:   Thu, 28 Apr 2022 19:22:43 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
 Subject: Re: [syzbot] WARNING in kvm_mmu_uninit_tdp_mmu (2)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
 Cc:     syzbot <syzbot+a8ad3ee1525a0c4b40ec@syzkaller.appspotmail.com>,
         bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
         jmattson@google.com, joro@8bytes.org, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org, mingo@redhat.com,
-        pbonzini@redhat.com, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org
-Date:   Thu, 28 Apr 2022 20:21:56 +0300
-In-Reply-To: <8f21a9d4b4ceb7c515f776b1a981c801e439c5f0.camel@redhat.com>
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org
 References: <00000000000082452505dd503126@google.com>
-         <13b3235ef66f22475fd4059df95ad0144548ccd1.camel@redhat.com>
-         <YmqzoFqdmH1WuPv0@google.com>
-         <8f21a9d4b4ceb7c515f776b1a981c801e439c5f0.camel@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
-MIME-Version: 1.0
+ <13b3235ef66f22475fd4059df95ad0144548ccd1.camel@redhat.com>
+ <YmqzoFqdmH1WuPv0@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YmqzoFqdmH1WuPv0@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-04-28 at 20:16 +0300, Maxim Levitsky wrote:
-> On Thu, 2022-04-28 at 15:32 +0000, Sean Christopherson wrote:
-> > On Tue, Apr 26, 2022, Maxim Levitsky wrote:
-> > > I can reproduce this in a VM, by running and CTRL+C'in my ipi_stress test,
-> > 
-> > Can you post your ipi_stress test?  I'm curious to see if I can repro, and also
-> > very curious as to what might be unique about your test.  I haven't been able to
-> > repro the syzbot test, nor have I been able to repro by killing VMs/tests.
-> > 
+On 4/28/22 17:32, Sean Christopherson wrote:
+> On Tue, Apr 26, 2022, Maxim Levitsky wrote:
+>> I can reproduce this in a VM, by running and CTRL+C'in my ipi_stress test,
 > 
-> This is the patch series (mostly attempt to turn svm to mini library,
-> but I don't know if this is worth it.
-> It was done so that ipi_stress could use  nesting itself to wait for IPI
-> from within a nested guest. I usually don't use it.
-> 
-> This is more or less how I was running it lately (I have a wrapper script)
-> 
-> 
-> ./x86/run x86/ipi_stress.flat \
->         -global kvm-pit.lost_tick_policy=discard \
-> 	        -machine kernel-irqchip=on -name debug-threads=on  \
-> 	        \
-> 	        -smp 8 \
-> 	        -cpu host,x2apic=off,svm=off,-hypervisor \
-> 	        -overcommit cpu-pm=on \
-> 	        -m 4g -append "0 10000"
+> Can you post your ipi_stress test?  I'm curious to see if I can repro, and also
+> very curious as to what might be unique about your test.  I haven't been able to
+> repro the syzbot test, nor have I been able to repro by killing VMs/tests.
 
-I forgot to mention: this should be run in a loop.
+Did you test with CONFIG_PREEMPT=y?
 
-Best regards,
-	Maxim Levitsky
+(BTW, the fact that it reproduces under 5.17 is a mixed blessing, 
+because it means that we can analyze/stare at a simpler codebase).
 
-> 
-> 
-> Its not fully finised for upstream, I will get to it soon.
-> 
-> 'cpu-pm=on' won't work for you as this fails due to non atomic memslot
-> update bug for which I have a small hack in qemu, and it is on my
-> backlog to fix it correctly.
-> 
-> Mostly likely cpu_pm=off will also reproduce it.
-> 
-> 
-> Test was run in a guest, natively this doesn't seem to reproduce.
-> tdp mmu was used for both L0 and L1.
-> 
-> Best regards,
-> 	Maxim levitsky
-
+Paolo
 
