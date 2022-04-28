@@ -2,105 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA25C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A83C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:05:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244784AbiD1HII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57734 "EHLO
+        id S244758AbiD1HIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 03:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244758AbiD1HIG (ORCPT
+        with ESMTP id S244796AbiD1HIR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:08:06 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C38E198F50;
-        Thu, 28 Apr 2022 00:04:52 -0700 (PDT)
-Received: from mail-yb1-f182.google.com ([209.85.219.182]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1N0WPK-1o7FkU34K4-00wX9v; Thu, 28 Apr 2022 09:04:50 +0200
-Received: by mail-yb1-f182.google.com with SMTP id y2so7372840ybi.7;
-        Thu, 28 Apr 2022 00:04:50 -0700 (PDT)
-X-Gm-Message-State: AOAM530vjkLCXyIvoodzRGwear/VE6c7tM7g9B3NAhLZfPZ6JoKPA+xk
-        qCgzEPALvV2UsJvvCM+sj0IbSkxy+RaLQCTdyhQ=
-X-Google-Smtp-Source: ABdhPJxPFdoAK53KrDUJDvXZZBNItrxVRstFggJZqPSzN1hTf5QMiOJMiJirNLjAI0bMczN8kVmmcLMEGUTHnXYsKxk=
-X-Received: by 2002:a25:31c2:0:b0:641:660f:230f with SMTP id
- x185-20020a2531c2000000b00641660f230fmr29428750ybx.472.1651129489342; Thu, 28
- Apr 2022 00:04:49 -0700 (PDT)
+        Thu, 28 Apr 2022 03:08:17 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E5DDF80;
+        Thu, 28 Apr 2022 00:05:01 -0700 (PDT)
+X-UUID: 4ed0c71f141b4b10be7e01444a57e674-20220428
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:5f51269b-0e32-4805-9432-1135a3552920,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:-20
+X-CID-META: VersionHash:faefae9,CLOUDID:6fe4c9c6-85ee-4ac1-ac05-bd3f1e72e732,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 4ed0c71f141b4b10be7e01444a57e674-20220428
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <yongqiang.niu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 108586444; Thu, 28 Apr 2022 15:04:54 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 28 Apr 2022 15:04:53 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 28 Apr 2022 15:04:30 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 28 Apr 2022 15:04:28 +0800
+From:   Yongqiang Niu <yongqiang.niu@mediatek.com>
+To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Yongqiang Niu <yongqiang.niu@mediatek.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        Dennis YC Hsieh <dennis-yc.hsieh@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Yongqiang Niu <yongqiang.niu@mediatek.corp-partner.google.com>
+Subject: [PATCH v3, 1/1] drm/mediatek: add lut diff flag for new gamma hardware support
+Date:   Thu, 28 Apr 2022 15:04:03 +0800
+Message-ID: <20220428070403.12968-2-yongqiang.niu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220428070403.12968-1-yongqiang.niu@mediatek.com>
+References: <20220428070403.12968-1-yongqiang.niu@mediatek.com>
 MIME-Version: 1.0
-References: <20220331092235.3000787-1-hasegawa-hitomi@fujitsu.com>
- <20220331092235.3000787-2-hasegawa-hitomi@fujitsu.com> <YkWVTEG5oFO82GPL@kroah.com>
- <CAK8P3a0jnzse4sG58taO5+Yd5vCgh1uddqbtAuim_z9r15Q3BA@mail.gmail.com>
- <20220408133246.fyw5554lgli4olvg@maple.lan> <CAK8P3a0u2xa9BFmakG+f4kyLsqNZQbE6KQ6jz2356Fyen=1EHw@mail.gmail.com>
- <YlBE6hZHmLo9/wrU@kroah.com> <CAK8P3a3v4+AO5avGoxeZSyNTOWqk8YS95xQLWSBZ=yV_3DKggg@mail.gmail.com>
- <20220408150202.yhn3qppqwm7wzmo3@maple.lan> <OSZPR01MB7050BE18BC9E8DA05C00F478EBF29@OSZPR01MB7050.jpnprd01.prod.outlook.com>
- <OSZPR01MB70504BD8347355EB51F7CCB8EBFD9@OSZPR01MB7050.jpnprd01.prod.outlook.com>
-In-Reply-To: <OSZPR01MB70504BD8347355EB51F7CCB8EBFD9@OSZPR01MB7050.jpnprd01.prod.outlook.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 28 Apr 2022 09:04:34 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2aHBxRJbOcXBGM7gjAqpErBAeaG3NmfgBTn4TNYscSgw@mail.gmail.com>
-Message-ID: <CAK8P3a2aHBxRJbOcXBGM7gjAqpErBAeaG3NmfgBTn4TNYscSgw@mail.gmail.com>
-Subject: Re: [PATCH v3 1/1] soc: fujitsu: Add A64FX diagnostic interrupt driver
-To:     "hasegawa-hitomi@fujitsu.com" <hasegawa-hitomi@fujitsu.com>
-Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Olof Johansson <olof@lixom.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Doug Anderson <dianders@chromium.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "kgdb-bugreport@lists.sourceforge.net" 
-        <kgdb-bugreport@lists.sourceforge.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mike Travis <mike.travis@hpe.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:eIi0QbvKv2J0kpPkGcSMwAc+VFulHu30u8L3LD5xEyxQRXD4+MR
- yMm0vea/KEYXxg8xMkBqgukd81d0BPir5c6lTNko7Wcv07wAopU0JZKjTwula3N1XlGIrNa
- U1rrhzfPBh1C16f51QH+cYVVBKYOlhqDhZYt9xWbbvG2Y6F3hWu6fnChuXvtPLFYLDHhHwv
- gIrZkdC/zxsi6ePsBQMug==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:+xxvt5P/Pug=:ZGNlrUHFBRGNMS8HB1c/gy
- taDKegWhqm0r641SGlzyJnXOlW30bB/OwjM2W2dkUSfdGK2r1nKdNcR7aOV0DSjNmlQqf0lu9
- BMLWpia4NUlHYOJ6ttmjkNgDylDgww9ISZZ9nVu4SIHDI6NCajAehT+/DisUz16Uba8bhVdjL
- GnK2ZBXiI66zfHnBJBxEbpeb9g1MCuVOElAD+FtiZnvISvryRDJtEn+dpT01zgqQA4thPLdHy
- b8NdSQzQCRGV8SfTFIEU76Buw/PPvdACEYRbXYa2IDOSm9nRiCFUZYKvoUEWE63iunNiXalUe
- M3bDyKf5hZxs0i/oNCtHeQMdKVIZuOTViiVqhGIKcUgxm4Aspl4rv312IplmmCpJyumX1yjTP
- TPxA52LoMoPazBlyL3/6K2Jkfm/fcNQaMdHUI3OuFWRTCUzKe5BUMEkdubr9xiqAahblyJd0F
- datbraVHPGh7g3zyci9Prw9ZoBKnv2p2jP54TatuCd4iFs4Jb3G3VZJhla5A1tIu6Ku5AEh4q
- 18Q6x0v2gOKqMZQliAlJf2XUQ3wtvwYUnjVzYxO85Nl249KaP+YVJr6HANtEiNCmwsFQTYcT5
- srtcPKBavApU8swqK8pZJNKtc8zKTiab8NiQAlX76rylUY9lg9JfWLIa+SfsmGFYEQ9TbuICx
- DfSQLU93sB/Rnm6eswu5588BTxunVdFRMp3uFSMsUVNYxRzUoSzQb7R3fW3Rg/jdBuHgnm97e
- axjkTI/nlo03qpDmbUha3qo9f9y2944+qO9Vwti45XF6qKuaOxe1W6ODfHTN1mpRAxRESAvsx
- f/O9YIscOif2N7B7bADg6p7XB7pDoaAMgshs7WuE/LqeJ2riAM=
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 4:15 AM hasegawa-hitomi@fujitsu.com
-<hasegawa-hitomi@fujitsu.com> wrote:
->
-> Hi Greg, Arnd, and Daniel,
->
-> > I understand that it is not appropriate to hardcode c.
-> > How about using __setup() to add a new kernel parameter and allow the admin
-> > to specify the sysrq command when booting?
->
-> I have received a lot of advice regarding sysrq, but after some consideration,
-> I would like to change to calling panic() directly as in v1 instead of sysrq.
->
-> If the administrator wants to request a diagnostic, I think they usually
-> expect crash with NMI like x86 and take a dump the kernel. It's not common
-> to handle diagnostic interrupts with sysrq now, so I don't think
-> it's necessary to make this driver extensible at this time.
+From: Yongqiang Niu <yongqiang.niu@mediatek.corp-partner.google.com>
 
-Ok, fair enough. Matching x86 behavior sounds like a reasonable outcome.
-If we want to make this configurable in the future, that can still be done then,
-and it should work the same across architectures but adding the logic
-in nmi_panic() directly.
+mt8183 gamma module usage is different with before soc,
+gamma odd(index start from 0) lut value set to hardware
+register should be
+the difference of current lut value with last lut value.
 
-        Arnd
+for example, chrome os user space set lut
+like this(only r chanel for example):
+2 4 6 8 10 12.
+1) mt8183 gamma driver should set the gamma lut to hardware
+register like this:
+2 [2] 6 [8] 10 [2]
+the value with [] is the difference value
+2)gamma hardware process display data with original lut
+
+Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
+---
+ drivers/gpu/drm/mediatek/mtk_disp_aal.c   |  2 +-
+ drivers/gpu/drm/mediatek/mtk_disp_drv.h   |  2 +-
+ drivers/gpu/drm/mediatek/mtk_disp_gamma.c | 34 +++++++++++++++++++----
+ 3 files changed, 30 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpu/drm/mediatek/mtk_disp_aal.c b/drivers/gpu/drm/mediatek/mtk_disp_aal.c
+index f46d4ab73d6a..0f9d7efb61d7 100644
+--- a/drivers/gpu/drm/mediatek/mtk_disp_aal.c
++++ b/drivers/gpu/drm/mediatek/mtk_disp_aal.c
+@@ -66,7 +66,7 @@ void mtk_aal_gamma_set(struct device *dev, struct drm_crtc_state *state)
+ 	struct mtk_disp_aal *aal = dev_get_drvdata(dev);
+ 
+ 	if (aal->data && aal->data->has_gamma)
+-		mtk_gamma_set_common(aal->regs, state);
++		mtk_gamma_set_common(aal->regs, state, false);
+ }
+ 
+ void mtk_aal_start(struct device *dev)
+diff --git a/drivers/gpu/drm/mediatek/mtk_disp_drv.h b/drivers/gpu/drm/mediatek/mtk_disp_drv.h
+index 86c3068894b1..3380651c6707 100644
+--- a/drivers/gpu/drm/mediatek/mtk_disp_drv.h
++++ b/drivers/gpu/drm/mediatek/mtk_disp_drv.h
+@@ -51,7 +51,7 @@ void mtk_gamma_config(struct device *dev, unsigned int w,
+ 		      unsigned int h, unsigned int vrefresh,
+ 		      unsigned int bpc, struct cmdq_pkt *cmdq_pkt);
+ void mtk_gamma_set(struct device *dev, struct drm_crtc_state *state);
+-void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state *state);
++void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state *state, bool lut_diff);
+ void mtk_gamma_start(struct device *dev);
+ void mtk_gamma_stop(struct device *dev);
+ 
+diff --git a/drivers/gpu/drm/mediatek/mtk_disp_gamma.c b/drivers/gpu/drm/mediatek/mtk_disp_gamma.c
+index 3a5815ab4079..bbd558a036ec 100644
+--- a/drivers/gpu/drm/mediatek/mtk_disp_gamma.c
++++ b/drivers/gpu/drm/mediatek/mtk_disp_gamma.c
+@@ -27,6 +27,7 @@
+ 
+ struct mtk_disp_gamma_data {
+ 	bool has_dither;
++	bool lut_diff;
+ };
+ 
+ /*
+@@ -53,12 +54,13 @@ void mtk_gamma_clk_disable(struct device *dev)
+ 	clk_disable_unprepare(gamma->clk);
+ }
+ 
+-void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state *state)
++void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state *state, bool lut_diff)
+ {
+ 	unsigned int i, reg;
+ 	struct drm_color_lut *lut;
+ 	void __iomem *lut_base;
+ 	u32 word;
++	u32 diff[3] = {0};
+ 
+ 	if (state->gamma_lut) {
+ 		reg = readl(regs + DISP_GAMMA_CFG);
+@@ -67,9 +69,20 @@ void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state *state)
+ 		lut_base = regs + DISP_GAMMA_LUT;
+ 		lut = (struct drm_color_lut *)state->gamma_lut->data;
+ 		for (i = 0; i < MTK_LUT_SIZE; i++) {
+-			word = (((lut[i].red >> 6) & LUT_10BIT_MASK) << 20) +
+-				(((lut[i].green >> 6) & LUT_10BIT_MASK) << 10) +
+-				((lut[i].blue >> 6) & LUT_10BIT_MASK);
++
++			if (!lut_diff || (i % 2 == 0)) {
++				word = (((lut[i].red >> 6) & LUT_10BIT_MASK) << 20) +
++					(((lut[i].green >> 6) & LUT_10BIT_MASK) << 10) +
++					((lut[i].blue >> 6) & LUT_10BIT_MASK);
++			} else {
++				diff[0] = (lut[i].red >> 6) - (lut[i - 1].red >> 6);
++				diff[1] = (lut[i].green >> 6) - (lut[i - 1].green >> 6);
++				diff[2] = (lut[i].blue >> 6) - (lut[i - 1].blue >> 6);
++
++				word = ((diff[0] & LUT_10BIT_MASK) << 20) +
++					((diff[1] & LUT_10BIT_MASK) << 10) +
++					(diff[2] & LUT_10BIT_MASK);
++			}
+ 			writel(word, (lut_base + i * 4));
+ 		}
+ 	}
+@@ -78,8 +91,12 @@ void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state *state)
+ void mtk_gamma_set(struct device *dev, struct drm_crtc_state *state)
+ {
+ 	struct mtk_disp_gamma *gamma = dev_get_drvdata(dev);
++	bool lut_diff = false;
++
++	if (gamma->data)
++		lut_diff = gamma->data->lut_diff;
+ 
+-	mtk_gamma_set_common(gamma->regs, state);
++	mtk_gamma_set_common(gamma->regs, state, lut_diff);
+ }
+ 
+ void mtk_gamma_config(struct device *dev, unsigned int w,
+@@ -176,10 +193,15 @@ static const struct mtk_disp_gamma_data mt8173_gamma_driver_data = {
+ 	.has_dither = true,
+ };
+ 
++static const struct mtk_disp_gamma_data mt8183_gamma_driver_data = {
++	.lut_diff = true,
++};
++
+ static const struct of_device_id mtk_disp_gamma_driver_dt_match[] = {
+ 	{ .compatible = "mediatek,mt8173-disp-gamma",
+ 	  .data = &mt8173_gamma_driver_data},
+-	{ .compatible = "mediatek,mt8183-disp-gamma"},
++	{ .compatible = "mediatek,mt8183-disp-gamma",
++	  .data = &mt8183_gamma_driver_data},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, mtk_disp_gamma_driver_dt_match);
+-- 
+2.25.1
+
