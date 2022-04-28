@@ -2,125 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21126C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 19:13:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 158BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 19:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351384AbiD1TRD (ORCPT
+        id S1350999AbiD1TaQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 15:17:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33636 "EHLO
+        Thu, 28 Apr 2022 15:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350999AbiD1TQz (ORCPT
+        with ESMTP id S229507AbiD1TaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 15:16:55 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F65BB083
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 12:13:39 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id y19so7948815ljd.4
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 12:13:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IpoRjAHqTnS4FmpnPiFyNV6WV8eg0o3grtiws+E6G5I=;
-        b=Gnzvaueav3QHGTSn7IyGj9WlErm4/3cYsOlmJMi09SF5tZ6OBo/373LzTgnUWbgqXT
-         A03fvitVFsIQw2doRuinCCqU52MtRKWXi3xzJ1pMVOS0pJHQcJQ1qIU4VRvmcxvVieUT
-         faj9CVcRtYDLdXNh99b1VQBFaUkwquL1M/chrNy51+cpPCiCK1/2g7biBgi4VLNUBLJX
-         p/1wjZC5ee2I8wSEssw1QytxzNS4B3V9ydKmCI22TWL2MNoVTucYJPt7grCJ51++pB9r
-         LUnIFgYUBZwylhSv5El2OBTMkBlM2o4IRRIZA7a1hRBDzEcYMWFbdVseetwL6AsA9QH7
-         rwXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IpoRjAHqTnS4FmpnPiFyNV6WV8eg0o3grtiws+E6G5I=;
-        b=08gwv2lPaRurmWSlFoEHEkeMM5QhqVanP/IaXYUBagSjJ4dJz0bbkopqhIxN8DXZyP
-         nQwMzgf0X6ql08eIpbQ750nElw6WShulxBf2kdzPg4rsJU5NKfZcea3CZG/isyxywmyH
-         OypsvMyvwNK8n5VCMaYqE+ic1ue4Q42bW2LKlWtjpLM2b0zcodDBo9p9PxwWDQ7W+g2Y
-         Znd1o+G6k7DCCbTFFrweSfW3DFmbP4lYUa8Vj5ZXwJEPDP4MhiZK0OH1hwLNjSDQ7emD
-         lhXVzjGrrlrVF2mVY2HvnbuT25bgmThRbKAuQE2AlKyhK3v/qcAxA4V4i1WwLisfmOtS
-         V4PQ==
-X-Gm-Message-State: AOAM532ELQI+PJv+LwmnLiUCozdeOB85Bt993iJvdEhftvhlAEd7PG2b
-        0D2vtvzXtGA1ahjeo0AAlKmgkQI6ErOcUwLoY3lDYQ==
-X-Google-Smtp-Source: ABdhPJxBofabfcdSg6XepYgQ/fzBd7Kgdln9EwjGB+dwQXfcwYdd8V3ihEWM57Pp+OHEO327j0znLc/DfgZ1mZpliSg=
-X-Received: by 2002:a2e:9041:0:b0:24a:ce83:dcb4 with SMTP id
- n1-20020a2e9041000000b0024ace83dcb4mr23085886ljg.291.1651173217688; Thu, 28
- Apr 2022 12:13:37 -0700 (PDT)
+        Thu, 28 Apr 2022 15:30:14 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561B451594
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 12:26:58 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651174016;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xfSwAQLrJKmPP9oDDd/tVMsIRjX709FvurdZ9DWRoyY=;
+        b=Bww6SxbToDwB7bXuj8ePiXTLQlXaWI/ZCOpy0AFAty9VzghL6Qe/zTmiptAyPUEhaRmt0A
+        v8KhLTGgOlq/uTo/b7ht4AXlA+UPqMi17fcTxnTgB5cAmUc6l9nfqrFjabv1WPUvkaws21
+        riPUfBjEJot46Rcoc0OlCgqO5pwlwv945EYABtOs3Dz3AIaJVG7v9CgrKSW3lsoiemJNQx
+        3N3VC9F0kihfKecZXXIGQ5ddNa5JJCqGOCSWSkN18boTGRlKJz3RyuU7XZNedyeZdozDQ2
+        0cVsa7nat9FyGySqYlv+LyCC/Ega/5YxC67Hp4DScO5Siu/pq4A++iuGD5xNrQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651174016;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xfSwAQLrJKmPP9oDDd/tVMsIRjX709FvurdZ9DWRoyY=;
+        b=dNLCtBuH0dDN/OA2Frm6WTkfshe/9gAZAuVMPBGxqTht57iFqgr+ZIGnusI01XuNL5Mh7B
+        KUMgIywRCft10uBg==
+To:     Prakash Sangappa <prakash.sangappa@oracle.com>,
+        linux-kernel@vger.kernel.org
+Cc:     akpm@linux-foundation.org, peterz@infradead.org, dave@stgolabs.net,
+        manfred@colorfullife.com,
+        Prakash Sangappa <prakash.sangappa@oracle.com>
+Subject: Re: [PATCH v2] ipc: Update semtimedop() to use hrtimer
+In-Reply-To: <1651158422-28014-1-git-send-email-prakash.sangappa@oracle.com>
+References: <1651158422-28014-1-git-send-email-prakash.sangappa@oracle.com>
+Date:   Thu, 28 Apr 2022 21:26:55 +0200
+Message-ID: <874k2dovpc.ffs@tglx>
 MIME-Version: 1.0
-References: <20220421165137.306101-1-posk@google.com> <b1b04160-1604-8281-4c82-09b1f84ba86c@redhat.com>
-In-Reply-To: <b1b04160-1604-8281-4c82-09b1f84ba86c@redhat.com>
-From:   Peter Oskolkov <posk@google.com>
-Date:   Thu, 28 Apr 2022 12:13:26 -0700
-Message-ID: <CAPNVh5eTzpK6QpJumegoN4_7r56ZHsi6hFCG-Mqt+R8ngrCitw@mail.gmail.com>
-Subject: Re: [PATCH] KVM: x86: add HC_VMM_CUSTOM hypercall
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
-        Paul Turner <pjt@google.com>, Peter Oskolkov <posk@posk.io>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 10:14 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
+Prakash,
+
+On Thu, Apr 28 2022 at 08:07, Prakash Sangappa wrote:
+> semtimedop() should be converted to use hrtimer like it has been done
+> for most of the system calls with timeouts. This system call already
+> takes a struct timespec as an argument and can therefore provide finer
+> granularity timed wait.
+
+almost perfect :)
+
+The v1->v2: description wants to be below the '---' separator. It's not
+part of the changelog and just helpful for reviewers to assess the
+history of the patch(set).
+
+> v1->v2:
+>   - Use timespec64_valid() to validate timeout
+>      and other changes as suggested by Thomas Gleixner
 >
-> On 4/21/22 18:51, Peter Oskolkov wrote:
-> > Allow kvm-based VMMs to request KVM to pass a custom vmcall
-> > from the guest to the VMM in the host.
-> >
-> > Quite often, operating systems research projects and/or specialized
-> > paravirtualized workloads would benefit from a extra-low-overhead,
-> > extra-low-latency guest-host communication channel.
->
-> You can use a memory page and an I/O port.  It should be as fast as a
-> hypercall.  You can even change it to use ioeventfd if an asynchronous
-> channel is enough, and then it's going to be less than 1 us latency.
+> Signed-off-by: Prakash Sangappa <prakash.sangappa@oracle.com>
+> ---
+...
+> @@ -2210,7 +2209,7 @@ long __do_semtimedop(int semid, struct sembuf *sops,
+>  		/*
+>  		 * If an interrupt occurred we have to clean up the queue.
+>  		 */
+> -		if (timeout && jiffies_left == 0)
+> +		if (timed_out)
+>  			error = -EAGAIN;
+>  	} while (error == -EINTR && !signal_pending(current)); /* spurious */
 
-So this function:
-
-uint8_t hyperchannel_ping(uint8_t arg)
-{
-        uint8_t inb;
-        uint16_t port = PORT;
-
-        asm(
-                "outb %[arg] , %[port]  \n\t"  // write arg
-                "inb  %[port], %[inb]   \n\t"  // read  res
-                : [inb] "=r"(inb)
-                : [arg] "r"(arg), [port] "r"(port)
-        );
-        return inb;
-}
-
-takes about 5.5usec vs 2.5usec for a vmcall on the same
-hardware/kernel/etc. I've also tried AF_VSOCK, and a roundtrip there
-is 30-50usec.
-
-The main problem of port I/O vs a vmcall is that with port I/O a
-second VM exit is needed to return any result to the guest. Am I
-missing something?
-
-I'll try now using ioeventfd, but I suspect that building a
-synchronous request/response channel on top of it will not match a
-direct vmcall in terms of latency.
-
-Are there any other alternatives I should look at?
-
-Thanks,
-Peter
-
->
-> Paolo
->
-> > With cloud-hypervisor modified to handle the new hypercall (simply
-> > return the sum of the received arguments), the following function in
-> > guest_userspace_  completes, on average, in 2.5 microseconds (walltime)
-> > on a relatively modern Intel Xeon processor:
->
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
