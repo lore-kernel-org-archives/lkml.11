@@ -2,291 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2200C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C98C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:58:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347831AbiD1OA6 (ORCPT
+        id S1347856AbiD1OB1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 10:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47510 "EHLO
+        Thu, 28 Apr 2022 10:01:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346899AbiD1OA4 (ORCPT
+        with ESMTP id S1347846AbiD1OBX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 10:00:56 -0400
-Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 464F53DDD3;
-        Thu, 28 Apr 2022 06:57:39 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 642DFDF8DB;
-        Thu, 28 Apr 2022 06:57:39 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Ig7oScWZPIsr; Thu, 28 Apr 2022 06:57:38 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 15:57:23 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1651154258; bh=vLbHlYOt6LoVdFmtMXhjYEpdyn/I1inbFkDo5q7Xc2Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nz8/Fafk2Vr5aiEgJyewn2lnV+gj0UhPCZcRjHm8Ga08pP1HPo0C5a4D+B1Y4T7U4
-         8ex9tXNujPUROXlCvv+P9shIRqhNsxZ3shnE0SQtMXvuPTZElqrm/ne+29SKalNmBP
-         Yuk5J4MOeOy8feiBbKKVsRi/25Mj0ftp5H28iuiRQN83PNXbg5lnJOvFdVnoCIAM6S
-         AEGni3jVS9boTKi6AmBHBYyAkYI0q2CHbKIFlpAM00++HnH3zpH0KsqQJqYkvDAHij
-         /pQjVfgLhwFE1IYrkCn3uvPgR6IDzl3cWZHw5leET3fv3TlvGJeLe7l4dthxY5rXBO
-         6CNgQPfVkpwyQ==
-From:   Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
-To:     Jacopo Mondi <jacopo@jmondi.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@puri.sm
-Subject: Re: [PATCHv2 1/2] doc/media api: Try to make enum usage clearer
-Message-ID: <20220428155723.456b7ff0.dorota.czaplejewicz@puri.sm>
-In-Reply-To: <20220428130448.bfht2nf23n6lidsk@uno.localdomain>
-References: <20220428105211.7106ce6a.dorota.czaplejewicz@puri.sm>
-        <20220428130448.bfht2nf23n6lidsk@uno.localdomain>
-Organization: Purism
+        Thu, 28 Apr 2022 10:01:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54530506FC;
+        Thu, 28 Apr 2022 06:58:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6EC561CE1;
+        Thu, 28 Apr 2022 13:58:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0301C385A0;
+        Thu, 28 Apr 2022 13:58:04 +0000 (UTC)
+Date:   Thu, 28 Apr 2022 09:58:03 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
+Message-ID: <20220428095803.66c17c32@gandalf.local.home>
+In-Reply-To: <20220416232103.c0b241c2ec7f2b3b985a2f99@kernel.org>
+References: <20220407125224.310255-1-jolsa@kernel.org>
+        <20220407125224.310255-5-jolsa@kernel.org>
+        <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
+        <20220412094923.0abe90955e5db486b7bca279@kernel.org>
+        <CAEf4BzaQRcZGMqq5wqHo3wSHZAAVvY6AhizDk_dV_GtnwHuxLQ@mail.gmail.com>
+        <20220416232103.c0b241c2ec7f2b3b985a2f99@kernel.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/vPfZ4CbmyVqo94p47OVPln.";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/vPfZ4CbmyVqo94p47OVPln.
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Sat, 16 Apr 2022 23:21:03 +0900
+Masami Hiramatsu <mhiramat@kernel.org> wrote:
 
-Hello,
+> OK, I also confirmed that __bpf_tramp_exit is listed. (others seems no notrace)
+> 
+> /sys/kernel/tracing # cat available_filter_functions | grep __bpf_tramp
+> __bpf_tramp_image_release
+> __bpf_tramp_image_put_rcu
+> __bpf_tramp_image_put_rcu_tasks
+> __bpf_tramp_image_put_deferred
+> __bpf_tramp_exit
+> 
+> My gcc is older one.
+> gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.1) 
+> 
+> But it seems that __bpf_tramp_exit() doesn't call __fentry__. (I objdump'ed) 
+> 
+> ffffffff81208270 <__bpf_tramp_exit>:
+> ffffffff81208270:       55                      push   %rbp
+> ffffffff81208271:       48 89 e5                mov    %rsp,%rbp
+> ffffffff81208274:       53                      push   %rbx
+> ffffffff81208275:       48 89 fb                mov    %rdi,%rbx
+> ffffffff81208278:       e8 83 70 ef ff          callq  ffffffff810ff300 <__rcu_read_lock>
+> ffffffff8120827d:       31 d2                   xor    %edx,%edx
 
-On Thu, 28 Apr 2022 15:04:48 +0200
-Jacopo Mondi <jacopo@jmondi.org> wrote:
+You need to look deeper ;-)
+> 
+> 
+> > 
+> > So it's quite bizarre and inconsistent.  
+> 
+> Indeed. I guess there is a bug in scripts/recordmcount.pl.
 
-> Hi Dorota,
->=20
->=20
-> On Thu, Apr 28, 2022 at 10:52:11AM +0200, Dorota Czaplejewicz wrote:
-> > Added: mbus codes must not repeat
-> > Added: no holes in the enumeration
-> > Added: enumerations per what?
-> > Added: who fills in what in calls
-> > Changed: "zero" -> "0"
-> > Changed: "given" -> "specified"
-> > =20
-> A more discoursive commit message would be appreciated. Just a few lines
-> before the crude list of changes:
->=20
-> Something like
->=20
-> "Update the documentation of ... in order to clarify etc etc"
->=20
-> > Signed-off-by: Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
-> > ---
-> > Hello,
-> >
-> > this is the second attempt at updating the media documentation.
-> >
-> > Differences from previous: "selected" is now "specified", "array" is no=
-w "enumeration", and "caller" is now "application". =20
->=20
-> Please stay in 80 cols even for parts that won't end up in the commit
-> message, it's hard to read this if you have multiple terminal windows
-> open.
+No there isn't.
 
-I can try to comply with this, but I generally don't do it
-because hard breaks are difficult to read
-on a phone or if I have multiple messages open.
-My line widths vary between 40 and 80 characters,
-and hard breaks can only cover one width, at the cost of all others.
->=20
-> >
-> > No differences: I haven't used the frame intervals calls and haven't ga=
-thered practical knowledge about where docs may be insufficient, so I didn'=
-t touch its documentation. =20
->=20
-> I think Hans required to change the documentation of that ioctl to
-> match the style of the changes you have made here, not because
-> something is missing there.
->=20
-> >
-> > Regards,
-> > Dorota
-> >
-> >  .../v4l/vidioc-subdev-enum-mbus-code.rst      | 39 +++++++++++++------
-> >  1 file changed, 27 insertions(+), 12 deletions(-)
-> >
-> > diff --git a/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-m=
-bus-code.rst b/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbu=
-s-code.rst
-> > index 417f1a19bcc4..87572de0fd26 100644
-> > --- a/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbus-cod=
-e.rst
-> > +++ b/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbus-cod=
-e.rst
-> > @@ -31,15 +31,29 @@ Arguments
-> >  Description
-> >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >
-> > -To enumerate media bus formats available at a given sub-device pad
-> > -applications initialize the ``pad``, ``which`` and ``index`` fields of
-> > -struct
-> > -:c:type:`v4l2_subdev_mbus_code_enum` and
-> > -call the :ref:`VIDIOC_SUBDEV_ENUM_MBUS_CODE` ioctl with a pointer to t=
-his
-> > -structure. Drivers fill the rest of the structure or return an ``EINVA=
-L``
-> > -error code if either the ``pad`` or ``index`` are invalid. All media b=
-us
-> > -formats are enumerable by beginning at index zero and incrementing by
-> > -one until ``EINVAL`` is returned.
-> > +This call is used by the application to access the enumeration of bus =
-formats
-> > +for the selected pad. =20
->=20
-> This is a good introductory phrase.
->=20
-> > +
-> > +The enumerations are defined by the driver, and indexed using the ``in=
-dex`` field
-> > +of struct :c:type:`v4l2_subdev_mbus_code_enum`.
-> > +Each value of ``pad`` corresponds to a separate enumeration. =20
->=20
-> Isn't this a repetition of the above "enumeration of bus formats for
-> the selected pad" ? Also, the fact different mbus codes are available
-> at different pads is an intrinsic characteristics of the device
-> capabilities and of what a pad represents. Put it in this way it seems
-> it's an API requirement.
->=20
-> > +Each enumeration starts with the ``index`` of 0, and
-> > +the lowest invalid index marks the end of enumeration.
-> > +
-> > +Therefore, to enumerate media bus formats available at a given sub-dev=
-ice pad,
-> > +initialize the ``pad``, and ``which`` fields to desired values,
-> > +and set ``index`` to 0.
-> > +Then call the :ref:`VIDIOC_SUBDEV_ENUM_MBUS_CODE` ioctl
-> > +with a pointer to this structure. =20
->=20
-> Could these two paragraphs be just:
->=20
-> To enumerate all the media bus codes available at a give sub-device pad,
-> an application set the ``index`` field to 0 and then call the
-> :ref:`VIDIOC_SUBDEV_ENUM_MBUS_CODE` ioctl with a pointer to this structur=
-e,
-> incrementing ``index`` by one until ``EINVAL`` is returned.
->=20
-What I found difficult with this documentation is that it described an algo=
-rithm,
-and did not describe the basic assumption about the shape of the data.
-Here, I tried to give a quick overview of the data structure in the first p=
-aragraph.
-The second paragraph is just a description of details,
-not needed to get a high level idea of the API.
+I added the addresses it was mapping and found this:
 
-> > +
-> > +A successful call will return with the ``code`` field filled in
-> > +with a mbus format value. =20
->=20
-> Generally, I see "mbus code", not "mbus format" as far as
-> I'm aware..
-I was generally confused about the "mbus" thing the whole time I used the A=
-PI.
-That's why I came up with the idea to describe what it's useful for (format=
-),
-instead of using an abstract "code" which could mean anything.
-"mbus code" is not even searchable online much, so it's difficult to make t=
-he connection.
->=20
-> > +Repeat with increasing ``index`` until ``EINVAL`` is received.
-> > +``EINVAL`` means that either ``pad`` is invalid,
-> > +or that there are no more codes available at this pad. =20
->=20
-> Is it necessary to add this last paragraph. Isn't it specified in the
-> error code description below ?
->=20
-> EINVAL
->     The struct
->     :c:type:`v4l2_subdev_mbus_code_enum`
->     ``pad`` references a non-existing pad, or the ``index`` field is out
->     of bounds.
->=20
->=20
-"Out of bounds" does not say what the bounds are.
-What I wrote is in the context of the incrementing algorithm,
-which implies that hitting it means hitting the bound ("no more codes").
-> > +
-> > +The driver must not return the same value of ``code`` for different in=
-dices
-> > +at the same pad. =20
->=20
-> This might be a good thing to specify, a little obvious maybe but it
-> doesn't hurt.
->=20
-Given that I ran head first into a bug involving repeats (prompting this pa=
-tch),
-I testify that nothing about it is obvious :)
-> >
-> >  Available media bus formats may depend on the current 'try' formats at
-> >  other pads of the sub-device, as well as on the current active links.
-> > @@ -57,14 +71,15 @@ information about the try formats.
-> >
-> >      * - __u32
-> >        - ``pad``
-> > -      - Pad number as reported by the media controller API.
-> > +      - Pad number as reported by the media controller API. Filled in =
-by the application.
-> >      * - __u32
-> >        - ``index``
-> > -      - Number of the format in the enumeration, set by the applicatio=
-n.
-> > +      - Index of the mbus code in the enumeration belonging to the giv=
-en pad.
-> > +    Filled in by the application. =20
->=20
-> These last changes are good, provided this phrase still renders correctly
-> now that you added a line break.
->=20
-> >      * - __u32
-> >        - ``code``
-> >        - The media bus format code, as defined in
-> > -	:ref:`v4l2-mbus-format`.
-> > +	:ref:`v4l2-mbus-format`. Filled in by the driver.
-> >      * - __u32
-> >        - ``which``
-> >        - Media bus format codes to be enumerated, from enum =20
->=20
-> In general there are a few good additions, but to be honest I would
-> keep the changes small for sake of consistency with the existing
-> documentation of other enumeration-related ioctls
->=20
-> Thanks
->    j
->=20
-> > --
-> > 2.35.1
-> > =20
->=20
->=20
-Thanks for reviewing.
+ffffffffa828f680 T __bpf_tramp_exit
 
---Dorota
+(which is relocated, but it's trivial to map it with the actual function).
 
---Sig_/vPfZ4CbmyVqo94p47OVPln.
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+At the end of that function we have:
 
------BEGIN PGP SIGNATURE-----
+ffffffff8128f767:       48 8d bb e0 00 00 00    lea    0xe0(%rbx),%rdi
+ffffffff8128f76e:       48 8b 40 08             mov    0x8(%rax),%rax
+ffffffff8128f772:       e8 89 28 d7 00          call   ffffffff82002000 <__x86_indirect_thunk_array>
+                        ffffffff8128f773: R_X86_64_PLT32        __x86_indirect_thunk_rax-0x4
+ffffffff8128f777:       e9 4a ff ff ff          jmp    ffffffff8128f6c6 <__bpf_tramp_exit+0x46>
+ffffffff8128f77c:       0f 1f 40 00             nopl   0x0(%rax)
+ffffffff8128f780:       e8 8b df dc ff          call   ffffffff8105d710 <__fentry__>
+                        ffffffff8128f781: R_X86_64_PLT32        __fentry__-0x4
+ffffffff8128f785:       b8 f4 fd ff ff          mov    $0xfffffdf4,%eax
+ffffffff8128f78a:       c3                      ret    
+ffffffff8128f78b:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
 
-iQIzBAEBCAAdFiEExKRqtqfFqmh+lu1oADBpX4S8ZncFAmJqnUMACgkQADBpX4S8
-Znd8jQ/8DpjlOIzRKpSjFYvngl3DGOsYQirndJNf2pxHhwV3vU3kCpl/32K1bhrI
-FZPD8THpKGhDmC9Kw2Q2mbxywvdS/crX5aeeucNgIg1KTSA/odIXou416vGAIrrO
-Xcc/9F+NHIow7qht03zQqczCoBmNcQV1MeigW0WDHOWWSQVfzNPK+ZonUqGp5VKj
-0aIiq6O7SZ1r5bdbt9CytRBnsOHCGeKc1mdPOh+ivIb/N5rgYNZA93DWpYpk6/10
-UewSUuaQH0S9tKFxh48y423Y2awy8HcF8sdjSl7RUWoY1p02vrGs2umT8XI1LkuL
-JBAKMTyVDk2neLGPWrLfcparK/ThbOtALutvQ2CoySYtiPIFcjQKvySreJoXkaUl
-lZn4T6IAd8eAb1ygX+s3dLZxZH0cmnAwk2i3PyF1RJk9T0xGtDJgpRKszLkfIsY1
-FcYnKZ6dcrgwswvwohzzivIicCF2etFMJq+1LQoW4JNvHGDEhsmzkzXmuKrQ4daj
-9VEnEB6KUnndZLUrmAFy1fvRLdI1SGZ0pEGsXTweeYuEK4oz8porBy/F63BwcH+x
-KE/7LZ/yZrz5NrK+c47xGTb3iGt5/1DCvue5wbHCOrK2OJ2r8jaYmz2znl0dpUXZ
-gnE108lqzk+KWBeOTH3VlvXJclaKh6BqZOMpZV3OHfRmLkpBWy8=
-=znw0
------END PGP SIGNATURE-----
 
---Sig_/vPfZ4CbmyVqo94p47OVPln.--
+Notice the call to fentry!
+
+It's due to this:
+
+void notrace __bpf_tramp_exit(struct bpf_tramp_image *tr)
+{
+	percpu_ref_put(&tr->pcref);
+}
+
+int __weak
+arch_prepare_bpf_trampoline(struct bpf_tramp_image *tr, void *image, void *image_end,
+			    const struct btf_func_model *m, u32 flags,
+			    struct bpf_tramp_progs *tprogs,
+			    void *orig_call)
+{
+	return -ENOTSUPP;
+}
+
+The weak function gets a call to ftrace, but it still gets compiled into
+vmlinux but its symbol is dropped due to it being overridden. Thus, the
+mcount_loc finds this call to fentry, and maps it to the symbol that is
+before it, which just happened to be __bpf_tramp_exit.
+
+I made that weak function "notrace" and the __bpf_tramp_exit disappeared
+from the available_filter_functions list.
+
+-- Steve
