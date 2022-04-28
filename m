@@ -2,81 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0755FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:46:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD19C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:47:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235041AbiD1Ktf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:49:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37906 "EHLO
+        id S241896AbiD1Kui (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:50:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229979AbiD1Kte (ORCPT
+        with ESMTP id S229979AbiD1Kuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:49:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 577DA89303
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 03:46:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0365BB82919
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 10:46:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78A27C385A9;
-        Thu, 28 Apr 2022 10:46:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651142777;
-        bh=7d3KnRH8ThdyiB4wx6AsCSrAqSAqq2CeEmVPr9bXaMc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QsxKHEbwPJ+ERWv4xFPxudVHN/ZFT89PFk3wAQfxVmmtOFWcHd0kZ4P6GnqQykjOz
-         TtrjG6BWHD1wP64zTQa6tkwUS/eT7M96FHeUg0GQQdJcxGMSNYIkE4cMB6Qf3l3Hx+
-         zDLGVLUya9GDNZxjdA6mYLw+wRDIYK9+DAqlwINAnKSyffLCVDCT6TsuvKjk51mzP/
-         /EqlK+COM+eJYFnf2l7eB5xFHvme6k1HiYPmXnDHHLVKwNTuoRlEY6UInSh+3nUdLY
-         5PCCzW5A/UGiOm5yUR/oSlHoUTSUGcczWIbC8EhGCs+fUQkOK8gAXMJ/IsSvzR/bAH
-         98LNx7//CzjZA==
-Date:   Thu, 28 Apr 2022 11:46:12 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH 0/4] arm64: Cleanup ioremap() and support ioremap_prot()
-Message-ID: <20220428104612.GA14515@willie-the-truck>
-References: <20220427121413.168468-1-wangkefeng.wang@huawei.com>
+        Thu, 28 Apr 2022 06:50:37 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8790089321
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 03:47:21 -0700 (PDT)
+Received: from kwepemi500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Kpsjr4F5mz1JBhm;
+        Thu, 28 Apr 2022 18:46:24 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by kwepemi500023.china.huawei.com
+ (7.221.188.76) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Apr
+ 2022 18:47:19 +0800
+From:   Peng Wu <wupeng58@huawei.com>
+To:     <xuwei5@hisilicon.com>, <linux@armlinux.org.uk>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <liwei391@huawei.com>,
+        <wangxiongfeng2@huawei.com>, Peng Wu <wupeng58@huawei.com>
+Subject: [PATCH] ARM: hisi: Add missing of_node_put after of_find_compatible_node
+Date:   Thu, 28 Apr 2022 10:43:06 +0000
+Message-ID: <20220428104306.21682-1-wupeng58@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220427121413.168468-1-wangkefeng.wang@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemi500023.china.huawei.com (7.221.188.76)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 08:14:09PM +0800, Kefeng Wang wrote:
-> Let's arm64 use GENERIC_IOREMAP to cleanup code, and
-> support ioremap_prot()/HAVE_IOREMAP_PROT, which could
-> enable generic_access_phys().
-> 
-> Kefeng Wang (4):
->   mm: ioremap: Setup phys_addr of struct vm_struct
->   mm: ioremap: Add arch_ioremap/iounmap_check()
->   arm64: mm: Convert to GENERIC_IOREMAP
->   arm64: Add HAVE_IOREMAP_PROT support
-> 
->  .../features/vm/ioremap_prot/arch-support.txt |  2 +-
->  arch/arm64/Kconfig                            |  2 +
->  arch/arm64/include/asm/io.h                   | 14 +--
->  arch/arm64/include/asm/pgtable.h              | 10 +++
->  arch/arm64/kernel/acpi.c                      |  2 +-
->  arch/arm64/mm/hugetlbpage.c                   | 10 ---
->  arch/arm64/mm/ioremap.c                       | 86 +++----------------
->  include/asm-generic/io.h                      |  3 +
->  mm/ioremap.c                                  | 21 ++++-
->  9 files changed, 56 insertions(+), 94 deletions(-)
+of_find_compatible_node  will increment the refcount of the returned
+device_node. Calling of_node_put() to avoid the refcount leak
 
-That's not a massively compelling diffstat for a cleanup, in all honesty.
-I looked at generic_access_phys() to try to figure out why we would want
-that on arm64, but it seems like it's related to mmap() of devices in
-userspace. Bearing in mind that CONFIG_STRICT_DEVMEM=y by default, please
-can you justify why this is something worth doing?
+Signed-off-by: Peng Wu <wupeng58@huawei.com>
+---
+ arch/arm/mach-hisi/platsmp.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Will
+diff --git a/arch/arm/mach-hisi/platsmp.c b/arch/arm/mach-hisi/platsmp.c
+index a56cc64deeb8..9ce93e0b6cdc 100644
+--- a/arch/arm/mach-hisi/platsmp.c
++++ b/arch/arm/mach-hisi/platsmp.c
+@@ -67,14 +67,17 @@ static void __init hi3xxx_smp_prepare_cpus(unsigned int max_cpus)
+ 		}
+ 		ctrl_base = of_iomap(np, 0);
+ 		if (!ctrl_base) {
++			of_node_put(np);
+ 			pr_err("failed to map address\n");
+ 			return;
+ 		}
+ 		if (of_property_read_u32(np, "smp-offset", &offset) < 0) {
++			of_node_put(np);
+ 			pr_err("failed to find smp-offset property\n");
+ 			return;
+ 		}
+ 		ctrl_base += offset;
++		of_node_put(np);
+ 	}
+ }
+ 
+@@ -160,6 +163,7 @@ static int hip01_boot_secondary(unsigned int cpu, struct task_struct *idle)
+ 	if (WARN_ON(!node))
+ 		return -1;
+ 	ctrl_base = of_iomap(node, 0);
++	of_node_put(node);
+ 
+ 	/* set the secondary core boot from DDR */
+ 	remap_reg_value = readl_relaxed(ctrl_base + REG_SC_CTRL);
+-- 
+2.17.1
+
