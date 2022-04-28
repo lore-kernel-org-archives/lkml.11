@@ -2,198 +2,340 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A2A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D63B0C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348290AbiD1O0H (ORCPT
+        id S1348292AbiD1O0u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 10:26:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37466 "EHLO
+        Thu, 28 Apr 2022 10:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231663AbiD1O0E (ORCPT
+        with ESMTP id S239271AbiD1O0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 10:26:04 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311D9B7C47
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:22:49 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <afa@pengutronix.de>)
-        id 1nk52I-0003gI-9X; Thu, 28 Apr 2022 16:22:26 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <afa@pengutronix.de>)
-        id 1nk52G-005lyX-RA; Thu, 28 Apr 2022 16:22:23 +0200
-Received: from afa by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <afa@pengutronix.de>)
-        id 1nk52E-003loB-MT; Thu, 28 Apr 2022 16:22:22 +0200
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-To:     Jarkko Sakkinen <jarkko@kernel.org>,
-        =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Pankaj Gupta <pankaj.gupta@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        James Bottomley <jejb@linux.ibm.com>
-Cc:     kernel@pengutronix.de, David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Steffen Trumtrar <s.trumtrar@pengutronix.de>,
-        Jan Luebbe <j.luebbe@pengutronix.de>,
-        David Gstir <david@sigma-star.at>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Franck LENORMAND <franck.lenormand@nxp.com>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Andreas Rammhold <andreas@rammhold.de>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Subject: [PATCH v8 0/6] KEYS: trusted: Introduce support for NXP CAAM-based trusted keys
-Date:   Thu, 28 Apr 2022 16:21:43 +0200
-Message-Id: <20220428140145.870527-1-a.fatoum@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Thu, 28 Apr 2022 10:26:43 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D15DB7177
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:23:27 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id e2so7015505wrh.7
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:23:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=T4OMoRCcRVFA0GeITjWTTDrrAy3UuDdOn8MZYxeYMis=;
+        b=fImJLDZTPArsLzV9PRdwFEyKlSRMrN5LdM1x+ekTA138hg+0H5oafdm8imQPdZiKPF
+         KeV7HuMjKfgEfZmJVXlVt3uhOTw3txj9LTWHunMbrxbQeBIUfetQPz7Aq4cFz4RuL8x5
+         eOO4eDEE0ldw2I+rp3vPFg6kptFNeoVznsFuKixY1wirzck4E3yEk6cAh0SL/qOYVCKL
+         QywOvJ1fm57xbRvYQfptdv2h/bVJmwpO4vGJQ2P9LZjkBiZoboObEQKvS/UD7JMTylM9
+         /+2jRT3lH5X8VL7E4v6538rmtlv7rPb0uZ49sSPCb3MHtHqjQQR+T/RQ0XYcd5Rs/LP1
+         c5Lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=T4OMoRCcRVFA0GeITjWTTDrrAy3UuDdOn8MZYxeYMis=;
+        b=rEcQWMyVJ2cU3hYimxsZ0O7nAlnyEzMuRsKGL7z6E4XIzw7xfVJ6gk9dSabeTDUkOu
+         V3+375WrM9UiK0XjeLov0G+pZf6TRn1bwHusAIARb9EQ1sJEOrMIay+yFh+QkvapOpEl
+         HasrIiQGzv75qRg7DV5BDWT0/mF3+xafiea0oeBFYv+uoGEweVsFyB8X3BsqsA3jiN28
+         4KCyN4/jvDvKtKOEwTkG+hohS77fxtbEgX0gaEBwc2a1KTKUIm9zGd9WoGQT7gSuduCO
+         /gQXAzgWqPdNe5N4XaGtYLL2PZKtEXuYuiSvN/181LGKtgze6FTGmcVucMx9F3rJ0gPK
+         AGtQ==
+X-Gm-Message-State: AOAM533R3LbvjM7qeVRQCtlkUTn34NgCA7eEdxtXQJW60lz2WiabIjvg
+        HoaOHU4l4DiVBSYVkwDIdDG1Tg==
+X-Google-Smtp-Source: ABdhPJxFwFWv25lUO45yoxx4zaBAdRGsWMAwwanW5Af0EZ/KUaWE0nXEVHMN96zefB66I2AhTNvOgg==
+X-Received: by 2002:a5d:6daf:0:b0:20a:dd36:7296 with SMTP id u15-20020a5d6daf000000b0020add367296mr15658915wrs.274.1651155805911;
+        Thu, 28 Apr 2022 07:23:25 -0700 (PDT)
+Received: from google.com (49.222.77.34.bc.googleusercontent.com. [34.77.222.49])
+        by smtp.gmail.com with ESMTPSA id g13-20020a5d64ed000000b0020a9e488976sm21664wri.25.2022.04.28.07.23.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 07:23:25 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 14:23:24 +0000
+From:   Sebastian Ene <sebastianene@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Derek Kiernan <derek.kiernan@xilinx.com>,
+        Dragan Cvetic <dragan.cvetic@xilinx.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        qperret@google.com, will@kernel.org, maz@kernel.org
+Subject: Re: [PATCH v3 2/2] misc: Add a mechanism to detect stalls on guest
+ vCPUs
+Message-ID: <YmqjXDJCnuEZVGpa@google.com>
+References: <20220425134204.149042-1-sebastianene@google.com>
+ <20220425134204.149042-3-sebastianene@google.com>
+ <YmatGqfEZOSL0Yfg@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: afa@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmatGqfEZOSL0Yfg@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Series applies on top of v5.18-rc4. Would be great if this could make it
-into v5.19.
+On Mon, Apr 25, 2022 at 04:15:54PM +0200, Greg Kroah-Hartman wrote:
+> On Mon, Apr 25, 2022 at 01:42:07PM +0000, Sebastian Ene wrote:
+> > This driver creates per-cpu hrtimers which are required to do the
+> > periodic 'pet' operation. On a conventional watchdog-core driver, the
+> > userspace is responsible for delivering the 'pet' events by writing to
+> > the particular /dev/watchdogN node. In this case we require a strong
+> > thread affinity to be able to account for lost time on a per vCPU.
+> > 
+> > This part of the driver is the 'frontend' which is reponsible for
+> > delivering the periodic 'pet' events, configuring the virtual peripheral
+> > and listening for cpu hotplug events. The other part of the driver
+> > handles the peripheral emulation and this part accounts for lost time by
+> > looking at the /proc/{}/task/{}/stat entries and is located here:
+> > https://chromium-review.googlesource.com/c/chromiumos/platform/crosvm/+/3548817
+> > 
+> > Signed-off-by: Sebastian Ene <sebastianene@google.com>
+> > ---
+> >  drivers/misc/Kconfig  |  12 +++
+> >  drivers/misc/Makefile |   1 +
+> >  drivers/misc/vm-wdt.c | 207 ++++++++++++++++++++++++++++++++++++++++++
+> >  3 files changed, 220 insertions(+)
+> >  create mode 100644 drivers/misc/vm-wdt.c
+> > 
+> > diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+> > index 2b9572a6d114..71c173e3f064 100644
+> > --- a/drivers/misc/Kconfig
+> > +++ b/drivers/misc/Kconfig
+> > @@ -493,6 +493,18 @@ config OPEN_DICE
+> >  
+> >  	  If unsure, say N.
+> >  
+> > +config VM_WATCHDOG
+> > +	tristate "Virtual Machine Watchdog"
+> > +	select LOCKUP_DETECTOR
+> > +	help
+> > +	  Detect CPU locks on the virtual machine. This driver relies on the
+> > +	  hrtimers which are CPU-binded to do the 'pet' operation. When a vCPU
+> > +	  has to do a 'pet', it exists the guest through MMIO write and the
+> > +	  backend driver takes into account the lost ticks for this particular
+> > +	  CPU.
+> > +	  To compile this driver as a module, choose M here: the
+> > +	  module will be called vm-wdt.
+> > +
+> >  source "drivers/misc/c2port/Kconfig"
+> >  source "drivers/misc/eeprom/Kconfig"
+> >  source "drivers/misc/cb710/Kconfig"
+> > diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+> > index 2ec634354cf5..fa9d644da5db 100644
+> > --- a/drivers/misc/Makefile
+> > +++ b/drivers/misc/Makefile
+> > @@ -59,3 +59,4 @@ obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
+> >  obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
+> >  obj-$(CONFIG_UID_SYS_STATS)	+= uid_sys_stats.o
+> >  obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
+> > +obj-$(CONFIG_VM_WATCHDOG)	+= vm-wdt.o
 
-v7 was here:
-https://lore.kernel.org/linux-integrity/20220415205647.46056-1-a.fatoum@pengutronix.de
+Hi,
 
-Changelog is beneath each individual patch. No code changes (except for
-comments) compared to v7.
+> 
+> We have no limit on names, why not "vm-watchdog"?
+> 
 
+I will update the name to vm-watchdog.
 
-The Cryptographic Acceleration and Assurance Module (CAAM) is an IP core
-built into many newer i.MX and QorIQ SoCs by NXP.
+> > \ No newline at end of file
+> > diff --git a/drivers/misc/vm-wdt.c b/drivers/misc/vm-wdt.c
+> > new file mode 100644
+> > index 000000000000..0c4df2fefbb9
+> > --- /dev/null
+> > +++ b/drivers/misc/vm-wdt.c
+> > @@ -0,0 +1,207 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +//
+> > +// Virtual watchdog driver.
+> > +//  Copyright (C) Google, 2022
+> 
+> I will need a watchdog maintainer to agree that this is the way to do
+> this as I really really do not understand why you can not use that
+> subsystem here.
+> 
 
-Its blob mechanism can AES encrypt/decrypt user data using a unique
-never-disclosed device-specific key.
+Sure, let me CC Guenter Roeck as he initially helped me with the
+feedback on this.
 
-There has been multiple discussions on how to represent this within the kernel:
+> > +
+> > +#include <linux/cpu.h>
+> > +#include <linux/init.h>
+> > +#include <linux/io.h>
+> > +#include <linux/kernel.h>
+> > +
+> > +#include <linux/device.h>
+> > +#include <linux/interrupt.h>
+> > +#include <linux/module.h>
+> > +#include <linux/nmi.h>
+> > +#include <linux/of.h>
+> > +#include <linux/of_device.h>
+> > +#include <linux/param.h>
+> > +#include <linux/percpu.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/slab.h>
+> > +
+> > +#define DRV_NAME			"vm_wdt"
+> 
+> KBUILD_MODNAME please
+> 
 
-The Cryptographic Acceleration and Assurance Module (CAAM) is an IP core
-built into many newer i.MX and QorIQ SoCs by NXP.
+Fixed.
 
-Its blob mechanism can AES encrypt/decrypt user data using a unique
-never-disclosed device-specific key. There has been multiple
-discussions on how to represent this within the kernel:
+> > +
+> > +#define VMWDT_REG_STATUS		(0x00)
+> > +#define VMWDT_REG_LOAD_CNT		(0x04)
+> > +#define VMWDT_REG_CURRENT_CNT		(0x08)
+> > +#define VMWDT_REG_CLOCK_FREQ_HZ		(0x0C)
+> > +#define VMWDT_REG_LEN			(0x10)
+> > +
+> > +#define VMWDT_DEFAULT_CLOCK_HZ		(10)
+> > +#define VMWDT_DEFAULT_TIMEOT_SEC	(8)
+> > +
+> > +struct vm_wdt_s {
+> > +	void __iomem *membase;
+> > +	u32 clock_freq;
+> > +	u32 expiration_sec;
+> > +	u32 ping_timeout_ms;
+> > +	struct hrtimer per_cpu_hrtimer;
+> > +	struct platform_device *dev;
+> > +};
+> > +
+> > +#define vmwdt_reg_write(wdt, reg, value)	\
+> > +	iowrite32((value), (wdt)->membase + (reg))
+> > +#define vmwdt_reg_read(wdt, reg)		\
+> > +	io32read((wdt)->membase + (reg))
+> > +
+> > +static struct platform_device *virt_dev;
+> 
+> Only one device in the system?  Please no, use the correct apis and you
+> will not have any limits like this.
+> 
 
- - [RFC] crypto: caam - add red blobifier
-   Steffen implemented[1] a PoC sysfs driver to start a discussion on how to
-   best integrate the blob mechanism.
-   Mimi suggested that it could be used to implement trusted keys.
-   Trusted keys back then were a TPM-only feature.
+Can you please explain what do you mean by use the correct APIs ? I
+don't think it will be possible or necessary to register multipple
+instances of this. 
 
- - security/keys/secure_key: Adds the secure key support based on CAAM.
-   Udit Agarwal added[2] a new "secure" key type with the CAAM as backend.
-   The key material stays within the kernel only.
-   Mimi and James agreed that this needs a generic interface, not specific
-   to CAAM. Mimi suggested trusted keys. Jan noted that this could serve as
-   basis for TEE-backed keys.
+> > +
+> > +static enum hrtimer_restart vmwdt_timer_fn(struct hrtimer *hrtimer)
+> > +{
+> > +	struct vm_wdt_s *cpu_wdt;
+> > +	u32 ticks;
+> > +
+> > +	cpu_wdt = container_of(hrtimer, struct vm_wdt_s, per_cpu_hrtimer);
+> > +	ticks = cpu_wdt->clock_freq * cpu_wdt->expiration_sec;
+> > +	vmwdt_reg_write(cpu_wdt, VMWDT_REG_LOAD_CNT, ticks);
+> > +	hrtimer_forward_now(hrtimer, ms_to_ktime(cpu_wdt->ping_timeout_ms));
+> > +
+> > +	return HRTIMER_RESTART;
+> > +}
+> > +
+> > +static void vmwdt_start(void *arg)
+> > +{
+> > +	u32 ticks;
+> > +	struct vm_wdt_s *cpu_wdt = arg;
+> > +	struct hrtimer *hrtimer = &cpu_wdt->per_cpu_hrtimer;
+> > +
+> > +	vmwdt_reg_write(cpu_wdt, VMWDT_REG_CLOCK_FREQ_HZ,
+> > +			cpu_wdt->clock_freq);
+> > +
+> > +	/* Compute the number of ticks required for the watchdog counter
+> > +	 * register based on the internal clock frequency and the watchdog
+> > +	 * timeout given from the device tree.
+> > +	 */
+> > +	ticks = cpu_wdt->clock_freq * cpu_wdt->expiration_sec;
+> > +	vmwdt_reg_write(cpu_wdt, VMWDT_REG_LOAD_CNT, ticks);
+> > +
+> > +	/* Enable the internal clock and start the watchdog */
+> > +	vmwdt_reg_write(cpu_wdt, VMWDT_REG_STATUS, 1);
+> > +
+> > +	hrtimer_init(hrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+> > +	hrtimer->function = vmwdt_timer_fn;
+> > +	hrtimer_start(hrtimer, ms_to_ktime(cpu_wdt->ping_timeout_ms),
+> > +		      HRTIMER_MODE_REL_PINNED);
+> > +}
+> > +
+> > +static void vmwdt_stop(void *arg)
+> > +{
+> > +	struct vm_wdt_s *cpu_wdt = arg;
+> > +	struct hrtimer *hrtimer = &cpu_wdt->per_cpu_hrtimer;
+> > +
+> > +	hrtimer_cancel(hrtimer);
+> > +
+> > +	/* Disable the watchdog */
+> > +	vmwdt_reg_write(cpu_wdt, VMWDT_REG_STATUS, 0);
+> > +}
+> > +
+> > +static int start_watchdog_on_cpu(unsigned int cpu)
+> > +{
+> > +	struct vm_wdt_s *vm_wdt = platform_get_drvdata(virt_dev);
+> > +
+> > +	vmwdt_start(this_cpu_ptr(vm_wdt));
+> > +	return 0;
+> > +}
+> > +
+> > +static int stop_watchdog_on_cpu(unsigned int cpu)
+> > +{
+> > +	struct vm_wdt_s *vm_wdt = platform_get_drvdata(virt_dev);
+> > +
+> > +	vmwdt_stop(this_cpu_ptr(vm_wdt));
+> > +	return 0;
+> > +}
+> > +
+> > +static int vmwdt_probe(struct platform_device *dev)
+> > +{
+> > +	int cpu, ret, err;
+> > +	void __iomem *membase;
+> > +	struct resource *r;
+> > +	struct vm_wdt_s *vm_wdt;
+> > +	u32 wdt_clock, wdt_timeout_sec = 0;
+> > +
+> > +	r = platform_get_resource(dev, IORESOURCE_MEM, 0);
+> > +	if (r == NULL)
+> > +		return -ENOENT;
+> > +
+> > +	vm_wdt = alloc_percpu(typeof(struct vm_wdt_s));
+> > +	if (!vm_wdt)
+> > +		return -ENOMEM;
+> > +
+> > +	membase = ioremap(r->start, resource_size(r));
+> > +	if (!membase) {
+> > +		ret = -ENXIO;
+> > +		goto err_withmem;
+> > +	}
+> > +
+> > +	virt_dev = dev;
+> > +	platform_set_drvdata(dev, vm_wdt);
+> > +	if (of_property_read_u32(dev->dev.of_node, "clock", &wdt_clock))
+> > +		wdt_clock = VMWDT_DEFAULT_CLOCK_HZ;
+> > +
+> > +	if (of_property_read_u32(dev->dev.of_node, "timeout-sec",
+> > +				 &wdt_timeout_sec))
+> > +		wdt_timeout_sec = VMWDT_DEFAULT_TIMEOT_SEC;
+> > +
+> > +	for_each_cpu_and(cpu, cpu_online_mask, &watchdog_cpumask) {
+> > +		struct vm_wdt_s *cpu_wdt = per_cpu_ptr(vm_wdt, cpu);
+> > +
+> > +		cpu_wdt->membase = membase + cpu * VMWDT_REG_LEN;
+> > +		cpu_wdt->clock_freq = wdt_clock;
+> > +		cpu_wdt->expiration_sec = wdt_timeout_sec;
+> > +		cpu_wdt->ping_timeout_ms = wdt_timeout_sec * MSEC_PER_SEC / 2;
+> > +		smp_call_function_single(cpu, vmwdt_start, cpu_wdt, true);
+> > +	}
+> > +
+> > +	err = cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
+> > +					"virt/watchdog:online",
+> > +					start_watchdog_on_cpu,
+> > +					stop_watchdog_on_cpu);
+> > +	if (err < 0) {
+> > +		pr_warn("could not be initialized");
+> 
+> drivers should never use pr_* calls.  dev_warn() please.
+>
 
- - [RFC] drivers: crypto: caam: key: Add caam_tk key type
-   Franck added[3] a new "caam_tk" key type based on Udit's work. This time
-   it uses CAAM "black blobs" instead of "red blobs", so key material stays
-   within the CAAM and isn't exposed to kernel in plaintext.
-   James voiced the opinion that there should be just one user-facing generic
-   wrap/unwrap key type with multiple possible handlers.
-   David suggested trusted keys.
+Removed this call,
 
- - Introduce TEE based Trusted Keys support
-   Sumit reworked[4] trusted keys to support multiple possible backends with
-   one chosen at boot time and added a new TEE backend along with TPM.
-   This now sits in Jarkko's master branch to be sent out for v5.13
+> thanks,
+> 
+> greg k-h
 
-This patch series builds on top of Sumit's rework to have the CAAM as yet another
-trusted key backend.
-
-The CAAM bits are based on Steffen's initial patch from 2015. His work had been
-used in the field for some years now, so I preferred not to deviate too much from it.
-
-This series has been tested with dmcrypt[5] on an i.MX6Q/DL and an i.MX8M[6].
-
-Looking forward to your feedback.
-
-Cheers,
-Ahmad
-
- [1]: https://lore.kernel.org/linux-crypto/1447082306-19946-2-git-send-email-s.trumtrar@pengutronix.de/
- [2]: https://lore.kernel.org/linux-integrity/20180723111432.26830-1-udit.agarwal@nxp.com/
- [3]: https://lore.kernel.org/lkml/1551456599-10603-2-git-send-email-franck.lenormand@nxp.com/
- [4]: https://lore.kernel.org/lkml/1604419306-26105-1-git-send-email-sumit.garg@linaro.org/
- [5]: https://lore.kernel.org/linux-integrity/20210122084321.24012-2-a.fatoum@pengutronix.de/
- [6]: https://lore.kernel.org/linux-integrity/DU2PR04MB8630D83FE9BBC0D782C4FAF595089@DU2PR04MB8630.eurprd04.prod.outlook.com/
-
----
-To: Jarkko Sakkinen <jarkko@kernel.org>
-To: "Horia Geantă" <horia.geanta@nxp.com>
-To: Mimi Zohar <zohar@linux.ibm.com>
-To: Pankaj Gupta <pankaj.gupta@nxp.com>
-To: Herbert Xu <herbert@gondor.apana.org.au>
-To: "David S. Miller" <davem@davemloft.net>
-To: James Bottomley <jejb@linux.ibm.com>
-Cc: David Howells <dhowells@redhat.com>
-Cc: James Morris <jmorris@namei.org>
-Cc: "Serge E. Hallyn" <serge@hallyn.com>
-Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>
-Cc: Jan Luebbe <j.luebbe@pengutronix.de>
-Cc: David Gstir <david@sigma-star.at>
-Cc: Eric Biggers <ebiggers@kernel.org>
-Cc: Richard Weinberger <richard@nod.at>
-Cc: Franck LENORMAND <franck.lenormand@nxp.com>
-Cc: Sumit Garg <sumit.garg@linaro.org>
-Cc: Andreas Rammhold <andreas@rammhold.de>
-Cc: Tim Harvey <tharvey@gateworks.com>
-Cc: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Cc: linux-integrity@vger.kernel.org
-Cc: keyrings@vger.kernel.org
-Cc: linux-crypto@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-security-module@vger.kernel.org
-
-Ahmad Fatoum (6):
-  KEYS: trusted: allow use of TEE as backend without TCG_TPM support
-  KEYS: trusted: allow use of kernel RNG for key material
-  crypto: caam - add in-kernel interface for blob generator
-  KEYS: trusted: Introduce support for NXP CAAM-based trusted keys
-  doc: trusted-encrypted: describe new CAAM trust source
-  MAINTAINERS: add myself as CAAM trusted key maintainer
-
- .../admin-guide/kernel-parameters.txt         |  11 ++
- .../security/keys/trusted-encrypted.rst       |  60 ++++++-
- MAINTAINERS                                   |   9 +
- drivers/crypto/caam/Kconfig                   |   3 +
- drivers/crypto/caam/Makefile                  |   1 +
- drivers/crypto/caam/blob_gen.c                | 164 ++++++++++++++++++
- include/keys/trusted-type.h                   |   2 +-
- include/keys/trusted_caam.h                   |  11 ++
- include/soc/fsl/caam-blob.h                   | 102 +++++++++++
- security/keys/Kconfig                         |  18 +-
- security/keys/trusted-keys/Kconfig            |  38 ++++
- security/keys/trusted-keys/Makefile           |  10 +-
- security/keys/trusted-keys/trusted_caam.c     |  82 +++++++++
- security/keys/trusted-keys/trusted_core.c     |  45 ++++-
- 14 files changed, 527 insertions(+), 29 deletions(-)
- create mode 100644 drivers/crypto/caam/blob_gen.c
- create mode 100644 include/keys/trusted_caam.h
- create mode 100644 include/soc/fsl/caam-blob.h
- create mode 100644 security/keys/trusted-keys/Kconfig
- create mode 100644 security/keys/trusted-keys/trusted_caam.c
-
--- 
-2.30.2
-
+Thanks,
+Sebastian
