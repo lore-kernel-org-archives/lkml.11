@@ -2,122 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4BE5C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:44:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5442C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:45:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350321AbiD1Qru (ORCPT
+        id S1350326AbiD1Qsb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 12:47:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60978 "EHLO
+        Thu, 28 Apr 2022 12:48:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350298AbiD1Qrk (ORCPT
+        with ESMTP id S1350307AbiD1Qs2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 12:47:40 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D34B2471;
-        Thu, 28 Apr 2022 09:44:25 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so3350950wmn.1;
-        Thu, 28 Apr 2022 09:44:25 -0700 (PDT)
+        Thu, 28 Apr 2022 12:48:28 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3C61F620
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:45:13 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2f7c57ee6feso59554687b3.2
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:45:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=JuNqfwwfmDk9L2CQQ3VU8TN8eMid01qpUgPNixDf+K8=;
-        b=g3z4I7Fw5b659c5VtcJceBdug81emUa4YI1iovyAo23Luwq6y2GMYmVdoEV/5nesYM
-         hXY178GXxuV6ablOJe91n81w60+Z0X2RYnsC8LTEIQaVzA65lVwQTuOFE5xVx0WCU63W
-         /pMpAVpRAc2bGntkk9RkCP0se6LedH0wgFeWSxJG6wlyH8jLaegNCo95osveQo9YZQiv
-         T4TwHdNoONiUlzYEwIOrpul2JAWU58zD085s7dmg5P8mmGn1wv+O/1O+gGmOlDUCp0Eq
-         1MieGyt1kluVV8Ee6jtTXpPpU/pfpDTJsX4dkzQ8upfhmyFPw4brNEVZCEfI2RQg6SjG
-         F5pg==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Fknn/A/aplgNNNjRdKgmyiKBYINuUEGbLWPpyif/20A=;
+        b=YO0d6jn5JI0W4xsSc8R1h/QVhlsSt/vXkx3iVg0uuWwmX20u45FXXDzERAG7QLf1Aa
+         snhbD5GzCEhp8b6azJRRaQmdO67ExxDaAW27X16YqAYFnvsvYk77FzRfGGIvwOb+3m7r
+         RSaLU7zu5JDLsj+n+seTPDfTd808rKCaVootnkDFNFj0aRy9KKMdLQi0O3Coq/FIyXIH
+         OaEWPH7isC5+jmTM2+wz1u+w6tQeoy/NoVS4ectyJSI/9Pv4v7khyLMN9Wf+cnOQ/Bov
+         cy0UZvGxeeyTA9Ff+jgaYmKYk1DlrGo4UfS+6d3SpZRY7IL720YKQh7f/6ixRVTWcFnJ
+         Aogw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=JuNqfwwfmDk9L2CQQ3VU8TN8eMid01qpUgPNixDf+K8=;
-        b=rwefHhei2mPAnH5e2ISej8E/Huc0GvSjlcmry+uSgBuHJwMqPI6F3EvqLPcInltSOE
-         /7yM0BpOS7gHQsZcDbMkI9Bca3x0hgf9n/n/Q+P8y7ZGLSjT4s276ta3YCqXbEl06c2k
-         tbidG+U+MLRmmx2vcifeiflh8ivGXGYkfGOtsutqW1flFdETqTX/Pm6fOQOgwmO6/nx4
-         UTpWRyyZ9QUS4vB8wHcOwnOGVqZU/9wlpJ0iOMjDziHhGoslLcDyXW1x4sIF2jIM3duY
-         XF+ckaVi5aVEzrsDCCfauSC1KfoTVMON0GtqtnW9VU6r2fmSpv8ywWxKcyy+5+f/RJ94
-         JUmw==
-X-Gm-Message-State: AOAM533z34EWEtfsU3jxfA7FzNW3zaYKg+q/tPaLSVJ+lk2YqehGF4TV
-        1xbvmeGREVxIclGVAOBAweg=
-X-Google-Smtp-Source: ABdhPJw+7+C9AZ30tLDTZTu27v5j+y7iZiAb28HCV7CxuuLmfavVlYAq0TEgcX7hehr0Xt1+Pwj74w==
-X-Received: by 2002:a05:600c:3b15:b0:393:eb14:bb5 with SMTP id m21-20020a05600c3b1500b00393eb140bb5mr21007048wms.129.1651164264321;
-        Thu, 28 Apr 2022 09:44:24 -0700 (PDT)
-Received: from localhost (92.40.203.206.threembb.co.uk. [92.40.203.206])
-        by smtp.gmail.com with ESMTPSA id f189-20020a1c38c6000000b0038ff83b9792sm4453035wma.43.2022.04.28.09.44.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 09:44:23 -0700 (PDT)
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     sboyd@kernel.org, mturquette@baylibre.com,
-        tsbogend@alpha.franken.de
-Cc:     paulburton@kernel.org, paul@crapouillou.net,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org
-Subject: [PATCH v2 3/3] mips: ingenic: Do not manually reference the CPU clock
-Date:   Thu, 28 Apr 2022 17:44:54 +0100
-Message-Id: <20220428164454.17908-4-aidanmacdonald.0x0@gmail.com>
-In-Reply-To: <20220428164454.17908-1-aidanmacdonald.0x0@gmail.com>
-References: <20220428164454.17908-1-aidanmacdonald.0x0@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Fknn/A/aplgNNNjRdKgmyiKBYINuUEGbLWPpyif/20A=;
+        b=6NjJ80MKgtv9j6ooigfdoTkX8jWONBmbPdVDcjexzih29si1CBzBf+14wE0t/5/xfx
+         7Fs9+ggc1LD//EOm0nhn9HtEnRxerFUt8fF+VUJ9KsZ9tjyuEWC8WFut4wZuYGZMZr07
+         RimyO7KLbFw6421uwvh69AWOGnKbEx21n2DANwmNlYMGuDnzqh0EBgRTIPx9mZ2j11d1
+         B4FgbTKRXUXHaEBzbmMgyCnT5zkWDZaxzhVrO7F1Y/Wbe7EnKPuIRuGONp66cyLkEsMc
+         bsPF5t4HTqYb9Dh905SJSZB/43JOlE0r0SDhaBMRtjbNrlnEAo6EJZW8tbuQKbfMI7Zi
+         SvIQ==
+X-Gm-Message-State: AOAM533iR3yYc2suzPlQc3hn1PQBmttZz7rcGlOdocUoBgCCwVYbB4GK
+        UcX1KCwWHuwkXrwLta2OiudKaESF2l1jjVRR5wAr3A==
+X-Google-Smtp-Source: ABdhPJwv9QJkwVyiIDw3emBO7qrkmvxIR8bSM0H70yzxZTC6aeFEY6iG/nvH3n6rHMvBWI/i6JhEbNn4x2yDxfRm+qg=
+X-Received: by 2002:a0d:d615:0:b0:2f7:cdc9:21c0 with SMTP id
+ y21-20020a0dd615000000b002f7cdc921c0mr25441432ywd.486.1651164312085; Thu, 28
+ Apr 2022 09:45:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <3167cbec7a82704c1ed2c6bfe85b77534a836fdc.1651162840.git.andreyknvl@google.com>
+ <c4105419650a2a8d9f153f55b5e76f4daa428297.1651162840.git.andreyknvl@google.com>
+In-Reply-To: <c4105419650a2a8d9f153f55b5e76f4daa428297.1651162840.git.andreyknvl@google.com>
+From:   Alexander Potapenko <glider@google.com>
+Date:   Thu, 28 Apr 2022 18:44:36 +0200
+Message-ID: <CAG_fn=Vy+GuQ0YCCvU1i2fwO35ZWbE3MqK9if6+iX4q5_3mTRA@mail.gmail.com>
+Subject: Re: [PATCH 3/3] kasan: give better names to shadow values
+To:     andrey.konovalov@linux.dev
+Cc:     Marco Elver <elver@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrey Konovalov <andreyknvl@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It isn't necessary to manually walk the device tree and enable
-the CPU clock anymore. The CPU and other necessary clocks are
-now flagged as critical in the clock driver, which accomplishes
-the same thing in a more declarative fashion.
-
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Reviewed-by: Paul Cercueil <paul@crapouillou.net>
----
- arch/mips/generic/board-ingenic.c | 26 --------------------------
- 1 file changed, 26 deletions(-)
-
-diff --git a/arch/mips/generic/board-ingenic.c b/arch/mips/generic/board-ingenic.c
-index 3f44f14bdb33..c422bbc890ed 100644
---- a/arch/mips/generic/board-ingenic.c
-+++ b/arch/mips/generic/board-ingenic.c
-@@ -131,36 +131,10 @@ static const struct platform_suspend_ops ingenic_pm_ops __maybe_unused = {
- 
- static int __init ingenic_pm_init(void)
- {
--	struct device_node *cpu_node;
--	struct clk *cpu0_clk;
--	int ret;
--
- 	if (boot_cpu_type() == CPU_XBURST) {
- 		if (IS_ENABLED(CONFIG_PM_SLEEP))
- 			suspend_set_ops(&ingenic_pm_ops);
- 		_machine_halt = ingenic_halt;
--
--		/*
--		 * Unconditionally enable the clock for the first CPU.
--		 * This makes sure that the PLL that feeds the CPU won't be
--		 * stopped while the kernel is running.
--		 */
--		cpu_node = of_get_cpu_node(0, NULL);
--		if (!cpu_node) {
--			pr_err("Unable to get CPU node\n");
--		} else {
--			cpu0_clk = of_clk_get(cpu_node, 0);
--			if (IS_ERR(cpu0_clk)) {
--				pr_err("Unable to get CPU0 clock\n");
--				return PTR_ERR(cpu0_clk);
--			}
--
--			ret = clk_prepare_enable(cpu0_clk);
--			if (ret) {
--				pr_err("Unable to enable CPU0 clock\n");
--				return ret;
--			}
--		}
- 	}
- 
- 	return 0;
--- 
-2.35.1
-
+On Thu, Apr 28, 2022 at 6:22 PM <andrey.konovalov@linux.dev> wrote:
+>
+> From: Andrey Konovalov <andreyknvl@google.com>
+>
+> Rename KASAN_KMALLOC_* shadow values to KASAN_SLAB_*, as they are used
+> for all slab allocations, not only for kmalloc.
+>
+> Also rename KASAN_FREE_PAGE to KASAN_PAGE_FREE to be consistent with
+> KASAN_PAGE_REDZONE and KASAN_SLAB_FREE.
+>
+> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+Reviewed-by: Alexander Potapenko <glider@google.com>
