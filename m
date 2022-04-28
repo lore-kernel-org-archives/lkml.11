@@ -2,105 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24735C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:35:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DEFC43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:36:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245469AbiD1Hiq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:38:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40146 "EHLO
+        id S245488AbiD1HjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 03:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245416AbiD1Hif (ORCPT
+        with ESMTP id S245619AbiD1HjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:38:35 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711B93BF92
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:35:19 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id i19so7756019eja.11
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:35:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=5c6uwqXlBRU9bpJ9pSPHIXx5eNprORPrld9pozTs8Tw=;
-        b=H75j/3VRi9fqMtQbn+w04QsT6K235C5ROMHuhSVSFmFZ/koa2PILvH3Ept+2Sr0mYO
-         WSOqyZXTv2PlXVd3TVxfSGINFtTlQic8/pEjyg8PSWB9elu9fPZV1grj2ULvGOXndrZX
-         C9jJxsSXlWkhLIGVEqHfye8ciAa4iIuahGDIvYsa3ersPJ+sACW2zT14sAKrhyEwgZ5a
-         nDqxMaGXDvxTvbcBKuOqaQKsmGt8JHV1XOv7Zi/8Wlf+gOnA/37yWHKfRL69pktHOX8s
-         uK0plqWDOlwXYG1uzhfDSiTs1GShXhFLCm9QGVWSQ9sBHhqFQA05pE5maHX4pcy0NtGU
-         xYfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=5c6uwqXlBRU9bpJ9pSPHIXx5eNprORPrld9pozTs8Tw=;
-        b=WnYPUYL7+FXWry6X6TL2uN+2TogZ1wxQwY+36Fyt5nvqlSGR0AdlF32sXNiQ2QOxqX
-         diZ4OkWX3xMCjO0OhCdX+9Z0/eTRh2yMUM+cN/BOtkEQsH+/CxPU+anyII10CBTsb4jJ
-         ZFYPR6bHYi3bsJP3emj5YZxNeRLARNR6fjepnPXEKsx7mwdKbNnDXvxebphCTtbNGXfH
-         Z2555dXmBoOvgce/Y/AeNUJxfEAIW+je5zTRlsmvQX7/2T8igOgNJA+1C4WP3nWWGZqi
-         Orj7d2/I5gGpmeG3TA3pM3aiHFXx0/AfgHFN8QOy/Pdq4La+RNz04Djz3KQkWts8XJaw
-         L+ag==
-X-Gm-Message-State: AOAM5305ImIAQ7Vpr3kOzWFkELeLzwkVEjXGNqz6OxtCQuejlgnVUfaU
-        F+J0xKBKgkgvtixWu/K+W/E76xl1i+1Lww==
-X-Google-Smtp-Source: ABdhPJxQABhDMXxKQC9B69m+aqrtRZFN3sKdbOUkg4a5i6dj/makIccAEAbNy2MqAD8h+bIFQVIExQ==
-X-Received: by 2002:a17:906:c113:b0:6e8:89f7:56da with SMTP id do19-20020a170906c11300b006e889f756damr30833813ejc.174.1651131318027;
-        Thu, 28 Apr 2022 00:35:18 -0700 (PDT)
-Received: from [192.168.0.160] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id n10-20020a170906378a00b006f3cd3e7b94sm2127377ejc.213.2022.04.28.00.35.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 00:35:17 -0700 (PDT)
-Message-ID: <703d4811-e46a-202e-c4ca-578ecdbd3e35@linaro.org>
-Date:   Thu, 28 Apr 2022 09:35:16 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 3/3] arm64: dts: sprd: use new 'dma-channels' property
-Content-Language: en-US
-To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220427161423.647534-1-krzysztof.kozlowski@linaro.org>
- <20220427161423.647534-4-krzysztof.kozlowski@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220427161423.647534-4-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Thu, 28 Apr 2022 03:39:05 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 379B14EF58;
+        Thu, 28 Apr 2022 00:35:50 -0700 (PDT)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxUNrQQ2piqFEBAA--.6543S3;
+        Thu, 28 Apr 2022 15:35:46 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next RESEND 1/2] bpf, docs: Remove duplicated word "instructions"
+Date:   Thu, 28 Apr 2022 15:35:43 +0800
+Message-Id: <1651131344-24528-2-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+In-Reply-To: <1651131344-24528-1-git-send-email-yangtiezhu@loongson.cn>
+References: <1651131344-24528-1-git-send-email-yangtiezhu@loongson.cn>
+X-CM-TRANSID: AQAAf9BxUNrQQ2piqFEBAA--.6543S3
+X-Coremail-Antispam: 1UD129KBjvdXoWrtF4UCryftFy3XF18Wr1UAwb_yoWfArg_CF
+        y7tFW5C3Z8Ka4rKr4UCr1UXF97uFWrCr18Ar1jyrsFq34DXa1DAFZ8tryqy343Cr4xuFn8
+        JrZ7Xr13ArnxCjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbqxYjsxI4VWxJwAYFVCjjxCrM7AC8VAFwI0_Xr0_Wr1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l82xGYIkIc2x26280x7
+        IE14v26r18M28IrcIa0xkI8VCY1x0267AKxVWUCVW8JwA2ocxC64kIII0Yj41l84x0c7CE
+        w4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6x
+        kF7I0E14v26r4UJVWxJr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv
+        6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c
+        02F40Ex7xfMcIj6xIIjxv20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVW8JVWxJwAm72CE
+        4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc7CjxVAaw2AFwI0_JF0_Jw1lc2xSY4
+        AK67AK6r4xMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8C
+        rVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8Zw
+        CIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x02
+        67AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr
+        0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU0eT
+        5PUUUUU==
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/04/2022 18:14, Krzysztof Kozlowski wrote:
-> The '#dma-channels' property was deprecated in favor of one defined by
-> generic dma-common DT bindings.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  arch/arm64/boot/dts/sprd/whale2.dtsi | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/sprd/whale2.dtsi b/arch/arm64/boot/dts/sprd/whale2.dtsi
-> index 79b9591c37aa..945f0e02d364 100644
-> --- a/arch/arm64/boot/dts/sprd/whale2.dtsi
-> +++ b/arch/arm64/boot/dts/sprd/whale2.dtsi
-> @@ -126,7 +126,7 @@ ap_dma: dma-controller@20100000 {
->  				reg = <0 0x20100000 0 0x4000>;
->  				interrupts = <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>;
->  				#dma-cells = <1>;
-> -				#dma-channels = <32>;
-> +				dma-channels = <32>;
+The word "instructions" is duplicated, remove it.
 
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+ Documentation/bpf/instruction-set.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-As Rob proposed, the removal of old property does not have to happen in
-this patch (but much later). This would allow merging DTS change
-immediately.
+diff --git a/Documentation/bpf/instruction-set.rst b/Documentation/bpf/instruction-set.rst
+index 5300837..30b019c 100644
+--- a/Documentation/bpf/instruction-set.rst
++++ b/Documentation/bpf/instruction-set.rst
+@@ -130,7 +130,7 @@ Byte swap instructions
+ The byte swap instructions use an instruction class of ``BFP_ALU`` and a 4-bit
+ code field of ``BPF_END``.
+ 
+-The byte swap instructions instructions operate on the destination register
++The byte swap instructions operate on the destination register
+ only and do not use a separate source register or immediate value.
+ 
+ The 1-bit source operand field in the opcode is used to to select what byte
+-- 
+2.1.0
 
-I will resend in that spirit, unless SoC maintainers prefer the original
-approach (where DTS has to wait for next release)?
-
-
-Best regards,
-Krzysztof
