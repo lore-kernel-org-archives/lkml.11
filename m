@@ -2,181 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66945C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:02:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E45C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244718AbiD1HFy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:05:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53426 "EHLO
+        id S244727AbiD1HH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 03:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243447AbiD1HFv (ORCPT
+        with ESMTP id S243043AbiD1HH0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:05:51 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AFFD98F4A
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:02:34 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Thu, 28 Apr 2022 03:07:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1743A98F50;
+        Thu, 28 Apr 2022 00:04:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 2831D1F37F;
-        Thu, 28 Apr 2022 07:02:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1651129353; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yv/GAIx/8nETe4kCc4L+SSgXvQ1n5epRd4fqCoWrYmc=;
-        b=dYe3x0GhIPZUxYzZbcTFFZ1VHjZHgMKRNndSeEd8Q8mupCdL0wWgX439hmAFWveOFpTFdj
-        mu63IwYtdrbXJJGOZALoZgoApGOq9flonip7Ot4yUp1g97jHw511Y/ULpiOqxOtPj8my6I
-        DdO9QK5hbSEtFLP2k6RFS7Zm6ebhgHs=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1651129353;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yv/GAIx/8nETe4kCc4L+SSgXvQ1n5epRd4fqCoWrYmc=;
-        b=zctHkSC7I1dtYLurWhPSL97e6MapO2UTCMWlvoXyikxIFXl6yg8xvQ7T0zH/rS0bPs8RuF
-        ckciGSUzvIwsYMCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0079E13A8C;
-        Thu, 28 Apr 2022 07:02:32 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id BkiiOgg8amJKXQAAMHmgww
-        (envelope-from <tzimmermann@suse.de>); Thu, 28 Apr 2022 07:02:32 +0000
-Message-ID: <46446e78-60a6-1b8c-1bb6-1c005489d58c@suse.de>
-Date:   Thu, 28 Apr 2022 09:02:32 +0200
+        by ams.source.kernel.org (Postfix) with ESMTPS id 535C0B82BC4;
+        Thu, 28 Apr 2022 07:04:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B788C385A0;
+        Thu, 28 Apr 2022 07:04:07 +0000 (UTC)
+Message-ID: <fd81ba16-9772-3f45-dca6-50a0284abd86@xs4all.nl>
+Date:   Thu, 28 Apr 2022 09:04:06 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2] drm/display: Select DP helper for DRM_DP_AUX_CHARDEV
- and DRM_DP_CEC
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] Documentation/media: Try to make enum usage clearer
 Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Lyude Paul <lyude@redhat.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org
-References: <20220427215528.237861-1-javierm@redhat.com>
-From:   Thomas Zimmermann <tzimmermann@suse.de>
-In-Reply-To: <20220427215528.237861-1-javierm@redhat.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------fWDwLqO6HwfernA4whKEzwFE"
+To:     Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@puri.sm
+References: <20220422092542.1333177-1-dorota.czaplejewicz@puri.sm>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220422092542.1333177-1-dorota.czaplejewicz@puri.sm>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------fWDwLqO6HwfernA4whKEzwFE
-Content-Type: multipart/mixed; boundary="------------UvUZ02dQorqjjUjIPmecZju0";
- protected-headers="v1"
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: Javier Martinez Canillas <javierm@redhat.com>,
- linux-kernel@vger.kernel.org
-Cc: Lyude Paul <lyude@redhat.com>, Jani Nikula <jani.nikula@linux.intel.com>,
- Daniel Vetter <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>,
- dri-devel@lists.freedesktop.org
-Message-ID: <46446e78-60a6-1b8c-1bb6-1c005489d58c@suse.de>
-Subject: Re: [PATCH v2] drm/display: Select DP helper for DRM_DP_AUX_CHARDEV
- and DRM_DP_CEC
-References: <20220427215528.237861-1-javierm@redhat.com>
-In-Reply-To: <20220427215528.237861-1-javierm@redhat.com>
+Hi Dorota,
 
---------------UvUZ02dQorqjjUjIPmecZju0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+On 22/04/2022 11:30, Dorota Czaplejewicz wrote:
+> Fixed: typo "format" -> "frame size" in enum-frame-size
+> Added: mbus codes must not repeat
+> Added: no holes in the array
+> Added: arrays per what?
+> Added: who fills in what (questionable naming: caller/driver. caller/callee could be confusing for beginners, they look similar)
+> Changed: "zero" -> "0"
+> Changed: "given" -> "selected". "given to me by the driver?" dunno feels like "selected" or "chosen" are the words to indicate agency to the consumer
 
-SGkNCg0KQW0gMjcuMDQuMjIgdW0gMjM6NTUgc2NocmllYiBKYXZpZXIgTWFydGluZXogQ2Fu
-aWxsYXM6DQo+IFRoZSBEUk1fRFBfQVVYX0NIQVJERVYgYW5kIERSTV9EUF9DRUMgS2NvbmZp
-ZyBzeW1ib2xzIGVuYWJsZSBjb2RlIHRoYXQgdXNlDQo+IERQIGhlbHBlciBmdW5jdGlvbnMs
-IHRoYXQgYXJlIG9ubHkgcHJlc2VudCBpZiBDT05GSUdfRFJNX0RJU1BMQVlfRFBfSEVMUEVS
-DQo+IGlzIGFsc28gZW5hYmxlZC4NCj4gDQo+IEJ1dCB0aGVzZSBkb24ndCBzZWxlY3QgdGhl
-IERSTV9ESVNQTEFZX0RQX0hFTFBFUiBzeW1ib2wsIG1lYW5pbmcgdGhhdCBpdA0KPiBpcyBw
-b3NzaWJsZSB0byBlbmFibGUgYW55IG9mIHRoZW0gd2l0aG91dCBDT05GSUdfRFJNX0RJU1BM
-QVlfRFBfSEVMUEVSLg0KPiANCj4gVGhhdCB3aWxsIGxlYWQgdG8gdGhlIGZvbGxvd2luZyBs
-aW5raW5nIGVycm9ycyB3aXRoIHRoZSBtZW50aW9uZWQgY29uZmlnOg0KPiANCj4gICAgTEQg
-ICAgICB2bWxpbnV4Lm8NCj4gICAgTU9EUE9TVCB2bWxpbnV4LnN5bXZlcnMNCj4gICAgTU9E
-SU5GTyBtb2R1bGVzLmJ1aWx0aW4ubW9kaW5mbw0KPiAgICBHRU4gICAgIG1vZHVsZXMuYnVp
-bHRpbg0KPiAgICBMRCAgICAgIC50bXBfdm1saW51eC5rYWxsc3ltczENCj4gICAgS1NZTVMg
-ICAudG1wX3ZtbGludXgua2FsbHN5bXMxLlMNCj4gICAgQVMgICAgICAudG1wX3ZtbGludXgu
-a2FsbHN5bXMxLlMNCj4gICAgTEQgICAgICAudG1wX3ZtbGludXgua2FsbHN5bXMyDQo+ICAg
-IEtTWU1TICAgLnRtcF92bWxpbnV4LmthbGxzeW1zMi5TDQo+ICAgIEFTICAgICAgLnRtcF92
-bWxpbnV4LmthbGxzeW1zMi5TDQo+ICAgIExEICAgICAgdm1saW51eA0KPiAgICBTWVNNQVAg
-IFN5c3RlbS5tYXANCj4gICAgU09SVFRBQiB2bWxpbnV4DQo+ICAgIE9CSkNPUFkgYXJjaC9h
-cm02NC9ib290L0ltYWdlDQo+ICAgIE1PRFBPU1QgbW9kdWxlcy1vbmx5LnN5bXZlcnMNCj4g
-RVJST1I6IG1vZHBvc3Q6ICJkcm1fZHBfZHBjZF93cml0ZSIgW2RyaXZlcnMvZ3B1L2RybS9k
-aXNwbGF5L2RybV9kaXNwbGF5X2hlbHBlci5rb10gdW5kZWZpbmVkIQ0KPiBFUlJPUjogbW9k
-cG9zdDogImRybV9kcF9yZWFkX2Rlc2MiIFtkcml2ZXJzL2dwdS9kcm0vZGlzcGxheS9kcm1f
-ZGlzcGxheV9oZWxwZXIua29dIHVuZGVmaW5lZCENCj4gRVJST1I6IG1vZHBvc3Q6ICJkcm1f
-ZHBfZHBjZF9yZWFkIiBbZHJpdmVycy9ncHUvZHJtL2Rpc3BsYXkvZHJtX2Rpc3BsYXlfaGVs
-cGVyLmtvXSB1bmRlZmluZWQhDQo+IG1ha2VbMV06ICoqKiBbc2NyaXB0cy9NYWtlZmlsZS5t
-b2Rwb3N0OjEzNDogbW9kdWxlcy1vbmx5LnN5bXZlcnNdIEVycm9yIDENCj4gbWFrZVsxXTog
-KioqIERlbGV0aW5nIGZpbGUgJ21vZHVsZXMtb25seS5zeW12ZXJzJw0KPiBtYWtlOiAqKiog
-W01ha2VmaWxlOjE3NDk6IG1vZHVsZXNdIEVycm9yIDINCj4gDQo+IE5vdGU6IEl0IHNlZW1z
-IHRoaXMgaGFzIGJlZW4gYW4gaXNzdWUgZm9yIGEgbG9uZyB0aW1lIGJ1dCB3YXMgbWFkZSBl
-YXNpZXINCj4gdG8gcmVwcm9kdWNlIGFmdGVyIHRoZSBjb21taXQgMWUwZjY2NDIwYjEzICgi
-ZHJtL2Rpc3BsYXk6IEludHJvZHVjZSBhIERSTQ0KPiBkaXNwbGF5LWhlbHBlciBtb2R1bGUi
-KS4gQWRkaW5nIGEgRml4ZXM6IHRhZyBqdXN0IHRvIG1ha2Ugc3VyZSB0aGF0IHRoaXMNCj4g
-Zml4IHdpbGwgYmUgcGlja2VkIGZvciBzdGFibGUgb25jZSB0aGUgbWVudGlvbmVkIGNoYW5n
-ZSBhbHNvIGxhbmRzIHRoZXJlLg0KPiANCj4gRml4ZXM6IDFlMGY2NjQyMGIxMyAoImRybS9k
-aXNwbGF5OiBJbnRyb2R1Y2UgYSBEUk0gZGlzcGxheS1oZWxwZXIgbW9kdWxlIikNCj4gU2ln
-bmVkLW9mZi1ieTogSmF2aWVyIE1hcnRpbmV6IENhbmlsbGFzIDxqYXZpZXJtQHJlZGhhdC5j
-b20+DQo+IC0tLQ0KPiANCj4gQ2hhbmdlcyBpbiB2MjoNCj4gLSBFeHBsYWluIGJldHRlciB0
-aGUgaXNzdWUgaW4gdGhlIGNoYW5nZSBkZXNjcmlwdGlvbi4NCj4gLSBPbmx5IHNlbGVjdCBE
-Uk1fRElTUExBWV9EUF9IRUxQRVIgYW5kIG5vdCBEUk1fRElTUExBWV9IRUxQRVIuDQo+IA0K
-PiAgIGRyaXZlcnMvZ3B1L2RybS9kaXNwbGF5L0tjb25maWcgfCAyICsrDQo+ICAgMSBmaWxl
-IGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-Z3B1L2RybS9kaXNwbGF5L0tjb25maWcgYi9kcml2ZXJzL2dwdS9kcm0vZGlzcGxheS9LY29u
-ZmlnDQo+IGluZGV4IGY4NGYxYjBjZDIzZi4uOWZlODBjNGU1NTVjIDEwMDY0NA0KPiAtLS0g
-YS9kcml2ZXJzL2dwdS9kcm0vZGlzcGxheS9LY29uZmlnDQo+ICsrKyBiL2RyaXZlcnMvZ3B1
-L2RybS9kaXNwbGF5L0tjb25maWcNCj4gQEAgLTMyLDYgKzMyLDcgQEAgY29uZmlnIERSTV9E
-SVNQTEFZX0hETUlfSEVMUEVSDQo+ICAgY29uZmlnIERSTV9EUF9BVVhfQ0hBUkRFVg0KPiAg
-IAlib29sICJEUk0gRFAgQVVYIEludGVyZmFjZSINCj4gICAJZGVwZW5kcyBvbiBEUk0NCj4g
-KwlzZWxlY3QgRFJNX0RJU1BMQVlfRFBfSEVMUEVSDQoNCllvdSBjYW5ub3Qgc2VsZWN0IERJ
-U1BMQVlfRFBfSEVMUEVSIHdpdGhvdXQgRElTUExBWV9IRUxQRVIuDQoNCkNhbid0IHlvdSBz
-aW1wbHkgbWFrZSBpdCBkZXBlbmQgb24gRElTUExBWV9EUF9IRUxQRVIuICBUaGUgbWVudSBl
-bnRyeSANCndpbGwgc2hvdyB1cCBhcyBzb29uIGFzIHRoZXJlJ3MgYSBkcml2ZXIgdGhhdCBz
-ZWxjZXRzIERJU1BMQVlfRFBfSEVMUEVSLg0KDQpCZXN0IHJlZ2FyZHMNClRob21hcw0KDQo+
-ICAgCWhlbHANCj4gICAJICBDaG9vc2UgdGhpcyBvcHRpb24gdG8gZW5hYmxlIGEgL2Rldi9k
-cm1fZHBfYXV4TiBub2RlIHRoYXQgYWxsb3dzIHRvDQo+ICAgCSAgcmVhZCBhbmQgd3JpdGUg
-dmFsdWVzIHRvIGFyYml0cmFyeSBEUENEIHJlZ2lzdGVycyBvbiB0aGUgRFAgYXV4DQo+IEBA
-IC00MCw2ICs0MSw3IEBAIGNvbmZpZyBEUk1fRFBfQVVYX0NIQVJERVYNCj4gICBjb25maWcg
-RFJNX0RQX0NFQw0KPiAgIAlib29sICJFbmFibGUgRGlzcGxheVBvcnQgQ0VDLVR1bm5lbGlu
-Zy1vdmVyLUFVWCBIRE1JIHN1cHBvcnQiDQo+ICAgCWRlcGVuZHMgb24gRFJNDQo+ICsJc2Vs
-ZWN0IERSTV9ESVNQTEFZX0RQX0hFTFBFUg0KPiAgIAlzZWxlY3QgQ0VDX0NPUkUNCj4gICAJ
-aGVscA0KPiAgIAkgIENob29zZSB0aGlzIG9wdGlvbiBpZiB5b3Ugd2FudCB0byBlbmFibGUg
-SERNSSBDRUMgc3VwcG9ydCBmb3INCg0KLS0gDQpUaG9tYXMgWmltbWVybWFubg0KR3JhcGhp
-Y3MgRHJpdmVyIERldmVsb3Blcg0KU1VTRSBTb2Z0d2FyZSBTb2x1dGlvbnMgR2VybWFueSBH
-bWJIDQpNYXhmZWxkc3RyLiA1LCA5MDQwOSBOw7xybmJlcmcsIEdlcm1hbnkNCihIUkIgMzY4
-MDksIEFHIE7DvHJuYmVyZykNCkdlc2Now6RmdHNmw7xocmVyOiBJdm8gVG90ZXYNCg==
+I'm missing a 'Signed-off-by' here, please add this in a v2.
 
---------------UvUZ02dQorqjjUjIPmecZju0--
+> 
+> ---
+> Hello,
+> 
+> I encountered some difficulties trying to implement a media-api driver, and I traced the problems to not understanding the documentation. Here I try to make the API usage clearer, after consulting with libcamera authors.
+> 
+> Still unclear how it works so I didn't touch it: "which". What is a "try format" vs "active format"?
+> 
+> Cheers,
+> Dorota Czaplejewicz
+> 
+> 
+>  .../v4l/vidioc-subdev-enum-frame-size.rst     | 44 ++++++++++++-------
+>  .../v4l/vidioc-subdev-enum-mbus-code.rst      | 39 +++++++++++-----
+>  2 files changed, 55 insertions(+), 28 deletions(-)
 
---------------fWDwLqO6HwfernA4whKEzwFE
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+Split this patch up into two separate patches, one for each .rst file.
 
------BEGIN PGP SIGNATURE-----
+> 
+> diff --git a/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-frame-size.rst b/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-frame-size.rst
+> index c25a9896df0e..c7afeffb6269 100644
+> --- a/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-frame-size.rst
+> +++ b/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-frame-size.rst
+> @@ -31,18 +31,29 @@ Arguments
+>  Description
+>  ===========
+>  
+> -This ioctl allows applications to enumerate all frame sizes supported by
+> -a sub-device on the given pad for the given media bus format. Supported
+> -formats can be retrieved with the
+> +This ioctl allows applications to access the array of frame sizes supported by
 
-wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmJqPAgFAwAAAAAACgkQlh/E3EQov+BG
-xQ/+JwljMIuuALeoCzPPjawd7nDTJj/mORV1W7b6JwFTAsQHHnvzPLOPUpTkPKx9noMpN/hGH64P
-oNhTFSz8ZYaOnI2KjKUejbq4n6l8XayijZZqOYNAC5HIBaeLe2Bpo87CDBQG3VV5xDW9DPQ9PyFE
-lf28sIEhyuT/TOcMd7AYRuUtundTRUEKLkeCzyelzFjtRJFI5S8U00eIRbVJPNJkAWSDXZ1fuO3w
-Pad68Ki3AxZMJCECRwq1zkRsWSxEzE2h5rNWowrwgR4Fma2VmqYZcQwVxDkOPbm+6TbWGIC9tqSW
-AaqPx1cwW4aAnCEyWtTVFCcGN910nug7BUqovWYmhv/AGls69Y4QjvdiJcOD0V5W4Gy6mM2A47an
-qJoWNEkUUedhCeQWAgPUttCB0Ouo71vmFqa0l12k4kd+CxpKXMG0UdpN6/teii4W5t3k1t4RTQO6
-iQy8zgFU9vF1xLUsfn/TtDdYsbRIgOUnr/iWoQMZQFCbOi1qgu6apnGtPkEZE+ySV1qxHK5ClGui
-tDB9KvfsGdkWvIji/mD/L80CCiu8a+5KW3AR5EyrPnvRieq0mV70Ok8tJE+MP5dUEOafD4Fq5/U/
-M4eyVFs82qrOwoNvPfiqXLESZWMCAjhLGgqogazqumC3bSNMMpPGmEonLAXtqsVLOGOQQKu7BoQF
-Zmo=
-=0UbS
------END PGP SIGNATURE-----
+As I mentioned on, I think, irc, I disagree with calling this an array.
+I prefer the original phrase 'enumerate all frame sizes'. This is consistent
+as well with other ENUM ioctls. This applies to the other 'array' references
+below as well. Just keep the original text.
 
---------------fWDwLqO6HwfernA4whKEzwFE--
+> +a sub-device on the selected pad for the selected media bus format.
+
+I'd use 'specified' instead of 'selected' or 'given' since the application
+specifies this information.
+
+> +Supported formats can be retrieved with the
+>  :ref:`VIDIOC_SUBDEV_ENUM_MBUS_CODE`
+>  ioctl.
+>  
+> -To enumerate frame sizes applications initialize the ``pad``, ``which``
+> -, ``code`` and ``index`` fields of the struct
+> -:c:type:`v4l2_subdev_mbus_code_enum` and
+> -call the :ref:`VIDIOC_SUBDEV_ENUM_FRAME_SIZE` ioctl with a pointer to the
+> -structure. Drivers fill the minimum and maximum frame sizes or return an
+> -EINVAL error code if one of the input parameters is invalid.
+> +The arrays are defined by the driver, and indexed using the ``index`` field
+> +of the struct :c:type:`v4l2_subdev_mbus_code_enum`.
+> +Each pair of ``pad`` and ``code`` correspond to a separate array.
+> +Each array starts with the ``index`` of 0, and
+> +the first invalid index marks the end of array.
+> +
+> +Therefore, to enumerate frame sizes allowed on the selected pad
+> +and using the selected mbus format, initialize the
+> +``pad``, ``which``, and ``code`` fields to desired values,
+> +and set ``index`` to 0.
+> +Then call the :ref:`VIDIOC_SUBDEV_ENUM_FRAME_SIZE` ioctl with a pointer to the
+> +structure.
+> +
+> +A successful call will return with minimum and maximum frame sizes filled in.
+> +Repeat with increasing ``index`` until ``EINVAL`` is received.
+> +``EINVAL`` means that either no more entries are available in the array,
+> +or that an input parameter was invalid.
+>  
+>  Sub-devices that only support discrete frame sizes (such as most
+>  sensors) will return one or more frame sizes with identical minimum and
+> @@ -72,26 +83,27 @@ information about try formats.
+>  
+>      * - __u32
+>        - ``index``
+> -      - Number of the format in the enumeration, set by the application.
+> +      - Index of the frame size in the enumeration
+> +    belonging to the given pad and format. Filled in by the caller.
+
+Stick to 'application' instead of 'caller'. That's the terminology used elsewhere
+in the documentation as well, changing what it is called is just more confusing.
+
+>      * - __u32
+>        - ``pad``
+> -      - Pad number as reported by the media controller API.
+> +      - Pad number as reported by the media controller API. Filled in by the caller.
+>      * - __u32
+>        - ``code``
+>        - The media bus format code, as defined in
+> -	:ref:`v4l2-mbus-format`.
+> +	:ref:`v4l2-mbus-format`. Filled in by the caller.
+>      * - __u32
+>        - ``min_width``
+> -      - Minimum frame width, in pixels.
+> +      - Minimum frame width, in pixels. Filled in by the driver.
+>      * - __u32
+>        - ``max_width``
+> -      - Maximum frame width, in pixels.
+> +      - Maximum frame width, in pixels. Filled in by the driver.
+>      * - __u32
+>        - ``min_height``
+> -      - Minimum frame height, in pixels.
+> +      - Minimum frame height, in pixels. Filled in by the driver.
+>      * - __u32
+>        - ``max_height``
+> -      - Maximum frame height, in pixels.
+> +      - Maximum frame height, in pixels. Filled in by the driver.
+>      * - __u32
+>        - ``which``
+>        - Frame sizes to be enumerated, from enum
+> diff --git a/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbus-code.rst b/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbus-code.rst
+> index 417f1a19bcc4..22d046dd09c2 100644
+> --- a/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbus-code.rst
+> +++ b/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbus-code.rst
+> @@ -31,15 +31,29 @@ Arguments
+>  Description
+>  ===========
+>  
+> -To enumerate media bus formats available at a given sub-device pad
+> -applications initialize the ``pad``, ``which`` and ``index`` fields of
+> -struct
+> -:c:type:`v4l2_subdev_mbus_code_enum` and
+> -call the :ref:`VIDIOC_SUBDEV_ENUM_MBUS_CODE` ioctl with a pointer to this
+> -structure. Drivers fill the rest of the structure or return an ``EINVAL``
+> -error code if either the ``pad`` or ``index`` are invalid. All media bus
+> -formats are enumerable by beginning at index zero and incrementing by
+> -one until ``EINVAL`` is returned.
+> +This call is used by the application to access the array of bus formats
+> +for the selected pad.
+> +
+> +The arrays are defined by the driver, and indexed using the ``index`` field
+> +of struct :c:type:`v4l2_subdev_mbus_code_enum`.
+> +Each value of ``pad`` corresponds to a separate array.
+> +Each array starts with the ``index`` of 0, and
+> +the first invalid index marks the end of array.
+> +
+> +Therefore, to enumerate media bus formats available at a given sub-device pad,
+> +initialize the ``pad``, and ``which`` fields to desired values,
+> +and set ``index`` to 0.
+> +Then call the :ref:`VIDIOC_SUBDEV_ENUM_MBUS_CODE` ioctl
+> +with a pointer to this structure.
+> +
+> +A successful call will return with the ``code`` field filled in
+> +with a mbus format value.
+> +Repeat with increasing ``index`` until ``EINVAL`` is received.
+> +``EINVAL`` means that either ``pad`` is invalid,
+> +or that there are no more codes available at this pad.
+> +
+> +The driver must not return the same value of ``code`` for different indices
+> +at the same pad.
+>  
+>  Available media bus formats may depend on the current 'try' formats at
+>  other pads of the sub-device, as well as on the current active links.
+> @@ -57,14 +71,15 @@ information about the try formats.
+>  
+>      * - __u32
+>        - ``pad``
+> -      - Pad number as reported by the media controller API.
+> +      - Pad number as reported by the media controller API. Filled in by the caller.
+>      * - __u32
+>        - ``index``
+> -      - Number of the format in the enumeration, set by the application.
+> +      - Index of the mbus code in the enumeration belonging to the given pad.
+> +    Filled in by the caller.
+>      * - __u32
+>        - ``code``
+>        - The media bus format code, as defined in
+> -	:ref:`v4l2-mbus-format`.
+> +	:ref:`v4l2-mbus-format`. Filled in by the driver.
+>      * - __u32
+>        - ``which``
+>        - Media bus format codes to be enumerated, from enum
+
+I'll take another, closer look at this once v2 is posted. The documentation certainly
+can be better, but changing terminology inconsistent with what is used elsewhere in
+the media documentation is not helping.
+
+You should also consider changing vidioc-subdev-enum-frame-interval.rst which is
+closely related to these two documentation files. If changes are made, then it
+should probably be done to all three.
+
+Regards,
+
+	Hans
