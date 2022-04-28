@@ -2,109 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6323EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 04:48:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE68C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 04:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242765AbiD1Evm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 00:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40458 "EHLO
+        id S242790AbiD1EwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 00:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241731AbiD1Evj (ORCPT
+        with ESMTP id S241731AbiD1EwC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 00:51:39 -0400
-Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com [210.131.2.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E407DE21;
-        Wed, 27 Apr 2022 21:48:23 -0700 (PDT)
-Received: from mail-pg1-f174.google.com (mail-pg1-f174.google.com [209.85.215.174]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id 23S4lsHu001405;
-        Thu, 28 Apr 2022 13:47:54 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 23S4lsHu001405
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1651121274;
-        bh=iNPcdynsiE9cFa7PrW6D5J6kKtmXCdTuoM66ZTzKmP4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=v0jaH2oKbbR4d6pZgPxUhXXYQoHwJ+bMcPi6Vu0HjMI1ypEPnpBEEx4fl4wrzdYxZ
-         SotssQIZqlnhiL71wqKFGvNkBWs6r86Rk3jsvnHXPurcPz9i0e5k8+XjQF5XjgXRoC
-         JNjIR2K6bFhkKkkvdedE9EBR1M0tGxOl/y6uvspv6yZsAO6YMT8joZF7e7/glT7Uwf
-         Bsqt7Tp/QyGpd1TBKak1JtE4xY40NNMcAxm3YRUf2r6+3mpeI/d+UwjrJNOkZrjDH4
-         nDtmo+QiiaK5SBk4yxJA9kz+nHauEKFzhAFq7/kjP7itzd2sqZJlKfP5PgzKaaEaCg
-         mfU6YF6sSQ3pQ==
-X-Nifty-SrcIP: [209.85.215.174]
-Received: by mail-pg1-f174.google.com with SMTP id g3so3054033pgg.3;
-        Wed, 27 Apr 2022 21:47:54 -0700 (PDT)
-X-Gm-Message-State: AOAM530achmGJfDURkinLL9JXAva3cNSCHLDpajqF5j64uju+fC91q7u
-        ob3Rxyvaujgx2D07MKKD6r5UMZzxU9hb6Gano80=
-X-Google-Smtp-Source: ABdhPJyUQ0pcXh3obFtIlIt1EVXqWYssVzaeU4h5YCjrFADTlGfHje1qeWPv1QFFMgxUNg9rIWdwKZaxj2UF+4f9Kfs=
-X-Received: by 2002:a63:18c:0:b0:3aa:d794:7c44 with SMTP id
- 134-20020a63018c000000b003aad7947c44mr23991414pgb.126.1651121273648; Wed, 27
- Apr 2022 21:47:53 -0700 (PDT)
+        Thu, 28 Apr 2022 00:52:02 -0400
+X-Greylist: delayed 587 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Apr 2022 21:48:48 PDT
+Received: from ozlabs.ru (ozlabs.ru [107.174.27.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 666127DE21
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 21:48:48 -0700 (PDT)
+Received: from fstn1-p1.ozlabs.ibm.com. (localhost [IPv6:::1])
+        by ozlabs.ru (Postfix) with ESMTP id C92C980536;
+        Thu, 28 Apr 2022 00:38:56 -0400 (EDT)
+From:   Alexey Kardashevskiy <aik@ozlabs.ru>
+To:     linux-kernel@vger.kernel.org
+Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>, Tom Rix <trix@redhat.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH kernel] RFC: zstd: Fixing mixed module-builtin objects
+Date:   Thu, 28 Apr 2022 14:38:50 +1000
+Message-Id: <20220428043850.1706973-1-aik@ozlabs.ru>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220424190811.1678416-1-masahiroy@kernel.org>
- <20220424190811.1678416-27-masahiroy@kernel.org> <YmoGuY82c/gGI/sU@bergen.fjasle.eu>
-In-Reply-To: <YmoGuY82c/gGI/sU@bergen.fjasle.eu>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 28 Apr 2022 13:46:50 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASDWPUuF3psbPb948LMumHn0BvcpPuuBgNLALgQ8y9=Kw@mail.gmail.com>
-Message-ID: <CAK7LNASDWPUuF3psbPb948LMumHn0BvcpPuuBgNLALgQ8y9=Kw@mail.gmail.com>
-Subject: Re: [PATCH 26/27] kbuild: stop generating *.symversions
-To:     Nicolas Schier <nicolas@fjasle.eu>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 12:15 PM Nicolas Schier <nicolas@fjasle.eu> wrote:
->
-> On Mon 25 Apr 2022 04:08:10 GMT Masahiro Yamada wrote:
-> > Now *.symversions is unneeded. Clean up the Makefile and script.
-> >
-> > I will keep *.symversions in .gitignore and 'make clean' for a while
-> > to avoid flooding the output from 'git status'.
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > ---
-> >
-> >  scripts/Makefile.build  | 28 ++++------------------------
-> >  scripts/link-vmlinux.sh | 19 -------------------
-> >  2 files changed, 4 insertions(+), 43 deletions(-)
-> >
-> > diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> > index aadc16e04632..7f199b0a5170 100644
-> > --- a/scripts/Makefile.build
-> > +++ b/scripts/Makefile.build
-> > @@ -170,12 +170,9 @@ ifdef CONFIG_MODVERSIONS
-> >  # to the kernel and/or modules at the end.
-> >  gen_symversions =                                                            \
-> >       if $(NM) $@ 2>/dev/null | grep -q __ksymtab; then                       \
-> > -             $(call cmd_gensymtypes_$(1),$(KBUILD_SYMTYPES),$(@:.o=.symtypes)) \
-> > -                 > $@.symversions;                                           \
-> >               echo >> $(dot-target).cmd ;                                     \
-> > -             sed 's/\(.*\) = \(.*\);/$(pound)\1=\2/' $@.symversions >> $(dot-target).cmd ; \
-> > -     else                                                                    \
-> > -             rm -f $@.symversions;                                           \
-> > +             $(call cmd_gensymtypes_$(1),$(KBUILD_SYMTYPES),$(@:.o=.symtypes)) | \
-> > +             sed 's/\(.*\) = \(.*\);/$(pound)\1=\2/' >> $(dot-target).cmd ; \
->
-> I was wondering, whether we should integrate the 'sed' part into
-> genksyms and make it output the lines as we need them.
-> If genksyms fails, we now don't see any error code and make will
-> silently continue as the pipe hides genksyms' exit code, right?
+With CONFIG_ZSTD_COMPRESS=m and CONFIG_ZSTD_DECOMPRESS=y we end up in
+a situation when files from lib/zstd/common/ are compiled once for
+ZSTD_DECOMPRESS (build-in) and ZSTD_COMPRESS (module) even though
+CFLAGS are different for builtins and modules. So far somehow
+this was not a problem until enabling LLVM LTO where it fails:
+
+ld.lld: error: linking module flags 'Code Model': IDs have conflicting values in 'lib/built-in.a(zstd_common.o at 5868)' and 'ld-temp.o'
+
+This particular conflict is caused by KBUILD_CFLAGS=-mcmodel=medium vs.
+KBUILD_CFLAGS_MODULE=-mcmodel=large , modules use the large model on
+POWERPC as explained at
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/powerpc/Makefile?h=v5.18-rc4#n127
+but the current use of common files is wrong anyway.
+
+This works around the issue by inlining common files and fixing few
+conflicts.
+
+Cc: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+---
+
+I tried fixing it by hacking Makefile to produce a separate .o for "y" and
+"m", like this:
+
++obj-common-y =  common/debug-y.o \
++               common/entropy_common-y.o \
++               common/error_private-y.o \
++               common/fse_decompress-y.o \
++               common/zstd_common-y.o
++obj-common-m =  common/debug-m.o \
++               common/entropy_common-m.o \
++               common/error_private-m.o \
++               common/fse_decompress-m.o \
++               common/zstd_common-m.o
++obj-common-m := $(addprefix $(obj)/, $(obj-common-m))
++obj-common-y := $(addprefix $(obj)/, $(obj-common-y))
++
++$(obj-common-m): $(obj)/%-m.o: %.c FORCE
++        $(call if_changed_dep,cc_o_c)
++$(obj-common-y): $(obj)/%-y.o: %.c FORCE
++        $(call if_changed_dep,cc_o_c)
++
+
+and so on but could not make it work and I suspect there is
+a better solution to the problem anyway, what is it?
 
 
-You are right.
-I was also thinking of doing this directly in genksyms.
-I will do it in v2.
+---
+ lib/zstd/Makefile                 | 10 ----------
+ lib/zstd/common/error_private.h   |  2 +-
+ lib/zstd/common/entropy_common.c  |  4 ++--
+ lib/zstd/zstd_compress_module.c   |  6 ++++++
+ lib/zstd/zstd_decompress_module.c |  6 ++++++
+ 5 files changed, 15 insertions(+), 13 deletions(-)
 
-bash supports 'set -o pipefail', but I do not know how
-to do it in other shells.
-
-I am also thinking of switching over to SHELL=/bin/bash,
-but we cannot rely on bash'ism here yet.
-
+diff --git a/lib/zstd/Makefile b/lib/zstd/Makefile
+index fc45339fc3a3..ee42f07711ea 100644
+--- a/lib/zstd/Makefile
++++ b/lib/zstd/Makefile
+@@ -13,11 +13,6 @@ obj-$(CONFIG_ZSTD_DECOMPRESS) += zstd_decompress.o
+ 
+ zstd_compress-y := \
+ 		zstd_compress_module.o \
+-		common/debug.o \
+-		common/entropy_common.o \
+-		common/error_private.o \
+-		common/fse_decompress.o \
+-		common/zstd_common.o \
+ 		compress/fse_compress.o \
+ 		compress/hist.o \
+ 		compress/huf_compress.o \
+@@ -33,11 +28,6 @@ zstd_compress-y := \
+ 
+ zstd_decompress-y := \
+ 		zstd_decompress_module.o \
+-		common/debug.o \
+-		common/entropy_common.o \
+-		common/error_private.o \
+-		common/fse_decompress.o \
+-		common/zstd_common.o \
+ 		decompress/huf_decompress.o \
+ 		decompress/zstd_ddict.o \
+ 		decompress/zstd_decompress.o \
+diff --git a/lib/zstd/common/error_private.h b/lib/zstd/common/error_private.h
+index d14e686adf95..e1570545c6af 100644
+--- a/lib/zstd/common/error_private.h
++++ b/lib/zstd/common/error_private.h
+@@ -42,7 +42,7 @@ typedef ZSTD_ErrorCode ERR_enum;
+ #define ERROR(name) ZSTD_ERROR(name)
+ #define ZSTD_ERROR(name) ((size_t)-PREFIX(name))
+ 
+-ERR_STATIC unsigned ERR_isError(size_t code) { return (code > ERROR(maxCode)); }
++ERR_STATIC inline unsigned ERR_isError(size_t code) { return (code > ERROR(maxCode)); }
+ 
+ ERR_STATIC ERR_enum ERR_getErrorCode(size_t code) { if (!ERR_isError(code)) return (ERR_enum)0; return (ERR_enum) (0-code); }
+ 
+diff --git a/lib/zstd/common/entropy_common.c b/lib/zstd/common/entropy_common.c
+index 53b47a2b52ff..863afecb7743 100644
+--- a/lib/zstd/common/entropy_common.c
++++ b/lib/zstd/common/entropy_common.c
+@@ -28,10 +28,10 @@ unsigned FSE_versionNumber(void) { return FSE_VERSION_NUMBER; }
+ 
+ 
+ /*===   Error Management   ===*/
+-unsigned FSE_isError(size_t code) { return ERR_isError(code); }
++#define FSE_isError  ERR_isError
+ const char* FSE_getErrorName(size_t code) { return ERR_getErrorName(code); }
+ 
+-unsigned HUF_isError(size_t code) { return ERR_isError(code); }
++#define HUF_isError  ERR_isError
+ const char* HUF_getErrorName(size_t code) { return ERR_getErrorName(code); }
+ 
+ 
+diff --git a/lib/zstd/zstd_compress_module.c b/lib/zstd/zstd_compress_module.c
+index 65548a4bb934..a4ad46fc1f12 100644
+--- a/lib/zstd/zstd_compress_module.c
++++ b/lib/zstd/zstd_compress_module.c
+@@ -158,3 +158,9 @@ EXPORT_SYMBOL(zstd_end_stream);
+ 
+ MODULE_LICENSE("Dual BSD/GPL");
+ MODULE_DESCRIPTION("Zstd Compressor");
++
++#include "common/debug.c"
++#include "common/entropy_common.c"
++#include "common/error_private.c"
++#include "common/fse_decompress.c"
++#include "common/zstd_common.c"
+diff --git a/lib/zstd/zstd_decompress_module.c b/lib/zstd/zstd_decompress_module.c
+index f4ed952ed485..21820588835d 100644
+--- a/lib/zstd/zstd_decompress_module.c
++++ b/lib/zstd/zstd_decompress_module.c
+@@ -103,3 +103,9 @@ EXPORT_SYMBOL(zstd_get_frame_header);
+ 
+ MODULE_LICENSE("Dual BSD/GPL");
+ MODULE_DESCRIPTION("Zstd Decompressor");
++
++#include "common/debug.c"
++#include "common/entropy_common.c"
++#include "common/error_private.c"
++#include "common/fse_decompress.c"
++#include "common/zstd_common.c"
 -- 
-Best Regards
-Masahiro Yamada
+2.30.2
+
