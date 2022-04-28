@@ -2,132 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 007CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE66C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234705AbiD1DFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 23:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55780 "EHLO
+        id S241704AbiD1DF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 23:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233953AbiD1DFi (ORCPT
+        with ESMTP id S241784AbiD1DFw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 23:05:38 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C9D825594;
-        Wed, 27 Apr 2022 20:02:19 -0700 (PDT)
-Received: from leknes.fjasle.eu ([46.142.49.32]) by mrelayeu.kundenserver.de
- (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1N5n3t-1nuti20xbP-017HWW; Thu, 28 Apr 2022 04:56:13 +0200
-Received: from localhost.fjasle.eu (bergen.fjasle.eu [IPv6:fdda:8718:be81:0:6f0:21ff:fe91:394])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by leknes.fjasle.eu (Postfix) with ESMTPS id 60FF93C01C;
-        Thu, 28 Apr 2022 04:56:11 +0200 (CEST)
-Authentication-Results: leknes.fjasle.eu; dkim=none; dkim-atps=neutral
-Received: by localhost.fjasle.eu (Postfix, from userid 1000)
-        id 2A7005F6; Wed, 27 Apr 2022 22:08:45 +0200 (CEST)
-Date:   Wed, 27 Apr 2022 22:08:45 +0200
-From:   Nicolas Schier <nicolas@fjasle.eu>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH 21/27] kbuild: record symbol versions in *.cmd files
-Message-ID: <YmmizaUdM5PjmCOK@bergen.fjasle.eu>
-References: <20220424190811.1678416-1-masahiroy@kernel.org>
- <20220424190811.1678416-22-masahiroy@kernel.org>
+        Wed, 27 Apr 2022 23:05:52 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8BE99695;
+        Wed, 27 Apr 2022 20:02:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651114957; x=1682650957;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=SIYCB3bexhua9iFQzXZUTU9dplIjEghTancCIHJwJog=;
+  b=Ewpu2M7NyoPLRzZJzISU0lTVPeoW41aAZpBs31QDgsCHfO2OGweOSzlI
+   rAvyAETNMvQ83zjq5UDWFZKqLYcfnF1Z+zYHPPsIITaQpDTXj3PooiRQn
+   oD5xgB8Yw2DtUSUfzLuFQCxwM2YhEGlAEH7peCYYvcJQB8XO8WKqPpwR2
+   Y=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 27 Apr 2022 20:02:37 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 20:02:35 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 27 Apr 2022 20:02:35 -0700
+Received: from [10.50.42.7] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 27 Apr
+ 2022 20:02:31 -0700
+Message-ID: <6b8b7969-56f0-d8d5-91b3-7accf066ea14@quicinc.com>
+Date:   Thu, 28 Apr 2022 08:32:28 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220424190811.1678416-22-masahiroy@kernel.org>
-Jabber-ID: nicolas@jabber.no
-X-Operating-System: Debian GNU/Linux bookworm/sid
-X-Provags-ID: V03:K1:4eZ1QVDrWYPEzqwAHKyFC4DUykBpGTm6QgZLqkfdK9SyXC1ZVLV
- IhNcHRRrNti9CPiPtr0iLywTheurjnLfDex121sMY0iOnLiG9qpadaf0pYt3d894btmOhSl
- q1vFPUstBCVH60KZYrOQ6IaeSfOPC5kknQJ1wpOV5YeAcWbwNM8/toELdyAFW/nn/0j6IdO
- p8HpFhTVhaTVZ+STlSp/Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:2Tc1ER8tJtg=:kQwHwpJmrFigKBpPcsK+v/
- ohzuPubvs5g3BQQOHXseG0XQN7zlf62m700u08oomPYvGK9m25fnu9z0A2D60PZRY8IbR45hX
- Py8w5N4FqySKNPKctAMcFwm/vsTxbXtA/d19xHp2Y/liJhS1EN5/Y3osZhKYIPvrq/W/m64kl
- JUfV2r9NN4EcznE/soSGV0EWqeEK2VbxgX5TEMix9eStKAGksZ/OhK3nRZDo4cNusl0NDdams
- QOP/WMd69XyJUPqsNTN/U2Za3cwfQYL5EXMd7L37YSOWpC5JZlTcLJwixmcnPzIrcY7exOIwN
- yQyUle/kZgaPkdv7KUacjIGqttKE8VskivrebiwqTQURAEUTrXk+jRf91Oa41ZABybiLJwX2M
- tbL3Kg0oIW+HcxUFAqL01/Nx7C29Cl8k63412TUS6DvcWGNNzWOXNmlWhLt/WInIKIDDoZZyV
- FWY9OvseIxYjAiMZLy+k5Kfm9SEU4DxpSjvIGdo02V8ccyWL5ACns6BrGjDd1+vRNuBba/bEu
- b11XQU6ztJsqTOMFrWcHE7iqmZLA2UPDqV+dWQ4K0CJKxXVZgfoxIi6sh6ioVYAKuaWi99qMS
- Po2FZkMtHnO2qcm1tIEWnhTmCrit8y14nxa7On/729FE2myuMJjBYeVa9mXaZ/ef1DQS47N3u
- vnVsWPY3GqvebEHFRJVT6aPoCP+N6gZKIR56k72atx3OUZCaWU7x29QNLrwIbuns1rDE=
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCHv10 0/6] lib/rwmmio/arm64: Add support to trace register
+ reads/writes
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@arndb.de>
+CC:     Catalin Marinas <catalin.marinas@arm.com>,
+        gregkh <gregkh@linuxfoundation.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Marc Zyngier <maz@kernel.org>, <quic_psodagud@quicinc.com>,
+        <quic_tsoni@quicinc.com>, Steven Rostedt <rostedt@goodmis.org>,
+        Will Deacon <will@kernel.org>
+References: <cover.1644824638.git.quic_saipraka@quicinc.com>
+ <20220408111707.2488-1-quic_saipraka@quicinc.com>
+ <bb99b615-cc76-9591-a610-fb4841d41d62@quicinc.com>
+ <CAK8P3a1b0K4hJC9esuznqDdcBoX6+QqD74nVh91-iYbkZxiqbQ@mail.gmail.com>
+From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+In-Reply-To: <CAK8P3a1b0K4hJC9esuznqDdcBoX6+QqD74nVh91-iYbkZxiqbQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On ma. 25. april 2022 kl. 04.08 +0000 Masahiro Yamada wrote:
-> When CONFIG_MODVERSIONS=y, the output from genksyms is saved in
-> separate *.symversions files, and will be used much later when
-> CONFIG_LTO_CLANG=y because it is impossible to update LLVM bit code
-> here.
-> 
-> This approach is not robust because:
-> 
->  - *.symversions may or may not exist. If *.symversions does not
->    exist, we never know if it is missing for legitimate reason
->    (i.e. no EXPORT_SYMBOL) or something bad has happened (for
->    example, the user accidentally deleted it). Once it occurs,
->    it is not self-healing because *.symversions is generated
->    as a side effect of the build rule of the object.
-> 
->  - stale (i.e. invalid) *.symversions might be picked up if an
->    object is generated in a non-ordinary way, and corresponding
->    *.symversions (, which was generated by old builds) just happen
->    to exist.
-> 
-> A more robust approach is to save symbol versions in *.cmd files
-> because:
-> 
->  - *.cmd always exists (if the object is generated by if_changed
->    rule or friends). Even if the user accidentally deletes it,
->    it will be regenerated in the next build.
-> 
->  - *.cmd is always re-generated when the object is updated. This
->    avoid stale version information being picked up.
-> 
-> I will remove *.symversions later.
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
-> 
->  scripts/Makefile.build | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> index f6a506318795..e03e85c90b26 100644
-> --- a/scripts/Makefile.build
-> +++ b/scripts/Makefile.build
-> @@ -175,6 +175,8 @@ gen_symversions =								\
->  	if $(NM) $@ 2>/dev/null | grep -q __ksymtab; then			\
->  		$(call cmd_gensymtypes_$(1),$(KBUILD_SYMTYPES),$(@:.o=.symtypes)) \
->  		    > $@.symversions;						\
-> +		echo >> $(dot-target).cmd ;					\
-> +		sed 's/\(.*\) = \(.*\);/$(pound)\1=\2/' $@.symversions >> $(dot-target).cmd ; \
->  	else									\
->  		rm -f $@.symversions;						\
->  	fi
+On 4/27/2022 9:20 PM, Arnd Bergmann wrote:
+> On Thu, Apr 21, 2022 at 4:00 AM Sai Prakash Ranjan
+> <quic_saipraka@quicinc.com> wrote:
+>> On 4/8/2022 4:47 PM, Sai Prakash Ranjan wrote:
+>>> Gentle ping, could you please take a look at this, would appreciate your reviews.
+>>>
+>> Gentle Ping !!
+>>
+> Sorry for dropping the ball on this. I'll go through the patches again
+> now. From a new
+> look, this all seems fine, but I'll need to take a little extra time
+> to understand why we
+> are getting the warnings that you are fixing, and how one will use the
+> tracepoints
+> in the end.
+>
+>         Arnd
 
-While reviewing this patch, I was missing the update of the comment a 
-few lines above.  But I understand that it makes more sense to update 
-it in the follow-up patch.
+Thanks Arnd, I saw in other thread that you figured out the reasons for warnings.
 
-Tested-by: Nicolas Schier <nicolas@fjasle.eu>
-Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
-
-> -- 
-> 2.32.0
-
--- 
-epost|xmpp: nicolas@fjasle.eu          irc://oftc.net/nsc
-↳ gpg: 18ed 52db e34f 860e e9fb  c82b 7d97 0932 55a0 ce7f
-     -- frykten for herren er opphav til kunnskap --
+Thanks,
+Sai
