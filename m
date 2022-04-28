@@ -2,126 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6CFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:41:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E921C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:42:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347513AbiD1NpD (ORCPT
+        id S1347518AbiD1Npj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57712 "EHLO
+        Thu, 28 Apr 2022 09:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241572AbiD1NpA (ORCPT
+        with ESMTP id S231963AbiD1Nph (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:45:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 313F45BE7C;
-        Thu, 28 Apr 2022 06:41:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C037861743;
-        Thu, 28 Apr 2022 13:41:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1704C385A0;
-        Thu, 28 Apr 2022 13:41:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651153305;
-        bh=P6NwmKSl37HKqsBkfsnaVlnnymPDnCBmzwPmXUQ33Ak=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CRQtEPEgZg+qRGcXuTGCR3GNA6UcwMOAVM5UjNZO6BYVYP4pCCWk8i7fjs3sy2MEm
-         9TUgHoQvu1wpc0V/GlaXgT+e7VAOUAvVKrSPSh2DnJZ+vM9lqDNj0NqR+2zX0aomZC
-         LrxHktS11GBOa7o2PELLVIv2SCmVDmqiH53FrCdfw7haN6ceTrVIbPm6pszAq2B+8W
-         zUSS4VeV8oc6ZCZfl6jKqnDlHAcU7UAyuSyJQ+8Otb3scEn1AAkn2S3IjJzaSWcLNm
-         hGkcf2+6/BqhC5ST7vWg2bS2C1/Q0rphijrZ4y0hPfmi50jMKQhYVPtODDKEbYcRJC
-         G1cD58+d4XOKg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 1AC44400B1; Thu, 28 Apr 2022 10:41:42 -0300 (-03)
-Date:   Thu, 28 Apr 2022 10:41:42 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     Timothy Hayes <timothy.hayes@arm.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH 3/3] perf test: Add perf_event_attr test for Arm SPE
-Message-ID: <YmqZluTEKAgg4AU0@kernel.org>
-References: <20220421165205.117662-1-timothy.hayes@arm.com>
- <20220421165205.117662-4-timothy.hayes@arm.com>
- <20220424145307.GE978927@leoy-ThinkPad-X240s>
+        Thu, 28 Apr 2022 09:45:37 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FF915C664
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:42:23 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id z21so4028531pgj.1
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:42:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=TF6mXmKGNoDwU6foP54u0rtByZLvOZZHf1ea13Jp9jo=;
+        b=UtizHoh7Wnf8sQMlLrn++pJjIO2Yt86r/dJMxPTfIIOQPd5NDV0M4NKMUmjNG5pPDX
+         wHLvFQK0QNLY1EmUuxlLifQqOCwvy6a3IB/iru4Yzqgt+YfuN1bILyApKLmKbhXOkPrk
+         Y79EF4kT7vAEbi23ZVaFMVQAdNPGygXn/aPVnnDs0Uus1etxdGHwoH2FstKMVHeJReXo
+         05cJD6wxXl3LNLK3fmDugO6ae2hEvkHu/QY1FgsVTmLtplMyzsi1dEvh4S22TGwTgqhB
+         J+8uNs1EUnmWnUr55MBfwZ+xf2pHftjtsTb6PmLXHQf0XyFmPzeOQREA+5UIojF61sRW
+         sK0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=TF6mXmKGNoDwU6foP54u0rtByZLvOZZHf1ea13Jp9jo=;
+        b=jQISp8UM2Xqbi5P1MqYyNT6d1RO0sR4YZwv1U7UY0Ze834cSKve1BwJNTP99uJdDjN
+         xIzHo9dKh+SMdrCXWdIY2aluNPO5QU0NSGNiFSXSr+7OasAiw/+GXD09jxlMoWYvzZcF
+         KYZf/5e3FvH3L4q12LjhO8+Hjs9Se0YPh/nXz9oMB7FXhKi9vGRi5ewlPB2heyODrGO+
+         fstVhpcJiI9fcAeoL8AoLsupkFeU/EmLvVlNTAH9xqcOsJ/cR2qE3ntwsLUoM9NKphL/
+         04NWzKuC/x+qtASR48Ckzz1d0dS07sZ+LdG6yOvyU3dLpjuqbO11Bs60Dv/A9f9pR/2N
+         TiEQ==
+X-Gm-Message-State: AOAM5322nAkoeHpiUAdra+a+9fMQjnRvd/5PXjrRTPHT5K9ShCSoN6r3
+        ZSUMHX01oiuLJ5Spfvkx6xGBzaIc5kTEbMUjhknOGQ==
+X-Google-Smtp-Source: ABdhPJyILdXQ2shK4sF3iS/l+Xso76KavH4e9aIAo/F9XVcR9zKVKp3G55ODRHOm/XfAxE/2P6ZGvz26bT1ooYV+Q+s=
+X-Received: by 2002:a63:42:0:b0:3a8:47f7:bf0d with SMTP id 63-20020a630042000000b003a847f7bf0dmr28454845pga.276.1651153342394;
+ Thu, 28 Apr 2022 06:42:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220424145307.GE978927@leoy-ThinkPad-X240s>
-X-Url:  http://acmel.wordpress.com
+References: <20220428122651.208575-1-jsd@semihalf.com> <60218a3b-9b56-d9c1-a0f4-97c171a050ba@linux.intel.com>
+In-Reply-To: <60218a3b-9b56-d9c1-a0f4-97c171a050ba@linux.intel.com>
+From:   =?UTF-8?B?SmFuIETEhWJyb8Wb?= <jsd@semihalf.com>
+Date:   Thu, 28 Apr 2022 15:42:11 +0200
+Message-ID: <CAOtMz3OeLzvtJ_T6w9v-OYCbTTxpfQjLsajN-a439QuETod7hQ@mail.gmail.com>
+Subject: Re: [PATCH] i2c: designware: Modify timing parameters for amdpsp mailbox
+To:     Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Raul E Rangel <rrangel@chromium.org>,
+        "Easow, Nimesh" <Nimesh.Easow@amd.com>, upstream@semihalf.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Sun, Apr 24, 2022 at 10:53:07PM +0800, Leo Yan escreveu:
-> On Thu, Apr 21, 2022 at 05:52:05PM +0100, Timothy Hayes wrote:
-> > Adds a perf_event_attr test for Arm SPE in which the presence of
-> > physical addresses are checked when SPE unit is run with pa_enable=1.
-> > 
-> > Signed-off-by: Timothy Hayes <timothy.hayes@arm.com>
-> 
-> Reviewed-by: Leo Yan <leo.yan@linaro.org>
-> Tested-by: Leo Yan <leo.yan@linaro.org>
-
-Thanks, applied the set to perf/urgent.
-
-- Arnaldo
- 
+czw., 28 kwi 2022 o 15:07 Jarkko Nikula
+<jarkko.nikula@linux.intel.com> napisa=C5=82(a):
+>
+> On 4/28/22 15:26, Jan Dabros wrote:
+> > Adjust retry period and timeout values for x86-PSP mailbox based on the
+> > typical I2C traffic generated by PSP. In order to limit the possibility
+> > of timeouts, x86 should reduce the interval between retries as well as
+> > increase overall time after which it gives up.
+> >
+> > Signed-off-by: Jan Dabros <jsd@semihalf.com>
 > > ---
-> >  tools/perf/tests/attr/README                         |  1 +
-> >  .../perf/tests/attr/test-record-spe-physical-address | 12 ++++++++++++
-> >  2 files changed, 13 insertions(+)
-> >  create mode 100644 tools/perf/tests/attr/test-record-spe-physical-address
-> > 
-> > diff --git a/tools/perf/tests/attr/README b/tools/perf/tests/attr/README
-> > index 454505d343fa..eb3f7d4bb324 100644
-> > --- a/tools/perf/tests/attr/README
-> > +++ b/tools/perf/tests/attr/README
-> > @@ -60,6 +60,7 @@ Following tests are defined (with perf commands):
-> >    perf record -R kill                           (test-record-raw)
-> >    perf record -c 2 -e arm_spe_0// -- kill       (test-record-spe-period)
-> >    perf record -e arm_spe_0/period=3/ -- kill    (test-record-spe-period-term)
-> > +  perf record -e arm_spe_0/pa_enable=1/ -- kill (test-record-spe-physical-address)
-> >    perf stat -e cycles kill                      (test-stat-basic)
-> >    perf stat kill                                (test-stat-default)
-> >    perf stat -d kill                             (test-stat-detailed-1)
-> > diff --git a/tools/perf/tests/attr/test-record-spe-physical-address b/tools/perf/tests/attr/test-record-spe-physical-address
-> > new file mode 100644
-> > index 000000000000..7ebcf5012ce3
-> > --- /dev/null
-> > +++ b/tools/perf/tests/attr/test-record-spe-physical-address
-> > @@ -0,0 +1,12 @@
-> > +[config]
-> > +command = record
-> > +args    = --no-bpf-event -e arm_spe_0/pa_enable=1/ -- kill >/dev/null 2>&1
-> > +ret     = 1
-> > +arch    = aarch64
-> > +
-> > +[event-10:base-record-spe]
-> > +# 622727 is the decimal of IP|TID|TIME|CPU|IDENTIFIER|DATA_SRC|PHYS_ADDR
-> > +sample_type=622727
-> > +
-> > +# dummy event
-> > +[event-1:base-record-spe]
-> > \ No newline at end of file
-> > -- 
-> > 2.25.1
-> > 
+> >   drivers/i2c/busses/i2c-designware-amdpsp.c | 4 ++--
+> >   1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/i2c/busses/i2c-designware-amdpsp.c b/drivers/i2c/b=
+usses/i2c-designware-amdpsp.c
+> > index 9b37f2b95abc..b624356c945f 100644
+> > --- a/drivers/i2c/busses/i2c-designware-amdpsp.c
+> > +++ b/drivers/i2c/busses/i2c-designware-amdpsp.c
+> > @@ -16,8 +16,8 @@
+> >   #define PSP_CMD_TIMEOUT_US  (500 * USEC_PER_MSEC)
+> >
+> >   #define PSP_I2C_REQ_BUS_CMD         0x64
+> > -#define PSP_I2C_REQ_RETRY_CNT                10
+> > -#define PSP_I2C_REQ_RETRY_DELAY_US   (50 * USEC_PER_MSEC)
+> > +#define PSP_I2C_REQ_RETRY_CNT                400
+> > +#define PSP_I2C_REQ_RETRY_DELAY_US   (25 * USEC_PER_MSEC)
+> >   #define PSP_I2C_REQ_STS_OK          0x0
+> >   #define PSP_I2C_REQ_STS_BUS_BUSY    0x1
+> >   #define PSP_I2C_REQ_STS_INV_PARAM   0x3
+>
+> Out of curiosity, can it be up to 400 * 25 ms =3D 10 s?
 
--- 
+Right, worst case x86 is trying to take arbitration of the bus for
+10s. But this is very unlikely (margin of safety).
 
-- Arnaldo
+> Acked-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+
+Thanks!
+
+Best Regards,
+Jan
