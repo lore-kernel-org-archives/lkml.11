@@ -2,117 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F03EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 18:22:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CB73C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 18:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351008AbiD1S0J (ORCPT
+        id S1351017AbiD1S02 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 14:26:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44368 "EHLO
+        Thu, 28 Apr 2022 14:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351009AbiD1S0I (ORCPT
+        with ESMTP id S1350849AbiD1S01 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 14:26:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1567EB7C6A;
-        Thu, 28 Apr 2022 11:22:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 28 Apr 2022 14:26:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5381A5AA6D
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 11:23:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651170191;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wg1zSD0Uo/cTh9pTTNBJKpd3vPv/btm0DQ5/ukfcHhE=;
+        b=Rr2SA7XdgXivDYW7exdwftXajv+sYFRMsrVTBZHihyQab+Zagm6UpwacJshRcHYoQMYWAU
+        VMPsPC5vomb0K6xy+f2BLzkRifkCEKOOAil8CLMMcDe7WdvUFeUtq3uRaUvhSlA6OYKvre
+        SItgUF5sG37/9pK/fzocaxBmJ4Xs9AY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-64-X_Q1Ros3MBKMs6aBD5Bn7Q-1; Thu, 28 Apr 2022 14:23:05 -0400
+X-MC-Unique: X_Q1Ros3MBKMs6aBD5Bn7Q-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9679B82EF7;
-        Thu, 28 Apr 2022 18:22:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84677C385A9;
-        Thu, 28 Apr 2022 18:22:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651170167;
-        bh=SK4cnaKCFvD7agMfaQTGJeSZhEoquGO61ZO3kbORHxg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pUgCbZCylmk8RbiDwT/u819kC4N/Ex5M+2wMgFzBj3E7Fm8uZKIyYAWxI1D7zWGxs
-         j8a2WoApFVJ64dah71+7HkYG8j8/fb7d7wCrXrhXsOCauMvaCOhAdadmHoXbF8yroS
-         YKBNlu+IBf8m4D1MbwMleSIcHVuE8k/0IohXG6ASEpUscjNPNeV9z+dN5X23CI27Ny
-         Pq8/gozbVAMKRrby0ACqseuJADsHZTK0ZSW+GEuoXa+HWdN2qxduL5Tzm5dWPItc14
-         DzaLtzRZ5BAA32XUANMdheNRzoJWm2NJwEpsjdjQm5rXRTKwzAJ3+KMmb0LoeZYnOV
-         6ELbCzIzLfC9w==
-Date:   Thu, 28 Apr 2022 19:30:59 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     navin <navin@linumiz.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/1] iio: temperature: max31865: Make use of device
- properties
-Message-ID: <20220428193059.67fdbaff@jic23-huawei>
-In-Reply-To: <80b6a194-53d7-bacc-23f9-7526f51b5463@linumiz.com>
-References: <20220413185335.21743-1-andriy.shevchenko@linux.intel.com>
-        <20220416114801.0865fcba@jic23-huawei>
-        <80b6a194-53d7-bacc-23f9-7526f51b5463@linumiz.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 019A6802819;
+        Thu, 28 Apr 2022 18:23:04 +0000 (UTC)
+Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.151])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 1264453CF;
+        Thu, 28 Apr 2022 18:22:58 +0000 (UTC)
+Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
+        oleg@redhat.com; Thu, 28 Apr 2022 20:23:03 +0200 (CEST)
+Date:   Thu, 28 Apr 2022 20:22:58 +0200
+From:   Oleg Nesterov <oleg@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 6/9] signal: Always call do_notify_parent_cldstop with
+ siglock held
+Message-ID: <20220428182257.GE15485@redhat.com>
+References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+ <20220426225211.308418-6-ebiederm@xmission.com>
+ <20220427141018.GA17421@redhat.com>
+ <874k2ea9q4.fsf@email.froward.int.ebiederm.org>
+ <87zgk67fdd.fsf@email.froward.int.ebiederm.org>
+ <YmrSijTc6HIv4sAG@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmrSijTc6HIv4sAG@hirez.programming.kicks-ass.net>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 26 Apr 2022 16:47:20 +0200
-navin <navin@linumiz.com> wrote:
+On 04/28, Peter Zijlstra wrote:
+>
+> I've not had time to fully appreciate the nested locking here, but if it
+> is possible to rework things to always take both locks at the same time,
+> then it would be possible to impose an arbitrary lock order on things
+> and break the cycle that way.
 
-> On 16.04.22 12:48, Jonathan Cameron wrote:
-> > On Wed, 13 Apr 2022 21:53:35 +0300
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> >  
-> >> Convert the module to be property provider agnostic and allow
-> >> it to be used on non-OF platforms.  
-> > This one should call out the addition of missing mod_devicetable.h
-> > If nothing else comes up I can add that whilst applying.
-> > Looks fine to me but I'd like to give a little time for
-> > Navin to comment if they wish.
-> >
-> > Jonathan  
-> 
-> Looks fine for me. Thanks
+This is clear, but this is not that simple.
 
-Thanks,
+For example (with this series at least), ptrace_stop() already holds
+current->sighand->siglock which (in particular) we need to protect
+current->parent, but then we need current->parent->sighand->siglock
+in do_notify_parent_cldstop().
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for 0-day to poke at it.
-
-Thanks,
-
-Jonathan
-
-> 
-> Navin
-> 
-> >  
-> >> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> >> ---
-> >>   drivers/iio/temperature/max31865.c | 4 +++-
-> >>   1 file changed, 3 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/iio/temperature/max31865.c b/drivers/iio/temperature/max31865.c
-> >> index 86c3f3509a26..e3bb78184c6e 100644
-> >> --- a/drivers/iio/temperature/max31865.c
-> >> +++ b/drivers/iio/temperature/max31865.c
-> >> @@ -12,9 +12,11 @@
-> >>   #include <linux/delay.h>
-> >>   #include <linux/err.h>
-> >>   #include <linux/init.h>
-> >> +#include <linux/mod_devicetable.h>
-> >>   #include <linux/module.h>
-> >>   #include <linux/iio/iio.h>
-> >>   #include <linux/iio/sysfs.h>
-> >> +#include <linux/property.h>
-> >>   #include <linux/spi/spi.h>
-> >>   #include <asm/unaligned.h>
-> >>   
-> >> @@ -305,7 +307,7 @@ static int max31865_probe(struct spi_device *spi)
-> >>   	indio_dev->channels = max31865_channels;
-> >>   	indio_dev->num_channels = ARRAY_SIZE(max31865_channels);
-> >>   
-> >> -	if (of_property_read_bool(spi->dev.of_node, "maxim,3-wire")) {
-> >> +	if (device_property_read_bool(&spi->dev, "maxim,3-wire")) {
-> >>   		/* select 3 wire */
-> >>   		data->three_wire = 1;
-> >>   	} else {  
+Oleg.
 
