@@ -2,82 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5442C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:45:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50446C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:46:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350326AbiD1Qsb (ORCPT
+        id S1345680AbiD1Qtw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 12:48:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34176 "EHLO
+        Thu, 28 Apr 2022 12:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350307AbiD1Qs2 (ORCPT
+        with ESMTP id S232566AbiD1Qtt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 12:48:28 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3C61F620
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:45:13 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2f7c57ee6feso59554687b3.2
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:45:13 -0700 (PDT)
+        Thu, 28 Apr 2022 12:49:49 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 145084AE2E
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:46:34 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id h29so2406751lfj.2
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:46:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Fknn/A/aplgNNNjRdKgmyiKBYINuUEGbLWPpyif/20A=;
-        b=YO0d6jn5JI0W4xsSc8R1h/QVhlsSt/vXkx3iVg0uuWwmX20u45FXXDzERAG7QLf1Aa
-         snhbD5GzCEhp8b6azJRRaQmdO67ExxDaAW27X16YqAYFnvsvYk77FzRfGGIvwOb+3m7r
-         RSaLU7zu5JDLsj+n+seTPDfTd808rKCaVootnkDFNFj0aRy9KKMdLQi0O3Coq/FIyXIH
-         OaEWPH7isC5+jmTM2+wz1u+w6tQeoy/NoVS4ectyJSI/9Pv4v7khyLMN9Wf+cnOQ/Bov
-         cy0UZvGxeeyTA9Ff+jgaYmKYk1DlrGo4UfS+6d3SpZRY7IL720YKQh7f/6ixRVTWcFnJ
-         Aogw==
+        bh=nUCMX2s+rfJjnCRjPBsqTrvIeHc/xB8tXJiukV/x6uw=;
+        b=CFs7namgLcbBdzCbwOWn2HbPugYal+FkQVh5xTQTuNZ4X2cDs80Xv/mDS6+440fwDi
+         CC2DbosLjDm+BxDHJcapajycT4b0+dLD2PsDJ3JXhK3ksFxCFasZN9PIAY59aQp8gteJ
+         Xpt91Gtmx1ig/8drEurcSZU7ZSUfFnYJPjHFU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Fknn/A/aplgNNNjRdKgmyiKBYINuUEGbLWPpyif/20A=;
-        b=6NjJ80MKgtv9j6ooigfdoTkX8jWONBmbPdVDcjexzih29si1CBzBf+14wE0t/5/xfx
-         7Fs9+ggc1LD//EOm0nhn9HtEnRxerFUt8fF+VUJ9KsZ9tjyuEWC8WFut4wZuYGZMZr07
-         RimyO7KLbFw6421uwvh69AWOGnKbEx21n2DANwmNlYMGuDnzqh0EBgRTIPx9mZ2j11d1
-         B4FgbTKRXUXHaEBzbmMgyCnT5zkWDZaxzhVrO7F1Y/Wbe7EnKPuIRuGONp66cyLkEsMc
-         bsPF5t4HTqYb9Dh905SJSZB/43JOlE0r0SDhaBMRtjbNrlnEAo6EJZW8tbuQKbfMI7Zi
-         SvIQ==
-X-Gm-Message-State: AOAM533iR3yYc2suzPlQc3hn1PQBmttZz7rcGlOdocUoBgCCwVYbB4GK
-        UcX1KCwWHuwkXrwLta2OiudKaESF2l1jjVRR5wAr3A==
-X-Google-Smtp-Source: ABdhPJwv9QJkwVyiIDw3emBO7qrkmvxIR8bSM0H70yzxZTC6aeFEY6iG/nvH3n6rHMvBWI/i6JhEbNn4x2yDxfRm+qg=
-X-Received: by 2002:a0d:d615:0:b0:2f7:cdc9:21c0 with SMTP id
- y21-20020a0dd615000000b002f7cdc921c0mr25441432ywd.486.1651164312085; Thu, 28
- Apr 2022 09:45:12 -0700 (PDT)
+        bh=nUCMX2s+rfJjnCRjPBsqTrvIeHc/xB8tXJiukV/x6uw=;
+        b=osI4qx6eqkhwXTCSG0MSBp0Yifu59IFX9HyZaDn6OoRvM538leuRxpikpqO2obHbsv
+         7OJJKZ3ZJD79d7o2cC8xmzXZnD3v33/betwkm+q6yfzjiivsritwgczfwxkK2NK6xcCa
+         M6gOa/96fezZ7I0O6Xh/gAHuDgWQgEeaRAdACDynkedSsyW3uWM5Y10iBwmct8kV9akK
+         jQrgz+xea+r+06NElVU78hxRo/NlYJa1ul+wb6YK/FXWGBTzRyFk5Ef7L/1+kM0Y+w8H
+         vh6yGiKHS+RN27ZXfuK35k0wXC80LyO5UOI09rSKAE8d91GSrLetX//I+ZjpS69ScKxl
+         K45w==
+X-Gm-Message-State: AOAM531Hdw6stGef8g+r+q2e0NJyLHd1fsNnLbnbCnLwnuAxZmN3nJod
+        uEdOz4T3OwdBt1xjqGPpus77kp+0SvoQ/ZuSZ/w=
+X-Google-Smtp-Source: ABdhPJxFSt32ZXDzw+Iq2hduYQ7ksquI7n1Q3hw0lOIAA/uZvsU2yYNQEQZK+pxzJOIh8C2myO8aAA==
+X-Received: by 2002:a05:6512:3b0f:b0:472:807:50c7 with SMTP id f15-20020a0565123b0f00b00472080750c7mr14628129lfv.395.1651164392004;
+        Thu, 28 Apr 2022 09:46:32 -0700 (PDT)
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com. [209.85.167.53])
+        by smtp.gmail.com with ESMTPSA id g4-20020a19e044000000b0044abb73ada2sm43635lfj.139.2022.04.28.09.46.30
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 09:46:31 -0700 (PDT)
+Received: by mail-lf1-f53.google.com with SMTP id p12so9672966lfs.5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:46:30 -0700 (PDT)
+X-Received: by 2002:a05:6512:3c93:b0:44b:4ba:c334 with SMTP id
+ h19-20020a0565123c9300b0044b04bac334mr24872519lfv.27.1651164390506; Thu, 28
+ Apr 2022 09:46:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <3167cbec7a82704c1ed2c6bfe85b77534a836fdc.1651162840.git.andreyknvl@google.com>
- <c4105419650a2a8d9f153f55b5e76f4daa428297.1651162840.git.andreyknvl@google.com>
-In-Reply-To: <c4105419650a2a8d9f153f55b5e76f4daa428297.1651162840.git.andreyknvl@google.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Thu, 28 Apr 2022 18:44:36 +0200
-Message-ID: <CAG_fn=Vy+GuQ0YCCvU1i2fwO35ZWbE3MqK9if6+iX4q5_3mTRA@mail.gmail.com>
-Subject: Re: [PATCH 3/3] kasan: give better names to shadow values
-To:     andrey.konovalov@linux.dev
-Cc:     Marco Elver <elver@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrey Konovalov <andreyknvl@google.com>
+References: <20220428061921.GS1098723@dread.disaster.area>
+In-Reply-To: <20220428061921.GS1098723@dread.disaster.area>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 28 Apr 2022 09:46:14 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiVgPPczqyLyOg8fmGYc1z+-ngPKkS_bCTwefcLXfp4CQ@mail.gmail.com>
+Message-ID: <CAHk-=wiVgPPczqyLyOg8fmGYc1z+-ngPKkS_bCTwefcLXfp4CQ@mail.gmail.com>
+Subject: Re: [GIT PULL] xfs: fixes for 5.18-rc5
+To:     Dave Chinner <david@fromorbit.com>
+Cc:     linux-xfs <linux-xfs@vger.kernel.org>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 6:22 PM <andrey.konovalov@linux.dev> wrote:
+On Wed, Apr 27, 2022 at 11:19 PM Dave Chinner <david@fromorbit.com> wrote:
 >
-> From: Andrey Konovalov <andreyknvl@google.com>
->
-> Rename KASAN_KMALLOC_* shadow values to KASAN_SLAB_*, as they are used
-> for all slab allocations, not only for kmalloc.
->
-> Also rename KASAN_FREE_PAGE to KASAN_PAGE_FREE to be consistent with
-> KASAN_PAGE_REDZONE and KASAN_SLAB_FREE.
->
-> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-Reviewed-by: Alexander Potapenko <glider@google.com>
+> It's all minor stuff;  a 5.18 build regession fix, a deadlock fix
+> and an update to remove redundant fields from the XFS entry in the
+> MAINTAINERS file.
+
+Done.
+
+I had to look twice at that patch going "why does it complain about
+the xfs flags thing" until I realized it was due to XBF_UNMAPPED being
+(1 <<31) and the compiler then seeing explicit negative values being
+assigned.
+
+We have a lot of "int flags" in various places, very much not just
+xfs, and yeah, we should probably try to clean them up.
+
+But 99% of the time it's just not worth the noise.
+
+And xfs only hit it because you guys literally used up the whole 'int'
+for it, normally the compiler won't make a peep about it.
+
+Thanks,
+                     Linus
