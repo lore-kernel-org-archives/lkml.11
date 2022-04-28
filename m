@@ -2,89 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEEB2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 18:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91098C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 18:43:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351208AbiD1Sot (ORCPT
+        id S1351224AbiD1Sqa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 14:44:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60828 "EHLO
+        Thu, 28 Apr 2022 14:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351204AbiD1Soq (ORCPT
+        with ESMTP id S1348158AbiD1Sq2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 14:44:46 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576F466F99
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 11:41:31 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id 1DB581F45BA9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1651171290;
-        bh=HSr1KCZ5LnslRjGdE29dDFgwDJWDw5RpI+XCM1ThDIE=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=bfLldcJ+mxw6WfTtItLTOjLcjf0DYyzsn4duwT4V65y2wh/auNP5VbaKcF1uLtb0B
-         iB/cky4I5BR35dO0sBsMH/IMcS2hQcrcukVUN2Se+PPS1Acf+cYw0aWDojUZPfuPr6
-         lry0gDJpMS6Znk7q4EgkKajPlWGFIbW3IQSsLO06kQYS5k5BW2+iwu3TyC1kW+eE2T
-         ltrTAD36FgqZAog2GI8KGWD5k8oX5TmtV/lGfBCUjyzIl3wf69EgFqlvTSr7MWV/Rl
-         O+vG2kloLrPb0rbCPCkO+207H8MSE6C8OYDbpOG/crx11Q8yVrBAc1ev3YHC1FTzVZ
-         Ke2HvHpsR9S0A==
-Message-ID: <9647245d-b0b5-12d1-fef2-7a5f759f908b@collabora.com>
-Date:   Thu, 28 Apr 2022 21:41:25 +0300
+        Thu, 28 Apr 2022 14:46:28 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1187ABF511;
+        Thu, 28 Apr 2022 11:43:12 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id y21so6549194edo.2;
+        Thu, 28 Apr 2022 11:43:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zI+9j94q19l63yFihh0+ZsjTI2C5NOx2hP5jr2k4x9k=;
+        b=WK6kihR8b3wSbEull4x65571g240iY3fBAfiTXsaZDlpj/xdgiElV/P43tUu9yXSVX
+         hWkKZvrStyCqJIayhO18QI89R8AHdCsLMnVVefiMboCPUg9jwW8UI371XTLloEYzpnBa
+         B0GUhQiLmGId/z5djVFsZ7AFAUgOKJDiPHULAklgepOzju10xb0RTX4BA1BeUnJ/S377
+         TjafnXdVqpgpA3pC8zc1MJup7/P2VeO9LxoimierGf1yWwgM8XqY65KnT+hRZSeagjyb
+         oxpyI9c1YV+pNkCdzr9uu3mIs5PfLCToQJgYckJ8Hywf72cLHHacgZsutwe5E7PxhHXF
+         hUSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=zI+9j94q19l63yFihh0+ZsjTI2C5NOx2hP5jr2k4x9k=;
+        b=6rwKrNuSL0XXu0nYcWhXHUxkiJdS2bOd1jVGDf3qfKXkJZAt1lr0w5qDT1PZgbv8M2
+         z5nwnb92MWy6YKsBRTRFUgit321njLjbuC4dIX+ae9rCQM0jMvzlqJKMi7t1PeTayKwr
+         O5pRZHw+PObWpVMNA3M+9A79AVUoIMs6ffCtCaNsAhaRMJ6J/pXcyu19RBc5FOROfCPX
+         Ivg2olImHdHjHoMnYxXK9mllPBsZ2ukYuoIzklOLR6xIbUIPbRHoJ/IiOLCIrzcR6YpY
+         TCLKTz/EkaR0+vb9jRLIjeTcByibZsIez7LeSMOUplorU2uEHrEaZL6AJmWijEIvm6D3
+         RCTg==
+X-Gm-Message-State: AOAM533e7emqyzaBYTne6YYBnvz2WYPjTaC41HrEeAK2VNkYaBhr5D2I
+        Jo5VXboGAbfeCWf36SRCMoY=
+X-Google-Smtp-Source: ABdhPJx/YPYe4JPKWoxoRcaMVgX4E0nnzI2Yu9Okc03Ig2cnSUmTTSqOuZdSRJVF91tk7qq1rWWdDg==
+X-Received: by 2002:aa7:d954:0:b0:425:f621:f77f with SMTP id l20-20020aa7d954000000b00425f621f77fmr18775972eds.363.1651171390413;
+        Thu, 28 Apr 2022 11:43:10 -0700 (PDT)
+Received: from eldamar (c-82-192-242-114.customer.ggaweb.ch. [82.192.242.114])
+        by smtp.gmail.com with ESMTPSA id v17-20020a1709060b5100b006f38cf075cbsm273241ejg.104.2022.04.28.11.43.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 11:43:09 -0700 (PDT)
+Sender: Salvatore Bonaccorso <salvatore.bonaccorso@gmail.com>
+Date:   Thu, 28 Apr 2022 20:43:07 +0200
+From:   Salvatore Bonaccorso <carnil@debian.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
+        Dusty Mabe <dustymabe@redhat.com>, Stefan Roese <sr@denx.de>,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Marek Vasut <marex@denx.de>, x86@kernel.org, maz@kernel.org,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        Juergen Gross <jgross@suse.com>,
+        Noah Meyerhans <noahm@debian.org>
+Subject: Re: [tip: irq/urgent] PCI/MSI: Mask MSI-X vectors only on success
+Message-ID: <YmrgO09bqePgiJJd@eldamar.lan>
+References: <20211210161025.3287927-1-sr@denx.de>
+ <163948488617.23020.3934435568065766936.tip-bot2@tip-bot2>
+ <Yi9vH2F2OBDprwd8@jpiotrowski-Surface-Book-3>
+ <43418c23-5efd-4d14-706f-f536c504b75a@denx.de>
+ <c4a65b9a-d1e2-bf0d-2519-aac7185931d5@redhat.com>
+ <Yi+lwVRTu8xxi9Gy@jpiotrowski-Surface-Book-3>
+ <Ymj3zzjQ9PwYaX/p@eldamar.lan>
+ <87v8uuwhs4.ffs@tglx>
+ <87wnf9uxnw.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v5 01/17] drm/panfrost: Put mapping instead of shmem obj
- on panfrost_mmu_map_fault_addr() error
-Content-Language: en-US
-To:     Steven Price <steven.price@arm.com>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Herring <robh@kernel.org>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Qiang Yu <yuq825@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Dmitry Osipenko <digetx@gmail.com>
-References: <20220424190424.540501-1-dmitry.osipenko@collabora.com>
- <20220424190424.540501-2-dmitry.osipenko@collabora.com>
- <37dae9fa-dadf-4b80-fbea-689472fd7dce@arm.com>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <37dae9fa-dadf-4b80-fbea-689472fd7dce@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87wnf9uxnw.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-28.04.2022 16:19, Steven Price пишет:
-> On 24/04/2022 20:04, Dmitry Osipenko wrote:
->> When panfrost_mmu_map_fault_addr() fails, the BO's mapping should be
->> unreferenced and not the shmem object that backs that mapping.
->>
->> Cc: stable@vger.kernel.org
->> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> 
-> Fixes: bdefca2d8dc0 ("drm/panfrost: Add the panfrost_gem_mapping concept")
-> 
-> Reviewed-by: Steven Price <steven.price@arm.com>
+Hi Thomas,
 
-Thank you for the fixes tag. It appeared to me that this problem existed
-since the first addition of the srinker when I was looking up the
-offending commit, my bad :)
+On Thu, Apr 28, 2022 at 03:48:03PM +0200, Thomas Gleixner wrote:
+> On Wed, Apr 27 2022 at 19:35, Thomas Gleixner wrote:
+> > On Wed, Apr 27 2022 at 09:59, Salvatore Bonaccorso wrote:
+> > XEN guests do not use the common PCI mask/unmask machinery which would
+> > unmask the interrupt on request_irq().
+> >
+> > So I assume that the following happens:
+> >
+> > Guest                     Hypervisor
+> >
+> > msix_capabilities_init()
+> >         ....
+> >         alloc_irq()
+> >            xen_magic()  -> alloc_msix_interrupt()
+> >                            request_irq()
+> >
+> >         msix_mask_all() -> trap
+> >                              do_magic()
+> > request_irq()
+> >    unmask()
+> >      xen_magic()
+> >        unmask_evtchn()  -> do_more_magic()
+> >
+> > So I assume further that msix_mask_all() actually is able to mask the
+> > interrupts in the hardware (ctrl word of the vector table) despite the
+> > hypervisor having allocated and requested the interrupt already.
+> >
+> > Nothing in XEN_HVM handles PCI/MSI[-X] mask/unmask in the guest, so I
+> > really have to ask why XEN_HVM does not disable PCI/MSI[-X] masking like
+> > XEN_PV does. I can only assume the answer is voodoo...
+> >
+> > Maybe the XEN people have some more enlightened answers to that.
+> 
+> So I was talking to Juergen about this and he agrees, that for the case
+> where a XEN HVM guest uses the PIRQ/Eventchannel mechanism PCI/MSI[-X]
+> masking should be disabled like it is done for XEN PV.
+> 
+> Why the hypervisor grants the mask write is still mysterious, but I
+> leave that to the folks who can master the XEN voodoo.
+> 
+> I'll send out a patch in minute.
 
+Thank you. We are having Noah Meyerhans now testing the patch and he
+will report back if it works (Cc'ed here now).
+
+Regards,
+Salvatore
