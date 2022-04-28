@@ -2,107 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD89C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:48:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B52EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:48:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347666AbiD1Nv0 (ORCPT
+        id S1347683AbiD1Nvo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:51:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48884 "EHLO
+        Thu, 28 Apr 2022 09:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344676AbiD1NvW (ORCPT
+        with ESMTP id S1344676AbiD1Nvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:51:22 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C41F49C87;
-        Thu, 28 Apr 2022 06:48:07 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651153684;
+        Thu, 28 Apr 2022 09:51:42 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3ECB3C47
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:48:27 -0700 (PDT)
+Received: from relay12.mail.gandi.net (unknown [217.70.178.232])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id C3E1BCD1C0
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 13:45:13 +0000 (UTC)
+Received: (Authenticated sender: michael.opdenacker@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 539D120000E;
+        Thu, 28 Apr 2022 13:45:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651153508;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BRKdot5ttusBTKgjdBbqkbA/kf9Xlr83fTRIj0wkH84=;
-        b=TDVC34fSnSPxzYcINftwPpx5/duIBp2zqhZ+Np9mWNUL0oYWvhRdoBf/AVJSgjszCnJAKk
-        JtpIG2eGXh/BwJUdms03bJ3whjcZbsDcYN2eBeZY3OK2dOE5+DfZe7JezcpDL02cJsylP/
-        XREMKrt+eKlYFQ7HDhiYz41wRLWtQUanqgtU6N1RYVOCu6epwNlfRYvUYCseb0bJIe6p0U
-        uBqhjBhwWauqzZTyd5a7ZAFXdWimCnd67tZxj36aixFyahABpZxiytU2fc7ngNCxlCmiP0
-        HbtJe41fB/HMZx6AlVlRgyREuJ2Ge7F5gZXpzOPwKADXmTTPVjAnu06Kj7JkOg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651153684;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BRKdot5ttusBTKgjdBbqkbA/kf9Xlr83fTRIj0wkH84=;
-        b=iSex9BtdxA9VVKGTdcZeKTKYsnoSP0JqXGxVekCncx0EzMDri3nZItgkjhutaLCMDFCwLr
-        BfAMf7EIz+w2j8Aw==
-To:     Salvatore Bonaccorso <carnil@debian.org>,
-        Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
-Cc:     Dusty Mabe <dustymabe@redhat.com>, Stefan Roese <sr@denx.de>,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Marek Vasut <marex@denx.de>, x86@kernel.org, maz@kernel.org,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        Juergen Gross <jgross@suse.com>
-Subject: Re: [tip: irq/urgent] PCI/MSI: Mask MSI-X vectors only on success
-In-Reply-To: <87v8uuwhs4.ffs@tglx>
-References: <20211210161025.3287927-1-sr@denx.de>
- <163948488617.23020.3934435568065766936.tip-bot2@tip-bot2>
- <Yi9vH2F2OBDprwd8@jpiotrowski-Surface-Book-3>
- <43418c23-5efd-4d14-706f-f536c504b75a@denx.de>
- <c4a65b9a-d1e2-bf0d-2519-aac7185931d5@redhat.com>
- <Yi+lwVRTu8xxi9Gy@jpiotrowski-Surface-Book-3>
- <Ymj3zzjQ9PwYaX/p@eldamar.lan> <87v8uuwhs4.ffs@tglx>
-Date:   Thu, 28 Apr 2022 15:48:03 +0200
-Message-ID: <87wnf9uxnw.ffs@tglx>
+         content-transfer-encoding:content-transfer-encoding;
+        bh=N1Tulo/oSEe9H5n9GB4cImHi2WR56NZD7DcX6uZWIXk=;
+        b=myJyZ8GGk5A2p0B9uBpfnuL2ZsC88dbhxXN9V1IW/gYeN20Yi9+foPepcWeqn7tTZtHtU6
+        oTlhFG+BNBdMXBnKx8WSLj65E8tZqaxdjntrsFz0Qk74wzLDmOpfTAKGdxwX3/lPPgSAAe
+        aSRMBNr86AHB30Vzets23IKTQAQfO6lmYlub17OaW4CY/8v8ajjiXSGzJTwnzqDiokUSUo
+        GBvbXM8ZGvVtP0fhB4KQM0ikT/xjHa7tYhdKV0wKcY9v9lhgLa55vIEJHiI8m2SSncLVlD
+        hq5piOHpdOZKTD71sxcXEfdmajdjiJVYQM/i5B4Pqf5kJ8opSz2TxsEOk4JftQ==
+Message-ID: <574d4aad-b786-71bc-18a0-f768a585658a@bootlin.com>
+Date:   Thu, 28 Apr 2022 15:45:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Cc:     michael.opdenacker@bootlin.com
+Content-Language: en-US
+To:     LKML <linux-kernel@vger.kernel.org>
+From:   Michael Opdenacker <michael.opdenacker@bootlin.com>
+Subject: How to mount the root filesystem with "strictatime"?
+Organization: Bootlin
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27 2022 at 19:35, Thomas Gleixner wrote:
-> On Wed, Apr 27 2022 at 09:59, Salvatore Bonaccorso wrote:
-> XEN guests do not use the common PCI mask/unmask machinery which would
-> unmask the interrupt on request_irq().
->
-> So I assume that the following happens:
->
-> Guest                     Hypervisor
->
-> msix_capabilities_init()
->         ....
->         alloc_irq()
->            xen_magic()  -> alloc_msix_interrupt()
->                            request_irq()
->
->         msix_mask_all() -> trap
->                              do_magic()
-> request_irq()
->    unmask()
->      xen_magic()
->        unmask_evtchn()  -> do_more_magic()
->
-> So I assume further that msix_mask_all() actually is able to mask the
-> interrupts in the hardware (ctrl word of the vector table) despite the
-> hypervisor having allocated and requested the interrupt already.
->
-> Nothing in XEN_HVM handles PCI/MSI[-X] mask/unmask in the guest, so I
-> really have to ask why XEN_HVM does not disable PCI/MSI[-X] masking like
-> XEN_PV does. I can only assume the answer is voodoo...
->
-> Maybe the XEN people have some more enlightened answers to that.
+Greetings,
 
-So I was talking to Juergen about this and he agrees, that for the case
-where a XEN HVM guest uses the PIRQ/Eventchannel mechanism PCI/MSI[-X]
-masking should be disabled like it is done for XEN PV.
+Sorry, this is almost a userspace question ;-)
 
-Why the hypervisor grants the mask write is still mysterious, but I
-leave that to the folks who can master the XEN voodoo.
+I need to mount my root filesystem in "strictatime" mode, instead of the
+"relatime"  default.
 
-I'll send out a patch in minute.
+Of course, if I pass "rootflags=strictatime" through the kernel command
+line, it doesn't work because the kernel only knows about the
+"MS_STRICTATIME" define, and not about the "strictatime"  string, which
+is a userspace thing:
 
-Thanks,
+    2.351189] EXT4-fs (mmcblk0p2): Unrecognized mount option
+"strictatime" or missing value
 
-        tglx
+Would there be a way to do this from the kernel command line anyway?
+Otherwise, I'll run "mount -o remount,strictatime /" from my startup
+scripts.
+
+Thanks
+Michael.
+
+-- 
+Michael Opdenacker, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
