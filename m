@@ -2,105 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A21C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 23:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B4FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 23:04:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353144AbiD1XEx (ORCPT
+        id S1353135AbiD1XIN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 19:04:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37908 "EHLO
+        Thu, 28 Apr 2022 19:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352801AbiD1XEr (ORCPT
+        with ESMTP id S233050AbiD1XIM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 19:04:47 -0400
-Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1934C4036
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 16:01:29 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id C55C42100A;
-        Thu, 28 Apr 2022 23:01:28 +0000 (UTC)
-Received: from pdx1-sub0-mail-a237.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 51D3620F98;
-        Thu, 28 Apr 2022 23:01:28 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1651186888; a=rsa-sha256;
-        cv=none;
-        b=BO4NqlqCSaiXtx9c2q/wUqfXdwnatqmHnatbWdwxqls/4l9b3/ycqXVaJ7lVOEOyXOlD4K
-        TtzQDldvFadzsyjFbWjgFG95v0S8yrEdbLjMvtMRaRmtaaiFvdYu7Sg+wwSFAQq0Gu63jW
-        T+Ya/qHDKraENZCyvoBNo1H3xE99FQkRe+H1i0O5unHtQoc+TJFZ4xVUW4qxApcT/0xiNs
-        k3rI0AOkKFgZqW18FnRmOSa5FVmrqS478QAknn1tt8Lw4yuE2fOA/vSD36zTYK0vcBRiQv
-        W1oNiZXrdfP7kpCR8eZBZ20RJ7iIHaZzKMTqylGryU68nasYu0WFj56dn5Fqkg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1651186888;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=vjYAnQTOe68YPTsKIi7cssU+yeRHQZhrNLp1AuuSurI=;
-        b=fd6oj+vbxsTPW51Oefvq4AUnzWj4tR8plYEUAcZTkEmfi42gizwXzWVjNsd7Syc7SvW38f
-        00up5ko8NcVoVCbCFRH6Wy+VTxbsejQ+2OFMmQtdYwWD8JU/agWiNqJ4KKaD0Jtcfd58Ev
-        5sCZ9x2UxkfaqbVcrhy0gfLRF90+YrXPWcniahlyAUZbnXManDN/PhV9z4too6R51hnnev
-        SWZ7ymjC/iXq8d+/Nb5GVscEth3XoAuidLw7mRexTsPcYKbZiOijzJv2Dj5LloAlHYy535
-        GgnbK+A3lVQCdNFlPA6mSlggFJ93HL8DN1yB5gi6J2ghH0RVCE1VDixrMHVQbQ==
-ARC-Authentication-Results: i=1;
-        rspamd-fdd564cbf-868r5;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Bored-Hysterical: 4188524533974da8_1651186888661_174020957
-X-MC-Loop-Signature: 1651186888660:2618623120
-X-MC-Ingress-Time: 1651186888660
-Received: from pdx1-sub0-mail-a237.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.113.195.69 (trex/6.7.1);
-        Thu, 28 Apr 2022 23:01:28 +0000
-Received: from offworld (unknown [104.36.31.105])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a237.dreamhost.com (Postfix) with ESMTPSA id 4KqB1z34sKz1ff;
-        Thu, 28 Apr 2022 16:01:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1651186887;
-        bh=vjYAnQTOe68YPTsKIi7cssU+yeRHQZhrNLp1AuuSurI=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=l0sJoKwgxfAEiAXAbE8JM7cLVjDCa6HEK1W/qeP9oJlaYxN0pl9ng7bdFYaHhztaw
-         B1jLcK5CnOum+F3pu/qG/mv5IzrGLwmlkEraIz6Of6HQHDXgXddcd7RfSRvlzJaW61
-         NWvGo0cuF1p+aCwqFExq6taVRr/0viNIR/y0FNNDnuB2c2kWA217bBOajVtoPoejGt
-         P3zaucHAxjueICScmtjidZbhG7tYpmRqFzUh3jyxSL6RADsiv8CvPxuiiHPEnA4ctG
-         n3h3FQ5yV1Y3K8kwdrYR8iK7r5TltSHfj6umVLA/UvGq/XVttziy55vYihhw05VF5y
-         a8Jc4mY1gTLKg==
-Date:   Thu, 28 Apr 2022 15:50:03 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Prakash Sangappa <prakash.sangappa@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, tglx@linutronix.de,
-        akpm@linux-foundation.org, peterz@infradead.org,
-        manfred@colorfullife.com
-Subject: Re: [PATCH v3] ipc: Update semtimedop() to use hrtimer
-Message-ID: <20220428225003.pszk3cbcp55kzhfi@offworld>
-References: <1651178767-447-1-git-send-email-prakash.sangappa@oracle.com>
+        Thu, 28 Apr 2022 19:08:12 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8949BC4038
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 16:04:56 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id e12so11598992ybc.11
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 16:04:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GQoVU4wGr8TgkC2O9uwCdXrBPx5WfN6I+AR9CAalrvo=;
+        b=XykUdOJn9AAYSBHln1orKxsbOypJXSbwjzhIzD7IcRnnYUvwgltYXHySy0heRgqmMs
+         RJeuWmzbv5mDyJtwHeHvzgVx2pscUXPDMvmsltuzig803Y2YMfpVTBBFGLhrFZ3ILTah
+         fAF9TVqjEer+q8Awbhb0o4M3GYJbKFdR57XYG6Xv8a+UNHO6HZd2HcIDnLL6kLb/G74C
+         CxZOaFAx3/kBrbXhxTW0WIZ9UT8a3d7AKyQS//hiHH0DCajdMbHJ6Hn0HZt5TtLYnyZc
+         q9igatKhJMUTY/BLf8VWNIVELubDkLv2AnnQDyJDaUPNSI9SGx+TgKZpnQaANKTEmDem
+         eQ4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GQoVU4wGr8TgkC2O9uwCdXrBPx5WfN6I+AR9CAalrvo=;
+        b=N/xnZ6DbDdAejTTWG+0zgy7QqDeoLlu0Re9FwhbFddRWRmYq2YooWwL59/nZE/7hgK
+         FRiFUawqpWpx02IC/xw5hK1Uh1j7FdQdXT7bmL//oT7kpWnTgWlPqIeMi+LKWPzonR16
+         S5Qtt4CKZF9zsNet43pC7CukNwCnlQVO5YpNApzvkBiOOrfl8ZIUjxqQUQehx+SvZ8oC
+         fDxGNf1IXaf9qmUOPgOS5ibMVphk11GAmsVOY2a9JPB7maEXZZT59MZ0IsXrGgV2wSI+
+         98RK5x5qVnLz/HkMW5r+5RasizheR6N6PPiw6EbH684B1YNBSjmfbSrogzFCRDRVepXk
+         rdxQ==
+X-Gm-Message-State: AOAM533lQOmRhahq19aj86DjJDWThF7QHvFoobKBTBOdL5rXhrF1AxXH
+        PdL6ExlXz4LW7/KNtquGWtPbxdgt08FDWTJ0kd2RirAy4Ek=
+X-Google-Smtp-Source: ABdhPJzSp3c9446rYI1rmrmWRZfF6j7G2HNGTVGEVU7YcMlA3YZIIEkTWDv3eWMKgBdvG3xXWMpDUFcY5OeEHkIBbaM=
+X-Received: by 2002:a5b:dc5:0:b0:624:f16d:7069 with SMTP id
+ t5-20020a5b0dc5000000b00624f16d7069mr33358655ybr.295.1651187095841; Thu, 28
+ Apr 2022 16:04:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <1651178767-447-1-git-send-email-prakash.sangappa@oracle.com>
-User-Agent: NeoMutt/20220408
+References: <20220425081416.22836-1-wupeng58@huawei.com>
+In-Reply-To: <20220425081416.22836-1-wupeng58@huawei.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 29 Apr 2022 01:04:44 +0200
+Message-ID: <CACRpkdZt0aq36MAS5PWPZtiC6UQLkW1h8TBw2pmQj2xNzW-=eg@mail.gmail.com>
+Subject: Re: [PATCH -next] ARM: versatile: Add missing of_node_put in dcscb_init
+To:     Peng Wu <wupeng58@huawei.com>
+Cc:     linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, liwei391@huawei.com,
+        wangxiongfeng2@huawei.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 28 Apr 2022, Prakash Sangappa wrote:
+On Mon, Apr 25, 2022 at 10:18 AM Peng Wu <wupeng58@huawei.com> wrote:
 
->semtimedop() should be converted to use hrtimer like it has been done
->for most of the system calls with timeouts. This system call already
->takes a struct timespec as an argument and can therefore provide finer
->granularity timed wait.
+> The device_node pointer is returned by of_find_compatible_node
+> with refcount incremented. We should use of_node_put() to avoid
+> the refcount leak.
 >
->Signed-off-by: Prakash Sangappa <prakash.sangappa@oracle.com>
->Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: Peng Wu <wupeng58@huawei.com>
 
-Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
+I applied this on linux-next. signed off and sent directly to
+the SoC tree.
+
+Yours,
+Linus Walleij
