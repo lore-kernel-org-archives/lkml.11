@@ -2,110 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F6AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:16:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABB5FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:16:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245088AbiD1HTq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:19:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36634 "EHLO
+        id S245086AbiD1HTx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 03:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245065AbiD1HTn (ORCPT
+        with ESMTP id S245098AbiD1HTp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:19:43 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F99972E1
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:16:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651130179; x=1682666179;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=6isfrYWtZlwpN1o+WfrvgHuYM1XSrDuAPO77smHhcok=;
-  b=AzGoKD8bwmouV7qctTT+USegro1sL3QBa+kYJsiLef3A6+RmqCNjJAYP
-   kR4F9Xvn1bVSfXpARdCxZiU9IhfCyjMKVombXpINiDyKgkcbkJdW2rRNX
-   P9NstErRiBbrG8yCLvxaWD9jYMFCWcHhZpBu7IeBm7U1Ig5WJfkQlglM2
-   iCSyqYkvGBuQ804Dl/SVcU/8EpZN+jgB5vG8ODjzOgJ8D+E3m66eXCp2r
-   kWQasm1vKip8DNbDRzrBCu6v2Rxdze27++xUIEL5Yx8W8Z4suCJD0Kw07
-   xuOl5rn/5QcKu3EvpeXHj0VxEH6FwzmQYfQjp98LjCX3KkzTELMJfwP99
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="352621103"
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="352621103"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 00:16:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="731255823"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 28 Apr 2022 00:16:17 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1njyNs-0005AF-LA;
-        Thu, 28 Apr 2022 07:16:16 +0000
-Date:   Thu, 28 Apr 2022 15:15:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Abhinav Kumar <quic_abhinavk@quicinc.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [drm-msm:msm-next-staging 99/108]
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c:410:13: warning:
- variable 'refcount' set but not used
-Message-ID: <202204281543.XFvZfER7-lkp@intel.com>
+        Thu, 28 Apr 2022 03:19:45 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD939A98F
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:16:30 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id p18so4446340edr.7
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:16:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=qK/yNrchERZZb5WKsXnjQKVBWPRpxhxKirZegeYDkkY=;
+        b=vJtMFaDNzaFtW99IRYyFTdk1Q8rYW6IgWzug6j118ma2yzmHBEoZiIvjA+nqqYpWTQ
+         Jn8F9zn8piDuH+HVvvDNy9n1snQ3Zs+xiBydHljNiaIbnqk8kbFOE0jRdRmK/FE35t8E
+         FwMLiIdpJsgd6pblclSuZNN8qA/zm0bLgh3FI8opcF/fbId2RbGSF/AZhU+Y01/1Kqkj
+         8V7lXoleyRtSyGVds/TB01VyhRAALqiMR4zPJ06+KXwLXXWgClKJKlvHm/ahNu2qXB5t
+         B4+IvMdt7au54atFCYPkxViu6/L/e/tVm+btfCw+jvW12VGe5M7Cz3wa/8D2RaJ5SqI9
+         EYnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qK/yNrchERZZb5WKsXnjQKVBWPRpxhxKirZegeYDkkY=;
+        b=LcMIaamcomHlDSvd6SKfOzYbO9otU1lOiqI7zbwsgeuAmMYVPFsjmM8ESff1ZPum7Y
+         Nkqhs+CaDM3pVXERkUta+R1kVhqsNob0mqkoQTVZBDJru/4PtqxCngyNKoIlcQkEmmH+
+         mFrfkYzgluzR7USDOhr9FcUsS5xj38iXS/o0OFYA+YomsT4dVAIfegwtPmnzx5MTMgMX
+         6zhsjNaogKQuKDdgiYHbBAH8x5fBF37ROUWGfmh92hXimxphWbazkYZl4zjhO1ghhJu7
+         dn/26GFRecCqvm32WDA9XyE3Svlvx55Hgv1xaJ8/zkC7AyDpVfBjlWrb86XbDPdgjE4d
+         b1cg==
+X-Gm-Message-State: AOAM530dpnJ+kv8cBI2ahg0QpNuFhCtrXBtgnKwOMSQGHWv07/hqlm3X
+        o1GIVFJAuo08G9uBL+Z40sdLGQ==
+X-Google-Smtp-Source: ABdhPJwRIlMZ/N3CaLiouXW/V1Nu5fEPPg34JRXTySZPqf2rTLSJUyAHmbmbfn25DsZhtMrqpgtQAw==
+X-Received: by 2002:a05:6402:2985:b0:425:d51f:ae4 with SMTP id eq5-20020a056402298500b00425d51f0ae4mr26454621edb.379.1651130189275;
+        Thu, 28 Apr 2022 00:16:29 -0700 (PDT)
+Received: from [192.168.0.160] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id z14-20020a170906944e00b006f38c33b6e3sm6086651ejx.68.2022.04.28.00.16.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 00:16:27 -0700 (PDT)
+Message-ID: <b7bb228f-751c-e7ad-a695-3dc40d889a72@linaro.org>
+Date:   Thu, 28 Apr 2022 09:16:26 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] dt-bindings: arm: mediatek: mmsys: refine power and gce
+ properties
+Content-Language: en-US
+To:     "jason-jh.lin" <jason-jh.lin@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Fabien Parent <fparent@baylibre.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, CK Hu <ck.hu@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Nancy Lin <nancy.lin@mediatek.com>,
+        Singo Chang <singo.chang@mediatek.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220428012715.2619-1-jason-jh.lin@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220428012715.2619-1-jason-jh.lin@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://gitlab.freedesktop.org/drm/msm.git msm-next-staging
-head:   d2dc68276133362f021bc8d429433b5818826c81
-commit: 0ce51f19453e2f901c6f6c0f725d1f397228970f [99/108] drm/msm/dpu: introduce the dpu_encoder_phys_* for writeback
-config: arc-allmodconfig (https://download.01.org/0day-ci/archive/20220428/202204281543.XFvZfER7-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add drm-msm https://gitlab.freedesktop.org/drm/msm.git
-        git fetch --no-tags drm-msm msm-next-staging
-        git checkout 0ce51f19453e2f901c6f6c0f725d1f397228970f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/gpu/drm/msm/
+On 28/04/2022 03:27, jason-jh.lin wrote:
+> From: "Jason-JH.Lin" <jason-jh.lin@mediatek.com>
+> 
+> Power:
+>   Refine description and add item number for power-domains property.
+> 
+> GCE:
+>   Refine description and add item number for mboxes property and
+>   mediatek,gce-client-reg property.
+> 
+> Fixes: 1da90b8a7bae ("dt-bindings: arm: mediatek: mmsys: add power and gce properties")
+> Signed-off-by: Jason-JH.Lin <jason-jh.lin@mediatek.com>
+> ---
+>  .../bindings/arm/mediatek/mediatek,mmsys.yaml | 29 +++++++++----------
+>  1 file changed, 14 insertions(+), 15 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+> index 6ad023eec193..6722f1b724ef 100644
+> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+> @@ -43,28 +43,27 @@ properties:
+>      maxItems: 1
+>  
+>    power-domains:
+> +    maxItems: 1
+>      description:
+> -      A phandle and PM domain specifier as defined by bindings
+> -      of the power controller specified by phandle. See
+> -      Documentation/devicetree/bindings/power/power-domain.yaml for details.
+> +      Each mmsys belongs to a power-domains. If mmsys wants to use PM
+> +      interface to control the power controller of mmsys, it should have
+> +      this property.
+>  
+>    mboxes:
+> +    minItems: 1
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+maxItems, surely you cannot have infinite number of mailboxes to talk with?
 
-All warnings (new ones prefixed by >>):
+>      description:
+> -      Using mailbox to communicate with GCE, it should have this
+> -      property and list of phandle, mailbox specifiers. See
+> -      Documentation/devicetree/bindings/mailbox/mtk-gce.txt for details.
+> -    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +      If using mailbox to communicate with GCE, it should have this
+> +      property. GCE will help configure the hardware settings for the
+> +      current mmsys data pipeline.
+>  
+>    mediatek,gce-client-reg:
+> -    description:
+> -      The register of client driver can be configured by gce with 4 arguments
+> -      defined in this property, such as phandle of gce, subsys id,
+> -      register offset and size.
+> -      Each subsys id is mapping to a base address of display function blocks
+> -      register which is defined in the gce header
+> -      include/dt-bindings/gce/<chip>-gce.h.
+> -    $ref: /schemas/types.yaml#/definitions/phandle-array
 
-   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c: In function 'dpu_encoder_phys_wb_irq_ctrl':
->> drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c:410:13: warning: variable 'refcount' set but not used [-Wunused-but-set-variable]
-     410 |         int refcount;
-         |             ^~~~~~~~
+Why removing ref? Does your binding work after such change?
+
+>      maxItems: 1
+> +    items:
+> +      - items:
+> +          - description: phandle to GCE
+> +          - description: subsys id
+> +          - description: register offset
+> +          - description: register size
+>  
+>    "#clock-cells":
+>      const: 1
 
 
-vim +/refcount +410 drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c
-
-   407	
-   408		struct dpu_encoder_phys_wb *wb_enc = to_dpu_encoder_phys_wb(phys);
-   409		int ret = 0;
- > 410		int refcount;
-   411	
-   412		refcount = atomic_read(&wb_enc->wbirq_refcount);
-   413	
-   414		if (enable && atomic_inc_return(&wb_enc->wbirq_refcount) == 1) {
-   415			dpu_core_irq_register_callback(phys->dpu_kms,
-   416					phys->irq[INTR_IDX_WB_DONE], dpu_encoder_phys_wb_done_irq, phys);
-   417			if (ret)
-   418				atomic_dec_return(&wb_enc->wbirq_refcount);
-   419		} else if (!enable &&
-   420				atomic_dec_return(&wb_enc->wbirq_refcount) == 0) {
-   421			dpu_core_irq_unregister_callback(phys->dpu_kms, phys->irq[INTR_IDX_WB_DONE]);
-   422			if (ret)
-   423				atomic_inc_return(&wb_enc->wbirq_refcount);
-   424		}
-   425	}
-   426	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+Krzysztof
