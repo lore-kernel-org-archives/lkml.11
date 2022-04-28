@@ -2,56 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:42:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E96CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:42:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349186AbiD1PpW (ORCPT
+        id S1348928AbiD1Ppz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 11:45:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59462 "EHLO
+        Thu, 28 Apr 2022 11:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244289AbiD1PpT (ORCPT
+        with ESMTP id S1344055AbiD1Ppo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 11:45:19 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79B19D059
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 08:42:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=TUzDmV6lGpxCRDwDQCNPidHsqESvizm5shxSGUEwRks=; b=iJzjAmRlF0oTd+7AtIrZPRreAm
-        IZwiMN55rJElndks6UMduecyy3x91S3cuy3zH0o4Itj+IXdmAuoJMqrlm5myEcV7Aqm05/fBW5klX
-        xG43SC0+gYKXZMlnxasN7HNoATJgJ0k2CHJ247w9V92Zd769Y4B5YbR98LtWwBwpIrrEg0jRj6r45
-        RAB2ChMy5+mLedWcH6EVkR2P9S4jH/Bs/4DcVMZuvXeQWjTI4JzOl48rdXyM3HLOj8rGfhL8uGHne
-        b9/7s8YAIDgyH3E40Ss8RUkSgcterpjQ2oleJb9P/W7A4scWAitv5SmT/bK3NVWXe43e5ahLPOhuo
-        g46S0CVg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nk6HF-007hmx-IQ; Thu, 28 Apr 2022 15:41:57 +0000
-Date:   Thu, 28 Apr 2022 08:41:57 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
+        Thu, 28 Apr 2022 11:45:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EFAAC04B;
+        Thu, 28 Apr 2022 08:42:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96F8A61F95;
+        Thu, 28 Apr 2022 15:42:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E38AC385A0;
+        Thu, 28 Apr 2022 15:42:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651160548;
+        bh=W6JZHURiD6S8sCBWTVgKCEUD2N8YrqtIi8H2lqDIUIE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=2FTCNuEMytEk2OLSJR+am6TFPzLZzc9hAU1K91ZblJPHOU3wXQN8kU6njVxB8Py/l
+         M36IPZ6KvEBBoep7xbkFbx5r+H3i9WqDDOrSesrxA394/eBd4mGWEqQoOCqjrRfn/Q
+         QskWcYrWsaZI4jQM1mJ2aVtC2QaJznoMfzJqN8Qc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     stable@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Muchun Song <songmuchun@bytedance.com>, Zi Yan <ziy@nvidia.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Lars Persson <lars.persson@axis.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Peter Xu <peterx@redhat.com>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH 1/4] mm: ioremap: Setup phys_addr of struct vm_struct
-Message-ID: <Ymq1xQTaImb2RP7h@infradead.org>
-References: <20220427121413.168468-1-wangkefeng.wang@huawei.com>
- <20220427121413.168468-2-wangkefeng.wang@huawei.com>
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH AUTOSEL 02/14] mm: fix missing cache flush for all tail pages of compound page
+Date:   Thu, 28 Apr 2022 17:42:10 +0200
+Message-Id: <20220428154222.1230793-2-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220428154222.1230793-1-gregkh@linuxfoundation.org>
+References: <20220428154222.1230793-1-gregkh@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220427121413.168468-2-wangkefeng.wang@huawei.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2363; i=gregkh@linuxfoundation.org; h=from:subject; bh=tzQoyaSqlxtKRFY8pVM4ItgoSNdr8h3zMFKbCiWeB+o=; b=owGbwMvMwCRo6H6F97bub03G02pJDElZW++4TAoPCs68vr7igM3rJk+lvg4Rixv6869mVp2wv2Cx +2N3RywLgyATg6yYIsuXbTxH91ccUvQytD0NM4eVCWQIAxenAEzk/FeGBWdvSqqovPy9V3b1Oqf2r0 sqt79pk2SYHyd3/rzal4VSM3hYg4XL8hQ/L9jwCAA=
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 08:14:10PM +0800, Kefeng Wang wrote:
-> Show physical address in /proc/vmallocinfo.
+From: Muchun Song <songmuchun@bytedance.com>
 
-Looks good:
+commit 2771739a7162782c0aa6424b2e3dd874e884a15d upstream.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+The D-cache maintenance inside move_to_new_page() only consider one
+page, there is still D-cache maintenance issue for tail pages of
+compound page (e.g. THP or HugeTLB).
+
+THP migration is only enabled on x86_64, ARM64 and powerpc, while
+powerpc and arm64 need to maintain the consistency between I-Cache and
+D-Cache, which depends on flush_dcache_page() to maintain the
+consistency between I-Cache and D-Cache.
+
+But there is no issues on arm64 and powerpc since they already considers
+the compound page cache flushing in their icache flush function.
+HugeTLB migration is enabled on arm, arm64, mips, parisc, powerpc,
+riscv, s390 and sh, while arm has handled the compound page cache flush
+in flush_dcache_page(), but most others do not.
+
+In theory, the issue exists on many architectures.  Fix this by not
+using flush_dcache_folio() since it is not backportable.
+
+Link: https://lkml.kernel.org/r/20220210123058.79206-3-songmuchun@bytedance.com
+Fixes: 290408d4a250 ("hugetlb: hugepage migration core")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Reviewed-by: Zi Yan <ziy@nvidia.com>
+Cc: Axel Rasmussen <axelrasmussen@google.com>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Fam Zheng <fam.zheng@bytedance.com>
+Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Cc: Lars Persson <lars.persson@axis.com>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Peter Xu <peterx@redhat.com>
+Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ mm/migrate.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/mm/migrate.c b/mm/migrate.c
+index 086a36637467..fc0e14ecd42a 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -916,9 +916,12 @@ static int move_to_new_page(struct page *newpage, struct page *page,
+ 		if (!PageMappingFlags(page))
+ 			page->mapping = NULL;
+ 
+-		if (likely(!is_zone_device_page(newpage)))
+-			flush_dcache_page(newpage);
++		if (likely(!is_zone_device_page(newpage))) {
++			int i, nr = compound_nr(newpage);
+ 
++			for (i = 0; i < nr; i++)
++				flush_dcache_page(newpage + i);
++		}
+ 	}
+ out:
+ 	return rc;
+-- 
+2.36.0
+
