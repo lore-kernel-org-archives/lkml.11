@@ -2,194 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CE05C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 21:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB54AC43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 21:48:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352427AbiD1Vvi (ORCPT
+        id S1352437AbiD1Vv7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 17:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44366 "EHLO
+        Thu, 28 Apr 2022 17:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232756AbiD1Vvg (ORCPT
+        with ESMTP id S230239AbiD1Vv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 17:51:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1E89BB0A8
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 14:48:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651182498;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1SdrNUtS00bHB3h5RBXA34wN9KxMmUCAGBI0InI/QLI=;
-        b=FATzLtVFlYKpQTEKq7sAbnozsl3K42vhFSAVUW+27EbLxDG4Laf1153YmAE+p86vW+kJ4i
-        BKkCbxnZCoAT6pbftTzBQ+0vYdsbuXTPJbLMnx4ybDd03dnAY6cjgcbF0NL+xmYIzcW0ml
-        EJpMu3NZirJ2AodF9KAGK8FoJpcSt+w=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
- [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-159-xAH0Jw54OIevqb7Etyypyg-1; Thu, 28 Apr 2022 17:48:17 -0400
-X-MC-Unique: xAH0Jw54OIevqb7Etyypyg-1
-Received: by mail-io1-f72.google.com with SMTP id j6-20020a5d93c6000000b0064fbbf9566bso5372709ioo.12
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 14:48:17 -0700 (PDT)
+        Thu, 28 Apr 2022 17:51:57 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFD7C1CBB;
+        Thu, 28 Apr 2022 14:48:42 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id o11so4468249qtp.13;
+        Thu, 28 Apr 2022 14:48:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VIMlgJSaKUPK/7h5zWJY806lZYuOHK/ks0bPYi8ucDM=;
+        b=Zt+bvY76wYsDI7E65dSTCp/J1neJLwfZf2/lF6fJGOA/G2XNDh7bjU/T6Tv+A2Yhs9
+         EaRuU79TNxPgDfBuT6bJ+DKsaBxyMjmBoMAEUgM4KF0268I0ycwxRulpOrw7oP4o0lN+
+         DPPufuljc49giVM20JXEN36af3Lo8IyoTn4WaLzAczKDgKASWEs2r6qFMcApTnKrPpG5
+         TFplqrhLRbjO24cU34qw28nkfxL198FO9T0Y4/zGT5cpHAnzFBPmPY4fye8LDXfO/0Fn
+         EJYTIRtB3TCX4E5OMrvVgeSla7/eIxn6xJTABUBRqH6c7Y9i8woYuOCJ4eRPtSHumMkF
+         SX8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=1SdrNUtS00bHB3h5RBXA34wN9KxMmUCAGBI0InI/QLI=;
-        b=r40u39Jk8X8zyckL1vklAGI8OUk8CnQvh8QWY4xIFXQm1Hv+M0i1g3BPTrAXXejBFU
-         otuRk63Iys1r50SNPqJyOB1tzfyv/o8tt9ELOo+5XEVqR4HF8+8ImKYA0l7OHym07csl
-         VqvtH2+wh2P5j8EMj8e6Etj7gAMLXeBwspIprAy0KuEQ2OAITMdta0x18ZI47bLQ/u5q
-         LB3+zUo/IIdLySbLsPnYZsu4xyleGW/A62A5L/D0Uj11m9h+Ge9iyZWlRWWEkvyvxqbF
-         O1oLv+Nwwp6jdmOCyVgH8w7z1buW+CRh0KUQzbrEsAlypPm6ePT2KZ4DWMsjAc/j70uy
-         8X5Q==
-X-Gm-Message-State: AOAM531Q/m13j6Vpu2TD7bnIxANN+eYWINu9w2fgGLoVSh2AUcxc8AK9
-        PdrMNaetL173GWyT/4msdGlIBIDzhT1VJKKHUry6pSSuoQKX6dxIY0G5zbHsH391Y6KYw9yDaPB
-        l07Z/3l3ObLZjRwgvD7jiFD2f
-X-Received: by 2002:a05:6638:345b:b0:32b:171c:e98a with SMTP id q27-20020a056638345b00b0032b171ce98amr4549689jav.157.1651182495331;
-        Thu, 28 Apr 2022 14:48:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyjWEjABWS84Q9IEOknOfcwKa7uQkrtX6It6lUsltV6rvcUb5+kUzsUYdaq615uXDOqxRj+Dg==
-X-Received: by 2002:a05:6638:345b:b0:32b:171c:e98a with SMTP id q27-20020a056638345b00b0032b171ce98amr4549684jav.157.1651182495127;
-        Thu, 28 Apr 2022 14:48:15 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id v18-20020a056e0213d200b002cbed258dcfsm42754ilj.0.2022.04.28.14.48.14
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VIMlgJSaKUPK/7h5zWJY806lZYuOHK/ks0bPYi8ucDM=;
+        b=ZwBPIKgTvggWOtWtoPqio5xXGQcVLztCeCNcD9+uqlEndjEJNkTh2+Wp3i+I3QQLOX
+         4mOPEGGk2r2g+N2MI3lYdviHb0Qx3uQ2L71iWRM5Hq2rYlIGo+i57KpFhEGf+rLWIPCm
+         6gIyOD+y8Sgt9aPiBNap6ci5ujaDDuZ5bEZpofx8Y0aA8gMQ9EeyM6r8Z5iDzLZ7VK5b
+         L7kCknTsw+I7YlcemQlN4fbJAh9z7z8ezGvTeIX5UkIN7WREmptiy3ySixDUP4aaQWjE
+         CYyCsSYf8K0M1Kq7Fny9jdBwV/IjFIzjnBN5d9wJU/AwbXae7gD3GKjsZc+i5niY/vU5
+         nPng==
+X-Gm-Message-State: AOAM530u8qWt5N95JZyA33A3zATQfdIj+2rk6XQ8GM/PkMFpr6ofG7nC
+        meUQ1evuAu3kkjhAPmH0GvE=
+X-Google-Smtp-Source: ABdhPJwv7QoELiYIxAsHxP9fTnCc+z0UzfaWK8FSssVnSNQhwArB1XB1ki5jmvztP7lDwMwP6f1u/g==
+X-Received: by 2002:ac8:7fcc:0:b0:2f2:5bf:6c with SMTP id b12-20020ac87fcc000000b002f205bf006cmr24992257qtk.655.1651182521178;
+        Thu, 28 Apr 2022 14:48:41 -0700 (PDT)
+Received: from jesse-desktop.jtp-bos.lab (146-115-144-188.s4282.c3-0.nwt-cbr1.sbo-nwt.ma.cable.rcncustomer.com. [146.115.144.188])
+        by smtp.gmail.com with ESMTPSA id bl5-20020a05620a1a8500b0069f51e47c5esm546442qkb.110.2022.04.28.14.48.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 14:48:14 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 15:48:13 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     "Wang, Zhi A" <zhi.a.wang@intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        "intel-gvt-dev@lists.freedesktop.org" 
-        <intel-gvt-dev@lists.freedesktop.org>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>
-Subject: Re: [PULL] gvt-next
-Message-ID: <20220428154813.7cef50d0.alex.williamson@redhat.com>
-In-Reply-To: <20220428153558.4b13fa27.alex.williamson@redhat.com>
-References: <c5cf6773-e7a2-8ba8-4cde-0bb14007bc6b@intel.com>
-        <87zgk8tf3l.fsf@intel.com>
-        <a0800c9b-71da-1cad-1dd4-78c0910ac266@intel.com>
-        <20220426115258.GJ2125828@nvidia.com>
-        <20220428153558.4b13fa27.alex.williamson@redhat.com>
-Organization: Red Hat
+        Thu, 28 Apr 2022 14:48:40 -0700 (PDT)
+From:   Jesse Taube <mr.bossman075@gmail.com>
+X-Google-Original-From: Jesse Taube <Mr.Bossman075@gmail.com>
+To:     linux-imx@nxp.com
+Cc:     robh+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, aisheng.dong@nxp.com, stefan@agner.ch,
+        linus.walleij@linaro.org, daniel.lezcano@linaro.org,
+        tglx@linutronix.de, arnd@arndb.de, olof@lixom.net, soc@kernel.org,
+        linux@armlinux.org.uk, abel.vesa@nxp.com, dev@lynxeye.de,
+        marcel.ziswiler@toradex.com, tharvey@gateworks.com,
+        leoyang.li@nxp.com, sebastian.reichel@collabora.com,
+        cniedermaier@dh-electronics.com, Mr.Bossman075@gmail.com,
+        clin@suse.com, giulio.benetti@benettiengineering.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org
+Subject: [PATCH v2 00/15] Add support for the i.MXRT1170-evk
+Date:   Thu, 28 Apr 2022 17:48:23 -0400
+Message-Id: <20220428214838.1040278-1-Mr.Bossman075@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 28 Apr 2022 15:35:58 -0600
-Alex Williamson <alex.williamson@redhat.com> wrote:
+This patch continues support for the imxrt series now with the imxrt1170
 
-> On Tue, 26 Apr 2022 08:52:58 -0300
-> Jason Gunthorpe <jgg@nvidia.com> wrote:
-> 
-> > On Tue, Apr 26, 2022 at 08:42:25AM +0000, Wang, Zhi A wrote:  
-> > > On 4/26/22 8:37 AM, Jani Nikula wrote:    
-> > > > On Tue, 26 Apr 2022, "Wang, Zhi A" <zhi.a.wang@intel.com> wrote:    
-> > > >> Hi folks:
-> > > >>
-> > > >> Here is the pull of gvt-next which fixs the compilation error when i915 debug
-> > > >> is open after the GVT-g refactor patches.
-> > > >>
-> > > >> Thanks so much for the efforts.    
-> > > > 
-> > > > Pulled, thanks.
-> > > > 
-> > > > BR,
-> > > > Jani.
-> > > >     
-> > > Thanks, looks good now. :)    
-> > 
-> > Great! Thanks everyone!
-> > 
-> > Alex, can you pull this to VFIO now too? The top commit should be:  
-> 
-> I see a gvt-next-2022-04-29 tag adding the following fixes:
-> 
-> 419f8299ddad i915/gvt: Fix NULL pointer dereference in init_mmio_block_handlers
-> 5b95b9d58fb0 drm/i915/gvt: Fix the compiling error when CONFIG_DRM_I915_DEBUG_RUNTIME_PM=n
-> fa630c304b93 drm/i915/gvt: Make intel_gvt_match_device() static
-> 
-> I'm expecting that's my new merge target once a pull request is
-> completed for that.  Please keep me cc'd.  Thanks,
+This patch contains:
+- Update to imxrt_defconfig
+- Devicetree
+- Clock driver
+- Pinctrl driver
+- New pll
 
-Oops, I see the new pull request for this tag came in while I was
-writing this.  I'll keep an eye for it to be merged.  Thanks,
+This patch also updates some documentation for both imxrt1170 an 1050.
 
-Alex
+The i.MXRT1170 has a vast array of features including two cores. 2 Ethernet, 2 USB phy, and a 2d gpu.
 
-> > commit 5e9ae5c47052e28a31fb4f55a6e735c28d4c3948
-> > Author: Zhi Wang <zhi.wang.linux@gmail.com>
-> > Date:   Mon Apr 25 18:03:31 2022 -0400
-> > 
-> >     drm/i915/gvt: Add missing symbol export.
-> >     
-> >     When CONFIG_DRM_I915_DEBUG_RUNTIME and CONFIG_DRM_I915_DEBUG_PM
-> >     are enabled, two more extra symols in i915 are required to be
-> >     exported.
-> >     
-> >     Cc: Jani Nikula <jani.nikula@intel.com>
-> >     Signed-off-by: Zhi Wang <zhi.a.wang@intel.com>
-> >     Link: http://patchwork.freedesktop.org/patch/msgid/20220425220331.24865-1-zhi.a.wang@intel.com
-> >     Reviewed-by: Jani Nikula <jani.nikula@intel.com>
-> > 
-> > Which was picked up here:
-> > 
-> > https://cgit.freedesktop.org/drm-intel/commit/?h=drm-intel-next&id=f08699ec5bd924be4c9572e21fd0a806d3fb34c2
-> > 
-> > It will have these commits:
-> > 
-> > 5e9ae5c47052e2 drm/i915/gvt: Add missing symbol export.
-> > 2917f53113be3b vfio/mdev: Remove mdev drvdata
-> > 2aa72ec97ce9eb vfio/mdev: Use the driver core to create the 'remove' file
-> > 6b42f491e17ce1 vfio/mdev: Remove mdev_parent_ops
-> > e6486939d8ea22 vfio/mdev: Remove mdev_parent_ops dev_attr_groups
-> > 6c7f98b334a32d vfio/mdev: Remove vfio_mdev.c
-> > cba619cb0d4d66 drm/i915/gvt: merge gvt.c into kvmgvt.c
-> > 978cf586ac35f3 drm/i915/gvt: convert to use vfio_register_emulated_iommu_dev
-> > 0e09f4066ad11b drm/i915/gvt: remove kvmgt_guest_{init,exit}
-> > 7f11e6893ff01b drm/i915/gvt: pass a struct intel_vgpu to the vfio read/write helpers
-> > 4456641232e2c1 drm/i915/gvt: streamline intel_vgpu_create
-> > 37e4bdbd5bad71 drm/i915/gvt: remove the extra vfio_device refcounting for dmabufs
-> > 5f8f3fe67cd908 drm/i915/gvt: remove struct intel_gvt_mpt
-> > 91879bbaf8890f drm/i915/gvt: devirtualize dma_pin_guest_page
-> > 8398eee85fd009 drm/i915/gvt: devirtualize ->dma_{,un}map_guest_page
-> > 4c2baaaf764bfb drm/i915/gvt: devirtualize ->{enable,disable}_page_track
-> > 4050dab5981cd4 drm/i915/gvt: devirtualize ->gfn_to_mfn
-> > bd73b4b193d450 drm/i915/gvt: devirtualize ->is_valid_gfn
-> > b3bece34956f86 drm/i915/gvt: devirtualize ->inject_msi
-> > 4c705ad0d784fd drm/i915/gvt: devirtualize ->detach_vgpu
-> > f9399b0e4a9555 drm/i915/gvt: devirtualize ->set_edid and ->set_opregion
-> > fe902f0ce686e8 drm/i915/gvt: devirtualize ->{get,put}_vfio_device
-> > e3d7640eeeb306 drm/i915/gvt: devirtualize ->{read,write}_gpa
-> > 3c340d05868d98 drm/i915/gvt: remove vgpu->handle
-> > 10ddb96295f3bd drm/i915/gvt: merge struct kvmgt_guest_info into strut intel_vgpu
-> > 62980cacc37f58 drm/i915/gvt: merge struct kvmgt_vdev into struct intel_vgpu
-> > 3cbac24c2cdbfe drm/i915/gvt: remove the unused from_virt_to_mfn op
-> > c977092a997708 drm/i915/gvt: remove the map_gfn_to_mfn and set_trap_area ops
-> > 675e5c4a33e20c drm/i915/gvt: remove intel_gvt_ops
-> > 8b750bf744181c drm/i915/gvt: move the gvt code into kvmgt.ko
-> > f49fc35799fa63 drm/i915/gvt: rename intel_vgpu_ops to intel_vgpu_mdev_ops
-> > 367748066eeb37 drm/i915/gvt: remove enum hypervisor_type
-> > a85749e12d66c2 drm/i915/gvt: remove module refcounting in intel_gvt_{,un}register_hypervisor
-> > 7f0cf30187cdb1 drm/i915/gvt: better align the Makefile with i915 Makefile
-> > de5d437ae8696a drm/i915/gvt: fix trace TRACE_INCLUDE_PATH
-> > 1672991412dfef i915/gvt: Use the initial HW state snapshot saved in i915
-> > 66e7a8063381cb i915/gvt: Save the initial HW state snapshot in i915
-> > e0f74ed4634d6d i915/gvt: Separate the MMIO tracking table from GVT-g
-> > 
-> > Thanks,
-> > Jason
-> >   
-> 
+It also is featured in a new google coral board
+https://coral.ai/products/dev-board-micro
+Not affiliated unfortunately.
+
+---
+V1 -> V2:
+ - Add 3 new commits in documentation
+ - Fix spelling
+---
+Jesse Taube (15):
+  dt-bindings: arm: imx: Add i.MXRT compatible Documentation
+  dt-bindings: timer: gpt: Add i.MXRT compatible Documentation
+  dt-bindings: gpio: fsl-imx-gpio: Add i.MXRT compatibles
+  dt-bindings: mmc: fsl-imx-esdhc: add i.MXRT1170 compatible
+  dt-bindings: serial: fsl-lpuart: add i.MXRT1170 compatible
+  dt-bindings: pinctrl: add i.MXRT1170 pinctrl Documentation
+  dt-bindings: clock: imx: Add documentation for i.MXRT1170 clock
+  ARM: mach-imx: Add support for i.MXRT1170
+  ARM: clk: imx: Update pllv3 to support i.MXRT1170
+  dt-bindings: imx: Add clock binding for i.MXRT1170
+  clk: imx: Add initial support for i.MXRT1170 clock driver
+  pinctrl: freescale: Add i.MXRT1170 pinctrl driver support
+  ARM: dts: imxrt1170-pinfunc: Add pinctrl binding header
+  ARM: dts: imx: Add i.MXRT1170-EVK support
+  ARM: imxrt_defconfig: Add i.MXRT1170
+
+ .../devicetree/bindings/arm/fsl.yaml          |   12 +
+ .../bindings/clock/fsl,imxrt1170-clock.yaml   |   59 +
+ .../bindings/gpio/fsl-imx-gpio.yaml           |    2 +
+ .../bindings/mmc/fsl-imx-esdhc.yaml           |    6 +
+ .../bindings/pinctrl/fsl,imxrt1170.yaml       |   77 +
+ .../bindings/serial/fsl-lpuart.yaml           |    4 +
+ .../devicetree/bindings/timer/fsl,imxgpt.yaml |    2 +
+ arch/arm/boot/dts/Makefile                    |    3 +-
+ arch/arm/boot/dts/imxrt1170-evk.dts           |  110 ++
+ arch/arm/boot/dts/imxrt1170-pinfunc.h         | 1561 +++++++++++++++++
+ arch/arm/boot/dts/imxrt1170.dtsi              |  276 +++
+ arch/arm/configs/imxrt_defconfig              |   17 +
+ arch/arm/mach-imx/mach-imxrt.c                |    1 +
+ drivers/clk/imx/Kconfig                       |    7 +
+ drivers/clk/imx/Makefile                      |    1 +
+ drivers/clk/imx/clk-imxrt1170.c               |  536 ++++++
+ drivers/clk/imx/clk-pllv3.c                   |   57 +-
+ drivers/clk/imx/clk.h                         |    4 +
+ drivers/pinctrl/freescale/Kconfig             |    7 +
+ drivers/pinctrl/freescale/Makefile            |    1 +
+ drivers/pinctrl/freescale/pinctrl-imxrt1170.c |  349 ++++
+ include/dt-bindings/clock/imxrt1170-clock.h   |  282 +++
+ 22 files changed, 3371 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/fsl,imxrt1170-clock.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/fsl,imxrt1170.yaml
+ create mode 100644 arch/arm/boot/dts/imxrt1170-evk.dts
+ create mode 100644 arch/arm/boot/dts/imxrt1170-pinfunc.h
+ create mode 100644 arch/arm/boot/dts/imxrt1170.dtsi
+ create mode 100644 drivers/clk/imx/clk-imxrt1170.c
+ create mode 100644 drivers/pinctrl/freescale/pinctrl-imxrt1170.c
+ create mode 100644 include/dt-bindings/clock/imxrt1170-clock.h
+
+-- 
+2.35.1
 
