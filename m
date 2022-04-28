@@ -2,166 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8476C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:11:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F0E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346841AbiD1NOX (ORCPT
+        id S1346850AbiD1NOa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45690 "EHLO
+        Thu, 28 Apr 2022 09:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346952AbiD1NOP (ORCPT
+        with ESMTP id S1346473AbiD1NO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:14:15 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79EAA1AF32;
-        Thu, 28 Apr 2022 06:11:00 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id s131so5294718oie.1;
-        Thu, 28 Apr 2022 06:11:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=m1086ZQTgciBDTHOLT4KKyAGoDAeJX2AiJjybJQ5ZuA=;
-        b=LOr1/Kv/sLO4NyKJzb6wqfS6o0gV4djWxJx68mOvZpgzsNuLzwrbG+2V7jAE76zIUj
-         iikJ8X+ovko/EHgij1nBQo/x7Bi/KPoLw5dbFg1zkl+o+xzs/STuev2VguEmliiioU9o
-         aCRBFz40yeAc2H4oCQbOSaMqx4cZT1CU8By5trHyfwPkvOAWyXlHhK8z6XGX/SWIIQLl
-         Q1L2YoO0TcjAiw0rojGcluE6Tex4gTGwkAVShpqBRAL9TZm38Dq0T+qg4j3LtP3jpc5T
-         CCMOla56w5vcgbaVApT13+c8dDBbEjXo0Hng5F4WYel0R7mCQx+yTsPc3q4uQqGQqOeU
-         09+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=m1086ZQTgciBDTHOLT4KKyAGoDAeJX2AiJjybJQ5ZuA=;
-        b=4OqAqygbgnAM6NRfolPcwj2dafkw5q6nJwddL4HNmu1oJCi8xAqCNtbsQtB7BiryQs
-         WJ/rSBgVcHuQ33M1IA4zt3hNWdqXIDpCezaqQd3um4G1KpkFKaUBKkFBIo9Z2OF9dtqp
-         aaIpR2PV9zTPDXQAT3Yk4CprDEXH1jfC9iFsB90fcHLAE36d9tNkhZsq27e2shFYl2D8
-         E2kesnTAsRz3URdLKaayZOoK93lcYYW1zuiJK8ZnUmt35lBBixovvma+AkTdeNPv5vYv
-         wZs35F1ZXu+6ZVH5pzk3i+YRDNca12qPiZ/wH+ug9ZsFxQHapEFCKa34X5K9tGBsTFA3
-         xFLA==
-X-Gm-Message-State: AOAM532RIWCtDXP07UUKZJjJhPpMtnLvYozOnZj+bU9NgAAcMaF43B9X
-        D+03HikrJkqQByP5+cGAA+Q=
-X-Google-Smtp-Source: ABdhPJzcMUpV76tKlp2QvspGppKBwEJiHCceRqEhu5DMtQBUZJkt02KlvwVAfbzsG9cuehRDhFmpIQ==
-X-Received: by 2002:aca:782:0:b0:325:4771:90b1 with SMTP id 124-20020aca0782000000b00325477190b1mr8237240oih.236.1651151459806;
-        Thu, 28 Apr 2022 06:10:59 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id i16-20020a056870d41000b000e686d1388esm1917184oag.40.2022.04.28.06.10.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 06:10:58 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <b19ce453-1235-689b-8796-fa6cba35c1f0@roeck-us.net>
-Date:   Thu, 28 Apr 2022 06:10:56 -0700
+        Thu, 28 Apr 2022 09:14:28 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 031681CB29
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:11:09 -0700 (PDT)
+Received: from relay12.mail.gandi.net (unknown [217.70.178.232])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 97A7DC6858
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 13:04:55 +0000 (UTC)
+Received: (Authenticated sender: jacopo@jmondi.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id D0646200018;
+        Thu, 28 Apr 2022 13:04:49 +0000 (UTC)
+Date:   Thu, 28 Apr 2022 15:04:48 +0200
+From:   Jacopo Mondi <jacopo@jmondi.org>
+To:     Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@puri.sm
+Subject: Re: [PATCHv2 1/2] doc/media api: Try to make enum usage clearer
+Message-ID: <20220428130448.bfht2nf23n6lidsk@uno.localdomain>
+References: <20220428105211.7106ce6a.dorota.czaplejewicz@puri.sm>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] watchdog: max63xx_wdt: Add support for specifying WDI
- logic via GPIO
-Content-Language: en-US
-To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220428091603.6838-1-pali@kernel.org>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <20220428091603.6838-1-pali@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="toluwoxxewqm2y5f"
+Content-Disposition: inline
+In-Reply-To: <20220428105211.7106ce6a.dorota.czaplejewicz@puri.sm>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/28/22 02:16, Pali Rohár wrote:
-> On some boards is WDI logic of max6370 chip connected via GPIO. So extend
-> max63xx_wdt driver and DTS schema to allow specifying WDI logic via GPIO.
-> 
-> Signed-off-by: Pali Rohár <pali@kernel.org>
 
-How is that different to just using the gpio watchdog driver ?
+--toluwoxxewqm2y5f
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-Guenter
+Hi Dorota,
 
+
+On Thu, Apr 28, 2022 at 10:52:11AM +0200, Dorota Czaplejewicz wrote:
+> Added: mbus codes must not repeat
+> Added: no holes in the enumeration
+> Added: enumerations per what?
+> Added: who fills in what in calls
+> Changed: "zero" -> "0"
+> Changed: "given" -> "specified"
+>
+A more discoursive commit message would be appreciated. Just a few lines
+before the crude list of changes:
+
+Something like
+
+"Update the documentation of ... in order to clarify etc etc"
+
+> Signed-off-by: Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
 > ---
->   .../bindings/watchdog/maxim,max63xx.yaml      |  4 +++
->   drivers/watchdog/max63xx_wdt.c                | 28 +++++++++++++++++++
->   2 files changed, 32 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml b/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml
-> index ab9641e845db..a97aa0135ef9 100644
-> --- a/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml
-> +++ b/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml
-> @@ -27,6 +27,10 @@ properties:
->       description: This is a 1-byte memory-mapped address
->       maxItems: 1
->   
-> +  gpios:
-> +    description: Optional GPIO used for controlling WDI when WDI bit is not mapped to memory
-> +    maxItems: 1
-> +
->   required:
->     - compatible
->     - reg
-> diff --git a/drivers/watchdog/max63xx_wdt.c b/drivers/watchdog/max63xx_wdt.c
-> index 9e1541cfae0d..eaf00c3f06a5 100644
-> --- a/drivers/watchdog/max63xx_wdt.c
-> +++ b/drivers/watchdog/max63xx_wdt.c
-> @@ -27,6 +27,7 @@
->   #include <linux/io.h>
->   #include <linux/slab.h>
->   #include <linux/property.h>
-> +#include <linux/gpio/consumer.h>
->   
->   #define DEFAULT_HEARTBEAT 60
->   #define MAX_HEARTBEAT     60
-> @@ -53,6 +54,9 @@ struct max63xx_wdt {
->   	void __iomem *base;
->   	spinlock_t lock;
->   
-> +	/* GPIOs */
-> +	struct gpio_desc *gpio_wdi;
-> +
->   	/* WDI and WSET bits write access routines */
->   	void (*ping)(struct max63xx_wdt *wdt);
->   	void (*set)(struct max63xx_wdt *wdt, u8 set);
-> @@ -158,6 +162,17 @@ static const struct watchdog_info max63xx_wdt_info = {
->   	.identity = "max63xx Watchdog",
->   };
->   
-> +static void max63xx_gpio_ping(struct max63xx_wdt *wdt)
-> +{
-> +	spin_lock(&wdt->lock);
-> +
-> +	gpiod_set_value_cansleep(wdt->gpio_wdi, 1);
-> +	udelay(1);
-> +	gpiod_set_value_cansleep(wdt->gpio_wdi, 0);
-> +
-> +	spin_unlock(&wdt->lock);
-> +}
-> +
->   static void max63xx_mmap_ping(struct max63xx_wdt *wdt)
->   {
->   	u8 val;
-> @@ -225,6 +240,19 @@ static int max63xx_wdt_probe(struct platform_device *pdev)
->   		return -EINVAL;
->   	}
->   
-> +	wdt->gpio_wdi = devm_gpiod_get(dev, NULL, GPIOD_FLAGS_BIT_DIR_OUT);
-> +	if (IS_ERR(wdt->gpio_wdi) && PTR_ERR(wdt->gpio_wdi) != -ENOENT) {
-> +		if (PTR_ERR(wdt->gpio_wdi) != -EPROBE_DEFER)
-> +			dev_err(dev, "unable to request gpio: %ld\n",
-> +				PTR_ERR(wdt->gpio_wdi));
-> +		return PTR_ERR(wdt->gpio_wdi);
-> +	}
-> +
-> +	if (!IS_ERR(wdt->gpio_wdi))
-> +		wdt->ping = max63xx_gpio_ping;
-> +	else
-> +		wdt->gpio_wdi = NULL;
-> +
->   	err = max63xx_mmap_init(pdev, wdt);
->   	if (err)
->   		return err;
+> Hello,
+>
+> this is the second attempt at updating the media documentation.
+>
+> Differences from previous: "selected" is now "specified", "array" is now "enumeration", and "caller" is now "application".
 
+Please stay in 80 cols even for parts that won't end up in the commit
+message, it's hard to read this if you have multiple terminal windows
+open.
+
+>
+> No differences: I haven't used the frame intervals calls and haven't gathered practical knowledge about where docs may be insufficient, so I didn't touch its documentation.
+
+I think Hans required to change the documentation of that ioctl to
+match the style of the changes you have made here, not because
+something is missing there.
+
+>
+> Regards,
+> Dorota
+>
+>  .../v4l/vidioc-subdev-enum-mbus-code.rst      | 39 +++++++++++++------
+>  1 file changed, 27 insertions(+), 12 deletions(-)
+>
+> diff --git a/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbus-code.rst b/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbus-code.rst
+> index 417f1a19bcc4..87572de0fd26 100644
+> --- a/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbus-code.rst
+> +++ b/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-mbus-code.rst
+> @@ -31,15 +31,29 @@ Arguments
+>  Description
+>  ===========
+>
+> -To enumerate media bus formats available at a given sub-device pad
+> -applications initialize the ``pad``, ``which`` and ``index`` fields of
+> -struct
+> -:c:type:`v4l2_subdev_mbus_code_enum` and
+> -call the :ref:`VIDIOC_SUBDEV_ENUM_MBUS_CODE` ioctl with a pointer to this
+> -structure. Drivers fill the rest of the structure or return an ``EINVAL``
+> -error code if either the ``pad`` or ``index`` are invalid. All media bus
+> -formats are enumerable by beginning at index zero and incrementing by
+> -one until ``EINVAL`` is returned.
+> +This call is used by the application to access the enumeration of bus formats
+> +for the selected pad.
+
+This is a good introductory phrase.
+
+> +
+> +The enumerations are defined by the driver, and indexed using the ``index`` field
+> +of struct :c:type:`v4l2_subdev_mbus_code_enum`.
+> +Each value of ``pad`` corresponds to a separate enumeration.
+
+Isn't this a repetition of the above "enumeration of bus formats for
+the selected pad" ? Also, the fact different mbus codes are available
+at different pads is an intrinsic characteristics of the device
+capabilities and of what a pad represents. Put it in this way it seems
+it's an API requirement.
+
+> +Each enumeration starts with the ``index`` of 0, and
+> +the lowest invalid index marks the end of enumeration.
+> +
+> +Therefore, to enumerate media bus formats available at a given sub-device pad,
+> +initialize the ``pad``, and ``which`` fields to desired values,
+> +and set ``index`` to 0.
+> +Then call the :ref:`VIDIOC_SUBDEV_ENUM_MBUS_CODE` ioctl
+> +with a pointer to this structure.
+
+Could these two paragraphs be just:
+
+To enumerate all the media bus codes available at a give sub-device pad,
+an application set the ``index`` field to 0 and then call the
+:ref:`VIDIOC_SUBDEV_ENUM_MBUS_CODE` ioctl with a pointer to this structure,
+incrementing ``index`` by one until ``EINVAL`` is returned.
+
+> +
+> +A successful call will return with the ``code`` field filled in
+> +with a mbus format value.
+
+Generally, I see "mbus code", not "mbus format" as far as
+I'm aware..
+
+> +Repeat with increasing ``index`` until ``EINVAL`` is received.
+> +``EINVAL`` means that either ``pad`` is invalid,
+> +or that there are no more codes available at this pad.
+
+Is it necessary to add this last paragraph. Isn't it specified in the
+error code description below ?
+
+EINVAL
+    The struct
+    :c:type:`v4l2_subdev_mbus_code_enum`
+    ``pad`` references a non-existing pad, or the ``index`` field is out
+    of bounds.
+
+
+> +
+> +The driver must not return the same value of ``code`` for different indices
+> +at the same pad.
+
+This might be a good thing to specify, a little obvious maybe but it
+doesn't hurt.
+
+>
+>  Available media bus formats may depend on the current 'try' formats at
+>  other pads of the sub-device, as well as on the current active links.
+> @@ -57,14 +71,15 @@ information about the try formats.
+>
+>      * - __u32
+>        - ``pad``
+> -      - Pad number as reported by the media controller API.
+> +      - Pad number as reported by the media controller API. Filled in by the application.
+>      * - __u32
+>        - ``index``
+> -      - Number of the format in the enumeration, set by the application.
+> +      - Index of the mbus code in the enumeration belonging to the given pad.
+> +    Filled in by the application.
+
+These last changes are good, provided this phrase still renders correctly
+now that you added a line break.
+
+>      * - __u32
+>        - ``code``
+>        - The media bus format code, as defined in
+> -	:ref:`v4l2-mbus-format`.
+> +	:ref:`v4l2-mbus-format`. Filled in by the driver.
+>      * - __u32
+>        - ``which``
+>        - Media bus format codes to be enumerated, from enum
+
+In general there are a few good additions, but to be honest I would
+keep the changes small for sake of consistency with the existing
+documentation of other enumeration-related ioctls
+
+Thanks
+   j
+
+> --
+> 2.35.1
+>
+
+
+
+--toluwoxxewqm2y5f
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEtcQ9SICaIIqPWDjAcjQGjxahVjwFAmJqkO8ACgkQcjQGjxah
+VjymVhAApUEsdzPNeWh7kxkyZbVPoJgq+1UFS/zhkJNnby4tmdpJ86TbbKtzjifj
+s4Hw1QyCQkEgZxl1vPpmUpcGlkVEafHT7AN9DjuToOjKJKAWhhNuUO4n8nrRUkhN
+1R5KV/ffy3ighSBSOtlyaW9a+GtVwNn39UFBK9FqKKlCHQsY4qwO0jivltjIWM1h
+WTSFEcl7nrky3tGp45WvezT1ZOjPCSdn2dsJ2tmBbeZQ00qJYp7hHuqKDId6jDSV
+LUuQ9yV95PH1gXMTmKmraUl/qwj0teLx5SKPZ11oSTkPGdUjyisL6hp5XleTmozy
+5aWnY3C0rhLoeQ4ljxWyXIppMxxO+Vkihow/CYHo9oVBHuy4EiCQoxKtJ0VBUa/r
+2D/XEoJRD5xB326V3LAt7Rhk0t1RPq89kpl7ilXDdLn+meBx/NhPyPDSexbimnEf
+uNSfMaWHny76bioOT/29pHrvNhss7knpwW3yXkXHbmLrtbbLJ6p6heoMJ0raP6fe
+GYybe9060leuTxq30yhpuolCYOutL/+dBczD6rqm3V8qkNKmZnAiXC+2fVra6BTo
+8aNE8WQ5zfjWexSQw2+g7B4rsCQp6SJ6BNWsY9ynwX11Rsrs5p7N6EWyhSNl4ntw
+4CIBTDt59sCh6aGrYCLMwC62RMufYzk3UwQiTg2IPtzUjFG/i4I=
+=OWpT
+-----END PGP SIGNATURE-----
+
+--toluwoxxewqm2y5f--
