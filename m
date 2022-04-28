@@ -2,82 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCFCEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 21:52:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 252AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 21:56:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352682AbiD1Vzq (ORCPT
+        id S1352712AbiD1V7V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 17:55:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55180 "EHLO
+        Thu, 28 Apr 2022 17:59:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237165AbiD1Vy6 (ORCPT
+        with ESMTP id S1348288AbiD1V7T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 17:54:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9465221E3B
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 14:51:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AC0461FB9
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 21:51:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 809CAC385B9;
-        Thu, 28 Apr 2022 21:51:41 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.95)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1nkC32-003MaG-Jh;
-        Thu, 28 Apr 2022 17:51:40 -0400
-Message-ID: <20220428215140.438634489@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Thu, 28 Apr 2022 17:51:06 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [for-next][PATCH 4/8] tracing: Add documentation for trace clock tai
-References: <20220428215102.260147624@goodmis.org>
+        Thu, 28 Apr 2022 17:59:19 -0400
+Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875E9580C8
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 14:56:03 -0700 (PDT)
+Received: by mail-ua1-x934.google.com with SMTP id c15so2271941uav.0
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 14:56:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ykl24436SaU3yo8134eJXPByhNLIxnoisxRIQCMfPNU=;
+        b=OYu5UJiojOCJcf+bfjl+7mPHz/EWWUDTzXAD/6tENRmjCYCZ90t03VyG4kKPUSUIik
+         Tp6T67U+oz784+GfWsihRuRDungG+sOW09ZOInLUUjAJeO2POKKWQrE8f1JrakYe3IYV
+         T/wBJVKrp2c8LiiMg5BWOtletnbd3OjIBOkGOu8TSriEDHvQcsliMsI0Y+gPmFL/fmnY
+         l7r6xLRLmfkNjeLcH4NXNggVpyO3SWIdhB8RX/uBrKtWyonF16GR3Uat1yndrGEsB6yQ
+         QbE9aucSPGz1jBJ6UGo1By1znTJTtiPmFHqpuxypaXfDkmttIcPJuDYhw9GSiF5rrmqO
+         8sxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ykl24436SaU3yo8134eJXPByhNLIxnoisxRIQCMfPNU=;
+        b=0cryUO3OS3QHePKZUadu49Mrz4ZxCERLUxNu5D1+yCCPYcU7iJDbnnqr9dWL+gXyMM
+         dRMShcM/yOsP7d2eO1pogo49XqLlewc+a2f6z+d7gehOS60CC/brOaOtBeQtfVnGXmiv
+         WSM+Yatdii5JIQeHusMvlyrcnb67n/PsToOiYMDzblWZogjpQa64gW1l3BmJo1/0L484
+         o/cL12cUnD82did5cfJBDR/umQxMa46Ujevy6XQAQH613ZxdJpyF40sa3R1UhL5hlYgb
+         FNNQdK9gNTbta99nuduz4oatPGBleUV7tjAbRonQOQQ8JCV9/fe4LcVFkW8HQ4QlH7GF
+         m7MQ==
+X-Gm-Message-State: AOAM533R0cS7QYbW4ceUI9eeEEe1OVNsOEMSJJBjomckna42T11vICVt
+        RQjDeytDNS4v9QVVrQUGDPpwVXG0ahKjbieLtOjncQ==
+X-Google-Smtp-Source: ABdhPJx0EqFUFPkWRHxfFBGbweZrmSs8OVh4W2+Tz0hiwIBGnXxj8QBMaPt7l0rXQZfXNnDthfcm5PZzBs2XYv2CYIg=
+X-Received: by 2002:ab0:7308:0:b0:35f:acfb:c011 with SMTP id
+ v8-20020ab07308000000b0035facfbc011mr10636031uao.51.1651182962546; Thu, 28
+ Apr 2022 14:56:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20220427195820.1716975-1-pcc@google.com> <20220427195820.1716975-2-pcc@google.com>
+ <20220427132738.fdca02736b5d067c92185c5b@linux-foundation.org>
+In-Reply-To: <20220427132738.fdca02736b5d067c92185c5b@linux-foundation.org>
+From:   Peter Collingbourne <pcc@google.com>
+Date:   Thu, 28 Apr 2022 14:55:51 -0700
+Message-ID: <CAMn1gO4sdaqZDoa0CErkTOaP=z2Y_ZitPck9opdXNbexdLaVOg@mail.gmail.com>
+Subject: Re: [PATCH v5 2/2] mm: make minimum slab alignment a runtime property
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Pekka Enberg <penberg@kernel.org>, roman.gushchin@linux.dev,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        David Rientjes <rientjes@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kurt Kanzenbach <kurt@linutronix.de>
+On Wed, Apr 27, 2022 at 1:27 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+>
+> On Wed, 27 Apr 2022 12:58:20 -0700 Peter Collingbourne <pcc@google.com> wrote:
+>
+> > When CONFIG_KASAN_HW_TAGS is enabled we currently increase the minimum
+> > slab alignment to 16. This happens even if MTE is not supported in
+> > hardware or disabled via kasan=off, which creates an unnecessary
+> > memory overhead in those cases. Eliminate this overhead by making
+> > the minimum slab alignment a runtime property and only aligning to
+> > 16 if KASAN is enabled at runtime.
+> >
+> > On a DragonBoard 845c (non-MTE hardware) with a kernel built with
+> > CONFIG_KASAN_HW_TAGS, waiting for quiescence after a full Android
+> > boot I see the following Slab measurements in /proc/meminfo (median
+> > of 3 reboots):
+> >
+> > ...
+> >
+> > --- a/mm/slab.c
+> > +++ b/mm/slab.c
+> > @@ -3009,10 +3009,9 @@ static void *cache_alloc_debugcheck_after(struct kmem_cache *cachep,
+> >       objp += obj_offset(cachep);
+> >       if (cachep->ctor && cachep->flags & SLAB_POISON)
+> >               cachep->ctor(objp);
+> > -     if (ARCH_SLAB_MINALIGN &&
+> > -         ((unsigned long)objp & (ARCH_SLAB_MINALIGN-1))) {
+> > -             pr_err("0x%px: not aligned to ARCH_SLAB_MINALIGN=%d\n",
+> > -                    objp, (int)ARCH_SLAB_MINALIGN);
+> > +     if ((unsigned long)objp & (arch_slab_minalign() - 1)) {
+> > +             pr_err("0x%px: not aligned to arch_slab_minalign()=%d\n", objp,
+> > +                    (int)arch_slab_minalign());
+>
+> printf/printk know about size_t.  Use %zu, no cast needed.  But...
+>
+> >       }
+> >       return objp;
+> >  }
+> > diff --git a/mm/slab_common.c b/mm/slab_common.c
+> > index 2b3206a2c3b5..33cc49810a54 100644
+> > --- a/mm/slab_common.c
+> > +++ b/mm/slab_common.c
+> > @@ -154,8 +154,7 @@ static unsigned int calculate_alignment(slab_flags_t flags,
+> >               align = max(align, ralign);
+> >       }
+> >
+> > -     if (align < ARCH_SLAB_MINALIGN)
+> > -             align = ARCH_SLAB_MINALIGN;
+> > +     align = max_t(size_t, align, arch_slab_minalign());
+>
+> max_t/min_t are nature's way of telling us "you screwed up the types".
+>
+> So what type _is_ slab alignment?  size_t seems sensible, but the code
+> prefers unsigned int.  So how about we stick with that?
+>
+>
+> This compiles.  Still some max_t's in slob.c because I was too lazy to
+> go fix the type of ARCH_KMALLOC_MINALIGN.
+>
+> Shrug, I don't know if we can be bothered.   You decide :)
 
-Add documentation for newly introduced trace clock "tai".
-This clock corresponds to CLOCK_TAI.
+Hi Andrew,
 
-Link: https://lkml.kernel.org/r/20220414091805.89667-4-kurt@linutronix.de
+No strong opinions here. I'm happy with the fixup that you added to
+your tree on top of my patch.
 
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
- Documentation/trace/ftrace.rst | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/Documentation/trace/ftrace.rst b/Documentation/trace/ftrace.rst
-index 45b8c56af67a..b37dc19e4d40 100644
---- a/Documentation/trace/ftrace.rst
-+++ b/Documentation/trace/ftrace.rst
-@@ -517,6 +517,18 @@ of ftrace. Here is a list of some of the key files:
- 		processing should be able to handle them. See comments in the
- 		ktime_get_boot_fast_ns() function for more information.
- 
-+	tai:
-+		This is the tai clock (CLOCK_TAI) and is derived from the wall-
-+		clock time. However, this clock does not experience
-+		discontinuities and backwards jumps caused by NTP inserting leap
-+		seconds. Since the clock access is designed for use in tracing,
-+		side effects are possible. The clock access may yield wrong
-+		readouts in case the internal TAI offset is updated e.g., caused
-+		by setting the system time or using adjtimex() with an offset.
-+		These effects are rare and post processing should be able to
-+		handle them. See comments in the ktime_get_tai_fast_ns()
-+		function for more information.
-+
- 	To set a clock, simply echo the clock name into this file::
- 
- 	  # echo global > trace_clock
--- 
-2.35.1
+Peter
