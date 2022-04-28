@@ -2,95 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:17:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE57AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346966AbiD1NU1 (ORCPT
+        id S1346985AbiD1NUd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37296 "EHLO
+        Thu, 28 Apr 2022 09:20:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346854AbiD1NUO (ORCPT
+        with ESMTP id S1346944AbiD1NUT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:20:14 -0400
-Received: from mo-csw.securemx.jp (mo-csw1115.securemx.jp [210.130.202.157])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86415A0BB;
-        Thu, 28 Apr 2022 06:16:58 -0700 (PDT)
-Received: by mo-csw.securemx.jp (mx-mo-csw1115) id 23SDGYBv005922; Thu, 28 Apr 2022 22:16:34 +0900
-X-Iguazu-Qid: 2wGrSY3sPO1pGNxkIK
-X-Iguazu-QSIG: v=2; s=0; t=1651151794; q=2wGrSY3sPO1pGNxkIK; m=bTvy+cUh66mFikFBu1CMUwP46MeZjQTe4nnCWw9Qy4Q=
-Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
-        by relay.securemx.jp (mx-mr1112) id 23SDGXQu017419
-        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 28 Apr 2022 22:16:33 +0900
-X-SA-MID: 3363560
-From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, yuji2.ishikawa@toshiba.co.jp
-Subject: [PATCH 0/4] Add Toshiba Visconti DNN image processing accelerator driver
-Date:   Thu, 28 Apr 2022 22:11:24 +0900
-X-TSB-HOP2: ON
-Message-Id: <20220428131128.5053-1-yuji2.ishikawa@toshiba.co.jp>
-X-Mailer: git-send-email 2.17.1
+        Thu, 28 Apr 2022 09:20:19 -0400
+Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B8E5C85D;
+        Thu, 28 Apr 2022 06:17:04 -0700 (PDT)
+Received: by mail-oi1-f182.google.com with SMTP id l203so5335608oif.0;
+        Thu, 28 Apr 2022 06:17:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=2KX0k1wrXX43D5TeLkqocszqE72U0xXm9eQIEdaCUbE=;
+        b=TgY5XBw5uqMfXtjMf9sYoal5HTrNfcmvw4StcnpzzB0rDlRM45ZMcSDfPOKmgQTUjQ
+         hPGz2xRhQn6EZt0Sp+F3f+bZHH5hburNjsjxkVLrLYejteID6EgeD08ceI9NzeoFmbQA
+         skGVhl790JO4uD/JjOUx+t6ourfAKFAkT+efo2mC/Ohh3UToye5wqL9LqTbSti5NwFjy
+         fGqjOmWAV2oMt63uQeByzICkDc1w05coNbBQoBTU2LsewXi8dIPNBjZs5Yd+behASMB8
+         8UtjZW99RQcyyrLBj8/cK9EW8v7cD2z8N5WTxfDda43d0atYjjEvVkGIWQJ690+8/Qrd
+         ZupQ==
+X-Gm-Message-State: AOAM532fWHsXpUkXv9rmqVs1tdtdD/cxmzkv/ZUtAwI0mvVS38GL/FJC
+        FWAFOp/yOVl8tte2V4D23g==
+X-Google-Smtp-Source: ABdhPJz/d8BYWGUSJp+sBgndd/ngWTLW1+V3dbP8Dggh5IlPgtUXaU65s/zWtk3vrKBC101akso2uw==
+X-Received: by 2002:a05:6808:2021:b0:322:ba69:53d2 with SMTP id q33-20020a056808202100b00322ba6953d2mr19985135oiw.22.1651151823956;
+        Thu, 28 Apr 2022 06:17:03 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id dt48-20020a0568705ab000b000e686d13875sm1825089oab.15.2022.04.28.06.17.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 06:17:03 -0700 (PDT)
+Received: (nullmailer pid 2082134 invoked by uid 1000);
+        Thu, 28 Apr 2022 13:17:02 -0000
+Date:   Thu, 28 Apr 2022 08:17:02 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Gene Chen <gene.chen.richtek@gmail.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        krzysztof.kozlowski+dt@linaro.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Gene Chen <gene_chen@richtek.com>,
+        ChiYuan Huang <cy_huang@richtek.com>
+Subject: Re: [PATCH 2/2] dt-bindings: mfd: Add bindings for the Mediatek
+ MT6360
+Message-ID: <YmqTzlrVL5KaVPuz@robh.at.kernel.org>
+References: <20220427080330.40136-1-gene.chen.richtek@gmail.com>
+ <20220427080330.40136-3-gene.chen.richtek@gmail.com>
+ <YmmQpg/Hh6qTNhj2@robh.at.kernel.org>
+ <CAE+NS34SawC_pdTm=eDmp6zq1zLZgEaA+_s_xZOc4LuFHDV1iQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAE+NS34SawC_pdTm=eDmp6zq1zLZgEaA+_s_xZOc4LuFHDV1iQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series is the DNN image processing accelerator driver for Toshiba's ARM SoC, Visconti[0].
-This provides DT binding documentation, device driver, MAINTAINER files.
+On Thu, Apr 28, 2022 at 05:30:38PM +0800, Gene Chen wrote:
+> Rob Herring <robh@kernel.org> 於 2022年4月28日 週四 上午2:51寫道：
+> >
+> > On Wed, Apr 27, 2022 at 04:03:30PM +0800, Gene Chen wrote:
+> > > From: Gene Chen <gene_chen@richtek.com>
+> > >
+> > > Add bindings for the Mediatek MT6360
+> > >
+> > > Signed-off-by: Gene Chen <gene_chen@richtek.com>
+> > > ---
+> > >  .../devicetree/bindings/mfd/mt6360.yaml       | 258 ++++++++++++++++++
+> > >  1 file changed, 258 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/mfd/mt6360.yaml
+> >
+> > As I mentioned, I applied your previous version. Please send a patch on
+> > top of it adding the child nodes.
+> >
+> > Rob
+> 
+> Hi Rob,
+> 
+>     I try to sync latest code and can't find the mt6360 led fixed patch.
+>     Could you please tell me how to get and apply previous version?
+>     And should I add a tags in commit message to tell which previous
+> commit I based on?
 
-The second patch "soc: visconti: Add Toshiba Visconti image processing accelerator common source"
-and the fourth patch "MAINTAINERS: ..." are the same as the ones in the preceding post for affine driver.
+The led fix is in my dt/linus branch and today's linux next.
 
-Best regards,
-Yuji
+The mfd patch is in my dt/next branch.
 
-[0]: https://toshiba.semicon-storage.com/ap-en/semiconductor/product/image-recognition-processors-visconti.html
-
-Yuji Ishikawa (4):
-  dt-bindings: soc: visconti: Add Toshiba Visconti DNN image processing
-    accelerator bindings
-  soc: visconti: Add Toshiba Visconti image processing accelerator
-    common source
-  soc: visconti: Add Toshiba Visconti DNN image processing accelerator
-  MAINTAINERS: Add entries for Toshiba Visconti DNN image processing
-    accelerator
-
- .../soc/visconti/toshiba,visconti-dnn.yaml    |  54 ++
- MAINTAINERS                                   |   2 +
- drivers/soc/Kconfig                           |   1 +
- drivers/soc/Makefile                          |   1 +
- drivers/soc/visconti/Kconfig                  |   7 +
- drivers/soc/visconti/Makefile                 |   8 +
- drivers/soc/visconti/dnn/Makefile             |   6 +
- drivers/soc/visconti/dnn/dnn.c                | 533 ++++++++++++++++++
- drivers/soc/visconti/dnn/hwd_dnn.c            | 183 ++++++
- drivers/soc/visconti/dnn/hwd_dnn.h            |  68 +++
- drivers/soc/visconti/dnn/hwd_dnn_reg.h        | 228 ++++++++
- drivers/soc/visconti/ipa_common.c             |  55 ++
- drivers/soc/visconti/ipa_common.h             |  18 +
- drivers/soc/visconti/uapi/dnn.h               |  77 +++
- drivers/soc/visconti/uapi/ipa.h               |  88 +++
- 15 files changed, 1329 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/soc/visconti/toshiba,visconti-dnn.yaml
- create mode 100644 drivers/soc/visconti/Kconfig
- create mode 100644 drivers/soc/visconti/Makefile
- create mode 100644 drivers/soc/visconti/dnn/Makefile
- create mode 100644 drivers/soc/visconti/dnn/dnn.c
- create mode 100644 drivers/soc/visconti/dnn/hwd_dnn.c
- create mode 100644 drivers/soc/visconti/dnn/hwd_dnn.h
- create mode 100644 drivers/soc/visconti/dnn/hwd_dnn_reg.h
- create mode 100644 drivers/soc/visconti/ipa_common.c
- create mode 100644 drivers/soc/visconti/ipa_common.h
- create mode 100644 drivers/soc/visconti/uapi/dnn.h
- create mode 100644 drivers/soc/visconti/uapi/ipa.h
-
--- 
-2.17.1
-
-
+Rob
