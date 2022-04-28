@@ -2,131 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91098C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 18:43:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56E47C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 18:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351224AbiD1Sqa (ORCPT
+        id S1351232AbiD1StV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 14:46:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38892 "EHLO
+        Thu, 28 Apr 2022 14:49:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348158AbiD1Sq2 (ORCPT
+        with ESMTP id S233258AbiD1StS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 14:46:28 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1187ABF511;
-        Thu, 28 Apr 2022 11:43:12 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id y21so6549194edo.2;
-        Thu, 28 Apr 2022 11:43:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zI+9j94q19l63yFihh0+ZsjTI2C5NOx2hP5jr2k4x9k=;
-        b=WK6kihR8b3wSbEull4x65571g240iY3fBAfiTXsaZDlpj/xdgiElV/P43tUu9yXSVX
-         hWkKZvrStyCqJIayhO18QI89R8AHdCsLMnVVefiMboCPUg9jwW8UI371XTLloEYzpnBa
-         B0GUhQiLmGId/z5djVFsZ7AFAUgOKJDiPHULAklgepOzju10xb0RTX4BA1BeUnJ/S377
-         TjafnXdVqpgpA3pC8zc1MJup7/P2VeO9LxoimierGf1yWwgM8XqY65KnT+hRZSeagjyb
-         oxpyI9c1YV+pNkCdzr9uu3mIs5PfLCToQJgYckJ8Hywf72cLHHacgZsutwe5E7PxhHXF
-         hUSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=zI+9j94q19l63yFihh0+ZsjTI2C5NOx2hP5jr2k4x9k=;
-        b=6rwKrNuSL0XXu0nYcWhXHUxkiJdS2bOd1jVGDf3qfKXkJZAt1lr0w5qDT1PZgbv8M2
-         z5nwnb92MWy6YKsBRTRFUgit321njLjbuC4dIX+ae9rCQM0jMvzlqJKMi7t1PeTayKwr
-         O5pRZHw+PObWpVMNA3M+9A79AVUoIMs6ffCtCaNsAhaRMJ6J/pXcyu19RBc5FOROfCPX
-         Ivg2olImHdHjHoMnYxXK9mllPBsZ2ukYuoIzklOLR6xIbUIPbRHoJ/IiOLCIrzcR6YpY
-         TCLKTz/EkaR0+vb9jRLIjeTcByibZsIez7LeSMOUplorU2uEHrEaZL6AJmWijEIvm6D3
-         RCTg==
-X-Gm-Message-State: AOAM533e7emqyzaBYTne6YYBnvz2WYPjTaC41HrEeAK2VNkYaBhr5D2I
-        Jo5VXboGAbfeCWf36SRCMoY=
-X-Google-Smtp-Source: ABdhPJx/YPYe4JPKWoxoRcaMVgX4E0nnzI2Yu9Okc03Ig2cnSUmTTSqOuZdSRJVF91tk7qq1rWWdDg==
-X-Received: by 2002:aa7:d954:0:b0:425:f621:f77f with SMTP id l20-20020aa7d954000000b00425f621f77fmr18775972eds.363.1651171390413;
-        Thu, 28 Apr 2022 11:43:10 -0700 (PDT)
-Received: from eldamar (c-82-192-242-114.customer.ggaweb.ch. [82.192.242.114])
-        by smtp.gmail.com with ESMTPSA id v17-20020a1709060b5100b006f38cf075cbsm273241ejg.104.2022.04.28.11.43.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 11:43:09 -0700 (PDT)
-Sender: Salvatore Bonaccorso <salvatore.bonaccorso@gmail.com>
-Date:   Thu, 28 Apr 2022 20:43:07 +0200
-From:   Salvatore Bonaccorso <carnil@debian.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
-        Dusty Mabe <dustymabe@redhat.com>, Stefan Roese <sr@denx.de>,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Marek Vasut <marex@denx.de>, x86@kernel.org, maz@kernel.org,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        Juergen Gross <jgross@suse.com>,
-        Noah Meyerhans <noahm@debian.org>
-Subject: Re: [tip: irq/urgent] PCI/MSI: Mask MSI-X vectors only on success
-Message-ID: <YmrgO09bqePgiJJd@eldamar.lan>
-References: <20211210161025.3287927-1-sr@denx.de>
- <163948488617.23020.3934435568065766936.tip-bot2@tip-bot2>
- <Yi9vH2F2OBDprwd8@jpiotrowski-Surface-Book-3>
- <43418c23-5efd-4d14-706f-f536c504b75a@denx.de>
- <c4a65b9a-d1e2-bf0d-2519-aac7185931d5@redhat.com>
- <Yi+lwVRTu8xxi9Gy@jpiotrowski-Surface-Book-3>
- <Ymj3zzjQ9PwYaX/p@eldamar.lan>
- <87v8uuwhs4.ffs@tglx>
- <87wnf9uxnw.ffs@tglx>
+        Thu, 28 Apr 2022 14:49:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DDBF7893A;
+        Thu, 28 Apr 2022 11:46:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27C2E61C9C;
+        Thu, 28 Apr 2022 18:46:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A280C385B2;
+        Thu, 28 Apr 2022 18:46:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651171561;
+        bh=W8f7fDe36f4f+Eym6CMYV+jfkS0Qx3jHXxH9asFg4vc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=jdAyFQOJDF9rwjgLlTOYxJfRcvhjskJT4OsMiwRI9nKf3eDbCeiT2XPq5XDO0y+5e
+         TdycQjji4IK2tU9MCqIV+b7ri4IN0lz+6WC9rLv60g365aJL6stisYuRi6CRDmO14i
+         xoMkRAJmdBNNWlf4VxIkWQWlL2Ba33e5YZWhT1lSyrtOKphWd2FvU1v6HLovbW2DkI
+         T24+ctCML/jVBTEPFJ+g8rITrT6dA64oqBY2v70nMfP+4ypnhWxCgi7WaqJ8fXVghI
+         WAGgZHspGFvhfjyoJTQsJ42ifDQU5WiXJHTLUyAO8+n6oKXaSYGUlXcaSSKnONUxiM
+         hhpOVE21BpILg==
+Received: by mail-pj1-f49.google.com with SMTP id m14-20020a17090a34ce00b001d5fe250e23so5201328pjf.3;
+        Thu, 28 Apr 2022 11:46:01 -0700 (PDT)
+X-Gm-Message-State: AOAM530cFLSl3FUfDDchAlFBWIv0MEzsFD7xqaDNe0M3Qr6b8ZEMropD
+        mXot6qKstkGQKx+h0mTUB6Kml/txN5D56XOb0g==
+X-Google-Smtp-Source: ABdhPJxmdsC0BMphKfk6yRxPeHZONR7yfWAe7UKYtouukIIEoW+HJaG2vJEzGYNWAi5NxIAy4BbGAWutgditCSWB0hY=
+X-Received: by 2002:a17:902:b694:b0:153:1d9a:11a5 with SMTP id
+ c20-20020a170902b69400b001531d9a11a5mr34601834pls.151.1651171560862; Thu, 28
+ Apr 2022 11:46:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87wnf9uxnw.ffs@tglx>
+References: <20220423085319.483524-1-markuss.broks@gmail.com>
+ <20220423085319.483524-3-markuss.broks@gmail.com> <CAL_Jsq+hBtuet-WShvvLA7vfdFdpGRSmv45bcqQhoediq7a7xQ@mail.gmail.com>
+ <5b2c429b-11ad-0d14-a106-d4b1d29d69e1@gmail.com>
+In-Reply-To: <5b2c429b-11ad-0d14-a106-d4b1d29d69e1@gmail.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 28 Apr 2022 13:45:49 -0500
+X-Gmail-Original-Message-ID: <CAL_Jsq+Cb335=sb1aOM0TDT+7LMKFYbc-diW0V1PRkA-ASJHuw@mail.gmail.com>
+Message-ID: <CAL_Jsq+Cb335=sb1aOM0TDT+7LMKFYbc-diW0V1PRkA-ASJHuw@mail.gmail.com>
+Subject: Re: [PATCH v5 2/5] dt-bindings: regulator: Add bindings for Silicon
+ Mitus SM5703 regulators
+To:     Markuss Broks <markuss.broks@gmail.com>
+Cc:     Lee Jones <lee.jones@linaro.org>, Mark Brown <broonie@kernel.org>,
+        Matti Vaittinen <mazziesaccount@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        phone-devel@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS
+        <devicetree@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>, Andy
+        Shevchenko <andy.shevchenko@gmail.com>," 
+        <~postmarketos/upstreaming@lists.sr.ht>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+On Thu, Apr 28, 2022 at 12:04 PM Markuss Broks <markuss.broks@gmail.com> wrote:
+>
+> Hi Rob,
+>
+> On 4/28/22 19:36, Rob Herring wrote:
+> > On Sat, Apr 23, 2022 at 3:54 AM Markuss Broks <markuss.broks@gmail.com> wrote:
+> >> This patch adds device-tree bindings for regulators on Silicon Mitus
+> >> SM5703 MFD.
+> >>
+> >> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+> >> ---
+> >>   .../siliconmitus,sm5703-regulator.yaml        | 49 +++++++++++++++++++
+> >>   1 file changed, 49 insertions(+)
+> >>   create mode 100644 Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml b/Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
+> >> new file mode 100644
+> >> index 000000000000..75ff16b58000
+> >> --- /dev/null
+> >> +++ b/Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
+> >> @@ -0,0 +1,49 @@
+> >> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> >> +%YAML 1.2
+> >> +---
+> >> +$id: http://devicetree.org/schemas/regulator/siliconmitus,sm5703-regulator.yaml#
+> >> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >> +
+> >> +title: Silicon Mitus SM5703 multi function device regulators
+> >> +
+> >> +maintainers:
+> >> +  - Markuss Broks <markuss.broks@gmail.com>
+> >> +
+> >> +description: |
+> >> +  SM5703 regulators node should be a sub node of the SM5703 MFD node. See SM5703 MFD
+> >> +  bindings at Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml
+> >> +  Regulator nodes should be named as USBLDO_<number>, BUCK, VBUS, LDO_<number>.
+> >> +  The definition for each of these nodes is defined using the standard
+> >> +  binding for regulators at Documentation/devicetree/bindings/regulator/regulator.txt.
+> >> +
+> >> +properties:
+> >> +  buck:
+> >> +    type: object
+> >> +    $ref: regulators.yaml#
+> > The correct file is regulator.yaml.
+> I was applying all the suggestions, and I thought I had somehow made a
+> typo referring to a wrong file.
+>
+> Do I re-send the whole series with just the s/regulators/regulator/g? A
+> part of series has already been merged, do I not re-send the already
+> merged patches then?
 
-On Thu, Apr 28, 2022 at 03:48:03PM +0200, Thomas Gleixner wrote:
-> On Wed, Apr 27 2022 at 19:35, Thomas Gleixner wrote:
-> > On Wed, Apr 27 2022 at 09:59, Salvatore Bonaccorso wrote:
-> > XEN guests do not use the common PCI mask/unmask machinery which would
-> > unmask the interrupt on request_irq().
-> >
-> > So I assume that the following happens:
-> >
-> > Guest                     Hypervisor
-> >
-> > msix_capabilities_init()
-> >         ....
-> >         alloc_irq()
-> >            xen_magic()  -> alloc_msix_interrupt()
-> >                            request_irq()
-> >
-> >         msix_mask_all() -> trap
-> >                              do_magic()
-> > request_irq()
-> >    unmask()
-> >      xen_magic()
-> >        unmask_evtchn()  -> do_more_magic()
-> >
-> > So I assume further that msix_mask_all() actually is able to mask the
-> > interrupts in the hardware (ctrl word of the vector table) despite the
-> > hypervisor having allocated and requested the interrupt already.
-> >
-> > Nothing in XEN_HVM handles PCI/MSI[-X] mask/unmask in the guest, so I
-> > really have to ask why XEN_HVM does not disable PCI/MSI[-X] masking like
-> > XEN_PV does. I can only assume the answer is voodoo...
-> >
-> > Maybe the XEN people have some more enlightened answers to that.
-> 
-> So I was talking to Juergen about this and he agrees, that for the case
-> where a XEN HVM guest uses the PIRQ/Eventchannel mechanism PCI/MSI[-X]
-> masking should be disabled like it is done for XEN PV.
-> 
-> Why the hypervisor grants the mask write is still mysterious, but I
-> leave that to the folks who can master the XEN voodoo.
-> 
-> I'll send out a patch in minute.
+Just send an incremental patch fixing the file name. If there are then
+errors in the example, then you need to resend the MFD binding with
+the errors fixed. Unless Lee applies v5 before you do that, then you
+need an incremental fix for example.
 
-Thank you. We are having Noah Meyerhans now testing the patch and he
-will report back if it works (Cc'ed here now).
-
-Regards,
-Salvatore
+Rob
