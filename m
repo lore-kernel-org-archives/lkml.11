@@ -2,193 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C48DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:18:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6421DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:18:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349001AbiD1PVW (ORCPT
+        id S1349043AbiD1PVZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 11:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45318 "EHLO
+        Thu, 28 Apr 2022 11:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349041AbiD1PU5 (ORCPT
+        with ESMTP id S1349129AbiD1PVK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 11:20:57 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC5DB6D24
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 08:17:21 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id z126so3857215qkb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 08:17:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=E9UW1bag0U6JwSp2lSKEFTQPx6fxwp66hBJxsfKUM1Q=;
-        b=gRA6hbtN/01k4+k22fV/ZVyh8d/v1uJ8gcamYPxonMAcJx8uuQTXaMsl2cAvgDzKIc
-         T30+pFpIeJOxFtaGF4H5w4QDpMhBfMSa/IRig4pA91KK2J2EJzCeU/kvPwG9qeMDkqSF
-         0M1jjIIyWzHmkshwPgA9MnNY7YW688hDVNGtwpEeV2ReIGCcLZH4TNUWSoGDgPJVmYn4
-         kgSq4l7TidxAF7IByp5uYg3VTk2iRG6Ry6VhBr65yYljjeJzuHfdY5/1+38fgLYlR5R8
-         QNRygU8Tuw7ukszTHI58UOlwMgnF/uUo5NrUz0ocjhfKfbeQGWiHY7eplLvMEXdnC0mD
-         OkoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=E9UW1bag0U6JwSp2lSKEFTQPx6fxwp66hBJxsfKUM1Q=;
-        b=R971owcXsrYKnjF8CzWGxWETHjNJxAQkt56k7wpSI/dusjRRl8+MaSgobyhT+5Xhur
-         JmjDqd2kkTGvkCksFTjhtfC82NmD0Je7J498ssw15SAN3Iikw1QNNhzm2wHaxSM5BJhe
-         VN0qrdzpIWVX1jh+uyR2mm5yAbFdOFkhAIa55snJs3aK+z8/kLvb0Fb2We1mC7d+Yxgr
-         yBIBGZLSN6iWaSty+SEk4FO//zduhuctk4j3v3IqQwnnXiEfvlOSKQ4JBVt4g2Xcg/A+
-         mUXj2JbxFsHRthlUbMWqitHsZTwIt17qo6kSP5eQlSDlqKc7AyknA+0hi3FRQiEiahjo
-         uvow==
-X-Gm-Message-State: AOAM533C8JYC8znqZzeEzNR76SJVtO+oMpVl7oEmBURSbbEM9o6RoAMl
-        zMYPUJiXv1H1QE+vware3UolDA==
-X-Google-Smtp-Source: ABdhPJz0uD0Y4GikJduMeS7kngfPj/NeqmtNRrLdYE+UuoiwDoiYWKCJ9epVPC+Wehgv4PrxA1EH1w==
-X-Received: by 2002:a37:c44:0:b0:69f:9a59:43c1 with SMTP id 65-20020a370c44000000b0069f9a5943c1mr4298447qkm.616.1651159040310;
-        Thu, 28 Apr 2022 08:17:20 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1:d588])
-        by smtp.gmail.com with ESMTPSA id r7-20020a05622a034700b002f337000725sm140413qtw.42.2022.04.28.08.17.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 08:17:19 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 11:16:43 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Minchan Kim <minchan@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
-        Seth Jennings <sjenning@redhat.com>,
-        Dan Streetman <ddstreet@ieee.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
-Message-ID: <Ymqv25+8IX2wqKzu@cmpxchg.org>
-References: <20220427160016.144237-1-hannes@cmpxchg.org>
- <20220427160016.144237-5-hannes@cmpxchg.org>
- <Ymmnrkn0mSWcuvmH@google.com>
- <YmmznQ8AO5RLxicA@cmpxchg.org>
- <Ymm3WpvJWby4gaD/@cmpxchg.org>
- <CALvZod5LBi5V6q1uHUTSNnLz64HbD499a+OZvdYsUcmcWSt8Jg@mail.gmail.com>
- <YmqmWPrIagEEceN1@cmpxchg.org>
- <CALvZod7wOyXpA3pycM2dav9_F9sW5ezC84or-75u8GdQyu30nw@mail.gmail.com>
+        Thu, 28 Apr 2022 11:21:10 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB84B7151;
+        Thu, 28 Apr 2022 08:17:34 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23SFFtY0025437;
+        Thu, 28 Apr 2022 15:17:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Q+rV3z8C5E6PlcUoo4fQ3zmgPF5V/RMCDgir8bBJ3Zc=;
+ b=ZBsJB++JnSyV5DBadlLlSyGl168mG2kYIYEuS8+fRPf9bPZskTDRlvZqR8aMec8g55/8
+ SV/gI0wYhMg4ITVXpPnx7m+MIQRsoifawzWtegGbfZ1Ct/wCEQ2ivCXL4S893CcZXBPK
+ BOKE9EBlX9sMp04Mn8ESUTXb6ysrIEn4qqcbtqH3M1loUrwrgJZu/pHl0+ygqmHZfPeN
+ m7KQsFYG9p9ZFKM4wurkC2N46mgcZZ4eaXJWQn42fjteWJMxH4oBO3qenQXBfGFGQmr0
+ jbrk5xFeDJM1jtpPVwcc2eWaujA/5UbRbrF6ZDELCCK4PISACFX7byc0RMY7xA/EtcZ8 3w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqtqv4nrr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 Apr 2022 15:17:23 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23SFFvNh025729;
+        Thu, 28 Apr 2022 15:17:22 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqtqv4nr4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 Apr 2022 15:17:22 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23SFCxLJ023075;
+        Thu, 28 Apr 2022 15:17:20 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma03fra.de.ibm.com with ESMTP id 3fm938x46u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 Apr 2022 15:17:20 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23SFHS1022872346
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 28 Apr 2022 15:17:28 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5947711C04A;
+        Thu, 28 Apr 2022 15:17:17 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id F226E11C050;
+        Thu, 28 Apr 2022 15:17:16 +0000 (GMT)
+Received: from [9.145.182.141] (unknown [9.145.182.141])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 28 Apr 2022 15:17:16 +0000 (GMT)
+Message-ID: <4eb9f64c-aabd-8461-27a4-05b2e808e1f0@linux.ibm.com>
+Date:   Thu, 28 Apr 2022 17:17:16 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALvZod7wOyXpA3pycM2dav9_F9sW5ezC84or-75u8GdQyu30nw@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] perf test: Fix test case 81 on s390x
+Content-Language: en-US
+To:     German Gomez <german.gomez@arm.com>, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, acme@kernel.org,
+        irogers@google.com
+Cc:     svens@linux.ibm.com, gor@linux.ibm.com, sumanthk@linux.ibm.com,
+        hca@linux.ibm.com
+References: <20220428122821.3652015-1-tmricht@linux.ibm.com>
+ <768de4e7-7bf1-62b5-4446-28420c3a82d5@arm.com>
+From:   Thomas Richter <tmricht@linux.ibm.com>
+Organization: IBM
+In-Reply-To: <768de4e7-7bf1-62b5-4446-28420c3a82d5@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: QDqfq5GFwbNK7EvMlZwoZome8oN-hco_
+X-Proofpoint-ORIG-GUID: 9uEBVlsUS2ynLlyjHEnnq59iJVHsqyzG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-28_02,2022-04-28_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 spamscore=0 clxscore=1011 mlxscore=0 suspectscore=0
+ mlxlogscore=999 phishscore=0 malwarescore=0 adultscore=0 impostorscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204280091
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 07:49:33AM -0700, Shakeel Butt wrote:
-> On Thu, Apr 28, 2022 at 7:36 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
-> >
-> > On Wed, Apr 27, 2022 at 04:36:22PM -0700, Shakeel Butt wrote:
-> > > On Wed, Apr 27, 2022 at 3:32 PM Johannes Weiner <hannes@cmpxchg.org> wrote:
-> > > >
-> > > > On Wed, Apr 27, 2022 at 05:20:31PM -0400, Johannes Weiner wrote:
-> > > > > On Wed, Apr 27, 2022 at 01:29:34PM -0700, Minchan Kim wrote:
-> > > > > > Hi Johannes,
-> > > > > >
-> > > > > > On Wed, Apr 27, 2022 at 12:00:15PM -0400, Johannes Weiner wrote:
-> > > > > > > Currently it requires poking at debugfs to figure out the size and
-> > > > > > > population of the zswap cache on a host. There are no counters for
-> > > > > > > reads and writes against the cache. As a result, it's difficult to
-> > > > > > > understand zswap behavior on production systems.
-> > > > > > >
-> > > > > > > Print zswap memory consumption and how many pages are zswapped out in
-> > > > > > > /proc/meminfo. Count zswapouts and zswapins in /proc/vmstat.
-> > > > > > >
-> > > > > > > Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
-> > > > > > > ---
-> > > > > > >  fs/proc/meminfo.c             |  7 +++++++
-> > > > > > >  include/linux/swap.h          |  5 +++++
-> > > > > > >  include/linux/vm_event_item.h |  4 ++++
-> > > > > > >  mm/vmstat.c                   |  4 ++++
-> > > > > > >  mm/zswap.c                    | 13 ++++++-------
-> > > > > > >  5 files changed, 26 insertions(+), 7 deletions(-)
-> > > > > > >
-> > > > > > > diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
-> > > > > > > index 6fa761c9cc78..6e89f0e2fd20 100644
-> > > > > > > --- a/fs/proc/meminfo.c
-> > > > > > > +++ b/fs/proc/meminfo.c
-> > > > > > > @@ -86,6 +86,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
-> > > > > > >
-> > > > > > >   show_val_kb(m, "SwapTotal:      ", i.totalswap);
-> > > > > > >   show_val_kb(m, "SwapFree:       ", i.freeswap);
-> > > > > > > +#ifdef CONFIG_ZSWAP
-> > > > > > > + seq_printf(m,  "Zswap:          %8lu kB\n",
-> > > > > > > +            (unsigned long)(zswap_pool_total_size >> 10));
-> > > > > > > + seq_printf(m,  "Zswapped:       %8lu kB\n",
-> > > > > > > +            (unsigned long)atomic_read(&zswap_stored_pages) <<
-> > > > > > > +            (PAGE_SHIFT - 10));
-> > > > > > > +#endif
-> > > > > >
-> > > > > > I agree it would be very handy to have the memory consumption in meminfo
-> > > > > >
-> > > > > > https://lore.kernel.org/all/YYwZXrL3Fu8%2FvLZw@google.com/
-> > > > > >
-> > > > > > If we really go this Zswap only metric instead of general term
-> > > > > > "Compressed", I'd like to post maybe "Zram:" with same reason
-> > > > > > in this patchset. Do you think that's better idea instead of
-> > > > > > introducing general term like "Compressed:" or something else?
-> > > > >
-> > > > > I'm fine with changing it to Compressed. If somebody cares about a
-> > > > > more detailed breakdown, we can add Zswap, Zram subsets as needed.
-> > > >
-> > > > It does raise the question what to do about cgroup, though. Should the
-> > > > control files (memory.zswap.current & memory.zswap.max) apply to zram
-> > > > in the future? If so, we should rename them, too.
-> > > >
-> > > > I'm not too familiar with zram, maybe you can provide some
-> > > > background. AFAIU, Google uses zram quite widely; all the more
-> > > > confusing why there is no container support for it yet.
-> > > >
-> > > > Could you shed some light?
-> > > >
-> > >
-> > > I can shed light on the datacenter workloads. We use cgroup (still on
-> > > v1) and zswap. For the workloads/applications, the swap (or zswap) is
-> > > transparent in the sense that they are charged exactly the same
-> > > irrespective of how much their memory is zswapped-out. Basically the
-> > > applications see the same usage which is actually v1's
-> > > memsw.usage_in_bytes. We dynamically increase the swap size if it is
-> > > low, so we are not really worried about one job hogging the swap
-> > > space.
-> > >
-> > > Regarding stats we actually do have them internally representing
-> > > compressed size and number of pages in zswap. The compressed size is
-> > > actually used for OOM victim selection. The memsw or v2's swap usage
-> > > in the presence of compression based swap does not actually tell how
-> > > much memory can potentially be released by evicting a job. For example
-> > > if there are two jobs 'A' and 'B'. Both of them have 100 pages
-> > > compressed but A's 100 pages are compressed to let's say 10 pages
-> > > while B's 100 pages are compressed to 70 pages. It is preferable to
-> > > kill B as that will release 70 pages. (This is a very simplified
-> > > explanation of what we actually do).
-> >
-> > Ah, so zram is really only used by the mobile stuff after all.
-> >
-> > In the DC, I guess you don't use disk swap in conjunction with zswap,
-> > so those writeback cache controls are less interesting to you?
+On 4/28/22 15:43, German Gomez wrote:
 > 
-> Yes, we have some modifications to zswap to make it work without any
-> backing real swap.
-
-Not sure if you can share them, but I would be interested in those
-changes. We have real backing swap, but because of the way swap
-entries are allocated, pages stored in zswap will consume physical
-disk slots. So on top of regular swap, you need to provision disk
-space for zswap as well, which is unfortunate.
-
-What could be useful is a separate swap entry address space that maps
-zswap slots and disk slots alike. This would fix the above problem. It
-would have the added benefit of making swapoff much simpler and faster
-too, as it doesn't need to chase down page tables to free disk slots.
-
-> > But it sounds like you would benefit from the zswap(ped) counters in
-> > memory.stat at least.
+> On 28/04/2022 13:28, Thomas Richter wrote:
+>> perf test -F 81 -v fails on s390x on the linux-next branch.
+>> The test case is x86 specific can not be executed on s390x.
+>> The test case depends on x86 register names such as
+>>
+>>   ... | egrep -q 'available registers: AX BX CX DX ....'
+>>
+>> Skip this test case on s390x.
+>>
+>> Output before:
+>>  # perf test -F 81
+>>  81: perf record tests                       : FAILED!
+>>  #
+>>
+>> Output after:
+>>  # perf test -F 81
+>>  81: perf record tests                       : Skip
+>>  #
+>>
+>> Fixes: 24f378e66021 ("perf test: Add basic perf record tests")
+>> Cc: Ian Rogers <irogers@google.com>
+>> Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
+>> ---
+>>  tools/perf/tests/shell/record.sh | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/tools/perf/tests/shell/record.sh b/tools/perf/tests/shell/record.sh
+>> index cd1cf14259b8..d98f4d4a00e1 100755
+>> --- a/tools/perf/tests/shell/record.sh
+>> +++ b/tools/perf/tests/shell/record.sh
+>> @@ -37,6 +37,8 @@ test_register_capture() {
+>>    echo "Register capture test [Success]"
+>>  }
+>>  
+>> +# Test for platform support and return TEST_SKIP
+>> +[ $(uname -m) = s390x ] && exit 2
+>>  test_per_thread
 > 
-> Yes and I think if we need zram specific counters/stats in future,
-> those can be added then.
+> The "test_per_thread" might still be valid though, right?
+> 
 
-I agree.
+Right,
+this issue is the perf record -e instructions:u event
+which is not supported on all machine types and configurations
+we have in our test suite.
+
+Because of the 'set -e' at the beginning, the first perf
+command fails and the shell exits with error code.
+
+Since s390x does not support x86 register names anyway, it is easier
+to just omit this test case on s390x. At least I thought so.
+
+The alternative would be to add some more tests to check s390x
+machine supports instructions:u event and then just to bail
+out on the register_capture test function.
+
+Maybe this helps.
+
+> In my case, the register test skips gracefully (arm64).
+> 
+> $ ./perf test 82 -v
+>  82: perf record tests                                               :
+> --- start ---
+> test child forked, pid 54345
+> Basic --per-thread mode test
+> Basic --per-thread mode test [Success]
+> Register capture test
+> Register capture test [Skipped missing instruction]
+> test child finished with 0
+> ---- end ----
+> perf record tests: Ok
+> 
+>>  test_register_capture
+>>  exit $err
+
+
+-- 
+Thomas Richter, Dept 3303, IBM s390 Linux Development, Boeblingen, Germany
+--
+Vorsitzender des Aufsichtsrats: Gregor Pillen
+Geschäftsführung: David Faller
+Sitz der Gesellschaft: Böblingen / Registergericht: Amtsgericht Stuttgart, HRB 243294
