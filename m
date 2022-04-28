@@ -2,115 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1880AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B27EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:18:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348243AbiD1OUC (ORCPT
+        id S1348128AbiD1OVW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 10:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48102 "EHLO
+        Thu, 28 Apr 2022 10:21:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233037AbiD1OT4 (ORCPT
+        with ESMTP id S230193AbiD1OVV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 10:19:56 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 186CB4EA1C
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:16:41 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7985D1474;
-        Thu, 28 Apr 2022 07:16:41 -0700 (PDT)
-Received: from [10.57.80.98] (unknown [10.57.80.98])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 413FA3F5A1;
-        Thu, 28 Apr 2022 07:16:39 -0700 (PDT)
-Message-ID: <77195ec7-89e0-c208-f021-70a958347657@arm.com>
-Date:   Thu, 28 Apr 2022 15:16:33 +0100
+        Thu, 28 Apr 2022 10:21:21 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0507B53D9;
+        Thu, 28 Apr 2022 07:18:06 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id e24so6975095wrc.9;
+        Thu, 28 Apr 2022 07:18:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=5XdPKzrNuCW9Uls4djg9CnJPr0HfyWEzzX13gHvuT9s=;
+        b=WYm5siW9NgsC3mcU0a3rvvmjzgshlYltbHF/8MkclQWoK+UeqblajvhIEXxxYve1Hw
+         ArzFVVgI0LhX+EQQMKgsLRnxr1l6oRxDxasL6i16yusWP0qQO05kK2pUFQ9rwO2PU7CV
+         g/I+91SHjrw6N2nVnNSpIvSq/6Q2axMNSjt8G+cn8jFEaCbdNXqLDCTe+qYh+tyImRcs
+         2C2UQopBi/UqDb8Z7mJP93le0PX8NtFtxYQqKo5iDqjqEk8jhUY5Mz9CaPTNwW+JgW6O
+         iYGgtDnGkNWHOvHntQd/+h4c+Y7dY/FegmQSsb4AbzllTJvmfkKOktoV7v9L5Gg3S71D
+         XaEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5XdPKzrNuCW9Uls4djg9CnJPr0HfyWEzzX13gHvuT9s=;
+        b=WBnbpbbgU4m8Xg3MzWHEPRsnH32R/MZXNrcwGQp9YqJCxAWJiIQETfLmgQD0PbfZQx
+         18qjNxWE/tpBx3thYZDL9SzjKtwH7IMT85DbhOAc3OC4v9L5ew3rAGMGqTW7b1J7hq8I
+         jbJ0pkBDPV39kJ8fhGaDbSCnlE6Ym9++dKagOloFIszDOQxxG7igVtZF0CM0y9GMnzLh
+         9FhNx1+nabqKNrKvo78eIpL0gF2dHaNn+ucSSM8MsUKeYheP+xpx3kJfae0rbkis77oU
+         wd2F6lw8LUSdvzUQIRKWAaAOlE4GDTX9vOXNT3818cdXzw6Hx1xIxRdFae7JHCUPsV7u
+         rKTA==
+X-Gm-Message-State: AOAM531j6k/IEZ8EM/AYjYmp0//pCrxg36NDuIyHGHbUfnOgnYgVSH4S
+        x3mRSiHWsXo9srXh0skpP50=
+X-Google-Smtp-Source: ABdhPJx0D91qDY3rAHXrUKYpJ6EndFNu0vi5Ze7REIXxyW9yTMg00OwkJnpjgHzk30D5LZMqwVL8fA==
+X-Received: by 2002:a5d:47ab:0:b0:20a:7f8a:ec69 with SMTP id 11-20020a5d47ab000000b0020a7f8aec69mr26826607wrb.504.1651155485199;
+        Thu, 28 Apr 2022 07:18:05 -0700 (PDT)
+Received: from [192.168.0.43] (static-35-180-85-188.ipcom.comunitel.net. [188.85.180.35])
+        by smtp.gmail.com with ESMTPSA id s10-20020adf978a000000b0020ae0154f1esm12625wrb.5.2022.04.28.07.17.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 07:18:03 -0700 (PDT)
+Message-ID: <661261a7-45be-230b-b0b2-5837d2139030@gmail.com>
+Date:   Thu, 28 Apr 2022 16:17:58 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 00/14] iommu: Retire bus_set_iommu()
-Content-Language: en-GB
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     joro@8bytes.org, will@kernel.org
-Cc:     jean-philippe@linaro.org, mjrosato@linux.ibm.com,
-        sven@svenpeter.dev, zhang.lyra@gmail.com, robdclark@gmail.com,
-        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org,
-        gerald.schaefer@linux.ibm.com, baolu.lu@linux.intel.com,
-        yong.wu@mediatek.com, m.szyprowski@samsung.com
-References: <cover.1650890638.git.robin.murphy@arm.com>
-In-Reply-To: <cover.1650890638.git.robin.murphy@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v6 15/34] iommu/mediatek: Add IOMMU_TYPE flag
+Content-Language: en-US
+To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Rob Herring <robh+dt@kernel.org>, Will Deacon <will@kernel.org>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org,
+        Hsin-Yi Wang <hsinyi@chromium.org>, youlin.pei@mediatek.com,
+        anan.sun@mediatek.com, xueqi.zhang@mediatek.com,
+        yen-chang.chen@mediatek.com,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        mingyuan.ma@mediatek.com, yf.wang@mediatek.com,
+        libo.kang@mediatek.com, chengci.xu@mediatek.com
+References: <20220407075726.17771-1-yong.wu@mediatek.com>
+ <20220407075726.17771-16-yong.wu@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220407075726.17771-16-yong.wu@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-28 14:18, Robin Murphy wrote:
-> v1: https://lore.kernel.org/linux-iommu/cover.1649935679.git.robin.murphy@arm.com/
-> 
-> Hi all,
-> 
-> Just some minor updates for v2, adding a workaround to avoid changing
-> VT-d behaviour for now, cleaning up the extra include I missed in
-> virtio-iommu, and collecting all the acks so far.
 
-Oh, and I added the proper error handling for bus_iommu_probe() since it 
-turned out to be trivial, and applied Krishna's R-b to the wrong patch 
-because of course what was patch #2 is now actually patch #3 :(
 
-Apologies, juggling one too many things at the moment...
+On 07/04/2022 09:57, Yong Wu wrote:
+> Add IOMMU_TYPE definition. In the mt8195, we have another IOMMU_TYPE:
+> infra iommu, also there will be another APU_IOMMU, thus, use 2bits for the
+> IOMMU_TYPE.
+> 
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>   drivers/iommu/mtk_iommu.c | 12 ++++++++++--
+>   1 file changed, 10 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 84d661e0b371..642949aad47e 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -126,9 +126,17 @@
+>   #define SHARE_PGTABLE			BIT(10) /* 2 HW share pgtable */
+>   #define DCM_DISABLE			BIT(11)
+>   #define NOT_STD_AXI_MODE		BIT(12)
+> +/* 2 bits: iommu type */
+> +#define MTK_IOMMU_TYPE_MM		(0x0 << 13)
+> +#define MTK_IOMMU_TYPE_INFRA		(0x1 << 13)
+> +#define MTK_IOMMU_TYPE_MASK		(0x3 << 13)
+>   
+> -#define MTK_IOMMU_HAS_FLAG(pdata, _x) \
+> -		((((pdata)->flags) & (_x)) == (_x))
+> +#define MTK_IOMMU_HAS_FLAG(pdata, _x)	(!!(((pdata)->flags) & (_x)))
 
-Robin.
+That could be:
+MTK_IOMMU_HAS_FLAG(pdata, _x) \
+                 MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, _x)
 
-> As before, this is
-> based on the AMD IOMMU patch now applied, plus v2 of my
-> device_iommu_capable() series here:
-> 
-> https://lore.kernel.org/linux-iommu/cover.1650878781.git.robin.murphy@arm.com/
-> 
-> Cheers,
-> Robin.
-> 
-> 
-> 
-> Robin Murphy (14):
->    iommu/vt-d: Temporarily reject probing non-PCI devices
->    iommu: Always register bus notifiers
->    iommu: Move bus setup to IOMMU device registration
->    iommu/amd: Clean up bus_set_iommu()
->    iommu/arm-smmu: Clean up bus_set_iommu()
->    iommu/arm-smmu-v3: Clean up bus_set_iommu()
->    iommu/dart: Clean up bus_set_iommu()
->    iommu/exynos: Clean up bus_set_iommu()
->    iommu/ipmmu-vmsa: Clean up bus_set_iommu()
->    iommu/mtk: Clean up bus_set_iommu()
->    iommu/omap: Clean up bus_set_iommu()
->    iommu/tegra-smmu: Clean up bus_set_iommu()
->    iommu/virtio: Clean up bus_set_iommu()
->    iommu: Clean up bus_set_iommu()
-> 
->   drivers/iommu/amd/amd_iommu.h               |   1 -
->   drivers/iommu/amd/init.c                    |   9 +-
->   drivers/iommu/amd/iommu.c                   |  21 ----
->   drivers/iommu/apple-dart.c                  |  30 +-----
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  53 +---------
->   drivers/iommu/arm/arm-smmu/arm-smmu.c       |  84 +--------------
->   drivers/iommu/arm/arm-smmu/qcom_iommu.c     |   4 -
->   drivers/iommu/exynos-iommu.c                |   9 --
->   drivers/iommu/fsl_pamu_domain.c             |   4 -
->   drivers/iommu/intel/iommu.c                 |   5 +-
->   drivers/iommu/iommu.c                       | 110 +++++++++-----------
->   drivers/iommu/ipmmu-vmsa.c                  |  35 +------
->   drivers/iommu/msm_iommu.c                   |   2 -
->   drivers/iommu/mtk_iommu.c                   |  13 +--
->   drivers/iommu/mtk_iommu_v1.c                |  13 +--
->   drivers/iommu/omap-iommu.c                  |   6 --
->   drivers/iommu/rockchip-iommu.c              |   2 -
->   drivers/iommu/s390-iommu.c                  |   6 --
->   drivers/iommu/sprd-iommu.c                  |   5 -
->   drivers/iommu/sun50i-iommu.c                |   2 -
->   drivers/iommu/tegra-smmu.c                  |  29 ++----
->   drivers/iommu/virtio-iommu.c                |  25 -----
->   include/linux/iommu.h                       |   1 -
->   23 files changed, 67 insertions(+), 402 deletions(-)
-> 
+> +
+> +#define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
+> +				((((pdata)->flags) & (mask)) == (_x))
+> +#define MTK_IOMMU_IS_TYPE(pdata, _x)	MTK_IOMMU_HAS_FLAG_MASK(pdata, _x,\
+> +							MTK_IOMMU_TYPE_MASK)
+>   
+>   struct mtk_iommu_domain {
+>   	struct io_pgtable_cfg		cfg;
