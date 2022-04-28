@@ -2,149 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B777DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29732C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:06:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232878AbiD1OI3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 10:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37666 "EHLO
+        id S1348041AbiD1OJO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 10:09:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233952AbiD1OII (ORCPT
+        with ESMTP id S1348334AbiD1OJG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 10:08:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD899AC90F
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:04:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651154692;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OxHoR1XOD4W/IjvJCT93NhYkY3XViy+vGcO5L5iVNbQ=;
-        b=Hh6NdChxTHK3Z8AsfyZTx4BOQt+5y3fNyr912sUoJyDEP4MKALEXjd+LbyK+p3OdpN02Q1
-        JpyBo4xqzZqMrHwxQIF3RhR0fotQLLljF0VLlg4oPVJkbytxt/X/4BLy5UHFK36WosWxf2
-        JGqnIxf2xw5agX89zzdZ0l59uZJhWCk=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-550-LiqQw2WSP0-lsXWkz1kW0w-1; Thu, 28 Apr 2022 10:04:44 -0400
-X-MC-Unique: LiqQw2WSP0-lsXWkz1kW0w-1
-Received: by mail-wr1-f69.google.com with SMTP id y13-20020adfc7cd000000b0020ac7c7bf2eso1980025wrg.9
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:04:44 -0700 (PDT)
+        Thu, 28 Apr 2022 10:09:06 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17220201BB
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:05:51 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id x77so2856411qkb.3
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:05:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EWNhQ6rVh6eXAW1cPKtOkkQDFiBPnV60f02tyxwR5Yc=;
+        b=nibOfdXs0pW9RsNjEJkkttSRKnNqlNrv3VGuEoDx+NjanzQTMrPiHJBi6jLuBYlEBX
+         NcO/5bG7QV10FdfyjroVW7zjvHmRCL6rESoVffMrL0roquyhR0RiqvnKOugcVXNzxQUv
+         k+KjGFlWbI1y1+uZBSyBAhb5DLIo4mcmwiJJWFRu2M4LMUruthwmPcQm1TZjTnVUbevG
+         iUldqaSPXn3+1z5uyqObupucLM6SHgKfNXHInYKV6a7ZZmUdMxKwRsdHyfT2sAGbHgZF
+         D760Af4oY/VmKyobDe06ICDwWWOcI7CqP4m48CjvnuCsv6BaaaKe/enYr7XQgP56Ehbf
+         7YeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=OxHoR1XOD4W/IjvJCT93NhYkY3XViy+vGcO5L5iVNbQ=;
-        b=wt8rgeVkw5L20Fkgt5xnMGR8azYUeWv0aztnA8rxvg0bSjA8JvZc2sZByzfZ9Ntnrm
-         Od//ieIOZj/BbjlI6cQetTwjX6/oJa1NR1lcSyVIx6EHpOGVpJeZgcGusTEwZ01BmTuY
-         +uU6sC+vS3kPmmJAVvTsM9ZnvARjF1n2wYzZzfbFoorKNoFRJV1uQcG4WPLKm8hLv5Z3
-         py+c4qBdbsO24H0qpHcQ6rNHyfaiLRqoZxWGLsMP+w9pOZfcjUCNZpRGtZ2YVi+ZgudX
-         7//A2brYDaShJq1/Gbuz/YqFQ52jzyT9visEFChP3L6E03RA5siW+TcnYAWEWxdH8uEa
-         mDBg==
-X-Gm-Message-State: AOAM531t3UStodm0UTx6k0TE2yDiMI8muZXHB1zSCXUm0IcY1XU9Tbyo
-        DFPR6eeQkNnXd1AAee0qw+6OSfEiYWUVjvNJbBOaWeF+5WVMHzq0b1PFZRaGXd4gJvkIud2xQZS
-        UcvLhRQhjJBCAFr/Z+jtGVUN3
-X-Received: by 2002:a05:6000:144e:b0:20c:3f58:2eaf with SMTP id v14-20020a056000144e00b0020c3f582eafmr1663786wrx.583.1651154683348;
-        Thu, 28 Apr 2022 07:04:43 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz9tN3o+GX1JK7xNAAZhBEzcb+Yy+SWq58NQSOnRbLIZaHQMca/yzpkdCnhavJwuHVmm3rAPQ==
-X-Received: by 2002:a05:6000:144e:b0:20c:3f58:2eaf with SMTP id v14-20020a056000144e00b0020c3f582eafmr1663766wrx.583.1651154683093;
-        Thu, 28 Apr 2022 07:04:43 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-96-13.dyn.eolo.it. [146.241.96.13])
-        by smtp.gmail.com with ESMTPSA id n16-20020a05600c3b9000b0039411b2e96fsm1521278wms.30.2022.04.28.07.04.42
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EWNhQ6rVh6eXAW1cPKtOkkQDFiBPnV60f02tyxwR5Yc=;
+        b=1/QjtJEE+aoBwXJXtN2AO8m6d2hzdh/YuP34R1YzT3JIHUkek2lquWBoHW/V9mW/iX
+         KfjEZLeCyNHp/4mNKUE1kogr1QUnOndHIQmm918UR7zsxd2YmmKa5uYd/Hx/gYoprC5r
+         DL96Praimq7gCoSnPElecebHKRsjc/J2iyNCdBUAanW99qWyolMBwllpMQwYYT1honXj
+         UTsvqTbLcOHXgr6aUx9qlnbBdoTJHWWsAt2qMy7MP/k6wjP+zmehDQaXI2/tc5ZWBMMV
+         kvABTL+8YfjVCfGpBN3OURp5nVOH77qSiH6M4Wuxbt6lQpRJx0DNbzMnh8wDS1Tb3z9l
+         yUDA==
+X-Gm-Message-State: AOAM532aHzFTCvhQwQ2IJfxySh9LTjnNN0Tw5oJhN2aJvJvmk87JaNIn
+        riovqathuHq7X8z2Nu4IPNq69g==
+X-Google-Smtp-Source: ABdhPJzYZvJDZXce9yZA3Kg+yP+dJzbTC8DyT0C7ZcSkd7lrwBMQGBGM5G6sPvmBbM9uR/KzYMco7Q==
+X-Received: by 2002:a05:620a:3195:b0:69f:ac68:4cae with SMTP id bi21-20020a05620a319500b0069fac684caemr1107547qkb.292.1651154750168;
+        Thu, 28 Apr 2022 07:05:50 -0700 (PDT)
+Received: from localhost ([2620:10d:c091:480::1:d588])
+        by smtp.gmail.com with ESMTPSA id w4-20020a05620a0e8400b0067b1bcd081csm13278qkm.66.2022.04.28.07.05.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 07:04:42 -0700 (PDT)
-Message-ID: <ffc7a45e9c77303b47bf2faaf3498ed8a3c1ab1a.camel@redhat.com>
-Subject: Re: [PATCH net-next 01/11] ipv6: optimise ipcm6 cookie init
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Pavel Begunkov <asml.silence@gmail.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 28 Apr 2022 16:04:41 +0200
-In-Reply-To: <64341db6ca5a1f4d1eebbe86a7ee0b7d7400335e.1651071843.git.asml.silence@gmail.com>
-References: <cover.1651071843.git.asml.silence@gmail.com>
-         <64341db6ca5a1f4d1eebbe86a7ee0b7d7400335e.1651071843.git.asml.silence@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Thu, 28 Apr 2022 07:05:49 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 10:05:13 -0400
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Minchan Kim <minchan@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Seth Jennings <sjenning@redhat.com>,
+        Dan Streetman <ddstreet@ieee.org>, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
+Message-ID: <YmqfGaIhE8W+Z1mo@cmpxchg.org>
+References: <20220427160016.144237-1-hannes@cmpxchg.org>
+ <20220427160016.144237-5-hannes@cmpxchg.org>
+ <Ymmnrkn0mSWcuvmH@google.com>
+ <YmmznQ8AO5RLxicA@cmpxchg.org>
+ <Ymm3WpvJWby4gaD/@cmpxchg.org>
+ <Ymm/wayEB3MH6ZRY@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ymm/wayEB3MH6ZRY@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-04-28 at 11:56 +0100, Pavel Begunkov wrote:
-> Users of ipcm6_init() have a somewhat complex post initialisation
-> of ->dontfrag and ->tclass. Not only it adds additional overhead,
-> but also complicates the code.
+On Wed, Apr 27, 2022 at 03:12:17PM -0700, Minchan Kim wrote:
+> On Wed, Apr 27, 2022 at 05:36:26PM -0400, Johannes Weiner wrote:
+> > On Wed, Apr 27, 2022 at 05:20:31PM -0400, Johannes Weiner wrote:
+> > > On Wed, Apr 27, 2022 at 01:29:34PM -0700, Minchan Kim wrote:
+> > > > Hi Johannes,
+> > > > 
+> > > > On Wed, Apr 27, 2022 at 12:00:15PM -0400, Johannes Weiner wrote:
+> > > > > Currently it requires poking at debugfs to figure out the size and
+> > > > > population of the zswap cache on a host. There are no counters for
+> > > > > reads and writes against the cache. As a result, it's difficult to
+> > > > > understand zswap behavior on production systems.
+> > > > > 
+> > > > > Print zswap memory consumption and how many pages are zswapped out in
+> > > > > /proc/meminfo. Count zswapouts and zswapins in /proc/vmstat.
+> > > > > 
+> > > > > Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
+> > > > > ---
+> > > > >  fs/proc/meminfo.c             |  7 +++++++
+> > > > >  include/linux/swap.h          |  5 +++++
+> > > > >  include/linux/vm_event_item.h |  4 ++++
+> > > > >  mm/vmstat.c                   |  4 ++++
+> > > > >  mm/zswap.c                    | 13 ++++++-------
+> > > > >  5 files changed, 26 insertions(+), 7 deletions(-)
+> > > > > 
+> > > > > diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
+> > > > > index 6fa761c9cc78..6e89f0e2fd20 100644
+> > > > > --- a/fs/proc/meminfo.c
+> > > > > +++ b/fs/proc/meminfo.c
+> > > > > @@ -86,6 +86,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
+> > > > >  
+> > > > >  	show_val_kb(m, "SwapTotal:      ", i.totalswap);
+> > > > >  	show_val_kb(m, "SwapFree:       ", i.freeswap);
+> > > > > +#ifdef CONFIG_ZSWAP
+> > > > > +	seq_printf(m,  "Zswap:          %8lu kB\n",
+> > > > > +		   (unsigned long)(zswap_pool_total_size >> 10));
+> > > > > +	seq_printf(m,  "Zswapped:       %8lu kB\n",
+> > > > > +		   (unsigned long)atomic_read(&zswap_stored_pages) <<
+> > > > > +		   (PAGE_SHIFT - 10));
+> > > > > +#endif
+> > > > 
+> > > > I agree it would be very handy to have the memory consumption in meminfo
+> > > > 
+> > > > https://lore.kernel.org/all/YYwZXrL3Fu8%2FvLZw@google.com/
+> > > > 
+> > > > If we really go this Zswap only metric instead of general term
+> > > > "Compressed", I'd like to post maybe "Zram:" with same reason
+> > > > in this patchset. Do you think that's better idea instead of
+> > > > introducing general term like "Compressed:" or something else?
+> > > 
+> > > I'm fine with changing it to Compressed. If somebody cares about a
+> > > more detailed breakdown, we can add Zswap, Zram subsets as needed.
+> > 
+> > It does raise the question what to do about cgroup, though. Should the
+> > control files (memory.zswap.current & memory.zswap.max) apply to zram
+> > in the future? If so, we should rename them, too.
+> > 
+> > I'm not too familiar with zram, maybe you can provide some
+> > background. AFAIU, Google uses zram quite widely; all the more
+> > confusing why there is no container support for it yet.
 > 
-> First, replace ipcm6_init() with ipcm6_init_sk(). As it might be not an
-> equivalent change, let's first look at ->dontfrag. The logic was to set
-> it from cmsg if specified and otherwise fallback to np->dontfrag. Now
-> it's initialising to np->dontfrag in the beginning and then potentially
-> overriding with cmsg, which is absolutely the same behaviour.
-> 
-> It's a bit more complex with ->tclass as ip6_datagram_send_ctl() might
-> set it to -1, which is a default and not valid value. The solution
-> here is to skip -1's specified in cmsg, so it'll be left with the socket
-> default value getting us to the old behaviour.
-> 
-> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-> ---
->  include/net/ipv6.h    | 9 ---------
->  net/ipv6/datagram.c   | 4 ++--
->  net/ipv6/ip6_output.c | 2 --
->  net/ipv6/raw.c        | 8 +-------
->  net/ipv6/udp.c        | 7 +------
->  net/l2tp/l2tp_ip6.c   | 8 +-------
->  6 files changed, 5 insertions(+), 33 deletions(-)
-> 
-> diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-> index 213612f1680c..30a3447e34b4 100644
-> --- a/include/net/ipv6.h
-> +++ b/include/net/ipv6.h
-> @@ -352,15 +352,6 @@ struct ipcm6_cookie {
->  	struct ipv6_txoptions *opt;
->  };
->  
-> -static inline void ipcm6_init(struct ipcm6_cookie *ipc6)
-> -{
-> -	*ipc6 = (struct ipcm6_cookie) {
-> -		.hlimit = -1,
-> -		.tclass = -1,
-> -		.dontfrag = -1,
-> -	};
-> -}
-> -
->  static inline void ipcm6_init_sk(struct ipcm6_cookie *ipc6,
->  				 const struct ipv6_pinfo *np)
->  {
-> diff --git a/net/ipv6/datagram.c b/net/ipv6/datagram.c
-> index 206f66310a88..1b334bc855ae 100644
-> --- a/net/ipv6/datagram.c
-> +++ b/net/ipv6/datagram.c
-> @@ -1003,9 +1003,9 @@ int ip6_datagram_send_ctl(struct net *net, struct sock *sk,
->  			if (tc < -1 || tc > 0xff)
->  				goto exit_f;
->  
-> +			if (tc != -1)
-> +				ipc6->tclass = tc;
->  			err = 0;
-> -			ipc6->tclass = tc;
-> -
->  			break;
->  		    }
+> My usecase with zram is Android which doesn't use memcg.
 
-It looks like the above causes a behavioral change: before this patch
-cmsg took precedence on socket status, after this patch looks like it's
-the opposide.
+Ok.
 
-Am I missing something?
+After more thought, my take is that in the future it could make sense
+to track zram pages in a cgroup's memory.current. But it should NOT be
+included in the dedicated memory.zswap.* files. Zswap is an in-kernel
+writeback cache, and those files allow userspace to tune writeback
+thresholds depending on the composition of the workload's
+workingset. This doesn't translate to zram: the wb facility that it
+has is triggered by hand, based on criteria such as idle pages and
+compression rate. It's not based on size. From a cgroup POV, it's a
+memory consumer that should be subject to memory.max, nothing more.
 
-Thanks
+This distinction applies to meminfo as well, though. While I think it
+makes sense to have a combined "Compressed" counter for zram and
+zswap, it's still important to understand zswap behavior on its own to
+tune the system-wide writeback threshold in max_pool_percent. (And
+again, while zram can also be limited, it's not a writeback threshold,
+it's just a red line for returning -ENOMEM).
 
-Paolo
+So I'm going to keep the Zswap and Zswapped items and retract the
+delta patch for renaming it to Compressed.
 
+But I'd ack a patch that adds a combined "Compressed" counter for zram
++ zswap if you send it, Minchan.
