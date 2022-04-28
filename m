@@ -2,118 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6970EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F101BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346408AbiD1Mpz (ORCPT
+        id S1346527AbiD1MqJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 08:45:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52332 "EHLO
+        Thu, 28 Apr 2022 08:46:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346478AbiD1Mps (ORCPT
+        with ESMTP id S1346403AbiD1Mpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 08:45:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C811AB0D0E
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 05:42:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58918B82CEB
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 12:42:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FFB2C385A0;
-        Thu, 28 Apr 2022 12:42:24 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="hZmprpak"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651149742;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2K05YkZhpOuMhgr/oncdSXk/GQQMhwmWcgULc5ceX9k=;
-        b=hZmprpak9Ywzz2wdBB6rNoLcdPOidG7yeoMlWxICXLsXO1SjNXFzJDPB8cawTsGS7t+V68
-        1NQ+l/BryRStpTiKym34Y3Xh6DP6sdoiDwE5n4I/sTftqrLWXDAdUGI/gd30LxXeIk+bV4
-        I0RzJy/xurTIn7WcuHcad4veUIXwh9k=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d25154e0 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 28 Apr 2022 12:42:21 +0000 (UTC)
-Date:   Thu, 28 Apr 2022 14:42:20 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Stafford Horne <shorne@gmail.com>
-Cc:     openrisc@lists.librecores.org, linux-kernel@vger.kernel.org,
-        Peter Maydell <peter.maydell@linaro.org>
-Subject: Re: [PATCH] openrisc: define nop command for simulator reboot
-Message-ID: <YmqLrDfbEGP659EO@zx2c4.com>
-References: <20220428111139.1330966-1-Jason@zx2c4.com>
- <YmqAx31dtXCaNn7R@antec>
+        Thu, 28 Apr 2022 08:45:53 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8205631D;
+        Thu, 28 Apr 2022 05:42:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651149752; x=1682685752;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=10NxDxRtq67xm2RzbqaoZqNSZgxkaEYpYv/by8QfknU=;
+  b=HhD4vBm3ElNid5/G0DoODGs33bmp1VubGGagpVsfhvXv92Em3N23f/vE
+   7kZ/pSGzDnxPwyAMtDHD2a30OiWocBhFL02I5i9tyB0qr7MMBoR8jc4il
+   RQK+tH56ocDFknDg/HgsWde+/d1Hv8gzWbjbIHFar7WmFJT9coUdHKsZQ
+   zuhpfIjySkFKXZCtFPoPIgxGXEQGGRZF9JRYvA7OyEGy/+WtOkIz50KiF
+   SLCrLY3PNBiSXUz3vNdI7iezL9xdWGk9p2XjfFv0Bq/g2VeK+71hLUWyq
+   5RjLia46gEOpPdJGO2ZvGcnnyE0GXp+pGWWetdIO667Gnbx+nat6ur8JU
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="266090828"
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="266090828"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 05:42:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="878612539"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by fmsmga005.fm.intel.com with ESMTP; 28 Apr 2022 05:42:30 -0700
+To:     Zixuan Fu <r33s3n6@gmail.com>, mathias.nyman@intel.com,
+        gregkh@linuxfoundation.org
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        baijiaju1990@gmail.com, TOTE Robot <oslab@tsinghua.edu.cn>
+References: <20220428092321.3011983-1-r33s3n6@gmail.com>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH v2 resend] drivers: usb: host: fix NULL pointer
+ dereferences triggered by unhandled errors in xhci_create_rhub_port_array()
+Message-ID: <eb417aeb-92f2-8910-378f-00031fbbcae5@linux.intel.com>
+Date:   Thu, 28 Apr 2022 15:44:29 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <20220428092321.3011983-1-r33s3n6@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YmqAx31dtXCaNn7R@antec>
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 08:55:51PM +0900, Stafford Horne wrote:
-> On Thu, Apr 28, 2022 at 01:11:39PM +0200, Jason A. Donenfeld wrote:
-> > The simulator defines `l.nop 1` for shutdown, but doesn't have anything
-> > for reboot. Use 13 for this, which is currently unused, dubbed
-> > `NOP_REBOOT`.
-> > 
-> > Cc: Stafford Horne <shorne@gmail.com>
-> > Cc: Peter Maydell <peter.maydell@linaro.org>
-> > Link: https://lore.kernel.org/all/YmnaDUpVI5ihgvg6@zx2c4.com/
-> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> > ---
-> >  arch/openrisc/kernel/process.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/arch/openrisc/kernel/process.c b/arch/openrisc/kernel/process.c
-> > index 3c0c91bcdcba..4cce95fa6eb5 100644
-> > --- a/arch/openrisc/kernel/process.c
-> > +++ b/arch/openrisc/kernel/process.c
-> > @@ -52,6 +52,8 @@ void machine_restart(char *cmd)
-> >  {
-> >  	do_kernel_restart(cmd);
-> >  
-> > +	__asm__("l.nop 13");
-> > +
-> >  	/* Give a grace period for failure to restart of 1s */
-> >  	mdelay(1000);
-> >  
-> > -- 
-> > 2.35.1
+On 28.4.2022 12.23, Zixuan Fu wrote:
+> In xhci_create_rhub_port_array(), when rhub->num_ports is zero, 
+> rhub->ports would not be set; when kcalloc_node() fails, rhub->ports
+> would be set to NULL. In these two cases, xhci_create_rhub_port_array()
+> just returns void, and thus its callers are unaware of the error.
 > 
-> This seems fair, probably it would be good to have a comment mentioninmg what
-> the nop is for, fyi for context these are the nop numbers used to control
-> simulations.
-> 
->     #define NOP_NOP          0x0000      /* Normal nop instruction */
->     #define NOP_EXIT         0x0001      /* End of simulation */
->     #define NOP_REPORT       0x0002      /* Simple report */
->     /*#define NOP_PRINTF       0x0003       Simprintf instruction (obsolete)*/
->     #define NOP_PUTC         0x0004      /* JPB: Simputc instruction */
->     #define NOP_CNT_RESET    0x0005      /* Reset statistics counters */
->     #define NOP_GET_TICKS    0x0006      /* JPB: Get # ticks running */
->     #define NOP_GET_PS       0x0007      /* JPB: Get picosecs/cycle */
->     #define NOP_TRACE_ON     0x0008      /* Turn on tracing */
->     #define NOP_TRACE_OFF    0x0009      /* Turn off tracing */
->     #define NOP_RANDOM       0x000a      /* Return 4 random bytes */
->     #define NOP_OR1KSIM      0x000b      /* Return non-zero if this is Or1ksim */
->     #define NOP_EXIT_SILENT  0x000c      /* End of simulation, quiet version */
->     /* New! */
->     #define NOP_RESET        0x000d      /* Reset the cpu */
+> Then rhub->ports is dereferenced in xhci_usb3_hub_descriptor() or 
+> xhci_usb2_hub_descriptor().
 
-Right, that's where I got 13 from. By the way, the .tex file only
-mentions ones up to 11, so at first I chose 12, and then saw this file.
+As it turned out this dereference is only an issue if kcalloc_node() failed,
+not if rhub->num_ports is zero.
 
-> 
-> I will queue this once we update the spec to define some of these, I am thinking
-> if qemu should allow for the shutdown to work in user mode.
-> 
-> BTW, are you working specifically on openrisc? Or just setting up test
-> environments for all architectures?
+So this is more of a theoretical issue. Not urgent, not for stable.
 
-Trying to get OpenRISC up on https://build.wireguard.com/ . The other
-architectures were simple, but OpenRISC is requiring some work...
+So as Greg suggested its probably better to add this fix on top of
+the one roothub support series it conflicts with.
 
-Jason
+
+Thanks
+Mathias
