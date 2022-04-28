@@ -2,199 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D04C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:27:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B862C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346233AbiD1MaU (ORCPT
+        id S1346235AbiD1Map (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 08:30:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42046 "EHLO
+        Thu, 28 Apr 2022 08:30:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346227AbiD1MaM (ORCPT
+        with ESMTP id S1346218AbiD1Mao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 08:30:12 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13F17CB0B;
-        Thu, 28 Apr 2022 05:26:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651148817; x=1682684817;
-  h=to:cc:references:from:subject:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=uWpsrfMCGcdP4sBCZpdV/K9nXsH6L4kQovbP/bC7oiM=;
-  b=EtEZL6LXBy5f+wWZaMasunOM0ZkDPJVe26PdJxpW6Ke7x3KrOo/fQdiP
-   U1vUnm+KSUGocnqZP71JDY7K0P+xvsZa8tpLJvxKh5SxNwmNJLAlSMPsl
-   aYr7ng9e4jBJEXn57YGdKeb6vlQwk4b/OWBcvjWIn22+nPIwAnqIkEONq
-   gDJ2MsiqLlzHZ3FVA3OPs1onbt8UStmtYVBm5x1MfCrzuo54IHJXHom0O
-   GM0ABBMYmDZvlZFgdMR/pY0jjiCYba8mLDFDZE9/j26PMu1EtsZqv0/tS
-   dwUuKMJYJ3jdJcb9kSkUAYhDXdwjjGopxayR701qVKrGeS9bcj460Azjg
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="246832536"
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="246832536"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 05:26:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="878583949"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by fmsmga005.fm.intel.com with ESMTP; 28 Apr 2022 05:26:49 -0700
-To:     Jung Daehwan <dh10.jung@samsung.com>
-Cc:     Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-References: <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
- <CGME20220426092023epcas2p32946c087135ca4b7e63b03915060c55d@epcas2p3.samsung.com>
- <1650964728-175347-6-git-send-email-dh10.jung@samsung.com>
- <b9fcc518-cc0d-d346-774e-3a9472e664bc@linux.intel.com>
- <20220428030319.GA139938@ubuntu>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: Re: [PATCH v4 5/5] usb: host: add xhci-exynos driver
-Message-ID: <0f84e8d4-451f-693a-d098-517dc6235a0f@linux.intel.com>
-Date:   Thu, 28 Apr 2022 15:28:49 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+        Thu, 28 Apr 2022 08:30:44 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E221A777D
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 05:27:29 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id bq30so8338369lfb.3
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 05:27:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D86VqWFsSM3Q2BxVORseBTMD8q1EWJ6nNtqyTRVzxzo=;
+        b=m0Z2OtpFG7W1/JRCK1QHki2+nTLtGozvlTi+CEdYgSrcoC+gkJGA/Z5cpXEAHZnApd
+         T2y4NjA2cdQPHZ0s3Bxtb+iGu4WvJAdiGJbvyVeya2YXiyPk0j7nf+LXpJfeROqWAXlf
+         hAkL3jmYjJHAZlOkZh9TFXQNxzxla/mVgcW5zLiCkuKHiysb/h2hNOyY+jGIgPNCvVE8
+         VfvSBjvX7blFyifiwkBIB2+3YcovnTxxj4Jf+6o/JLHow3ilROL+4MAk6CZhlJsDT9Lg
+         U2xAJPC1a/vS1wgds9M9xWG3zxvs9v53QZXEKMd3TQ4UdWLitMKneFHCB0WjHC8zaz85
+         yELA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D86VqWFsSM3Q2BxVORseBTMD8q1EWJ6nNtqyTRVzxzo=;
+        b=hnnFC2Dv6G64d8we4a0d08SwbsnIi4T8kdiEq5jZxHiuJG7jJGYwIInxUSn+ZrXz8F
+         SaQe1zrqKI/ButtVIG492DaRvI39JHln4Q+bM2JomhdUEx5YEjfPesaY167P1lGAl+gx
+         quuog0TQ+kC13X1s++r2YbczAdf6hkvrXSnCHTrP3gsiFq3WpJIJZ50srspyzrEuddVR
+         h9hYR4+A3+c6Ndrg4nJgY3jYvF82YvUp1ec6QpvBE9mSs7pyD2KO2TB6OID+Wtdhv43q
+         /wuXDFr2V2u0p9D4m1/OjJXhOe5IaAGIA2j1T0RbeZeQRF9yV07eUSGpMmwd/1H5PRST
+         SkWg==
+X-Gm-Message-State: AOAM533AZiKxx/9bKm+a4O2Vevp/2fRie95+eO5CDEtYZm+jjIuvdARc
+        5F9uQYRFZwymmaokKkupOgk30WBJ6AzNmQ==
+X-Google-Smtp-Source: ABdhPJwVaLVWeZh7xSITy/Q++AcEKHxRKqg7clfLQNHY+c1uh7VRfE5Rhk7uUtS+kWH1nGV1BbWf9w==
+X-Received: by 2002:a05:6512:694:b0:471:8eae:8c13 with SMTP id t20-20020a056512069400b004718eae8c13mr23805009lfe.37.1651148847853;
+        Thu, 28 Apr 2022 05:27:27 -0700 (PDT)
+Received: from dabros-l.wifi.semihalf.net ([185.157.14.92])
+        by smtp.gmail.com with ESMTPSA id s12-20020ac25fec000000b0044837422334sm2340475lfg.154.2022.04.28.05.27.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 05:27:27 -0700 (PDT)
+From:   Jan Dabros <jsd@semihalf.com>
+To:     linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+        jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com
+Cc:     mika.westerberg@linux.intel.com, rrangel@chromium.org,
+        Nimesh.Easow@amd.com, upstream@semihalf.com,
+        Jan Dabros <jsd@semihalf.com>
+Subject: [PATCH] i2c: designware: Modify timing parameters for amdpsp mailbox
+Date:   Thu, 28 Apr 2022 14:26:51 +0200
+Message-Id: <20220428122651.208575-1-jsd@semihalf.com>
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
 MIME-Version: 1.0
-In-Reply-To: <20220428030319.GA139938@ubuntu>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28.4.2022 6.03, Jung Daehwan wrote:
-> On Wed, Apr 27, 2022 at 07:25:21PM +0300, Mathias Nyman wrote:
->> On 26.4.2022 12.18, Daehwan Jung wrote:
->>> This driver is for Samsung Exynos xhci host conroller. It uses xhci-plat
->>> driver mainly and extends some functions by xhci hooks and overrides.
->>>
->>> It supports USB Audio offload with Co-processor. It only cares DCBAA,
->>> Device Context, Transfer Ring, Event Ring, and ERST. They are allocated
->>> on specific address with xhci hooks. Co-processor could use them directly
->>> without xhci driver after then.
->>>
->>> Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
->>
->> I have to agree with Krzysztof's comments, this is an odd driver stub.
->>
->> Perhaps open up a bit how the Exynos offloading works so we can figure out
->> in more detail what the hardware needs from software.  
->>
->> (...)
-> 
->>> +static int xhci_alloc_segments_for_ring_uram(struct xhci_hcd *xhci,
->>> +		struct xhci_segment **first, struct xhci_segment **last,
->>> +		unsigned int num_segs, unsigned int cycle_state,
->>> +		enum xhci_ring_type type, unsigned int max_packet, gfp_t flags,
->>> +		u32 endpoint_type)
->>> +{
->>> +	struct xhci_segment *prev;
->>> +	bool chain_links = false;
->>> +
->>> +	while (num_segs > 0) {
->>> +		struct xhci_segment *next = NULL;
->>> +
->>> +		if (!next) {
->>> +			prev = *first;
->>> +			while (prev) {
->>> +				next = prev->next;
->>> +				xhci_segment_free(xhci, prev);
->>> +				prev = next;
->>> +			}
->>> +			return -ENOMEM;
->>
->> This always return -ENOMEM
-> 
-> Yes. it's right to return error here.
-> 
+Adjust retry period and timeout values for x86-PSP mailbox based on the
+typical I2C traffic generated by PSP. In order to limit the possibility
+of timeouts, x86 should reduce the interval between retries as well as
+increase overall time after which it gives up.
 
-Still don't think that is the case.
+Signed-off-by: Jan Dabros <jsd@semihalf.com>
+---
+ drivers/i2c/busses/i2c-designware-amdpsp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-So if the num_segs value passed to a function named
-xhci_alloc_segments_for_ring_uram() is anything else than 0, it will 
-automatically return -ENOMEM?
+diff --git a/drivers/i2c/busses/i2c-designware-amdpsp.c b/drivers/i2c/busses/i2c-designware-amdpsp.c
+index 9b37f2b95abc..b624356c945f 100644
+--- a/drivers/i2c/busses/i2c-designware-amdpsp.c
++++ b/drivers/i2c/busses/i2c-designware-amdpsp.c
+@@ -16,8 +16,8 @@
+ #define PSP_CMD_TIMEOUT_US	(500 * USEC_PER_MSEC)
+ 
+ #define PSP_I2C_REQ_BUS_CMD		0x64
+-#define PSP_I2C_REQ_RETRY_CNT		10
+-#define PSP_I2C_REQ_RETRY_DELAY_US	(50 * USEC_PER_MSEC)
++#define PSP_I2C_REQ_RETRY_CNT		400
++#define PSP_I2C_REQ_RETRY_DELAY_US	(25 * USEC_PER_MSEC)
+ #define PSP_I2C_REQ_STS_OK		0x0
+ #define PSP_I2C_REQ_STS_BUS_BUSY	0x1
+ #define PSP_I2C_REQ_STS_INV_PARAM	0x3
+-- 
+2.36.0.rc2.479.g8af0fa9b8e-goog
 
->>
->> Also this whole function never allocates or remaps any memory.
-> 
-> This fuctions is for link segments. Right below function(xhci_ring_alloc_uram)
-> allocates.
-
-Still doesn't allocate any ring segments.
-Below function only allocates memory for the
-ring structure that contains pointers to segments.
-
-> 
->>
->>> +		}
->>> +		xhci_link_segments(prev, next, type, chain_links);
->>> +
->>> +		prev = next;
->>> +		num_segs--;
->>> +	}
->>> +	xhci_link_segments(prev, *first, type, chain_links);
->>> +	*last = prev;
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static struct xhci_ring *xhci_ring_alloc_uram(struct xhci_hcd *xhci,
->>> +		unsigned int num_segs, unsigned int cycle_state,
->>> +		enum xhci_ring_type type, unsigned int max_packet, gfp_t flags,
->>> +		u32 endpoint_type)
->>> +{
->>> +	struct xhci_ring	*ring;
->>> +	int ret;
->>> +	struct device *dev = xhci_to_hcd(xhci)->self.sysdev;
->>> +
->>> +	ring = kzalloc_node(sizeof(*ring), flags, dev_to_node(dev));
->>> +	if (!ring)
->>> +		return NULL;
->>> +
->>> +	ring->num_segs = num_segs;
->>> +	ring->bounce_buf_len = max_packet;
->>> +	INIT_LIST_HEAD(&ring->td_list);
->>> +	ring->type = type;
->>> +	if (num_segs == 0)
->>> +		return ring;
->>> +
->>> +	ret = xhci_alloc_segments_for_ring_uram(xhci, &ring->first_seg,
->>> +			&ring->last_seg, num_segs, cycle_state, type,
->>> +			max_packet, flags, endpoint_type);
->>> +	if (ret)
->>> +		goto fail;
->>> +
->>> +	/* Only event ring does not use link TRB */
->>> +	if (type != TYPE_EVENT) {
->>> +		/* See section 4.9.2.1 and 6.4.4.1 */
->>> +		ring->last_seg->trbs[TRBS_PER_SEGMENT - 1].link.control |=
->>> +			cpu_to_le32(LINK_TOGGLE);
->>
->> No memory was allocated for trbs
-> 
-> Allcation function for trbs are missed. It's done by ioremap.
-> I will add it on next submission. Thanks for the comment.
-> 
->>
->> A lot of this code seems to exists just to avoid xhci driver from allocating
->> dma capable memory, we can refactor the existing xhci_mem_init() and move
->> dcbaa and event ring allocation and other code to their own overridable
->> functions.
->>
->> This way we can probably get rid of a lot of the code in this series.
-> 
-> Yes right. I think it's proper. Do you agree with it or have better way
-> to do it?
-
-Could be, but I don't have a good picture of how this Exynos audio offloading
-works, so it's hard to guess.
-
-Thanks
--Mathias
