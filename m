@@ -2,151 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A6A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 18:35:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECADC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 18:35:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351123AbiD1Si3 (ORCPT
+        id S1351126AbiD1SjC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 14:38:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41676 "EHLO
+        Thu, 28 Apr 2022 14:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351108AbiD1Si0 (ORCPT
+        with ESMTP id S1351173AbiD1SjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 14:38:26 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649F21C10D
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 11:35:10 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id y21so6527474edo.2
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 11:35:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AK0opkaQ33+z/69oRWBiqlwlTBqFBYezZDCc2NUQjJU=;
-        b=FsJjSFghCOFVlM+in5VediqEFhRGeoGmwi2peza2ZaLm+9pD4jTYGuix/b/dpuZ7NA
-         YgiULt0vntSK/uG4A7sFE4PqXJVeQNeYcNnzVbNvV/F/LQia8LWc8IvKQNQLqsCJyxya
-         aU8l6o3INW0tkpuM5rGPva/IbjdDNLllG0dsPar/R6FwPSoyzVmGAXS7qJjOu61Kz2cs
-         gs6GVGiuWhgodWYELBHXVjJhUrDXlXCfdqB/a2FwQxqYQtbGYLUzdhG4EzmCqbntmj8f
-         VYAhGiTVuUJn8HNgfNaFg9N7E9/Lw/y0YeIQC/UC2bjyiv10KUj23v9cNMsPaZXtc1He
-         9BKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AK0opkaQ33+z/69oRWBiqlwlTBqFBYezZDCc2NUQjJU=;
-        b=xNMWIj2Fu1ehYhZDAi5XjdIWHPKOhZkCQSy432W16PfBXuoagTEVySBZ1rac/OiSRD
-         nBRWElQYezdYFKatL3VeiXosFnONF/Tms2n49888Cj51InNA5vTG/QQSqLGi+SmlhICa
-         15UqFdJ1pOMkPt4Hr5MKGeyCtH6yys5dhWUtjQ/tEVtY51qhLZOybRZthqzl3LJoSHDc
-         b6uXyJDlIt/lSzQz9aCJ7YkF9uTiVOuvCwZ/nmzPvcYVDkr/pz1tSggB45HYqkxIaNYd
-         tOmmP/LGPaH4CIT27m0+bpKioNXlbaQghItWyqUEiW/dzvcgN7qXV6AaQOtcBRky1Zai
-         IUGQ==
-X-Gm-Message-State: AOAM532R98As3PCX7zrvver2h2oslZPHOS9jpNjE8cCZ5vSrS1VRGu4D
-        2lbTX46/zugAvceExOLCWnOlhvm0ypN1q1GJ2UC55Q==
-X-Google-Smtp-Source: ABdhPJzUgLwJOKqwihS2A/xSr0KyC8jdRUvBxTu1BVT7j/K2p1uzV1t6MuiygLZcW+CNvCsO6YSnf37jHD/0VEWXhWs=
-X-Received: by 2002:a05:6402:26d3:b0:425:d67e:9880 with SMTP id
- x19-20020a05640226d300b00425d67e9880mr29352477edd.210.1651170908674; Thu, 28
- Apr 2022 11:35:08 -0700 (PDT)
+        Thu, 28 Apr 2022 14:39:01 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B6E42B247;
+        Thu, 28 Apr 2022 11:35:46 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:3d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 058662BD;
+        Thu, 28 Apr 2022 18:35:45 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 058662BD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1651170946; bh=9IIGBlboau/zQf/QWoBV5Td7htGubCcvMj6JuOI5Muk=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=CiRmNdmZR8iAq8WrObjx7wftNIkJ3jR+I0vx1wmI4OYrQ4NfOdj8NfeyeerNF9wNT
+         NMKQiHNWKg53eE9qOsRFt3vE/iL5/3FA8wx6JGt4smYYF0ut04QLUWN782BCXAm7Dy
+         sK2VeZKVeCCucMwYSeh839UZJCCV7rzFqyXOvIQUIqV8Hw0fMEvj3uGXquUiMkyJev
+         oKxDW/JxQzxB/vA0p4yZoP76b8HwqN3AJ/rWiZqvje9ZkkX8hcdV31QSIdCmH2EoSC
+         9Io215IN4/QOfaJHSwrho8sHOvUh9LLdYAIniV8pa5KG49J8o+I6v6mjDMcwi78hmF
+         sHcpICD40eIFA==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Frank Rowand <frowand.list@gmail.com>,
+        David Gow <davidgow@google.com>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        "Bird, Tim" <Tim.Bird@sony.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Rae Moar <rmr167@gmail.com>,
+        Guillaume Tucker <guillaume.tucker@collabora.com>,
+        Daniel Latypov <dlatypov@google.com>, kernelci@groups.io,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH 2/2] Documentation: dev-tools: use literal block
+ instead of code-block
+In-Reply-To: <95dcdcd3-fb48-6e5c-3262-7aacaac71e78@gmail.com>
+References: <20220316202622.324866-1-frowand.list@gmail.com>
+ <20220316202622.324866-3-frowand.list@gmail.com>
+ <CABVgOSngfB41BVoEvQ1JX+2oFvS7Mik58VfPm9pydmiC_GSD6Q@mail.gmail.com>
+ <95dcdcd3-fb48-6e5c-3262-7aacaac71e78@gmail.com>
+Date:   Thu, 28 Apr 2022 12:35:45 -0600
+Message-ID: <87tuad5a4e.fsf@meer.lwn.net>
 MIME-Version: 1.0
-References: <20220418175932.1809770-1-wonchung@google.com> <Yl/l7gjRXj41a93q@lahna>
- <CAOvb9yidpOZ4jCjme+u1a4fPTRnLmxUHSTO3yHPPuYtDbe1V0g@mail.gmail.com>
- <YmDy/xEsyktRS6D+@lahna> <MW3PR11MB46517BE51D4DCBC02B463C0EEDF99@MW3PR11MB4651.namprd11.prod.outlook.com>
- <CAOvb9yhToxfT7cVzDX9cQhbRj0r2DXyuLJer64J8XSRJuUPcEg@mail.gmail.com>
-In-Reply-To: <CAOvb9yhToxfT7cVzDX9cQhbRj0r2DXyuLJer64J8XSRJuUPcEg@mail.gmail.com>
-From:   Won Chung <wonchung@google.com>
-Date:   Fri, 29 Apr 2022 03:34:56 +0900
-Message-ID: <CAOvb9yhPuNOM-HEb+fCfJPZ9kyxYZ9orT6u7BH_iiTU4XPWChg@mail.gmail.com>
-Subject: Re: [PATCH 0/2] thunderbolt: Link USB4 ports to their USB Type-C connectors
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     "Winkler, Tomas" <tomas.winkler@intel.com>,
-        "Usyskin, Alexander" <alexander.usyskin@intel.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        "Ceraolo Spurio, Daniele" <daniele.ceraolospurio@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 1:51 AM Won Chung <wonchung@google.com> wrote:
->
-> On Sun, Apr 24, 2022 at 2:12 PM Usyskin, Alexander
-> <alexander.usyskin@intel.com> wrote:
-> >
-> > > > > > Currently, USB port is linked to Type C connector, using the component
-> > > > > > framework, if they share the same _PLD fields from ACPI table. Type C
-> > > > > > port-mapper searches for devices with the same _PLD values, and
-> > > > > > aggregate them as components.
-> > > > > >
-> > > > > > When there is another device that share the same _PLD but does not
-> > > > > > registers a component, Type C connector (component master) would never
-> > > > > > be bound due to a component match entry device without a component
-> > > > > > registered. There exists some cases where USB4 port also shares the same
-> > > > > > _PLD with USB port and Type C connector, so we need to register a
-> > > > > > component for USB4 ports too, linking USB4 port with Type C connector.
-> > > > > > Otherwise, link between USB port and Type C connector would not
-> > > > > > work either.
-> > > > > >
-> > > > > > Due to the nature of the component framework, all registered components
-> > > > > > are shared by all component match despite the relevance. MEI subsystems
-> > > > > > also use the component framework to bind to i915 driver, which try to
-> > > > > > match components registered by USB ports and USB4 ports. This can be
-> > > > > > problematic since MEI assumes that there is a driver bound to the
-> > > > > > component device, while USB4 port does not bind to any drivers. MEI's
-> > > > > > component match callback functions should handle such case to avoid
-> > > NULL
-> > > > > > pointer dereference when USB4 port registers a component.
-> > > > > >
-> > > > > > In summary this patch series
-> > > > > > 1. Fixes MEI subsystem's component match callbacks to handle a
-> > > component
-> > > > > > device without any driver bound
-> > > > > > 2. Registers a component for USB4 ports to link them to Type C
-> > > > > > connectors, similar to USB ports.
-> > > > > >
-> > > > > > Heikki Krogerus (1):
-> > > > > >   thunderbolt: Link USB4 ports to their USB Type-C connectors
-> > > > > >
-> > > > > > Won Chung (1):
-> > > > > >   misc/mei: Add NULL check to component match callback functions
-> > > > >
-> > > > > The Thunderbolt patch looks good to me. Do you want me to take the both
-> > > > > patches through the Thunderbolt tree or they can go separately? I need
-> > > > > an ack from the mei maintainer it goes through my tree.
-> > > >
-> > > > Hi Mika,
-> > > >
-> > > > I would prefer the two patches to go to the same tree since it can
-> > > > cause a crash with only the second patch (tbt). Would that sound okay?
-> > >
-> > > Sounds good to me.
-> >
-> > Tomas is MEI maintainer and should ack MEI patch
-> >
-> > --
-> > Thanks,
-> > Sasha
-> >
-> >
->
-> Hi Tomas,
->
-> Can you take a look at this patch series and give an ack if it looks
-> okay to be merged into Mika's tree?
-> One of the patches adds NULL checks in MEI:
-> https://lore.kernel.org/all/20220418175932.1809770-2-wonchung@google.com/
->
-> Thank you,
-> Won
+Frank Rowand <frowand.list@gmail.com> writes:
 
-Hi Mika,
+> Hi Jon,
 
-Tomas has given an ack on the first patch on MEI:
-https://lore.kernel.org/all/0136fcb26ca8433899593208af4351c9@intel.com/
+> I got distracted with other tasks, just now returning to this.
+>
+> There has been no other comment in the last month, so I think it
+> is fair to go ahead and ask you to pull this patch.
+>
+> Can you pull just this patch (patch 2/2) or would you prefer that
+> I do a version 2 which does not contain patch 1/2?
 
-Should I resend the patch with an additional "Acked-by" tag?
-Or could that be added as the patch is merged into the thunderbolt tree?
+I've applied it, thanks.
 
-Thank you,
-Won
+jon
