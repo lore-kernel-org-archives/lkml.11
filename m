@@ -2,86 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0839DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:23:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 039F4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:25:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234804AbiD1K0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32964 "EHLO
+        id S234840AbiD1K2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234885AbiD1K0i (ORCPT
+        with ESMTP id S229592AbiD1K22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:26:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2DA1220C4;
-        Thu, 28 Apr 2022 03:23:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EED98B82ADD;
-        Thu, 28 Apr 2022 10:23:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94B16C385A9;
-        Thu, 28 Apr 2022 10:23:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651141399;
-        bh=eGq+Qy5coA1eiupDJohON71z3nxTpsGZWZmLWIPy7Ls=;
-        h=From:To:Cc:Subject:Date:From;
-        b=t5okDDTkd4qUrowvavmE94jQ05DGUDdcjuHpgLYTfkNzVvG8U7t/ii6RZgsCK4Ekm
-         9nfC2LVtbzjaWcNGF/sNtHEd7dk5peocOPsYoyUrDoSK0HOIRgcvWUfytCyeiW5OC3
-         Li5tofqAOYEAe88wzZ5beQDsLc659hQojAHNJ/aOtPqkuE39imWWfXi4AFLfykl/Et
-         1JTq3Pvquf1+n83xduuvSAYHqnox3vTs4VthV8okERrtQai8ykzip+9Ua8BxEjL95d
-         OsQ6E0kOJNnPQJlBRDJIHsS+Gm6Bb9oViXgnL9Oser3LkpTsQm35f5fDn219YCjlsL
-         Fl98pxTzeHXeQ==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
-        Roger Quadros <rogerq@ti.com>, Felipe Balbi <balbi@ti.com>,
-        linux-usb@vger.kernel.org, linux-omap@vger.kernel.org,
+        Thu, 28 Apr 2022 06:28:28 -0400
+X-Greylist: delayed 8042 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Apr 2022 03:25:12 PDT
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C152E1837A;
+        Thu, 28 Apr 2022 03:25:10 -0700 (PDT)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+        id 87B01374; Thu, 28 Apr 2022 12:25:08 +0200 (CEST)
+Date:   Thu, 28 Apr 2022 12:25:07 +0200
+From:   Joerg Roedel <joro@8bytes.org>
+To:     xkernel.wang@foxmail.com
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, will@kernel.org,
+        linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] usb: ehci-omap: drop unused ehci_read() function
-Date:   Thu, 28 Apr 2022 12:22:58 +0200
-Message-Id: <20220428102314.950323-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+Subject: Re: [PATCH v2] iommu/msm: add a check for the return of kzalloc()
+Message-ID: <Ymprg6lvpn+9Vozl@8bytes.org>
+References: <tencent_EDB94B1C7E14B4E1974A66FF4D2029CC6D08@qq.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <tencent_EDB94B1C7E14B4E1974A66FF4D2029CC6D08@qq.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Thu, Apr 28, 2022 at 04:52:39PM +0800, xkernel.wang@foxmail.com wrote:
+> From: Xiaoke Wang <xkernel.wang@foxmail.com>
+> 
+> kzalloc() is a memory allocation function which can return NULL when
+> some internal memory errors happen. So it is better to check it to
+> prevent potential wrong memory access.
+> 
+> Besides, to propagate the error to the caller, the type of
+> insert_iommu_master() is changed to `int`. Several instructions related
+> to it are also updated.
+> 
+> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+> ---
+> ChangeLog:
+> v1->v2 propagate the error to the caller.
+>  drivers/iommu/msm_iommu.c | 11 ++++++++---
+>  1 file changed, 8 insertions(+), 3 deletions(-)
 
-After moving the omap1 platform into generalized multiplatform
-support on ARM, the kernel test robot points out a W=1 warning that
-now shows up in more configurations:
-
-drivers/usb/host/ehci-omap.c:64:19: warning: unused function 'ehci_read'
-
-The function was last used 9 years ago and can just be removed.
-
-Fixes: 87425ad36330 ("USB: ehci-omap: Remove PHY reset handling code")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/usb/host/ehci-omap.c | 5 -----
- 1 file changed, 5 deletions(-)
-
-diff --git a/drivers/usb/host/ehci-omap.c b/drivers/usb/host/ehci-omap.c
-index 7f4a03e8647a..8c45bc17a580 100644
---- a/drivers/usb/host/ehci-omap.c
-+++ b/drivers/usb/host/ehci-omap.c
-@@ -61,11 +61,6 @@ static inline void ehci_write(void __iomem *base, u32 reg, u32 val)
- 	__raw_writel(val, base + reg);
- }
- 
--static inline u32 ehci_read(void __iomem *base, u32 reg)
--{
--	return __raw_readl(base + reg);
--}
--
- /* configure so an HC device and id are always provided */
- /* always called with process context; sleeping is OK */
- 
--- 
-2.29.2
-
+Applied, thanks.
