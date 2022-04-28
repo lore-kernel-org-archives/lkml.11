@@ -2,111 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77365C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EED5EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:23:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235094AbiD1L0z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 07:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34306 "EHLO
+        id S235189AbiD1L06 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 07:26:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233052AbiD1L0u (ORCPT
+        with ESMTP id S235063AbiD1L0y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 07:26:50 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D9A5D65B;
-        Thu, 28 Apr 2022 04:23:36 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 3B4361F88A;
-        Thu, 28 Apr 2022 11:23:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1651145015; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ALSlNdnUDfGqnVDNF+XbySa5KKZiHe5nsD1aWA9cJlQ=;
-        b=Qqo62OOYsyHjfh46Geys+bzp5ZZw/H7DtsEoukKYDwWaRzoQgHT9LNdSBBtAVJ35q2QG+s
-        OgC57syIbets7bbDv9VpnPnulvaIZfuIZyb1SI8/AZcFN+CLkB2RY5Y7/zduhoT5A3HfZg
-        drXATWWbO/gIevBcwhXuQJfpu8BlqMo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1651145015;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ALSlNdnUDfGqnVDNF+XbySa5KKZiHe5nsD1aWA9cJlQ=;
-        b=nozySw/YbNaB4EEXbIQFKP2yluTxF6VXLonrNIQglDs3KxliUb9+ELxwZrRKp8B6L6AI9c
-        Mng41wRfV4ecu5CA==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 286012C141;
-        Thu, 28 Apr 2022 11:23:35 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id D0057A061A; Thu, 28 Apr 2022 13:23:34 +0200 (CEST)
-Date:   Thu, 28 Apr 2022 13:23:34 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Yu Kuai <yukuai3@huawei.com>
-Cc:     jack@suse.cz, tj@kernel.org, axboe@kernel.dk,
-        paolo.valente@linaro.org, cgroups@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-Subject: Re: [PATCH -next v4 2/3] block, bfq: refactor the counting of
- 'num_groups_with_pending_reqs'
-Message-ID: <20220428112334.um5mnmxmm2y2oqqf@quack3.lan>
-References: <20220428111907.3635820-1-yukuai3@huawei.com>
- <20220428111907.3635820-3-yukuai3@huawei.com>
+        Thu, 28 Apr 2022 07:26:54 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A505E16C;
+        Thu, 28 Apr 2022 04:23:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651145020; x=1682681020;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=YSpDATXy/AEnQCqNpDDdMNwfxMpapZmzIYX8S6XiNuc=;
+  b=Meg06O/KeVEOvbcvwHOkss7GumVYJbLxc7P6jPEMBnqpwHb/QLaA6cgV
+   O5K1DarW7M96UkAn6pPR19Ajk+0uAjvYBE+PVtdj9vSTKsHgovLKg6yAM
+   7oVH33UaGpGYGUxDOtTES+uhH/5+t4OHzEGCkl+JSYYrbcmUujm3JMrs2
+   eqy6VWYmVRbak3YIZlcumeibMrbOyQk9bnwXIxIwjkvNwAss4JfeO9/JM
+   S40mPfl6MM5wYCcZYRhGFaARym7sxnII1RC10yfGnNXDt+N6/XUCuR1/u
+   A2/7x2saHMNYbo2IMD7qj7uTXSzzWxb0LZhiNnLIic3qhMOIUk8feNvzq
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="352692120"
+X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
+   d="scan'208";a="352692120"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 04:23:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
+   d="scan'208";a="541152152"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga002.jf.intel.com with ESMTP; 28 Apr 2022 04:23:37 -0700
+Received: from lincoln.igk.intel.com (lincoln.igk.intel.com [10.102.21.235])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 23SBNZi8003960;
+        Thu, 28 Apr 2022 12:23:35 +0100
+From:   Larysa Zaremba <larysa.zaremba@intel.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: [PATCH RESEND bpf-next] bpftool: Use sysfs vmlinux when dumping BTF by ID
+Date:   Thu, 28 Apr 2022 13:14:42 +0200
+Message-Id: <20220428111442.111805-1-larysa.zaremba@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220428111907.3635820-3-yukuai3@huawei.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 28-04-22 19:19:06, Yu Kuai wrote:
-> Currently, bfq can't handle sync io concurrently as long as they
-> are not issued from root group. This is because
-> 'bfqd->num_groups_with_pending_reqs > 0' is always true in
-> bfq_asymmetric_scenario().
-> 
-> The way that bfqg is counted into 'num_groups_with_pending_reqs':
-> 
-> Before this patch:
->  1) root group will never be counted.
->  2) Count if bfqg or it's child bfqgs have pending requests.
->  3) Don't count if bfqg and it's child bfqgs complete all the requests.
-> 
-> After this patch:
->  1) root group is counted.
->  2) Count if bfqg have at least one bfqq that is marked busy.
->  3) Don't count if bfqg doesn't have any busy bfqqs.
-> 
-> The main reason to use busy state of bfqq instead of 'pending requests'
-> is that bfqq can stay busy after dispatching the last request if idling
-> is needed for service guarantees.
-> 
-> With this change, the occasion that only one group is activated can be
-> detected, and next patch will support concurrent sync io in the
-> occasion.
-> 
-> This patch also rename 'num_groups_with_pending_reqs' to
-> 'num_groups_with_busy_queues'.
-> 
-> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-> ---
->  block/bfq-iosched.c | 46 ++-----------------------------------
->  block/bfq-iosched.h | 55 ++++++---------------------------------------
->  block/bfq-wf2q.c    | 19 ++++------------
->  3 files changed, 13 insertions(+), 107 deletions(-)
+Currently, dumping almost all BTFs specified by id requires
+using the -B option to pass the base BTF. For most cases
+the vmlinux BTF sysfs path should work.
 
-I love the diffstat :)
+This patch simplifies dumping by ID usage by attempting to
+use vmlinux BTF from sysfs, if the first try of loading BTF by ID
+fails with certain conditions.
 
-> +	 * Number of groups with at leaset one bfqq that is marked busy,
-				    ^^^^^ least
+Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
+Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+---
+ tools/bpf/bpftool/btf.c | 35 ++++++++++++++++++++++++++---------
+ 1 file changed, 26 insertions(+), 9 deletions(-)
 
-Otherwise the patch looks good so feel free to add:
-
-Reviewed-by: Jan Kara <jack@suse.cz>
-
-								Honza
+diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+index a2c665beda87..557f65e2de5c 100644
+--- a/tools/bpf/bpftool/btf.c
++++ b/tools/bpf/bpftool/btf.c
+@@ -459,6 +459,22 @@ static int dump_btf_c(const struct btf *btf,
+ 	return err;
+ }
+ 
++static const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
++
++static struct btf *get_vmlinux_btf_from_sysfs(void)
++{
++	struct btf *base;
++
++	base = btf__parse(sysfs_vmlinux, NULL);
++	if (libbpf_get_error(base)) {
++		p_err("failed to parse vmlinux BTF at '%s': %ld\n",
++		      sysfs_vmlinux, libbpf_get_error(base));
++		base = NULL;
++	}
++
++	return base;
++}
++
+ static int do_dump(int argc, char **argv)
+ {
+ 	struct btf *btf = NULL, *base = NULL;
+@@ -536,18 +552,11 @@ static int do_dump(int argc, char **argv)
+ 		NEXT_ARG();
+ 	} else if (is_prefix(src, "file")) {
+ 		const char sysfs_prefix[] = "/sys/kernel/btf/";
+-		const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
+ 
+ 		if (!base_btf &&
+ 		    strncmp(*argv, sysfs_prefix, sizeof(sysfs_prefix) - 1) == 0 &&
+-		    strcmp(*argv, sysfs_vmlinux) != 0) {
+-			base = btf__parse(sysfs_vmlinux, NULL);
+-			if (libbpf_get_error(base)) {
+-				p_err("failed to parse vmlinux BTF at '%s': %ld\n",
+-				      sysfs_vmlinux, libbpf_get_error(base));
+-				base = NULL;
+-			}
+-		}
++		    strcmp(*argv, sysfs_vmlinux))
++			base = get_vmlinux_btf_from_sysfs();
+ 
+ 		btf = btf__parse_split(*argv, base ?: base_btf);
+ 		err = libbpf_get_error(btf);
+@@ -593,6 +602,14 @@ static int do_dump(int argc, char **argv)
+ 	if (!btf) {
+ 		btf = btf__load_from_kernel_by_id_split(btf_id, base_btf);
+ 		err = libbpf_get_error(btf);
++		if (err == -EINVAL && !base_btf) {
++			btf__free(base);
++			base = get_vmlinux_btf_from_sysfs();
++			p_info("Warning: valid base BTF was not specified with -B option, falling back on standard base BTF (sysfs vmlinux)");
++			btf = btf__load_from_kernel_by_id_split(btf_id, base);
++			err = libbpf_get_error(btf);
++		}
++
+ 		if (err) {
+ 			p_err("get btf by id (%u): %s", btf_id, strerror(err));
+ 			goto done;
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+2.35.1
+
