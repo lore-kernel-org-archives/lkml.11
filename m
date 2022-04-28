@@ -2,94 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F6E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E069CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344047AbiD1I12 (ORCPT
+        id S1344071AbiD1I2X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34306 "EHLO
+        Thu, 28 Apr 2022 04:28:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234174AbiD1I11 (ORCPT
+        with ESMTP id S234174AbiD1I2U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:27:27 -0400
+        Thu, 28 Apr 2022 04:28:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68C59D4DE;
-        Thu, 28 Apr 2022 01:24:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0FDDF3C;
+        Thu, 28 Apr 2022 01:25:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74A0D61F97;
-        Thu, 28 Apr 2022 08:24:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FA10C385A0;
-        Thu, 28 Apr 2022 08:24:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651134252;
-        bh=7Qn4QH+TeAmEKVEjCdFVC71kSPqcGYshxtlJcIsHtmo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=wWlT5w0nDXoBbWDRSYmJ9MTt/Ykz36DoTHIWkhyeVDYGkurfe27rq23L+lpr+3Hlc
-         eKeGyJoTE0gLRmJuA3nUNCYtaBGmRI4j87gJa27jrO6FlijfGQEO43Y0nsMbsIGWJl
-         DrN9OKf25kTv6t3fdxmZGFQ6AqrrnmkfIVkFaxyk=
-Date:   Thu, 28 Apr 2022 10:24:09 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Marc Zyngier <maz@kernel.org>, quic_psodagud@quicinc.com,
-        quic_tsoni@quicinc.com, Will Deacon <will@kernel.org>
-Subject: Re: [PATCHv11 6/6] asm-generic/io: Add logging support for MMIO
- accessors
-Message-ID: <YmpPKRB6FS/5pKjK@kroah.com>
-References: <cover.1645772606.git.quic_saipraka@quicinc.com>
- <3de35c9f4a3a070d197bab499acefc709a6f5336.1645772606.git.quic_saipraka@quicinc.com>
- <YmorayBozWWRlTpP@kroah.com>
- <96dc5e2e-5d88-52ce-c295-779603e668f2@quicinc.com>
- <YmpD3tIQK2iiqt46@kroah.com>
- <CAK8P3a3o7BacAo1fWOLvVxyMrfNV95P1-wUB1t5deLah=nZOwg@mail.gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B43CD61F96;
+        Thu, 28 Apr 2022 08:25:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6174FC385AF;
+        Thu, 28 Apr 2022 08:25:02 +0000 (UTC)
+Message-ID: <a7772b0c-a326-6ec3-31fc-d0c172264cf9@xs4all.nl>
+Date:   Thu, 28 Apr 2022 10:25:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a3o7BacAo1fWOLvVxyMrfNV95P1-wUB1t5deLah=nZOwg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 1/3] media: dt-bindings: media: rockchip-vdec: Add
+ RK3328 compatible
+Content-Language: en-US
+To:     Christopher Obbard <chris.obbard@collabora.com>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Johan Jonker <jbx6244@gmail.com>,
+        Elaine Zhang <zhangqing@rock-chips.com>
+Cc:     linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com
+References: <20220425184510.1138446-1-chris.obbard@collabora.com>
+ <20220425184510.1138446-2-chris.obbard@collabora.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220425184510.1138446-2-chris.obbard@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 10:18:36AM +0200, Arnd Bergmann wrote:
-> On Thu, Apr 28, 2022 at 9:35 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Thu, Apr 28, 2022 at 12:59:13PM +0530, Sai Prakash Ranjan wrote:
-> > > On 4/28/2022 11:21 AM, Greg KH wrote:
-> > > > On Thu, Apr 28, 2022 at 09:00:13AM +0530, Sai Prakash Ranjan wrote:
-> >
-> > > -D__NO_FORTIFY, -D__DISABLE_EXPORTS, -DDISABLE_BRANCH_PROFILING".
-> >
-> > Those are compiler flags that affect gcc, not kernel code functionality.
+On 25/04/2022 20:45, Christopher Obbard wrote:
+> Document the RK3328 compatible for rockchip-vdec. The driver shares
+> the same base functionality as the RK3399 hardware so make sure that
+> the RK3399 compatible is also included in the device tree.
 > 
-> It's normal for invasive instrumentation to need flags to disable them. If you
-> look at mm/kasan/Makefile, you see
+> Signed-off-by: Christopher Obbard <chris.obbard@collabora.com>
+
+I'm merging this bindings change in the media subsystem, so the other two
+patches can be be merged for 5.19 by whoever maintains those dts files.
+
+Regards,
+
+	Hans
+
+> ---
+>  Documentation/devicetree/bindings/media/rockchip,vdec.yaml | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> KASAN_SANITIZE := n
-> UBSAN_SANITIZE := n
-> KCOV_INSTRUMENT := n
-> CC_FLAGS_KASAN_RUNTIME += -DDISABLE_BRANCH_PROFILING
-> CFLAGS_REMOVE_common.o = $(CC_FLAGS_FTRACE)
-> 
-> all of which disable one of the instrumentation options, either per file
-> or per directory, in order to break recursion.
+> diff --git a/Documentation/devicetree/bindings/media/rockchip,vdec.yaml b/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
+> index 089f11d21b25..3bcfb8e12333 100644
+> --- a/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
+> +++ b/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
+> @@ -18,7 +18,9 @@ properties:
+>      oneOf:
+>        - const: rockchip,rk3399-vdec
+>        - items:
+> -          - const: rockchip,rk3228-vdec
+> +          - enum:
+> +              - rockchip,rk3228-vdec
+> +              - rockchip,rk3328-vdec
+>            - const: rockchip,rk3399-vdec
+>  
+>    reg:
 
-That's not for logging stuff (which seems to change the functionality of
-the driver), it's for system-wide profiling/code-coverage/checking/etc
-type of stuff.
-
-Let's keep a #define at the top of the driver for the drivers that
-absolutely need this feature disabled as it is much easier to track that
-and to see how it affects things.  If you put it in a Makefile,
-reviewers will miss it and wonder what is going on.
-
-thanks,
-
-greg k-h
