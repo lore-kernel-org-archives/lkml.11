@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7E1FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:19:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0E32C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:19:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347036AbiD1NWR (ORCPT
+        id S1347069AbiD1NWV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:22:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44544 "EHLO
+        Thu, 28 Apr 2022 09:22:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347011AbiD1NV5 (ORCPT
+        with ESMTP id S1346901AbiD1NWH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:21:57 -0400
+        Thu, 28 Apr 2022 09:22:07 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 902C9939D3
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:18:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E836939E4
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:18:50 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5964F1477;
-        Thu, 28 Apr 2022 06:18:43 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1A3F21480;
+        Thu, 28 Apr 2022 06:18:50 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 542D53F73B;
-        Thu, 28 Apr 2022 06:18:41 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 16AA93F85F;
+        Thu, 28 Apr 2022 06:18:47 -0700 (PDT)
 From:   Robin Murphy <robin.murphy@arm.com>
 To:     joro@8bytes.org, will@kernel.org
 Cc:     iommu@lists.linux-foundation.org, sven@svenpeter.dev,
@@ -31,9 +31,9 @@ Cc:     iommu@lists.linux-foundation.org, sven@svenpeter.dev,
         zhang.lyra@gmail.com, thierry.reding@gmail.com, vdumpa@nvidia.com,
         jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 07/14] iommu/dart: Clean up bus_set_iommu()
-Date:   Thu, 28 Apr 2022 14:18:08 +0100
-Message-Id: <2a56bc5322c02da954d7890c5b162768f57c3277.1650890638.git.robin.murphy@arm.com>
+Subject: [PATCH v2 10/14] iommu/mtk: Clean up bus_set_iommu()
+Date:   Thu, 28 Apr 2022 14:18:11 +0100
+Message-Id: <5d63560fbda7582ae517ff0b1246e91b275c783c.1650890638.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.35.3.dirty
 In-Reply-To: <cover.1650890638.git.robin.murphy@arm.com>
 References: <cover.1650890638.git.robin.murphy@arm.com>
@@ -44,80 +44,84 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Stop calling bus_set_iommu() since it's now unnecessary, and simplify
-the probe failure path accordingly.
+the probe failure paths accordingly.
 
-Tested-by: Sven Peter <sven@svenpeter.dev>
-Reviewed-by: Sven Peter <sven@svenpeter.dev>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/apple-dart.c | 30 +-----------------------------
- 1 file changed, 1 insertion(+), 29 deletions(-)
+ drivers/iommu/mtk_iommu.c    | 13 +------------
+ drivers/iommu/mtk_iommu_v1.c | 13 +------------
+ 2 files changed, 2 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index decafb07ad08..a679e4c02291 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -823,27 +823,6 @@ static irqreturn_t apple_dart_irq(int irq, void *dev)
- 	return IRQ_HANDLED;
- }
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 6fd75a60abd6..4278d9e032ad 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -920,19 +920,11 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	spin_lock_init(&data->tlb_lock);
+ 	list_add_tail(&data->list, &m4ulist);
  
--static int apple_dart_set_bus_ops(const struct iommu_ops *ops)
--{
--	int ret;
--
 -	if (!iommu_present(&platform_bus_type)) {
--		ret = bus_set_iommu(&platform_bus_type, ops);
+-		ret = bus_set_iommu(&platform_bus_type, &mtk_iommu_ops);
 -		if (ret)
--			return ret;
+-			goto out_list_del;
 -	}
--#ifdef CONFIG_PCI
--	if (!iommu_present(&pci_bus_type)) {
--		ret = bus_set_iommu(&pci_bus_type, ops);
--		if (ret) {
--			bus_set_iommu(&platform_bus_type, NULL);
--			return ret;
--		}
+-
+ 	ret = component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
+ 	if (ret)
+-		goto out_bus_set_null;
++		goto out_list_del;
+ 	return ret;
+ 
+-out_bus_set_null:
+-	bus_set_iommu(&platform_bus_type, NULL);
+ out_list_del:
+ 	list_del(&data->list);
+ 	iommu_device_unregister(&data->iommu);
+@@ -952,9 +944,6 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+ 	iommu_device_sysfs_remove(&data->iommu);
+ 	iommu_device_unregister(&data->iommu);
+ 
+-	if (iommu_present(&platform_bus_type))
+-		bus_set_iommu(&platform_bus_type, NULL);
+-
+ 	clk_disable_unprepare(data->bclk);
+ 	device_link_remove(data->smicomm_dev, &pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index ecff800656e6..7d17d6a21803 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -660,19 +660,11 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto out_sysfs_remove;
+ 
+-	if (!iommu_present(&platform_bus_type)) {
+-		ret = bus_set_iommu(&platform_bus_type,  &mtk_iommu_ops);
+-		if (ret)
+-			goto out_dev_unreg;
 -	}
--#endif
--	return 0;
--}
 -
- static int apple_dart_probe(struct platform_device *pdev)
- {
- 	int ret;
-@@ -899,14 +878,10 @@ static int apple_dart_probe(struct platform_device *pdev)
+ 	ret = component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
+ 	if (ret)
+-		goto out_bus_set_null;
++		goto out_dev_unreg;
+ 	return ret;
  
- 	platform_set_drvdata(pdev, dart);
+-out_bus_set_null:
+-	bus_set_iommu(&platform_bus_type, NULL);
+ out_dev_unreg:
+ 	iommu_device_unregister(&data->iommu);
+ out_sysfs_remove:
+@@ -687,9 +679,6 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+ 	iommu_device_sysfs_remove(&data->iommu);
+ 	iommu_device_unregister(&data->iommu);
  
--	ret = apple_dart_set_bus_ops(&apple_dart_iommu_ops);
--	if (ret)
--		goto err_free_irq;
+-	if (iommu_present(&platform_bus_type))
+-		bus_set_iommu(&platform_bus_type, NULL);
 -
- 	ret = iommu_device_sysfs_add(&dart->iommu, dev, NULL, "apple-dart.%s",
- 				     dev_name(&pdev->dev));
- 	if (ret)
--		goto err_remove_bus_ops;
-+		goto err_free_irq;
- 
- 	ret = iommu_device_register(&dart->iommu, &apple_dart_iommu_ops, dev);
- 	if (ret)
-@@ -920,8 +895,6 @@ static int apple_dart_probe(struct platform_device *pdev)
- 
- err_sysfs_remove:
- 	iommu_device_sysfs_remove(&dart->iommu);
--err_remove_bus_ops:
--	apple_dart_set_bus_ops(NULL);
- err_free_irq:
- 	free_irq(dart->irq, dart);
- err_clk_disable:
-@@ -936,7 +909,6 @@ static int apple_dart_remove(struct platform_device *pdev)
- 
- 	apple_dart_hw_reset(dart);
- 	free_irq(dart->irq, dart);
--	apple_dart_set_bus_ops(NULL);
- 
- 	iommu_device_unregister(&dart->iommu);
- 	iommu_device_sysfs_remove(&dart->iommu);
+ 	clk_disable_unprepare(data->bclk);
+ 	devm_free_irq(&pdev->dev, data->irq, data);
+ 	component_master_del(&pdev->dev, &mtk_iommu_com_ops);
 -- 
 2.35.3.dirty
 
