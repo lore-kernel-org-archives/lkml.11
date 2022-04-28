@@ -2,144 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF093C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 134BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:16:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242061AbiD1DSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 23:18:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
+        id S241745AbiD1DTp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 23:19:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239209AbiD1DSQ (ORCPT
+        with ESMTP id S233318AbiD1DTi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 23:18:16 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B78DDD
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 20:15:01 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Kpggx0671z1JBfK;
-        Thu, 28 Apr 2022 11:14:05 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Apr 2022 11:14:59 +0800
-Subject: Re: [RFC PATCH v1 1/4] mm, hwpoison, hugetlb: introduce
- SUBPAGE_INDEX_HWPOISON to save raw error page
-To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>
-CC:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-References: <20220427042841.678351-1-naoya.horiguchi@linux.dev>
- <20220427042841.678351-2-naoya.horiguchi@linux.dev>
- <5b956156-887b-1d91-7831-28a66db53c6a@huawei.com>
- <20220427130342.GA3915117@hori.linux.bs1.fc.nec.co.jp>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <b321a771-1a49-4d4a-3108-fa713bede2e0@huawei.com>
-Date:   Thu, 28 Apr 2022 11:14:58 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Wed, 27 Apr 2022 23:19:38 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF03189;
+        Wed, 27 Apr 2022 20:16:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651115784; x=1682651784;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=OzLHedGGs0p8Rkynak6Kv3mvYKpyq/SCmi4nw9hwu+U=;
+  b=ayglFXADbyBsMoLPXTsZHxrSqDqrYrcZ0Tl/xUz8X8JkLBhalW6oxOPp
+   RdwY8auoxX9du1CBrR4PsDt/maSjPVIg13w/F48VR7RmJEdWdcA2O3nwF
+   qj//kpTdJeUymxPscWd28i0AJVMq+9mMK+ZJKFo6/psEnUT4mqB72B2xb
+   E=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 27 Apr 2022 20:16:23 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 20:16:23 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 27 Apr 2022 20:16:23 -0700
+Received: from [10.50.42.7] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 27 Apr
+ 2022 20:16:19 -0700
+Message-ID: <2cb26bc2-704b-86df-15ed-8c18f81addaf@quicinc.com>
+Date:   Thu, 28 Apr 2022 08:46:15 +0530
 MIME-Version: 1.0
-In-Reply-To: <20220427130342.GA3915117@hori.linux.bs1.fc.nec.co.jp>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCHv10 5/6] lib: Add register read/write tracing support
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+To:     Arnd Bergmann <arnd@arndb.de>
+CC:     Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Marc Zyngier <maz@kernel.org>,
+        "Trilok Soni" <quic_tsoni@quicinc.com>,
+        <quic_psodagud@quicinc.com>, gregkh <gregkh@linuxfoundation.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Prasad Sodagudi <psodagud@codeaurora.org>
+References: <cover.1644824638.git.quic_saipraka@quicinc.com>
+ <8cf9304d9941c25d920c4835cbc624ff5c2ac2cb.1644824638.git.quic_saipraka@quicinc.com>
+ <CAK8P3a1WwghVToFBNZMpG7Wcji_k3CebK3--LL8YNJs_Wu3rBQ@mail.gmail.com>
+From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+In-Reply-To: <CAK8P3a1WwghVToFBNZMpG7Wcji_k3CebK3--LL8YNJs_Wu3rBQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/27 21:03, HORIGUCHI NAOYA(堀口 直也) wrote:
-> On Wed, Apr 27, 2022 at 03:11:31PM +0800, Miaohe Lin wrote:
->> On 2022/4/27 12:28, Naoya Horiguchi wrote:
->>> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
->>>
->>> When handling memory error on a hugetlb page, the error handler tries to
->>> dissolve and turn it into 4kB pages.  If it's successfully dissolved,
->>> PageHWPoison flag is moved to the raw error page, so but that's all
+Hi Arnd,
+
+On 4/27/2022 9:44 PM, Arnd Bergmann wrote:
+> On Thu, Feb 24, 2022 at 7:07 AM Sai Prakash Ranjan
+> <quic_saipraka@quicinc.com> wrote:
+>> From: Prasad Sodagudi <psodagud@codeaurora.org>
 >>
->> s/so but/so/
-> 
-> Fixed, thank you.
-> 
+>> Generic MMIO read/write i.e., __raw_{read,write}{b,l,w,q} accessors
+>> are typically used to read/write from/to memory mapped registers
+>> and can cause hangs or some undefined behaviour in following few
+>> cases,
 >>
->>> right.  However, dissolve sometimes fails, then the error page is left
->>> as hwpoisoned hugepage. It's useful if we can retry to dissolve it to
->>> save healthy pages, but that's not possible now because the information
->>> about where the raw error page is lost.
->>>
->>> Use the private field of a tail page to keep that information.  The code
+>> * If the access to the register space is unclocked, for example: if
+>>    there is an access to multimedia(MM) block registers without MM
+>>    clocks.
 >>
->> Only one raw error page is saved now. Should this be ok? I think so as memory
->> failure should be rare anyway?
-> 
-> This is a good point.  It might be rare, but maybe we need some consideration
-> on it. Some ideas in my mind below ...
-> 
-> - using struct page of all subpages is not compatible with hugetlb_free_vmemmap,
->   so it's not desirable.
-
-Yes, that is not compatible with hugetlb_free_vmemmap.
-
-> - defining a linked list starting from hpage[SUBPAGE_INDEX_HWPOISON].private
->   might be a solution to save the multiple offsets.
-> - hacking bits in hpage[SUBPAGE_INDEX_HWPOISON].private field to save offset
->   info in compressed format.  For example, for 2MB hugepage there could be
->   512 offset numbers, so we can save one offset with 9 bits subfield.
->   So we can save upto 7 offsets in the field.  This is not flexible and
->   still can't handle many errors.
-
-If there are many errors inside one hugetlb page, there might be other serious problems.
-
-> - maintaining global data structure to save the pfn of all hwpoison pages
->   in the system. This might sound overkilling for the current purpose,
->   but this data structure might be helpful for other purpose, so in the long
->   run someone might get interested in it.
-
-The above ideas sound good. And last one might be more helpful in the memory re-online
-case: We can restore the hwpoison info using this global data structure. :)
-
-Thanks!
-
-> 
+>> * If the register space is protected and not set to be accessible from
+>>    non-secure world, for example: only EL3 (EL: Exception level) access
+>>    is allowed and any EL2/EL1 access is forbidden.
 >>
->>> path of shrinking hugepage pool used this info to try delayed dissolve.
->>>
->>> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
->>> ---
->>>  include/linux/hugetlb.h | 24 ++++++++++++++++++++++++
->>>  mm/hugetlb.c            |  9 +++++++++
->>>  mm/memory-failure.c     |  2 ++
->>>  3 files changed, 35 insertions(+)
->>>
->>> diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
->>> index ac2a1d758a80..689e69cb556b 100644
->>> --- a/include/linux/hugetlb.h
->>> +++ b/include/linux/hugetlb.h
->>> @@ -42,6 +42,9 @@ enum {
->>>  	SUBPAGE_INDEX_CGROUP,		/* reuse page->private */
->>>  	SUBPAGE_INDEX_CGROUP_RSVD,	/* reuse page->private */
->>>  	__MAX_CGROUP_SUBPAGE_INDEX = SUBPAGE_INDEX_CGROUP_RSVD,
->>> +#endif
->>> +#ifdef CONFIG_CGROUP_HUGETLB
->>> +	SUBPAGE_INDEX_HWPOISON,
->>>  #endif
+>> * If xPU(memory/register protection units) is controlling access to
+>>    certain memory/register space for specific clients.
 >>
->> Do we rely on the CONFIG_CGROUP_HUGETLB to store the raw error page?
-> 
-> No. I meant CONFIG_MEMORY_FAILURE.
-> # I just copied and pasted the #ifdef line just above, and forget to update
-> # the CONFIG_* part :(
-> 
-> Thanks,
-> Naoya Horiguchi
-> 
+>> and more...
+>>
+>> Such cases usually results in instant reboot/SErrors/NOC or interconnect
+>> hangs and tracing these register accesses can be very helpful to debug
+>> such issues during initial development stages and also in later stages.
+>>
+>> So use ftrace trace events to log such MMIO register accesses which
+>> provides rich feature set such as early enablement of trace events,
+>> filtering capability, dumping ftrace logs on console and many more.
+>>
+>> Sample output:
+>>
+>> rwmmio_write: __qcom_geni_serial_console_write+0x160/0x1e0 width=32 val=0xa0d5d addr=0xfffffbfffdbff700
+>> rwmmio_post_write: __qcom_geni_serial_console_write+0x160/0x1e0 width=32 val=0xa0d5d addr=0xfffffbfffdbff700
+>> rwmmio_read: qcom_geni_serial_poll_bit+0x94/0x138 width=32 addr=0xfffffbfffdbff610
+>> rwmmio_post_read: qcom_geni_serial_poll_bit+0x94/0x138 width=32 val=0x0 addr=0xfffffbfffdbff610
+>>
+>> Signed-off-by: Prasad Sodagudi <psodagud@codeaurora.org>
+>> Co-developed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+>> Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+> I think this is ok in general. I saw that Steve had a minor comment, and
+> I suppose you could have just resent the same patches with a fixup in order
+> to have me pick it up into the asm-generic tree for 5.19.
 
+I had it ready the same day Steve gave the comment :) but given there was no further
+reviews on other patches, I thought of slowing down the posting of new versions.
+I will send v11 now.
+
+> There is one more thing that I saw looking through this patch again: the
+> address you print is the virtual __iomem token, but it might be more
+> valuable to have the physical address instead, which can be looked up
+> in the devicetree to know which register is affected.
+>
+> There is a small extra cost to walk the page table, and I'm not sure
+> if we actually have an interface for it (vmalloc_to_page is almost
+> what we want, but it returns an invalid page pointer). Any suggestions
+> on this?
+>
+>
+
+Right, it would be useful but currently we rely on the caller information (the function name and
+the offset) to identify who writes to the location and then post process to identify the register
+written based on it. I am also not aware of the interface for page table walk and the walk on this
+hot trace path (note that we are capturing every register read/write) would slow down the system
+further.
+
+Even in the internal versions, we get the physical address postmortem from the parser tool [1].
+
+[1] https://source.codeaurora.org/quic/la/platform/vendor/qcom-opensource/tools/tree/linux-ramdump-parser-v2/parsers/rtb.py#n72
+
+Given that we can add fields to this tracepoint without breaking ABI, we can probably add this addon
+at a later point.
+
+Thanks,
+Sai
