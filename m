@@ -2,76 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 520B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:46:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27C45C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:46:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349619AbiD1Pt2 (ORCPT
+        id S1349633AbiD1Ptl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 11:49:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48534 "EHLO
+        Thu, 28 Apr 2022 11:49:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349611AbiD1PtZ (ORCPT
+        with ESMTP id S1349620AbiD1Ptk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 11:49:25 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99EED939FF
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 08:46:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Transfer-Encoding
-        :Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=H8t3i1Ilo0TsM4g1vXvltMjUgO5KYNHNYngAHD4WDa0=; b=rfhN9PZLACHZ4LhiiVnE+Rumfm
-        fq8WiCT2P2F6C18PE0vD1csAJKP1ZOnry5Mbcscy1AmrKHq0gyrctYuoG38DUaUspoiQvoWBszq9H
-        6DP2CKgyushXlZfDCqCv05gBVyNBijQnD3gdjTYX44BXc5Zwru6Xc6tLnGcE6u9ySieym1iq3d/0+
-        mlHEiGsJ7GRrgjSaPjQXQ37qFBnv755Z/ajUBFiZr95aoYxosXE6CU8W3GRsf01MeHzRfskxAjZ3D
-        9SOJGtcL5+mwMMeCFuZrwOXjSYJLdSmBzPBKv7VKv7YGhZWU0W4p6aV2vtTr7ZLARjMjbPhiscvKg
-        xCOQYFQA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nk6LB-007iRi-Db; Thu, 28 Apr 2022 15:46:01 +0000
-Date:   Thu, 28 Apr 2022 08:46:01 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH 2/4] mm: ioremap: Add arch_ioremap/iounmap_check()
-Message-ID: <Ymq2uX/Y15HlIpo7@infradead.org>
-References: <20220427121413.168468-1-wangkefeng.wang@huawei.com>
- <20220427121413.168468-3-wangkefeng.wang@huawei.com>
- <20220427100411.8eaf54c51767c3e2b0b070a5@linux-foundation.org>
- <8d5c41a6-0478-bd5c-a37b-06a37101fc31@huawei.com>
+        Thu, 28 Apr 2022 11:49:40 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF8C15A20
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 08:46:24 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id r1so5565259oie.4
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 08:46:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=72XL9ljJSCpyh1igSvHXXmfQ5X9YflA33+3u5daUI/Q=;
+        b=JkKdzH8ICBBnlV+qYWl8+s1yiWj+Sp1dn1ttrs9LsHxukOuc9DYojUjBHUB+7Emp+/
+         qnLwofWO/Afewv1Up5imHJxgSUuKQs03JD4f3os1S88QdSlGuAEBi2MNfRlRd41cT0dB
+         EY8x3xtSmZXYGE4R2FgC6lZB+I/VlOjR05czDNC6zsDQWfJ3VXFXEjWHEcDr4wcZAN2g
+         UtSDjrRcU4sQiv5m2qQT7+/Vh99fT+FNLVeWVgHL13jaOdcs5hCW9f+cPnQkitW8g+5W
+         +cxeGg5+nafAYEKN2h/zG39bmIF1pisSb1mRdxLAVBzhv/LFEMQR5LnBhUgnITIGMii/
+         jbVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=72XL9ljJSCpyh1igSvHXXmfQ5X9YflA33+3u5daUI/Q=;
+        b=cWihtA+yTeXgmlC4d9XAnRxYsltZwgJc4gFCmTUMNZ3Q0II2dMONCJyXqTSbbAT9PA
+         y+qPWX76HQWRdB6nzWfFFw9jPT7X3IAGdyFof7Zzv1wFrqUq2W6ExByCpYxygIy0QIuD
+         jw6Cgb/FZx5KWm9NX/FZOocLwwyog9MzwFIWsfX/oo+HyPBmKdlKrDh0G5nspqvqyY6D
+         f3YJj3+FRFCo0jvN+od2B1zJ9W6eLMk2FCpToLOgg4wPSb+MAaV0yFRoEig2L2/JA+vT
+         DUHFwih+AQpG3Nuotbe5PmriPXTKN3S0ZvxTOv0Qx93XJzSfGjulhgCDbxNXa9hj1kWl
+         znAg==
+X-Gm-Message-State: AOAM533FtxLq8IJmyq/DNZ4lE3RqE+CKFac7iNHUsQlHY1lwkTusUyNo
+        9KZDYQD6NBCEQYnHlHLKAL1fIJp0Fi9h+JYZ
+X-Google-Smtp-Source: ABdhPJzPU4DOMgYNbXIxKVtSpLb8juWKCap4L4LCdbY0DlEyzGnlKd+RKNZOlV4GT7Oa3YDWgx8nEQ==
+X-Received: by 2002:a05:6808:1b14:b0:322:f715:a9d5 with SMTP id bx20-20020a0568081b1400b00322f715a9d5mr18929182oib.275.1651160783518;
+        Thu, 28 Apr 2022 08:46:23 -0700 (PDT)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id u3-20020a056870d58300b000e686d1389csm2146978oao.54.2022.04.28.08.46.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 08:46:22 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 08:48:17 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Andrew Halaney <ahalaney@redhat.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] soc: qcom: rpmhpd: add sc8280xp & sa8540p rpmh
+ power-domains
+Message-ID: <Ymq3QfFnSplnEBRK@ripper>
+References: <20220426233508.1762345-1-bjorn.andersson@linaro.org>
+ <20220426233508.1762345-4-bjorn.andersson@linaro.org>
+ <20220427123835.hmfdu66ut3uvvtjp@halaneylaptop>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8d5c41a6-0478-bd5c-a37b-06a37101fc31@huawei.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20220427123835.hmfdu66ut3uvvtjp@halaneylaptop>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 02:16:39PM +0800, Kefeng Wang wrote:
-> > Pet peeve.  The word "check" is a poor one.  I gives no sense of what
-> > the function is checking and it gives no sense of how the function's
-> > return value relates to the thing which it checks.
+On Wed 27 Apr 05:38 PDT 2022, Andrew Halaney wrote:
+
+> On Tue, Apr 26, 2022 at 04:35:08PM -0700, Bjorn Andersson wrote:
+> > The Qualcomm sc8280xp platform has 13 and the sa8540p platform has 11
+> > power-domains. Add compatibles, the typically used ones power-domains
+> > and their relevant active-only variants, to the RPMh power-domain
+> > driver.
 > > 
-> > Maybe it returns 0 on success and -EINVAL on failure.  Don't know!
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > ---
 > > 
-> > Don't you think that better names would be io_remap_ok(),
-> > io_remap_valid(), io_remap_allowed(), etc?
+> > Changes since v1:
+> > - Added QPHY
+> > - Split out sa8540
+> > - Sorted the entries alphabetically
+> > 
+> >  drivers/soc/qcom/rpmhpd.c | 53 +++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 53 insertions(+)
+> > 
+> > diff --git a/drivers/soc/qcom/rpmhpd.c b/drivers/soc/qcom/rpmhpd.c
+> > index f8d28e902942..05fff8691ee3 100644
+> > --- a/drivers/soc/qcom/rpmhpd.c
+> > +++ b/drivers/soc/qcom/rpmhpd.c
+> > @@ -180,6 +180,36 @@ static struct rpmhpd mxc_ao = {
+> >  	.res_name = "mxc.lvl",
+> >  };
+> >  
+> > +static struct rpmhpd nsp = {
+> > +	.pd = { .name = "nsp", },
+> > +	.res_name = "nsp.lvl",
+> > +};
+> > +
+> > +static struct rpmhpd qphy = {
+> > +	.pd = { .name = "qphy", },
+> > +	.res_name = "qphy.lvl",
+> > +};
+> > +
+> > +/* SA8540P RPMH powerdomains */
+> > +static struct rpmhpd *sa8540p_rpmhpds[] = {
+> > +	[SC8280XP_CX] = &cx,
+> > +	[SC8280XP_CX_AO] = &cx_ao,
+> > +	[SC8280XP_EBI] = &ebi,
+> > +	[SC8280XP_GFX] = &gfx,
+> > +	[SC8280XP_LCX] = &lcx,
+> > +	[SC8280XP_LMX] = &lmx,
+> > +	[SC8280XP_MMCX] = &mmcx,
+> > +	[SC8280XP_MMCX_AO] = &mmcx_ao,
+> > +	[SC8280XP_MX] = &mx,
+> > +	[SC8280XP_MX_AO] = &mx_ao,
+> > +	[SC8280XP_NSP] = &nsp,
+> > +};
+> > +
+> > +static const struct rpmhpd_desc sa8540p_desc = {
+> > +	.rpmhpds = sa8540p_rpmhpds,
+> > +	.num_pds = ARRAY_SIZE(sa8540p_rpmhpds),
+> > +};
+> > +
+> >  /* SDM845 RPMH powerdomains */
+> >  static struct rpmhpd *sdm845_rpmhpds[] = {
+> >  	[SDM845_CX] = &cx_w_mx_parent,
+> > @@ -378,10 +408,33 @@ static const struct rpmhpd_desc sc8180x_desc = {
+> >  	.num_pds = ARRAY_SIZE(sc8180x_rpmhpds),
+> >  };
+> >  
+> > +/* SC8280xp RPMH powerdomains */
+> > +static struct rpmhpd *sc8280xp_rpmhpds[] = {
+> > +	[SC8280XP_CX] = &cx,
+> > +	[SC8280XP_CX_AO] = &cx_ao,
+> > +	[SC8280XP_EBI] = &ebi,
+> > +	[SC8280XP_GFX] = &gfx,
+> > +	[SC8280XP_LCX] = &lcx,
+> > +	[SC8280XP_LMX] = &lmx,
+> > +	[SC8280XP_MMCX] = &mmcx,
+> > +	[SC8280XP_MMCX_AO] = &mmcx_ao,
+> > +	[SC8280XP_MX] = &mx,
+> > +	[SC8280XP_MX_AO] = &mx_ao,
+> > +	[SC8280XP_NSP] = &nsp,
+> > +	[SC8280XP_QPHY] = &qphy,
+> > +};
 > 
-> Will use arch_ioremap/unmap_allowed(), and I'd like to keep return bool
+> The commit messages mention sc8280xp having 13 power domains, but here I
+> only count 12. Good chance I'm just missing something obvious (not
+> familiar with using power domains or rpmh) but I thought I should
+> highlight it in case that was an error.
 > 
-> for now if there is no special requirements.
 
-Actually, there are a few architectures that can successfully ioreamp
-without setting up new ptes, e.g. mips.
+The "typically used ones" in the commit message "captures" that. Further
+more _AO is just a variant of the non-_AO resources, referring to votes
+that should only apply when the CPU subsystem is not power collapsed.
 
-So I think I'd name them just arch_ioremap and arch_iounmap, and
-return a "void __іomem *" from arch_ioremap, where:
+So what you have in this list is 10 power domains.
 
- - IS_ERR means return an error
- - NULL means continue to remap
- - a non-NULL, non-IS_ERR pointer is directly returned.
+I added defines for all 13 in the DT binding, so comparing with that
+you'll see that the missing ones are DDR, MSS and XO. I don't see how we
+would use these from Linux today. So let's postpone adding them until we
+have a use case.
+
+> I attempted to find where this sort of thing is defined downstream, but
+> failed :(
+> 
+
+In direwolf-regulators.dtsi you'll find entries with qcom,resource-name
+of "*.lvl". These resource names are matches against the Command DB
+registry, which you can dump using the cmd-db file in debugfs.
+
+Regards,
+Bjorn
+
+> Thanks,
+> Andrew
+> 
+> > +
+> > +static const struct rpmhpd_desc sc8280xp_desc = {
+> > +	.rpmhpds = sc8280xp_rpmhpds,
+> > +	.num_pds = ARRAY_SIZE(sc8280xp_rpmhpds),
+> > +};
+> > +
+> >  static const struct of_device_id rpmhpd_match_table[] = {
+> > +	{ .compatible = "qcom,sa8540p-rpmhpd", .data = &sa8540p_desc },
+> >  	{ .compatible = "qcom,sc7180-rpmhpd", .data = &sc7180_desc },
+> >  	{ .compatible = "qcom,sc7280-rpmhpd", .data = &sc7280_desc },
+> >  	{ .compatible = "qcom,sc8180x-rpmhpd", .data = &sc8180x_desc },
+> > +	{ .compatible = "qcom,sc8280xp-rpmhpd", .data = &sc8280xp_desc },
+> >  	{ .compatible = "qcom,sdm845-rpmhpd", .data = &sdm845_desc },
+> >  	{ .compatible = "qcom,sdx55-rpmhpd", .data = &sdx55_desc},
+> >  	{ .compatible = "qcom,sdx65-rpmhpd", .data = &sdx65_desc},
+> > -- 
+> > 2.35.1
+> > 
+> 
