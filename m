@@ -2,274 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 473DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:12:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346857AbiD1NOu (ORCPT
+        id S1346864AbiD1NPY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:14:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47958 "EHLO
+        Thu, 28 Apr 2022 09:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232830AbiD1NOp (ORCPT
+        with ESMTP id S238516AbiD1NPW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:14:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 677681CFEF
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:11:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E304D62057
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 13:11:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 554E3C385AA;
-        Thu, 28 Apr 2022 13:11:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651151489;
-        bh=3cUbLRj0AS6ThTYaeUINo9N9tQusNC2k+C55ygza17A=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dLPGFXXC3Yg3hkBK39uWfjKON3Qop7xypGm1ULKIbLDZ9A1Chiv/w4uk0ZSAu70mD
-         gQa/AV08INc3p/iKF0mmw85FqX+hXUHiT/pRszFetIVfz5ROyNJb4VnpJIVWZec7oF
-         rOpaPSRLNfGlq4R7Inbo1MzcfTxMjA10OmLNucSTccs+FVERcoDBssqiuDP8JmKhpg
-         y9A+eSBDVeKZjzyEBM9Schpdx6ltyhMf+qGf0hSZh8bKHInw9oUgJtXwtTKCgtqPwn
-         8LdgFA4T2t6dF8tESudf7XadBNKjbRdv7bz/DRzGxxlpzQIGrzkMhotzZ3Jx2tDBJ0
-         Hp9FzZBDHTynw==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Cc:     Guenter Roeck <linux@roeck-us.net>, Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ARM: pxa/sa1100: move I/O space to PCI_IOBASE
-Date:   Thu, 28 Apr 2022 15:10:34 +0200
-Message-Id: <20220428131115.986812-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        Thu, 28 Apr 2022 09:15:22 -0400
+X-Greylist: delayed 419 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Apr 2022 06:11:51 PDT
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A25F1D306;
+        Thu, 28 Apr 2022 06:11:50 -0700 (PDT)
+Received: (Authenticated sender: jacopo@jmondi.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 6F4B01C0007;
+        Thu, 28 Apr 2022 13:11:48 +0000 (UTC)
+Date:   Thu, 28 Apr 2022 15:11:46 +0200
+From:   Jacopo Mondi <jacopo@jmondi.org>
+To:     Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@puri.sm
+Subject: Re: [PATCHv2 2/2] media api: Try to make enum usage clearer
+Message-ID: <20220428131146.ofdn7tr5mkxya3ck@uno.localdomain>
+References: <20220428083715.75997-1-dorota.czaplejewicz@puri.sm>
+ <20220428105219.4b068b1f.dorota.czaplejewicz@puri.sm>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="mydpssort7jg2wxh"
+Content-Disposition: inline
+In-Reply-To: <20220428105219.4b068b1f.dorota.czaplejewicz@puri.sm>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
 
-PXA and StrongARM1100 traditionally map their I/O space 1:1 into virtual
-memory, using a per-bus io_offset that matches the base address of the
-ioremap mapping.
+--mydpssort7jg2wxh
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-In order for PXA to work in a multiplatform config, this needs to
-change so I/O space starts at PCI_IOBASE (0xfee00000). Since the pcmcia
-soc_common support is shared with StrongARM1100, both have to change at
-the same time. The affected machines are:
+Hi Dorota
 
- - Anything with a PCMCIA slot now uses pci_remap_iospace, which
-   is made available to PCMCIA configurations as well, rather than
-   just PCI
+On Thu, Apr 28, 2022 at 10:52:19AM +0200, Dorota Czaplejewicz wrote:
+> Fixed: typo "format" -> "frame size" in enum-frame-size
+> Added: no holes in the enumeration
+> Added: enumerations per what?
+> Added: who fills in what in calls
+> Changed: "zero" -> "0"
+> Changed: "given" -> "specified"
 
- - The Zeus and Viper platforms have PC/104-style ISA buses,
-   which have a static mapping for both I/O and memory space at
-   0xf1000000, which can no longer work. It does not appear to have
-   any in-tree users, so moving it to port number 0x2000 is unlikely to
-   break something.
+Empty line here
 
- - SA1100 does support ISA slots in theory, but all machines that
-   originally enabled this appear to have been removed from the tree
-   ages ago, and the I/O space is never mapped anywhere.
+> Signed-off-by: Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
+> ---
+>  .../v4l/vidioc-subdev-enum-frame-size.rst     | 44 ++++++++++++-------
+>  1 file changed, 28 insertions(+), 16 deletions(-)
+>
+> diff --git a/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-frame-size.rst b/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-frame-size.rst
+> index c25a9896df0e..2c6fd291dc44 100644
+> --- a/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-frame-size.rst
+> +++ b/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-frame-size.rst
+> @@ -31,18 +31,29 @@ Arguments
+>  Description
+>  ===========
+>
+> -This ioctl allows applications to enumerate all frame sizes supported by
+> -a sub-device on the given pad for the given media bus format. Supported
+> -formats can be retrieved with the
+> +This ioctl allows applications to access the enumeration of frame sizes supported by
 
- - The Nanoengine machine has support for PCI slots, but looks
-   like this never included I/O space, the resources only define the
-   location for memory and config space.
+over 80 cols
 
-With this, the definitions of __io() and IO_SPACE_LIMIT can be simplified,
-as the only remaining cases are the generic PCI_IOBASE and the custom
-inb()/outb() macros on RiscPC.  S3C24xx still has a custom inb()/outb()
-in this here, but this is already removed in another branch.
+> +a sub-device on the specified pad for the specified media bus format.
+> +Supported formats can be retrieved with the
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/arm/include/asm/io.h   | 25 +++----------------------
- arch/arm/mach-pxa/viper.c   | 12 ++++++++++++
- arch/arm/mach-pxa/zeus.c    | 12 ++++++++++++
- arch/arm/mm/ioremap.c       |  2 +-
- drivers/pcmcia/soc_common.c | 16 ++++++++--------
- include/pcmcia/soc_common.h |  2 +-
- 6 files changed, 37 insertions(+), 32 deletions(-)
+This seems quite an arbitrary change. What's wrong with the existing
+phrase ?
 
-diff --git a/arch/arm/include/asm/io.h b/arch/arm/include/asm/io.h
-index 0c70eb688a00..3bdc54702baa 100644
---- a/arch/arm/include/asm/io.h
-+++ b/arch/arm/include/asm/io.h
-@@ -200,32 +200,13 @@ void __iomem *pci_remap_cfgspace(resource_size_t res_cookie, size_t size);
-  */
- #ifdef CONFIG_NEED_MACH_IO_H
- #include <mach/io.h>
--#elif defined(CONFIG_PCI)
--#define IO_SPACE_LIMIT	((resource_size_t)0xfffff)
--#define __io(a)		__typesafe_io(PCI_IO_VIRT_BASE + ((a) & IO_SPACE_LIMIT))
- #else
--#define __io(a)		__typesafe_io((a) & IO_SPACE_LIMIT)
--#endif
--
--/*
-- * This is the limit of PC card/PCI/ISA IO space, which is by default
-- * 64K if we have PC card, PCI or ISA support.  Otherwise, default to
-- * zero to prevent ISA/PCI drivers claiming IO space (and potentially
-- * oopsing.)
-- *
-- * Only set this larger if you really need inb() et.al. to operate over
-- * a larger address space.  Note that SOC_COMMON ioremaps each sockets
-- * IO space area, and so inb() et.al. must be defined to operate as per
-- * readb() et.al. on such platforms.
-- */
--#ifndef IO_SPACE_LIMIT
--#if defined(CONFIG_PCMCIA_SOC_COMMON) || defined(CONFIG_PCMCIA_SOC_COMMON_MODULE)
--#define IO_SPACE_LIMIT ((resource_size_t)0xffffffff)
--#elif defined(CONFIG_PCI) || defined(CONFIG_ISA) || defined(CONFIG_PCCARD)
--#define IO_SPACE_LIMIT ((resource_size_t)0xffff)
-+#if defined(CONFIG_PCMCIA) || defined(CONFIG_PCI)
-+#define IO_SPACE_LIMIT	((resource_size_t)0xfffff)
- #else
- #define IO_SPACE_LIMIT ((resource_size_t)0)
- #endif
-+#define __io(a)		__typesafe_io(PCI_IO_VIRT_BASE + ((a) & IO_SPACE_LIMIT))
- #endif
- 
- /*
-diff --git a/arch/arm/mach-pxa/viper.c b/arch/arm/mach-pxa/viper.c
-index 0782f0ed5a6e..71e4d7ea77b8 100644
---- a/arch/arm/mach-pxa/viper.c
-+++ b/arch/arm/mach-pxa/viper.c
-@@ -998,6 +998,18 @@ static struct map_desc viper_io_desc[] __initdata = {
- 		.length  = 0x00800000,
- 		.type    = MT_DEVICE,
- 	},
-+	{
-+		/*
-+		 * ISA I/O space mapping:
-+		 * -  ports 0x0000-0x0fff are PCMCIA slot 0
-+		 * -  ports 0x1000-0x1fff are PCMCIA slot 1
-+		 * -  ports 0x2000-0x2fff are PC/104
-+		 */
-+		.virtual = PCI_IOBASE + 0x2000,
-+		.pfn     = __phys_to_pfn(0x30000000),
-+		.length  = 0x1000,
-+		.type    = MT_DEVICE,
-+	},
- };
- 
- static void __init viper_map_io(void)
-diff --git a/arch/arm/mach-pxa/zeus.c b/arch/arm/mach-pxa/zeus.c
-index 1fdef9426784..5ddb4223d1dc 100644
---- a/arch/arm/mach-pxa/zeus.c
-+++ b/arch/arm/mach-pxa/zeus.c
-@@ -929,6 +929,18 @@ static struct map_desc zeus_io_desc[] __initdata = {
- 		.length  = 0x00800000,
- 		.type    = MT_DEVICE,
- 	},
-+	{
-+		/*
-+		 * ISA I/O space mapping:
-+		 * -  ports 0x0000-0x0fff are PCMCIA slot 0
-+		 * -  ports 0x1000-0x1fff are PCMCIA slot 1
-+		 * -  ports 0x2000-0x2fff are PC/104
-+		 */
-+		.virtual = PCI_IOBASE + 0x2000,
-+		.pfn     = __phys_to_pfn(ZEUS_PC104IO_PHYS),
-+		.length  = 0x1000,
-+		.type    = MT_DEVICE,
-+	},
- };
- 
- static void __init zeus_map_io(void)
-diff --git a/arch/arm/mm/ioremap.c b/arch/arm/mm/ioremap.c
-index aa08bcb72db9..e6f5354ed1d7 100644
---- a/arch/arm/mm/ioremap.c
-+++ b/arch/arm/mm/ioremap.c
-@@ -455,7 +455,7 @@ void iounmap(volatile void __iomem *cookie)
- }
- EXPORT_SYMBOL(iounmap);
- 
--#ifdef CONFIG_PCI
-+#if defined(CONFIG_PCI) || defined(CONFIG_PCMCIA)
- static int pci_ioremap_mem_type = MT_DEVICE;
- 
- void pci_ioremap_set_mem_type(int mem_type)
-diff --git a/drivers/pcmcia/soc_common.c b/drivers/pcmcia/soc_common.c
-index 9276a628473d..fdeaefffd34a 100644
---- a/drivers/pcmcia/soc_common.c
-+++ b/drivers/pcmcia/soc_common.c
-@@ -46,6 +46,7 @@
- #include <linux/regulator/consumer.h>
- #include <linux/spinlock.h>
- #include <linux/timer.h>
-+#include <linux/pci.h>
- 
- #include "soc_common.h"
- 
-@@ -782,8 +783,7 @@ void soc_pcmcia_remove_one(struct soc_pcmcia_socket *skt)
- 	/* should not be required; violates some lowlevel drivers */
- 	soc_common_pcmcia_config_skt(skt, &dead_socket);
- 
--	iounmap(skt->virt_io);
--	skt->virt_io = NULL;
-+	pci_unmap_iospace(&skt->res_io_io);
- 	release_resource(&skt->res_attr);
- 	release_resource(&skt->res_mem);
- 	release_resource(&skt->res_io);
-@@ -816,11 +816,11 @@ int soc_pcmcia_add_one(struct soc_pcmcia_socket *skt)
- 	if (ret)
- 		goto out_err_4;
- 
--	skt->virt_io = ioremap(skt->res_io.start, 0x10000);
--	if (skt->virt_io == NULL) {
--		ret = -ENOMEM;
-+	skt->res_io_io = (struct resource)
-+		 DEFINE_RES_IO_NAMED(skt->nr * 0x1000, 0x1000, "PCMCIA I/O");
-+	ret = pci_remap_iospace(&skt->res_io_io, skt->res_io.start);
-+	if (ret)
- 		goto out_err_5;
--	}
- 
- 	/*
- 	 * We initialize default socket timing here, because
-@@ -838,7 +838,7 @@ int soc_pcmcia_add_one(struct soc_pcmcia_socket *skt)
- 	skt->socket.resource_ops = &pccard_static_ops;
- 	skt->socket.irq_mask = 0;
- 	skt->socket.map_size = PAGE_SIZE;
--	skt->socket.io_offset = (unsigned long)skt->virt_io;
-+	skt->socket.io_offset = (unsigned long)skt->res_io_io.start;
- 
- 	skt->status = soc_common_pcmcia_skt_state(skt);
- 
-@@ -872,7 +872,7 @@ int soc_pcmcia_add_one(struct soc_pcmcia_socket *skt)
-  out_err_7:
- 	soc_pcmcia_hw_shutdown(skt);
-  out_err_6:
--	iounmap(skt->virt_io);
-+	pci_unmap_iospace(&skt->res_io_io);
-  out_err_5:
- 	release_resource(&skt->res_attr);
-  out_err_4:
-diff --git a/include/pcmcia/soc_common.h b/include/pcmcia/soc_common.h
-index 26f1473a06c5..d4f18f4679df 100644
---- a/include/pcmcia/soc_common.h
-+++ b/include/pcmcia/soc_common.h
-@@ -46,9 +46,9 @@ struct soc_pcmcia_socket {
- 
- 	struct resource		res_skt;
- 	struct resource		res_io;
-+	struct resource		res_io_io;
- 	struct resource		res_mem;
- 	struct resource		res_attr;
--	void __iomem		*virt_io;
- 
- 	struct {
- 		int		gpio;
--- 
-2.29.2
+>  :ref:`VIDIOC_SUBDEV_ENUM_MBUS_CODE`
+>  ioctl.
+>
+> -To enumerate frame sizes applications initialize the ``pad``, ``which``
+> -, ``code`` and ``index`` fields of the struct
+> -:c:type:`v4l2_subdev_mbus_code_enum` and
+> -call the :ref:`VIDIOC_SUBDEV_ENUM_FRAME_SIZE` ioctl with a pointer to the
+> -structure. Drivers fill the minimum and maximum frame sizes or return an
+> -EINVAL error code if one of the input parameters is invalid.
+> +The enumerations are defined by the driver, and indexed using the ``index`` field
+> +of the struct :c:type:`v4l2_subdev_mbus_code_enum`.
+> +Each pair of ``pad`` and ``code`` correspond to a separate enumeration.
+> +Each enumeeration starts with the ``index`` of 0, and
 
+s/enumeeration/enumeration/
+
+> +the lowest invalid index marks the end of the enumeration.
+> +
+> +Therefore, to enumerate frame sizes allowed on the specified pad
+> +and using the specified mbus format, initialize the
+> +``pad``, ``which``, and ``code`` fields to desired values,
+> +and set ``index`` to 0.
+> +Then call the :ref:`VIDIOC_SUBDEV_ENUM_FRAME_SIZE` ioctl with a pointer to the
+> +structure.
+> +
+> +A successful call will return with minimum and maximum frame sizes filled in.
+> +Repeat with increasing ``index`` until ``EINVAL`` is received.
+> +``EINVAL`` means that either no more entries are available in the enumeration,
+> +or that an input parameter was invalid.
+>
+>  Sub-devices that only support discrete frame sizes (such as most
+>  sensors) will return one or more frame sizes with identical minimum and
+> @@ -72,26 +83,27 @@ information about try formats.
+>
+>      * - __u32
+>        - ``index``
+> -      - Number of the format in the enumeration, set by the application.
+> +      - Index of the frame size in the enumeration
+
+Rougue line break
+
+> +    belonging to the given pad and format. Filled in by the application.
+>      * - __u32
+>        - ``pad``
+> -      - Pad number as reported by the media controller API.
+> +      - Pad number as reported by the media controller API. Filled in by the application.
+
+over 80 cols
+
+>      * - __u32
+>        - ``code``
+>        - The media bus format code, as defined in
+> -	:ref:`v4l2-mbus-format`.
+> +	:ref:`v4l2-mbus-format`. Filled in by the application.
+>      * - __u32
+>        - ``min_width``
+> -      - Minimum frame width, in pixels.
+> +      - Minimum frame width, in pixels. Filled in by the driver.
+>      * - __u32
+>        - ``max_width``
+> -      - Maximum frame width, in pixels.
+> +      - Maximum frame width, in pixels. Filled in by the driver.
+>      * - __u32
+>        - ``min_height``
+> -      - Minimum frame height, in pixels.
+> +      - Minimum frame height, in pixels. Filled in by the driver.
+>      * - __u32
+>        - ``max_height``
+> -      - Maximum frame height, in pixels.
+> +      - Maximum frame height, in pixels. Filled in by the driver.
+>      * - __u32
+>        - ``which``
+>        - Frame sizes to be enumerated, from enum
+
+Even more than 1/2, I am a bit failing to see what is missing in the
+existing doc. If it feels better to others who will have a look, I for sure
+won't oppose this change though :)
+
+> --
+> 2.35.1
+>
+
+
+
+--mydpssort7jg2wxh
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEtcQ9SICaIIqPWDjAcjQGjxahVjwFAmJqkpIACgkQcjQGjxah
+VjwkRQ//XOof8zmTn52P5jTy7sxMrWz8z9pDTDsFi4ZouonRODL6WRssg7gMtXXq
+QO/haVRwKwgG/PRgwXFgJAZ7GAsWDpu3gcoLgzenX2DiAbYu8XPz8/Nr1rCmUOoZ
+roP7VK2COn+Y0KgdzArHI/W2Rpzw1cDqbbZVzQvJvqyP/WELYD7ddCJegLwKTqFD
+7KMlWAcg8FkX60yKEhoNf8je5tfC9fNQ0QJcAT7piazfXcfCvF/1EhjRSLiP046r
+mQgSbETN6L9GQ1NsAaR3Vn6b0j7/WAussYUBpQGNm05egS7SaI1ETP78sFWmncF9
+U0No76QwBm+ZPgvWEFMbHQpvQPwlioSUA9gBYqPP6tBBBsb/l6AQLWXJ4wuXC/G/
+87LBPdsjyyIHV5yCOjohMMQA4wdBIrhtsutUGIdS8iUiTi8X41AXACivM10qifuV
+jT/i9JoAWo9gkMpfw7SfQze7pJUwRhe0FBmm7WeXES/i3EwHinCUHLFs4quZYnVa
+YGxVuO63V6n/AT1QYdMFYKA2aBhJC7gwPZ/DQoVL2BaexVJVH7PMXQtAl/0YX6xC
+qEmvm/DT3Y9qJaginKAeuLeCFmtkO6ynHNkYsnVqcz+5MAHd8YavcTbTdnJNki9W
+PH6lbEkbaChsnbtDP09X4xBrW+HKWVCiCzZPAvLl6/88PtK3T4w=
+=DgoL
+-----END PGP SIGNATURE-----
+
+--mydpssort7jg2wxh--
