@@ -2,103 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E46DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:02:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB3BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:02:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231293AbiD1KFi convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58924 "EHLO
+        id S233263AbiD1KF5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231986AbiD1KFJ (ORCPT
+        with ESMTP id S231137AbiD1KF2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:05:09 -0400
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6B66A404;
-        Thu, 28 Apr 2022 02:50:35 -0700 (PDT)
-Received: by mail-qt1-f173.google.com with SMTP id bz24so3029477qtb.2;
-        Thu, 28 Apr 2022 02:50:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LWvtmkIwZsmHohGNhyLUaGl2hkjSPDsamW5Yc84+fGI=;
-        b=PBu0sbZ8agiajAR3ioM2Tv34f1Zrp665lbWusaIBDpVaBVvMI81KpavBnvpSjlbYCe
-         5LiLIHkq86mhvEUag/RXnbWPQD4/mlh6DH0r9UH+JiCWOt8zLoLtrX9JaY1R4LdR8T0N
-         i2q7LO/40dWeiKWCNm4i0nPsIgoKCEB8QQStmp7awIRlPdp580cOMH/68EhkOv/30DjE
-         L/bJssrUa//o5fHSaomOFDTbPjgaXfsnK4FZdAWqa3UPrnrAIH9kYpU+a8nk1ZckFxBA
-         0pzdUA8K57u7zHjr35/dKJ26TRTyh9NviDtUA7EhoFHRI8VbUYfAmbKVjgQxxcnCEZf4
-         XSJQ==
-X-Gm-Message-State: AOAM533LZHjILTrjqMbqvo+Z7WZRZ1GoOH8XfNb8rXPI9nz9v51kTH32
-        +hZk8dKqKIwzu44jntUTvp+p9GE/ljs+jA==
-X-Google-Smtp-Source: ABdhPJyzeNlwp5FyLinjqqA9yyceyyAAwfUmIYs8Z6GjGAzNVqSvcsB0T3qjvGStABjBQmUJ65F1rQ==
-X-Received: by 2002:a05:622a:548:b0:2f3:61ee:781d with SMTP id m8-20020a05622a054800b002f361ee781dmr17134621qtx.373.1651139433887;
-        Thu, 28 Apr 2022 02:50:33 -0700 (PDT)
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
-        by smtp.gmail.com with ESMTPSA id z8-20020ac87f88000000b002e1cecad0e4sm11543380qtj.33.2022.04.28.02.50.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 02:50:33 -0700 (PDT)
-Received: by mail-yb1-f172.google.com with SMTP id y76so8050359ybe.1;
-        Thu, 28 Apr 2022 02:50:33 -0700 (PDT)
-X-Received: by 2002:a25:8087:0:b0:641:dd06:577d with SMTP id
- n7-20020a258087000000b00641dd06577dmr29581386ybk.207.1651139432762; Thu, 28
- Apr 2022 02:50:32 -0700 (PDT)
+        Thu, 28 Apr 2022 06:05:28 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31EE06A072;
+        Thu, 28 Apr 2022 02:50:48 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 09:50:45 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651139446;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=amI3erXdt1Xv23VT11iPF4AsfDkiPeSSWj4s2lUQsjo=;
+        b=p3N41ujw5RH74qFPNSz9lXYvgJN4H8y4wsu+G5zPr0PvBBKkKGmquu7UgajGiH0Ne5TupU
+        rMMIndCCuwjZnUN50EGr7gGzZspJ48HcHwk2ODwP24P+AcCvTzgrpxYb+8C4sNVebQlRxg
+        wZCMFf5e/drAtZbyr5OxR7QZ/d6RsrAm8F7G3tz0k7nbDw1q2P+2pYHmS9zNoyfIlc3N5l
+        KBAvtkhXC1ygK80mx+DJeVlP1t20zq7TY8qZJuITVjg9JAchXdWEGZ2o91fpMgLwD8m8l8
+        n7tMxE4Yd4lL6SD5MbmjXAW+UJk9rnHZECQX2xgdOGN42BzseX0FNTw83UN13A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651139446;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=amI3erXdt1Xv23VT11iPF4AsfDkiPeSSWj4s2lUQsjo=;
+        b=evAc7t+BNdoZVnfhbgvPKQlXitk+Zkws83gsYFbK6DUNowTdBmCYwDOViplOLWAz7STxCk
+        /cvKM2HXn7G7BRAg==
+From:   "tip-bot2 for Josh Poimboeuf" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/cpu] x86/speculation: Add missing prototype for
+ unpriv_ebpf_notify()
+Cc:     kernel test robot <lkp@intel.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@suse.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <5689d065f739602ececaee1e05e68b8644009608.1650930000.git.jpoimboe@redhat.com>
+References: <5689d065f739602ececaee1e05e68b8644009608.1650930000.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-References: <20220422120850.769480-1-herve.codina@bootlin.com>
- <20220422120850.769480-7-herve.codina@bootlin.com> <CAMuHMdWfbbQ64CipqoVPEOGhE08HYckhyOaeSi+V7ar+F45PMw@mail.gmail.com>
-In-Reply-To: <CAMuHMdWfbbQ64CipqoVPEOGhE08HYckhyOaeSi+V7ar+F45PMw@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 28 Apr 2022 11:50:21 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdX_CwsmzOHBi0TVBR7KOSqW0tY5=94betF_B40gkHoYxQ@mail.gmail.com>
-Message-ID: <CAMuHMdX_CwsmzOHBi0TVBR7KOSqW0tY5=94betF_B40gkHoYxQ@mail.gmail.com>
-Subject: Re: [PATCH v3 6/8] ARM: dts: r9a06g032: Add internal PCI bridge node
-To:     Herve Codina <herve.codina@bootlin.com>
-Cc:     Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Rob Herring <robh@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Message-ID: <165113944536.4207.8430547828762066325.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hervé,
+The following commit has been merged into the x86/cpu branch of tip:
 
-On Thu, Apr 28, 2022 at 11:49 AM Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
-> > --- a/arch/arm/boot/dts/r9a06g032.dtsi
-> > +++ b/arch/arm/boot/dts/r9a06g032.dtsi
-> > @@ -212,6 +212,35 @@ gic: interrupt-controller@44101000 {
-> >                         interrupts =
-> >                                 <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>;
-> >                 };
-> > +
-> > +               pci_usb: pci@40030000 {
+Commit-ID:     2147c438fde135d6c145a96e373d9348e7076f7f
+Gitweb:        https://git.kernel.org/tip/2147c438fde135d6c145a96e373d9348e70=
+76f7f
+Author:        Josh Poimboeuf <jpoimboe@redhat.com>
+AuthorDate:    Mon, 25 Apr 2022 16:40:02 -07:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Thu, 28 Apr 2022 11:12:17 +02:00
 
-Please preserve sort order (by unit address).
+x86/speculation: Add missing prototype for unpriv_ebpf_notify()
 
-Gr{oetje,eeting}s,
+Fix the following warnings seen with "make W=3D1":
 
-                        Geert
+  kernel/sysctl.c:183:13: warning: no previous prototype for =E2=80=98unpriv_=
+ebpf_notify=E2=80=99 [-Wmissing-prototypes]
+    183 | void __weak unpriv_ebpf_notify(int new_state)
+        |             ^~~~~~~~~~~~~~~~~~
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+  arch/x86/kernel/cpu/bugs.c:659:6: warning: no previous prototype for =E2=80=
+=98unpriv_ebpf_notify=E2=80=99 [-Wmissing-prototypes]
+    659 | void unpriv_ebpf_notify(int new_state)
+        |      ^~~~~~~~~~~~~~~~~~
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Fixes: 44a3918c8245 ("x86/speculation: Include unprivileged eBPF status in Sp=
+ectre v2 mitigation reporting")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/5689d065f739602ececaee1e05e68b8644009608.1650=
+930000.git.jpoimboe@redhat.com
+---
+ include/linux/bpf.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index bdb5298..ecc3d3e 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -2085,6 +2085,8 @@ void bpf_offload_dev_netdev_unregister(struct bpf_offlo=
+ad_dev *offdev,
+ 				       struct net_device *netdev);
+ bool bpf_offload_dev_match(struct bpf_prog *prog, struct net_device *netdev);
+=20
++void unpriv_ebpf_notify(int new_state);
++
+ #if defined(CONFIG_NET) && defined(CONFIG_BPF_SYSCALL)
+ int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr);
+=20
