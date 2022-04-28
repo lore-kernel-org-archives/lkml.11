@@ -2,116 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 508FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:44:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79373C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347578AbiD1NrS (ORCPT
+        id S1347595AbiD1NsI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:47:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35944 "EHLO
+        Thu, 28 Apr 2022 09:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243244AbiD1NrQ (ORCPT
+        with ESMTP id S233789AbiD1NsH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:47:16 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CEBB3DDC;
-        Thu, 28 Apr 2022 06:44:01 -0700 (PDT)
-Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KpxbT2CTMz6800p;
-        Thu, 28 Apr 2022 21:41:09 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Apr 2022 15:43:58 +0200
-Received: from [10.47.91.78] (10.47.91.78) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.24; Thu, 28 Apr
- 2022 14:43:57 +0100
-Message-ID: <72c6c1b4-5e83-02e3-6051-c11b3bfff452@huawei.com>
-Date:   Thu, 28 Apr 2022 14:43:56 +0100
+        Thu, 28 Apr 2022 09:48:07 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9262E5C77F;
+        Thu, 28 Apr 2022 06:44:52 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 893481F41A71
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651153491;
+        bh=fB7oaBnDq+Pk5dXIeNanIcPDn8WmB6Fwxu0ws9sHRSw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=bjk4ghRjSBpf6pJdMGDZ4L3zRpEu7fxmpsiGi/WkeVIKRmw0oXu9LqxJ+5m3PNbEX
+         8OdUYcQS9It+X/1TWAfhbqOXW2GDc74Ho3ORZRDV8q1HXc569ha05VY16TrSure/z5
+         QrOnPcgAopTzm0KtdcfihZkCFIP5naB6EPxEDCEnsvO+tCJrwTK2saalGKNwVFZyJO
+         7jrc+86cJ8grY3sRo10M2pJhKBWhqnJuyvFsniZonUHg8W2IHXRhPbTF+Lukddg82L
+         mfbX2QdmbnjMkNwm+YE0hUClWM38It1b5rz4RM64K1+PFw8l7SNyK9L923C12lz5Bo
+         lIhNawWmyMVaA==
+Message-ID: <28fcda49-5f4e-508c-26cd-b30dc5837e9e@collabora.com>
+Date:   Thu, 28 Apr 2022 15:44:47 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] perf test: Fix test case 81 on s390x
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Thomas Richter <tmricht@linux.ibm.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <irogers@google.com>, <svens@linux.ibm.com>, <gor@linux.ibm.com>,
-        <sumanthk@linux.ibm.com>, <hca@linux.ibm.com>
-References: <20220428122821.3652015-1-tmricht@linux.ibm.com>
- <YmqV5o0XFfewhNkC@kernel.org>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <YmqV5o0XFfewhNkC@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V5 16/16] arm64: dts: mediatek: Add infra #reset-cells
+ property for MT8195
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, mturquette@baylibre.com,
+        sboyd@kernel.org, matthias.bgg@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     p.zabel@pengutronix.de, chun-jie.chen@mediatek.com,
+        wenst@chromium.org, runyang.chen@mediatek.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220428115620.13512-1-rex-bc.chen@mediatek.com>
+ <20220428115620.13512-17-rex-bc.chen@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220428115620.13512-17-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.91.78]
-X-ClientProxiedBy: lhreml701-chm.china.huawei.com (10.201.108.50) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/04/2022 14:25, Arnaldo Carvalho de Melo wrote:
-> Em Thu, Apr 28, 2022 at 02:28:21PM +0200, Thomas Richter escreveu:
->> perf test -F 81 -v fails on s390x on the linux-next branch.
->> The test case is x86 specific can not be executed on s390x.
->> The test case depends on x86 register names such as
->>
->>    ... | egrep -q 'available registers: AX BX CX DX ....'
+Il 28/04/22 13:56, Rex-BC Chen ha scritto:
+> We will use mediatek clock reset as infracfg_ao reset instead of
+> ti-syscon. To support this, remove property of ti reset and add
+> property of #reset-cells for mediatek clock reset.
 > 
-> Thanks,
-> 
-> Ian, I guess this will break on other !x86 arches as well.
+> Fixes: 4c78814a1f46ac0 (arm64: dts: Add mediatek SoC mt8195 and evaluation board)
+> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
-JFYI, arm64 gives on acme perf/core branch @ e0c1b8f9eb this:
+Please remove the Fixes tag: the reset commits are not going to be backported, so
+this commit also shall not be backported.
 
-john@debian:~/acme/tools/perf$ sudo ./perf test -F 82
-  82: perf record tests     :Basic --per-thread mode test
-Basic --per-thread mode test [Success]
-Register capture test
-Register capture test [Skipped missing instruction]
-  Ok
-john@debian:~/acme/tools/perf$
+After the removal:
 
-> Can you
-> please take a look?
-> 
-> - Arnaldo
->   
->> Skip this test case on s390x.
->>
->> Output before:
->>   # perf test -F 81
->>   81: perf record tests                       : FAILED!
->>   #
->>
->> Output after:
->>   # perf test -F 81
->>   81: perf record tests                       : Skip
->>   #
->>
->> Fixes: 24f378e66021 ("perf test: Add basic perf record tests")
->> Cc: Ian Rogers <irogers@google.com>
->> Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
->> ---
->>   tools/perf/tests/shell/record.sh | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/tools/perf/tests/shell/record.sh b/tools/perf/tests/shell/record.sh
->> index cd1cf14259b8..d98f4d4a00e1 100755
->> --- a/tools/perf/tests/shell/record.sh
->> +++ b/tools/perf/tests/shell/record.sh
->> @@ -37,6 +37,8 @@ test_register_capture() {
->>     echo "Register capture test [Success]"
->>   }
->>   
->> +# Test for platform support and return TEST_SKIP
->> +[ $(uname -m) = s390x ] && exit 2
->>   test_per_thread
->>   test_register_capture
->>   exit $err
->> -- 
->> 2.35.1
-> 
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
