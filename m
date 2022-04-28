@@ -2,111 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84DC5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:59:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5533BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 17:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350421AbiD1RCj (ORCPT
+        id S1350427AbiD1RDO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 13:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49994 "EHLO
+        Thu, 28 Apr 2022 13:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237800AbiD1RCh (ORCPT
+        with ESMTP id S233670AbiD1RDL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 13:02:37 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0D3F6B7C4B;
-        Thu, 28 Apr 2022 09:59:21 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7CE991474;
-        Thu, 28 Apr 2022 09:59:21 -0700 (PDT)
-Received: from [10.57.80.98] (unknown [10.57.80.98])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2BA103F774;
-        Thu, 28 Apr 2022 09:59:18 -0700 (PDT)
-Message-ID: <3686314d-4226-b360-a72d-267af52c8918@arm.com>
-Date:   Thu, 28 Apr 2022 17:59:11 +0100
+        Thu, 28 Apr 2022 13:03:11 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0319B6E6C;
+        Thu, 28 Apr 2022 09:59:56 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id h1so4737737pfv.12;
+        Thu, 28 Apr 2022 09:59:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZDYp2Y77Y0buY8pwqMtyLcOAE+45dX/zsVX064x7LX0=;
+        b=T5FFCS6UotdYG74iCBtYERNBWBj0bDr3newq9MZ2CU9iAU7Mvp0pkO5CiXjERw7Z4h
+         dtH/fRg2OWCurCYY/v6eAgs86zEARY/k+6a8gV+KFp5cnuwhIc+5wD3LrAQy89ZpYjGn
+         zh4XBjGCMww1+wmz3wu4aESExAsU5U3STiPkEsu5tnyY86NbVyZRjEGc1jDnJahB9RoI
+         akO6N05QtWT7jO5Nq0Op+bDPxkkBcZqWYPxqRyT/l6r+xlIU6CgdduGLX8sp2gwYd8TJ
+         5Y4/YsTIot25E8QLmvce9ubCcCd/jkHViC+wf9ZWxyci0PT7D76bJhMzp9dpPEi16tdZ
+         /xvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=ZDYp2Y77Y0buY8pwqMtyLcOAE+45dX/zsVX064x7LX0=;
+        b=NxhGK5NRmQm4A+imMm06k3557NXc8+fMT2lrTnLBFuXDltWwozgW3HDFcYA9p19Rp5
+         oX6eIogeCpzHtkEoplJUvXiJ699YywX31w9at0cJV2NX0A4O2WUvNwigUvnrXJ+sqqtH
+         T52oFPPxZYUZkrPqo5pxQagiqalWy5JpM1IxeQJuM0+w0y8BSVEwgNxfxvzg4Iyed4AX
+         xJrSZe6IFBnoLAkuu7qy6MzdUE1ycDc5hf0/l6EqtjYB9wyEyfm1imRqjzze7mYc4Tzc
+         M0pe9CfWcWdxElq5i8V9Dz1m/7z+G73JV8AkmNL8Wp8fg+5zpO0rnXW04leW77wNeqO8
+         kiRQ==
+X-Gm-Message-State: AOAM530vyqYLKF4OuFJi4pkp4t4Rz+LtGMiZOXAuOlwHAOJ6LiuhPY3j
+        mfRuQGJIRtrJ0GSWh4V9lHSYa2yFZNs=
+X-Google-Smtp-Source: ABdhPJwPPcw3VwBhysd0ZeuGi4yi13I/NUSthjo0ZKPGjaYuM6U1k+/xijgpEn8AmcNANaQZXubH8w==
+X-Received: by 2002:aa7:9f1d:0:b0:50d:3ae5:9cac with SMTP id g29-20020aa79f1d000000b0050d3ae59cacmr23636951pfr.9.1651165196014;
+        Thu, 28 Apr 2022 09:59:56 -0700 (PDT)
+Received: from google.com ([2620:15c:211:201:dc95:713b:f72c:4ad4])
+        by smtp.gmail.com with ESMTPSA id x126-20020a628684000000b0050d3f600ed0sm379077pfd.40.2022.04.28.09.59.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 09:59:55 -0700 (PDT)
+Sender: Minchan Kim <minchan.kim@gmail.com>
+Date:   Thu, 28 Apr 2022 09:59:53 -0700
+From:   Minchan Kim <minchan@kernel.org>
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Seth Jennings <sjenning@redhat.com>,
+        Dan Streetman <ddstreet@ieee.org>, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
+Message-ID: <YmrICbP6bDJqDv5R@google.com>
+References: <20220427160016.144237-1-hannes@cmpxchg.org>
+ <20220427160016.144237-5-hannes@cmpxchg.org>
+ <Ymmnrkn0mSWcuvmH@google.com>
+ <YmmznQ8AO5RLxicA@cmpxchg.org>
+ <YmnA0Da90IURbxrM@google.com>
+ <Ymqj93gEEzu2Gb3U@cmpxchg.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [RFC PATCH 1/2] swiotlb: Split up single swiotlb lock
-Content-Language: en-GB
-To:     Andi Kleen <ak@linux.intel.com>,
-        Christoph Hellwig <hch@infradead.org>
-Cc:     parri.andrea@gmail.com, thomas.lendacky@amd.com,
-        wei.liu@kernel.org, Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        konrad.wilk@oracle.com, linux-hyperv@vger.kernel.org,
-        Tianyu Lan <ltykernel@gmail.com>, linux-kernel@vger.kernel.org,
-        michael.h.kelley@microsoft.com, iommu@lists.linux-foundation.org,
-        andi.kleen@intel.com, brijesh.singh@amd.com, vkuznets@redhat.com,
-        kys@microsoft.com, kirill.shutemov@intel.com, hch@lst.de
-References: <20220428141429.1637028-1-ltykernel@gmail.com>
- <20220428141429.1637028-2-ltykernel@gmail.com>
- <e7b644f0-6c90-fe99-792d-75c38505dc54@arm.com>
- <YmqonHKBT8ftYHgY@infradead.org>
- <1517d2f0-08d6-a532-7810-2161b2dff421@linux.intel.com>
- <aa8e2fab-5b7e-cac3-0fbd-7c6edbbf942a@arm.com>
- <b3059196-a28b-a509-fc0e-75d2dbebdbae@linux.intel.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <b3059196-a28b-a509-fc0e-75d2dbebdbae@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ymqj93gEEzu2Gb3U@cmpxchg.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-28 17:02, Andi Kleen wrote:
+On Thu, Apr 28, 2022 at 10:25:59AM -0400, Johannes Weiner wrote:
+> On Wed, Apr 27, 2022 at 03:16:48PM -0700, Minchan Kim wrote:
+> > On Wed, Apr 27, 2022 at 05:20:29PM -0400, Johannes Weiner wrote:
+> > > On Wed, Apr 27, 2022 at 01:29:34PM -0700, Minchan Kim wrote:
+> > > > Hi Johannes,
+> > > > 
+> > > > On Wed, Apr 27, 2022 at 12:00:15PM -0400, Johannes Weiner wrote:
+> > > > > Currently it requires poking at debugfs to figure out the size and
+> > > > > population of the zswap cache on a host. There are no counters for
+> > > > > reads and writes against the cache. As a result, it's difficult to
+> > > > > understand zswap behavior on production systems.
+> > > > > 
+> > > > > Print zswap memory consumption and how many pages are zswapped out in
+> > > > > /proc/meminfo. Count zswapouts and zswapins in /proc/vmstat.
+> > > > > 
+> > > > > Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
+> > > > > ---
+> > > > >  fs/proc/meminfo.c             |  7 +++++++
+> > > > >  include/linux/swap.h          |  5 +++++
+> > > > >  include/linux/vm_event_item.h |  4 ++++
+> > > > >  mm/vmstat.c                   |  4 ++++
+> > > > >  mm/zswap.c                    | 13 ++++++-------
+> > > > >  5 files changed, 26 insertions(+), 7 deletions(-)
+> > > > > 
+> > > > > diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
+> > > > > index 6fa761c9cc78..6e89f0e2fd20 100644
+> > > > > --- a/fs/proc/meminfo.c
+> > > > > +++ b/fs/proc/meminfo.c
+> > > > > @@ -86,6 +86,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
+> > > > >  
+> > > > >  	show_val_kb(m, "SwapTotal:      ", i.totalswap);
+> > > > >  	show_val_kb(m, "SwapFree:       ", i.freeswap);
+> > > > > +#ifdef CONFIG_ZSWAP
+> > > > > +	seq_printf(m,  "Zswap:          %8lu kB\n",
+> > > > > +		   (unsigned long)(zswap_pool_total_size >> 10));
+> > > > > +	seq_printf(m,  "Zswapped:       %8lu kB\n",
+> > > > > +		   (unsigned long)atomic_read(&zswap_stored_pages) <<
+> > > > > +		   (PAGE_SHIFT - 10));
+> > > > > +#endif
+> > > > 
+> > > > I agree it would be very handy to have the memory consumption in meminfo
+> > > > 
+> > > > https://lore.kernel.org/all/YYwZXrL3Fu8%2FvLZw@google.com/
+> > > > 
+> > > > If we really go this Zswap only metric instead of general term
+> > > > "Compressed", I'd like to post maybe "Zram:" with same reason
+> > > > in this patchset. Do you think that's better idea instead of
+> > > > introducing general term like "Compressed:" or something else?
+> > > 
+> > > I'm fine with changing it to Compressed. If somebody cares about a
+> > > more detailed breakdown, we can add Zswap, Zram subsets as needed.
+> > 
+> > Thanks! Please consider ZSWPIN to rename more general term, too.
 > 
-> On 4/28/2022 8:07 AM, Robin Murphy wrote:
->> On 2022-04-28 15:55, Andi Kleen wrote:
->>>
->>> On 4/28/2022 7:45 AM, Christoph Hellwig wrote:
->>>> On Thu, Apr 28, 2022 at 03:44:36PM +0100, Robin Murphy wrote:
->>>>> Rather than introduce this extra level of allocator complexity, how 
->>>>> about
->>>>> just dividing up the initial SWIOTLB allocation into multiple 
->>>>> io_tlb_mem
->>>>> instances?
->>>> Yeah.  We're almost done removing all knowledge of swiotlb from 
->>>> drivers,
->>>> so the very last thing I want is an interface that allows a driver to
->>>> allocate a per-device buffer.
->>>
->>> At least for TDX need parallelism with a single device for performance.
->>>
->>> So if you split up the io tlb mems for a device then you would need a 
->>> new mechanism to load balance the requests for single device over 
->>> those. I doubt it would be any simpler.
->>
->> Eh, I think it would be, since the round-robin retry loop can then 
->> just sit around the existing io_tlb_mem-based allocator, vs. the churn 
->> of inserting it in the middle, plus it's then really easy to 
->> statically distribute different starting points across different 
->> devices via dev->dma_io_tlb_mem if we wanted to.
->>
->> Admittedly the overall patch probably ends up about the same size, 
->> since it likely pushes a bit more complexity into swiotlb_init to 
->> compensate, but that's still a trade-off I like.
+> That doesn't make sense to me.
 > 
-> Unless you completely break the external API this will require a new 
-> mechanism to search a list of io_tlb_mems for the right area to free into.
-> 
-> If the memory area not contiguous (like in the original patch) this will 
-> be a O(n) operation on the number of io_tlb_mems, so it would get more 
-> and more expensive on larger systems. Or you merge them all together (so 
-> that the simple address arithmetic to look up the area works again), 
-> which will require even more changes in the setup. Or you add hashing or 
-> similar which will be even more complicated.
-> 
-> In the end doing it with a single io_tlb_mem is significantly simpler 
-> and also more natural.
+> Zram is a swap backend, its traffic is accounted in PSWPIN/OUT. Zswap
+> is a writeback cache on top of the swap backend. It has pages
+> entering, refaulting, and being written back to the swap backend
+> (PSWPOUT). A zswpout and a zramout are different things.
 
-Sorry if "dividing up the initial SWIOTLB allocation" somehow sounded 
-like "making multiple separate SWIOTLB allocations all over the place"?
-
-I don't see there being any *functional* difference in whether a slice 
-of the overall SWIOTLB memory is represented by 
-"io_tlb_default_mem->areas[i]->blah" or "io_tlb_default_mem[i]->blah", 
-I'm simply advocating for not churning the already-complex allocator 
-internals by pushing the new complexity out to the margins instead.
-
-Thanks,
-Robin.
+Think about that system has two swap devices (storage + zram).
+I think it's useful to know how many swap IO comes from zram
+and rest of them are storage.
