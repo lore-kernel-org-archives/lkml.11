@@ -2,63 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB10FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:34:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 778AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344308AbiD1Ih0 (ORCPT
+        id S1344499AbiD1Iij (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39492 "EHLO
+        Thu, 28 Apr 2022 04:38:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344461AbiD1Igh (ORCPT
+        with ESMTP id S1344385AbiD1IiI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:36:37 -0400
-X-Greylist: delayed 675 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Apr 2022 01:29:25 PDT
-Received: from mail.profitbizdesign.com.pl (mail.profitbizdesign.com.pl [94.177.252.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30AB0A146A
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:29:25 -0700 (PDT)
-Received: by mail.profitbizdesign.com.pl (Postfix, from userid 1001)
-        id 8FE1DA2B13; Thu, 28 Apr 2022 09:11:40 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=profitbizdesign.com.pl; s=mail; t=1651133547;
-        bh=Rfzvu4C+yJ1wyuJ4V+t/udh6cgYEQVnY6S5ltO4wdNg=;
-        h=Date:From:To:Subject:From;
-        b=wAhHvLgnTbw/BNXpVYAMEFVMz8DlQaLdIID4a4FgjNeLDmoAXUYM9X3hWku9mMLOS
-         Fjz6k5Rf0fbhKfwXGfD9vKUvP/vZuSjVLoDaBC30YeL8Ce95OFoJUlWz+9Y97W8DSY
-         w/+2kLPaX5TiFj6tMQjtUJJPBD8FDn+t5eG9jbVHPeBPeQGVr/sV042A0r670xsW/q
-         goo2oy3UfDgN6hvY+eC7QG1DB1JXF7VLm0VmTL7sNSv+LjbWoJNTpDmMXol/urwqU3
-         TDEHFhGXm1twEMcnbySZ3OFvEeJ2xmE9o+bgpSHvelV0XlQz5M54XQcTu3beiaHnsz
-         8DfQYTGeq0sEQ==
-Received: by mail.profitbizdesign.com.pl for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 08:10:19 GMT
-Message-ID: <20220428074503-0.1.1z.5zgu.0.gibocixagf@profitbizdesign.com.pl>
-Date:   Thu, 28 Apr 2022 08:10:19 GMT
-From:   =?UTF-8?Q? "Arkadiusz_Soko=C5=82owski" ?= 
-        <arkadiusz.sokolowski@profitbizdesign.com.pl>
-To:     <linux-kernel@vger.kernel.org>
-Subject: Koszty instalacji fotowoltaicznej
-X-Mailer: mail.profitbizdesign.com.pl
-MIME-Version: 1.0
+        Thu, 28 Apr 2022 04:38:08 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBAEF13EA4
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:30:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=DBYQvN/5MSQRzjCWOAoBqlgy8xIwXFrPxzrjrPoRctw=;
+        t=1651134619; x=1652344219; b=EC5xgzWff2R53+3GlpYB6Uk6qWhf8VgJLEA2Q/JMiTOkEW0
+        c3qOzj6ApZyeFmAHQaqnvqxaPfnrwJL4AC1AJV+Dh83SJcIbc9BINRw8tNbWayMHU/JRmzNM6jZHu
+        tETWW+9SZamznl68FU67YWNTtEodsgYLaqHIix3+84pC5sa5+KQ9DBlARMTqHsoE7AhS/Am6cELbV
+        a6dfS7nxhIr4FQXDc3wtEUoKWyVk8UbcQhcyQpSvvmqAlp7npiLa3c1Kw5C7vL81ywZATXUkR9gMO
+        JMKXAC43/8Lof1SWBw40bInt1ZZH98aH6Szn95A4G68L7psTKcivB/8tkZHm5AGQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1njzXU-00GKKP-Db;
+        Thu, 28 Apr 2022 10:30:16 +0200
+Message-ID: <98a1bff1a4cc798f0a02fd10a5f3b291c68ad1d7.camel@sipsolutions.net>
+Subject: Re: [PATCH 11/30] um: Improve panic notifiers consistency and
+ ordering
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     linux-kernel@vger.kernel.org,
+        "linux-um@lists.infradead.orgAnton Ivanov" 
+        <anton.ivanov@cambridgegreys.com>,
+        Richard Weinberger <richard@nod.at>
+Date:   Thu, 28 Apr 2022 10:30:15 +0200
+In-Reply-To: <20220427224924.592546-12-gpiccoli@igalia.com>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+         <20220427224924.592546-12-gpiccoli@igalia.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dzie=C5=84 dobry,
+[trimming massive CC list]
 
-stworzyli=C5=9Bmy specjaln=C4=85 ofert=C4=99 dla firm, na kompleksow=C4=85=
- obs=C5=82ug=C4=99 inwestycji w fotowoltaik=C4=99. =20
+On Wed, 2022-04-27 at 19:49 -0300, Guilherme G. Piccoli wrote:
+> 
+> Also, we remove a useless header inclusion.
 
-Specjalizujemy si=C4=99 w zakresie doboru, monta=C5=BCu i serwisie instal=
-acji fotowoltaicznych, dysponujemy najnowocze=C5=9Bniejszymi rozwi=C4=85z=
-ania, kt=C3=B3re zapewni=C4=85 Pa=C5=84stwu oczekiwane rezultaty.
+I wouldn't say it's useless, generally we try not to rely on implicit
+includes so much? And you at least now use NOTIFY_DONE from it.
 
-Mo=C5=BCemy przygotowa=C4=87 dla Pa=C5=84stwa wst=C4=99pn=C4=85 kalkulacj=
-=C4=99 i przeanalizowa=C4=87 efekty mo=C5=BCliwe do osi=C4=85gni=C4=99cia=
-=2E
+Otherwise looks fine to me.
 
-Czy s=C4=85 Pa=C5=84stwo otwarci na wst=C4=99pn=C4=85 rozmow=C4=99 w tym =
-temacie?
-
-Pozdrawiam
-Arkadiusz Soko=C5=82owski
+johannes
