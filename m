@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE0EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:18:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C24CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:19:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347051AbiD1NWI (ORCPT
+        id S1347068AbiD1NWO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:22:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44522 "EHLO
+        Thu, 28 Apr 2022 09:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347003AbiD1NV4 (ORCPT
+        with ESMTP id S1347036AbiD1NWA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:21:56 -0400
+        Thu, 28 Apr 2022 09:22:00 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6BEE39399F
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:18:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D264995499
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:18:45 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 23E7A150C;
-        Thu, 28 Apr 2022 06:18:41 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 994FE1480;
+        Thu, 28 Apr 2022 06:18:45 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1EC453F73B;
-        Thu, 28 Apr 2022 06:18:39 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8AF483F73B;
+        Thu, 28 Apr 2022 06:18:43 -0700 (PDT)
 From:   Robin Murphy <robin.murphy@arm.com>
 To:     joro@8bytes.org, will@kernel.org
 Cc:     iommu@lists.linux-foundation.org, sven@svenpeter.dev,
@@ -31,9 +31,9 @@ Cc:     iommu@lists.linux-foundation.org, sven@svenpeter.dev,
         zhang.lyra@gmail.com, thierry.reding@gmail.com, vdumpa@nvidia.com,
         jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 06/14] iommu/arm-smmu-v3: Clean up bus_set_iommu()
-Date:   Thu, 28 Apr 2022 14:18:07 +0100
-Message-Id: <4abe6fc30d5630c99b034ddd0cdac56d19bd9f15.1650890638.git.robin.murphy@arm.com>
+Subject: [PATCH v2 08/14] iommu/exynos: Clean up bus_set_iommu()
+Date:   Thu, 28 Apr 2022 14:18:09 +0100
+Message-Id: <9a92e01323e988eeea80655105db3f1fc4051362.1650890638.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.35.3.dirty
 In-Reply-To: <cover.1650890638.git.robin.murphy@arm.com>
 References: <cover.1650890638.git.robin.murphy@arm.com>
@@ -44,101 +44,35 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Stop calling bus_set_iommu() since it's now unnecessary, and simplify
-the probe failure path accordingly.
+the init failure path accordingly.
 
-Acked-by: Will Deacon <will@kernel.org>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 53 +--------------------
- 1 file changed, 2 insertions(+), 51 deletions(-)
+ drivers/iommu/exynos-iommu.c | 9 ---------
+ 1 file changed, 9 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 627a3ed5ee8f..73b7b1b17b77 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -28,8 +28,6 @@
- #include <linux/pci-ats.h>
- #include <linux/platform_device.h>
- 
--#include <linux/amba/bus.h>
--
- #include "arm-smmu-v3.h"
- #include "../../iommu-sva-lib.h"
- 
-@@ -3698,43 +3696,6 @@ static unsigned long arm_smmu_resource_size(struct arm_smmu_device *smmu)
- 		return SZ_128K;
- }
- 
--static int arm_smmu_set_bus_ops(struct iommu_ops *ops)
--{
--	int err;
--
--#ifdef CONFIG_PCI
--	if (pci_bus_type.iommu_ops != ops) {
--		err = bus_set_iommu(&pci_bus_type, ops);
--		if (err)
--			return err;
--	}
--#endif
--#ifdef CONFIG_ARM_AMBA
--	if (amba_bustype.iommu_ops != ops) {
--		err = bus_set_iommu(&amba_bustype, ops);
--		if (err)
--			goto err_reset_pci_ops;
--	}
--#endif
--	if (platform_bus_type.iommu_ops != ops) {
--		err = bus_set_iommu(&platform_bus_type, ops);
--		if (err)
--			goto err_reset_amba_ops;
--	}
--
--	return 0;
--
--err_reset_amba_ops:
--#ifdef CONFIG_ARM_AMBA
--	bus_set_iommu(&amba_bustype, NULL);
--#endif
--err_reset_pci_ops: __maybe_unused;
--#ifdef CONFIG_PCI
--	bus_set_iommu(&pci_bus_type, NULL);
--#endif
--	return err;
--}
--
- static void __iomem *arm_smmu_ioremap(struct device *dev, resource_size_t start,
- 				      resource_size_t size)
- {
-@@ -3838,27 +3799,17 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
- 	if (ret) {
- 		dev_err(dev, "Failed to register iommu\n");
--		goto err_sysfs_remove;
-+		iommu_device_sysfs_remove(&smmu->iommu);
-+		return ret;
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 71f2018e23fe..359b255b3924 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1356,16 +1356,7 @@ static int __init exynos_iommu_init(void)
+ 		goto err_zero_lv2;
  	}
  
--	ret = arm_smmu_set_bus_ops(&arm_smmu_ops);
--	if (ret)
--		goto err_unregister_device;
+-	ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
+-	if (ret) {
+-		pr_err("%s: Failed to register exynos-iommu driver.\n",
+-								__func__);
+-		goto err_set_iommu;
+-	}
 -
  	return 0;
--
--err_unregister_device:
--	iommu_device_unregister(&smmu->iommu);
--err_sysfs_remove:
--	iommu_device_sysfs_remove(&smmu->iommu);
--	return ret;
- }
- 
- static int arm_smmu_device_remove(struct platform_device *pdev)
- {
- 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
- 
--	arm_smmu_set_bus_ops(NULL);
- 	iommu_device_unregister(&smmu->iommu);
- 	iommu_device_sysfs_remove(&smmu->iommu);
- 	arm_smmu_device_disable(smmu);
+-err_set_iommu:
+-	kmem_cache_free(lv2table_kmem_cache, zero_lv2_table);
+ err_zero_lv2:
+ 	platform_driver_unregister(&exynos_sysmmu_driver);
+ err_reg_driver:
 -- 
 2.35.3.dirty
 
