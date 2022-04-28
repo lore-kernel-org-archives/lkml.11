@@ -2,100 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F38EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:40:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C25DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:41:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347496AbiD1Nnb (ORCPT
+        id S1347508AbiD1Nom (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:43:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52762 "EHLO
+        Thu, 28 Apr 2022 09:44:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241572AbiD1Nn2 (ORCPT
+        with ESMTP id S241572AbiD1Noi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:43:28 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148601FA49;
-        Thu, 28 Apr 2022 06:40:14 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id b12so4391966plg.4;
-        Thu, 28 Apr 2022 06:40:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=J6PdeDybWktJ3VOINyxTrk1DVabwU+Bt41DCAGyrJqw=;
-        b=IPsajGJEOyFy0KXi5MbqNqA+B6gzB8xNg++FY3nWAd50+XLHI3IiiXgHM0D0hOvAGP
-         NHzF/Fmjx3BKNr25mf0LCvUD+BlCo9/dmB2/lCRjW51Eam0ExUwFK3YH7YMSti0A4ZZd
-         xEcKqHyrldXKx9tcqf+yWyAzrg4cetWf1poIiq59krbuM8OrRi/cvudto62nFlc/aWbk
-         VsWQAj+C5W8ABz7FdqFhorEwMN6BDyPdq5A590Zmk4vzVVXSN0QQbskvoIT0LCXuVqwX
-         BMeO8voLLYnahizk2FNYrugh1ix+nJ07EM4TTaj80NJn1xQL7mAjorMIdiY2reS7pEos
-         TqYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=J6PdeDybWktJ3VOINyxTrk1DVabwU+Bt41DCAGyrJqw=;
-        b=pFIaISZuLVNtC9oxx6qyQW03KrRpszL4YwWPrup9S2I375shOfrNU1PasuPi9TBsQB
-         vTjP5KgAnk4UExzKfq8qtoZ2hAqEzV0jTkEwL72d/oAPs9ozAlrt7eaEuw8fBwgySe/t
-         +AxrgszU25SBZ1O8YWWPXZA34jUwU/c00itxH0gj4X1+yulErccQvZwfAS2SZ4exwrH3
-         6a2Hee55SdE55nBClST7qqF2cHXRFovItiONFJ1kKk2A6ELx1eHYgTNW8z8s7l18ita/
-         5i7PENJGUNcIiCE19VUpI4BRO38bVdIxTMd3fHww6latZ3oNBRDKErmu4QXTJSzeSqdF
-         ey1A==
-X-Gm-Message-State: AOAM530rQ6FMFwaDEFho/Ub9sSI1BgFXcl2xAZpZyj7OlHtP347SN9sr
-        MRqpHhScuduroFC+dkz87H0=
-X-Google-Smtp-Source: ABdhPJx25FcLG2JQe24kaXZecI9BCEFvz9z8SheCmciK7YDm8iNJkM8WfVpRJ48uQcNgOpHj2YG0Yw==
-X-Received: by 2002:a17:902:d54d:b0:15d:2ff:b0e2 with SMTP id z13-20020a170902d54d00b0015d02ffb0e2mr23275845plf.131.1651153213528;
-        Thu, 28 Apr 2022 06:40:13 -0700 (PDT)
-Received: from [192.168.255.10] ([203.205.141.119])
-        by smtp.gmail.com with ESMTPSA id z15-20020a056a001d8f00b004fda37855ddsm21177011pfw.168.2022.04.28.06.40.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 06:40:13 -0700 (PDT)
-Message-ID: <5c227ef8-72d2-9254-f061-128974a6dc7d@gmail.com>
-Date:   Thu, 28 Apr 2022 21:40:05 +0800
+        Thu, 28 Apr 2022 09:44:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 465225BE5E;
+        Thu, 28 Apr 2022 06:41:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E50A9B82D5F;
+        Thu, 28 Apr 2022 13:41:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DD67C385A9;
+        Thu, 28 Apr 2022 13:41:20 +0000 (UTC)
+Message-ID: <99adb257-bf94-a291-b5a9-d22e97ce967a@linux-m68k.org>
+Date:   Thu, 28 Apr 2022 23:41:17 +1000
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.1
-Subject: Re: [PATCH v4 6/7] perf/x86/amd/core: Add PerfMonV2 overflow handling
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 4/4] m68knommu: allow elf_fdpic loader to be selected
 Content-Language: en-US
-To:     Sandipan Das <sandipan.das@amd.com>
-Cc:     peterz@infradead.org, bp@alien8.de, dave.hansen@linux.intel.com,
-        acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, namhyung@kernel.org,
-        jolsa@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        pbonzini@redhat.com, jmattson@google.com, eranian@google.com,
-        puwen@hygon.cn, ananth.narayan@amd.com, ravi.bangoria@amd.com,
-        santosh.shukla@amd.com,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org, x86@kernel.org
-References: <cover.1651058600.git.sandipan.das@amd.com>
- <6bb3a6de79afbdb1ebc1b804fb8c2002c00cbaee.1651058600.git.sandipan.das@amd.com>
-From:   Like Xu <like.xu.linux@gmail.com>
-Organization: Tencent
-In-Reply-To: <6bb3a6de79afbdb1ebc1b804fb8c2002c00cbaee.1651058600.git.sandipan.das@amd.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Linux/m68k <linux-m68k@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rich Felker <dalias@libc.org>
+References: <20220428033319.239341-1-gerg@linux-m68k.org>
+ <20220428033319.239341-5-gerg@linux-m68k.org>
+ <CAMuHMdXtj+ncYOhc3GcNdBuWxMe+0rP1aYCEKMP0yL3aJ_WH3w@mail.gmail.com>
+From:   Greg Ungerer <gerg@linux-m68k.org>
+In-Reply-To: <CAMuHMdXtj+ncYOhc3GcNdBuWxMe+0rP1aYCEKMP0yL3aJ_WH3w@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/4/2022 7:31 pm, Sandipan Das wrote:
-> +static inline void amd_pmu_ack_global_status(u64 status)
-> +{
-> +	/*
-> +	 * PerfCntrGlobalStatus is read-only but an overflow acknowledgment
+Hi Geert,
 
-If wrmsrl PerfCntrGlobalStatus, remain silent or report #GP ?
+On 28/4/22 17:20, Geert Uytterhoeven wrote:
+> Hi Greg,
+> 
+> On Thu, Apr 28, 2022 at 7:05 AM Greg Ungerer <gerg@linux-m68k.org> wrote:
+>> The m68k architecture code is capable of supporting the binfmt_elf_fdpic
+>> loader, so allow it to be configured. It is restricted to nommu
+>> configurations at this time due to the MMU context structures/code not
+>> supporting everything elf_fdpic needs when MMU is enabled.
+>>
+>> Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+> 
+> Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> 
+>> --- a/fs/Kconfig.binfmt
+>> +++ b/fs/Kconfig.binfmt
+>> @@ -58,7 +58,7 @@ config ARCH_USE_GNU_PROPERTY
+>>   config BINFMT_ELF_FDPIC
+>>          bool "Kernel support for FDPIC ELF binaries"
+>>          default y if !BINFMT_ELF
+>> -       depends on (ARM || (SUPERH && !MMU))
+>> +       depends on (ARM || ((M68K || SUPERH) && !MMU))
+> 
+> While at it, you may want to drop the unneeded outer parentheses,
+> as they make the expression harder to round, IMHO.
 
-> +	 * mechanism exists; writing 1 to a bit in PerfCntrGlobalStatusClr
-> +	 * clears the same bit in PerfCntrGlobalStatus
-> +	 */
-> +
-> +	/* Only allow modifications to PerfCntrGlobalStatus.PerfCntrOvfl */
-> +	status &= amd_pmu_global_cntr_mask;
-> +	wrmsrl(MSR_AMD64_PERF_CNTR_GLOBAL_STATUS_CLR, status);
+Sure thing, will do,
 
-If rdmsrl PerfCntrGlobalStatusClr, does it return 0 or the value of 
-PerfCntrGlobalStatus ?
+Regards
+Greg
 
-> +}
+
+>>          select ELFCORE
+>>          help
+>>            ELF FDPIC binaries are based on ELF, but allow the individual load
+> 
+> Gr{oetje,eeting}s,
+> 
+>                          Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                  -- Linus Torvalds
