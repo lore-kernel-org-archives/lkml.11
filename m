@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC406C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:19:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2432CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347084AbiD1NWX (ORCPT
+        id S1347094AbiD1NWZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:22:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44780 "EHLO
+        Thu, 28 Apr 2022 09:22:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347048AbiD1NWG (ORCPT
+        with ESMTP id S1347057AbiD1NWH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:22:06 -0400
+        Thu, 28 Apr 2022 09:22:07 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1BF4E939D4
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:18:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9C35895A14
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:18:52 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D8FD81477;
-        Thu, 28 Apr 2022 06:18:48 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5727F14BF;
+        Thu, 28 Apr 2022 06:18:52 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id D10A03F73B;
-        Thu, 28 Apr 2022 06:18:45 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 4B7FD3F73B;
+        Thu, 28 Apr 2022 06:18:50 -0700 (PDT)
 From:   Robin Murphy <robin.murphy@arm.com>
 To:     joro@8bytes.org, will@kernel.org
 Cc:     iommu@lists.linux-foundation.org, sven@svenpeter.dev,
@@ -31,9 +31,9 @@ Cc:     iommu@lists.linux-foundation.org, sven@svenpeter.dev,
         zhang.lyra@gmail.com, thierry.reding@gmail.com, vdumpa@nvidia.com,
         jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 09/14] iommu/ipmmu-vmsa: Clean up bus_set_iommu()
-Date:   Thu, 28 Apr 2022 14:18:10 +0100
-Message-Id: <01a58dcc9c70836b7556d54dbdac6a340f206781.1650890638.git.robin.murphy@arm.com>
+Subject: [PATCH v2 11/14] iommu/omap: Clean up bus_set_iommu()
+Date:   Thu, 28 Apr 2022 14:18:12 +0100
+Message-Id: <9c1dd5a7f697fc6cfd3ed6f9e1819a81a434574e.1650890638.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.35.3.dirty
 In-Reply-To: <cover.1650890638.git.robin.murphy@arm.com>
 References: <cover.1650890638.git.robin.murphy@arm.com>
@@ -43,66 +43,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Stop calling bus_set_iommu() since it's now unnecessary. This also
-leaves the custom initcall effectively doing nothing but register
-the driver, which no longer needs to happen early either, so convert
-it to builtin_platform_driver().
+Stop calling bus_set_iommu() since it's now unnecessary, and simplify
+the init failure path accordingly.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/ipmmu-vmsa.c | 35 +----------------------------------
- 1 file changed, 1 insertion(+), 34 deletions(-)
+ drivers/iommu/omap-iommu.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 8fdb84b3642b..2549d32f0ddd 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -1090,11 +1090,6 @@ static int ipmmu_probe(struct platform_device *pdev)
- 		ret = iommu_device_register(&mmu->iommu, &ipmmu_ops, &pdev->dev);
- 		if (ret)
- 			return ret;
--
--#if defined(CONFIG_IOMMU_DMA)
--		if (!iommu_present(&platform_bus_type))
--			bus_set_iommu(&platform_bus_type, &ipmmu_ops);
--#endif
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index d9cf2820c02e..07ee2600113c 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1776,14 +1776,8 @@ static int __init omap_iommu_init(void)
+ 		goto fail_driver;
  	}
  
- 	/*
-@@ -1168,32 +1163,4 @@ static struct platform_driver ipmmu_driver = {
- 	.probe = ipmmu_probe,
- 	.remove	= ipmmu_remove,
- };
+-	ret = bus_set_iommu(&platform_bus_type, &omap_iommu_ops);
+-	if (ret)
+-		goto fail_bus;
 -
--static int __init ipmmu_init(void)
--{
--	struct device_node *np;
--	static bool setup_done;
--	int ret;
--
--	if (setup_done)
--		return 0;
--
--	np = of_find_matching_node(NULL, ipmmu_of_ids);
--	if (!np)
--		return 0;
--
--	of_node_put(np);
--
--	ret = platform_driver_register(&ipmmu_driver);
--	if (ret < 0)
--		return ret;
--
--#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
--	if (!iommu_present(&platform_bus_type))
--		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
--#endif
--
--	setup_done = true;
--	return 0;
--}
--subsys_initcall(ipmmu_init);
-+builtin_platform_driver(ipmmu_driver);
+ 	return 0;
+ 
+-fail_bus:
+-	platform_driver_unregister(&omap_iommu_driver);
+ fail_driver:
+ 	kmem_cache_destroy(iopte_cachep);
+ 	return ret;
 -- 
 2.35.3.dirty
 
