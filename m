@@ -2,90 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45615C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DE53C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343616AbiD1H5O (ORCPT
+        id S1343531AbiD1H6B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36410 "EHLO
+        Thu, 28 Apr 2022 03:58:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343531AbiD1H4o (ORCPT
+        with ESMTP id S231307AbiD1H57 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:56:44 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF12E692A0
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:53:30 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id y21so4562260edo.2
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:53:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7imria7AOBpaNTcOn+sNIMNFLxOEbQktxf1OYV+mCb4=;
-        b=oBowMauFsKiWlMKoUFjyn0tQc0cXzAUCM6P9dHhlgL92tclsRV4WUlyxpCbFrqdUQV
-         f72EXv37YQX7++jcHgvGug7uOJZMjXKPknstXCPo8mdnQ6W/yjWJA8+FSAdOsX32NYYZ
-         fsXyvOfb0Nom1+G58YXrxnPZ3GGu1sPmlSt0HCNJfQmpEu9sQLfnkLoHg1velrva+EF7
-         k1gnG95qwNsq5wyis8alM2bRH9lboBDlg0gaLToO7nrIZzpbt/bIB0fx8fvduysn1dav
-         gS3stFU86bS/wAC2R6fWE+9PpjsZze00EBMkZcAXA//4EV7ZsKUnZe6D3R780BeNX3hH
-         0WnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7imria7AOBpaNTcOn+sNIMNFLxOEbQktxf1OYV+mCb4=;
-        b=MauCLV+KukUJFNP+bq126rP3JbUhrlKYpOqraDeqCoYVNh60RniRmTOnrv5MYuN8ur
-         +iBh4gGk6n0KGkz4qDNiqBcphrkJGgOIiOyfdeoRFUXIY8uQviYevZs3VXw69x8uJab1
-         IZ/Q72iCmWe34dDTPMFaIPoXJoNlsHJ27ajIhy4Rpfyj3X5gvKPWivj3INCr6lk0v/CG
-         FNWjjO7JCBVrKvCZ0IJG6M8LucMgGrYlXBFtPmUBmC5NAyjIbDTJooStSRmaGUKv/tlu
-         2mqmRq2U02ehy4XOGMFkXHjd84WSAu99m3rIK6d62CbyZW/etXtELjBLDt9SL472q7DF
-         ykxA==
-X-Gm-Message-State: AOAM533Ujnm1kVduZ2qa6yPKlLNeJPebR7MgF3TKeCq+Cuf+1+41eDBw
-        4duaeikdoBVH1JrVMLl7wpYW1w==
-X-Google-Smtp-Source: ABdhPJzviV5gS3KcyKsb8SDPBhzT7DiiOIR0C4FkBQNdYrbgZ3rUvu1yMYOzUNHDjnYGGQYf33IU4g==
-X-Received: by 2002:aa7:c442:0:b0:425:ebed:4782 with SMTP id n2-20020aa7c442000000b00425ebed4782mr19873545edr.168.1651132409299;
-        Thu, 28 Apr 2022 00:53:29 -0700 (PDT)
-Received: from [192.168.0.160] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id l21-20020a056402345500b0042617ba6393sm1081334edc.29.2022.04.28.00.53.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 00:53:28 -0700 (PDT)
-Message-ID: <1e3afa05-2e2f-fb0a-19a3-5a7a6af50863@linaro.org>
-Date:   Thu, 28 Apr 2022 09:53:27 +0200
+        Thu, 28 Apr 2022 03:57:59 -0400
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600B15F253
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:54:44 -0700 (PDT)
+Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220428075442epoutp025169229d268b9926a933412f9a9e4d5e~qAD6WfwUV2115421154epoutp02K
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:54:42 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220428075442epoutp025169229d268b9926a933412f9a9e4d5e~qAD6WfwUV2115421154epoutp02K
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1651132482;
+        bh=ezbrraO8aVmu2laJsDo6jcJ3FLv2F245TKkCYuIqyHc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=otWKbaVxjlX9bFAq8CJP7AuCPO/c3nf7Dwxf8uzjg8fkLTzcODn0QwDaoZcJyde4V
+         YxhdO9Ospw9Wz27OSLhM5JSXF0NN0fT29DDl+dV4GZjc68k+8aJLoNpebJV7zzi40u
+         IO7k4P6S0yVy747u/9mVRaZ5FaaI7OIPNUj2T7KI=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
+        20220428075441epcas2p4a1cccd2ad3e178104bc6098cf5ebe21d~qAD5e1PfZ1539415394epcas2p4a;
+        Thu, 28 Apr 2022 07:54:41 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.102]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4Kpnvg4HGqz4x9Q3; Thu, 28 Apr
+        2022 07:54:39 +0000 (GMT)
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        E9.35.10069.B384A626; Thu, 28 Apr 2022 16:54:35 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220428075434epcas2p1792bc1c96afd57aff3af85c82761b99e~qADzfhaZZ1912219122epcas2p1L;
+        Thu, 28 Apr 2022 07:54:34 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220428075434epsmtrp109bfd176b36bf1fff984b3ba672a5bad~qADzev3nA1575615756epsmtrp1R;
+        Thu, 28 Apr 2022 07:54:34 +0000 (GMT)
+X-AuditID: b6c32a45-a8fff70000002755-c1-626a483bf3ed
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        25.BF.08924.A384A626; Thu, 28 Apr 2022 16:54:34 +0900 (KST)
+Received: from ubuntu (unknown [10.229.95.128]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220428075434epsmtip12106b10af694ea89b2a9eaf5a55e51f9~qADzSWFpf1899518995epsmtip14;
+        Thu, 28 Apr 2022 07:54:34 +0000 (GMT)
+Date:   Thu, 28 Apr 2022 16:53:05 +0900
+From:   Jung Daehwan <dh10.jung@samsung.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Mathias Nyman <mathias.nyman@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Howard Yen <howardyen@google.com>,
+        Jack Pham <jackp@codeaurora.org>,
+        Puma Hsu <pumahsu@google.com>,
+        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: Re: [PATCH v4 5/5] usb: host: add xhci-exynos driver
+Message-ID: <20220428075305.GH151827@ubuntu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/8] dt-bindings: input: mtk-pmic-keys: add MT6359
- binding definition
-Content-Language: en-US
-To:     Fabien Parent <fparent@baylibre.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220426135313.245466-1-fparent@baylibre.com>
- <20220426135313.245466-2-fparent@baylibre.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220426135313.245466-2-fparent@baylibre.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <fa113ba0-1221-de93-a18f-e4e942cdb261@kernel.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrJJsWRmVeSWpSXmKPExsWy7bCmma61R1aSwfcHYhZPjixit2hevJ7N
+        4vqf94wW7c8vsFmcP7+B3WLj2x9MFpd3zWGzWLSsldmiedMUVouZa5Utuu7eYHTg9pjV0Mvm
+        cbmvl8ljwaZSj8V7XjJ5bFrVyeaxf+4ado++LasYPT5vkgvgiMq2yUhNTEktUkjNS85PycxL
+        t1XyDo53jjc1MzDUNbS0MFdSyEvMTbVVcvEJ0HXLzAG6U0mhLDGnFCgUkFhcrKRvZ1OUX1qS
+        qpCRX1xiq5RakJJTYF6gV5yYW1yal66Xl1piZWhgYGQKVJiQnXFixlLmgp+cFS/2ujUw9nJ0
+        MXJySAiYSLQu3M7SxcjFISSwg1Hia89iKOcTo8SFp6sZIZzPQJm9C5hhWn69WcoKkdjFKNF3
+        6hg7hPOEUeLfsRdMIFUsAqoSc9cfZgOx2QS0JO79OAHWLSKgKXH973ewbmaBOcwS15bcYAFJ
+        CAvYSvzaupMRxOYV0JFoXvmQDcIWlDg58wlYDaeAncTxFf+BBnFwiAqoSLw6WA8yR0JgJYfE
+        7MWrmSDOc5H48vMDK4QtLPHq+BZ2CFtK4mV/G5RdLLHrUysTRHMDo0TjgxNQvxlLzHrWDnYE
+        s0CGxMqWtWwgyyQElCWO3GKBCPNJdBz+yw4R5pXoaBOC6FSWmH55AtRaSYmDr89BTfSQ+PZ0
+        IxskgHYySxy5MZttAqP8LCSvzUKyDcLWkViw+xOQzQFkS0ss/8cBYWpKrN+lv4CRdRWjWGpB
+        cW56arFRgSE8tpPzczcxgtOwlusOxslvP+gdYmTiYDzEKMHBrCTC+2V3RpIQb0piZVVqUX58
+        UWlOavEhRlNgRE1klhJNzgdmgrySeEMTSwMTMzNDcyNTA3MlcV6vlA2JQgLpiSWp2ampBalF
+        MH1MHJxSDUzzmNYmzfkn3SOxcLu0bPMb6xmTb/ry6X+/69ViwLnr459P5dP0HRL+2zPNcJd9
+        HeKuJ9S7dPOWM8p2vio8p87cbPzewjdjgVvEBBGdrkNvQ3fuLZ8bfaKjeaMdc8Pi5eyqD3u6
+        rgXqpopUytz6msfxY0vYh0ftHQ9sllqs+jXpRes2hT95FhLmHn1aDbFvVX7+mXF4w5zS1x4f
+        0vdXzSi/4Ptejf213vHP0T8fPJ9gcHVCiOWJmvtZNxVjFxyJOVt4pjLM99Gqfw+Wmk3v4Fqm
+        ac3EbV3P0/Lk/++HoTMEp8zb1paRIMgvve1pt3fls3Pak3QXb9BkeeC33FH8+p47nPYLHjxr
+        5Nl+bXLo1IRrSizFGYmGWsxFxYkA/pV5/UwEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrLLMWRmVeSWpSXmKPExsWy7bCSnK6VR1aSwdsv2hZPjixit2hevJ7N
+        4vqf94wW7c8vsFmcP7+B3WLj2x9MFpd3zWGzWLSsldmiedMUVouZa5Utuu7eYHTg9pjV0Mvm
+        cbmvl8ljwaZSj8V7XjJ5bFrVyeaxf+4ado++LasYPT5vkgvgiOKySUnNySxLLdK3S+DK2L/a
+        oGAne8WpZWcZGxifsXYxcnJICJhI/HqzFMwWEtjBKDHneT1EXFJi6dwb7BC2sMT9liNANVxA
+        NY8YJaZv2s8IkmARUJWYu/4wG4jNJqAlce/HCWYQW0RAU+L63+9gDcwCC5glzrXNAysSFrCV
+        +LV1J1gzr4CORPPKh2wQU3cyS7Q3NkIlBCVOznzCAmIzA0298e8lUxcjB5AtLbH8HwdImFPA
+        TuL4iv/MIGFRARWJVwfrJzAKzkLSPAtJ8yyE5gWMzKsYJVMLinPTc4sNC4zyUsv1ihNzi0vz
+        0vWS83M3MYJjSEtrB+OeVR/0DjEycTAeYpTgYFYS4f2yOyNJiDclsbIqtSg/vqg0J7X4EKM0
+        B4uSOO+FrpPxQgLpiSWp2ampBalFMFkmDk6pBqYzJlnqBcInOuzmOm5ewuAYuOWNVWhn1tFV
+        hy6yLX15avLiguSYM3/+VO35cffjsrjNVRxnfnx6nemtxqUlzsXye9uk+HcJ89YH2zS/rLnp
+        mpucnHpulY31ep43Z4KOTZkuJ3nNXoNRtP3Ens9/LvsFfLtk0bNzWq0g+5bcqyX3Nwmd+bTs
+        +rLAuu+h67wPdJZpvRFZl3b556zVAf8yHWWcWZj/XFmp56X8TS9CjmV3a5D+Vn6uf+J2p8RM
+        nB6VtorcY7OVvb9frKrCqcuh4JJI3/cz7jMM2K+ePK/Voj57hm+ef1/615Oq8lWOvay3j24T
+        i22qKLVguxcXuPfEkpJ7Qa/VPHUDc3fLcSauSlRiKc5INNRiLipOBAAAHGPbEAMAAA==
+X-CMS-MailID: 20220428075434epcas2p1792bc1c96afd57aff3af85c82761b99e
+X-Msg-Generator: CA
+Content-Type: multipart/mixed;
+        boundary="----ibIraZXel8vAP7k4n32fW3YR3bsCcgqvt7YD6UTr0n_RukWR=_31fa8_"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220426092023epcas2p32946c087135ca4b7e63b03915060c55d
+References: <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
+        <CGME20220426092023epcas2p32946c087135ca4b7e63b03915060c55d@epcas2p3.samsung.com>
+        <1650964728-175347-6-git-send-email-dh10.jung@samsung.com>
+        <a9438aef-78a3-e8ab-2b78-cc872447df08@kernel.org>
+        <20220428012941.GF145620@ubuntu>
+        <01ec9962-e210-ce47-57cd-8849cca0a9df@kernel.org>
+        <20220428063634.GF151827@ubuntu>
+        <fa113ba0-1221-de93-a18f-e4e942cdb261@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26/04/2022 15:53, Fabien Parent wrote:
-> Add binding definition for the support of the MT6359 keyboard driver.
+------ibIraZXel8vAP7k4n32fW3YR3bsCcgqvt7YD6UTr0n_RukWR=_31fa8_
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+
+On Thu, Apr 28, 2022 at 09:31:56AM +0200, Krzysztof Kozlowski wrote:
+> On 28/04/2022 08:36, Jung Daehwan wrote:
+> >>
+> >> Since you called everything here as "exynos" it is specific to one
+> >> hardware and not-reusable on anything else. How can then you use some
+> >> other compatible? It would be a misuse of Devicetree bindings.
+> >>
+> > 
+> > I got it. Let me add them. Is it still necessary if it is only used by
+> > other module on runtime as I said above?
 > 
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> ---
-> v2: no changes
+> Except what Greg wrote, if by "other module" you mean out-of-tree, then
+> the patchset will not be accepted as it is unusable for Linux users.
+> Basically it would be a dead code in Linux kernel.
+> 
+> Best regards,
+> Krzysztof
+> 
+
+I wanted to submit patches of just xhci. Let me add a patch together of other
+module(dwc3-exynos) that is in-tree on next submission.
+
+Is it still necessary to add compatible or bindings in this case?
+
+Best Regards,
+Jung Daehwan
+
+------ibIraZXel8vAP7k4n32fW3YR3bsCcgqvt7YD6UTr0n_RukWR=_31fa8_
+Content-Type: text/plain; charset="utf-8"
 
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-
-Best regards,
-Krzysztof
+------ibIraZXel8vAP7k4n32fW3YR3bsCcgqvt7YD6UTr0n_RukWR=_31fa8_--
