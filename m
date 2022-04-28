@@ -2,125 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D49C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:44:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D6AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:44:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345475AbiD1JbY (ORCPT
+        id S1345645AbiD1Jba (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 05:31:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41852 "EHLO
+        Thu, 28 Apr 2022 05:31:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347239AbiD1Jad (ORCPT
+        with ESMTP id S1347286AbiD1Jau (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 05:30:33 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AE587C16B
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:27:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651138039; x=1682674039;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=BL7FbK1nu3gA7P1M1qIu9/gKr1VPvrt+sdkc/scSC5c=;
-  b=QZ+8TZxFwfw1LELQb5IqRxMqlPCzG+xWDXvxPOA6ukeI6x3yuFY8gIai
-   lvnj41bHmHO6+w7+t3AvD/8N+58x37wRVJ138C2yZ1zI5Xfv/QRsv6Twk
-   SUprTzkv2hO1XJMzVnKyVNOjl8bqsiQS9XqPFF7IYc0rBlHbwXg98Hpgi
-   Hrx9/MtRfkQlyFAjJTVD5d2ZHsKE6QS5p+zX0tTuFDcgF3yU0ngukAfQs
-   hM/v4t93yI45ItUaoZD2XrNQfFgopsxeZxIZRrxlqyOXocWDbbDqayhIe
-   mwbq7s2yOrFt2XIH1PgCRtQ8TNV0GIdXQ2/yFajjGMvHx1tjQrV5sCTYG
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="253601392"
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="253601392"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 02:27:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="651141431"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 28 Apr 2022 02:27:17 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nk0Qe-0005Ex-Hy;
-        Thu, 28 Apr 2022 09:27:16 +0000
-Date:   Thu, 28 Apr 2022 17:27:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-linked-list 39/45]
- fs/netfs/buffered_write.c:669:13: sparse: sparse: incorrect type in
- assignment (different base types)
-Message-ID: <202204281739.ZRJW1o8Z-lkp@intel.com>
+        Thu, 28 Apr 2022 05:30:50 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC92C7CB22;
+        Thu, 28 Apr 2022 02:27:35 -0700 (PDT)
+X-UUID: f061bfd7b48046aebe7282d6c7c98cd0-20220428
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:78fbf268-8de0-4134-b325-16baa79af4ce,OB:10,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:95
+X-CID-INFO: VERSION:1.1.4,REQID:78fbf268-8de0-4134-b325-16baa79af4ce,OB:10,LOB
+        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:95
+X-CID-META: VersionHash:faefae9,CLOUDID:f211082f-6199-437e-8ab4-9920b4bc5b76,C
+        OID:8903f490233d,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+        ,QS:0,BEC:nil
+X-UUID: f061bfd7b48046aebe7282d6c7c98cd0-20220428
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 86142278; Thu, 28 Apr 2022 17:27:31 +0800
+Received: from MTKMBS07N2.mediatek.inc (172.21.101.141) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 28 Apr 2022 17:27:30 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 28 Apr 2022 17:27:30 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 28 Apr 2022 17:27:30 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <linux-rtc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Yuchen Huang <yuchen.huang@mediatek.com>
+Subject: [PATCH v2 1/1] dt-bindings: rtc: mediatek: add mt6358 and mt6366 compatible
+Date:   Thu, 28 Apr 2022 17:27:26 +0800
+Message-ID: <20220428092726.25814-2-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220428092726.25814-1-allen-kh.cheng@mediatek.com>
+References: <20220428092726.25814-1-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-linked-list
-head:   a20ca5707a9b524115f5ded439fed1f8e552dd6b
-commit: 95f517db4cb2fbcfdabe76d0be06d75746958b0b [39/45] netfs: Allow buffered shared-writeable mmap through netfs_page_mkwrite()
-config: s390-randconfig-s032-20220428 (https://download.01.org/0day-ci/archive/20220428/202204281739.ZRJW1o8Z-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/ammarfaizi2/linux-block/commit/95f517db4cb2fbcfdabe76d0be06d75746958b0b
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-linked-list
-        git checkout 95f517db4cb2fbcfdabe76d0be06d75746958b0b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=s390 SHELL=/bin/bash
+Add mt6358 and mt6366 compatible in devicetree-binding document for
+MediaTek PMIC based RTC. mt6358 and mt6366 use same compatible data
+to store RTC_WRTGR address offset.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+mt6358-rts should be used as fallback for mt6366-rtc.
 
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Signed-off-by: Yuchen Huang <yuchen.huang@mediatek.com>
+---
+ Documentation/devicetree/bindings/rtc/rtc-mt6397.txt | 2 ++
+ 1 file changed, 2 insertions(+)
 
-sparse warnings: (new ones prefixed by >>)
->> fs/netfs/buffered_write.c:669:13: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted vm_fault_t [usertype] ret @@     got int @@
-   fs/netfs/buffered_write.c:669:13: sparse:     expected restricted vm_fault_t [usertype] ret
-   fs/netfs/buffered_write.c:669:13: sparse:     got int
->> fs/netfs/buffered_write.c:670:13: sparse: sparse: restricted vm_fault_t degrades to integer
-
-vim +669 fs/netfs/buffered_write.c
-
-   640	
-   641	/*
-   642	 * Notification that a previously read-only page is about to become writable.
-   643	 * Note that the caller indicates a single page of a multipage folio.
-   644	 */
-   645	vm_fault_t netfs_page_mkwrite(struct vm_fault *vmf)
-   646	{
-   647		struct netfs_dirty_region *region;
-   648		struct folio *folio = page_folio(vmf->page);
-   649		struct file *file = vmf->vma->vm_file;
-   650		struct inode *inode = file_inode(file);
-   651		struct netfs_i_context *ctx = netfs_i_context(inode);
-   652		vm_fault_t ret = VM_FAULT_RETRY;
-   653		int err;
-   654		LIST_HEAD(spare_regions);
-   655	
-   656		_enter("%lx", folio->index);
-   657	
-   658		if (ctx->ops->validate_for_write(inode, file) < 0)
-   659			return VM_FAULT_SIGBUS;
-   660	
-   661		sb_start_pagefault(inode->i_sb);
-   662	
-   663		if (folio_wait_writeback_killable(folio))
-   664			goto out;
-   665	
-   666		if (folio_lock_killable(folio) < 0)
-   667			goto out;
-   668	
- > 669		ret = netfs_preallocate_regions(&spare_regions);
- > 670		if (ret < 0) {
-
+diff --git a/Documentation/devicetree/bindings/rtc/rtc-mt6397.txt b/Documentation/devicetree/bindings/rtc/rtc-mt6397.txt
+index 55a0c8874c03..7212076a8f1b 100644
+--- a/Documentation/devicetree/bindings/rtc/rtc-mt6397.txt
++++ b/Documentation/devicetree/bindings/rtc/rtc-mt6397.txt
+@@ -14,6 +14,8 @@ For MediaTek PMIC wrapper bus bindings, see:
+ Required properties:
+ - compatible: Should be one of follows
+        "mediatek,mt6323-rtc": for MT6323 PMIC
++       "mediatek,mt6358-rtc": for MT6358 PMIC
++       "mediatek,mt6366-rtc", "mediatek,mt6358-rtc": for MT6366 PMIC
+        "mediatek,mt6397-rtc": for MT6397 PMIC
+ 
+ Example:
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.18.0
+
