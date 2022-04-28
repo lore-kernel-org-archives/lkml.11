@@ -2,73 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30908C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 01:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEBBEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 01:35:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240735AbiD1Bge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 21:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43868 "EHLO
+        id S240866AbiD1BjG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 21:39:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiD1Bga (ORCPT
+        with ESMTP id S240811AbiD1BjA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 21:36:30 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB46921E25;
-        Wed, 27 Apr 2022 18:33:17 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KpdRL0YtmzhYZc;
-        Thu, 28 Apr 2022 09:33:02 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Apr 2022 09:33:15 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Apr
- 2022 09:33:15 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <grygorii.strashko@ti.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-Subject: [PATCH] net: cpsw: add missing of_node_put() in cpsw_probe_dt()
-Date:   Thu, 28 Apr 2022 09:45:14 +0800
-Message-ID: <20220428014514.2509940-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 27 Apr 2022 21:39:00 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1854198D;
+        Wed, 27 Apr 2022 18:35:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651109747; x=1682645747;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=cgA2i8n+gUQ0bO6YPVXx2hXtOlEvor0nj1EPo8UtNcM=;
+  b=citxVubaE2sM4T6rNjCFeyT+74ZIhlKVEVHO6yWXATz5Wd7cZJm5nbH4
+   vVWFr2y8y7lthEuzUBQEpuFis+D+joATgiImLVFqIBY7zJdt8e2YjA58V
+   8peQJVzn1YFMtCaTk8YGKrm3glSLxI1+Ic+YWXgFTHI8lKDsauiKnk8gs
+   +Tdg2GtkEPUmL0FZoEwP7f2chaFFwGcp2LSL+tcNETcNPsQ+OdrbziPe4
+   yjlzQnzIzY8tvDvP+HOaWRlgGpYNobnGYVfzLVn8lUAkC3bZ4qAlWsWQh
+   28rIJumF4lQ6nldrU63h49UjBHKTIJMJhVo1UEzMFEqBRQbuohSmX/dpy
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="253508420"
+X-IronPort-AV: E=Sophos;i="5.90,294,1643702400"; 
+   d="scan'208";a="253508420"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 18:35:46 -0700
+X-IronPort-AV: E=Sophos;i="5.90,294,1643702400"; 
+   d="scan'208";a="808324382"
+Received: from rrnambia-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.60.78])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 18:35:43 -0700
+Message-ID: <a6fb489700ce00fcb32a670a2fd7bf99a113d878.camel@intel.com>
+Subject: Re: [PATCH v3 10/21] x86/virt/tdx: Add placeholder to coveret all
+ system RAM as TDX memory
+From:   Kai Huang <kai.huang@intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+Date:   Thu, 28 Apr 2022 13:35:41 +1200
+In-Reply-To: <1624e839-81e5-7bc7-533b-c5c838d35f47@intel.com>
+References: <cover.1649219184.git.kai.huang@intel.com>
+         <6230ef28be8c360ab326c8f592acf1964ac065c1.1649219184.git.kai.huang@intel.com>
+         <d69c08da-80fa-2001-bbe8-8c45552e74ae@intel.com>
+         <228cfa7e5326fa378c1dde2b5e9022146f97b706.camel@intel.com>
+         <1624e839-81e5-7bc7-533b-c5c838d35f47@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If devm_kcalloc() fails, 'tmp_node' should be put in cpsw_probe_dt().
+On Wed, 2022-04-27 at 18:07 -0700, Dave Hansen wrote:
+> On 4/27/22 17:53, Kai Huang wrote:
+> > On Wed, 2022-04-27 at 15:24 -0700, Dave Hansen wrote:
+> > > On 4/5/22 21:49, Kai Huang wrote:
+> > > > TDX provides increased levels of memory confidentiality and integrity.
+> > > > This requires special hardware support for features like memory
+> > > > encryption and storage of memory integrity checksums.  Not all memory
+> > > > satisfies these requirements.
+> > > > 
+> > > > As a result, TDX introduced the concept of a "Convertible Memory Region"
+> > > > (CMR).  During boot, the firmware builds a list of all of the memory
+> > > > ranges which can provide the TDX security guarantees.  The list of these
+> > > > ranges, along with TDX module information, is available to the kernel by
+> > > > querying the TDX module.
+> > > > 
+> > > > In order to provide crypto protection to TD guests, the TDX architecture
+> > > 
+> > > There's that "crypto protection" thing again.  I'm not really a fan of
+> > > the changes made to this changelog since I wrote it. :)
+> > 
+> > Sorry about that.  I'll remove "In order to provide crypto protection to TD
+> > guests".
+> 
+> Seriously, though.  I took the effort to write these changelogs for you.
+>  They were fine.  I'm not stoked about needing to proofread them again.
 
-Fixes: ed3525eda4c4 ("net: ethernet: ti: introduce cpsw switchdev based driver part 1 - dual-emac")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/net/ethernet/ti/cpsw_new.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Yeah pretty clear to me now. Really thanks for your time.
 
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index bd4b1528cf99..b81179f7d738 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -1246,8 +1246,10 @@ static int cpsw_probe_dt(struct cpsw_common *cpsw)
- 	data->slave_data = devm_kcalloc(dev, CPSW_SLAVE_PORTS_NUM,
- 					sizeof(struct cpsw_slave_data),
- 					GFP_KERNEL);
--	if (!data->slave_data)
-+	if (!data->slave_data) {
-+		of_node_put(tmp_node);
- 		return -ENOMEM;
-+	}
- 
- 	/* Populate all the child nodes here...
- 	 */
+Won't happen again.  If there's something I feel not right, I'll raise but not
+slightly change.
+
+> 
+> > > > also needs additional metadata to record things like which TD guest
+> > > > "owns" a given page of memory.  This metadata essentially serves as the
+> > > > 'struct page' for the TDX module.  The space for this metadata is not
+> > > > reserved by the hardware upfront and must be allocated by the kernel
+> > > 
+> > > 			    ^ "up front"
+> > 
+> > Thanks will change to "up front".
+> > 
+> > Btw, the gmail grammar check gives me a red line if I use "up front", but it
+> > doesn't complain "upfront".
+> 
+> I'm pretty sure it's wrong.  "up front" is an adverb that applies to
+> "reserved".  "Upfront" is an adjective and not how you used it in that
+> sentence.
+
+Thanks for explaining.  Anyway the gmail grammar can have bug.
+
+> 
+> > > > +	 * allocated individually within construct_tdmrs() to meet
+> > > > +	 * this requirement.
+> > > > +	 */
+> > > > +	tdmr_array = kcalloc(tdx_sysinfo.max_tdmrs, sizeof(struct tdmr_info *),
+> > > > +			GFP_KERNEL);
+> > > 
+> > > Where, exactly is that alignment provided?  A 'struct tdmr_info *' is 8
+> > > bytes so a tdx_sysinfo.max_tdmrs=8 kcalloc() would only guarantee
+> > > 64-byte alignment.
+> > 
+> > The entries in the array only contain a pointer to TDMR_INFO.  The actual
+> > TDMR_INFO is allocated separately. The array itself is never used by TDX
+> > hardware so it doesn't matter.  We just need to guarantee each TDMR_INFO is
+> > 512B-byte aligned.
+> 
+> The comment was clear as mud about this.  If you're going to talk about
+> alignment, then do it near the allocation that guarantees the alignment,
+> not in some other function near *ANOTHER* allocation.
+> 
+> Also, considering that you're about to go allocate potentially gigabytes
+> of physically contiguous memory, it seems laughable that you'd go to any
+> trouble at all to allocate an array of pointers here.  Why not just
+> 
+> 	kcalloc(tdx_sysinfo.max_tdmrs, sizeof(struct tmdr_info), ...);
+
+kmalloc() guarantees the size-alignment if the size is power-of-two.  TDMR_INFO
+(512-bytes) itself is  power of two, but the 'max_tdmrs x sizeof(TDMR_INFO)' may
+not be power of two.  For instance, when max_tdmrs == 3, the result is not
+power-of-two.
+
+Or am I wrong? I am not good at math though.
+
+> 
+> Or, heck, just vmalloc() the dang thing.  Why even bother with the array
+> of pointers?
+> 
+> 
+> > > > +	if (!tdmr_array) {
+> > > > +		ret = -ENOMEM;
+> > > > +		goto out;
+> > > > +	}
+> > > > +
+> > > > +	/* Construct TDMRs to build TDX memory */
+> > > > +	ret = construct_tdmrs(tdmr_array, &tdmr_num);
+> > > > +	if (ret)
+> > > > +		goto out_free_tdmrs;
+> > > > +
+> > > >  	/*
+> > > >  	 * Return -EFAULT until all steps of TDX module
+> > > >  	 * initialization are done.
+> > > >  	 */
+> > > >  	ret = -EFAULT;
+> > > 
+> > > There's the -EFAULT again.  I'd replace these with a better error code.
+> > 
+> > I couldn't think out a better error code.  -EINVAL looks doesn't suit.  -EAGAIN
+> > also doesn't make sense for now since we always shutdown the TDX module in case
+> > of any error so caller should never retry.  I think we need some error code to
+> > tell "the job isn't done yet".  Perhaps -EBUSY?
+> 
+> Is this going to retry if it sees -EFAULT or -EBUSY?
+
+No.  Currently we always shutdown the module in case of any error.  Caller won't
+be able to retry.
+
+In the future, this can be optimized.  We don't shutdown the module in case of
+*some* error (i.e. -ENOMEM), but record an internal state when error happened,
+so the caller can retry again.  For now, there's no retry.
+
 -- 
-2.25.1
+Thanks,
+-Kai
+
 
