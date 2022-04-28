@@ -2,170 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD6EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF31C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:41:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242433AbiD1Do0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 23:44:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37330 "EHLO
+        id S242507AbiD1Dow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 23:44:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242761AbiD1DoL (ORCPT
+        with ESMTP id S241797AbiD1Dot (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 23:44:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27334814A0
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 20:40:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651117257;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6a45cRhNTdyTWeV51hCajpfm2v3DEUl9/Oa/LlePIyo=;
-        b=Xw1AgB43qCGvNAE6TyxLDKdNe+TeRvLdoW+JfofZ8zIqRzv1r5/lBugjLS8fGeoobVT5FR
-        hKL3xw+roS/voyIzdr7ccrIP/tH9kbGn0akaZzciNIkszcfKS9/s+NNxNjbIFlL2AEUg+l
-        IXtusfw3NJcysEVMq9JRfE85TJySlNY=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-464-1oYT8W6vO1uRN0Dr2-nsXQ-1; Wed, 27 Apr 2022 23:40:50 -0400
-X-MC-Unique: 1oYT8W6vO1uRN0Dr2-nsXQ-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9ACD1380670B;
-        Thu, 28 Apr 2022 03:40:49 +0000 (UTC)
-Received: from localhost (ovpn-13-110.pek2.redhat.com [10.72.13.110])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id ED604553D7A;
-        Thu, 28 Apr 2022 03:40:47 +0000 (UTC)
-Date:   Thu, 28 Apr 2022 11:40:45 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        kexec@lists.infradead.org, Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        John Donnelly <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: Re: [PATCH v22 5/9] arm64: kdump: Reimplement crashkernel=X
-Message-ID: <YmoMvV1wzHT5V1aw@MiWiFi-R3L-srv>
-References: <20220414115720.1887-1-thunder.leizhen@huawei.com>
- <20220414115720.1887-6-thunder.leizhen@huawei.com>
- <YmgzxsrrMlCDYsWp@arm.com>
- <ee8daaa9-3258-e7e8-e5c4-c51dc9841580@huawei.com>
- <Ymk34NsIFqUgfk3b@arm.com>
- <ae7211ad-e2ac-f5b1-5aa0-701802132e73@huawei.com>
- <YmlphvZVMsGfFksp@arm.com>
+        Wed, 27 Apr 2022 23:44:49 -0400
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 1CE9483B1B;
+        Wed, 27 Apr 2022 20:41:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding;
+        bh=TkdTGRGgDnMX8EaddtL3uKayHDJt8/TLy89laRtXYrQ=; b=Bs50JvXElikc8
+        7LmlIXOE0aU/NqN9yLGnQ7AyQbt+K2NN295V1n12wk+whZrxyTZmGCSyvpYbUA+J
+        EpGVSO8EL2gioZXhd9aIUOmNF5RKblRXuWkia1AUjYm4UO6JgDTvUbfLFVax2jyd
+        DgaIxXcp0eeL49A+etI6rCR8xIgzs0=
+Received: from localhost.localdomain (unknown [10.102.183.96])
+        by app1 (Coremail) with SMTP id XAUFCgAHsrnPDGpi9qRkEQ--.26115S4;
+        Thu, 28 Apr 2022 11:41:08 +0800 (CST)
+From:   Xin Xiong <xiongx18@fudan.edu.cn>
+To:     John Johansen <john.johansen@canonical.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Seth Arnold <seth.arnold@canonical.com>,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     yuanxzhang@fudan.edu.cn, Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>
+Subject: [PATCH] apparmor: fix reference count leak in aa_pivotroot()
+Date:   Thu, 28 Apr 2022 11:39:08 +0800
+Message-Id: <20220428033907.1658-1-xiongx18@fudan.edu.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmlphvZVMsGfFksp@arm.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: XAUFCgAHsrnPDGpi9qRkEQ--.26115S4
+X-Coremail-Antispam: 1UD129KBjvdXoWruryruFW5tr4kCFWfGry3Arb_yoWkurc_GF
+        1kZwn5urWUZF1qqF4qkay0gF92934kJr4qga4FkrsrG34Y9a1ayrZxJw1fZry2qw47JF15
+        AFZ3Cr9Iy34xZjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbT8FF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr1j
+        6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
+        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVWUJVW8Jw
+        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAG
+        YxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCFx2
+        IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v2
+        6r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67
+        AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IY
+        s7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxV
+        WUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfUo-BMDUUUU
+X-CM-SenderInfo: arytiiqsuqiimz6i3vldqovvfxof0/1tbiAQ0KEFKp4-Oj6wAAs1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Catalin, Zhen Lei,
+The aa_pivotroot() function has a reference counting bug in a specific
+path. When aa_replace_current_label() returns on success, the function
+forgets to decrement the reference count of “target”, which is
+increased earlier by build_pivotroot(), causing a reference leak.
 
-On 04/27/22 at 05:04pm, Catalin Marinas wrote:
-> On Wed, Apr 27, 2022 at 09:49:20PM +0800, Leizhen (ThunderTown) wrote:
-> > On 2022/4/27 20:32, Catalin Marinas wrote:
-> > > I think one could always pass a default command line like:
-> > > 
-> > > 	crashkernel=1G,high crashkernel=128M,low
-> > > 
-> > > without much knowledge of the SoC memory layout.
-> > 
-> > Yes, that's what the end result is. The user specify crashkernel=128M,low
-> > and the implementation ensure the 128M low memory is allocated from DMA zone.
-> > We use arm64_dma_phys_limit as the upper limit for crash low memory.
-> > 
-> > +#define CRASH_ADDR_LOW_MAX             arm64_dma_phys_limit
-> > +       unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
-> > +       crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
-> >                                                crash_base, crash_max);
-> > 
-> > > Another option is to only introduce crashkernel=Y,low and, when that is
-> > > passed, crashkernel=Y can go above arm64_dma_phys_limit. We won't need a
-> > > 'high' option at all:
-> > > 
-> > > 	crashkernel=1G				- all within ZONE_DMA
-> > > 	crashkernel=1G crashkernel=128M,low	- 128M in ZONE_DMA
-> > > 						  1G above ZONE_DMA
-> > > 
-> > > If ZONE_DMA is not present or it extends to the whole RAM, we can ignore
-> > > the 'low' option.
-> > 
-> > I think although the code is hard to make generic, the interface is better to
-> > be relatively uniform. A user might have to maintain both x86 and arm64, and
-> > so on. It's not a good thing that the difference is too big.
-> 
-> There will be some difference as the 4G limit doesn't always hold for
-> arm64 (though it's true in most cases). Anyway, we can probably simplify
-> things a bit while following the documented behaviour:
-> 
-> 	crashkernel=Y		- current behaviour within ZONE_DMA
-> 	crashkernel=Y,high	- allocate from above ZONE_DMA
-> 	crashkernel=Y,low	- allocate within ZONE_DMA
-> 
-> There is no fallback from crashkernel=Y.
-> 
-> The question is whether we still want a default low allocation if
-> crashkernel=Y,low is missing but 'high' is present. If we add this, I
-> think we'd be consistent with kernel-parameters.txt for the 'low'
-> description. A default 'low' is probably not that bad but I'm tempted to
-> always mandate both 'high' and 'low'.
+Fix it by decreasing the refcount of “target” in that path.
 
-Sorry to interrupt. Seems the ,high ,low and fallback are main concerns
-about this version. And I have the same concerns about them which comes
-from below points:
-1) we may need to take best effort to keep ,high, ,low behaviour
-consistent on all ARCHes. Otherwise user/admin may be confused when they
-deploy/configure kdump on different machines of different ARCHes in the
-same LAB. I think we should try to avoid the confusion.
-2) Fallback behaviour is important to our distros. The reason is we will
-provide default value with crashkernel=xxxM along kernel of distros. In
-this case, we hope the reservation will succeed by all means. The ,high
-and ,low is an option if customer likes to take with expertise.
+Fixes: 2ea3ffb7782a ("apparmor: add mount mediation")
+Co-developed-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Co-developed-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+---
+ security/apparmor/mount.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-After going through arm64 memory init code, I got below summary about
-arm64_dma_phys_limit which is the first zone's upper limit. I think we
-can make use of it to facilitate to simplify code.
-================================================================================
-                        DMA                      DMA32                    NORMAL
-1)Raspberry Pi4         0~1G                     3G~4G                    (above 4G)
-2)Normal machine        0~4G                     0                        (above 4G)
-3)Special machine       (above 4G)~MAX
-4)No DMA|DMA32                                                            (above 4G)~MAX
-
--------------------------------------------
-                      arm64_dma_phys_limit
-1)Raspberry Pi4         1G                     
-2)Normal machine        4G                     
-3)Special machine       MAX
-4)No DMA|DMA32          MAX
-
-Note: 3)Special machine means the machine's starting physical address is above 4G.
-WHile 4)No DMA|DMA32 means kernel w/o CONFIG_ZONE_DMA|DMA32, and has
-IOMMU hardware supporting.
-===================================================================================
-
-I made a draft patch based on this patchset, please feel free to check and
-see if it's OK, or anything missing or wrongly understood. I removed
-reserve_crashkernel_high() and only keep reserve_crashkernel() and
-reserve_crashkernel_low() as the v21 did.
-
-Thanks
-Baoquan
+diff --git a/security/apparmor/mount.c b/security/apparmor/mount.c
+index aa6fcfde3051..d0b19ab9137d 100644
+--- a/security/apparmor/mount.c
++++ b/security/apparmor/mount.c
+@@ -718,6 +718,7 @@ int aa_pivotroot(struct aa_label *label, const struct path *old_path,
+ 			aa_put_label(target);
+ 			goto out;
+ 		}
++		aa_put_label(target);
+ 	} else
+ 		/* already audited error */
+ 		error = PTR_ERR(target);
+-- 
+2.25.1
 
