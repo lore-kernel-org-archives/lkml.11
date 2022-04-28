@@ -2,150 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C57C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:28:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 893D8C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349159AbiD1Pb1 (ORCPT
+        id S1349169AbiD1Pb2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 11:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50984 "EHLO
+        Thu, 28 Apr 2022 11:31:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346122AbiD1Pb0 (ORCPT
+        with ESMTP id S1349039AbiD1Pb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 28 Apr 2022 11:31:26 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C4FAFAC4
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 08:28:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651159691; x=1682695691;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4JLBXpO7OFugdq0TzzwsqFbdF4JGMEv8lqRHVUp7dVA=;
-  b=cX9SO6472Fho/2KsZZjmWaUc70zb4Egx2rxbVrjKogXRjyy8wHX5rr42
-   AKT5/i/czr0rbm4yroUF7dbl7PeEMkF2hJRmt4BKbxAGXsTqbDf+24rMt
-   sKBpMLSx6hrMsn/1UWBWfYIPr0hVuCrzcD6qOICTkLP17me4dAH2sgwg9
-   9PLar2dcPBaL6bloX4U7RH0HRmesDMDxAj3jDJbmTZPRO+piXkRVnISLj
-   1X6jWLBQ+vG9ViMwNvotkfvdkKclwQrM4cyI2lk3rIYYwsyt3zLF4+Bdi
-   Ts4VYeG4Jcjw492KxfzRsXc/mQYbfhA1ULWoMLS+86D3OzmoeXY5hrAOH
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="263911791"
-X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="263911791"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 08:28:11 -0700
-X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="651263724"
-Received: from fyu1.sc.intel.com ([172.25.103.126])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 08:28:10 -0700
-Date:   Thu, 28 Apr 2022 08:28:41 -0700
-From:   Fenghua Yu <fenghua.yu@intel.com>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>, robin.murphy@arm.com,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        iommu <iommu@lists.linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, zhangfei.gao@linaro.org,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Message-ID: <YmqyeBfCuDXAMDlZ@fyu1.sc.intel.com>
-References: <tencent_A4E83BA6071B2204B6F5D4E69A50D21C1A09@qq.com>
- <YmLOznyBF0f7COYT@myrica>
- <tencent_2922DAB6F3D5789A1CD3A21A843B4007ED09@qq.com>
- <Yman5hLomw9/c+bi@myrica>
- <76ec6342-0d7c-7c7b-c132-2892e4048fa1@intel.com>
- <YmavoKkVu+hd+x0M@myrica>
- <20220425083444.00af5674@jacob-builder>
- <YmbIjnHtibY7n4Wb@myrica>
- <YmdzFFx7fN586jcf@fyu1.sc.intel.com>
- <bc18351c-27f2-17ae-e781-6b60fbb72541@intel.com>
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA1AB0A4F;
+        Thu, 28 Apr 2022 08:28:11 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id g20so5941770edw.6;
+        Thu, 28 Apr 2022 08:28:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ch/ZtI4KpEXScEqZimVchhnhnRwZuiX0qxTyST1Yn2o=;
+        b=BY5xSbA0UnNgyOKeZBLaGbeP7emvZCKOxpo0COt1DslBptxCiWnZIMOFwvxI+Ftf2s
+         X32E13UDx9/c1FbsJRN78jtM9zq9ud+LRGrHDqRQ6kFJgTPdvPoKY16CjUGDpnLhgOAo
+         fcq9CGX+i2atQhSaZHM6EvZm1N98o0QPAKEu2VoTlJ0B8rDTj1Xin9jFPw4lvnJCH1f4
+         UjpYvh1BC815dkW5y7cWCWDnO/LOawQ5oAMuUfxtgCGMhpDfU4uwt37rG/o+GF3xtgQa
+         kjfRra4QKZJfP4DeZHP1+600NbFyTEqjgAuoYea5Ea0slBpjJPvbatt+4MCib7u6sD1i
+         aEZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ch/ZtI4KpEXScEqZimVchhnhnRwZuiX0qxTyST1Yn2o=;
+        b=47Kh/HVS3YT/kG7mTgX7wdNHVxDxqfBueL7fbOUxn8rsUV/nLjSjTqHJggFUvLJklx
+         qAh7UFmqGgeBGo/AQqkaMqfT9ffw2djRqIUx5/LKhy/iFigJ3kuQFq/bGd2EdQjZanHE
+         KQcWoSczVGz+aTkSF2+rB7N+ZUAtB9U+oeWzbym2iput22LRAi2USPJLHvQ26UpCWeSt
+         W4xiCntOV72ATXKF4RGhHtp12WrhRTbIP1n+wNZ9GViTF3GeYY124ejQNAFUIoIo7XL2
+         aVIA/HwzQrD3r+EJzGHimS6xutw8nJbhn/L4VBDbDuMRUHjRggICLEAxf+/lEoGGIv5t
+         yD6w==
+X-Gm-Message-State: AOAM531BAhUtrILXANb5zeflkAMAMD/DQveyk8qqukiR/fDLC6vPJ2Ta
+        6XB03AeCE3m+BBTPZspnp8U=
+X-Google-Smtp-Source: ABdhPJwlZ+HlhcNftxpgUFH4WQGGTIK106UeyDR06lq4db6fJTGhdiYuK0CMOhx/Qp2FTuHBihUZrw==
+X-Received: by 2002:aa7:d751:0:b0:425:d38c:41a1 with SMTP id a17-20020aa7d751000000b00425d38c41a1mr29299130eds.162.1651159689975;
+        Thu, 28 Apr 2022 08:28:09 -0700 (PDT)
+Received: from [192.168.8.198] ([85.255.235.145])
+        by smtp.gmail.com with ESMTPSA id b20-20020a1709063f9400b006e12836e07fsm103527ejj.154.2022.04.28.08.28.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 08:28:09 -0700 (PDT)
+Message-ID: <e4a9103e-feaa-7e0d-8597-1fe35b399561@gmail.com>
+Date:   Thu, 28 Apr 2022 16:27:45 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bc18351c-27f2-17ae-e781-6b60fbb72541@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net-next 01/11] ipv6: optimise ipcm6 cookie init
+Content-Language: en-US
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org
+References: <cover.1651071843.git.asml.silence@gmail.com>
+ <64341db6ca5a1f4d1eebbe86a7ee0b7d7400335e.1651071843.git.asml.silence@gmail.com>
+ <ffc7a45e9c77303b47bf2faaf3498ed8a3c1ab1a.camel@redhat.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <ffc7a45e9c77303b47bf2faaf3498ed8a3c1ab1a.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Dave,
+On 4/28/22 15:04, Paolo Abeni wrote:
+> On Thu, 2022-04-28 at 11:56 +0100, Pavel Begunkov wrote:
+>> Users of ipcm6_init() have a somewhat complex post initialisation
+>> of ->dontfrag and ->tclass. Not only it adds additional overhead,
+>> but also complicates the code.
+>>
+>> First, replace ipcm6_init() with ipcm6_init_sk(). As it might be not an
+>> equivalent change, let's first look at ->dontfrag. The logic was to set
+>> it from cmsg if specified and otherwise fallback to np->dontfrag. Now
+>> it's initialising to np->dontfrag in the beginning and then potentially
+>> overriding with cmsg, which is absolutely the same behaviour.
+>>
+>> It's a bit more complex with ->tclass as ip6_datagram_send_ctl() might
+>> set it to -1, which is a default and not valid value. The solution
+>> here is to skip -1's specified in cmsg, so it'll be left with the socket
+>> default value getting us to the old behaviour.
+>>
+>> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+>> ---
+>>   include/net/ipv6.h    | 9 ---------
+>>   net/ipv6/datagram.c   | 4 ++--
+>>   net/ipv6/ip6_output.c | 2 --
+>>   net/ipv6/raw.c        | 8 +-------
+>>   net/ipv6/udp.c        | 7 +------
+>>   net/l2tp/l2tp_ip6.c   | 8 +-------
+>>   6 files changed, 5 insertions(+), 33 deletions(-)
+>>
+>> diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+>> index 213612f1680c..30a3447e34b4 100644
+>> --- a/include/net/ipv6.h
+>> +++ b/include/net/ipv6.h
+>> @@ -352,15 +352,6 @@ struct ipcm6_cookie {
+>>   	struct ipv6_txoptions *opt;
+>>   };
+>>   
+>> -static inline void ipcm6_init(struct ipcm6_cookie *ipc6)
+>> -{
+>> -	*ipc6 = (struct ipcm6_cookie) {
+>> -		.hlimit = -1,
+>> -		.tclass = -1,
+>> -		.dontfrag = -1,
+>> -	};
+>> -}
+>> -
+>>   static inline void ipcm6_init_sk(struct ipcm6_cookie *ipc6,
+>>   				 const struct ipv6_pinfo *np)
+>>   {
+>> diff --git a/net/ipv6/datagram.c b/net/ipv6/datagram.c
+>> index 206f66310a88..1b334bc855ae 100644
+>> --- a/net/ipv6/datagram.c
+>> +++ b/net/ipv6/datagram.c
+>> @@ -1003,9 +1003,9 @@ int ip6_datagram_send_ctl(struct net *net, struct sock *sk,
+>>   			if (tc < -1 || tc > 0xff)
+>>   				goto exit_f;
+>>   
+>> +			if (tc != -1)
+>> +				ipc6->tclass = tc;
+>>   			err = 0;
+>> -			ipc6->tclass = tc;
+>> -
+>>   			break;
+>>   		    }
+> 
+> It looks like the above causes a behavioral change: before this patch
+> cmsg took precedence on socket status, after this patch looks like it's
+> the opposide.
+> 
+> Am I missing something?
 
-On Thu, Apr 28, 2022 at 08:09:04AM -0700, Dave Hansen wrote:
-> On 4/25/22 21:20, Fenghua Yu wrote:
-> >>From 84aa68f6174439d863c40cdc2db0e1b89d620dd0 Mon Sep 17 00:00:00 2001
-> > From: Fenghua Yu <fenghua.yu@intel.com>
-> > Date: Fri, 15 Apr 2022 00:51:33 -0700
-> > Subject: [PATCH] iommu/sva: Fix PASID use-after-free issue
-> > 
-> > A PASID might be still used on ARM after it is freed in __mmput().
-> 
-> Is it really just ARM?
+before:
 
-Actually it should happen on X86 as well. I will remove "on ARM" in the
-changelog.
+ipc6.tclass = -1;
+if (cmsg)
+	ip6_datagram_send_ctl(&ipc6);
+if (ipc6.tclass < 0)
+	ipc6.tclass = np->tclass;
 
-> 
-> > process:
-> > 	open()->sva_bind()->ioasid_alloc() = N; // Get PASID N for the mm
-> > 	exit();
-> > 	exit_mm()->__mmput()->mm_pasid_drop()->mm->pasid = -1; // PASID -1
-> > 	exit_files()->release(dev)->sva_unbind()->use mm->pasid; // Failure
-> > 
-> > To avoid the use-after-free issue, free the PASID after no device uses it,
-> > i.e. after all devices are unbound from the mm.
-> > 
-> > sva_bind()/sva_unbind() call mmgrab()/mmdrop() to track mm->mm_count.
-> > __mmdrop() is called only after mm->mm_count is zero. So freeing the PASID
-> > in __mmdrop() guarantees the PASID is safely freed only after no device
-> > is bound to the mm.
-> 
-> Does this changelog work for everyone?
-> 
-> ==
-> 
-> tl;dr: The PASID is being freed too early.  It needs to stay around
-> until after device drivers that might be using it have had a chance to
-> clear it out of the hardware.
-> 
+after:
 
-Do you want me to change the changlog to add both this paragraph and the
-following paragraph?
+ipc6.tclass = np->tclass; // ipcm6_init_sk()
+if (cmsg)
+	ip6_datagram_send_ctl(&ipc6);
 
-> --
-> 
-> As a reminder:
-> 
-> mmget() /mmput()  refcount the mm's address space
-> mmgrab()/mmdrop() refcount the mm itself
-> 
-> The PASID is currently tied to the life of the mm's address space and
-> freed in __mmput().  This makes logical sense because the PASID can't be
-> used once the address space is gone.
-> 
-> But, this misses an important point: even after the address space is
-> gone, the PASID will still be programmed into a device.  Device drivers
-> might, for instance, still need to flush operations that are outstanding
-> and need to use that PASID.  They do this at ->release() time.
-> 
-> Device drivers hold a reference on the mm itself and drop it at
-> ->release() time.  But, the device driver holds a reference mm itself,
-> not the address space.  The address space (and the PASID) is long gone
-> by the time the driver tries to clean up.  This is effectively a
-> use-after-free bug on the PASID.
-> 
-> To fix this, move the PASID free operation from __mmput() to __mmdrop().
->  This ensures that the device drivers' existing mmgrab() keeps the PASID
-> allocated until they drop their mm reference.
-> 
 
-Thank you very much!
+Both should prioritise cmsg. The only catch is when tclass is
+specified in cmsg but it's -1. The old version would assign
+np->tclass in the end, the new one does the same but with
+this added "if" in ip6_datagram_send_ctl() in the chunk
+you quoted. Unless I missed something as well.
 
--Fenghua
+-- 
+Pavel Begunkov
