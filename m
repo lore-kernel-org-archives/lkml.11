@@ -2,109 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77365C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345678AbiD1LYh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 07:24:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53732 "EHLO
+        id S235094AbiD1L0z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 07:26:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345529AbiD1LXl (ORCPT
+        with ESMTP id S233052AbiD1L0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 07:23:41 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A0724092
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 04:20:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651144825; x=1682680825;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ZPrsh+0tNzPO483bOJM93YSxdd0XN/16xX0+69NhVQQ=;
-  b=JqB83HvWAvjcfE/qdRCj0Va5swAzF+WhFVIO9zDS0gnU7TUppZKPoGk1
-   lMk0IRZxqrsWKCY43rwUjdcHKfXwAnV2Vw7k1qpfMKBdYMVvb6DbxjZYi
-   khhYGt5VMJGtKFhEYHMYknxgImhpnEuPEfBI9r7xaGdDNgiUGJgidRoj9
-   N3+7pnSBFw41rrJMPJDXd72tSY6KcHvOI6yFlwwmpuGw/y072iPcb+8t7
-   NfZLU1LSzsjg5TNJ4LXRIl5WagnyXwZsVIPwa8TYuOJIAVPSNkPIhzFvi
-   B5n8p7FhRamrXuSJwkUl5trvxgQSruBTEM3Q9Mvl6tO2LKkBh67fmUze6
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="263845737"
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="263845737"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 04:20:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="706015599"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 28 Apr 2022 04:20:22 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nk2C6-0005JH-8V;
-        Thu, 28 Apr 2022 11:20:22 +0000
-Date:   Thu, 28 Apr 2022 19:19:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-linked-list 39/45]
- fs/netfs/buffered_write.c:670 netfs_page_mkwrite() warn: unsigned 'ret' is
- never less than zero.
-Message-ID: <202204281931.WsLfU7aL-lkp@intel.com>
+        Thu, 28 Apr 2022 07:26:50 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D9A5D65B;
+        Thu, 28 Apr 2022 04:23:36 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 3B4361F88A;
+        Thu, 28 Apr 2022 11:23:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1651145015; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ALSlNdnUDfGqnVDNF+XbySa5KKZiHe5nsD1aWA9cJlQ=;
+        b=Qqo62OOYsyHjfh46Geys+bzp5ZZw/H7DtsEoukKYDwWaRzoQgHT9LNdSBBtAVJ35q2QG+s
+        OgC57syIbets7bbDv9VpnPnulvaIZfuIZyb1SI8/AZcFN+CLkB2RY5Y7/zduhoT5A3HfZg
+        drXATWWbO/gIevBcwhXuQJfpu8BlqMo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1651145015;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ALSlNdnUDfGqnVDNF+XbySa5KKZiHe5nsD1aWA9cJlQ=;
+        b=nozySw/YbNaB4EEXbIQFKP2yluTxF6VXLonrNIQglDs3KxliUb9+ELxwZrRKp8B6L6AI9c
+        Mng41wRfV4ecu5CA==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 286012C141;
+        Thu, 28 Apr 2022 11:23:35 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id D0057A061A; Thu, 28 Apr 2022 13:23:34 +0200 (CEST)
+Date:   Thu, 28 Apr 2022 13:23:34 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Yu Kuai <yukuai3@huawei.com>
+Cc:     jack@suse.cz, tj@kernel.org, axboe@kernel.dk,
+        paolo.valente@linaro.org, cgroups@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH -next v4 2/3] block, bfq: refactor the counting of
+ 'num_groups_with_pending_reqs'
+Message-ID: <20220428112334.um5mnmxmm2y2oqqf@quack3.lan>
+References: <20220428111907.3635820-1-yukuai3@huawei.com>
+ <20220428111907.3635820-3-yukuai3@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220428111907.3635820-3-yukuai3@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-linked-list
-head:   a20ca5707a9b524115f5ded439fed1f8e552dd6b
-commit: 95f517db4cb2fbcfdabe76d0be06d75746958b0b [39/45] netfs: Allow buffered shared-writeable mmap through netfs_page_mkwrite()
-config: i386-randconfig-m021 (https://download.01.org/0day-ci/archive/20220428/202204281931.WsLfU7aL-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+On Thu 28-04-22 19:19:06, Yu Kuai wrote:
+> Currently, bfq can't handle sync io concurrently as long as they
+> are not issued from root group. This is because
+> 'bfqd->num_groups_with_pending_reqs > 0' is always true in
+> bfq_asymmetric_scenario().
+> 
+> The way that bfqg is counted into 'num_groups_with_pending_reqs':
+> 
+> Before this patch:
+>  1) root group will never be counted.
+>  2) Count if bfqg or it's child bfqgs have pending requests.
+>  3) Don't count if bfqg and it's child bfqgs complete all the requests.
+> 
+> After this patch:
+>  1) root group is counted.
+>  2) Count if bfqg have at least one bfqq that is marked busy.
+>  3) Don't count if bfqg doesn't have any busy bfqqs.
+> 
+> The main reason to use busy state of bfqq instead of 'pending requests'
+> is that bfqq can stay busy after dispatching the last request if idling
+> is needed for service guarantees.
+> 
+> With this change, the occasion that only one group is activated can be
+> detected, and next patch will support concurrent sync io in the
+> occasion.
+> 
+> This patch also rename 'num_groups_with_pending_reqs' to
+> 'num_groups_with_busy_queues'.
+> 
+> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+> ---
+>  block/bfq-iosched.c | 46 ++-----------------------------------
+>  block/bfq-iosched.h | 55 ++++++---------------------------------------
+>  block/bfq-wf2q.c    | 19 ++++------------
+>  3 files changed, 13 insertions(+), 107 deletions(-)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I love the diffstat :)
 
-smatch warnings:
-fs/netfs/buffered_write.c:670 netfs_page_mkwrite() warn: unsigned 'ret' is never less than zero.
+> +	 * Number of groups with at leaset one bfqq that is marked busy,
+				    ^^^^^ least
 
-vim +/ret +670 fs/netfs/buffered_write.c
+Otherwise the patch looks good so feel free to add:
 
-   640	
-   641	/*
-   642	 * Notification that a previously read-only page is about to become writable.
-   643	 * Note that the caller indicates a single page of a multipage folio.
-   644	 */
-   645	vm_fault_t netfs_page_mkwrite(struct vm_fault *vmf)
-   646	{
-   647		struct netfs_dirty_region *region;
-   648		struct folio *folio = page_folio(vmf->page);
-   649		struct file *file = vmf->vma->vm_file;
-   650		struct inode *inode = file_inode(file);
-   651		struct netfs_i_context *ctx = netfs_i_context(inode);
-   652		vm_fault_t ret = VM_FAULT_RETRY;
-   653		int err;
-   654		LIST_HEAD(spare_regions);
-   655	
-   656		_enter("%lx", folio->index);
-   657	
-   658		if (ctx->ops->validate_for_write(inode, file) < 0)
-   659			return VM_FAULT_SIGBUS;
-   660	
-   661		sb_start_pagefault(inode->i_sb);
-   662	
-   663		if (folio_wait_writeback_killable(folio))
-   664			goto out;
-   665	
-   666		if (folio_lock_killable(folio) < 0)
-   667			goto out;
-   668	
-   669		ret = netfs_preallocate_regions(&spare_regions);
- > 670		if (ret < 0) {
+Reviewed-by: Jan Kara <jack@suse.cz>
 
+								Honza
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
