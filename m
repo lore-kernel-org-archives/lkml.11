@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB37C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 179C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:39:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349414AbiD1Pmw (ORCPT
+        id S1349424AbiD1Pmz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 11:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
+        Thu, 28 Apr 2022 11:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349278AbiD1PmU (ORCPT
+        with ESMTP id S1348684AbiD1PmR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 11:42:20 -0400
+        Thu, 28 Apr 2022 11:42:17 -0400
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 402B0B53C2;
-        Thu, 28 Apr 2022 08:39:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAE3B53D5;
+        Thu, 28 Apr 2022 08:39:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651160345; x=1682696345;
+  t=1651160341; x=1682696341;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cwJd5e6aeRwgU9xPsGnRNV1wC06YL4Fz8JBExprqrBA=;
-  b=AqosTy42JfNN5pkEpBs3fCVZ90kTautKHaui7+h/+xeE3xCsn4MC0uXV
-   0MXgJ3K71M704+0ZtmAJlQTY0Y1osRIwdswBFFqGvCou8HR0/DEZD1Omf
-   Qka2QHd0JnU8pW/9PVZlFsLzd/yjdhfJUr8heflTQ7ML+Fo3myWeLjdbU
-   6MoJbZeiiF3bZzMJ2YlL4mLjQbNSWqcVXGnEadxnQdShQMq4ksPONRbAm
-   +ETWSGXc8fMPZWGo6KRsEhZSafm6zvQAMGwcxcTNiR2+2FliUjllzHYcZ
-   yqVtIYshosa+1MgU9thTr1EPyOoAIMwLftQ7qf2i9u9xoELrMsyRi7d09
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="329271670"
+  bh=09faArqF0ybDa7yJRCawo2WfNEh4ZJlwmYaJ5Yj+Yxg=;
+  b=H4mWFn9E0nX+sAS3Q1dluQzoTX3ejUy1QMW7lvNfYpoJEHtsy4PEEWQm
+   hX1oJOHxQ60v2tKIZ67a3bsQODkZgfmx9AgueiVmtsbjEYS0W41lt1xuy
+   kaU5nFXw8nSyCwnEd2K3PguOrrw6xii8HB1RR+STrdXGGmyFWDhiEg2Pc
+   yBJBOP0AYPgeertVkppi0xXvFAN4sFzo0NV4Qwjt15v/HuN4K029HFzTa
+   K2N8Js2w2nnbt7PbY9Gb0jub4Y4wj2d2SRbBtLxtwFFLBUarNeUZSrsE4
+   2WaC5jjoA4EbF/F0FXsoFElrXn3hhNyBaGnUJnLdxOPPAo9KBenSxujhk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="329271644"
 X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="329271670"
+   d="scan'208";a="329271644"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 08:39:04 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 08:39:01 -0700
 X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="559734358"
+   d="scan'208";a="559734318"
 Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 08:39:04 -0700
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 08:39:00 -0700
 From:   Tony Luck <tony.luck@intel.com>
 To:     hdegoede@redhat.com, markgross@kernel.org
 Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
@@ -48,9 +48,9 @@ Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dan.j.williams@intel.com, linux-kernel@vger.kernel.org,
         linux-doc@vger.kernel.org, platform-driver-x86@vger.kernel.org,
         patches@lists.linux.dev, ravi.v.shankar@intel.com
-Subject: [PATCH v5 10/10] platform/x86/intel/ifs: add ABI documentation for IFS
-Date:   Thu, 28 Apr 2022 08:38:49 -0700
-Message-Id: <20220428153849.295779-11-tony.luck@intel.com>
+Subject: [PATCH v5 02/10] x86/msr-index: Define INTEGRITY_CAPABILITIES MSR
+Date:   Thu, 28 Apr 2022 08:38:41 -0700
+Message-Id: <20220428153849.295779-3-tony.luck@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220428153849.295779-1-tony.luck@intel.com>
 References: <20220422200219.2843823-1-tony.luck@intel.com>
@@ -61,64 +61,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jithu Joseph <jithu.joseph@intel.com>
+The INTEGRITY_CAPABILITIES MSR is enumerated by bit 2 of the
+CORE_CAPABILITIES MSR.
 
-Add the sysfs attributes in ABI/testing for In-Field Scan.
+Add defines for the CORE_CAPS enumeration as well as for the integrity
+MSR.
 
 Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Jithu Joseph <jithu.joseph@intel.com>
-Co-developed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Tony Luck <tony.luck@intel.com>
 ---
- .../ABI/testing/sysfs-platform-intel-ifs      | 39 +++++++++++++++++++
- 1 file changed, 39 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-platform-intel-ifs
+ arch/x86/include/asm/msr-index.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-platform-intel-ifs b/Documentation/ABI/testing/sysfs-platform-intel-ifs
-new file mode 100644
-index 000000000000..486d6d2ff8a0
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-platform-intel-ifs
-@@ -0,0 +1,39 @@
-+What:		/sys/devices/virtual/misc/intel_ifs_<N>/run_test
-+Date:		April 21 2022
-+KernelVersion:	5.19
-+Contact:	"Jithu Joseph" <jithu.joseph@intel.com>
-+Description:	Write <cpu#> to trigger IFS test for one online core.
-+		Note that the test is per core. The cpu# can be
-+		for any thread on the core. Running on one thread
-+		completes the test for the core containing that thread.
-+		Example: to test the core containing cpu5: echo 5 >
-+		/sys/devices/platform/intel_ifs.<N>/run_test
+diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
+index ee15311b6be1..c3dc7ae32f1f 100644
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -76,6 +76,8 @@
+ 
+ /* Abbreviated from Intel SDM name IA32_CORE_CAPABILITIES */
+ #define MSR_IA32_CORE_CAPS			  0x000000cf
++#define MSR_IA32_CORE_CAPS_INTEGRITY_CAPS_BIT	  2
++#define MSR_IA32_CORE_CAPS_INTEGRITY_CAPS	  BIT(MSR_IA32_CORE_CAPS_INTEGRITY_CAPS_BIT)
+ #define MSR_IA32_CORE_CAPS_SPLIT_LOCK_DETECT_BIT  5
+ #define MSR_IA32_CORE_CAPS_SPLIT_LOCK_DETECT	  BIT(MSR_IA32_CORE_CAPS_SPLIT_LOCK_DETECT_BIT)
+ 
+@@ -154,6 +156,11 @@
+ #define MSR_IA32_POWER_CTL		0x000001fc
+ #define MSR_IA32_POWER_CTL_BIT_EE	19
+ 
++/* Abbreviated from Intel SDM name IA32_INTEGRITY_CAPABILITIES */
++#define MSR_INTEGRITY_CAPS			0x000002d9
++#define MSR_INTEGRITY_CAPS_PERIODIC_BIST_BIT	4
++#define MSR_INTEGRITY_CAPS_PERIODIC_BIST	BIT(MSR_INTEGRITY_CAPS_PERIODIC_BIST_BIT)
 +
-+What:		/sys/devices/virtual/misc/intel_ifs_<N>/status
-+Date:		April 21 2022
-+KernelVersion:	5.19
-+Contact:	"Jithu Joseph" <jithu.joseph@intel.com>
-+Description:	The status of the last test. It can be one of "pass", "fail"
-+		or "untested".
-+
-+What:		/sys/devices/virtual/misc/intel_ifs_<N>/details
-+Date:		April 21 2022
-+KernelVersion:	5.19
-+Contact:	"Jithu Joseph" <jithu.joseph@intel.com>
-+Description:	Additional information regarding the last test. The details file reports
-+		the hex value of the SCAN_STATUS MSR. Note that the error_code field
-+		may contain driver defined software code not defined in the Intel SDM.
-+
-+What:		/sys/devices/virtual/misc/intel_ifs_<N>/image_version
-+Date:		April 21 2022
-+KernelVersion:	5.19
-+Contact:	"Jithu Joseph" <jithu.joseph@intel.com>
-+Description:	Version (hexadecimal) of loaded IFS binary image. If no scan image
-+		is loaded reports "none".
-+
-+What:		/sys/devices/virtual/misc/intel_ifs_<N>/reload
-+Date:		April 21 2022
-+KernelVersion:	5.19
-+Contact:	"Jithu Joseph" <jithu.joseph@intel.com>
-+Description:	Write "1" (or "y" or "Y") to reload the IFS image from
-+		/lib/firmware/intel/ifs/ff-mm-ss.scan.
+ #define MSR_LBR_NHM_FROM		0x00000680
+ #define MSR_LBR_NHM_TO			0x000006c0
+ #define MSR_LBR_CORE_FROM		0x00000040
 -- 
 2.35.1
 
