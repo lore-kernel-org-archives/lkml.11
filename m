@@ -2,79 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 588D0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 19:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17969C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 19:39:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351466AbiD1TlT (ORCPT
+        id S1351478AbiD1Tmk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 15:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39410 "EHLO
+        Thu, 28 Apr 2022 15:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351454AbiD1TlR (ORCPT
+        with ESMTP id S1345395AbiD1Tmj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 15:41:17 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA11AFB37
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 12:38:00 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id m23so8079403ljc.0
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 12:38:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PviecKSNBQ9rvt14y/CLlsqQGaNe4zDSNifKgF5FE5c=;
-        b=Mk/ZjIgpPO7ZjCxNJRE5W4RfcBcM9U03fLAGiHpSCx9OJwTUlKZlQFlhx+wLCTDfvD
-         n4Pe7ckjUJ9CJogJ2um0a73RMV3NqhLe0fs6B+hSn1dc7FUEAtYSuVxnqaDMDdOOkmNV
-         MfsNo4pco1mgdD+H5I5Vudi9U/F1WunaiWSOo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PviecKSNBQ9rvt14y/CLlsqQGaNe4zDSNifKgF5FE5c=;
-        b=c2ZaP/0cunhZliVrCu/Nbls7+jhURaK8dnC+Kyuf8wsDByFR4T3vTLGQSIbYMXYaiE
-         Skfe6MI7BowOQA5eCLGshxiw8wtg1QP5HTevh4rWXvIixos8cyrn6ctGpdP5V23C37xA
-         6zBdN9hF+V6aQXZqehYVHxirwSCWk09r8ToRMifZMg3tgidl42yYtcZDK0uZS8xLiuy+
-         ZGV35/vQ5LACQ8/pp/479oSkkKo0gZ4NlNW2x/OjeKHrlmuG0WQ9pEZxf3Isbiozy8vk
-         /sdx+fYVekJ0W29hZGPxLa8jmOESQCGq9tUqYm+DnCtxlZX6KjWWgZwPTeMrw4ueDVb+
-         BWvg==
-X-Gm-Message-State: AOAM531Cl3uOqR3zAG/CUh5DfAOL4Oq9x73ZeFvD5JelE56mO96G0j//
-        NoomP5/nmuGG/F4pTPPbqXw4Cyl9JmQKTqK16aU=
-X-Google-Smtp-Source: ABdhPJziK7tyOqOGcdBpY4b6ce/9SE7BVVuej6aWBd2yz0/ogU9nk4TMZDAL9O4nUbNfGozTCa5TYg==
-X-Received: by 2002:a2e:6f12:0:b0:24f:2109:f038 with SMTP id k18-20020a2e6f12000000b0024f2109f038mr10066814ljc.311.1651174678544;
-        Thu, 28 Apr 2022 12:37:58 -0700 (PDT)
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com. [209.85.167.49])
-        by smtp.gmail.com with ESMTPSA id d14-20020a19f24e000000b00471a405963asm75519lfk.304.2022.04.28.12.37.57
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 12:37:57 -0700 (PDT)
-Received: by mail-lf1-f49.google.com with SMTP id x17so10402922lfa.10
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 12:37:57 -0700 (PDT)
-X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
- y3-20020ac24203000000b004488053d402mr24901401lfh.687.1651174677085; Thu, 28
- Apr 2022 12:37:57 -0700 (PDT)
+        Thu, 28 Apr 2022 15:42:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23763B6477;
+        Thu, 28 Apr 2022 12:39:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9218B82F9E;
+        Thu, 28 Apr 2022 19:39:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A19BC385A9;
+        Thu, 28 Apr 2022 19:39:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651174761;
+        bh=UgDPG16EQ1o8xT5G2Ea0j8kDFXnr+CSGOT2RWoE8VOQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=c7y6YjCSsmAN3yTZNCKeLD0pnnoxkXOqAzNcIsAG+ykcNkY7wO1D7sNxd1WhOX/9U
+         VkNwwUqyt0A51yyjIiOUaGMgHbp40DaRmW3+suRBO0XtcmyfnlVuHrrYwSa1Q78w2m
+         W6TkGQZAns9tM0dYAzafTiJwQo0Xadw/6RYSWiiUGHYOfwg7uyelm2qaQiXiJO+fU/
+         i78gaInD3AbaWjdSJOx7nCBKgKSXcEmnxGSAUKiqEbhszG4pLklSwnDQil8G13Xk5M
+         1x9h2J6vCkuMygB9lC4B7YW87ONYW3+n18bcq5v2MvPMMbyMgXJH2czp3z+bWIllJe
+         xZ/sUh7ZWqPDw==
+Date:   Thu, 28 Apr 2022 20:47:33 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Slawomir Stepien <sst@poczta.fm>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio: Fix incorrect compatible strings in
+ examples
+Message-ID: <20220428204733.6af91db6@jic23-huawei>
+In-Reply-To: <Ymb6TfADJKd+a6Ys@robh.at.kernel.org>
+References: <20220422192039.2590548-1-robh@kernel.org>
+        <20220424171212.6d247854@jic23-huawei>
+        <Ymb6TfADJKd+a6Ys@robh.at.kernel.org>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220428182554.2138218-1-kuba@kernel.org>
-In-Reply-To: <20220428182554.2138218-1-kuba@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 28 Apr 2022 12:37:40 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wivb9faQ6Xuwfiqr6r1uHaR4a-i2oi6u142tWDppS-+gg@mail.gmail.com>
-Message-ID: <CAHk-=wivb9faQ6Xuwfiqr6r1uHaR4a-i2oi6u142tWDppS-+gg@mail.gmail.com>
-Subject: Re: [GIT PULL] Networking for 5.18-rc5
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 11:26 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Misc:
->
->  - add Eric Dumazet to networking maintainers
+On Mon, 25 Apr 2022 14:45:17 -0500
+Rob Herring <robh@kernel.org> wrote:
 
-He wasn't already? Strange.
+> On Sun, Apr 24, 2022 at 05:12:12PM +0100, Jonathan Cameron wrote:
+> > On Fri, 22 Apr 2022 14:20:39 -0500
+> > Rob Herring <robh@kernel.org> wrote:
+> >   
+> > > Fix a couple of examples using incorrect compatible strings.
+> > > 
+> > > Signed-off-by: Rob Herring <robh@kernel.org>  
+> > Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > 
+> > or I can pick these up through IIO if preferred.  
+> 
+> Yes, please apply.
 
-            Linus
+Done,
+
+Thanks,
+
+Jonathan
+
+> 
+> Rob
+
