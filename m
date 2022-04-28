@@ -2,87 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 260C7C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:27:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344095AbiD1I3J (ORCPT
+        id S1344114AbiD1IaN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:29:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38000 "EHLO
+        Thu, 28 Apr 2022 04:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344122AbiD1I27 (ORCPT
+        with ESMTP id S1344104AbiD1IaF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:28:59 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ECD6972DC
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:25:42 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23S85KIx014079;
-        Thu, 28 Apr 2022 03:24:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=Pm7r4W1Cm//VcduQTiTK26jaLSZ7r2ZK0U6VdwqHIWA=;
- b=JHmoA1J4Uuq1Ef7gUpLGXwMVvmgOEVlK+pNeFhphAOhoHQ5abU/AgcnXFwHHhVSqtnrN
- xrO4FsZeAka+u1k4Ih6L8gsqOs/LBfk8tjmPpyxtT+AlFsu4AMGD+SSMGidnbZMPdpbp
- tj8BgLo/fgRXxEniXerGvObmR1mhzfBoQKOieQhds58/zs0Z1uS7TvAlgdQ4Mmlt08mr
- nMMvfa366girDwbc6fA2LdXC1VjpoegKVG/mA/5dFQWLaSvjOEDoy//8v1yb1vO+q0aQ
- bWdaJbTtKvgyI5rkrivN381EQv0D2Rd1fItidKO2CznKb+c70LAPDGgU2BdhzcHysW6k zg== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fprt61uw4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 28 Apr 2022 03:24:57 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Apr
- 2022 09:24:56 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Thu, 28 Apr 2022 09:24:56 +0100
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 06E5446C;
-        Thu, 28 Apr 2022 08:24:56 +0000 (UTC)
-Date:   Thu, 28 Apr 2022 08:24:56 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Nicola Lunghi <nick83ola@gmail.com>
-CC:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        <patches@opensource.cirrus.com>, <alsa-devel@alsa-project.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ASoC: wm8960: Add ACPI support
-Message-ID: <20220428082456.GJ38351@ediswmail.ad.cirrus.com>
-References: <20220427212916.40145-1-nick83ola@gmail.com>
+        Thu, 28 Apr 2022 04:30:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851E9972D6;
+        Thu, 28 Apr 2022 01:26:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B33661F79;
+        Thu, 28 Apr 2022 08:26:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C164FC385A9;
+        Thu, 28 Apr 2022 08:26:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651134410;
+        bh=GLz5+Ex776cdEP5shJHP4b9TFRJlXnb2hcy3oYy4hds=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=HP7W0PIUumKpzOMcgq30IkYm6Q00WTbyKrPa3ogdWwvJDpi/0AfUPBt6ChK2i+3/h
+         OlKFOf2t7EtOOZgNh+WKpUWglb0gCRodOnK8ve6ggm0jlMzZ30IIpmGxrpa010zMnC
+         6AKytmsPnMiF42Z7wlMD9K9xgV37WxZxoP0KVqQuw+n9oCB9GpDTaTOJQE81lPsHiz
+         0twvUD4wnCbnjs/FgIJkWDdaZPKc259TzhpLlNMxtMsMVfFgQIHWYYuHddEsBAovTw
+         KYp9TKbRYwP0iE3W7AsmVkxvkR4j8Ske02pDLKpAjFBOJPh/izKhcKQQXrA9/qs4JB
+         RvUAcmtnCvH+g==
+Message-ID: <786681d7-d079-b8df-c175-ead4099c9549@kernel.org>
+Date:   Thu, 28 Apr 2022 10:26:43 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220427212916.40145-1-nick83ola@gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-GUID: 48N1y2DSeMR1C6Z9PycqBZyN_VANppph
-X-Proofpoint-ORIG-GUID: 48N1y2DSeMR1C6Z9PycqBZyN_VANppph
-X-Proofpoint-Spam-Reason: safe
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4 5/5] usb: host: add xhci-exynos driver
+Content-Language: en-US
+To:     Jung Daehwan <dh10.jung@samsung.com>
+Cc:     Mathias Nyman <mathias.nyman@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Howard Yen <howardyen@google.com>,
+        Jack Pham <jackp@codeaurora.org>,
+        Puma Hsu <pumahsu@google.com>,
+        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+References: <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
+ <CGME20220426092023epcas2p32946c087135ca4b7e63b03915060c55d@epcas2p3.samsung.com>
+ <1650964728-175347-6-git-send-email-dh10.jung@samsung.com>
+ <a9438aef-78a3-e8ab-2b78-cc872447df08@kernel.org>
+ <20220428012941.GF145620@ubuntu>
+ <01ec9962-e210-ce47-57cd-8849cca0a9df@kernel.org>
+ <20220428063634.GF151827@ubuntu>
+ <fa113ba0-1221-de93-a18f-e4e942cdb261@kernel.org>
+ <20220428075305.GH151827@ubuntu>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220428075305.GH151827@ubuntu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 10:29:16PM +0100, Nicola Lunghi wrote:
-> HID made of either Wolfson/CirrusLogic PCI ID + 8960 identifier
+On 28/04/2022 09:53, Jung Daehwan wrote:
+> On Thu, Apr 28, 2022 at 09:31:56AM +0200, Krzysztof Kozlowski wrote:
+>> On 28/04/2022 08:36, Jung Daehwan wrote:
+>>>>
+>>>> Since you called everything here as "exynos" it is specific to one
+>>>> hardware and not-reusable on anything else. How can then you use some
+>>>> other compatible? It would be a misuse of Devicetree bindings.
+>>>>
+>>>
+>>> I got it. Let me add them. Is it still necessary if it is only used by
+>>> other module on runtime as I said above?
+>>
+>> Except what Greg wrote, if by "other module" you mean out-of-tree, then
+>> the patchset will not be accepted as it is unusable for Linux users.
+>> Basically it would be a dead code in Linux kernel.
+>>
+>> Best regards,
+>> Krzysztof
+>>
 > 
-> This helps enumerate the Waveshare WM8960 WM8960 Hi-Fi Sound
-> Card HAT on the Up2 platform.
+> I wanted to submit patches of just xhci. Let me add a patch together of other
+> module(dwc3-exynos) that is in-tree on next submission.
 > 
-> The scripts at https://github.com/thesofproject/acpi-scripts
-> can be used to add the ACPI initrd overlay.
-> 
-> This commit is similar to the commit:
-> 960cdd50ca9f ("ASoC: wm8804: Add ACPI support")
-> 
-> Signed-off-by: Nicola Lunghi <nick83ola@gmail.com>
-> ---
+> Is it still necessary to add compatible or bindings in this case?
 
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+The answer depends on:
+1. Is it possible to use the code without compatible and bindings?
+2. Does the new feature changes the hardware description or hardware
+behavior? IOW, does it change the meaning of existing bindings?
+3. How does it fit to the process explained in
+bindings/submitting-patches.rst?
 
-Thanks,
-Charles
+
+Best regards,
+Krzysztof
