@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34FE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 01:04:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE78C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 01:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240187AbiD1BHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 21:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39922 "EHLO
+        id S240282AbiD1BH4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 21:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234954AbiD1BHe (ORCPT
+        with ESMTP id S238114AbiD1BHf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 21:07:34 -0400
+        Wed, 27 Apr 2022 21:07:35 -0400
 Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF7F113DEF;
-        Wed, 27 Apr 2022 18:04:18 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3FE065C0216;
-        Wed, 27 Apr 2022 21:04:18 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2681AD8B;
+        Wed, 27 Apr 2022 18:04:22 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 59C645C0206;
+        Wed, 27 Apr 2022 21:04:22 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 27 Apr 2022 21:04:18 -0400
+  by compute2.internal (MEProxy); Wed, 27 Apr 2022 21:04:22 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1651107858; x=1651194258; bh=EW
-        QuBrshtflaBYZQbOQftY716qHgPAQrgs5xYJD0PZQ=; b=B27RA3E11tPFjhXoZl
-        BCXngJ4YKleJDrSbx28eZHU8/vEasIR/rNzdX+0YfcwNkYs22yPGBbBjNktJtMOe
-        np3rp6oQ3OLLc5xXlLifCZV4CkCux2q0f0al1x1odNlZniJGqSzPV0YYSEf5Cz39
-        a963ajqTtRnxiCeQh2vBRYypvbH0RCUaljLvXP9YoeHUDk3YG40CqnCyYGJikvuj
-        AwQbtuMTLbrp7Nmq9PgSb50Dka2xAM6P1CLCurp5QzUpx7AGrq1mM/0LZXnDuW4d
-        Y+KhLbeCOBWMMD8spVkuwdyfcAliYIpfwz68yOpsZyOCxuRFGecIyImrHLCoJoC2
-        mo2A==
+        :subject:subject:to:to; s=fm2; t=1651107862; x=1651194262; bh=pW
+        /iSjCJy6f2Vv0EQ/XJtZJNRvKHgymrVop1mTD/+d4=; b=FrGZ3IwMEyxk0BjXNO
+        Vn6EK3IZkTeZYX1nmAgh0L/6GXH09OQFz5khjVFhqRQxvkDQ8iDuC/qi1acgqZqw
+        tv8WRkEfQ4AoTjTRlaN6NhaK0RhZo1oWrkSkFdGyas5kgvRGJfsHCpjhYq78DvPe
+        609Tt9NTCeO4N4Zm+TxBjBv+YRMa+Ie+sePBHJka1zTa2CT01GJCMFlJV9lF4zqz
+        uGaKapqLbcroSeG19fmO4qom2nOwvEZOPxDShOLWyntpjiqX6PH+QZXp1bbQNnyg
+        Iq7zhzqcW8PI2A+NZF6EY8wccvQ+EHyzA+wRQBo0Slg0FHmm9LrX0FLyT4GujU64
+        usKA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :from:from:in-reply-to:in-reply-to:message-id:mime-version
         :references:reply-to:sender:subject:subject:to:to:x-me-proxy
         :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1651107858; x=1651194258; bh=EWQuBrshtflaBYZQbOQftY716qHgPAQrgs5
-        xYJD0PZQ=; b=HN2J6N7ELnQR3Gy9fUmDvuEk9YlYKp9j7GPM2wWJGOlfvoLRYro
-        qPxAJxQXaPAiCFUANedSSSTw6H7d23TRSskiqrtJ+sEsSBq3+a8XHJDBOcJoHFd7
-        QUc0TV3p1g7bdK2v9lyV5qA9FcsV+xn8syFJQo8RdXd8iHf/C59/sp5DLVrRmomL
-        RebZWUBp3uuLATt8lGTZRx4HRMUI5Fq9kxiLOcZ1BzlkB34tsPzHuND4M9OCPqEX
-        gurem5f3Z/74dn2SHEMHIDVkSuqkdCTQJCTZYy8LRl3EV7SVB9z+2aXBkfyGcOtV
-        Ve5zqxdiy/bGIjDnOBKmfMTMllDYbEaYB0A==
-X-ME-Sender: <xms:EuhpYiffe1DAaWEuU_68hMUOBvbCoui-fcIL1RS2YG0nVIiGRlauZA>
-    <xme:EuhpYsMpJWFJo0J0ehGz_Ii_rQr8oLWQsgQk9ozuccLjyIapi2z0cLOKXiFzGlszg
-    eADy8XQY9N25tVVZg>
-X-ME-Received: <xmr:EuhpYjhSfFHsGZ9OUA-7tBa6NWIdm7Icl5arTlUJOxHwV-VGhyRF1QzLUyiCCB8FIcTcUZrp5pCukFkB1F4bWpzEGG9_osOF49FghfEr2aP-_ZdGdojfqyBwn3eS2Uek5Q0Fag>
+        1651107862; x=1651194262; bh=pW/iSjCJy6f2Vv0EQ/XJtZJNRvKHgymrVop
+        1mTD/+d4=; b=mJfp/fEwio/wl6hdscLqZwCPe04Lu8yYNk6DvErXlKYQrQiGlil
+        dtH8DNLmMB/e2xjTKRjqv/DxgQgFsbVkjeIDdg9TdA8MIEDnSZvRwArLL+/riO3P
+        yIFXrAdNx0jorrx8hpPN+o7ZWq2ZWzPM0j+aAK/tSgXXKhLFnqNts6h4AUk98KUC
+        HAQ0y7n607zCKnHuDK74hDqqBE0GpJdH37c6/Vdla+aKdBokMbzJSpDgqlML4Hu7
+        oahEmPxd7qZ+tHqNg3PCInxvCAdVFsr4eCnN3hirg9/u2OhrWKUTJVgaH9uTSuCE
+        4sLZmHvMPzTGGCwpF1xXzf1ZY5GbF66rsnA==
+X-ME-Sender: <xms:FuhpYq0EZ0uZKl5xR_YXNiBCVJ6i6ZxKi8257WG1dtW1ASthe0MaqQ>
+    <xme:FuhpYtGHgkZZreEXAGXhoRmHQcTbFMkwVes6T-yuSMZ2_3BjxDDlSKReDfPq4eGtQ
+    4-xZWJ6KAAJAdDyiw>
+X-ME-Received: <xmr:FuhpYi7ypbVtND9R0bjH6s6mnQHQS_hCH1Y0-_t1VKoCku5sAZdImsO-kcHTca-E0AI3OWmmA_Y02HcufFmu3VRhKTWsgb3GKDrdIkovgoMcXKrfEQCyZ7pvaSKvMQM6CBx7yg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeigdegfecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
@@ -55,12 +55,12 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeigdegfecutefuodetggdote
     frrghtthgvrhhnpedukeetueduhedtleetvefguddvvdejhfefudelgfduveeggeehgfdu
     feeitdevteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
     hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:EuhpYv-9UAS85yEzxjAya6_MNmWfVVLGaDvoLZeI8-PENgg-cMupMg>
-    <xmx:EuhpYuvDa-YXf4W-vmvlhT17qVRPnqantOu7Lb8H9GlVebkFWL3ilw>
-    <xmx:EuhpYmEpctWVjsxcZdxljjMhExeISxNIc93WvPZSXSBMRyosXrkFWQ>
-    <xmx:EuhpYqOvI53ClkFNLgbr8waNRaIs9DQ4WmvEDlRQaI5dyEhshxRHlQ>
+X-ME-Proxy: <xmx:FuhpYr3diNoK6jg3AVunpqPYUeYJqwGsGLmMEvvL3BLsmCGahaGAZA>
+    <xmx:FuhpYtH7_Y9s7kJNLTNaVP3OL7_PTyrChjaRu3h0Ue7-XqW4ZDMMvw>
+    <xmx:FuhpYk-a9GL8Z6J72ariS91YzrmcOyFbbpVons82YM8BTnuYK7KdOQ>
+    <xmx:FuhpYvGQDdk5fOER4xo_VaXjotqiTRriv4oCud3RLOqI_7M0QDhaAQ>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 27 Apr 2022 21:04:17 -0400 (EDT)
+ 27 Apr 2022 21:04:21 -0400 (EDT)
 From:   Samuel Holland <samuel@sholland.org>
 To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
         iommu@lists.linux-foundation.org
@@ -76,9 +76,9 @@ Cc:     Heiko Stuebner <heiko@sntech.de>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-sunxi@lists.linux.dev
-Subject: [PATCH 2/5] iommu/sun50i: Support variants without an external reset
-Date:   Wed, 27 Apr 2022 20:03:57 -0500
-Message-Id: <20220428010401.11323-3-samuel@sholland.org>
+Subject: [PATCH 4/5] iommu/sun50i: Add support for the D1 variant
+Date:   Wed, 27 Apr 2022 20:03:59 -0500
+Message-Id: <20220428010401.11323-5-samuel@sholland.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220428010401.11323-1-samuel@sholland.org>
 References: <20220428010401.11323-1-samuel@sholland.org>
@@ -88,72 +88,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The IOMMU in the Allwinner D1 SoC does not have an external reset line.
-
-Only attempt to get the reset on hardware variants which should have one
-according to the binding. And switch from the deprecated function to the
-explicit "exclusive" variant.
+D1 contains an IOMMU similar to the one in the H6 SoC, but the D1
+variant has no external reset signal. It also has some register
+definition changes, but none that affect the current driver.
 
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
 
- drivers/iommu/sun50i-iommu.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+ drivers/iommu/sun50i-iommu.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index c54ab477b8fd..ec07b60016d3 100644
+index b9e644b93637..1fb707e37fb3 100644
 --- a/drivers/iommu/sun50i-iommu.c
 +++ b/drivers/iommu/sun50i-iommu.c
-@@ -92,6 +92,10 @@
- #define NUM_PT_ENTRIES			256
- #define PT_SIZE				(NUM_PT_ENTRIES * PT_ENTRY_SIZE)
- 
-+struct sun50i_iommu_variant {
-+	bool has_reset;
-+};
-+
- struct sun50i_iommu {
- 	struct iommu_device iommu;
- 
-@@ -905,9 +909,14 @@ static irqreturn_t sun50i_iommu_irq(int irq, void *dev_id)
- 
- static int sun50i_iommu_probe(struct platform_device *pdev)
- {
-+	const struct sun50i_iommu_variant *variant;
- 	struct sun50i_iommu *iommu;
- 	int ret, irq;
- 
-+	variant = of_device_get_match_data(&pdev->dev);
-+	if (!variant)
-+		return -EINVAL;
-+
- 	iommu = devm_kzalloc(&pdev->dev, sizeof(*iommu), GFP_KERNEL);
- 	if (!iommu)
- 		return -ENOMEM;
-@@ -947,7 +956,8 @@ static int sun50i_iommu_probe(struct platform_device *pdev)
- 		goto err_free_group;
- 	}
- 
--	iommu->reset = devm_reset_control_get(&pdev->dev, NULL);
-+	if (variant->has_reset)
-+		iommu->reset = devm_reset_control_get_exclusive(&pdev->dev, NULL);
- 	if (IS_ERR(iommu->reset)) {
- 		dev_err(&pdev->dev, "Couldn't get our reset line.\n");
- 		ret = PTR_ERR(iommu->reset);
-@@ -987,8 +997,12 @@ static int sun50i_iommu_probe(struct platform_device *pdev)
+@@ -999,11 +999,15 @@ static int sun50i_iommu_probe(struct platform_device *pdev)
  	return ret;
  }
  
-+static const struct sun50i_iommu_variant sun50i_h6_iommu = {
-+	.has_reset = true,
++static const struct sun50i_iommu_variant sun20i_d1_iommu = {
 +};
 +
+ static const struct sun50i_iommu_variant sun50i_h6_iommu = {
+ 	.has_reset = true,
+ };
+ 
  static const struct of_device_id sun50i_iommu_dt[] = {
--	{ .compatible = "allwinner,sun50i-h6-iommu", },
-+	{ .compatible = "allwinner,sun50i-h6-iommu", .data = &sun50i_h6_iommu },
++	{ .compatible = "allwinner,sun20i-d1-iommu", .data = &sun20i_d1_iommu },
+ 	{ .compatible = "allwinner,sun50i-h6-iommu", .data = &sun50i_h6_iommu },
  	{ /* sentinel */ },
  };
- MODULE_DEVICE_TABLE(of, sun50i_iommu_dt);
 -- 
 2.35.1
 
