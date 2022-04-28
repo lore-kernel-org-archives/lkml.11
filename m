@@ -2,29 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B095C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:22:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236342AbiD1QZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 12:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57088 "EHLO
+        id S1349696AbiD1QZW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 12:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235036AbiD1QZP (ORCPT
+        with ESMTP id S236322AbiD1QZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 12:25:15 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5A269718
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:21:59 -0700 (PDT)
+        Thu, 28 Apr 2022 12:25:16 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC6B5DE4B
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:22:01 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1651162915;
+        t=1651162919;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=cbOwwdKzIP/GSDsAkRZ0QuBwdx3oi7IvMcPM3Ptuuw8=;
-        b=scASAs6/0AqVLS6ziYbW4E0ln5SrqzL6noGVkbxyUMmvJ4S75halbnS0PTPlF3MgXQb38h
-        M5FWvrAShH0gZSsCp3y5pfjG08KzArs/uKNEJ+CGpxxuFuvqNLsegIUI9pGSFVVr8F7hvz
-        jzXqJELhG1/eTXzUrcwBtvuJ5xyM/OM=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BH942fTrVXtBdrYiEmF6IffforHv8CYbMy+kTtVqBFE=;
+        b=fVu2K6g4IWkIBc2L8njf0e84MXt+GosHS2pV4rXJqsjduauDqeQZpRuU0khk8BwBB8e6vR
+        A74bK3KdxQTvU24RQODO1Rtr7CJiiohEWRTgZMHZEWPB1EwmTenoupIVT6tAYbG9u9cjfK
+        izwTOxgwO4Doby7XRNVJwIcfQfrwfJA=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -35,9 +37,11 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH 1/3] kasan: clean up comments in internal kasan.h
-Date:   Thu, 28 Apr 2022 18:21:50 +0200
-Message-Id: <3167cbec7a82704c1ed2c6bfe85b77534a836fdc.1651162840.git.andreyknvl@google.com>
+Subject: [PATCH 3/3] kasan: give better names to shadow values
+Date:   Thu, 28 Apr 2022 18:21:52 +0200
+Message-Id: <c4105419650a2a8d9f153f55b5e76f4daa428297.1651162840.git.andreyknvl@google.com>
+In-Reply-To: <3167cbec7a82704c1ed2c6bfe85b77534a836fdc.1651162840.git.andreyknvl@google.com>
+References: <3167cbec7a82704c1ed2c6bfe85b77534a836fdc.1651162840.git.andreyknvl@google.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Migadu-Flow: FLOW_OUT
@@ -48,191 +52,174 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Clean up comments in mm/kasan/kasan.h: clarify, unify styles, fix
-punctuation, etc.
+Rename KASAN_KMALLOC_* shadow values to KASAN_SLAB_*, as they are used
+for all slab allocations, not only for kmalloc.
+
+Also rename KASAN_FREE_PAGE to KASAN_PAGE_FREE to be consistent with
+KASAN_PAGE_REDZONE and KASAN_SLAB_FREE.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
- mm/kasan/kasan.h | 71 +++++++++++++++++++++---------------------------
- 1 file changed, 31 insertions(+), 40 deletions(-)
+ mm/kasan/common.c         | 12 ++++++------
+ mm/kasan/generic.c        |  6 +++---
+ mm/kasan/kasan.h          | 14 +++++++-------
+ mm/kasan/quarantine.c     |  2 +-
+ mm/kasan/report_generic.c |  8 ++++----
+ 5 files changed, 21 insertions(+), 21 deletions(-)
 
+diff --git a/mm/kasan/common.c b/mm/kasan/common.c
+index d9079ec11f31..c40c0e7b3b5f 100644
+--- a/mm/kasan/common.c
++++ b/mm/kasan/common.c
+@@ -117,7 +117,7 @@ void __kasan_poison_pages(struct page *page, unsigned int order, bool init)
+ {
+ 	if (likely(!PageHighMem(page)))
+ 		kasan_poison(page_address(page), PAGE_SIZE << order,
+-			     KASAN_FREE_PAGE, init);
++			     KASAN_PAGE_FREE, init);
+ }
+ 
+ /*
+@@ -254,7 +254,7 @@ void __kasan_poison_slab(struct slab *slab)
+ 	for (i = 0; i < compound_nr(page); i++)
+ 		page_kasan_tag_reset(page + i);
+ 	kasan_poison(page_address(page), page_size(page),
+-		     KASAN_KMALLOC_REDZONE, false);
++		     KASAN_SLAB_REDZONE, false);
+ }
+ 
+ void __kasan_unpoison_object_data(struct kmem_cache *cache, void *object)
+@@ -265,7 +265,7 @@ void __kasan_unpoison_object_data(struct kmem_cache *cache, void *object)
+ void __kasan_poison_object_data(struct kmem_cache *cache, void *object)
+ {
+ 	kasan_poison(object, round_up(cache->object_size, KASAN_GRANULE_SIZE),
+-			KASAN_KMALLOC_REDZONE, false);
++			KASAN_SLAB_REDZONE, false);
+ }
+ 
+ /*
+@@ -357,7 +357,7 @@ static inline bool ____kasan_slab_free(struct kmem_cache *cache, void *object,
+ 	}
+ 
+ 	kasan_poison(object, round_up(cache->object_size, KASAN_GRANULE_SIZE),
+-			KASAN_KMALLOC_FREE, init);
++			KASAN_SLAB_FREE, init);
+ 
+ 	if ((IS_ENABLED(CONFIG_KASAN_GENERIC) && !quarantine))
+ 		return false;
+@@ -414,7 +414,7 @@ void __kasan_slab_free_mempool(void *ptr, unsigned long ip)
+ 	if (unlikely(!folio_test_slab(folio))) {
+ 		if (____kasan_kfree_large(ptr, ip))
+ 			return;
+-		kasan_poison(ptr, folio_size(folio), KASAN_FREE_PAGE, false);
++		kasan_poison(ptr, folio_size(folio), KASAN_PAGE_FREE, false);
+ 	} else {
+ 		struct slab *slab = folio_slab(folio);
+ 
+@@ -505,7 +505,7 @@ static inline void *____kasan_kmalloc(struct kmem_cache *cache,
+ 	redzone_end = round_up((unsigned long)(object + cache->object_size),
+ 				KASAN_GRANULE_SIZE);
+ 	kasan_poison((void *)redzone_start, redzone_end - redzone_start,
+-			   KASAN_KMALLOC_REDZONE, false);
++			   KASAN_SLAB_REDZONE, false);
+ 
+ 	/*
+ 	 * Save alloc info (if possible) for kmalloc() allocations.
+diff --git a/mm/kasan/generic.c b/mm/kasan/generic.c
+index a25ad4090615..437fcc7e77cf 100644
+--- a/mm/kasan/generic.c
++++ b/mm/kasan/generic.c
+@@ -369,14 +369,14 @@ void kasan_set_free_info(struct kmem_cache *cache,
+ 
+ 	kasan_set_track(&free_meta->free_track, GFP_NOWAIT);
+ 	/* The object was freed and has free track set. */
+-	*(u8 *)kasan_mem_to_shadow(object) = KASAN_KMALLOC_FREETRACK;
++	*(u8 *)kasan_mem_to_shadow(object) = KASAN_SLAB_FREETRACK;
+ }
+ 
+ struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
+ 				void *object, u8 tag)
+ {
+-	if (*(u8 *)kasan_mem_to_shadow(object) != KASAN_KMALLOC_FREETRACK)
++	if (*(u8 *)kasan_mem_to_shadow(object) != KASAN_SLAB_FREETRACK)
+ 		return NULL;
+-	/* Free meta must be present with KASAN_KMALLOC_FREETRACK. */
++	/* Free meta must be present with KASAN_SLAB_FREETRACK. */
+ 	return &kasan_get_free_meta(cache, object)->free_track;
+ }
 diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
-index b01b4bbe0409..13681516dc08 100644
+index 06fdea41ca4a..41681d3c551d 100644
 --- a/mm/kasan/kasan.h
 +++ b/mm/kasan/kasan.h
-@@ -42,6 +42,7 @@ static inline bool kasan_sync_fault_possible(void)
- {
- 	return kasan_mode == KASAN_MODE_SYNC || kasan_mode == KASAN_MODE_ASYMM;
- }
-+
- #else
- 
- static inline bool kasan_stack_collection_enabled(void)
-@@ -73,47 +74,41 @@ static inline bool kasan_sync_fault_possible(void)
+@@ -74,22 +74,22 @@ static inline bool kasan_sync_fault_possible(void)
  #define KASAN_MEMORY_PER_SHADOW_PAGE	(KASAN_GRANULE_SIZE << PAGE_SHIFT)
  
  #ifdef CONFIG_KASAN_GENERIC
--#define KASAN_FREE_PAGE         0xFF  /* page was freed */
--#define KASAN_PAGE_REDZONE      0xFE  /* redzone for kmalloc_large allocations */
--#define KASAN_KMALLOC_REDZONE   0xFC  /* redzone inside slub object */
--#define KASAN_KMALLOC_FREE      0xFB  /* object was freed (kmem_cache_free/kfree) */
--#define KASAN_VMALLOC_INVALID   0xF8  /* unallocated space in vmapped page */
-+#define KASAN_FREE_PAGE         0xFF  /* freed page */
-+#define KASAN_PAGE_REDZONE      0xFE  /* redzone for kmalloc_large allocation */
-+#define KASAN_KMALLOC_REDZONE   0xFC  /* redzone for slab object */
-+#define KASAN_KMALLOC_FREE      0xFB  /* freed slab object */
-+#define KASAN_VMALLOC_INVALID   0xF8  /* inaccessible space in vmap area */
+-#define KASAN_FREE_PAGE		0xFF  /* freed page */
++#define KASAN_PAGE_FREE		0xFF  /* freed page */
+ #define KASAN_PAGE_REDZONE	0xFE  /* redzone for kmalloc_large allocation */
+-#define KASAN_KMALLOC_REDZONE	0xFC  /* redzone for slab object */
+-#define KASAN_KMALLOC_FREE	0xFB  /* freed slab object */
++#define KASAN_SLAB_REDZONE	0xFC  /* redzone for slab object */
++#define KASAN_SLAB_FREE		0xFB  /* freed slab object */
+ #define KASAN_VMALLOC_INVALID	0xF8  /* inaccessible space in vmap area */
  #else
- #define KASAN_FREE_PAGE         KASAN_TAG_INVALID
- #define KASAN_PAGE_REDZONE      KASAN_TAG_INVALID
- #define KASAN_KMALLOC_REDZONE   KASAN_TAG_INVALID
- #define KASAN_KMALLOC_FREE      KASAN_TAG_INVALID
--#define KASAN_VMALLOC_INVALID   KASAN_TAG_INVALID /* only for SW_TAGS */
-+#define KASAN_VMALLOC_INVALID   KASAN_TAG_INVALID /* only used for SW_TAGS */
+-#define KASAN_FREE_PAGE		KASAN_TAG_INVALID
++#define KASAN_PAGE_FREE		KASAN_TAG_INVALID
+ #define KASAN_PAGE_REDZONE	KASAN_TAG_INVALID
+-#define KASAN_KMALLOC_REDZONE	KASAN_TAG_INVALID
+-#define KASAN_KMALLOC_FREE	KASAN_TAG_INVALID
++#define KASAN_SLAB_REDZONE	KASAN_TAG_INVALID
++#define KASAN_SLAB_FREE		KASAN_TAG_INVALID
+ #define KASAN_VMALLOC_INVALID	KASAN_TAG_INVALID /* only used for SW_TAGS */
  #endif
  
  #ifdef CONFIG_KASAN_GENERIC
  
--#define KASAN_KMALLOC_FREETRACK 0xFA  /* object was freed and has free track set */
-+#define KASAN_KMALLOC_FREETRACK 0xFA  /* freed slab object with free track */
- #define KASAN_GLOBAL_REDZONE    0xF9  /* redzone for global variable */
+-#define KASAN_KMALLOC_FREETRACK	0xFA  /* freed slab object with free track */
++#define KASAN_SLAB_FREETRACK	0xFA  /* freed slab object with free track */
+ #define KASAN_GLOBAL_REDZONE	0xF9  /* redzone for global variable */
  
--/*
-- * Stack redzone shadow values
-- * (Those are compiler's ABI, don't change them)
-- */
-+/* Stack redzone shadow values. Compiler's ABI, do not change. */
- #define KASAN_STACK_LEFT        0xF1
- #define KASAN_STACK_MID         0xF2
- #define KASAN_STACK_RIGHT       0xF3
- #define KASAN_STACK_PARTIAL     0xF4
- 
--/*
-- * alloca redzone shadow values
-- */
-+/* alloca redzone shadow values. */
- #define KASAN_ALLOCA_LEFT	0xCA
- #define KASAN_ALLOCA_RIGHT	0xCB
- 
-+/* alloca redzone size. Compiler's ABI, do not change. */
- #define KASAN_ALLOCA_REDZONE_SIZE	32
- 
--/*
-- * Stack frame marker (compiler ABI).
-- */
-+/* Stack frame marker. Compiler's ABI, do not change. */
- #define KASAN_CURRENT_STACK_FRAME_MAGIC 0x41B58AB3
- 
--/* Don't break randconfig/all*config builds */
-+/* Dummy value to avoid breaking randconfig/all*config builds. */
- #ifndef KASAN_ABI_VERSION
- #define KASAN_ABI_VERSION 1
- #endif
-@@ -141,21 +136,21 @@ struct kasan_report_info {
- 	unsigned long ip;
- };
- 
--/* The layout of struct dictated by compiler */
-+/* Do not change the struct layout: compiler's ABI. */
- struct kasan_source_location {
- 	const char *filename;
- 	int line_no;
- 	int column_no;
- };
- 
--/* The layout of struct dictated by compiler */
-+/* Do not change the struct layout: compiler's ABI. */
- struct kasan_global {
- 	const void *beg;		/* Address of the beginning of the global variable. */
- 	size_t size;			/* Size of the global variable. */
--	size_t size_with_redzone;	/* Size of the variable + size of the red zone. 32 bytes aligned */
-+	size_t size_with_redzone;	/* Size of the variable + size of the redzone. 32 bytes aligned. */
- 	const void *name;
- 	const void *module_name;	/* Name of the module where the global variable is declared. */
--	unsigned long has_dynamic_init;	/* This needed for C++ */
-+	unsigned long has_dynamic_init;	/* This needed for C++. */
- #if KASAN_ABI_VERSION >= 4
- 	struct kasan_source_location *location;
- #endif
-@@ -164,9 +159,7 @@ struct kasan_global {
- #endif
- };
- 
--/**
-- * Structures to keep alloc and free tracks *
-- */
-+/* Structures for keeping alloc and free tracks. */
- 
- #define KASAN_STACK_DEPTH 64
- 
-@@ -183,11 +176,8 @@ struct kasan_track {
- 
- struct kasan_alloc_meta {
- 	struct kasan_track alloc_track;
-+	/* Generic mode stores free track in kasan_free_meta. */
- #ifdef CONFIG_KASAN_GENERIC
--	/*
--	 * The auxiliary stack is stored into struct kasan_alloc_meta.
--	 * The free stack is stored into struct kasan_free_meta.
--	 */
- 	depot_stack_handle_t aux_stack[2];
- #else
- 	struct kasan_track free_track[KASAN_NR_FREE_STACKS];
-@@ -203,18 +193,18 @@ struct qlist_node {
- };
- 
- /*
-- * Generic mode either stores free meta in the object itself or in the redzone
-- * after the object. In the former case free meta offset is 0, in the latter
-- * case it has some sane value smaller than INT_MAX. Use INT_MAX as free meta
-- * offset when free meta isn't present.
-+ * Free meta is stored either in the object itself or in the redzone after the
-+ * object. In the former case, free meta offset is 0. In the latter case, the
-+ * offset is between 0 and INT_MAX. INT_MAX marks that free meta is not present.
-  */
- #define KASAN_NO_FREE_META INT_MAX
- 
-+/*
-+ * Free meta is only used by Generic mode while the object is in quarantine.
-+ * After that, slab allocator stores the freelist pointer in the object.
-+ */
- struct kasan_free_meta {
- #ifdef CONFIG_KASAN_GENERIC
--	/* This field is used while the object is in the quarantine.
--	 * Otherwise it might be used for the allocator freelist.
--	 */
- 	struct qlist_node quarantine_link;
- 	struct kasan_track free_track;
- #endif
-@@ -417,9 +407,9 @@ static inline void kasan_unpoison(const void *addr, size_t size, bool init)
- 		return;
- 	/*
- 	 * Explicitly initialize the memory with the precise object size to
--	 * avoid overwriting the SLAB redzone. This disables initialization in
-+	 * avoid overwriting the slab redzone. This disables initialization in
- 	 * the arch code and may thus lead to performance penalty. The penalty
--	 * is accepted since SLAB redzones aren't enabled in production builds.
-+	 * is accepted since slab redzones aren't enabled in production builds.
+ /* Stack redzone shadow values. Compiler's ABI, do not change. */
+diff --git a/mm/kasan/quarantine.c b/mm/kasan/quarantine.c
+index 0a9def8ce5e8..fac4befb9ef2 100644
+--- a/mm/kasan/quarantine.c
++++ b/mm/kasan/quarantine.c
+@@ -152,7 +152,7 @@ static void qlink_free(struct qlist_node *qlink, struct kmem_cache *cache)
+ 	 * As the object now gets freed from the quarantine, assume that its
+ 	 * free track is no longer valid.
  	 */
- 	if (__slub_debug_enabled() &&
- 	    init && ((unsigned long)size & KASAN_GRANULE_MASK)) {
-@@ -503,8 +493,9 @@ void kasan_restore_multi_shot(bool enabled);
+-	*(u8 *)kasan_mem_to_shadow(object) = KASAN_KMALLOC_FREE;
++	*(u8 *)kasan_mem_to_shadow(object) = KASAN_SLAB_FREE;
  
- /*
-  * Exported functions for interfaces called from assembly or from generated
-- * code. Declarations here to avoid warning about missing declarations.
-+ * code. Declared here to avoid warnings about missing declarations.
-  */
-+
- asmlinkage void kasan_unpoison_task_stack_below(const void *watermark);
- void __asan_register_globals(struct kasan_global *globals, size_t size);
- void __asan_unregister_globals(struct kasan_global *globals, size_t size);
-@@ -573,4 +564,4 @@ void __hwasan_storeN_noabort(unsigned long addr, size_t size);
+ 	___cache_free(cache, object, _THIS_IP_);
  
- void __hwasan_tag_memory(unsigned long addr, u8 tag, unsigned long size);
- 
--#endif
-+#endif /* __MM_KASAN_KASAN_H */
+diff --git a/mm/kasan/report_generic.c b/mm/kasan/report_generic.c
+index efc5e79a103f..6689fb9a919b 100644
+--- a/mm/kasan/report_generic.c
++++ b/mm/kasan/report_generic.c
+@@ -66,7 +66,7 @@ static const char *get_shadow_bug_type(struct kasan_report_info *info)
+ 		bug_type = "out-of-bounds";
+ 		break;
+ 	case KASAN_PAGE_REDZONE:
+-	case KASAN_KMALLOC_REDZONE:
++	case KASAN_SLAB_REDZONE:
+ 		bug_type = "slab-out-of-bounds";
+ 		break;
+ 	case KASAN_GLOBAL_REDZONE:
+@@ -78,9 +78,9 @@ static const char *get_shadow_bug_type(struct kasan_report_info *info)
+ 	case KASAN_STACK_PARTIAL:
+ 		bug_type = "stack-out-of-bounds";
+ 		break;
+-	case KASAN_FREE_PAGE:
+-	case KASAN_KMALLOC_FREE:
+-	case KASAN_KMALLOC_FREETRACK:
++	case KASAN_PAGE_FREE:
++	case KASAN_SLAB_FREE:
++	case KASAN_SLAB_FREETRACK:
+ 		bug_type = "use-after-free";
+ 		break;
+ 	case KASAN_ALLOCA_LEFT:
 -- 
 2.25.1
 
