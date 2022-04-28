@@ -2,203 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A83C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:05:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1387C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:06:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244758AbiD1HIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:08:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58154 "EHLO
+        id S244750AbiD1HJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 03:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244796AbiD1HIR (ORCPT
+        with ESMTP id S233753AbiD1HJQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:08:17 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E5DDF80;
-        Thu, 28 Apr 2022 00:05:01 -0700 (PDT)
-X-UUID: 4ed0c71f141b4b10be7e01444a57e674-20220428
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:5f51269b-0e32-4805-9432-1135a3552920,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:-20
-X-CID-META: VersionHash:faefae9,CLOUDID:6fe4c9c6-85ee-4ac1-ac05-bd3f1e72e732,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 4ed0c71f141b4b10be7e01444a57e674-20220428
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <yongqiang.niu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 108586444; Thu, 28 Apr 2022 15:04:54 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 28 Apr 2022 15:04:53 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 28 Apr 2022 15:04:30 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 28 Apr 2022 15:04:28 +0800
-From:   Yongqiang Niu <yongqiang.niu@mediatek.com>
-To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Yongqiang Niu <yongqiang.niu@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Dennis YC Hsieh <dennis-yc.hsieh@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Yongqiang Niu <yongqiang.niu@mediatek.corp-partner.google.com>
-Subject: [PATCH v3, 1/1] drm/mediatek: add lut diff flag for new gamma hardware support
-Date:   Thu, 28 Apr 2022 15:04:03 +0800
-Message-ID: <20220428070403.12968-2-yongqiang.niu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220428070403.12968-1-yongqiang.niu@mediatek.com>
-References: <20220428070403.12968-1-yongqiang.niu@mediatek.com>
+        Thu, 28 Apr 2022 03:09:16 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 782FD7CB03;
+        Thu, 28 Apr 2022 00:06:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651129561; x=1682665561;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=KV3xSjx5IORH3nBw259kA2U6vXkqu4AbHZhtuFZNwhY=;
+  b=vi8bvwbPWIWkzIr1DwDGamI7KLO/B1X2wWsTUwoPRrx6MNg0Djaz17mC
+   XZSk5+2jEkvwSfJ54+A8tTKfC2QSmmfnV9Jf2Y13z2Hvz2JG5G+9hm+jb
+   HxFRPD2RqF9d3H20NWjftzB/I1kAprbqJHZfahkkQOlhM+BooDlSLgedR
+   E=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 28 Apr 2022 00:06:01 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 00:06:01 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 28 Apr 2022 00:06:00 -0700
+Received: from [10.50.42.7] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 28 Apr
+ 2022 00:05:57 -0700
+Message-ID: <cbf3c7e4-a8c8-51d1-f245-cfbcbccc6a51@quicinc.com>
+Date:   Thu, 28 Apr 2022 12:35:54 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCHv6] tty: hvc: dcc: Bind driver to CPU core0 for reads and
+ writes
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Jiri Slaby <jirislaby@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>
+References: <20220310032636.7286-1-quic_saipraka@quicinc.com>
+ <YlkPvnBYzJo9aeZ2@kroah.com>
+ <cad739da-75af-8d2f-4107-72c657b9acab@quicinc.com>
+ <Ymo7ODt+bToCf5Y2@kroah.com>
+From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+In-Reply-To: <Ymo7ODt+bToCf5Y2@kroah.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongqiang Niu <yongqiang.niu@mediatek.corp-partner.google.com>
+On 4/28/2022 12:29 PM, Greg Kroah-Hartman wrote:
+> On Thu, Apr 28, 2022 at 10:04:34AM +0530, Sai Prakash Ranjan wrote:
+>> Hi Greg,
+>>
+>> On 4/15/2022 11:55 AM, Greg Kroah-Hartman wrote:
+>>> On Thu, Mar 10, 2022 at 08:56:36AM +0530, Sai Prakash Ranjan wrote:
+>>>> From: Shanker Donthineni <shankerd@codeaurora.org>
+>>>>
+>>>> Some debuggers, such as Trace32 from Lauterbach GmbH, do not handle
+>>>> reads/writes from/to DCC on secondary cores. Each core has its
+>>>> own DCC device registers, so when a core reads or writes from/to DCC,
+>>>> it only accesses its own DCC device. Since kernel code can run on
+>>>> any core, every time the kernel wants to write to the console, it
+>>>> might write to a different DCC.
+>>>>
+>>>> In SMP mode, Trace32 creates multiple windows, and each window shows
+>>>> the DCC output only from that core's DCC. The result is that console
+>>>> output is either lost or scattered across windows.
+>>>>
+>>>> Selecting this option will enable code that serializes all console
+>>>> input and output to core 0. The DCC driver will create input and
+>>>> output FIFOs that all cores will use. Reads and writes from/to DCC
+>>>> are handled by a workqueue that runs only core 0.
+>>>>
+>>>> Signed-off-by: Shanker Donthineni <shankerd@codeaurora.org>
+>>>> Acked-by: Adam Wallis <awallis@codeaurora.org>
+>>>> Signed-off-by: Timur Tabi <timur@codeaurora.org>
+>>>> Signed-off-by: Elliot Berman <eberman@codeaurora.org>
+>>>> Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+>>>> ---
+>>>>
+>>>> Changes in v6:
+>>>>    * Disable CPU hotplug when CONFIG_HVC_DCC_SERIALIZE_SMP=y.
+>>>>
+>>>> Changes in v5:
+>>>>    * Use get_cpu() and put_cpu() for CPU id check in preemptible context.
+>>>>    * Revert back to build time Kconfig.
+>>>>    * Remove unnecessary hotplug locks, they result in sleeping in atomic context bugs.
+>>>>    * Add a comment for the spinlock.
+>>>>
+>>>> Changes in v4:
+>>>>    * Use module parameter for runtime choice of enabling this feature.
+>>>>    * Use hotplug locks to avoid race between cpu online check and work schedule.
+>>>>    * Remove ifdefs and move to common ops.
+>>>>    * Remove unnecessary check for this configuration.
+>>>>    * Use macros for buf size instead of magic numbers.
+>>>>    * v3 - https://lore.kernel.org/lkml/20211213141013.21464-1-quic_saipraka@quicinc.com/
+>>>>
+>>>> Changes in v3:
+>>>>    * Handle case where core0 is not online.
+>>>>
+>>>> Changes in v2:
+>>>>    * Checkpatch warning fixes.
+>>>>    * Use of IS_ENABLED macros instead of ifdefs.
+>>>>
+>>>> ---
+>>>>    drivers/tty/hvc/Kconfig   |  20 +++++
+>>>>    drivers/tty/hvc/hvc_dcc.c | 175 +++++++++++++++++++++++++++++++++++++-
+>>>>    2 files changed, 192 insertions(+), 3 deletions(-)
+>>>>
+>>>> diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
+>>>> index 8d60e0ff67b4..62560cd0c04d 100644
+>>>> --- a/drivers/tty/hvc/Kconfig
+>>>> +++ b/drivers/tty/hvc/Kconfig
+>>>> @@ -87,6 +87,26 @@ config HVC_DCC
+>>>>    	  driver. This console is used through a JTAG only on ARM. If you don't have
+>>>>    	  a JTAG then you probably don't want this option.
+>>>> +config HVC_DCC_SERIALIZE_SMP
+>>>> +	bool "Use DCC only on CPU core 0"
+>>>> +	depends on SMP && HVC_DCC
+>>>> +	help
+>>>> +	  Some debuggers, such as Trace32 from Lauterbach GmbH, do not handle
+>>>> +	  reads/writes from/to DCC on more than one CPU core. Each core has its
+>>>> +	  own DCC device registers, so when a CPU core reads or writes from/to
+>>>> +	  DCC, it only accesses its own DCC device. Since kernel code can run on
+>>>> +	  any CPU core, every time the kernel wants to write to the console, it
+>>>> +	  might write to a different DCC.
+>>>> +
+>>>> +	  In SMP mode, Trace32 creates multiple windows, and each window shows
+>>>> +	  the DCC output only from that core's DCC. The result is that console
+>>>> +	  output is either lost or scattered across windows.
+>>> Why are we documenting, and supporting, a closed source userspace tool
+>>> with kernel changes?  Does this advertisement deserve to be in the
+>>> kernel source tree?
+>> Ok, I will remove the comment.
+>>
+>>> And why can't they just fix their tool if this is such a big issue?  Why
+>>> does this only affect this one platform and not all other smp systems?
+>> Hmm, this has been discussed in all the past versions of this series and still we
+>> are at the same question :) I will write a small summary below which will cover
+>> mostly relevant discussions we discussed till now and then I can point to it
+>> whenever this question is asked again.
+> No, it needs to go into the changelog text so that we know what we are
+> reviewing and considering when you submit it.  Never refer back to some
+> old conversation, how are we supposed to remember that?
 
-mt8183 gamma module usage is different with before soc,
-gamma odd(index start from 0) lut value set to hardware
-register should be
-the difference of current lut value with last lut value.
+True given the amount of patches you handle. I will be explicit and add more details in the next
+version.
 
-for example, chrome os user space set lut
-like this(only r chanel for example):
-2 4 6 8 10 12.
-1) mt8183 gamma driver should set the gamma lut to hardware
-register like this:
-2 [2] 6 [8] 10 [2]
-the value with [] is the difference value
-2)gamma hardware process display data with original lut
+> So this all seems to be debugging-only code, and this config option
+> should NEVER be turned on for a real system.  That makes much more
+> sense, and is something that I don't recall anyone saying before.
 
-Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
----
- drivers/gpu/drm/mediatek/mtk_disp_aal.c   |  2 +-
- drivers/gpu/drm/mediatek/mtk_disp_drv.h   |  2 +-
- drivers/gpu/drm/mediatek/mtk_disp_gamma.c | 34 +++++++++++++++++++----
- 3 files changed, 30 insertions(+), 8 deletions(-)
+Ah my bad, I thought it was known thing given the DCC driver was already
+present.
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_disp_aal.c b/drivers/gpu/drm/mediatek/mtk_disp_aal.c
-index f46d4ab73d6a..0f9d7efb61d7 100644
---- a/drivers/gpu/drm/mediatek/mtk_disp_aal.c
-+++ b/drivers/gpu/drm/mediatek/mtk_disp_aal.c
-@@ -66,7 +66,7 @@ void mtk_aal_gamma_set(struct device *dev, struct drm_crtc_state *state)
- 	struct mtk_disp_aal *aal = dev_get_drvdata(dev);
- 
- 	if (aal->data && aal->data->has_gamma)
--		mtk_gamma_set_common(aal->regs, state);
-+		mtk_gamma_set_common(aal->regs, state, false);
- }
- 
- void mtk_aal_start(struct device *dev)
-diff --git a/drivers/gpu/drm/mediatek/mtk_disp_drv.h b/drivers/gpu/drm/mediatek/mtk_disp_drv.h
-index 86c3068894b1..3380651c6707 100644
---- a/drivers/gpu/drm/mediatek/mtk_disp_drv.h
-+++ b/drivers/gpu/drm/mediatek/mtk_disp_drv.h
-@@ -51,7 +51,7 @@ void mtk_gamma_config(struct device *dev, unsigned int w,
- 		      unsigned int h, unsigned int vrefresh,
- 		      unsigned int bpc, struct cmdq_pkt *cmdq_pkt);
- void mtk_gamma_set(struct device *dev, struct drm_crtc_state *state);
--void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state *state);
-+void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state *state, bool lut_diff);
- void mtk_gamma_start(struct device *dev);
- void mtk_gamma_stop(struct device *dev);
- 
-diff --git a/drivers/gpu/drm/mediatek/mtk_disp_gamma.c b/drivers/gpu/drm/mediatek/mtk_disp_gamma.c
-index 3a5815ab4079..bbd558a036ec 100644
---- a/drivers/gpu/drm/mediatek/mtk_disp_gamma.c
-+++ b/drivers/gpu/drm/mediatek/mtk_disp_gamma.c
-@@ -27,6 +27,7 @@
- 
- struct mtk_disp_gamma_data {
- 	bool has_dither;
-+	bool lut_diff;
- };
- 
- /*
-@@ -53,12 +54,13 @@ void mtk_gamma_clk_disable(struct device *dev)
- 	clk_disable_unprepare(gamma->clk);
- }
- 
--void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state *state)
-+void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state *state, bool lut_diff)
- {
- 	unsigned int i, reg;
- 	struct drm_color_lut *lut;
- 	void __iomem *lut_base;
- 	u32 word;
-+	u32 diff[3] = {0};
- 
- 	if (state->gamma_lut) {
- 		reg = readl(regs + DISP_GAMMA_CFG);
-@@ -67,9 +69,20 @@ void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state *state)
- 		lut_base = regs + DISP_GAMMA_LUT;
- 		lut = (struct drm_color_lut *)state->gamma_lut->data;
- 		for (i = 0; i < MTK_LUT_SIZE; i++) {
--			word = (((lut[i].red >> 6) & LUT_10BIT_MASK) << 20) +
--				(((lut[i].green >> 6) & LUT_10BIT_MASK) << 10) +
--				((lut[i].blue >> 6) & LUT_10BIT_MASK);
-+
-+			if (!lut_diff || (i % 2 == 0)) {
-+				word = (((lut[i].red >> 6) & LUT_10BIT_MASK) << 20) +
-+					(((lut[i].green >> 6) & LUT_10BIT_MASK) << 10) +
-+					((lut[i].blue >> 6) & LUT_10BIT_MASK);
-+			} else {
-+				diff[0] = (lut[i].red >> 6) - (lut[i - 1].red >> 6);
-+				diff[1] = (lut[i].green >> 6) - (lut[i - 1].green >> 6);
-+				diff[2] = (lut[i].blue >> 6) - (lut[i - 1].blue >> 6);
-+
-+				word = ((diff[0] & LUT_10BIT_MASK) << 20) +
-+					((diff[1] & LUT_10BIT_MASK) << 10) +
-+					(diff[2] & LUT_10BIT_MASK);
-+			}
- 			writel(word, (lut_base + i * 4));
- 		}
- 	}
-@@ -78,8 +91,12 @@ void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state *state)
- void mtk_gamma_set(struct device *dev, struct drm_crtc_state *state)
- {
- 	struct mtk_disp_gamma *gamma = dev_get_drvdata(dev);
-+	bool lut_diff = false;
-+
-+	if (gamma->data)
-+		lut_diff = gamma->data->lut_diff;
- 
--	mtk_gamma_set_common(gamma->regs, state);
-+	mtk_gamma_set_common(gamma->regs, state, lut_diff);
- }
- 
- void mtk_gamma_config(struct device *dev, unsigned int w,
-@@ -176,10 +193,15 @@ static const struct mtk_disp_gamma_data mt8173_gamma_driver_data = {
- 	.has_dither = true,
- };
- 
-+static const struct mtk_disp_gamma_data mt8183_gamma_driver_data = {
-+	.lut_diff = true,
-+};
-+
- static const struct of_device_id mtk_disp_gamma_driver_dt_match[] = {
- 	{ .compatible = "mediatek,mt8173-disp-gamma",
- 	  .data = &mt8173_gamma_driver_data},
--	{ .compatible = "mediatek,mt8183-disp-gamma"},
-+	{ .compatible = "mediatek,mt8183-disp-gamma",
-+	  .data = &mt8183_gamma_driver_data},
- 	{},
- };
- MODULE_DEVICE_TABLE(of, mtk_disp_gamma_driver_dt_match);
--- 
-2.25.1
+> So make this very very explicit, both in the changelog, and in the
+> Kconfig text, AND when the driver loads have it spit out a huge message
+> in the kernel log saying that this is for debugging only and that no one
+> should see this on a normal running system.  We have examples of other
+> Kconfig options that do this at runtime, copy what they do so it's
+> painfully obvious.  Like what is in clk_debug_init().
 
+Sure, I will make these changes and post.
+
+Thanks,
+Sai
