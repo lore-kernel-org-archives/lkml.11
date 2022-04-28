@@ -2,82 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A1E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:14:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE12BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:16:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348235AbiD1OSC (ORCPT
+        id S1348233AbiD1OTz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 10:18:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40782 "EHLO
+        Thu, 28 Apr 2022 10:19:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348202AbiD1ORx (ORCPT
+        with ESMTP id S233037AbiD1OTx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 10:17:53 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF79B7156;
-        Thu, 28 Apr 2022 07:14:37 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id r11-20020a05600c35cb00b0039409c1111bso2158107wmq.3;
-        Thu, 28 Apr 2022 07:14:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=S0n4vT9BhMHU2WQlHRXLpp/KRrHRQlF2a1BLW87KTmk=;
-        b=gAo2hOkVIKXQN2B46GdYlRrzaZTgfNHy4B0UwKMLWDwYy2hqdunAn+f4J1YAWxsIkI
-         f/NTIomFneugwkvTqguhSHUAGUWJYzufBW+YNSTDGQ8CVjSXpvcRptzF3ErfhV+eF50K
-         RDmPIYaFrwTxpnF5W66kw9Bcl51jKC9OE+kX3jJi5GnpnBg2EG/tXzi7CSngM83SWpzy
-         lOt5/qMLQkGXXCzNURX9+mfmuFM9fieJWVR3yX10BwivUYDaIeab7/nNE5PSylJDnUUh
-         8Jm/YJcbi4GrShGruqoOvtAqyRFa7BdZtg37hxbiQUEgKlmg6oyXt3IQFbUJyr2zFTfY
-         gfbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=S0n4vT9BhMHU2WQlHRXLpp/KRrHRQlF2a1BLW87KTmk=;
-        b=objDyJ9AlI6G68wdRBqQbn14S8vmF5IPA/Of+9WCnjp/2wFlfDE5LWkOt1aHjAW2Dh
-         NuTjeTmRfH0+v4on33K1ab3Y322Qg3LgQXZScsZ6V5X3i4IbPgsu5KLYLP9KWyAcZAd4
-         Uw4BJBqCR5YwYqn03P+r2MaVBWbw7Ls0u0YjudDaTxAjDN0ekjZRIGohHKw7qt0elw06
-         ZcZLG5ZX8p6SwUATIpx7NJF814g4xSnhI2G0EgU8BgLDl5Cxxk8ubE+cvGsv7d4ENKMQ
-         IsqOYm43H+ZL5x9jvlhULLB+WDJyUsz8BoDlvn/HBRD5vzCQuppk4vFetnWv0Y05Jr/F
-         cdpQ==
-X-Gm-Message-State: AOAM531mI3t5f9U02VG4MR8rPygT2wJkRcI8gK910+ehFmEyFuAXhWi7
-        e7ZtdVvb+sUkawqitcBDIbrrxbjvvjHGCA==
-X-Google-Smtp-Source: ABdhPJwUdgNeXIVbLSeg3t/l9hijtw5yJRrMD2iH8BHIePXx5Ru7c5WskYH6AKHZcKUO2GzrZkH9SQ==
-X-Received: by 2002:a05:600c:1548:b0:392:8e1a:18c3 with SMTP id f8-20020a05600c154800b003928e1a18c3mr31451311wmg.102.1651155276124;
-        Thu, 28 Apr 2022 07:14:36 -0700 (PDT)
-Received: from [192.168.0.43] (static-35-180-85-188.ipcom.comunitel.net. [188.85.180.35])
-        by smtp.gmail.com with ESMTPSA id f66-20020a1c3845000000b00393e84ea043sm54451wma.44.2022.04.28.07.14.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 07:14:35 -0700 (PDT)
-Message-ID: <cc7cc7a8-c7a2-56a1-47bf-6c553c200b33@gmail.com>
-Date:   Thu, 28 Apr 2022 16:14:33 +0200
+        Thu, 28 Apr 2022 10:19:53 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F024EA1C;
+        Thu, 28 Apr 2022 07:16:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651155398; x=1682691398;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=2G2qPAimlQVyg5V7Ct8GtdDOryOBTEIMTjn+8CkRzds=;
+  b=ZER2EafqrQ3AJxWFUDH03FAIUah9uaG6U79s2CufS2TevgIdC57NmE/U
+   ZqnlrKFpj9sPoWO4qxqsCHycbItd79kjXJaJMu/86LfeKv4hfkKARaN0N
+   SpaCgQqRaPcx3/r0t9xSv5GKtPsfG+j0L14xxozdHNV8FeUzoCi8TOEYG
+   8ZXoZ6cFF9Ls8BnyAsH+tkb6XNmfWPtMEXAgRGPpLQtpNH3rapbNrQAYB
+   Up1A1jiUBHfdz2ZyeDMKqtsfEG7njIcvWBJ/Uhsh56HtwQwXkrQ6g6T1u
+   Wzk6KCIUBcAYTn38gMuGHOLc5We+ydO4ojgfuCzGJ8WL0ieKzEoJi4Zos
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="352735278"
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="352735278"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 07:16:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="541332604"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga002.jf.intel.com with ESMTP; 28 Apr 2022 07:16:37 -0700
+Received: from [10.209.10.70] (kliang2-MOBL.ccr.corp.intel.com [10.209.10.70])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id DA31A580689;
+        Thu, 28 Apr 2022 07:16:36 -0700 (PDT)
+Message-ID: <bc3b3f6c-8d68-ffc1-cb6e-604d84797da1@linux.intel.com>
+Date:   Thu, 28 Apr 2022 10:16:36 -0400
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v6 31/34] iommu/mediatek: Get the proper bankid for multi
- banks
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v10 07/16] KVM: vmx/pmu: Emulate MSR_ARCH_LBR_CTL for
+ guest Arch LBR
 Content-Language: en-US
-To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        Rob Herring <robh+dt@kernel.org>, Will Deacon <will@kernel.org>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org,
-        Hsin-Yi Wang <hsinyi@chromium.org>, youlin.pei@mediatek.com,
-        anan.sun@mediatek.com, xueqi.zhang@mediatek.com,
-        yen-chang.chen@mediatek.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        mingyuan.ma@mediatek.com, yf.wang@mediatek.com,
-        libo.kang@mediatek.com, chengci.xu@mediatek.com
-References: <20220407075726.17771-1-yong.wu@mediatek.com>
- <20220407075726.17771-32-yong.wu@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220407075726.17771-32-yong.wu@mediatek.com>
+To:     Yang Weijiang <weijiang.yang@intel.com>, pbonzini@redhat.com,
+        jmattson@google.com, seanjc@google.com, like.xu.linux@gmail.com,
+        vkuznets@redhat.com, wei.w.wang@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220422075509.353942-1-weijiang.yang@intel.com>
+ <20220422075509.353942-8-weijiang.yang@intel.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <20220422075509.353942-8-weijiang.yang@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -86,123 +68,210 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 07/04/2022 09:57, Yong Wu wrote:
-> We preassign some ports in a special bank via the new defined
-> banks_portmsk. Put it in the plat_data means it is not expected to be
-> adjusted dynamically.
+On 4/22/2022 3:55 AM, Yang Weijiang wrote:
+> From: Like Xu <like.xu@linux.intel.com>
 > 
-> If the iommu id in the iommu consumer's dtsi node is inside this
-> banks_portmsk, then we switch it to this special iommu bank, and
-> initialise the IOMMU bank HW.
+> Arch LBR is enabled by setting MSR_ARCH_LBR_CTL.LBREn to 1. A new guest
+> state field named "Guest IA32_LBR_CTL" is added to enhance guest LBR usage.
+> When guest Arch LBR is enabled, a guest LBR event will be created like the
+> model-specific LBR does. Clear guest LBR enable bit on host PMI handling so
+> guest can see expected config.
 > 
-> Each a bank has the independent pgtable(4GB iova range). Each a bank
-> is a independent iommu domain/group. Currently we don't separate different
-> iova ranges inside a bank.
+> On processors that support Arch LBR, MSR_IA32_DEBUGCTLMSR[bit 0] has no
+> meaning. It can be written to 0 or 1, but reads will always return 0.
+> Like IA32_DEBUGCTL, IA32_ARCH_LBR_CTL msr is also preserved on INIT.
 > 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> Regardless of the Arch LBR or legacy LBR, when the LBR_EN bit 0 of the
+> corresponding control MSR is set to 1, LBR recording will be enabled.
+> 
+> Signed-off-by: Like Xu <like.xu@linux.intel.com>
+> Co-developed-by: Yang Weijiang <weijiang.yang@intel.com>
+> Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
 > ---
->   drivers/iommu/mtk_iommu.c | 39 ++++++++++++++++++++++++++++++++++++---
->   1 file changed, 36 insertions(+), 3 deletions(-)
+>   arch/x86/events/intel/lbr.c      |  2 --
+>   arch/x86/include/asm/msr-index.h |  1 +
+>   arch/x86/include/asm/vmx.h       |  2 ++
+>   arch/x86/kvm/vmx/pmu_intel.c     | 58 +++++++++++++++++++++++++++++---
+>   arch/x86/kvm/vmx/vmx.c           | 12 +++++++
+>   5 files changed, 68 insertions(+), 7 deletions(-)
 > 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 0828cff97625..d42b3d35a36e 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -191,6 +191,7 @@ struct mtk_iommu_plat_data {
+> diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
+> index 4529ce448b2e..4fe6c3b50fc3 100644
+> --- a/arch/x86/events/intel/lbr.c
+> +++ b/arch/x86/events/intel/lbr.c
+> @@ -160,8 +160,6 @@ enum {
+>   	 ARCH_LBR_RETURN		|\
+>   	 ARCH_LBR_OTHER_BRANCH)
 >   
->   	u8                  banks_num;
->   	bool                banks_enable[MTK_IOMMU_BANK_MAX];
-> +	unsigned int        banks_portmsk[MTK_IOMMU_BANK_MAX];
->   	unsigned char       larbid_remap[MTK_LARB_COM_MAX][MTK_LARB_SUBCOM_MAX];
->   };
+> -#define ARCH_LBR_CTL_MASK			0x7f000e
+> -
+>   static void intel_pmu_lbr_filter(struct cpu_hw_events *cpuc);
 >   
-> @@ -467,6 +468,30 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
->   	return IRQ_HANDLED;
+>   static __always_inline bool is_lbr_call_stack_bit_set(u64 config)
+> diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
+> index 0eb90d21049e..60e0ab108dc0 100644
+> --- a/arch/x86/include/asm/msr-index.h
+> +++ b/arch/x86/include/asm/msr-index.h
+> @@ -169,6 +169,7 @@
+>   #define LBR_INFO_BR_TYPE		(0xfull << LBR_INFO_BR_TYPE_OFFSET)
+>   
+>   #define MSR_ARCH_LBR_CTL		0x000014ce
+> +#define ARCH_LBR_CTL_MASK		0x7f000e
+>   #define ARCH_LBR_CTL_LBREN		BIT(0)
+>   #define ARCH_LBR_CTL_CPL_OFFSET		1
+>   #define ARCH_LBR_CTL_CPL		(0x3ull << ARCH_LBR_CTL_CPL_OFFSET)
+> diff --git a/arch/x86/include/asm/vmx.h b/arch/x86/include/asm/vmx.h
+> index 0ffaa3156a4e..ea3be961cc8e 100644
+> --- a/arch/x86/include/asm/vmx.h
+> +++ b/arch/x86/include/asm/vmx.h
+> @@ -245,6 +245,8 @@ enum vmcs_field {
+>   	GUEST_BNDCFGS_HIGH              = 0x00002813,
+>   	GUEST_IA32_RTIT_CTL		= 0x00002814,
+>   	GUEST_IA32_RTIT_CTL_HIGH	= 0x00002815,
+> +	GUEST_IA32_LBR_CTL		= 0x00002816,
+> +	GUEST_IA32_LBR_CTL_HIGH		= 0x00002817,
+>   	HOST_IA32_PAT			= 0x00002c00,
+>   	HOST_IA32_PAT_HIGH		= 0x00002c01,
+>   	HOST_IA32_EFER			= 0x00002c02,
+> diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+> index c8e6c1e1e00c..7dc8a5783df7 100644
+> --- a/arch/x86/kvm/vmx/pmu_intel.c
+> +++ b/arch/x86/kvm/vmx/pmu_intel.c
+> @@ -19,6 +19,7 @@
+>   #include "pmu.h"
+>   
+>   #define MSR_PMC_FULL_WIDTH_BIT      (MSR_IA32_PMC0 - MSR_IA32_PERFCTR0)
+> +#define KVM_ARCH_LBR_CTL_MASK  (ARCH_LBR_CTL_MASK | ARCH_LBR_CTL_LBREN)
+>   
+>   static struct kvm_event_hw_type_mapping intel_arch_events[] = {
+>   	[0] = { 0x3c, 0x00, PERF_COUNT_HW_CPU_CYCLES },
+> @@ -215,6 +216,7 @@ static bool intel_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr)
+>   		ret = pmu->version > 1;
+>   		break;
+>   	case MSR_ARCH_LBR_DEPTH:
+> +	case MSR_ARCH_LBR_CTL:
+>   		if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
+>   			ret = guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR);
+>   		break;
+> @@ -361,6 +363,35 @@ static bool arch_lbr_depth_is_valid(struct kvm_vcpu *vcpu, u64 depth)
+>   	return (depth == pmu->kvm_arch_lbr_depth);
 >   }
 >   
-> +static unsigned int mtk_iommu_get_bank_id(struct device *dev,
-> +					  const struct mtk_iommu_plat_data *plat_data)
+> +#define ARCH_LBR_CTL_BRN_MASK   GENMASK_ULL(22, 16)
+> +
+> +static bool arch_lbr_ctl_is_valid(struct kvm_vcpu *vcpu, u64 ctl)
 > +{
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> +	unsigned int i, portmsk = 0, bankid = 0;
+> +	struct kvm_cpuid_entry2 *entry;
 > +
-> +	if (plat_data->banks_num == 1)
-> +		return bankid;
+> +	if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
+> +		return false;
 > +
-> +	for (i = 0; i < fwspec->num_ids; i++)
-> +		portmsk |= BIT(MTK_M4U_TO_PORT(fwspec->ids[i]));
+> +	if (ctl & ~KVM_ARCH_LBR_CTL_MASK)
+> +		goto warn;
 > +
-> +	for (i = 0; i < plat_data->banks_num && i < MTK_IOMMU_BANK_MAX; i++) {
-> +		if (!plat_data->banks_enable[i])
-> +			continue;
+> +	entry = kvm_find_cpuid_entry(vcpu, 0x1c, 0);
+> +	if (!entry)
+> +		return false;
 > +
-> +		if (portmsk & plat_data->banks_portmsk[i]) {
-> +			bankid = i;
-> +			break;
-> +		}
-> +	}
-> +	return bankid; /* default is 0 */
+> +	if (!(entry->ebx & BIT(0)) && (ctl & ARCH_LBR_CTL_CPL))
+> +		return false;
+> +	if (!(entry->ebx & BIT(2)) && (ctl & ARCH_LBR_CTL_STACK))
+> +		return false;
+> +	if (!(entry->ebx & BIT(1)) && (ctl & ARCH_LBR_CTL_BRN_MASK))
+
+Why KVM wants to define this mask by itself? Cannot we use the 
+ARCH_LBR_CTL_FILTER?
+
+Thanks,
+Kan
+
+> +		return false;
+> +	return true;
+> +warn:
+> +	pr_warn_ratelimited("kvm: vcpu-%d: invalid arch lbr ctl.\n",
+> +			    vcpu->vcpu_id);
+> +	return false;
 > +}
 > +
->   static int mtk_iommu_get_iova_region_id(struct device *dev,
->   					const struct mtk_iommu_plat_data *plat_data)
+>   static int intel_pmu_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
 >   {
-> @@ -619,13 +644,14 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
->   	struct list_head *hw_list = data->hw_list;
->   	struct device *m4udev = data->dev;
->   	struct mtk_iommu_bank_data *bank;
-> -	unsigned int bankid = 0;
-> +	unsigned int bankid;
->   	int ret, region_id;
+>   	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
+> @@ -384,6 +415,9 @@ static int intel_pmu_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+>   	case MSR_ARCH_LBR_DEPTH:
+>   		msr_info->data = lbr_desc->records.nr;
+>   		return 0;
+> +	case MSR_ARCH_LBR_CTL:
+> +		msr_info->data = vmcs_read64(GUEST_IA32_LBR_CTL);
+> +		return 0;
+>   	default:
+>   		if ((pmc = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0)) ||
+>   		    (pmc = get_gp_pmc(pmu, msr, MSR_IA32_PMC0))) {
+> @@ -455,6 +489,16 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+>   		 */
+>   		wrmsrl(MSR_ARCH_LBR_DEPTH, lbr_desc->records.nr);
+>   		return 0;
+> +	case MSR_ARCH_LBR_CTL:
+> +		if (!arch_lbr_ctl_is_valid(vcpu, data))
+> +			break;
+> +
+> +		vmcs_write64(GUEST_IA32_LBR_CTL, data);
+> +
+> +		if (intel_pmu_lbr_is_enabled(vcpu) && !lbr_desc->event &&
+> +		    (data & ARCH_LBR_CTL_LBREN))
+> +			intel_pmu_create_guest_lbr_event(vcpu);
+> +		return 0;
+>   	default:
+>   		if ((pmc = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0)) ||
+>   		    (pmc = get_gp_pmc(pmu, msr, MSR_IA32_PMC0))) {
+> @@ -668,12 +712,16 @@ static void intel_pmu_reset(struct kvm_vcpu *vcpu)
+>    */
+>   static void intel_pmu_legacy_freezing_lbrs_on_pmi(struct kvm_vcpu *vcpu)
+>   {
+> -	u64 data = vmcs_read64(GUEST_IA32_DEBUGCTL);
+> +	u32 lbr_ctl_field = GUEST_IA32_DEBUGCTL;
 >   
->   	region_id = mtk_iommu_get_iova_region_id(dev, data->plat_data);
->   	if (region_id < 0)
->   		return region_id;
+> -	if (data & DEBUGCTLMSR_FREEZE_LBRS_ON_PMI) {
+> -		data &= ~DEBUGCTLMSR_LBR;
+> -		vmcs_write64(GUEST_IA32_DEBUGCTL, data);
+> -	}
+> +	if (!(vmcs_read64(GUEST_IA32_DEBUGCTL) & DEBUGCTLMSR_FREEZE_LBRS_ON_PMI))
+> +		return;
+> +
+> +	if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR) &&
+> +	    guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR))
+> +		lbr_ctl_field = GUEST_IA32_LBR_CTL;
+> +
+> +	vmcs_write64(lbr_ctl_field, vmcs_read64(lbr_ctl_field) & ~0x1ULL);
+>   }
 >   
-> +	bankid = mtk_iommu_get_bank_id(dev, data->plat_data);
->   	mutex_lock(&dom->mutex);
->   	if (!dom->bank) {
->   		/* Data is in the frstdata in sharing pgtable case. */
-> @@ -802,6 +828,7 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
->   	struct mtk_iommu_data *c_data = dev_iommu_priv_get(dev), *data;
->   	struct list_head *hw_list = c_data->hw_list;
->   	struct iommu_group *group;
-> +	unsigned int bankid, groupid;
->   	int regionid;
+>   static void intel_pmu_deliver_pmi(struct kvm_vcpu *vcpu)
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index 04d170c4b61e..73961fcfb62d 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -2022,6 +2022,13 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+>   						VM_EXIT_SAVE_DEBUG_CONTROLS)
+>   			get_vmcs12(vcpu)->guest_ia32_debugctl = data;
 >   
->   	data = mtk_iommu_get_frst_data(hw_list);
-> @@ -812,12 +839,18 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
->   	if (regionid < 0)
->   		return ERR_PTR(regionid);
+> +		/*
+> +		 * For Arch LBR, IA32_DEBUGCTL[bit 0] has no meaning.
+> +		 * It can be written to 0 or 1, but reads will always return 0.
+> +		 */
+> +		if (guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR))
+> +			data &= ~DEBUGCTLMSR_LBR;
+> +
+>   		vmcs_write64(GUEST_IA32_DEBUGCTL, data);
+>   		if (intel_pmu_lbr_is_enabled(vcpu) && !to_vmx(vcpu)->lbr_desc.event &&
+>   		    (data & DEBUGCTLMSR_LBR))
+> @@ -4548,6 +4555,11 @@ static void vmx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+>   	kvm_make_request(KVM_REQ_APIC_PAGE_RELOAD, vcpu);
 >   
-> +	bankid = mtk_iommu_get_bank_id(dev, data->plat_data);
-
-I think code readability would be improved if we add a new function like 
-mtk_iommu_get_id which call mtk_iommu_get_bankid and if necessary 
-mtk_iommu_get_regionid.
-
->   	mutex_lock(&data->mutex);
-> -	group = data->m4u_group[regionid];
-> +	/*
-> +	 * If the bank function is enabled, each a bank is a iommu group/domain.
-> +	 * otherwise, each a iova region is a iommu group/domain.
-
-While at it:
-"If the bank function is enabled, each bank is a iommu group/domain. Otherwise, 
-each iova region is a iommu group/domain."
-
-Regards,
-Matthias
-
-> +	 */
-> +	groupid = bankid ? bankid : regionid;
-> +	group = data->m4u_group[groupid];
->   	if (!group) {
->   		group = iommu_group_alloc();
->   		if (!IS_ERR(group))
-> -			data->m4u_group[regionid] = group;
-> +			data->m4u_group[groupid] = group;
->   	} else {
->   		iommu_group_ref_get(group);
->   	}
+>   	vpid_sync_context(vmx->vpid);
+> +
+> +	if (!init_event) {
+> +		if (static_cpu_has(X86_FEATURE_ARCH_LBR))
+> +			vmcs_write64(GUEST_IA32_LBR_CTL, 0);
+> +	}
+>   }
+>   
+>   static void vmx_enable_irq_window(struct kvm_vcpu *vcpu)
