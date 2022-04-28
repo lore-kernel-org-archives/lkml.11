@@ -2,115 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F47C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B25A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:10:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344393AbiD1LLN (ORCPT
+        id S1345241AbiD1LNq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 07:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53414 "EHLO
+        Thu, 28 Apr 2022 07:13:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231407AbiD1LLI (ORCPT
+        with ESMTP id S1344512AbiD1LNp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 07:11:08 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81661BE32
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 04:07:54 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KptBD5mJczhYfc;
-        Thu, 28 Apr 2022 19:07:32 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Apr 2022 19:07:52 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Apr 2022 19:07:52 +0800
-Subject: Re: [PATCH v2] arm64: add the printing of tpidr_elx in __show_regs()
-To:     Will Deacon <will@kernel.org>
-CC:     Catalin Marinas <catalin.marinas@arm.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, "James Morse" <james.morse@arm.com>
-References: <20220316062408.1113-1-thunder.leizhen@huawei.com>
- <20220428102156.GA14123@willie-the-truck>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <4c956c17-6e13-37a1-7da3-b2c8243c2c01@huawei.com>
-Date:   Thu, 28 Apr 2022 19:07:51 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        Thu, 28 Apr 2022 07:13:45 -0400
+X-Greylist: delayed 1227 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Apr 2022 04:10:29 PDT
+Received: from mail.pcs.gmbh (mail.pcs.gmbh [89.27.162.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C870186D2;
+        Thu, 28 Apr 2022 04:10:27 -0700 (PDT)
+Received: from mail.csna.de (mail.csna.de [89.27.162.50])
+        by mail.pcs.gmbh with ESMTPA
+        ; Thu, 28 Apr 2022 12:49:58 +0200
+Received: from EXCHANGE2019.pcs.ditec.de (mail.pcs.com [89.27.162.5])
+        by mail.csna.de with ESMTPA
+        ; Thu, 28 Apr 2022 12:49:59 +0200
+Received: from EXCHANGE2019.pcs.ditec.de (192.168.8.214) by
+ EXCHANGE2019.pcs.ditec.de (192.168.8.214) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 28 Apr 2022 12:49:58 +0200
+Received: from lxtpfaff.pcs.ditec.de (192.168.9.96) by
+ EXCHANGE2019.pcs.ditec.de (192.168.8.214) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22
+ via Frontend Transport; Thu, 28 Apr 2022 12:49:58 +0200
+Date:   Thu, 28 Apr 2022 12:49:58 +0200
+From:   Thomas Pfaff <tpfaff@pcs.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <linux-rt-users@vger.kernel.org>
+Subject: [PATCH] irq: synchronize irq_thread startup
+Message-ID: <f18798-9e66-66e7-8c9d-cb8eeda364c4@pcs.com>
 MIME-Version: 1.0
-In-Reply-To: <20220428102156.GA14123@willie-the-truck>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="US-ASCII"
+X-KSE-ServerInfo: EXCHANGE2019.pcs.ditec.de, 9
+X-KSE-AntiSpam-Interceptor-Info: white sender email list
+X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 28.04.2022 09:19:00
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Thomas Pfaff <tpfaff@pcs.com>
+
+While running
+"while /bin/true; do setserial /dev/ttyS0 uart none;
+setserial /dev/ttyS0 uart 16550A; done"
+on a kernel with threaded irqs, setserial is hung after some calls.
+
+setserial opens the device, this will install an irq handler if the uart is
+not none, followed by TIOCGSERIAL and TIOCSSERIAL ioctls.
+Then the device is closed. On close, synchronize_irq() is called by
+serial_core.
+
+If the close comes too fast, the irq_thread does not really start,
+it is terminated immediately without going into irq_thread().
+But an interrupt might already been handled by
+irq_default_primary_handler(), going to __irq_wake_thread() and
+incrementing threads_active.
+If this happens, synchronize_irq() will hang forever, because the
+irq_thread is already dead, and threads_active will never be decremented.
+
+The fix is to make sure that the irq_thread is really started
+during __setup_irq().
+
+Signed-off-by: Thomas Pfaff <tpfaff@pcs.com>
+---
+diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
+index f40754caaefa..82a16a12d472 100644
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -113,6 +113,8 @@ typedef irqreturn_t (*irq_handler_t)(int, void *);
+  * @secondary:	pointer to secondary irqaction (force threading)
+  * @thread_flags:	flags related to @thread
+  * @thread_mask:	bitmask for keeping track of @thread activity
++ * @thread_is_up:	threaded irq handler initializated
++ * @wait_for_thread:	wait queue to wait for thread initialization
+  * @dir:	pointer to the proc/irq/NN/name entry
+  */
+ struct irqaction {
+@@ -127,6 +129,8 @@ struct irqaction {
+ 	unsigned int		flags;
+ 	unsigned long		thread_flags;
+ 	unsigned long		thread_mask;
++	atomic_t		thread_is_up;
++	wait_queue_head_t	wait_for_thread;
+ 	const char		*name;
+ 	struct proc_dir_entry	*dir;
+ } ____cacheline_internodealigned_in_smp;
+diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+index c03f71d5ec10..345e4f824c58 100644
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -1272,6 +1272,9 @@ static int irq_thread(void *data)
+ 
+ 	irq_thread_check_affinity(desc, action);
+ 
++	atomic_set(&action->thread_is_up, 1);
++	wake_up(&action->wait_for_thread);
++
+ 	while (!irq_wait_for_interrupt(action)) {
+ 		irqreturn_t action_ret;
+ 
+@@ -1415,6 +1418,8 @@ setup_irq_thread(struct irqaction *new, unsigned int irq, bool secondary)
+ {
+ 	struct task_struct *t;
+ 
++	init_waitqueue_head(&new->wait_for_thread);
++
+ 	if (!secondary) {
+ 		t = kthread_create(irq_thread, new, "irq/%d-%s", irq,
+ 				   new->name);
+@@ -1781,13 +1786,18 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
+ 	irq_setup_timings(desc, new);
+ 
+ 	/*
+-	 * Strictly no need to wake it up, but hung_task complains
+-	 * when no hard interrupt wakes the thread up.
++	 * wake thread up, and wait until it is really up
+ 	 */
+-	if (new->thread)
++	if (new->thread) {
+ 		wake_up_process(new->thread);
+-	if (new->secondary)
++		wait_event(new->wait_for_thread,
++			   atomic_read(&new->thread_is_up));
++	}
++	if (new->secondary) {
+ 		wake_up_process(new->secondary->thread);
++		wait_event(new->secondary->wait_for_thread,
++			   atomic_read(&new->secondary->thread_is_up));
++	}
+ 
+ 	register_irq_proc(irq, desc);
+ 	new->dir = NULL;
 
 
-On 2022/4/28 18:21, Will Deacon wrote:
-> On Wed, Mar 16, 2022 at 02:24:08PM +0800, Zhen Lei wrote:
->> Commit 7158627686f0 ("arm64: percpu: implement optimised pcpu access
->> using tpidr_el1") and commit 6d99b68933fb ("arm64: alternatives: use
->> tpidr_el2 on VHE hosts") use tpidr_elx to cache my_cpu_offset to optimize
->> pcpu access. However, when performing reverse execution based on the
->> registers and the memory contents in kdump, this information is sometimes
->> required if there is a pcpu access.
->>
->> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
->> ---
->>  arch/arm64/kernel/process.c | 11 +++++++++++
->>  1 file changed, 11 insertions(+)
->>
->> v1 --> v2:
->> Directly print the tpidr_elx register of the current exception level.
->> Avoid coupling with the implementation of 'my_cpu_offset'.
->>
->> diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
->> index 5369e649fa79ff8..738932e6fa4e947 100644
->> --- a/arch/arm64/kernel/process.c
->> +++ b/arch/arm64/kernel/process.c
->> @@ -216,6 +216,17 @@ void __show_regs(struct pt_regs *regs)
->>  	show_regs_print_info(KERN_DEFAULT);
->>  	print_pstate(regs);
->>  
->> +	switch (read_sysreg(CurrentEL)) {
-> 
-> This should use is_kernel_in_hyp_mode() to detect if we're running at El2.
-> 
->> +	case CurrentEL_EL1:
->> +		printk("tpidr_el1 : %016llx\n", read_sysreg(TPIDR_EL1));
->> +		break;
->> +	case CurrentEL_EL2:
->> +		printk("tpidr_el2 : %016llx\n", read_sysreg(TPIDR_EL2));
->> +		break;
->> +	default:
->> +		break;
->> +	}
-> 
-> I think this path can be triggered directly from usermode, so we really
-> shouldn't be printing raw kernel virtual addresses here.
-
-I run echo c > /proc/sysrq-trigger and didn't trigger this path, but maybe
-there's another way. Analysis from the other side, except for the instruction
-address, all generic registers r0-r31 is output as raw. There's also an
-opportunity to contain the instruction address.
-
-So how about:
-+       if (oops_in_progress)
-+               printk("tpidr : %016lx\n", __my_cpu_offset);
-
-> 
-> Will
-> .
-> 
-
--- 
-Regards,
-  Zhen Lei
