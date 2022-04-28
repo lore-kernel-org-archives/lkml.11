@@ -2,149 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 134BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:16:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8E2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:20:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241745AbiD1DTp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 23:19:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57816 "EHLO
+        id S241930AbiD1DXh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 23:23:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233318AbiD1DTi (ORCPT
+        with ESMTP id S241671AbiD1DXd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 23:19:38 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF03189;
-        Wed, 27 Apr 2022 20:16:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651115784; x=1682651784;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=OzLHedGGs0p8Rkynak6Kv3mvYKpyq/SCmi4nw9hwu+U=;
-  b=ayglFXADbyBsMoLPXTsZHxrSqDqrYrcZ0Tl/xUz8X8JkLBhalW6oxOPp
-   RdwY8auoxX9du1CBrR4PsDt/maSjPVIg13w/F48VR7RmJEdWdcA2O3nwF
-   qj//kpTdJeUymxPscWd28i0AJVMq+9mMK+ZJKFo6/psEnUT4mqB72B2xb
-   E=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 27 Apr 2022 20:16:23 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 20:16:23 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 27 Apr 2022 20:16:23 -0700
-Received: from [10.50.42.7] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 27 Apr
- 2022 20:16:19 -0700
-Message-ID: <2cb26bc2-704b-86df-15ed-8c18f81addaf@quicinc.com>
-Date:   Thu, 28 Apr 2022 08:46:15 +0530
+        Wed, 27 Apr 2022 23:23:33 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C090812A88
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 20:20:19 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Kpgp31BNxz1JBj2;
+        Thu, 28 Apr 2022 11:19:23 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 28 Apr 2022 11:20:17 +0800
+Subject: Re: [RFC PATCH v1 4/4] mm, memory_hotplug: fix inconsistent
+ num_poisoned_pages on memory hotremove
+To:     Naoya Horiguchi <naoya.horiguchi@linux.dev>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        <linux-kernel@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
+References: <20220427042841.678351-1-naoya.horiguchi@linux.dev>
+ <20220427042841.678351-5-naoya.horiguchi@linux.dev>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <828cc111-40e8-88ed-bb50-fb185e5f0304@huawei.com>
+Date:   Thu, 28 Apr 2022 11:20:16 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCHv10 5/6] lib: Add register read/write tracing support
+In-Reply-To: <20220427042841.678351-5-naoya.horiguchi@linux.dev>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>
-CC:     Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Marc Zyngier <maz@kernel.org>,
-        "Trilok Soni" <quic_tsoni@quicinc.com>,
-        <quic_psodagud@quicinc.com>, gregkh <gregkh@linuxfoundation.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Prasad Sodagudi <psodagud@codeaurora.org>
-References: <cover.1644824638.git.quic_saipraka@quicinc.com>
- <8cf9304d9941c25d920c4835cbc624ff5c2ac2cb.1644824638.git.quic_saipraka@quicinc.com>
- <CAK8P3a1WwghVToFBNZMpG7Wcji_k3CebK3--LL8YNJs_Wu3rBQ@mail.gmail.com>
-From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-In-Reply-To: <CAK8P3a1WwghVToFBNZMpG7Wcji_k3CebK3--LL8YNJs_Wu3rBQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnd,
+On 2022/4/27 12:28, Naoya Horiguchi wrote:
+> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+> 
+> When offlining memory section with hwpoisoned pages, the hwpoisons are
+> canceled. But num_poisoned_pages is not updated for that event, so the
+> counter becomes inconsistent.
 
-On 4/27/2022 9:44 PM, Arnd Bergmann wrote:
-> On Thu, Feb 24, 2022 at 7:07 AM Sai Prakash Ranjan
-> <quic_saipraka@quicinc.com> wrote:
->> From: Prasad Sodagudi <psodagud@codeaurora.org>
->>
->> Generic MMIO read/write i.e., __raw_{read,write}{b,l,w,q} accessors
->> are typically used to read/write from/to memory mapped registers
->> and can cause hangs or some undefined behaviour in following few
->> cases,
->>
->> * If the access to the register space is unclocked, for example: if
->>    there is an access to multimedia(MM) block registers without MM
->>    clocks.
->>
->> * If the register space is protected and not set to be accessible from
->>    non-secure world, for example: only EL3 (EL: Exception level) access
->>    is allowed and any EL2/EL1 access is forbidden.
->>
->> * If xPU(memory/register protection units) is controlling access to
->>    certain memory/register space for specific clients.
->>
->> and more...
->>
->> Such cases usually results in instant reboot/SErrors/NOC or interconnect
->> hangs and tracing these register accesses can be very helpful to debug
->> such issues during initial development stages and also in later stages.
->>
->> So use ftrace trace events to log such MMIO register accesses which
->> provides rich feature set such as early enablement of trace events,
->> filtering capability, dumping ftrace logs on console and many more.
->>
->> Sample output:
->>
->> rwmmio_write: __qcom_geni_serial_console_write+0x160/0x1e0 width=32 val=0xa0d5d addr=0xfffffbfffdbff700
->> rwmmio_post_write: __qcom_geni_serial_console_write+0x160/0x1e0 width=32 val=0xa0d5d addr=0xfffffbfffdbff700
->> rwmmio_read: qcom_geni_serial_poll_bit+0x94/0x138 width=32 addr=0xfffffbfffdbff610
->> rwmmio_post_read: qcom_geni_serial_poll_bit+0x94/0x138 width=32 val=0x0 addr=0xfffffbfffdbff610
->>
->> Signed-off-by: Prasad Sodagudi <psodagud@codeaurora.org>
->> Co-developed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
->> Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-> I think this is ok in general. I saw that Steve had a minor comment, and
-> I suppose you could have just resent the same patches with a fixup in order
-> to have me pick it up into the asm-generic tree for 5.19.
+IIUC, this work is already done via clear_hwpoisoned_pages when __remove_pages.
+Or am I miss something?
 
-I had it ready the same day Steve gave the comment :) but given there was no further
-reviews on other patches, I thought of slowing down the posting of new versions.
-I will send v11 now.
+Thanks!
 
-> There is one more thing that I saw looking through this patch again: the
-> address you print is the virtual __iomem token, but it might be more
-> valuable to have the physical address instead, which can be looked up
-> in the devicetree to know which register is affected.
->
-> There is a small extra cost to walk the page table, and I'm not sure
-> if we actually have an interface for it (vmalloc_to_page is almost
-> what we want, but it returns an invalid page pointer). Any suggestions
-> on this?
->
->
+> 
+> Add num_poisoned_pages_dec() in __offline_isolated_pages(). PageHWPoison
+> can be set on a tail page of some high order buddy page, so we need check
+> PageHWPoison on each subpage.
+> 
+> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+> ---
+>  mm/page_alloc.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 6e5b4488a0c5..dcd962855617 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -9487,12 +9487,15 @@ void __offline_isolated_pages(unsigned long start_pfn, unsigned long end_pfn)
+>  	zone = page_zone(pfn_to_page(pfn));
+>  	spin_lock_irqsave(&zone->lock, flags);
+>  	while (pfn < end_pfn) {
+> +		int i;
+> +
+>  		page = pfn_to_page(pfn);
+>  		/*
+>  		 * The HWPoisoned page may be not in buddy system, and
+>  		 * page_count() is not 0.
+>  		 */
+>  		if (unlikely(!PageBuddy(page) && PageHWPoison(page))) {
+> +			num_poisoned_pages_dec();
+>  			pfn++;
+>  			continue;
+>  		}
+> @@ -9510,6 +9513,9 @@ void __offline_isolated_pages(unsigned long start_pfn, unsigned long end_pfn)
+>  		BUG_ON(page_count(page));
+>  		BUG_ON(!PageBuddy(page));
+>  		order = buddy_order(page);
+> +		for (i = 0; i < 1 << order; i++)
+> +			if (PageHWPoison(page + i))
+> +				num_poisoned_pages_dec();
+>  		del_page_from_free_list(page, zone, order);
+>  		pfn += (1 << order);
+>  	}
+> 
 
-Right, it would be useful but currently we rely on the caller information (the function name and
-the offset) to identify who writes to the location and then post process to identify the register
-written based on it. I am also not aware of the interface for page table walk and the walk on this
-hot trace path (note that we are capturing every register read/write) would slow down the system
-further.
-
-Even in the internal versions, we get the physical address postmortem from the parser tool [1].
-
-[1] https://source.codeaurora.org/quic/la/platform/vendor/qcom-opensource/tools/tree/linux-ramdump-parser-v2/parsers/rtb.py#n72
-
-Given that we can add fields to this tracepoint without breaking ABI, we can probably add this addon
-at a later point.
-
-Thanks,
-Sai
