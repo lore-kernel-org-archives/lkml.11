@@ -2,69 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50FB7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 22:59:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A21C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 23:01:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353128AbiD1XCs (ORCPT
+        id S1353144AbiD1XEx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 19:02:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32924 "EHLO
+        Thu, 28 Apr 2022 19:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353087AbiD1XCq (ORCPT
+        with ESMTP id S1352801AbiD1XEr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 19:02:46 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991BC939FA
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 15:59:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=b4+AHM7wJy0IuAqNWd732AbrAYFYwHIt1nWPqvpllJA=; b=n2K0M7OQZ4LCAz24evApPafpmc
-        u5lkS5owdCeHFbfNk0FvFmzlQRUfbJ3BRHtUVSlveOpaBHkByBfWm83kMgJxp00Y8ZyGm0ADiH78L
-        tgDtxLpjtI9BCI7cNlGCqKSQWtraj9RC4eMATVQwrIPAuwbGqET9BVf55Y0Bs65dOJ0QnYp3kiMc8
-        53bOJQw0jJKmS31fXj5znSpO66HsX56ms4bwSunMKe7kB7p34UcuuZH29lieSpecb58FxYVZHO1Ls
-        bNGdE+fzQwzuRtwa+SkiN+NiB2ZeYvSYJNl0s5alfnfeZilW46tc5LpG01qAsjhwMLWf1dW1Pk4ZB
-        0ZE434Pw==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nkD6g-008uq2-7Y; Thu, 28 Apr 2022 22:59:30 +0000
-Date:   Thu, 28 Apr 2022 15:59:30 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Jessica Yu <jeyu@kernel.org>,
-        Matthias Maennich <maennich@google.com>
-Subject: Re: [PATCH] module.h: simplify MODULE_IMPORT_NS
-Message-ID: <YmscUrVNYlnNHVbC@bombadil.infradead.org>
-References: <20220427090321.2105373-1-gregkh@linuxfoundation.org>
+        Thu, 28 Apr 2022 19:04:47 -0400
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1934C4036
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 16:01:29 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id C55C42100A;
+        Thu, 28 Apr 2022 23:01:28 +0000 (UTC)
+Received: from pdx1-sub0-mail-a237.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 51D3620F98;
+        Thu, 28 Apr 2022 23:01:28 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1651186888; a=rsa-sha256;
+        cv=none;
+        b=BO4NqlqCSaiXtx9c2q/wUqfXdwnatqmHnatbWdwxqls/4l9b3/ycqXVaJ7lVOEOyXOlD4K
+        TtzQDldvFadzsyjFbWjgFG95v0S8yrEdbLjMvtMRaRmtaaiFvdYu7Sg+wwSFAQq0Gu63jW
+        T+Ya/qHDKraENZCyvoBNo1H3xE99FQkRe+H1i0O5unHtQoc+TJFZ4xVUW4qxApcT/0xiNs
+        k3rI0AOkKFgZqW18FnRmOSa5FVmrqS478QAknn1tt8Lw4yuE2fOA/vSD36zTYK0vcBRiQv
+        W1oNiZXrdfP7kpCR8eZBZ20RJ7iIHaZzKMTqylGryU68nasYu0WFj56dn5Fqkg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1651186888;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=vjYAnQTOe68YPTsKIi7cssU+yeRHQZhrNLp1AuuSurI=;
+        b=fd6oj+vbxsTPW51Oefvq4AUnzWj4tR8plYEUAcZTkEmfi42gizwXzWVjNsd7Syc7SvW38f
+        00up5ko8NcVoVCbCFRH6Wy+VTxbsejQ+2OFMmQtdYwWD8JU/agWiNqJ4KKaD0Jtcfd58Ev
+        5sCZ9x2UxkfaqbVcrhy0gfLRF90+YrXPWcniahlyAUZbnXManDN/PhV9z4too6R51hnnev
+        SWZ7ymjC/iXq8d+/Nb5GVscEth3XoAuidLw7mRexTsPcYKbZiOijzJv2Dj5LloAlHYy535
+        GgnbK+A3lVQCdNFlPA6mSlggFJ93HL8DN1yB5gi6J2ghH0RVCE1VDixrMHVQbQ==
+ARC-Authentication-Results: i=1;
+        rspamd-fdd564cbf-868r5;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Bored-Hysterical: 4188524533974da8_1651186888661_174020957
+X-MC-Loop-Signature: 1651186888660:2618623120
+X-MC-Ingress-Time: 1651186888660
+Received: from pdx1-sub0-mail-a237.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.113.195.69 (trex/6.7.1);
+        Thu, 28 Apr 2022 23:01:28 +0000
+Received: from offworld (unknown [104.36.31.105])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a237.dreamhost.com (Postfix) with ESMTPSA id 4KqB1z34sKz1ff;
+        Thu, 28 Apr 2022 16:01:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1651186887;
+        bh=vjYAnQTOe68YPTsKIi7cssU+yeRHQZhrNLp1AuuSurI=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=l0sJoKwgxfAEiAXAbE8JM7cLVjDCa6HEK1W/qeP9oJlaYxN0pl9ng7bdFYaHhztaw
+         B1jLcK5CnOum+F3pu/qG/mv5IzrGLwmlkEraIz6Of6HQHDXgXddcd7RfSRvlzJaW61
+         NWvGo0cuF1p+aCwqFExq6taVRr/0viNIR/y0FNNDnuB2c2kWA217bBOajVtoPoejGt
+         P3zaucHAxjueICScmtjidZbhG7tYpmRqFzUh3jyxSL6RADsiv8CvPxuiiHPEnA4ctG
+         n3h3FQ5yV1Y3K8kwdrYR8iK7r5TltSHfj6umVLA/UvGq/XVttziy55vYihhw05VF5y
+         a8Jc4mY1gTLKg==
+Date:   Thu, 28 Apr 2022 15:50:03 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Prakash Sangappa <prakash.sangappa@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, tglx@linutronix.de,
+        akpm@linux-foundation.org, peterz@infradead.org,
+        manfred@colorfullife.com
+Subject: Re: [PATCH v3] ipc: Update semtimedop() to use hrtimer
+Message-ID: <20220428225003.pszk3cbcp55kzhfi@offworld>
+References: <1651178767-447-1-git-send-email-prakash.sangappa@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220427090321.2105373-1-gregkh@linuxfoundation.org>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+In-Reply-To: <1651178767-447-1-git-send-email-prakash.sangappa@oracle.com>
+User-Agent: NeoMutt/20220408
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 11:03:21AM +0200, Greg Kroah-Hartman wrote:
-> In commit ca321ec74322 ("module.h: allow #define strings to work with
-> MODULE_IMPORT_NS") I fixed up the MODULE_IMPORT_NS() macro to allow
-> defined strings to work with it.  Unfortunatly I did it in a two-stage
-> process, when it could just be done with the __stringify() macro as
-> pointed out by Masahiro Yamada.
-> 
-> Clean this up to only be one macro instead of two steps to achieve the
-> same end result.
-> 
-> Fixes: ca321ec74322 ("module.h: allow #define strings to work with MODULE_IMPORT_NS")
-> Reported-by: Masahiro Yamada <masahiroy@kernel.org>
-> Cc: Luis Chamberlain <mcgrof@kernel.org>
-> Cc: Jessica Yu <jeyu@kernel.org>
-> Cc: Matthias Maennich <maennich@google.com>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+On Thu, 28 Apr 2022, Prakash Sangappa wrote:
 
-Thanks! Queued onto modules-testing. If no complaints come back I'll
-move it to modules-next shortly after that.
+>semtimedop() should be converted to use hrtimer like it has been done
+>for most of the system calls with timeouts. This system call already
+>takes a struct timespec as an argument and can therefore provide finer
+>granularity timed wait.
+>
+>Signed-off-by: Prakash Sangappa <prakash.sangappa@oracle.com>
+>Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 
-  Luis
+Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
