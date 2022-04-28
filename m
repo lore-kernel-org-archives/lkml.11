@@ -2,106 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41515C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 18:26:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5689C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 18:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351048AbiD1S3z (ORCPT
+        id S1351050AbiD1Sc4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 14:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52840 "EHLO
+        Thu, 28 Apr 2022 14:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350909AbiD1S3x (ORCPT
+        with ESMTP id S229449AbiD1Scy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 14:29:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F062BB929;
-        Thu, 28 Apr 2022 11:26:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Thu, 28 Apr 2022 14:32:54 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F59DBB92C;
+        Thu, 28 Apr 2022 11:29:39 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:3d::5f6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A37CB82F55;
-        Thu, 28 Apr 2022 18:26:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63FDFC385A0;
-        Thu, 28 Apr 2022 18:26:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651170395;
-        bh=U5e77tVFeyTjyJTtfLg3A2UHgDfPEx8DxgdENmDZGN0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Aqw8MDUL6VZ/h0YClBkPr941jAJq2LGXh86qupZiAc4MyLDrYNbbyRyGjRBHVWaTR
-         5sqqupgMCaeHaTr5866Tl6MyoQDjpEN3qOVvcRBeDQPUi1SEPPTx1Y/zG2jBEOjE6U
-         qCY9kvKuSZEjjJjle+hxaqc1MjkmiIlUXjbDSamphBmaoKk4JDDPTVgl3n0SaKoi6V
-         g+djUZivHtZBDCce//7nHlDnvj5mzrLSV+o64EA3Ik8kuBrRTc4QsfB0g/YDUhoJFI
-         /nRo5VgdjsmZH6AEtuow7ONLhuKWZabcyN0sCCKXG1YcW3SDHxyZ2n2xfuoA6ovosp
-         g8M8nSRb1dUvQ==
-Date:   Thu, 28 Apr 2022 19:34:47 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/1] iio: dac: ltc2632: Make use of device properties
-Message-ID: <20220428193447.33b2d4a7@jic23-huawei>
-In-Reply-To: <20220413192203.46704-1-andriy.shevchenko@linux.intel.com>
-References: <20220413192203.46704-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        by ms.lwn.net (Postfix) with ESMTPSA id 7B4DD2BD;
+        Thu, 28 Apr 2022 18:29:37 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 7B4DD2BD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1651170577; bh=43cdOEsVWETBTp+jLybdKavmf9Zu8s0U30w1o0k+M0U=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=rJ1NZsg5X4SQCR/NcAY+iFUHcKmmi3b2wkg2o7WOY3B2QIX24ejy3MT5OrwpBAgRz
+         IuU8VfLO2AR8kOLqMTAR5/rXfl+0iTemfIENQS6KQ1H8ZfQkg+oUT4s3U/NSMFGiKL
+         ClfKBzep/4H862Qz6pHL+S0ua1Dzl5eu/B6qhe1LZHDCrGcOp4/69zjaQuDCq68I1b
+         yxOKDFae9jxyHBQT1aPy3XDLxnzfiMHtAv8IhImZuOqghHXGfGF6whz0OCzydAzLHH
+         L/LJjzSVgfmEEGA/SvABAzCue1K5kEhLPerVb6GIlNfgzhoF5a/wkGz0nsYRPgk3I5
+         fYrphbpdxiT0w==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Akira Yokosawa <akiyks@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Akira Yokosawa <akiyks@gmail.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] docs: submitting-patches: Fix crossref to 'The
+ canonical patch format'
+In-Reply-To: <64e105a5-50be-23f2-6cae-903a2ea98e18@gmail.com>
+References: <64e105a5-50be-23f2-6cae-903a2ea98e18@gmail.com>
+Date:   Thu, 28 Apr 2022 12:29:36 -0600
+Message-ID: <87bkwl6oz3.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Apr 2022 22:22:03 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+Akira Yokosawa <akiyks@gmail.com> writes:
 
-> Convert the module to be property provider agnostic and allow
-> it to be used on non-OF platforms.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-Hi Andy,
-
-Not sure why I was sitting on this one.
-
-Anyhow, now applied to the togreg branch of iio.git and pushed out
-as testing for all the normal reasons.
-
-Thanks,
-
-Jonathan
-
+> The reference to `explicit_in_reply_to` is pointless as when the
+> reference was added in the form of "#15" [1], Section 15) was "The
+> canonical patch format".
+> The reference of "#15" had not been properly updated in a couple of
+> reorganizations during the plain-text SubmittingPatches era.
+>
+> Fix it by using `the_canonical_patch_format`.
+>
+> [1]: 2ae19acaa50a ("Documentation: Add "how to write a good patch summary" to SubmittingPatches")
+>
+> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+> Fixes: 5903019b2a5e ("Documentation/SubmittingPatches: convert it to ReST markup")
+> Fixes: 9b2c76777acc ("Documentation/SubmittingPatches: enrich the Sphinx output")
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: stable@vger.kernel.org # v4.9+
 > ---
->  drivers/iio/dac/ltc2632.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/ltc2632.c b/drivers/iio/dac/ltc2632.c
-> index aed46c80757e..c0255f402056 100644
-> --- a/drivers/iio/dac/ltc2632.c
-> +++ b/drivers/iio/dac/ltc2632.c
-> @@ -10,6 +10,7 @@
->  #include <linux/spi/spi.h>
->  #include <linux/module.h>
->  #include <linux/iio/iio.h>
-> +#include <linux/property.h>
->  #include <linux/regulator/consumer.h>
->  
->  #include <asm/unaligned.h>
-> @@ -362,8 +363,7 @@ static int ltc2632_probe(struct spi_device *spi)
->  		}
->  	}
->  
-> -	indio_dev->name = dev_of_node(&spi->dev) ? dev_of_node(&spi->dev)->name
-> -						 : spi_get_device_id(spi)->name;
-> +	indio_dev->name = fwnode_get_name(dev_fwnode(&spi->dev)) ?: spi_get_device_id(spi)->name;
->  	indio_dev->info = &ltc2632_info;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->channels = chip_info->channels;
-> @@ -469,7 +469,7 @@ MODULE_DEVICE_TABLE(of, ltc2632_of_match);
->  static struct spi_driver ltc2632_driver = {
->  	.driver		= {
->  		.name	= "ltc2632",
-> -		.of_match_table = of_match_ptr(ltc2632_of_match),
-> +		.of_match_table = ltc2632_of_match,
->  	},
->  	.probe		= ltc2632_probe,
->  	.remove		= ltc2632_remove,
+>  Documentation/process/submitting-patches.rst | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
+Applied, thanks.
+
+jon
