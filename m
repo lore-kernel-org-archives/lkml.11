@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8716C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E79AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244529AbiD1PqJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 11:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34524 "EHLO
+        id S1349484AbiD1PqL (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 11:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349448AbiD1PqC (ORCPT
+        with ESMTP id S1349384AbiD1Pp6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 11:46:02 -0400
+        Thu, 28 Apr 2022 11:45:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A58B715C;
-        Thu, 28 Apr 2022 08:42:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA861B820F;
+        Thu, 28 Apr 2022 08:42:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF1FC61F95;
-        Thu, 28 Apr 2022 15:42:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7F3DC385AA;
-        Thu, 28 Apr 2022 15:42:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9885961FCF;
+        Thu, 28 Apr 2022 15:42:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C296C385A0;
+        Thu, 28 Apr 2022 15:42:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651160566;
-        bh=4dKNV+ceiLtd6M4VTt7w+2x33yEvnPjHequM8WdzUY8=;
+        s=korg; t=1651160560;
+        bh=ilVGieZZEUUvQGWgxV/ekNNEKBv8j99uQo8L2J5iPnc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ndhhVA0zXP0WKVFtbkSbktkcOBNoTftoBdq4wF6SHbEtuWfWziLbWN05RUXoEPHMH
-         M3tiFUjiIFRjJ+c9hC+k8+BXuliPMVMvD9WfQMUep2NNI2htsWKKElWyw83RvnXrsU
-         gI6I8IePYVp65dcSW2vnN+8fk5VvW+sGOYm9VVg0=
+        b=TphhwJI1zDAFX85nU7OlzRbFcWxeMhtHQXNO03ghzEVhdh+AnuBmpXvO05ukLPq7w
+         0r2qwhfPcteuyDNlPvIfVvk2dGevzA8z0PqgEwEZOJ7LY9H2r/vjq8H/8D6b5ab4Kg
+         gF0vGZbGbRGXCWzjyld3aE0UXSXnS0vq58UdCfLM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     stable@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Hugh Dickins <hughd@google.com>, Yang Shi <shy828301@gmail.com>,
+        Ralph Campbell <rcampbell@nvidia.com>, Zi Yan <ziy@nvidia.com>,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH AUTOSEL 14/14] mm/thp: fix NR_FILE_MAPPED accounting in page_*_file_rmap()
-Date:   Thu, 28 Apr 2022 17:42:22 +0200
-Message-Id: <20220428154222.1230793-14-gregkh@linuxfoundation.org>
+Subject: [PATCH AUTOSEL 12/14] mm/thp: refix __split_huge_pmd_locked() for migration PMD
+Date:   Thu, 28 Apr 2022 17:42:20 +0200
+Message-Id: <20220428154222.1230793-12-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220428154222.1230793-1-gregkh@linuxfoundation.org>
 References: <20220428154222.1230793-1-gregkh@linuxfoundation.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4320; i=gregkh@linuxfoundation.org; h=from:subject; bh=DY9PobJ+iVCOW4dJoQet7IIvSJy1rG7kl8G4mbSfMDg=; b=owGbwMvMwCRo6H6F97bub03G02pJDElZW++tOOTj5W0tkVux6LONokf0tOCAnWxPfbl+8a1Ov5XE NO1tRywLgyATg6yYIsuXbTxH91ccUvQytD0NM4eVCWQIAxenAExk8iGGBY0ME0XPNm/Ul1RreRU4ma ecd3JQJsOCS/NeH5qxYWqa+NofpXpXd8+MDfSfCAA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2125; i=gregkh@linuxfoundation.org; h=from:subject; bh=2n4FFedWfpMpKCUPl3SXm4kSvYrTBoaoARY2+jFW1hk=; b=owGbwMvMwCRo6H6F97bub03G02pJDElZW++pcwp8fCAvs2yu/Yys01Pe9v9Y9m9xb8FF0fsRe97w nOXU64hlYRBkYpAVU2T5so3n6P6KQ4pehranYeawMoEMYeDiFICJfLrEsKCha/qJglfTnob7dEYvW/ HF7Xnr230M80vSHtmarV24JTdQ/Mb+UmHJ9D13+AA=
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -52,122 +54,54 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Hugh Dickins <hughd@google.com>
 
-commit 5d543f13e2f5580828de885c751d68a35b6a493d upstream.
+commit 9d84604b845c3888d1bede43d16ab3ebedb13e24 upstream.
 
-NR_FILE_MAPPED accounting in mm/rmap.c (for /proc/meminfo "Mapped" and
-/proc/vmstat "nr_mapped" and the memcg's memory.stat "mapped_file") is
-slightly flawed for file or shmem huge pages.
+Migration entries do not contribute to a page's reference count: move
+__split_huge_pmd_locked()'s page_ref_add() into pmd_migration's else
+block (along with the page_count() check - a page is quite likely to
+have reference count frozen to 0 when a migration entry is found).
 
-It is well thought out, and looks convincing, but there's a racy case when
-the careful counting in page_remove_file_rmap() (without page lock) gets
-discarded.  So that in a workload like two "make -j20" kernel builds under
-memory pressure, with cc1 on hugepage text, "Mapped" can easily grow by a
-spurious 5MB or more on each iteration, ending up implausibly bigger than
-most other numbers in /proc/meminfo.  And, hypothetically, might grow to
-the point of seriously interfering in mm/vmscan.c's heuristics, which do
-take NR_FILE_MAPPED into some consideration.
+This will fix a very rare anonymous memory leak, after a
+split_huge_pmd() raced with an anon split_huge_page() or an anon THP
+migrate_pages(): since the wrongly raised refcount stopped the page
+(perhaps small, perhaps huge, depending on when the race hit) from ever
+being freed.
 
-Fixed by moving the __mod_lruvec_page_state() down to where it will not be
-missed before return (and I've grown a bit tired of that oft-repeated
-but-not-everywhere comment on the __ness: it gets lost in the move here).
+At first I thought there were worse risks, from prematurely unfreezing a
+frozen page: but now think that would only affect page cache pages,
+which do not come this way (except for anonymous pages in swap cache,
+perhaps).
 
-Does page_add_file_rmap() need the same change?  I suspect not, because
-page lock is held in all relevant cases, and its skipping case looks safe;
-but it's much easier to be sure, if we do make the same change.
-
-Link: https://lkml.kernel.org/r/e02e52a1-8550-a57c-ed29-f51191ea2375@google.com
-Fixes: dd78fedde4b9 ("rmap: support file thp")
+Link: https://lkml.kernel.org/r/84792468-f512-e48f-378c-e34c3641e97@google.com
+Fixes: ec0abae6dcdf ("mm/thp: fix __split_huge_pmd_locked() for migration PMD")
 Signed-off-by: Hugh Dickins <hughd@google.com>
 Reviewed-by: Yang Shi <shy828301@gmail.com>
+Cc: Ralph Campbell <rcampbell@nvidia.com>
+Cc: Zi Yan <ziy@nvidia.com>
 Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/rmap.c | 30 ++++++++++++++----------------
- 1 file changed, 14 insertions(+), 16 deletions(-)
+ mm/huge_memory.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/mm/rmap.c b/mm/rmap.c
-index 444d0d958aff..fa09b5eaff34 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -1239,14 +1239,14 @@ void page_add_new_anon_rmap(struct page *page,
-  */
- void page_add_file_rmap(struct page *page, bool compound)
- {
--	int i, nr = 1;
-+	int i, nr = 0;
- 
- 	VM_BUG_ON_PAGE(compound && !PageTransHuge(page), page);
- 	lock_page_memcg(page);
- 	if (compound && PageTransHuge(page)) {
- 		int nr_pages = thp_nr_pages(page);
- 
--		for (i = 0, nr = 0; i < nr_pages; i++) {
-+		for (i = 0; i < nr_pages; i++) {
- 			if (atomic_inc_and_test(&page[i]._mapcount))
- 				nr++;
- 		}
-@@ -1279,17 +1279,18 @@ void page_add_file_rmap(struct page *page, bool compound)
- 			if (PageMlocked(page))
- 				clear_page_mlock(head);
- 		}
--		if (!atomic_inc_and_test(&page->_mapcount))
--			goto out;
-+		if (atomic_inc_and_test(&page->_mapcount))
-+			nr++;
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 406a3c28c026..468fca576bc2 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -2055,9 +2055,9 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
+ 		young = pmd_young(old_pmd);
+ 		soft_dirty = pmd_soft_dirty(old_pmd);
+ 		uffd_wp = pmd_uffd_wp(old_pmd);
++		VM_BUG_ON_PAGE(!page_count(page), page);
++		page_ref_add(page, HPAGE_PMD_NR - 1);
  	}
--	__mod_lruvec_page_state(page, NR_FILE_MAPPED, nr);
- out:
-+	if (nr)
-+		__mod_lruvec_page_state(page, NR_FILE_MAPPED, nr);
- 	unlock_page_memcg(page);
- }
+-	VM_BUG_ON_PAGE(!page_count(page), page);
+-	page_ref_add(page, HPAGE_PMD_NR - 1);
  
- static void page_remove_file_rmap(struct page *page, bool compound)
- {
--	int i, nr = 1;
-+	int i, nr = 0;
- 
- 	VM_BUG_ON_PAGE(compound && !PageHead(page), page);
- 
-@@ -1304,12 +1305,12 @@ static void page_remove_file_rmap(struct page *page, bool compound)
- 	if (compound && PageTransHuge(page)) {
- 		int nr_pages = thp_nr_pages(page);
- 
--		for (i = 0, nr = 0; i < nr_pages; i++) {
-+		for (i = 0; i < nr_pages; i++) {
- 			if (atomic_add_negative(-1, &page[i]._mapcount))
- 				nr++;
- 		}
- 		if (!atomic_add_negative(-1, compound_mapcount_ptr(page)))
--			return;
-+			goto out;
- 		if (PageSwapBacked(page))
- 			__mod_lruvec_page_state(page, NR_SHMEM_PMDMAPPED,
- 						-nr_pages);
-@@ -1317,16 +1318,13 @@ static void page_remove_file_rmap(struct page *page, bool compound)
- 			__mod_lruvec_page_state(page, NR_FILE_PMDMAPPED,
- 						-nr_pages);
- 	} else {
--		if (!atomic_add_negative(-1, &page->_mapcount))
--			return;
-+		if (atomic_add_negative(-1, &page->_mapcount))
-+			nr++;
- 	}
- 
--	/*
--	 * We use the irq-unsafe __{inc|mod}_lruvec_page_state because
--	 * these counters are not modified in interrupt context, and
--	 * pte lock(a spinlock) is held, which implies preemption disabled.
--	 */
--	__mod_lruvec_page_state(page, NR_FILE_MAPPED, -nr);
-+out:
-+	if (nr)
-+		__mod_lruvec_page_state(page, NR_FILE_MAPPED, -nr);
- 
- 	if (unlikely(PageMlocked(page)))
- 		clear_page_mlock(page);
+ 	/*
+ 	 * Withdraw the table only after we mark the pmd entry invalid.
 -- 
 2.36.0
 
