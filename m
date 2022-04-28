@@ -2,54 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 038C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:29:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB6C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344332AbiD1Icu (ORCPT
+        id S1344432AbiD1IdD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:32:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48040 "EHLO
+        Thu, 28 Apr 2022 04:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344123AbiD1IbF (ORCPT
+        with ESMTP id S1344209AbiD1IbJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:31:05 -0400
+        Thu, 28 Apr 2022 04:31:09 -0400
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6BDA0BDF
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:27:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F9EA0BEE;
+        Thu, 28 Apr 2022 01:27:53 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 804C41F8A8;
-        Thu, 28 Apr 2022 08:27:49 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 3C6951F88B;
+        Thu, 28 Apr 2022 08:27:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1651134469; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1651134472; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=nqfEAJYikez5yuRaJWQFVEnr7bTvqklH6kJ7XEyZeH4=;
-        b=TYPIqdG6C2kNSXwfoxobkb0T7Qrlkecz89DW0NUUSRJk8G1Cl1McWKfb63f8rCvjK2Z1w9
-        hltCqgILrPkBWZf7D6lZQrTVsQ9bYGNjEQQXo2D58+bj+Zbr/uJommfLuFr/ZVITaGpYKs
-        3TdHSODcKkMVn6eBxvw3c05nJoauKJs=
+        bh=1OIhlvhpDf96xGkhA26yZf7pns1SEZ9vLk/EobSBf7U=;
+        b=e4ZiNoI9Kk/vxF6WBGPMvTgtaqzePnrbSEgd3HhKF9fP7PEcYc6C3tzqPjkZsraNDBQpgQ
+        Xh5BmiCZb69+V49nJ6MhqGTMRLvrWvGZekAggS1g0NOR11UvMZk2/S6Lwh9yw+93369n8K
+        zuoWN8JagVvATERzOOkykaCGvpybBDs=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4287913491;
-        Thu, 28 Apr 2022 08:27:49 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EEBE613491;
+        Thu, 28 Apr 2022 08:27:51 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id sDPlDgVQamIBLgAAMHmgww
-        (envelope-from <jgross@suse.com>); Thu, 28 Apr 2022 08:27:49 +0000
+        id GGn6OAdQamIBLgAAMHmgww
+        (envelope-from <jgross@suse.com>); Thu, 28 Apr 2022 08:27:51 +0000
 From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
+To:     xen-devel@lists.xenproject.org, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Cc:     Juergen Gross <jgross@suse.com>,
-        Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org
-Subject: [PATCH v2 06/19] xen/sound: switch xen_snd_front to use INVALID_GRANT_REF
-Date:   Thu, 28 Apr 2022 10:27:30 +0200
-Message-Id: <20220428082743.16593-7-jgross@suse.com>
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH v2 16/19] xen/scsifront: use xenbus_setup_ring() and xenbus_teardown_ring()
+Date:   Thu, 28 Apr 2022 10:27:40 +0200
+Message-Id: <20220428082743.16593-17-jgross@suse.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220428082743.16593-1-jgross@suse.com>
 References: <20220428082743.16593-1-jgross@suse.com>
@@ -59,57 +61,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of using a private macro for an invalid grant reference use
-the common one.
+Simplify scsifront's ring creation and removal via xenbus_setup_ring()
+and xenbus_teardown_ring().
 
 Signed-off-by: Juergen Gross <jgross@suse.com>
 ---
- sound/xen/xen_snd_front_evtchnl.c | 4 ++--
- sound/xen/xen_snd_front_evtchnl.h | 9 ---------
- 2 files changed, 2 insertions(+), 11 deletions(-)
+ drivers/scsi/xen-scsifront.c | 28 +++++++---------------------
+ 1 file changed, 7 insertions(+), 21 deletions(-)
 
-diff --git a/sound/xen/xen_snd_front_evtchnl.c b/sound/xen/xen_snd_front_evtchnl.c
-index ecbc294fc59a..3e21369c8216 100644
---- a/sound/xen/xen_snd_front_evtchnl.c
-+++ b/sound/xen/xen_snd_front_evtchnl.c
-@@ -167,7 +167,7 @@ static void evtchnl_free(struct xen_snd_front_info *front_info,
- 		xenbus_free_evtchn(front_info->xb_dev, channel->port);
+diff --git a/drivers/scsi/xen-scsifront.c b/drivers/scsi/xen-scsifront.c
+index 4c55e479fc36..51afc66e839d 100644
+--- a/drivers/scsi/xen-scsifront.c
++++ b/drivers/scsi/xen-scsifront.c
+@@ -798,27 +798,15 @@ static int scsifront_alloc_ring(struct vscsifrnt_info *info)
+ {
+ 	struct xenbus_device *dev = info->dev;
+ 	struct vscsiif_sring *sring;
+-	grant_ref_t gref;
+-	int err = -ENOMEM;
++	int err;
  
- 	/* End access and free the page. */
--	if (channel->gref != GRANT_INVALID_REF)
-+	if (channel->gref != INVALID_GRANT_REF)
- 		gnttab_end_foreign_access(channel->gref, page);
- 	else
- 		free_page(page);
-@@ -207,7 +207,7 @@ static int evtchnl_alloc(struct xen_snd_front_info *front_info, int index,
- 	channel->index = index;
- 	channel->front_info = front_info;
- 	channel->state = EVTCHNL_STATE_DISCONNECTED;
--	channel->gref = GRANT_INVALID_REF;
-+	channel->gref = INVALID_GRANT_REF;
- 	page = get_zeroed_page(GFP_KERNEL);
- 	if (!page) {
- 		ret = -ENOMEM;
-diff --git a/sound/xen/xen_snd_front_evtchnl.h b/sound/xen/xen_snd_front_evtchnl.h
-index cbe51fd1ec15..3675fba70564 100644
---- a/sound/xen/xen_snd_front_evtchnl.h
-+++ b/sound/xen/xen_snd_front_evtchnl.h
-@@ -15,15 +15,6 @@
+ 	/***** Frontend to Backend ring start *****/
+-	sring = (struct vscsiif_sring *)__get_free_page(GFP_KERNEL);
+-	if (!sring) {
+-		xenbus_dev_fatal(dev, err,
+-			"fail to allocate shared ring (Front to Back)");
++	err = xenbus_setup_ring(dev, GFP_KERNEL, (void **)&sring, 1,
++				&info->ring_ref);
++	if (err)
+ 		return err;
+-	}
+-	SHARED_RING_INIT(sring);
+-	FRONT_RING_INIT(&info->ring, sring, PAGE_SIZE);
  
- struct xen_snd_front_info;
+-	err = xenbus_grant_ring(dev, sring, 1, &gref);
+-	if (err < 0) {
+-		free_page((unsigned long)sring);
+-		xenbus_dev_fatal(dev, err,
+-			"fail to grant shared ring (Front to Back)");
+-		return err;
+-	}
+-	info->ring_ref = gref;
++	XEN_FRONT_RING_INIT(&info->ring, sring, PAGE_SIZE);
  
--#ifndef GRANT_INVALID_REF
--/*
-- * FIXME: usage of grant reference 0 as invalid grant reference:
-- * grant reference 0 is valid, but never exposed to a PV driver,
-- * because of the fact it is already in use/reserved by the PV console.
-- */
--#define GRANT_INVALID_REF	0
--#endif
--
- /* Timeout in ms to wait for backend to respond. */
- #define VSND_WAIT_BACK_MS	3000
+ 	err = xenbus_alloc_evtchn(dev, &info->evtchn);
+ 	if (err) {
+@@ -847,8 +835,7 @@ static int scsifront_alloc_ring(struct vscsifrnt_info *info)
+ free_irq:
+ 	unbind_from_irqhandler(info->irq, info);
+ free_gnttab:
+-	gnttab_end_foreign_access(info->ring_ref,
+-				  (unsigned long)info->ring.sring);
++	xenbus_teardown_ring((void **)&sring, 1, &info->ring_ref);
  
+ 	return err;
+ }
+@@ -856,8 +843,7 @@ static int scsifront_alloc_ring(struct vscsifrnt_info *info)
+ static void scsifront_free_ring(struct vscsifrnt_info *info)
+ {
+ 	unbind_from_irqhandler(info->irq, info);
+-	gnttab_end_foreign_access(info->ring_ref,
+-				  (unsigned long)info->ring.sring);
++	xenbus_teardown_ring((void **)&info->ring.sring, 1, &info->ring_ref);
+ }
+ 
+ static int scsifront_init_ring(struct vscsifrnt_info *info)
 -- 
 2.34.1
 
