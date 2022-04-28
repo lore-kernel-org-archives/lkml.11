@@ -2,135 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13151C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 02:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10519C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 02:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241229AbiD1CEz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 22:04:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60506 "EHLO
+        id S240505AbiD1CHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 22:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241199AbiD1CEt (ORCPT
+        with ESMTP id S229493AbiD1CHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 22:04:49 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E53C60AA9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 19:01:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651111296; x=1682647296;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=OjoYt/fKZvuOQ29DqTUujDoAkDaL+dweNmz7ZiUdJJA=;
-  b=nMpOcqfIwL3VC3F5sBkFVTB3m5T+QkQ6h5qG0W+FpsuYrLTTFJwtSS0H
-   brtVvJksrzkPn3t/n1FoWESvuFPvF8EO00PW1skP/7XzZq0H+cIjO8eyD
-   xhWt2L4aQoqEjQ/xJznhFEG9bQHtrVAHwky6VmksmmAfk9FJmL+HiIIFp
-   NkNBZhGy+S0kwToqw0+lMWZmklyS7eveVojK/hiuUUx4k7ByawRnJkqjd
-   bPj1qWL9yQRbTTev+k2W+anNsijG2f0tzDq8UidAs0c34WB6Zl1NdljxN
-   iFh42IMpH4ShndPPgXHW8k4f0qlJvAgR6+Wsbs8oxONghvlymCP2mWy7f
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="326621426"
-X-IronPort-AV: E=Sophos;i="5.90,294,1643702400"; 
-   d="scan'208";a="326621426"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 19:01:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,294,1643702400"; 
-   d="scan'208";a="808338730"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 27 Apr 2022 19:01:24 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1njtTA-0004yv-47;
-        Thu, 28 Apr 2022 02:01:24 +0000
-Date:   Thu, 28 Apr 2022 10:00:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mark:stackleak/rework 9/13] drivers/misc/lkdtm/stackleak.c:42:23:
- error: implicit declaration of function 'stackleak_find_top_of_poison'
-Message-ID: <202204280834.PTB3Ku7I-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Wed, 27 Apr 2022 22:07:16 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CCE15FF3D;
+        Wed, 27 Apr 2022 19:04:03 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23S01jW6023389;
+        Thu, 28 Apr 2022 02:03:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=v4DC5jk5MW0kmAL8NfEopkxW5+LAGdSMqLeMRUpLlxI=;
+ b=RmyWBgSEjEROXKWcQlgvAZayB37v8sswxxdRHZUeBCIsHXJsktryRPjAqKvGmNI+06iE
+ /TwFj9Nwych3tagggYm8satgE1IOiNSXRkjt/1czRs0Ek4Tqr/nroofW9YH7CuVLoPuW
+ qQQAMEO4o5tVDFFY+Eo/7tKCewWE7vmODtTUeR9aFKwvWJjN/mfyGkfu2Rw7SVtwWAny
+ /qUUBQ8F6P4vLYERNwdp+1r4V1wlEC1sXHWvyfEUzxvtd3HItxakbP6FOSfWqzojq/KX
+ ReZPta5+wVIVmAjg+m6KFnHQv6psJGnjsUszqhnLk6zRg+679ufRu/AsZsfv62WoVvNI 5Q== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqg1a1qsc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 Apr 2022 02:03:56 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23S22aK4022680;
+        Thu, 28 Apr 2022 02:03:55 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma04ams.nl.ibm.com with ESMTP id 3fm938xpx8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 Apr 2022 02:03:54 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23S23qnU36045126
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 28 Apr 2022 02:03:52 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 97EEBAE04D;
+        Thu, 28 Apr 2022 02:03:52 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B4BC6AE053;
+        Thu, 28 Apr 2022 02:03:51 +0000 (GMT)
+Received: from sig-9-65-70-226.ibm.com (unknown [9.65.70.226])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 28 Apr 2022 02:03:51 +0000 (GMT)
+Message-ID: <1f76429bfe89ee37a19f2d8ad0cf1a31ff9da798.camel@linux.ibm.com>
+Subject: Re: [PATCH v7 2/5] ima: define a new template field named 'd-ngv2'
+ and templates
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     linux-integrity@vger.kernel.org,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 27 Apr 2022 22:03:51 -0400
+In-Reply-To: <YkyUdM5hmKf4noS7@gmail.com>
+References: <20220325223824.310119-1-zohar@linux.ibm.com>
+         <20220325223824.310119-3-zohar@linux.ibm.com> <YkyUdM5hmKf4noS7@gmail.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Jom3KH8WeVfajdKrCS7j0EwBuV8h46wP
+X-Proofpoint-ORIG-GUID: Jom3KH8WeVfajdKrCS7j0EwBuV8h46wP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-27_04,2022-04-27_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 suspectscore=0
+ mlxlogscore=999 lowpriorityscore=0 mlxscore=0 spamscore=0 malwarescore=0
+ impostorscore=0 phishscore=0 bulkscore=0 priorityscore=1501 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204280010
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git stackleak/rework
-head:   26f638ab0d7c718b10526dae2bd3ea2e3d0286c8
-commit: 9aa3a1d3e1f91e96131631d60869eaef8bb8cca5 [9/13] lkdtm/stackleak: rework boundary management
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220428/202204280834.PTB3Ku7I-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/commit/?id=9aa3a1d3e1f91e96131631d60869eaef8bb8cca5
-        git remote add mark https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git
-        git fetch --no-tags mark stackleak/rework
-        git checkout 9aa3a1d3e1f91e96131631d60869eaef8bb8cca5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+On Tue, 2022-04-05 at 19:11 +0000, Eric Biggers wrote:
+> On Fri, Mar 25, 2022 at 06:38:21PM -0400, Mimi Zohar wrote:
+> >  static int ima_eventdigest_init_common(const u8 *digest, u32 digestsize,
+> > -				       u8 hash_algo,
+> > +				       u8 digest_type, u8 hash_algo,
+> >  				       struct ima_field_data *field_data)
+> >  {
+> >  	/*
+> >  	 * digest formats:
+> >  	 *  - DATA_FMT_DIGEST: digest
+> >  	 *  - DATA_FMT_DIGEST_WITH_ALGO: [<hash algo>] + ':' + '\0' + digest,
+> > +	 *  - DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO:
+> > +	 *	[<digest type> + ':' + <hash algo>] + ':' + '\0' + digest,
+> > +	 *    where <hash type> is either "ima" or "verity",
+> >  	 *    where <hash algo> is provided if the hash algorithm is not
+> >  	 *    SHA1 or MD5
+> 
+> This says both "hash type" and "digest type".  It should be one or the other.
+> 
+> The square brackets are meant to indicate that the part within it is optional,
+> right?  Are they in the right place?  I don't see how this matches the code.
+> There is also no explanation for why or when <digest type> is optional with
+> DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Agreed.
 
-All errors (new ones prefixed by >>):
+> 
+> > +	if (digest_type < DIGEST_TYPE__LAST && hash_algo < HASH_ALGO__LAST) {
+> > +		fmt = DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO;
+> > +		offset += snprintf(buffer, DIGEST_TYPE_NAME_LEN_MAX +
+> > +				   CRYPTO_MAX_ALG_NAME + 1, "%*s:%s",
+> > +				   (int)strlen(digest_type_name[digest_type]),
+> > +				   digest_type_name[digest_type],
+> >  				   hash_algo_name[hash_algo]);
+> >  		buffer[offset] = ':';
+> >  		offset += 2;
+> 
+> There's no need to use %*s if the length argument is just going to be strlen().
+> It should just use %s.
 
-   drivers/misc/lkdtm/stackleak.c: In function 'lkdtm_STACKLEAK_ERASING':
-   drivers/misc/lkdtm/stackleak.c:17:46: error: implicit declaration of function 'stackleak_task_low_bound' [-Werror=implicit-function-declaration]
-      17 |         const unsigned long task_stack_low = stackleak_task_low_bound(current);
-         |                                              ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/misc/lkdtm/stackleak.c:18:47: error: implicit declaration of function 'stackleak_task_high_bound'; did you mean 'stackleak_task_init'? [-Werror=implicit-function-declaration]
-      18 |         const unsigned long task_stack_high = stackleak_task_high_bound(current);
-         |                                               ^~~~~~~~~~~~~~~~~~~~~~~~~
-         |                                               stackleak_task_init
-   drivers/misc/lkdtm/stackleak.c:19:42: error: 'current_stack_pointer' undeclared (first use in this function); did you mean 'user_stack_pointer'?
-      19 |         const unsigned long current_sp = current_stack_pointer;
-         |                                          ^~~~~~~~~~~~~~~~~~~~~
-         |                                          user_stack_pointer
-   drivers/misc/lkdtm/stackleak.c:19:42: note: each undeclared identifier is reported only once for each function it appears in
-   drivers/misc/lkdtm/stackleak.c:20:48: error: 'struct task_struct' has no member named 'lowest_stack'
-      20 |         const unsigned long lowest_sp = current->lowest_stack;
-         |                                                ^~
->> drivers/misc/lkdtm/stackleak.c:42:23: error: implicit declaration of function 'stackleak_find_top_of_poison' [-Werror=implicit-function-declaration]
-      42 |         poison_high = stackleak_find_top_of_poison(task_stack_low, untracked_high);
-         |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+Using "%*s" prevents having a trailing NULL.
 
+> 
+> Also, this is not correct use of snprintf(), given that the string is
+> unconditionally appended to at the offset which snprintf() returns.  So it is
+> not providing buffer overflow protection.  It might as well just be:
+> 
+>                 offset += 1 + sprintf(buffer, "%s:%s:",
+>                                       digest_type_name[digest_type],
+>                                       hash_algo_name[hash_algo]);
+> 
+> and likewise for the other case:
+> 
+>                 offset += 1 + sprintf(buffer, "%s:", hash_algo_name[hash_algo]);
+> 
+> > +/*
+> > + * This function writes the digest of an event (without size limit),
+> > + * prefixed with both the hash type and algorithm.
+> > + */
+> > +int ima_eventdigest_ngv2_init(struct ima_event_data *event_data,
+> > +			      struct ima_field_data *field_data)
+> > +{
+> > +	u8 *cur_digest = NULL, hash_algo = HASH_ALGO_SHA1;
+> 
+> Why is this defaulting to SHA-1?
 
-vim +/stackleak_find_top_of_poison +42 drivers/misc/lkdtm/stackleak.c
+Violation records contain 0's in the file hash and the template data
+hash fields. Changing the default hash algorithm would result in larger
+violation digests without any real benefit other than cosmetic.  Will
+make the change anyway in the next version.
 
-    13	
-    14	void lkdtm_STACKLEAK_ERASING(void)
-    15	{
-    16		const unsigned long task_stack_base = (unsigned long)task_stack_page(current);
-    17		const unsigned long task_stack_low = stackleak_task_low_bound(current);
-    18		const unsigned long task_stack_high = stackleak_task_high_bound(current);
-    19		const unsigned long current_sp = current_stack_pointer;
-    20		const unsigned long lowest_sp = current->lowest_stack;
-    21		unsigned long untracked_high;
-    22		unsigned long poison_high, poison_low;
-    23		bool test_failed = false;
-    24	
-    25		/*
-    26		 * Depending on what has run prior to this test, the lowest recorded
-    27		 * stack pointer could be above or below the current stack pointer.
-    28		 * Start from the lowest of the two.
-    29		 *
-    30		 * Poison values are naturally-aligned unsigned longs. As the current
-    31		 * stack pointer might not be sufficiently aligned, we must align
-    32		 * downwards to find the lowest known stack pointer value. This is the
-    33		 * high boundary for a portion of the stack which may have been used
-    34		 * without being tracked, and has to be scanned for poison.
-    35		 */
-    36		untracked_high = min(current_sp, lowest_sp);
-    37		untracked_high = ALIGN_DOWN(untracked_high, sizeof(unsigned long));
-    38	
-    39		/*
-    40		 * Find the top of the poison in the same way as the erasing code.
-    41		 */
-  > 42		poison_high = stackleak_find_top_of_poison(task_stack_low, untracked_high);
+thanks,
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Mimi
+
