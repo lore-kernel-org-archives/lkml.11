@@ -2,129 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0107C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:16:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C69B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345482AbiD1LUJ (ORCPT
+        id S1345485AbiD1LVC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 07:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46752 "EHLO
+        Thu, 28 Apr 2022 07:21:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345471AbiD1LUA (ORCPT
+        with ESMTP id S230231AbiD1LVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 07:20:00 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD9E52B12;
-        Thu, 28 Apr 2022 04:16:41 -0700 (PDT)
-X-UUID: 99dcd6c7b8c14047b1fc936b4ede6ca6-20220428
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:6ce3acf7-14bd-4058-bdb1-c51983d16a9b,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:faefae9,CLOUDID:8c8dd3c6-85ee-4ac1-ac05-bd3f1e72e732,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 99dcd6c7b8c14047b1fc936b4ede6ca6-20220428
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2020644970; Thu, 28 Apr 2022 19:16:34 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 28 Apr 2022 19:16:33 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 28 Apr 2022 19:16:32 +0800
-Message-ID: <346736a339bed576817179ded3795d61f71fa06a.camel@mediatek.com>
-Subject: Re: [PATCH V4 07/14] cpufreq: mediatek: Add .get function
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-CC:     <rafael@kernel.org>, <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
-        <roger.lu@mediatek.com>, <hsinyi@google.com>,
-        <khilman@baylibre.com>, <angelogioacchino.delregno@collabora.com>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Thu, 28 Apr 2022 19:16:32 +0800
-In-Reply-To: <20220427031141.or2owu5wrh2cadfo@vireshk-i7>
-References: <20220422075239.16437-1-rex-bc.chen@mediatek.com>
-         <20220422075239.16437-8-rex-bc.chen@mediatek.com>
-         <20220425053548.72w2jh2g6lpzgz6g@vireshk-i7>
-         <64c690e8edf493ec0a4a14e0fdaad2d8e88e6da7.camel@mediatek.com>
-         <20220425100058.4kbvmpi63ygni6k5@vireshk-i7>
-         <078b1f9b39690da98cbd3c4528ba28374a097083.camel@mediatek.com>
-         <20220427031141.or2owu5wrh2cadfo@vireshk-i7>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 28 Apr 2022 07:21:00 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8016C5B3F8;
+        Thu, 28 Apr 2022 04:17:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651144666; x=1682680666;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=YSpDATXy/AEnQCqNpDDdMNwfxMpapZmzIYX8S6XiNuc=;
+  b=UNCEw+9uLr5Fn5MbiSDzlVu+rRI5AlBUArUaSc3XLcD79z9Vu0VA6EdT
+   XKy6vO8vqDM5NavO1+sawdmeTAZ4Ltc5POW1WXvyUH4Z8Zq7+yW9nQBq0
+   hOVsLuvqoAxrfzKdS8cPmbWY+Pm0WoGNSag89B0zSre+ykrBj+VQm77Uy
+   KXNI1KNZamSMaLbJgwkafRugh4O17n0hSQZU1MHDcQb7+xR1J3MXGG2PR
+   AHAiucQ5hWqwooEThuqV8ygn7skZqk9cvy1I5kkpew8zdhz0ee4VuXy6m
+   NusN34vx6l785y2/OyNiLhGcCK0Cun6mFX8jEDnRzIpZeaMx2XPAixr2k
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="266069735"
+X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
+   d="scan'208";a="266069735"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 04:17:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
+   d="scan'208";a="682532655"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga004.jf.intel.com with ESMTP; 28 Apr 2022 04:17:43 -0700
+Received: from lincoln.igk.intel.com (lincoln.igk.intel.com [10.102.21.235])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 23SBHfQK002736;
+        Thu, 28 Apr 2022 12:17:42 +0100
+From:   Larysa Zaremba <larysa.zaremba@intel.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: [PATCH] bpftool: Use sysfs vmlinux when dumping BTF by ID
+Date:   Thu, 28 Apr 2022 13:08:40 +0200
+Message-Id: <20220428110839.111042-1-larysa.zaremba@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-27 at 08:41 +0530, Viresh Kumar wrote:
-> On 26-04-22, 19:13, Rex-BC Chen wrote:
-> > We have a non-upstream driver which tries to get frequency by
-> > 'cpufreq_get'.
-> 
-> This is the right thing to do there.
-> 
-> > When we use that non-upstream driver, 'cpufreq_verify_current_freq'
-> > will be further invoked by 'cpufreq_get' and it would cause voltage
-> > pulse issue as I described previously.
-> 
-> I see this will eventually resolve to __cpufreq_driver_target(),
-> which
-> should return without any frequency updates.
-> 
+Currently, dumping almost all BTFs specified by id requires
+using the -B option to pass the base BTF. For most cases
+the vmlinux BTF sysfs path should work.
 
-Hello Viresh,
+This patch simplifies dumping by ID usage by attempting to
+use vmlinux BTF from sysfs, if the first try of loading BTF by ID
+fails with certain conditions.
 
-Yes, the call stack will eventually go to __cpufreq_driver_target.
-However, we can observe the mismatch between target_freq and policy-cur 
-with a tiny difference.
-e.g.
-[ 553.065356] cpufreq: target for CPU 0: 500000 kHz, relation 0,
-requested 500000 kHz
-[ 553.066366] cpufreq: target_freq/policy->cur: 500000/499999 kHz
+Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
+Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+---
+ tools/bpf/bpftool/btf.c | 35 ++++++++++++++++++++++++++---------
+ 1 file changed, 26 insertions(+), 9 deletions(-)
 
-We check the assignment of policy->cur could be either from
-cpufreq_driver->get_intermediate or from cpufreq_driver->get.
-But it is strange to have the frequency value like 499999 kHz.
-Is the result of tiny frequency difference expected from your point of
-view?
-
-> What do you mean by "voltage pulse" here? What actually happens which
-> you want to avoid.
-> 
-
-When cpufreq is fixed to lowest opp, "voltage pulse" is a quick voltage
-rising and falling phenomenon which can be observed if 'cpufreq_get' is
-invoked.
-From top of view, if 'cpufreq_get' is NOT invoked in that condition,
-the voltage pulse will no longer occur.
-That's why we add this patch for this series.
-
-> > Therefore, we apply the solution in this series.
-> 
-> I won't call it a solution but a Bug as .get() is supposed to read
-> real freq of the hardware.
-> 
-> > Recently, we found that using 'cpufreq_generic_get' directly in our
-> > non-upstream driver can do the same thing without pulse issue.
-> 
-> That would be an abuse of the cpufreq_generic_get() API. It is ONLY
-> allowed to be used while setting .get callback in the driver.
-> 
-
-Thank you for sharing the correct information.
-Is it possible to get frequency (API) a simple way, like get current
-opp frequency?
-
-BRs,
-Rex
+diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+index a2c665beda87..557f65e2de5c 100644
+--- a/tools/bpf/bpftool/btf.c
++++ b/tools/bpf/bpftool/btf.c
+@@ -459,6 +459,22 @@ static int dump_btf_c(const struct btf *btf,
+ 	return err;
+ }
+ 
++static const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
++
++static struct btf *get_vmlinux_btf_from_sysfs(void)
++{
++	struct btf *base;
++
++	base = btf__parse(sysfs_vmlinux, NULL);
++	if (libbpf_get_error(base)) {
++		p_err("failed to parse vmlinux BTF at '%s': %ld\n",
++		      sysfs_vmlinux, libbpf_get_error(base));
++		base = NULL;
++	}
++
++	return base;
++}
++
+ static int do_dump(int argc, char **argv)
+ {
+ 	struct btf *btf = NULL, *base = NULL;
+@@ -536,18 +552,11 @@ static int do_dump(int argc, char **argv)
+ 		NEXT_ARG();
+ 	} else if (is_prefix(src, "file")) {
+ 		const char sysfs_prefix[] = "/sys/kernel/btf/";
+-		const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
+ 
+ 		if (!base_btf &&
+ 		    strncmp(*argv, sysfs_prefix, sizeof(sysfs_prefix) - 1) == 0 &&
+-		    strcmp(*argv, sysfs_vmlinux) != 0) {
+-			base = btf__parse(sysfs_vmlinux, NULL);
+-			if (libbpf_get_error(base)) {
+-				p_err("failed to parse vmlinux BTF at '%s': %ld\n",
+-				      sysfs_vmlinux, libbpf_get_error(base));
+-				base = NULL;
+-			}
+-		}
++		    strcmp(*argv, sysfs_vmlinux))
++			base = get_vmlinux_btf_from_sysfs();
+ 
+ 		btf = btf__parse_split(*argv, base ?: base_btf);
+ 		err = libbpf_get_error(btf);
+@@ -593,6 +602,14 @@ static int do_dump(int argc, char **argv)
+ 	if (!btf) {
+ 		btf = btf__load_from_kernel_by_id_split(btf_id, base_btf);
+ 		err = libbpf_get_error(btf);
++		if (err == -EINVAL && !base_btf) {
++			btf__free(base);
++			base = get_vmlinux_btf_from_sysfs();
++			p_info("Warning: valid base BTF was not specified with -B option, falling back on standard base BTF (sysfs vmlinux)");
++			btf = btf__load_from_kernel_by_id_split(btf_id, base);
++			err = libbpf_get_error(btf);
++		}
++
+ 		if (err) {
+ 			p_err("get btf by id (%u): %s", btf_id, strerror(err));
+ 			goto done;
+-- 
+2.35.1
 
