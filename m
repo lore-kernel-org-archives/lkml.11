@@ -2,251 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B269FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:32:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B193C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:33:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347233AbiD1NgH (ORCPT
+        id S1347262AbiD1NgO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:36:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34918 "EHLO
+        Thu, 28 Apr 2022 09:36:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347218AbiD1NgD (ORCPT
+        with ESMTP id S1347227AbiD1NgG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:36:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307D121242;
-        Thu, 28 Apr 2022 06:32:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2D9BB82D13;
-        Thu, 28 Apr 2022 13:32:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EB31C385AA;
-        Thu, 28 Apr 2022 13:32:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651152765;
-        bh=TdsmGBfhLb6EpL2bc7aXZ8uPegbZvnGnOlqjuT9ku/k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aydvV/UDHxMpY73vPCQLCCSlEHykG4e0WFWP1/Et4Z/zDuUfu59W/vZnjyHFUn+9X
-         WgmfcD9QI/LNcOivsnP0+aEhtKEdOCTnwzrQdmysmVtwaMu/RqpEVQwyJCpdpBeige
-         ZkbkZNTqjpzOa/9FB7YIiwDFMQ5ctrE3nuSc6wOgB9M/O0yuTCBt5c9jA7vYN/l/wR
-         BwB8Yg6Rc/0hHeuLnTCVmx8yTDwMCTZ+K/wDn4sHcal/ownzW8tgR8Ku2gk30hl81H
-         Y2zz/gwneAcwI2np1utg+Qb1P+4PWkwpeflTarZanEcUgYJENw//3kJwtB9CD4lIc2
-         YLJ92mcW7/mzQ==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     tony@atomide.com, jmkrzyszt@gmail.com, aaro.koskinen@iki.fi,
-        vireshk@kernel.org, shiraz.linux.kernel@gmail.com, nsekhar@ti.com,
-        brgl@bgdev.pl, linux-kernel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 1/6] ARM: omap2: remove include/mach/ subdirectory
-Date:   Thu, 28 Apr 2022 15:31:53 +0200
-Message-Id: <20220428133210.990808-2-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220428133210.990808-1-arnd@kernel.org>
-References: <20220428133210.990808-1-arnd@kernel.org>
+        Thu, 28 Apr 2022 09:36:06 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C5E21274;
+        Thu, 28 Apr 2022 06:32:51 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id BCEC41F458A0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651152769;
+        bh=/U63ACeQUirihMwLAXg7hRsWkkxF4fnAOZcyYxhREIo=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=VAwCobX1tvMAfcq07elW+o6jf6vMrnFtj3SFVtm6XXgvep+Jcvdu3sRocW7vTpLIl
+         y6Z13jOY/Y6yOh/8ylDW3yvp1rtfxPYPZYmADILgl6ECGVx8WGD3fjQP3GoeuQEk0s
+         zywlw3BLloSE/4zj3xnwcLlwUchlvX4eMJTWMFYZQ5CJozsLWDtgMBHwoZyFMxIpHr
+         kytepd1Rf4A21PNrC1aZn1dm0uMFTq7bD8jO/HaGyv4kDy30ZqZnZPmTLqsTlgDEUU
+         medm6fH/o8RcYSUZ2HXQNAc08kj5GOCAj+lSNSsfxG2xGWNvEyJWr/MgpKYplfX9Qt
+         99vRaBNp3U+KA==
+Message-ID: <c60bf00a-340d-e1de-cabc-87535470c472@collabora.com>
+Date:   Thu, 28 Apr 2022 15:32:46 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v8 2/2] arm64: dts: Add MediaTek SoC MT8186 dts and
+ evaluation board and Makefile
+Content-Language: en-US
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>, hsinyi@chromium.org
+References: <20220428061717.11197-1-allen-kh.cheng@mediatek.com>
+ <20220428061717.11197-3-allen-kh.cheng@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220428061717.11197-3-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Il 28/04/22 08:17, Allen-KH Cheng ha scritto:
+> Add basic chip support for MediaTek MT8186.
+> 
+> Signed-off-by: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+> ---
+>   arch/arm64/boot/dts/mediatek/Makefile       |   1 +
+>   arch/arm64/boot/dts/mediatek/mt8186-evb.dts | 232 +++++
+>   arch/arm64/boot/dts/mediatek/mt8186.dtsi    | 949 ++++++++++++++++++++
+>   3 files changed, 1182 insertions(+)
+>   create mode 100644 arch/arm64/boot/dts/mediatek/mt8186-evb.dts
+>   create mode 100644 arch/arm64/boot/dts/mediatek/mt8186.dtsi
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
+> index c7d4636a2cb7..50a2c58c5f56 100644
+> --- a/arch/arm64/boot/dts/mediatek/Makefile
+> +++ b/arch/arm64/boot/dts/mediatek/Makefile
+> @@ -37,6 +37,7 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku32.dtb
+>   dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku0.dtb
+>   dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku176.dtb
+>   dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-pumpkin.dtb
+> +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-evb.dtb
+>   dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-evb.dtb
+>   dtb-$(CONFIG_ARCH_MEDIATEK) += mt8195-demo.dtb
+>   dtb-$(CONFIG_ARCH_MEDIATEK) += mt8195-evb.dtb
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8186-evb.dts b/arch/arm64/boot/dts/mediatek/mt8186-evb.dts
+> new file mode 100644
+> index 000000000000..6bf5b81e3e6b
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/mediatek/mt8186-evb.dts
+> @@ -0,0 +1,232 @@
 
-mach/serial.h is only included from arch/arm/mach-omap2/serial.h,
-and the other two files are unused and empty.
+..snip..
 
-Remove the directory by relocating the contents of mach/serial.h
-and dropping all other references.
+> +
+> +&pio {
+> +	i2c0_pins: i2c0{
+> +		pins_bus {
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/arm/mach-omap2/Makefile                |  3 -
- arch/arm/mach-omap2/include/mach/hardware.h |  3 -
- arch/arm/mach-omap2/include/mach/irqs.h     |  3 -
- arch/arm/mach-omap2/include/mach/serial.h   | 66 --------------------
- arch/arm/mach-omap2/serial.h                | 67 ++++++++++++++++++++-
- 5 files changed, 66 insertions(+), 76 deletions(-)
- delete mode 100644 arch/arm/mach-omap2/include/mach/hardware.h
- delete mode 100644 arch/arm/mach-omap2/include/mach/irqs.h
- delete mode 100644 arch/arm/mach-omap2/include/mach/serial.h
+No underscores please!
 
-diff --git a/arch/arm/mach-omap2/Makefile b/arch/arm/mach-omap2/Makefile
-index 8306ad686bc8..2feb9f6630af 100644
---- a/arch/arm/mach-omap2/Makefile
-+++ b/arch/arm/mach-omap2/Makefile
-@@ -3,9 +3,6 @@
- # Makefile for the linux kernel.
- #
- 
--ccflags-y := -I$(srctree)/$(src)/include \
--	-I$(srctree)/arch/arm/plat-omap/include
--
- # Common support
- obj-y := id.o io.o control.o devices.o fb.o pm.o \
- 	 common.o dma.o omap-headsmp.o sram.o
-diff --git a/arch/arm/mach-omap2/include/mach/hardware.h b/arch/arm/mach-omap2/include/mach/hardware.h
-deleted file mode 100644
-index 54492dbf6973..000000000000
---- a/arch/arm/mach-omap2/include/mach/hardware.h
-+++ /dev/null
-@@ -1,3 +0,0 @@
--/*
-- * arch/arm/mach-omap2/include/mach/hardware.h
-- */
-diff --git a/arch/arm/mach-omap2/include/mach/irqs.h b/arch/arm/mach-omap2/include/mach/irqs.h
-deleted file mode 100644
-index ba5282cafa42..000000000000
---- a/arch/arm/mach-omap2/include/mach/irqs.h
-+++ /dev/null
-@@ -1,3 +0,0 @@
--/*
-- * arch/arm/mach-omap2/include/mach/irqs.h
-- */
-diff --git a/arch/arm/mach-omap2/include/mach/serial.h b/arch/arm/mach-omap2/include/mach/serial.h
-deleted file mode 100644
-index 7ca1fcff453b..000000000000
---- a/arch/arm/mach-omap2/include/mach/serial.h
-+++ /dev/null
-@@ -1,66 +0,0 @@
--/*
-- * Copyright (C) 2009 Texas Instruments
-- * Added OMAP4 support- Santosh Shilimkar <santosh.shilimkar@ti.com>
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-- * GNU General Public License for more details.
-- */
--
--/* OMAP2 serial ports */
--#define OMAP2_UART1_BASE	0x4806a000
--#define OMAP2_UART2_BASE	0x4806c000
--#define OMAP2_UART3_BASE	0x4806e000
--
--/* OMAP3 serial ports */
--#define OMAP3_UART1_BASE	OMAP2_UART1_BASE
--#define OMAP3_UART2_BASE	OMAP2_UART2_BASE
--#define OMAP3_UART3_BASE	0x49020000
--#define OMAP3_UART4_BASE	0x49042000	/* Only on 36xx */
--#define OMAP3_UART4_AM35XX_BASE	0x4809E000	/* Only on AM35xx */
--
--/* OMAP4 serial ports */
--#define OMAP4_UART1_BASE	OMAP2_UART1_BASE
--#define OMAP4_UART2_BASE	OMAP2_UART2_BASE
--#define OMAP4_UART3_BASE	0x48020000
--#define OMAP4_UART4_BASE	0x4806e000
--
--/* TI81XX serial ports */
--#define TI81XX_UART1_BASE	0x48020000
--#define TI81XX_UART2_BASE	0x48022000
--#define TI81XX_UART3_BASE	0x48024000
--
--/* AM3505/3517 UART4 */
--#define AM35XX_UART4_BASE	0x4809E000	/* Only on AM3505/3517 */
--
--/* AM33XX serial port */
--#define AM33XX_UART1_BASE	0x44E09000
--
--/* OMAP5 serial ports */
--#define OMAP5_UART1_BASE	OMAP2_UART1_BASE
--#define OMAP5_UART2_BASE	OMAP2_UART2_BASE
--#define OMAP5_UART3_BASE	OMAP4_UART3_BASE
--#define OMAP5_UART4_BASE	OMAP4_UART4_BASE
--#define OMAP5_UART5_BASE	0x48066000
--#define OMAP5_UART6_BASE	0x48068000
--
--/* External port on Zoom2/3 */
--#define ZOOM_UART_BASE		0x10000000
--#define ZOOM_UART_VIRT		0xfa400000
--
--#define OMAP_PORT_SHIFT		2
--#define ZOOM_PORT_SHIFT		1
--
--#define OMAP24XX_BASE_BAUD	(48000000/16)
--
--#ifndef __ASSEMBLER__
--
--struct omap_board_data;
--struct omap_uart_port_info;
--
--extern void omap_serial_init(void);
--extern void omap_serial_board_init(struct omap_uart_port_info *platform_data);
--extern void omap_serial_init_port(struct omap_board_data *bdata,
--		struct omap_uart_port_info *platform_data);
--#endif
-diff --git a/arch/arm/mach-omap2/serial.h b/arch/arm/mach-omap2/serial.h
-index c4014f013df0..7ca1fcff453b 100644
---- a/arch/arm/mach-omap2/serial.h
-+++ b/arch/arm/mach-omap2/serial.h
-@@ -1 +1,66 @@
--#include <mach/serial.h>
-+/*
-+ * Copyright (C) 2009 Texas Instruments
-+ * Added OMAP4 support- Santosh Shilimkar <santosh.shilimkar@ti.com>
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-+ */
-+
-+/* OMAP2 serial ports */
-+#define OMAP2_UART1_BASE	0x4806a000
-+#define OMAP2_UART2_BASE	0x4806c000
-+#define OMAP2_UART3_BASE	0x4806e000
-+
-+/* OMAP3 serial ports */
-+#define OMAP3_UART1_BASE	OMAP2_UART1_BASE
-+#define OMAP3_UART2_BASE	OMAP2_UART2_BASE
-+#define OMAP3_UART3_BASE	0x49020000
-+#define OMAP3_UART4_BASE	0x49042000	/* Only on 36xx */
-+#define OMAP3_UART4_AM35XX_BASE	0x4809E000	/* Only on AM35xx */
-+
-+/* OMAP4 serial ports */
-+#define OMAP4_UART1_BASE	OMAP2_UART1_BASE
-+#define OMAP4_UART2_BASE	OMAP2_UART2_BASE
-+#define OMAP4_UART3_BASE	0x48020000
-+#define OMAP4_UART4_BASE	0x4806e000
-+
-+/* TI81XX serial ports */
-+#define TI81XX_UART1_BASE	0x48020000
-+#define TI81XX_UART2_BASE	0x48022000
-+#define TI81XX_UART3_BASE	0x48024000
-+
-+/* AM3505/3517 UART4 */
-+#define AM35XX_UART4_BASE	0x4809E000	/* Only on AM3505/3517 */
-+
-+/* AM33XX serial port */
-+#define AM33XX_UART1_BASE	0x44E09000
-+
-+/* OMAP5 serial ports */
-+#define OMAP5_UART1_BASE	OMAP2_UART1_BASE
-+#define OMAP5_UART2_BASE	OMAP2_UART2_BASE
-+#define OMAP5_UART3_BASE	OMAP4_UART3_BASE
-+#define OMAP5_UART4_BASE	OMAP4_UART4_BASE
-+#define OMAP5_UART5_BASE	0x48066000
-+#define OMAP5_UART6_BASE	0x48068000
-+
-+/* External port on Zoom2/3 */
-+#define ZOOM_UART_BASE		0x10000000
-+#define ZOOM_UART_VIRT		0xfa400000
-+
-+#define OMAP_PORT_SHIFT		2
-+#define ZOOM_PORT_SHIFT		1
-+
-+#define OMAP24XX_BASE_BAUD	(48000000/16)
-+
-+#ifndef __ASSEMBLER__
-+
-+struct omap_board_data;
-+struct omap_uart_port_info;
-+
-+extern void omap_serial_init(void);
-+extern void omap_serial_board_init(struct omap_uart_port_info *platform_data);
-+extern void omap_serial_init_port(struct omap_board_data *bdata,
-+		struct omap_uart_port_info *platform_data);
-+#endif
--- 
-2.29.2
+Either name this "pins-bus" or, more appropriately, I would give it a more
+descriptive name, like "pins-sda-scl".
 
+> +			pinmux = <PINMUX_GPIO128__FUNC_SDA0>,
+> +				 <PINMUX_GPIO127__FUNC_SCL0>;
+> +			bias-disable;
+> +			mediatek,drive-strength-adv =<0>;
+> +			drive-strength = <MTK_DRIVE_4mA>;
+> +			input-enable;
+> +		};
+> +	};
+
+..snip..
+
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8186.dtsi b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
+> new file mode 100644
+> index 000000000000..9e3d45f3e5de
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
+> @@ -0,0 +1,949 @@
+> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +/*
+> + * Copyright (C) 2022 MediaTek Inc.
+> + * Author: Allen-KH Cheng <allenn-kh.cheng@mediatek.com>
+
+Uhm, you typoed your email address! :-)
+
+> + */
+> +/dts-v1/;
+> +#include <dt-bindings/clock/mt8186-clk.h>
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +#include <dt-bindings/interrupt-controller/irq.h>
+> +#include <dt-bindings/pinctrl/mt8186-pinfunc.h>
+> +#include <dt-bindings/power/mt8186-power.h>
+> +#include <dt-bindings/phy/phy.h>
+> +#include <dt-bindings/reset/mt8186-resets.h>
+> +
+> +/ {
+> +	compatible = "mediatek,mt8186";
+> +	interrupt-parent = <&gic>;
+> +	#address-cells = <2>;
+> +	#size-cells = <2>;
+> +
+> +	cpus {
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		cpu0: cpu@0 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a55";
+> +			reg = <0x000>;
+> +			enable-method = "psci";
+> +			clock-frequency = <2000000000>;
+
+No capacity-dmips-mhz for the CPUs?!
+
+> +			cpu-idle-states = <&cpu_off_l &cluster_off_l>;
+> +			next-level-cache = <&l2_0>;
+> +		};
+
+..snip..
+
+> +	soc {
+> +		#address-cells = <2>;
+> +		#size-cells = <2>;
+> +		compatible = "simple-bus";
+> +		ranges;
+> +
+> +		gic: interrupt-controller@c000000 {
+> +			compatible = "arm,gic-v3";
+> +			#interrupt-cells = <3>;
+> +			#address-cells = <2>;
+> +			#size-cells = <2>;
+> +			#redistributor-regions = <1>;
+> +			interrupt-parent = <&gic>;
+> +			interrupt-controller;
+> +			reg = <0 0x0c000000 0 0x40000>,
+> +			      <0 0x0c040000 0 0x200000>;
+> +			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
+
+Are there no ppi-partitions for this interrupt controller?
+
+> +		};
+> +
+
+..snip..
+
+> +
+> +		scpsys: syscon@10006000 {
+> +			compatible = "syscon", "simple-mfd";
+> +			reg = <0 0x10006000 0 0x1000>;
+> +			#power-domain-cells = <1>;
+> +
+> +			/* System Power Manager */
+> +			spm: power-controller {
+> +				compatible = "mediatek,mt8186-power-controller";
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +				#power-domain-cells = <1>;
+> +
+> +				/* power domain of the SoC */
+> +				mfg0: mfg0@MT8186_POWER_DOMAIN_MFG0 {
+This should be, for consistency with other mtk devicetrees:
+     mfg0: power-domain@MT8186_POWER_DOMAIN_MFG0 {
+
+> +					reg = <MT8186_POWER_DOMAIN_MFG0>;
+> +					clocks = <&topckgen CLK_TOP_MFG>;
+> +					clock-names= "mfg00";
+> +					#address-cells = <1>;
+> +					#size-cells = <0>;
+> +					#power-domain-cells = <1>;
+> +
+> +					mfg1@MT8186_POWER_DOMAIN_MFG1 {
+
+power-domain@MT8186_POWER_DOMAIN_MFG1
+
+....and the same for all of the other occurrences.
+
+> +						reg = <MT8186_POWER_DOMAIN_MFG1>;
+> +						mediatek,infracfg = <&infracfg_ao>;
+> +						#address-cells = <1>;
+> +						#size-cells = <0>;
+> +						#power-domain-cells = <1>;
+
+..snip..
+
+> +
+> +		scp: scp@10500000 {
+> +			compatible = "mediatek,mt8186-scp";
+> +			reg = <0 0x10500000 0 0x40000>,
+> +			      <0 0x105c0000 0 0x19080>;
+> +			reg-names = "sram", "cfg";
+> +			interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
+> +			status = "okay";
+
+`status = "okay"` can be omitted here: all the nodes are enabled by default.
+
+> +		};
+> +
+
+Cheers,
+Angelo
