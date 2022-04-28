@@ -2,84 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6379C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA671C4167D
 	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:19:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345570AbiD1JRp (ORCPT
+        id S1345585AbiD1JRv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 05:17:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59844 "EHLO
+        Thu, 28 Apr 2022 05:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345427AbiD1JPS (ORCPT
+        with ESMTP id S1345429AbiD1JPU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 05:15:18 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C705DE40
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:12:04 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23S85KKX014079;
-        Thu, 28 Apr 2022 04:11:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=GNIWocH5RL4/4+L/+i4OpILLi3MARmooLeD42GzbnLg=;
- b=JTGGqEZDbnFgB/FHIpQfUNpqxsAXSlUMjlGwYZl7PMQGj+Xikf290Xx1il2Mw8r6Gd88
- c0F8FFfDPSBBO3CyZWjWCvjezZXJH7j4q1OW0JDwT3sQrp+icOi6sT0m/p7eo5NL8QIU
- 6hsYYDy9tS/WiYF1Neb7SnDJ64d6/mu+th1hAmiBIGj20uOdtt8JPSOMynMvEirqe6Qu
- kQ+z5+jXsAFqZMZhUUV+FSK9fepkfwgy3/ITWa/AAxTumG3/RGsjDLFPDywFDryRYp8c
- D5Q2hYXHvyfM9a3qu2oGem5DTiYIOYa5FE7BHoiYmZrNlrHvKhUpu9Mj61wwQK4owQdz KA== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fprt61w3s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 28 Apr 2022 04:11:22 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Apr
- 2022 10:11:20 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Thu, 28 Apr 2022 10:11:20 +0100
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 6DA47B10;
-        Thu, 28 Apr 2022 09:11:19 +0000 (UTC)
-Date:   Thu, 28 Apr 2022 09:11:19 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Vitaly Rodionov <vitalyr@opensource.cirrus.com>
-CC:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Mark Brown <broonie@kernel.org>, <alsa-devel@alsa-project.org>,
-        <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: Re: [PATCH 19/26] ALSA: cs35l41: Do not print error when waking from
- hibernation
-Message-ID: <20220428091119.GO38351@ediswmail.ad.cirrus.com>
-References: <20220427150720.9194-1-vitalyr@opensource.cirrus.com>
- <20220427150720.9194-20-vitalyr@opensource.cirrus.com>
+        Thu, 28 Apr 2022 05:15:20 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637315E155;
+        Thu, 28 Apr 2022 02:12:05 -0700 (PDT)
+Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id B1B201EC04A9;
+        Thu, 28 Apr 2022 11:11:59 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1651137119;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=4EsXYi2iN9MjtiJwAFERWO0RBwBmrl7v2x3DoW2MF7M=;
+        b=Xq5QXk/4l3oFGRD8SiZTM4A+65pi7YB/k41RuzVST5sDnelaDl1N88dEu6MEiaD29t0BN1
+        hwrSbhdX2zZjkg1VwAGWxAj9dchhkvT3ezxCDcD+gegx8hXVbmDYy90bR6x/MpqUhQ+D4T
+        qmhRdfw4sHo2flmvgT9fmGGPeq9tGI4=
+Date:   Thu, 28 Apr 2022 11:12:00 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        bpf <bpf@vger.kernel.org>, X86 ML <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] x86/speculation: Add missing prototype for
+ unpriv_ebpf_notify()
+Message-ID: <YmpaYJP0xE7lc774@zn.tnic>
+References: <5689d065f739602ececaee1e05e68b8644009608.1650930000.git.jpoimboe@redhat.com>
+ <YmexSIL5pqNK63iH@zn.tnic>
+ <CAADnVQKjfQMG_zFf9F9P7m0UzqESs7XoRy=udqrDSodxa8yBpg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220427150720.9194-20-vitalyr@opensource.cirrus.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-GUID: _59qDnNUtRHXae41tWGQ6wwiCZZzJ5Jy
-X-Proofpoint-ORIG-GUID: _59qDnNUtRHXae41tWGQ6wwiCZZzJ5Jy
-X-Proofpoint-Spam-Reason: safe
+In-Reply-To: <CAADnVQKjfQMG_zFf9F9P7m0UzqESs7XoRy=udqrDSodxa8yBpg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 04:07:13PM +0100, Vitaly Rodionov wrote:
-> From: Stefan Binding <sbinding@opensource.cirrus.com>
-> 
-> When waking from hibernation, it is possible for the function
-> which sends the wake command to fail initially, but after a
-> retry it will succeed. There is no need to print an error if
-> the initial attempts fail.
-> 
-> Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
-> Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
-> ---
+On Tue, Apr 26, 2022 at 04:36:08PM -0700, Alexei Starovoitov wrote:
+> I don't remember seeing the original patch on the bpf list.
+> I'm guessing it was done in private as part of bhb series?
 
-Commit message should be ASoC: not ALSA:, but otherwise looks
-good.
+Yap.
 
-Thanks,
-Charles
+> Feel free to land it via tip.
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
