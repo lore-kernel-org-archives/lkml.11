@@ -2,158 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F30A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA34BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349735AbiD1QEW (ORCPT
+        id S1349775AbiD1QF3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 12:04:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34034 "EHLO
+        Thu, 28 Apr 2022 12:05:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236249AbiD1QEU (ORCPT
+        with ESMTP id S231591AbiD1QF2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 12:04:20 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F705B3F3
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:01:05 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-e656032735so5627856fac.0
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:01:05 -0700 (PDT)
+        Thu, 28 Apr 2022 12:05:28 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E71F6562
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:02:13 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id 1-20020a05600c248100b00393fbf11a05so4539347wms.3
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:02:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=tOYccIv/dT6lmvXGvSUCI6aiul062Sk35pOpE7VAjd0=;
-        b=Ex6/5YgKwQwxJsHj/38OfN7VSZ9xWcLyNJp10OPA38dwexhh4dcxsgFm+gKmIQrHT2
-         heh+TkkcCjKabzzpa1XHSCH0xJcaXx6BPHOTeQN/CgXhRQMW5IIcIYHBBSISK6LxBiL3
-         EeHbhgLa2oEI+/KrsNHKR84JcasSP1EXgv5SQ=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qmZUiFUPP8wYUiHrUlqJhgO7VbVwKJAKpj8W10R2YOQ=;
+        b=y5cpmqg5E14QepqUlmfEMAz04fMm1zi45VxE4Ue0OGvGJ8fM1byvnMaqzHq+ppFs3w
+         JnxbtA7kJWWMJJl3ouYlk3AjbA1cNCJDRpij/RajvJyXZrjpRcWwJb48vIKt715o3OVF
+         PiE80uXqVgbGn4QJruJfxuffMm6Q6uOUcMoqYYU16QEIgZiLU5jMiTcEbvCW+yaAPQah
+         IY2aBbMlrYGbhf4frrMPrU8x7Cpu22G5C5go8JIScX3x5GfM5NDkTkHNuImPEbvB8QqP
+         ZZtnGEAWAdCdDemlhaX2h2bCpVvoHRDUcI3MYsD8hLtLB3bIBaKZvTnJTd9PhFL5UdXN
+         FQeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=tOYccIv/dT6lmvXGvSUCI6aiul062Sk35pOpE7VAjd0=;
-        b=dcuQA7+1huc6tyY60hsjuCqXF9+DviIF8o1teTfPggHeAbEG/xDen5PHrp8Ey+ZvND
-         RE/IyzzqK1YtwdgcAnqPEhM0v0H4GUbesSb7K6djV7mqyZLiznUOyC0Zpjmg7qwcGp0j
-         Pp1OS3Y42GcYFidmw2Sd2TpeCDfmt30SYfRnxQjq2TFw26q1KUeQQJ4Ldz+RvlKnuNNw
-         KxXQPiazc/hMZeGOW5gFh6uq86/mc5HH9sYSYe4U9vxqcb2sIOVlF+8Bz6ASpHiU6Tl4
-         //K23FgR96h9rgH7x5na9OTjHd7QT5gVKf6Jrnu/WPNeQungipVvKc/cLbOBR8YigKDY
-         mocw==
-X-Gm-Message-State: AOAM531r0flCKeDqcbsf7/sLIyx260CIcTRAspW6a6ujKX2aoCa8L9C5
-        AWLDPW9HhHW7ayidnDctcBMib8J9h2c06U3q7pcapQ==
-X-Google-Smtp-Source: ABdhPJwz7phB9NwKRasAF0gUvyiUVCir6b2Zp6/7BWPtZe+hBjgdurJmcapC5XhcW8uNYD8Ad2BBWtxaRynOJC4aapY=
-X-Received: by 2002:a05:6870:558e:b0:e1:db7c:26aa with SMTP id
- n14-20020a056870558e00b000e1db7c26aamr14473277oao.63.1651161664179; Thu, 28
- Apr 2022 09:01:04 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 28 Apr 2022 09:01:03 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qmZUiFUPP8wYUiHrUlqJhgO7VbVwKJAKpj8W10R2YOQ=;
+        b=ZrESXv7ay8aqjQRkH89HnnzdaWDuCGUKu/oDcRaNBb+4KbMTF6pnXDYNHkF7aJYoxp
+         FGImJBpWNcml0/pqhY/vjmBaCYp7toD1WOAbVu1ij9/7vY7n1c7I5LIE3BAXis631gM/
+         uTjffqC586PWK/5wz4c31jTzkFJ0K3ByMC16jx3/eRuqL+8uxupPNybL9u0FaVgM+H1S
+         mcADAyRgLQmXIg9ZgqqZ27sL3s4tiJMYrKsuH/uh1IbG4DMGMQbUjHWgY/OJ+k0Zg5db
+         QCU8HYGuGr4iS5PlbiunKnUlbsexHuJfTFto4FdckSd7jDTrTuU+YeQTNQ0PsNWgLUIa
+         IXCQ==
+X-Gm-Message-State: AOAM532VpQGk4wwBSmIB9tykLp5suhOPdopIwW8eOjDYsxAlEKG0nUCi
+        5XEZ7PrNnD++cIq3RB5xBwVjaQ==
+X-Google-Smtp-Source: ABdhPJxL4jzSFoCLq25i5k8etbhswfCdtRlZ7uAjJ5s+YgxKJFIWI2qzwygKSC+xkj15A4B9LX8IYA==
+X-Received: by 2002:a05:600c:590:b0:38c:804e:4197 with SMTP id o16-20020a05600c059000b0038c804e4197mr31616563wmd.22.1651161731620;
+        Thu, 28 Apr 2022 09:02:11 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id q1-20020a1c4301000000b00394145534bbsm325283wma.9.2022.04.28.09.02.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 09:02:10 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 17:01:45 +0100
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>, robin.murphy@arm.com,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        iommu <iommu@lists.linux-foundation.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, zhangfei.gao@linaro.org,
+        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Message-ID: <Ymq6aZCTdrOE60cn@myrica>
+References: <tencent_A4E83BA6071B2204B6F5D4E69A50D21C1A09@qq.com>
+ <YmLOznyBF0f7COYT@myrica>
+ <tencent_2922DAB6F3D5789A1CD3A21A843B4007ED09@qq.com>
+ <Yman5hLomw9/c+bi@myrica>
+ <76ec6342-0d7c-7c7b-c132-2892e4048fa1@intel.com>
+ <YmavoKkVu+hd+x0M@myrica>
+ <20220425083444.00af5674@jacob-builder>
+ <YmbIjnHtibY7n4Wb@myrica>
+ <YmdzFFx7fN586jcf@fyu1.sc.intel.com>
+ <bc18351c-27f2-17ae-e781-6b60fbb72541@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <29cc62aa-2995-ea96-0e7e-242f9ddaa87e@linaro.org>
-References: <20220427203026.828183-1-swboyd@chromium.org> <20220427203026.828183-2-swboyd@chromium.org>
- <9248da4f-ca04-82f0-2840-a20797c25d2a@linaro.org> <CAE-0n52Y=3EEZ6qguNx=hM44BahbH3cuq7x6Bbe5HELKkkvrUw@mail.gmail.com>
- <29cc62aa-2995-ea96-0e7e-242f9ddaa87e@linaro.org>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Thu, 28 Apr 2022 09:01:03 -0700
-Message-ID: <CAE-0n50ORzU52KpSPUNeEke-16uWo+Vn8WVhcdtdCc6WJiji6A@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: google,cros-ec-keyb: Introduce switches
- only compatible
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        "Joseph S. Barrera III" <joebar@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bc18351c-27f2-17ae-e781-6b60fbb72541@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Krzysztof Kozlowski (2022-04-28 00:27:52)
-> On 28/04/2022 08:24, Stephen Boyd wrote:
-> > Quoting Krzysztof Kozlowski (2022-04-27 23:12:47)
-> >> On 27/04/2022 22:30, Stephen Boyd wrote:
-> >>> If the device is a detachable, this device won't have a matrix keyboard
-> >>> but it may have some button switches, e.g. volume buttons and power
-> >>> buttons. Let's add a more specific compatible for this type of device
-> >>> that indicates to the OS that there are only switches and no matrix
-> >>> keyboard present.
-> >>>
-> >>> Cc: Krzysztof Kozlowski <krzk@kernel.org>
-> >>> Cc: Rob Herring <robh+dt@kernel.org>
-> >>> Cc: <devicetree@vger.kernel.org>
-> >>> Cc: Benson Leung <bleung@chromium.org>
-> >>> Cc: Guenter Roeck <groeck@chromium.org>
-> >>> Cc: Douglas Anderson <dianders@chromium.org>
-> >>> Cc: Hsin-Yi Wang <hsinyi@chromium.org>
-> >>> Cc: "Joseph S. Barrera III" <joebar@chromium.org>
-> >>> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> >>> ---
-> >>>  .../bindings/input/google,cros-ec-keyb.yaml          | 12 +++++++++---
-> >>>  1 file changed, 9 insertions(+), 3 deletions(-)
-> >>>
-> >>> diff --git a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> >>> index e8f137abb03c..edc1194d558d 100644
-> >>> --- a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> >>> +++ b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> >>> @@ -15,14 +15,20 @@ description: |
-> >>>    Google's ChromeOS EC Keyboard is a simple matrix keyboard
-> >>>    implemented on a separate EC (Embedded Controller) device. It provides
-> >>>    a message for reading key scans from the EC. These are then converted
-> >>> -  into keycodes for processing by the kernel.
-> >>> +  into keycodes for processing by the kernel. This device also supports
-> >>> +  switches/buttons like power and volume buttons.
-> >>>
-> >>>  allOf:
-> >>>    - $ref: "/schemas/input/matrix-keymap.yaml#"
-> >>>
-> >>>  properties:
-> >>>    compatible:
-> >>> -    const: google,cros-ec-keyb
-> >>> +    oneOf:
-> >>> +      - items:
-> >>> +          - const: google,cros-ec-keyb-switches
-> >>> +          - const: google,cros-ec-keyb
-> >>> +      - items:
-> >>> +          - const: google,cros-ec-keyb
-> >>>
-> >>
-> >> In such case matrix-keymap properties are not valid, right? The
-> >> matrix-keymap should not be referenced, IOW, you need to move allOf
-> >> below "required" and add:
-> >> if:not:...then: $ref: "/schemas/input/matrix-keymap.yaml
-> >>
-> >
-> > Eventually that sounds doable, but for the time being I want to merely
-> > add this new compatible in front of the original compatible so that
-> > updated DTBs still work with older kernels, i.e. the switches still get
-> > registered because the driver works with the original
-> > google,cros-ec-keyb compatible.
->
-> The bindings here do not invalidate (break) existing DTBs. Old DTBs can
-> work in old way, we talk only about binding.
+On Thu, Apr 28, 2022 at 08:09:04AM -0700, Dave Hansen wrote:
+> On 4/25/22 21:20, Fenghua Yu wrote:
+> >>From 84aa68f6174439d863c40cdc2db0e1b89d620dd0 Mon Sep 17 00:00:00 2001
+> > From: Fenghua Yu <fenghua.yu@intel.com>
+> > Date: Fri, 15 Apr 2022 00:51:33 -0700
+> > Subject: [PATCH] iommu/sva: Fix PASID use-after-free issue
+> > 
+> > A PASID might be still used on ARM after it is freed in __mmput().
+> 
+> Is it really just ARM?
+> 
+> > process:
+> > 	open()->sva_bind()->ioasid_alloc() = N; // Get PASID N for the mm
+> > 	exit();
+> > 	exit_mm()->__mmput()->mm_pasid_drop()->mm->pasid = -1; // PASID -1
+> > 	exit_files()->release(dev)->sva_unbind()->use mm->pasid; // Failure
+> > 
+> > To avoid the use-after-free issue, free the PASID after no device uses it,
+> > i.e. after all devices are unbound from the mm.
+> > 
+> > sva_bind()/sva_unbind() call mmgrab()/mmdrop() to track mm->mm_count.
+> > __mmdrop() is called only after mm->mm_count is zero. So freeing the PASID
+> > in __mmdrop() guarantees the PASID is safely freed only after no device
+> > is bound to the mm.
+> 
+> Does this changelog work for everyone?
+> 
+> ==
+> 
+> tl;dr: The PASID is being freed too early.  It needs to stay around
+> until after device drivers that might be using it have had a chance to
+> clear it out of the hardware.
+> 
+> --
+> 
+> As a reminder:
+> 
+> mmget() /mmput()  refcount the mm's address space
+> mmgrab()/mmdrop() refcount the mm itself
+> 
+> The PASID is currently tied to the life of the mm's address space and
+> freed in __mmput().  This makes logical sense because the PASID can't be
+> used once the address space is gone.
+> 
+> But, this misses an important point: even after the address space is
+> gone, the PASID will still be programmed into a device.  Device drivers
+> might, for instance, still need to flush operations that are outstanding
+> and need to use that PASID.  They do this at ->release() time.
 
-Ok, got it.
+It's not really clear which release() this is. For us it's file descriptor
+release() (not MMU notifier release(), which is how I initially understood
+this sentence)
 
->
-> > Given that none of the properties are
-> > required for google,cros-ec-keyb it didn't seem necessary to make having
-> > the google,cros-ec-keyb-switches compatible deny the existence of the
-> > matrix-keymap properties.
->
-> Maybe I misunderstood the commit msg. Are the
-> "google,cros-ec-keyb-switches" devices coming with matrix keyboard or
-> not? I mean physically.
->
+> 
+> Device drivers hold a reference on the mm itself and drop it at
+> ->release() time.  But, the device driver holds a reference mm itself,
 
-The answer is "sometimes, physically". Sometimes there are switches like
-volume buttons and power buttons and also a matrix keyboard (convertible
-and clamshells). Other times there are volume buttons and power buttons
-and no matrix keyboard (detachable). This device node represents both
-the keyboard and the switches.
+"to the mm"
 
-Unfortunately the EC firmware on older Chromebooks that don't have a
-matrix keyboard still report that they have some number of columns and
-rows. I was hoping to make this fully dynamic by querying the EC but
-that isn't possible.
+(To be pendantic it's the IOMMU driver that holds this reference, and
+the device driver calls the IOMMU driver to release it, but the idea is
+the same.)
+
+> not the address space.  The address space (and the PASID) is long gone
+> by the time the driver tries to clean up.  This is effectively a
+> use-after-free bug on the PASID.
+> 
+> To fix this, move the PASID free operation from __mmput() to __mmdrop().
+>  This ensures that the device drivers' existing mmgrab() keeps the PASID
+> allocated until they drop their mm reference.
+
+Good changelog otherwise
+
+Thanks,
+Jean
+
+> 
+> >  kernel/fork.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/fork.c b/kernel/fork.c
+> > index 9796897560ab..35a3beff140b 100644
+> > --- a/kernel/fork.c
+> > +++ b/kernel/fork.c
+> > @@ -792,6 +792,7 @@ void __mmdrop(struct mm_struct *mm)
+> >  	mmu_notifier_subscriptions_destroy(mm);
+> >  	check_mm(mm);
+> >  	put_user_ns(mm->user_ns);
+> > +	mm_pasid_drop(mm);
+> >  	free_mm(mm);
+> >  }
+> >  EXPORT_SYMBOL_GPL(__mmdrop);
+> > @@ -1190,7 +1191,6 @@ static inline void __mmput(struct mm_struct *mm)
+> >  	}
+> >  	if (mm->binfmt)
+> >  		module_put(mm->binfmt->module);
+> > -	mm_pasid_drop(mm);
+> >  	mmdrop(mm);
+> >  }
+> >  
+> 
