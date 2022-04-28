@@ -2,118 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D408C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F18C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229495AbiD1Kqh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:46:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57880 "EHLO
+        id S1344621AbiD1Kqq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244584AbiD1KqK (ORCPT
+        with ESMTP id S1343885AbiD1Kqb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:46:10 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9067E86ACF
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 03:42:52 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id l18so8690864ejc.7
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 03:42:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=N6G/xcwWCTxvb9G73B2XRdjPPr2MF5UR6WrCerpPvtI=;
-        b=afWohOX5/h2MitoomFn4Jj8HmGwDFi7+I/qKFfXl0zbDW9GdlQkwYMey7qtsBr3Ut1
-         TR7fex2X69k0Cp2nVHj872HxReTMTtAvQTwWSkAvLf4qQ/bf61S0bLDLBz8wd3wFuzXH
-         yKD2w9FSumkw5kppYJYUWZrv/uZr5XQkDtCKvafl0Xjj5tCqSLL3DOgrLjupTq/ntaa7
-         pLyW0LqZwJcnvnHdImBM+yizghmC92CE+HINrK3gdkGgy2Rbq4iGIn83WPG7S+NBcARV
-         JDdZoTxujQyzHMp5QHHx31Q6p6gZeIMd6e4KLwJB05j6dEopWTxcYv3FQugld09DK9jS
-         /m+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=N6G/xcwWCTxvb9G73B2XRdjPPr2MF5UR6WrCerpPvtI=;
-        b=DVnVotu0JsPe3gmHNcvo/+vS8+AjLjOwMhwqrg1AG8Qumkf8xUqmBDXxHG6Q1lErWZ
-         y4vpRGMWdxhuoW5AZXY60lWkEj4qpOvsG1aP78yRRHjkVMTCfo1tpWlPzmqawTqVMoZv
-         yuHoNEtcMWFyeLmpPJD9MLGURgew2AU+l3f+sjqQd87qEfZURxwg/3TovBYUIbjE5ST9
-         vbHpnxrCg7ROTdLIhfnnh8QBoagE/yXMErfsCNHehytubFmepOTdkC+V7lDNeyXRfet+
-         rDxTGVhH0GVW95p+f5YAYEOxb+VamhepV6vg7GFOluY8GffemwIP2Jf54P4gJQyNinvy
-         pwTA==
-X-Gm-Message-State: AOAM530hc4iyk3p5WwxGip2nD6O0mDfS6fOjiHLsVzODxZOhLOOOsfub
-        v0cktSsRpDNA+m2o0uhy/OJEgQ==
-X-Google-Smtp-Source: ABdhPJzY6ALvKxPFzbFvnzPx2ZcFkFDikyd243cj8RSnwSMgEbc4UqYIIjNQwxII4daU9PNt4+euHQ==
-X-Received: by 2002:a17:907:3e1e:b0:6ef:ebf8:4059 with SMTP id hp30-20020a1709073e1e00b006efebf84059mr31076153ejc.657.1651142571177;
-        Thu, 28 Apr 2022 03:42:51 -0700 (PDT)
-Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
-        by smtp.gmail.com with ESMTPSA id mf1-20020a1709071a4100b006f39f556011sm4982583ejc.125.2022.04.28.03.42.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 03:42:50 -0700 (PDT)
-From:   Caleb Connolly <caleb.connolly@linaro.org>
-To:     caleb.connolly@linaro.org, Sebastian Reichel <sre@kernel.org>,
+        Thu, 28 Apr 2022 06:46:31 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B1ED86AEC;
+        Thu, 28 Apr 2022 03:43:10 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 963DB1474;
+        Thu, 28 Apr 2022 03:43:10 -0700 (PDT)
+Received: from [10.57.80.98] (unknown [10.57.80.98])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7EEF53F774;
+        Thu, 28 Apr 2022 03:43:07 -0700 (PDT)
+Message-ID: <1d1aae6e-50db-d6db-9727-62f9c2d1ca6b@arm.com>
+Date:   Thu, 28 Apr 2022 11:43:01 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 04/10] arm64: dts: juno: use proper
+ 'dma-channels/requests' properties
+Content-Language: en-GB
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Cc:     Amit Pundir <amit.pundir@linaro.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>
-Subject: [PATCH v2 4/6] arm64: dts: qcom: sdm845-db845c: enable pmi8998 charger
-Date:   Thu, 28 Apr 2022 11:42:31 +0100
-Message-Id: <20220428104233.2980806-5-caleb.connolly@linaro.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220428104233.2980806-1-caleb.connolly@linaro.org>
-References: <20220428104233.2980806-1-caleb.connolly@linaro.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Rob Herring <robh@kernel.org>
+References: <20220427155840.596535-1-krzysztof.kozlowski@linaro.org>
+ <20220427155840.596535-5-krzysztof.kozlowski@linaro.org>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220427155840.596535-5-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable the smb2 charger driver on the db845c and add a simple-battery
-node to report the correct VBAT voltage.
+On 2022-04-27 16:58, Krzysztof Kozlowski wrote:
+> pl330 DMA controller bindings documented 'dma-channels' and
+> 'dma-requests' properties (without leading hash sign), so fix the DTS to
+> match the bindings.
+> 
+> Reported-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>   arch/arm64/boot/dts/arm/juno-base.dtsi | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm64/boot/dts/arm/juno-base.dtsi b/arch/arm64/boot/dts/arm/juno-base.dtsi
+> index 4f40a5c8f565..96ef0ddc0b2d 100644
+> --- a/arch/arm64/boot/dts/arm/juno-base.dtsi
+> +++ b/arch/arm64/boot/dts/arm/juno-base.dtsi
+> @@ -829,8 +829,8 @@ dma-controller@7ff00000 {
+>   		compatible = "arm,pl330", "arm,primecell";
+>   		reg = <0x0 0x7ff00000 0 0x1000>;
+>   		#dma-cells = <1>;
+> -		#dma-channels = <8>;
+> -		#dma-requests = <32>;
+> +		dma-channels = <8>;
+> +		dma-requests = <32>;
 
-Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
----
- arch/arm64/boot/dts/qcom/sdm845-db845c.dts | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+BTW, this has always been wrong - Juno is configured with only 8 request 
+interfaces. But then it's moot anyway since PL330 has an ID register for 
+this stuff[1], so the DT properties aren't used by Linux, and shouldn't 
+be needed in general.
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-index 40a290b6d4f3..3b73b5305c51 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-@@ -240,6 +240,18 @@ vph_pwr: vph-pwr-regulator {
- 
- 		vin-supply = <&vbat_som>;
- 	};
-+
-+	/*
-+	 * The db845c doesn't actually have a battery, but the charger circuitry
-+	 * is still wired up to support one, it needs to be programmed for nominal
-+	 * vbat voltage. See the vbat-regulator above.
-+	 */
-+	battery: battery {
-+		compatible = "simple-battery";
-+
-+		voltage-min-design-microvolt = <4200000>;
-+		voltage-max-design-microvolt = <4200000>;
-+	};
- };
- 
- &adsp_pas {
-@@ -603,6 +615,12 @@ &pmi8998_rradc {
- 	status = "okay";
- };
- 
-+&pmi8998_charger {
-+	status = "okay";
-+
-+	monitored-battery = <&battery>;
-+};
-+
- /* QUAT I2S Uses 4 I2S SD Lines for audio on LT9611 HDMI Bridge */
- &q6afedai {
- 	qi2s@22 {
--- 
-2.36.0
+Thanks,
+Robin.
 
+[1] 
+https://developer.arm.com/documentation/ddi0424/d/programmers-model/register-descriptions/configuration-register-0?lang=en
+
+>   		interrupts = <GIC_SPI 88 IRQ_TYPE_LEVEL_HIGH>,
+>   			     <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>,
+>   			     <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>,
