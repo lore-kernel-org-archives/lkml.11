@@ -2,273 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0849AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:40:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7F7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344788AbiD1IoI (ORCPT
+        id S1344726AbiD1Irz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:44:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55308 "EHLO
+        Thu, 28 Apr 2022 04:47:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344539AbiD1ImL (ORCPT
+        with ESMTP id S241706AbiD1IrS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:42:11 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285605A2E5
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:37:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651135059; x=1682671059;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=HwmGF4rIcjwwV8q8uxbE8wsBmcCLazT1Q+3ogCoTicE=;
-  b=A8SOJrCMa4+f87NROAvN5jfY4u9BTZYiyiAnyA8oxrj9ZFT6dKZ3kqIu
-   g0U6wzkhLXcUi2XrJAUGkAxjDdUF2uB6S69kr/gPQHY7ngO4/9Ry/mnjQ
-   vo/cql9sC7A6odBzFpOkSf6UyvcwuiNSpJFP/oxhkVdUyyV4JL5rgtlB7
-   s8D5r+8JqW7EC/A/39I094SgWUK88HAk2uFUsEPkzUballJxYTJPsXQpa
-   8sAOuexLRUHWBijOhGuDcZ6QfrT70LG1pD7eeWWcTRtpsdq1DTKwB5TS1
-   s5TNWymB9Flup+ibXnkHncSf8ORqHdvwa9wI5XpdG4sVAumPmB4J6kA95
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="253589079"
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="253589079"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 01:37:38 -0700
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="581158956"
-Received: from shanlinl-mobl.ccr.corp.intel.com ([10.254.212.81])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 01:37:34 -0700
-Message-ID: <cb424fff95cf2b1a6e31616ebb261660e8000425.camel@intel.com>
-Subject: Re: [PATCH v2 0/5] mm: demotion: Introduce new node state
- N_DEMOTION_TARGETS
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     Wei Xu <weixugc@google.com>
-Cc:     Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Greg Thelen <gthelen@google.com>,
-        MichalHocko <mhocko@kernel.org>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Tim C Chen <tim.c.chen@intel.com>
-Date:   Thu, 28 Apr 2022 16:37:32 +0800
-In-Reply-To: <CAAPL-u8b3m2yx8A-MhPmJUasuz8Ra9mW2E2dwT2KvJ06FeZofQ@mail.gmail.com>
-References: <CAAPL-u_pSWD6U0yQ8Ws+_Yfb_3ZEmNXJsYcRJjAFBkyDk=nq8g@mail.gmail.com>
-         <ea73f6fda9cafdd0cb6ba8351139e6f4b47354a8.camel@intel.com>
-         <CAAPL-u-aeceXFUNdok_GYb2aLhZa0zBBuSqHxFznQob3PbJt7Q@mail.gmail.com>
-         <a80647053bba44623094995730e061f0e6129677.camel@intel.com>
-         <CAAPL-u89Jxutu1VH0LnO5VGdMbkLvc2M9eapuwP-y9oG9QSsrA@mail.gmail.com>
-         <610ccaad03f168440ce765ae5570634f3b77555e.camel@intel.com>
-         <CAAPL-u9ktM82zAW_OVwqTmQsr-XC8XOPmAsjoiCLo18cxUWA=A@mail.gmail.com>
-         <8e31c744a7712bb05dbf7ceb2accf1a35e60306a.camel@intel.com>
-         <CAAPL-u9uP+FUh7Yn0ByOECo+EP32ZABnCvNPKQB9JCA68VHEqQ@mail.gmail.com>
-         <78b5f4cfd86efda14c61d515e4db9424e811c5be.camel@intel.com>
-         <YmKKwXa2XI/nwac0@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
-         <200e95cf36c1642512d99431014db8943fed715d.camel@intel.com>
-         <CAAPL-u94H9FLjVtYLhi_A2AqLTOCTMRh6=Sx9cX8A3WGNM-OdA@mail.gmail.com>
-         <a1b875913df743355e1ff3752c0eb7ddf74bae91.camel@intel.com>
-         <CAAPL-u8b3m2yx8A-MhPmJUasuz8Ra9mW2E2dwT2KvJ06FeZofQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Thu, 28 Apr 2022 04:47:18 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49119ABF70
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:39:55 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id k23so8116918ejd.3
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:39:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZM0I9FLBdxBfWI01gte4uSiEvRTRl5rH8dWQh+u9ogY=;
+        b=KJgxND+xFH2/Fv+kdMQsSCcy25Pzjbh6piMm1sj3fR70l6wTR9IVRFcZe4VBp+emiz
+         7W5JxEnwX1Vv+DC8tO5Dnb93wrEij4Jx1BvrKUmt8XXOz0h88f1l6qZ3beJ9vGxKGywg
+         EN6yzr2/5nKQFn0fSrxU2ECF8JsqbC1bh/DKA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZM0I9FLBdxBfWI01gte4uSiEvRTRl5rH8dWQh+u9ogY=;
+        b=d5OlAr7TMer7Ir9Zx8ybKTzaPADwIgdjYSorVLBtoBzvNhIm1izohpobaWf6Eg1Fg8
+         FPMw6s9nWed1BC+cVcTbsNooq0iwnFR8E6EnQ4GPxEEKQmzRJ/QaP22GWqT8UVak1wPk
+         hFdl2FQ2pL+V2j9UUVBRPm774lIRpvOOp/YOa/UybqAAlxK94YHp1ZO8k8ljdM82bHzW
+         qv549OQCm9XaU5qbumsQCsRfwme69LwLpXjMcYnaqdeBuSXgwl0gOToUiJT648Hx4iUG
+         3fvlsvnthe6p39Plp1m99vpjdDI5eQfAgB9NvdoJH/jGXP4TZPE4At7/VHNcVGTBH2Vu
+         qnXA==
+X-Gm-Message-State: AOAM533rL9CavLOOFTfIychL9RMnybE2lCZ044YVxamC2/c2EFkBDOnp
+        n9NOoJnaoXjVpnsNSoIsifo+G7KzvahbgMYQZdZP7A==
+X-Google-Smtp-Source: ABdhPJzUmAY96r8FtHibCf5TcAZdtnOrMcrJPS+A/mNw7Y0uXCa9uh6e3O6f2Ylzq57ttVAt2Bcw3RxA9GhXp5BTfMw=
+X-Received: by 2002:a17:906:1315:b0:6ef:5903:c5d1 with SMTP id
+ w21-20020a170906131500b006ef5903c5d1mr30082332ejb.537.1651135193813; Thu, 28
+ Apr 2022 01:39:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220420231230.58499-1-bjorn.andersson@linaro.org>
+ <20220420231230.58499-2-bjorn.andersson@linaro.org> <CAMty3ZAw7DUSnBePC05qC8Gn6ESKiu+FHw4a-HPPc05VX1hqhg@mail.gmail.com>
+ <20220421082358.ivpmtak3ednvddrc@houat> <YmEdAVwZuA7Wo1Ch@aptenodytes>
+ <YmelPCcWCCjALtRU@aptenodytes> <CAMty3ZBwguzvC8A9xA5c0enfoFRGS=4wWCzpfakTUXrsRS9GyA@mail.gmail.com>
+ <20220427143410.bectqumq62qmlv5x@houat>
+In-Reply-To: <20220427143410.bectqumq62qmlv5x@houat>
+From:   Jagan Teki <jagan@amarulasolutions.com>
+Date:   Thu, 28 Apr 2022 14:09:42 +0530
+Message-ID: <CAMty3ZDk-M3hW97_GY4-z=f+cKs1Sg4Jbq5L7L4zHgXURhFuZA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] Revert "drm: of: Lookup if child node has panel or bridge"
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Rob Clark <robdclark@gmail.com>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Robert Foss <robert.foss@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-27 at 09:27 -0700, Wei Xu wrote:
-> On Wed, Apr 27, 2022 at 12:11 AM ying.huang@intel.com
-> <ying.huang@intel.com> wrote:
-> > 
-> > On Mon, 2022-04-25 at 09:56 -0700, Wei Xu wrote:
-> > > On Sat, Apr 23, 2022 at 8:02 PM ying.huang@intel.com
-> > > <ying.huang@intel.com> wrote:
-> > > > 
-> > > > Hi, All,
-> > > > 
-> > > > On Fri, 2022-04-22 at 16:30 +0530, Jagdish Gediya wrote:
-> > > > 
-> > > > [snip]
-> > > > 
-> > > > > I think it is necessary to either have per node demotion targets
-> > > > > configuration or the user space interface supported by this patch
-> > > > > series. As we don't have clear consensus on how the user interface
-> > > > > should look like, we can defer the per node demotion target set
-> > > > > interface to future until the real need arises.
-> > > > > 
-> > > > > Current patch series sets N_DEMOTION_TARGET from dax device kmem
-> > > > > driver, it may be possible that some memory node desired as demotion
-> > > > > target is not detected in the system from dax-device kmem probe path.
-> > > > > 
-> > > > > It is also possible that some of the dax-devices are not preferred as
-> > > > > demotion target e.g. HBM, for such devices, node shouldn't be set to
-> > > > > N_DEMOTION_TARGETS. In future, Support should be added to distinguish
-> > > > > such dax-devices and not mark them as N_DEMOTION_TARGETS from the
-> > > > > kernel, but for now this user space interface will be useful to avoid
-> > > > > such devices as demotion targets.
-> > > > > 
-> > > > > We can add read only interface to view per node demotion targets
-> > > > > from /sys/devices/system/node/nodeX/demotion_targets, remove
-> > > > > duplicated /sys/kernel/mm/numa/demotion_target interface and instead
-> > > > > make /sys/devices/system/node/demotion_targets writable.
-> > > > > 
-> > > > > Huang, Wei, Yang,
-> > > > > What do you suggest?
-> > > > 
-> > > > We cannot remove a kernel ABI in practice.  So we need to make it right
-> > > > at the first time.  Let's try to collect some information for the kernel
-> > > > ABI definitation.
-> > > > 
-> > > > The below is just a starting point, please add your requirements.
-> > > > 
-> > > > 1. Jagdish has some machines with DRAM only NUMA nodes, but they don't
-> > > > want to use that as the demotion targets.  But I don't think this is a
-> > > > issue in practice for now, because demote-in-reclaim is disabled by
-> > > > default.
-> > > > 
-> > > > 2. For machines with PMEM installed in only 1 of 2 sockets, for example,
-> > > > 
-> > > > Node 0 & 2 are cpu + dram nodes and node 1 are slow
-> > > > memory node near node 0,
-> > > > 
-> > > > available: 3 nodes (0-2)
-> > > > node 0 cpus: 0 1
-> > > > node 0 size: n MB
-> > > > node 0 free: n MB
-> > > > node 1 cpus:
-> > > > node 1 size: n MB
-> > > > node 1 free: n MB
-> > > > node 2 cpus: 2 3
-> > > > node 2 size: n MB
-> > > > node 2 free: n MB
-> > > > node distances:
-> > > > node   0   1   2
-> > > >   0:  10  40  20
-> > > >   1:  40  10  80
-> > > >   2:  20  80  10
-> > > > 
-> > > > We have 2 choices,
-> > > > 
-> > > > a)
-> > > > node    demotion targets
-> > > > 0       1
-> > > > 2       1
-> > > > 
-> > > > b)
-> > > > node    demotion targets
-> > > > 0       1
-> > > > 2       X
-> > > > 
-> > > > a) is good to take advantage of PMEM.  b) is good to reduce cross-socket
-> > > > traffic.  Both are OK as defualt configuration.  But some users may
-> > > > prefer the other one.  So we need a user space ABI to override the
-> > > > default configuration.
-> > > 
-> > > I think 2(a) should be the system-wide configuration and 2(b) can be
-> > > achieved with NUMA mempolicy (which needs to be added to demotion).
-> > 
-> > Unfortunately, some NUMA mempolicy information isn't available at
-> > demotion time, for example, mempolicy enforced via set_mempolicy() is
-> > for thread. But I think that cpusets can work for demotion.
-> > 
-> > > In general, we can view the demotion order in a way similar to
-> > > allocation fallback order (after all, if we don't demote or demotion
-> > > lags behind, the allocations will go to these demotion target nodes
-> > > according to the allocation fallback order anyway).  If we initialize
-> > > the demotion order in that way (i.e. every node can demote to any node
-> > > in the next tier, and the priority of the target nodes is sorted for
-> > > each source node), we don't need per-node demotion order override from
-> > > the userspace.  What we need is to specify what nodes should be in
-> > > each tier and support NUMA mempolicy in demotion.
-> > 
-> > This sounds interesting. Tier sounds like a natural and general concept
-> > for these memory types. It's attracting to use it for user space
-> > interface too. For example, we may use that for mem_cgroup limits of a
-> > specific memory type (tier).
-> > 
-> > And if we take a look at the N_DEMOTION_TARGETS again from the "tier"
-> > point of view. The nodes are divided to 2 classes via
-> > N_DEMOTION_TARGETS.
-> > 
-> > - The nodes without N_DEMOTION_TARGETS are top tier (or tier 0).
-> > 
-> > - The nodes with N_DEMOTION_TARGETS are non-top tier (or tier 1, 2, 3,
-> > ...)
-> > 
-> 
-> Yes, this is one of the main reasons why we (Google) want this interface.
-> 
-> > So, another possibility is to fit N_DEMOTION_TARGETS and its overriding
-> > into "tier" concept too.  !N_DEMOTION_TARGETS == TIER0.
-> > 
-> > - All nodes start with TIER0
-> > 
-> > - TIER0 can be cleared for some nodes via e.g. kmem driver
-> > 
-> > TIER0 node list can be read or overriden by the user space via the
-> > following interface,
-> > 
-> >   /sys/devices/system/node/tier0
-> > 
-> > In the future, if we want to customize more tiers, we can add tier1,
-> > tier2, tier3, .....  For now, we can add just tier0.  That is, the
-> > interface is extensible in the future compared with
-> > .../node/demote_targets.
-> > 
-> 
-> This more explicit tier definition interface works, too.
-> 
+On Wed, Apr 27, 2022 at 8:04 PM Maxime Ripard <maxime@cerno.tech> wrote:
+>
+> On Tue, Apr 26, 2022 at 01:40:31PM +0530, Jagan Teki wrote:
+> > On Tue, Apr 26, 2022 at 1:24 PM Paul Kocialkowski
+> > <paul.kocialkowski@bootlin.com> wrote:
+> > >
+> > > Hi,
+> > >
+> > > On Thu 21 Apr 22, 10:59, Paul Kocialkowski wrote:
+> > > > Hi Maxime,
+> > > >
+> > > > On Thu 21 Apr 22, 10:23, Maxime Ripard wrote:
+> > > > > On Thu, Apr 21, 2022 at 01:15:54PM +0530, Jagan Teki wrote:
+> > > > > > + Linus
+> > > > > > + Marek
+> > > > > > + Laurent
+> > > > > > + Robert
+> > > > > >
+> > > > > > On Thu, Apr 21, 2022 at 4:40 AM Bjorn Andersson
+> > > > > > <bjorn.andersson@linaro.org> wrote:
+> > > > > > >
+> > > > > > > Commit '80253168dbfd ("drm: of: Lookup if child node has panel or
+> > > > > > > bridge")' attempted to simplify the case of expressing a simple panel
+> > > > > > > under a DSI controller, by assuming that the first non-graph child node
+> > > > > > > was a panel or bridge.
+> > > > > > >
+> > > > > > > Unfortunately for non-trivial cases the first child node might not be a
+> > > > > > > panel or bridge.  Examples of this can be a aux-bus in the case of
+> > > > > > > DisplayPort, or an opp-table represented before the panel node.
+> > > > > > >
+> > > > > > > In these cases the reverted commit prevents the caller from ever finding
+> > > > > > > a reference to the panel.
+> > > > > > >
+> > > > > > > This reverts commit '80253168dbfd ("drm: of: Lookup if child node has
+> > > > > > > panel or bridge")', in favor of using an explicit graph reference to the
+> > > > > > > panel in the trivial case as well.
+> > > > > >
+> > > > > > This eventually breaks many child-based devm_drm_of_get_bridge
+> > > > > > switched drivers.  Do you have any suggestions on how to proceed to
+> > > > > > succeed in those use cases as well?
+> > > > >
+> > > > > I guess we could create a new helper for those, like
+> > > > > devm_drm_of_get_bridge_with_panel, or something.
+> > > >
+> > > > Oh wow I feel stupid for not thinking about that.
+> > > >
+> > > > Yeah I agree that it seems like the best option.
+> > >
+> > > Should I prepare a patch with such a new helper?
+> > >
+> > > The idea would be to keep drm_of_find_panel_or_bridge only for the of graph
+> > > case and add one for the child node case, maybe:
+> > > drm_of_find_child_panel_or_bridge.
+> > >
+> > > I really don't have a clear idea of which driver would need to be switched
+> > > over though. Could someone (Jagan?) let me know where it would be needed?
+> >
+> > sun6i_mipi_dsi
+>
+> It doesn't look like sun6i_mipi_dsi is using devm_drm_of_get_bridge at all?
 
-In addition to make tiering definition explicit, more importantly, this
-makes it much easier to support more than 2 tiers.  For example, for a
-system with HBM (High Bandwidth Memory), CPU+DRAM, DRAM only, and PMEM,
-that is, 3 tiers, we can put HBM in tier 0, CPU+DRAM and DRAM only in
-tier 1, and PMEM in tier 2, automatically, or via user space
-overridding.  N_DEMOTION_TARGETS isn't natural to be extended to support
-this.
+Correct, patch for this on the mailing list.
 
-Best Regards,
-Huang, Ying
+>
+> > exynos_drm_dsi
+>
+> If you reference 711c7adc4687, I don't see why we would need to switch
+> it back to the old behaviour. It wasn't iterating over its child node
+> before, so what does the switch to drm_of_get_bridge broke exactly?
 
-> > This isn't as flexible as the writable per-node demotion targets.  But
-> > it may be enough for most requirements?
-> 
-> I would think so. Besides, it doesn't really conflict with the
-> per-node demotion target interface if we really want to introduce the
-> latter.
-> 
-> > Best Regards,
-> > Huang, Ying
-> > 
-> > > Cross-socket demotion should not be too big a problem in practice
-> > > because we can optimize the code to do the demotion from the local CPU
-> > > node (i.e. local writes to the target node and remote read from the
-> > > source node).  The bigger issue is cross-socket memory access onto the
-> > > demoted pages from the applications, which is why NUMA mempolicy is
-> > > important here.
-> > > 
-> > > > 3. For machines with HBM (High Bandwidth Memory), as in
-> > > > 
-> > > > https://lore.kernel.org/lkml/39cbe02a-d309-443d-54c9-678a0799342d@gmail.com/
-> > > > 
-> > > > > [1] local DDR = 10, remote DDR = 20, local HBM = 31, remote HBM = 41
-> > > > 
-> > > > Although HBM has better performance than DDR, in ACPI SLIT, their
-> > > > distance to CPU is longer.  We need to provide a way to fix this.  The
-> > > > user space ABI is one way.  The desired result will be to use local DDR
-> > > > as demotion targets of local HBM.
-> > > > 
-> > > > Best Regards,
-> > > > Huang, Ying
-> > > > 
-> > 
-> > 
-> > 
+Exynos bindings have a child node (unlike OF-graph), the old code is
+checking panel and bridge individually so it broke once switch to
+devm_drm_of_get_bridge
 
-
+Jagan.
