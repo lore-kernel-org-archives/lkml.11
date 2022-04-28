@@ -2,83 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 106A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 22:49:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE59C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 22:50:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353039AbiD1WxK (ORCPT
+        id S1353049AbiD1Wxn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 18:53:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60906 "EHLO
+        Thu, 28 Apr 2022 18:53:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234181AbiD1WxI (ORCPT
+        with ESMTP id S1353040AbiD1Wxl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 18:53:08 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1251EC1C87
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 15:49:53 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id w187so11624468ybe.2
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 15:49:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4y/h2CdaCT5aLcDGH4vyOwMEkajTPv3gIH/CP9hJ7RA=;
-        b=zf0mXXTka8NgKEFkBHSJ/qfYmus5/JFJZILWQI1MilIp9S9gi0aQG4qJtwmC4PxuNO
-         RSYQMGBFZpxLRocrDGZyJPKpZNDphWcnBj53tOuqOuGeRPirZgNm7F8rPOqCqtQzmLdx
-         GaRODpmnNmyCk+M+xuaweNEeOK7dTTwVQdRGyoG4TgIYRP7Zq+EUx0IUUjdxHzuDNXTO
-         lWcLeJyZ5yHgxTW+OLrSpG7B57WiYdo+Av7nQUcy7E636Ziu8Bm+Q3bLop4Zl6FkaEUv
-         uzBgPzLVLRRwHCCZlDPqYou6rERZyuDVyyB9FFq0UjQcplmLwodBNRB4ZJkSqoIxQ0G5
-         Z9KA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4y/h2CdaCT5aLcDGH4vyOwMEkajTPv3gIH/CP9hJ7RA=;
-        b=hvgTjtxfQXd4+yRmbr8KOlgliJigj174RPyW7JFl7pU2sRDZnY9BSy0u0x/q6ASAMe
-         kMftuwqNolLJ+NQuii3bWjvXCsqMngRcahOX3SRYDlp0HnI/3LAS0aJPtsZPhc7H79I6
-         k71u8b7TgWmtnQ7XhU15jdcconm7OprA/0RTi9iwVM6oabTmS+NARSXWIVvbj3zYsiEi
-         UCikkANhtEIq9+7bbsCjhEMEo1X1V9r07yJtPr6zSyJWB49EdBPO67/hm/pESB8hCXW0
-         Yziw9hr7NpMpR/WNA0wAoFQ8g8fG0p6/XDeqIx3nkBhjIXuuy3MIoD/KRfS9vsKH7X8S
-         66+A==
-X-Gm-Message-State: AOAM5338dQGgdFb6KjYrfdDebbGaXVpejX4jrI8jSC4bv8MsRrEgjwWT
-        gTD14+OXRPu39CVy36woLnvn6fU1NlNlugEKl56gIg==
-X-Google-Smtp-Source: ABdhPJzqCCPSOEN3jFOUYTqgtVwOHJNyh29726bF/LKrEzWJCg+CybXlzXS2RFlHdIdfZ3PbxqUrieuD6UWUK9NlNZM=
-X-Received: by 2002:a5b:dc5:0:b0:624:f16d:7069 with SMTP id
- t5-20020a5b0dc5000000b00624f16d7069mr33306209ybr.295.1651186190787; Thu, 28
- Apr 2022 15:49:50 -0700 (PDT)
+        Thu, 28 Apr 2022 18:53:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFEEBE0C6
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 15:50:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651186223;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=21r3A+a97qIjMQ0EcHn0xJlRdWWTFjCaN7Ewqfu8RvI=;
+        b=GXgboNJ6g4n8LkG4lW0b1aNWqgcVxcrB5n4N3mVxn4Ws9zwOsMe/Q+3VgLNjosrgqqhXCc
+        mlxD9Ovv+Fag4/vHunZi/m3Q8FO/mWB51T0n2dtVNeufJY0uueMt8zTh8xCG8guwvjZV0R
+        dLJMcleDNn4UooA+Ro9RIcpa/izCtXg=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-656-Yga_bl7UMtGVW5CD2aBAng-1; Thu, 28 Apr 2022 18:50:14 -0400
+X-MC-Unique: Yga_bl7UMtGVW5CD2aBAng-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 902ED86B8A3;
+        Thu, 28 Apr 2022 22:50:13 +0000 (UTC)
+Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.40])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 783765E1A38;
+        Thu, 28 Apr 2022 22:50:10 +0000 (UTC)
+Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
+        oleg@redhat.com; Fri, 29 Apr 2022 00:50:13 +0200 (CEST)
+Date:   Fri, 29 Apr 2022 00:50:09 +0200
+From:   Oleg Nesterov <oleg@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>, rjw@rjwysocki.net,
+        mingo@kernel.org, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
+        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
+        linux-kernel@vger.kernel.org, tj@kernel.org,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH v2 2/5] sched,ptrace: Fix ptrace_check_attach() vs
+ PREEMPT_RT
+Message-ID: <20220428225008.GH15485@redhat.com>
+References: <20220421150248.667412396@infradead.org>
+ <20220421150654.817117821@infradead.org>
+ <20220425174719.GB12412@redhat.com>
+ <8735hzcr18.fsf@email.froward.int.ebiederm.org>
+ <Ymr5Ga3gcqG4ZAMt@hirez.programming.kicks-ass.net>
+ <20220428205956.GG15485@redhat.com>
+ <YmsTd4FiAXjsFegE@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-References: <20220422105339.78810-1-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220422105339.78810-1-krzysztof.kozlowski@linaro.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 29 Apr 2022 00:49:39 +0200
-Message-ID: <CACRpkdbKYYfeVnLBU3o1E6KJAy8gpg70aCxMcEb1SGGdG1Rfkg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] pinctrl: mvebu: Fix irq_of_parse_and_map() return value
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmsTd4FiAXjsFegE@hirez.programming.kicks-ass.net>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 12:53 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
+Peter, you know, it is very difficult to me to discuss the changes
+in the 2 unfinished series and not loose the context ;) Plus I am
+already sleeping. But I'll try to reply anyway.
 
-> The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+On 04/29, Peter Zijlstra wrote:
 >
-> Fixes: 2f227605394b ("pinctrl: armada-37xx: Add irqchip support")
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> On Thu, Apr 28, 2022 at 10:59:57PM +0200, Oleg Nesterov wrote:
+> > If it is on top of JOBCTL_TRACED/DELAY_WAKEKILL changes (yours or Eric's),
+> > then it can't help - SIGKILL can come right after the tracee drops siglock
+> > and calls schedule().
+>
+> But by that time it will already have set TRACED and signal_wake_up()
+> wil clear it, no?
 
-Patch applied!
+No. JOBCTL_DELAY_WAKEKILL is already set, this means that signal_wake_up()
+will remove TASK_WAKEKILL from the "state" passed to signal_wake_up_state()
+and this is fine and correct, this mean thats ttwu() won't change ->__state.
 
-Yours,
-Linus Walleij
+But this also mean that wake_up_state() will return false, and in this case
+
+	signal_wake_up_state:
+
+		if (wake_up_state(t, state | TASK_INTERRUPTIBLE))
+			t->jobctl &= ~(JOBCTL_STOPPED | JOBCTL_TRACED | JOBCTL_TRACED_QUIESCE);
+
+won't clear these flags. And this is nice too.
+
+But. fatal_signal_pending() is true! And once we change freeze_traced()
+to not abuse p->__state, schedule() won't block because it will check
+signal_pending_state(TASK_TRACED == TASK_WAKEKILL | __TASK_TRACED) and
+__fatal_signal_pending() == T.
+
+In this case ptrace_stop() will leak JOBCTL_TRACED, so we simply need
+to clear it before return along with LISTENING | DELAY_WAKEKILL.
+
+> I'll go
+> over it all again in the morning, perhaps I'll reach a different
+> conclusion :-)
+
+Same here ;)
+
+Oleg.
+
