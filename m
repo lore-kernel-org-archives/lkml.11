@@ -2,109 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29ABBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60B11C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:44:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350233AbiD1QqJ (ORCPT
+        id S1350251AbiD1Qri (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 12:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59802 "EHLO
+        Thu, 28 Apr 2022 12:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349973AbiD1QqI (ORCPT
+        with ESMTP id S1350260AbiD1Qrg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 12:46:08 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42013B1AB0
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:42:53 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id f38so10077143ybi.3
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:42:53 -0700 (PDT)
+        Thu, 28 Apr 2022 12:47:36 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52589B2467;
+        Thu, 28 Apr 2022 09:44:21 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id 129so3301049wmz.0;
+        Thu, 28 Apr 2022 09:44:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=r56JqmyEKwLfjjTuw56FZ5cxoCmhZkz1FIGkAdMEzhg=;
-        b=gmEWLK/G4g326vlQfUkD0s/whD9rJnz2/equnQIJF2nnqQbb7pM3Ed+1fibophD2N7
-         CIa1/jAvm7oxqS3hLTUpPUD84dJivbYpULK+unSOmhJB0bFDTKwLDO0h8/WXg9AnVau6
-         /eZZhSk1wL0rTdkQQdONX8rlY2390cpw5zfJe1m+vvD4CErK/cim9uNN2ixWR5kCXw98
-         sKyiLO6SNAeFdazNmNIccaHuwNOpcCDd1uDbTbIyuRtBb6eesZm85F1l8qARnu7FPXZ6
-         kyIRcsOWWwVkvKcKgb8XkWMuGKki4vACrXFntBmRLJ4xOvBarkPtDxwDSGM+RbyM+45n
-         YxaQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WN0HGdKpWoSZ0LiSed55nop2VOLSomnBY77ipXlmIVo=;
+        b=V9CGZZDheuRNpjCUW+jbajRmXNYBF/ds4+4HUjCxNLHTKSBzKfrj7/BghHgsAnhymE
+         4LKopQUSwp/ERCUkww8wnsO45a+VcViAE1nOvFDrGjiFg7VoALTSBP2Gp+XLYBESp5bO
+         8NkbJ8Mi3g7OZ8H+Rs5E5vJtfub3foxvnKHZm/9931jtKdBQIk2eQ7x/taGu/FitZGr6
+         gKalr4MfcVnO7CbDhooYPyBru5sv4PJdeItPjAQHKEaGuzc8AW0VIAVU34cTsoCJVO9B
+         5aZZiC6Zwow9cnFrx3+CfXZXLXdResBjlERUr7S0Gq1YXsleW+ITO9mdsqjBCA8eRUEm
+         kyVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=r56JqmyEKwLfjjTuw56FZ5cxoCmhZkz1FIGkAdMEzhg=;
-        b=oEBq0qKBMS/qWWcJGtYXjXMJmKu7CeWf4bWZSsNTEbQ46YQw6wNDfRec4/3oBH2dGn
-         jUtIOibvhxBlmASbhgjqwa0rkgmYtUH7CsCItyFfisGXvjM+WuRee17GrdqN9rnC/bmg
-         8Q+Z5/C3czxj4NHCH5EhrjT+kE/Y7s3Zi/WbmTZHqcgRsfxJSY9uHjHi7y1mQNEKLaSj
-         vhZdVUIY5xFWD7CDdPRlX4nLUECQCpAI1TMLCvsNofsdt1CAzMVV15bxPS07InVLw0LF
-         X5TaAtLPkY7LpQfkcLMzfV471v1wgCxVHRXJbWCwNM6jmGNQ6Fmz1JD3kgXA1HVU75K9
-         5K9w==
-X-Gm-Message-State: AOAM533TpbiwS6nr3H0hRGO7kHDF5g5EKoO7Q3URVa5BwLP4EIJafmtK
-        vSbD1rIZRQEoYIjl02OkGA5G0CC+HqCKOVv2Wtu6bw==
-X-Google-Smtp-Source: ABdhPJwULhotWKO+NXz+dcEVz2aj7n4dvaBRBZ72IUvS4DL/hWhIkaotQI0g/VvhyXUYmLNxVAYiXldqMl9RMubQXGY=
-X-Received: by 2002:a25:9bc5:0:b0:644:c1bc:1f12 with SMTP id
- w5-20020a259bc5000000b00644c1bc1f12mr30361921ybo.138.1651164172335; Thu, 28
- Apr 2022 09:42:52 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WN0HGdKpWoSZ0LiSed55nop2VOLSomnBY77ipXlmIVo=;
+        b=12aLZ9aZeoejMTmyCxB2OBkBl8bQdBYzGyLGGK8eHxmh8vc2nQduYdta47AqkFErkU
+         duyp8uF+UcKsnC8rAhGA2zzzRyKSYhL2YHFhMSawJVE5h1bWFYC3789gOvdv2DuE+8RM
+         LS2BuyybiF2zFMr+3uEWC99GOo5jjfdx3xmPifSgZ1XiPOATgyXWeQVDfSarExsUDxwF
+         XHFq3PsACVL6af7PQF9d67yAgyCElXrLIi+ziQDYUjZfgIRqoPZG3vJUGXc3gboCRaan
+         4kWKdrdVZEmQtGRsey9k9GpOYDTFV51u3aQKU7MMF0KEjxknZm/UiKkcrmVO+HnY1ykW
+         LncQ==
+X-Gm-Message-State: AOAM531tS/JYFc55t+5te9/NPPAlipo0TZwUYbM0kKjNq2OGiTrHZTNl
+        DQh0WJBuiBmL24dFAr42sE8=
+X-Google-Smtp-Source: ABdhPJxobhyOyDJaoF16yg7Aob/pFOO3tu1f7qRSIxDY0GG+TE/ClXR9kY5ixY0FZ3F1zhZWvABC8Q==
+X-Received: by 2002:a05:600c:1e1d:b0:394:1b19:e347 with SMTP id ay29-20020a05600c1e1d00b003941b19e347mr712517wmb.202.1651164259847;
+        Thu, 28 Apr 2022 09:44:19 -0700 (PDT)
+Received: from localhost (92.40.203.206.threembb.co.uk. [92.40.203.206])
+        by smtp.gmail.com with ESMTPSA id f189-20020a1c38c6000000b0038ff83b9792sm4453035wma.43.2022.04.28.09.44.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 09:44:19 -0700 (PDT)
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     sboyd@kernel.org, mturquette@baylibre.com,
+        tsbogend@alpha.franken.de
+Cc:     paulburton@kernel.org, paul@crapouillou.net,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org
+Subject: [PATCH v2 0/3] Clock fixes for Ingenic SoCs
+Date:   Thu, 28 Apr 2022 17:44:51 +0100
+Message-Id: <20220428164454.17908-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-References: <3167cbec7a82704c1ed2c6bfe85b77534a836fdc.1651162840.git.andreyknvl@google.com>
-In-Reply-To: <3167cbec7a82704c1ed2c6bfe85b77534a836fdc.1651162840.git.andreyknvl@google.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Thu, 28 Apr 2022 18:42:16 +0200
-Message-ID: <CAG_fn=XFOA-qsvPwjwJ0iZH1Wy54aS7QtD4ETVdp9L-yvOkiWg@mail.gmail.com>
-Subject: Re: [PATCH 1/3] kasan: clean up comments in internal kasan.h
-To:     andrey.konovalov@linux.dev
-Cc:     Marco Elver <elver@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrey Konovalov <andreyknvl@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 6:21 PM <andrey.konovalov@linux.dev> wrote:
->
-> From: Andrey Konovalov <andreyknvl@google.com>
->
-> Clean up comments in mm/kasan/kasan.h: clarify, unify styles, fix
-> punctuation, etc.
->
-> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+I ran across a problem trying to get Linux running on an Ingenic X1000 SoC:
+since the memory clock isn't referenced by any driver, it appears unused and
+gets disabled automatically. After that, the system hangs on any RAM access.
 
-Reviewed-by: Alexander Potapenko <glider@google.com>
+There is a hack in board-ingenic.c to forcibly enable the CPU clock, but this
+is insufficient for the X1000 since the memory clock has its own gate and mux
+that isn't tied to the CPU.
 
->
-> +/* alloca redzone size. Compiler's ABI, do not change. */
-s/Compiler's/Compiler ?
+This patch series fixes the bug by adding CLK_IS_CRITICAL flags to important
+clocks, which seems to be the approach used in many other SoC clock drivers.
 
->  #define KASAN_ALLOCA_REDZONE_SIZE      32
->
-> -/*
-> - * Stack frame marker (compiler ABI).
-> - */
-> +/* Stack frame marker. Compiler's ABI, do not change. */
-Ditto
+v2: Add comments to patch 02 to explain why we need CLK_IS_CRITICAL.
 
->
-> -/* The layout of struct dictated by compiler */
-> +/* Do not change the struct layout: compiler's ABI. */
-Ditto
+Aidan MacDonald (3):
+  clk: ingenic: Allow specifying common clock flags
+  clk: ingenic: Mark critical clocks in Ingenic SoCs
+  mips: ingenic: Do not manually reference the CPU clock
 
-> -/* The layout of struct dictated by compiler */
-> +/* Do not change the struct layout: compiler's ABI. */
-Ditto
+ arch/mips/generic/board-ingenic.c | 26 --------------------------
+ drivers/clk/ingenic/cgu.c         |  2 +-
+ drivers/clk/ingenic/cgu.h         |  3 +++
+ drivers/clk/ingenic/jz4725b-cgu.c | 10 ++++++++++
+ drivers/clk/ingenic/jz4740-cgu.c  | 10 ++++++++++
+ drivers/clk/ingenic/jz4760-cgu.c  | 10 ++++++++++
+ drivers/clk/ingenic/jz4770-cgu.c  |  5 +++++
+ drivers/clk/ingenic/jz4780-cgu.c  | 15 +++++++++++++++
+ drivers/clk/ingenic/x1000-cgu.c   | 15 +++++++++++++++
+ drivers/clk/ingenic/x1830-cgu.c   | 11 +++++++++++
+ 10 files changed, 80 insertions(+), 27 deletions(-)
 
-> -       unsigned long has_dynamic_init; /* This needed for C++ */
-> +       unsigned long has_dynamic_init; /* This needed for C++. */
-"is needed"?
+-- 
+2.35.1
 
-
-> -        * is accepted since SLAB redzones aren't enabled in production builds.
-> +        * is accepted since slab redzones aren't enabled in production builds.
-s/accepted/acceptable ?
