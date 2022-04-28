@@ -2,181 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE68C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 04:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE2A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 04:50:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242790AbiD1EwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 00:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41484 "EHLO
+        id S242807AbiD1Exr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 00:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241731AbiD1EwC (ORCPT
+        with ESMTP id S239349AbiD1Exo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 00:52:02 -0400
-X-Greylist: delayed 587 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Apr 2022 21:48:48 PDT
-Received: from ozlabs.ru (ozlabs.ru [107.174.27.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 666127DE21
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 21:48:48 -0700 (PDT)
-Received: from fstn1-p1.ozlabs.ibm.com. (localhost [IPv6:::1])
-        by ozlabs.ru (Postfix) with ESMTP id C92C980536;
-        Thu, 28 Apr 2022 00:38:56 -0400 (EDT)
-From:   Alexey Kardashevskiy <aik@ozlabs.ru>
-To:     linux-kernel@vger.kernel.org
-Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>, Tom Rix <trix@redhat.com>,
-        Nick Terrell <terrelln@fb.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH kernel] RFC: zstd: Fixing mixed module-builtin objects
-Date:   Thu, 28 Apr 2022 14:38:50 +1000
-Message-Id: <20220428043850.1706973-1-aik@ozlabs.ru>
-X-Mailer: git-send-email 2.30.2
+        Thu, 28 Apr 2022 00:53:44 -0400
+Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E8C6E563;
+        Wed, 27 Apr 2022 21:50:26 -0700 (PDT)
+Received: from mail-pf1-f172.google.com (mail-pf1-f172.google.com [209.85.210.172]) (authenticated)
+        by conssluserg-05.nifty.com with ESMTP id 23S4oAjS015140;
+        Thu, 28 Apr 2022 13:50:11 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 23S4oAjS015140
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1651121411;
+        bh=HvHeejvcDRHKzw1tJx0jd+vWYPp1piZipJIqVv1NRaA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ACxt701z+cudaCdxpluTeRg398QsxIGBkLVgflo2kLOzvzn3naWRk0+KKpY1lCh1w
+         fIKw1nDzyFdnZkqSCloCrDzBIxUwhTcxRgki18t1RmXd2x+uSMz52JMYGxXAsf+kTx
+         Pe6nYhLEoRNUy7NXpaqR4IPHIuPJYrdAmmyPttX2/mYy9x0EdkNsG8qTp7pH5mimHj
+         iPbkXfmUidGn53bRD2Gxu5i9NuXUTuiju8X57O3vWy4jtn3TZffCFSCZhgll/3DI9Q
+         zb5rdmfV6h5b5gMPXQPQSWogvyBqWODXOFYfpNEovyzeWNu3iGTJuZDUS/+UN93dZN
+         4Hu0PGdWNvm/w==
+X-Nifty-SrcIP: [209.85.210.172]
+Received: by mail-pf1-f172.google.com with SMTP id y38so3283688pfa.6;
+        Wed, 27 Apr 2022 21:50:11 -0700 (PDT)
+X-Gm-Message-State: AOAM531Cm6IXB4KQurkwBFtP/FCBumVYS2WYMV31aZbxvY2M2urO16iL
+        RT9U3gsuYBAR+iTvWSdxV2IP9grrAFVaOEznMzY=
+X-Google-Smtp-Source: ABdhPJzc/3BIbWAickOh8ccpNu7skgYWcfn8JOQH/fR2Fq1J6lCqBPitBC1AXjz+Y5xjMnlBa7cQukvdfYT9B+GSFvQ=
+X-Received: by 2002:a65:60c1:0:b0:39d:9c28:909a with SMTP id
+ r1-20020a6560c1000000b0039d9c28909amr26630354pgv.352.1651121410336; Wed, 27
+ Apr 2022 21:50:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220424190811.1678416-1-masahiroy@kernel.org>
+ <20220424190811.1678416-23-masahiroy@kernel.org> <YmmkDoPsE5pfSxbG@bergen.fjasle.eu>
+In-Reply-To: <YmmkDoPsE5pfSxbG@bergen.fjasle.eu>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Thu, 28 Apr 2022 13:49:06 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQt6ZppmUzgQtFx86=iCYpDMp1HFbk6TpNDUg6+y2TyEw@mail.gmail.com>
+Message-ID: <CAK7LNAQt6ZppmUzgQtFx86=iCYpDMp1HFbk6TpNDUg6+y2TyEw@mail.gmail.com>
+Subject: Re: [PATCH 22/27] kbuild: generate a list of objects in vmlinux
+To:     Nicolas Schier <nicolas@fjasle.eu>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With CONFIG_ZSTD_COMPRESS=m and CONFIG_ZSTD_DECOMPRESS=y we end up in
-a situation when files from lib/zstd/common/ are compiled once for
-ZSTD_DECOMPRESS (build-in) and ZSTD_COMPRESS (module) even though
-CFLAGS are different for builtins and modules. So far somehow
-this was not a problem until enabling LLVM LTO where it fails:
+On Thu, Apr 28, 2022 at 11:56 AM Nicolas Schier <nicolas@fjasle.eu> wrote:
+>
+> On Mon 25 Apr 2022 04:08:06 GMT Masahiro Yamada wrote:
+> > A *.mod file lists the member objects of a module, but vmlinux does
+> > not have such a file to list out all the member objects.
+> >
+> > Generate this list to allow modpost to know all the member objects.
+> >
+> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> > ---
+> >
+> >  scripts/link-vmlinux.sh | 15 ++++++++++++++-
+> >  1 file changed, 14 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> > index 20f44504a644..d2c193f82004 100755
+> > --- a/scripts/link-vmlinux.sh
+> > +++ b/scripts/link-vmlinux.sh
+> > @@ -310,7 +310,7 @@ cleanup()
+> >       rm -f vmlinux
+> >       rm -f vmlinux.map
+> >       rm -f vmlinux.o
+> > -     rm -f .vmlinux.d
+> > +     rm -f .vmlinux*
+>
+> Wouldn't it be safer to keep the removal of .vmlinux.d for some time
+> and just add .vmlinux.objs?  Somehow I do not like the wildcard here.
 
-ld.lld: error: linking module flags 'Code Model': IDs have conflicting values in 'lib/built-in.a(zstd_common.o at 5868)' and 'ld-temp.o'
-
-This particular conflict is caused by KBUILD_CFLAGS=-mcmodel=medium vs.
-KBUILD_CFLAGS_MODULE=-mcmodel=large , modules use the large model on
-POWERPC as explained at
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/powerpc/Makefile?h=v5.18-rc4#n127
-but the current use of common files is wrong anyway.
-
-This works around the issue by inlining common files and fixing few
-conflicts.
-
-Cc: Masahiro Yamada <masahiroy@kernel.org>
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
----
-
-I tried fixing it by hacking Makefile to produce a separate .o for "y" and
-"m", like this:
-
-+obj-common-y =  common/debug-y.o \
-+               common/entropy_common-y.o \
-+               common/error_private-y.o \
-+               common/fse_decompress-y.o \
-+               common/zstd_common-y.o
-+obj-common-m =  common/debug-m.o \
-+               common/entropy_common-m.o \
-+               common/error_private-m.o \
-+               common/fse_decompress-m.o \
-+               common/zstd_common-m.o
-+obj-common-m := $(addprefix $(obj)/, $(obj-common-m))
-+obj-common-y := $(addprefix $(obj)/, $(obj-common-y))
-+
-+$(obj-common-m): $(obj)/%-m.o: %.c FORCE
-+        $(call if_changed_dep,cc_o_c)
-+$(obj-common-y): $(obj)/%-y.o: %.c FORCE
-+        $(call if_changed_dep,cc_o_c)
-+
-
-and so on but could not make it work and I suspect there is
-a better solution to the problem anyway, what is it?
+OK, will change in v2.
 
 
----
- lib/zstd/Makefile                 | 10 ----------
- lib/zstd/common/error_private.h   |  2 +-
- lib/zstd/common/entropy_common.c  |  4 ++--
- lib/zstd/zstd_compress_module.c   |  6 ++++++
- lib/zstd/zstd_decompress_module.c |  6 ++++++
- 5 files changed, 15 insertions(+), 13 deletions(-)
+> >  }
+> >
+> >  # Use "make V=3D1" to debug this script
+> > @@ -342,6 +342,19 @@ ${MAKE} -f "${srctree}/scripts/Makefile.build" obj=
+=3Dinit need-builtin=3D1
+> >  modpost_link vmlinux.o
+> >  objtool_link vmlinux.o
+> >
+> > +# Generate the list of objects in vmlinux
+> > +rm -f .vmlinux.objs
+> > +for f in ${KBUILD_VMLINUX_OBJS} ${KBUILD_VMLINUX_LIBS}; do
+> > +     case ${f} in
+> > +     *.a)
+> > +             ${AR} t ${f} >> .vmlinux.objs
+> > +             ;;
+> > +     *)
+> > +             echo ${f} >> .vmlinux.objs
+> > +             ;;
+> > +     esac
+> > +done
+>
+> just some bike shedding comment:  I would have left out the 'rm -f
+> .vmlinux.objs' and moved the redirection to the end of the for loop:
+>
+> for f in ...
+>     ...
+>     ${AR}
+>     echo
+> done > .vmlinux.objs
 
-diff --git a/lib/zstd/Makefile b/lib/zstd/Makefile
-index fc45339fc3a3..ee42f07711ea 100644
---- a/lib/zstd/Makefile
-+++ b/lib/zstd/Makefile
-@@ -13,11 +13,6 @@ obj-$(CONFIG_ZSTD_DECOMPRESS) += zstd_decompress.o
- 
- zstd_compress-y := \
- 		zstd_compress_module.o \
--		common/debug.o \
--		common/entropy_common.o \
--		common/error_private.o \
--		common/fse_decompress.o \
--		common/zstd_common.o \
- 		compress/fse_compress.o \
- 		compress/hist.o \
- 		compress/huf_compress.o \
-@@ -33,11 +28,6 @@ zstd_compress-y := \
- 
- zstd_decompress-y := \
- 		zstd_decompress_module.o \
--		common/debug.o \
--		common/entropy_common.o \
--		common/error_private.o \
--		common/fse_decompress.o \
--		common/zstd_common.o \
- 		decompress/huf_decompress.o \
- 		decompress/zstd_ddict.o \
- 		decompress/zstd_decompress.o \
-diff --git a/lib/zstd/common/error_private.h b/lib/zstd/common/error_private.h
-index d14e686adf95..e1570545c6af 100644
---- a/lib/zstd/common/error_private.h
-+++ b/lib/zstd/common/error_private.h
-@@ -42,7 +42,7 @@ typedef ZSTD_ErrorCode ERR_enum;
- #define ERROR(name) ZSTD_ERROR(name)
- #define ZSTD_ERROR(name) ((size_t)-PREFIX(name))
- 
--ERR_STATIC unsigned ERR_isError(size_t code) { return (code > ERROR(maxCode)); }
-+ERR_STATIC inline unsigned ERR_isError(size_t code) { return (code > ERROR(maxCode)); }
- 
- ERR_STATIC ERR_enum ERR_getErrorCode(size_t code) { if (!ERR_isError(code)) return (ERR_enum)0; return (ERR_enum) (0-code); }
- 
-diff --git a/lib/zstd/common/entropy_common.c b/lib/zstd/common/entropy_common.c
-index 53b47a2b52ff..863afecb7743 100644
---- a/lib/zstd/common/entropy_common.c
-+++ b/lib/zstd/common/entropy_common.c
-@@ -28,10 +28,10 @@ unsigned FSE_versionNumber(void) { return FSE_VERSION_NUMBER; }
- 
- 
- /*===   Error Management   ===*/
--unsigned FSE_isError(size_t code) { return ERR_isError(code); }
-+#define FSE_isError  ERR_isError
- const char* FSE_getErrorName(size_t code) { return ERR_getErrorName(code); }
- 
--unsigned HUF_isError(size_t code) { return ERR_isError(code); }
-+#define HUF_isError  ERR_isError
- const char* HUF_getErrorName(size_t code) { return ERR_getErrorName(code); }
- 
- 
-diff --git a/lib/zstd/zstd_compress_module.c b/lib/zstd/zstd_compress_module.c
-index 65548a4bb934..a4ad46fc1f12 100644
---- a/lib/zstd/zstd_compress_module.c
-+++ b/lib/zstd/zstd_compress_module.c
-@@ -158,3 +158,9 @@ EXPORT_SYMBOL(zstd_end_stream);
- 
- MODULE_LICENSE("Dual BSD/GPL");
- MODULE_DESCRIPTION("Zstd Compressor");
-+
-+#include "common/debug.c"
-+#include "common/entropy_common.c"
-+#include "common/error_private.c"
-+#include "common/fse_decompress.c"
-+#include "common/zstd_common.c"
-diff --git a/lib/zstd/zstd_decompress_module.c b/lib/zstd/zstd_decompress_module.c
-index f4ed952ed485..21820588835d 100644
---- a/lib/zstd/zstd_decompress_module.c
-+++ b/lib/zstd/zstd_decompress_module.c
-@@ -103,3 +103,9 @@ EXPORT_SYMBOL(zstd_get_frame_header);
- 
- MODULE_LICENSE("Dual BSD/GPL");
- MODULE_DESCRIPTION("Zstd Decompressor");
-+
-+#include "common/debug.c"
-+#include "common/entropy_common.c"
-+#include "common/error_private.c"
-+#include "common/fse_decompress.c"
-+#include "common/zstd_common.c"
--- 
-2.30.2
+OK, that would shorten the code a little.
+Will do in v2.
 
+
+
+>
+> but it probably not worth.
+>
+> Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
+>
+> > +
+> >  # modpost vmlinux.o to check for section mismatches
+> >  ${MAKE} -f "${srctree}/scripts/Makefile.modpost" MODPOST_VMLINUX=3D1
+> >
+> > --
+> > 2.32.0
+>
+> --
+> epost|xmpp: nicolas@fjasle.eu          irc://oftc.net/nsc
+> =E2=86=B3 gpg: 18ed 52db e34f 860e e9fb  c82b 7d97 0932 55a0 ce7f
+>      -- frykten for herren er opphav til kunnskap --
+
+
+
+--=20
+Best Regards
+Masahiro Yamada
