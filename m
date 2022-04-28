@@ -2,96 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D2BC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:04:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA25C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:04:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244762AbiD1HIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57682 "EHLO
+        id S244784AbiD1HII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 03:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244769AbiD1HIB (ORCPT
+        with ESMTP id S244758AbiD1HIG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:08:01 -0400
-Received: from m12-13.163.com (m12-13.163.com [220.181.12.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 91ED298F44;
-        Thu, 28 Apr 2022 00:04:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=v7ddE
-        ZSDRf6xzmmtMm6vxzsMFaKIpnIxHYegWszCApk=; b=Br6R/9swlPSl10JEdBB33
-        yMX3nJpam/10siAqVrgByKkuWzQQBrxpTeCvEFdJvL/OxWDi+g0JC6Ed1VT3Q2R2
-        USLimbFlLkjyASuccmhYDC2JEwc1LOIIFJyoh0wGC+Wq6+o9g0mQKyahTt3sdXQr
-        SwZdl6BrYm7yVrV2wCrq5k=
-Received: from carlis (unknown [218.17.89.92])
-        by smtp9 (Coremail) with SMTP id DcCowADHjHsXPGpiuFB+Dw--.17805S2;
-        Thu, 28 Apr 2022 15:02:47 +0800 (CST)
-From:   Xuezhi Zhang <zhangxuezhi1@coolpad.com>
-To:     jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xuezhi Zhang <zhangxuezhi1@coolpad.com>
-Subject: [PATCH] scsi: pmcraid: convert sysfs snprintf to sysfs_emit
-Date:   Thu, 28 Apr 2022 07:02:45 +0000
-Message-Id: <20220428070245.255827-1-zhangxuezhi1@coolpad.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 28 Apr 2022 03:08:06 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C38E198F50;
+        Thu, 28 Apr 2022 00:04:52 -0700 (PDT)
+Received: from mail-yb1-f182.google.com ([209.85.219.182]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1N0WPK-1o7FkU34K4-00wX9v; Thu, 28 Apr 2022 09:04:50 +0200
+Received: by mail-yb1-f182.google.com with SMTP id y2so7372840ybi.7;
+        Thu, 28 Apr 2022 00:04:50 -0700 (PDT)
+X-Gm-Message-State: AOAM530vjkLCXyIvoodzRGwear/VE6c7tM7g9B3NAhLZfPZ6JoKPA+xk
+        qCgzEPALvV2UsJvvCM+sj0IbSkxy+RaLQCTdyhQ=
+X-Google-Smtp-Source: ABdhPJxPFdoAK53KrDUJDvXZZBNItrxVRstFggJZqPSzN1hTf5QMiOJMiJirNLjAI0bMczN8kVmmcLMEGUTHnXYsKxk=
+X-Received: by 2002:a25:31c2:0:b0:641:660f:230f with SMTP id
+ x185-20020a2531c2000000b00641660f230fmr29428750ybx.472.1651129489342; Thu, 28
+ Apr 2022 00:04:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DcCowADHjHsXPGpiuFB+Dw--.17805S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7CF48CF18tr47Zr45uFy8Zrb_yoW8WF4xpa
-        yrGryUAa1DJr15AryUXay0v3WFvayxJa4DtFWkZ3savF9ayrWkJ39rAFWagFs5Gr4kur9x
-        Zw4qyw1Y9a1jyrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jlbyZUUUUU=
-X-Originating-IP: [218.17.89.92]
-Sender: llyz108@163.com
-X-CM-SenderInfo: xoo16iiqy6il2tof0z/1tbiDxnwhVUMdGFAjgAAsh
+References: <20220331092235.3000787-1-hasegawa-hitomi@fujitsu.com>
+ <20220331092235.3000787-2-hasegawa-hitomi@fujitsu.com> <YkWVTEG5oFO82GPL@kroah.com>
+ <CAK8P3a0jnzse4sG58taO5+Yd5vCgh1uddqbtAuim_z9r15Q3BA@mail.gmail.com>
+ <20220408133246.fyw5554lgli4olvg@maple.lan> <CAK8P3a0u2xa9BFmakG+f4kyLsqNZQbE6KQ6jz2356Fyen=1EHw@mail.gmail.com>
+ <YlBE6hZHmLo9/wrU@kroah.com> <CAK8P3a3v4+AO5avGoxeZSyNTOWqk8YS95xQLWSBZ=yV_3DKggg@mail.gmail.com>
+ <20220408150202.yhn3qppqwm7wzmo3@maple.lan> <OSZPR01MB7050BE18BC9E8DA05C00F478EBF29@OSZPR01MB7050.jpnprd01.prod.outlook.com>
+ <OSZPR01MB70504BD8347355EB51F7CCB8EBFD9@OSZPR01MB7050.jpnprd01.prod.outlook.com>
+In-Reply-To: <OSZPR01MB70504BD8347355EB51F7CCB8EBFD9@OSZPR01MB7050.jpnprd01.prod.outlook.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 28 Apr 2022 09:04:34 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2aHBxRJbOcXBGM7gjAqpErBAeaG3NmfgBTn4TNYscSgw@mail.gmail.com>
+Message-ID: <CAK8P3a2aHBxRJbOcXBGM7gjAqpErBAeaG3NmfgBTn4TNYscSgw@mail.gmail.com>
+Subject: Re: [PATCH v3 1/1] soc: fujitsu: Add A64FX diagnostic interrupt driver
+To:     "hasegawa-hitomi@fujitsu.com" <hasegawa-hitomi@fujitsu.com>
+Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        SoC Team <soc@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Olof Johansson <olof@lixom.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Doug Anderson <dianders@chromium.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "kgdb-bugreport@lists.sourceforge.net" 
+        <kgdb-bugreport@lists.sourceforge.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Mike Travis <mike.travis@hpe.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:eIi0QbvKv2J0kpPkGcSMwAc+VFulHu30u8L3LD5xEyxQRXD4+MR
+ yMm0vea/KEYXxg8xMkBqgukd81d0BPir5c6lTNko7Wcv07wAopU0JZKjTwula3N1XlGIrNa
+ U1rrhzfPBh1C16f51QH+cYVVBKYOlhqDhZYt9xWbbvG2Y6F3hWu6fnChuXvtPLFYLDHhHwv
+ gIrZkdC/zxsi6ePsBQMug==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:+xxvt5P/Pug=:ZGNlrUHFBRGNMS8HB1c/gy
+ taDKegWhqm0r641SGlzyJnXOlW30bB/OwjM2W2dkUSfdGK2r1nKdNcR7aOV0DSjNmlQqf0lu9
+ BMLWpia4NUlHYOJ6ttmjkNgDylDgww9ISZZ9nVu4SIHDI6NCajAehT+/DisUz16Uba8bhVdjL
+ GnK2ZBXiI66zfHnBJBxEbpeb9g1MCuVOElAD+FtiZnvISvryRDJtEn+dpT01zgqQA4thPLdHy
+ b8NdSQzQCRGV8SfTFIEU76Buw/PPvdACEYRbXYa2IDOSm9nRiCFUZYKvoUEWE63iunNiXalUe
+ M3bDyKf5hZxs0i/oNCtHeQMdKVIZuOTViiVqhGIKcUgxm4Aspl4rv312IplmmCpJyumX1yjTP
+ TPxA52LoMoPazBlyL3/6K2Jkfm/fcNQaMdHUI3OuFWRTCUzKe5BUMEkdubr9xiqAahblyJd0F
+ datbraVHPGh7g3zyci9Prw9ZoBKnv2p2jP54TatuCd4iFs4Jb3G3VZJhla5A1tIu6Ku5AEh4q
+ 18Q6x0v2gOKqMZQliAlJf2XUQ3wtvwYUnjVzYxO85Nl249KaP+YVJr6HANtEiNCmwsFQTYcT5
+ srtcPKBavApU8swqK8pZJNKtc8zKTiab8NiQAlX76rylUY9lg9JfWLIa+SfsmGFYEQ9TbuICx
+ DfSQLU93sB/Rnm6eswu5588BTxunVdFRMp3uFSMsUVNYxRzUoSzQb7R3fW3Rg/jdBuHgnm97e
+ axjkTI/nlo03qpDmbUha3qo9f9y2944+qO9Vwti45XF6qKuaOxe1W6ODfHTN1mpRAxRESAvsx
+ f/O9YIscOif2N7B7bADg6p7XB7pDoaAMgshs7WuE/LqeJ2riAM=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following coccicheck warnings:
-drivers/scsi/pmcraid.c:3591:8-16:
-WARNING: use scnprintf or sprintf
-drivers/scsi/pmcraid.c:3557:8-16:
-WARNING: use scnprintf or sprintf
-drivers/scsi/pmcraid.c:3496:8-16:
-WARNING: use scnprintf or sprintf
+On Thu, Apr 28, 2022 at 4:15 AM hasegawa-hitomi@fujitsu.com
+<hasegawa-hitomi@fujitsu.com> wrote:
+>
+> Hi Greg, Arnd, and Daniel,
+>
+> > I understand that it is not appropriate to hardcode c.
+> > How about using __setup() to add a new kernel parameter and allow the admin
+> > to specify the sysrq command when booting?
+>
+> I have received a lot of advice regarding sysrq, but after some consideration,
+> I would like to change to calling panic() directly as in v1 instead of sysrq.
+>
+> If the administrator wants to request a diagnostic, I think they usually
+> expect crash with NMI like x86 and take a dump the kernel. It's not common
+> to handle diagnostic interrupts with sysrq now, so I don't think
+> it's necessary to make this driver extensible at this time.
 
-Signed-off-by: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
----
- drivers/scsi/pmcraid.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+Ok, fair enough. Matching x86 behavior sounds like a reasonable outcome.
+If we want to make this configurable in the future, that can still be done then,
+and it should work the same across architectures but adding the logic
+in nmi_panic() directly.
 
-diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
-index 3d5cd337a2a6..299553ff2277 100644
---- a/drivers/scsi/pmcraid.c
-+++ b/drivers/scsi/pmcraid.c
-@@ -3493,7 +3493,7 @@ static ssize_t pmcraid_show_log_level(
- 	struct Scsi_Host *shost = class_to_shost(dev);
- 	struct pmcraid_instance *pinstance =
- 		(struct pmcraid_instance *)shost->hostdata;
--	return snprintf(buf, PAGE_SIZE, "%d\n", pinstance->current_log_level);
-+	return sysfs_emit(buf, "%d\n", pinstance->current_log_level);
- }
- 
- /**
-@@ -3554,8 +3554,7 @@ static ssize_t pmcraid_show_drv_version(
- 	char *buf
- )
- {
--	return snprintf(buf, PAGE_SIZE, "version: %s\n",
--			PMCRAID_DRIVER_VERSION);
-+	return sysfs_emt(buf, "version: %s\n", PMCRAID_DRIVER_VERSION);
- }
- 
- static struct device_attribute pmcraid_driver_version_attr = {
-@@ -3588,8 +3587,7 @@ static ssize_t pmcraid_show_adapter_id(
- 		pinstance->pdev->devfn;
- 	u32 aen_group = pmcraid_event_family.id;
- 
--	return snprintf(buf, PAGE_SIZE,
--			"adapter id: %d\nminor: %d\naen group: %d\n",
-+	return sysfs_emit(buf, "adapter id: %d\nminor: %d\naen group: %d\n",
- 			adapter_id, MINOR(pinstance->cdev.dev), aen_group);
- }
- 
--- 
-2.25.1
-
+        Arnd
