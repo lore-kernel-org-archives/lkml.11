@@ -2,65 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90C9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:35:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F1E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:39:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241736AbiD1Dij (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 23:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48130 "EHLO
+        id S242419AbiD1DnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 23:43:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242342AbiD1DiW (ORCPT
+        with ESMTP id S231929AbiD1DnA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 23:38:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B24C11167;
-        Wed, 27 Apr 2022 20:35:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 915A9B82AEB;
-        Thu, 28 Apr 2022 03:35:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CE6CC385A9;
-        Thu, 28 Apr 2022 03:35:04 +0000 (UTC)
-From:   Greg Ungerer <gerg@linux-m68k.org>
-To:     linux-m68k@vger.kernel.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org, dalias@libc.org,
-        Greg Ungerer <gerg@linux-m68k.org>
-Subject: [PATCH 4/4] m68knommu: allow elf_fdpic loader to be selected
-Date:   Thu, 28 Apr 2022 13:33:19 +1000
-Message-Id: <20220428033319.239341-5-gerg@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220428033319.239341-1-gerg@linux-m68k.org>
-References: <20220428033319.239341-1-gerg@linux-m68k.org>
+        Wed, 27 Apr 2022 23:43:00 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AFB36FF49;
+        Wed, 27 Apr 2022 20:39:47 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2f7c424c66cso39701947b3.1;
+        Wed, 27 Apr 2022 20:39:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mihABchek1Eixq9pTsDEvJD+Zdo5A9r3WorbFfIZpzE=;
+        b=diTUXy8/eVt0YaxdFzg9kwj1y5VW3ZYyIAG1VcXLNwlNPGJISgVE10tKvWxYEWuhk2
+         vi1EPHKpghMO6o7uuxgxptKqbBG0EGFz1Psijc+IDqg5IkL48Ri8NSPXOvrobrKtokZx
+         hui3skwT7H99rLlyfEunD6715gz3CiVWjxVlhNeJQcGgxyfbMe6q80utgN/ElepuTkHs
+         R5JbVYXeknk+2GILtar3Z+2a+YVwj/6EOVlqquxwO3yXFoe9eoPV1BYHRvUZxJ3FN92A
+         ciAImVCI51fJAeUxQO2VVn1Q/K1HwIwHU3YE1WM/UY3ts2p1zKj6UDLmRl6Nf/cNEvLT
+         j7+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mihABchek1Eixq9pTsDEvJD+Zdo5A9r3WorbFfIZpzE=;
+        b=1oavkV0Mq5aSOPXB7zb1DXmpPOPQx4hZapucrLTcyjiKM/DzGAyZNDAyYplHn3qiyG
+         j6nMqUvwVyCtwnsRj2jlpQXDth29sxcDF5MRQAEOgdm+0aiI0RCouirk/hEX53jlsLKq
+         AH6iKbPEkcyUOipqtDzTq5mcrbrN4sLct9CdUxFmdtqa3KTIptJAaVit4tLxNfFFpVYQ
+         21JGp2MrDsxWrD1ELAs0bCupvEkBF86ZQAqeHh6FWQ05rISYr1swboGktGyhaMkzzsGo
+         M9zkldUGA9LT2U4f5xbQTo1mbpPBsymz1OWvPoVkbrS1IfyAgzOvnlvDTfAooQ5n/YPv
+         eoQg==
+X-Gm-Message-State: AOAM53178izP0QYXVDdmrnv7cyjP9xYvkLHnxR+n9nYRd8kpLPD24xuX
+        oVDky2JbcikvTvMNpq2a+4On7V6/8Mi+JgTLHAs=
+X-Google-Smtp-Source: ABdhPJz7I6GB+kHu8lN1fpQm1FvM9jKqX1BOGg+joAovqHyJBAjwgZQ/qLAOx3Kk1/UBgKVS9VNdthzKFFV217hUiSo=
+X-Received: by 2002:a0d:cb41:0:b0:2f7:d205:9c99 with SMTP id
+ n62-20020a0dcb41000000b002f7d2059c99mr22457299ywd.417.1651117186852; Wed, 27
+ Apr 2022 20:39:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220427014004.1992589-1-seanjc@google.com> <20220427014004.1992589-7-seanjc@google.com>
+In-Reply-To: <20220427014004.1992589-7-seanjc@google.com>
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+Date:   Thu, 28 Apr 2022 11:39:35 +0800
+Message-ID: <CAJhGHyB4RwNekpKNQu_KsGTZCyz2EoZMt0V9+PF=p43EksD_6Q@mail.gmail.com>
+Subject: Re: [PATCH v2 6/8] KVM: Fix multiple races in gfn=>pfn cache refresh
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Woodhouse <dwmw@amazon.co.uk>,
+        Mingwei Zhang <mizhang@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The m68k architecture code is capable of supporting the binfmt_elf_fdpic
-loader, so allow it to be configured. It is restricted to nommu
-configurations at this time due to the MMU context structures/code not
-supporting everything elf_fdpic needs when MMU is enabled.
+On Wed, Apr 27, 2022 at 7:16 PM Sean Christopherson <seanjc@google.com> wrote:
 
-Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
----
- fs/Kconfig.binfmt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> @@ -159,10 +249,23 @@ int kvm_gfn_to_pfn_cache_refresh(struct kvm *kvm, struct gfn_to_pfn_cache *gpc,
+>
 
-diff --git a/fs/Kconfig.binfmt b/fs/Kconfig.binfmt
-index 21c6332fa785..2666398120c4 100644
---- a/fs/Kconfig.binfmt
-+++ b/fs/Kconfig.binfmt
-@@ -58,7 +58,7 @@ config ARCH_USE_GNU_PROPERTY
- config BINFMT_ELF_FDPIC
- 	bool "Kernel support for FDPIC ELF binaries"
- 	default y if !BINFMT_ELF
--	depends on (ARM || (SUPERH && !MMU))
-+	depends on (ARM || ((M68K || SUPERH) && !MMU))
- 	select ELFCORE
- 	help
- 	  ELF FDPIC binaries are based on ELF, but allow the individual load
--- 
-2.25.1
+The following code of refresh_in_progress is somewhat like mutex.
 
++ mutex_lock(&gpc->refresh_in_progress); // before write_lock_irq(&gpc->lock);
+
+Is it fit for the intention?
+
+Thanks
+Lai
+
+>         write_lock_irq(&gpc->lock);
+>
+> +       /*
+> +        * If another task is refreshing the cache, wait for it to complete.
+> +        * There is no guarantee that concurrent refreshes will see the same
+> +        * gpa, memslots generation, etc..., so they must be fully serialized.
+> +        */
+> +       while (gpc->refresh_in_progress) {
+> +               write_unlock_irq(&gpc->lock);
+> +
+> +               cond_resched();
+> +
+> +               write_lock_irq(&gpc->lock);
+> +       }
+> +       gpc->refresh_in_progress = true;
+> +
+>         old_pfn = gpc->pfn;
+>         old_khva = gpc->khva - offset_in_page(gpc->khva);
+>         old_uhva = gpc->uhva;
+> -       old_valid = gpc->valid;
+>
