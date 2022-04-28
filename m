@@ -2,181 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 152FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:16:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C27C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349875AbiD1QUH (ORCPT
+        id S1349661AbiD1QUp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 12:20:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
+        Thu, 28 Apr 2022 12:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233676AbiD1QUF (ORCPT
+        with ESMTP id S236350AbiD1QUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 12:20:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E8FB29CB6
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:16:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E0FEB82EAA
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 16:16:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB4F3C385A0;
-        Thu, 28 Apr 2022 16:16:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651162607;
-        bh=5l1zZFYXR3nbgSWYb9fM49V2g+NgWbrT93chhaME8H4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MufhC7j/PfpGGL27LjgUN/RXItVTwHtDZ8qLbKQ30b4mc4cp/bCap/tEssknLBO0q
-         LZEj3e6jCLSaUb2nLqA4TSDyEq5LHhNcZLEf99YMHMPZVgw11H/zAtnUuMhXT1kgiG
-         wEdOddhuE7t77Y55tbnNWDEi4v21tznaPbPPAe0LY269Yn71Vn+r3S3AciZnDsSiw3
-         aAaLLeOZbHYNLVrKktdSYkt/0OU9q+/GN6ge4JmGaqM/7h2wu58yHhvrqezSZQPAYL
-         ijt132vobtnjIYH0yllMH5Hmruzg3rNyI71P0eY2DBpsSSJK9rPykjw2l475Xay0QH
-         j3CxJBbuwiRMw==
-From:   sj@kernel.org
-To:     Barry Song <21cnbao@gmail.com>
-Cc:     sj@kernel.org, "Andrew Morton" <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Matthew Wilcox" <willy@infradead.org>, shuah@kernel.org,
-        brendanhiggins@google.com, foersleo@amazon.de, sieberf@amazon.com,
-        "Shakeel Butt" <shakeelb@google.com>, sjpark@amazon.de,
-        tuhailong@gmail.com, "Song Jiang" <sjiang88@gmail.com>,
-        =?UTF-8?q?=E5=BC=A0=E8=AF=97=E6=98=8E=28Simon=20Zhang=29?= 
-        <zhangshiming@oppo.com>,
-        =?UTF-8?q?=E6=9D=8E=E5=9F=B9=E9=94=8B=28wink=29?= 
-        <lipeifeng@oppo.com>, linux-damon@amazon.com
-Subject: Re: DAMON VA regions don't split on an large Android APP
-Date:   Thu, 28 Apr 2022 16:16:44 +0000
-Message-Id: <20220428161644.84921-1-sj@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <CAGsJ_4y==XhrG9mNnLV_s1UovpsUsHGjTAvEK-XDJTy_L7AvDA@mail.gmail.com>
-References: 
+        Thu, 28 Apr 2022 12:20:43 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB1C3EBBF
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:17:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651162648; x=1682698648;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=vebxYnf7INN7pEbjK0bBU6XAyt/+YjQwfCwAbd8efsM=;
+  b=heBeRSQfUtVJE85u9YUPygzLO2577DZI9pMC24wLDdNtk/lSMZX4JhA6
+   TlPS+S7DltRtv3JZaTCB7ZUYyoQiqAMffdhe9V/MdzOHhj8+oKDgy+qr0
+   FawabNudcbzRr0eqGWNPM8NFE3AVT9+rrxThHRkfL1AKIsT2dub9MmyUv
+   G7z+5XaO2lmhrms2o9bpzddi/z3Pt75s4O1+og01G0PXLZBz54sPCoZEu
+   6b2gJCiprrh21fD767EDMSwsN0WORde/xaEcZBzIn7E9i49hN83B2kYqv
+   FNTkhFVSUy1jcr5i4fF1PSwWiu0y/HPiPXNhHubCLrV0efkrAn7wAZZj2
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="246896011"
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="246896011"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 09:15:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="541450892"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 28 Apr 2022 09:15:45 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nk6nw-0005WH-Th;
+        Thu, 28 Apr 2022 16:15:44 +0000
+Date:   Fri, 29 Apr 2022 00:15:12 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [asahilinux:pr/22 95/189] lib/vsprintf.c:1804:30: sparse: sparse:
+ cast to restricted __le32
+Message-ID: <202204290013.olXBPppO-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 28 Apr 2022 13:27:59 +1200 Barry Song <21cnbao@gmail.com> wrote:
+tree:   https://github.com/AsahiLinux/linux pr/22
+head:   7ee315306d1a3b0da8cf2a53e7f55889d0e7f034
+commit: 87176f64712bb42092a6c89189f8b788f36eb70b [95/189] lib/vsprintf: Add support for generic FOURCCs by extending %p4cc
+config: powerpc-randconfig-s031-20220427 (https://download.01.org/0day-ci/archive/20220429/202204290013.olXBPppO-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.3.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/AsahiLinux/linux/commit/87176f64712bb42092a6c89189f8b788f36eb70b
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux pr/22
+        git checkout 87176f64712bb42092a6c89189f8b788f36eb70b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=powerpc SHELL=/bin/bash
 
-[...]
-> 
-> Thanks for the clarification.
-> 
-> i hardcoded min_nr_regions to 200 by:
-> diff --git a/_damon.py b/_damon.py
-> index 1306ea1..82342a5 100644
-> --- a/_damon.py
-> +++ b/_damon.py
-> @@ -344,7 +344,7 @@ def set_attrs_argparser(parser):
->      parser.add_argument('-u', '--updr', metavar='<interval>', type=int,
->              default=1000000, help='regions update interval (us)')
->      parser.add_argument('-n', '--minr', metavar='<# regions>', type=int,
-> -            default=10, help='minimal number of regions')
-> +            default=200, help='minimal number of regions')
->      parser.add_argument('-m', '--maxr', metavar='<# regions>', type=int,
->              default=1000, help='maximum number of regions')
-> 
-> 
-> Now wss seems to make more senses:
-> 
-> ~/damo # ./damo monitor --report_type=wss --count=20 2551
-> # <percentile> <wss>
-> # target_id 0
-> # avr: 235.394 MiB
->   0             0 B |
->          |
->  25       2.164 MiB |
->          |
->  50     129.875 MiB |*********
->          |
->  75     430.547 MiB |******************************
->          |
-> 100     844.238 MiB
-> |***********************************************************|
-> 
-> # <percentile> <wss>
-> # target_id 0
-> # avr: 352.501 MiB
->   0       8.781 MiB |
-[...]
->          |
-> 100     664.480 MiB
-> |***********************************************************|
-> 
-> Regions are like:
-> 
-> monitoring_start:             2.250 s
-> monitoring_end:               2.350 s
-> monitoring_duration:       100.425 ms
-> target_id: 0
-> nr_regions: 488
-> 000012c00000-00002c14a000( 405.289 MiB): 0
-> 00002c14a000-000044f05000( 397.730 MiB): 0
-> 000044f05000-00005d106000( 386.004 MiB): 0
-> 00005d106000-0000765f9000( 404.949 MiB): 0
-> 0000765f9000-0000867b8000( 257.746 MiB): 0
-> 0000867b8000-00009fb18000( 403.375 MiB): 0
-[...]
-> 007f74a66000-007f8caaf000( 384.285 MiB): 0
-> 007f8caaf000-007fa423b000( 375.547 MiB): 0
-> 007fa423b000-007fb9fb6000( 349.480 MiB): 0
-> 007fb9fb6000-007fd29ae000( 393.969 MiB): 0
-> 007fd29ae000-007fdbd6e000( 147.750 MiB): 0
-> 
-> Though I am not quite sure if it is accurate enough :-) so fixed-gran would be
-> a nice feature.
-
-Totally agreed.  Thank you for making your voice!  I will use this for
-re-prioritizing my TODO list items.
-
-[...]
-> > >
-> > > And I have a question, what do percentile 0,25,50,75 mean here?
-> > > Why are they so different with percentile 100?
-> > > For example, 0,25,50,75 has only KiB but 100 has GiB.
-> >
-> > For each aggregation interval, we get one snapshot.  So, if we have a
-> > monitoring results that recorded for, say, 100 aggregation interval, we have
-> > 100 snapshots.  'damo' calculates working set size of each snapshot by summing
-> > size of regions assumed to be accessed at least once.  So, in this example, we
-> > get 100 wss values.  Then, 'damo' sorts the values and provides the smallest
-> > one as 0-th percentile, 25th small value as 25-th percentile, and so on.
-> >
-> > 100-th percentile wss is usually noisy, as DAMON regions shouldn't be converged
-> > well at the beginning of the record.  I believe that could be the reason why
-> > the 100-th percentile wss is so unexpectedly big.
-> >
-> > I personally use 50-th percentile as reliable value.
-> 
-> Thanks, it seems you mean if we get 100 snapshots with values exactly as
-> 2, 4, 6, 8, 10..... , 198, 200 (just an example)
-> 
-> for 25%, we will get 50; for 50%, we will get 100; for 75%, we will
-> get 150, for 100%,
-> we will get 200. Right?
-
-You're perfectly understanding my point.
-
-> 
-> I am not quite sure I understand "as DAMON regions shouldn't be converged well
-> at the beginning of the record", in case we are monitoring with
-> --count=2000, I suppose
-> only at the beginning, regions are not splitted very well? When we
-> have run monitor
-> for a while, regions should have been relatively stable? I mean I
-> don't quite understand
-> why 100% is noise and 50% is more reliable.
-
-'damo monitor' simply repeats 'damo record' and 'damo report'.  That is, it
-starts recording, stop recording, reporting, and repeat.  Therefore every 'damo
-moitor' results are fresh ones, not a snapshot of ongoing record.  Therefore
-regions converge from the beginning for every 'damo monitor' output.  Sorry for
-the ugly implementation.  It should be improved in a near future.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
-Thanks,
-SJ
+sparse warnings: (new ones prefixed by >>)
+>> lib/vsprintf.c:1804:30: sparse: sparse: cast to restricted __le32
+>> lib/vsprintf.c:1807:30: sparse: sparse: cast to restricted __be32
 
-[...]
+vim +1804 lib/vsprintf.c
+
+  1778	
+  1779	static noinline_for_stack
+  1780	char *fourcc_string(char *buf, char *end, const u32 *fourcc,
+  1781			    struct printf_spec spec, const char *fmt)
+  1782	{
+  1783		char output[sizeof("0123 little-endian (0x01234567)")];
+  1784		char *p = output;
+  1785		unsigned int i;
+  1786		bool pix_fmt = false;
+  1787		u32 orig, val;
+  1788	
+  1789		if (fmt[1] != 'c')
+  1790			return error_string(buf, end, "(%p4?)", spec);
+  1791	
+  1792		if (check_pointer(&buf, end, fourcc, spec))
+  1793			return buf;
+  1794	
+  1795		orig = get_unaligned(fourcc);
+  1796		switch (fmt[2]) {
+  1797		case 'h':
+  1798			val = orig;
+  1799			break;
+  1800		case 'r':
+  1801			val = orig = swab32(orig);
+  1802			break;
+  1803		case 'l':
+> 1804			val = orig = le32_to_cpu(orig);
+  1805			break;
+  1806		case 'b':
+> 1807			val = orig = be32_to_cpu(orig);
+  1808			break;
+  1809		case 'c':
+  1810			/* Pixel formats are printed LSB-first */
+  1811			val = swab32(orig & ~BIT(31));
+  1812			pix_fmt = true;
+  1813			break;
+  1814		default:
+  1815			return error_string(buf, end, "(%p4?)", spec);
+  1816		}
+  1817	
+  1818		for (i = 0; i < sizeof(u32); i++) {
+  1819			unsigned char c = val >> ((3 - i) * 8);
+  1820	
+  1821			/* Print non-control ASCII characters as-is, dot otherwise */
+  1822			*p++ = isascii(c) && isprint(c) ? c : '.';
+  1823		}
+  1824	
+  1825		if (pix_fmt) {
+  1826			*p++ = ' ';
+  1827			strcpy(p, orig & BIT(31) ? "big-endian" : "little-endian");
+  1828			p += strlen(p);
+  1829		}
+  1830	
+  1831		*p++ = ' ';
+  1832		*p++ = '(';
+  1833		p = special_hex_number(p, output + sizeof(output) - 2, orig, sizeof(u32));
+  1834		*p++ = ')';
+  1835		*p = '\0';
+  1836	
+  1837		return string(buf, end, output, spec);
+  1838	}
+  1839	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
