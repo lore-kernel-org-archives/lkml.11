@@ -2,92 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 085EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:25:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D621C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:26:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348317AbiD1O2b (ORCPT
+        id S1348330AbiD1O3Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 10:28:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43326 "EHLO
+        Thu, 28 Apr 2022 10:29:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348309AbiD1O22 (ORCPT
+        with ESMTP id S1347045AbiD1O3V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 10:28:28 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139211FA7E
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:25:12 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id r83so4126366pgr.2
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:25:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TlawIu8gUQdtMxZhaj9GVkTl4M/PnXrCnZW+L5pZKe0=;
-        b=tKZ1Q2krSUMLYZ6CSInNA0TRI1pjrsEg7+OqZ8ze8ewZGs+I86Z0NhYlnUsFJ9/lEI
-         TNURtOJoogb52Y7Kwpiyz6Jb+YTfNOc0mBQWEFsiBYDrd+P9/qiUvCybpaXHtnKxID8c
-         Id315fHpOrKcHEh8Q1ZcImwdC0G396PPk8cRO1Pbi08i0ITda+o2d7EzUjpf6q59Kabu
-         0qeUkMSPq8p5kX33jjNK1DQvo56WWZ/22LDg/zUOAFlPE9oEYsdWwDy6soUlvHtuWQD5
-         EquFgQgQXuSC3M+C5DdmMvUHPH4IeyhMbRZaZmzBlauiBPL5OKEdhWwIKBpFWYRwOWrr
-         H4HA==
+        Thu, 28 Apr 2022 10:29:21 -0400
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A0883B57C;
+        Thu, 28 Apr 2022 07:26:06 -0700 (PDT)
+Received: by mail-oi1-f178.google.com with SMTP id m11so5471697oib.11;
+        Thu, 28 Apr 2022 07:26:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=TlawIu8gUQdtMxZhaj9GVkTl4M/PnXrCnZW+L5pZKe0=;
-        b=uDAwJW5wxpNz/8/bayuo6Oo7CnOfJcyHdk40wQovUue6OptJnkkkiuGJFYa3O4eo8t
-         I90DnvZGjKbjMWXQfxzD+REnMvnU+ElbCXLdc1VeKTD2mITKY2aP1R/J/oKslw57UOdg
-         G4g9k7RBYyvgPrJcniQRpVa7KaRGEfJHu3mJZ6GkBhtl6ZoLZAYq8zipt0XoU7OYgtxD
-         J61yqS3Em24vHa4R0PPjS7R00gSCcjZ8nUxlAyxDCyxOerEIwLC62wMNmuXGfCo3pO9b
-         Njn8Mg5xZeo2uNLLsEbKpvJvSV6AIAdXP5VG4ZvHza10k7Zwp/BlVd4lFTgeb7yXAeRc
-         JFGA==
-X-Gm-Message-State: AOAM532T5dWGnUVBSI1yfWbGjb3NZOOZuKURdwhC/pUZMpebB3S00HAr
-        kgPNWRLYaYR0AvGuiHQpgAf7ew==
-X-Google-Smtp-Source: ABdhPJyF9oLJ1Bh5rjVR522O+z3xuw2GtfFl9NHA0CBZ6FswvOiHNlk9DB1Jx8TyNlFm/XGsktvEbg==
-X-Received: by 2002:a65:6946:0:b0:39d:a0c3:71f with SMTP id w6-20020a656946000000b0039da0c3071fmr28007435pgq.160.1651155912175;
-        Thu, 28 Apr 2022 07:25:12 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id v21-20020a631515000000b003c14af50603sm3147541pgl.27.2022.04.28.07.25.11
+        bh=zXubuPjx2pjAm7hx5cD02wC66amPUE4R4gLIeK6MStk=;
+        b=Hgi6UFYBOnfLbtFt3RVphkX7kyVyE0dWBeCF9+GFZIrwHTU07TyDVoycqB4ZceuCeC
+         /ITKNTjYNtQyhXdbWynMaYs1aExYGEF1YL37IPS/1XnsjYSSVuluPw6nB2MW2F2i7Oi9
+         l5bQYkYWY2erPfQ34x1MSGLoZ8eFIenJimtyHuUt6juNlAF3KRix/Lz/2a0FFM1tqBHC
+         BmUyMFkq2VJupPtVN07orIB2CErgPBitg3IsW0+ftJRa7s0hCN/Mv5COsV0EPkB8jC8O
+         QMrvdYwgDWwQKPgq10XLhwBxZ6AY3FYUDflhxjaBT7Wbl9bGg1Bkhyvofk/jGMofwFCI
+         JO8Q==
+X-Gm-Message-State: AOAM5332D4ayo57SKa5zR2EpXsFV4lR5oKJ1mRHQi41NBMIaso38Wxtw
+        FkWdKA1kATkpy7lVdLjY+w==
+X-Google-Smtp-Source: ABdhPJyGuPF0HOA0tIXbE2tN+YPk6d3A782bnuVeS4IVfJscr45WQBcONamKAO4aNHjqSxXj6dJ9ww==
+X-Received: by 2002:aca:1811:0:b0:2ef:3c0f:f169 with SMTP id h17-20020aca1811000000b002ef3c0ff169mr15678035oih.61.1651155965318;
+        Thu, 28 Apr 2022 07:26:05 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id x21-20020a4aea15000000b0035e9a8d6e58sm68641ood.26.2022.04.28.07.26.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 07:25:11 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 14:25:08 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH v2 05/11] KVM: SVM: Re-inject INT3/INTO instead of
- retrying the instruction
-Message-ID: <YmqjxNQiMABl+tX7@google.com>
-References: <20220423021411.784383-1-seanjc@google.com>
- <20220423021411.784383-6-seanjc@google.com>
- <051f508121bcf47d8cbc79ee2c0817aafbe5af48.camel@redhat.com>
- <9553b164-67a6-3634-34c5-f7319ce2dc60@maciej.szmigiero.name>
+        Thu, 28 Apr 2022 07:26:04 -0700 (PDT)
+Received: (nullmailer pid 2177702 invoked by uid 1000);
+        Thu, 28 Apr 2022 14:26:03 -0000
+Date:   Thu, 28 Apr 2022 09:26:03 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Detlev Casanova <detlev.casanova@collabora.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-rpi-kernel <linux-rpi-kernel@lists.infradead.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Olof Johansson <olof@lixom.net>, Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        arm-soc <soc@kernel.org>, Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: [RFC PATCH v2 3/3] ARM: dto: Add bcm2711-rpi-7-inches-ts.dts
+ overlay
+Message-ID: <Ymqj+2xBuHCmGUd/@robh.at.kernel.org>
+References: <20220427185243.173594-1-detlev.casanova@collabora.com>
+ <20220427185243.173594-4-detlev.casanova@collabora.com>
+ <YmmyvdjiG7s/Qil4@robh.at.kernel.org>
+ <CAMuHMdXHRQOOrmUO1AyDXye+nnRtpzx7WHiC__whcg0aBtzAmw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9553b164-67a6-3634-34c5-f7319ce2dc60@maciej.szmigiero.name>
+In-Reply-To: <CAMuHMdXHRQOOrmUO1AyDXye+nnRtpzx7WHiC__whcg0aBtzAmw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022, Maciej S. Szmigiero wrote:
-> On 28.04.2022 11:37, Maxim Levitsky wrote:
-> > On Sat, 2022-04-23 at 02:14 +0000, Sean Christopherson wrote:
-> > > @@ -1618,7 +1644,7 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
-> > >   	nested_copy_vmcb_control_to_cache(svm, ctl);
-> > >   	svm_switch_vmcb(svm, &svm->nested.vmcb02);
-> > > -	nested_vmcb02_prepare_control(svm, save->rip);
-> > > +	nested_vmcb02_prepare_control(svm, svm->vmcb->save.rip);
-> > 
-> > Is this change intentional?
+On Thu, Apr 28, 2022 at 08:44:17AM +0200, Geert Uytterhoeven wrote:
+> Hi Rob,
 > 
-> It looks to me the final code is correct since "svm->vmcb->save"
-> contains L2 register save, while "save" has L1 register save.
+> On Wed, Apr 27, 2022 at 11:23 PM Rob Herring <robh@kernel.org> wrote:
+> > On Wed, Apr 27, 2022 at 02:52:43PM -0400, Detlev Casanova wrote:
+> > > Add a device tree overlay to support the official Raspberrypi 7" touchscreen for
+> > > the bcm2711 devices.
+> > >
+> > > The panel is connected on the DSI 1 port and uses the simple-panel
+> > > driver.
+> > >
+> > > The device tree also makes sure to activate the pixelvalve[0-4] CRTC modules
+> > >
+> > > Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
+> > > ---
+> > >  arch/arm/boot/dts/Makefile                    |   4 +
+> > >  arch/arm/boot/dts/overlays/Makefile           |   3 +
+> > >  .../dts/overlays/bcm2711-rpi-7-inches-ts.dts  | 125 ++++++++++++++++++
+> >
+> > .dtso is preferred. I think... It was discussed, but I never got an
+> > updated patch to switch.
 > 
-> It was the patch 1 from this series that was incorrect in
-> using "save->rip" here instead.
+> Unfortunately that switch indeed hasn't happened yet.
+> My main gripe with .dts for overlays is that you cannot know whether
+> it's an overlay or not without reading the file's contents.
+> Hence tools like make also cannot know, and you need to e.g. list
+> all files explicitly in a Makefile.
 
-Yeah, I botched the fixup.
+See my reply in the other thread for that.
+
+> > >  arch/arm64/boot/dts/broadcom/Makefile         |   4 +
+> > >  .../arm64/boot/dts/broadcom/overlays/Makefile |   3 +
+> > >  .../overlays/bcm2711-rpi-7-inches-ts.dts      |   2 +
+> > >  6 files changed, 141 insertions(+)
+> > >  create mode 100644 arch/arm/boot/dts/overlays/Makefile
+> > >  create mode 100644 arch/arm/boot/dts/overlays/bcm2711-rpi-7-inches-ts.dts
+> >
+> > A global (to arm) 'overlays' directory will create the same mess that we
+> > have in arch/arm/boot/dts/. IMO, first you should move all the Broadcom
+> > dts files to a 'broadcom' subdirectory like we have for arm64.
+> 
+> As I believe this display is not only used with real Raspberry Pi
+> devices, it makes sense to not have it a broadcom directory.
+
+Then at a minimum 'bcm2711' in the name is not appropriate.
+
+I'm doubtful that as-is the overlay would apply to boards outside of 
+RPi's. For this to work (well), there needs to be a connector node to 
+translate between connector resources and the base board resources. See 
+the recent mikrobus thread[2].
+
+> In fact it may be used on other architectures than arm, too, so I
+> think we need an arch-agnostic directory for overlays[1]?
+
+Probably so.
+
+Personally, I would prefer no DTs under /arch.
+
+> This may need remapping of labels. I'm aware the rpi infrastructure has
+> support for remapping labels when applying overlays during boot, but
+> AFAIK this is not yet supported by fdtoverlay (or perhaps by a fork?)?
+> Note that the remapping is also needed if you want to apply two
+> instances of the same overlay.
+
+First I've heard of label remapping... I have a lot of concerns about 
+using labels for overlays. For starters, with a flip of a switch (-@), 
+they all become an ABI when they were not previously. I think at a 
+minimum, we need an annotation so that a subset can be exported. 
+Anything that's an ABI, we should be documenting and reviewing.
+
+The requirement for overlays upstream is that they are applied at build 
+time to a base DT. Otherwise, we can't validate them completely. So if 
+there's a label remapping dependency on these, sounds like there is some 
+more work to do. The first being getting agreement that label remapping 
+is the right approach.
+
+Common label names or some remapping for targets kind of works, but 
+easily falls apart. For example, GPIO (or any provider with identifier 
+cells) numbering or SPI CS numbering would be different. 
+
+Rob
+
+[2] https://lore.kernel.org/all/YmFo+EntwxIsco%2Ft@robh.at.kernel.org/
