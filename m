@@ -2,112 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29266C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:18:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01DAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345493AbiD1LVT (ORCPT
+        id S1345275AbiD1LWA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 07:21:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50742 "EHLO
+        Thu, 28 Apr 2022 07:22:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230231AbiD1LVS (ORCPT
+        with ESMTP id S230231AbiD1LV5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 07:21:18 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD80A88A1;
-        Thu, 28 Apr 2022 04:18:03 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id A70091F37F;
-        Thu, 28 Apr 2022 11:18:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1651144682; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oTrnvMpAhjSGeg1gbv33jLZDolAkh8q0+zNQ815xKlQ=;
-        b=u/MaWQyAW2WWLjnSuO7VRXh2tbAm8BiWtFpc6daZUTVzIaWYKwFlx01h1w+nw4vs52VB8E
-        FiEZAmdelzrw+GfHEPtQdL5J5Fq02eMk7mYvyRoGQRjqM9whOKLIbb/W6YAU0pWbWTllJX
-        V+9rqJVoqyrkpjBK7QPyFBMp0SpODyU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1651144682;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oTrnvMpAhjSGeg1gbv33jLZDolAkh8q0+zNQ815xKlQ=;
-        b=sQOtrYhIKz01UuNxtkiMhUrfGvIlrtZgRKSHw0Qr/9X8S0UTvFRvWkUKZ22FzRc6nV8GEW
-        JLpypogPB1UaJGDg==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
+        Thu, 28 Apr 2022 07:21:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40A5A94E7
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 04:18:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 2F89D2C142;
-        Thu, 28 Apr 2022 11:18:02 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 7F55FA061A; Thu, 28 Apr 2022 13:18:00 +0200 (CEST)
-Date:   Thu, 28 Apr 2022 13:18:00 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Yu Kuai <yukuai3@huawei.com>
-Cc:     jack@suse.cz, tj@kernel.org, axboe@kernel.dk,
-        paolo.valente@linaro.org, cgroups@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-Subject: Re: [PATCH -next v4 1/3] block, bfq: record how many queues are busy
- in bfq_group
-Message-ID: <20220428111800.aqfzwwii5dabx3ko@quack3.lan>
-References: <20220428111907.3635820-1-yukuai3@huawei.com>
- <20220428111907.3635820-2-yukuai3@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220428111907.3635820-2-yukuai3@huawei.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E7A161F43
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 11:18:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99194C385A9;
+        Thu, 28 Apr 2022 11:18:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651144723;
+        bh=4FwS8ZqLFX/b+oKN3PZi77Ssb4xeXteo8CbKvZJr8WM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Ds9YGxLJYfrtkbmsKcIBH/U4e7GVVfk0APPIAYM58tm3mNmYOMH0SNMZk3Xuq7fUI
+         cRztPP5RC7GyKrQndlKjWc+vuVo7hsmB0JuqnmgTEzMHoVQjXAI1RtX24NX7rO7lt+
+         9g8aR+d4E8Y/LgNG+JsmL+d0+Eu6MxrSi1neB8Hz5VETYInhAy9cEZCXSfgijbo4Mv
+         x0BJgjSDLo3bx/iRk03Y4GW4nWygvodXnmwAziaepqP9E6sLTJjvSEW9yL/Q/jVi0M
+         ujz8wcxLnLFmUfagMztXd0slpWPOH3Dxn9XVJaObeGXoefHVn567lZFBqlVyyfa6E2
+         Tq3pDGuIRpmtg==
+From:   Mark Brown <broonie@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>, linux-kernel@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>
+Subject: [GIT PULL] regulator fixes for v5.18-rc4
+Date:   Thu, 28 Apr 2022 12:18:30 +0100
+Message-Id: <20220428111842.99194C385A9@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 28-04-22 19:19:05, Yu Kuai wrote:
-> Prepare to refactor the counting of 'num_groups_with_pending_reqs'.
-> 
-> Add a counter 'busy_queues' in bfq_group, and update it in
-> bfq_add/del_bfqq_busy().
-> 
-> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+The following changes since commit 908b768f9a8ffca2ef69f3145e23a6a259f99ac3:
 
-Just two nits below:
+  MAINTAINERS: Fix reviewer info for a few ROHM ICs (2022-04-08 12:09:45 +0100)
 
-> --- a/block/bfq-wf2q.c
-> +++ b/block/bfq-wf2q.c
-> @@ -218,6 +218,16 @@ static bool bfq_no_longer_next_in_service(struct bfq_entity *entity)
->  	return false;
->  }
->  
-> +static void bfq_add_busy_queues(struct bfq_queue *bfqq)
-> +{
-> +	bfqq_group(bfqq)->busy_queues++;
-> +}
-> +
-> +static void bfq_dec_busy_queues(struct bfq_queue *bfqq)
-> +{
-> +	bfqq_group(bfqq)->busy_queues--;
-> +}
-> +
+are available in the Git repository at:
 
-An opposite from "decrement" is "increment", not "add". So
-bfq_add_busy_queues() should be bfq_inc_busy_queues().
+  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git tags/regulator-fix-v5.18-rc4
 
-> @@ -230,6 +240,14 @@ static bool bfq_no_longer_next_in_service(struct bfq_entity *entity)
->  	return true;
->  }
->  
-> +static void bfq_add_busy_queues(struct bfq_queue *bfqq)
-> +{
-> +}
-> +
-> +static void bfq_add_busy_queues(struct bfq_queue *bfqq)
-> +{
-> +}
-> +
+for you to fetch changes up to dfd2b37edf7ef469574ef7f36e3a1905ac9ead62:
 
-You have two times the same function here and you miss the other one...
+  regulator: dt-bindings: Revise the rt5190a buck/ldo description (2022-04-22 12:37:22 +0100)
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+----------------------------------------------------------------
+regulator: Fix for v5.18
+
+A minor fix for the DT binding documentation of the rt5190a driver.
+
+----------------------------------------------------------------
+ChiYuan Huang (1):
+      regulator: dt-bindings: Revise the rt5190a buck/ldo description
+
+ .../devicetree/bindings/regulator/richtek,rt5190a-regulator.yaml        | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
