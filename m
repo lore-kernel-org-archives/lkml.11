@@ -2,162 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CFF2C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:23:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 128A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:23:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347142AbiD1N0O (ORCPT
+        id S1347153AbiD1N0U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:26:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58800 "EHLO
+        Thu, 28 Apr 2022 09:26:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347105AbiD1N0M (ORCPT
+        with ESMTP id S1346967AbiD1N0N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:26:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3D67AAC927
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:22:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651152173;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=a14xq4pv5r/FkYeXeUtrnJ56gM2JRtUzYDAyxUxKyXw=;
-        b=Tt248EhYFzQ1e2QqfYV5aGSPG/ngkVC8YQdIZJkjiYuiU0HMOA35v1TbBI5pgu7/G6rBlr
-        dW2xXHL3i07Uv3uPefDHVDRtj69desMiwMf12uvzCGskizj59OJJ+bRf6qjf/B0SVdOkt1
-        GBi7drlRIjEF0iM4bHMMWyTrh7qGsJ0=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-263-lYfuRa2JPnaHhPowZP6EOw-1; Thu, 28 Apr 2022 09:22:49 -0400
-X-MC-Unique: lYfuRa2JPnaHhPowZP6EOw-1
-Received: by mail-wm1-f69.google.com with SMTP id k41-20020a05600c1ca900b0039415d40dbbso517405wms.5
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:22:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=a14xq4pv5r/FkYeXeUtrnJ56gM2JRtUzYDAyxUxKyXw=;
-        b=rechXkeQkYfBANUsV275z486wqBUIY0BKcLDeIL2rhjWjfAM/jnOZPjxlIPVDvPV8W
-         poMTw8L4b9aFQImnGT4Vq1SNn2G12OLC4hG+bIqhkLut73GYrbdWIneyJghvC3NloffH
-         c3THNDuYI33sD48QE+uBfYqisrDg+gjBOvJX59LznZI5uDfzMe+p7s/4slrv35tUGUnp
-         /QgPp5GgXXfrNKwSj66uV012UpYWuLSTQJFsXVM2hcpuKqpI2UZ8ZO19t4ct6XG0r4HF
-         NSrxYmx5rg4paXrmrwoc0yaINQ7HU3Seq5/GwUCH83Ax7dhv51G24jXQW/ev7eG74I9p
-         BLqA==
-X-Gm-Message-State: AOAM531MV0nz6s4Dzqn3nAsR9LEMbYxq1tWDU3iacG0HX50jADJLv6E9
-        rKpcZVOWe9BDiqH38UYUsbArl8vwM9iPjDuab4lNHMWi0FP4uv4YPMEiM5ptURsE/yGhdukHvF3
-        a498DqBDTaSnENjON5JP2uOsW
-X-Received: by 2002:a05:600c:502b:b0:38f:f7c6:3609 with SMTP id n43-20020a05600c502b00b0038ff7c63609mr31169266wmr.15.1651152168729;
-        Thu, 28 Apr 2022 06:22:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwQVnCQJ38EwfNhzDeSYDCstkye3h+BWbMt9XxC8erbs+iXajlC/fBdW5XhbJa/npUVsWgZzw==
-X-Received: by 2002:a05:600c:502b:b0:38f:f7c6:3609 with SMTP id n43-20020a05600c502b00b0038ff7c63609mr31169254wmr.15.1651152168532;
-        Thu, 28 Apr 2022 06:22:48 -0700 (PDT)
-Received: from step1.redhat.com (host-87-11-6-234.retail.telecomitalia.it. [87.11.6.234])
-        by smtp.gmail.com with ESMTPSA id f7-20020a05600c4e8700b00393f1393abfsm4680978wmq.41.2022.04.28.06.22.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 06:22:47 -0700 (PDT)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vilas R K <vilas.r.k@intel.com>,
-        linux-kernel@vger.kernel.org,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH net-next 2/2] vsock/virtio: add support for device suspend/resume
-Date:   Thu, 28 Apr 2022 15:22:41 +0200
-Message-Id: <20220428132241.152679-3-sgarzare@redhat.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220428132241.152679-1-sgarzare@redhat.com>
-References: <20220428132241.152679-1-sgarzare@redhat.com>
+        Thu, 28 Apr 2022 09:26:13 -0400
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 3E860AC91D;
+        Thu, 28 Apr 2022 06:22:53 -0700 (PDT)
+Received: by ajax-webmail-mail-app4 (Coremail) ; Thu, 28 Apr 2022 21:22:11
+ +0800 (GMT+08:00)
+X-Originating-IP: [125.120.151.211]
+Date:   Thu, 28 Apr 2022 21:22:11 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "Lin Ma" <linma@zju.edu.cn>
+To:     "Greg KH" <gregkh@linuxfoundation.org>
+Cc:     "Duoming Zhou" <duoming@zju.edu.cn>,
+        krzysztof.kozlowski@linaro.org, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        alexander.deucher@amd.com, akpm@linux-foundation.org,
+        broonie@kernel.org, netdev@vger.kernel.org,
+        "Jakub Kicinski" <kuba@kernel.org>
+Subject: Re: [PATCH net v4] nfc: ... device_is_registered() is data
+ race-able
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <20220428060628.713479b2@kernel.org>
+References: <20220427011438.110582-1-duoming@zju.edu.cn>
+ <20220427174548.2ae53b84@kernel.org>
+ <38929d91.237b.1806f05f467.Coremail.linma@zju.edu.cn>
+ <YmpEZQ7EnOIWlsy8@kroah.com>
+ <2d7c9164.2b1f.1806f2a8ed9.Coremail.linma@zju.edu.cn>
+ <YmpNZOaJ1+vWdccK@kroah.com>
+ <15d09db2.2f76.1806f5c4187.Coremail.linma@zju.edu.cn>
+ <YmpcUNf7O+OK6/Ax@kroah.com> <20220428060628.713479b2@kernel.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
+Message-ID: <f51aa1.41ae.180705614b5.Coremail.linma@zju.edu.cn>
+X-Coremail-Locale: en_US
+X-CM-TRANSID: cS_KCgAXGfAElWpiuIz8AQ--.797W
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwMOElNG3GhOdQAEsC
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Implement .freeze and .restore callbacks of struct virtio_driver
-to support device suspend/resume.
-
-During suspension all connected sockets are reset and VQs deleted.
-During resume the VQs are re-initialized.
-
-Reported by: Vilas R K <vilas.r.k@intel.com>
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
- net/vmw_vsock/virtio_transport.c | 47 ++++++++++++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
-
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index 31f4f6f40614..ad64f403536a 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -743,6 +743,49 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
- 	kfree(vsock);
- }
- 
-+#ifdef CONFIG_PM_SLEEP
-+static int virtio_vsock_freeze(struct virtio_device *vdev)
-+{
-+	struct virtio_vsock *vsock = vdev->priv;
-+
-+	mutex_lock(&the_virtio_vsock_mutex);
-+
-+	rcu_assign_pointer(the_virtio_vsock, NULL);
-+	synchronize_rcu();
-+
-+	virtio_vsock_vqs_del(vsock);
-+
-+	mutex_unlock(&the_virtio_vsock_mutex);
-+
-+	return 0;
-+}
-+
-+static int virtio_vsock_restore(struct virtio_device *vdev)
-+{
-+	struct virtio_vsock *vsock = vdev->priv;
-+	int ret;
-+
-+	mutex_lock(&the_virtio_vsock_mutex);
-+
-+	/* Only one virtio-vsock device per guest is supported */
-+	if (rcu_dereference_protected(the_virtio_vsock,
-+				lockdep_is_held(&the_virtio_vsock_mutex))) {
-+		ret = -EBUSY;
-+		goto out;
-+	}
-+
-+	ret = virtio_vsock_vqs_init(vsock);
-+	if (ret < 0)
-+		goto out;
-+
-+	rcu_assign_pointer(the_virtio_vsock, vsock);
-+
-+out:
-+	mutex_unlock(&the_virtio_vsock_mutex);
-+	return ret;
-+}
-+#endif /* CONFIG_PM_SLEEP */
-+
- static struct virtio_device_id id_table[] = {
- 	{ VIRTIO_ID_VSOCK, VIRTIO_DEV_ANY_ID },
- 	{ 0 },
-@@ -760,6 +803,10 @@ static struct virtio_driver virtio_vsock_driver = {
- 	.id_table = id_table,
- 	.probe = virtio_vsock_probe,
- 	.remove = virtio_vsock_remove,
-+#ifdef CONFIG_PM_SLEEP
-+	.freeze = virtio_vsock_freeze,
-+	.restore = virtio_vsock_restore,
-+#endif
- };
- 
- static int __init virtio_vsock_init(void)
--- 
-2.35.1
-
+SGVsbG8gdGhlcmUsCgo+IAo+IFllcywgdGhhdCBsb29rcyBiZXR0ZXIsIAoKQ29vbCwgdGhhbmtz
+IGFnYWluIGZvciBnaXZpbmcgY29tbWVudHMuIDopCgo+IGJ1dCB3aGF0IGlzIHRoZSByb290IHBy
+b2JsZW0gaGVyZSB0aGF0IHlvdSBhcmUKPiB0cnlpbmcgdG8gc29sdmU/ICBXaHkgZG9lcyBORkMg
+bmVlZCB0aGlzIHdoZW4gbm8gb3RoZXIgc3Vic3lzdGVtIGRvZXM/Cj4gCgpXZWxsLCBpbiBmYWN0
+LCBtZSBhbmQgRHVvbWluZyBhcmUga2VlcCBmaW5kaW5nIGNvbmN1cnJlbmN5IGJ1Z3MgdGhhdCBo
+YXBwZW4gCmJldHdlZW4gdGhlIGRldmljZSBjbGVhbnVwL2RldGFjaCByb3V0aW5lIGFuZCBvdGhl
+ciB1bmRlcmdvaW5nIHJvdXRpbmVzLgoKVGhhdCBpcyB0byBzYXksIHdoZW4gYSBkZXZpY2UsIG5v
+IG1hdHRlciByZWFsIG9yIHZpcnR1YWwsIGlzIGRldGFjaGVkIGZyb20gCnRoZSBtYWNoaW5lLCB0
+aGUga2VybmVsIGF3YWtlIGNsZWFudXAgcm91dGluZSB0byByZWNsYWltIHRoZSByZXNvdXJjZS4g
+CkluIGN1cnJlbnQgY2FzZSwgdGhlIGNsZWFudXAgcm91dGluZSB3aWxsIGNhbGwgbmZjX3VucmVn
+aXN0ZXJfZGV2aWNlKCkuCgpPdGhlciByb3V0aW5lcywgbWFpbmx5IGZyb20gdXNlci1zcGFjZSBz
+eXN0ZW0gY2FsbHMsIG5lZWQgdG8gYmUgY2FyZWZ1bCBvZiAKdGhlIGNsZWFudXAgZXZlbnQuIElu
+IGFub3RoZXIgd29yZCwgdGhlIGtlcm5lbCBuZWVkIHRvIHN5bmNocm9uaXplIHRoZXNlIApyb3V0
+aW5lcyB0byBhdm9pZCByYWNlIGJ1Z3MuCgpJbiBvdXIgcHJhY3RpY2UsIHdlIGZpbmQgdGhhdCBt
+YW55IHN1YnN5c3RlbXMgYXJlIHByb25lIHRvIHRoaXMgdHlwZSBvZiBidWcuCgpGb3IgZXhhbXBs
+ZSwgaW4gYmx1ZXRvb3RoIHdlIGZpeAoKQlQgc3Vic3lzdGVtCiogZTJjYjZiODkxYWQyICgiYmx1
+ZXRvb3RoOiBlbGltaW5hdGUgdGhlIHBvdGVudGlhbCByYWNlIGNvbmRpdGlvbiB3aGVuIHJlbW92
+aW5nCnRoZSBIQ0kgY29udHJvbGxlciIpCiogZmE3OGQyZDFkNjRmICgiQmx1ZXRvb3RoOiBmaXgg
+ZGF0YSByYWNlcyBpbiBzbXBfdW5yZWdpc3RlcigpLCBzbXBfZGVsX2NoYW4oKSIpCi4uCgpBWDI1
+IHN1YnN5c3RlbQoqIDFhZGU0OGQwYzI3ZCAoImF4MjU6IE5QRCBidWcgd2hlbiBkZXRhY2hpbmcg
+QVgyNSBkZXZpY2UiKQouLgoKd2UgY3VycmVudGx5IGZvY3VzIG9uIHRoZSBuZXQgcmVsZXZhbnQg
+c3Vic3lzdGVtcyBhbmQgd2Ugbm93IGlzIGF1ZGl0aW5nIHRoZSBORkMgCmNvZGUuCgpJbiBhbm90
+aGVyIHdvcmQsIGFsbCBzdWJzeXN0ZW1zIG5lZWQgdG8gdGFrZSBjYXJlIG9mIHRoZSBzeW5jaHJv
+bml6YXRpb24gaXNzdWVzLgpCdXQgc2VlbXMgdGhhdCB0aGUgc29sdXRpb25zIGFyZSB2YXJpZWQg
+YmV0d2VlbiBkaWZmZXJlbnQgc3Vic3lzdGVtLiAKCkVtcGlyaWNhbGx5IHNwZWFraW5nLCBtb3N0
+IG9mIHRoZW0gdXNlIHNwZWNpZmljIGZsYWdzICsgc3BlY2lmaWMgbG9ja3MgdG8gcHJldmVudAp0
+aGUgcmFjZS4gCgpJbiBzdWNoIGNhc2VzLCBpZiB0aGUgY2xlYW51cCByb3V0aW5lIGZpcnN0IGhv
+bGQgdGhlIGxvY2ssIHRoZSBvdGhlciByb3V0aW5lcyB3aWxsCndhaXQgb24gdGhlIGxvY2tzLiBT
+aW5jZSB0aGUgY2xlYW51cCByb3V0aW5lIHdyaXRlIHRoZSBzcGVjaWZpYyBmbGFnLCB0aGUgb3Ro
+ZXIKcm91dGluZSwgYWZ0ZXIgY2hlY2sgdGhlIHNwZWNpZmljIGZsYWcsIHdpbGwgYmUgYXdhcmUg
+b2YgdGhlIGNsZWFudXAgc3R1ZmYgYW5kIGp1c3QKYWJvcnQgdGhlaXIgdGFza3MuCklmIHRoZSBv
+dGhlciByb3V0aW5lcyBmaXJzdCBob2xkIHRoZSBsb2NrLCB0aGUgY2xlYW51cCByb3V0aW5lIGp1
+c3Qgd2FpdCB0aGVtIHRvIApmaW5pc2guCgpORkMgaGVyZSBpcyBzcGVjaWFsIGJlY2F1c2UgaXQg
+dXNlcyBkZXZpY2VfaXNfcmVnaXN0ZXJlZC4gSSB0aG91Z2h0IHRoZSBhdXRob3IgbWF5CmJlbGll
+dmUgdGhpcyBtYWNybyBpcyByYWNlIGZyZWUuIEhvd2V2ZXIsIGl0IGlzIG5vdC4gU28gd2UgbmVl
+ZCB0byByZXBsYWNlIHRoaXMgY2hlY2sKdG8gbWFrZSBzdXJlIHRoZSBuZXRsaW5rIGZ1bmN0aW9u
+cyB3aWxsIDEwMCBwZXJjZW50IGJlIGF3YXJlIG9mIHRoZSBjbGVhbnVwIHJvdXRpbmUKYW5kIGFi
+b3J0IHRoZSB0YXNrIGlmIHRoZXkgZ3JhYiB0aGUgZGV2aWNlX2xvY2sgbGF0ZWx5LiBPdGhlcndp
+c2UsIHRoZSBuZWxpbmsgcm91dGluZQp3aWxsIGNhbGwgc3ViLWxheWVyIGNvZGUgYW5kIHBvc3Np
+bGJ5IGRlcmVmZXJlbmNlIHJlc291cmNlcyB0aGF0IGFscmVhZHkgZnJlZWQuCgpGb3IgZXhhbXBs
+ZSwgb25lIG9mIG15IHJlY2VudCBmaXggM2UzYjVkZmNkMTZhICgiTkZDOiByZW9yZGVyIHRoZSBs
+b2dpYyBpbiAKbmZjX3t1bix9cmVnaXN0ZXJfZGV2aWNlIikgdGFrZXMgdGhlIHN1Z2dlc3Rpb24g
+ZnJvbSBtYWludGFpbmVyIGFzIGhlIHRob3VnaHQgdGhlIApkZXZpY2VfaXNfcmVnaXN0ZXJlZCBp
+cyBlbm91Z2guIEFuZCBmb3Igbm93IHdlIGZpbmQgb3V0IHRoaXMgZGV2aWNlX2lzX3JlZ2lzdGVy
+ZWQKaXMgbm90IGVub3VnaC4KCklmIHlvdSBhcmUgd29uZGVyaW5nIGlmIG90aGVyIHN1YnN5c3Rl
+bXMgdXNlIHRoZSBjb21iaW5hdGlvbiBvZiBkZXZpY2VfaXNfcmVnaXN0ZXJlZAphcyBjaGVjayB0
+byBhdm9pZCB0aGUgcmFjZSwgSSBoYXZlIHRvIHNheSBJIGRvbid0IGtub3cuIElmIHRoZSBhbnN3
+ZXIgaXMgeWVzLCB0aGF0IGNvZGUKaXMgcG9zc2libHkgYWxzbyBwcm9uZSB0byB0aGlzIHR5cGUg
+b2YgY29uY3VycmVudCBidWcuCgo+IHRoYW5zaywKPiAKPiBncmVnIGstaAoKVGhhbmtzIGFnYWlu
+LgoKTGluIE1h
