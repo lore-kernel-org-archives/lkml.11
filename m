@@ -2,168 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE612C4167B
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:04:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F5D7C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:04:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233880AbiD1KHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
+        id S234056AbiD1KHs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:07:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233418AbiD1KHB (ORCPT
+        with ESMTP id S233217AbiD1KHF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:07:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A2B3C41FB4
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:55:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651139735;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LAMPVNdq/kHZXC36MFoCnFQzkvkEzOW9H33jASJaclo=;
-        b=e8iDxGHAKJAIfNxeJXWo4UdTvMcUyRzn2EHvGv0hL33HoXebF5I2SlXGyOIedtchp0+7MU
-        ieWz2cSfAjHYVoAUPXliqd1BF0TuXPM8zM2SthmqbhJuzWy1KwTnGBqFIcjnQqv18qWfGA
-        aWKYrVo7EjaaPDwucMgJdQb9YQ9YTdY=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-7-wqhV8_-QMUCYe74Cy9svZw-1; Thu, 28 Apr 2022 05:55:34 -0400
-X-MC-Unique: wqhV8_-QMUCYe74Cy9svZw-1
-Received: by mail-wr1-f69.google.com with SMTP id l11-20020adfc78b000000b0020abc1ce7e4so1736499wrg.1
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:55:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=LAMPVNdq/kHZXC36MFoCnFQzkvkEzOW9H33jASJaclo=;
-        b=OoSVRQKm71/MaEhyN4ex2lF6YlY2F3g0k/1W+3zqN8ndmQmOh1j+StM0TgUU4f0M6p
-         smYe1iDN/yt0amwLjylskHoeTJO4fvssVcyjsglArCqFvNQEQPjxLHXnNK4gGyCs5maV
-         lpoFxKBuRv+RaUOubHfTAMxkLEdm+0E/IIV6L25rMX4MAFshrayHrRzwCHcHqxhvsavC
-         ffVe/N/uVvY3IR1Mpc5NgkQlkSa4GsrK0WqkuGK3WH+E7v/uHLqDKaLHm87AYBk7085B
-         DuLfBTR1BQW7PGng44x2EYg63TNsxKJ0FGEA3bEQ3st20zAlH3XkxQ3Kho5h4HPqdwCK
-         npuw==
-X-Gm-Message-State: AOAM5338ipx6zA92AUElGupwx76K++hnZbxYpMw0vy2k7kiG2Uib3wUS
-        0kty42H8oK4DUo5aXpf7u+uHpHpNJ/Z8KhKVeA0c49cXOr7+w31OcL8upKEIY9x3k26n9M6OiQW
-        Zgm1D5whFVsw6XneMOm2ZIG/p
-X-Received: by 2002:a05:6000:186a:b0:20a:e94c:8e68 with SMTP id d10-20020a056000186a00b0020ae94c8e68mr8644369wri.458.1651139733307;
-        Thu, 28 Apr 2022 02:55:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwpPWxFqbdOW5KvLd6q7JL2LVTng4bvaGwfGBgZ2h4Lj1HrF2PRW5cw7a2EJu5Te3nDqhXhaw==
-X-Received: by 2002:a05:6000:186a:b0:20a:e94c:8e68 with SMTP id d10-20020a056000186a00b0020ae94c8e68mr8644352wri.458.1651139733021;
-        Thu, 28 Apr 2022 02:55:33 -0700 (PDT)
-Received: from smtpclient.apple ([2a01:e0a:834:5aa0:80d7:8022:3692:b311])
-        by smtp.gmail.com with ESMTPSA id w12-20020adfbacc000000b0020aeed10962sm3557316wrg.61.2022.04.28.02.55.32
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 28 Apr 2022 02:55:32 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [PATCH] virtio-pci: Remove wrong address verification in
- vp_del_vqs()
-From:   Christophe Marie Francois Dupont de Dinechin <cdupontd@redhat.com>
-In-Reply-To: <B954A683-EE43-4469-B57A-EB8C6B671BEC@redhat.com>
-Date:   Thu, 28 Apr 2022 11:55:31 +0200
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, mopsfelder@gmail.com,
-        Christophe de Dinechin <dinechin@redhat.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <2F2EFFE9-5174-49A8-A71F-EE134D387E07@redhat.com>
-References: <20220415023002.49805-1-muriloo@linux.ibm.com>
- <e8620e70-16bb-639c-9446-68dcd199253f@linux.ibm.com>
- <A5CD1C91-F5D0-4109-9894-824184362B5C@redhat.com>
- <B954A683-EE43-4469-B57A-EB8C6B671BEC@redhat.com>
-To:     Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
-X-Mailer: Apple Mail (2.3696.80.82.1.1)
+        Thu, 28 Apr 2022 06:07:05 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDAD0433A0;
+        Thu, 28 Apr 2022 02:55:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651139756; x=1682675756;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=PXIOCDihekmrUtTEV7DZtH+hIzDJq4m2iY3er2d+PEM=;
+  b=NQQA0/XUJLgdjW2dqznhq87CbxYf3GFU60epa9rU3ZyUtFGfF3kQmfsk
+   UeDpk6sHqJM9niu+AS9ccv1koJUxjhs56EJN4Avto0Ig0FwUPXwiwEwMB
+   HHDNbbEyjSHRP/BSUZMiHFadF1WWLyL3MCev8G5flSx0XV5fo+dkS3U1+
+   A=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 28 Apr 2022 02:55:56 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 02:55:56 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 28 Apr 2022 02:55:55 -0700
+Received: from blr-ubuntu-253.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 28 Apr 2022 02:55:51 -0700
+From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+To:     <arnd@arndb.de>, <catalin.marinas@arm.com>,
+        <gregkh@linuxfoundation.org>, <rostedt@goodmis.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <maz@kernel.org>, <quic_psodagud@quicinc.com>,
+        <quic_tsoni@quicinc.com>, <will@kernel.org>,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Subject: [PATCHv12 0/9] lib/rwmmio/arm64: Add support to trace register reads/writes
+Date:   Thu, 28 Apr 2022 15:25:23 +0530
+Message-ID: <cover.1651139070.git.quic_saipraka@quicinc.com>
+X-Mailer: git-send-email 2.33.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Generic MMIO read/write i.e., __raw_{read,write}{b,l,w,q} accessors
+are typically used to read/write from/to memory mapped registers
+and can cause hangs or some undefined behaviour in following cases,
+
+* If the access to the register space is unclocked, for example: if
+  there is an access to multimedia(MM) block registers without MM
+  clocks.
+
+* If the register space is protected and not set to be accessible from
+  non-secure world, for example: only EL3 (EL: Exception level) access
+  is allowed and any EL2/EL1 access is forbidden.
+
+* If xPU(memory/register protection units) is controlling access to
+  certain memory/register space for specific clients.
+
+and more...
+
+Such cases usually results in instant reboot/SErrors/NOC or interconnect
+hangs and tracing these register accesses can be very helpful to debug
+such issues during initial development stages and also in later stages.
+
+So use ftrace trace events to log such MMIO register accesses which
+provides rich feature set such as early enablement of trace events,
+filtering capability, dumping ftrace logs on console and many more.
+
+Sample output:
+
+rwmmio_write: __qcom_geni_serial_console_write+0x160/0x1e0 width=32 val=0xa0d5d addr=0xfffffbfffdbff700
+rwmmio_post_write: __qcom_geni_serial_console_write+0x160/0x1e0 width=32 val=0xa0d5d addr=0xfffffbfffdbff700
+rwmmio_read: qcom_geni_serial_poll_bit+0x94/0x138 width=32 addr=0xfffffbfffdbff610
+rwmmio_post_read: qcom_geni_serial_poll_bit+0x94/0x138 width=32 val=0x0 addr=0xfffffbfffdbff610
+
+This series is a follow-up for the series [1] and a recent series [2] making use
+of both.
+
+[1] https://lore.kernel.org/lkml/cover.1536430404.git.saiprakash.ranjan@codeaurora.org/
+[2] https://lore.kernel.org/lkml/1604631386-178312-1-git-send-email-psodagud@codeaurora.org/
+
+Note in v4 version, Arnd suggested to benchmark and compare size with callback
+based implementation, please see [3] for more details on that with brief comparison below.
 
 
-> On 28 Apr 2022, at 11:51, Christophe Marie Francois Dupont de Dinechin =
-<cdupontd@redhat.com> wrote:
->=20
->=20
->=20
->> On 28 Apr 2022, at 11:46, Christophe Marie Francois Dupont de =
-Dinechin <cdupontd@redhat.com> wrote:
->>=20
->>=20
->>=20
->>> On 15 Apr 2022, at 05:51, Murilo Opsfelder Ara=C3=BAjo =
-<muriloo@linux.ibm.com> wrote:
->>>=20
->>> On 4/14/22 23:30, Murilo Opsfelder Araujo wrote:
->>>> GCC 12 enhanced -Waddress when comparing array address to null [0],
->>>> which warns:
->>>> drivers/virtio/virtio_pci_common.c: In function =E2=80=98vp_del_vqs=E2=
-=80=99:
->>>> drivers/virtio/virtio_pci_common.c:257:29: warning: the comparison =
-will always evaluate as =E2=80=98true=E2=80=99 for the pointer operand =
-in =E2=80=98vp_dev->msix_affinity_masks + (sizetype)((long unsigned =
-int)i * 256)=E2=80=99 must not be NULL [-Waddress]
->>>> 257 | if (vp_dev->msix_affinity_masks[i])
->>>> | ^~~~~~
->>>> In fact, the verification is comparing the result of a pointer
->>>> arithmetic, the address "msix_affinity_masks + i", which will =
-always
->>>> evaluate to true.
->>>> Under the hood, free_cpumask_var() calls kfree(), which is safe to =
-pass
->>>> NULL, not requiring non-null verification. So remove the =
-verification
->>>> to make compiler happy (happy compiler, happy life).
->>>> [0] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D102103
->>>> Signed-off-by: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
->>>> ---
->>>> drivers/virtio/virtio_pci_common.c | 3 +--
->>>> 1 file changed, 1 insertion(+), 2 deletions(-)
->>>> diff --git a/drivers/virtio/virtio_pci_common.c =
-b/drivers/virtio/virtio_pci_common.c
->>>> index d724f676608b..5046efcffb4c 100644
->>>> --- a/drivers/virtio/virtio_pci_common.c
->>>> +++ b/drivers/virtio/virtio_pci_common.c
->>>> @@ -254,8 +254,7 @@ void vp_del_vqs(struct virtio_device *vdev)
->>>> 	if (vp_dev->msix_affinity_masks) {
->>>> 		for (i =3D 0; i < vp_dev->msix_vectors; i++)
->>>> -			if (vp_dev->msix_affinity_masks[i])
->>>> -				=
-free_cpumask_var(vp_dev->msix_affinity_masks[i]);
->>>> +			=
-free_cpumask_var(vp_dev->msix_affinity_masks[i]);
->>>> 	}
->>>> 	if (vp_dev->msix_enabled) {
->>>=20
->>> After I sent this message, I realized that Christophe (copied here)
->>> had already proposed a fix:
->>>=20
->>> =
-https://lore.kernel.org/lkml/20220414150855.2407137-4-dinechin@redhat.com/=
+**Inline version with CONFIG_FTRACE=y and CONFIG_TRACE_MMIO_ACCESS=y**
+$ size vmlinux
+   text           data             bss     dec             hex         filename
+ 23884219        14284468         532568 38701255        24e88c7        vmlinux
 
->>>=20
->>> Christophe,
->>>=20
->>> Since free_cpumask_var() calls kfree() and kfree() is null-safe,
->>> can we just drop this null verification and call free_cpumask_var() =
-right away?
->>=20
->> Apologies for the delay in responding, broken laptop=E2=80=A6
->>=20
->> In the case where CONFIG_CPUMASK_OFFSTACK is not defined, we have:
->>=20
->> 	typedef struct cpumask cpumask_var_t[1];
->>=20
->> So that vp_dev->msix_affinity_masks[i] is statically not null =
-(that=E2=80=99s the warning)
->> but also a static pointer, so not kfree-safe IMO.
->=20
-> =E2=80=A6 which also renders my own patch invalid :-/
->=20
-> Compiler warnings are good. Clearly not sufficient.
+**Callback version with CONFIG_FTRACE=y and CONFIG_TRACE_MMIO_ACCESS=y**
+$ size vmlinux
+    text          data             bss     dec             hex        filename
+ 24108179        14279596         532568 38920343        251e097       vmlinux
 
-Ah, I just noticed that free_cpumask_var is a noop in that case.
+$ ./scripts/bloat-o-meter inline-vmlinux callback-vmlinux
+add/remove: 8/3 grow/shrink: 4889/89 up/down: 242244/-11564 (230680)
+Total: Before=25812612, After=26043292, chg +0.89%
 
-So yes, your fix is better :-)=
+[3] https://lore.kernel.org/lkml/466449a1-36da-aaa9-7e4f-477f36b52c9e@quicinc.com/
+
+Changes in v12:
+ * Split the generic flag addition patch (Greg).
+ * Move the flag from makefile to driver .c file (Greg).
+
+Changes in v11:
+ * Use unsigned long for caller ip and current ip addr (Steven Rostedt).
+ * Include review tags from Arnd.
+
+Changes in v10:
+ * Use GENMASK(31, 0) for -Woverflow warning in irqchip tegra driver (Marc).
+ * Convert ETM4x ARM64 driver to use asm-generic IO memory barriers (Catalin).
+ * Collect ack from Catalin for arm64 change.
+
+Changes in v9:
+ * Use TRACE_EVENT_CLASS for rwmmio_write and post_write (Steven Rostedt).
+
+Changes in v8:
+ * Fix build error reported by kernel test robot.
+
+Changes in v7:
+ * Use lib/ instead of kernel/trace/ based on review comment by Steven Rostedt.
+
+Changes in v6:
+ * Implemented suggestions by Arnd Bergmann:
+   - Use arch independent IO barriers in arm64/asm
+   - Add ARCH_HAVE_TRACE_MMIO_ACCESS
+   - Add post read and post write logging support
+   - Remove tracepoint_active check
+ * Fix build error reported by kernel test robot.
+
+Changes in v5:
+ * Move arm64 to use asm-generic provided high level MMIO accessors (Arnd).
+ * Add inline logging for MMIO relaxed and non-relaxed accessors.
+ * Move nVHE KVM comment to makefile (Marc).
+ * Fix overflow warning due to switch to inline accessors instead of macro.
+ * Modify trace event field to include caller and parent details for more detailed logs.
+
+Changes in v4:
+ * Drop dynamic debug based filter support since that will be developed later with
+   the help from Steven (Ftrace maintainer).
+ * Drop value passed to writel as it is causing hangs when tracing is enabled.
+ * Code cleanup for trace event as suggested by Steven for earlier version.
+ * Fixed some build errors reported by 0-day bot.
+
+Changes in v3:
+ * Create a generic mmio header for instrumented version (Earlier suggested in [1]
+   by Will Deacon and recently [2] by Greg to have a generic version first).
+ * Add dynamic debug support to filter out traces which can be very useful for targeted
+   debugging specific to subsystems or drivers.
+ * Few modifications to the rwmmio trace event fields to include the mmio width and print
+   addresses in hex.
+ * Rewrote commit msg to explain some more about usecases.
+
+Prasad Sodagudi (1):
+  lib: Add register read/write tracing support
+
+Sai Prakash Ranjan (8):
+  arm64: io: Use asm-generic high level MMIO accessors
+  coresight: etm4x: Use asm-generic IO memory barriers
+  irqchip/tegra: Fix overflow implicit truncation warnings
+  drm/meson: Fix overflow implicit truncation warnings
+  KVM: arm64: Add a flag to disable MMIO trace for nVHE KVM
+  asm-generic/io: Add logging support for MMIO accessors
+  serial: qcom_geni_serial: Disable MMIO tracing for geni serial
+  soc: qcom: geni: Disable MMIO tracing for GENI SE
+
+ arch/Kconfig                                  |  3 +
+ arch/arm64/Kconfig                            |  1 +
+ arch/arm64/include/asm/io.h                   | 41 ++------
+ arch/arm64/kvm/hyp/nvhe/Makefile              |  7 +-
+ drivers/gpu/drm/meson/meson_viu.c             | 22 ++---
+ .../coresight/coresight-etm4x-core.c          |  8 +-
+ drivers/hwtracing/coresight/coresight-etm4x.h |  8 +-
+ drivers/irqchip/irq-tegra.c                   | 10 +-
+ drivers/soc/qcom/qcom-geni-se.c               |  8 +-
+ drivers/tty/serial/qcom_geni_serial.c         |  8 +-
+ include/asm-generic/io.h                      | 82 +++++++++++++++-
+ include/trace/events/rwmmio.h                 | 97 +++++++++++++++++++
+ lib/Kconfig                                   |  7 ++
+ lib/Makefile                                  |  2 +
+ lib/trace_readwrite.c                         | 47 +++++++++
+ 15 files changed, 287 insertions(+), 64 deletions(-)
+ create mode 100644 include/trace/events/rwmmio.h
+ create mode 100644 lib/trace_readwrite.c
+
+-- 
+2.33.1
 
