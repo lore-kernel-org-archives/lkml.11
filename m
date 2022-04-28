@@ -2,92 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 837ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:56:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACDF2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231360AbiD1KAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33278 "EHLO
+        id S232168AbiD1KAL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:00:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233489AbiD1J7N (ORCPT
+        with ESMTP id S234350AbiD1J7n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 05:59:13 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65213A66E3
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:47:22 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id bv19so8433232ejb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:47:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=wWR0SKL64pnLD+2RxbQHe5x2swIM4L4QdrFCGmGjULw=;
-        b=EdxD+YkbyRfIBBatIq1RZQMAfdzNFEx6lUYzVLMwcYkVGQQLi9LRqWdvlrpjOqRB7U
-         cQ9kqTs38/XtJ2Kc8tbUnL2na8IA/ypvLgKK69LfWdCkSNhaIOwLHJKmtRmQXPHsjFLe
-         BK5TP4gEoFOK0Ifc4Pb94CPDYEyOcZEiN9nrT4mH32ytZa5lO84tnw6k3jihSZ8ecIFV
-         pxG0hVP/atAlzbxX+ILItYGFr2cIHeMlqqnIJvIJkri4O4Mfjx4t6TFj8ZKXpIRBg4kP
-         p3eg8qu49Y5UPdJpdODj+eSauov1PrnXFLDwpaUAYRKUnKM/9g/DLWcOijW9wh1uTsPS
-         3sIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=wWR0SKL64pnLD+2RxbQHe5x2swIM4L4QdrFCGmGjULw=;
-        b=5khNoebNP1GF11DxItBFPz170DicUe5CjiqO99xznM/0bnsoxbnt3szSFaCxvqM0bJ
-         bOaosy5oqqQQzMTYiQb+Tpl61xA8OwYOMfUEviDb99VHAADP23CdZm2r+5SNAjyCGqsG
-         sN7yBhmxBk2xqDPKSsWHvc+sc9NBD9rFkAKeoQWzaE6owUi/626aN+WIEXpdxaCYjO8p
-         uIHCW011ClS2P0wGfnlqcs5jT6Srb5ndBlO1pmLut8GhUpKIZRo6HBjx/gRnzEm4Pl06
-         Q+M83pYW9ZQd9uHRgp1CGeyNyXuanxhkTEM2ZysqXdzJ9w5OdMbpztVjsxofhxJ3qJCl
-         U+Lg==
-X-Gm-Message-State: AOAM5324KGi863PlqhL7Gwr3YPl6bsiOHtVbGKfnmhrWfJbQXSy/i/sN
-        siTDb1L/rQJ/7eekUtmv12VlUw==
-X-Google-Smtp-Source: ABdhPJzAV1lVi1Qj3A837ST82rK8dtlvg3nSijyuX7w+cVeLMIEfPtmGM61KSFI2SrT0WVvTNB5VTw==
-X-Received: by 2002:a17:907:8a03:b0:6f3:c842:f018 with SMTP id sc3-20020a1709078a0300b006f3c842f018mr7254999ejc.277.1651139240902;
-        Thu, 28 Apr 2022 02:47:20 -0700 (PDT)
-Received: from [192.168.0.161] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id k7-20020a17090666c700b006e8688d5fcbsm8113791ejp.135.2022.04.28.02.47.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 02:47:20 -0700 (PDT)
-Message-ID: <dc088719-d8d6-2405-961a-1975b7f62d57@linaro.org>
-Date:   Thu, 28 Apr 2022 11:47:19 +0200
+        Thu, 28 Apr 2022 05:59:43 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C260ADD51;
+        Thu, 28 Apr 2022 02:47:50 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KprP91b4JzfZwj;
+        Thu, 28 Apr 2022 17:46:53 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 28 Apr 2022 17:47:48 +0800
+Received: from [10.67.109.184] (10.67.109.184) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 28 Apr 2022 17:47:48 +0800
+From:   Pu Lehui <pulehui@huawei.com>
+Subject: Re: [PATCH -next 1/2] bpf: Unify data extension operation of
+ jited_ksyms and jited_linfo
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+References: <20220426140924.3308472-1-pulehui@huawei.com>
+ <20220426140924.3308472-2-pulehui@huawei.com>
+ <CAEf4BzYvGaskrquK1hsKv6h7iz0NXWCNYn_zJEHvYUBYC=2UoA@mail.gmail.com>
+Message-ID: <f1777267-7904-e993-24f9-8071cd4b5bf7@huawei.com>
+Date:   Thu, 28 Apr 2022 17:47:48 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] rpmsg: qcom_smd: Fix returning 0 if
- irq_of_parse_and_map() fails
+In-Reply-To: <CAEf4BzYvGaskrquK1hsKv6h7iz0NXWCNYn_zJEHvYUBYC=2UoA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220423093932.32136-1-krzysztof.kozlowski@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220423093932.32136-1-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.109.184]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/04/2022 11:39, Krzysztof Kozlowski wrote:
-> irq_of_parse_and_map() returns 0 on failure, so this should not be
-> passed further as error return code.
-> 
-> Fixes: 1a358d350664 ("rpmsg: qcom_smd: Fix irq_of_parse_and_map() return value")
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> A fix for: https://lore.kernel.org/all/20220422105326.78713-1-krzysztof.kozlowski@linaro.org/
-> Commit sha from Bjorn's email, so might not be stable/correct.
-> 
+Hi Andrii,
 
-Bjorn,
+On 2022/4/28 6:33, Andrii Nakryiko wrote:
+> On Tue, Apr 26, 2022 at 6:40 AM Pu Lehui <pulehui@huawei.com> wrote:
+>>
+>> We found that 32-bit environment can not print bpf line info due
+>> to data inconsistency between jited_ksyms[0] and jited_linfo[0].
+>>
+>> For example:
+>> jited_kyms[0] = 0xb800067c, jited_linfo[0] = 0xffffffffb800067c
+>>
+>> We know that both of them store bpf func address, but due to the
+>> different data extension operations when extended to u64, they may
+>> not be the same. We need to unify the data extension operations of
+>> them.
+>>
+>> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+>> ---
+>>   kernel/bpf/syscall.c                         |  5 ++++-
+>>   tools/lib/bpf/bpf_prog_linfo.c               |  8 ++++----
+>>   tools/testing/selftests/bpf/prog_tests/btf.c | 18 +++++++++---------
+> 
+> please split kernel changes, libbpf changes, and selftests/bpf changes
+> into separate patches
+Thanks for your review. Alright, I will split it next time.
 
-Can you pick up this one? It's for an issue in your tree, introduced
-with my previous patch.
+> 
+>>   3 files changed, 17 insertions(+), 14 deletions(-)
+>>
+>> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+>> index e9621cfa09f2..4c417c806d92 100644
+>> --- a/kernel/bpf/syscall.c
+>> +++ b/kernel/bpf/syscall.c
+>> @@ -3868,13 +3868,16 @@ static int bpf_prog_get_info_by_fd(struct file *file,
+>>                  info.nr_jited_line_info = 0;
+>>          if (info.nr_jited_line_info && ulen) {
+>>                  if (bpf_dump_raw_ok(file->f_cred)) {
+>> +                       unsigned long jited_linfo_addr;
+>>                          __u64 __user *user_linfo;
+>>                          u32 i;
+>>
+>>                          user_linfo = u64_to_user_ptr(info.jited_line_info);
+>>                          ulen = min_t(u32, info.nr_jited_line_info, ulen);
+>>                          for (i = 0; i < ulen; i++) {
+>> -                               if (put_user((__u64)(long)prog->aux->jited_linfo[i],
+>> +                               jited_linfo_addr = (unsigned long)
+>> +                                       prog->aux->jited_linfo[i];
+>> +                               if (put_user((__u64) jited_linfo_addr,
+>>                                               &user_linfo[i]))
+>>                                          return -EFAULT;
+>>                          }
+Please let me to explain more detail, sorry if I'm wordy.
+The main reason that 32-bit env does not print bpf line info is here:
 
-Best regards,
-Krzysztof
+kernel/bpf/syscall.c:
+bpf_prog_get_info_by_fd {
+	...
+	user_ksyms = u64_to_user_ptr(info.jited_ksyms);
+	ksym_addr = (unsigned long)prog->aux->func[i]->bpf_func;
+	if (put_user((u64) ksym_addr, &user_ksyms[i]))
+	...
+
+	user_linfo = u64_to_user_ptr(info.jited_line_info);
+	if (put_user((__u64)(long)prog->aux->jited_linfo[i],
+		     &user_linfo[i]))
+	...
+}
+
+In 32-bit env, ksym_addr and prog->aux->jited_linfo[0] both store the 
+32-bit address of bpf_func, but the first one is zero-extension to u64, 
+while the other is sign-extension to u64.
+For example:
+	prog->aux->func[0]->bpf_func = 0xb800067c
+	user_ksyms[0] = 0xb800067c, user_linfo[0] = 0xffffffffb800067c
+
+Both zero-extension and sign-extension are fine, but if operating 
+directly between them without casting in 32-bit env, there will have 
+some potential problems. Such as:
+
+tools/lib/bpf/bpf_prog_linfo.c:
+dissect_jited_func {
+	...
+	if (ksym_func[0] != *jited_linfo) //always missmatch in 32 env
+		goto errout;
+	...
+	if (ksym_func[f] == *jited_linfo) {
+	...
+	last_jited_linfo = *jited_linfo;
+	if (last_jited_linfo - ksym_func[f - 1] + 1 >
+	    ksym_len[f - 1])
+	...
+}
+
+We could cast them to 32-bit data type, but I think unify data extension 
+operation will be better.
+
+>> diff --git a/tools/lib/bpf/bpf_prog_linfo.c b/tools/lib/bpf/bpf_prog_linfo.c
+>> index 5c503096ef43..5cf41a563ef5 100644
+>> --- a/tools/lib/bpf/bpf_prog_linfo.c
+>> +++ b/tools/lib/bpf/bpf_prog_linfo.c
+>> @@ -127,7 +127,7 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
+>>          prog_linfo->raw_linfo = malloc(data_sz);
+>>          if (!prog_linfo->raw_linfo)
+>>                  goto err_free;
+>> -       memcpy(prog_linfo->raw_linfo, (void *)(long)info->line_info, data_sz);
+>> +       memcpy(prog_linfo->raw_linfo, (void *)(unsigned long)info->line_info, data_sz);
+>>
+>>          nr_jited_func = info->nr_jited_ksyms;
+>>          if (!nr_jited_func ||
+>> @@ -148,7 +148,7 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
+>>          if (!prog_linfo->raw_jited_linfo)
+>>                  goto err_free;
+>>          memcpy(prog_linfo->raw_jited_linfo,
+>> -              (void *)(long)info->jited_line_info, data_sz);
+>> +              (void *)(unsigned long)info->jited_line_info, data_sz);
+>>
+>>          /* Number of jited_line_info per jited func */
+>>          prog_linfo->nr_jited_linfo_per_func = malloc(nr_jited_func *
+>> @@ -166,8 +166,8 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
+>>                  goto err_free;
+>>
+>>          if (dissect_jited_func(prog_linfo,
+>> -                              (__u64 *)(long)info->jited_ksyms,
+>> -                              (__u32 *)(long)info->jited_func_lens))
+>> +                              (__u64 *)(unsigned long)info->jited_ksyms,
+>> +                              (__u32 *)(unsigned long)info->jited_func_lens))
+> 
+> so I'm trying to understand how this is changing anything for 32-bit
+> architecture and I must be missing something, sorry if I'm being
+> dense. The example you used below
+> 
+> jited_kyms[0] = 0xb800067c, jited_linfo[0] = 0xffffffffb800067c
+> 
+> Wouldn't (unsigned long)0xffffffffb800067c == (long)0xffffffffb800067c
+> == 0xb800067c ?
+If I understand correctly, info->jited_ksyms or info->jited_func_lens is 
+just a u64 address that point to the corresponding space. The bpf_func 
+address is stored in the item of info->jited_ksyms but not 
+info->jited_ksyms.
+
+And here, I may have misled you. Both (__u64 *)(long)info->jited_ksyms 
+and (__u64 *)(unsigned long)info->jited_ksyms are the same, I just want 
+to unify the style. I will remove them in v2.
+
+Please let me know if there is any problem with my understanding.
+
+Thanks,
+Lehui
+> 
+> isn't sizeof(long) == sizeof(void*) == 4?
+> 
+> It would be nice if you could elaborate a bit more on what problems
+> did you see in practice?
+> 
+>>                  goto err_free;
+>>
+>>          return prog_linfo;
+>> diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
+>> index 84aae639ddb5..d9ba1ec1d5b3 100644
+>> --- a/tools/testing/selftests/bpf/prog_tests/btf.c
+>> +++ b/tools/testing/selftests/bpf/prog_tests/btf.c
+>> @@ -6451,8 +6451,8 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
+>>                    info.nr_jited_line_info, jited_cnt,
+>>                    info.line_info_rec_size, rec_size,
+>>                    info.jited_line_info_rec_size, jited_rec_size,
+>> -                 (void *)(long)info.line_info,
+>> -                 (void *)(long)info.jited_line_info)) {
+>> +                 (void *)(unsigned long)info.line_info,
+>> +                 (void *)(unsigned long)info.jited_line_info)) {
+>>                  err = -1;
+>>                  goto done;
+>>          }
+>> @@ -6500,8 +6500,8 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
+>>          }
+>>
+>>          if (CHECK(jited_linfo[0] != jited_ksyms[0],
+>> -                 "jited_linfo[0]:%lx != jited_ksyms[0]:%lx",
+>> -                 (long)(jited_linfo[0]), (long)(jited_ksyms[0]))) {
+>> +                 "jited_linfo[0]:%llx != jited_ksyms[0]:%llx",
+>> +                 jited_linfo[0], jited_ksyms[0])) {
+>>                  err = -1;
+>>                  goto done;
+>>          }
+>> @@ -6519,16 +6519,16 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
+>>                  }
+>>
+>>                  if (CHECK(jited_linfo[i] <= jited_linfo[i - 1],
+>> -                         "jited_linfo[%u]:%lx <= jited_linfo[%u]:%lx",
+>> -                         i, (long)jited_linfo[i],
+>> -                         i - 1, (long)(jited_linfo[i - 1]))) {
+>> +                         "jited_linfo[%u]:%llx <= jited_linfo[%u]:%llx",
+>> +                         i, jited_linfo[i],
+>> +                         i - 1, (jited_linfo[i - 1]))) {
+>>                          err = -1;
+>>                          goto done;
+>>                  }
+>>
+>>                  if (CHECK(jited_linfo[i] - cur_func_ksyms > cur_func_len,
+>> -                         "jited_linfo[%u]:%lx - %lx > %u",
+>> -                         i, (long)jited_linfo[i], (long)cur_func_ksyms,
+>> +                         "jited_linfo[%u]:%llx - %llx > %u",
+>> +                         i, jited_linfo[i], cur_func_ksyms,
+>>                            cur_func_len)) {
+>>                          err = -1;
+>>                          goto done;
+>> --
+>> 2.25.1
+>>
+> .
+> 
