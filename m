@@ -2,70 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60281C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 19:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 19:50:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351509AbiD1Tow (ORCPT
+        id S1347108AbiD1Tx0 convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 15:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46980 "EHLO
+        Thu, 28 Apr 2022 15:53:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351494AbiD1Tot (ORCPT
+        with ESMTP id S236574AbiD1TxX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 15:44:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C612E5A5BC;
-        Thu, 28 Apr 2022 12:41:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 871E3B82C97;
-        Thu, 28 Apr 2022 19:41:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 38FF2C385A9;
-        Thu, 28 Apr 2022 19:41:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651174891;
-        bh=y4Cc6cqQY1HadzSDIcZayf/poMhf9TXDXmdbQJZkBlY=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=B1xHv+HLghwO+VM6I1eMTiJPPDSXHmJgooDb6y8Hnuf+8oLAP/FqNZHuTHuvV0W4p
-         T26p5yZ6x04oGnXorKrBe48ds8XoT/NebZYP/EZhsnQP7I4FdC728bfcxoAU0N+PGj
-         WG3BMnn/hdZF9ogLNh9/u4Ocl/lsoDSWoe5BcY7vktZ5d0+8XVyiBU8zgqMf2wMlwc
-         DX5UoapLITjruVhxlBus7BRuuymH+iJ3qYKArnaxSr4A8KLQSnwHhaSB78e9hKctoE
-         1iB/1ACZ1GINv9hxoYv2z0er58JY4jXbRsoLf3YFdFIh23NgimkAdUtmX0CNCVQP73
-         FK3NBmoa+C+Lw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2635DE85D90;
-        Thu, 28 Apr 2022 19:41:31 +0000 (UTC)
-Subject: Re: [GIT PULL] Networking for 5.18-rc5
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220428182554.2138218-1-kuba@kernel.org>
-References: <20220428182554.2138218-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220428182554.2138218-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.18-rc5
-X-PR-Tracked-Commit-Id: d9157f6806d1499e173770df1f1b234763de5c79
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 249aca0d3d631660aa3583c6a3559b75b6e971b4
-Message-Id: <165117489114.1505.12951073752854060589.pr-tracker-bot@kernel.org>
-Date:   Thu, 28 Apr 2022 19:41:31 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Thu, 28 Apr 2022 15:53:23 -0400
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B3B26DA;
+        Thu, 28 Apr 2022 12:50:06 -0700 (PDT)
+Received: by mail-yb1-f170.google.com with SMTP id w17so10899115ybh.9;
+        Thu, 28 Apr 2022 12:50:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=MjJFRl9zxHBD7Ef9rxT75GXYs6BfVSpg1GTO4h+nOHo=;
+        b=UQiHkrTTB5YhdWVQSBm5bxf43qLkP/SMGyIhUYGZv6HlxVg+UuclWuaUYIYT68oih+
+         MnBEvk4m1qIFWf8Qa7E6gqDc82HEEYhK+/LIN15uMwvqWF5xbRad8wIno5PRTBLB7jW1
+         Uo1+n7DjWOVM2mk9BUHOrvahYw5TfeYq1qIOYQ4unXNneuJe1KF80VK8aR6OGbmmOsYh
+         Z0T45p4+7Z/3FuYyj02xbBY3TZ61sMuVUAyZFMCBRnGdCrciOeIKl95rYrK0mroZvD5m
+         tJ5V/Iy4v9yMvjwFomo6SQZh33oeAQw11cADykZgSb7cTZmUhgYgg1N10UMnXrCpC3xq
+         zAAg==
+X-Gm-Message-State: AOAM531v+2fk/sZ01n7VvShL8Gf9hB1QsMOPBZKdV6eG4O9fg86VOr5D
+        Evb/BnhoGdjGE2IPJFVgHDFUTzPis++QKin+bsPYESvn4jQ=
+X-Google-Smtp-Source: ABdhPJzd1gMQJMRF8n6zclaqn9im1EeqLqzsuhBkQncyHUtYxezKcxxDsdklplYjnIyfEOOJ6nEHelJompr8vXe/7+U=
+X-Received: by 2002:a05:6902:187:b0:63d:9c95:edca with SMTP id
+ t7-20020a056902018700b0063d9c95edcamr31156818ybh.81.1651175405157; Thu, 28
+ Apr 2022 12:50:05 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAJZ5v0hHYRsWkRsJj+_Wa=jTS5cHasajYeh14yxEDvxu7gWWRQ@mail.gmail.com>
+ <CAHk-=wit9xfwAf=z6YqkZerH28qFYeTnhr3GtBqCYBnsTsSYXw@mail.gmail.com>
+In-Reply-To: <CAHk-=wit9xfwAf=z6YqkZerH28qFYeTnhr3GtBqCYBnsTsSYXw@mail.gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 28 Apr 2022 21:49:53 +0200
+Message-ID: <CAJZ5v0jpaAwq0Ad-ZA60bA5AU8JG1Y2muYtXy-bA4LapX8_dJQ@mail.gmail.com>
+Subject: Re: [GIT PULL] ACPI fixes for v5.18-rc5
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu, 28 Apr 2022 11:25:54 -0700:
+On Thu, Apr 28, 2022 at 8:50 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Thu, Apr 28, 2022 at 8:30 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
+> >
+> >  - Make the ACPI processor driver avoid falling back to C3 type of
+> >    C-states when C3 cannot be requested (Ville Syrjälä).
+>
+> Hmm.
+>
+> Doesn't this avoid C3 for _everybody_ rather than some conditional
+> "when C3 cannot be requested"?
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.18-rc5
+The bug was that if acpi_idle_bm_check() returned 1, it would "fall
+back"  to the same state via safe_state_index.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/249aca0d3d631660aa3583c6a3559b75b6e971b4
+> Of course, it looks like the 'has_lpi' state still potentially allows
+> C3 even for busmastering sleeps. Maybe that is what you meant.
 
-Thank you!
+That too.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Thanks for pulling!
+
+Rafael
