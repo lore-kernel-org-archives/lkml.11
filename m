@@ -2,84 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64488C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:16:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8063DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:16:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348934AbiD1PTq (ORCPT
+        id S1348962AbiD1PT4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 11:19:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42430 "EHLO
+        Thu, 28 Apr 2022 11:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348927AbiD1PTo (ORCPT
+        with ESMTP id S1348948AbiD1PTx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 11:19:44 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2A4AF1E6;
-        Thu, 28 Apr 2022 08:16:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651158989; x=1682694989;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=pr+ey4rRc9gYEaidZyl/0OLhL2bGWJUaGv02tvBN1vQ=;
-  b=XTy1BaP/iaSUjNBrGrzJuxCS9XnwlC9pOvppE0ALCJMFuHDl937BZ69N
-   wU3CnLJGTib1ikLiq6bxJem+bs1Bo23FrsyUNoASgYOTERYDFoPRjKOgG
-   tlWbS+auv4re7pRXe1CRBH2iang/Y4BpnvwXl09tmfwgnDPgTeMbHQfLw
-   H7gNx9c2vvgLV+aBMEiLBa0oKq+0AfL+ygjpoaIFOywdw7uq+Lercb8P9
-   0dMKIUPujmlCpkAV/aSlUmbCLumEvKiylG/h0rxgbM5lgVYm4qNguMvoS
-   oDtKBGLNsXJf513HSveylikMOpk+BSF8MclbZOQnZL00sujJMVZV5IqZg
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="329264513"
-X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="329264513"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 08:16:29 -0700
-X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="651259674"
-Received: from akleen-mobl1.amr.corp.intel.com (HELO [10.209.19.92]) ([10.209.19.92])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 08:16:27 -0700
-Message-ID: <25fdc11c-06b9-c16f-8427-77ac7673855c@linux.intel.com>
-Date:   Thu, 28 Apr 2022 08:16:27 -0700
+        Thu, 28 Apr 2022 11:19:53 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A5BAF1F7;
+        Thu, 28 Apr 2022 08:16:36 -0700 (PDT)
+Received: (Authenticated sender: herve.codina@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPA id 3D035E0002;
+        Thu, 28 Apr 2022 15:16:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651158995;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Xx4++H4H07qRaFWCLXjPyhd8z07yHU6qu47SxPJ2nTk=;
+        b=bRWuHYKpBmXDLWGTmxrKlbl0K8wnqqcDg9rtbyuOds0h5kSdlI/HLfObWrUQjiOOj7pWS/
+        IrxKrfQuxtxIrBbZmTtTfSZ+CJer8Ssv1y/QzxCCQ6ZWq5u+2IjDoQnyrdp7dWS49tYLFr
+        hvIH7vcXyraNVABqvZf3JRMBIn1yLP5qdbhV96fjuOuR9xORhRJjk2MNGdbvGoEQuTU6hJ
+        hnx1XPL0jvZX6yIAJWSRIclfd14jx23psIM2F66FvdtGAZ936iEXZuFEFnROCyHF0oozp5
+        92LnUnetlULaN1FMCGQN7YGmlJpYwLHlR0g7HEAzx306utmfi2CcwCR7cE8d5Q==
+From:   Herve Codina <herve.codina@bootlin.com>
+To:     Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
+Cc:     Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>
+Subject: [PATCH v4 0/6] RZN1 USB Host support
+Date:   Thu, 28 Apr 2022 17:16:24 +0200
+Message-Id: <20220428151630.586009-1-herve.codina@bootlin.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [RFC PATCH 1/2] swiotlb: Split up single swiotlb lock
-Content-Language: en-US
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Tianyu Lan <ltykernel@gmail.com>, m.szyprowski@samsung.com,
-        michael.h.kelley@microsoft.com, kys@microsoft.com,
-        parri.andrea@gmail.com, thomas.lendacky@amd.com,
-        wei.liu@kernel.org, Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        linux-hyperv@vger.kernel.org, konrad.wilk@oracle.com,
-        linux-kernel@vger.kernel.org, kirill.shutemov@intel.com,
-        iommu@lists.linux-foundation.org, andi.kleen@intel.com,
-        brijesh.singh@amd.com, vkuznets@redhat.com, hch@lst.de
-References: <20220428141429.1637028-1-ltykernel@gmail.com>
- <20220428141429.1637028-2-ltykernel@gmail.com>
- <e7b644f0-6c90-fe99-792d-75c38505dc54@arm.com>
- <YmqonHKBT8ftYHgY@infradead.org>
- <1517d2f0-08d6-a532-7810-2161b2dff421@linux.intel.com>
- <YmqtJr5lxDruT/9s@infradead.org>
-From:   Andi Kleen <ak@linux.intel.com>
-In-Reply-To: <YmqtJr5lxDruT/9s@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
-On 4/28/2022 8:05 AM, Christoph Hellwig wrote:
-> On Thu, Apr 28, 2022 at 07:55:39AM -0700, Andi Kleen wrote:
->> At least for TDX need parallelism with a single device for performance.
-> So find a way to make it happen without exposing details to random
-> drivers.
+This series add support for the USB Host controllers available on
+RZN1 (r9a06g032) SOC.
+
+These USB Host controllers are PCI OHCI/EHCI controllers located
+behind a bridge.
+
+Regards,
+Herve
+
+Changes v2:
+- Convert bindings to json-schema
+- Update clocks description
+- Remove unneeded '.compatible = "renesas,pci-r9a06g032"'
+
+Changes v3:
+- Remove the unneeded patch that calls clk_bulk_prepare_enable()
+- Rework the device tree binding (conversion from .txt and RZ/N1 support)
+- Use the RZ/N1 SOCs family only in the driver match compatible string.
+- Enable PM and PM_GENERIC_DOMAIN for RZ/N1 and add the missing
+  '#power-domain-cells' in sysctrl node.
+
+Changes v4:
+- Remove patches related to PM enable and #pwower-domain-cells as they
+  will be handle out of this series.
+- Add Bob's reviewed-by on patch 1
+- Add Geert's reviewed by on patch 1 and 6
+- Rename clocks and make the 'resets' property optional on RZ/N1 family
+- Reword some commit logs and titles
+- Fix dst node location (sort by node names or unit addresses)
+- Fix the USB PHY node name
 
 
-That's what the original patch (that this one is derived from) did.
+Herve Codina (6):
+  dt-bindings: PCI: pci-rcar-gen2: Convert bindings to json-schema
+  dt-bindings: PCI: renesas,pci-rcar-gen2: Add device tree support for
+    r9a06g032
+  PCI: rcar-gen2: Add RZ/N1 SOCs family compatible string
+  ARM: dts: r9a06g032: Add internal PCI bridge node
+  ARM: dts: r9a06g032: Add USB PHY DT support
+  ARM: dts: r9a06g032: Link the PCI USB devices to the USB PHY
 
-It was completely transparent to everyone outside swiotlb.c
+ .../devicetree/bindings/pci/pci-rcar-gen2.txt |  84 --------
+ .../bindings/pci/renesas,pci-rcar-gen2.yaml   | 188 ++++++++++++++++++
+ arch/arm/boot/dts/r9a06g032.dtsi              |  47 +++++
+ drivers/pci/controller/pci-rcar-gen2.c        |   1 +
+ 4 files changed, 236 insertions(+), 84 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pci/pci-rcar-gen2.txt
+ create mode 100644 Documentation/devicetree/bindings/pci/renesas,pci-rcar-gen2.yaml
 
--Andi
+-- 
+2.35.1
 
