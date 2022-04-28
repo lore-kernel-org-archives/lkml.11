@@ -2,106 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D368C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C6EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:26:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347096AbiD1N3j (ORCPT
+        id S1347361AbiD1N3q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:29:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39552 "EHLO
+        Thu, 28 Apr 2022 09:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347337AbiD1N3W (ORCPT
+        with ESMTP id S229625AbiD1N3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:29:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 926D3B0A7B;
-        Thu, 28 Apr 2022 06:26:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C16E86209C;
-        Thu, 28 Apr 2022 13:26:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01EACC385A9;
-        Thu, 28 Apr 2022 13:26:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651152362;
-        bh=09Hl6oSetqVN5HFGm8OzMmoV77aDSHC1Wz+qVhdohVc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mrECKqx+fDChACFLciuZBFdjI81Hm5XjpSdrCdSLC4T0WvdaDbhhR6TD6kZDPxp/z
-         gqDsYrMSUjf9T1RMUHoy2S+GOo3B1l6x/Zz4uWKYukVLYQ9mjoiFb0HxC+DdDddmVC
-         fwccbFMKZhBPDkZYH7uS/gmSpRYbrGgBSUEDjLkrgKL+AGyCyhmUYOFrkCNzktkzUN
-         BmAF+Sfh4k3FH5PxHXbtifDjnN4nUPXi/3KpOATSOjCOw72oRKSejoSQZqYW8alal2
-         wSQSnCI2TIycDX4IVZ+jF0GFjuPU6wImTwwM8Q6pERI+Yb9sbMmirSdQ0yNpfodhHb
-         ny6wNM7Hn28Kw==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 1178A400B1; Thu, 28 Apr 2022 10:25:58 -0300 (-03)
-Date:   Thu, 28 Apr 2022 10:25:58 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Thomas Richter <tmricht@linux.ibm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        irogers@google.com, svens@linux.ibm.com, gor@linux.ibm.com,
-        sumanthk@linux.ibm.com, hca@linux.ibm.com
-Subject: Re: [PATCH] perf test: Fix test case 81 on s390x
-Message-ID: <YmqV5o0XFfewhNkC@kernel.org>
-References: <20220428122821.3652015-1-tmricht@linux.ibm.com>
+        Thu, 28 Apr 2022 09:29:44 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4506BB0D24;
+        Thu, 28 Apr 2022 06:26:25 -0700 (PDT)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KpxFM45kjzfZkJ;
+        Thu, 28 Apr 2022 21:25:27 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by dggpeml500020.china.huawei.com
+ (7.185.36.88) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Apr
+ 2022 21:26:22 +0800
+From:   Baokun Li <libaokun1@huawei.com>
+To:     <linux-ext4@vger.kernel.org>
+CC:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>, <jack@suse.cz>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>,
+        <yebin10@huawei.com>, <yukuai3@huawei.com>, <libaokun1@huawei.com>,
+        <stable@vger.kernel.org>, Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH v3] ext4: fix race condition between ext4_write and ext4_convert_inline_data
+Date:   Thu, 28 Apr 2022 21:40:31 +0800
+Message-ID: <20220428134031.4153381-1-libaokun1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220428122821.3652015-1-tmricht@linux.ibm.com>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500020.china.huawei.com (7.185.36.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Thu, Apr 28, 2022 at 02:28:21PM +0200, Thomas Richter escreveu:
-> perf test -F 81 -v fails on s390x on the linux-next branch.
-> The test case is x86 specific can not be executed on s390x.
-> The test case depends on x86 register names such as
-> 
->   ... | egrep -q 'available registers: AX BX CX DX ....'
+Hulk Robot reported a BUG_ON:
+ ==================================================================
+ EXT4-fs error (device loop3): ext4_mb_generate_buddy:805: group 0,
+ block bitmap and bg descriptor inconsistent: 25 vs 31513 free clusters
+ kernel BUG at fs/ext4/ext4_jbd2.c:53!
+ invalid opcode: 0000 [#1] SMP KASAN PTI
+ CPU: 0 PID: 25371 Comm: syz-executor.3 Not tainted 5.10.0+ #1
+ RIP: 0010:ext4_put_nojournal fs/ext4/ext4_jbd2.c:53 [inline]
+ RIP: 0010:__ext4_journal_stop+0x10e/0x110 fs/ext4/ext4_jbd2.c:116
+ [...]
+ Call Trace:
+  ext4_write_inline_data_end+0x59a/0x730 fs/ext4/inline.c:795
+  generic_perform_write+0x279/0x3c0 mm/filemap.c:3344
+  ext4_buffered_write_iter+0x2e3/0x3d0 fs/ext4/file.c:270
+  ext4_file_write_iter+0x30a/0x11c0 fs/ext4/file.c:520
+  do_iter_readv_writev+0x339/0x3c0 fs/read_write.c:732
+  do_iter_write+0x107/0x430 fs/read_write.c:861
+  vfs_writev fs/read_write.c:934 [inline]
+  do_pwritev+0x1e5/0x380 fs/read_write.c:1031
+ [...]
+ ==================================================================
 
-Thanks,
+Above issue may happen as follows:
+           cpu1                     cpu2
+__________________________|__________________________
+do_pwritev
+ vfs_writev
+  do_iter_write
+   ext4_file_write_iter
+    ext4_buffered_write_iter
+     generic_perform_write
+      ext4_da_write_begin
+                           vfs_fallocate
+                            ext4_fallocate
+                             ext4_convert_inline_data
+                              ext4_convert_inline_data_nolock
+                               ext4_destroy_inline_data_nolock
+                                clear EXT4_STATE_MAY_INLINE_DATA
+                               ext4_map_blocks
+                                ext4_ext_map_blocks
+                                 ext4_mb_new_blocks
+                                  ext4_mb_regular_allocator
+                                   ext4_mb_good_group_nolock
+                                    ext4_mb_init_group
+                                     ext4_mb_init_cache
+                                      ext4_mb_generate_buddy  --> error
+       ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
+                                ext4_restore_inline_data
+                                 set EXT4_STATE_MAY_INLINE_DATA
+       ext4_block_write_begin
+      ext4_da_write_end
+       ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
+       ext4_write_inline_data_end
+        handle=NULL
+        ext4_journal_stop(handle)
+         __ext4_journal_stop
+          ext4_put_nojournal(handle)
+           ref_cnt = (unsigned long)handle
+           BUG_ON(ref_cnt == 0)  ---> BUG_ON
 
-Ian, I guess this will break on other !x86 arches as well. Can you
-please take a look?
+The lock held by ext4_convert_inline_data is xattr_sem, but the lock
+held by generic_perform_write is i_rwsem. Therefore, the two locks can
+be concurrent.
 
-- Arnaldo
+To solve above issue, we add inode_lock() for ext4_convert_inline_data().
+At the same time, move ext4_convert_inline_data() in front of
+ext4_punch_hole(), remove similar handling from ext4_punch_hole().
+
+Fixes: 0c8d414f163f ("ext4: let fallocate handle inline data correctly")
+Cc: stable@vger.kernel.org
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+---
+V1->V2:
+	Increase the range of the inode_lock.
+V2->V3:
+	Move the lock outside the ext4_convert_inline_data().
+	And reorganize ext4_fallocate().
+
+ fs/ext4/extents.c | 10 ++++++----
+ fs/ext4/inode.c   |  9 ---------
+ 2 files changed, 6 insertions(+), 13 deletions(-)
+
+diff --git a/fs/ext4/extents.c b/fs/ext4/extents.c
+index e473fde6b64b..474479ce76e0 100644
+--- a/fs/ext4/extents.c
++++ b/fs/ext4/extents.c
+@@ -4693,15 +4693,17 @@ long ext4_fallocate(struct file *file, int mode, loff_t offset, loff_t len)
+ 		     FALLOC_FL_INSERT_RANGE))
+ 		return -EOPNOTSUPP;
  
-> Skip this test case on s390x.
-> 
-> Output before:
->  # perf test -F 81
->  81: perf record tests                       : FAILED!
->  #
-> 
-> Output after:
->  # perf test -F 81
->  81: perf record tests                       : Skip
->  #
-> 
-> Fixes: 24f378e66021 ("perf test: Add basic perf record tests")
-> Cc: Ian Rogers <irogers@google.com>
-> Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
-> ---
->  tools/perf/tests/shell/record.sh | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/tools/perf/tests/shell/record.sh b/tools/perf/tests/shell/record.sh
-> index cd1cf14259b8..d98f4d4a00e1 100755
-> --- a/tools/perf/tests/shell/record.sh
-> +++ b/tools/perf/tests/shell/record.sh
-> @@ -37,6 +37,8 @@ test_register_capture() {
->    echo "Register capture test [Success]"
->  }
->  
-> +# Test for platform support and return TEST_SKIP
-> +[ $(uname -m) = s390x ] && exit 2
->  test_per_thread
->  test_register_capture
->  exit $err
-> -- 
-> 2.35.1
-
++	inode_lock(inode);
++	ret = ext4_convert_inline_data(inode);
++	inode_unlock(inode);
++	if (ret)
++		goto exit;
++
+ 	if (mode & FALLOC_FL_PUNCH_HOLE) {
+ 		ret = ext4_punch_hole(file, offset, len);
+ 		goto exit;
+ 	}
+ 
+-	ret = ext4_convert_inline_data(inode);
+-	if (ret)
+-		goto exit;
+-
+ 	if (mode & FALLOC_FL_COLLAPSE_RANGE) {
+ 		ret = ext4_collapse_range(file, offset, len);
+ 		goto exit;
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 646ece9b3455..4779673d733e 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -3967,15 +3967,6 @@ int ext4_punch_hole(struct file *file, loff_t offset, loff_t length)
+ 
+ 	trace_ext4_punch_hole(inode, offset, length, 0);
+ 
+-	ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+-	if (ext4_has_inline_data(inode)) {
+-		filemap_invalidate_lock(mapping);
+-		ret = ext4_convert_inline_data(inode);
+-		filemap_invalidate_unlock(mapping);
+-		if (ret)
+-			return ret;
+-	}
+-
+ 	/*
+ 	 * Write out all dirty pages to avoid race conditions
+ 	 * Then release them.
 -- 
+2.31.1
 
-- Arnaldo
