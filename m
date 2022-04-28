@@ -2,155 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40922C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 06:17:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E68C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 06:17:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243570AbiD1GUe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 02:20:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48032 "EHLO
+        id S243603AbiD1GUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 02:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238278AbiD1GUc (ORCPT
+        with ESMTP id S243605AbiD1GUp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 02:20:32 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C2F84ECC8
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 23:17:19 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2f7ee6bc6ddso38345437b3.1
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 23:17:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc
-         :content-transfer-encoding;
-        bh=u7wndHCcjBCq9MjMJkcDUIkWDGiU0w6bmfVGxnonv/M=;
-        b=CU8+6WTyf1pgwQElEqOndsoRs3YaZpcUu6opi0AGd0maXtTGR66G7zc0icaWW+rvmI
-         fNakozFmiEMeGyRPID/2ka15r4ZHFybMklZkkHG4zdTdW5QlEu9dHt4h0N5hWI0DLOA5
-         0wMkkmUpd8+K/ukZh5NY1svWbqmv8GvukIeuN6F/wOrc8NwfFMRUZZzANhQCk8bBQ+XP
-         ByDw5XH4oOMoc91SwKVfBjZwuefrCyfzusxwI1Fhdm3xFHDbM/J6nwyDWtUwqUeBlKn1
-         R7DKon5BmObE9FeTpmkMGVfT9azOthpaUEb4/ZFCmnC/Ek5949LbpcLB9jzoqtzndJgt
-         +IwQ==
+        Thu, 28 Apr 2022 02:20:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 06345532F6
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 23:17:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651126648;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qQhGtA47NR84b2kaV85amh4Sebyf9NryuvTIfdPeXpA=;
+        b=K5bDmTSnZ2E7/XoLjkYPUmvrHp26LDs6R9AhgQLl0RtKnWBF//b8TvJL1CH3tGjIk0AVZD
+        Rms3e2W+f2nbyz3lVCHlreXSVaK1nqxDfmdwPk93XrFq2CD2JU5uvvoVVSNgT60M17MlQa
+        tmFJlTjqHN7Godo9EYWpQLmg2mu6XyM=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-93-XkX60JfoPbq7ZWGKLkHP3w-1; Thu, 28 Apr 2022 02:17:26 -0400
+X-MC-Unique: XkX60JfoPbq7ZWGKLkHP3w-1
+Received: by mail-wm1-f71.google.com with SMTP id h65-20020a1c2144000000b0038e9ce3b29cso3912528wmh.2
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 23:17:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc
-         :content-transfer-encoding;
-        bh=u7wndHCcjBCq9MjMJkcDUIkWDGiU0w6bmfVGxnonv/M=;
-        b=XkUmvt2O5Sr4WaqBWHtts7K0OJSSnK2WB6j/z/R5G85McqD7eL4lDWnh6Z0zoR0bdg
-         dW6Dfz9PljlQwlMhrF5jHnLY5nX44p7RlI47Rnn8bYjWmU5C3XiBDvkNV4jSquMixc9d
-         FL97Tliib521T1imfdOe/U75/+hCYy2xzU5IEjyKAB6eZJUnV7UwW8BShG3fqSa0S1u2
-         0Lw7gyNQh6HpKm0foOAzBuLTu2+0itlTk4UAvsZo/BN8oPZzHbBeuUs9rWHJRHPy0oyk
-         BRYJxaUWBIMD107lPfmjQEcVxDG5Kx3V8+K4kahxi4wbNl8Y7+OIablkgs3XrnLdAlK1
-         XhqA==
-X-Gm-Message-State: AOAM532We7Bzy+R14ck4GSuZx9C9Ztd3221Z7mb77rmosmOAm9rhzQnd
-        ZR2C7wh/vh3wn5yorJk7PDviH2PUgQ==
-X-Google-Smtp-Source: ABdhPJyFLVRpkOEbdtAoedpI4qeWJmLVRCV37Z9hNxVqgKTlw13xrBWkN+DFyXvA81TiAVYfpAcbjp+Bnw==
-X-Received: from tweek-sin.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:2bfd])
- (user=tweek job=sendgmr) by 2002:a25:d55:0:b0:648:7008:61e0 with SMTP id
- 82-20020a250d55000000b00648700861e0mr16601052ybn.282.1651126638534; Wed, 27
- Apr 2022 23:17:18 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 16:17:07 +1000
-Message-Id: <20220428061707.768468-1-tweek@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v3] firmware_loader: use kernel credentials when reading firmware
-From:   "=?UTF-8?q?Thi=C3=A9baud=20Weksteen?=" <tweek@google.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Qian Cai <quic_qiancai@quicinc.com>
-Cc:     Jeffrey Vander Stoep <jeffv@google.com>,
-        Saravana Kannan <saravanak@google.com>,
-        Alistair Delva <adelva@google.com>,
-        Adam Shih <adamshih@google.com>, selinux@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "=?UTF-8?q?Thi=C3=A9baud=20Weksteen?=" <tweek@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qQhGtA47NR84b2kaV85amh4Sebyf9NryuvTIfdPeXpA=;
+        b=Et1B4BrukHVXi8TRl+ACbjNxx9k4PO+ihT6Ps/cd+E15qL+ccSR1ONRNi9EWV6daQx
+         3IuCAThS6AyJ3CTyirqDZxTOm+LdLM3nfcjNgPki4egHOE8MpFPjdxVIvtnN4aVYUf7M
+         14duMB7fUNph1KhLgqCUZuSrnshP6wn4zQwSlxXmaHSF9nESoLvsHy312aApuPt0kCV/
+         l1iq71nUNtRilaXVCALndSJjkfnxqAZpZeHH4ZY8LCMAqt5By45ib2QvdGGxtOaojdMb
+         VmqEVclIQ+SVuLDjWn1LonHtWnMmOwsON3cYNad6qwtgbTdzBxUUnd1bT99Kj7XQWjZN
+         rylg==
+X-Gm-Message-State: AOAM5333NErQm/wcZ0iJXAc+BDX74MG6CVEyaVTzi1xzOyO+NZJGs4G9
+        6Mu30PdKewxhUcEkh1RQn2uKGRnBDBhA0lEo+0n2v3yagpLDmocA9lx4Sj40QWL75E7P+KeKeFy
+        MGEnKH9u2b+eEFqhEH89IjLsO
+X-Received: by 2002:a05:600c:1d9b:b0:393:ffc8:a09b with SMTP id p27-20020a05600c1d9b00b00393ffc8a09bmr6976969wms.40.1651126645654;
+        Wed, 27 Apr 2022 23:17:25 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJySt1PmpZpkFkGjb2r3Cu8qgqSGEsGjgTv5m05qjUwHnRW5foby32blg2uMdYADJxt6WCMk5A==
+X-Received: by 2002:a05:600c:1d9b:b0:393:ffc8:a09b with SMTP id p27-20020a05600c1d9b00b00393ffc8a09bmr6976935wms.40.1651126645390;
+        Wed, 27 Apr 2022 23:17:25 -0700 (PDT)
+Received: from redhat.com ([2.53.18.16])
+        by smtp.gmail.com with ESMTPSA id o2-20020a5d6482000000b0020a96536fcdsm16391780wri.57.2022.04.27.23.17.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 23:17:24 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 02:17:19 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Halil Pasic <pasic@linux.ibm.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        eperezma <eperezma@redhat.com>, Cindy Lu <lulu@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Marc Zyngier <maz@kernel.org>
+Subject: Re: [PATCH V3 6/9] virtio-ccw: implement synchronize_cbs()
+Message-ID: <20220428021658-mutt-send-email-mst@kernel.org>
+References: <20220425235415-mutt-send-email-mst@kernel.org>
+ <87o80n7soq.fsf@redhat.com>
+ <20220426124243-mutt-send-email-mst@kernel.org>
+ <87ilqu7u6w.fsf@redhat.com>
+ <20220428044315.3945e660.pasic@linux.ibm.com>
+ <CACGkMEudDf=XXhV2tV+xZ586AnDyrQEotGAiSQZ4k1CTAWHZJQ@mail.gmail.com>
+ <20220428012156-mutt-send-email-mst@kernel.org>
+ <CACGkMEsd+WHp=LN0BnnDKfzv+nbS2hjgVC-tdemZWuPTc60HBQ@mail.gmail.com>
+ <20220428015318-mutt-send-email-mst@kernel.org>
+ <CACGkMEutdd=9c-2h5ijMkgUzEqNPtUCXAum7bm8W7a6m62i_Mg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACGkMEutdd=9c-2h5ijMkgUzEqNPtUCXAum7bm8W7a6m62i_Mg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Device drivers may decide to not load firmware when probed to avoid
-slowing down the boot process should the firmware filesystem not be
-available yet. In this case, the firmware loading request may be done
-when a device file associated with the driver is first accessed. The
-credentials of the userspace process accessing the device file may be
-used to validate access to the firmware files requested by the driver.
-Ensure that the kernel assumes the responsibility of reading the
-firmware.
+On Thu, Apr 28, 2022 at 02:02:16PM +0800, Jason Wang wrote:
+> On Thu, Apr 28, 2022 at 1:55 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Thu, Apr 28, 2022 at 01:51:59PM +0800, Jason Wang wrote:
+> > > On Thu, Apr 28, 2022 at 1:24 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > >
+> > > > On Thu, Apr 28, 2022 at 11:04:41AM +0800, Jason Wang wrote:
+> > > > > > But my guess is that rwlock + some testing for the legacy indicator case
+> > > > > > just to double check if there is a heavy regression despite of our
+> > > > > > expectations to see none should do the trick.
+> > > > >
+> > > > > I suggest this, rwlock (for not airq) seems better than spinlock, but
+> > > > > at worst case it will cause cache line bouncing. But I wonder if it's
+> > > > > noticeable (anyhow it has been used for airq).
+> > > > >
+> > > > > Thanks
+> > > >
+> > > > Which existing rwlock does airq use right now? Can we take it to sync?
+> > >
+> > > It's the rwlock in airq_info, it has already been used in this patch.
+> > >
+> > >                 write_lock(&info->lock);
+> > >                 write_unlock(&info->lock);
+> > >
+> > > But the problem is, it looks to me there could be a case that airq is
+> > > not used, (virtio_ccw_int_hander()). That's why the patch use a
+> > > spinlock, it could be optimized with using a rwlock as well.
+> > >
+> > > Thanks
+> >
+> > Ah, right. So let's take that on the legacy path too and Halil promises
+> > to test to make sure performance isn't impacted too badly?
+> 
+> I think what you meant is using a dedicated rwlock instead of trying
+> to reuse one of the airq_info locks.
+> 
+> If this is true, it should be fine.
+> 
+> Thanks
 
-This was observed on Android for a graphic driver loading their firmware
-when the device file (e.g. /dev/mali0) was first opened by userspace
-(i.e. surfaceflinger). The security context of surfaceflinger was used
-to validate the access to the firmware file (e.g.
-/vendor/firmware/mali.bin).
+yes
 
-Previously, Android configurations were not setting up the
-firmware_class.path command line argument and were relying on the
-userspace fallback mechanism. In this case, the security context of the
-userspace daemon (i.e. ueventd) was consistently used to read firmware
-files. More Android devices are now found to set firmware_class.path
-which gives the kernel the opportunity to read the firmware directly
-(via kernel_read_file_from_path_initns). In this scenario, the current
-process credentials were used, even if unrelated to the loading of the
-firmware file.
-
-Signed-off-by: Thi=C3=A9baud Weksteen <tweek@google.com>
----
-v3:=20
-	- Add call to put_cred to avoid a memory leak. Confirmed that no new
-		memory leak occurs on a Pixel 4a.
-	- Update commit log.
-v2: Add comment
-
- drivers/base/firmware_loader/main.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
-
-diff --git a/drivers/base/firmware_loader/main.c b/drivers/base/firmware_lo=
-ader/main.c
-index 94d1789a233e..406a907a4cae 100644
---- a/drivers/base/firmware_loader/main.c
-+++ b/drivers/base/firmware_loader/main.c
-@@ -735,6 +735,8 @@ _request_firmware(const struct firmware **firmware_p, c=
-onst char *name,
- 		  size_t offset, u32 opt_flags)
- {
- 	struct firmware *fw =3D NULL;
-+	struct cred *kern_cred =3D NULL;
-+	const struct cred *old_cred;
- 	bool nondirect =3D false;
- 	int ret;
-=20
-@@ -751,6 +753,18 @@ _request_firmware(const struct firmware **firmware_p, =
-const char *name,
- 	if (ret <=3D 0) /* error or already assigned */
- 		goto out;
-=20
-+	/*
-+	 * We are about to try to access the firmware file. Because we may have b=
-een
-+	 * called by a driver when serving an unrelated request from userland, we=
- use
-+	 * the kernel credentials to read the file.
-+	 */
-+	kern_cred =3D prepare_kernel_cred(NULL);
-+	if (!kern_cred) {
-+		ret =3D -ENOMEM;
-+		goto out;
-+	}
-+	old_cred =3D override_creds(kern_cred);
-+
- 	ret =3D fw_get_filesystem_firmware(device, fw->priv, "", NULL);
-=20
- 	/* Only full reads can support decompression, platform, and sysfs. */
-@@ -776,6 +790,9 @@ _request_firmware(const struct firmware **firmware_p, c=
-onst char *name,
- 	} else
- 		ret =3D assign_fw(fw, device);
-=20
-+	revert_creds(old_cred);
-+	put_cred(kern_cred);
-+
-  out:
- 	if (ret < 0) {
- 		fw_abort_batch_reqs(fw);
---=20
-2.36.0.464.gb9c8b46e94-goog
+> >
+> > > >
+> > > > --
+> > > > MST
+> > > >
+> >
 
