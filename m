@@ -2,153 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81DA3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 083DEC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:40:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346399AbiD1Mng (ORCPT
+        id S1346440AbiD1MoK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 08:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42472 "EHLO
+        Thu, 28 Apr 2022 08:44:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346373AbiD1Mn1 (ORCPT
+        with ESMTP id S1346431AbiD1MoG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 08:43:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740096324;
-        Thu, 28 Apr 2022 05:40:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 126A662027;
-        Thu, 28 Apr 2022 12:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE201C385A9;
-        Thu, 28 Apr 2022 12:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651149610;
-        bh=CwJL/sJR7s+HMBkHYZ+buUi2WTGVZ0xfIEzSXHMVYgg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dAATbAyz0Xbfm6thvsL84KlVJyiRJ5XPC+rTYaulWlrE3HkXrdWeKlsjRoywc7nFL
-         op+pi2rLaaGq0HXEEKKma4AmlMcl/+8XxQFaReGnHbZXdWHsfsoRcrNtUTRuvpDAHh
-         lv/+KC3EWTAhKhtb1NtlIeBJdO84xV33i8NyW5LE=
-Date:   Thu, 28 Apr 2022 14:40:08 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Collabora Kernel ML <kernel@collabora.com>,
-        groeck@chromium.org, bleung@chromium.org, dtor@chromium.org,
-        gwendal@chromium.org, vbendeb@chromium.org, andy@infradead.org,
-        Ayman Bagabas <ayman.bagabas@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        =?utf-8?B?Qmxhxb4=?= Hrastnik <blaz@mxxn.io>,
-        Darren Hart <dvhart@infradead.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jeremy Soller <jeremy@system76.com>,
-        Mattias Jacobsson <2pi@mok.nu>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Rajat Jain <rajatja@google.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Enric Balletbo i Serra <eballetbo@gmail.com>
-Subject: Re: [PATCH v8] platform: x86: Add ChromeOS ACPI device driver
-Message-ID: <YmqLKBVPMl4AFzCE@kroah.com>
-References: <Ylmmf03fewXEjRr0@debian-BULLSEYE-live-builder-AMD64>
- <YmUNnq5tH8mykNOF@kroah.com>
- <c195573c-e7c7-a2dd-7f29-c6d4625fefdb@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c195573c-e7c7-a2dd-7f29-c6d4625fefdb@collabora.com>
+        Thu, 28 Apr 2022 08:44:06 -0400
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1038DE010;
+        Thu, 28 Apr 2022 05:40:50 -0700 (PDT)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 23SCeDHb007479;
+        Thu, 28 Apr 2022 14:40:13 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org, Willy Tarreau <w@1wt.eu>
+Subject: [PATCH v2 net 0/7] insufficient TCP source port randomness
+Date:   Thu, 28 Apr 2022 14:39:54 +0200
+Message-Id: <20220428124001.7428-1-w@1wt.eu>
+X-Mailer: git-send-email 2.17.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 05:24:04PM +0500, Muhammad Usama Anjum wrote:
-> On 4/24/22 1:43 PM, Greg Kroah-Hartman wrote:
-> > On Fri, Apr 15, 2022 at 10:08:15PM +0500, Muhammad Usama Anjum wrote:
-> >> +	i = 0;
-> >> +	list_for_each_entry(aag, &chromeos_acpi.groups, list) {
-> >> +		chromeos_acpi.dev_groups[i] = &aag->group;
-> >> +		i++;
-> >> +	}
-> >> +
-> >> +	ret = sysfs_create_groups(&dev->kobj, chromeos_acpi.dev_groups);
-> > 
-> > You have raced with userspace and lost here :(
-> > 
-> Sorry, What does it mean exactly?
+Hi,
 
-Long old post that describes the issue in detail is here:
-	http://www.kroah.com/log/blog/2013/06/26/how-to-create-a-sysfs-file-correctly/
+In a not-yet published paper, Moshe Kol, Amit Klein, and Yossi Gilad
+report being able to accurately identify a client by forcing it to emit
+only 40 times more connections than the number of entries in the
+table_perturb[] table, which is indexed by hashing the connection tuple.
+The current 2^8 setting allows them to perform that attack with only 10k
+connections, which is not hard to achieve in a few seconds.
 
-> > Use the default groups pointer in the platform driver for this, and use
-> > the is_visible() callback to know to show, or not show, the attribute
-> > instead of building up dynamic lists of attributes at runtime.  That
-> > will save you lots of crazy logic and housekeeping _AND_ userspace tools
-> > will work properly as well.
-> > 
-> 
-> Driver has the 2 kinds of attributes:
-> 
-> A) Attributes which are always there. For example, CHSW and HWIDs etc.
-> They can be easily shows via dev_groups pointer in platform driver.
+Eric, Amit and I have been working on this for a few weeks now imagining,
+testing and eliminating a number of approaches that Amit and his team were
+still able to break or that were found to be too risky or too expensive,
+and ended up with the simple improvements in this series that resists to
+the attack, doesn't degrade the performance, and preserves a reliable port
+selection algorithm to avoid connection failures, including the odd/even
+port selection preference that allows bind() to always find a port quickly
+even under strong connect() stress.
 
-Great.
+The approach relies on several factors:
+  - resalting the hash secret that's used to choose the table_perturb[]
+    entry every 10 seconds to eliminate slow attacks and force the
+    attacker to forget everything that was learned after this delay.
+    This already eliminates most of the problem because if a client
+    stays silent for more than 10 seconds there's no link between the
+    previous and the next patterns, and 10s isn't yet frequent enough
+    to cause too frequent repetition of a same port that may induce a
+    connection failure ;
 
-> B) Attribute groups which vary between 0 to N. N is platform dependent
-> and can be determined at runtime. For example, GPIO attribute group
-> which have 4 sub attributes in it:
-> 
-> Group GPIO.0 --> attributes GPIO.0, GPIO.1, GPIO.2 and GPIO.3
-> Group GPIO.1 --> attributes GPIO.0, GPIO.1, GPIO.2 and GPIO.3
-> ...
-> Group GPIO.N --> attributes GPIO.0, GPIO.1, GPIO.2 and GPIO.3
-> 
-> My Chromebook has 2 GPIO attribute groups while I've found logs of a
-> Chromebook which has 7 GPIO groups.
-> 
-> Why these groups cannot be defined at compile time (Shortcomings):
-> 
-> 1) We don't know the total GPIO groups.
-> Possible solution: Determine GPIO groups' number at run time and define
-> attributes at run time.
+  - adding small random increments to the source port. Previously, a
+    random 0 or 1 was added every 16 ports. Now a random 0 to 7 is
+    added after each port. This means that with the default 32768-60999
+    range, a worst case rollover happens after 1764 connections, and
+    an average of 3137. This doesn't stop statistical attacks but
+    requires significantly more iterations of the same attack to
+    confirm a guess.
 
-What is the max number of groups you can ever have?  10?  100?  1000?
-Pick a high number, define them all (macros make this easy), and then
-only enable the ones that you need at runtime.
+  - increasing the table_perturb[] size from 2^8 to 2^16, which Amit
+    says will require 2.6 million connections to be attacked with the
+    changes above, making it pointless to get a fingerprint that will
+    only last 10 seconds. Due to the size, the table was made dynamic.
 
-> 2) We cannot determine from attribute name that this group will be
-> visible or not as is_visible doesn't provide information about its group
-> name.
-> umode_t (*is_visible)(struct kobject *, struct attribute *, int);
+  - a few minor improvements on the bits used from the hash, to eliminate
+    some unfortunate correlations that may possibly have been exploited
+    to design future attack models.
 
-Look at the attribute pointer.  That's all you care about.  Compare it
-to a real pointer and away you go!
+These changes were tested under the most extreme conditions, up to
+1.1 million connections per second to one and a few targets, showing no
+performance regression, and only 2 connection failures within 13 billion,
+which is less than 2^-32 and perfectly within usual values.
 
-> 3) In attribute.show functions, we only know about the attribute's name
-> and not the group's name. We cannot evaluate and show the attribute.
-> ssize_t (*show)(struct device *dev, struct device_attribute *attr, char
-> *buf);
-> Possible solution for 2) and 3):
-> Embed the group name into attribute name like:
-> attributes GPIO.0_GPIO.0, GPIO.0_GPIO.1, GPIO.0_GPIO.2 and GPIO.0_GPIO.3
-> attributes GPIO.1_GPIO.0, GPIO.1_GPIO.1, GPIO.2_GPIO.2 and GPIO.3_GPIO.3
-> But this is completely new ABI which we don't desire.
+The series is split into small reviewable changes and was already reviewed
+by Amit and Eric.
 
-This whole thing is a new abi :)
+Regards,
+Willy
 
-> After looking at dependence on runtime values, can we keep the existing
-> version of the driver instead of trying to workout some other hybrid
-> solution?
+---
+v2:
+  - fixed build issue reported by lkp@intel.com on 32-bit archs due
+    to the 64-by-32 divide; it's now correctly 32-by-32 as suggested
+    by Eric
+  - addressed the IPv6 hash size as well that was overlooked, as
+    reported by Jason
 
-Again, you are racing with userspace and loosing.  If you do not mind
-userspace not noticing the attributes, fine, leave it as-is, but odds
-are you don't want that.
+This version was built for i386, armv7, x86_64, and was stress-tested on
+x86_64 under both IPv4 and IPv6. I'm reasonably confident that this time
+nothing else is missing.
 
-thanks,
+---
 
-greg k-h
+Eric Dumazet (1):
+  tcp: resalt the secret every 10 seconds
+
+Willy Tarreau (6):
+  secure_seq: use the 64 bits of the siphash for port offset calculation
+  tcp: use different parts of the port_offset for index and offset
+  tcp: add small random increments to the source port
+  tcp: dynamically allocate the perturb table used by source ports
+  tcp: increase source port perturb table to 2^16
+  tcp: drop the hash_32() part from the index calculation
+
+ include/net/inet_hashtables.h |  2 +-
+ include/net/secure_seq.h      |  4 ++--
+ net/core/secure_seq.c         | 16 ++++++++-----
+ net/ipv4/inet_hashtables.c    | 42 ++++++++++++++++++++++-------------
+ net/ipv6/inet6_hashtables.c   |  4 ++--
+ 5 files changed, 43 insertions(+), 25 deletions(-)
+
+-- 
+2.17.5
+
