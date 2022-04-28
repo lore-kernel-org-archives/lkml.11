@@ -2,79 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF7A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:07:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 263DDC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:07:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343847AbiD1IKu (ORCPT
+        id S1343901AbiD1ILK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:10:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45554 "EHLO
+        Thu, 28 Apr 2022 04:11:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343809AbiD1IKl (ORCPT
+        with ESMTP id S233984AbiD1IKr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:10:41 -0400
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25905FF22;
-        Thu, 28 Apr 2022 01:07:23 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A3CCB20014;
-        Thu, 28 Apr 2022 08:07:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651133242;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OgdzcTozFEXOc5nis4y/bqNo2BFl7HCpt8t/Qg1ao2I=;
-        b=mHEA5MLCK9+jcAr3vWQsAIKpZckVY+FUgOCNMiMP1SXRkfVtqtuiRep8XuKxBEaZ0cs2kc
-        iKXOwY4qOoi+rW2ZE5l2bTTNh0bFNG9bVklK5w4slvIEvYCFKAFXvXZMjGF0NAgAJOY7gP
-        T3qCFl41r6YkAwVYHv/e/heC14i7SW+vCqZfygdtjQmuXbGA4S8zdm4OgbgGBNuUS0VYuO
-        wH+GMaFVo45+Hb7F+Z64gjFkv6H1XeIeRDcfW7Dsah4BhMZXJPlLPcckRaYq3U79XglayW
-        hZKw5LR3F1i7O0rkyCCjn8hSrbBENOyAuBr+XORQSpkz1OYXAe+qPg16mC1E6g==
-Date:   Thu, 28 Apr 2022 10:07:19 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the iio tree
-Message-ID: <20220428100719.4a29e68f@xps13>
-In-Reply-To: <20220428173758.2e642f54@canb.auug.org.au>
-References: <20220428173758.2e642f54@canb.auug.org.au>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Thu, 28 Apr 2022 04:10:47 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A245F8F2;
+        Thu, 28 Apr 2022 01:07:29 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23S7jBE9002377;
+        Thu, 28 Apr 2022 08:07:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=P5GSW7S1bGcTV0o4nVQux7Wo07UtirM3gAsmxixkw3o=;
+ b=sHRv7KOIs8uZcsib4SMqQi8jz+8RcDagMGlbGb/d8PqjOlpd9ScIAhDsl12yjPB/UCI9
+ Hv3WU5HbNkRpYBEtf4xaNK4OgJTUwUfVD8oT9ZylTnfEuAKBVJscwj/vBaS0XC+aEnDh
+ N4i4g+QgfrsccHR9L6kKHfGDl4cxzC0CVTTeho8O/NhtRggCj6/SJhS64uypy4zYGXck
+ GOmI5BK9HFdB1BiIr0uN89mJlWgASvDEqZTERM49ZAiGxfQnhyipg+5HS2UQYC75DbpM
+ ve9tECCXqQhE2ayCTrUsZ7ufA44daQ72QOPgfz4ft4zs7r2XLHKmWxWqrLKvYRJiYph/ /g== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqmk7u4y0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 Apr 2022 08:07:24 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23S7ehAa028779;
+        Thu, 28 Apr 2022 08:07:24 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqmk7u4x9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 Apr 2022 08:07:23 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23S7ueke006684;
+        Thu, 28 Apr 2022 08:07:22 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma02fra.de.ibm.com with ESMTP id 3fpuyg9k91-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 Apr 2022 08:07:22 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23S87IDa49545654
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 28 Apr 2022 08:07:18 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CAC2C4C044;
+        Thu, 28 Apr 2022 08:07:18 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 899C44C040;
+        Thu, 28 Apr 2022 08:07:18 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 28 Apr 2022 08:07:18 +0000 (GMT)
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-s390@vger.kernel.org, linux-pci@vger.kernel.org
+Subject: [PATCH v5 0/4]  PCI: Rework pci_scan_slot() and isolated PCI functions
+Date:   Thu, 28 Apr 2022 10:07:14 +0200
+Message-Id: <20220428080718.3094464-1-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Amv0XS3eBV8LnTTqsNza-I_OCTb8tSZF
+X-Proofpoint-ORIG-GUID: OV4Ct2rHkptg9YL5dprTnuiiEJnWYj0M
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-27_04,2022-04-27_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
+ mlxlogscore=762 phishscore=0 impostorscore=0 suspectscore=0
+ lowpriorityscore=0 spamscore=0 malwarescore=0 bulkscore=0
+ priorityscore=1501 clxscore=1011 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2204280049
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Hi Bjorn, Hi Jan,
 
-sfr@canb.auug.org.au wrote on Thu, 28 Apr 2022 17:37:58 +1000:
+In an earlier version[0], I sought to apply the existing jailhouse special case
+for isolated PCI functions to s390. As Bjorn noted in[1] there appears to be
+some potential for cleaning things up and removing duplication though.
 
-> Hi all,
->=20
-> After merging the iio tree, today's linux-next build (htmldocs) produced
-> this warning:
->=20
-> include/linux/iio/iio.h:319: warning: This comment starts with '/**', but=
- isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Device operating modes
->=20
-> Introduced by commit
->=20
->   831d87089ca8 ("iio: core: Clarify the modes")
+This series attempts to do this cleanup (Patches 1 and 2) followed by enabling
+isolated PCI functions for s390 (Patches 3 and 4). If need be I can of course
+split the cleanup off but for now I kept it as one as that's what I have
+been testing.
 
-Looks like there is no kdoc specific format for #define's
-(Documentation/doc-guide/kernel-doc.rst), which is disappointing, I
-really hoped this could be brought to the developer's attention this
-way.
-
-But that's not a big deal. Jonathan, if you don't mind, you may just
-drop that extra start s|/**|/*| to make the htmldocs target happy
-again.
+Testing:
+- On s390 with SR-IOV and a ConnectX NIC with PF 1 but not PF 0 passed throug
+  i.e. the isolated function case. Also of course with just VFs and an NVMe.
+- On x86_64 on a desktop system where ARI is disabled and with an SR-IOV NIC
+  with non-contiguous VFs as well as the usual other PCI devices.
 
 Thanks,
-Miqu=C3=A8l
+Niklas
+
+Changes v4 -> v5:
+- Remove unintended whitespace change in patch 1
+Changes v3 -> v4:
+- Use a do {} while loop in pci_scan_slot() as it is simpler (Bjorn)
+- Explicitly check "fn == 0" as it is not a pointer or bool (Bjorn)
+- Keep the "!dev" check in the ARI branch of next_fn() (Bjorn)
+- Moved the "fn == 0 && !dev" condition out of next_fn() into pci_scan_slot().
+  This allows us to keep the "!dev" case in the ARI branch and means there are
+  no new conditions in next_fn() making it easier to verify that its behavior
+  is equivalent to the existing code.
+- Guard the assignment of dev->multifunction with "fn > 0"
+  instead of "nr > 0". This matches the existing logic more closely and works
+  for the jailhouse case which unconditionally sets dev->multifunction for
+  "fn > 0". This also means fn == 0 is the single "first iteration" test.
+- Remove some unneeded whitespace in patch 2
+
+Changes v2 -> v3:
+- Removed now unused nr_devs variable (kernel test robot)
+
+Niklas Schnelle (4):
+  PCI: Clean up pci_scan_slot()
+  PCI: Move jailhouse's isolated function handling to pci_scan_slot()
+  PCI: Extend isolated function probing to s390
+  s390/pci: allow zPCI zbus without a function zero
+
+ arch/s390/pci/pci_bus.c    | 82 ++++++++++----------------------------
+ drivers/pci/probe.c        | 64 +++++++++++++----------------
+ include/linux/hypervisor.h |  8 ++++
+ 3 files changed, 55 insertions(+), 99 deletions(-)
+
+-- 
+2.32.0
+
