@@ -2,198 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F9B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 17:59:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B94F4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 18:00:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350669AbiD1SCO (ORCPT
+        id S1350677AbiD1SDz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 14:02:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58470 "EHLO
+        Thu, 28 Apr 2022 14:03:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345831AbiD1SCM (ORCPT
+        with ESMTP id S235021AbiD1SDu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 14:02:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BAB9EBB088
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 10:58:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651168736;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cIjpgsiLsw3XcYdc/Hr1MoGaRlP4zUefffh+YhKfGsI=;
-        b=J8UU11ZJokZAullUlrMg+p8n2ZOMjTpmGHcXA/ShfBT9wyn+ZTR6ydgrUwf/eBszbXavip
-        2ZRn2KAZkXEZbmzyeaxx/WrzKbgjSysTqNnZoyrDTH45y+gm0vmPThO+X+dTMxwY6B91X8
-        QxjAivVzIIt/V5IJ216BfdyxsXRDPKo=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-468-ZiLh68HvNo-ThRqG6eU8rQ-1; Thu, 28 Apr 2022 13:58:46 -0400
-X-MC-Unique: ZiLh68HvNo-ThRqG6eU8rQ-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 88B263C0E182;
-        Thu, 28 Apr 2022 17:58:45 +0000 (UTC)
-Received: from fedora (unknown [10.22.33.56])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 26BA2574B5B;
-        Thu, 28 Apr 2022 17:58:43 +0000 (UTC)
-Date:   Thu, 28 Apr 2022 14:58:42 -0300
-From:   Wander Lairson Costa <wander@redhat.com>
-To:     Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 3/3] x86/tdx: Add Quote generation support
-Message-ID: <YmrV0uYMBCSq7xNK@fedora>
-References: <20220422233418.1203092-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20220422233418.1203092-4-sathyanarayanan.kuppuswamy@linux.intel.com>
+        Thu, 28 Apr 2022 14:03:50 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDCB6C96B
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 11:00:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651168834; x=1682704834;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=gcCHMN2R3ZV830nUOD2eh8/g6lV0UH2wZKBz4H8GihI=;
+  b=EmwrMBEphGyq3saHhXruDZu5beJRXACzXeOA0V5s5iPzrUejMnCUNQE4
+   GAH5YDcvCIXGL/YUIBYAI7FfYAzA6+baK5HmsJu2u+f4NPxKlv4yxmRjZ
+   /dF3QMnoS8a9ZkzuKIv7lWgj9NnbuXQ6hLkg/VZxP+br+gARPBQE98Etp
+   t2gafOlcU2ycmh/abo+QEs/CiuZVFrCD9+xcqVGXdhNxMGgXw3iu6Vj3j
+   COPHd8d0c24KedHKW3SsmwJRmsHMbfFMEdzV1ga8cHDzFCAqkUZY5VW+U
+   VhDd4cTJMQAbjEU6hKbFPMucpAa6JxK4Tth6Y8uPPLPj8vWuIvS3Gt3Vd
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="266528768"
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="266528768"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 11:00:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="596910482"
+Received: from fyu1.sc.intel.com ([172.25.103.126])
+  by orsmga001.jf.intel.com with ESMTP; 28 Apr 2022 11:00:33 -0700
+From:   Fenghua Yu <fenghua.yu@intel.com>
+To:     "Dave Hansen" <dave.hansen@linux.intel.com>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        "Jean-Philippe Brucker" <jean-philippe@linaro.org>,
+        "Borislav Petkov" <bp@alien8.de>, "Ingo Molnar" <mingo@redhat.com>,
+        "Zhangfei Gao" <zhangfei.gao@linaro.org>,
+        "Will Deacon" <will@kernel.org>,
+        "Robin Murphy" <robin.murphy@arm.com>,
+        "Tony Luck" <tony.luck@intel.com>,
+        "Jacob Pan" <jacob.jun.pan@linux.intel.com>,
+        "Ravi V Shankar" <ravi.v.shankar@intel.com>,
+        "Peter Zijlstra" <peterz@infradead.org>,
+        "Andy Lutomirski" <luto@kernel.org>, "x86" <x86@kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>,
+        iommu@lists.linux-foundation.org
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Zhangfei Gao <zhangfei.gao@foxmail.com>
+Subject: [PATCH v2] iommu/sva: Fix PASID use-after-free issue
+Date:   Thu, 28 Apr 2022 11:00:41 -0700
+Message-Id: <20220428180041.806809-1-fenghua.yu@intel.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422233418.1203092-4-sathyanarayanan.kuppuswamy@linux.intel.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 04:34:18PM -0700, Kuppuswamy Sathyanarayanan wrote:
+The PASID is being freed too early.  It needs to stay around until after
+device drivers that might be using it have had a chance to clear it out
+of the hardware.
 
-[snip]
+As a reminder:
 
-> +static long tdx_get_tdquote(void __user *argp)
-> +{
-> +	struct tdx_quote_hdr *quote_hdr;
-> +	struct tdx_quote_req quote_req;
-> +	void *quote_buf = NULL;
-> +	dma_addr_t handle;
-> +	long ret = 0, err;
-> +	u64 quote_buf_len;
-> +
-> +	mutex_lock(&quote_lock);
-> +
-> +	reinit_completion(&req_compl);
-> +
-> +	/* Copy Quote request struct from user buffer */
-> +	if (copy_from_user(&quote_req, argp, sizeof(struct tdx_quote_req)))
-> +		return -EFAULT;
-> +
-> +	/* Make sure the length & timeout is valid */
-> +	if (quote_req.len <= 0 || quote_req.timeout <= 0)
+mmget() /mmput()  refcount the mm's address space
+mmgrab()/mmdrop() refcount the mm itself
 
-len and timeout are unsigned values, so they will never be negative.
+The PASID is currently tied to the life of the mm's address space and
+freed in __mmput().  This makes logical sense because the PASID can't be
+used once the address space is gone.
 
-> +		return -EINVAL;
-> +
-> +	/* Align with page size to meet 4K alignment */
-> +	quote_buf_len = PAGE_ALIGN(quote_req.len);
-> +
-> +	/*
-> +	 * Allocate DMA buffer to get TDQUOTE data from the VMM.
-> +	 * dma_alloc_coherent() API internally marks allocated
-> +	 * memory as shared with VMM. So explicit shared mapping is
-> +	 * not required.
-> +	 */
-> +	quote_buf = dma_alloc_coherent(&pdev->dev, quote_buf_len, &handle,
-> +					GFP_KERNEL | __GFP_ZERO);
-> +	if (!quote_buf) {
-> +		ret = -ENOMEM;
-> +		goto quote_failed;
-> +	}
-> +
-> +	/* Copy TDREPORT from user Quote data buffer to kernel Quote buffer */
-> +	if (copy_from_user(quote_buf, (void __user *)quote_req.buf, quote_req.len)) {
-> +		ret = -EFAULT;
-> +		goto quote_failed;
-> +	}
-> +
-> +	/* Submit GetQuote Request */
-> +	err = tdx_hcall_get_quote(quote_buf, quote_buf_len);
-> +	if (err) {
-> +		/* if failed, copy hypercall error code to user buffer */
-> +		ret = put_user(err, (long __user *)argp);
+But, this misses an important point: even after the address space is
+gone, the PASID will still be programmed into a device.  Device drivers
+might, for instance, still need to flush operations that are outstanding
+and need to use that PASID.  They do this at file->release() time.
 
-The assigment to ret is unused.
+Device drivers call the IOMMU driver to hold a reference on the mm itself
+and drop it at file->release() time.  But, the IOMMU driver holds a
+reference on the mm itself, not the address space.  The address space
+(and the PASID) is long gone by the time the driver tries to clean up.
+This is effectively a use-after-free bug on the PASID.
 
-> +		ret = -EIO;
-> +		goto quote_failed;
-> +	}
-> +
-> +	/* Wait for attestation completion */
-> +	ret = wait_for_completion_interruptible_timeout(
-> +			&req_compl,
-> +			msecs_to_jiffies(quote_req.timeout));
-> +	if (ret <= 0) {
-> +		ret = -EIO;
-> +		goto quote_failed;
-> +	}
-> +
-> +	/* Copy generated Quote data back to user buffer */
-> +	if (copy_to_user((void __user *)quote_req.buf, quote_buf, quote_buf_len)) {
+To fix this, move the PASID free operation from __mmput() to __mmdrop().
+This ensures that the IOMMU driver's existing mmgrab() keeps the PASID
+allocated until it drops its mm reference.
 
-Shouldn't we use quote_req.len instead of quote_buf_len here?
+Fixes: 701fac40384f ("iommu/sva: Assign a PASID to mm on PASID allocation and free it on mm exit")
 
-> +		ret = -EFAULT;
-> +		goto quote_failed;
-> +	}
-> +
-> +	quote_hdr = (struct tdx_quote_hdr *)quote_buf;
-> +
-> +	/* Make sure quote generation is successful */
-> +	if (!quote_hdr->status)
-> +		ret = 0;
-> +	else
-> +		ret = -EIO;
-> +
+Reported-by: Zhangfei Gao <zhangfei.gao@foxmail.com>
+Tested-by: Zhangfei Gao <zhangfei.gao@foxmail.com>
+Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Suggested-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+---
 
-Shouldn't copy_to_user be called after checking the status?
+v2:
+- Dave Hansen rewrites the change log.
+- Add Tested-by: Zhangfei Gao <zhangfei.gao@foxmail.com>
+- Add Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-> +quote_failed:
-> +	if (quote_buf)
-> +		dma_free_coherent(&pdev->dev, quote_buf_len, quote_buf, handle);
-> +
-> +	mutex_unlock(&quote_lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static void attestation_callback_handler(void)
-> +{
-> +	complete(&req_compl);
-> +}
-> +
->  static long tdx_attest_ioctl(struct file *file, unsigned int cmd,
->  			     unsigned long arg)
->  {
-> @@ -89,6 +183,9 @@ static long tdx_attest_ioctl(struct file *file, unsigned int cmd,
->  	case TDX_CMD_GET_TDREPORT:
->  		ret = tdx_get_tdreport(argp);
->  		break;
-> +	case TDX_CMD_GEN_QUOTE:
-> +		ret = tdx_get_tdquote(argp);
-> +		break;
->  	default:
->  		pr_err("cmd %d not supported\n", cmd);
->  		break;
-> @@ -103,6 +200,14 @@ static const struct file_operations tdx_attest_fops = {
->  	.llseek		= no_llseek,
->  };
->  
-> +/* Helper function to cleanup attestation related allocations */
-> +static void _tdx_attest_remove(void)
-> +{
-> +	misc_deregister(&miscdev);
+The original patch was posted and discussed in:
+https://lore.kernel.org/lkml/YmdzFFx7fN586jcf@fyu1.sc.intel.com/
 
-Won't misc_deregister be called even if misc_register fails?
+ kernel/fork.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +
-> +	tdx_remove_ev_notify_handler();
-> +}
-> +
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 9796897560ab..35a3beff140b 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -792,6 +792,7 @@ void __mmdrop(struct mm_struct *mm)
+ 	mmu_notifier_subscriptions_destroy(mm);
+ 	check_mm(mm);
+ 	put_user_ns(mm->user_ns);
++	mm_pasid_drop(mm);
+ 	free_mm(mm);
+ }
+ EXPORT_SYMBOL_GPL(__mmdrop);
+@@ -1190,7 +1191,6 @@ static inline void __mmput(struct mm_struct *mm)
+ 	}
+ 	if (mm->binfmt)
+ 		module_put(mm->binfmt->module);
+-	mm_pasid_drop(mm);
+ 	mmdrop(mm);
+ }
+ 
+-- 
+2.32.0
 
