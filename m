@@ -2,148 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F3EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 167A6C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:15:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349843AbiD1QSi (ORCPT
+        id S1349853AbiD1QTB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 12:18:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36956 "EHLO
+        Thu, 28 Apr 2022 12:19:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349842AbiD1QSf (ORCPT
+        with ESMTP id S1349898AbiD1QS7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 12:18:35 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 469C327B3F;
-        Thu, 28 Apr 2022 09:15:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D1095CE2C22;
-        Thu, 28 Apr 2022 16:15:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EA33C385A9;
-        Thu, 28 Apr 2022 16:15:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651162514;
-        bh=ITjlQ9g4B0gG723l683GuIOlpyn+saWXawbyT3upTSg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=gydywKUF2PJ/Z+XCGdoURVO8Xu7MmunrcWN9ck3aC2UWj3xv/rAFHrMc4EA/Rb3/g
-         dpRe75K6y46Jm5gEMux0dZl+qGHCu6SgDVHxR+6OeoY/VH6vWGB61e3ooREjaRPoDF
-         b6eNMdhrK8W0V27HcoUtdk7zEVgndcfj+zezhqU9zGS1ZJY/ORJ0RvQcYBjATn2U/0
-         IWLRejijOuO0bm5NVM0tvkj8USH6xGeqbiCQvpIz66SCo4YhlchLlGs/fWJ1TyITAE
-         YFBhzjpF20pQe0PViDJD6TjSha4laT9JglwvI1kJJTrUH2Pm2c2KBmtmc5YE+n5U8L
-         X2GQCoMzYH5vg==
-Received: by mail-pf1-f171.google.com with SMTP id i24so4653790pfa.7;
-        Thu, 28 Apr 2022 09:15:14 -0700 (PDT)
-X-Gm-Message-State: AOAM532HxKbiX8wR6Znr2RE2zqlankTqkY+dFV3AnTHHAe/wcJ+vhNDu
-        9hcEZr2hygWada0EXvOSAEnZ3Kq5LgakA2x+uw==
-X-Google-Smtp-Source: ABdhPJxWGKldChLEEW78VL6JusmO+ABexzsxV/SQewmd+Y9FRmG85Z5pK95W6eSIzbOvdvdIEpSvnklBPlyKXQUKU8s=
-X-Received: by 2002:a63:ff4b:0:b0:3aa:3083:5131 with SMTP id
- s11-20020a63ff4b000000b003aa30835131mr29087326pgk.148.1651162513664; Thu, 28
- Apr 2022 09:15:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220421102041.17345-1-johan+linaro@kernel.org>
- <20220421102041.17345-2-johan+linaro@kernel.org> <de4f9514-5132-f208-d43f-4c50afcda203@linaro.org>
- <YmKBgGHtfDcO1Mkg@hovoldconsulting.com> <CAA8EJpqTzcwAtxk+XtAWdZaKEx2=VduPiVBp+CWj=_C-921YJg@mail.gmail.com>
-In-Reply-To: <CAA8EJpqTzcwAtxk+XtAWdZaKEx2=VduPiVBp+CWj=_C-921YJg@mail.gmail.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Thu, 28 Apr 2022 11:15:01 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqLmy1-=5=NpWuVo9RYBXAvLisREJoMp1cWEychGmfFN=w@mail.gmail.com>
-Message-ID: <CAL_JsqLmy1-=5=NpWuVo9RYBXAvLisREJoMp1cWEychGmfFN=w@mail.gmail.com>
-Subject: Re: [PATCH RFC 1/5] phy: qcom-qmp: add support for pipe clock muxing
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Andy Gross <agross@kernel.org>,
+        Thu, 28 Apr 2022 12:18:59 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62FD629815
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:15:43 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id z21so4380777pgj.1
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:15:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Dfa1bV+l0rTD/48Pn9eH0bLjlOwV1+aYl2ofQSrXJUM=;
+        b=hWZiuHu8JdkaW16COERrDY5bK6U72h+rWDMYgBl2WsnIVOQwa3cmfWdmXW3QL4ho3D
+         GmDWhfJ6qhqQrHlZlJGNhkQ4RDqj4dHbwdCIPbADdhn/LLzhC7ZiLboE0eHKGeypFLv4
+         cReOdJ48psk9nQNdUBp8jsYfW60zM2w7XKXMk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Dfa1bV+l0rTD/48Pn9eH0bLjlOwV1+aYl2ofQSrXJUM=;
+        b=tHxVo0wERqg9+XK1qlMg9dlIbrZfQfa2qEeIPKdKdrI/ONInw4cItoND/L2MS0XKph
+         nKB1CmaC0qoSoztok/lEUO0fl/lXbkVQLXvUityqUtM3V/50GRM5UQCokmOWsX5xh3y8
+         lzbrQG9NEmJ/kGSPYUnRfLBFbh7Av+poJl2UGFsXjcBDXWr4qOTsGt8cdlbCs8gutMRs
+         CeOUlAlN3q8zbCGL8lqcnesaG252honBF6ilnSjwJo1lcgzasF+0DYvo6CnkB4ynNoQZ
+         VmhV8mzdMgCdqTtoUMHmnqlQcxJNfE1AW0RMumBlU9hbKfA9K8G+Gi6SsXrUoifBmv0S
+         6VXw==
+X-Gm-Message-State: AOAM530R8Ozh6Zp5ZwL4yP4kbACaMjAvRbw9n+oGwdBi5aKWbzWqZRmU
+        T66HJD7pBWkhgBBMvwVd+iYlxQ==
+X-Google-Smtp-Source: ABdhPJzlBNQOMivdc1V03Wr32p3jvOOeJtUJvOQ9TbIPp9SCu1XaxHBr07iH7lOg3BRvs0j4aFP0wQ==
+X-Received: by 2002:aa7:83c2:0:b0:505:723f:6ace with SMTP id j2-20020aa783c2000000b00505723f6acemr35965537pfn.86.1651162542894;
+        Thu, 28 Apr 2022 09:15:42 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:7a56:fc44:2682:8a2e])
+        by smtp.gmail.com with UTF8SMTPSA id 132-20020a62168a000000b004f40e8b3133sm293538pfw.188.2022.04.28.09.15.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 09:15:42 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 09:15:39 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Prasad Malisetty <quic_pmaliset@quicinc.com>,
         linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        PCI <linux-pci@vger.kernel.org>,
-        "open list:GENERIC PHY FRAMEWORK" <linux-phy@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>
+Subject: Re: [PATCH v22 1/2] arm64: dts: qcom: sc7180-trogdor: Add nodes for
+ onboard USB hub
+Message-ID: <Ymq9qzzd+OV6xjh8@google.com>
+References: <20220426170306.v22.1.I7a1a6448d50bdd38e6082204a9818c59cc7a9bfd@changeid>
+ <CAD=FV=UzhOrXgB4LrHO4kaSrfw1GQJMb0RNsQXYfG5kG8EwcRA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAD=FV=UzhOrXgB4LrHO4kaSrfw1GQJMb0RNsQXYfG5kG8EwcRA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 5:35 AM Dmitry Baryshkov
-<dmitry.baryshkov@linaro.org> wrote:
->
-> On Fri, 22 Apr 2022 at 13:20, Johan Hovold <johan@kernel.org> wrote:
+On Wed, Apr 27, 2022 at 02:05:04PM -0700, Doug Anderson wrote:
+> Hi,
+> 
+> On Tue, Apr 26, 2022 at 5:03 PM Matthias Kaehlcke <mka@chromium.org> wrote:
 > >
-> > On Thu, Apr 21, 2022 at 02:08:27PM +0300, Dmitry Baryshkov wrote:
-> > > On 21/04/2022 13:20, Johan Hovold wrote:
-> > > > Some QMP PHYs need to remux to their pipe clock input to the pipe clock
-> > > > output generated by the PHY before powering on the PHY and restore the
-> > > > default source during power down.
-> > > >
-> > > > Add support for an optional pipe clock mux which will be reparented to
-> > > > the generated pipe clock before powering on the PHY and restored to the
-> > > > default reference source on power off.
-> > > >
-> > > > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> > Add nodes for the onboard USB hub on trogdor devices. Remove the
+> > 'always-on' property from the hub regulator, since the regulator
+> > is now managed by the onboard_usb_hub driver.
+> 
+> There are people out there that are running trogdor devices with
+> upstream Linux. There's not much we can do about it, but probably this
+> patch will cause them to fail to probe USB because they won't have
+> "CONFIG_USB_ONBOARD_HUB=y". Luckily the commit subject has "USB" in it
+> so hopefully it'll be easy to spot, but I wonder if we should add
+> something to the commit message that makes that super obvious and
+> tells them about the relevant commit, like:
+> 
+> For anyone using trogdor-based devices on Linux, it should be noted
+> that this requires "CONFIG_USB_ONBOARD_HUB=y".
 
-[...]
+Ok, I'll respin and add the note.
 
-> > > > +   } else {
-> > > > +           qphy->piperef_clk = of_clk_get_by_name(np, "ref");
-> > > > +           if (IS_ERR(qphy->piperef_clk)) {
-> > > > +                   ret = PTR_ERR(qphy->piperef_clk);
-> > > > +                   return dev_err_probe(dev, ret,
-> > > > +                                        "failed to get lane%d piperef_clk\n",
-> > > > +                                        id);
-> > > > +           }
-> > > > +   }
-> > > > +
-> > >
-> > > As a second thought.
-> > > This needs to be more explicit. If the chipset requires the pipe clock
-> > > remuxing, we must fail if the clocks were not provided. So depending on
-> > > the qmp instance/property the driver should either use devm_clk_get()
-> > > (instead of _optional) or skip this block completely.
+> > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> > Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> > Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> > ---
+> > Depends on "usb: misc: Add onboard_usb_hub driver" [1] which landed in
+> > https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git/commit/?h=usb-testing
 > >
-> > No, the kernel is not a DT validator (and we have the YAML bindings for
-> > that now).
->
-> It is not about DT validation. It is about passing a correct DT. The
-> file can come up from the kernel. It can come from the older kernel.
-> OR it can come from the vendor. Or it even might be being a part of
-> firmware flashed into the device.
-
-As of dtschema 2022.03, validation of dtb's from firmware (or anywhere
-else) is supported. Of course, as the old saying goes, if it's not
-upstream, it doesn't exist. We can't control what vendors do in their
-DTs.
-
-> So we can not assume that the DT is correct just because the in-kernel
-> DT passes YAML validation.
-
-I agree with Johan on this. In terms of ensuring correctness, the
-kernel does a horrible job. It never will be as long as it is done in
-ad hoc code.
-
-> So, as I wrote, the whole patchset needs much more care about compatibility.
->
-> > > But this will not work with earlier DTS files.
+> > This patch was split off the above series.
 > >
-> > So this is not a problem (but if we really wanted to have the driver
-> > validate the DT it can be done by updating the compatible strings).
->
-> We should not update compatible strings just because the driver
-> changes. Compat strings describe the hardware, not the Linux point of
-> view on it.
+> > [1] https://patchwork.kernel.org/project/linux-usb/list/?series=615531&state=%2A&archive=both
+> 
+> I presume it will be moderately annoying if this lands in the Qualcomm
+> branch before the driver lands in mainline? Otherwise USB will fully
+> stop working on the Qualcomm branch. Do we want to postpone landing
+> this?
 
-Yes and no. It is the OS/client view of the h/w. If a binding is
-deemed horribly broken we could do a new compatible string and
-binding. That's not something we want to be doing frequently though.
-
-Rob
+Postponing the trogdor patch sounds good to me.
