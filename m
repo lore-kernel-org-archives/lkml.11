@@ -2,93 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 889CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:26:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55FAFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234785AbiD1KaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41242 "EHLO
+        id S234801AbiD1Kae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233754AbiD1KaA (ORCPT
+        with ESMTP id S233754AbiD1Kac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:30:00 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5E629CAE
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 03:26:45 -0700 (PDT)
-Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 420781EC0494;
-        Thu, 28 Apr 2022 12:26:40 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1651141600;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=hNWNwXX4JHOhR5AkV+ZKCJoeYikWgZzneU0wZPfsPCY=;
-        b=f31gUaucukPH/UdZE874YdbRAce7Q4NQVk0jLDDatRjH4Y/YOtnrf2c9/A7FoZ/4wQ2z2M
-        TWtRbyqQwZ7DMgYjkl4+zFqrzFjQP5tnfLI77DPJ01E/YXHiiG4cnx57Cxsri6ZRNMTuS7
-        s5c6+4v8WZxtBTUnCsaf46bgm2JzySg=
-Date:   Thu, 28 Apr 2022 12:26:37 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Juergen Gross <jgross@suse.com>, X86 ML <x86@kernel.org>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH V6 3/8] x86/entry: Move PUSH_AND_CLEAR_REGS out of
- error_entry()
-Message-ID: <Ympr3VU5Q182SVT7@zn.tnic>
-References: <20220421141055.316239-1-jiangshanlai@gmail.com>
- <20220421141055.316239-4-jiangshanlai@gmail.com>
- <YmmBHABKMk7Ctx46@zn.tnic>
- <CAJhGHyANWhu-HX20_4XhgACE8tUd8SFa5BTH-ynJscNQ7QxBRw@mail.gmail.com>
+        Thu, 28 Apr 2022 06:30:32 -0400
+X-Greylist: delayed 465 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Apr 2022 03:27:16 PDT
+Received: from todd.t-8ch.de (todd.t-8ch.de [IPv6:2a01:4f8:c010:41de::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94F53E0D9
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 03:27:16 -0700 (PDT)
+From:   =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=weissschuh.net;
+        s=mail; t=1651141165;
+        bh=HDPmPUonfLA18N3RXFt5kVLnPCi7amyMZQTy67dXQwc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=P8aClK6Y0g1CHjYNxqx8xMgauuxlIqa6OfRoobMHCHTXG9xjBjjn8tiNM8DUx5OnE
+         xamrBg2R/Lo2vMt/tzrqJ69VyX4+jmZLqlQIZp1qaTrhe8F0DFWiOcweVmwLhLY/2p
+         0upI/wdk01BVAItbB9EvqqedIndHQaK88SmPSiW4=
+To:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>, linux-kernel@vger.kernel.org
+Cc:     linux-nvme@lists.infradead.org,
+        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
+Subject: [PATCH] nvme-pci: fix host memory buffer allocation size
+Date:   Thu, 28 Apr 2022 12:19:22 +0200
+Message-Id: <20220428101922.14216-1-linux@weissschuh.net>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAJhGHyANWhu-HX20_4XhgACE8tUd8SFa5BTH-ynJscNQ7QxBRw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1651141162; l=1214; s=20211113; h=from:subject; bh=HDPmPUonfLA18N3RXFt5kVLnPCi7amyMZQTy67dXQwc=; b=OiwSDn/v0nel5RXEG7W+KHVEVkvgcbHiVXm+yYEAd5FC4Uc0EuTF1Bc4BT4EmxhFl3URAIeaUSar WqhLdmDgADR5QqlPiuV66HUNIO7gCIYQd5x4wifwMCtLXLp4B9q9
+X-Developer-Key: i=linux@weissschuh.net; a=ed25519; pk=9LP6KM4vD/8CwHW7nouRBhWLyQLcK1MkP6aTZbzUlj4=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 08:33:36AM +0800, Lai Jiangshan wrote:
-> The branch in sync_regs() can be optimized out for the non-XENPV case
-> since XENPV doesn't call sync_regs() after patch5 which makes XENPV
-> not call error_entry().
+We want to allocate the smallest possible amount of buffers with the
+largest possible size (1 buffer of size "hmpre").
 
-I find it confusing why you're even mentioning optimizing a simple test.
+Previously we were allocating as many buffers as possible of the smallest
+possible size.
+This also lead to "hmpre" to not be satisifed as not enough buffer slots
+where available.
 
-That thing is basically a *whopping* two fastpath instructions:
+Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
+---
 
-# arch/x86/kernel/traps.c:853: 	if (regs != eregs)
-	cmpq	%rdi, %rax	# eregs, <retval>
-	je	.L255	#,
+Also discussed at https://lore.kernel.org/linux-nvme/f94565db-f217-4a56-83c3-c6429807185c@t-8ch.de/
 
-Is this such a hot path that it shows in some profiles and removing that
-test there is so important?
+ drivers/nvme/host/pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> The aim of this patch and most of the patchset is to make
-> error_entry() be able to be converted to C.  And XENPV cases can
-> also be optimized in the patchset although it is not the major main.
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 3aacf1c0d5a5..0546523cc20b 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -2090,7 +2090,7 @@ static int __nvme_alloc_host_mem(struct nvme_dev *dev, u64 preferred,
+ 
+ static int nvme_alloc_host_mem(struct nvme_dev *dev, u64 min, u64 preferred)
+ {
+-	u64 min_chunk = min_t(u64, preferred, PAGE_SIZE * MAX_ORDER_NR_PAGES);
++	u64 min_chunk = max_t(u64, preferred, PAGE_SIZE * MAX_ORDER_NR_PAGES);
+ 	u64 hmminds = max_t(u32, dev->ctrl.hmminds * 4096, PAGE_SIZE * 2);
+ 	u64 chunk_size;
+ 
 
-So say just that.
-
-> Since this patch adds extra overhead (CALL and RET), the changelog
-> has to explain why it is worth it not just for converting ASM to C.
-
-What is the practical relevance of this very minor overhead? Does it
-show even in a microbenchmark?
-
-Thx.
-
+base-commit: 46cf2c613f4b10eb12f749207b0fd2c1bfae3088
 -- 
-Regards/Gruss,
-    Boris.
+2.36.0
 
-https://people.kernel.org/tglx/notes-about-netiquette
