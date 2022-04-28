@@ -2,163 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C08C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:32:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344474AbiD1Id4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:33:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48320 "EHLO
+        id S231320AbiD1Ifx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 04:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344202AbiD1IbI (ORCPT
+        with ESMTP id S1344532AbiD1IeI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:31:08 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8DF6A0BEC
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:27:53 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Thu, 28 Apr 2022 04:34:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6E5A27FF;
+        Thu, 28 Apr 2022 01:28:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id A49C61F88C;
-        Thu, 28 Apr 2022 08:27:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1651134471; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pzS6PLrR2PHAizt1+i4tl6giJjA8snqDfs2l2Q2VBs0=;
-        b=nFFFyryTPJUwSGLm0DOiWi5pBKFreuwVT6dtG6vv7wwwjuQBZiXQURV9kZVktg8KWsLx1t
-        ilLRU/ya4Wl0h4xf0vilOs5Q1STs8uNfcYkc77DBM7WYb0v8XRhp6kV9DQJWf22LPv4YH4
-        YeMQaNn8uOAEoouaJA49F3Fl0qU4Z08=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 695A913491;
-        Thu, 28 Apr 2022 08:27:51 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id eDY0GAdQamIBLgAAMHmgww
-        (envelope-from <jgross@suse.com>); Thu, 28 Apr 2022 08:27:51 +0000
-From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, dri-devel@lists.freedesktop.org,
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E257B82B47;
+        Thu, 28 Apr 2022 08:28:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CBA8C385A9;
+        Thu, 28 Apr 2022 08:28:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651134524;
+        bh=FQ7tkUBDxzmIQSIuGVBUfG+AlREALsjEt5yG5PjK1+Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WTZb83o9GLYWJwu5A6wCFd9vhs9TWHnnQMLn9YPQvTKTWatkDPxOxcRjCCLvpt0xE
+         gdX0ZvAECJ1PkQafYq81Fr0s2sYLtY1y2R5LiQ2sI8ZmPtJymzoy0SUU9i79cr57fM
+         AMB1B2Xuzv0sDgWi8K2qlDCtllq7+6Ywl+OMBYeI=
+Date:   Thu, 28 Apr 2022 10:28:41 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     =?iso-8859-1?Q?Thi=E9baud?= Weksteen <tweek@google.com>
+Cc:     Luis Chamberlain <mcgrof@kernel.org>,
+        Qian Cai <quic_qiancai@quicinc.com>,
+        Jeffrey Vander Stoep <jeffv@google.com>,
+        Saravana Kannan <saravanak@google.com>,
+        Alistair Delva <adelva@google.com>,
+        Adam Shih <adamshih@google.com>, selinux@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>,
-        Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Subject: [PATCH v2 14/19] xen/drmfront: use xenbus_setup_ring() and xenbus_teardown_ring()
-Date:   Thu, 28 Apr 2022 10:27:38 +0200
-Message-Id: <20220428082743.16593-15-jgross@suse.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220428082743.16593-1-jgross@suse.com>
-References: <20220428082743.16593-1-jgross@suse.com>
+Subject: Re: [PATCH v3] firmware_loader: use kernel credentials when reading
+ firmware
+Message-ID: <YmpQOSf0bdOcIZSU@kroah.com>
+References: <20220428061707.768468-1-tweek@google.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220428061707.768468-1-tweek@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify drmfront's ring creation and removal via xenbus_setup_ring()
-and xenbus_teardown_ring().
+On Thu, Apr 28, 2022 at 04:17:07PM +1000, Thiébaud Weksteen wrote:
+> Device drivers may decide to not load firmware when probed to avoid
+> slowing down the boot process should the firmware filesystem not be
+> available yet. In this case, the firmware loading request may be done
+> when a device file associated with the driver is first accessed. The
+> credentials of the userspace process accessing the device file may be
+> used to validate access to the firmware files requested by the driver.
+> Ensure that the kernel assumes the responsibility of reading the
+> firmware.
+> 
+> This was observed on Android for a graphic driver loading their firmware
+> when the device file (e.g. /dev/mali0) was first opened by userspace
+> (i.e. surfaceflinger). The security context of surfaceflinger was used
+> to validate the access to the firmware file (e.g.
+> /vendor/firmware/mali.bin).
+> 
+> Previously, Android configurations were not setting up the
+> firmware_class.path command line argument and were relying on the
+> userspace fallback mechanism. In this case, the security context of the
+> userspace daemon (i.e. ueventd) was consistently used to read firmware
+> files. More Android devices are now found to set firmware_class.path
+> which gives the kernel the opportunity to read the firmware directly
+> (via kernel_read_file_from_path_initns). In this scenario, the current
+> process credentials were used, even if unrelated to the loading of the
+> firmware file.
+> 
+> Signed-off-by: Thiébaud Weksteen <tweek@google.com>
+> ---
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
----
- drivers/gpu/drm/xen/xen_drm_front_evtchnl.c | 43 ++++++---------------
- 1 file changed, 11 insertions(+), 32 deletions(-)
+As stated before, should this go to stable kernels?  If so, how far
+back?
 
-diff --git a/drivers/gpu/drm/xen/xen_drm_front_evtchnl.c b/drivers/gpu/drm/xen/xen_drm_front_evtchnl.c
-index 4006568b9e32..e52afd792346 100644
---- a/drivers/gpu/drm/xen/xen_drm_front_evtchnl.c
-+++ b/drivers/gpu/drm/xen/xen_drm_front_evtchnl.c
-@@ -123,12 +123,12 @@ static irqreturn_t evtchnl_interrupt_evt(int irq, void *dev_id)
- static void evtchnl_free(struct xen_drm_front_info *front_info,
- 			 struct xen_drm_front_evtchnl *evtchnl)
- {
--	unsigned long page = 0;
-+	void *page = NULL;
- 
- 	if (evtchnl->type == EVTCHNL_TYPE_REQ)
--		page = (unsigned long)evtchnl->u.req.ring.sring;
-+		page = evtchnl->u.req.ring.sring;
- 	else if (evtchnl->type == EVTCHNL_TYPE_EVT)
--		page = (unsigned long)evtchnl->u.evt.page;
-+		page = evtchnl->u.evt.page;
- 	if (!page)
- 		return;
- 
-@@ -147,8 +147,7 @@ static void evtchnl_free(struct xen_drm_front_info *front_info,
- 		xenbus_free_evtchn(front_info->xb_dev, evtchnl->port);
- 
- 	/* end access and free the page */
--	if (evtchnl->gref != INVALID_GRANT_REF)
--		gnttab_end_foreign_access(evtchnl->gref, page);
-+	xenbus_teardown_ring(&page, 1, &evtchnl->gref);
- 
- 	memset(evtchnl, 0, sizeof(*evtchnl));
- }
-@@ -158,8 +157,7 @@ static int evtchnl_alloc(struct xen_drm_front_info *front_info, int index,
- 			 enum xen_drm_front_evtchnl_type type)
- {
- 	struct xenbus_device *xb_dev = front_info->xb_dev;
--	unsigned long page;
--	grant_ref_t gref;
-+	void *page;
- 	irq_handler_t handler;
- 	int ret;
- 
-@@ -168,44 +166,25 @@ static int evtchnl_alloc(struct xen_drm_front_info *front_info, int index,
- 	evtchnl->index = index;
- 	evtchnl->front_info = front_info;
- 	evtchnl->state = EVTCHNL_STATE_DISCONNECTED;
--	evtchnl->gref = INVALID_GRANT_REF;
- 
--	page = get_zeroed_page(GFP_NOIO | __GFP_HIGH);
--	if (!page) {
--		ret = -ENOMEM;
-+	ret = xenbus_setup_ring(xb_dev, GFP_NOIO | __GFP_HIGH, &page,
-+				1, &evtchnl->gref);
-+	if (ret)
- 		goto fail;
--	}
- 
- 	if (type == EVTCHNL_TYPE_REQ) {
- 		struct xen_displif_sring *sring;
- 
- 		init_completion(&evtchnl->u.req.completion);
- 		mutex_init(&evtchnl->u.req.req_io_lock);
--		sring = (struct xen_displif_sring *)page;
--		SHARED_RING_INIT(sring);
--		FRONT_RING_INIT(&evtchnl->u.req.ring, sring, XEN_PAGE_SIZE);
--
--		ret = xenbus_grant_ring(xb_dev, sring, 1, &gref);
--		if (ret < 0) {
--			evtchnl->u.req.ring.sring = NULL;
--			free_page(page);
--			goto fail;
--		}
-+		sring = page;
-+		XEN_FRONT_RING_INIT(&evtchnl->u.req.ring, sring, XEN_PAGE_SIZE);
- 
- 		handler = evtchnl_interrupt_ctrl;
- 	} else {
--		ret = gnttab_grant_foreign_access(xb_dev->otherend_id,
--						  virt_to_gfn((void *)page), 0);
--		if (ret < 0) {
--			free_page(page);
--			goto fail;
--		}
--
--		evtchnl->u.evt.page = (struct xendispl_event_page *)page;
--		gref = ret;
-+		evtchnl->u.evt.page = page;
- 		handler = evtchnl_interrupt_evt;
- 	}
--	evtchnl->gref = gref;
- 
- 	ret = xenbus_alloc_evtchn(xb_dev, &evtchnl->port);
- 	if (ret < 0)
--- 
-2.34.1
+And you forgot to cc: John?
 
+thanks,
+
+greg k-h
