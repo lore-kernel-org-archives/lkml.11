@@ -2,79 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C3D6C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A69BDC433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:06:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345355AbiD1LIz (ORCPT
+        id S1345414AbiD1LI7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 07:08:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40538 "EHLO
+        Thu, 28 Apr 2022 07:08:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344622AbiD1LIm (ORCPT
+        with ESMTP id S1343934AbiD1LIm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 28 Apr 2022 07:08:42 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C563BA47;
-        Thu, 28 Apr 2022 04:05:23 -0700 (PDT)
-Received: from kwepemi100001.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kpt6C0pfczfbDB;
-        Thu, 28 Apr 2022 19:04:03 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi100001.china.huawei.com (7.221.188.215) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Apr 2022 19:04:58 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Apr
- 2022 19:04:57 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <jack@suse.cz>, <tj@kernel.org>, <axboe@kernel.dk>,
-        <paolo.valente@linaro.org>
-CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
-        <yi.zhang@huawei.com>
-Subject: [PATCH -next v4 3/3] block, bfq: do not idle if only one group is activated
-Date:   Thu, 28 Apr 2022 19:19:07 +0800
-Message-ID: <20220428111907.3635820-4-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220428111907.3635820-1-yukuai3@huawei.com>
-References: <20220428111907.3635820-1-yukuai3@huawei.com>
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63F42F4;
+        Thu, 28 Apr 2022 04:05:24 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 13:05:21 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651143922;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cnxllsTcAyZYtkavIh31owKoz9rJdYEtxB5QbrLOk3k=;
+        b=UGJNInDBPSxA5iy6App+FFqkZE4flLJQY8+rk28YwbJ9klfs7ZSzorXAs9eSBFVfB/7Zwg
+        AXzmj8T2D3pvGVYrTRB65GPr3Cays9X+igoYKxJpOQ6C7JU6szReOzcaAoxl+EXFX2wCB+
+        PvrAqZ07eM6cY6FyH8kXF8uTzw8KWUN15fNXQtPmwNHlGZgvuwf3RBtRQKbFHYAkfX6EsT
+        DksWdXCyDYDbfpnV1i5/HkLLLYTuhFabqGHvg3oaXU49FfzTVy+QS6kBwrQ1S88Uy3GAZW
+        GH/UTAzrXlO8x1ZmLK4wl91t5KkjqrN5DfSiWZe/GlzwNHTnbDmPa0acLALlrg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651143922;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cnxllsTcAyZYtkavIh31owKoz9rJdYEtxB5QbrLOk3k=;
+        b=seOCzzM5JH2712g7j/mcC/gzYbbNjXx8Or9WsjyDPI1JoCtzFz/hB2js/Mlnsj0CFf+s2N
+        XKv8UdRY3I6eo0BQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, outreachy@lists.linux.dev,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCH v3 1/4] mm/highmem: Fix kernel-doc warnings in highmem*.h
+Message-ID: <Ymp08dSdeDjvwF9b@linutronix.de>
+References: <20220427183821.1979-1-fmdefrancesco@gmail.com>
+ <20220427183821.1979-2-fmdefrancesco@gmail.com>
+ <YmpaUgxIk0rrwt2G@linutronix.de>
+ <2598013.X9hSmTKtgW@leap>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <2598013.X9hSmTKtgW@leap>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that root group is counted into 'num_groups_with_busy_queues',
-'num_groups_with_busy_queues > 0' is always true in
-bfq_asymmetric_scenario(). Thus change the condition to '> 1'.
+On 2022-04-28 12:54:14 [+0200], Fabio M. De Francesco wrote:
+> No, it's not sufficient because Matthew Wilcox said that something like "It 
+> is the counterpart of kmap_atomic() for unmapping" (or anything similar) is 
+> _not_ what he wants to see. 
+> 
+> Furthermore, a large part of this text has been written by him (I'm talking 
+> of a couple of weeks ago, when this patch was not part of this series - it 
+> was on its own until Ira Weiny asked me to gather 4 patches in one only 
+> series).
 
-On the other hand, this change can enable concurrent sync io if only
-one group is activated.
+Sure.
 
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
----
- block/bfq-iosched.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> > This indicates the "migration" is disabled for
+> > !PREEMPT_RT which is not the case.
+> 
+> I read again how kmap_atomic() is defined. There are lots of 'if' 
+> statements. Only if the code gets to __kmap_local_pfn_prot(), users can be 
+> assured that it unconditionally calls both migrate_disable() and 
+> preempt_disable(). 
 
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 609b4e894684..aeba9001da0b 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -844,7 +844,7 @@ static bool bfq_asymmetric_scenario(struct bfq_data *bfqd,
- 
- 	return varied_queue_weights || multiple_classes_busy
- #ifdef CONFIG_BFQ_GROUP_IOSCHED
--	       || bfqd->num_groups_with_busy_queues > 0
-+	       || bfqd->num_groups_with_busy_queues > 1
- #endif
- 		;
- }
--- 
-2.31.1
+Right, that part. Then keep it.
 
+> > So maybe something like
+> > 
+> >  * Unmaps an address previously mapped by kmap_atomic() and re-enables
+> >  * pagefaults, CPU migration (CONFIG_PREEMPT_RT) or preemption
+> >  * (!CONFIG_PREEMPT_RT). Mappings should be unmapped in the reverse
+> > 
+> > will make it clear.
+> 
+> I'm starting to think that this level of detail is too much for users who 
+> just need to understand how to use this function as well as  
+> kmap_local_page().
+> 
+> I prefer something like the following:
+> 
+> + * Unmaps an address previously mapped by kmap_atomic() and re-enables
+> + * pagefaults and possibly also CPU migration and/or preemption. However, 
+> + * users should not count on disable of migration and/or preemption as a 
+> + * side effect of calling kmap_atomic(). Mappings must be unmapped in the 
+> + * reverse [...]
+> 
+> I'd also like to write the same paragraph for kmap_local_page().
+> 
+> What do you think of being less detailed and instead using the text I wrote 
+> above? 
+
+Sounds perfect.
+
+> Thanks,
+> 
+> Fabio
+
+Sebastian
