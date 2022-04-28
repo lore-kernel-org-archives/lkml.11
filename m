@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CFACC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 21:52:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCFCEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 21:52:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352627AbiD1Vzl (ORCPT
+        id S1352682AbiD1Vzq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 17:55:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55322 "EHLO
+        Thu, 28 Apr 2022 17:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352564AbiD1Vy7 (ORCPT
+        with ESMTP id S237165AbiD1Vy6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 17:54:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E9E33886
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 14:51:43 -0700 (PDT)
+        Thu, 28 Apr 2022 17:54:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9465221E3B
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 14:51:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4916AB83035
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AC0461FB9
         for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 21:51:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FABDC385B1;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 809CAC385B9;
         Thu, 28 Apr 2022 21:51:41 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nkC32-003MYb-1x;
+        id 1nkC32-003MaG-Jh;
         Thu, 28 Apr 2022 17:51:40 -0400
-Message-ID: <20220428215139.888187334@goodmis.org>
+Message-ID: <20220428215140.438634489@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Thu, 28 Apr 2022 17:51:03 -0400
+Date:   Thu, 28 Apr 2022 17:51:06 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Tom Zanussi <zanussi@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [for-next][PATCH 1/8] ring-buffer: Have absolute time stamps handle large numbers
+Subject: [for-next][PATCH 4/8] tracing: Add documentation for trace clock tai
 References: <20220428215102.260147624@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,162 +43,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+From: Kurt Kanzenbach <kurt@linutronix.de>
 
-There's an absolute timestamp event in the ring buffer, but this only
-saves 59 bits of the timestamp, as the 5 MSB is used for meta data
-(stating it is an absolute time stamp). This was never an issue as all the
-clocks currently in use never used those 5 MSB. But now there's a new
-clock (TAI) that does.
+Add documentation for newly introduced trace clock "tai".
+This clock corresponds to CLOCK_TAI.
 
-To handle this case, when reading an absolute timestamp, a previous full
-timestamp is passed in, and the 5 MSB of that timestamp is OR'd to the
-absolute timestamp (if any of the 5 MSB are set), and then to test for
-overflow, if the new result is smaller than the passed in previous
-timestamp, then 1 << 59 is added to it.
+Link: https://lkml.kernel.org/r/20220414091805.89667-4-kurt@linutronix.de
 
-All the extra processing is done on the reader "slow" path, with the
-exception of the "too big delta" check, and the reading of timestamps
-for histograms.
-
-Note, libtraceevent will need to be updated to handle this case as well.
-But this is not a user space regression, as user space was never able to
-handle any timestamps that used more than 59 bits.
-
-Link: https://lore.kernel.org/all/20220426175338.3807ca4f@gandalf.local.home/
-Link: https://lkml.kernel.org/r/20220427153339.16c33f75@gandalf.local.home
-
-Cc: Tom Zanussi <zanussi@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Kurt Kanzenbach <kurt@linutronix.de>
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- kernel/trace/ring_buffer.c | 49 ++++++++++++++++++++++++++++++++++----
- 1 file changed, 44 insertions(+), 5 deletions(-)
+ Documentation/trace/ftrace.rst | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/kernel/trace/ring_buffer.c b/kernel/trace/ring_buffer.c
-index 655d6db3e3c3..3a0c7ed0e93f 100644
---- a/kernel/trace/ring_buffer.c
-+++ b/kernel/trace/ring_buffer.c
-@@ -29,6 +29,14 @@
+diff --git a/Documentation/trace/ftrace.rst b/Documentation/trace/ftrace.rst
+index 45b8c56af67a..b37dc19e4d40 100644
+--- a/Documentation/trace/ftrace.rst
++++ b/Documentation/trace/ftrace.rst
+@@ -517,6 +517,18 @@ of ftrace. Here is a list of some of the key files:
+ 		processing should be able to handle them. See comments in the
+ 		ktime_get_boot_fast_ns() function for more information.
  
- #include <asm/local.h>
- 
-+/*
-+ * The "absolute" timestamp in the buffer is only 59 bits.
-+ * If a clock has the 5 MSBs set, it needs to be saved and
-+ * reinserted.
-+ */
-+#define TS_MSB		(0xf8ULL << 56)
-+#define ABS_TS_MASK	(~TS_MSB)
++	tai:
++		This is the tai clock (CLOCK_TAI) and is derived from the wall-
++		clock time. However, this clock does not experience
++		discontinuities and backwards jumps caused by NTP inserting leap
++		seconds. Since the clock access is designed for use in tracing,
++		side effects are possible. The clock access may yield wrong
++		readouts in case the internal TAI offset is updated e.g., caused
++		by setting the system time or using adjtimex() with an offset.
++		These effects are rare and post processing should be able to
++		handle them. See comments in the ktime_get_tai_fast_ns()
++		function for more information.
 +
- static void update_pages_handler(struct work_struct *work);
+ 	To set a clock, simply echo the clock name into this file::
  
- /*
-@@ -783,6 +791,24 @@ static inline void verify_event(struct ring_buffer_per_cpu *cpu_buffer,
- }
- #endif
- 
-+/*
-+ * The absolute time stamp drops the 5 MSBs and some clocks may
-+ * require them. The rb_fix_abs_ts() will take a previous full
-+ * time stamp, and add the 5 MSB of that time stamp on to the
-+ * saved absolute time stamp. Then they are compared in case of
-+ * the unlikely event that the latest time stamp incremented
-+ * the 5 MSB.
-+ */
-+static inline u64 rb_fix_abs_ts(u64 abs, u64 save_ts)
-+{
-+	if (save_ts & TS_MSB) {
-+		abs |= save_ts & TS_MSB;
-+		/* Check for overflow */
-+		if (unlikely(abs < save_ts))
-+			abs += 1ULL << 59;
-+	}
-+	return abs;
-+}
- 
- static inline u64 rb_time_stamp(struct trace_buffer *buffer);
- 
-@@ -811,8 +837,10 @@ u64 ring_buffer_event_time_stamp(struct trace_buffer *buffer,
- 	u64 ts;
- 
- 	/* If the event includes an absolute time, then just use that */
--	if (event->type_len == RINGBUF_TYPE_TIME_STAMP)
--		return rb_event_time_stamp(event);
-+	if (event->type_len == RINGBUF_TYPE_TIME_STAMP) {
-+		ts = rb_event_time_stamp(event);
-+		return rb_fix_abs_ts(ts, cpu_buffer->tail_page->page->time_stamp);
-+	}
- 
- 	nest = local_read(&cpu_buffer->committing);
- 	verify_event(cpu_buffer, event);
-@@ -2754,8 +2782,15 @@ static void rb_add_timestamp(struct ring_buffer_per_cpu *cpu_buffer,
- 		(RB_ADD_STAMP_FORCE | RB_ADD_STAMP_ABSOLUTE);
- 
- 	if (unlikely(info->delta > (1ULL << 59))) {
-+		/*
-+		 * Some timers can use more than 59 bits, and when a timestamp
-+		 * is added to the buffer, it will lose those bits.
-+		 */
-+		if (abs && (info->ts & TS_MSB)) {
-+			info->delta &= ABS_TS_MASK;
-+
- 		/* did the clock go backwards */
--		if (info->before == info->after && info->before > info->ts) {
-+		} else if (info->before == info->after && info->before > info->ts) {
- 			/* not interrupted */
- 			static int once;
- 
-@@ -3304,7 +3339,7 @@ static void dump_buffer_page(struct buffer_data_page *bpage,
- 
- 		case RINGBUF_TYPE_TIME_STAMP:
- 			delta = rb_event_time_stamp(event);
--			ts = delta;
-+			ts = rb_fix_abs_ts(delta, ts);
- 			pr_warn("  [%lld] absolute:%lld TIME STAMP\n", ts, delta);
- 			break;
- 
-@@ -3380,7 +3415,7 @@ static void check_buffer(struct ring_buffer_per_cpu *cpu_buffer,
- 
- 		case RINGBUF_TYPE_TIME_STAMP:
- 			delta = rb_event_time_stamp(event);
--			ts = delta;
-+			ts = rb_fix_abs_ts(delta, ts);
- 			break;
- 
- 		case RINGBUF_TYPE_PADDING:
-@@ -4367,6 +4402,7 @@ rb_update_read_stamp(struct ring_buffer_per_cpu *cpu_buffer,
- 
- 	case RINGBUF_TYPE_TIME_STAMP:
- 		delta = rb_event_time_stamp(event);
-+		delta = rb_fix_abs_ts(delta, cpu_buffer->read_stamp);
- 		cpu_buffer->read_stamp = delta;
- 		return;
- 
-@@ -4397,6 +4433,7 @@ rb_update_iter_read_stamp(struct ring_buffer_iter *iter,
- 
- 	case RINGBUF_TYPE_TIME_STAMP:
- 		delta = rb_event_time_stamp(event);
-+		delta = rb_fix_abs_ts(delta, iter->read_stamp);
- 		iter->read_stamp = delta;
- 		return;
- 
-@@ -4650,6 +4687,7 @@ rb_buffer_peek(struct ring_buffer_per_cpu *cpu_buffer, u64 *ts,
- 	case RINGBUF_TYPE_TIME_STAMP:
- 		if (ts) {
- 			*ts = rb_event_time_stamp(event);
-+			*ts = rb_fix_abs_ts(*ts, reader->page->time_stamp);
- 			ring_buffer_normalize_time_stamp(cpu_buffer->buffer,
- 							 cpu_buffer->cpu, ts);
- 		}
-@@ -4741,6 +4779,7 @@ rb_iter_peek(struct ring_buffer_iter *iter, u64 *ts)
- 	case RINGBUF_TYPE_TIME_STAMP:
- 		if (ts) {
- 			*ts = rb_event_time_stamp(event);
-+			*ts = rb_fix_abs_ts(*ts, iter->head_page->page->time_stamp);
- 			ring_buffer_normalize_time_stamp(cpu_buffer->buffer,
- 							 cpu_buffer->cpu, ts);
- 		}
+ 	  # echo global > trace_clock
 -- 
 2.35.1
