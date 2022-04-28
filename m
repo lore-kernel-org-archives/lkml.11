@@ -2,94 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C52D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:22:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCB9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:23:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232740AbiD1KZX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:25:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59304 "EHLO
+        id S233338AbiD1K0Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:26:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbiD1KZU (ORCPT
+        with ESMTP id S232791AbiD1K0V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:25:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 802C61EEEF
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 03:22:04 -0700 (PDT)
+        Thu, 28 Apr 2022 06:26:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CC711C1C
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 03:23:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38F0FB82C74
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 10:22:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA3FCC385A0;
-        Thu, 28 Apr 2022 10:22:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62AB761E0B
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 10:23:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74574C385A0;
+        Thu, 28 Apr 2022 10:23:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651141321;
-        bh=T43eOhfkYAIAzcaX7ZyWux1tIjqtySnRoASDc6wbkZQ=;
+        s=k20201202; t=1651141386;
+        bh=pW5AkClgtgif1M44ZzNbijRHv2tpBkE6aFgaCTHtRDY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=F996I4S4t1o/qpGlQMeoCI18EdMkugEGUVE4eT4lWEJ31c7fc3fX6Kiux04EkDOli
-         IzjnWkzVMb18Paq1hS2Z+LhwCupL6tBQkupyd9Sk7Q4ZkF4o/a/7LNfHyDuuEPJDmb
-         8pPTy2w84iMooyZdbzZGm4kszMKvplvocuDBWbkNflh5elHlKywCHKDh5WTRiWO8IJ
-         9mP4ogrY3YFd6N5SvbhvKeWCq8Xza9M8fvQHLAGu3PRtuzfN3PArKZMlZIVLz/yCi6
-         m6LhJtVZu+8MTDNhX5LLG19OFf2tnfhk4sf6ml2HBwLIWDKCjxidv62Xhsrw+mX7kv
-         oXHMcAJ45SKFA==
-Date:   Thu, 28 Apr 2022 11:21:56 +0100
+        b=gMMQ1lV6tn8qLAy770WrJmRL1aTPgDjpxYBBaYLkNno7Vg8e8DuwMYiBGZJ37uMX8
+         3JS1f2RRPW210PErlb8DQQFTHwOMqAP4/i/pgq5JPSOdyOR3S/mK3lUltj1f/VG2ox
+         P1N9ngpbTjAkUBL9hKyjmQ7y5Pf/gSx9m5g+JtsMBfbiajCpGTIoIMkMsPXroIEMp/
+         FV2px9r3jeC+ZyakRNvyF0msy7vH1ICEBbWtbyO0iYSCzd2cMwc829Tag1A+pH0LpZ
+         arZLAsiPSxjGhhdONyzxQ2sYKlEEzIxxjzYnrSBRtcyR+JPur16Td8TVCMVMSMPI/r
+         Or0Rqukays14Q==
+Date:   Thu, 28 Apr 2022 11:23:01 +0100
 From:   Will Deacon <will@kernel.org>
-To:     Zhen Lei <thunder.leizhen@huawei.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Zhen Lei <thunder.leizhen@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         James Morse <james.morse@arm.com>
 Subject: Re: [PATCH v2] arm64: add the printing of tpidr_elx in __show_regs()
-Message-ID: <20220428102156.GA14123@willie-the-truck>
+Message-ID: <20220428102301.GB14123@willie-the-truck>
 References: <20220316062408.1113-1-thunder.leizhen@huawei.com>
+ <165108481148.3292741.14737552201298089977.b4-ty@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220316062408.1113-1-thunder.leizhen@huawei.com>
+In-Reply-To: <165108481148.3292741.14737552201298089977.b4-ty@arm.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 02:24:08PM +0800, Zhen Lei wrote:
-> Commit 7158627686f0 ("arm64: percpu: implement optimised pcpu access
-> using tpidr_el1") and commit 6d99b68933fb ("arm64: alternatives: use
-> tpidr_el2 on VHE hosts") use tpidr_elx to cache my_cpu_offset to optimize
-> pcpu access. However, when performing reverse execution based on the
-> registers and the memory contents in kdump, this information is sometimes
-> required if there is a pcpu access.
+On Wed, Apr 27, 2022 at 07:40:15PM +0100, Catalin Marinas wrote:
+> On Wed, 16 Mar 2022 14:24:08 +0800, Zhen Lei wrote:
+> > Commit 7158627686f0 ("arm64: percpu: implement optimised pcpu access
+> > using tpidr_el1") and commit 6d99b68933fb ("arm64: alternatives: use
+> > tpidr_el2 on VHE hosts") use tpidr_elx to cache my_cpu_offset to optimize
+> > pcpu access. However, when performing reverse execution based on the
+> > registers and the memory contents in kdump, this information is sometimes
+> > required if there is a pcpu access.
+> > 
+> > [...]
 > 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->  arch/arm64/kernel/process.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
+> Applied to arm64 (for-next/misc), thanks!
 > 
-> v1 --> v2:
-> Directly print the tpidr_elx register of the current exception level.
-> Avoid coupling with the implementation of 'my_cpu_offset'.
-> 
-> diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
-> index 5369e649fa79ff8..738932e6fa4e947 100644
-> --- a/arch/arm64/kernel/process.c
-> +++ b/arch/arm64/kernel/process.c
-> @@ -216,6 +216,17 @@ void __show_regs(struct pt_regs *regs)
->  	show_regs_print_info(KERN_DEFAULT);
->  	print_pstate(regs);
->  
-> +	switch (read_sysreg(CurrentEL)) {
+> [1/1] arm64: add the printing of tpidr_elx in __show_regs()
+>       https://git.kernel.org/arm64/c/9ec393c812f2
 
-This should use is_kernel_in_hyp_mode() to detect if we're running at El2.
-
-> +	case CurrentEL_EL1:
-> +		printk("tpidr_el1 : %016llx\n", read_sysreg(TPIDR_EL1));
-> +		break;
-> +	case CurrentEL_EL2:
-> +		printk("tpidr_el2 : %016llx\n", read_sysreg(TPIDR_EL2));
-> +		break;
-> +	default:
-> +		break;
-> +	}
-
-I think this path can be triggered directly from usermode, so we really
-shouldn't be printing raw kernel virtual addresses here.
+heh, I wasn't expecting you to apply this, but also hadn't realised nobody
+had reviewed it. I've replied with my concerns, so please can you drop it
+for now?
 
 Will
