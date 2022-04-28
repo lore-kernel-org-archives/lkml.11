@@ -2,122 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4D8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3707C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:26:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245344AbiD1H32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:29:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38768 "EHLO
+        id S245195AbiD1H3v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 03:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245284AbiD1H3Y (ORCPT
+        with ESMTP id S245235AbiD1H3j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:29:24 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27C2340C9;
-        Thu, 28 Apr 2022 00:26:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1651130723;
-        bh=Kl1D0qKBLbFcGmM/inCOM/LMhQnD3kUx2fRwBIfJFbY=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=ICgj3U0KsWCdSyk+4KTl7+UbbH7ZgeuOkjZprYn96+3lI1AwcRvsBXO6wd+8qZwPn
-         OoIxHHuNiq00mTWpDdxVNnQJovYajWGc5SsfcuWwvgRNldnbn6R5FYiuIV/k+QG89n
-         mi1e9wXTuqQiOIvz8GUyBD6Pzj3qw9SOqaQH/XoM=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [217.61.145.42] ([217.61.145.42]) by web-mail.gmx.net
- (3c-app-gmx-bs20.server.lan [172.19.170.72]) (via HTTP); Thu, 28 Apr 2022
- 09:25:23 +0200
+        Thu, 28 Apr 2022 03:29:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 29F4F34B9B
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:26:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651130779;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Baw5AAynaYZhBtVAECa7lnldNyZZzfbq8GqHK16Ojp4=;
+        b=eTPwoNVGXsfD7XL5MDd0hgjC0p0c/ydY2Ek8XlTjrqwunK8EV/3bmCV1Zgb1AnydhsjpTu
+        LWPcSDdMZuZsOXLB1ahUq/huMmLxuiT1/LHYHnNOwE03sySJtFmiqc3Mn7YDyjLrJso497
+        EJthh2fXrJOL3LAzW1R0cDvNhLmVRc8=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-633-5cFKtU6BMMm8v4l9jh7ndg-1; Thu, 28 Apr 2022 03:26:17 -0400
+X-MC-Unique: 5cFKtU6BMMm8v4l9jh7ndg-1
+Received: by mail-wr1-f71.google.com with SMTP id s8-20020adf9788000000b0020adb01dc25so1577918wrb.20
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:26:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Baw5AAynaYZhBtVAECa7lnldNyZZzfbq8GqHK16Ojp4=;
+        b=wUteh+dBgPuQVd7khK/DJlpi9aGQADahVbxSkzA+nWxhh6zhG0whN/3OEKj/YUoNQg
+         BPKcypE8B2oLJ7gwvmpi4JPAx9rugzQb0h6acNNQjwVljrY7CiTU4Chzh/5SAEbvSkUJ
+         WcZ4w4BMQAo+Sx/u9txfh2Bfga4XJ4Aaa5T8wGeLTdp1a+NtnnWXl4B4I1r4+pXFHORz
+         /szCTT5mNYArCI3CzQOOQfQNnZeHIqpbIGFCI2H/zDf+R8FjR2F7phdrG/3gaFebDpcq
+         eiJwjCTGcR46IxWd9MPK+DYzx8uwhzvnQYAZY4GSzMAn1twGtz+IDMCURKmpIW7wzsDq
+         0WtA==
+X-Gm-Message-State: AOAM531nqMMZuTJFDX44avVso0ItM2stQtuxGMD0ZZZ4zJO9jmw0Y+4g
+        NEWRvy+bQpDgTsLHZMPGgmhoCuRTS8sS7Rkz5MjAdpWjK6IwPIvOMmDal8WJU3SKzOmsjfbfeWC
+        a6cnxwU32nxkD9M08cp8JcIXi
+X-Received: by 2002:a7b:c8d5:0:b0:392:b12e:fd11 with SMTP id f21-20020a7bc8d5000000b00392b12efd11mr29610292wml.96.1651130772052;
+        Thu, 28 Apr 2022 00:26:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzNXR7aPjPClAeL9yVwShDBwTTCIJfhAL5A0u1ugWtOkmKMV1lDCAZ9Yu5Tgd4bZgKDo6E2Qg==
+X-Received: by 2002:a7b:c8d5:0:b0:392:b12e:fd11 with SMTP id f21-20020a7bc8d5000000b00392b12efd11mr29610274wml.96.1651130771783;
+        Thu, 28 Apr 2022 00:26:11 -0700 (PDT)
+Received: from [192.168.1.129] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id u4-20020a5d6da4000000b0020a8c8d3e00sm16226202wrs.73.2022.04.28.00.26.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 00:26:11 -0700 (PDT)
+Message-ID: <6f3b8d37-0a70-a035-e87b-5aa72926fff9@redhat.com>
+Date:   Thu, 28 Apr 2022 09:26:10 +0200
 MIME-Version: 1.0
-Message-ID: <trinity-fcca248f-cb76-474a-8227-5b7188140bdf-1651130723782@3c-app-gmx-bs20>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Frank Wunderlich <linux@fw-web.de>,
-        linux-rockchip@lists.infradead.org,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Johan Jonker <jbx6244@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-phy@lists.infradead.org
-Subject: Aw: Re: [RFC/RFT v2 05/11] dt-bindings: pci: add bifurcation option
- to Rockchip DesignWare binding
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2] drm/display: Select DP helper for DRM_DP_AUX_CHARDEV
+ and DRM_DP_CEC
+Content-Language: en-US
+To:     Thomas Zimmermann <tzimmermann@suse.de>,
+        linux-kernel@vger.kernel.org
+Cc:     Lyude Paul <lyude@redhat.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel@lists.freedesktop.org
+References: <20220427215528.237861-1-javierm@redhat.com>
+ <46446e78-60a6-1b8c-1bb6-1c005489d58c@suse.de>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <46446e78-60a6-1b8c-1bb6-1c005489d58c@suse.de>
 Content-Type: text/plain; charset=UTF-8
-Date:   Thu, 28 Apr 2022 09:25:23 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <ea6ccec6-81a3-b22d-46db-c31a9f1e85f3@linaro.org>
-References: <20220426132139.26761-1-linux@fw-web.de>
- <20220426132139.26761-6-linux@fw-web.de>
- <ea6ccec6-81a3-b22d-46db-c31a9f1e85f3@linaro.org>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:HuS/IQbWns2B9KbVmd+JXXePQOBTI5r+4oLrCZnL6JqsyIeqTqsBN/vkAMd357JlnYgtg
- 43YoCUDaepjA+gR16+vK2qsTsr2Ggk+GAdPHRIuTT25wO9OaXXFxzSpRFegBlZVrQWK5MXoEqjar
- iAZeNn9SgywJLlkDgT8y3fRThCDpGCk0BET0WAB96yokouxCOXHKnW6UZMTKzC+794JlErXjecwE
- nOvCkWakPUTT8Eb4neasYEGg6txE7h/DJplgMSgezg5PWQ445EzyGytjG9rvZ2t5gA53hlGPPTCu
- CQ=
-X-UI-Out-Filterresults: notjunk:1;V03:K0:+DhlrGzejX0=:H7ejG4ksVlR2OD+2AK78pX
- NEn5mlQjnBf4smxMBlFQljTTDT4W3WRU9Ox9sJ9xtSepQmURcyZ9dmRz33TNfj4pKUQQnPHR2
- vJnr0pZHyzisgYrhozVIiPpQqDuK2Bm1g6wmUJEqNtkyvZMY1dJt50oY03g5hDHAh2Z68clXs
- DEdgI9Q/rkGwXhaXXcmeWNR/yePzdnuglPIrJEqnIHu+WgpAcGYOT33sD8fxQOTKuGAhFUqVt
- LGWzfBaGSHbQ7IAtL1cp5Os9cpbM5CWuUNUywoyNUW1mdZg6EO+tuRk8H/X0m3DgcfVfTFV5y
- cdPM7M2+up0OIiVi1YuXUDrlfvppcNs5wmn5N/G5Mfoso5J3BnSqaAqu5IqW1MIkTFmZGnKHa
- Otv3ngNV4/PnY0rspfKTYZBgtwvuFKESVSOjs/lbachHn9LL2mmrmjqiwmxlqPwDQq6W2mMFj
- 2G5UtIxST1Y+5IHo0OXbSF0FwTXVwj2xMOBMDnDDUvGazu2xqLQFng8dzLnoGzVRr+m/srdOe
- VCKBW4yNmX6U7tZ6W98QE14hn0R3gL4mWd6fSv9VGrE/O3HWP7rotqrVcDnMJ77F51RbKfNqP
- JGdLo6lSN+nH7fuKzXYoDWU6JZD6FzyP72acErlUg0aLbF3UMNr+zZl7cdp/284bXNlZL5dLr
- Fv6ERQriyiaZQ3BjuTQXJE5gIAslsj3d81qC8t6yyYFfqDWY+1bGH+38N9CmUIJixJkboSc4C
- Mfqgom7Fv+w2Sh75SuR8v4crb79c6PkMGRAqpOJ8pdoZpebtchSZP90ENTVBfg3f5Enz/F/N4
- 0aXBOMR
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
-> Gesendet: Donnerstag, 28. April 2022 um 08:37 Uhr
-> Von: "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
-> On 26/04/2022 15:21, Frank Wunderlich wrote:
-> > From: Frank Wunderlich <frank-w@public-files.de>
-> >
-> > Add bifurcation property for splitting PCIe lanes.
-> >
-> > Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-> > ---
-> >  Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.ya=
-ml b/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
-> > index bc0a9d1db750..a992970e8b85 100644
-> > --- a/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
-> > +++ b/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
-> > @@ -74,6 +74,8 @@ properties:
-> >    reset-names:
-> >      const: pipe
-> >
-> > +  bifurcation: true
-> > +
+Hello Thomas,
+
+Thanks for your feedback.
+
+On 4/28/22 09:02, Thomas Zimmermann wrote:
+
+[snip]
+
+>> Changes in v2:
+>> - Explain better the issue in the change description.
+>> - Only select DRM_DISPLAY_DP_HELPER and not DRM_DISPLAY_HELPER.
+>>
+>>   drivers/gpu/drm/display/Kconfig | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/gpu/drm/display/Kconfig b/drivers/gpu/drm/display/Kconfig
+>> index f84f1b0cd23f..9fe80c4e555c 100644
+>> --- a/drivers/gpu/drm/display/Kconfig
+>> +++ b/drivers/gpu/drm/display/Kconfig
+>> @@ -32,6 +32,7 @@ config DRM_DISPLAY_HDMI_HELPER
+>>   config DRM_DP_AUX_CHARDEV
+>>   	bool "DRM DP AUX Interface"
+>>   	depends on DRM
+>> +	select DRM_DISPLAY_DP_HELPER
+> 
+> You cannot select DISPLAY_DP_HELPER without DISPLAY_HELPER.
 >
-> Does not look like standard property. Is it already defined somewhere?
-> All non-standard properties need vendor, type and description.
 
-have removed vendor-prefix from v1>v2 based on suggestion this can be usef=
-ul for other vendors too.
+That was my original thought as well and what did in v1, but then I noticed
+that doing that it would force DRM_DISPLAY_HELPER to be set as built-in and
+not allow to be built as a module.
+ 
+> Can't you simply make it depend on DISPLAY_DP_HELPER.  The menu entry 
+> will show up as soon as there's a driver that selcets DISPLAY_DP_HELPER.
+>
 
-but last 3 patches of this series replacing bifurcation property (which is=
- only bool) by the more useful lane-map (left alone for discussion, will b=
-e squashed if the right way is found).
+I could but then that means that once won't be able to select these two config
+options unless some enable symbol selects DRM_DISPLAY_DP_HELPER.
 
-i guess same here, description+type needed, but how to describe an array o=
-f int in yaml? do you know any examples?
+In my opinion, DRM_DP_AUX_CHARDEV and DRM_DP_CEC are different than all other
+options that select DRM_DISPLAY_DP_HELPER, since those are drivers and want to
+have both DRM_DISPLAY_DP_HELPER and DRM_DISPLAY_HELPER set.
 
-regards Frank
+But DRM_DP_AUX_CHARDEV and DRM_DP_CEC are just included in drm_display_helper.o
+if enabled, and depend on symbols that are present if CONFIG_DRM_DISPLAY_DP_HELPER
+is enabled. So just need the latter, if DRM_DISPLAY_HELPER is not enabled then it
+will just be a no-op.
+
+Having written that though I noticed that a "depends on DRM_DISPLAY_HELPER" makes
+sense. If you agree I can add it and post a v3.
+
+Now, pondering more about this issue, probably the most correct thing to do is for
+the drivers that make use of the symbols exported by DRM_DP_{AUX_CHARDEV,CEC} to
+select these. What do you think ?
+ -- 
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
