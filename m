@@ -2,171 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23F25C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:18:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D15D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:19:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345514AbiD1LWJ (ORCPT
+        id S1345519AbiD1LWr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 07:22:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51402 "EHLO
+        Thu, 28 Apr 2022 07:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230231AbiD1LWD (ORCPT
+        with ESMTP id S230231AbiD1LWo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 07:22:03 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F28A94F6;
-        Thu, 28 Apr 2022 04:18:48 -0700 (PDT)
-X-UUID: 6da760cb734a4341bb8b8abd0fde6d5b-20220428
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:d83dbdcb-c48c-45e9-af44-dd36e57a733c,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:45
-X-CID-INFO: VERSION:1.1.4,REQID:d83dbdcb-c48c-45e9-af44-dd36e57a733c,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:45
-X-CID-META: VersionHash:faefae9,CLOUDID:5198d3c6-85ee-4ac1-ac05-bd3f1e72e732,C
-        OID:IGNORED,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil,QS:0
-        ,BEC:nil
-X-UUID: 6da760cb734a4341bb8b8abd0fde6d5b-20220428
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 228262536; Thu, 28 Apr 2022 19:18:43 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 28 Apr 2022 19:18:42 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 28 Apr 2022 19:18:41 +0800
-Message-ID: <b83049a9cc9714a28c90a167245c43afddbc1aab.camel@mediatek.com>
-Subject: Re: [PATCH V4 12/15] dt-bindings: reset: mediatek: Add infra_ao
- reset bit for MT8192/MT8195
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "angelogioacchino.delregno@collabora.com" 
-        <angelogioacchino.delregno@collabora.com>,
-        Chun-Jie Chen =?UTF-8?Q?=28=E9=99=B3=E6=B5=9A=E6=A1=80=29?= 
-        <Chun-Jie.Chen@mediatek.com>,
-        "wenst@chromium.org" <wenst@chromium.org>,
-        Runyang Chen =?UTF-8?Q?=28=E9=99=88=E6=B6=A6=E6=B4=8B=29?= 
-        <Runyang.Chen@mediatek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        Project_Global_Chrome_Upstream_Group 
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Thu, 28 Apr 2022 19:18:41 +0800
-In-Reply-To: <d96797dc-8fbd-fe1c-f970-2f6fc8ca5b69@linaro.org>
-References: <20220427030950.23395-1-rex-bc.chen@mediatek.com>
-         <20220427030950.23395-13-rex-bc.chen@mediatek.com>
-         <d96797dc-8fbd-fe1c-f970-2f6fc8ca5b69@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 28 Apr 2022 07:22:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A755EA94F2
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 04:19:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651144769;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Qr2DOGB0z6K0qePNKw8JJPlRt9jZnLNpgbFm3MJ8HzE=;
+        b=eNKVgpbvjOSnx86OScTqbuZpid+U+vejq4zFJTjH0smxRRL+mTTkBGmqPkfl77+KfMAvI9
+        VFKhWaLgnZicHcYoaC9/SlNuqNMB0kfmNExnHU6M/q9dWl5AhH3/TiMpTw0aqfAT2PZLS/
+        hjqts5K8zKjZNx30sP3KAJtsUfREpN8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-416-PeK0j-6rMlibt-Yq8wehuw-1; Thu, 28 Apr 2022 07:19:24 -0400
+X-MC-Unique: PeK0j-6rMlibt-Yq8wehuw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CD7BE1815CFC;
+        Thu, 28 Apr 2022 11:19:17 +0000 (UTC)
+Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.193.96])
+        by smtp.corp.redhat.com (Postfix) with SMTP id C6B052166B18;
+        Thu, 28 Apr 2022 11:19:12 +0000 (UTC)
+Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
+        oleg@redhat.com; Thu, 28 Apr 2022 13:19:17 +0200 (CEST)
+Date:   Thu, 28 Apr 2022 13:19:11 +0200
+From:   Oleg Nesterov <oleg@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 7/9] ptrace: Simplify the wait_task_inactive call in
+ ptrace_check_attach
+Message-ID: <20220428111911.GA3804@redhat.com>
+References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+ <20220426225211.308418-7-ebiederm@xmission.com>
+ <20220427151455.GE17421@redhat.com>
+ <Ympvf1Pam1ckX+EA@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ympvf1Pam1ckX+EA@hirez.programming.kicks-ass.net>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-04-28 at 15:18 +0800, Krzysztof Kozlowski wrote:
-> On 27/04/2022 05:09, Rex-BC Chen wrote:
-> > - To support reset of infra_ao, add the bit definition of
-> >   thermal/PCIe/SVS for MT8192.
-> > - To support reset of infra_ao, add the bit definition of
-> >   thermal/SVS for MT8195.
-> > - Add the driver comment to separate the reset index for
-> >   TOPRGU and INFRA.
-> > 
-> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> > ---
-> >  include/dt-bindings/reset/mt8192-resets.h | 8 ++++++++
-> >  include/dt-bindings/reset/mt8195-resets.h | 6 ++++++
-> >  2 files changed, 14 insertions(+)
-> > 
-> > diff --git a/include/dt-bindings/reset/mt8192-resets.h
-> > b/include/dt-bindings/reset/mt8192-resets.h
-> > index be9a7ca245b9..ee0ca02a39bf 100644
-> > --- a/include/dt-bindings/reset/mt8192-resets.h
-> > +++ b/include/dt-bindings/reset/mt8192-resets.h
-> > @@ -7,6 +7,7 @@
-> >  #ifndef _DT_BINDINGS_RESET_CONTROLLER_MT8192
-> >  #define _DT_BINDINGS_RESET_CONTROLLER_MT8192
-> >  
-> > +/* TOPRGU resets */
-> >  #define MT8192_TOPRGU_MM_SW_RST					
-> > 1
-> >  #define MT8192_TOPRGU_MFG_SW_RST				2
-> >  #define MT8192_TOPRGU_VENC_SW_RST				3
-> > @@ -27,4 +28,11 @@
-> >  
-> >  #define MT8192_TOPRGU_SW_RST_NUM				23
-> >  
-> > +/* INFRA resets */
-> > +#define MT8192_INFRA_THERMAL_CTRL_RST			0
-> > +#define MT8192_INFRA_PEXTP_PHY_RST				79
-> > +#define MT8192_INFRA_PTP_RST					
-> > 101
-> > +#define MT8192_INFRA_RST4_PCIE_TOP				129
-> > +#define MT8192_INFRA_THERMAL_CTRL_MCU_RST		140
-> 
-> This is still wrong. I gave you exactly what has to be used:
-> 0
-> 1
-> 2
-> ...
-> 
-> It's a decimal number incremented by one.
-> 
-> 
-> > +
-> >  #endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT8192 */
-> > diff --git a/include/dt-bindings/reset/mt8195-resets.h
-> > b/include/dt-bindings/reset/mt8195-resets.h
-> > index a26bccc8b957..a3226f40779c 100644
-> > --- a/include/dt-bindings/reset/mt8195-resets.h
-> > +++ b/include/dt-bindings/reset/mt8195-resets.h
-> > @@ -7,6 +7,7 @@
-> >  #ifndef _DT_BINDINGS_RESET_CONTROLLER_MT8195
-> >  #define _DT_BINDINGS_RESET_CONTROLLER_MT8195
-> >  
-> > +/* TOPRGU resets */
-> >  #define MT8195_TOPRGU_CONN_MCU_SW_RST          0
-> >  #define MT8195_TOPRGU_INFRA_GRST_SW_RST        1
-> >  #define MT8195_TOPRGU_APU_SW_RST               2
-> > @@ -26,4 +27,9 @@
-> >  
-> >  #define MT8195_TOPRGU_SW_RST_NUM               16
-> >  
-> > +/* INFRA resets */
-> > +#define MT8195_INFRA_THERMAL_AP_RST            0
-> > +#define MT8195_INFRA_PTP_RST                   101
-> > +#define MT8195_INFRA_THERMAL_MCU_RST           138
-> 
-> Same issue.
-> 
-> 
-> Best regards,
-> Krzysztof
+On 04/28, Peter Zijlstra wrote:
+>
+> On Wed, Apr 27, 2022 at 05:14:57PM +0200, Oleg Nesterov wrote:
+> > On 04/26, Eric W. Biederman wrote:
+> > >
+> > > Asking wait_task_inactive to verify that tsk->__state == __TASK_TRACED
+> > > was needed to detect the when ptrace_stop would decide not to stop
+> > > after calling "set_special_state(TASK_TRACED)".  With the recent
+> > > cleanups ptrace_stop will always stop after calling set_special_state.
+> > >
+> > > Take advatnage of this by no longer asking wait_task_inactive to
+> > > verify the state.  If a bug is hit and wait_task_inactive does not
+> > > succeed warn and return -ESRCH.
+> >
+> > ACK, but I think that the changelog is wrong.
+> >
+> > We could do this right after may_ptrace_stop() has gone. This doesn't
+> > depend on the previous changes in this series.
+>
+> It very much does rely on there not being any blocking between
+> set_special_state() and schedule() tho. So all those PREEMPT_RT
+> spinlock->rt_mutex things need to be gone.
 
-Hello Krzysztof,
+Yes sure. But this patch doesn't add the new problems, imo.
 
-Thanks for your review.
-As mentioned in prvious mail, I will add all reset bits in MT8192 and
-MT8195.
+Yes we can hit the WARN_ON_ONCE(!wait_task_inactive()), but this is
+correct in that it should not fail, and this is what we need to fix.
 
-BRs,
-Rex
+> That is also the reason I couldn't do wait_task_inactive(task, 0)
+
+Ah, I din't notice this patch uses wait_task_inactive(child, 0),
+I think it should do wait_task_inactive(child, __TASK_TRACED).
+
+Oleg.
 
