@@ -2,96 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF49DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:45:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 747E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:45:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346589AbiD1Msv (ORCPT
+        id S1346628AbiD1Ms6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 08:48:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58564 "EHLO
+        Thu, 28 Apr 2022 08:48:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346632AbiD1Mst (ORCPT
+        with ESMTP id S1346607AbiD1Msy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 08:48:49 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5C828E27;
-        Thu, 28 Apr 2022 05:45:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651149925; x=1682685925;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=K4dbklDrBN0007czk1A8uvXlWciPzpruZ8ED1Gjwyzc=;
-  b=irVOqfVbjwYoRCGR8TIAL4zwgUjemDS9lsNih0IP5/iXw1UF5OcNCYFg
-   xoq4vn9yQvzdVez1ubb1odkJ4tdC7nNH7xKU3RwC0a10KYY5/XwqPVMXn
-   GEKZI7p/IX8hDe5Z9tDaF85TJ0N/MaMDOkezukr/z9VN8ODjmXrHCFHxX
-   o=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 28 Apr 2022 05:45:25 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 05:45:24 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 28 Apr 2022 05:45:24 -0700
-Received: from blr-ubuntu-253.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 28 Apr 2022 05:45:20 -0700
-From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-To:     <arnd@arndb.de>, <catalin.marinas@arm.com>,
-        <gregkh@linuxfoundation.org>, <rostedt@goodmis.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <maz@kernel.org>, <quic_psodagud@quicinc.com>,
-        <quic_tsoni@quicinc.com>, <will@kernel.org>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Subject: [PATCHv13 6/9] KVM: arm64: Add a flag to disable MMIO trace for nVHE KVM
-Date:   Thu, 28 Apr 2022 18:14:09 +0530
-Message-ID: <1517201c3424214edd2d5385eeb10ac106b67d1c.1651149615.git.quic_saipraka@quicinc.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <cover.1651149615.git.quic_saipraka@quicinc.com>
-References: <cover.1651149615.git.quic_saipraka@quicinc.com>
+        Thu, 28 Apr 2022 08:48:54 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A33286E7;
+        Thu, 28 Apr 2022 05:45:39 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 50799210F3;
+        Thu, 28 Apr 2022 12:45:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1651149938; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=M1tER3DtXbQSLD/j7/Uc6zPjmyydRTQWyAvK011v6WQ=;
+        b=kyeLx/umgkcWp7Jye4+E/wli4Ow/64CCjDRg54IG697QSqk7Rw8tksQOhwQhuqMVZ0ZEBC
+        VSjoH4OYH80t/nZOGas/0XnPYKfxbWIlvUVfN8sUs8oEm9EB51wT2qX4byVfwrDcr5GF/C
+        XYXule2uzIGfdvJ7C1+bH4gQTI3B3/s=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1651149938;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=M1tER3DtXbQSLD/j7/Uc6zPjmyydRTQWyAvK011v6WQ=;
+        b=8uOH1k5ym649fa0VViH9DHTNG9RA9bhvgedB1TQqxU/6MEHo4XHi+B6v9gnBQ0bQWP9czQ
+        YCwB2rtjm8fOKfDA==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 3B2FF2C141;
+        Thu, 28 Apr 2022 12:45:38 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id DBDE8A061A; Thu, 28 Apr 2022 14:45:37 +0200 (CEST)
+Date:   Thu, 28 Apr 2022 14:45:37 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Yu Kuai <yukuai3@huawei.com>
+Cc:     jack@suse.cz, paolo.valente@linaro.org, axboe@kernel.dk,
+        tj@kernel.org, linux-block@vger.kernel.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH -next v5 1/3] block, bfq: record how many queues are busy
+ in bfq_group
+Message-ID: <20220428124537.c5ve4vs2jk5uzthy@quack3.lan>
+References: <20220428120837.3737765-1-yukuai3@huawei.com>
+ <20220428120837.3737765-2-yukuai3@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220428120837.3737765-2-yukuai3@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a generic flag (__DISABLE_TRACE_MMIO__) to disable MMIO
-tracing in nVHE KVM as the tracepoint and MMIO logging symbols
-should not be visible at nVHE KVM as there is no way to execute
-them. It can also be used to disable MMIO tracing for specific
-drivers.
+On Thu 28-04-22 20:08:35, Yu Kuai wrote:
+> Prepare to refactor the counting of 'num_groups_with_pending_reqs'.
+> 
+> Add a counter 'busy_queues' in bfq_group, and update it in
+> bfq_add/del_bfqq_busy().
+> 
+> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 
-Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
----
- arch/arm64/kvm/hyp/nvhe/Makefile | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+Looks good. Feel free to add:
 
-diff --git a/arch/arm64/kvm/hyp/nvhe/Makefile b/arch/arm64/kvm/hyp/nvhe/Makefile
-index f9fe4dc21b1f..87d22a18b7a5 100644
---- a/arch/arm64/kvm/hyp/nvhe/Makefile
-+++ b/arch/arm64/kvm/hyp/nvhe/Makefile
-@@ -4,7 +4,12 @@
- #
- 
- asflags-y := -D__KVM_NVHE_HYPERVISOR__ -D__DISABLE_EXPORTS
--ccflags-y := -D__KVM_NVHE_HYPERVISOR__ -D__DISABLE_EXPORTS
-+
-+# Tracepoint and MMIO logging symbols should not be visible at nVHE KVM as
-+# there is no way to execute them and any such MMIO access from nVHE KVM
-+# will explode instantly (Words of Marc Zyngier). So introduce a generic flag
-+# __DISABLE_TRACE_MMIO__ to disable MMIO tracing for nVHE KVM.
-+ccflags-y := -D__KVM_NVHE_HYPERVISOR__ -D__DISABLE_EXPORTS -D__DISABLE_TRACE_MMIO__
- 
- hostprogs := gen-hyprel
- HOST_EXTRACFLAGS += -I$(objtree)/include
+Reviewed-by: Jan Kara <jack@suse.cz>
+
+								Honza
+
+> ---
+>  block/bfq-cgroup.c  |  1 +
+>  block/bfq-iosched.h |  2 ++
+>  block/bfq-wf2q.c    | 20 ++++++++++++++++++++
+>  3 files changed, 23 insertions(+)
+> 
+> diff --git a/block/bfq-cgroup.c b/block/bfq-cgroup.c
+> index 09574af83566..4d516879d9fa 100644
+> --- a/block/bfq-cgroup.c
+> +++ b/block/bfq-cgroup.c
+> @@ -557,6 +557,7 @@ static void bfq_pd_init(struct blkg_policy_data *pd)
+>  				   */
+>  	bfqg->bfqd = bfqd;
+>  	bfqg->active_entities = 0;
+> +	bfqg->busy_queues = 0;
+>  	bfqg->online = true;
+>  	bfqg->rq_pos_tree = RB_ROOT;
+>  }
+> diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
+> index 978ef5d6fe6a..3847f4ab77ac 100644
+> --- a/block/bfq-iosched.h
+> +++ b/block/bfq-iosched.h
+> @@ -906,6 +906,7 @@ struct bfq_group_data {
+>   *                   are groups with more than one active @bfq_entity
+>   *                   (see the comments to the function
+>   *                   bfq_bfqq_may_idle()).
+> + * @busy_queues: number of busy bfqqs.
+>   * @rq_pos_tree: rbtree sorted by next_request position, used when
+>   *               determining if two or more queues have interleaving
+>   *               requests (see bfq_find_close_cooperator()).
+> @@ -942,6 +943,7 @@ struct bfq_group {
+>  	struct bfq_entity *my_entity;
+>  
+>  	int active_entities;
+> +	int busy_queues;
+>  
+>  	struct rb_root rq_pos_tree;
+>  
+> diff --git a/block/bfq-wf2q.c b/block/bfq-wf2q.c
+> index f8eb340381cf..d9ff33e0be38 100644
+> --- a/block/bfq-wf2q.c
+> +++ b/block/bfq-wf2q.c
+> @@ -218,6 +218,16 @@ static bool bfq_no_longer_next_in_service(struct bfq_entity *entity)
+>  	return false;
+>  }
+>  
+> +static void bfq_inc_busy_queues(struct bfq_queue *bfqq)
+> +{
+> +	bfqq_group(bfqq)->busy_queues++;
+> +}
+> +
+> +static void bfq_dec_busy_queues(struct bfq_queue *bfqq)
+> +{
+> +	bfqq_group(bfqq)->busy_queues--;
+> +}
+> +
+>  #else /* CONFIG_BFQ_GROUP_IOSCHED */
+>  
+>  static bool bfq_update_parent_budget(struct bfq_entity *next_in_service)
+> @@ -230,6 +240,14 @@ static bool bfq_no_longer_next_in_service(struct bfq_entity *entity)
+>  	return true;
+>  }
+>  
+> +static void bfq_inc_busy_queues(struct bfq_queue *bfqq)
+> +{
+> +}
+> +
+> +static void bfq_dec_busy_queues(struct bfq_queue *bfqq)
+> +{
+> +}
+> +
+>  #endif /* CONFIG_BFQ_GROUP_IOSCHED */
+>  
+>  /*
+> @@ -1660,6 +1678,7 @@ void bfq_del_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+>  	bfq_clear_bfqq_busy(bfqq);
+>  
+>  	bfqd->busy_queues[bfqq->ioprio_class - 1]--;
+> +	bfq_inc_busy_queues(bfqq);
+>  
+>  	if (bfqq->wr_coeff > 1)
+>  		bfqd->wr_busy_queues--;
+> @@ -1683,6 +1702,7 @@ void bfq_add_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq)
+>  
+>  	bfq_mark_bfqq_busy(bfqq);
+>  	bfqd->busy_queues[bfqq->ioprio_class - 1]++;
+> +	bfq_dec_busy_queues(bfqq);
+>  
+>  	if (!bfqq->dispatched)
+>  		if (bfqq->wr_coeff == 1)
+> -- 
+> 2.31.1
+> 
 -- 
-2.33.1
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
