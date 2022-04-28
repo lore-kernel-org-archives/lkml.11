@@ -2,127 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D8BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:48:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C867C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:49:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348563AbiD1Ovg (ORCPT
+        id S1348577AbiD1OxD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 10:51:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56114 "EHLO
+        Thu, 28 Apr 2022 10:53:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231773AbiD1Ove (ORCPT
+        with ESMTP id S231773AbiD1OxB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 10:51:34 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925A6B0D34
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:48:19 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id bi24-20020a05600c3d9800b00393ff664705so3158290wmb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:48:19 -0700 (PDT)
+        Thu, 28 Apr 2022 10:53:01 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD20B1AA2
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:49:46 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id f38so9480118ybi.3
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:49:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gXcgGcE+u9ZZ2nNfuMlJwxFYwU47p+7KJbt/dJsKH2k=;
-        b=WoXhKzVCsdlC5PUxXMPtuzO6MyUVEwuQIKmv3o0Fq3J+OB+PULeTKG9nBT0FsElq8U
-         tzXFIdRn+O/epPEH8lcBtwL/GVklJeA53TSIHwe5JEFkgzt3FWfHSVPcu/d1ivseCBdC
-         187xbW/KsmiQt3bJ42HIUc3A8B7TJhiyNI6coYwMWaWUJ8ScACpCjTavoLRReuX7Av/P
-         upuWvJBiL/cRfcv/AopQLXAlHMuHbLE1xNpqMx7hel3CxHW+vEgAmL0GJT+zRJ4osRJY
-         PoIwgAmvExzt9jf52TXT8RVwRA+GB5mapKcp8fPjbI5HrsmWMCOPbCSmK6+ErdA5r+gc
-         Uncw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lB9G0cOuwnlKFcyDN4agu+9Zs72ednckPaeKqeZhvqE=;
+        b=QL4NGu/PMkkIPar7VNuv3jRT/c6ouw14nCnTqVpJChB0AejQZ7vnndnVEG9yCJJCY6
+         0leNwPkZaepZ10A7v4IKc2SX2Er/0wKPLdxwtJ90dZIJfvLaRKCo2QlN3FlutKJ9Mtct
+         9mzt+oFJTZa0vH9oluHu5Oo468Zc4TJGWbLp5FA4yLX0OEM9SmFzIUTk44Khf5Ztn7QR
+         ZZ2MCH3m0sq+pcWxq5vXq/3nw+G0QenB8/Ryh3/7vs54bYkp/VkRnbhOnuZ9+C2gK5do
+         JUTP1SCv//HBqMnlNbo6xJysNdmK3QSHDSg4xadhk/JwWBirsxpn1QsjFpRm3irnB+82
+         0djw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gXcgGcE+u9ZZ2nNfuMlJwxFYwU47p+7KJbt/dJsKH2k=;
-        b=qWeyJC9wsZO34mis1K9XuBFApSMWpEAoJ6+ZBX29xE0SYFJElBgsLktobTVBCr9+fL
-         Uqmk9XA6SIKpEG5xtsPBshY/MHnXgK5sOpecby41f+F9qV/IImRbJ5UbxEAgx7zG27oh
-         darkJYkB7ZJkzy0/f3r7E7Gi2O3yUPwXubS6ynGz0ylJ/2fL0uPCUKVoSnW87vZAv9Pl
-         51srP29aCw/kG1zZahuW2RrKkmmYA1HTxJuzZUrErE7hmyhBWLCsmFlHVEL1abiqt9Tn
-         ttkqZbf4tyR3ymp6haggOtQcTJv8FIcfp24Q+rwpcSFGfS88sSWWFZzd2TVc4OZCnzjj
-         lP7A==
-X-Gm-Message-State: AOAM531Inge5phwAiniELm2es/NX7b2U/KcajsWxhV5vuuG9rCR31oA/
-        CprXeN6/I31dOy+DiIguS5FTVw==
-X-Google-Smtp-Source: ABdhPJxNWPXTUPDxwHrxcCJa+urJQ5WdUNKsvAt695sYRfcOhAF31zd2EOk9mXufDDPQiUwFCynz5Q==
-X-Received: by 2002:a7b:cb48:0:b0:394:b64:8b88 with SMTP id v8-20020a7bcb48000000b003940b648b88mr5166056wmj.183.1651157298179;
-        Thu, 28 Apr 2022 07:48:18 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id p3-20020adfaa03000000b00207a1db96cfsm60631wrd.71.2022.04.28.07.48.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 07:48:17 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 15:47:52 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 10/12] iommu: Prepare IOMMU domain for IOPF
-Message-ID: <YmqpGFzMZn7ZMzsQ@myrica>
-References: <20220421052121.3464100-1-baolu.lu@linux.intel.com>
- <20220421052121.3464100-11-baolu.lu@linux.intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lB9G0cOuwnlKFcyDN4agu+9Zs72ednckPaeKqeZhvqE=;
+        b=i7G5TrvdsYqBsXrTCcJt4OUO/cH45mITTjHe+d+ZVDWOd7Lus1C0cFWxU3r5sa9tp9
+         pO10adM1DE3qTMzv5aEq4u5vtZB362fZOQ7geDxIdCmnHpS11Fpke71RF5srR4BhZTbd
+         AI2CpJQuG7dMOZCC5S8A5zy9PjgICn5jSTi8lusoF4/NJxnMNe/feNPm4Y1f1NuOWKMt
+         j4LoJnGlLmSzUw8qZ/akJbBrZXFC/n/XjefqBHJTdlpTyOyS9Ad8i2XFPkMJiq2XPZUG
+         7uAibwoyACagKr1QC1DwEj1rDpckEZtEoZOw3gHgNPZZiSzawYxRUghimtFIMa59+8wr
+         m48w==
+X-Gm-Message-State: AOAM532woX+X9D2W1Ywo0gVnGHvFVf+is8wMr21i810hFjh5JPSnqlaR
+        ahjN4jK1s64TiS8iSa0D0R/vsNHScTYujKzmrpseWQ==
+X-Google-Smtp-Source: ABdhPJzUQdQX91SAnTRZl5sWENvnOfqTxHX03AYbii6GzqLZ/7y3uMfL6wXsVAagf9bnS/GUWpnuZbwT6DtRp+BswjU=
+X-Received: by 2002:a25:2e4e:0:b0:648:6652:ca6e with SMTP id
+ b14-20020a252e4e000000b006486652ca6emr20288090ybn.345.1651157385608; Thu, 28
+ Apr 2022 07:49:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220421052121.3464100-11-baolu.lu@linux.intel.com>
+References: <20220427160016.144237-1-hannes@cmpxchg.org> <20220427160016.144237-5-hannes@cmpxchg.org>
+ <Ymmnrkn0mSWcuvmH@google.com> <YmmznQ8AO5RLxicA@cmpxchg.org>
+ <Ymm3WpvJWby4gaD/@cmpxchg.org> <CALvZod5LBi5V6q1uHUTSNnLz64HbD499a+OZvdYsUcmcWSt8Jg@mail.gmail.com>
+ <YmqmWPrIagEEceN1@cmpxchg.org>
+In-Reply-To: <YmqmWPrIagEEceN1@cmpxchg.org>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Thu, 28 Apr 2022 07:49:33 -0700
+Message-ID: <CALvZod7wOyXpA3pycM2dav9_F9sW5ezC84or-75u8GdQyu30nw@mail.gmail.com>
+Subject: Re: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Minchan Kim <minchan@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
+        Seth Jennings <sjenning@redhat.com>,
+        Dan Streetman <ddstreet@ieee.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Baolu,
+On Thu, Apr 28, 2022 at 7:36 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
+>
+> On Wed, Apr 27, 2022 at 04:36:22PM -0700, Shakeel Butt wrote:
+> > On Wed, Apr 27, 2022 at 3:32 PM Johannes Weiner <hannes@cmpxchg.org> wrote:
+> > >
+> > > On Wed, Apr 27, 2022 at 05:20:31PM -0400, Johannes Weiner wrote:
+> > > > On Wed, Apr 27, 2022 at 01:29:34PM -0700, Minchan Kim wrote:
+> > > > > Hi Johannes,
+> > > > >
+> > > > > On Wed, Apr 27, 2022 at 12:00:15PM -0400, Johannes Weiner wrote:
+> > > > > > Currently it requires poking at debugfs to figure out the size and
+> > > > > > population of the zswap cache on a host. There are no counters for
+> > > > > > reads and writes against the cache. As a result, it's difficult to
+> > > > > > understand zswap behavior on production systems.
+> > > > > >
+> > > > > > Print zswap memory consumption and how many pages are zswapped out in
+> > > > > > /proc/meminfo. Count zswapouts and zswapins in /proc/vmstat.
+> > > > > >
+> > > > > > Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
+> > > > > > ---
+> > > > > >  fs/proc/meminfo.c             |  7 +++++++
+> > > > > >  include/linux/swap.h          |  5 +++++
+> > > > > >  include/linux/vm_event_item.h |  4 ++++
+> > > > > >  mm/vmstat.c                   |  4 ++++
+> > > > > >  mm/zswap.c                    | 13 ++++++-------
+> > > > > >  5 files changed, 26 insertions(+), 7 deletions(-)
+> > > > > >
+> > > > > > diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
+> > > > > > index 6fa761c9cc78..6e89f0e2fd20 100644
+> > > > > > --- a/fs/proc/meminfo.c
+> > > > > > +++ b/fs/proc/meminfo.c
+> > > > > > @@ -86,6 +86,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
+> > > > > >
+> > > > > >   show_val_kb(m, "SwapTotal:      ", i.totalswap);
+> > > > > >   show_val_kb(m, "SwapFree:       ", i.freeswap);
+> > > > > > +#ifdef CONFIG_ZSWAP
+> > > > > > + seq_printf(m,  "Zswap:          %8lu kB\n",
+> > > > > > +            (unsigned long)(zswap_pool_total_size >> 10));
+> > > > > > + seq_printf(m,  "Zswapped:       %8lu kB\n",
+> > > > > > +            (unsigned long)atomic_read(&zswap_stored_pages) <<
+> > > > > > +            (PAGE_SHIFT - 10));
+> > > > > > +#endif
+> > > > >
+> > > > > I agree it would be very handy to have the memory consumption in meminfo
+> > > > >
+> > > > > https://lore.kernel.org/all/YYwZXrL3Fu8%2FvLZw@google.com/
+> > > > >
+> > > > > If we really go this Zswap only metric instead of general term
+> > > > > "Compressed", I'd like to post maybe "Zram:" with same reason
+> > > > > in this patchset. Do you think that's better idea instead of
+> > > > > introducing general term like "Compressed:" or something else?
+> > > >
+> > > > I'm fine with changing it to Compressed. If somebody cares about a
+> > > > more detailed breakdown, we can add Zswap, Zram subsets as needed.
+> > >
+> > > It does raise the question what to do about cgroup, though. Should the
+> > > control files (memory.zswap.current & memory.zswap.max) apply to zram
+> > > in the future? If so, we should rename them, too.
+> > >
+> > > I'm not too familiar with zram, maybe you can provide some
+> > > background. AFAIU, Google uses zram quite widely; all the more
+> > > confusing why there is no container support for it yet.
+> > >
+> > > Could you shed some light?
+> > >
+> >
+> > I can shed light on the datacenter workloads. We use cgroup (still on
+> > v1) and zswap. For the workloads/applications, the swap (or zswap) is
+> > transparent in the sense that they are charged exactly the same
+> > irrespective of how much their memory is zswapped-out. Basically the
+> > applications see the same usage which is actually v1's
+> > memsw.usage_in_bytes. We dynamically increase the swap size if it is
+> > low, so we are not really worried about one job hogging the swap
+> > space.
+> >
+> > Regarding stats we actually do have them internally representing
+> > compressed size and number of pages in zswap. The compressed size is
+> > actually used for OOM victim selection. The memsw or v2's swap usage
+> > in the presence of compression based swap does not actually tell how
+> > much memory can potentially be released by evicting a job. For example
+> > if there are two jobs 'A' and 'B'. Both of them have 100 pages
+> > compressed but A's 100 pages are compressed to let's say 10 pages
+> > while B's 100 pages are compressed to 70 pages. It is preferable to
+> > kill B as that will release 70 pages. (This is a very simplified
+> > explanation of what we actually do).
+>
+> Ah, so zram is really only used by the mobile stuff after all.
+>
+> In the DC, I guess you don't use disk swap in conjunction with zswap,
+> so those writeback cache controls are less interesting to you?
 
-On Thu, Apr 21, 2022 at 01:21:19PM +0800, Lu Baolu wrote:
-> +/*
-> + * Get the attached domain for asynchronous usage, for example the I/O
-> + * page fault handling framework. The caller get a reference counter
-> + * of the domain automatically on a successful return and should put
-> + * it with iommu_domain_put() after usage.
-> + */
-> +struct iommu_domain *
-> +iommu_get_domain_for_dev_pasid_async(struct device *dev, ioasid_t pasid)
-> +{
-> +	struct iommu_domain *domain;
-> +	struct iommu_group *group;
-> +
-> +	if (!pasid_valid(pasid))
-> +		return NULL;
-> +
-> +	group = iommu_group_get(dev);
-> +	if (!group)
-> +		return NULL;
-> +
-> +	mutex_lock(&group->mutex);
+Yes, we have some modifications to zswap to make it work without any
+backing real swap. Though there is a future plan to move to zram
+eventually.
 
-There is a possible deadlock between unbind() and the fault handler:
+>
+> But it sounds like you would benefit from the zswap(ped) counters in
+> memory.stat at least.
 
- unbind()                            iopf_handle_group()
-  mutex_lock(&group->mutex)
-  iommu_detach_device_pasid()
-   iopf_queue_flush_dev()             iommu_get_domain_for_dev_pasid_async()
-    ... waits for IOPF work            mutex_lock(&group->mutex)
+Yes and I think if we need zram specific counters/stats in future,
+those can be added then.
 
-I was wrong in my previous review: we do have a guarantee that the SVA
-domain does not go away during IOPF handling, because unbind() waits for
-pending faults with iopf_queue_flush_dev() before freeing the domain (or
-for Arm stall, knows that there are no pending faults). So we can just get
-rid of domain->async_users and the group->mutex in IOPF, I think?
-
-Thanks,
-Jean
-
-> +	domain = xa_load(&group->pasid_array, pasid);
-> +	if (domain)
-> +		refcount_inc(&domain->async_users);
-> +	mutex_unlock(&group->mutex);
-> +	iommu_group_put(group);
-> +
-> +	return domain;
-> +}
-> -- 
-> 2.25.1
-> 
+>
+> Thanks, that is enlightening!
