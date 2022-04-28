@@ -2,110 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A4FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:25:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F53BC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245102AbiD1H2f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:28:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35894 "EHLO
+        id S245161AbiD1H2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 03:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233871AbiD1H2a (ORCPT
+        with ESMTP id S245108AbiD1H2s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:28:30 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8C21A3BE;
-        Thu, 28 Apr 2022 00:25:14 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KpnFh33nTz4ySY;
-        Thu, 28 Apr 2022 17:25:12 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1651130713;
-        bh=C4UdvvBeWY91RIypqvjFLe8UHWVKtFwPIG23O7DBFW8=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=CPxAsekmTKCpn041eRTbmR2p7d+DCOZs+wTm/EvvQf+hNyaGcNArusaXqKJs6ONxW
-         UosN18FRzbo4g0ROwCDiYBEEdgXw7k+Auv5HyQuv0ZHavLgWJTBY3gDR0aMeqI5+JN
-         HodlYm2qK9nJycUJNQ+NUHESR8lDtZEzbOiOs1J+Kk2jc8qcwwT+dYC6el8gRKPEiP
-         KBsN8b1z0sWIEwLX/RpeT0uE0GLVGui0CKCIFMlYzu1BX4MHiRKEWpMWrbMY+uIC+0
-         D0qeTOP2iGhRVpKHh0RszaxhLXCKkcCeZSAysbdS39WVlSb9tp4hs/sGjFGOjoEhWM
-         kgCB0Tzrqreeg==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Helge Deller <deller@gmx.de>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
-Subject: Re: Build regressions/improvements in v5.18-rc1
-In-Reply-To: <CAMuHMdX45omg_3pUPYnOdkwQC+wP89L3RE-GZq5A=jTHDqDJFA@mail.gmail.com>
-References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
- <20220404074734.1092959-1-geert@linux-m68k.org>
- <alpine.DEB.2.22.394.2204041006230.1941618@ramsan.of.borg>
- <545e68c7-2872-9ee7-0b39-59c39f2bb9d1@gmx.de>
- <CAMuHMdX45omg_3pUPYnOdkwQC+wP89L3RE-GZq5A=jTHDqDJFA@mail.gmail.com>
-Date:   Thu, 28 Apr 2022 17:25:08 +1000
-Message-ID: <87fslxacvf.fsf@mpe.ellerman.id.au>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Thu, 28 Apr 2022 03:28:48 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 81BBE2F392;
+        Thu, 28 Apr 2022 00:25:29 -0700 (PDT)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxMNpjQWpidk8BAA--.6695S4;
+        Thu, 28 Apr 2022 15:25:25 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] bpf, docs: BPF_FROM_BE exists as alias for BPF_TO_BE
+Date:   Thu, 28 Apr 2022 15:25:23 +0800
+Message-Id: <1651130723-23635-3-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+In-Reply-To: <1651130723-23635-1-git-send-email-yangtiezhu@loongson.cn>
+References: <1651130723-23635-1-git-send-email-yangtiezhu@loongson.cn>
+X-CM-TRANSID: AQAAf9BxMNpjQWpidk8BAA--.6695S4
+X-Coremail-Antispam: 1UD129KBjvdXoW7GrWrJryUJrWruF47WF17KFg_yoW3Zrg_CF
+        1kJ3Z5Wa1rCryruw1UWF1xCF97AFWrur4UA3WIyF4DAayqqws8Cr98W34DArWUGrW7u398
+        CrZ3Wry3ZrnrGjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbfkYjsxI4VWxJwAYFVCjjxCrM7AC8VAFwI0_Wr0E3s1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l82xGYIkIc2x26280x7
+        IE14v26r15M28IrcIa0xkI8VCY1x0267AKxVW8JVW5JwA2ocxC64kIII0Yj41l84x0c7CE
+        w4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6x
+        kF7I0E14v26F4j6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIE
+        c7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I
+        8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCF
+        s4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCY02Avz4vE14v_GF4l42xK82IYc2Ij64
+        vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8G
+        jcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2I
+        x0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK
+        8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I
+        0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUs8sqDUUUU
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Geert Uytterhoeven <geert@linux-m68k.org> writes:
-> Hi Helge,
->
-> CC Michael
->
-> On Tue, Apr 5, 2022 at 8:45 AM Helge Deller <deller@gmx.de> wrote:
->> On 4/4/22 10:16, Geert Uytterhoeven wrote:
->> > On Mon, 4 Apr 2022, Geert Uytterhoeven wrote:
->> >> Below is the list of build error/warning regressions/improvements in
->> >> v5.18-rc1[1] compared to v5.17[2].
->> >>
->> >> [1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/3123109284176b1532874591f7c81f3837bbdc17/ (all 96 configs)
->> >> [2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/f443e374ae131c168a065ea1748feac6b2e76613/ (all 96 configs)
->> >>
->> >> *** ERRORS ***
->> > parisc64-gcc8/generic-64bit_defconfig
->> > parisc-gcc8/generic-32bit_defconfig
->> > parisc-gcc8/parisc-allmodconfig
->> > parisc-gcc8/parisc-allnoconfig
->>
->> Someone needs to adjust how the parisc kernel is built on kisskb...
->>
->> The parisc platform got vDSO support, so now the 32- and 64-bit
->> hppa compiler needs to be installed when building (for 64-bit).
->>
->> In addition, it changed how to build a kernel:
->>  make ARCH=parisc                         # to build a 32-bit kernel
->>  or
->>  make ARCH=parisc64                       # to build a 64-bit kernel
->> (before ARCH=parisc was sufficient to build either for 32- or 64-bit).
->>
->> And, in case "CROSS_COMPILE=" is given, you need to give "CROSS32_COMPILE=" as well.
->> It's preferred to leave out both CROSS[32]_COMPILE= parameters and let
->> the environment detect the compilers automatically. They just need to be in $PATH.
->>
->> Who can change that on kisskb ?
->
-> Michael (CCed).
+According include/uapi/linux/bpf.h:
 
-Hi all,
+  #define BPF_FROM_LE	BPF_TO_LE
+  #define BPF_FROM_BE	BPF_TO_BE
 
-Sorry for the delay, I don't have much time to work on kisskb these days :}
+BPF_FROM_BE exists as alias for BPF_TO_BE instead of BPF_TO_LE.
 
-I've updated things to work. It required a bit of fiddling because the
-cross compilers I use from kernel.org don't have hppa and hppa64 in the
-same prefix. But I just rsync'ed them into a shared directory and that
-seems to be working.
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+ Documentation/bpf/instruction-set.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The two parisc configs we have are here, everything recent is green:
+diff --git a/Documentation/bpf/instruction-set.rst b/Documentation/bpf/instruction-set.rst
+index 30b019c..00b0800 100644
+--- a/Documentation/bpf/instruction-set.rst
++++ b/Documentation/bpf/instruction-set.rst
+@@ -157,7 +157,7 @@ Examples:
+   dst_reg = htobe64(dst_reg)
+ 
+ ``BPF_FROM_LE`` and ``BPF_FROM_BE`` exist as aliases for ``BPF_TO_LE`` and
+-``BPF_TO_LE`` respetively.
++``BPF_TO_BE`` respetively.
+ 
+ 
+ Jump instructions
+-- 
+2.1.0
 
-  http://kisskb.ellerman.id.au/kisskb/config/507/
-  http://kisskb.ellerman.id.au/kisskb/config/508/
-
-I also added gcc11 for parisc.
-
-cheers
