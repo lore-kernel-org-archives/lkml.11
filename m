@@ -2,182 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F22A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F8E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:57:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236190AbiD1Q6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 12:58:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32884 "EHLO
+        id S1350204AbiD1RAq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 13:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234392AbiD1Q6H (ORCPT
+        with ESMTP id S236416AbiD1RAn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 12:58:07 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41C5AAB6D;
-        Thu, 28 Apr 2022 09:54:52 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id a11so4759830pff.1;
-        Thu, 28 Apr 2022 09:54:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MvCOJLEv0diYuRsRJ3vfm9TWORadeU8jtlQyqpscZYs=;
-        b=Wj8UXDdE0X8gpr6LoRyZmqUQOw2kxuuPyrfVfL1bKAAZqgSatnq6bYzfRifjXKI+FX
-         Wm9USQkdGM8HZGBT7ts1RW4ABEbw+glCOKAVM2+/Kk3j//GfWRCpzt+Zh9uEuyVTS3RE
-         +BSxCzbRHgD+qVLgtP8lSGFNihGOMbsjyBDNZ+gcJx/AHUi+zyX5Z2+nAFvx/N/QhlRS
-         7PuL9T3OQ4hj5tyqcKkjBLDhVV7d5z9g2aOVx/D7OCeALJGjMrAi8pkEeLNK13IQC2D2
-         fjsgAARRjCsT2bNtUGofF1e30Q8XgIa9z97MYStEAnk5Cs0NUbGtoiUeCTdfMFw3D/BW
-         PvEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MvCOJLEv0diYuRsRJ3vfm9TWORadeU8jtlQyqpscZYs=;
-        b=nyQouo1SJltt9db2f3Cxem80fh3mEfi2si3yKy0qKTWf6ol50YR+KVyX14lYEC3Uuj
-         iV6M7189Ti+wtYmmtjcSj2r6B7G/prLzr6W+pc3laDTWE8qsE5FLdUzfDxmzO0c/VTfh
-         6L0diJmurxzOswXzEuwddoI1KXG+Kz41eWcXNiBeA5zhP89S3Q2mMBiUzCxUzMVj5AoW
-         2xTAcb7AyxiEO64kFOlIZwbFPbAqNjGvxpzYJrovSoJ5vd9ldOy3btj6gd0spAJF1Nzf
-         2rnc9ySS+tttgSHdsMCmIZ8rT3RAKswRU8zfG7nQ58XCvT+0DHiUohkL/u6AkTGI23ax
-         d8EQ==
-X-Gm-Message-State: AOAM530H8GyxRdRMwgEwz/xqTdsHQJn+n26UPwiJOYhm5tLPlRLhHX1M
-        A6UCVCpYPGNtdSij8Urqq2/KYXiWZk10LUF4m34=
-X-Google-Smtp-Source: ABdhPJwOi4QlvWVAg2x0n7sXu+D03SSjc9/9+Z2qP7Q8SICby6ygCVP2AF2/o6d5nA40Vvl1UIFzJlKaHhWZ+diI4kk=
-X-Received: by 2002:a65:6951:0:b0:381:f10:ccaa with SMTP id
- w17-20020a656951000000b003810f10ccaamr28256271pgq.587.1651164892221; Thu, 28
- Apr 2022 09:54:52 -0700 (PDT)
+        Thu, 28 Apr 2022 13:00:43 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88740B53C2;
+        Thu, 28 Apr 2022 09:57:27 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 40096210EB;
+        Thu, 28 Apr 2022 16:57:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1651165046; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sI0Q4qCHHuJeHrCT7hRK8KULGr3GzzzrmyaJAYZra3o=;
+        b=dVA4YthPmXCw8w1ju6hpYrbycaGoL0t7OWJbQGzfBkQVH9r1zBbWoO4k+gONFqG5trQVuB
+        7pilT8pA+QOXX7pSlL8Ifr442npyo3Aw3oAmw7YiA0SQ2g4/4TADBx8VsQgx20vTz7C8Df
+        cZ37SnDNLXBXfV5Sl6ouihbmb3xRp+M=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1651165046;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sI0Q4qCHHuJeHrCT7hRK8KULGr3GzzzrmyaJAYZra3o=;
+        b=asFIO0NfC2COfU/Uk3pVdGJatW2YeCh67pSQ8bYbpygdOYt1mncC0WMFnJp6WY5ALpKgPx
+        9WIVYcyfv8ZH6yBw==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id DA7242C141;
+        Thu, 28 Apr 2022 16:57:25 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 61818A061A; Thu, 28 Apr 2022 18:57:25 +0200 (CEST)
+Date:   Thu, 28 Apr 2022 18:57:25 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Baokun Li <libaokun1@huawei.com>
+Cc:     linux-ext4@vger.kernel.org, tytso@mit.edu,
+        adilger.kernel@dilger.ca, jack@suse.cz,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
+        yebin10@huawei.com, yukuai3@huawei.com, stable@vger.kernel.org,
+        Hulk Robot <hulkci@huawei.com>
+Subject: Re: [PATCH v3] ext4: fix race condition between ext4_write and
+ ext4_convert_inline_data
+Message-ID: <20220428165725.mvjh6mx7gr5vekqe@quack3.lan>
+References: <20220428134031.4153381-1-libaokun1@huawei.com>
 MIME-Version: 1.0
-References: <20220427160016.144237-1-hannes@cmpxchg.org> <20220427160016.144237-5-hannes@cmpxchg.org>
- <Ymmnrkn0mSWcuvmH@google.com> <YmmznQ8AO5RLxicA@cmpxchg.org>
- <Ymm3WpvJWby4gaD/@cmpxchg.org> <CALvZod5LBi5V6q1uHUTSNnLz64HbD499a+OZvdYsUcmcWSt8Jg@mail.gmail.com>
- <YmqmWPrIagEEceN1@cmpxchg.org> <CALvZod7wOyXpA3pycM2dav9_F9sW5ezC84or-75u8GdQyu30nw@mail.gmail.com>
-In-Reply-To: <CALvZod7wOyXpA3pycM2dav9_F9sW5ezC84or-75u8GdQyu30nw@mail.gmail.com>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Thu, 28 Apr 2022 09:54:39 -0700
-Message-ID: <CAHbLzkqOUkaud4hQZeAbnO3T6VJpku4aKn1EYv9RunB+Kmu9Sg@mail.gmail.com>
-Subject: Re: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Minchan Kim <minchan@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
-        Seth Jennings <sjenning@redhat.com>,
-        Dan Streetman <ddstreet@ieee.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220428134031.4153381-1-libaokun1@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 7:49 AM Shakeel Butt <shakeelb@google.com> wrote:
->
-> On Thu, Apr 28, 2022 at 7:36 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
-> >
-> > On Wed, Apr 27, 2022 at 04:36:22PM -0700, Shakeel Butt wrote:
-> > > On Wed, Apr 27, 2022 at 3:32 PM Johannes Weiner <hannes@cmpxchg.org> wrote:
-> > > >
-> > > > On Wed, Apr 27, 2022 at 05:20:31PM -0400, Johannes Weiner wrote:
-> > > > > On Wed, Apr 27, 2022 at 01:29:34PM -0700, Minchan Kim wrote:
-> > > > > > Hi Johannes,
-> > > > > >
-> > > > > > On Wed, Apr 27, 2022 at 12:00:15PM -0400, Johannes Weiner wrote:
-> > > > > > > Currently it requires poking at debugfs to figure out the size and
-> > > > > > > population of the zswap cache on a host. There are no counters for
-> > > > > > > reads and writes against the cache. As a result, it's difficult to
-> > > > > > > understand zswap behavior on production systems.
-> > > > > > >
-> > > > > > > Print zswap memory consumption and how many pages are zswapped out in
-> > > > > > > /proc/meminfo. Count zswapouts and zswapins in /proc/vmstat.
-> > > > > > >
-> > > > > > > Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
-> > > > > > > ---
-> > > > > > >  fs/proc/meminfo.c             |  7 +++++++
-> > > > > > >  include/linux/swap.h          |  5 +++++
-> > > > > > >  include/linux/vm_event_item.h |  4 ++++
-> > > > > > >  mm/vmstat.c                   |  4 ++++
-> > > > > > >  mm/zswap.c                    | 13 ++++++-------
-> > > > > > >  5 files changed, 26 insertions(+), 7 deletions(-)
-> > > > > > >
-> > > > > > > diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
-> > > > > > > index 6fa761c9cc78..6e89f0e2fd20 100644
-> > > > > > > --- a/fs/proc/meminfo.c
-> > > > > > > +++ b/fs/proc/meminfo.c
-> > > > > > > @@ -86,6 +86,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
-> > > > > > >
-> > > > > > >   show_val_kb(m, "SwapTotal:      ", i.totalswap);
-> > > > > > >   show_val_kb(m, "SwapFree:       ", i.freeswap);
-> > > > > > > +#ifdef CONFIG_ZSWAP
-> > > > > > > + seq_printf(m,  "Zswap:          %8lu kB\n",
-> > > > > > > +            (unsigned long)(zswap_pool_total_size >> 10));
-> > > > > > > + seq_printf(m,  "Zswapped:       %8lu kB\n",
-> > > > > > > +            (unsigned long)atomic_read(&zswap_stored_pages) <<
-> > > > > > > +            (PAGE_SHIFT - 10));
-> > > > > > > +#endif
-> > > > > >
-> > > > > > I agree it would be very handy to have the memory consumption in meminfo
-> > > > > >
-> > > > > > https://lore.kernel.org/all/YYwZXrL3Fu8%2FvLZw@google.com/
-> > > > > >
-> > > > > > If we really go this Zswap only metric instead of general term
-> > > > > > "Compressed", I'd like to post maybe "Zram:" with same reason
-> > > > > > in this patchset. Do you think that's better idea instead of
-> > > > > > introducing general term like "Compressed:" or something else?
-> > > > >
-> > > > > I'm fine with changing it to Compressed. If somebody cares about a
-> > > > > more detailed breakdown, we can add Zswap, Zram subsets as needed.
-> > > >
-> > > > It does raise the question what to do about cgroup, though. Should the
-> > > > control files (memory.zswap.current & memory.zswap.max) apply to zram
-> > > > in the future? If so, we should rename them, too.
-> > > >
-> > > > I'm not too familiar with zram, maybe you can provide some
-> > > > background. AFAIU, Google uses zram quite widely; all the more
-> > > > confusing why there is no container support for it yet.
-> > > >
-> > > > Could you shed some light?
-> > > >
-> > >
-> > > I can shed light on the datacenter workloads. We use cgroup (still on
-> > > v1) and zswap. For the workloads/applications, the swap (or zswap) is
-> > > transparent in the sense that they are charged exactly the same
-> > > irrespective of how much their memory is zswapped-out. Basically the
-> > > applications see the same usage which is actually v1's
-> > > memsw.usage_in_bytes. We dynamically increase the swap size if it is
-> > > low, so we are not really worried about one job hogging the swap
-> > > space.
-> > >
-> > > Regarding stats we actually do have them internally representing
-> > > compressed size and number of pages in zswap. The compressed size is
-> > > actually used for OOM victim selection. The memsw or v2's swap usage
-> > > in the presence of compression based swap does not actually tell how
-> > > much memory can potentially be released by evicting a job. For example
-> > > if there are two jobs 'A' and 'B'. Both of them have 100 pages
-> > > compressed but A's 100 pages are compressed to let's say 10 pages
-> > > while B's 100 pages are compressed to 70 pages. It is preferable to
-> > > kill B as that will release 70 pages. (This is a very simplified
-> > > explanation of what we actually do).
-> >
-> > Ah, so zram is really only used by the mobile stuff after all.
-> >
-> > In the DC, I guess you don't use disk swap in conjunction with zswap,
-> > so those writeback cache controls are less interesting to you?
->
-> Yes, we have some modifications to zswap to make it work without any
-> backing real swap. Though there is a future plan to move to zram
-> eventually.
+On Thu 28-04-22 21:40:31, Baokun Li wrote:
+> Hulk Robot reported a BUG_ON:
+>  ==================================================================
+>  EXT4-fs error (device loop3): ext4_mb_generate_buddy:805: group 0,
+>  block bitmap and bg descriptor inconsistent: 25 vs 31513 free clusters
+>  kernel BUG at fs/ext4/ext4_jbd2.c:53!
+>  invalid opcode: 0000 [#1] SMP KASAN PTI
+>  CPU: 0 PID: 25371 Comm: syz-executor.3 Not tainted 5.10.0+ #1
+>  RIP: 0010:ext4_put_nojournal fs/ext4/ext4_jbd2.c:53 [inline]
+>  RIP: 0010:__ext4_journal_stop+0x10e/0x110 fs/ext4/ext4_jbd2.c:116
+>  [...]
+>  Call Trace:
+>   ext4_write_inline_data_end+0x59a/0x730 fs/ext4/inline.c:795
+>   generic_perform_write+0x279/0x3c0 mm/filemap.c:3344
+>   ext4_buffered_write_iter+0x2e3/0x3d0 fs/ext4/file.c:270
+>   ext4_file_write_iter+0x30a/0x11c0 fs/ext4/file.c:520
+>   do_iter_readv_writev+0x339/0x3c0 fs/read_write.c:732
+>   do_iter_write+0x107/0x430 fs/read_write.c:861
+>   vfs_writev fs/read_write.c:934 [inline]
+>   do_pwritev+0x1e5/0x380 fs/read_write.c:1031
+>  [...]
+>  ==================================================================
+> 
+> Above issue may happen as follows:
+>            cpu1                     cpu2
+> __________________________|__________________________
+> do_pwritev
+>  vfs_writev
+>   do_iter_write
+>    ext4_file_write_iter
+>     ext4_buffered_write_iter
+>      generic_perform_write
+>       ext4_da_write_begin
+>                            vfs_fallocate
+>                             ext4_fallocate
+>                              ext4_convert_inline_data
+>                               ext4_convert_inline_data_nolock
+>                                ext4_destroy_inline_data_nolock
+>                                 clear EXT4_STATE_MAY_INLINE_DATA
+>                                ext4_map_blocks
+>                                 ext4_ext_map_blocks
+>                                  ext4_mb_new_blocks
+>                                   ext4_mb_regular_allocator
+>                                    ext4_mb_good_group_nolock
+>                                     ext4_mb_init_group
+>                                      ext4_mb_init_cache
+>                                       ext4_mb_generate_buddy  --> error
+>        ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
+>                                 ext4_restore_inline_data
+>                                  set EXT4_STATE_MAY_INLINE_DATA
+>        ext4_block_write_begin
+>       ext4_da_write_end
+>        ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
+>        ext4_write_inline_data_end
+>         handle=NULL
+>         ext4_journal_stop(handle)
+>          __ext4_journal_stop
+>           ext4_put_nojournal(handle)
+>            ref_cnt = (unsigned long)handle
+>            BUG_ON(ref_cnt == 0)  ---> BUG_ON
+> 
+> The lock held by ext4_convert_inline_data is xattr_sem, but the lock
+> held by generic_perform_write is i_rwsem. Therefore, the two locks can
+> be concurrent.
+> 
+> To solve above issue, we add inode_lock() for ext4_convert_inline_data().
+> At the same time, move ext4_convert_inline_data() in front of
+> ext4_punch_hole(), remove similar handling from ext4_punch_hole().
+> 
+> Fixes: 0c8d414f163f ("ext4: let fallocate handle inline data correctly")
+> Cc: stable@vger.kernel.org
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Baokun Li <libaokun1@huawei.com>
 
-Interesting, if so why not just simply use zram?
+Looks good to me. Feel free to add:
 
->
-> >
-> > But it sounds like you would benefit from the zswap(ped) counters in
-> > memory.stat at least.
->
-> Yes and I think if we need zram specific counters/stats in future,
-> those can be added then.
->
-> >
-> > Thanks, that is enlightening!
->
+Reviewed-by: Jan Kara <jack@suse.cz>
+
+								Honza
+
+> ---
+> V1->V2:
+> 	Increase the range of the inode_lock.
+> V2->V3:
+> 	Move the lock outside the ext4_convert_inline_data().
+> 	And reorganize ext4_fallocate().
+> 
+>  fs/ext4/extents.c | 10 ++++++----
+>  fs/ext4/inode.c   |  9 ---------
+>  2 files changed, 6 insertions(+), 13 deletions(-)
+> 
+> diff --git a/fs/ext4/extents.c b/fs/ext4/extents.c
+> index e473fde6b64b..474479ce76e0 100644
+> --- a/fs/ext4/extents.c
+> +++ b/fs/ext4/extents.c
+> @@ -4693,15 +4693,17 @@ long ext4_fallocate(struct file *file, int mode, loff_t offset, loff_t len)
+>  		     FALLOC_FL_INSERT_RANGE))
+>  		return -EOPNOTSUPP;
+>  
+> +	inode_lock(inode);
+> +	ret = ext4_convert_inline_data(inode);
+> +	inode_unlock(inode);
+> +	if (ret)
+> +		goto exit;
+> +
+>  	if (mode & FALLOC_FL_PUNCH_HOLE) {
+>  		ret = ext4_punch_hole(file, offset, len);
+>  		goto exit;
+>  	}
+>  
+> -	ret = ext4_convert_inline_data(inode);
+> -	if (ret)
+> -		goto exit;
+> -
+>  	if (mode & FALLOC_FL_COLLAPSE_RANGE) {
+>  		ret = ext4_collapse_range(file, offset, len);
+>  		goto exit;
+> diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+> index 646ece9b3455..4779673d733e 100644
+> --- a/fs/ext4/inode.c
+> +++ b/fs/ext4/inode.c
+> @@ -3967,15 +3967,6 @@ int ext4_punch_hole(struct file *file, loff_t offset, loff_t length)
+>  
+>  	trace_ext4_punch_hole(inode, offset, length, 0);
+>  
+> -	ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+> -	if (ext4_has_inline_data(inode)) {
+> -		filemap_invalidate_lock(mapping);
+> -		ret = ext4_convert_inline_data(inode);
+> -		filemap_invalidate_unlock(mapping);
+> -		if (ret)
+> -			return ret;
+> -	}
+> -
+>  	/*
+>  	 * Write out all dirty pages to avoid race conditions
+>  	 * Then release them.
+> -- 
+> 2.31.1
+> 
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
