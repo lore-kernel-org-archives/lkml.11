@@ -2,164 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC3AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 17:25:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B359C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 17:27:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350341AbiD1R3E (ORCPT
+        id S1350402AbiD1RaT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 13:29:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
+        Thu, 28 Apr 2022 13:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350474AbiD1R3B (ORCPT
+        with ESMTP id S244981AbiD1RaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 13:29:01 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C28220C4
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 10:25:46 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id e24so4922451pjt.2
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 10:25:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VCwam7UiUNOXhElbv2jko1D22lHmNSK/U551dYCHJBk=;
-        b=kb2gXGO0dOiHelquCwPSsvA81OokVqaYnDdu+PCdW9ZS0DatM5QQUDG0tmfeaQmLzo
-         4CJS+I78m6sSb3rqc15C4CJpW2lQp40Cpec+y1RhaGZCBz9izEaUCWIt8S4Lw1ZjOsrD
-         46UMZnHk/jDIwkEIWMmBS6cSAo5Vz5iqQ7RyBUr0ZjXjbBmHCERFX0NjjvMvBmcSlihu
-         iX+ttzi3Z8eLHazNtGWX7lX1ai7smZXZg9JBSjDzJIUUbJezyAR6Qfi9ZCU+7kVRPzx2
-         3HNwguIMh1tbxiEnJAwiuc3M1jnQR566x2JDe8I+hp5rp3OdFSKMTN9lSdEavqnco0i0
-         fvzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VCwam7UiUNOXhElbv2jko1D22lHmNSK/U551dYCHJBk=;
-        b=d03roFe1c+Bm79nNCzYVxyTtxiEhMOD81JJvP3IitNBsftaHgiEc4zE99hRWxQWpYs
-         tCvkVzYKsreWwcI6AIZE0naHp24zpZ6oh7kihSf+swnzMLafkQU2fRYLH3ojFcrv7zWu
-         +8XYB7Lu4qASWPfnRkLNf7oRSHgJvaLf5kepyTlGCTSfAfPPOhaWRt8PcBVWjxWpgMGl
-         5Q7YcEdQxAkTnBW/bXemRhUQIGsPkm1yRjg2szq1T2IJLfNGgLudfkvJhlxIIw1leCKh
-         fUOyk+MWSpx0K1oZTatQTr3Q+ia9GgJyzlohLDBOX9uoqAsp03lgEkz4lPwkD/WLFMXh
-         wmsA==
-X-Gm-Message-State: AOAM532J0Ww930BlEa9LR2Z3A4k+T/wF0Znz6pDueRVOSK/ZivK2aHgm
-        s1fdkoWtDUlQZoKaBDvEFkWTORppC/0LXMvbUNB5CKQw
-X-Google-Smtp-Source: ABdhPJx/6Wrux0hAoIpHbzr0izmaFGDh3pXpcrD2VvY0Ekjt5BdumhW+HSUTcUf/+427d9ui4qoZtrF+a9c0tOAKRCg=
-X-Received: by 2002:a17:902:d5c3:b0:154:c472:de80 with SMTP id
- g3-20020a170902d5c300b00154c472de80mr34345864plh.87.1651166745857; Thu, 28
- Apr 2022 10:25:45 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220427053220.719866-1-naoya.horiguchi@linux.dev>
-In-Reply-To: <20220427053220.719866-1-naoya.horiguchi@linux.dev>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Thu, 28 Apr 2022 10:25:33 -0700
-Message-ID: <CAHbLzko3=bHrsWNGdb0QZijN9oPg3pchbC2F9=_6Td+2xDczhA@mail.gmail.com>
-Subject: Re: [PATCH v2] mm/hwpoison: use pr_err() instead of dump_page() in get_any_page()
-To:     Naoya Horiguchi <naoya.horiguchi@linux.dev>
-Cc:     Linux MM <linux-mm@kvack.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        William Kucharski <william.kucharski@oracle.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Thu, 28 Apr 2022 13:30:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B8F8635262
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 10:26:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651166817;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZRY0CP0uuG/LK26ciYdoHEggTFpAtfPg+TlemPGY9CE=;
+        b=Q5OUqnRwUsKOsMcshF3Dg1PqFKJ1LLl7aSPvH9LPD3xmElHXR94nREqjsB0TfbpIzoTEKO
+        xbmMm4h4/nEfAmhs1qe4rMRxlX6Jze7CEg6g+icB87PeugxOlXWsswPAqmSUAa0oMEyY3b
+        NKZP92e5S5DC7Uodrd5clM80hTeBMfs=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-602-lHxxeDkwM6WjHK5gSxSWgA-1; Thu, 28 Apr 2022 13:26:54 -0400
+X-MC-Unique: lHxxeDkwM6WjHK5gSxSWgA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D40511014A62;
+        Thu, 28 Apr 2022 17:26:53 +0000 (UTC)
+Received: from starship (unknown [10.40.192.41])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5A52D1121319;
+        Thu, 28 Apr 2022 17:26:50 +0000 (UTC)
+Message-ID: <47eb853424ef6c7dd6439ac33dfeb64a29f49c44.camel@redhat.com>
+Subject: Re: [syzbot] WARNING in kvm_mmu_uninit_tdp_mmu (2)
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     syzbot <syzbot+a8ad3ee1525a0c4b40ec@syzkaller.appspotmail.com>,
+        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
+        jmattson@google.com, joro@8bytes.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mingo@redhat.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org
+Date:   Thu, 28 Apr 2022 20:26:49 +0300
+In-Reply-To: <d1e4eaba-2dcd-ec08-4e23-98ab8ea6c37b@redhat.com>
+References: <00000000000082452505dd503126@google.com>
+         <13b3235ef66f22475fd4059df95ad0144548ccd1.camel@redhat.com>
+         <YmqzoFqdmH1WuPv0@google.com>
+         <d1e4eaba-2dcd-ec08-4e23-98ab8ea6c37b@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 10:32 PM Naoya Horiguchi
-<naoya.horiguchi@linux.dev> wrote:
->
-> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
->
-> The following VM_BUG_ON_FOLIO() is triggered when memory error event
-> happens on the (thp/folio) pages which are about to be freed:
->
->   [ 1160.232771] page:00000000b36a8a0f refcount:1 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x16a000
->   [ 1160.236916] page:00000000b36a8a0f refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x16a000
->   [ 1160.240684] flags: 0x57ffffc0800000(hwpoison|node=1|zone=2|lastcpupid=0x1fffff)
->   [ 1160.243458] raw: 0057ffffc0800000 dead000000000100 dead000000000122 0000000000000000
->   [ 1160.246268] raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
->   [ 1160.249197] page dumped because: VM_BUG_ON_FOLIO(!folio_test_large(folio))
->   [ 1160.251815] ------------[ cut here ]------------
->   [ 1160.253438] kernel BUG at include/linux/mm.h:788!
->   [ 1160.256162] invalid opcode: 0000 [#1] PREEMPT SMP PTI
->   [ 1160.258172] CPU: 2 PID: 115368 Comm: mceinj.sh Tainted: G            E     5.18.0-rc1-v5.18-rc1-220404-2353-005-g83111+ #3
->   [ 1160.262049] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
->   [ 1160.265103] RIP: 0010:dump_page.cold+0x27e/0x2bd
->   [ 1160.266757] Code: fe ff ff 48 c7 c6 81 f1 5a 98 e9 4c fe ff ff 48 c7 c6 a1 95 59 98 e9 40 fe ff ff 48 c7 c6 50 bf 5a 98 48 89 ef e8 9d 04 6d ff <0f> 0b 41 f7 c4 ff 0f 00 00 0f 85 9f fd ff ff 49 8b 04 24 a9 00 00
->   [ 1160.273180] RSP: 0018:ffffaa2c4d59fd18 EFLAGS: 00010292
->   [ 1160.274969] RAX: 000000000000003e RBX: 0000000000000001 RCX: 0000000000000000
->   [ 1160.277263] RDX: 0000000000000001 RSI: ffffffff985995a1 RDI: 00000000ffffffff
->   [ 1160.279571] RBP: ffffdc9c45a80000 R08: 0000000000000000 R09: 00000000ffffdfff
->   [ 1160.281794] R10: ffffaa2c4d59fb08 R11: ffffffff98940d08 R12: ffffdc9c45a80000
->   [ 1160.283920] R13: ffffffff985b6f94 R14: 0000000000000000 R15: ffffdc9c45a80000
->   [ 1160.286641] FS:  00007eff54ce1740(0000) GS:ffff99c67bd00000(0000) knlGS:0000000000000000
->   [ 1160.289498] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->   [ 1160.291106] CR2: 00005628381a5f68 CR3: 0000000104712003 CR4: 0000000000170ee0
->   [ 1160.293031] Call Trace:
->   [ 1160.293724]  <TASK>
->   [ 1160.294334]  get_hwpoison_page+0x47d/0x570
->   [ 1160.295474]  memory_failure+0x106/0xaa0
->   [ 1160.296474]  ? security_capable+0x36/0x50
->   [ 1160.297524]  hard_offline_page_store+0x43/0x80
->   [ 1160.298684]  kernfs_fop_write_iter+0x11c/0x1b0
->   [ 1160.299829]  new_sync_write+0xf9/0x160
->   [ 1160.300810]  vfs_write+0x209/0x290
->   [ 1160.301835]  ksys_write+0x4f/0xc0
->   [ 1160.302718]  do_syscall_64+0x3b/0x90
->   [ 1160.303664]  entry_SYSCALL_64_after_hwframe+0x44/0xae
->   [ 1160.304981] RIP: 0033:0x7eff54b018b7
->
-> As shown in the RIP address, this VM_BUG_ON in folio_entire_mapcount() is
-> called from dump_page("hwpoison: unhandlable page") in get_any_page().
-> The below explains the mechanism of the race:
->
->   CPU 0                                       CPU 1
->
->     memory_failure
->       get_hwpoison_page
->         get_any_page
->           dump_page
->             compound = PageCompound
->                                                 free_pages_prepare
->                                                   page->flags &= ~PAGE_FLAGS_CHECK_AT_PREP
->             folio_entire_mapcount
->               VM_BUG_ON_FOLIO(!folio_test_large(folio))
->
-> So replace dump_page() with safer one, pr_err().
->
-> Fixes: 74e8ee4708a8 ("mm: Turn head_compound_mapcount() into folio_entire_mapcount()")
-> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-> ---
-> ChangeLog v1 -> v2:
-> - v1: https://lore.kernel.org/linux-mm/20220414235950.840409-1-naoya.horiguchi@linux.dev/T/#u
-> - update caller side instead of changing dump_page().
-> ---
->  mm/memory-failure.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-> index 35e11d6bea4a..0e1453514a2b 100644
-> --- a/mm/memory-failure.c
-> +++ b/mm/memory-failure.c
-> @@ -1270,7 +1270,7 @@ static int get_any_page(struct page *p, unsigned long flags)
->         }
->  out:
->         if (ret == -EIO)
-> -               dump_page(p, "hwpoison: unhandlable page");
-> +               pr_err("Memory failure: %#lx: unhandlable page.\n", page_to_pfn(p));
+On Thu, 2022-04-28 at 19:22 +0200, Paolo Bonzini wrote:
+> On 4/28/22 17:32, Sean Christopherson wrote:
+> > On Tue, Apr 26, 2022, Maxim Levitsky wrote:
+> > > I can reproduce this in a VM, by running and CTRL+C'in my ipi_stress test,
+> > 
+> > Can you post your ipi_stress test?  I'm curious to see if I can repro, and also
+> > very curious as to what might be unique about your test.  I haven't been able to
+> > repro the syzbot test, nor have I been able to repro by killing VMs/tests.
+> 
+> Did you test with CONFIG_PREEMPT=y?
 
-I think dump_page() is helpful to tell the users more information
-about the unhandlable page, I'm ok with this fix for now, but should
-we consider having a memory failure safe dump_page() in the future?
+yes, I test with CONFIG_PREEMPT but I only enabled it a day ago,
+I think I had seen this warning before, but could bit, I'll check
+if that fails without CONFIG_PREEMPT as well.
 
->
->         return ret;
->  }
-> --
-> 2.25.1
->
->
+
+What I recently changed, is that I enabled lockdep and related settings
+on all my machines and VMs, I enabled CONFIG_PREEMPT, and I also
+switched to tdp_mmu on all systems.
+
+Bugs are biting but it is better this way, especially to weed out
+the last bugs of my nested avic code :)
+
+Best regards,
+	Maxim Levitsky
+
+
+> 
+> (BTW, the fact that it reproduces under 5.17 is a mixed blessing, 
+> because it means that we can analyze/stare at a simpler codebase).
+> 
+> Paolo
+> 
+
+
