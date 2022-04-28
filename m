@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3426C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:18:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:18:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346942AbiD1NVj (ORCPT
+        id S1346993AbiD1NVu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
+        Thu, 28 Apr 2022 09:21:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346528AbiD1NVh (ORCPT
+        with ESMTP id S1346977AbiD1NVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:21:37 -0400
+        Thu, 28 Apr 2022 09:21:43 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8170C8D69D
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:18:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9438D939E3
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:18:28 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 402C21474;
-        Thu, 28 Apr 2022 06:18:21 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5B97D1477;
+        Thu, 28 Apr 2022 06:18:28 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 3B7723F73B;
-        Thu, 28 Apr 2022 06:18:19 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 30E3F3F73B;
+        Thu, 28 Apr 2022 06:18:26 -0700 (PDT)
 From:   Robin Murphy <robin.murphy@arm.com>
 To:     joro@8bytes.org, will@kernel.org
 Cc:     iommu@lists.linux-foundation.org, sven@svenpeter.dev,
@@ -31,74 +31,47 @@ Cc:     iommu@lists.linux-foundation.org, sven@svenpeter.dev,
         zhang.lyra@gmail.com, thierry.reding@gmail.com, vdumpa@nvidia.com,
         jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 00/14] iommu: Retire bus_set_iommu()
-Date:   Thu, 28 Apr 2022 14:18:01 +0100
-Message-Id: <cover.1650890638.git.robin.murphy@arm.com>
+Subject: [PATCH v2 01/14] iommu/vt-d: Temporarily reject probing non-PCI devices
+Date:   Thu, 28 Apr 2022 14:18:02 +0100
+Message-Id: <5e5e36fa489967c405a51b9371de17be32c5a0d8.1650890638.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.35.3.dirty
+In-Reply-To: <cover.1650890638.git.robin.murphy@arm.com>
+References: <cover.1650890638.git.robin.murphy@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v1: https://lore.kernel.org/linux-iommu/cover.1649935679.git.robin.murphy@arm.com/
+Although the driver has some support implemented for non-PCI devices via
+ANDD, it only registers itself for pci_bus_type, so has never actually
+seen probe_device for a non-PCI device. Once the bus details move into
+the IOMMU core, it appears there may be some issues with correctly
+rejecting non-ANDD platform devices, so let's temporarily enforce the
+current behaviour of only considering PCI devices until that can be
+investigated properly.
 
-Hi all,
+Reported-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/iommu/intel/iommu.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Just some minor updates for v2, adding a workaround to avoid changing
-VT-d behaviour for now, cleaning up the extra include I missed in
-virtio-iommu, and collecting all the acks so far. As before, this is
-based on the AMD IOMMU patch now applied, plus v2 of my
-device_iommu_capable() series here:
-
-https://lore.kernel.org/linux-iommu/cover.1650878781.git.robin.murphy@arm.com/
-
-Cheers,
-Robin.
-
-
-
-Robin Murphy (14):
-  iommu/vt-d: Temporarily reject probing non-PCI devices
-  iommu: Always register bus notifiers
-  iommu: Move bus setup to IOMMU device registration
-  iommu/amd: Clean up bus_set_iommu()
-  iommu/arm-smmu: Clean up bus_set_iommu()
-  iommu/arm-smmu-v3: Clean up bus_set_iommu()
-  iommu/dart: Clean up bus_set_iommu()
-  iommu/exynos: Clean up bus_set_iommu()
-  iommu/ipmmu-vmsa: Clean up bus_set_iommu()
-  iommu/mtk: Clean up bus_set_iommu()
-  iommu/omap: Clean up bus_set_iommu()
-  iommu/tegra-smmu: Clean up bus_set_iommu()
-  iommu/virtio: Clean up bus_set_iommu()
-  iommu: Clean up bus_set_iommu()
-
- drivers/iommu/amd/amd_iommu.h               |   1 -
- drivers/iommu/amd/init.c                    |   9 +-
- drivers/iommu/amd/iommu.c                   |  21 ----
- drivers/iommu/apple-dart.c                  |  30 +-----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  53 +---------
- drivers/iommu/arm/arm-smmu/arm-smmu.c       |  84 +--------------
- drivers/iommu/arm/arm-smmu/qcom_iommu.c     |   4 -
- drivers/iommu/exynos-iommu.c                |   9 --
- drivers/iommu/fsl_pamu_domain.c             |   4 -
- drivers/iommu/intel/iommu.c                 |   5 +-
- drivers/iommu/iommu.c                       | 110 +++++++++-----------
- drivers/iommu/ipmmu-vmsa.c                  |  35 +------
- drivers/iommu/msm_iommu.c                   |   2 -
- drivers/iommu/mtk_iommu.c                   |  13 +--
- drivers/iommu/mtk_iommu_v1.c                |  13 +--
- drivers/iommu/omap-iommu.c                  |   6 --
- drivers/iommu/rockchip-iommu.c              |   2 -
- drivers/iommu/s390-iommu.c                  |   6 --
- drivers/iommu/sprd-iommu.c                  |   5 -
- drivers/iommu/sun50i-iommu.c                |   2 -
- drivers/iommu/tegra-smmu.c                  |  29 ++----
- drivers/iommu/virtio-iommu.c                |  25 -----
- include/linux/iommu.h                       |   1 -
- 23 files changed, 67 insertions(+), 402 deletions(-)
-
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 0edf6084dc14..9507b64fdf6b 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4565,6 +4565,10 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ 	unsigned long flags;
+ 	u8 bus, devfn;
+ 
++	/* ANDD platform device support needs fixing */
++	if (!pdev)
++		return ERR_PTR(-ENODEV);
++
+ 	iommu = device_to_iommu(dev, &bus, &devfn);
+ 	if (!iommu)
+ 		return ERR_PTR(-ENODEV);
 -- 
 2.35.3.dirty
 
