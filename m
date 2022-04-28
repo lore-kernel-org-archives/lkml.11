@@ -2,122 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1440DC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A42C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:28:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345396AbiD1J1q convert rfc822-to-8bit (ORCPT
+        id S1347139AbiD1JaR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 05:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58074 "EHLO
+        Thu, 28 Apr 2022 05:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346585AbiD1J0D (ORCPT
+        with ESMTP id S1346747AbiD1J04 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 05:26:03 -0400
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1EB87B55A;
-        Thu, 28 Apr 2022 02:22:49 -0700 (PDT)
-Received: by mail-qv1-f54.google.com with SMTP id a5so2816005qvx.1;
-        Thu, 28 Apr 2022 02:22:49 -0700 (PDT)
+        Thu, 28 Apr 2022 05:26:56 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEF97B556;
+        Thu, 28 Apr 2022 02:23:42 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id p6so3795741pjm.1;
+        Thu, 28 Apr 2022 02:23:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4R456a2EKx3/Cjhoycmuudv2QP7/h6tZBuPXNUpi9fk=;
+        b=I+lUa/of4zMx/MbE0mRhv6Lk3HLDIsjTKSRtN47KbE4VORjOEUzVMjpx7JVYN11vYq
+         AfpM4QSpe0Ik/dIP4mDt0EaSADIoqtFhYF43sGbGCo3rt1/IhmtHifBK9CuZpTPHJFCI
+         AW686YkIXIB9N2V0pRQGkWIGkuMtmuKksSRk8/+ufkn7drQ4VeJZA1N4HAzREAPhojIE
+         VgQeCdc4/jspzPgBu1zWwC91ngQEG3JL99e2KPuYz7tOm7MEhiUqXB3eovWZo8v9GfwR
+         5RHYuj60FOLwCCA7qt6MKNsR+0ldk3HmvNK042XMJeG+rPK86qQBtnJPv80pBdWeyGA0
+         J5Ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=XqlNbfP07/JFH01D+0otUBRM7EY77qBFCn/ld2fGXUk=;
-        b=oEZ+F4UIOxbggPbpUd+38Q5RcsS64KEBKvmzSIUP01hIQdxh4ftDWoIUbC7eYTPeDk
-         aMuMQy02J6QAJbFDC0BC8xeEfOJC4JRomGUKnYgx/jyAcv6jeNuEMGGMMsXRZFFmUl0s
-         ZA67KSd3Or34vRmR7dJvt8OP0Fb0SKHyLXLFQcHE23FEOkybjmueeuf0+eKGvzH5GBQo
-         XDBVl6glmg6YsMdwWxyejRC8yp/a4ccln6Z9dhT/ik8Q7K505wywuQ88vBvDIUBDXlCZ
-         N5N7rVE+JzIAuKPBm29EpHiM+7wZmYe0zXipPcl+DZ4x7GN/6WOQEoEcPQ25EsHDwMQk
-         IGaA==
-X-Gm-Message-State: AOAM532YwHdDSVzECnrVS+odxRarZpir6BtB3buK30VX0A4soO6Z7LCr
-        Ij4l0zWAo6reu2LQuvlgPXAOjkpqmv++LQ==
-X-Google-Smtp-Source: ABdhPJyZVJVTfXghprm+uK544vIooJPyHd/NqYJy555ifKHxac+s/bMU6ua9HBq+/o2o7618xwjcww==
-X-Received: by 2002:a05:6214:d86:b0:456:4ae4:d993 with SMTP id e6-20020a0562140d8600b004564ae4d993mr7911694qve.38.1651137768464;
-        Thu, 28 Apr 2022 02:22:48 -0700 (PDT)
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
-        by smtp.gmail.com with ESMTPSA id n186-20020a37bdc3000000b0069c218173e8sm9372017qkf.112.2022.04.28.02.22.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 02:22:48 -0700 (PDT)
-Received: by mail-yb1-f174.google.com with SMTP id m128so7933688ybm.5;
-        Thu, 28 Apr 2022 02:22:47 -0700 (PDT)
-X-Received: by 2002:a5b:984:0:b0:63f:8c38:676c with SMTP id
- c4-20020a5b0984000000b0063f8c38676cmr30668590ybq.393.1651137767425; Thu, 28
- Apr 2022 02:22:47 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4R456a2EKx3/Cjhoycmuudv2QP7/h6tZBuPXNUpi9fk=;
+        b=zDsFRmz2nDD5OLEtAu1iTUJIUIVS7WVN8weqLp3qtAwXFHXTJ6R1rsTsZpOI74ayBK
+         3YahiyVezX0weDSV1bQwdEIY2uWPdr1JaaG2KHO8NWtDg2+B/aJS7Y0VGBZKdwPNb9hg
+         z3bOBdTNNmic2lcszRCe5BRUp9oD1mbT1MfcozdKwaQis0Kh2AgaP0GVjpHtUOEDc6mQ
+         47JAtLjGiniZnb2D/9bc2o6xPoOa5Wp/qH48f9WPC+UZBWuGfPcYXYr74EzdooT766Ej
+         itg1E5ybuZPvUt107Bc6wGQ5RjL6lveqjIYYC3lPJORCFqjBUjZNHi4YzG8Patt4KEpc
+         Roqg==
+X-Gm-Message-State: AOAM533GGP0EK+R28UKmfD5C7PrULNVvlktO2EgPKPI29NYjshFt+kdR
+        jT6EIDAZpXnlSRbVlhidxTE=
+X-Google-Smtp-Source: ABdhPJxDGLtFG2tk8d7m9YtfFxcyKP2ifBm7uCBtAeOK056rRBExu2Z4vCN3ZgZGlvlePmI57yzjiQ==
+X-Received: by 2002:a17:90b:1b4d:b0:1d9:bc90:f7ea with SMTP id nv13-20020a17090b1b4d00b001d9bc90f7eamr13052241pjb.223.1651137821789;
+        Thu, 28 Apr 2022 02:23:41 -0700 (PDT)
+Received: from localhost ([166.111.139.106])
+        by smtp.gmail.com with ESMTPSA id b7-20020a056a00114700b004f7be3231d6sm22189732pfm.7.2022.04.28.02.23.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 02:23:41 -0700 (PDT)
+From:   Zixuan Fu <r33s3n6@gmail.com>
+To:     mathias.nyman@intel.com, gregkh@linuxfoundation.org
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        baijiaju1990@gmail.com, Zixuan Fu <r33s3n6@gmail.com>,
+        TOTE Robot <oslab@tsinghua.edu.cn>
+Subject: [PATCH v2 resend] drivers: usb: host: fix NULL pointer dereferences triggered by unhandled errors in xhci_create_rhub_port_array()
+Date:   Thu, 28 Apr 2022 17:23:21 +0800
+Message-Id: <20220428092321.3011983-1-r33s3n6@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220422120850.769480-1-herve.codina@bootlin.com>
- <20220422120850.769480-5-herve.codina@bootlin.com> <CAMuHMdWmcBXRxZ_SDLCnimh7GqzkR0_qz178s51EtXsMm39ddg@mail.gmail.com>
- <20220428111535.51833857@bootlin.com>
-In-Reply-To: <20220428111535.51833857@bootlin.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 28 Apr 2022 11:22:35 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUf6M=ESvSnRoqYkBfvizW-tBzTwUX2Uka-FOGvLFzL=w@mail.gmail.com>
-Message-ID: <CAMuHMdUf6M=ESvSnRoqYkBfvizW-tBzTwUX2Uka-FOGvLFzL=w@mail.gmail.com>
-Subject: Re: [PATCH v3 4/8] soc: renesas: rzn1: Select PM and
- PM_GENERIC_DOMAINS configs
-To:     Herve Codina <herve.codina@bootlin.com>
-Cc:     Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Rob Herring <robh@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hervé,
+In xhci_create_rhub_port_array(), when rhub->num_ports is zero, 
+rhub->ports would not be set; when kcalloc_node() fails, rhub->ports
+would be set to NULL. In these two cases, xhci_create_rhub_port_array()
+just returns void, and thus its callers are unaware of the error.
 
-On Thu, Apr 28, 2022 at 11:15 AM Herve Codina <herve.codina@bootlin.com> wrote:
-> On Wed, 27 Apr 2022 16:58:07 +0200
-> Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Fri, Apr 22, 2022 at 2:09 PM Herve Codina <herve.codina@bootlin.com> wrote:
-> > > PM and PM_GENERIC_DOMAINS configs are required for RZ/N1 SOCs.
-> > > Without these configs, the clocks used by the PCI bridge are not
-> > > enabled and so accessing the devices leads to a kernel crash:
-> > >   [    0.832958] Unhandled fault: external abort on non-linefetch (0x1008) at 0x90b5f848
-> > >
-> > > Select PM and PM_GENERIC_DOMAINS for ARCH_RZN1
-> > >
-> > > Signed-off-by: Herve Codina <herve.codina@bootlin.com>
-> >
-> > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > i.e. will queue in renesas-devel for v5.19.
->
-> I plan to send a v4 of this series.
->
-> As this patch (4/8) and the following one (5/8) will be
-> queued for v5.19, I plan to remove them from the v4 version
-> of the series.
->
-> Is that ok for you or do you prefer to still have them
-> in v4 ?
+Then rhub->ports is dereferenced in xhci_usb3_hub_descriptor() or 
+xhci_usb2_hub_descriptor().
 
-As these two patches are not strictly related to adding PCI support,
-but they are dependencies, I will queue them separately. Hence you
-do not need to include them in v5.
+To fix the bug, xhci_setup_port_arrays() should return an integer to 
+indicate a possible error, and its callers should handle the error.
 
-Gr{oetje,eeting}s,
+In the driver, xhci_create_rhub_port_array() is only used in 
+xhci_setup_port_arrays(), and only xhci_mem_init() calls
+xhci_setup_port_arrays() and does all cleanup work when it fails.
+Specifically, xhci_mem_init() calls xhci_mem_cleanup(), which eventually
+calls kfree(xhci->usb2_rhub.ports) and kfree(xhci->usb3_rhub.ports). For
+this reason, when xhci_create_rhub_port_array() fails, 
+xhci_setup_port_arrays() should return the error code directly, without
+freeing the memory allocated in this function.
 
-                        Geert
+The error log in our fault-injection testing is shown as follows:
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+[   24.001309] BUG: kernel NULL pointer dereference, address: 0000000000000000
+...
+[   24.003992] RIP: 0010:xhci_hub_control+0x3f5/0x60d0 [xhci_hcd]
+...
+[   24.009803] Call Trace:
+[   24.010014]  <TASK>
+[   24.011310]  usb_hcd_submit_urb+0x1233/0x1fd0
+[   24.017071]  usb_start_wait_urb+0x115/0x310
+[   24.017641]  usb_control_msg+0x28a/0x450
+[   24.019046]  hub_probe+0xb16/0x2320
+[   24.019757]  usb_probe_interface+0x4f1/0x930
+[   24.019765]  really_probe+0x33d/0x970
+[   24.019768]  __driver_probe_device+0x157/0x210
+[   24.019772]  driver_probe_device+0x4f/0x340
+[   24.019775]  __device_attach_driver+0x2ee/0x3a0
+...
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+---
+v2:
+* Explain the reason why xhci_setup_port_arrays() returns without freeing the memory in error handling code.
+  Thank Greg KH for helpful advice.
+---
+ drivers/usb/host/xhci-mem.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/usb/host/xhci-mem.c b/drivers/usb/host/xhci-mem.c
+index bbb27ee2c6a3..024515346c39 100644
+--- a/drivers/usb/host/xhci-mem.c
++++ b/drivers/usb/host/xhci-mem.c
+@@ -2235,7 +2235,7 @@ static void xhci_add_in_port(struct xhci_hcd *xhci, unsigned int num_ports,
+ 	/* FIXME: Should we disable ports not in the Extended Capabilities? */
+ }
+ 
+-static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
++static int xhci_create_rhub_port_array(struct xhci_hcd *xhci,
+ 					struct xhci_hub *rhub, gfp_t flags)
+ {
+ 	int port_index = 0;
+@@ -2243,11 +2243,11 @@ static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
+ 	struct device *dev = xhci_to_hcd(xhci)->self.sysdev;
+ 
+ 	if (!rhub->num_ports)
+-		return;
++		return -EINVAL;
+ 	rhub->ports = kcalloc_node(rhub->num_ports, sizeof(*rhub->ports),
+ 			flags, dev_to_node(dev));
+ 	if (!rhub->ports)
+-		return;
++		return -ENOMEM;
+ 
+ 	for (i = 0; i < HCS_MAX_PORTS(xhci->hcs_params1); i++) {
+ 		if (xhci->hw_ports[i].rhub != rhub ||
+@@ -2259,6 +2259,7 @@ static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
+ 		if (port_index == rhub->num_ports)
+ 			break;
+ 	}
++	return 0;
+ }
+ 
+ /*
+@@ -2277,6 +2278,7 @@ static int xhci_setup_port_arrays(struct xhci_hcd *xhci, gfp_t flags)
+ 	int cap_count = 0;
+ 	u32 cap_start;
+ 	struct device *dev = xhci_to_hcd(xhci)->self.sysdev;
++	int ret;
+ 
+ 	num_ports = HCS_MAX_PORTS(xhci->hcs_params1);
+ 	xhci->hw_ports = kcalloc_node(num_ports, sizeof(*xhci->hw_ports),
+@@ -2367,8 +2369,13 @@ static int xhci_setup_port_arrays(struct xhci_hcd *xhci, gfp_t flags)
+ 	 * Not sure how the USB core will handle a hub with no ports...
+ 	 */
+ 
+-	xhci_create_rhub_port_array(xhci, &xhci->usb2_rhub, flags);
+-	xhci_create_rhub_port_array(xhci, &xhci->usb3_rhub, flags);
++	ret = xhci_create_rhub_port_array(xhci, &xhci->usb2_rhub, flags);
++	if (ret)
++		return ret;
++
++	ret = xhci_create_rhub_port_array(xhci, &xhci->usb3_rhub, flags);
++	if (ret)
++		return ret;
+ 
+ 	return 0;
+ }
+-- 
+2.25.1
+
