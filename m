@@ -2,113 +2,317 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2BA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:22:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:22:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349912AbiD1QZY (ORCPT
+        id S1349938AbiD1QZi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 12:25:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
+        Thu, 28 Apr 2022 12:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231805AbiD1QZQ (ORCPT
+        with ESMTP id S1349926AbiD1QZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 12:25:16 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DAFE5E152
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:22:01 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1651162917;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ScfRiX1QGknyiNAjIBYqs4VvQ59BCXbjYO7mgxh1RLQ=;
-        b=Ljf+8djCHvl0bjxq+iIreKVSb56/xRs6kVfEazeA8DB1DrDEp2FenrJJHhl8TxQFCjJu5r
-        3IMOpW1287MbIGCRAPir7Aw+6ngEfiDS6mo1b6hyD/rS2TWVJ2Cy4KHG70EkCEdpKAXiS9
-        C457Ica9DFy6TlWCdWlC0+hhySpSBOI=
-From:   andrey.konovalov@linux.dev
-To:     Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH 2/3] kasan: use tabs to align shadow values
-Date:   Thu, 28 Apr 2022 18:21:51 +0200
-Message-Id: <91a979ef1eb9aa68d820234663ad797b4818e098.1651162840.git.andreyknvl@google.com>
-In-Reply-To: <3167cbec7a82704c1ed2c6bfe85b77534a836fdc.1651162840.git.andreyknvl@google.com>
-References: <3167cbec7a82704c1ed2c6bfe85b77534a836fdc.1651162840.git.andreyknvl@google.com>
+        Thu, 28 Apr 2022 12:25:36 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B6469739;
+        Thu, 28 Apr 2022 09:22:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651162941; x=1682698941;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=iOd+jlxVC3IP0tBf3f5BFvwo71ngtvmSrBimJVft37M=;
+  b=eShJXL1YVSf9RcGbjncDqJ2FYtJmCS3cnkidGeX36V12CixqPCmvS4so
+   iTaqmqJkX9JbMLnb/tUFVQgcKuaZxQ9NhnuROflNP3Jn4pMCCLjR9Isd4
+   flW95duGFffbzRY0NjeRGPzDxaen/MVYrvPFFhqs9Y7xeJj5VapLcSN+6
+   liaJ7EQb5dAkfkHb9ujs/NvLW2n98elXbU7efQpFSc0N6ckGVxZWMqmaA
+   KV5tcJdt1bMfE0/zbJJfHVKlSl9Kbe70HSxXjAJB50Yk3O1paHk1fBF78
+   KXpvRmQxvCjDgEsHDAjfRcN1PXSny3PPW5Yj23XGpi4hOgJ95r7F+Wp7f
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="246898467"
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="246898467"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 09:22:21 -0700
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="559754474"
+Received: from mpoursae-mobl2.amr.corp.intel.com (HELO [10.212.0.84]) ([10.212.0.84])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 09:22:20 -0700
+Message-ID: <fa4d15d5-4690-9e63-f0c9-af4b58e4325c@intel.com>
+Date:   Thu, 28 Apr 2022 09:22:36 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 12/21] x86/virt/tdx: Create TDMRs to cover all system
+ RAM
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+References: <cover.1649219184.git.kai.huang@intel.com>
+ <6cc984d5c23e06c9c87b4c7342758b29f8c8c022.1649219184.git.kai.huang@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <6cc984d5c23e06c9c87b4c7342758b29f8c8c022.1649219184.git.kai.huang@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+On 4/5/22 21:49, Kai Huang wrote:
+> The kernel configures TDX usable memory regions to the TDX module via
+> an array of "TD Memory Region" (TDMR). 
 
-Consistently use tabs instead of spaces to shadow value definitions.
+One bit of language that's repeated in these changelogs that I don't
+like is "configure ... to".  I think that's a misuse of the word
+configure.  I'd say something more like:
 
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
----
- mm/kasan/kasan.h | 32 ++++++++++++++++----------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
+	The kernel configures TDX-usable memory regions by passing an
+	array of "TD Memory Regions" (TDMRs) to the TDX module.
 
-diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
-index 13681516dc08..06fdea41ca4a 100644
---- a/mm/kasan/kasan.h
-+++ b/mm/kasan/kasan.h
-@@ -74,29 +74,29 @@ static inline bool kasan_sync_fault_possible(void)
- #define KASAN_MEMORY_PER_SHADOW_PAGE	(KASAN_GRANULE_SIZE << PAGE_SHIFT)
- 
- #ifdef CONFIG_KASAN_GENERIC
--#define KASAN_FREE_PAGE         0xFF  /* freed page */
--#define KASAN_PAGE_REDZONE      0xFE  /* redzone for kmalloc_large allocation */
--#define KASAN_KMALLOC_REDZONE   0xFC  /* redzone for slab object */
--#define KASAN_KMALLOC_FREE      0xFB  /* freed slab object */
--#define KASAN_VMALLOC_INVALID   0xF8  /* inaccessible space in vmap area */
-+#define KASAN_FREE_PAGE		0xFF  /* freed page */
-+#define KASAN_PAGE_REDZONE	0xFE  /* redzone for kmalloc_large allocation */
-+#define KASAN_KMALLOC_REDZONE	0xFC  /* redzone for slab object */
-+#define KASAN_KMALLOC_FREE	0xFB  /* freed slab object */
-+#define KASAN_VMALLOC_INVALID	0xF8  /* inaccessible space in vmap area */
- #else
--#define KASAN_FREE_PAGE         KASAN_TAG_INVALID
--#define KASAN_PAGE_REDZONE      KASAN_TAG_INVALID
--#define KASAN_KMALLOC_REDZONE   KASAN_TAG_INVALID
--#define KASAN_KMALLOC_FREE      KASAN_TAG_INVALID
--#define KASAN_VMALLOC_INVALID   KASAN_TAG_INVALID /* only used for SW_TAGS */
-+#define KASAN_FREE_PAGE		KASAN_TAG_INVALID
-+#define KASAN_PAGE_REDZONE	KASAN_TAG_INVALID
-+#define KASAN_KMALLOC_REDZONE	KASAN_TAG_INVALID
-+#define KASAN_KMALLOC_FREE	KASAN_TAG_INVALID
-+#define KASAN_VMALLOC_INVALID	KASAN_TAG_INVALID /* only used for SW_TAGS */
- #endif
- 
- #ifdef CONFIG_KASAN_GENERIC
- 
--#define KASAN_KMALLOC_FREETRACK 0xFA  /* freed slab object with free track */
--#define KASAN_GLOBAL_REDZONE    0xF9  /* redzone for global variable */
-+#define KASAN_KMALLOC_FREETRACK	0xFA  /* freed slab object with free track */
-+#define KASAN_GLOBAL_REDZONE	0xF9  /* redzone for global variable */
- 
- /* Stack redzone shadow values. Compiler's ABI, do not change. */
--#define KASAN_STACK_LEFT        0xF1
--#define KASAN_STACK_MID         0xF2
--#define KASAN_STACK_RIGHT       0xF3
--#define KASAN_STACK_PARTIAL     0xF4
-+#define KASAN_STACK_LEFT	0xF1
-+#define KASAN_STACK_MID		0xF2
-+#define KASAN_STACK_RIGHT	0xF3
-+#define KASAN_STACK_PARTIAL	0xF4
- 
- /* alloca redzone shadow values. */
- #define KASAN_ALLOCA_LEFT	0xCA
--- 
-2.25.1
+Could you please take a look over this series and reword those?
+
+> Each TDMR entry (TDMR_INFO)
+> contains the information of the base/size of a memory region, the
+> base/size of the associated Physical Address Metadata Table (PAMT) and
+> a list of reserved areas in the region.
+> 
+> Create a number of TDMRs according to the verified e820 RAM entries.
+> As the first step only set up the base/size information for each TDMR.
+> 
+> TDMR must be 1G aligned and the size must be in 1G granularity.  This
+
+ ^ Each
+
+> implies that one TDMR could cover multiple e820 RAM entries.  If a RAM
+> entry spans the 1GB boundary and the former part is already covered by
+> the previous TDMR, just create a new TDMR for the latter part.
+> 
+> TDX only supports a limited number of TDMRs (currently 64).  Abort the
+> TDMR construction process when the number of TDMRs exceeds this
+> limitation.
+
+... and what does this *MEAN*?  Is TDX disabled?  Does it throw away the
+RAM?  Does it eat puppies?
+
+>  arch/x86/virt/vmx/tdx/tdx.c | 138 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 138 insertions(+)
+> 
+> diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+> index 6b0c51aaa7f2..82534e70df96 100644
+> --- a/arch/x86/virt/vmx/tdx/tdx.c
+> +++ b/arch/x86/virt/vmx/tdx/tdx.c
+> @@ -54,6 +54,18 @@
+>  		((u32)(((_keyid_part) & 0xffffffffull) + 1))
+>  #define TDX_KEYID_NUM(_keyid_part)	((u32)((_keyid_part) >> 32))
+>  
+> +/* TDMR must be 1gb aligned */
+> +#define TDMR_ALIGNMENT		BIT_ULL(30)
+> +#define TDMR_PFN_ALIGNMENT	(TDMR_ALIGNMENT >> PAGE_SHIFT)
+> +
+> +/* Align up and down the address to TDMR boundary */
+> +#define TDMR_ALIGN_DOWN(_addr)	ALIGN_DOWN((_addr), TDMR_ALIGNMENT)
+> +#define TDMR_ALIGN_UP(_addr)	ALIGN((_addr), TDMR_ALIGNMENT)
+> +
+> +/* TDMR's start and end address */
+> +#define TDMR_START(_tdmr)	((_tdmr)->base)
+> +#define TDMR_END(_tdmr)		((_tdmr)->base + (_tdmr)->size)
+
+Make these 'static inline's please.  #defines are only for constants or
+things that can't use real functions.
+
+>  /*
+>   * TDX module status during initialization
+>   */
+> @@ -813,6 +825,44 @@ static int e820_check_against_cmrs(void)
+>  	return 0;
+>  }
+>  
+> +/* The starting offset of reserved areas within TDMR_INFO */
+> +#define TDMR_RSVD_START		64
+
+				^ extra whitespace
+
+> +static struct tdmr_info *__alloc_tdmr(void)
+> +{
+> +	int tdmr_sz;
+> +
+> +	/*
+> +	 * TDMR_INFO's actual size depends on maximum number of reserved
+> +	 * areas that one TDMR supports.
+> +	 */
+> +	tdmr_sz = TDMR_RSVD_START + tdx_sysinfo.max_reserved_per_tdmr *
+> +		sizeof(struct tdmr_reserved_area);
+
+You have a structure for this.  I know this because it's the return type
+of the function.  You have TDMR_RSVD_START available via the structure
+itself.  So, derive that 64 either via:
+
+	sizeof(struct tdmr_info)
+
+or,
+
+	offsetof(struct tdmr_info, reserved_areas);
+
+Which would make things look like this:
+
+	tdmr_base_sz = sizeof(struct tdmr_info);
+	tdmr_reserved_area_sz = sizeof(struct tdmr_reserved_area) *
+				tdx_sysinfo.max_reserved_per_tdmr;
+
+	tdmr_sz = tdmr_base_sz + tdmr_reserved_area_sz;
+
+Could you explain why on earth you felt the need for the TDMR_RSVD_START
+#define?
+
+> +	/*
+> +	 * TDX requires TDMR_INFO to be 512 aligned.  Always align up
+
+Again, 512 what?  512 pages?  512 hippos?
+
+> +	 * TDMR_INFO size to 512 so the memory allocated via kzalloc()
+> +	 * can meet the alignment requirement.
+> +	 */
+> +	tdmr_sz = ALIGN(tdmr_sz, TDMR_INFO_ALIGNMENT);
+> +
+> +	return kzalloc(tdmr_sz, GFP_KERNEL);
+> +}
+> +
+> +/* Create a new TDMR at given index in the TDMR array */
+> +static struct tdmr_info *alloc_tdmr(struct tdmr_info **tdmr_array, int idx)
+> +{
+> +	struct tdmr_info *tdmr;
+> +
+> +	if (WARN_ON_ONCE(tdmr_array[idx]))
+> +		return NULL;
+> +
+> +	tdmr = __alloc_tdmr();
+> +	tdmr_array[idx] = tdmr;
+> +
+> +	return tdmr;
+> +}
+> +
+>  static void free_tdmrs(struct tdmr_info **tdmr_array, int tdmr_num)
+>  {
+>  	int i;
+> @@ -826,6 +876,89 @@ static void free_tdmrs(struct tdmr_info **tdmr_array, int tdmr_num)
+>  	}
+>  }
+>  
+> +/*
+> + * Create TDMRs to cover all RAM entries in e820_table.  The created
+> + * TDMRs are saved to @tdmr_array and @tdmr_num is set to the actual
+> + * number of TDMRs.  All entries in @tdmr_array must be initially NULL.
+> + */
+> +static int create_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
+> +{
+> +	struct tdmr_info *tdmr;
+> +	u64 start, end;
+> +	int i, tdmr_idx;
+> +	int ret = 0;
+> +
+> +	tdmr_idx = 0;
+> +	tdmr = alloc_tdmr(tdmr_array, 0);
+> +	if (!tdmr)
+> +		return -ENOMEM;
+> +	/*
+> +	 * Loop over all RAM entries in e820 and create TDMRs to cover
+> +	 * them.  To keep it simple, always try to use one TDMR to cover
+> +	 * one RAM entry.
+> +	 */
+> +	e820_for_each_mem(i, start, end) {
+> +		start = TDMR_ALIGN_DOWN(start);
+> +		end = TDMR_ALIGN_UP(end);
+			    ^ vertically align those ='s, please.
+
+
+> +		/*
+> +		 * If the current TDMR's size hasn't been initialized, it
+> +		 * is a new allocated TDMR to cover the new RAM entry.
+> +		 * Otherwise the current TDMR already covers the previous
+> +		 * RAM entry.  In the latter case, check whether the
+> +		 * current RAM entry has been fully or partially covered
+> +		 * by the current TDMR, since TDMR is 1G aligned.
+> +		 */
+> +		if (tdmr->size) {
+> +			/*
+> +			 * Loop to next RAM entry if the current entry
+> +			 * is already fully covered by the current TDMR.
+> +			 */
+> +			if (end <= TDMR_END(tdmr))
+> +				continue;
+
+This loop is actually pretty well commented and looks OK.  The
+TDMR_END() construct even adds to readability.  *BUT*, the
+
+> +			/*
+> +			 * If part of current RAM entry has already been
+> +			 * covered by current TDMR, skip the already
+> +			 * covered part.
+> +			 */
+> +			if (start < TDMR_END(tdmr))
+> +				start = TDMR_END(tdmr);
+> +
+> +			/*
+> +			 * Create a new TDMR to cover the current RAM
+> +			 * entry, or the remaining part of it.
+> +			 */
+> +			tdmr_idx++;
+> +			if (tdmr_idx >= tdx_sysinfo.max_tdmrs) {
+> +				ret = -E2BIG;
+> +				goto err;
+> +			}
+> +			tdmr = alloc_tdmr(tdmr_array, tdmr_idx);
+> +			if (!tdmr) {
+> +				ret = -ENOMEM;
+> +				goto err;
+> +			}
+
+This is a bit verbose for this loop.  Why not just hide the 'max_tdmrs'
+inside the alloc_tdmr() function?  That will make this loop smaller and
+easier to read.
+
+> +		}
+> +
+> +		tdmr->base = start;
+> +		tdmr->size = end - start;
+> +	}
+> +
+> +	/* @tdmr_idx is always the index of last valid TDMR. */
+> +	*tdmr_num = tdmr_idx + 1;
+> +
+> +	return 0;
+> +err:
+> +	/*
+> +	 * Clean up already allocated TDMRs in case of error.  @tdmr_idx
+> +	 * indicates the last TDMR that wasn't created successfully,
+> +	 * therefore only needs to free @tdmr_idx TDMRs.
+> +	 */
+> +	free_tdmrs(tdmr_array, tdmr_idx);
+> +	return ret;
+> +}
+> +
+>  static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
+>  {
+>  	int ret;
+> @@ -834,8 +967,13 @@ static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
+>  	if (ret)
+>  		goto err;
+>  
+> +	ret = create_tdmrs(tdmr_array, tdmr_num);
+> +	if (ret)
+> +		goto err;
+> +
+>  	/* Return -EFAULT until constructing TDMRs is done */
+>  	ret = -EFAULT;
+> +	free_tdmrs(tdmr_array, *tdmr_num);
+>  err:
+>  	return ret;
+>  }
 
