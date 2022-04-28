@@ -2,212 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B004FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2899C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:22:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229960AbiD1DYy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 23:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40822 "EHLO
+        id S241752AbiD1DZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 23:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232395AbiD1DYr (ORCPT
+        with ESMTP id S242119AbiD1DZJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 23:24:47 -0400
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 008CB6AA63
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 20:21:32 -0700 (PDT)
-Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220428032130epoutp0299a4e1a4fb0ad975dd1adc3b04f0af6e~p8VYwYl-72164321643epoutp02Z
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 03:21:30 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220428032130epoutp0299a4e1a4fb0ad975dd1adc3b04f0af6e~p8VYwYl-72164321643epoutp02Z
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1651116090;
-        bh=qLP+UZc7EifN9V67tnV264MsHZBf8baSTTk1XlJZFC0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=deBAU5ydP1bTEp7gprCVV+BOTtl+3a/0vxOps/jn/8hXwsF47r/XRsvsPsCpKGqCF
-         /pdjBvATyfCbhysjNa3r3mWO4TF0gAh8a4ctEHGO1RJisJvo//eO9ZwoUYD+u7cUR5
-         4xr9+0LGQHfGwyPqA1N9E8RKIwQpcL42fzQElqPU=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
-        20220428032130epcas2p4fcc2ae7dcc385d3756ef7641696b5d60~p8VYMWZtR2967929679epcas2p4m;
-        Thu, 28 Apr 2022 03:21:30 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.69]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4KpgrQ503Zz4x9QQ; Thu, 28 Apr
-        2022 03:21:26 +0000 (GMT)
-Received: from epcas2p1.samsung.com ( [182.195.41.53]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        A8.7D.10028.6380A626; Thu, 28 Apr 2022 12:21:26 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220428032126epcas2p46afc20be5d8e04a05bd6da2102ba0113~p8VUSJRRU2969329693epcas2p4U;
-        Thu, 28 Apr 2022 03:21:26 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220428032126epsmtrp163c71214ef3ca569c2550470b3044880~p8VURGBrF1589315893epsmtrp1a;
-        Thu, 28 Apr 2022 03:21:26 +0000 (GMT)
-X-AuditID: b6c32a47-573ff7000000272c-a5-626a0836543d
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        22.B1.08924.5380A626; Thu, 28 Apr 2022 12:21:25 +0900 (KST)
-Received: from ubuntu (unknown [10.229.95.128]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220428032125epsmtip2ef4817dc72342b83fdfc8ea3d4b29391~p8VUE98Qw1017810178epsmtip2R;
-        Thu, 28 Apr 2022 03:21:25 +0000 (GMT)
-Date:   Thu, 28 Apr 2022 12:19:54 +0900
-From:   Jung Daehwan <dh10.jung@samsung.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: Re: [PATCH v4 0/5] add xhci-exynos driver
-Message-ID: <20220428031954.GA151827@ubuntu>
+        Wed, 27 Apr 2022 23:25:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 280AA98F44
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 20:21:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651116113;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RWTp4yaWdfWUPtHWFlBNQneS0qdCKFMJ9HDg1d8VUa8=;
+        b=OtT27f76gYlSb30jRVcS8ea2qkmDHjJDaxIWqYrfQbMzOh6lzOjRILzv3WxX+g55t3bRRX
+        D/beT0ZM3vIUP0IS8dnrRTglBw5i0CqwdFIT2KHx+gHWFTPH9bk5SDv0h3KzXdPDlWIJGx
+        pqs1rWTpDwVn2yvoLM9pKk/95SzLhmU=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-623-RFkJdZ_1Ni26JTcIH0nh1Q-1; Wed, 27 Apr 2022 23:21:51 -0400
+X-MC-Unique: RFkJdZ_1Ni26JTcIH0nh1Q-1
+Received: by mail-ed1-f71.google.com with SMTP id n4-20020a5099c4000000b00418ed58d92fso1993332edb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 20:21:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=RWTp4yaWdfWUPtHWFlBNQneS0qdCKFMJ9HDg1d8VUa8=;
+        b=1GuOdc+UuWyppabs+uTx653kCuT+ahGFjOw8xcL2f3YVAnfNI8SA9viIQDbwApRwhi
+         bjmO7F2n113KWmOb3A4rnLSZ9bM0JUGTMIIxeYtG8zKBDJ//AVCVML7Fb+hvG1zl7YIo
+         7g1lkiiWLXh5G7IKTdHHobXXCOvyh0GXYXU6x/GBZIX+n+5c1xmUo6z+qEqQfYzv4/FS
+         mUP0zxlnhA1f9MsHoq0bVQHNAgRc6EyVXVfSB9r39PO3C7mHv/B3RyP13kRXw+H97fFN
+         SCJdzVq1Tt8JpUhiwCbaDLN2Rk9cixihk1+pMbUMfjLR1hmAlMeOskOrE9OAdj5Ai+Qp
+         kYlg==
+X-Gm-Message-State: AOAM532qrqWN9A4yQtKwZqnupCWkUrT7kc4zVqU6GpS3eBB1u5LckzqS
+        EpTpjOdlz/tus6QKn8ApF+I2mi5msvBlR8wI5qMi4bONnZFRjbry29BFeEgwBhm08cU23stwwLk
+        cZsQw3UaQWxyEyZW8fhfkjN40BSL9GwlYTW/3O3CR
+X-Received: by 2002:a17:906:4fc3:b0:6e0:66a5:d59c with SMTP id i3-20020a1709064fc300b006e066a5d59cmr28770500ejw.131.1651116109077;
+        Wed, 27 Apr 2022 20:21:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwVS2I0+viNy4osAXG1kjD9pnxU9sgoXgJ9kAdtvf3xONcbrWyidzTUb9rZNhBtITxIjolCSaHMRySkKl1cKtU=
+X-Received: by 2002:a17:906:4fc3:b0:6e0:66a5:d59c with SMTP id
+ i3-20020a1709064fc300b006e066a5d59cmr28770492ejw.131.1651116108889; Wed, 27
+ Apr 2022 20:21:48 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <fe81598e-e2de-5923-248c-5fb3ad7e70bb@kernel.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrJJsWRmVeSWpSXmKPExsWy7bCmqa4ZR1aSwYl2dYsnRxaxWzQvXs9m
-        cf3Pe0aL9ucX2CzOn9/AbrHx7Q8mi8u75rBZLFrWymzRvGkKq8XMtcoWXXdvMDpwe8xq6GXz
-        uNzXy+SxYFOpx+I9L5k8Nq3qZPPYP3cNu0ffllWMHp83yQVwRGXbZKQmpqQWKaTmJeenZOal
-        2yp5B8c7x5uaGRjqGlpamCsp5CXmptoqufgE6Lpl5gDdqaRQlphTChQKSCwuVtK3synKLy1J
-        VcjILy6xVUotSMkpMC/QK07MLS7NS9fLSy2xMjQwMDIFKkzIzvix+jNbwXGZir+7XjA2MN4S
-        72Lk5JAQMJGY1bqesYuRi0NIYAejRPP7PWwQzidGiT9rnzJBOJ8ZJfbNfMwC07J10g4mEFtI
-        YBejRNcFO4iiJ4wS1371soEkWARUJf7NXc4OYrMJaEnc+3GCGcQWEdCUuP73OytIA7PAHGaJ
-        a0tugE0VFjCSuLV7HVgRr4COxJRl3ewQtqDEyZlPwGo4Bewktj44BbSAg0NUQEXi1cF6kDkS
-        Ais5JPp+/GaDuM5Fom3qNCYIW1ji1fEt7BC2lMTL/jYou1hi16dWJojmBkaJxgcQ10kIGEvM
-        etbOCGIzC2RIXJ23jh1kmYSAssSRWywQYT6JjsN/ocK8Eh1tQhCdyhLTL09ghbAlJQ6+Pgc1
-        0UPi4rKl7JAAWsokMfvCG8YJjPKzkLw2C8k2CFtHYsHuT2yzgFYwC0hLLP/HAWFqSqzfpb+A
-        kXUVo1hqQXFuemqxUYExPLaT83M3MYLTsJb7DsYZbz/oHWJk4mA8xCjBwawkwvtld0aSEG9K
-        YmVValF+fFFpTmrxIUZTYERNZJYSTc4HZoK8knhDE0sDEzMzQ3MjUwNzJXFer5QNiUIC6Ykl
-        qdmpqQWpRTB9TBycUg1MzPfOHZMOk06Q3VPrrpHCtO5VCdtzp24Gptlfr5up5P2X23Q62LXn
-        uX7c3vzmX5sfmkwUD8/KlZx1vohNm4vX7+VPj59ms5rf3dQXWcJaILtoYnYu8/Jg/ZZDvPXR
-        pZ9qw+edUgyaL9yxQf3gYyauI4wFp4+dzk9xyO13lnPnrwq5snrn4qCJu2eWTNmpL/laQzxK
-        KNf/q7f428iS3z/3SQnoeRxo77ZkPbebt3bGeXOP2d+lUswnt3RJrfp78pjuwch/weantkbp
-        JXHue7zbUJ1749WwAOP1J34HnTncv8T1i7ynUdQSRwGPD6L/1tY/9py9UZtjRk2MVELaP6tk
-        ofXzLbiC521WDz77ZoESS3FGoqEWc1FxIgCVhYXmTAQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrLLMWRmVeSWpSXmKPExsWy7bCSvK4pR1aSwbVZ1hZPjixit2hevJ7N
-        4vqf94wW7c8vsFmcP7+B3WLj2x9MFpd3zWGzWLSsldmiedMUVouZa5Utuu7eYHTg9pjV0Mvm
-        cbmvl8ljwaZSj8V7XjJ5bFrVyeaxf+4ado++LasYPT5vkgvgiOKySUnNySxLLdK3S+DK+H7q
-        NWNBu1TF3I3yDYybRbsYOTkkBEwktk7awdTFyMUhJLCDUeLenU+MEAlJiaVzb7BD2MIS91uO
-        sEIUPWKUOPztN1iCRUBV4t/c5WA2m4CWxL0fJ5hBbBEBTYnrf7+DNTALLGCWONc2jw0kISxg
-        JHFr9zqwIl4BHYkpy7rBmoUEljJJTN3pDREXlDg58wkLiM0MNPTGv5dA53EA2dISy/9xgIQ5
-        Bewktj44xQYSFhVQkXh1sH4Co+AsJM2zkDTPQmhewMi8ilEytaA4Nz232LDAKC+1XK84Mbe4
-        NC9dLzk/dxMjOIa0tHYw7ln1Qe8QIxMH4yFGCQ5mJRHeL7szkoR4UxIrq1KL8uOLSnNSiw8x
-        SnOwKInzXug6GS8kkJ5YkpqdmlqQWgSTZeLglGpgaq+2l16zPYnVKjj5qPJpqytVXcnPmKc5
-        FQQbSq6ruP/4W2BDyNt7exSv3a+ymLTnx5e9rwt2L9h1lTvhYdqfJ70sQUaPQv5yLd8a6tp6
-        4pPdpGi+lZVucpXLTA3zIycac1saT7cx7bgg3+fDZ8WWnhY8u2f2puVr5tfY7NRfeNTFIXT5
-        non9yx6+ab3LffddnvZ+gR+i3A47akM6S/cteqx7ILby+kTZa5FLuOa+OS1p5dT9/5Xx65K7
-        VckrW7oUz/pO7uF4EPUvT/ge87/JBya+u9ShfOeKsXsW56a4f9n6u68s5vtZ0Psj432jz9Tc
-        f9OUniW5Oe5+vfVpwsuYM+uuhTuLtxznv+rlovpKS4mlOCPRUIu5qDgRACsg2roQAwAA
-X-CMS-MailID: 20220428032126epcas2p46afc20be5d8e04a05bd6da2102ba0113
-X-Msg-Generator: CA
-Content-Type: multipart/mixed;
-        boundary="----qfoLneH-bA4OZ9oHdTyx3iGNIh7cCFW1WhPixvfI4kv0vTIJ=_2eae1_"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220426092019epcas2p2ef5dfde273edaaadc2ff74414f1b2c7a
-References: <CGME20220426092019epcas2p2ef5dfde273edaaadc2ff74414f1b2c7a@epcas2p2.samsung.com>
-        <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
-        <3ce5f3b8-3c6b-1e83-94c2-84f4ad8aa9dc@kernel.org>
-        <20220427094942.GE145620@ubuntu>
-        <fe81598e-e2de-5923-248c-5fb3ad7e70bb@kernel.org>
+References: <20220425062735.172576-1-lulu@redhat.com> <CACGkMEuMZJRw1TBfY5pTkSAD5MnGvUCu5Eqi=bWD5yc1-hc9YQ@mail.gmail.com>
+ <CACLfguUOoeiWrq_2s6NrNB4HwaAbeBYy2TGo0mhO-xswy9G7yw@mail.gmail.com>
+ <46c9f96a-8fcf-fae8-5fd7-53557d59c324@redhat.com> <CACLfguW+9OMPMUpehp+Zut7JosFtg2gzr7t7gZ6U-AdtV89S3g@mail.gmail.com>
+ <CACGkMEuJhrSxNc3v7hijSpBdA4X6aC-gA2Ogwed4oODUT_DJ6w@mail.gmail.com>
+In-Reply-To: <CACGkMEuJhrSxNc3v7hijSpBdA4X6aC-gA2Ogwed4oODUT_DJ6w@mail.gmail.com>
+From:   Cindy Lu <lulu@redhat.com>
+Date:   Thu, 28 Apr 2022 11:21:10 +0800
+Message-ID: <CACLfguV9Za0fa7vXaPxLEKUY2brnNitW6i=Gofdt00cFBwss_Q@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] vdpa: add the check for id_table in struct vdpa_mgmt_dev
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------qfoLneH-bA4OZ9oHdTyx3iGNIh7cCFW1WhPixvfI4kv0vTIJ=_2eae1_
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
+On Thu, Apr 28, 2022 at 11:07 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+> On Thu, Apr 28, 2022 at 9:56 AM Cindy Lu <lulu@redhat.com> wrote:
+> >
+> > On Wed, Apr 27, 2022 at 12:04 PM Jason Wang <jasowang@redhat.com> wrote=
+:
+> > >
+> > >
+> > > =E5=9C=A8 2022/4/27 10:01, Cindy Lu =E5=86=99=E9=81=93:
+> > > > On Mon, Apr 25, 2022 at 5:00 PM Jason Wang <jasowang@redhat.com> wr=
+ote:
+> > > >> On Mon, Apr 25, 2022 at 2:27 PM Cindy Lu <lulu@redhat.com> wrote:
+> > > >>> To support the dynamic ids in vp_vdpa, we need to add the check f=
+or
+> > > >>> id table. If the id table is NULL, will not set the device type
+> > > >>>
+> > > >>> Signed-off-by: Cindy Lu <lulu@redhat.com>
+> > > >>> ---
+> > > >>>   drivers/vdpa/vdpa.c | 11 +++++++----
+> > > >>>   1 file changed, 7 insertions(+), 4 deletions(-)
+> > > >>>
+> > > >>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+> > > >>> index 1ea525433a5c..09edd92cede0 100644
+> > > >>> --- a/drivers/vdpa/vdpa.c
+> > > >>> +++ b/drivers/vdpa/vdpa.c
+> > > >>> @@ -492,10 +492,13 @@ static int vdpa_mgmtdev_fill(const struct v=
+dpa_mgmt_dev *mdev, struct sk_buff *m
+> > > >>>          if (err)
+> > > >>>                  goto msg_err;
+> > > >>>
+> > > >>> -       while (mdev->id_table[i].device) {
+> > > >>> -               if (mdev->id_table[i].device <=3D 63)
+> > > >>> -                       supported_classes |=3D BIT_ULL(mdev->id_t=
+able[i].device);
+> > > >>> -               i++;
+> > > >>> +       if (mdev->id_table !=3D NULL) {
+> > > >>> +               while (mdev->id_table[i].device) {
+> > > >>> +                       if (mdev->id_table[i].device <=3D 63)
+> > > >>> +                               supported_classes |=3D
+> > > >>> +                                       BIT_ULL(mdev->id_table[i]=
+.device);
+> > > >>> +                       i++;
+> > > >>> +               }
+> > > >>>          }
+> > > >> This will cause 0 to be advertised as the supported classes.
+> > > >>
+> > > >> I wonder if we can simply use VIRTIO_DEV_ANY_ID here (and need to
+> > > >> export it to via uAPI probably).
+> > > >>
+> > > >> Thanks
+> > > >>
+> > > > like the below one? not sure if this ok to use like this?
+> > > > static struct virtio_device_id vp_vdpa_id_table[] =3D {
+> > > > { VIRTIO_DEV_ANY_ID, VIRTIO_DEV_ANY_ID },
+> > > > { 0 },
+> > > > };
+> > >
+> > >
+> > > Something like this.
+> > >
+> > > Thanks
+> > >
+> > >
+> > I have checked the code, this maybe can not work, because the
+> > #define VIRTIO_DEV_ANY_ID 0xffffffff
+> >  it want't work in
+> >                 supported_classes |=3D BIT_ULL(mdev->id_table[i].device=
+);
+> > if we chane to
+> >             supported_classes |=3D VIRTIO_DEV_ANY_ID;
+> > the vdpa dev show will be
+> > pci/0000:00:04.0:
+> >   supported_classes net block < unknown class > < unknown class > <
+> > unknown class > < unknown class > < unknown class > < unknow>
+> >   max_supported_vqs 3
+>
+> That's why I suggest exporting the ANY_ID via uAPI and then we can fix
+> the userspace.
+>
+sure.But I think maybe we can fix this in another patch, since it
+related to userspace
 
-On Wed, Apr 27, 2022 at 08:24:04PM +0200, Krzysztof Kozlowski wrote:
-> On 27/04/2022 11:49, Jung Daehwan wrote:
-> >> 1. What is this based on? Output of: git describe
-> > 
-> > url = https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-> > fetch = +refs/heads/*:refs/remotes/origin/*
-> > 
-> > or
-> > 
-> > url = https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-> > fetch = +refs/heads/*:refs/remotes/origin/*
-> 
-> Thanks, although it is not what I asked for. It's not the output of `git
-> describe`. To get the output of git describe, execute commands in the
-> shell in the Git repository on your branch with these commits:
->   $ git describe
-> 
-> >> 2. What does the scripts/get_maintainers.pl print when you run on this
-> >> patchset?
-> > 
-> > I don't see your name in xhci even for whole usb/host directory.
-> > I see same result on above 2 gits.
-> > 
-> > jdh@PlatFormDev3:~/works/mainline/linux-next$ ./scripts/get_maintainer.pl drivers/usb/host/
-> 
-> That's not the proper way to get list of people to Cc when submitting
-> patches because it does not include the contents of the directory and
-> contents of other parts of the kernel which you might change.
-> 
-> > Greg Kroah-Hartman <gregkh@linuxfoundation.org> (supporter:USB SUBSYSTEM,commit_signer:170/184=92%)
-> > Mathias Nyman <mathias.nyman@linux.intel.com> (commit_signer:52/184=28%,authored:25/184=14%)
-> > Alan Stern <stern@rowland.harvard.edu> (commit_signer:30/184=16%)
-> > Chunfeng Yun <chunfeng.yun@mediatek.com> (commit_signer:23/184=12%,authored:21/184=11%)
-> > linux-usb@vger.kernel.org (open list:USB SUBSYSTEM)
-> > linux-kernel@vger.kernel.org (open list)
-> 
-> So either you run it in wrong way (not on the patchset but on some parts
-> of tree) or you still have it based on some different tree.
-> 
-> I just applied your patchset on linux-next and as expected output is
-> entirely different:
-> 
-> $ git format-patch -5
-> $ scripts/get_maintainer.pl 0*
-> (... skipping entries which you pasted)
-> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> (maintainer:ARM/SAMSUNG S3C, S5P AND EXYNOS ARM
-> ARCHITECTURES,authored:1/7=14%,added_lines:4/25=16%,removed_lines:2/13=15%)
-> 
-> linux-arm-kernel@lists.infradead.org (moderated list:ARM/SAMSUNG S3C,
-> S5P AND EXYNOS ARM ARCHITECTURES)
-> 
-> linux-samsung-soc@vger.kernel.org (open list:ARM/SAMSUNG S3C, S5P AND
-> EXYNOS ARM ARCHITECTURES)
-> 
-> 
+> >   dev_features CSUM GUEST_CSUM CTRL_GUEST_OFFLOADS MAC GUEST_TSO4
+> > GUEST_TSO6 GUEST_ECN GUEST_UFO HOST_TSO4 HOST_TSO6 HOST_
+> >  I think we can use
+> > static struct virtio_device_id id_table[] =3D {
+> > { VIRTIO_ID_NET, VIRTIO_DEV_ANY_ID },
+> > { 0 },
+> > };
+> >  if we need to add another type of device, we can add the device id at =
+that type
+> >
+>
+> My point is that, we have supported any virtio devices before. But
+> after this change, we only support virtio-net.
+>
+> So if we choose to use id arrays, let's just add all possible virtio
+> devices that are supported by the kernel here.
+>
+sorry=EF=BC=8C I didn't make it clearly,  I mean  we can use the vp_vdpa de=
+vice id as
+ static struct virtio_device_id id_table[] =3D {
+ { VIRTIO_ID_NET, VIRTIO_DEV_ANY_ID },
+{ 0 },
+since it now only support the net device and This will make the vp_vdpa wor=
+k.
 
-I got it. I could find your name only on my last patch.
-(v4-0005-usb-host-add-xhci-exynos-driver.patch)
+Thanks
+cindy
 
-When I submitted 1st(v1) patchset, there's no xhci-exynos driver patch.
-That's why I couldn't find your name there. I've added it since v2 but I haven't 
-got maintainer again but just use previous one. It's my fault.
-Let me correct it on next submission. Thanks for the comment.
+> Thanks
+>
+> > Thanks
+> > cindy
+> >
+> >
+> >
+> > > >
+> > > >
+> > > >>>          if (nla_put_u64_64bit(msg, VDPA_ATTR_MGMTDEV_SUPPORTED_C=
+LASSES,
+> > > >>> --
+> > > >>> 2.34.1
+> > > >>>
+> > >
+> >
+>
 
-Best Regards,
-Jung Daehwan
-
-> 
-> > In fact, I manually tried adding you as you commendted previous patchset.
-> > But, It seems you changed email id and domain..
-> 
-> Up to date email is printed by scripts/get_maintainers.pl. If you don't
-> use that tool but add addresses manually - might work, might not.
-> 
-> Anyway, it's not only about my email - you did not Cc relevant mailing
-> lists, which I mentioned weeks ago as well.
-> 
-> Best regards,
-> Krzysztof
-> 
-
-------qfoLneH-bA4OZ9oHdTyx3iGNIh7cCFW1WhPixvfI4kv0vTIJ=_2eae1_
-Content-Type: text/plain; charset="utf-8"
-
-
-------qfoLneH-bA4OZ9oHdTyx3iGNIh7cCFW1WhPixvfI4kv0vTIJ=_2eae1_--
