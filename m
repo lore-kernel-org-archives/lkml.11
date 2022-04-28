@@ -2,87 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BA6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:33:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA035C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:34:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348461AbiD1OhB (ORCPT
+        id S1348453AbiD1OiJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 10:37:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42722 "EHLO
+        Thu, 28 Apr 2022 10:38:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346564AbiD1Og7 (ORCPT
+        with ESMTP id S232699AbiD1OiI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 10:36:59 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0C8B646C
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:33:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651156425; x=1682692425;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=P7R3NniOUVQ571w6+hROLmu3RMmQFSvj5HRSEytbIvI=;
-  b=Vb0vfedW2WpSesfbzbTVnYiacFZp17J/ThNERALEECbvHm/dJqhrYt+t
-   Vx7I5waUZV6hCC2vlwgqurAOwCOyZl3Ha/N1U2QCsW4jgopmh9DUQgxjo
-   QPHno60VjD78Jp1oN2oPgaHtFAuoGhfWVep6N4PpCOisuntkK9efybCeX
-   ERJ+FFdAFGWNTeGW+BaQIAFvcG2sjo4yPqBGs9qBshmk40sqcdgWo3jJG
-   Nqzj6C1MIBh9ZqgGySlO/76myp+iZ5ESSfZ0Y75JpAX7N8bAqhjYQYlfo
-   12JVzgX2e+6udu8CZK74kV1kSiJe8V8WUYrlgjMJJR0Rm5uyG6x1SEoBL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="266121038"
-X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="266121038"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 07:33:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="565624406"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 28 Apr 2022 07:33:42 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nk5DB-0005Rk-85;
-        Thu, 28 Apr 2022 14:33:41 +0000
-Date:   Thu, 28 Apr 2022 22:32:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-linked-list 25/45]
- ld.lld: error: undefined symbol: fscache_begin_cache_operation
-Message-ID: <202204282239.2Pg6F5y5-lkp@intel.com>
+        Thu, 28 Apr 2022 10:38:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3F117B7155
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:34:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651156492;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5PDm4tHCHPYdLQ9C5vAO9ilNtVAoyTm1UBO+qRDuy2I=;
+        b=Z9+g9fYP4oDChYLW8P0eDJKHW2SxSHmZToAJO3FSgf6ZxykueIP2ffrHGi7n32VTFwhpXV
+        wU5ynEMSxHy/FF2pb6E6g/JPeecXrXi8QreY5NWt9MlM1GrOZ+wmr7NkOex+3PBMd5lZOU
+        XqEOsuOVgUStFRCA4cCG3n842YmTbPA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-259-mXTDc8oQPDqKujQj-mWFaQ-1; Thu, 28 Apr 2022 10:34:48 -0400
+X-MC-Unique: mXTDc8oQPDqKujQj-mWFaQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8B9328001EA;
+        Thu, 28 Apr 2022 14:34:47 +0000 (UTC)
+Received: from starship (unknown [10.40.192.41])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8C3242166B4D;
+        Thu, 28 Apr 2022 14:34:45 +0000 (UTC)
+Message-ID: <b8a02f2eab780262c172cd4bbffd801ca8a37e98.camel@redhat.com>
+Subject: Re: [PATCH v2 02/11] KVM: SVM: Don't BUG if userspace injects a
+ soft interrupt with GIF=0
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Date:   Thu, 28 Apr 2022 17:34:44 +0300
+In-Reply-To: <4baa5071-3fb6-64f3-bcd7-2ffc1181d811@maciej.szmigiero.name>
+References: <20220423021411.784383-1-seanjc@google.com>
+         <20220423021411.784383-3-seanjc@google.com>
+         <61ad22d6de1f6a51148d2538f992700cac5540d4.camel@redhat.com>
+         <4baa5071-3fb6-64f3-bcd7-2ffc1181d811@maciej.szmigiero.name>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-linked-list
-head:   a20ca5707a9b524115f5ded439fed1f8e552dd6b
-commit: 506cacdcdfd787336db327e5f38d5a378d5998fd [25/45] fscache: Add a function to begin an cache op from a netfslib request
-config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20220428/202204282239.2Pg6F5y5-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c59473aacce38cd7dd77eebceaf3c98c5707ab3b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/506cacdcdfd787336db327e5f38d5a378d5998fd
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-linked-list
-        git checkout 506cacdcdfd787336db327e5f38d5a378d5998fd
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On Thu, 2022-04-28 at 15:27 +0200, Maciej S. Szmigiero wrote:
+> On 28.04.2022 09:35, Maxim Levitsky wrote:
+> > On Sat, 2022-04-23 at 02:14 +0000, Sean Christopherson wrote:
+> > > From: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+> > > 
+> > > Don't BUG/WARN on interrupt injection due to GIF being cleared if the
+> > > injected event is a soft interrupt, which are not actually IRQs and thus
+> > 
+> > Are any injected events subject to GIF set? I think that EVENTINJ just injects
+> > unconditionaly whatever hypervisor puts in it.
+> 
+> That's right, EVENTINJ will pretty much always inject, even when the CPU
+> is in a 'wrong' state (like for example, injecting a hardware interrupt
+> or a NMI with GIF masked).
+> 
+> But KVM as a L0 is not supposed to inject a hardware interrupt into guest
+> with GIF unset since the guest is obviously not expecting it then.
+> Hence this WARN_ON().
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+If you mean L0->L1 injection, that sure, but if L1 injects interrupt to L2,
+then it should always be allowed to do so.
 
-All errors (new ones prefixed by >>):
 
->> ld.lld: error: undefined symbol: fscache_begin_cache_operation
-   >>> referenced by file.c
-   >>>               afs/file.o:(afs_req_ops) in archive fs/built-in.a
+I am not sure that I am right here, just noticed something odd. I'll take
+a better look at this next week.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+
+Best regards,
+	Maxim levitsky
+
+> 
+> > Best regards,
+> > 	Maxim Levitsky
+> 
+> Thanks,
+> Maciej
+> 
+
+
