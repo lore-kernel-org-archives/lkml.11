@@ -2,199 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E11EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52336C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:24:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349109AbiD1P17 (ORCPT
+        id S1349119AbiD1P2K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 11:27:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37838 "EHLO
+        Thu, 28 Apr 2022 11:28:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243844AbiD1P16 (ORCPT
+        with ESMTP id S1347167AbiD1P2J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 11:27:58 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D02EB7157;
-        Thu, 28 Apr 2022 08:24:43 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id q185so7169067ljb.5;
-        Thu, 28 Apr 2022 08:24:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=SzJXhZg7qGrBl+J121B58kcKO0wVfv/TnHF/oCwmV6o=;
-        b=hzmBfUP04rp5lGzXAo7D1RGUZ1S6j/COkdetxgNRb+SU7A+uun0bJ78x2DdmHJ5fHj
-         TT3pTRQ0Rm5XlHh4ZjpHbZXAcVunIS5U9CRKGaVwRYQdAbE/kNkUbaxqJAznMOJCUqwU
-         jqFTZ68BTSNvbHbajn31p8UYJLPGRUN3tsduXGryeD4ia9HnFkAHrwtYyX8WdlUcKyaP
-         07jVeXi4kaBDcUsV3NuC+nWE2FES5WwKFOvoM2Ge3wq2ijeZwSmKlFpyfPfu/qFRc7fG
-         iYqihaFt4y/OCtpE+lKrTKd8hJNdco+9QJB72olUze5Nq9UUsf5tpEjf7opUOc+RVIaA
-         89KQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=SzJXhZg7qGrBl+J121B58kcKO0wVfv/TnHF/oCwmV6o=;
-        b=Go/qvcigXmycv0B2xLFrd/yKuSNFQ70cADca58eP8o0EkpR9zoWYgomqyWpp4cBTWC
-         YkjNEHA0abvyltezXWRpRXdxrzErvBrK14uafCYu/8Kte5BxpiOx60QdeV1H4+H34nSL
-         scpYWCcIQA08YOYEGyCA7mXIpYFbqQ89JDBCvkxIEnHP+1597QTm7uGISDAbjbfMHui/
-         ZwyCNBPUqebrZoWI22KCamqzu3AHJwmNpQoRGeW8LOnqEuxbdsfpEairAVPmdjoHEPDW
-         X4iCiaKKsUtIEgtgHDMWAyqb979rvAwJKfIlX47LzEFFeiEbE6OkQuFOPgyMkXUCvzvo
-         k3HQ==
-X-Gm-Message-State: AOAM531XG6AXv5eYAmf/9KRA4fKb7bjNB4WznPE2emNEUVo3lDRh6Eyr
-        yRrELoWUrm7w7sOc63IOgXY=
-X-Google-Smtp-Source: ABdhPJxAsRNvdhIkNNUOuQo9jhs45Y/TigHYoQssJn3JBnGYv0FOckyPXgZr4kxnhvowMEuwzIz0AA==
-X-Received: by 2002:a2e:1f11:0:b0:24b:6b35:42e3 with SMTP id f17-20020a2e1f11000000b0024b6b3542e3mr21503724ljf.195.1651159481353;
-        Thu, 28 Apr 2022 08:24:41 -0700 (PDT)
-Received: from ?IPV6:2a06:a003:501a:a7ce:d836:2ab4:b41d:7819? ([2a06:a004:d009:c8fa:102c:912a:a6e3:41ea])
-        by smtp.gmail.com with ESMTPSA id s11-20020a2e9c0b000000b0024ace83744asm19844lji.116.2022.04.28.08.24.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 08:24:40 -0700 (PDT)
-Message-ID: <25da3f43-c46e-8108-2da9-0e4f2b7cc1a4@gmail.com>
-Date:   Thu, 28 Apr 2022 18:24:35 +0300
+        Thu, 28 Apr 2022 11:28:09 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D765B715D
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 08:24:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651159495; x=1682695495;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=OB8erSxeEPvD/61c1TWqwknjFG/dDVzfD1qRXPL9Uj4=;
+  b=VV4FL/HSpSg5Ua+7LKQdo7ZHOU9ICdEM7adyjrMKvgoZw6GbWEP0Y1K6
+   TvDl14lRcFu0iiWXzvrHexKfFPQidkT2LJ5aNROw7pLVlhvk34/OPp4Vd
+   EYVS58cPnAf0DexmHUnrrEH8YES+Ohsv+ICkjcaFEyrVjmAFHHdzyQRya
+   /9/lqwoBSQIaqG5TPXnEnScNCgv9JIo7beEiOk1z8raBzv38B8Vy9tGGU
+   mnhZX/s9lNDP0bXGTW/uCBfg3PFdYagbMccFpo9XHl07e1t3EgecDOhkI
+   7KBoT0vztfT3ynl6IqGK+Xf88Oe93MZBNA/cTyMS9gAqTqn+JIwpAJOl8
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="266481913"
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="266481913"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 08:24:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="541408288"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 28 Apr 2022 08:24:53 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nk60i-0005Ti-GE;
+        Thu, 28 Apr 2022 15:24:52 +0000
+Date:   Thu, 28 Apr 2022 23:23:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mark:stackleak/rework 9/13] drivers/misc/lkdtm/stackleak.c:20:22:
+ warning: incompatible pointer to integer conversion initializing 'const
+ unsigned long' with an expression of type 'struct ftrace_ret_stack *'
+Message-ID: <202204282335.OFfZpgnN-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 1/2] dt-bindings: mtd: partitions: Add binding for
- Sercomm parser
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     NOGUCHI Hiroshi <drvlabo@gmail.com>, Karim <Karimdplay@gmail.com>,
-        M <x1@disroot.org>, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220406195557.1956-1-csharper2005@gmail.com>
- <20220406195946.2019-1-csharper2005@gmail.com>
- <8d0d8b27-35ff-3693-cf80-897b80c26b4e@linaro.org>
- <57bebf2f-af4c-b2d9-10e5-19e5104946fb@gmail.com>
- <29cfa017-bbaf-3aba-fe1d-06771957dbaa@linaro.org>
- <1b391399-984b-7a63-3265-62ef09caec39@gmail.com>
- <bd533827-b575-caad-c230-af060851b231@gmail.com>
- <db70e53b-7484-43bf-e9c8-b6a2dce1fbb5@linaro.org>
-From:   Mikhail Zhilkin <csharper2005@gmail.com>
-In-Reply-To: <db70e53b-7484-43bf-e9c8-b6a2dce1fbb5@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git stackleak/rework
+head:   eceae38b5363e034fea5ad4cf977734a864a2bb0
+commit: 4aac8d85c42a73f2d4dcb11acf3e4ec669919e08 [9/13] lkdtm/stackleak: rework boundary management
+config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220428/202204282335.OFfZpgnN-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c59473aacce38cd7dd77eebceaf3c98c5707ab3b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/commit/?id=4aac8d85c42a73f2d4dcb11acf3e4ec669919e08
+        git remote add mark https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git
+        git fetch --no-tags mark stackleak/rework
+        git checkout 4aac8d85c42a73f2d4dcb11acf3e4ec669919e08
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/misc/lkdtm/ drivers/net/wireless/realtek/rtw89/
 
-Hi, Krzysztof,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-On 4/10/2022 11:18 AM, Krzysztof Kozlowski wrote:
-> I am sorry, but you changed now a lot in the bindings and it looks
-> entirely different. Things previously being correct now are wrong, so
-> rather start from your old bindings...
+All warnings (new ones prefixed by >>):
 
-
-Looks like I'm a bit confused... I use dual "compatible" in my real dts
-and I realized that:
-
-1. Therefore I have to use  dual "compatible" in example too:
-
-compatible = "sercomm,sc-partitions", "fixed-partitions";
-
-2. When I'm trying to reuse "fixed-partitions" compatible from
-fixed-partitions.yaml in my new .yaml I get "too long" errors.
-
-Real dts:
-
-Link:
-https://github.com/openwrt/openwrt/blob/edcc1a9a734bb3fcdc9242025290d3f173e71b78/target/linux/ramips/dts/mt7621_beeline_smartbox-giga.dts#L79
-
-So, I currently found another solution - to extend fixed-partitions.yaml
-with "sercomm,sc-partitions". Is It ok from your side? Can I use this
-code in v3?
-
-diff --git
-a/Documentation/devicetree/bindings/mtd/partitions/fixed-partitions.yaml
-b/Documentation/devicetree/bindings/mtd/partitions/fixed-partitions.yaml
-index ea4cace6a955..9eebe39a57fb 100644
---- a/Documentation/devicetree/bindings/mtd/partitions/fixed-partitions.yaml
-+++ b/Documentation/devicetree/bindings/mtd/partitions/fixed-partitions.yaml
-@@ -19,7 +19,11 @@ maintainers:
- 
- properties:
-   compatible:
--    const: fixed-partitions
-+    oneOf:
-+      - const: fixed-partitions
-+      - items:
-+          - const: sercomm,sc-partitions
-+          - const: fixed-partitions
- 
-   "#address-cells": true
- 
-@@ -27,7 +31,18 @@ properties:
- 
- patternProperties:
-   "@[0-9a-f]+$":
--    $ref: "partition.yaml#"
-+    allOf:
-+      - $ref: "partition.yaml#"
-+      - if:
-+          properties:
-+            compatible:
-+              contains:
-+                const: sercomm,sc-partitions
-+        then:
-+          properties:
-+            scpart-id:
-+              description: Partition id in Sercomm partition map
-+              $ref: /schemas/types.yaml#/definitions/uint32
- 
- required:
-   - "#address-cells"
-@@ -119,3 +134,29 @@ examples:
-             };
-         };
-     };
-+  - |
-+    partitions {
-+        compatible = "sercomm,sc-partitions", "fixed-partitions";
-+        #address-cells = <1>;
-+        #size-cells = <1>;
-+
-+        partition@0 {
-+            label = "u-boot";
-+            reg = <0x0 0x100000>;
-+            scpart-id=<0>;
-+            read-only;
-+        };
-+
-+        partition@100000 {
-+            label = "dynamic partition map";
-+            reg = <0x100000 0x100000>;
-+            scpart-id = <1>;
-+        };
-+
-+        partition@200000 {
-+            label = "Factory";
-+            reg = <0x200000 0x100000>;
-+            scpart-id = <2>;
-+            read-only;
-+        };
-+    };
--- 
-2.25.1
+   drivers/misc/lkdtm/stackleak.c:17:39: error: call to undeclared function 'stackleak_task_low_bound'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           const unsigned long task_stack_low = stackleak_task_low_bound(current);
+                                                ^
+   drivers/misc/lkdtm/stackleak.c:18:40: error: call to undeclared function 'stackleak_task_high_bound'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           const unsigned long task_stack_high = stackleak_task_high_bound(current);
+                                                 ^
+   drivers/misc/lkdtm/stackleak.c:20:43: error: no member named 'lowest_stack' in 'struct task_struct'; did you mean 'ret_stack'?
+           const unsigned long lowest_sp = current->lowest_stack;
+                                                    ^~~~~~~~~~~~
+                                                    ret_stack
+   include/linux/sched.h:1365:28: note: 'ret_stack' declared here
+           struct ftrace_ret_stack         *ret_stack;
+                                            ^
+>> drivers/misc/lkdtm/stackleak.c:20:22: warning: incompatible pointer to integer conversion initializing 'const unsigned long' with an expression of type 'struct ftrace_ret_stack *' [-Wint-conversion]
+           const unsigned long lowest_sp = current->lowest_stack;
+                               ^           ~~~~~~~~~~~~~~~~~~~~~
+   drivers/misc/lkdtm/stackleak.c:42:16: error: call to undeclared function 'stackleak_find_top_of_poison'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           poison_high = stackleak_find_top_of_poison(task_stack_low, untracked_high);
+                         ^
+   1 warning and 4 errors generated.
 
 
->> +
->> +additionalProperties: true
-> This is wrong, why it became true?
+vim +20 drivers/misc/lkdtm/stackleak.c
 
-You're right. Got it
-
-
-> Best regards,
-> Krzysztof
+    13	
+    14	void lkdtm_STACKLEAK_ERASING(void)
+    15	{
+    16		const unsigned long task_stack_base = (unsigned long)task_stack_page(current);
+    17		const unsigned long task_stack_low = stackleak_task_low_bound(current);
+    18		const unsigned long task_stack_high = stackleak_task_high_bound(current);
+    19		const unsigned long current_sp = current_stack_pointer;
+  > 20		const unsigned long lowest_sp = current->lowest_stack;
 
 -- 
-Best regards,
-Mikhail
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
