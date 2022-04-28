@@ -2,198 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA85C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 20:49:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F6EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 20:51:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351917AbiD1Uw7 (ORCPT
+        id S1351936AbiD1Uyi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 16:52:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
+        Thu, 28 Apr 2022 16:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236992AbiD1Uw6 (ORCPT
+        with ESMTP id S236992AbiD1Uyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 16:52:58 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D6D6C0D35;
-        Thu, 28 Apr 2022 13:49:42 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:50108)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nkB51-00GPjo-1R; Thu, 28 Apr 2022 14:49:39 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:36210 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nkB4z-00H69k-Dg; Thu, 28 Apr 2022 14:49:38 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Oleg Nesterov <oleg@redhat.com>, linux-kernel@vger.kernel.org,
-        rjw@rjwysocki.net, mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
-        tj@kernel.org, linux-pm@vger.kernel.org,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>
-References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
-        <20220426225211.308418-6-ebiederm@xmission.com>
-        <20220427141018.GA17421@redhat.com>
-        <874k2ea9q4.fsf@email.froward.int.ebiederm.org>
-        <87zgk67fdd.fsf@email.froward.int.ebiederm.org>
-        <YmrSijTc6HIv4sAG@hirez.programming.kicks-ass.net>
-        <8735hxxddw.fsf@email.froward.int.ebiederm.org>
-Date:   Thu, 28 Apr 2022 15:49:11 -0500
-In-Reply-To: <8735hxxddw.fsf@email.froward.int.ebiederm.org> (Eric
-        W. Biederman's message of "Thu, 28 Apr 2022 13:37:47 -0500")
-Message-ID: <87ilqtvsqg.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Thu, 28 Apr 2022 16:54:36 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2FF06E8E3;
+        Thu, 28 Apr 2022 13:51:20 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id q13so4082157qvk.3;
+        Thu, 28 Apr 2022 13:51:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ahmsxGBp2MwMA3sj4/KBiWzEQEE2E96hzz7zFwhvNm4=;
+        b=pKRCBLEvIV/YU4iWHNl2rS1Hi8u1KdoWTBvrAVRycQcK/vh3cQWPCu6UTrv5B/GYR+
+         NcSMcHqO11hilkbx/1hvBoKD8/PUPIugLLb94v6yD5G+cUwUwqSssquIqmBwJKo7s+WT
+         ddeEPt0322Mk3W6Iw2e+MnCiMSMrhRlfSqjo+UTsz55/D30cc8D63RYUGmX/6khmC21s
+         VNdT4mStw2x2OEtWWPsM/ER+K2ceLXOg0XHukjHYNda1d64FXp4kzx9I06S1chJRaKHJ
+         6Otr4z4+5iBlx7Um0Jfwkg66jFUfJE4ly4J3bMpVeJ5W1Q4LOnbSdOcZ788D6OPtsCXs
+         A7Tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ahmsxGBp2MwMA3sj4/KBiWzEQEE2E96hzz7zFwhvNm4=;
+        b=zQjkS79aiU94MrUkpdAVmFSz4FiMsAPto3oJgBwI2ZtATIg0gtmVmI+gKo7YIJfMQs
+         1u15v1KgibsTCjGuOTp4KGToKB6vQBKiUPbDjBClVF7QiisVYa1p7wuc3V53if7plvEc
+         SJoHwdWXF9mDohwlUYOCsACk7sDrenOUVsJMT27XW8kHQRSgyNF0fzqYNUUU5/F1LOQz
+         s823b5BkCDAK0tyhGOfDoAZ616A7iAVJH+zwSqwzojk3hWSGxEScAMmqUZhfJujNcS9x
+         m/x+qctBLQy82psZmWPIsvlV2nbSPdd7b0PJoWBSxfsYob+D0l0/K98GlrJ8MLPZP4ze
+         Rm6A==
+X-Gm-Message-State: AOAM533Eqp8jQel9M1qBt08Z9G/iVdPyXiNgYa4AfyVgMzryXaa6SLZ+
+        slxCV+D+5cW1kyAP4L1SBYZwf1G9A/o=
+X-Google-Smtp-Source: ABdhPJx9SvBAXEB+cBZ2RPR5ZBXM6yOkHdc/mxMtpdswhqNKwbO9JuqAEVH5BJmXbVkuksiqly/dmw==
+X-Received: by 2002:a05:6214:b6f:b0:450:a4ab:b409 with SMTP id ey15-20020a0562140b6f00b00450a4abb409mr25023773qvb.123.1651179079722;
+        Thu, 28 Apr 2022 13:51:19 -0700 (PDT)
+Received: from localhost ([2601:c4:c432:4da:fa85:340e:2244:1d8c])
+        by smtp.gmail.com with ESMTPSA id q17-20020a05622a031100b002f1d478c218sm628994qtw.62.2022.04.28.13.51.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 13:51:19 -0700 (PDT)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     linux-kernel@vger.kernel.org,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Yury Norov <yury.norov@gmail.com>, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: [PATCH v2 0/5] bitmap: fix conversion from/to fix-sized arrays
+Date:   Thu, 28 Apr 2022 13:51:11 -0700
+Message-Id: <20220428205116.861003-1-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nkB4z-00H69k-Dg;;;mid=<87ilqtvsqg.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX18FsIJPS4HixtOCLuAhCgdZZJJtBZvrxxg=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 6/9] signal: Always call do_notify_parent_cldstop with
- siglock held
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+X-Mailer: git-send-email 2.32.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Eric W. Biederman" <ebiederm@xmission.com> writes:
+In the kernel codebase we have functions that call bitmap_copy()
+to convert bitmaps to and from fix-sized 32 or 64-bit arrays. It
+works well for LE architectures when size of long is equal to the
+size of fixed type.
 
-> Peter Zijlstra <peterz@infradead.org> writes:
->
->> On Wed, Apr 27, 2022 at 09:47:10AM -0500, Eric W. Biederman wrote:
->>
->>> Hmm.  If we have the following process tree.
->>> 
->>>     A
->>>      \
->>>       B
->>>        \
->>>         C
->>> 
->>> Process A, B, and C are all in the same process group.
->>> Process A and B are setup to receive SIGCHILD when
->>> their process stops.
->>> 
->>> Process C traces process A.
->>> 
->>> When a sigstop is delivered to the group we can have:
->>> 
->>> Process B takes siglock(B) siglock(A) to notify the real_parent
->>> Process C takes siglock(C) siglock(B) to notify the real_parent
->>> Process A takes siglock(A) siglock(C) to notify the tracer
->>> 
->>> If they all take their local lock at the same time there is
->>> a deadlock.
->>> 
->>> I don't think the restriction that you can never ptrace anyone
->>> up the process tree is going to fly.  So it looks like I am back to the
->>> drawing board for this one.
->>
->> I've not had time to fully appreciate the nested locking here, but if it
->> is possible to rework things to always take both locks at the same time,
->> then it would be possible to impose an arbitrary lock order on things
->> and break the cycle that way.
->>
->> That is, simply order the locks by their heap address or something:
->>
->> static void double_siglock_irq(struct sighand *sh1, struct sighand2 *sh2)
->> {
->> 	if (sh1 > sh2)
->> 		swap(sh1, sh2)
->>
->> 	spin_lock_irq(&sh1->siglock);
->> 	spin_lock_nested(&sh2->siglock, SINGLE_DEPTH_NESTING);
->> }
->
-> You know it might be.  Especially given that the existing code is
-> already dropping siglock and grabbing tasklist_lock.
->
-> It would take a potentially triple lock function to lock
-> the task it's real_parent and it's tracer (aka parent).
->
-> That makes this possible to consider is that notifying the ``parents''
-> is a fundamental part of the operation so we know we are going to
-> need the lock so we can move it up.
->
-> Throw in a pinch of lock_task_sighand and the triple lock function
-> gets quite interesting.
->
-> It is certainly worth trying, and I will.
+If the system is BE and/or size of long is not equal to the size of
+fixed type of the array, bitmap_copy() may produce wrong result either
+because of endianness issue, or because of out-of-bound access.
 
-To my surprise it doesn't look too bad.  The locking simplifications and
-not using a lock as big as tasklist_lock probably make it even worth
-doing.
+To address this problem we have bitmap_{from,to}_arr32(). In recent
+discussion it was spotted that we also need 64-bit analogue:
 
-I need to sleep on it and look at everything again.  In the
-meantime here is my function that comes in with siglock held,
-possibly drops it, and grabs the other two locks all in
-order.
+https://lore.kernel.org/all/YiCWNdWd+AsLbDkp@smile.fi.intel.com/T/#m754da92acb0003e12b99293d07ddcd46dbe04ada
 
-static void lock_parents_siglocks(bool lock_tracer)
-	__releases(&current->sighand->siglock)
-	__acquires(&current->sighand->siglock)
-	__acquires(&current->real_parent->sighand->siglock)
-	__acquires(&current->parent->sighand->siglock)
-{
-	struct task_struct *me = current;
-	struct sighand_struct *m_sighand = me->sighand;
+This series takes care of it.
 
-	lockdep_assert_held(&m_sighand->siglock);
+v1: https://lore.kernel.org/lkml/20220420222530.910125-3-yury.norov@gmail.com/T/
+v2: - fix build warnings (patch 2)
+    - add test for bitmap_{from,to}_arr64
 
-	rcu_read_lock();
-	for (;;) {
-		struct task_struct *parent, *tracer;
-		struct sighand_struct *p_sighand, *t_sighand, *s1, *s2, *s3;
+Yury Norov (5):
+  lib/bitmap: extend comment for bitmap_(from,to)_arr32()
+  lib: add bitmap_{from,to}_arr64
+  lib/bitmap: add test for bitmap_{from,to}_arr64
+  KVM: s390: replace bitmap_copy with bitmap_{from,to}_arr64 where
+    appropriate
+  drm/amd/pm: use bitmap_{from,to}_arr32 where appropriate
 
-		parent = me->real_parent;
-		tracer = lock_tracer? me->parent : parent;
+ arch/s390/kvm/kvm-s390.c                      | 10 ++--
+ .../gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c    |  2 +-
+ .../gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c    |  2 +-
+ include/linux/bitmap.h                        | 31 +++++++++---
+ lib/bitmap.c                                  | 48 +++++++++++++++++++
+ lib/test_bitmap.c                             | 25 ++++++++++
+ 6 files changed, 103 insertions(+), 15 deletions(-)
 
-		p_sighand = rcu_dereference(parent->sighand);
-		t_sighand = rcu_dereference(tracer->sighand);
+-- 
+2.32.0
 
-		/* Sort the sighands so that s1 >= s2 >= s3 */
-		s1 = m_sighand;
-		s2 = p_sighand;
-		s3 = t_sighand;
-		if (s1 > s2)
-			swap(s1, s2);
-		if (s1 > s3)
-			swap(s1, s3);
-		if (s2 > s3)
-			swap(s2, s3);
-
-		if (s1 != m_sighand) {
-			spin_unlock(&m_sighand->siglock);
-			spin_lock(&s1->siglock);
-		}
-
-		if (s1 != s2)
-			spin_lock_nested(&s2->siglock, SIGLOCK_LOCK_SECOND);
-		if (s2 != s3)
-			spin_lock_nested(&s3->siglock, SIGLOCK_LOCK_THIRD);
-
-		if (likely((me->real_parent == parent) &&
-			   (me->parent == tracer) &&
-			   (parent->sighand == p_sighand) &&
-			   (tracer->sighand == t_sighand))) {
-			break;
-		}
-		spin_unlock(&p_sighand->siglock);
-                if (t_sighand != p_sighand)
-			spin_unlock(&t_sighand->siglock);
-		continue;
-	}
-	rcu_read_unlock();
-}
-
-Eric
