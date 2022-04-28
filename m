@@ -2,118 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5739C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F5ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243478AbiD1KVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:21:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35452 "EHLO
+        id S230367AbiD1KXG convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:23:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244110AbiD1KUd (ORCPT
+        with ESMTP id S229449AbiD1KXF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:20:33 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E927E41FA4;
-        Thu, 28 Apr 2022 03:12:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651140734; x=1682676734;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DN8nmFYcb38IeRXfm3ZKJ3F7KWzA3y9zzhKp5ZnLg5s=;
-  b=V+S/0rfa6bHAlfhdOxrjpTcTheq203+QLXAL5ciLxQpCnqw+KgsqwgoE
-   hdcR7fhxIgE/Fsm8cm1eY07am1znNbTCAyfnkG6UTugNyKDRrOIqAAP8K
-   RUC5iamRP9jakRf/oLefBJlG5OM9K3NspvflEHLdlvfscKTtuhe63S8vZ
-   0Lm49kEPZAs3ETOkStujWaz7B53AXNn40tgt6rNWIfBxrXO6+2aNZjV9t
-   Si1a364zAdl7PBDz7manQ5AvaotyijnfPNjUAeHeEgB3343Y7baFaZCJT
-   bja8me5+aBlRjRi9/ld1UjP1IVhhCDVyXizQnnxirdy1nm440zSPE1xnM
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="265082134"
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="265082134"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 03:12:14 -0700
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="731348066"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 03:12:12 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nk185-009FHA-7N;
-        Thu, 28 Apr 2022 13:12:09 +0300
-Date:   Thu, 28 Apr 2022 13:12:08 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Aubrey Li <aubrey.li@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        Mark Gross <markgross@kernel.org>,
-        platform-driver-x86@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH 0/4] platform: allow ATOM PMC code to be optional
-Message-ID: <YmpoeJtFNSyCq1QL@smile.fi.intel.com>
-References: <20220428062430.31010-1-paul.gortmaker@windriver.com>
+        Thu, 28 Apr 2022 06:23:05 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879AB294
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 03:19:51 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nk1FJ-0007p7-Ru; Thu, 28 Apr 2022 12:19:37 +0200
+Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nk1FI-005jdQ-Kb; Thu, 28 Apr 2022 12:19:35 +0200
+Received: from pza by lupine with local (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nk1FG-0006Kp-GQ; Thu, 28 Apr 2022 12:19:34 +0200
+Message-ID: <3f40330f76e27dbe3162c31c3e33837e2d0433e0.camel@pengutronix.de>
+Subject: Re: [PATCH V5] mmc: sdhci-msm: Reset GCC_SDCC_BCR register for SDHC
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>, agross@kernel.org,
+        bjorn.andersson@linaro.org, adrian.hunter@intel.com,
+        ulf.hansson@linaro.org, chris@printf.net, venkatg@codeaurora.org,
+        gdjakov@mm-sol.com, quic_asutoshd@quicinc.com
+Cc:     linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rampraka@quicinc.com,
+        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
+        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com
+Date:   Thu, 28 Apr 2022 12:19:34 +0200
+In-Reply-To: <1650816153-23797-1-git-send-email-quic_c_sbhanu@quicinc.com>
+References: <1650816153-23797-1-git-send-email-quic_c_sbhanu@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220428062430.31010-1-paul.gortmaker@windriver.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 02:24:26AM -0400, Paul Gortmaker wrote:
-> A few months back I was doing a test build for "defconfig-like" COTS
-> hardware and happened to notice some pmc-atom stuff being built.  Fine,
-> I thought - the defconfig isn't minimal - we all know that - what Kconfig
-> do I use to turn that off?  Well, imagine my surprise when I found out
-> you couldn't turn it [Atom Power Management Controller] code off!
-
-Turning it off on BayTrail and CherryTrail devices will be devastating
-to the users' experience. And plenty of cheap tablets are exactly made
-on that SoCs.
-
-> Normally we all agree to not use "default y" unless unavoidable, but
-> somehow this was added as "def_bool y" which is even worse ; you can
-> see the Kconfig setting but there is *no* way you can turn it off.
+On So, 2022-04-24 at 21:32 +0530, Shaik Sajida Bhanu wrote:
+> Reset GCC_SDCC_BCR register before every fresh initilazation. This will
+> reset whole SDHC-msm controller, clears the previous power control
+> states and avoids, software reset timeout issues as below.
 > 
-> After investigating, I found no reason why the atom code couldn't be
-> opt-out with just minor changes that the original addition overlooked.
+> [ 5.458061][ T262] mmc1: Reset 0x1 never completed.
+> [ 5.462454][ T262] mmc1: sdhci: ============ SDHCI REGISTER DUMP ===========
+> [ 5.469065][ T262] mmc1: sdhci: Sys addr: 0x00000000 | Version: 0x00007202
+> [ 5.475688][ T262] mmc1: sdhci: Blk size: 0x00000000 | Blk cnt: 0x00000000
+> [ 5.482315][ T262] mmc1: sdhci: Argument: 0x00000000 | Trn mode: 0x00000000
+> [ 5.488927][ T262] mmc1: sdhci: Present: 0x01f800f0 | Host ctl: 0x00000000
+> [ 5.495539][ T262] mmc1: sdhci: Power: 0x00000000 | Blk gap: 0x00000000
+> [ 5.502162][ T262] mmc1: sdhci: Wake-up: 0x00000000 | Clock: 0x00000003
+> [ 5.508768][ T262] mmc1: sdhci: Timeout: 0x00000000 | Int stat: 0x00000000
+> [ 5.515381][ T262] mmc1: sdhci: Int enab: 0x00000000 | Sig enab: 0x00000000
+> [ 5.521996][ T262] mmc1: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000000
+> [ 5.528607][ T262] mmc1: sdhci: Caps: 0x362dc8b2 | Caps_1: 0x0000808f
+> [ 5.535227][ T262] mmc1: sdhci: Cmd: 0x00000000 | Max curr: 0x00000000
+> [ 5.541841][ T262] mmc1: sdhci: Resp[0]: 0x00000000 | Resp[1]: 0x00000000
+> [ 5.548454][ T262] mmc1: sdhci: Resp[2]: 0x00000000 | Resp[3]: 0x00000000
+> [ 5.555079][ T262] mmc1: sdhci: Host ctl2: 0x00000000
+> [ 5.559651][ T262] mmc1: sdhci_msm: ----------- VENDOR REGISTER DUMP-----------
+> [ 5.566621][ T262] mmc1: sdhci_msm: DLL sts: 0x00000000 | DLL cfg: 0x6000642c | DLL cfg2: 0x0020a000
+> [ 5.575465][ T262] mmc1: sdhci_msm: DLL cfg3: 0x00000000 | DLL usr ctl: 0x00010800 | DDR cfg: 0x80040873
+> [ 5.584658][ T262] mmc1: sdhci_msm: Vndr func: 0x00018a9c | Vndr func2 : 0xf88218a8 Vndr func3: 0x02626040
 > 
-> And so this series addreses that.  I tried to be sensitive to not
-> break any existing configs in the process, but the defconfig will
-> now intentionally be different and exclude this atom specific code.
+> Fixes: 0eb0d9f4de34 ("mmc: sdhci-msm: Initial support for Qualcomm chipsets")
+> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+> ---
 > 
-> Using a defconfig on today's linux-next, here is the delta summary:
-> 
-> $ ./scripts/bloat-o-meter -c ../pmc-atom-pre/vmlinux ../pmc-atom-post/vmlinux|grep add/remove
-> add/remove: 0/410 grow/shrink: 0/7 up/down: 0/-47659 (-47659)
-> add/remove: 0/105 grow/shrink: 0/1 up/down: 0/-6848 (-6848)
-> add/remove: 0/56 grow/shrink: 0/1 up/down: 0/-10155 (-10155)
-> 
-> $ ./scripts/bloat-o-meter -c ../pmc-atom-pre/vmlinux ../pmc-atom-post/vmlinux|grep Total
-> Total: Before=13626994, After=13579335, chg -0.35%
-> Total: Before=3572137, After=3565289, chg -0.19%
-> Total: Before=1235335, After=1225180, chg -0.82%
-> 
-> It is hard to reclaim anything against the inevitable growth in
-> footprint, so I'd say we should be glad to take whatever we can.
-> 
-> Boot tested defconfig on today's linux-next on older non-atom COTS.
+> Changes since V4:
+> 	- Called reset_control_put() in error path.
 
-I believe this needs an extensive test done by Hans who possesses a lot of
-problematic devices that require that module to be present.
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
 
-Note to all your patches, please, use --cc option instead of putting noisy
-lines in the each of the commit messages. For myself I created a "smart"
-script [1] to avoid bothering with that. Feel free to use, modify, send PRs
-back to improve.
-
-[1]: https://github.com/andy-shev/home-bin-tools/blob/master/ge2maintainer.sh
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+regards
+Philipp
