@@ -2,100 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DDD6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:07:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF7A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237120AbiD1IK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44596 "EHLO
+        id S1343847AbiD1IKu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 04:10:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233548AbiD1IKV (ORCPT
+        with ESMTP id S1343809AbiD1IKl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:10:21 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBFEE54F9D;
-        Thu, 28 Apr 2022 01:07:07 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id C5D1A1F45034
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1651133225;
-        bh=gkofCbla6q/11zKU00zv0OsLH0Kg1dBauD7EEXXr8w4=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=nIeU3RHTyPGIbfsEWhwWP2fVMUQQGuJtXlVD9kFzxnPfRWMhllRUjI6u8vypNIVN1
-         eu5cHaG3n9ZXhp5V0x+Jf73SMqKL3ceJeaWwg/m5gnjeiUO1Lk3UuaB20pLNZryoDz
-         XfhHxrUIAcPO/NxiDtUFBcV+SeCuArS5mWrsQTaxFQAEHs6+4Xak2qTkB/r9e3xVLF
-         zirWf7yQjIrqAO3iiIzePtDqizqzGS0G3clZvhCHmq6HKa5jxswEmgUjt7W0zgvuzt
-         5PZlEXA7u9a/1YAtHxNSnPF/XdiH0rnqPh8pD3XCcSFKgJQTOXdSu5tF19o5iqJ2Cx
-         dY4T1R3CTKPVw==
-Message-ID: <8acef982-0aec-aaf0-7e26-b02cf024cdf8@collabora.com>
-Date:   Thu, 28 Apr 2022 13:06:48 +0500
+        Thu, 28 Apr 2022 04:10:41 -0400
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25905FF22;
+        Thu, 28 Apr 2022 01:07:23 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id A3CCB20014;
+        Thu, 28 Apr 2022 08:07:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651133242;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OgdzcTozFEXOc5nis4y/bqNo2BFl7HCpt8t/Qg1ao2I=;
+        b=mHEA5MLCK9+jcAr3vWQsAIKpZckVY+FUgOCNMiMP1SXRkfVtqtuiRep8XuKxBEaZ0cs2kc
+        iKXOwY4qOoi+rW2ZE5l2bTTNh0bFNG9bVklK5w4slvIEvYCFKAFXvXZMjGF0NAgAJOY7gP
+        T3qCFl41r6YkAwVYHv/e/heC14i7SW+vCqZfygdtjQmuXbGA4S8zdm4OgbgGBNuUS0VYuO
+        wH+GMaFVo45+Hb7F+Z64gjFkv6H1XeIeRDcfW7Dsah4BhMZXJPlLPcckRaYq3U79XglayW
+        hZKw5LR3F1i7O0rkyCCjn8hSrbBENOyAuBr+XORQSpkz1OYXAe+qPg16mC1E6g==
+Date:   Thu, 28 Apr 2022 10:07:19 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warning after merge of the iio tree
+Message-ID: <20220428100719.4a29e68f@xps13>
+In-Reply-To: <20220428173758.2e642f54@canb.auug.org.au>
+References: <20220428173758.2e642f54@canb.auug.org.au>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Cc:     usama.anjum@collabora.com, "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Collabora Kernel ML <kernel@collabora.com>,
-        groeck@chromium.org, bleung@chromium.org, dtor@chromium.org,
-        gwendal@chromium.org, vbendeb@chromium.org, andy@infradead.org,
-        Ayman Bagabas <ayman.bagabas@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        =?UTF-8?Q?Bla=c5=be_Hrastnik?= <blaz@mxxn.io>,
-        Darren Hart <dvhart@infradead.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jeremy Soller <jeremy@system76.com>,
-        Mattias Jacobsson <2pi@mok.nu>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Rajat Jain <rajatja@google.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Enric Balletbo i Serra <eballetbo@gmail.com>
-Subject: Re: [PATCH v8] platform: x86: Add ChromeOS ACPI device driver
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <Ylmmf03fewXEjRr0@debian-BULLSEYE-live-builder-AMD64>
- <YmUNnq5tH8mykNOF@kroah.com>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <YmUNnq5tH8mykNOF@kroah.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/24/22 1:43 PM, Greg Kroah-Hartman wrote:
-> On Fri, Apr 15, 2022 at 10:08:15PM +0500, Muhammad Usama Anjum wrote:
->> +	i = 0;
->> +	list_for_each_entry(aag, &chromeos_acpi.groups, list) {
->> +		chromeos_acpi.dev_groups[i] = &aag->group;
->> +		i++;
->> +	}
->> +
->> +	ret = sysfs_create_groups(&dev->kobj, chromeos_acpi.dev_groups);
-> 
-> You have raced with userspace and lost here :(
-> 
-> Use the default groups pointer in the platform driver for this, and use
-> the is_visible() callback to know to show, or not show, the attribute
-> instead of building up dynamic lists of attributes at runtime.  That
-> will save you lots of crazy logic and housekeeping _AND_ userspace tools
-> will work properly as well.
-> 
-Yeah, using dev_group pointer in platform driver makes it simple. We
-need to define the attributes at compile time. At run time, we can only
-make decision to show or not to show the attribute. This simplifies
-logic for the static attributes which will always be there. But there
-are some set of attributes which may be 1 to N depending upon the
-platform such as GPIO.0, GPIO.2 .... and GPIO.N. I'm working on
-overcoming this. Once this is done, the driver is going to be very simple.
+Hello,
 
-> thanks,
-> 
-> greg k-h
+sfr@canb.auug.org.au wrote on Thu, 28 Apr 2022 17:37:58 +1000:
 
--- 
-Muhammad Usama Anjum
+> Hi all,
+>=20
+> After merging the iio tree, today's linux-next build (htmldocs) produced
+> this warning:
+>=20
+> include/linux/iio/iio.h:319: warning: This comment starts with '/**', but=
+ isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+>  * Device operating modes
+>=20
+> Introduced by commit
+>=20
+>   831d87089ca8 ("iio: core: Clarify the modes")
+
+Looks like there is no kdoc specific format for #define's
+(Documentation/doc-guide/kernel-doc.rst), which is disappointing, I
+really hoped this could be brought to the developer's attention this
+way.
+
+But that's not a big deal. Jonathan, if you don't mind, you may just
+drop that extra start s|/**|/*| to make the htmldocs target happy
+again.
+
+Thanks,
+Miqu=C3=A8l
