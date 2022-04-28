@@ -2,99 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B7DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 05:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2070C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 05:19:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242904AbiD1FVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 01:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
+        id S242921AbiD1FW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 01:22:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235900AbiD1FUz (ORCPT
+        with ESMTP id S235900AbiD1FW0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 01:20:55 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 735DC4B846;
-        Wed, 27 Apr 2022 22:17:41 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23S5HNpX056757;
-        Thu, 28 Apr 2022 00:17:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651123043;
-        bh=GIR56Dp6NW93S1PCI77cjzEsaz9hMYfzz1WDjFbahqY=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=Zb0l7G/eeQ8vZ/veXBO/dMb1Jwbs64EheZo35J8wiS6jkZFfx0MdQOcawEdFUkQHq
-         app1V68OfMOkdni3VzrpCted+el12SLe/I3Ua2uqGlOto3OfFM1wo68KExM7TT1nYZ
-         5M9qqeNss9Zu6gPcrFw+Eg5lxowzR6/cD4haQkGc=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23S5HNLF076786
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 28 Apr 2022 00:17:23 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 28
- Apr 2022 00:17:23 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 28 Apr 2022 00:17:23 -0500
-Received: from uda0132425.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23S5HJdF089205;
-        Thu, 28 Apr 2022 00:17:20 -0500
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-To:     Rob Herring <robh+dt@kernel.org>, Tero Kristo <kristo@kernel.org>,
-        Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-CC:     Aswath Govindraju <a-govindraju@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-kernel@vger.kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH] arm64: dts: ti: k3-am62-mcu: Enable MCU GPIO module
-Date:   Thu, 28 Apr 2022 10:47:02 +0530
-Message-ID: <165107250534.1111532.10717948019266458838.b4-ty@ti.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220421061938.122317-1-vigneshr@ti.com>
-References: <20220421061938.122317-1-vigneshr@ti.com>
+        Thu, 28 Apr 2022 01:22:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFDB533E9F;
+        Wed, 27 Apr 2022 22:19:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4406361C9A;
+        Thu, 28 Apr 2022 05:19:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41D6AC385A9;
+        Thu, 28 Apr 2022 05:19:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651123151;
+        bh=UQfVi3ZGeNriIKk381DlRNwfzv/ILBbw7Z6AKGd13XA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=eIgMY3GZMKEglFJtWh76V0pJAjxc/sYlKuLCeJWSGsiN+hlLSloUN9DuzeNgCB+VG
+         WJWuMLRBBjP02ElF6KcXYMzZ/R5Ux069rbX4GX5VlEWjaF6Z8mCHcIfUPVCcB08IZ2
+         sSaHwJ66iP7fCjaSdNvx0TteTLnVX3V1aeLjKqSau3J8ITgz/dzRxkDc9+HGfFfADg
+         eH8MUuY4ZPcAhslrftwE4hUg+oLcaK6EHTsxXaQVKH4ZmvyT8uK+enh0KWO/rr4hSn
+         eLj9YdCkylWSfAG09O7p4RuvT0cDOhOqR5OKDo4iBnXZw6B+ax+95DUu+LV/PV+Lzq
+         DbVFB0orSgIAw==
+Message-ID: <01ec9962-e210-ce47-57cd-8849cca0a9df@kernel.org>
+Date:   Thu, 28 Apr 2022 07:19:04 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4 5/5] usb: host: add xhci-exynos driver
+Content-Language: en-US
+To:     Jung Daehwan <dh10.jung@samsung.com>
+Cc:     Mathias Nyman <mathias.nyman@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Howard Yen <howardyen@google.com>,
+        Jack Pham <jackp@codeaurora.org>,
+        Puma Hsu <pumahsu@google.com>,
+        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+References: <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
+ <CGME20220426092023epcas2p32946c087135ca4b7e63b03915060c55d@epcas2p3.samsung.com>
+ <1650964728-175347-6-git-send-email-dh10.jung@samsung.com>
+ <a9438aef-78a3-e8ab-2b78-cc872447df08@kernel.org>
+ <20220428012941.GF145620@ubuntu>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220428012941.GF145620@ubuntu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vignesh Raghavendra,
- 
-On Thu, 21 Apr 2022 11:49:38 +0530, Vignesh Raghavendra wrote:
-> AM62 has x1 GPIO module and associated interrupt router in MCU Domain.
-> Add DT nodes for the same.
+On 28/04/2022 03:29, Jung Daehwan wrote:
+> On Tue, Apr 26, 2022 at 02:59:57PM +0200, Krzysztof Kozlowski wrote:
+>> On 26/04/2022 11:18, Daehwan Jung wrote:
+>>> This driver is for Samsung Exynos xhci host conroller. It uses xhci-plat
+>>> driver mainly and extends some functions by xhci hooks and overrides.
+>>>
+>>> It supports USB Audio offload with Co-processor. It only cares DCBAA,
+>>> Device Context, Transfer Ring, Event Ring, and ERST. They are allocated
+>>> on specific address with xhci hooks. Co-processor could use them directly
+>>> without xhci driver after then.
+>>
+>> This does not look like developed in current Linux kernel, but something
+>> out-of-tree, with some other unknown modifications. This is not how the
+>> code should be developed. Please rebase on linux-next and drop any
+>> unrelated modifications (these which are not sent with this patchset).
+>>
 > 
+> I've been developing on linux-next and I rebase before submitting.
+> Could you tell me one of dropped modifications or patches?
 > 
- 
-I have applied the following to branch ti-k3-dts-next on [1].
-Thank you!
- 
-[1/1] arm64: dts: ti: k3-am62-mcu: Enable MCU GPIO module
-      commit: d196d2a98d62c505ab71caf2630575e448dc417c
- 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent up the chain during
-the next merge window (or sooner if it is a relevant bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
- 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
- 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
- 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
- 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/ti/linux.git
---
-Vignesh
+>> (...)
+>>
+>>> +
+>>> +static int xhci_exynos_suspend(struct device *dev)
+>>> +{
+>>> +	struct usb_hcd	*hcd = dev_get_drvdata(dev);
+>>> +	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
+>>> +
+>>> +	/* TODO: AP sleep scenario*/
+>>
+>> Shall the patchset be called RFC?
+>>
+> OK. I will add RFC for this patch on next submission.
+> 
+>>> +
+>>> +	return xhci_suspend(xhci, device_may_wakeup(dev));
+>>> +}
+>>> +
+>>> +static int xhci_exynos_resume(struct device *dev)
+>>> +{
+>>> +	struct usb_hcd	*hcd = dev_get_drvdata(dev);
+>>> +	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
+>>> +	int ret;
+>>> +
+>>> +	/* TODO: AP resume scenario*/
+>>> +
+>>> +	ret = xhci_resume(xhci, 0);
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	pm_runtime_disable(dev);
+>>> +	pm_runtime_set_active(dev);
+>>> +	pm_runtime_enable(dev);
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static const struct dev_pm_ops xhci_exynos_pm_ops = {
+>>> +	SET_SYSTEM_SLEEP_PM_OPS(xhci_exynos_suspend, xhci_exynos_resume)
+>>> +};
+>>> +
+>>> +MODULE_DESCRIPTION("xHCI Exynos Host Controller Driver");
+>>> +MODULE_LICENSE("GPL");
+>>
+>> You don't have list of compatibles (and missing bindings), driver
+>> definition, driver registration. Entire solution is not used - nothing
+>> calls xhci_exynos_vendor_init(), because nothign uses "ops".
+>>
+> 
+> xhci_exynos_vendor_init is called in xhci-plat.c (xhci_vendor_init)
+> [v4,2/5] usb: host: add xhci hooks for xhci-exynos
+> ops are used in some files(xhci-mem.c, xhci.c ..) and the body of ops is in
+> all xhci-exynos.
 
+
+Nothing uses the "ops" except xhci_exynos_register_vendor_ops() which is
+not called anywhere, so the xhci_vendor_init() does not call
+xhci_exynos_vendor_init().
+
+> 
+> xhci-exynos is not a standalone driver. It could be enabled when other module
+> makes xhci platform driver probed as it uses xhci platform mainly.
+
+It "could be" or "will be"? We do not talk here about theoretical usage
+of the driver, but a real one.
+
+> I thought I just used existing compltible not adding new one.
+> I will add them if needed.
+
+Since you called everything here as "exynos" it is specific to one
+hardware and not-reusable on anything else. How can then you use some
+other compatible? It would be a misuse of Devicetree bindings.
+
+Unless this is not specific to "exynos", but then please remove any
+exynos and vendor references and make it integrated in generic XHCI
+working for all drivers.
+
+
+>> This does not work and it makes it impossible to test it. Please provide
+>> proper XHCI Exynos driver, assuming you need it and it is not part of
+>> regular Exynos XHCI drivers (DWC3 and so on).
+>>
+> 
+> What makes you think it doesn't work?
+
+Not possible to probe. The code cannot be loaded.
+
+> I think it's almost proper. I just removed
+> other IPs code like Co-Processor(we call it abox) or Power Management because
+> it would make build-error. I've added hooking points in some files(xhci-mem.c,
+> xhci.c..) and ops are implemented in xhci-exynos. It's mainly operated with
+> xhci platform driver.
+
+Best regards,
+Krzysztof
