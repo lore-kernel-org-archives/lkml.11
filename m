@@ -2,176 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A42C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4914C433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:28:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347139AbiD1JaR (ORCPT
+        id S1346712AbiD1JaP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 05:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58594 "EHLO
+        Thu, 28 Apr 2022 05:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346747AbiD1J04 (ORCPT
+        with ESMTP id S1346648AbiD1J0T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 05:26:56 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEF97B556;
-        Thu, 28 Apr 2022 02:23:42 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id p6so3795741pjm.1;
-        Thu, 28 Apr 2022 02:23:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4R456a2EKx3/Cjhoycmuudv2QP7/h6tZBuPXNUpi9fk=;
-        b=I+lUa/of4zMx/MbE0mRhv6Lk3HLDIsjTKSRtN47KbE4VORjOEUzVMjpx7JVYN11vYq
-         AfpM4QSpe0Ik/dIP4mDt0EaSADIoqtFhYF43sGbGCo3rt1/IhmtHifBK9CuZpTPHJFCI
-         AW686YkIXIB9N2V0pRQGkWIGkuMtmuKksSRk8/+ufkn7drQ4VeJZA1N4HAzREAPhojIE
-         VgQeCdc4/jspzPgBu1zWwC91ngQEG3JL99e2KPuYz7tOm7MEhiUqXB3eovWZo8v9GfwR
-         5RHYuj60FOLwCCA7qt6MKNsR+0ldk3HmvNK042XMJeG+rPK86qQBtnJPv80pBdWeyGA0
-         J5Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4R456a2EKx3/Cjhoycmuudv2QP7/h6tZBuPXNUpi9fk=;
-        b=zDsFRmz2nDD5OLEtAu1iTUJIUIVS7WVN8weqLp3qtAwXFHXTJ6R1rsTsZpOI74ayBK
-         3YahiyVezX0weDSV1bQwdEIY2uWPdr1JaaG2KHO8NWtDg2+B/aJS7Y0VGBZKdwPNb9hg
-         z3bOBdTNNmic2lcszRCe5BRUp9oD1mbT1MfcozdKwaQis0Kh2AgaP0GVjpHtUOEDc6mQ
-         47JAtLjGiniZnb2D/9bc2o6xPoOa5Wp/qH48f9WPC+UZBWuGfPcYXYr74EzdooT766Ej
-         itg1E5ybuZPvUt107Bc6wGQ5RjL6lveqjIYYC3lPJORCFqjBUjZNHi4YzG8Patt4KEpc
-         Roqg==
-X-Gm-Message-State: AOAM533GGP0EK+R28UKmfD5C7PrULNVvlktO2EgPKPI29NYjshFt+kdR
-        jT6EIDAZpXnlSRbVlhidxTE=
-X-Google-Smtp-Source: ABdhPJxDGLtFG2tk8d7m9YtfFxcyKP2ifBm7uCBtAeOK056rRBExu2Z4vCN3ZgZGlvlePmI57yzjiQ==
-X-Received: by 2002:a17:90b:1b4d:b0:1d9:bc90:f7ea with SMTP id nv13-20020a17090b1b4d00b001d9bc90f7eamr13052241pjb.223.1651137821789;
-        Thu, 28 Apr 2022 02:23:41 -0700 (PDT)
-Received: from localhost ([166.111.139.106])
-        by smtp.gmail.com with ESMTPSA id b7-20020a056a00114700b004f7be3231d6sm22189732pfm.7.2022.04.28.02.23.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 02:23:41 -0700 (PDT)
-From:   Zixuan Fu <r33s3n6@gmail.com>
-To:     mathias.nyman@intel.com, gregkh@linuxfoundation.org
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        baijiaju1990@gmail.com, Zixuan Fu <r33s3n6@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>
-Subject: [PATCH v2 resend] drivers: usb: host: fix NULL pointer dereferences triggered by unhandled errors in xhci_create_rhub_port_array()
-Date:   Thu, 28 Apr 2022 17:23:21 +0800
-Message-Id: <20220428092321.3011983-1-r33s3n6@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 28 Apr 2022 05:26:19 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E9487B553;
+        Thu, 28 Apr 2022 02:23:05 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23S9MnPD114566;
+        Thu, 28 Apr 2022 04:22:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1651137769;
+        bh=SdGBrCh40gSHcFSouD8MdmXwgrI8So6iMxE64Wbkmjo=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=jYhmyaZBksW8oYkDtNQYH7YjcC86TF2PZhmwwRmh/ergbHHKxI4ogKvXU6RV9POa4
+         x2J59slDd+rF+JIpZp32Qs5XV1+DCXiLOpJlQhemu8ozq+eeuLqNz+BkgqOWw5SPCl
+         0BkgpJ7E1Mvqw3uishVNWGLj08onV0xeryRaYZlA=
+Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23S9MnpO126190
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 28 Apr 2022 04:22:49 -0500
+Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 28
+ Apr 2022 04:22:49 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 28 Apr 2022 04:22:49 -0500
+Received: from [10.0.2.15] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23S9Mjmb078389;
+        Thu, 28 Apr 2022 04:22:46 -0500
+Message-ID: <4d9da502-52b5-e5c1-7675-93c4341fb446@ti.com>
+Date:   Thu, 28 Apr 2022 14:52:43 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RESEND PATCH v3] arm64: dts: ti: k3-am642-sk: Enable WLAN
+ connected to SDHCI0
+Content-Language: en-US
+To:     Aparna M <a-m1@ti.com>, <nm@ti.com>, <vigneshr@ti.com>,
+        <kishon@ti.com>, <kristo@kernel.org>, <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <praneeth@ti.com>, <nikhil.nd@ti.com>
+References: <20220414133612.13365-1-a-m1@ti.com>
+From:   Devarsh Thakkar <devarsht@ti.com>
+In-Reply-To: <20220414133612.13365-1-a-m1@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In xhci_create_rhub_port_array(), when rhub->num_ports is zero, 
-rhub->ports would not be set; when kcalloc_node() fails, rhub->ports
-would be set to NULL. In these two cases, xhci_create_rhub_port_array()
-just returns void, and thus its callers are unaware of the error.
 
-Then rhub->ports is dereferenced in xhci_usb3_hub_descriptor() or 
-xhci_usb2_hub_descriptor().
-
-To fix the bug, xhci_setup_port_arrays() should return an integer to 
-indicate a possible error, and its callers should handle the error.
-
-In the driver, xhci_create_rhub_port_array() is only used in 
-xhci_setup_port_arrays(), and only xhci_mem_init() calls
-xhci_setup_port_arrays() and does all cleanup work when it fails.
-Specifically, xhci_mem_init() calls xhci_mem_cleanup(), which eventually
-calls kfree(xhci->usb2_rhub.ports) and kfree(xhci->usb3_rhub.ports). For
-this reason, when xhci_create_rhub_port_array() fails, 
-xhci_setup_port_arrays() should return the error code directly, without
-freeing the memory allocated in this function.
-
-The error log in our fault-injection testing is shown as follows:
-
-[   24.001309] BUG: kernel NULL pointer dereference, address: 0000000000000000
-...
-[   24.003992] RIP: 0010:xhci_hub_control+0x3f5/0x60d0 [xhci_hcd]
-...
-[   24.009803] Call Trace:
-[   24.010014]  <TASK>
-[   24.011310]  usb_hcd_submit_urb+0x1233/0x1fd0
-[   24.017071]  usb_start_wait_urb+0x115/0x310
-[   24.017641]  usb_control_msg+0x28a/0x450
-[   24.019046]  hub_probe+0xb16/0x2320
-[   24.019757]  usb_probe_interface+0x4f1/0x930
-[   24.019765]  really_probe+0x33d/0x970
-[   24.019768]  __driver_probe_device+0x157/0x210
-[   24.019772]  driver_probe_device+0x4f/0x340
-[   24.019775]  __device_attach_driver+0x2ee/0x3a0
-...
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
----
-v2:
-* Explain the reason why xhci_setup_port_arrays() returns without freeing the memory in error handling code.
-  Thank Greg KH for helpful advice.
----
- drivers/usb/host/xhci-mem.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/usb/host/xhci-mem.c b/drivers/usb/host/xhci-mem.c
-index bbb27ee2c6a3..024515346c39 100644
---- a/drivers/usb/host/xhci-mem.c
-+++ b/drivers/usb/host/xhci-mem.c
-@@ -2235,7 +2235,7 @@ static void xhci_add_in_port(struct xhci_hcd *xhci, unsigned int num_ports,
- 	/* FIXME: Should we disable ports not in the Extended Capabilities? */
- }
- 
--static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
-+static int xhci_create_rhub_port_array(struct xhci_hcd *xhci,
- 					struct xhci_hub *rhub, gfp_t flags)
- {
- 	int port_index = 0;
-@@ -2243,11 +2243,11 @@ static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
- 	struct device *dev = xhci_to_hcd(xhci)->self.sysdev;
- 
- 	if (!rhub->num_ports)
--		return;
-+		return -EINVAL;
- 	rhub->ports = kcalloc_node(rhub->num_ports, sizeof(*rhub->ports),
- 			flags, dev_to_node(dev));
- 	if (!rhub->ports)
--		return;
-+		return -ENOMEM;
- 
- 	for (i = 0; i < HCS_MAX_PORTS(xhci->hcs_params1); i++) {
- 		if (xhci->hw_ports[i].rhub != rhub ||
-@@ -2259,6 +2259,7 @@ static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
- 		if (port_index == rhub->num_ports)
- 			break;
- 	}
-+	return 0;
- }
- 
- /*
-@@ -2277,6 +2278,7 @@ static int xhci_setup_port_arrays(struct xhci_hcd *xhci, gfp_t flags)
- 	int cap_count = 0;
- 	u32 cap_start;
- 	struct device *dev = xhci_to_hcd(xhci)->self.sysdev;
-+	int ret;
- 
- 	num_ports = HCS_MAX_PORTS(xhci->hcs_params1);
- 	xhci->hw_ports = kcalloc_node(num_ports, sizeof(*xhci->hw_ports),
-@@ -2367,8 +2369,13 @@ static int xhci_setup_port_arrays(struct xhci_hcd *xhci, gfp_t flags)
- 	 * Not sure how the USB core will handle a hub with no ports...
- 	 */
- 
--	xhci_create_rhub_port_array(xhci, &xhci->usb2_rhub, flags);
--	xhci_create_rhub_port_array(xhci, &xhci->usb3_rhub, flags);
-+	ret = xhci_create_rhub_port_array(xhci, &xhci->usb2_rhub, flags);
-+	if (ret)
-+		return ret;
-+
-+	ret = xhci_create_rhub_port_array(xhci, &xhci->usb3_rhub, flags);
-+	if (ret)
-+		return ret;
- 
- 	return 0;
- }
--- 
-2.25.1
-
+On 14/04/22 19:06, Aparna M wrote:
+> From: Kishon Vijay Abraham I <kishon@ti.com>
+>
+> WL1837 module is connected to SDHCI0 in AM642 SK. Enable it here.
+> This will enable the WiFi functionaliy on the board.
+>
+> Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+> Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+> Signed-off-by: Nikhil Devshatwar <nikhil.nd@ti.com>
+> Signed-off-by: Aparna M <a-m1@ti.com>
+Tested-by: Devarsh Thakkar <devarsht@ti.com>
+> ---
+>
+> v3 RESEND: rebased on top of v5.18-rc2
+> v2 -> v3: Use generic node names for the regulators as per DT Specs
+> v1 -> v2: Add "From" tag in commit message
+>
+>  arch/arm64/boot/dts/ti/k3-am642-sk.dts | 62 ++++++++++++++++++++++++++
+>  1 file changed, 62 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/ti/k3-am642-sk.dts b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
+> index 1d7db8bf3a5c..59f506cbd275 100644
+> --- a/arch/arm64/boot/dts/ti/k3-am642-sk.dts
+> +++ b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
+> @@ -125,6 +125,31 @@
+>  		vin-supply = <&vcc_3v3_sys>;
+>  		gpio = <&exp1 3 GPIO_ACTIVE_HIGH>;
+>  	};
+> +
+> +	com8_ls_en: regulator-1 {
+> +		compatible = "regulator-fixed";
+> +		regulator-name = "com8_ls_en";
+> +		regulator-min-microvolt = <3300000>;
+> +		regulator-max-microvolt = <3300000>;
+> +		regulator-always-on;
+> +		regulator-boot-on;
+> +		pinctrl-0 = <&main_com8_ls_en_pins_default>;
+> +		pinctrl-names = "default";
+> +		gpio = <&main_gpio0 62 GPIO_ACTIVE_LOW>;
+> +	};
+> +
+> +	wlan_en: regulator-2 {
+> +		/* output of SN74AVC4T245RSVR */
+> +		compatible = "regulator-fixed";
+> +		regulator-name = "wlan_en";
+> +		regulator-min-microvolt = <1800000>;
+> +		regulator-max-microvolt = <1800000>;
+> +		enable-active-high;
+> +		pinctrl-0 = <&main_wlan_en_pins_default>;
+> +		pinctrl-names = "default";
+> +		vin-supply = <&com8_ls_en>;
+> +		gpio = <&main_gpio0 48 GPIO_ACTIVE_HIGH>;
+> +	};
+>  };
+>  
+>  &main_pmx0 {
+> @@ -216,6 +241,23 @@
+>  			AM64X_IOPAD(0x0270, PIN_INPUT, 0) /* (D18) ECAP0_IN_APWM_OUT */
+>  		>;
+>  	};
+> +	main_wlan_en_pins_default: main-wlan-en-pins-default {
+> +		pinctrl-single,pins = <
+> +			AM64X_IOPAD(0x00c4, PIN_OUTPUT_PULLUP, 7) /* (V8) GPIO0_48 */
+> +		>;
+> +	};
+> +
+> +	main_com8_ls_en_pins_default: main-com8-ls-en-pins-default {
+> +		pinctrl-single,pins = <
+> +			AM64X_IOPAD(0x00fc, PIN_OUTPUT, 7) /* (U7) PRG1_PRU0_GPO17.GPIO0_62 */
+> +		>;
+> +	};
+> +
+> +	main_wlan_pins_default: main-wlan-pins-default {
+> +		pinctrl-single,pins = <
+> +			AM64X_IOPAD(0x00bc, PIN_INPUT, 7) /* (U8) GPIO0_46 */
+> +		>;
+> +	};
+>  };
+>  
+>  &mcu_uart0 {
+> @@ -293,6 +335,26 @@
+>  	status = "reserved";
+>  };
+>  
+> +&sdhci0 {
+> +	vmmc-supply = <&wlan_en>;
+> +	bus-width = <4>;
+> +	non-removable;
+> +	cap-power-off-card;
+> +	keep-power-in-suspend;
+> +	ti,driver-strength-ohm = <50>;
+> +
+> +	#address-cells = <1>;
+> +	#size-cells = <0>;
+> +	wlcore: wlcore@2 {
+> +		compatible = "ti,wl1837";
+> +		reg = <2>;
+> +		pinctrl-0 = <&main_wlan_pins_default>;
+> +		pinctrl-names = "default";
+> +		interrupt-parent = <&main_gpio0>;
+> +		interrupts = <46 IRQ_TYPE_EDGE_FALLING>;
+> +	};
+> +};
+> +
+>  &sdhci1 {
+>  	/* SD/MMC */
+>  	vmmc-supply = <&vdd_mmc1>;
