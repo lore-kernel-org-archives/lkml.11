@@ -2,199 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB83C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:19:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9237C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348256AbiD1OWM (ORCPT
+        id S1348274AbiD1OZW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 10:22:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55512 "EHLO
+        Thu, 28 Apr 2022 10:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230128AbiD1OWL (ORCPT
+        with ESMTP id S235849AbiD1OZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 10:22:11 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7828B6D21;
-        Thu, 28 Apr 2022 07:18:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651155536; x=1682691536;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=aPhTz0JDV2h95i9ZtlBz+qDBbAxlRKmeFPSbHaSb/XI=;
-  b=LaUUVc0heYeUGsfhr/b7P5QeJo/hM3mLnjtpgdn0buavNVDD2w3YFTwd
-   gFODOy/EIdQX4BPNmleIhZrO8pxl8zOke+1109gJ7+X6YmbZ9PZy5BQDP
-   Z2XrFIdhlAuxRNIQN/70kh8VKeEyh6NvgBMoVUK15VgZxbEOahRccGrvs
-   U9ZcPtjszScTKG7tzYlFhe/R3Y4VsJqpRqnRpg6ABbrvf7IY7VhOk1pq1
-   ePhkOmxnb++raaWytY8S6Ad8LtAS69wfUFvm7kTvv8YQ154cJ+77rc8Ax
-   DHm5c3oqBNNvwjchDwScAg9Sg1sngf8HXWay6BiDe3xzEXSVyrTtVpV1I
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="329247916"
-X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="329247916"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 07:18:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="533905895"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga006.jf.intel.com with ESMTP; 28 Apr 2022 07:18:56 -0700
-Received: from [10.209.10.70] (kliang2-MOBL.ccr.corp.intel.com [10.209.10.70])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 60C09580279;
-        Thu, 28 Apr 2022 07:18:55 -0700 (PDT)
-Message-ID: <4ad3bbff-8577-8e84-6ed9-b6f90e018224@linux.intel.com>
-Date:   Thu, 28 Apr 2022 10:18:54 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v10 08/16] KVM: x86/pmu: Refactor code to support guest
- Arch LBR
-Content-Language: en-US
-To:     Yang Weijiang <weijiang.yang@intel.com>, pbonzini@redhat.com,
-        jmattson@google.com, seanjc@google.com, like.xu.linux@gmail.com,
-        vkuznets@redhat.com, wei.w.wang@intel.com, kvm@vger.kernel.org,
+        Thu, 28 Apr 2022 10:25:20 -0400
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115EFB7167;
+        Thu, 28 Apr 2022 07:22:06 -0700 (PDT)
+Received: by mail-wr1-f45.google.com with SMTP id x18so7064803wrc.0;
+        Thu, 28 Apr 2022 07:22:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JEV/gRiIboowFneDPWmwyJ1nyTcxlK0F4cE9gOGek2A=;
+        b=RwTYspm/bHKOn2vDZLJtsOXF4pSCdD20BxQQyDzUwcCifCPA1CwmKcB0pPuZfEpbL5
+         jSWL7lf1EF2tGh6ebmJxBJl7wGSZRiRGm/i/Yt0OT+xAA9vtQz4sTIVN52o22/zR8YQq
+         ntu/krKaUpsGzNcfKdQ2//gouM1DG4RFDoVYuoZB271yIn1lmA5ED9aomEsPV42DSYG4
+         m5Q4su73hcGrtlDzgqQY4tISZlPiQeGBIfjybJYIVzEjESXS6Jooa62bGlvOnenom/Ye
+         H+18KXhVMNqBdBQF2bI1A1vM0tpGKq3WRNy5vZJ84o2H4jHjz0ymzqk0GyV2ki2KaEj8
+         PrHA==
+X-Gm-Message-State: AOAM5332Qpu+6LE3sYc7fZPsuXDJnb257aUwLHe3W0qiMwnzMXC6J5hI
+        rugPFcf9wN2m9sKf8b9TmhQ=
+X-Google-Smtp-Source: ABdhPJznPLb2OMC6g5J4b7e7c+k6RIWPzQZckIWjLIExi5veGYSl1V59TUDwLc8acbDhh1Bh1df4ng==
+X-Received: by 2002:adf:d1e3:0:b0:20a:e6bd:75ce with SMTP id g3-20020adfd1e3000000b0020ae6bd75cemr10694908wrd.340.1651155724375;
+        Thu, 28 Apr 2022 07:22:04 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id f13-20020a0560001a8d00b0020aab7cefc4sm8804wry.46.2022.04.28.07.22.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 07:22:03 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 14:22:02 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
+Cc:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-hyperv@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20220422075509.353942-1-weijiang.yang@intel.com>
- <20220422075509.353942-9-weijiang.yang@intel.com>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <20220422075509.353942-9-weijiang.yang@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2 0/5] hv_sock: Hardening changes
+Message-ID: <20220428142202.tkiv4e2f4oukbfx3@liuwe-devbox-debian-v2>
+References: <20220427131225.3785-1-parri.andrea@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220427131225.3785-1-parri.andrea@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 4/22/2022 3:55 AM, Yang Weijiang wrote:
-> Take account of Arch LBR when do sanity checks before program
-> vPMU for guest. Pass through Arch LBR recording MSRs to guest
-> to gain better performance. Note, Arch LBR and Legacy LBR support
-> are mutually exclusive, i.e., they're not both available on one
-> platform.
+On Wed, Apr 27, 2022 at 03:12:20PM +0200, Andrea Parri (Microsoft) wrote:
+> Changes since v1[1]:
+>   - Expand commit message of patch #2
+>   - Coding style changes
 > 
-> Co-developed-by: Like Xu <like.xu@linux.intel.com>
-> Signed-off-by: Like Xu <like.xu@linux.intel.com>
-> Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
-> ---
->   arch/x86/kvm/vmx/pmu_intel.c | 37 +++++++++++++++++++++++++++++-------
->   arch/x86/kvm/vmx/vmx.c       |  3 +++
->   2 files changed, 33 insertions(+), 7 deletions(-)
+> Changes since RFC[2]:
+>   - Massage changelogs, fix typo
+>   - Drop "hv_sock: Initialize send_buf in hvs_stream_enqueue()"
+>   - Remove style/newline change
+>   - Remove/"inline" hv_pkt_iter_first_raw()
 > 
-> diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-> index 7dc8a5783df7..cb28888e9f4f 100644
-> --- a/arch/x86/kvm/vmx/pmu_intel.c
-> +++ b/arch/x86/kvm/vmx/pmu_intel.c
-> @@ -170,12 +170,16 @@ static inline struct kvm_pmc *get_fw_gp_pmc(struct kvm_pmu *pmu, u32 msr)
->   
->   bool intel_pmu_lbr_is_compatible(struct kvm_vcpu *vcpu)
->   {
-> +	if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
-> +		return guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR);
-> +
->   	/*
->   	 * As a first step, a guest could only enable LBR feature if its
->   	 * cpu model is the same as the host because the LBR registers
->   	 * would be pass-through to the guest and they're model specific.
->   	 */
-> -	return boot_cpu_data.x86_model == guest_cpuid_model(vcpu);
-> +	return !boot_cpu_has(X86_FEATURE_ARCH_LBR) &&
-> +		boot_cpu_data.x86_model == guest_cpuid_model(vcpu);
->   }
->   
->   bool intel_pmu_lbr_is_enabled(struct kvm_vcpu *vcpu)
-> @@ -193,12 +197,19 @@ static bool intel_pmu_is_valid_lbr_msr(struct kvm_vcpu *vcpu, u32 index)
+> Applies to v5.18-rc4.
+> 
+> Thanks,
+>   Andrea
+> 
+> [1] https://lkml.kernel.org/r/20220420200720.434717-1-parri.andrea@gmail.com
+> [2] https://lkml.kernel.org/r/20220413204742.5539-1-parri.andrea@gmail.com
+> 
+> Andrea Parri (Microsoft) (5):
+[...]
+>   Drivers: hv: vmbus: Accept hv_sock offers in isolated guests
 
-I think we should move MSR_ARCH_LBR_DEPTH and MSR_ARCH_LBR_CTL to this 
-function as well, since they are LBR related MSRs.
-
->   	if (!intel_pmu_lbr_is_enabled(vcpu))
->   		return ret;
->   
-> -	ret = (index == MSR_LBR_SELECT) || (index == MSR_LBR_TOS) ||
-> -		(index >= records->from && index < records->from + records->nr) ||
-> -		(index >= records->to && index < records->to + records->nr);
-> +	if (!guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR))
-> +		ret = (index == MSR_LBR_SELECT) || (index == MSR_LBR_TOS);
-> +
-> +	if (!ret) {
-> +		ret = (index >= records->from &&
-> +		       index < records->from + records->nr) ||
-> +		      (index >= records->to &&
-> +		       index < records->to + records->nr);
-> +	}
->   
->   	if (!ret && records->info)
-> -		ret = (index >= records->info && index < records->info + records->nr);
-> +		ret = (index >= records->info &&
-> +		       index < records->info + records->nr);
-
-Please use "{}" since you split it to two lines.
-
-Thanks,
-Kan
->   
->   	return ret;
->   }
-> @@ -747,6 +758,9 @@ static void vmx_update_intercept_for_lbr_msrs(struct kvm_vcpu *vcpu, bool set)
->   			vmx_set_intercept_for_msr(vcpu, lbr->info + i, MSR_TYPE_RW, set);
->   	}
->   
-> +	if (guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR))
-> +		return;
-> +
->   	vmx_set_intercept_for_msr(vcpu, MSR_LBR_SELECT, MSR_TYPE_RW, set);
->   	vmx_set_intercept_for_msr(vcpu, MSR_LBR_TOS, MSR_TYPE_RW, set);
->   }
-> @@ -787,10 +801,13 @@ void vmx_passthrough_lbr_msrs(struct kvm_vcpu *vcpu)
->   {
->   	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
->   	struct lbr_desc *lbr_desc = vcpu_to_lbr_desc(vcpu);
-> +	bool lbr_enable = guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR) ?
-> +		(vmcs_read64(GUEST_IA32_LBR_CTL) & ARCH_LBR_CTL_LBREN) :
-> +		(vmcs_read64(GUEST_IA32_DEBUGCTL) & DEBUGCTLMSR_LBR);
->   
->   	if (!lbr_desc->event) {
->   		vmx_disable_lbr_msrs_passthrough(vcpu);
-> -		if (vmcs_read64(GUEST_IA32_DEBUGCTL) & DEBUGCTLMSR_LBR)
-> +		if (lbr_enable)
->   			goto warn;
->   		if (test_bit(INTEL_PMC_IDX_FIXED_VLBR, pmu->pmc_in_use))
->   			goto warn;
-> @@ -807,13 +824,19 @@ void vmx_passthrough_lbr_msrs(struct kvm_vcpu *vcpu)
->   	return;
->   
->   warn:
-> +	if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
-> +		wrmsrl(MSR_ARCH_LBR_DEPTH, lbr_desc->records.nr);
->   	pr_warn_ratelimited("kvm: vcpu-%d: fail to passthrough LBR.\n",
->   		vcpu->vcpu_id);
->   }
->   
->   static void intel_pmu_cleanup(struct kvm_vcpu *vcpu)
->   {
-> -	if (!(vmcs_read64(GUEST_IA32_DEBUGCTL) & DEBUGCTLMSR_LBR))
-> +	bool lbr_enable = guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR) ?
-> +		(vmcs_read64(GUEST_IA32_LBR_CTL) & ARCH_LBR_CTL_LBREN) :
-> +		(vmcs_read64(GUEST_IA32_DEBUGCTL) & DEBUGCTLMSR_LBR);
-> +
-> +	if (!lbr_enable)
->   		intel_pmu_release_guest_lbr_event(vcpu);
->   }
->   
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index 73961fcfb62d..a1816c6597f5 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -573,6 +573,9 @@ static bool is_valid_passthrough_msr(u32 msr)
->   	case MSR_LBR_NHM_TO ... MSR_LBR_NHM_TO + 31:
->   	case MSR_LBR_CORE_FROM ... MSR_LBR_CORE_FROM + 8:
->   	case MSR_LBR_CORE_TO ... MSR_LBR_CORE_TO + 8:
-> +	case MSR_ARCH_LBR_FROM_0 ... MSR_ARCH_LBR_FROM_0 + 31:
-> +	case MSR_ARCH_LBR_TO_0 ... MSR_ARCH_LBR_TO_0 + 31:
-> +	case MSR_ARCH_LBR_INFO_0 ... MSR_ARCH_LBR_INFO_0 + 31:
->   		/* LBR MSRs. These are handled in vmx_update_intercept_for_lbr_msrs() */
->   		return true;
->   	}
+This patch does not apply cleanly to hyperv-next.
