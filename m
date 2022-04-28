@@ -2,89 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E29C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB31C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:55:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345785AbiD1L54 (ORCPT
+        id S1345799AbiD1L7K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 07:57:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55960 "EHLO
+        Thu, 28 Apr 2022 07:59:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345738AbiD1L5o (ORCPT
+        with ESMTP id S240712AbiD1L7I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 07:57:44 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2938584EE0;
-        Thu, 28 Apr 2022 04:54:30 -0700 (PDT)
-Received: from kwepemi500026.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kpv9L50dKzGpPc;
-        Thu, 28 Apr 2022 19:51:50 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi500026.china.huawei.com (7.221.188.247) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Apr 2022 19:54:28 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Apr
- 2022 19:54:27 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <jack@suse.cz>, <paolo.valente@linaro.org>, <axboe@kernel.dk>,
-        <tj@kernel.org>
-CC:     <linux-block@vger.kernel.org>, <cgroups@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
-        <yi.zhang@huawei.com>
-Subject: [PATCH -next v5 3/3] block, bfq: do not idle if only one group is activated
-Date:   Thu, 28 Apr 2022 20:08:37 +0800
-Message-ID: <20220428120837.3737765-4-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220428120837.3737765-1-yukuai3@huawei.com>
-References: <20220428120837.3737765-1-yukuai3@huawei.com>
+        Thu, 28 Apr 2022 07:59:08 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DBB4888D8
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 04:55:54 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id k14so3829782pga.0
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 04:55:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nNaL4oWbSaoZkugEaXO//WHohZesy6t6T5egzcvNBJU=;
+        b=UE5paQOXIHvF+isxo/nkvMlIFVMoOhZoeSphPe2amLG90ZyGcyfxpF4r3SAfjM3I3l
+         FSYZoVv6EmF4O+hzZ60QiNtYcspZ6TeKJAQsXgKt7PBF7yzn9IpVuWAbQ4TKvgAlrRRR
+         tJHf/NwVNB+it9VNHHhpIpA99ZfIfetWmM6au/TMlwiZizoHaLGf5eQOwUwViLrN7vpN
+         yR8tqWZCedbNBJt5wGh+Zw2Rg35LZgIpwIArw3gZtoARF0DZlPZHGyLrIaQLJAwqM0PK
+         AHUPTFgemhWKs6bzsmiZi0rIG9eshdOgu0rbj+uJFTxf6sA5ZTFLNPC1L74aSxUB6D3U
+         r7Zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nNaL4oWbSaoZkugEaXO//WHohZesy6t6T5egzcvNBJU=;
+        b=pHfKW7YxaxjQzmfc5tt77T926v0rPhBbuEnazSRM9nBpNImKP915EfqZg9OEsf0pWr
+         yHz81dlbw3IfUSSFD0ToyZ0XLI7LC98x2fKa+3wtZYnCUI1v2bMyPusQCtojopcHLlc7
+         q1EBaZ8qXHwiXsR80W1twuEeQ7vUegwfzCGUjW8FnoeBiaWA0pm9KPDru/OhJg2jN1//
+         zjBCLkAPQXvwKYfqAITAuqvGv4yCZn2gbvtxCA43s8yPJqI8UgPMBPHmjUvAvBZ6y0iF
+         ayxvSNapC0CBF9ovyT/bfOlsSXH0iKL8wxOhIa76xkrPvA8JplWDCYKrjTWN5xrF6NSC
+         FzPw==
+X-Gm-Message-State: AOAM530AuHNC1pWzEpsszBIAeR9buvJFI0dV4+/QTfzfEa4VOQ2u+ZcD
+        OKuCw76S16Iohsv6kMlzQcKBhMXN85U=
+X-Google-Smtp-Source: ABdhPJxM4TdmZDJGCeZu3o4bX2/jcid6E3rTBlyeeKlcZ3F9o6XszzHtsfq7fRTAYiVk6TSn/Uvebg==
+X-Received: by 2002:a62:5ec6:0:b0:50d:a467:3cb7 with SMTP id s189-20020a625ec6000000b0050da4673cb7mr569675pfb.85.1651146953687;
+        Thu, 28 Apr 2022 04:55:53 -0700 (PDT)
+Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
+        by smtp.gmail.com with ESMTPSA id q2-20020a17090a064200b001cd498dc152sm12244744pje.2.2022.04.28.04.55.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 04:55:53 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 20:55:51 +0900
+From:   Stafford Horne <shorne@gmail.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     openrisc@lists.librecores.org, linux-kernel@vger.kernel.org,
+        Peter Maydell <peter.maydell@linaro.org>
+Subject: Re: [PATCH] openrisc: define nop command for simulator reboot
+Message-ID: <YmqAx31dtXCaNn7R@antec>
+References: <20220428111139.1330966-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220428111139.1330966-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that root group is counted into 'num_groups_with_busy_queues',
-'num_groups_with_busy_queues > 0' is always true in
-bfq_asymmetric_scenario(). Thus change the condition to '> 1'.
+On Thu, Apr 28, 2022 at 01:11:39PM +0200, Jason A. Donenfeld wrote:
+> The simulator defines `l.nop 1` for shutdown, but doesn't have anything
+> for reboot. Use 13 for this, which is currently unused, dubbed
+> `NOP_REBOOT`.
+> 
+> Cc: Stafford Horne <shorne@gmail.com>
+> Cc: Peter Maydell <peter.maydell@linaro.org>
+> Link: https://lore.kernel.org/all/YmnaDUpVI5ihgvg6@zx2c4.com/
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  arch/openrisc/kernel/process.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/arch/openrisc/kernel/process.c b/arch/openrisc/kernel/process.c
+> index 3c0c91bcdcba..4cce95fa6eb5 100644
+> --- a/arch/openrisc/kernel/process.c
+> +++ b/arch/openrisc/kernel/process.c
+> @@ -52,6 +52,8 @@ void machine_restart(char *cmd)
+>  {
+>  	do_kernel_restart(cmd);
+>  
+> +	__asm__("l.nop 13");
+> +
+>  	/* Give a grace period for failure to restart of 1s */
+>  	mdelay(1000);
+>  
+> -- 
+> 2.35.1
 
-On the other hand, this change can enable concurrent sync io if only
-one group is activated.
+This seems fair, probably it would be good to have a comment mentioninmg what
+the nop is for, fyi for context these are the nop numbers used to control
+simulations.
 
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
----
- block/bfq-iosched.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+    #define NOP_NOP          0x0000      /* Normal nop instruction */
+    #define NOP_EXIT         0x0001      /* End of simulation */
+    #define NOP_REPORT       0x0002      /* Simple report */
+    /*#define NOP_PRINTF       0x0003       Simprintf instruction (obsolete)*/
+    #define NOP_PUTC         0x0004      /* JPB: Simputc instruction */
+    #define NOP_CNT_RESET    0x0005      /* Reset statistics counters */
+    #define NOP_GET_TICKS    0x0006      /* JPB: Get # ticks running */
+    #define NOP_GET_PS       0x0007      /* JPB: Get picosecs/cycle */
+    #define NOP_TRACE_ON     0x0008      /* Turn on tracing */
+    #define NOP_TRACE_OFF    0x0009      /* Turn off tracing */
+    #define NOP_RANDOM       0x000a      /* Return 4 random bytes */
+    #define NOP_OR1KSIM      0x000b      /* Return non-zero if this is Or1ksim */
+    #define NOP_EXIT_SILENT  0x000c      /* End of simulation, quiet version */
+    /* New! */
+    #define NOP_RESET        0x000d      /* Reset the cpu */
 
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 609b4e894684..142e1ca4600f 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -812,7 +812,7 @@ bfq_pos_tree_add_move(struct bfq_data *bfqd, struct bfq_queue *bfqq)
-  * much easier to maintain the needed state:
-  * 1) all active queues have the same weight,
-  * 2) all active queues belong to the same I/O-priority class,
-- * 3) there are no active groups.
-+ * 3) there are one active group at most.
-  * In particular, the last condition is always true if hierarchical
-  * support or the cgroups interface are not enabled, thus no state
-  * needs to be maintained in this case.
-@@ -844,7 +844,7 @@ static bool bfq_asymmetric_scenario(struct bfq_data *bfqd,
- 
- 	return varied_queue_weights || multiple_classes_busy
- #ifdef CONFIG_BFQ_GROUP_IOSCHED
--	       || bfqd->num_groups_with_busy_queues > 0
-+	       || bfqd->num_groups_with_busy_queues > 1
- #endif
- 		;
- }
--- 
-2.31.1
+I will queue this once we update the spec to define some of these, I am thinking
+if qemu should allow for the shutdown to work in user mode.
+
+BTW, are you working specifically on openrisc? Or just setting up test
+environments for all architectures?
+
+Acked-by: Stafford Horne <shorne@gmail.com>
 
