@@ -2,187 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBAD1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F026C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 14:09:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348169AbiD1OKV (ORCPT
+        id S1348009AbiD1OM5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 10:10:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47806 "EHLO
+        Thu, 28 Apr 2022 10:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240550AbiD1OJ4 (ORCPT
+        with ESMTP id S230047AbiD1OM4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 10:09:56 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A8E27CDD;
-        Thu, 28 Apr 2022 07:06:41 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id z19so5640490edx.9;
-        Thu, 28 Apr 2022 07:06:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QJZCrq2E0rQnS/46bb0lykjV+BZFhQWSf3jC5XNL6+g=;
-        b=VG+XGeXwtrnao2belQIyDCpE53M+TwDLG20Z28noaE9BVO82F0ddshJZXxkTLWVum8
-         UYkJLSUkmoK4IrzEOw+SOSZ4otS6LysxF3nZlcwmAldFEA3e3GvZtwE3Gt2cRMM0bpjb
-         oBxXg38LRbYVwbCPAAXGtnh8uz9y2NJ/c471sBW6UBCQ0fmqVC/UYqiQclAFoSWe3Nin
-         8mOZNTKMqB4r3rRd3+QM5+GHIIEjJUlefvO8CA/DNF+CaKHnjjNNjE8fYLj4N+Ul1gwL
-         +qF5EOnp6Gx6L07d87O6MSNBxEmv7pl6ei+OsMOCo47eoL+0ryvZd5eXqCFWWTTs9LF4
-         incg==
+        Thu, 28 Apr 2022 10:12:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70EEF27CCD
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:09:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651154981;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VU/g/6adn+3HZiPBUlaLXpCnn/ytwolQHw+K+XFjUgY=;
+        b=BZ4UWh0oGkwUTHDk6qcj1TJFqnhNmK2BhlGxgnTi36xVLg1YCxB7l1ZMD3zlaiu+1TK/Vw
+        V63osOU3X20cAxlhDpMlwfscoEHvJ9rIgBeXl6kXGyjzRt2UVWaFr4hFcNlNvQssHwBNgb
+        a/+ZL/cz13EiZti9HZSe9m4uHoPvlUg=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-124-5eaKoKVXPliRlAHaUGjScw-1; Thu, 28 Apr 2022 10:09:40 -0400
+X-MC-Unique: 5eaKoKVXPliRlAHaUGjScw-1
+Received: by mail-wm1-f69.google.com with SMTP id l33-20020a05600c1d2100b00394059572d6so1537211wms.8
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 07:09:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QJZCrq2E0rQnS/46bb0lykjV+BZFhQWSf3jC5XNL6+g=;
-        b=jNKAqjlcB3NsFyjUq50ElN4BkPODUl3wTVMMqiOMb0GLY8bBaXzDNnQhRn9uoIgGYl
-         iI9AxZEnoQGfYtFj9lXgGvrG7w5cswY1dJS9wN1DUu6EmWf2dczpwYiXggFufPftWRTA
-         Q4xPeHpQhUH0kyifPjTq0MGQw28TOwOTLlAbS0JmzE/3DAd50Cs7p4oxSuJ55sEq1Yh+
-         xxOt6ekAzO/shh52RPNzKhREMXhdV8wvNQP/Kp5X/krle1VLKmnkdXfVlmsoLs4Z5aI5
-         R+1YxFDHOfwCVE8D6CYfUz0GKL58NGu0ayK8ECVNYBBUSAhu4gc9b7w/Xkf2OnDp9vpI
-         nH1A==
-X-Gm-Message-State: AOAM5326WsQIfEbTX6McCD247E09PInlroHfzqZpwCgs3qL6Sjz6xEFH
-        /B/hWpPtTnD4qHN88xGejAk=
-X-Google-Smtp-Source: ABdhPJxTCl1+kKIl67NUFmKgRu5wamXoHx5lN8bjrDkSjVSzRa95wx4v0+F1jUFAHdsDFJfH4vzhjQ==
-X-Received: by 2002:a05:6402:35d6:b0:425:f2c5:ba0d with SMTP id z22-20020a05640235d600b00425f2c5ba0dmr19355166edc.369.1651154799729;
-        Thu, 28 Apr 2022 07:06:39 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id h7-20020a1709060f4700b006e8d0746969sm2158ejj.222.2022.04.28.07.06.37
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=VU/g/6adn+3HZiPBUlaLXpCnn/ytwolQHw+K+XFjUgY=;
+        b=RIFURED9pSHvgVFrNioEkAoUhiPKWZZb6A20fsANoMfoMv7ZaMoP/v8QqxwbpGIRg7
+         MCzpvILc3syOE/gL8dSJBAtpk2i0FzhawPt6119tYkQdev0vLq1WpIgplYxqta0eXyKK
+         CfyylEuSVXsSdY5uSR9TfWS7EW4rZMC7w5td5rAybyiF6gUyun2+MLg9qsP+j08/h84f
+         cZvREnzEgu4A+lAJUzn2czL0dWzpZbXRVBEzEnberIiqqQ5Jbkxl7QRxnFEQkHiiMM3S
+         NPnvLlVGSsxrLLG7NxFMgYZYQjndrN+um24t1IvzKuFWeJFyd2B7YODnpEhCCi33U001
+         JV7A==
+X-Gm-Message-State: AOAM533+okPNr4kSyFied8nVH5EQpg4S8FRzVDToNPbatgmxRs709uAv
+        wtHqpfBfdXP0J3mvo9VpmUe+fnH5LUrSb22ARkeUul2ZWzk7pAAasdrzSOKjO3SnzoNUq/UcJvI
+        KBhAgsd+00lOV8kR/YB2j/zaF
+X-Received: by 2002:adf:ee4c:0:b0:20a:e668:b939 with SMTP id w12-20020adfee4c000000b0020ae668b939mr10770717wro.523.1651154978799;
+        Thu, 28 Apr 2022 07:09:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwYEXrCDh17OVyVJrMHReMDh2nx5QQA/qJmvMcJgS06lVB9a+h1o00gnmRaDcGh7EL9Au5MCg==
+X-Received: by 2002:adf:ee4c:0:b0:20a:e668:b939 with SMTP id w12-20020adfee4c000000b0020ae668b939mr10770703wro.523.1651154978621;
+        Thu, 28 Apr 2022 07:09:38 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-96-13.dyn.eolo.it. [146.241.96.13])
+        by smtp.gmail.com with ESMTPSA id v6-20020adfa1c6000000b0020add25571bsm9855395wrv.42.2022.04.28.07.09.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 07:06:38 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 16:06:35 +0200
-From:   Jiri Olsa <olsajiri@gmail.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Christoph Hellwig <hch@lst.de>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCHv3 bpf-next 1/5] kallsyms: Fully export
- kallsyms_on_each_symbol function
-Message-ID: <Ymqfa6rooEIm4c/f@krava>
-References: <20220427210345.455611-1-jolsa@kernel.org>
- <20220427210345.455611-2-jolsa@kernel.org>
+        Thu, 28 Apr 2022 07:09:38 -0700 (PDT)
+Message-ID: <229c169ccf8fdbf7fc826901982f1f15e86f3d17.camel@redhat.com>
+Subject: Re: [PATCH net-next 02/11] udp/ipv6: refactor udpv6_sendmsg udplite
+ checks
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Pavel Begunkov <asml.silence@gmail.com>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 28 Apr 2022 16:09:37 +0200
+In-Reply-To: <33dfdf2119c86e35062f783d405bedec2fde2b4c.1651071843.git.asml.silence@gmail.com>
+References: <cover.1651071843.git.asml.silence@gmail.com>
+         <33dfdf2119c86e35062f783d405bedec2fde2b4c.1651071843.git.asml.silence@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220427210345.455611-2-jolsa@kernel.org>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 11:03:41PM +0200, Jiri Olsa wrote:
-> Fully exporting kallsyms_on_each_symbol function, so it can be used
-> in following changes.
-> 
-> Rather than adding another ifdef option let's export the function
-> completely (when CONFIG_KALLSYMS option is defined).
-> 
-> Cc: Christoph Hellwig <hch@lst.de>
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  include/linux/kallsyms.h | 5 +++++
->  kernel/kallsyms.c        | 2 --
->  2 files changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
-> index ce1bd2fbf23e..d423f3cffa6d 100644
-> --- a/include/linux/kallsyms.h
-> +++ b/include/linux/kallsyms.h
-> @@ -163,6 +163,11 @@ static inline bool kallsyms_show_value(const struct cred *cred)
->  	return false;
->  }
->  
-> +static inline int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *, unsigned long),
-> +					  void *data)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
->  #endif /*CONFIG_KALLSYMS*/
->  
->  static inline void print_ip_sym(const char *loglvl, unsigned long ip)
-> diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-> index 79f2eb617a62..fdfd308bebc4 100644
-> --- a/kernel/kallsyms.c
-> +++ b/kernel/kallsyms.c
-> @@ -228,7 +228,6 @@ unsigned long kallsyms_lookup_name(const char *name)
->  	return module_kallsyms_lookup_name(name);
->  }
->  
-> -#ifdef CONFIG_LIVEPATCH
->  /*
->   * Iterate over all symbols in vmlinux.  For symbols from modules use
->   * module_kallsyms_on_each_symbol instead.
-> @@ -251,7 +250,6 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
->  	}
->  	return 0;
->  }
-> -#endif /* CONFIG_LIVEPATCH */
->  
->  static unsigned long get_symbol_pos(unsigned long addr,
->  				    unsigned long *symbolsize,
-> -- 
-> 2.35.1
-> 
+On Thu, 2022-04-28 at 11:56 +0100, Pavel Begunkov wrote:
+> Don't save a IS_UDPLITE() result in advance but do when it's really
+> needed, so it doesn't store/load it from the stack. Same for resolving
+> the getfrag callback pointer.
 
-got this one wrong, it needs one more change
-I'll send new version
+It's quite unclear to me if this change brings really any performance
+benefit. The end results will depend a lot on the optimization
+performed by the compiler, and IMHO the code looks better before this
+modifications.
 
-jirka
+Paolo
 
-
----
-diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
-index ce1bd2fbf23e..89f063651192 100644
---- a/include/linux/kallsyms.h
-+++ b/include/linux/kallsyms.h
-@@ -65,11 +65,11 @@ static inline void *dereference_symbol_descriptor(void *ptr)
- 	return ptr;
- }
- 
-+#ifdef CONFIG_KALLSYMS
- int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
- 				      unsigned long),
- 			    void *data);
- 
--#ifdef CONFIG_KALLSYMS
- /* Lookup the address for a symbol. Returns 0 if not found. */
- unsigned long kallsyms_lookup_name(const char *name);
- 
-@@ -163,6 +163,11 @@ static inline bool kallsyms_show_value(const struct cred *cred)
- 	return false;
- }
- 
-+static inline int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *, unsigned long),
-+					  void *data)
-+{
-+	return -EOPNOTSUPP;
-+}
- #endif /*CONFIG_KALLSYMS*/
- 
- static inline void print_ip_sym(const char *loglvl, unsigned long ip)
-diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-index 79f2eb617a62..fdfd308bebc4 100644
---- a/kernel/kallsyms.c
-+++ b/kernel/kallsyms.c
-@@ -228,7 +228,6 @@ unsigned long kallsyms_lookup_name(const char *name)
- 	return module_kallsyms_lookup_name(name);
- }
- 
--#ifdef CONFIG_LIVEPATCH
- /*
-  * Iterate over all symbols in vmlinux.  For symbols from modules use
-  * module_kallsyms_on_each_symbol instead.
-@@ -251,7 +250,6 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
- 	}
- 	return 0;
- }
--#endif /* CONFIG_LIVEPATCH */
- 
- static unsigned long get_symbol_pos(unsigned long addr,
- 				    unsigned long *symbolsize,
