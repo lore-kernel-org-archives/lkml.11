@@ -2,161 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B4F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 01:07:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D2A9C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 01:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231425AbiD1BK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 21:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51996 "EHLO
+        id S238379AbiD1BLe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 21:11:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229887AbiD1BKz (ORCPT
+        with ESMTP id S229887AbiD1BLb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 21:10:55 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1A76A064;
-        Wed, 27 Apr 2022 18:07:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651108062; x=1682644062;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=2gBxdgt48nj77jzRla0ic/dl45U8oWm98zru5apAGlA=;
-  b=jV3o/oRDzfSVeSwkYHfKYXOC9Ta1Zi97+hTCtD4vgpNekXxYmA06kli5
-   Te+h4hsawr+M0waL160hOZ5HSl/5aplTJcjhHqyJ/7q6aNn0ytVMkYyFM
-   C1hxyH2cIen6sTJq2eDjMNTiAjlCAqeRsJMecpFLZjbjjHboDviqgxvR8
-   5YMjW+XPi19bGGEJONse5rDxpxj58J3mJR8j+qN8Xocv62PgeFoSjbde8
-   Ia9pX0SnbNK7gQgaZL44scHaynW7VINFfmKrsGqVlw17+nF10fsXU/RMG
-   TYVZ9Hxdted6U32CGqMtwyOdEURNhh6ElzlzXR89uZQA+YO/ETLR9B1CG
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="253503506"
-X-IronPort-AV: E=Sophos;i="5.90,294,1643702400"; 
-   d="scan'208";a="253503506"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 18:07:42 -0700
-X-IronPort-AV: E=Sophos;i="5.90,294,1643702400"; 
-   d="scan'208";a="513988230"
-Received: from lcdaughe-mobl1.amr.corp.intel.com (HELO [10.212.72.252]) ([10.212.72.252])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 18:07:41 -0700
-Message-ID: <1624e839-81e5-7bc7-533b-c5c838d35f47@intel.com>
-Date:   Wed, 27 Apr 2022 18:07:57 -0700
+        Wed, 27 Apr 2022 21:11:31 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F020772457;
+        Wed, 27 Apr 2022 18:08:17 -0700 (PDT)
+Received: from kwepemi100025.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KpcnV2knLzCs7X;
+        Thu, 28 Apr 2022 09:03:42 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100025.china.huawei.com (7.221.188.158) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 28 Apr 2022 09:08:15 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 28 Apr 2022 09:08:14 +0800
+Subject: Re: [PATCH -next v3 1/3] block, bfq: record how many queues are busy
+ in bfq_group
+To:     Jan Kara <jack@suse.cz>
+CC:     <tj@kernel.org>, <axboe@kernel.dk>, <paolo.valente@linaro.org>,
+        <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+References: <20220427124722.48465-1-yukuai3@huawei.com>
+ <20220427124722.48465-2-yukuai3@huawei.com>
+ <20220427125251.yl7ff4ti33w6ktrf@quack3.lan>
+From:   "yukuai (C)" <yukuai3@huawei.com>
+Message-ID: <4c783fa9-f01b-1f9e-9bcb-0e26431d0d24@huawei.com>
+Date:   Thu, 28 Apr 2022 09:08:14 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 10/21] x86/virt/tdx: Add placeholder to coveret all
- system RAM as TDX memory
-Content-Language: en-US
-To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
-        tony.luck@intel.com, rafael.j.wysocki@intel.com,
-        reinette.chatre@intel.com, dan.j.williams@intel.com,
-        peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com
-References: <cover.1649219184.git.kai.huang@intel.com>
- <6230ef28be8c360ab326c8f592acf1964ac065c1.1649219184.git.kai.huang@intel.com>
- <d69c08da-80fa-2001-bbe8-8c45552e74ae@intel.com>
- <228cfa7e5326fa378c1dde2b5e9022146f97b706.camel@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <228cfa7e5326fa378c1dde2b5e9022146f97b706.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20220427125251.yl7ff4ti33w6ktrf@quack3.lan>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/27/22 17:53, Kai Huang wrote:
-> On Wed, 2022-04-27 at 15:24 -0700, Dave Hansen wrote:
->> On 4/5/22 21:49, Kai Huang wrote:
->>> TDX provides increased levels of memory confidentiality and integrity.
->>> This requires special hardware support for features like memory
->>> encryption and storage of memory integrity checksums.  Not all memory
->>> satisfies these requirements.
->>>
->>> As a result, TDX introduced the concept of a "Convertible Memory Region"
->>> (CMR).  During boot, the firmware builds a list of all of the memory
->>> ranges which can provide the TDX security guarantees.  The list of these
->>> ranges, along with TDX module information, is available to the kernel by
->>> querying the TDX module.
->>>
->>> In order to provide crypto protection to TD guests, the TDX architecture
+ÔÚ 2022/04/27 20:52, Jan Kara Ð´µÀ:
+> On Wed 27-04-22 20:47:20, Yu Kuai wrote:
+>> Prepare to refactor the counting of 'num_groups_with_pending_reqs'.
 >>
->> There's that "crypto protection" thing again.  I'm not really a fan of
->> the changes made to this changelog since I wrote it. :)
-> 
-> Sorry about that.  I'll remove "In order to provide crypto protection to TD
-> guests".
-
-Seriously, though.  I took the effort to write these changelogs for you.
- They were fine.  I'm not stoked about needing to proofread them again.
-
->>> also needs additional metadata to record things like which TD guest
->>> "owns" a given page of memory.  This metadata essentially serves as the
->>> 'struct page' for the TDX module.  The space for this metadata is not
->>> reserved by the hardware upfront and must be allocated by the kernel
+>> Add a counter 'busy_queues' in bfq_group, and update it in
+>> bfq_add/del_bfqq_busy().
 >>
->> 			    ^ "up front"
+>> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 > 
-> Thanks will change to "up front".
+> ...
 > 
-> Btw, the gmail grammar check gives me a red line if I use "up front", but it
-> doesn't complain "upfront".
-
-I'm pretty sure it's wrong.  "up front" is an adverb that applies to
-"reserved".  "Upfront" is an adjective and not how you used it in that
-sentence.
-
->>> +	 * allocated individually within construct_tdmrs() to meet
->>> +	 * this requirement.
->>> +	 */
->>> +	tdmr_array = kcalloc(tdx_sysinfo.max_tdmrs, sizeof(struct tdmr_info *),
->>> +			GFP_KERNEL);
->>
->> Where, exactly is that alignment provided?  A 'struct tdmr_info *' is 8
->> bytes so a tdx_sysinfo.max_tdmrs=8 kcalloc() would only guarantee
->> 64-byte alignment.
+>> diff --git a/block/bfq-wf2q.c b/block/bfq-wf2q.c
+>> index f8eb340381cf..53826797430f 100644
+>> --- a/block/bfq-wf2q.c
+>> +++ b/block/bfq-wf2q.c
+>> @@ -218,6 +218,14 @@ static bool bfq_no_longer_next_in_service(struct bfq_entity *entity)
+>>   	return false;
+>>   }
+>>   
+>> +static void bfq_update_busy_queues(struct bfq_queue *bfqq, bool is_add)
+>> +{
+>> +	if (is_add)
+>> +		bfqq_group(bfqq)->busy_queues++;
+>> +	else
+>> +		bfqq_group(bfqq)->busy_queues--;
+>> +}
+>> +
+>>   #else /* CONFIG_BFQ_GROUP_IOSCHED */
 > 
-> The entries in the array only contain a pointer to TDMR_INFO.  The actual
-> TDMR_INFO is allocated separately. The array itself is never used by TDX
-> hardware so it doesn't matter.  We just need to guarantee each TDMR_INFO is
-> 512B-byte aligned.
+> I think the bool argument here unnecessarily hurts readability (it's
+> difficult to see what the argument means without looking into the
+> implementation). I'd rather create two functions bfq_{inc,dec}_busy_queues()
+> or if you really insist on a single function, we can have
+> bfq_add_busy_queues() and have 'int' argument that will be +1 or -1.
 
-The comment was clear as mud about this.  If you're going to talk about
-alignment, then do it near the allocation that guarantees the alignment,
-not in some other function near *ANOTHER* allocation.
-
-Also, considering that you're about to go allocate potentially gigabytes
-of physically contiguous memory, it seems laughable that you'd go to any
-trouble at all to allocate an array of pointers here.  Why not just
-
-	kcalloc(tdx_sysinfo.max_tdmrs, sizeof(struct tmdr_info), ...);
-
-Or, heck, just vmalloc() the dang thing.  Why even bother with the array
-of pointers?
-
-
->>> +	if (!tdmr_array) {
->>> +		ret = -ENOMEM;
->>> +		goto out;
->>> +	}
->>> +
->>> +	/* Construct TDMRs to build TDX memory */
->>> +	ret = construct_tdmrs(tdmr_array, &tdmr_num);
->>> +	if (ret)
->>> +		goto out_free_tdmrs;
->>> +
->>>  	/*
->>>  	 * Return -EFAULT until all steps of TDX module
->>>  	 * initialization are done.
->>>  	 */
->>>  	ret = -EFAULT;
->>
->> There's the -EFAULT again.  I'd replace these with a better error code.
+Thanks for the suggestion, I'll create two functions in next iteration.
 > 
-> I couldn't think out a better error code.  -EINVAL looks doesn't suit.  -EAGAIN
-> also doesn't make sense for now since we always shutdown the TDX module in case
-> of any error so caller should never retry.  I think we need some error code to
-> tell "the job isn't done yet".  Perhaps -EBUSY?
-
-Is this going to retry if it sees -EFAULT or -EBUSY?
+> 								Honza
+> 
