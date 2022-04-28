@@ -2,56 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E98C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C64C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:53:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343555AbiD1H4s (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:56:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36384 "EHLO
+        id S245677AbiD1H4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 03:56:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343529AbiD1H4o (ORCPT
+        with ESMTP id S1343517AbiD1H4n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:56:44 -0400
+        Thu, 28 Apr 2022 03:56:43 -0400
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DD85F256;
-        Thu, 28 Apr 2022 00:53:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B5B5F257;
+        Thu, 28 Apr 2022 00:53:28 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 410E81F88C;
-        Thu, 28 Apr 2022 07:53:28 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 6F77A1F88A;
+        Thu, 28 Apr 2022 07:53:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1651132408; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1651132407; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=wQy1x+fRNHgv0+hbA7kZO4avv6jlEcwjeAC24DRrSzI=;
-        b=aT2gbQ4cLusb6bFR/NVvfh2fUPPiBfScImg4BQauGsfXBe4tL9IvgxoXAd1IB/RhKzgOdZ
-        sJJ8KvFn5k04VCyST136HD4Mo7vqC1tdff9LRZ+bWfwxN0JB29OJLWU0Fim4lB8nn62eQK
-        x71dMrdYjnsr0/Cra1B4XnCmpFJ8P8E=
+        bh=FZ3HQWGQIijrKpRTy/DK1bE6hLtaRKbTQP99RtUeXZU=;
+        b=ECk+vYsxELyggamzu+fuy1Zg+vf3nxF8Xo8jfyaBEZ5MSiWoM3kjkusDS3n/hYiRHbrfRf
+        Nf3kM6vz9MrZAUvcswEVd/h4c+g3zQxeLSzcaiBTOfK5cX0KozAVYCpMadi+hLPF/edAtj
+        bo9+5HS5avOOL7Uemt9gJLBheTHiTYk=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0412813AF8;
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3CDA913AF8;
         Thu, 28 Apr 2022 07:53:27 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id uGFaO/dHamIoHAAAMHmgww
+        id aAN4DfdHamIoHAAAMHmgww
         (envelope-from <jgross@suse.com>); Thu, 28 Apr 2022 07:53:27 +0000
 From:   Juergen Gross <jgross@suse.com>
 To:     xen-devel@lists.xenproject.org, linux-scsi@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Juergen Gross <jgross@suse.com>,
         Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH v2 4/4] xen/scsifront: harden driver against malicious backend
-Date:   Thu, 28 Apr 2022 09:53:23 +0200
-Message-Id: <20220428075323.12853-5-jgross@suse.com>
+        Stefano Stabellini <sstabellini@kernel.org>
+Subject: [PATCH v2 1/4] xen: update vscsiif.h
+Date:   Thu, 28 Apr 2022 09:53:20 +0200
+Message-Id: <20220428075323.12853-2-jgross@suse.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220428075323.12853-1-jgross@suse.com>
 References: <20220428075323.12853-1-jgross@suse.com>
@@ -61,290 +58,197 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of relying on a well behaved PV scsi backend verify all meta
-data received from the backend and avoid multiple reads of the same
-data from the shared ring page.
-
-In case any illegal data from the backend is detected switch the
-PV device to a new "error" state and deactivate it for further use.
-
-Use the "lateeoi" variant for the event channel in order to avoid
-event storms blocking the guest.
+Update include/xen/interface/io/vscsiif.h to its newest version.
 
 Signed-off-by: Juergen Gross <jgross@suse.com>
 ---
-V2:
-- only remove spurious flag from eoiflag (Boris Ostrovsky)
----
- drivers/scsi/xen-scsifront.c | 104 +++++++++++++++++++++++++----------
- 1 file changed, 76 insertions(+), 28 deletions(-)
+ include/xen/interface/io/vscsiif.h | 133 ++++++++++++++++++++++++++++-
+ 1 file changed, 129 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/xen-scsifront.c b/drivers/scsi/xen-scsifront.c
-index 8511bfc62963..56173beecbc6 100644
---- a/drivers/scsi/xen-scsifront.c
-+++ b/drivers/scsi/xen-scsifront.c
-@@ -83,6 +83,8 @@ struct vscsifrnt_shadow {
- 	uint16_t rqid;
- 	uint16_t ref_rqid;
+diff --git a/include/xen/interface/io/vscsiif.h b/include/xen/interface/io/vscsiif.h
+index 1f6047d3de44..7ea4dc9611c4 100644
+--- a/include/xen/interface/io/vscsiif.h
++++ b/include/xen/interface/io/vscsiif.h
+@@ -43,7 +43,7 @@
+  *
+  *      A string specifying the backend device: either a 4-tuple "h:c:t:l"
+  *      (host, controller, target, lun, all integers), or a WWN (e.g.
+- *      "naa.60014054ac780582").
++ *      "naa.60014054ac780582:0").
+  *
+  * v-dev
+  *      Values:         string
+@@ -87,6 +87,75 @@
+  *      response structures.
+  */
  
-+	bool inflight;
++/*
++ * Xenstore format in practice
++ * ===========================
++ *
++ * The backend driver uses a single_host:many_devices notation to manage domU
++ * devices. Everything is stored in /local/domain/<backend_domid>/backend/vscsi/.
++ * The xenstore layout looks like this (dom0 is assumed to be the backend_domid):
++ *
++ *     <domid>/<vhost>/feature-host = "0"
++ *     <domid>/<vhost>/frontend = "/local/domain/<domid>/device/vscsi/0"
++ *     <domid>/<vhost>/frontend-id = "<domid>"
++ *     <domid>/<vhost>/online = "1"
++ *     <domid>/<vhost>/state = "4"
++ *     <domid>/<vhost>/vscsi-devs/dev-0/p-dev = "8:0:2:1" or "naa.wwn:lun"
++ *     <domid>/<vhost>/vscsi-devs/dev-0/state = "4"
++ *     <domid>/<vhost>/vscsi-devs/dev-0/v-dev = "0:0:0:0"
++ *     <domid>/<vhost>/vscsi-devs/dev-1/p-dev = "8:0:2:2"
++ *     <domid>/<vhost>/vscsi-devs/dev-1/state = "4"
++ *     <domid>/<vhost>/vscsi-devs/dev-1/v-dev = "0:0:1:0"
++ *
++ * The frontend driver maintains its state in
++ * /local/domain/<domid>/device/vscsi/.
++ *
++ *     <vhost>/backend = "/local/domain/0/backend/vscsi/<domid>/<vhost>"
++ *     <vhost>/backend-id = "0"
++ *     <vhost>/event-channel = "20"
++ *     <vhost>/ring-ref = "43"
++ *     <vhost>/state = "4"
++ *     <vhost>/vscsi-devs/dev-0/state = "4"
++ *     <vhost>/vscsi-devs/dev-1/state = "4"
++ *
++ * In addition to the entries for backend and frontend these flags are stored
++ * for the toolstack:
++ *
++ *     <domid>/<vhost>/vscsi-devs/dev-1/p-devname = "/dev/$device"
++ *     <domid>/<vhost>/libxl_ctrl_index = "0"
++ *
++ *
++ * Backend/frontend protocol
++ * =========================
++ *
++ * To create a vhost along with a device:
++ *     <domid>/<vhost>/feature-host = "0"
++ *     <domid>/<vhost>/frontend = "/local/domain/<domid>/device/vscsi/0"
++ *     <domid>/<vhost>/frontend-id = "<domid>"
++ *     <domid>/<vhost>/online = "1"
++ *     <domid>/<vhost>/state = "1"
++ *     <domid>/<vhost>/vscsi-devs/dev-0/p-dev = "8:0:2:1"
++ *     <domid>/<vhost>/vscsi-devs/dev-0/state = "1"
++ *     <domid>/<vhost>/vscsi-devs/dev-0/v-dev = "0:0:0:0"
++ * Wait for <domid>/<vhost>/state + <domid>/<vhost>/vscsi-devs/dev-0/state become 4
++ *
++ * To add another device to a vhost:
++ *     <domid>/<vhost>/state = "7"
++ *     <domid>/<vhost>/vscsi-devs/dev-1/p-dev = "8:0:2:2"
++ *     <domid>/<vhost>/vscsi-devs/dev-1/state = "1"
++ *     <domid>/<vhost>/vscsi-devs/dev-1/v-dev = "0:0:1:0"
++ * Wait for <domid>/<vhost>/state + <domid>/<vhost>/vscsi-devs/dev-1/state become 4
++ *
++ * To remove a device from a vhost:
++ *     <domid>/<vhost>/state = "7"
++ *     <domid>/<vhost>/vscsi-devs/dev-1/state = "5"
++ * Wait for <domid>/<vhost>/state to become 4
++ * Wait for <domid>/<vhost>/vscsi-devs/dev-1/state become 6
++ * Remove <domid>/<vhost>/vscsi-devs/dev-1/{state,p-dev,v-dev,p-devname}
++ * Remove <domid>/<vhost>/vscsi-devs/dev-1/
++ *
++ */
 +
- 	unsigned int nr_grants;		/* number of grants in gref[] */
- 	struct scsiif_request_segment *sg;	/* scatter/gather elements */
- 	struct scsiif_request_segment seg[VSCSIIF_SG_TABLESIZE];
-@@ -104,7 +106,11 @@ struct vscsifrnt_info {
- 	struct xenbus_device *dev;
+ /* Requests from the frontend to the backend */
  
- 	struct Scsi_Host *host;
--	int host_active;
-+	enum {
-+		STATE_INACTIVE,
-+		STATE_ACTIVE,
-+		STATE_ERROR
-+	}  host_active;
+ /*
+@@ -117,7 +186,8 @@
+  * (plus the set VSCSIIF_SG_GRANT bit), the number of scsiif_request_segment
+  * elements referencing the target data buffers is calculated from the lengths
+  * of the seg[] elements (the sum of all valid seg[].length divided by the
+- * size of one scsiif_request_segment structure).
++ * size of one scsiif_request_segment structure). The frontend may use a mix of
++ * direct and indirect requests.
+  */
+ #define VSCSIIF_ACT_SCSI_CDB		1
  
- 	unsigned int evtchn;
- 	unsigned int irq;
-@@ -217,6 +223,8 @@ static int scsifront_do_request(struct vscsifrnt_info *info,
- 	for (i = 0; i < (shadow->nr_segments & ~VSCSIIF_SG_GRANT); i++)
- 		ring_req->seg[i] = shadow->seg[i];
+@@ -154,12 +224,14 @@
  
-+	shadow->inflight = true;
+ /*
+  * based on Linux kernel 2.6.18, still valid
++ *
+  * Changing these values requires support of multiple protocols via the rings
+  * as "old clients" will blindly use these values and the resulting structure
+  * sizes.
+  */
+ #define VSCSIIF_MAX_COMMAND_SIZE	16
+ #define VSCSIIF_SENSE_BUFFERSIZE	96
++#define VSCSIIF_PAGE_SIZE		4096
+ 
+ struct scsiif_request_segment {
+ 	grant_ref_t gref;
+@@ -167,7 +239,8 @@ struct scsiif_request_segment {
+ 	uint16_t length;
+ };
+ 
+-#define VSCSIIF_SG_PER_PAGE (PAGE_SIZE / sizeof(struct scsiif_request_segment))
++#define VSCSIIF_SG_PER_PAGE	(VSCSIIF_PAGE_SIZE / \
++				 sizeof(struct scsiif_request_segment))
+ 
+ /* Size of one request is 252 bytes */
+ struct vscsiif_request {
+@@ -207,6 +280,58 @@ struct vscsiif_response {
+ 	uint32_t reserved[36];
+ };
+ 
++/* SCSI I/O status from vscsiif_response->rslt */
++#define XEN_VSCSIIF_RSLT_STATUS(x)  ((x) & 0x00ff)
 +
- 	RING_PUSH_REQUESTS_AND_CHECK_NOTIFY(ring, notify);
- 	if (notify)
- 		notify_remote_via_irq(info->irq);
-@@ -224,6 +232,13 @@ static int scsifront_do_request(struct vscsifrnt_info *info,
- 	return 0;
- }
- 
-+static void scsifront_set_error(struct vscsifrnt_info *info, const char *msg)
-+{
-+	shost_printk(KERN_ERR, info->host, KBUILD_MODNAME "%s\n"
-+		     "Disabling device for further use\n", msg);
-+	info->host_active = STATE_ERROR;
-+}
++/* Host I/O status from vscsiif_response->rslt */
++#define XEN_VSCSIIF_RSLT_HOST(x)    (((x) & 0x00ff0000) >> 16)
++#define XEN_VSCSIIF_RSLT_HOST_OK                   0
++/* Couldn't connect before timeout */
++#define XEN_VSCSIIF_RSLT_HOST_NO_CONNECT           1
++/* Bus busy through timeout */
++#define XEN_VSCSIIF_RSLT_HOST_BUS_BUSY             2
++/* Timed out for other reason */
++#define XEN_VSCSIIF_RSLT_HOST_TIME_OUT             3
++/* Bad target */
++#define XEN_VSCSIIF_RSLT_HOST_BAD_TARGET           4
++/* Abort for some other reason */
++#define XEN_VSCSIIF_RSLT_HOST_ABORT                5
++/* Parity error */
++#define XEN_VSCSIIF_RSLT_HOST_PARITY               6
++/* Internal error */
++#define XEN_VSCSIIF_RSLT_HOST_ERROR                7
++/* Reset by somebody */
++#define XEN_VSCSIIF_RSLT_HOST_RESET                8
++/* Unexpected interrupt */
++#define XEN_VSCSIIF_RSLT_HOST_BAD_INTR             9
++/* Force command past mid-layer */
++#define XEN_VSCSIIF_RSLT_HOST_PASSTHROUGH         10
++/* Retry requested */
++#define XEN_VSCSIIF_RSLT_HOST_SOFT_ERROR          11
++/* Hidden retry requested */
++#define XEN_VSCSIIF_RSLT_HOST_IMM_RETRY           12
++/* Requeue command requested */
++#define XEN_VSCSIIF_RSLT_HOST_REQUEUE             13
++/* Transport error disrupted I/O */
++#define XEN_VSCSIIF_RSLT_HOST_TRANSPORT_DISRUPTED 14
++/* Transport class fastfailed */
++#define XEN_VSCSIIF_RSLT_HOST_TRANSPORT_FAILFAST  15
++/* Permanent target failure */
++#define XEN_VSCSIIF_RSLT_HOST_TARGET_FAILURE      16
++/* Permanent nexus failure on path */
++#define XEN_VSCSIIF_RSLT_HOST_NEXUS_FAILURE       17
++/* Space allocation on device failed */
++#define XEN_VSCSIIF_RSLT_HOST_ALLOC_FAILURE       18
++/* Medium error */
++#define XEN_VSCSIIF_RSLT_HOST_MEDIUM_ERROR        19
++/* Transport marginal errors */
++#define XEN_VSCSIIF_RSLT_HOST_TRANSPORT_MARGINAL  20
 +
- static void scsifront_gnttab_done(struct vscsifrnt_info *info,
- 				  struct vscsifrnt_shadow *shadow)
- {
-@@ -234,9 +249,8 @@ static void scsifront_gnttab_done(struct vscsifrnt_info *info,
- 
- 	for (i = 0; i < shadow->nr_grants; i++) {
- 		if (unlikely(!gnttab_try_end_foreign_access(shadow->gref[i]))) {
--			shost_printk(KERN_ALERT, info->host, KBUILD_MODNAME
--				     "grant still in use by backend\n");
--			BUG();
-+			scsifront_set_error(info, "grant still in use by backend");
-+			return;
- 		}
- 	}
- 
-@@ -308,6 +322,8 @@ static void scsifront_cdb_cmd_done(struct vscsifrnt_info *info,
- 	BUG_ON(sc == NULL);
- 
- 	scsifront_gnttab_done(info, shadow);
-+	if (info->host_active == STATE_ERROR)
-+		return;
- 	scsifront_put_rqid(info, id);
- 
- 	set_host_byte(sc, scsifront_host_byte(ring_rsp->rslt));
-@@ -348,9 +364,7 @@ static void scsifront_sync_cmd_done(struct vscsifrnt_info *info,
- 			scsifront_wake_up(info);
- 		return;
- 	default:
--		shost_printk(KERN_ERR, info->host, KBUILD_MODNAME
--			     "bad reset state %d, possibly leaking %u\n",
--			     shadow->rslt_reset, id);
-+		scsifront_set_error(info, "bad reset state");
- 		break;
- 	}
- 	spin_unlock_irqrestore(&info->shadow_lock, flags);
-@@ -361,28 +375,41 @@ static void scsifront_sync_cmd_done(struct vscsifrnt_info *info,
- static void scsifront_do_response(struct vscsifrnt_info *info,
- 				  struct vscsiif_response *ring_rsp)
- {
--	if (WARN(ring_rsp->rqid >= VSCSIIF_MAX_REQS ||
--		 test_bit(ring_rsp->rqid, info->shadow_free_bitmap),
--		 "illegal rqid %u returned by backend!\n", ring_rsp->rqid))
-+	struct vscsifrnt_shadow *shadow;
++/* Result values of reset operations */
++#define XEN_VSCSIIF_RSLT_RESET_SUCCESS  0x2002
++#define XEN_VSCSIIF_RSLT_RESET_FAILED   0x2003
 +
-+	if (ring_rsp->rqid >= VSCSIIF_MAX_REQS ||
-+	    !info->shadow[ring_rsp->rqid]->inflight) {
-+		scsifront_set_error(info, "illegal rqid returned by backend!");
- 		return;
-+	}
-+	shadow = info->shadow[ring_rsp->rqid];
-+	shadow->inflight = false;
+ DEFINE_RING_TYPES(vscsiif, struct vscsiif_request, struct vscsiif_response);
  
--	if (info->shadow[ring_rsp->rqid]->act == VSCSIIF_ACT_SCSI_CDB)
-+	if (shadow->act == VSCSIIF_ACT_SCSI_CDB)
- 		scsifront_cdb_cmd_done(info, ring_rsp);
- 	else
- 		scsifront_sync_cmd_done(info, ring_rsp);
- }
- 
--static int scsifront_ring_drain(struct vscsifrnt_info *info)
-+static int scsifront_ring_drain(struct vscsifrnt_info *info,
-+				unsigned int *eoiflag)
- {
--	struct vscsiif_response *ring_rsp;
-+	struct vscsiif_response ring_rsp;
- 	RING_IDX i, rp;
- 	int more_to_do = 0;
- 
--	rp = info->ring.sring->rsp_prod;
--	rmb();	/* ordering required respective to dom0 */
-+	rp = READ_ONCE(info->ring.sring->rsp_prod);
-+	virt_rmb();	/* ordering required respective to backend */
-+	if (RING_RESPONSE_PROD_OVERFLOW(&info->ring, rp)) {
-+		scsifront_set_error(info, "illegal number of responses");
-+		return 0;
-+	}
- 	for (i = info->ring.rsp_cons; i != rp; i++) {
--		ring_rsp = RING_GET_RESPONSE(&info->ring, i);
--		scsifront_do_response(info, ring_rsp);
-+		RING_COPY_RESPONSE(&info->ring, i, &ring_rsp);
-+		scsifront_do_response(info, &ring_rsp);
-+		if (info->host_active == STATE_ERROR)
-+			return 0;
-+		*eoiflag &= ~XEN_EOI_FLAG_SPURIOUS;
- 	}
- 
- 	info->ring.rsp_cons = i;
-@@ -395,14 +422,15 @@ static int scsifront_ring_drain(struct vscsifrnt_info *info)
- 	return more_to_do;
- }
- 
--static int scsifront_cmd_done(struct vscsifrnt_info *info)
-+static int scsifront_cmd_done(struct vscsifrnt_info *info,
-+			      unsigned int *eoiflag)
- {
- 	int more_to_do;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(info->host->host_lock, flags);
- 
--	more_to_do = scsifront_ring_drain(info);
-+	more_to_do = scsifront_ring_drain(info, eoiflag);
- 
- 	info->wait_ring_available = 0;
- 
-@@ -416,20 +444,28 @@ static int scsifront_cmd_done(struct vscsifrnt_info *info)
- static irqreturn_t scsifront_irq_fn(int irq, void *dev_id)
- {
- 	struct vscsifrnt_info *info = dev_id;
-+	unsigned int eoiflag = XEN_EOI_FLAG_SPURIOUS;
+-#endif /*__XEN__PUBLIC_IO_SCSI_H__*/
 +
-+	if (info->host_active == STATE_ERROR) {
-+		xen_irq_lateeoi(irq, XEN_EOI_FLAG_SPURIOUS);
-+		return IRQ_HANDLED;
-+	}
- 
--	while (scsifront_cmd_done(info))
-+	while (scsifront_cmd_done(info, &eoiflag))
- 		/* Yield point for this unbounded loop. */
- 		cond_resched();
- 
-+	xen_irq_lateeoi(irq, eoiflag);
-+
- 	return IRQ_HANDLED;
- }
- 
- static void scsifront_finish_all(struct vscsifrnt_info *info)
- {
--	unsigned i;
-+	unsigned int i, dummy;
- 	struct vscsiif_response resp;
- 
--	scsifront_ring_drain(info);
-+	scsifront_ring_drain(info, &dummy);
- 
- 	for (i = 0; i < VSCSIIF_MAX_REQS; i++) {
- 		if (test_bit(i, info->shadow_free_bitmap))
-@@ -586,6 +622,9 @@ static int scsifront_queuecommand(struct Scsi_Host *shost,
- 	unsigned long flags;
- 	int err;
- 
-+	if (info->host_active == STATE_ERROR)
-+		return SCSI_MLQUEUE_HOST_BUSY;
-+
- 	sc->result = 0;
- 
- 	shadow->sc  = sc;
-@@ -638,6 +677,9 @@ static int scsifront_action_handler(struct scsi_cmnd *sc, uint8_t act)
- 	struct vscsifrnt_shadow *shadow, *s = scsi_cmd_priv(sc);
- 	int err = 0;
- 
-+	if (info->host_active == STATE_ERROR)
-+		return FAILED;
-+
- 	shadow = kzalloc(sizeof(*shadow), GFP_NOIO);
- 	if (!shadow)
- 		return FAILED;
-@@ -709,6 +751,9 @@ static int scsifront_sdev_configure(struct scsi_device *sdev)
- 	struct vscsifrnt_info *info = shost_priv(sdev->host);
- 	int err;
- 
-+	if (info->host_active == STATE_ERROR)
-+		return -EIO;
-+
- 	if (info && current == info->curr) {
- 		err = xenbus_printf(XBT_NIL, info->dev->nodename,
- 			      info->dev_state_path, "%d", XenbusStateConnected);
-@@ -784,7 +829,7 @@ static int scsifront_alloc_ring(struct vscsifrnt_info *info)
- 		goto free_gnttab;
- 	}
- 
--	err = bind_evtchn_to_irq(info->evtchn);
-+	err = bind_evtchn_to_irq_lateeoi(info->evtchn);
- 	if (err <= 0) {
- 		xenbus_dev_fatal(dev, err, "bind_evtchn_to_irq");
- 		goto free_gnttab;
-@@ -914,7 +959,7 @@ static int scsifront_probe(struct xenbus_device *dev,
- 		goto free_sring;
- 	}
- 	info->host = host;
--	info->host_active = 1;
-+	info->host_active = STATE_ACTIVE;
- 
- 	xenbus_switch_state(dev, XenbusStateInitialised);
- 
-@@ -982,10 +1027,10 @@ static int scsifront_remove(struct xenbus_device *dev)
- 	pr_debug("%s: %s removed\n", __func__, dev->nodename);
- 
- 	mutex_lock(&scsifront_mutex);
--	if (info->host_active) {
-+	if (info->host_active != STATE_INACTIVE) {
- 		/* Scsi_host not yet removed */
- 		scsi_remove_host(info->host);
--		info->host_active = 0;
-+		info->host_active = STATE_INACTIVE;
- 	}
- 	mutex_unlock(&scsifront_mutex);
- 
-@@ -1009,9 +1054,9 @@ static void scsifront_disconnect(struct vscsifrnt_info *info)
- 	 */
- 
- 	mutex_lock(&scsifront_mutex);
--	if (info->host_active) {
-+	if (info->host_active != STATE_INACTIVE) {
- 		scsi_remove_host(host);
--		info->host_active = 0;
-+		info->host_active = STATE_INACTIVE;
- 	}
- 	mutex_unlock(&scsifront_mutex);
- 
-@@ -1029,6 +1074,9 @@ static void scsifront_do_lun_hotplug(struct vscsifrnt_info *info, int op)
- 	unsigned int hst, chn, tgt, lun;
- 	struct scsi_device *sdev;
- 
-+	if (info->host_active == STATE_ERROR)
-+		return;
-+
- 	dir = xenbus_directory(XBT_NIL, dev->otherend, "vscsi-devs", &dir_n);
- 	if (IS_ERR(dir))
- 		return;
++#endif  /*__XEN__PUBLIC_IO_SCSI_H__*/
 -- 
 2.34.1
 
