@@ -2,253 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C7DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:35:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E8FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:35:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245456AbiD1HiM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38830 "EHLO
+        id S245471AbiD1Hil (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 03:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245434AbiD1HiC (ORCPT
+        with ESMTP id S245519AbiD1Hic (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:38:02 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11AA9BAE6;
-        Thu, 28 Apr 2022 00:34:48 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id z5-20020a17090a468500b001d2bc2743c4so3700455pjf.0;
-        Thu, 28 Apr 2022 00:34:48 -0700 (PDT)
+        Thu, 28 Apr 2022 03:38:32 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BF09D4D5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:35:10 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id j6so7747242ejc.13
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:35:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=PyeuYNXmzkjWDa6213Nn+RP5RRNEwW8v57e0cAbPzO8=;
-        b=MKqpOMM5OpNR68G0XQ6+Jg+AKi0V5VD4npSUgiyfnEm+8O+SkNjJkQaq9OUhTP+UB1
-         Jdvruq9j9LxWMB+/mfuG/qrq2EQRI8djaHKbrB6QMnIzAx+H7006ZUiWfHlGfgDXwwE7
-         bOzoMZS6UjLc7RHk6sd1pcnbQ+NlUPdGdxxNe/NnzD2GYtD6j0JWKx1P/OE2qx9TEmem
-         L1Mk88D9Slhj/RzUYmxhnlMSuuYGxAkVEIKUdC2OPCG84Xrg3mK17js61RLzSFlR0jtH
-         29vOxlYDXx+3vjV8oedAVn8LsB1Riu0/YLVfoYltMmgjPsNqPaOtcgD5cjs/LZlnFnpK
-         ZOLg==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=4JvsDqqK9ttY5rHf8XBLNsfShpWbe64Z3RuZmn+7sxo=;
+        b=CawBNzMbbClMCgqgz10dV/iGLX7SFfUaSWdYT2xbA9cRKfKmMUDlTzeMI9DnmJckip
+         oqIMfvzKOwUwmIqkLL/0klX+KJphWlq7X3YAizN+0jtp2s89SHwvW+QmUVEzyEyRvH2F
+         +aTvvb0DfReU8RfqDTHwwlfEH3ggI0Alxlugbed0DbUu4GN2uc0CeSePrY0GOw0dGnlT
+         so72UaXanc81exPXJ70dm7OMH1Smeeh9q4zFbHTGI+Z7hrCgnD+uijQ3NZzDwDe17IPs
+         xNxcslitPsTzfPVdk1iSxtKQzSDvRrZiMRSDq8Ca5FPWKsd0XfXb830/guavDSKR9i4O
+         lV+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PyeuYNXmzkjWDa6213Nn+RP5RRNEwW8v57e0cAbPzO8=;
-        b=flPfnIVC2+T8JsfErRaxU568aR/YKx4L4jBwafN/sKI31O2Kf5UQuKJs21+HVPCeAw
-         5k99VNNn1SMioaqQ1l5acnLT/y10tW/lSAqXqAlU+UGKKq5b7JcyF8E0UJhd6KZcwLOu
-         9HqNnbSv7l5bZQQpAAHXW54lRmudZAvjCdFexBkqNcq9tjtH7ltbhG5CARPfOdA1A3FH
-         6kYsyJvLfG1K4nX5Lgnb1nOmUr6KzAOVNhbSVZ34wmcSzkTNo15ydSlTNKKCn32D4Pb8
-         BiRD+ElHzFQ4MhVXNqQ7PounWPZWaKnQI+qqks6f/xP43yZUcSxy+t9uezEh0w4LnbuB
-         aOgg==
-X-Gm-Message-State: AOAM530rRFD/T9l51Z1F0WqB3tZQStiTliMx3N4GWk14TlB4dHkybnCk
-        SbaOPIk9Tta3JybUjm+3p5Q=
-X-Google-Smtp-Source: ABdhPJxOk3oChZeXXTKxJEL/zK2Yj1xBMf2uG+U1f11+mR2yVsn9peH+JTwsi95XNZfzHGZOkcIyIg==
-X-Received: by 2002:a17:90b:3742:b0:1d9:5dc6:dede with SMTP id ne2-20020a17090b374200b001d95dc6dedemr24174038pjb.92.1651131288193;
-        Thu, 28 Apr 2022 00:34:48 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.114])
-        by smtp.gmail.com with ESMTPSA id a9-20020aa78649000000b004fe3d6c1731sm21369511pfo.175.2022.04.28.00.34.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 00:34:47 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     edumazet@google.com
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, benbjiang@tencent.com, flyingpeng@tencent.com,
-        imagedong@tencent.com, kafai@fb.com, talalahmad@google.com,
-        keescook@chromium.org, mengensun@tencent.com,
-        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next v2 2/2] net: tcp: add skb drop reasons to route_req()
-Date:   Thu, 28 Apr 2022 15:33:40 +0800
-Message-Id: <20220428073340.224391-3-imagedong@tencent.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220428073340.224391-1-imagedong@tencent.com>
-References: <20220428073340.224391-1-imagedong@tencent.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=4JvsDqqK9ttY5rHf8XBLNsfShpWbe64Z3RuZmn+7sxo=;
+        b=QBYqmcYruU5h32egvyz+sOi+uURvGCArtJ0m2f+mLPG2C5YvNuwYu2k3ok+a2M+sD/
+         f+q0qd6vcleuJAJz3GVsCUy9ME1LXGy5C1NPPHcHnLF9zgPRhpaH5qkltCOpnxcFcfT9
+         JypYQWYR4TikY6LRkerlTM8iGdSumSev4SYffQNTMFkETZv23OucqSX0Y3lIaObQvwCh
+         QvlZkF/jBZVLpPL3HHQdzYtRUik14nyWrQnsO74ZqObjQ3cY9oYFShXf2Uf7ks8e9g5S
+         CDqN9f2CMeLhavSm3cgF3INtNO1JzHQOzceFUYgCQn/4MeaGDUyi3Vdzs/wobZ6XGZEQ
+         FKBQ==
+X-Gm-Message-State: AOAM530975ERNwrM9iCqvCZUAG0MU5ZyE/Bmg3D6gaFy/PACwRE7Li/F
+        2R545e+53gjerMsXdoXpZpyhayErnSbGzw==
+X-Google-Smtp-Source: ABdhPJzRoxehe5gk4lTTso+tkR4hsOuSW2vMtPQjWj020xAP62C6IRc+IHyj2AGRm63ckwt/5iBSgw==
+X-Received: by 2002:a17:906:19c6:b0:6ce:98a4:5ee6 with SMTP id h6-20020a17090619c600b006ce98a45ee6mr30155478ejd.567.1651131308943;
+        Thu, 28 Apr 2022 00:35:08 -0700 (PDT)
+Received: from [192.168.0.160] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id w14-20020a1709060a0e00b006f01e581668sm7878197ejf.209.2022.04.28.00.35.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 00:35:08 -0700 (PDT)
+Message-ID: <edec6367-c2ca-a321-4683-1fcaeb15ba51@linaro.org>
+Date:   Thu, 28 Apr 2022 09:35:07 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 4/4] ARM: dts: pxa: use new 'dma-channels/requests'
+ properties
+Content-Language: en-US
+To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220427161459.647676-1-krzysztof.kozlowski@linaro.org>
+ <20220427161459.647676-5-krzysztof.kozlowski@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220427161459.647676-5-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+On 27/04/2022 18:14, Krzysztof Kozlowski wrote:
+> The '#dma-channels' and '#dma-requests' properties were deprecated in
+> favor of these defined by generic dma-common DT bindings.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  arch/arm/boot/dts/mmp2.dtsi   | 2 +-
+>  arch/arm/boot/dts/pxa25x.dtsi | 4 ++--
+>  arch/arm/boot/dts/pxa27x.dtsi | 4 ++--
+>  arch/arm/boot/dts/pxa3xx.dtsi | 4 ++--
+>  4 files changed, 7 insertions(+), 7 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/mmp2.dtsi b/arch/arm/boot/dts/mmp2.dtsi
+> index 46984d4c5224..1a49b58e8048 100644
+> --- a/arch/arm/boot/dts/mmp2.dtsi
+> +++ b/arch/arm/boot/dts/mmp2.dtsi
+> @@ -275,7 +275,7 @@ dma-controller@d4000000 {
+>  				compatible = "marvell,pdma-1.0";
+>  				reg = <0xd4000000 0x10000>;
+>  				interrupts = <48>;
+> -				#dma-channels = <16>;
+> +				dma-channels = <16>;
 
-Add skb drop reasons to the route_req() in struct tcp_request_sock_ops.
-Following functions are involved:
+As Rob proposed, the removal of old property does not have to happen in
+this patch (but much later). This would allow merging DTS change
+immediately.
 
-  tcp_v4_route_req()
-  tcp_v6_route_req()
-  subflow_v4_route_req()
-  subflow_v6_route_req()
+I will resend in that spirit, unless SoC maintainers prefer the original
+approach (where DTS has to wait for next release)?
 
-And the new reason SKB_DROP_REASON_SECURITY is added, which is used when
-skb is dropped by LSM.
 
-Reviewed-by: Jiang Biao <benbjiang@tencent.com>
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
- include/linux/skbuff.h     |  1 +
- include/net/tcp.h          |  3 ++-
- include/trace/events/skb.h |  1 +
- net/ipv4/tcp_input.c       |  2 +-
- net/ipv4/tcp_ipv4.c        | 14 +++++++++++---
- net/ipv6/tcp_ipv6.c        | 14 +++++++++++---
- net/mptcp/subflow.c        | 10 ++++++----
- 7 files changed, 33 insertions(+), 12 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index f33b3636bbce..5909759e1b95 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -473,6 +473,7 @@ enum skb_drop_reason {
- 	SKB_DROP_REASON_TCP_REQQFULLDROP, /* request queue of the listen
- 					   * socket is full
- 					   */
-+	SKB_DROP_REASON_SECURITY,	/* dropped by LSM */
- 	SKB_DROP_REASON_MAX,
- };
- 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 679b1964d494..01f841611895 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -2075,7 +2075,8 @@ struct tcp_request_sock_ops {
- 	struct dst_entry *(*route_req)(const struct sock *sk,
- 				       struct sk_buff *skb,
- 				       struct flowi *fl,
--				       struct request_sock *req);
-+				       struct request_sock *req,
-+				       enum skb_drop_reason *reason);
- 	u32 (*init_seq)(const struct sk_buff *skb);
- 	u32 (*init_ts_off)(const struct net *net, const struct sk_buff *skb);
- 	int (*send_synack)(const struct sock *sk, struct dst_entry *dst,
-diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index de6c93670437..aff57cd43e85 100644
---- a/include/trace/events/skb.h
-+++ b/include/trace/events/skb.h
-@@ -82,6 +82,7 @@
- 	EM(SKB_DROP_REASON_PKT_TOO_BIG, PKT_TOO_BIG)		\
- 	EM(SKB_DROP_REASON_LISTENOVERFLOWS, LISTENOVERFLOWS)	\
- 	EM(SKB_DROP_REASON_TCP_REQQFULLDROP, TCP_REQQFULLDROP)	\
-+	EM(SKB_DROP_REASON_SECURITY, SECURITY)			\
- 	EMe(SKB_DROP_REASON_MAX, MAX)
- 
- #undef EM
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 412367b7dfd6..e55340059c19 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6932,7 +6932,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
- 	/* Note: tcp_v6_init_req() might override ir_iif for link locals */
- 	inet_rsk(req)->ir_iif = inet_request_bound_dev_if(sk, skb);
- 
--	dst = af_ops->route_req(sk, skb, &fl, req);
-+	dst = af_ops->route_req(sk, skb, &fl, req, &reason);
- 	if (!dst)
- 		goto drop_and_free;
- 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 6a49470d30db..0ae55c9e8428 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1424,14 +1424,22 @@ static void tcp_v4_init_req(struct request_sock *req,
- static struct dst_entry *tcp_v4_route_req(const struct sock *sk,
- 					  struct sk_buff *skb,
- 					  struct flowi *fl,
--					  struct request_sock *req)
-+					  struct request_sock *req,
-+					  enum skb_drop_reason *reason)
- {
-+	struct dst_entry *dst;
-+
- 	tcp_v4_init_req(req, sk, skb);
- 
--	if (security_inet_conn_request(sk, skb, req))
-+	if (security_inet_conn_request(sk, skb, req)) {
-+		SKB_DR_SET(*reason, SECURITY);
- 		return NULL;
-+	}
- 
--	return inet_csk_route_req(sk, &fl->u.ip4, req);
-+	dst = inet_csk_route_req(sk, &fl->u.ip4, req);
-+	if (!dst)
-+		SKB_DR_SET(*reason, IP_OUTNOROUTES);
-+	return dst;
- }
- 
- struct request_sock_ops tcp_request_sock_ops __read_mostly = {
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 92f4a58fdc2c..d1f9266a81ed 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -802,14 +802,22 @@ static void tcp_v6_init_req(struct request_sock *req,
- static struct dst_entry *tcp_v6_route_req(const struct sock *sk,
- 					  struct sk_buff *skb,
- 					  struct flowi *fl,
--					  struct request_sock *req)
-+					  struct request_sock *req,
-+					  enum skb_drop_reason *reason)
- {
-+	struct dst_entry *dst;
-+
- 	tcp_v6_init_req(req, sk, skb);
- 
--	if (security_inet_conn_request(sk, skb, req))
-+	if (security_inet_conn_request(sk, skb, req)) {
-+		SKB_DR_SET(*reason, SECURITY);
- 		return NULL;
-+	}
- 
--	return inet6_csk_route_req(sk, &fl->u.ip6, req, IPPROTO_TCP);
-+	dst = inet6_csk_route_req(sk, &fl->u.ip6, req, IPPROTO_TCP);
-+	if (!dst)
-+		SKB_DR_SET(*reason, IP_OUTNOROUTES);
-+	return dst;
- }
- 
- struct request_sock_ops tcp6_request_sock_ops __read_mostly = {
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index aba260f547da..03d07165cda6 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -283,7 +283,8 @@ EXPORT_SYMBOL_GPL(mptcp_subflow_init_cookie_req);
- static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
- 					      struct sk_buff *skb,
- 					      struct flowi *fl,
--					      struct request_sock *req)
-+					      struct request_sock *req,
-+					      enum skb_drop_reason *reason)
- {
- 	struct dst_entry *dst;
- 	int err;
-@@ -291,7 +292,7 @@ static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
- 	tcp_rsk(req)->is_mptcp = 1;
- 	subflow_init_req(req, sk);
- 
--	dst = tcp_request_sock_ipv4_ops.route_req(sk, skb, fl, req);
-+	dst = tcp_request_sock_ipv4_ops.route_req(sk, skb, fl, req, reason);
- 	if (!dst)
- 		return NULL;
- 
-@@ -309,7 +310,8 @@ static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
- static struct dst_entry *subflow_v6_route_req(const struct sock *sk,
- 					      struct sk_buff *skb,
- 					      struct flowi *fl,
--					      struct request_sock *req)
-+					      struct request_sock *req,
-+					      enum skb_drop_reason *reason)
- {
- 	struct dst_entry *dst;
- 	int err;
-@@ -317,7 +319,7 @@ static struct dst_entry *subflow_v6_route_req(const struct sock *sk,
- 	tcp_rsk(req)->is_mptcp = 1;
- 	subflow_init_req(req, sk);
- 
--	dst = tcp_request_sock_ipv6_ops.route_req(sk, skb, fl, req);
-+	dst = tcp_request_sock_ipv6_ops.route_req(sk, skb, fl, req, reason);
- 	if (!dst)
- 		return NULL;
- 
--- 
-2.36.0
-
+Best regards,
+Krzysztof
