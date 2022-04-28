@@ -2,168 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24DECC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:08:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7436C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343973AbiD1ILh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46526 "EHLO
+        id S241870AbiD1IOb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 04:14:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343833AbiD1IKs (ORCPT
+        with ESMTP id S233817AbiD1INp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:10:48 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9B9612A7;
-        Thu, 28 Apr 2022 01:07:29 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23S7fSIA031365;
-        Thu, 28 Apr 2022 08:07:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : content-transfer-encoding
- : mime-version; s=pp1; bh=BUKnHMMtJlhw8wLxcVR6t/uKudxySSsONcFK+URS3a0=;
- b=BL1kipiDd8zjOWETYOfIT9JACUTUx5NHGthf3sggXxWjTFcH0di+ExSq/mnpDVE4fLhr
- xyv/4nACfqGkyo6Hoa/C1rZxsklC4RJiuC+amFg2aP9J3spghlq5kOWFlQvC4sqUulWS
- TAsKS0x94O5pvPUaAVlH8lRmFxaX5lxXejo2cVU7przUoPQ634GDaEs2pGQFw7QhN1Aq
- GnmkbVyXM1UkTEmUAyM79Ucd2ZBqXZiAByr+D+3Ku3qYYhx5dh6IwH4U1RXlv/MO4Vn+
- znJvykrJ5bdKreNv53AoWhyqLKUkT3RrxClilACAk2VAh0OiptYY7QALjDI077v+TJbM 2w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqnfga2s8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 28 Apr 2022 08:07:25 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23S7hYJ5025154;
-        Thu, 28 Apr 2022 08:07:24 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqnfga2rc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 28 Apr 2022 08:07:24 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23S7wldN005960;
-        Thu, 28 Apr 2022 08:07:22 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04ams.nl.ibm.com with ESMTP id 3fm938y3km-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 28 Apr 2022 08:07:22 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23S87Jq647120794
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 28 Apr 2022 08:07:19 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6EB4C4C040;
-        Thu, 28 Apr 2022 08:07:19 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2E2054C044;
-        Thu, 28 Apr 2022 08:07:19 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 28 Apr 2022 08:07:19 +0000 (GMT)
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-s390@vger.kernel.org, linux-pci@vger.kernel.org
-Subject: [PATCH v5 2/4] PCI: Move jailhouse's isolated function handling to pci_scan_slot()
-Date:   Thu, 28 Apr 2022 10:07:16 +0200
-Message-Id: <20220428080718.3094464-3-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220428080718.3094464-1-schnelle@linux.ibm.com>
-References: <20220428080718.3094464-1-schnelle@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: h3vu6NpiKc1Lkc7QlOOnoNIOtdGxAevY
-X-Proofpoint-ORIG-GUID: NWJDT8M5a_TtT6KVhxO0PWnDXrjZIFJg
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Thu, 28 Apr 2022 04:13:45 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E7FA0BE3;
+        Thu, 28 Apr 2022 01:09:40 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id p18so4585017edr.7;
+        Thu, 28 Apr 2022 01:09:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6jNeearvH+hhGDjLkKRhMtvv9bKx6EoH/x/e7DTa8KY=;
+        b=o56ujL31V7wnkN7VUd9hMJAvi4RE+WM7gseNBy/zWj3rLUkXCUQPYEz9oPUeqUUdKy
+         VhMAAOL7HzhILMEpRyn3EoXNBVUpONutknkQVIk2ZvqE68qZQO/EGedE+xpx7oyJlcAh
+         wnZBOqi8SjCB9pK1dnDZsspnaqhZnYIe10Fl7eMD8JQqLYGsmFDJRajprTllxjEjTl0v
+         rpQ58PfZQXK/y8efND2yLShSuFuIbVFJRNE7Iyb0jwlkova0ywmF1vfSNju8MQiYT1TT
+         byiLiHdCk1OkS0l1/V2fx+Jb/frp/dE8x3NJpTWDAzHztDB4HNABOkTYhTjcd0TArHU3
+         aY2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6jNeearvH+hhGDjLkKRhMtvv9bKx6EoH/x/e7DTa8KY=;
+        b=HekmjPUlJB1uf5p9FGI2bP/8c8mmeorKb3NTvgCdqJUBRv/FVtPi2UfakchHnsDn3j
+         JoV7e3pC/FYpByTdcBIawi22R7v1T5nO4/5ZwtFypeX56q/2TCalZXX6F6mhM7QXUYyi
+         fvrgqGzyaNvH9RuFOxF2gZcgb5ETm64/Rli1QL73HXl45P7IG+vvwJxGifRNxAnnyTwM
+         cD2PjFR0C6JEjtcBHaxvhLrHOegLfAifBpBFD96hWG2zE733BEjUxZB0VERPAFkm5pFs
+         Twx1FVdbFylQb9shWyCYDu4XuVwLpWahPXIN6mU7gB4V1GZitC+i+kuxcl84gV+kqiPO
+         Y8hQ==
+X-Gm-Message-State: AOAM532pMEeLun/8NjJDoU51/drgV99OqP2GcfsFD3l6n8WDe1/DrJB7
+        lbeoMqQXp/orVLZU17ZRnKU=
+X-Google-Smtp-Source: ABdhPJztZ8+oV4qu6hJupS3cSC9OJkpEoajvHWbIk6ZrA7gAfI5DNOsmUdXa9+0qvACKdhuKUqf1SA==
+X-Received: by 2002:a05:6402:298b:b0:41d:675f:8b44 with SMTP id eq11-20020a056402298b00b0041d675f8b44mr34705939edb.377.1651133379069;
+        Thu, 28 Apr 2022 01:09:39 -0700 (PDT)
+Received: from jernej-laptop.localnet (89-212-118-115.static.t-2.net. [89.212.118.115])
+        by smtp.gmail.com with ESMTPSA id g2-20020a056402114200b0042617ba637fsm1130681edw.9.2022.04.28.01.09.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 01:09:38 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Samuel Holland <samuel@sholland.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v4 43/45] media: sun6i-csi: Detect the availability of the ISP
+Date:   Thu, 28 Apr 2022 10:09:37 +0200
+Message-ID: <5794263.alqRGMn8q6@jernej-laptop>
+In-Reply-To: <YmpIjPe8pw+yvGyL@aptenodytes>
+References: <20220415152811.636419-1-paul.kocialkowski@bootlin.com> <2029179.KlZ2vcFHjT@jernej-laptop> <YmpIjPe8pw+yvGyL@aptenodytes>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-27_04,2022-04-27_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- malwarescore=0 mlxscore=0 adultscore=0 mlxlogscore=999 priorityscore=1501
- bulkscore=0 clxscore=1015 lowpriorityscore=0 spamscore=0 suspectscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204280049
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The special case of the jailhouse hypervisor passing through individual
-PCI functions handles scanning for PCI functions even if function 0 does
-not exist. Currently this is done with an extra loop duplicating the one
-in pci_scan_slot(). By incorporating the check for jailhouse_paravirt()
-into pci_scan_slot() we can instead do this as part of the normal
-slot scan. Note that with the assignment of dev->multifunction gated by
-fn > 0 we set dev->multifunction unconditionally for all functions if
-function 0 is missing just as in the existing jailhouse loop.
+Dne =C4=8Detrtek, 28. april 2022 ob 09:55:56 CEST je Paul Kocialkowski napi=
+sal(a):
+> Hi Jernej,
+>=20
+> Thanks a lot for all your reviews!
+>=20
+> On Wed 27 Apr 22, 22:07, Jernej =C5=A0krabec wrote:
+> > Dne petek, 15. april 2022 ob 17:28:09 CEST je Paul Kocialkowski=20
+napisal(a):
+> > > Add a helper to detect whether the ISP is available and connected
+> > > and store the indication in a driver-wide variable.
+> > >=20
+> > > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> > > ---
+> > >=20
+> > >  .../platform/sunxi/sun6i-csi/sun6i_csi.c      | 33 +++++++++++++++++=
+++
+> > >  .../platform/sunxi/sun6i-csi/sun6i_csi.h      |  3 ++
+> > >  2 files changed, 36 insertions(+)
+> > >=20
+> > > diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> > > b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c index
+> > > a88deb8ba1e7..f185cbd113c7 100644
+> > > --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> > > +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> > > @@ -25,6 +25,35 @@
+> > >=20
+> > >  #include "sun6i_csi_capture.h"
+> > >  #include "sun6i_csi_reg.h"
+> > >=20
+> > > +/* ISP */
+> > > +
+> > > +static bool sun6i_csi_isp_detect(struct sun6i_csi_device *csi_dev)
+> > > +{
+> > > +	struct device *dev =3D csi_dev->dev;
+> > > +	struct fwnode_handle *handle =3D NULL;
+> > > +
+> > > +	/* ISP is not available if disabled in kernel config. */
+> > > +	if (!IS_ENABLED(CONFIG_VIDEO_SUN6I_ISP))
+> >=20
+> > Where is this symbol defined?
+>=20
+> That is defined through Kconfig's auto-generated header, from the associa=
+ted
+> option for the ISP driver. It is defined in the ISP support series so this
+> will effectively always be false for now.
 
-The only functional change is that we now call
-pcie_aspm_init_link_state() for these functions but this already
-happened if function 0 was passed through and should not be a problem.
+Well, then, that driver should be merged before this patch. While I underst=
+and=20
+that it's likely that ISP driver with such name will eventually materialize=
+ in=20
+kernel, I don't want to rely on things that are not set in stone, e.g. alre=
+ady=20
+merged.
 
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-Link: https://lore.kernel.org/linux-pci/20220408224514.GA353445@bhelgaas/
-Suggested-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- drivers/pci/probe.c | 30 ++++++++++--------------------
- 1 file changed, 10 insertions(+), 20 deletions(-)
+Best regards,
+Jernej
 
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 78aa1bccab2f..3029edc68ff7 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -2658,8 +2658,13 @@ int pci_scan_slot(struct pci_bus *bus, int devfn)
- 			if (fn > 0)
- 				dev->multifunction = 1;
- 		} else if (fn == 0) {
--			/* function 0 is required */
--			break;
-+			/*
-+			 * function 0 is required unless we are running on
-+			 * a hypervisor which passes through individual PCI
-+			 * functions.
-+			 */
-+			if (!jailhouse_paravirt())
-+				break;
- 		}
- 		fn = next_fn(bus, dev, fn);
- 	} while (fn >= 0);
-@@ -2858,29 +2863,14 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
- {
- 	unsigned int used_buses, normal_bridges = 0, hotplug_bridges = 0;
- 	unsigned int start = bus->busn_res.start;
--	unsigned int devfn, fn, cmax, max = start;
-+	unsigned int devfn, cmax, max = start;
- 	struct pci_dev *dev;
--	int nr_devs;
- 
- 	dev_dbg(&bus->dev, "scanning bus\n");
- 
- 	/* Go find them, Rover! */
--	for (devfn = 0; devfn < 256; devfn += 8) {
--		nr_devs = pci_scan_slot(bus, devfn);
--
--		/*
--		 * The Jailhouse hypervisor may pass individual functions of a
--		 * multi-function device to a guest without passing function 0.
--		 * Look for them as well.
--		 */
--		if (jailhouse_paravirt() && nr_devs == 0) {
--			for (fn = 1; fn < 8; fn++) {
--				dev = pci_scan_single_device(bus, devfn + fn);
--				if (dev)
--					dev->multifunction = 1;
--			}
--		}
--	}
-+	for (devfn = 0; devfn < 256; devfn += 8)
-+		pci_scan_slot(bus, devfn);
- 
- 	/* Reserve buses for SR-IOV capability */
- 	used_buses = pci_iov_bus_range(bus);
--- 
-2.32.0
+>=20
+> > Best regards,
+> > Jernej
+> >=20
+> > > +		return 0;
+> > > +
+> > > +	/*
+> > > +	 * ISP is not available if not connected via fwnode graph.
+> > > +	 * This weill also check that the remote parent node is available.
+> > > +	 */
+> > > +	handle =3D fwnode_graph_get_endpoint_by_id(dev_fwnode(dev),
+> > > +
+> >=20
+> > SUN6I_CSI_PORT_ISP, 0,
+> >=20
+> > > +
+> >=20
+> > FWNODE_GRAPH_ENDPOINT_NEXT);
+> >=20
+> > > +	if (!handle)
+> > > +		return 0;
+> > > +
+> > > +	fwnode_handle_put(handle);
+> > > +
+> > > +	dev_info(dev, "ISP link is available\n");
+> > > +	csi_dev->isp_available =3D true;
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > >=20
+> > >  /* Media */
+> > > =20
+> > >  static const struct media_device_ops sun6i_csi_media_ops =3D {
+> > >=20
+> > > @@ -306,6 +335,10 @@ static int sun6i_csi_probe(struct platform_device
+> > > *platform_dev) if (ret)
+> > >=20
+> > >  		return ret;
+> > >=20
+> > > +	ret =3D sun6i_csi_isp_detect(csi_dev);
+> > > +	if (ret)
+> > > +		goto error_resources;
+> > > +
+> > >=20
+> > >  	ret =3D sun6i_csi_v4l2_setup(csi_dev);
+> > >  	if (ret)
+> > >  =09
+> > >  		goto error_resources;
+> > >=20
+> > > diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
+> > > b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h index
+> > > 6aa83dd11684..9b105c341047 100644
+> > > --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
+> > > +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
+> > > @@ -22,6 +22,7 @@
+> > >=20
+> > >  enum sun6i_csi_port {
+> > > =20
+> > >  	SUN6I_CSI_PORT_PARALLEL		=3D 0,
+> > >  	SUN6I_CSI_PORT_MIPI_CSI2	=3D 1,
+> > >=20
+> > > +	SUN6I_CSI_PORT_ISP		=3D 2,
+> > >=20
+> > >  };
+> > > =20
+> > >  struct sun6i_csi_buffer {
+> > >=20
+> > > @@ -46,6 +47,8 @@ struct sun6i_csi_device {
+> > >=20
+> > >  	struct clk			*clock_mod;
+> > >  	struct clk			*clock_ram;
+> > >  	struct reset_control		*reset;
+> > >=20
+> > > +
+> > > +	bool				isp_available;
+> > >=20
+> > >  };
+> > > =20
+> > >  struct sun6i_csi_variant {
+
+
+
 
