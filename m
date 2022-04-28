@@ -2,47 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 416CAC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55CB5C4321E
 	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:24:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345363AbiD1JXN (ORCPT
+        id S1345407AbiD1JXP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 05:23:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33964 "EHLO
+        Thu, 28 Apr 2022 05:23:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229931AbiD1JSZ (ORCPT
+        with ESMTP id S1345779AbiD1JTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 05:18:25 -0400
-Received: from theia.8bytes.org (8bytes.org [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12896647E
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:15:11 -0700 (PDT)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-        id AF19A2FB; Thu, 28 Apr 2022 11:15:09 +0200 (CEST)
-Date:   Thu, 28 Apr 2022 11:15:08 +0200
-From:   Joerg Roedel <joro@8bytes.org>
-To:     Sven Peter <sven@svenpeter.dev>
-Cc:     Will Deacon <will@kernel.org>, Hector Martin <marcan@marcan.st>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: merge DART into ARM/APPLE MACHINE
-Message-ID: <YmpbHJc66KURJ3+k@8bytes.org>
-References: <20220412161211.23162-1-sven@svenpeter.dev>
+        Thu, 28 Apr 2022 05:19:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52BC2AC5E;
+        Thu, 28 Apr 2022 02:16:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC24AB82C2E;
+        Thu, 28 Apr 2022 09:16:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 503C0C385A9;
+        Thu, 28 Apr 2022 09:16:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651137382;
+        bh=EwqTDOFG4cur2yOUWY0eqlQeG96O0SBRWYEdM0HpvnM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YQWeMhhIYWkVP4QpudZiHEyFzRV7W+O8k3op2HEwj6pt4oqeJreaEcS5GNME8vZPT
+         DBo3LcroC01kZ+vPss5pM9mSOknFl/mBhOZj54a8tFq1mlKruzaOBfB08INCvSD5MM
+         YRoSbcZfOF9tjfhYSUJZ9oJwJFT+FBR9VIdKr+6wvIS/7nNZPzxMGSCYEzlJ5K70Tp
+         kk2pM0jintE8ylwfXCeOpHft5uJQ1FDV1x8fTumX+jPKJvS7Wboxj5mRYVVDu9HJAD
+         Xd6tsBXiJVgiUDwP8FbLuffVi8vijy1vi3JAgn8n5cZLfOsBR/V8OLEYlXDbYPUiRw
+         F2dexix1oWy5Q==
+Received: by pali.im (Postfix)
+        id 40A928A0; Thu, 28 Apr 2022 11:16:19 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] watchdog: max63xx_wdt: Add support for specifying WDI logic via GPIO
+Date:   Thu, 28 Apr 2022 11:16:03 +0200
+Message-Id: <20220428091603.6838-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412161211.23162-1-sven@svenpeter.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 06:12:11PM +0200, Sven Peter wrote:
-> It's the same people anyway.
-> 
-> Signed-off-by: Sven Peter <sven@svenpeter.dev>
-> ---
->  MAINTAINERS | 10 ++--------
->  1 file changed, 2 insertions(+), 8 deletions(-)
+On some boards is WDI logic of max6370 chip connected via GPIO. So extend
+max63xx_wdt driver and DTS schema to allow specifying WDI logic via GPIO.
 
-Applied, thanks.
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+ .../bindings/watchdog/maxim,max63xx.yaml      |  4 +++
+ drivers/watchdog/max63xx_wdt.c                | 28 +++++++++++++++++++
+ 2 files changed, 32 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml b/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml
+index ab9641e845db..a97aa0135ef9 100644
+--- a/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml
++++ b/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml
+@@ -27,6 +27,10 @@ properties:
+     description: This is a 1-byte memory-mapped address
+     maxItems: 1
+ 
++  gpios:
++    description: Optional GPIO used for controlling WDI when WDI bit is not mapped to memory
++    maxItems: 1
++
+ required:
+   - compatible
+   - reg
+diff --git a/drivers/watchdog/max63xx_wdt.c b/drivers/watchdog/max63xx_wdt.c
+index 9e1541cfae0d..eaf00c3f06a5 100644
+--- a/drivers/watchdog/max63xx_wdt.c
++++ b/drivers/watchdog/max63xx_wdt.c
+@@ -27,6 +27,7 @@
+ #include <linux/io.h>
+ #include <linux/slab.h>
+ #include <linux/property.h>
++#include <linux/gpio/consumer.h>
+ 
+ #define DEFAULT_HEARTBEAT 60
+ #define MAX_HEARTBEAT     60
+@@ -53,6 +54,9 @@ struct max63xx_wdt {
+ 	void __iomem *base;
+ 	spinlock_t lock;
+ 
++	/* GPIOs */
++	struct gpio_desc *gpio_wdi;
++
+ 	/* WDI and WSET bits write access routines */
+ 	void (*ping)(struct max63xx_wdt *wdt);
+ 	void (*set)(struct max63xx_wdt *wdt, u8 set);
+@@ -158,6 +162,17 @@ static const struct watchdog_info max63xx_wdt_info = {
+ 	.identity = "max63xx Watchdog",
+ };
+ 
++static void max63xx_gpio_ping(struct max63xx_wdt *wdt)
++{
++	spin_lock(&wdt->lock);
++
++	gpiod_set_value_cansleep(wdt->gpio_wdi, 1);
++	udelay(1);
++	gpiod_set_value_cansleep(wdt->gpio_wdi, 0);
++
++	spin_unlock(&wdt->lock);
++}
++
+ static void max63xx_mmap_ping(struct max63xx_wdt *wdt)
+ {
+ 	u8 val;
+@@ -225,6 +240,19 @@ static int max63xx_wdt_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
++	wdt->gpio_wdi = devm_gpiod_get(dev, NULL, GPIOD_FLAGS_BIT_DIR_OUT);
++	if (IS_ERR(wdt->gpio_wdi) && PTR_ERR(wdt->gpio_wdi) != -ENOENT) {
++		if (PTR_ERR(wdt->gpio_wdi) != -EPROBE_DEFER)
++			dev_err(dev, "unable to request gpio: %ld\n",
++				PTR_ERR(wdt->gpio_wdi));
++		return PTR_ERR(wdt->gpio_wdi);
++	}
++
++	if (!IS_ERR(wdt->gpio_wdi))
++		wdt->ping = max63xx_gpio_ping;
++	else
++		wdt->gpio_wdi = NULL;
++
+ 	err = max63xx_mmap_init(pdev, wdt);
+ 	if (err)
+ 		return err;
+-- 
+2.20.1
 
