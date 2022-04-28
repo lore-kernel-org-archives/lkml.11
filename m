@@ -2,74 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24890C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5EE0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:49:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232547AbiD1Jwb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 05:52:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42342 "EHLO
+        id S232602AbiD1Jwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 05:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348940AbiD1Jmh (ORCPT
+        with ESMTP id S1349195AbiD1Jop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 05:42:37 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8A8972B8
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:39:22 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id d5so5953822wrb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:39:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:reply-to:to:cc:date:in-reply-to
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=6ZKHGiDRzRbPXQHyr5VeHk6x4y/gIT70tGEEovHIImo=;
-        b=PeHfrQr7jWNTLtX4c68wBxngwOTuc6NMSZlesvJOJtSY33jMGK1xGMQsMiFCXinjGw
-         MS75GZe+n0mkK44PFTKNmKnl3KJN8OqrtQp59FO5P7sTHkcbRqSjAyfeULI6ezborhrm
-         E+nHrGb2E8hBzTAikcfkXLMhQCLXNnONjR3+5xgcJq6D8ZBEw8iPxVpG+Ap9iC7B0fK/
-         fnPsJHVIjwfdihDqsFnKv2Qtf/KhJexR5uFwI6pNDTLPEO+klzuh7npnpSvnShNvbGbs
-         LS1tbiRj8GD3fy6nPgsFHtOWDN3P5u5FBS0b612O7SgX+7vA4WTLb3w+G5+R9a428qf8
-         SS3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:reply-to:to:cc:date
-         :in-reply-to:content-transfer-encoding:user-agent:mime-version;
-        bh=6ZKHGiDRzRbPXQHyr5VeHk6x4y/gIT70tGEEovHIImo=;
-        b=EgCwEgu3vK3ZNVR2etdDNsvPMtzlAUF61K34oJ6jGa1jQhHc0Ir3/vWITySw3X6MoB
-         /jP55BkmY4KquD+5MTn8X9OMSdNdakJ0nkoufuhUoZ3/8XuEBYcTOamQd8tMKOUsQ/Sr
-         4dCWgZPNi5rncRA8GEq1/PLGm+EF3i4rbH5sPwu+NCOd3iwBEzInSOlA3vbM/0/bUy47
-         hltrMczJLiVBdGZ/uZTH3l91sLMU6uXO6VnVKaf2myfmuIlllbdylO8zneVMkNmfXrlL
-         H7ao00yxTWnwBDPYuT+VV+JkcOhvx5vtJljiFh5QRiFs1u/8znkbBSDHS0N4dqnN3z8U
-         HfVQ==
-X-Gm-Message-State: AOAM530BP5IUullUlyryHfWTY443O/FfWomgScQI7CWP3ltgm0RuWilA
-        +SOIewokJRcBC/mHHDcgg9Q=
-X-Google-Smtp-Source: ABdhPJzq8Avm5kj5cxYcajFINUiU3+GPuk/6MpZQ3CFwCbRNxAjyTyWjHfcLKbugSSXMG2vEJZ97dQ==
-X-Received: by 2002:a5d:59af:0:b0:20a:e9e7:5c12 with SMTP id p15-20020a5d59af000000b0020ae9e75c12mr8781894wrr.572.1651138761316;
-        Thu, 28 Apr 2022 02:39:21 -0700 (PDT)
-Received: from ?IPv6:2a02:587:7e0b:5403:d800:75d5:89c1:5d9c? ([2a02:587:7e0b:5403:d800:75d5:89c1:5d9c])
-        by smtp.gmail.com with ESMTPSA id o21-20020adfa115000000b0020adea2767csm8944012wro.83.2022.04.28.02.39.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 02:39:20 -0700 (PDT)
-Message-ID: <14ca7a53c11effb4e4f711b0dee60ebf041884b0.camel@gmail.com>
-Subject: Re: NTFS3 driver is orphan already. What we do?
-From:   Leonidas-Panagiotis Papadakos <papadakospan@gmail.com>
-Reply-To: CAHk-=wihuvzVTozzNLZT=uFzJH6uM7ZNKN7fYVpm0v2KkY6Jxg@mail.gmail.com
-To:     torvalds@linux-foundation.org
-Cc:     almaz.alexandrovich@paragon-software.com,
-        christian.brauner@ubuntu.com, djwong@kernel.org,
-        ebiggers@kernel.org, hch@lst.de,
-        kari.argillander@stargateuniverse.net,
-        linux-kernel@vger.kernel.org, ntfs3@lists.linux.dev, tytso@mit.edu,
-        viro@zeniv.linux.org.uk, willy@infradead.org
-Date:   Thu, 28 Apr 2022 12:38:48 +0300
-In-Reply-To: <CAHk-=wihuvzVTozzNLZT=uFzJH6uM7ZNKN7fYVpm0v2KkY6Jxg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 
+        Thu, 28 Apr 2022 05:44:45 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A8A99180;
+        Thu, 28 Apr 2022 02:41:30 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KprFs3DYLzfb8W;
+        Thu, 28 Apr 2022 17:40:33 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 28 Apr 2022 17:41:28 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Apr
+ 2022 17:41:28 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>
+CC:     <dan.carpenter@oracle.com>, <andrew@lunn.ch>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+Subject: [PATCH] net: dsa: mt7530: add missing of_node_put() in mt7530_setup()
+Date:   Thu, 28 Apr 2022 17:53:17 +0800
+Message-ID: <20220428095317.538829-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If Linux has to avoid having 2 unmaintained drivers, wouldn't it be better =
-to
-remove the old read-only one from (I think) 2001 and keep Paragon's version=
-?
+Add of_node_put() if of_get_phy_mode() fails in mt7530_setup()
+
+Fixes: 0c65b2b90d13 ("net: of_get_phy_mode: Change API to solve int/unit warnings")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/dsa/mt7530.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 19f0035d4410..fe3cb26f4287 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2229,6 +2229,7 @@ mt7530_setup(struct dsa_switch *ds)
+ 				ret = of_get_phy_mode(mac_np, &interface);
+ 				if (ret && ret != -ENODEV) {
+ 					of_node_put(mac_np);
++					of_node_put(phy_node);
+ 					return ret;
+ 				}
+ 				id = of_mdio_parse_addr(ds->dev, phy_node);
+-- 
+2.25.1
+
