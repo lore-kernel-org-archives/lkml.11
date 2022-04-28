@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F872C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:47:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7505EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350057AbiD1QuT (ORCPT
+        id S1350334AbiD1QuX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 12:50:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41262 "EHLO
+        Thu, 28 Apr 2022 12:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233777AbiD1QuR (ORCPT
+        with ESMTP id S233777AbiD1QuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 12:50:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB994AE2E
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:47:02 -0700 (PDT)
+        Thu, 28 Apr 2022 12:50:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 230CF4AE2E
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:47:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D058BB82E92
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 16:47:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDEBEC385A9;
-        Thu, 28 Apr 2022 16:46:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BFDDFB82EDD
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 16:47:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0496CC385AA;
+        Thu, 28 Apr 2022 16:46:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651164419;
-        bh=oTA/bLA09vyo7gZftSiBJgvnmnzNeALY3BscTIa+ohw=;
+        s=k20201202; t=1651164421;
+        bh=+RKLk9K6/GT4CyUUwj9j7R0islPDkWCMgjT+jFXMSDQ=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=kzImxQxtKo2A4VfSdtTB5B2HQF5eIMKRAuAelphHIW4NYWeafoGPqJYbmVl9JqVpy
-         LgaRdgvPg1QheX0laSoq8QZ1n7U8Lx0MFBbg7PYGCD7p6jNbdomCIe+IXMvdZ01OED
-         Ur91+jW4qSgd+LcePzEbAM1P+dDi1sFEs6KLezxeLPhA510mcHWGhAU4GdPUb3buIW
-         3s92pSDZeJROYgFMNPaX9yZScLT1AiaFOgn5df3hkOLwTKNu0OvAfzj611FACxzm//
-         HpN6pdKOi+0VdBLxjyKVm5u18uVvyvrwGy6jZssFuLPUv6cAHmTAPeOYD0joBjou5E
-         TCTy2g7WB/yvw==
+        b=P7mbsYTwr8FAZSziLNTBYcHxEL0bwO1N5uSk0kLF0pB7j//Nmqo61SzGkoXAOpv7P
+         Qh2pKMSZsG/UkD2/AHBby+wT2L/6sosdsGaSFrNKWhHDtX2h+1ktHYky6Kkz1FPHzW
+         PNkC1ik45wdhBq5BuwUf0wOwaaHZOw6YeW0vC7LiZc+WYqJwg2B3vsqvmCEu+hIoo4
+         AzoHCn8aZ94fzIy7YwaG41y02Id0iq8smbd23r57+HmqkP2iAg92xACXm/J+YQnobu
+         bDx7X8du13fAzjn4f/KxmItkVb/i+pjaY8XURDboQLCNPNrsok6IJaLSF0C7MdgMIm
+         z+atlvl9BKwVQ==
 From:   Mark Brown <broonie@kernel.org>
-To:     perex@perex.cz, frattaroli.nicolas@gmail.com, lgirdwood@gmail.com,
-        tiwai@suse.com, katsuhiro@katsuster.net
-Cc:     linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-rockchip@lists.infradead.org
-In-Reply-To: <20220427172310.138638-1-frattaroli.nicolas@gmail.com>
-References: <20220427172310.138638-1-frattaroli.nicolas@gmail.com>
-Subject: Re: [PATCH] ASoC: rk3328: fix disabling mclk on pclk probe failure
-Message-Id: <165116441767.4067540.16396705501182849019.b4-ty@kernel.org>
-Date:   Thu, 28 Apr 2022 17:46:57 +0100
+To:     tiwai@suse.com, nick83ola@gmail.com, lgirdwood@gmail.com,
+        perex@perex.cz
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        patches@opensource.cirrus.com, pierre-louis.bossart@linux.intel.com
+In-Reply-To: <20220427212916.40145-1-nick83ola@gmail.com>
+References: <20220427212916.40145-1-nick83ola@gmail.com>
+Subject: Re: [PATCH] ASoC: wm8960: Add ACPI support
+Message-Id: <165116441974.4067540.12774509625457137042.b4-ty@kernel.org>
+Date:   Thu, 28 Apr 2022 17:46:59 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -50,12 +50,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Apr 2022 19:23:11 +0200, Nicolas Frattaroli wrote:
-> If preparing/enabling the pclk fails, the probe function should
-> unprepare and disable the previously prepared and enabled mclk,
-> which it doesn't do. This commit rectifies this.
+On Wed, 27 Apr 2022 22:29:16 +0100, Nicola Lunghi wrote:
+> HID made of either Wolfson/CirrusLogic PCI ID + 8960 identifier
 > 
+> This helps enumerate the Waveshare WM8960 WM8960 Hi-Fi Sound
+> Card HAT on the Up2 platform.
 > 
+> The scripts at https://github.com/thesofproject/acpi-scripts
+> can be used to add the ACPI initrd overlay.
+> 
+> [...]
 
 Applied to
 
@@ -63,8 +67,8 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: rk3328: fix disabling mclk on pclk probe failure
-      commit: dd508e324cdde1c06ace08a8143fa50333a90703
+[1/1] ASoC: wm8960: Add ACPI support
+      commit: 7e0bdbae446ff8a752484f6bcbcd7157e7484158
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
