@@ -2,83 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB35CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:04:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D2BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:04:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244739AbiD1HHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57486 "EHLO
+        id S244762AbiD1HIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 03:08:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242508AbiD1HHr (ORCPT
+        with ESMTP id S244769AbiD1HIB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:07:47 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 862C998F5C;
-        Thu, 28 Apr 2022 00:04:33 -0700 (PDT)
-X-UUID: 3e03f09c9a58408aaa3c12df5e4b055a-20220428
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:ce657a71-afc7-46a5-9da8-93a4ec98089c,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:faefae9,CLOUDID:c9d5012f-6199-437e-8ab4-9920b4bc5b76,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 3e03f09c9a58408aaa3c12df5e4b055a-20220428
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <yongqiang.niu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 775402738; Thu, 28 Apr 2022 15:04:29 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 28 Apr 2022 15:04:27 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 28 Apr 2022 15:04:05 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 28 Apr 2022 15:04:04 +0800
-From:   Yongqiang Niu <yongqiang.niu@mediatek.com>
-To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Yongqiang Niu <yongqiang.niu@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Dennis YC Hsieh <dennis-yc.hsieh@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>
-Subject: [PATCH v3, 0/1] drm/mediatek: add lut diff flag for new gamma hardware
-Date:   Thu, 28 Apr 2022 15:04:02 +0800
-Message-ID: <20220428070403.12968-1-yongqiang.niu@mediatek.com>
+        Thu, 28 Apr 2022 03:08:01 -0400
+Received: from m12-13.163.com (m12-13.163.com [220.181.12.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 91ED298F44;
+        Thu, 28 Apr 2022 00:04:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=v7ddE
+        ZSDRf6xzmmtMm6vxzsMFaKIpnIxHYegWszCApk=; b=Br6R/9swlPSl10JEdBB33
+        yMX3nJpam/10siAqVrgByKkuWzQQBrxpTeCvEFdJvL/OxWDi+g0JC6Ed1VT3Q2R2
+        USLimbFlLkjyASuccmhYDC2JEwc1LOIIFJyoh0wGC+Wq6+o9g0mQKyahTt3sdXQr
+        SwZdl6BrYm7yVrV2wCrq5k=
+Received: from carlis (unknown [218.17.89.92])
+        by smtp9 (Coremail) with SMTP id DcCowADHjHsXPGpiuFB+Dw--.17805S2;
+        Thu, 28 Apr 2022 15:02:47 +0800 (CST)
+From:   Xuezhi Zhang <zhangxuezhi1@coolpad.com>
+To:     jejb@linux.ibm.com, martin.petersen@oracle.com
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xuezhi Zhang <zhangxuezhi1@coolpad.com>
+Subject: [PATCH] scsi: pmcraid: convert sysfs snprintf to sysfs_emit
+Date:   Thu, 28 Apr 2022 07:02:45 +0000
+Message-Id: <20220428070245.255827-1-zhangxuezhi1@coolpad.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DcCowADHjHsXPGpiuFB+Dw--.17805S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7CF48CF18tr47Zr45uFy8Zrb_yoW8WF4xpa
+        yrGryUAa1DJr15AryUXay0v3WFvayxJa4DtFWkZ3savF9ayrWkJ39rAFWagFs5Gr4kur9x
+        Zw4qyw1Y9a1jyrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jlbyZUUUUU=
+X-Originating-IP: [218.17.89.92]
+Sender: llyz108@163.com
+X-CM-SenderInfo: xoo16iiqy6il2tof0z/1tbiDxnwhVUMdGFAjgAAsh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-base v5.17-rc1
+Fix the following coccicheck warnings:
+drivers/scsi/pmcraid.c:3591:8-16:
+WARNING: use scnprintf or sprintf
+drivers/scsi/pmcraid.c:3557:8-16:
+WARNING: use scnprintf or sprintf
+drivers/scsi/pmcraid.c:3496:8-16:
+WARNING: use scnprintf or sprintf
 
-change since v2:
--change singed-off-by
+Signed-off-by: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
+---
+ drivers/scsi/pmcraid.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-
-Yongqiang Niu (1):
-  drm/mediatek: add lut diff flag for new gamma hardware support
-
- drivers/gpu/drm/mediatek/mtk_disp_aal.c   |  2 +-
- drivers/gpu/drm/mediatek/mtk_disp_drv.h   |  2 +-
- drivers/gpu/drm/mediatek/mtk_disp_gamma.c | 34 +++++++++++++++++++----
- 3 files changed, 30 insertions(+), 8 deletions(-)
-
+diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
+index 3d5cd337a2a6..299553ff2277 100644
+--- a/drivers/scsi/pmcraid.c
++++ b/drivers/scsi/pmcraid.c
+@@ -3493,7 +3493,7 @@ static ssize_t pmcraid_show_log_level(
+ 	struct Scsi_Host *shost = class_to_shost(dev);
+ 	struct pmcraid_instance *pinstance =
+ 		(struct pmcraid_instance *)shost->hostdata;
+-	return snprintf(buf, PAGE_SIZE, "%d\n", pinstance->current_log_level);
++	return sysfs_emit(buf, "%d\n", pinstance->current_log_level);
+ }
+ 
+ /**
+@@ -3554,8 +3554,7 @@ static ssize_t pmcraid_show_drv_version(
+ 	char *buf
+ )
+ {
+-	return snprintf(buf, PAGE_SIZE, "version: %s\n",
+-			PMCRAID_DRIVER_VERSION);
++	return sysfs_emt(buf, "version: %s\n", PMCRAID_DRIVER_VERSION);
+ }
+ 
+ static struct device_attribute pmcraid_driver_version_attr = {
+@@ -3588,8 +3587,7 @@ static ssize_t pmcraid_show_adapter_id(
+ 		pinstance->pdev->devfn;
+ 	u32 aen_group = pmcraid_event_family.id;
+ 
+-	return snprintf(buf, PAGE_SIZE,
+-			"adapter id: %d\nminor: %d\naen group: %d\n",
++	return sysfs_emit(buf, "adapter id: %d\nminor: %d\naen group: %d\n",
+ 			adapter_id, MINOR(pinstance->cdev.dev), aen_group);
+ }
+ 
 -- 
 2.25.1
 
