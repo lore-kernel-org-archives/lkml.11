@@ -2,151 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C27C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:17:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EF08C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349661AbiD1QUp (ORCPT
+        id S1349879AbiD1QWd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 12:20:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45588 "EHLO
+        Thu, 28 Apr 2022 12:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236350AbiD1QUn (ORCPT
+        with ESMTP id S236350AbiD1QWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 12:20:43 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB1C3EBBF
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:17:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651162648; x=1682698648;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=vebxYnf7INN7pEbjK0bBU6XAyt/+YjQwfCwAbd8efsM=;
-  b=heBeRSQfUtVJE85u9YUPygzLO2577DZI9pMC24wLDdNtk/lSMZX4JhA6
-   TlPS+S7DltRtv3JZaTCB7ZUYyoQiqAMffdhe9V/MdzOHhj8+oKDgy+qr0
-   FawabNudcbzRr0eqGWNPM8NFE3AVT9+rrxThHRkfL1AKIsT2dub9MmyUv
-   G7z+5XaO2lmhrms2o9bpzddi/z3Pt75s4O1+og01G0PXLZBz54sPCoZEu
-   6b2gJCiprrh21fD767EDMSwsN0WORde/xaEcZBzIn7E9i49hN83B2kYqv
-   FNTkhFVSUy1jcr5i4fF1PSwWiu0y/HPiPXNhHubCLrV0efkrAn7wAZZj2
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="246896011"
-X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="246896011"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 09:15:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="541450892"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 28 Apr 2022 09:15:45 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nk6nw-0005WH-Th;
-        Thu, 28 Apr 2022 16:15:44 +0000
-Date:   Fri, 29 Apr 2022 00:15:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [asahilinux:pr/22 95/189] lib/vsprintf.c:1804:30: sparse: sparse:
- cast to restricted __le32
-Message-ID: <202204290013.olXBPppO-lkp@intel.com>
+        Thu, 28 Apr 2022 12:22:32 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F63F29C93
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 09:19:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651162757; x=1682698757;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=t0aBCiflcBypZDeWPvvxI6gb6KauRymjuytqGky4Ut0=;
+  b=uoA9whTqwzee98UQycNmhDnTAbVllLwyAJ15apSGMeY76ngr8Wo9kVGl
+   ssPtzSACVoJmdmq4R6sfonVJpWUigXpibQbY0zEjN+UdXmqfoeThHE0W8
+   B5Jotjyjo1T33tMNdT66Ddo03rSb1kdz91KPRBCFmK5ET8OUirEupJOs3
+   k=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 28 Apr 2022 09:19:17 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 09:19:16 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 28 Apr 2022 09:19:15 -0700
+Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 28 Apr
+ 2022 09:19:14 -0700
+Date:   Thu, 28 Apr 2022 12:19:11 -0400
+From:   Qian Cai <quic_qiancai@quicinc.com>
+To:     Zi Yan <ziy@nvidia.com>
+CC:     David Hildenbrand <david@redhat.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Eric Ren <renzhengeek@gmail.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Oscar Salvador" <osalvador@suse.de>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v11 0/6] Use pageblock_order for cma and
+ alloc_contig_range alignment.
+Message-ID: <20220428161911.GB182@qian>
+References: <20220425143118.2850746-1-zi.yan@sent.com>
+ <20220426201855.GA1014@qian>
+ <B621B4DD-5D11-4F0E-AFF5-F8684AE37E57@nvidia.com>
+ <20220426210801.GA1038@qian>
+ <2B9844C8-6D35-41E2-ACB2-9854E7A9C29F@nvidia.com>
+ <20220427132720.GC71@qian>
+ <1D88AE1B-4DFC-400F-A054-662E3824C9AF@nvidia.com>
+ <A1956578-A851-4BF3-BD57-12571244DB5E@nvidia.com>
+ <20220428123308.GA71@qian>
+ <0E75B247-8150-48A3-83AE-56C586030006@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
+In-Reply-To: <0E75B247-8150-48A3-83AE-56C586030006@nvidia.com>
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux pr/22
-head:   7ee315306d1a3b0da8cf2a53e7f55889d0e7f034
-commit: 87176f64712bb42092a6c89189f8b788f36eb70b [95/189] lib/vsprintf: Add support for generic FOURCCs by extending %p4cc
-config: powerpc-randconfig-s031-20220427 (https://download.01.org/0day-ci/archive/20220429/202204290013.olXBPppO-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/AsahiLinux/linux/commit/87176f64712bb42092a6c89189f8b788f36eb70b
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux pr/22
-        git checkout 87176f64712bb42092a6c89189f8b788f36eb70b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=powerpc SHELL=/bin/bash
+On Thu, Apr 28, 2022 at 08:39:06AM -0400, Zi Yan wrote:
+> How about the one attached? I can apply it to next-20220428. Let me know
+> if you are using a different branch. Thanks.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The original endless loop is gone, but running some syscall fuzzer
+afterwards for a while would trigger the warning here. I have yet to
+figure out if this is related to this series.
 
+        /*
+         * There are several places where we assume that the order value is sane
+         * so bail out early if the request is out of bound.
+         */
+        if (unlikely(order >= MAX_ORDER)) {
+                WARN_ON_ONCE(!(gfp & __GFP_NOWARN));
+                return NULL;
+        }
 
-sparse warnings: (new ones prefixed by >>)
->> lib/vsprintf.c:1804:30: sparse: sparse: cast to restricted __le32
->> lib/vsprintf.c:1807:30: sparse: sparse: cast to restricted __be32
-
-vim +1804 lib/vsprintf.c
-
-  1778	
-  1779	static noinline_for_stack
-  1780	char *fourcc_string(char *buf, char *end, const u32 *fourcc,
-  1781			    struct printf_spec spec, const char *fmt)
-  1782	{
-  1783		char output[sizeof("0123 little-endian (0x01234567)")];
-  1784		char *p = output;
-  1785		unsigned int i;
-  1786		bool pix_fmt = false;
-  1787		u32 orig, val;
-  1788	
-  1789		if (fmt[1] != 'c')
-  1790			return error_string(buf, end, "(%p4?)", spec);
-  1791	
-  1792		if (check_pointer(&buf, end, fourcc, spec))
-  1793			return buf;
-  1794	
-  1795		orig = get_unaligned(fourcc);
-  1796		switch (fmt[2]) {
-  1797		case 'h':
-  1798			val = orig;
-  1799			break;
-  1800		case 'r':
-  1801			val = orig = swab32(orig);
-  1802			break;
-  1803		case 'l':
-> 1804			val = orig = le32_to_cpu(orig);
-  1805			break;
-  1806		case 'b':
-> 1807			val = orig = be32_to_cpu(orig);
-  1808			break;
-  1809		case 'c':
-  1810			/* Pixel formats are printed LSB-first */
-  1811			val = swab32(orig & ~BIT(31));
-  1812			pix_fmt = true;
-  1813			break;
-  1814		default:
-  1815			return error_string(buf, end, "(%p4?)", spec);
-  1816		}
-  1817	
-  1818		for (i = 0; i < sizeof(u32); i++) {
-  1819			unsigned char c = val >> ((3 - i) * 8);
-  1820	
-  1821			/* Print non-control ASCII characters as-is, dot otherwise */
-  1822			*p++ = isascii(c) && isprint(c) ? c : '.';
-  1823		}
-  1824	
-  1825		if (pix_fmt) {
-  1826			*p++ = ' ';
-  1827			strcpy(p, orig & BIT(31) ? "big-endian" : "little-endian");
-  1828			p += strlen(p);
-  1829		}
-  1830	
-  1831		*p++ = ' ';
-  1832		*p++ = '(';
-  1833		p = special_hex_number(p, output + sizeof(output) - 2, orig, sizeof(u32));
-  1834		*p++ = ')';
-  1835		*p = '\0';
-  1836	
-  1837		return string(buf, end, output, spec);
-  1838	}
-  1839	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+ WARNING: CPU: 26 PID: 172874 at mm/page_alloc.c:5368 __alloc_pages
+ CPU: 26 PID: 172874 Comm: trinity-main Not tainted 5.18.0-rc4-next-20220428-dirty #67
+ pstate: 20400009 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+ tpidr_el2 : ffff28cf80a61000
+ pc : __alloc_pages
+ lr : alloc_pages
+ sp : ffff8000597b70f0
+ x29: ffff8000597b70f0 x28: ffff0801e68d34c0 x27: 0000000000000000
+ x26: 1ffff0000b2f6ea2 x25: ffff8000597b7510 x24: 0000000000000dc0
+ x23: ffff28cf80a61000 x22: 000000000000000e x21: 1ffff0000b2f6e28
+ x20: 0000000000040dc0 x19: ffffdf670d4a6fe0 x18: ffffdf66fa017d1c
+ x17: ffffdf66f42f8348 x16: 1fffe1003cd1a7b3 x15: 000000000000001a
+ x14: 1fffe1003cd1a7a6 x13: 0000000000000004 x12: ffff70000b2f6e05
+ x11: 1ffff0000b2f6e04 x10: 00000000f204f1f1 x9 : 000000000000f204
+ x8 : dfff800000000000 x7 : 00000000f3000000 x6 : 00000000f3f3f3f3
+ x5 : ffff70000b2f6e28 x4 : ffff0801e68d34c0 x3 : 0000000000000000
+ x2 : 0000000000000000 x1 : 0000000000000001 x0 : 0000000000040dc0
+ Call trace:
+  __alloc_pages
+  alloc_pages
+  kmalloc_order
+  kmalloc_order_trace
+  __kmalloc
+  __regset_get
+  regset_get_alloc
+  fill_thread_core_info
+  fill_note_info
+  elf_core_dump
+  do_coredump
+  get_signal
+  do_signal
+  do_notify_resume
+  el0_svc
+  el0t_64_sync_handler
+  el0t_64_sync
+ irq event stamp: 3614
+ hardirqs last  enabled at (3613):  _raw_spin_unlock_irqrestore
+ hardirqs last disabled at (3614):  el1_dbg
+ softirqs last  enabled at (2988):  fpsimd_preserve_current_state
+ softirqs last disabled at (2986):  fpsimd_preserve_current_state
