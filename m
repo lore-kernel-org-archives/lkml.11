@@ -2,115 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF2FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:43:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:43:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349546AbiD1Pqk (ORCPT
+        id S1349570AbiD1Pqq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 11:46:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36014 "EHLO
+        Thu, 28 Apr 2022 11:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349506AbiD1PqU (ORCPT
+        with ESMTP id S1349527AbiD1PqZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 11:46:20 -0400
+        Thu, 28 Apr 2022 11:46:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B9EB715C;
-        Thu, 28 Apr 2022 08:43:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027B7B3DEE;
+        Thu, 28 Apr 2022 08:43:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB08EB82DAA;
-        Thu, 28 Apr 2022 15:42:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D529FC385AF;
-        Thu, 28 Apr 2022 15:42:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D537B82DE9;
+        Thu, 28 Apr 2022 15:43:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFE14C385A0;
+        Thu, 28 Apr 2022 15:43:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651160578;
-        bh=cUTeQdSbuKp1C1IB6s6cp2R4rK9jLAPr9VFjKwq5OVg=;
+        s=korg; t=1651160587;
+        bh=oOTTQiTXbJJNutl+GtVstgkF+NXnhIxj+Hxg+8AQ8Dw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NVbN9lEcnOc/+Jxc3KuGDhg6Dr8dnI5JqV5nzay/g7SJqVoLqShtoT6oewTEOLYwD
-         flLEKLx58kSL9hiOdWdGzg23ZYE1TfoW1gPGUCsbpTcgy2HWR66hQLfLqNuQoFf7my
-         sW0RXQzWXELykHKHBoXm5bo5DKucM8/ujbgHuW0s=
+        b=OB2EQAs7PyVqpxi2Lfaj07HXTncbkkVCdkHQG/FCb6oyCw3J+usQafXGEpe/99sjo
+         MAmMZSIGmZHNWnris5ZiucTCq0I9vyevcAcc2wAfuXoSR0mlJKQelJwcSG5dXX8vxv
+         P5xcrr6X1UhcXclL0imLtWu3a4M8OfrnNXGitVxU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Muchun Song <songmuchun@bytedance.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Lars Persson <lars.persson@axis.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Peter Xu <peterx@redhat.com>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Zi Yan <ziy@nvidia.com>,
+Cc:     Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Youquan Song <youquan.song@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH AUTOSEL 06/14] mm: userfaultfd: fix missing cache flush in mcopy_atomic_pte() and __mcopy_atomic()
-Date:   Thu, 28 Apr 2022 17:42:14 +0200
-Message-Id: <20220428154222.1230793-6-gregkh@linuxfoundation.org>
+Subject: [PATCH AUTOSEL 09/14] mm/hwpoison: fix error page recovered but reported "not recovered"
+Date:   Thu, 28 Apr 2022 17:42:17 +0200
+Message-Id: <20220428154222.1230793-9-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220428154222.1230793-1-gregkh@linuxfoundation.org>
 References: <20220428154222.1230793-1-gregkh@linuxfoundation.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1990; i=gregkh@linuxfoundation.org; h=from:subject; bh=w/4yshSSx6bYlycE+CXvFti1EqgLl8fqTCv8PDJp7+o=; b=owGbwMvMwCRo6H6F97bub03G02pJDElZW+8emM35cFrCfpYrsaulchb4ctgd5eWKLZG7/95q8YWr nNd3dcSyMAgyMciKKbJ82cZzdH/FIUUvQ9vTMHNYmUCGMHBxCsBErtQyLJh7/oDIuZBg9RvHvypanU rzKWsu+8swP+T74rvTtdWWGBqf3uH1JJPj3tWP0gA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2501; i=gregkh@linuxfoundation.org; h=from:subject; bh=fS6eim227H0Y5MlY1k72kHj4DPyJTiatgbOo3atAeao=; b=owGbwMvMwCRo6H6F97bub03G02pJDElZW+8Wz+d9/WHfovv3719Yo7xhQeOqzbzx5xPCv+2+NWnd QbHUWR2xLAyCTAyyYoosX7bxHN1fcUjRy9D2NMwcViaQIQxcnAIwkSlNDPMsNZcaznmwME66YNryrJ xJy7J4dRUY5ln/sgpvOsDQVqO6o7P2c76epnZ9OAA=
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-commit 7c25a0b89a487878b0691e6524fb5a8827322194 upstream.
+commit 046545a661af2beec21de7b90ca0e35f05088a81 upstream.
 
-userfaultfd calls mcopy_atomic_pte() and __mcopy_atomic() which do not
-do any cache flushing for the target page.  Then the target page will be
-mapped to the user space with a different address (user address), which
-might have an alias issue with the kernel address used to copy the data
-from the user to.  Fix this by insert flush_dcache_page() after
-copy_from_user() succeeds.
+When an uncorrected memory error is consumed there is a race between the
+CMCI from the memory controller reporting an uncorrected error with a
+UCNA signature, and the core reporting and SRAR signature machine check
+when the data is about to be consumed.
 
-Link: https://lkml.kernel.org/r/20220210123058.79206-7-songmuchun@bytedance.com
-Fixes: b6ebaedb4cb1 ("userfaultfd: avoid mmap_sem read recursion in mcopy_atomic")
-Fixes: c1a4de99fada ("userfaultfd: mcopy_atomic|mfill_zeropage: UFFDIO_COPY|UFFDIO_ZEROPAGE preparation")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Cc: Axel Rasmussen <axelrasmussen@google.com>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Fam Zheng <fam.zheng@bytedance.com>
-Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Lars Persson <lars.persson@axis.com>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Peter Xu <peterx@redhat.com>
-Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
-Cc: Zi Yan <ziy@nvidia.com>
+If the CMCI wins that race, the page is marked poisoned when
+uc_decode_notifier() calls memory_failure() and the machine check
+processing code finds the page already poisoned.  It calls
+kill_accessing_process() to make sure a SIGBUS is sent.  But returns the
+wrong error code.
+
+Console log looks like this:
+
+  mce: Uncorrected hardware memory error in user-access at 3710b3400
+  Memory failure: 0x3710b3: recovery action for dirty LRU page: Recovered
+  Memory failure: 0x3710b3: already hardware poisoned
+  Memory failure: 0x3710b3: Sending SIGBUS to einj_mem_uc:361438 due to hardware memory corruption
+  mce: Memory error not recovered
+
+kill_accessing_process() is supposed to return -EHWPOISON to notify that
+SIGBUS is already set to the process and kill_me_maybe() doesn't have to
+send it again.  But current code simply fails to do this, so fix it to
+make sure to work as intended.  This change avoids the noise message
+"Memory error not recovered" and skips duplicate SIGBUSs.
+
+[tony.luck@intel.com: reword some parts of commit message]
+
+Link: https://lkml.kernel.org/r/20220113231117.1021405-1-naoya.horiguchi@linux.dev
+Fixes: a3f5d80ea401 ("mm,hwpoison: send SIGBUS with error virutal address")
+Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reported-by: Youquan Song <youquan.song@intel.com>
+Cc: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/userfaultfd.c | 3 +++
- 1 file changed, 3 insertions(+)
+ mm/memory-failure.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/mm/userfaultfd.c b/mm/userfaultfd.c
-index 885e5adb0168..7259f96faaa0 100644
---- a/mm/userfaultfd.c
-+++ b/mm/userfaultfd.c
-@@ -153,6 +153,8 @@ static int mcopy_atomic_pte(struct mm_struct *dst_mm,
- 			/* don't free the page */
- 			goto out;
- 		}
-+
-+		flush_dcache_page(page);
- 	} else {
- 		page = *pagep;
- 		*pagep = NULL;
-@@ -628,6 +630,7 @@ static __always_inline ssize_t __mcopy_atomic(struct mm_struct *dst_mm,
- 				err = -EFAULT;
- 				goto out;
- 			}
-+			flush_dcache_page(page);
- 			goto retry;
- 		} else
- 			BUG_ON(page);
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index 15dcedbc1730..682eedb5ea75 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -707,8 +707,10 @@ static int kill_accessing_process(struct task_struct *p, unsigned long pfn,
+ 			      (void *)&priv);
+ 	if (ret == 1 && priv.tk.addr)
+ 		kill_proc(&priv.tk, pfn, flags);
++	else
++		ret = 0;
+ 	mmap_read_unlock(p->mm);
+-	return ret ? -EFAULT : -EHWPOISON;
++	return ret > 0 ? -EHWPOISON : -EFAULT;
+ }
+ 
+ static const char *action_name[] = {
 -- 
 2.36.0
 
