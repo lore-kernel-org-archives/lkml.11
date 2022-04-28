@@ -2,265 +2,330 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05F08C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:09:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE807C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:11:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346764AbiD1NNI (ORCPT
+        id S1346446AbiD1NNv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42172 "EHLO
+        Thu, 28 Apr 2022 09:13:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346446AbiD1NNG (ORCPT
+        with ESMTP id S1345973AbiD1NNq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:13:06 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB0E7B0A6C
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:09:51 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id a10so5244919oif.9
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:09:51 -0700 (PDT)
+        Thu, 28 Apr 2022 09:13:46 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 730251AF32
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:10:23 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id k12so3152437qvc.4
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:10:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yQhVPEwocqKZE/TgP32Dswwk0+c7D7Jj1pNtxxIXVbo=;
-        b=xbECkeKwHS85QEYeJrd90iT+3TVdNgg2pn7Xu1lVEwMaFzNkQZzmFf5v6rMsEP6jQ8
-         /Z/Betg7Yp+PvW8EQAts2v7NnvkO4u+f50FGNur2e84EX/Rbn7r1fS99ENreroAkqqh8
-         0RYnZ8clcHy7E+gh6tuOlV5tRug7xnNmnqpzZXbmui2cIsu0OSml4erNLcpDxZJzEEQ1
-         reyiP3IJETy+kpP1Kv8LUmRm4XQMxV3K/9UCV1uJ/TJ4d+4ZOccngKXh+fu1zYvL+1qP
-         ydkRtP9FKZnnIiE4hcr9Elbg3WYfMx563POrROpxyLf11LVs+tkywB73dcoX9tulms3u
-         CsGw==
+        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=2TRrUwuxYePyCI3WXghga60BzOAcIaDjgJpPfXkF+MY=;
+        b=a2UsnP0tEGjVv5vDoh+2KICnjlE1cHILNpfrjSpLO+mcCP2kVAOGe54xwb6OY8jnqd
+         mFNuClZqmHN4USYrhRMvY+ES4R99OaGevo9Lg5FHkykLNuO9C5P8cxJdJXe39y+FEmfQ
+         OGV89R4UQqT4p9bRwgdS2w4R5b7zNkjai04rEhLOZ3Cnj+TmZ9+RVhrKXSZxeVp2joBH
+         e+RAZ7XyGNHH1eTIvR1vjDv2Az7Hf+zPU+r6UC2X0E7rkZ0hQux7xkaEg68N13mscXJ/
+         XK/Z4Z61SDw7M5HInJUmnIzOtQSc8fekjJaXCsGjHgW2Q/HqxbBYTbiQZc1Jxxz942Tt
+         ubWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yQhVPEwocqKZE/TgP32Dswwk0+c7D7Jj1pNtxxIXVbo=;
-        b=FKIHhC/xTAa0E5ON5BX5ZGlNAIG8I0F5pbSpQxuCjjmdY5CXwQHslEuR++9HHB3hqV
-         tyBRCmkcOBl7OZ2ty9OC1cYsHJ7GWaQ4NO0lGXLRrUNy+SJ1DZiLNKf3re0DWrjN7wau
-         R8lDaS7vyNl+CS/HANaksS9z4kQVam0QwgvhnTD8pkAw6au0vaCrV5Hck4JWunDJ5+MB
-         2nqkORPQd7jfDm5LHQY10uaj7tirOIB6qCOqboSN7w0v6ymCD57kPuiiPVd4tZUpep14
-         2O7YNwtdwAp9eJLnHZB5S/6YxDR2+Dg/UekI+htHvEjQNXBCrFgWcaeNuD73TO4/7tDb
-         fh+A==
-X-Gm-Message-State: AOAM532CRb+s23FK3koKcTmYAw4RMimPXLqYsDNeAHFAKuf5/mMFF7kk
-        Bs5h2EzeVi+WvVvSUfbiNodGTg==
-X-Google-Smtp-Source: ABdhPJyNNu/9YjwEVSqzGB56IIlBp+Ne+BZ4LK5tD0ZCnv3vt9HiHm4vdI6A/vCz3mURFgR20L7wqQ==
-X-Received: by 2002:a05:6808:144a:b0:325:642:f58f with SMTP id x10-20020a056808144a00b003250642f58fmr12209158oiv.221.1651151390975;
-        Thu, 28 Apr 2022 06:09:50 -0700 (PDT)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id u7-20020a4a85c7000000b0035c12c8be73sm7963763ooh.29.2022.04.28.06.09.49
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=2TRrUwuxYePyCI3WXghga60BzOAcIaDjgJpPfXkF+MY=;
+        b=aNKwumVcSZFX6l0tkl7KLBmCRbUtRPkyC1v34ouuWCYWsDyLq8bVaMNsauovyvkRQc
+         CWlDfwavD920EdM73kfRj2V9Jf0HU8MHb5YzAH751KuMHVfiYXo0fsh7tUxUcjgv3DDg
+         a8DlcLCR/1b6V4eBlW7FtgMYHDu/oqiYKdiZ/gWybxNDaxdjsIPneBqE3qp84iNIQwqw
+         bDYKAv/snfKg0TdFu68WMIj4AnDJ0GB2xLoZV5TSVfeS4pMeJd0LLH/YLmOlcuFg8hz6
+         BCwf+ni0sbT0AgfC7yG+rEBKvQDQOXvDjPFPNzdVKbJkSQgGYCrghFWB/rM3nafahoT8
+         xV6Q==
+X-Gm-Message-State: AOAM531RRdo0wHezuN9hY5cCH385j7vgCToLjl+qLMy6evxC3bvkUmbU
+        lyXyRw2c5AxbOJSNxhofQpsD3g==
+X-Google-Smtp-Source: ABdhPJzyj6H4QGA1ydzFr7H+emnJ0ts6G9Rv/pqz78Z5Xf0TW0wtyqn2iGK4oxGCAkwIMXG6u+/HJg==
+X-Received: by 2002:a05:6214:1d09:b0:456:47c5:1db with SMTP id e9-20020a0562141d0900b0045647c501dbmr9214691qvd.73.1651151422600;
+        Thu, 28 Apr 2022 06:10:22 -0700 (PDT)
+Received: from nicolas-tpx395.localdomain (173-246-12-168.qc.cable.ebox.net. [173.246.12.168])
+        by smtp.gmail.com with ESMTPSA id v3-20020a05622a014300b002e1dcd4cfa9sm13158696qtw.64.2022.04.28.06.10.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 06:09:50 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 06:11:44 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Johan Hovold <johan+linaro@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Krzysztof Wilczy??ski <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Prasad Malisetty <quic_pmaliset@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-phy@lists.infradead.org
-Subject: Re: [PATCH RFC 1/5] phy: qcom-qmp: add support for pipe clock muxing
-Message-ID: <YmqSkP++4xzisJHp@ripper>
-References: <20220421102041.17345-1-johan+linaro@kernel.org>
- <20220421102041.17345-2-johan+linaro@kernel.org>
+        Thu, 28 Apr 2022 06:10:22 -0700 (PDT)
+Message-ID: <cf05c8031345341caf641d37aeeb58bd506b624a.camel@ndufresne.ca>
+Subject: Re: [PATCH v4 23/24] media: hantro: Add H.264 field decoding support
+From:   Nicolas Dufresne <nicolas@ndufresne.ca>
+To:     Hans Verkuil <hverkuil@xs4all.nl>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-media@vger.kernel.org, Jonas Karlman <jonas@kwiboo.se>,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 28 Apr 2022 09:10:20 -0400
+In-Reply-To: <5daa1dcd-a3a7-f508-e731-3a013ebc82ea@xs4all.nl>
+References: <20220426125751.108293-1-nicolas.dufresne@collabora.com>
+         <20220426125751.108293-24-nicolas.dufresne@collabora.com>
+         <5daa1dcd-a3a7-f508-e731-3a013ebc82ea@xs4all.nl>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.0 (3.44.0-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220421102041.17345-2-johan+linaro@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 21 Apr 03:20 PDT 2022, Johan Hovold wrote:
+Le jeudi 28 avril 2022 =C3=A0 10:50 +0200, Hans Verkuil a =C3=A9crit=C2=A0:
+> On 26/04/2022 14:57, Nicolas Dufresne wrote:
+> > This adds the required code to support field decoding. While most of
+> > the code is derived from Rockchip and VSI reference code, the
+> > reduction of the reference list to 16 entries was found by
+> > trial and errors. The list consists of all the references with the
+> > opposite field parity.
+> >=20
+> > The strategy is to deduplicate the reference picture that points
+> > to the same storage (same index). The choice of opposite parity has
+> > been made to keep the other field of the current field pair in the
+> > list. This method may not be robust if a field was lost.
+> >=20
+> > Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+> > Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+> > ---
+> >  drivers/staging/media/hantro/hantro_h264.c | 122 ++++++++++++++++++---
+> >  drivers/staging/media/hantro/hantro_hw.h   |   1 +
+> >  2 files changed, 109 insertions(+), 14 deletions(-)
+> >=20
+> > diff --git a/drivers/staging/media/hantro/hantro_h264.c b/drivers/stagi=
+ng/media/hantro/hantro_h264.c
+> > index 7377fc26f780..7502dddb324c 100644
+> > --- a/drivers/staging/media/hantro/hantro_h264.c
+> > +++ b/drivers/staging/media/hantro/hantro_h264.c
+> > @@ -22,6 +22,12 @@
+> >  #define POC_BUFFER_SIZE			34
+> >  #define SCALING_LIST_SIZE		(6 * 16 + 2 * 64)
+> > =20
+> > +/*
+> > + * For valid and long term reference marking, index are reversed, so b=
+it 31
+> > + * indicates the status of the picture 0.
+> > + */
+> > +#define REF_BIT(i)			BIT(32 - 1 - (i))
+> > +
+> >  /* Data structure describing auxiliary buffer format. */
+> >  struct hantro_h264_dec_priv_tbl {
+> >  	u32 cabac_table[CABAC_INIT_BUFFER_SIZE];
+> > @@ -227,6 +233,7 @@ static void prepare_table(struct hantro_ctx *ctx)
+> >  {
+> >  	const struct hantro_h264_dec_ctrls *ctrls =3D &ctx->h264_dec.ctrls;
+> >  	const struct v4l2_ctrl_h264_decode_params *dec_param =3D ctrls->decod=
+e;
+> > +	const struct v4l2_ctrl_h264_sps *sps =3D ctrls->sps;
+> >  	struct hantro_h264_dec_priv_tbl *tbl =3D ctx->h264_dec.priv.cpu;
+> >  	const struct v4l2_h264_dpb_entry *dpb =3D ctx->h264_dec.dpb;
+> >  	u32 dpb_longterm =3D 0;
+> > @@ -237,20 +244,45 @@ static void prepare_table(struct hantro_ctx *ctx)
+> >  		tbl->poc[i * 2] =3D dpb[i].top_field_order_cnt;
+> >  		tbl->poc[i * 2 + 1] =3D dpb[i].bottom_field_order_cnt;
+> > =20
+> > +		if (!(dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_VALID))
+> > +			continue;
+> > +
+> >  		/*
+> >  		 * Set up bit maps of valid and long term DPBs.
+> > -		 * NOTE: The bits are reversed, i.e. MSb is DPB 0.
+> > +		 * NOTE: The bits are reversed, i.e. MSb is DPB 0. For frame
+> > +		 * decoding, bit 31 to 15 are used, while for field decoding,
+> > +		 * all bits are used, with bit 31 being a top field, 30 a bottom
+> > +		 * field and so on.
+> >  		 */
+> > -		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
+> > -			dpb_valid |=3D BIT(HANTRO_H264_DPB_SIZE - 1 - i);
+> > -		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM)
+> > -			dpb_longterm |=3D BIT(HANTRO_H264_DPB_SIZE - 1 - i);
+> > +		if (dec_param->flags & V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC) {
+> > +			if (dpb[i].fields & V4L2_H264_TOP_FIELD_REF)
+> > +				dpb_valid |=3D REF_BIT(i * 2);
+> > +
+> > +			if (dpb[i].fields & V4L2_H264_BOTTOM_FIELD_REF)
+> > +				dpb_valid |=3D REF_BIT(i * 2 + 1);
+> > +
+> > +			if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM) {
+> > +				dpb_longterm |=3D REF_BIT(i * 2);
+> > +				dpb_longterm |=3D REF_BIT(i * 2 + 1);
+> > +			}
+> > +		} else {
+> > +			dpb_valid |=3D REF_BIT(i);
+> > +
+> > +			if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM)
+> > +				dpb_longterm |=3D REF_BIT(i);
+> > +		}
+> > +	}
+> > +	ctx->h264_dec.dpb_valid =3D dpb_valid;
+> > +	ctx->h264_dec.dpb_longterm =3D dpb_longterm;
+> > +
+> > +	if ((dec_param->flags & V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC) ||
+> > +	    !(sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD)) {
+> > +		tbl->poc[32] =3D ctx->h264_dec.cur_poc;
+> > +		tbl->poc[33] =3D 0;
+> > +	} else {
+> > +		tbl->poc[32] =3D dec_param->top_field_order_cnt;
+> > +		tbl->poc[33] =3D dec_param->bottom_field_order_cnt;
+> >  	}
+> > -	ctx->h264_dec.dpb_valid =3D dpb_valid << 16;
+> > -	ctx->h264_dec.dpb_longterm =3D dpb_longterm << 16;
+> > -
+> > -	tbl->poc[32] =3D dec_param->top_field_order_cnt;
+> > -	tbl->poc[33] =3D dec_param->bottom_field_order_cnt;
+> > =20
+> >  	assemble_scaling_list(ctx);
+> >  }
+> > @@ -326,6 +358,8 @@ dma_addr_t hantro_h264_get_ref_buf(struct hantro_ct=
+x *ctx,
+> >  {
+> >  	struct v4l2_h264_dpb_entry *dpb =3D ctx->h264_dec.dpb;
+> >  	dma_addr_t dma_addr =3D 0;
+> > +	s32 cur_poc =3D ctx->h264_dec.cur_poc;
+> > +	u32 flags;
+> > =20
+> >  	if (dpb[dpb_idx].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
+> >  		dma_addr =3D hantro_get_ref(ctx, dpb[dpb_idx].reference_ts);
+> > @@ -343,7 +377,12 @@ dma_addr_t hantro_h264_get_ref_buf(struct hantro_c=
+tx *ctx,
+> >  		dma_addr =3D hantro_get_dec_buf_addr(ctx, buf);
+> >  	}
+> > =20
+> > -	return dma_addr;
+> > +	flags =3D dpb[dpb_idx].flags & V4L2_H264_DPB_ENTRY_FLAG_FIELD ? 0x2 :=
+ 0;
+> > +	flags |=3D abs(dpb[dpb_idx].top_field_order_cnt - cur_poc) <
+> > +		 abs(dpb[dpb_idx].bottom_field_order_cnt - cur_poc) ?
+> > +		 0x1 : 0;
+> > +
+> > +	return dma_addr | flags;
+> >  }
+> > =20
+> >  u16 hantro_h264_get_ref_nbr(struct hantro_ctx *ctx, unsigned int dpb_i=
+dx)
+> > @@ -355,6 +394,47 @@ u16 hantro_h264_get_ref_nbr(struct hantro_ctx *ctx=
+, unsigned int dpb_idx)
+> >  	return dpb->frame_num;
+> >  }
+> > =20
+> > +/*
+> > + * Removes all references with he same parity as current picture from =
+the
+> > + * reference list. The remaining list will have references with the op=
+posite
+> > + * parity. This is effectively a deduplication of references since eac=
+h buffer
+> > + * stores two fields. For this eason, each buffer are found twice in t=
+he
+> > + * reference list.
+> > + *
+> > + * This technique has been chosen through trial and error. This simple=
+ approach
+> > + * resulted in the highest conformance score. Note that this method ma=
+y suffer
+> > + * worse quality in the case an opposite reference frame has been lost=
+. If this
+> > + * becomes a problem in the future, it should be possible to add a pre=
+processing
+> > + * to identify un-paired fields and avoid removing them.
+> > + */
+> > +static void deduplicate_reflist(struct v4l2_h264_reflist_builder *b,
+> > +				struct v4l2_h264_reference *reflist)
+> > +{
+> > +	int write_idx =3D 0;
+> > +	int i;
+> > +
+> > +	if (b->cur_pic_fields =3D=3D V4L2_H264_FRAME_REF) {
+> > +		write_idx =3D b->num_valid;
+> > +		goto done;
+> > +	}
+> > +
+> > +	for (i =3D 0; i < b->num_valid; i++) {
+> > +		if (!(b->cur_pic_fields =3D=3D reflist[i].fields)) {
+> > +			reflist[write_idx++] =3D reflist[i];
+> > +			continue;
+> > +		}
+> > +	}
+> > +
+> > +done:
+> > +	/* Should not happen unless we have a bug in the reflist builder. */
+> > +	if (WARN_ON(write_idx > 16))
+> > +		write_idx =3D 16;
+> > +
+> > +	/* Clear the remaining, some streams fails otherwise */
+> > +	for (; write_idx < 16; write_idx++)
+> > +		reflist[write_idx].index =3D 15;
+> > +}
+> > +
+> >  int hantro_h264_dec_prepare_run(struct hantro_ctx *ctx)
+> >  {
+> >  	struct hantro_h264_dec_hw_ctx *h264_ctx =3D &ctx->h264_dec;
+> > @@ -386,15 +466,29 @@ int hantro_h264_dec_prepare_run(struct hantro_ctx=
+ *ctx)
+> >  	/* Update the DPB with new refs. */
+> >  	update_dpb(ctx);
+> > =20
+> > -	/* Prepare data in memory. */
+> > -	prepare_table(ctx);
+> > -
+> >  	/* Build the P/B{0,1} ref lists. */
+> >  	v4l2_h264_init_reflist_builder(&reflist_builder, ctrls->decode,
+> >  				       ctrls->sps, ctx->h264_dec.dpb);
+> > +	h264_ctx->cur_poc =3D reflist_builder.cur_pic_order_count;
+> > +
+> > +	/* Prepare data in memory. */
+> > +	prepare_table(ctx);
+> > +
+> >  	v4l2_h264_build_p_ref_list(&reflist_builder, h264_ctx->reflists.p);
+> >  	v4l2_h264_build_b_ref_lists(&reflist_builder, h264_ctx->reflists.b0,
+> >  				    h264_ctx->reflists.b1);
+> > +
+> > +	/*
+> > +	 * Reduce ref lists to at most 16 entries, Hantro hardware will deduc=
+e
+> > +	 * the actual picture lists in field through the dpb_valid,
+> > +	 * dpb_longterm bitmap along with the current frame parity.
+> > +	 */
+> > +	if (reflist_builder.cur_pic_fields !=3D V4L2_H264_FRAME_REF) {
+> > +		deduplicate_reflist(&reflist_builder, h264_ctx->reflists.p);
+> > +		deduplicate_reflist(&reflist_builder, h264_ctx->reflists.b0);
+> > +		deduplicate_reflist(&reflist_builder, h264_ctx->reflists.b1);
+> > +	}
+> > +
+> >  	return 0;
+> >  }
+> > =20
+> > diff --git a/drivers/staging/media/hantro/hantro_hw.h b/drivers/staging=
+/media/hantro/hantro_hw.h
+> > index 292aaaabaf24..fd869369fb97 100644
+> > --- a/drivers/staging/media/hantro/hantro_hw.h
+> > +++ b/drivers/staging/media/hantro/hantro_hw.h
+> > @@ -91,6 +91,7 @@ struct hantro_h264_dec_hw_ctx {
+> >  	struct hantro_h264_dec_ctrls ctrls;
+> >  	u32 dpb_longterm;
+> >  	u32 dpb_valid;
+> > +	s32 cur_poc;
+>=20
+> This field isn't documented in kerneldoc.
+>=20
+> I've added this:
+>=20
+> + * @cur_poc:   Current picture order count
+>=20
+> Is that a correct description? If not, let me know what it should be.
+>=20
+> I'll update the patch manually, no need to repost.
 
-> Some QMP PHYs need to remux to their pipe clock input to the pipe clock
-> output generated by the PHY before powering on the PHY and restore the
-> default source during power down.
-> 
-> Add support for an optional pipe clock mux which will be reparented to
-> the generated pipe clock before powering on the PHY and restored to the
-> default reference source on power off.
-> 
+Yes, this is entirely correct, thanks for catching this.
 
-After considering this for a while, I have two objections to doing this
-explicitly:
+>=20
+> Regards,
+>=20
+> 	Hans
+>=20
+> >  };
+> > =20
+> >  /**
+>=20
 
-1) The QMP block is fed &gcc_pcie_N_pipe_clk (and on sc8280xp)
-gcc_pcie_N_pipediv2_clk. But neither of these clocks are the mux, so
-what this patch (and the existing muxing logic in the controller) does
-is to poke into gcc "internals".
-
-2) The actual reason for the mux dance is that toggling the associated
-GDSC without a valid parent of this clock would cause the clock to lock
-up and GDSC transition to time out. This property is shared with a wide
-range of other clocks (so far we have 84 users of clk_rcg2_shared_ops on
-sc8280xp).
-
-
-
-It would be nice if clk_summary would represent the real state of these
-clocks, but unfortunately I don't think the state matches reality with
-this approach either.
-
-E.g. we prepare/enable the pipe clock before setting
-QPHY_POWER_DOWN_CONTROL, during this time there's shouldn't be any pipe
-clock coming out of the PHY...
-
-Regards,
-Bjorn
-
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> ---
->  drivers/phy/qualcomm/phy-qcom-qmp.c | 71 ++++++++++++++++++++++++++---
->  1 file changed, 65 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
-> index 7d2d1ab061f7..bc6db9670291 100644
-> --- a/drivers/phy/qualcomm/phy-qcom-qmp.c
-> +++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
-> @@ -3292,6 +3292,8 @@ struct qmp_phy_combo_cfg {
->   * @rx2: iomapped memory space for second lane's rx (in dual lane PHYs)
->   * @pcs_misc: iomapped memory space for lane's pcs_misc
->   * @pipe_clk: pipe clock
-> + * @pipemux_clk: pipe clock source mux
-> + * @piperef_clk: pipe clock default reference source
->   * @index: lane index
->   * @qmp: QMP phy to which this lane belongs
->   * @lane_rst: lane's reset controller
-> @@ -3311,6 +3313,8 @@ struct qmp_phy {
->  	void __iomem *rx2;
->  	void __iomem *pcs_misc;
->  	struct clk *pipe_clk;
-> +	struct clk *pipemux_clk;
-> +	struct clk *piperef_clk;
->  	unsigned int index;
->  	struct qcom_qmp *qmp;
->  	struct reset_control *lane_rst;
-> @@ -3346,6 +3350,7 @@ struct qcom_qmp {
->  	void __iomem *dp_com;
->  
->  	struct clk_bulk_data *clks;
-> +	struct clk *pipe_clksrc;
->  	struct reset_control **resets;
->  	struct regulator_bulk_data *vregs;
->  
-> @@ -5355,6 +5360,42 @@ static int qcom_qmp_phy_init(struct phy *phy)
->  	return 0;
->  }
->  
-> +static int qcom_qmp_phy_pipe_clk_enable(struct qmp_phy *qphy)
-> +{
-> +	struct qcom_qmp *qmp = qphy->qmp;
-> +	int ret;
-> +
-> +	ret = clk_set_parent(qphy->pipemux_clk, qmp->pipe_clksrc);
-> +	if (ret)
-> +		dev_err(qmp->dev, "failed to reparent pipe clock: %d\n", ret);
-> +
-> +
-> +	ret = clk_prepare_enable(qphy->pipe_clk);
-> +	if (ret) {
-> +		dev_err(qmp->dev, "failed to enable pipe clock: %d\n", ret);
-> +		goto err_restore_parent;
-> +	}
-> +
-> +	return 0;
-> +
-> +err_restore_parent:
-> +	clk_set_parent(qphy->pipemux_clk, qphy->piperef_clk);
-> +
-> +	return ret;
-> +}
-> +
-> +static void qcom_qmp_phy_pipe_clk_disable(struct qmp_phy *qphy)
-> +{
-> +	struct qcom_qmp *qmp = qphy->qmp;
-> +	int ret;
-> +
-> +	clk_disable_unprepare(qphy->pipe_clk);
-> +
-> +	ret = clk_set_parent(qphy->pipemux_clk, qphy->piperef_clk);
-> +	if (ret)
-> +		dev_err(qmp->dev, "failed to reparent pipe clock: %d\n", ret);
-> +}
-> +
->  static int qcom_qmp_phy_power_on(struct phy *phy)
->  {
->  	struct qmp_phy *qphy = phy_get_drvdata(phy);
-> @@ -5379,11 +5420,9 @@ static int qcom_qmp_phy_power_on(struct phy *phy)
->  		}
->  	}
->  
-> -	ret = clk_prepare_enable(qphy->pipe_clk);
-> -	if (ret) {
-> -		dev_err(qmp->dev, "pipe_clk enable failed err=%d\n", ret);
-> +	ret = qcom_qmp_phy_pipe_clk_enable(qphy);
-> +	if (ret)
->  		goto err_reset_lane;
-> -	}
->  
->  	/* Tx, Rx, and PCS configurations */
->  	qcom_qmp_phy_configure_lane(tx, cfg->regs,
-> @@ -5478,7 +5517,7 @@ static int qcom_qmp_phy_power_on(struct phy *phy)
->  	return 0;
->  
->  err_disable_pipe_clk:
-> -	clk_disable_unprepare(qphy->pipe_clk);
-> +	qcom_qmp_phy_pipe_clk_disable(qphy);
->  err_reset_lane:
->  	if (cfg->has_lane_rst)
->  		reset_control_assert(qphy->lane_rst);
-> @@ -5491,7 +5530,7 @@ static int qcom_qmp_phy_power_off(struct phy *phy)
->  	struct qmp_phy *qphy = phy_get_drvdata(phy);
->  	const struct qmp_phy_cfg *cfg = qphy->cfg;
->  
-> -	clk_disable_unprepare(qphy->pipe_clk);
-> +	qcom_qmp_phy_pipe_clk_disable(qphy);
->  
->  	if (cfg->type == PHY_TYPE_DP) {
->  		/* Assert DP PHY power down */
-> @@ -5777,6 +5816,8 @@ static int phy_pipe_clk_register(struct qcom_qmp *qmp, struct device_node *np)
->  	if (ret)
->  		return ret;
->  
-> +	qmp->pipe_clksrc = fixed->hw.clk;
-> +
->  	ret = of_clk_add_hw_provider(np, of_clk_hw_simple_get, &fixed->hw);
->  	if (ret)
->  		return ret;
-> @@ -6091,6 +6132,24 @@ int qcom_qmp_phy_create(struct device *dev, struct device_node *np, int id,
->  		qphy->pipe_clk = NULL;
->  	}
->  
-> +	/* Get optional pipe clock mux and default reference source clock. */
-> +	qphy->pipemux_clk = of_clk_get_by_name(np, "mux");
-> +	if (IS_ERR(qphy->pipemux_clk)) {
-> +		ret = PTR_ERR(qphy->pipemux_clk);
-> +		if (ret == -EPROBE_DEFER)
-> +			return ret;
-> +
-> +		qphy->pipemux_clk = NULL;
-> +	} else {
-> +		qphy->piperef_clk = of_clk_get_by_name(np, "ref");
-> +		if (IS_ERR(qphy->piperef_clk)) {
-> +			ret = PTR_ERR(qphy->piperef_clk);
-> +			return dev_err_probe(dev, ret,
-> +					     "failed to get lane%d piperef_clk\n",
-> +					     id);
-> +		}
-> +	}
-> +
->  	/* Get lane reset, if any */
->  	if (cfg->has_lane_rst) {
->  		snprintf(prop_name, sizeof(prop_name), "lane%d", id);
-> -- 
-> 2.35.1
-> 
