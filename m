@@ -2,137 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 071C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11427C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235063AbiD1L1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 07:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34430 "EHLO
+        id S1345530AbiD1L17 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 07:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245064AbiD1L1B (ORCPT
+        with ESMTP id S229482AbiD1L16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 07:27:01 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D1266D971;
-        Thu, 28 Apr 2022 04:23:46 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23SBNRXm112466;
-        Thu, 28 Apr 2022 06:23:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651145007;
-        bh=5t3OzA0Rw/NGVThHMxQu6xew1IgZchZszoPZC/r7wwY=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=U3WwLaFQKcA8juoBzoJ6Y6E5ReyXXClgnmOv/P5Wr+nyQehNI/8L0F0MTE8pKV8eS
-         3D9gHclMZ2i5RG26Kvpp+Vkw4rtfUK5sfXAm+C3plcXYfLmBrAZ/x9bq7l66npIImz
-         Wo5aZCw9wmOgBy+CebCN6trSVY8+u4AF8UySDj40=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23SBNRFQ011008
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 28 Apr 2022 06:23:27 -0500
-Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 28
- Apr 2022 06:23:27 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 28 Apr 2022 06:23:27 -0500
-Received: from [10.24.69.24] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23SBNNd4068230;
-        Thu, 28 Apr 2022 06:23:23 -0500
-Message-ID: <ee1c1601-6db9-70d7-401a-8f67ec406ffc@ti.com>
-Date:   Thu, 28 Apr 2022 16:53:22 +0530
+        Thu, 28 Apr 2022 07:27:58 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D873F5D65B;
+        Thu, 28 Apr 2022 04:24:43 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 7C49C210EC;
+        Thu, 28 Apr 2022 11:24:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1651145082; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eskgHgHhEq1Wx+VmExpxr/07kCvTFnpRTsUSvj7Vrk4=;
+        b=QSbzbmYJDo3PGNt6gMolptedWIYKl/qUh7pJJNT0xu14YEN3XIwbwXAFlBLh0ibgUCEhm2
+        /YnT5BLZALgeRjUv2RBQ0PGtuVD6V3M8fF83cyKK8Wf9xjgqS1NP3Jm610ub8t/9GTpvoq
+        DsEaE3EY5PtGePslTBbBqpWurhHjh38=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1651145082;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eskgHgHhEq1Wx+VmExpxr/07kCvTFnpRTsUSvj7Vrk4=;
+        b=N97sJgAS8Z3gNWh1Y5NqmLhE0sT0yAxga8mT+3HsUDKkfQ9mdBavXUQ4KpL5kDK3pzKCnx
+        wHBpG3IOJkUjr8Cg==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 69FCB2C141;
+        Thu, 28 Apr 2022 11:24:42 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 29813A061A; Thu, 28 Apr 2022 13:24:42 +0200 (CEST)
+Date:   Thu, 28 Apr 2022 13:24:42 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Yu Kuai <yukuai3@huawei.com>
+Cc:     jack@suse.cz, tj@kernel.org, axboe@kernel.dk,
+        paolo.valente@linaro.org, cgroups@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH -next v4 3/3] block, bfq: do not idle if only one group
+ is activated
+Message-ID: <20220428112442.m4cx6uc6f4qaicby@quack3.lan>
+References: <20220428111907.3635820-1-yukuai3@huawei.com>
+ <20220428111907.3635820-4-yukuai3@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 0/5] Introduce PRU remoteproc consumer API
-Content-Language: en-US
-To:     <linux-kernel@vger.kernel.org>
-CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
-        <linux-arm-kernel@lists.infradead.org>, <rogerq@kernel.org>,
-        <grygorii.strashko@ti.com>, <vigneshr@ti.com>, <kishon@ti.com>
-References: <20220418104118.12878-1-p-mohan@ti.com>
-From:   Puranjay Mohan <p-mohan@ti.com>
-In-Reply-To: <20220418104118.12878-1-p-mohan@ti.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220428111907.3635820-4-yukuai3@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bjorn,
-Hi Mathieu,
+On Thu 28-04-22 19:19:07, Yu Kuai wrote:
+> Now that root group is counted into 'num_groups_with_busy_queues',
+> 'num_groups_with_busy_queues > 0' is always true in
+> bfq_asymmetric_scenario(). Thus change the condition to '> 1'.
+> 
+> On the other hand, this change can enable concurrent sync io if only
+> one group is activated.
+> 
+> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 
-I am writing to follow up on this patch series.
-This has been on the list for the last 10 days and I have not received
-any comments on it. So, does this look good to everyone?
+Looks good. Feel free to add:
 
-I had solved the minor checkpatch issues from v2 so I guess this series
-should be good now?
+Reviewed-by: Jan Kara <jack@suse.cz>
 
-Looking forward to your comments.
+								Honza
 
-Thanks
-Puranjay Mohan
-
-On 18/04/22 16:11, Puranjay Mohan wrote:
-> This is the v3 of the patch series [1]. The v2 had some minor comments
-> which have been addressed here.
+> ---
+>  block/bfq-iosched.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> I will be posting two more patch series which depend on this series, one to
-> the soc tree and another to the networking tree. I had sent all the 3
-> series, including this one as RFC [2] to get comments and to explain the
-> dependencies.
+> diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+> index 609b4e894684..aeba9001da0b 100644
+> --- a/block/bfq-iosched.c
+> +++ b/block/bfq-iosched.c
+> @@ -844,7 +844,7 @@ static bool bfq_asymmetric_scenario(struct bfq_data *bfqd,
+>  
+>  	return varied_queue_weights || multiple_classes_busy
+>  #ifdef CONFIG_BFQ_GROUP_IOSCHED
+> -	       || bfqd->num_groups_with_busy_queues > 0
+> +	       || bfqd->num_groups_with_busy_queues > 1
+>  #endif
+>  		;
+>  }
+> -- 
+> 2.31.1
 > 
-> The Programmable Real-Time Unit and Industrial Communication Subsystem
-> (PRU-ICSS or simply PRUSS) on various TI SoCs consists of dual 32-bit
-> RISC cores (Programmable Real-Time Units, or PRUs) for program execution.
-> 
-> There are 3 foundation components for PRUSS subsystem: the PRUSS platform
-> driver, the PRUSS INTC driver and the PRUSS remoteproc driver. All were
-> already merged and can be found under:
-> 1) drivers/soc/ti/pruss.c
->    Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
-> 2) drivers/irqchip/irq-pruss-intc.c
->    Documentation/devicetree/bindings/interrupt-controller/ti,pruss-intc.yaml
-> 3) drivers/remoteproc/pru_rproc.c
->    Documentation/devicetree/bindings/remoteproc/ti,pru-rproc.yaml
-> 
-> The programmable nature of the PRUs provide flexibility to implement custom
-> peripheral interfaces, fast real-time responses, or specialized data handling.
-> Example of a PRU consumer drivers will be:
->   - Software UART over PRUSS
->   - PRU-ICSS Ethernet EMAC
-> 
-> In order to make usage of common PRU resources and allow the consumer drivers to
-> configure the PRU hardware for specific usage the PRU API is introduced.
-> 
-> [1] https://patchwork.kernel.org/project/linux-remoteproc/cover/20201216165239.2744-1-grzegorz.jaszczyk@linaro.org/
-> [2] https://patchwork.kernel.org/project/linux-remoteproc/cover/20220406094358.7895-1-p-mohan@ti.com/
-> 
-> Thanks,
-> Puranjay Mohan
-> 
-> Roger Quadros (1):
->   remoteproc: pru: Add pru_rproc_set_ctable() function
-> 
-> Suman Anna (2):
->   dt-bindings: remoteproc: Add PRU consumer bindings
->   remoteproc: pru: Make sysfs entries read-only for PRU client driven
->     boots
-> 
-> Tero Kristo (2):
->   remoteproc: pru: Add APIs to get and put the PRU cores
->   remoteproc: pru: Configure firmware based on client setup
-> 
->  .../bindings/remoteproc/ti,pru-consumer.yaml  |  70 ++++++
->  drivers/remoteproc/pru_rproc.c                | 234 +++++++++++++++++-
->  include/linux/pruss.h                         |  78 ++++++
->  3 files changed, 377 insertions(+), 5 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml
->  create mode 100644 include/linux/pruss.h
-> 
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
