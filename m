@@ -2,172 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 359BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89AB2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:09:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234406AbiD1KMM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:12:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51580 "EHLO
+        id S234490AbiD1KMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234396AbiD1KLo (ORCPT
+        with ESMTP id S234245AbiD1KLp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:11:44 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B4E2CC8E;
-        Thu, 28 Apr 2022 03:03:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1651140147;
-        bh=5RkR0AnFX7vQTXrSZOyaEfFUYVNtE06t7X96bNHnpAk=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=EVZb7nTx/v4hqEQf/0UL39mQpzEJu4VuF3dvdrAbo9fT0Iy7igpqwmPyfEMJBQtY+
-         Pn2PmbzUQek4kJ1q1UIKaX7rOPl7Nf+Z9+fZ7S5dVF162uhqw3qb51QsEG+6vdrbcR
-         mhe7sT9dEFYcunjyIuD3Du0g/9QZgJK5vWxpSLEo=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([37.201.215.103]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MZTqW-1nOTRM3hrC-00WUrz; Thu, 28
- Apr 2022 12:02:26 +0200
-Date:   Thu, 28 Apr 2022 12:02:24 +0200
-From:   Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     Zev Weiss <zweiss@equinix.com>
-Cc:     Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Patrick Venture <venture@google.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Tali Perry <tali.perry1@gmail.com>,
+        Thu, 28 Apr 2022 06:11:45 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECA6674C1;
+        Thu, 28 Apr 2022 03:03:06 -0700 (PDT)
+Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 773C31EC0535;
+        Thu, 28 Apr 2022 12:03:01 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1651140181;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=PgBjqy9vQg0VYpTLuefpsdMFD4lNCA09smFUUhKxkbQ=;
+        b=o+/ay/k8tOLntCUuq4C/qtmunpu2Bol5mgc9WPOI2hN4GpvuDvxbJiHGAoCS300Qp1E2Rs
+        Ccp05mNGghaGTesy4iqY5q1AmS70B9H0Tf51+vF+MfJFGtjNew/44it8RJ8YmtKkimfogv
+        WTbY1Xg01IY/2tln7cK+ONkKq+PNJ8E=
+Date:   Thu, 28 Apr 2022 12:02:58 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: Re: [PATCH 2/7] clocksource: timer-npcm7xx: Enable timer 1 clock
- before use
-Message-ID: <YmpmMGsI2GLrvMg5@latitude>
-References: <20220422183012.444674-1-j.neuschaefer@gmx.net>
- <20220422183012.444674-3-j.neuschaefer@gmx.net>
- <20220428091158.GD11809@packtop>
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv5 03/12] efi/x86: Get full memory map in allocate_e820()
+Message-ID: <YmpmUjXn7XYOhUpF@zn.tnic>
+References: <20220425033934.68551-1-kirill.shutemov@linux.intel.com>
+ <20220425033934.68551-4-kirill.shutemov@linux.intel.com>
+ <YmmmpxVDyc3R5K2t@zn.tnic>
+ <20220427234853.6kt67gjrwzrhgvoa@box.shutemov.name>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="yOapqzkiMt8+dk0+"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220428091158.GD11809@packtop>
-X-Provags-ID: V03:K1:z2GOvnE2pOoTKqPS2YNCdWH3PNgLZoY46dfHyKNgxU1cCV0GDMV
- CD5eXdswQsXQqcWJUlISm7/TxvKACGZ4FJS9IDAcStlPoqFOQYnAZI7jcX3dsNtIq+i3Uai
- bV9ZDeHO2mpbW/oJIk5KYUBSGI1btTH9/yVMpNt9Z3sK8JIRqdkp0d4QnB1agCrftN6tB+z
- hl6MQKVaa1728yKtcJiBA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:I6+m8IwNZtM=:6UfzdwNcOAsy6GnUAtfJdl
- 6wW0Ip1MRPMbRrjB6AtLBRlzFqB1TJGg49uanx9G2aDNNU5pL8oveu/t/XhdSZajLVc5avdGp
- NexHpCpVrfm9P39HdsWE+Ys0gF5QOD5VLm3XEWSI5IdTpZsFl7rQ94GZjPGUpWOS5M76yKJQO
- HeWPP47IHdCOxj/g+3/yoa0SYC27v2lijBV9F7FWfqcucbNme9MQT/UxwHB2BLrKQLGcgtP0z
- 5rStsWFJ54Iq9YDnP8b8tVrx/Sc//6o3MXvyIh/OkHoTLP4lYouNjmscUocxJtxtH4CKDs8qB
- cdEK434ilq2GkCAN3j5DoTJi2f2UfvZ9vB5TIiogM1+pA7qjknwRhqo/RIEowtMKxS/PNemy7
- t/aweHpEDnlavP/XMBrSilu1mvq9/MexyqSaj14pLowIvu8DzJCMmo30/9pMkK869u/52W25Q
- ZqZ/AhaY5EgRs+XOFnj08nwmP4HGhxJB8bIkqKo4w40TNY1TIdYEqzuRdH+MlUIulHi6rXNJb
- TGUDj7BY57On5x8ng2FbF2MW5O5fd0dvWacwKvHpXWuzIdm9DIAqi+yxIcVlEvEcKpj+qPxrD
- SBJblxieQUAoPKOQtX8gWNEohdd1rHRawppM1/Z+FI7k/Uon7jxgZC31gGr/Jlqfs6PMHMu+6
- dkAnnrMfloM04cXPGgRYSj2VSeqVByrtPwPz4pk1B7KKU0VCv9a2xIt040qiByoAHM/DaRM58
- 8jzU8vbzjdXK//fpWL3sgAOuwHczM9ehyQmebFImrgk8TS04eqHqLPzFemNgdEFNE4TJSL8Ty
- cPIrK7irweN9tan58XCt1MY5okntg1dfih6GoblOwfDQx15BfNZHr6Wsq7eOWqkBdoCtl71cf
- PmUjzBsd7Biv33otqAby6iBMcSagwzXRKkat4/SDggUsVTbB2j6CM8AGH263eL15nFSXjuLdK
- Qrm32UaVAEYWCUxxY2hQnRutwHuYpvl5gCn65xUAmw3wX7JsNdEk02CsFWSKJ3zVEDIg2pSlj
- 1wEn2oH1yI6FqC7f+fn0la/L81NfleUMxBBcscy6H2UGlh57PD2dm7zmQ7rt/a0GA/1M0avLy
- oo+FpSSyPXgUvQ=
+In-Reply-To: <20220427234853.6kt67gjrwzrhgvoa@box.shutemov.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Apr 28, 2022 at 02:48:53AM +0300, Kirill A. Shutemov wrote:
+> Right. That's true. But having goto here makes patch 5/12 a bit cleaner.
 
---yOapqzkiMt8+dk0+
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Ok, let's take our time machine and go into the future:
 
-On Thu, Apr 28, 2022 at 09:11:58AM +0000, Zev Weiss wrote:
-> On Fri, Apr 22, 2022 at 11:30:07AM PDT, Jonathan Neusch=C3=A4fer wrote:
-> >In the WPCM450 SoC, the clocks for each timer can be gated individually.
-> >To prevent the timer 1 clock from being gated, enable it explicitly.
-> >
-> >Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-> >---
-> > drivers/clocksource/timer-npcm7xx.c | 14 +++++++++++++-
-> > 1 file changed, 13 insertions(+), 1 deletion(-)
-> >
-> >diff --git a/drivers/clocksource/timer-npcm7xx.c b/drivers/clocksource/t=
-imer-npcm7xx.c
-> >index a00520cbb660a..974269b6b0c36 100644
-> >--- a/drivers/clocksource/timer-npcm7xx.c
-> >+++ b/drivers/clocksource/timer-npcm7xx.c
-> >@@ -188,17 +188,29 @@ static void __init npcm7xx_clocksource_init(void)
-> >
-> > static int __init npcm7xx_timer_init(struct device_node *np)
-> > {
-> >+	struct clk *clk;
-> > 	int ret;
-> >
-> > 	ret =3D timer_of_init(np, &npcm7xx_to);
-> >-	if (ret)
-> >+	if (ret) {
-> >+		pr_warn("timer_of_init failed: %d\n", ret);
->=20
-> This seems like a somewhat opaque message to emit, especially given this
-> file's lack of a pr_fmt() definition -- maybe add a %pOF so it's
-> slightly easier to trace back to the device it stems from?
+This patch is in git, there's no concept of "next patch" anymore - and
+someone is staring at it for whatever reason.
 
-Now that I look at this code again, I think I should just drop the
-pr_warn entirely, since I didn't mention it in the description, and it's
-unrelated to enabling the clock.
+Someone is wondering: why the hell was this done this way? And which
+is that "next patch"? Someone probably needs to sort them in the
+application order to figure out which next patch the author is talking
+about...
 
-> > 		return ret;
-> >+	}
-> >
-> > 	/* Clock input is divided by PRESCALE + 1 before it is fed */
-> > 	/* to the counter */
-> > 	npcm7xx_to.of_clk.rate =3D npcm7xx_to.of_clk.rate /
-> > 		(NPCM7XX_Tx_MIN_PRESCALE + 1);
-> >
-> >+	/* Enable the clock for timer1, if it exists */
-> >+	clk =3D of_clk_get(np, 1);
-> >+	if (clk) {
-> >+		if (!IS_ERR(clk))
-> >+			clk_prepare_enable(clk);
-> >+		else
-> >+			pr_warn("Failed to get clock for timer1: %pe", clk);
->=20
-> Likewise here (though to a slightly lesser extent).
+See what I mean?
 
-I'll add %pOF here.
+Also, if this hunk
 
++
++       if (IS_ENABLED(CONFIG_UNACCEPTED_MEMORY))
++               status = allocate_unaccepted_memory(params, nr_desc, map);
++
 
-Thanks,
-Jonathan
+is what this is all about, then no, this confusion is not even worth it
+- please make sure your patches make sense on their own.
 
---yOapqzkiMt8+dk0+
-Content-Type: application/pgp-signature; name="signature.asc"
+Thx.
 
------BEGIN PGP SIGNATURE-----
+-- 
+Regards/Gruss,
+    Boris.
 
-iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAmJqZg4ACgkQCDBEmo7z
-X9v7UA//XinB73NhiIWuAgNkGTSfPjaFxOvIHuRuFLsnTcJHlorK0w1BmfZHecD+
-ZdHnpqPtkXz3gnReMqx8qJcO/0lHmJTkgvddzHqEu4wcWFROMTNs8Tbrd7TUvaxx
-9jmxWWOE5f9P5EXHCLUlo0c03r6Iq8R7BlMUVSh0wZz6RtPujFoHjw6A8uhE9tbt
-ZzoD4XhdNl4BkUpC/NUNIHSxbb/VYZYy7GxqP4N9yQ0QSYGIJm7ESR3RRGhMFoEO
-BZziQtQiH/zJSj71FbG3q8vnXJF4mVozFqnTk4UHngq5nJrM7ZFmE6tVRBf5EPzY
-aaBOk7Y7gcYdPDFMHszp+TtlxcGk7IuTs3I4lVA1JjCX7YPBfxA6AVt6Haf15YkL
-TmosKy8EOB+QqfwKLwddQafB9FXSkRSWr0fn3WboeAolBa+omi+5NMVfq4X1kbHL
-FNO1MlBA0IdDIuMwgRAm5aVTFiIuDoyYIm7qytMFvve4nSlLS3sL3F7qzT783Dvm
-jbSSOUGrQa4XrQoO/N0HRiYj6FkZGE00Deg7e2qY6mqVi7PT9AIzWakASES0LqSd
-kRiHXIqXlsjp65wuJ6xL/hj0PUg9ziUTurX31k1BXomattaHbz5ZSq+bGBD9vuvI
-muA9b/srdaA7jEkkLs6AqWGSsFl8CXAEwI1Rh5VRZ+MStwIBicg=
-=8ywP
------END PGP SIGNATURE-----
-
---yOapqzkiMt8+dk0+--
+https://people.kernel.org/tglx/notes-about-netiquette
