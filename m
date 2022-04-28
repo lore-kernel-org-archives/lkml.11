@@ -2,53 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5EDCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 038C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:29:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344419AbiD1Icr (ORCPT
+        id S1344332AbiD1Icu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:32:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47994 "EHLO
+        Thu, 28 Apr 2022 04:32:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344156AbiD1IbE (ORCPT
+        with ESMTP id S1344123AbiD1IbF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:31:04 -0400
+        Thu, 28 Apr 2022 04:31:05 -0400
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EED1A0BD7;
-        Thu, 28 Apr 2022 01:27:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6BDA0BDF
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:27:50 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id ECFC21F899;
-        Thu, 28 Apr 2022 08:27:48 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 804C41F8A8;
+        Thu, 28 Apr 2022 08:27:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1651134468; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1651134469; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7TSQqudTcVLuLhQNOY3wWT3BirutbrjVm/F1DYUL/Jc=;
-        b=bXQFN0N+BgI1kmZyCngmvHVCA1I+1WiKiyl4AoNXMJlXEBLY1bscsQfLjv+ocbOnCYApPF
-        Bj/5Cq72navU9MxLn+AfqK7WV3/FX3gM1bLJgJ28Gl0hLTxsS7SNqZ8qKkurAL6KoXX2bH
-        6ofYmp6Du47LiNOIHekEpuVElAnDZSs=
+        bh=nqfEAJYikez5yuRaJWQFVEnr7bTvqklH6kJ7XEyZeH4=;
+        b=TYPIqdG6C2kNSXwfoxobkb0T7Qrlkecz89DW0NUUSRJk8G1Cl1McWKfb63f8rCvjK2Z1w9
+        hltCqgILrPkBWZf7D6lZQrTVsQ9bYGNjEQQXo2D58+bj+Zbr/uJommfLuFr/ZVITaGpYKs
+        3TdHSODcKkMVn6eBxvw3c05nJoauKJs=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BDE1313491;
-        Thu, 28 Apr 2022 08:27:48 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4287913491;
+        Thu, 28 Apr 2022 08:27:49 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id OFX/LARQamIBLgAAMHmgww
-        (envelope-from <jgross@suse.com>); Thu, 28 Apr 2022 08:27:48 +0000
+        id sDPlDgVQamIBLgAAMHmgww
+        (envelope-from <jgross@suse.com>); Thu, 28 Apr 2022 08:27:49 +0000
 From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
 Cc:     Juergen Gross <jgross@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH v2 04/19] xen/usb: switch xen-hcd to use INVALID_GRANT_REF
-Date:   Thu, 28 Apr 2022 10:27:28 +0200
-Message-Id: <20220428082743.16593-5-jgross@suse.com>
+        Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org
+Subject: [PATCH v2 06/19] xen/sound: switch xen_snd_front to use INVALID_GRANT_REF
+Date:   Thu, 28 Apr 2022 10:27:30 +0200
+Message-Id: <20220428082743.16593-7-jgross@suse.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220428082743.16593-1-jgross@suse.com>
 References: <20220428082743.16593-1-jgross@suse.com>
@@ -62,57 +63,53 @@ Instead of using a private macro for an invalid grant reference use
 the common one.
 
 Signed-off-by: Juergen Gross <jgross@suse.com>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xen-hcd.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ sound/xen/xen_snd_front_evtchnl.c | 4 ++--
+ sound/xen/xen_snd_front_evtchnl.h | 9 ---------
+ 2 files changed, 2 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/usb/host/xen-hcd.c b/drivers/usb/host/xen-hcd.c
-index 3e487baf8422..9cbc7c2dab02 100644
---- a/drivers/usb/host/xen-hcd.c
-+++ b/drivers/usb/host/xen-hcd.c
-@@ -87,8 +87,6 @@ struct xenhcd_info {
- 	bool error;
- };
+diff --git a/sound/xen/xen_snd_front_evtchnl.c b/sound/xen/xen_snd_front_evtchnl.c
+index ecbc294fc59a..3e21369c8216 100644
+--- a/sound/xen/xen_snd_front_evtchnl.c
++++ b/sound/xen/xen_snd_front_evtchnl.c
+@@ -167,7 +167,7 @@ static void evtchnl_free(struct xen_snd_front_info *front_info,
+ 		xenbus_free_evtchn(front_info->xb_dev, channel->port);
  
--#define GRANT_INVALID_REF 0
+ 	/* End access and free the page. */
+-	if (channel->gref != GRANT_INVALID_REF)
++	if (channel->gref != INVALID_GRANT_REF)
+ 		gnttab_end_foreign_access(channel->gref, page);
+ 	else
+ 		free_page(page);
+@@ -207,7 +207,7 @@ static int evtchnl_alloc(struct xen_snd_front_info *front_info, int index,
+ 	channel->index = index;
+ 	channel->front_info = front_info;
+ 	channel->state = EVTCHNL_STATE_DISCONNECTED;
+-	channel->gref = GRANT_INVALID_REF;
++	channel->gref = INVALID_GRANT_REF;
+ 	page = get_zeroed_page(GFP_KERNEL);
+ 	if (!page) {
+ 		ret = -ENOMEM;
+diff --git a/sound/xen/xen_snd_front_evtchnl.h b/sound/xen/xen_snd_front_evtchnl.h
+index cbe51fd1ec15..3675fba70564 100644
+--- a/sound/xen/xen_snd_front_evtchnl.h
++++ b/sound/xen/xen_snd_front_evtchnl.h
+@@ -15,15 +15,6 @@
+ 
+ struct xen_snd_front_info;
+ 
+-#ifndef GRANT_INVALID_REF
+-/*
+- * FIXME: usage of grant reference 0 as invalid grant reference:
+- * grant reference 0 is valid, but never exposed to a PV driver,
+- * because of the fact it is already in use/reserved by the PV console.
+- */
+-#define GRANT_INVALID_REF	0
+-#endif
 -
- #define XENHCD_RING_JIFFIES (HZ/200)
- #define XENHCD_SCAN_JIFFIES 1
+ /* Timeout in ms to wait for backend to respond. */
+ #define VSND_WAIT_BACK_MS	3000
  
-@@ -1100,17 +1098,17 @@ static void xenhcd_destroy_rings(struct xenhcd_info *info)
- 		unbind_from_irqhandler(info->irq, info);
- 	info->irq = 0;
- 
--	if (info->urb_ring_ref != GRANT_INVALID_REF) {
-+	if (info->urb_ring_ref != INVALID_GRANT_REF) {
- 		gnttab_end_foreign_access(info->urb_ring_ref,
- 					  (unsigned long)info->urb_ring.sring);
--		info->urb_ring_ref = GRANT_INVALID_REF;
-+		info->urb_ring_ref = INVALID_GRANT_REF;
- 	}
- 	info->urb_ring.sring = NULL;
- 
--	if (info->conn_ring_ref != GRANT_INVALID_REF) {
-+	if (info->conn_ring_ref != INVALID_GRANT_REF) {
- 		gnttab_end_foreign_access(info->conn_ring_ref,
- 					  (unsigned long)info->conn_ring.sring);
--		info->conn_ring_ref = GRANT_INVALID_REF;
-+		info->conn_ring_ref = INVALID_GRANT_REF;
- 	}
- 	info->conn_ring.sring = NULL;
- }
-@@ -1123,8 +1121,8 @@ static int xenhcd_setup_rings(struct xenbus_device *dev,
- 	grant_ref_t gref;
- 	int err;
- 
--	info->urb_ring_ref = GRANT_INVALID_REF;
--	info->conn_ring_ref = GRANT_INVALID_REF;
-+	info->urb_ring_ref = INVALID_GRANT_REF;
-+	info->conn_ring_ref = INVALID_GRANT_REF;
- 
- 	urb_sring = (struct xenusb_urb_sring *)get_zeroed_page(
- 							GFP_NOIO | __GFP_HIGH);
 -- 
 2.34.1
 
