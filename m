@@ -2,95 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7645EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 05:36:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71915C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 05:41:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243149AbiD1Fjv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 01:39:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52888 "EHLO
+        id S233336AbiD1Foi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 01:44:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232144AbiD1Fjq (ORCPT
+        with ESMTP id S229627AbiD1Fog (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 01:39:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B1B13FBC
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 22:36:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB29261CBA
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 05:36:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DEBFC385A0;
-        Thu, 28 Apr 2022 05:36:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651124192;
-        bh=W+skY9yUEL0OAM6VVty2lXt20EE+p8SAZWb/wne2n0Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=o9nZNRRl8vxn7YgCBDCJHGnRdTbnqpR4CB/do+AaJxDjlDC4sjXEuxslQkfYI0YOH
-         +8IHoT9BX4tuGFHbCI0BTRacyvc0/oPRmwlHGHhzzdS8qmlyfM4mir6fpFcEPQ+3DE
-         8LH5Lq6C6fySHgPG+rsRPCYO4DcmpG+1vjaTXCkI=
-Date:   Thu, 28 Apr 2022 07:36:24 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Adrien Thierry <athierry@redhat.com>
-Cc:     Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: vchiq_arm: use standard print helpers
-Message-ID: <Ymon2OgJhbwaH2H8@kroah.com>
-References: <20220427182439.424963-1-athierry@redhat.com>
+        Thu, 28 Apr 2022 01:44:36 -0400
+X-Greylist: delayed 3396 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Apr 2022 22:41:21 PDT
+Received: from www1102.sakura.ne.jp (www1102.sakura.ne.jp [219.94.129.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6574E5EDF0
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 22:41:20 -0700 (PDT)
+Received: from fsav117.sakura.ne.jp (fsav117.sakura.ne.jp [27.133.134.244])
+        by www1102.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 23S4iiUx031241;
+        Thu, 28 Apr 2022 13:44:44 +0900 (JST)
+        (envelope-from katsuhiro@katsuster.net)
+Received: from www1102.sakura.ne.jp (219.94.129.142)
+ by fsav117.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav117.sakura.ne.jp);
+ Thu, 28 Apr 2022 13:44:44 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav117.sakura.ne.jp)
+Received: from [192.168.1.2] (125.90.232.153.ap.dti.ne.jp [153.232.90.125])
+        (authenticated bits=0)
+        by www1102.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 23S4ihJD031236
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 28 Apr 2022 13:44:43 +0900 (JST)
+        (envelope-from katsuhiro@katsuster.net)
+Message-ID: <d2d0ac77-e8bc-dd69-0a8a-470e42276d8c@katsuster.net>
+Date:   Thu, 28 Apr 2022 13:44:43 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220427182439.424963-1-athierry@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] ASoC: rk3328: fix disabling mclk on pclk probe failure
+Content-Language: en-US
+To:     Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc:     linux-rockchip@lists.infradead.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+References: <20220427172310.138638-1-frattaroli.nicolas@gmail.com>
+From:   Katsuhiro Suzuki <katsuhiro@katsuster.net>
+In-Reply-To: <20220427172310.138638-1-frattaroli.nicolas@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 02:24:37PM -0400, Adrien Thierry wrote:
-> Replace the custom debug print macros with the standard dev_err() and
-> friends.
+Hello Nicolas,
+
+Oh, indeed. Thanks for fix.
+
+Reviewed-by: Katsuhiro Suzuki <katsuhiro@katsuster.net>
+
+
+On 2022/04/28 2:23, Nicolas Frattaroli wrote:
+> If preparing/enabling the pclk fails, the probe function should
+> unprepare and disable the previously prepared and enabled mclk,
+> which it doesn't do. This commit rectifies this.
 > 
-> This handles TODO item "Cleanup logging mechanism".
-> 
-> Signed-off-by: Adrien Thierry <athierry@redhat.com>
+> Fixes: c32759035ad2 ("ASoC: rockchip: support ACODEC for rk3328")
+> Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
 > ---
->  .../interface/vchiq_arm/vchiq_arm.c           | 158 +++---
->  .../interface/vchiq_arm/vchiq_connected.c     |   7 +-
->  .../interface/vchiq_arm/vchiq_connected.h     |   4 +-
->  .../interface/vchiq_arm/vchiq_core.c          | 495 ++++++++----------
->  .../interface/vchiq_arm/vchiq_core.h          |  43 +-
->  .../interface/vchiq_arm/vchiq_debugfs.c       | 105 ----
->  .../interface/vchiq_arm/vchiq_dev.c           |  88 ++--
->  7 files changed, 344 insertions(+), 556 deletions(-)
+>   sound/soc/codecs/rk3328_codec.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-> index 0596ac61e286..664940e6d9e9 100644
-> --- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-> +++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-> @@ -58,10 +58,6 @@
->  #define KEEPALIVE_VER 1
->  #define KEEPALIVE_VER_MIN KEEPALIVE_VER
->  
-> -/* Run time control of log level, based on KERN_XXX level. */
-> -int vchiq_arm_log_level = VCHIQ_LOG_DEFAULT;
-> -int vchiq_susp_log_level = VCHIQ_LOG_ERROR;
-> -
->  DEFINE_SPINLOCK(msg_queue_spinlock);
->  struct vchiq_state g_state;
->  
-> @@ -253,7 +249,7 @@ create_pagelist(char *buf, char __user *ubuf,
->  	pagelist = dma_alloc_coherent(g_dev, pagelist_size, &dma_addr,
->  				      GFP_KERNEL);
->  
-> -	vchiq_log_trace(vchiq_arm_log_level, "%s - %pK", __func__, pagelist);
-> +	dev_dbg(g_dev, "%s - %pK", __func__, pagelist);
+> diff --git a/sound/soc/codecs/rk3328_codec.c b/sound/soc/codecs/rk3328_codec.c
+> index 758d439e8c7a..86b679cf7aef 100644
+> --- a/sound/soc/codecs/rk3328_codec.c
+> +++ b/sound/soc/codecs/rk3328_codec.c
+> @@ -481,7 +481,7 @@ static int rk3328_platform_probe(struct platform_device *pdev)
+>   	ret = clk_prepare_enable(rk3328->pclk);
+>   	if (ret < 0) {
+>   		dev_err(&pdev->dev, "failed to enable acodec pclk\n");
+> -		return ret;
+> +		goto err_unprepare_mclk;
+>   	}
+>   
+>   	base = devm_platform_ioremap_resource(pdev, 0);
 
-As dev_dbg() provides the output of the function name, there's no need
-to keep it in here when you convert to using it.  Can you fix this up
-and resend?
-
-thanks,
-
-greg k-h
