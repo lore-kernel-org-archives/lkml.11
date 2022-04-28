@@ -2,123 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E70B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 01:02:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91FE9C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 01:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237140AbiD1BFU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 21:05:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
+        id S238318AbiD1BHf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 21:07:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbiD1BFR (ORCPT
+        with ESMTP id S230210AbiD1BHd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 21:05:17 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A53AE70
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 18:02:05 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id bd19-20020a17090b0b9300b001d98af6dcd1so6321995pjb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 18:02:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gGGuSc0LSBpuNtbaK3b654kpekt8+afyXub7g//oygQ=;
-        b=lfN+Nhqc2aJ4rKKRp29t9F072aKzevhDma4KY5PS1Z/oIl/YgaJt1bXV+Qghxx6s0e
-         dXntgAWGVNC6Y4bxz9ls0y/VdHGaZ9PgdmVNvcdsvCfWV4w4bV4pS43+dT3k6bq0N97q
-         mn2BLHfNh93NYHcrOtUbs3g370CwDKhkNY0xqKp6HDoIMf0MohHESw8owRmF56Q1KJZl
-         tKwh+sE3tnkwAPlIfglLpZZjQFx2vx+2GBqiLJqdln9Ji4yMbzZqIJ3Akk2OMeGLcJHg
-         +0kHO5wjo5AlS2L0n6lBNDuccRTU0SzPLtNB7HBzNcvetMpbt+rN8Xsy+uwFbXD5Tkyc
-         xBKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gGGuSc0LSBpuNtbaK3b654kpekt8+afyXub7g//oygQ=;
-        b=48i/MW+lFP1MARPSoU4T+8ekXkNXff97QKMWj+rp66MBK6zGrfxROqRph02PeQ+K+7
-         addZHYFRtW37eE2NnyADrw2V5L1eJxpTH1RnKrmEkApOpJfyCuaMEN222GrgBgLzc6TE
-         syqOdSIdlX03Ua2ugIBw1mNiwJfNjUsKTVc6aPAEgzjILtNCLeFu/n4TEvqCqIHhOkB0
-         RJBCO/WugTIxhocgMq264bLGAVOttQurHQ8i7OWdWgNLD0fxeIEyfAtdb0YuwdPeeYSi
-         n5hSTlfdOBBl1b0xO+xCddFLIPjpcBKWTG2KRSBNtoc0DY9pzC8jHFWeyIbqHF+8oBIq
-         mrbw==
-X-Gm-Message-State: AOAM531XrFndMbBOcoleUnXmpahK8YMMq2oiLzrc7nCTtla2zYpeMG8t
-        I6VNtc21mwLEzjiBAj3CNv/hvofVa8JoRHQ/ty4a6g==
-X-Google-Smtp-Source: ABdhPJzjke2ZEb+yF7GVfe3sX27nyy/kmsf+yglPd7alvwRgx2AoojnzZ+0Ix57E6s7+ew5bxxyRUl/ZtqkXCCwM560=
-X-Received: by 2002:a17:902:da81:b0:15d:37b9:70df with SMTP id
- j1-20020a170902da8100b0015d37b970dfmr10897086plx.34.1651107724585; Wed, 27
- Apr 2022 18:02:04 -0700 (PDT)
+        Wed, 27 Apr 2022 21:07:33 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6806E1AD8B;
+        Wed, 27 Apr 2022 18:04:17 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 4B3E55C00CF;
+        Wed, 27 Apr 2022 21:04:16 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Wed, 27 Apr 2022 21:04:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1651107856; x=1651194256; bh=kp
+        LZSWY5pulSybgy+J3BHvwPqsyKhKZy8Hob8bLRgSg=; b=eaVtCutJFC89h8TSye
+        kLgrAxKv7mv8BB3RX8FsQV7YUJ2RC/w2St56QIpWTwuaKQqVt3pY3LcqpBkjCpTT
+        ykj3Q6ICT5Vr+U7/uxidw+apIT6qLv4EqbgmLYViSzNEfj0iPRHuNv8uLW2bKywN
+        owiGCwiX9PP7aAXvm7RNZ+oLgUW9014iZ6QNK7bbHIdr6ADen10qKr4sFZh3l4FP
+        +mXooRjN9vX9IpXnsrwOHbtJ1vc5DiwXsHmUyuTxBy0x2gEF5uUZxfJvXZPEJn5O
+        oF89vHZzwRwlo2ZlS5EQC6S2qPOuo1a7fYSJbrdVYw6vK6ME9GpfuMASXFIc/jNT
+        8y1A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+        1651107856; x=1651194256; bh=kpLZSWY5pulSybgy+J3BHvwPqsyKhKZy8Ho
+        b8bLRgSg=; b=S1i8lZN3lIqHPk2XZ+Jri1eBBAk0E5/ClkcJX4vi6nXmiPEVGZn
+        TQe2QXLlGpBd71gc65+nXhUnTGXeq4f+3u0Mf5+vSPI5+pyEckyVg/YS4qfxP+GB
+        EpzNx+cqUe/zzyxn7mChk8CU9LlrjeTd+jRHqcTmcZEktbGnDZAx6rvvO37+DbDx
+        PS7ZN+D3NZoMRLc2o8ym+jst1ifJaUGBicHLvih4siw6clmK1j4/oadezgB2H29X
+        OI+NvchmEfRxmmtCP+hFWjR/0BDIdwh2Ykc7vomhEBEJPgCDYHbg3+YJqPy8HiZS
+        g8D/dz06+SXrsJhp+btgN0E/UH+yM4s8SdQ==
+X-ME-Sender: <xms:EOhpYu5rICuAfhOyvhG3zBn6SsmosX9sa0QwBgkEGzgIVwutKwsCpw>
+    <xme:EOhpYn7kI6lE-vmIDGjcCVFPEyCQyEptO7JZzaFPXy9zVq_mco20xBjT61625nrbI
+    -F14DwV2cL1ssV7jw>
+X-ME-Received: <xmr:EOhpYtfVGSM7evT-89FyD_wca4youZjNuT6WKzxWqty_q_y6GGHN5HE-eAMvtepPioOvRUK72_5KuYtch4XYvVEiwwLpjzvy2TvQugkWadzLXrdtQAhJmGn4CGVhD8GHIEAN6A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeigdegvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
+    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
+    frrghtthgvrhhnpedukeetueduhedtleetvefguddvvdejhfefudelgfduveeggeehgfdu
+    feeitdevteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:EOhpYrKiNgGyGRcR3093GrJAZecRwQTXKAhNGkHpj6jKimrQYutSuw>
+    <xmx:EOhpYiL2yi74IQfBWUPtp7H7fZnFwVKJ2DUrSNOHFRItvIROIq7ifQ>
+    <xmx:EOhpYsz0yymD3QJ07hXzkWy5mfkGQvCL7QgIYtQjpHLxs5GA_MMscw>
+    <xmx:EOhpYn7jcvmGpZ7QiIF9HAPNh4dg0GCA_nU8OqiAJg5uBL8Myr4nsQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 27 Apr 2022 21:04:15 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        iommu@lists.linux-foundation.org
+Cc:     Heiko Stuebner <heiko@sntech.de>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        linux-riscv@lists.infradead.org,
+        Samuel Holland <samuel@sholland.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: [PATCH 1/5] dt-bindings: iommu: sun50i: Add compatible for Allwinner D1
+Date:   Wed, 27 Apr 2022 20:03:56 -0500
+Message-Id: <20220428010401.11323-2-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220428010401.11323-1-samuel@sholland.org>
+References: <20220428010401.11323-1-samuel@sholland.org>
 MIME-Version: 1.0
-References: <cover.1649219184.git.kai.huang@intel.com> <522e37eb-68fc-35db-44d5-479d0088e43f@intel.com>
-In-Reply-To: <522e37eb-68fc-35db-44d5-479d0088e43f@intel.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Wed, 27 Apr 2022 18:01:53 -0700
-Message-ID: <CAPcyv4g5E_TOow=3pFJXyFr=KLV9pTSnDthgz6TuXvru4xDzaQ@mail.gmail.com>
-Subject: Re: [PATCH v3 00/21] TDX host kernel support
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Kai Huang <kai.huang@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "Brown, Len" <len.brown@intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Rafael J Wysocki <rafael.j.wysocki@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Isaku Yamahata <isaku.yamahata@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 1:10 PM Dave Hansen <dave.hansen@intel.com> wrote:
-[..]
-> > 3. Memory hotplug
-> >
-> > The first generation of TDX architecturally doesn't support memory
-> > hotplug.  And the first generation of TDX-capable platforms don't support
-> > physical memory hotplug.  Since it physically cannot happen, this series
-> > doesn't add any check in ACPI memory hotplug code path to disable it.
-> >
-> > A special case of memory hotplug is adding NVDIMM as system RAM using
+D1 contains an IOMMU similar to the one in the H6 SoC, but the D1
+variant has no external reset signal.
 
-Saw "NVDIMM" mentioned while browsing this, so stopped to make a comment...
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
 
-> > kmem driver.  However the first generation of TDX-capable platforms
-> > cannot enable TDX and NVDIMM simultaneously, so in practice this cannot
-> > happen either.
->
-> What prevents this code from today's code being run on tomorrow's
-> platforms and breaking these assumptions?
+ .../iommu/allwinner,sun50i-h6-iommu.yaml         | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-The assumption is already broken today with NVDIMM-N. The lack of
-DDR-T support on TDX enabled platforms has zero effect on DDR-based
-persistent memory solutions. In other words, please describe the
-actual software and hardware conflicts at play here, and do not make
-the mistake of assuming that "no DDR-T support on TDX platforms" ==
-"no NVDIMM support".
+diff --git a/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.yaml b/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.yaml
+index 5e125cf2a88b..18d3451d4dd5 100644
+--- a/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.yaml
++++ b/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.yaml
+@@ -17,7 +17,9 @@ properties:
+       The content of the cell is the master ID.
+ 
+   compatible:
+-    const: allwinner,sun50i-h6-iommu
++    enum:
++      - allwinner,sun20i-d1-iommu
++      - allwinner,sun50i-h6-iommu
+ 
+   reg:
+     maxItems: 1
+@@ -37,7 +39,17 @@ required:
+   - reg
+   - interrupts
+   - clocks
+-  - resets
++
++if:
++  properties:
++    compatible:
++      contains:
++        enum:
++          - allwinner,sun50i-h6-iommu
++
++then:
++  required:
++    - resets
+ 
+ additionalProperties: false
+ 
+-- 
+2.35.1
 
-> > Another case is admin can use 'memmap' kernel command line to create
-> > legacy PMEMs and use them as TD guest memory, or theoretically, can use
-> > kmem driver to add them as system RAM.  To avoid having to change memory
-> > hotplug code to prevent this from happening, this series always include
-> > legacy PMEMs when constructing TDMRs so they are also TDX memory.
-
-I am not sure what you are trying to say here?
-
-> > 4. CPU hotplug
-> >
-> > The first generation of TDX architecturally doesn't support ACPI CPU
-> > hotplug.  All logical cpus are enabled by BIOS in MADT table.  Also, the
-> > first generation of TDX-capable platforms don't support ACPI CPU hotplug
-> > either.  Since this physically cannot happen, this series doesn't add any
-> > check in ACPI CPU hotplug code path to disable it.
-
-What are the actual challenges posed to TDX with respect to CPU hotplug?
-
-> > Also, only TDX module initialization requires all BIOS-enabled cpus are
-
-Please define "BIOS-enabled" cpus. There is no "BIOS-enabled" line in
-/proc/cpuinfo for example.
