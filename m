@@ -2,53 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8CC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 01:13:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF0EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 01:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240404AbiD1BRD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 21:17:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39914 "EHLO
+        id S238898AbiD1BRM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 21:17:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240582AbiD1BQp (ORCPT
+        with ESMTP id S240431AbiD1BQq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 21:16:45 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E356B369F7;
-        Wed, 27 Apr 2022 18:13:25 -0700 (PDT)
+        Wed, 27 Apr 2022 21:16:46 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4FF7E5BA;
+        Wed, 27 Apr 2022 18:13:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651108406; x=1682644406;
+  t=1651108412; x=1682644412;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=ETtu/JXolCZgtw04vL8fJdMG86c05ohO0c9rbBE7X5M=;
-  b=KdzZUkFdBxROAfeG3AaksGZfHgJEG4qu3805h1V7bl+bI5Oo9aRwUbDn
-   Br1QKgIRxSqop+2T+D01p0y4zAyql1h6J+MrEiL3d0xIf8j18YOws0DV/
-   sGysklpzW0IeDQcWjW8MnsXv7QzodorSfENSCCv769ruikF0pfxHNvWMh
-   g=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 27 Apr 2022 18:13:25 -0700
+  bh=Ht5tFAx/b0oY9oX+FB+kzZOocBM2sta/Sgzs8nZLw/o=;
+  b=Xw7jCIlw1Fis1Hl9ad6goxgkFLQMyG9RJuS8lKADE/8Rq0ck8KDmB3Tw
+   joD276nGEL+PvDh5OMEq1JmaHTIKmxpDsxSag07t1ePOvnK9bj1eLIjXu
+   PNsAKakYUQItJAM9kaKA9LzMZCbaHGPCerw4mdzMwfZCYXUoGP01jNd3U
+   w=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 27 Apr 2022 18:13:31 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 18:13:24 -0700
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 18:13:30 -0700
 Received: from nalasex01c.na.qualcomm.com (10.47.97.35) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 27 Apr 2022 18:13:24 -0700
+ 15.2.986.22; Wed, 27 Apr 2022 18:13:30 -0700
 Received: from fenglinw-gv.qualcomm.com (10.80.80.8) by
  nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 27 Apr 2022 18:13:21 -0700
+ 15.2.986.22; Wed, 27 Apr 2022 18:13:27 -0700
 From:   Fenglin Wu <quic_fenglinw@quicinc.com>
 To:     <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <sboyd@kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
+        <sboyd@kernel.org>
 CC:     <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
         <quic_fenglinw@quicinc.com>, <tglx@linutronix.de>,
         <maz@kernel.org>, "David Collins" <collinsd@codeaurora.org>
-Subject: [RESEND PATCH V6 08/10] dt-bindings: spmi: spmi-pmic-arb: make interrupt properties as optional
-Date:   Thu, 28 Apr 2022 09:12:47 +0800
-Message-ID: <1651108369-11059-9-git-send-email-quic_fenglinw@quicinc.com>
+Subject: [RESEND PATCH V6 10/10] spmi: pmic-arb: increase SPMI transaction timeout delay
+Date:   Thu, 28 Apr 2022 09:12:49 +0800
+Message-ID: <1651108369-11059-11-git-send-email-quic_fenglinw@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1651108369-11059-1-git-send-email-quic_fenglinw@quicinc.com>
 References: <1651108369-11059-1-git-send-email-quic_fenglinw@quicinc.com>
@@ -63,31 +61,29 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Collins <collinsd@codeaurora.org>
 
-Make all interrupt related properties as optional instead of
-required.  Some boards do not required PMIC IRQ support and it
-isn't needed to handle SPMI bus transactions, so specify it as
-optional.
+Increase the SPMI transaction timeout delay from 100 us to
+1000 us in order to account for the slower execution time
+found on some simulator targets.
 
 Signed-off-by: David Collins <collinsd@codeaurora.org>
 Signed-off-by: Fenglin Wu <quic_fenglinw@quicinc.com>
 ---
- Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.yaml | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/spmi/spmi-pmic-arb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.yaml b/Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.yaml
-index 55d379c..fee4f0e 100644
---- a/Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.yaml
-+++ b/Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.yaml
-@@ -88,9 +88,6 @@ properties:
- required:
-   - compatible
-   - reg-names
--  - interrupts
--  - interrupt-names
--  - '#interrupt-cells'
-   - qcom,ee
-   - qcom,channel
+diff --git a/drivers/spmi/spmi-pmic-arb.c b/drivers/spmi/spmi-pmic-arb.c
+index 0496e5d..45f9344 100644
+--- a/drivers/spmi/spmi-pmic-arb.c
++++ b/drivers/spmi/spmi-pmic-arb.c
+@@ -91,7 +91,7 @@ enum pmic_arb_channel {
  
+ /* Maximum number of support PMIC peripherals */
+ #define PMIC_ARB_MAX_PERIPHS		512
+-#define PMIC_ARB_TIMEOUT_US		100
++#define PMIC_ARB_TIMEOUT_US		1000
+ #define PMIC_ARB_MAX_TRANS_BYTES	(8)
+ 
+ #define PMIC_ARB_APID_MASK		0xFF
 -- 
 2.7.4
 
