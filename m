@@ -2,102 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 179C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:39:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18103C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 15:39:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349424AbiD1Pmz (ORCPT
+        id S1349378AbiD1PnL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 11:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
+        Thu, 28 Apr 2022 11:43:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348684AbiD1PmR (ORCPT
+        with ESMTP id S1349433AbiD1Pm6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 11:42:17 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAE3B53D5;
-        Thu, 28 Apr 2022 08:39:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651160341; x=1682696341;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=09faArqF0ybDa7yJRCawo2WfNEh4ZJlwmYaJ5Yj+Yxg=;
-  b=H4mWFn9E0nX+sAS3Q1dluQzoTX3ejUy1QMW7lvNfYpoJEHtsy4PEEWQm
-   hX1oJOHxQ60v2tKIZ67a3bsQODkZgfmx9AgueiVmtsbjEYS0W41lt1xuy
-   kaU5nFXw8nSyCwnEd2K3PguOrrw6xii8HB1RR+STrdXGGmyFWDhiEg2Pc
-   yBJBOP0AYPgeertVkppi0xXvFAN4sFzo0NV4Qwjt15v/HuN4K029HFzTa
-   K2N8Js2w2nnbt7PbY9Gb0jub4Y4wj2d2SRbBtLxtwFFLBUarNeUZSrsE4
-   2WaC5jjoA4EbF/F0FXsoFElrXn3hhNyBaGnUJnLdxOPPAo9KBenSxujhk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="329271644"
-X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="329271644"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 08:39:01 -0700
-X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
-   d="scan'208";a="559734318"
-Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 08:39:00 -0700
-From:   Tony Luck <tony.luck@intel.com>
-To:     hdegoede@redhat.com, markgross@kernel.org
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        corbet@lwn.net, gregkh@linuxfoundation.org,
-        andriy.shevchenko@linux.intel.com, jithu.joseph@intel.com,
-        ashok.raj@intel.com, tony.luck@intel.com, rostedt@goodmis.org,
-        dan.j.williams@intel.com, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        patches@lists.linux.dev, ravi.v.shankar@intel.com
-Subject: [PATCH v5 02/10] x86/msr-index: Define INTEGRITY_CAPABILITIES MSR
-Date:   Thu, 28 Apr 2022 08:38:41 -0700
-Message-Id: <20220428153849.295779-3-tony.luck@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220428153849.295779-1-tony.luck@intel.com>
-References: <20220422200219.2843823-1-tony.luck@intel.com>
- <20220428153849.295779-1-tony.luck@intel.com>
+        Thu, 28 Apr 2022 11:42:58 -0400
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F7C8B8205
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 08:39:34 -0700 (PDT)
+Received: by mail-il1-x12a.google.com with SMTP id d3so2227867ilr.10
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 08:39:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=OTiwe2B8rcUTI1j/SK3IzHaXYBhsCj6uIQbvt9mJoW8=;
+        b=ipfJ7mfMBx1Gh7S27tOSuhiVa4tGtVpllk6Wp5RAxvOy62JewaAVekq9L7hm3Rw4Dz
+         CXzsm9JZz/m5595XdVfjTk1u/u53HX2rbqoGiwpAJ0yH3l+ppPrfg6w+07ZoOCCt8y0B
+         SjumJbNHwlEv2zNZmCR2hHbghukJqeDZtbDGqclEHxfmJ8diXalU9JjDQZ3/PhWz9UIT
+         SNOvc0+zcKpNV5BKUQLpjoi6wjRd5FXZIG1VGxNe+/VQTEDSv36gbBAybf5N3vAW3SN0
+         7YTIjH4j7hb/++l/0QN9k6hGAGczcQguvm5tkgsUCuk12wxDejfjV/U9kMjcVMuneh6z
+         gIdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OTiwe2B8rcUTI1j/SK3IzHaXYBhsCj6uIQbvt9mJoW8=;
+        b=kP3kT29lne5vZblt8oVgBhKF1EmU9zKnG8NMjsdYS3WSbKfoYijY9uDmp8y1pUzDPh
+         efeBDjaKT8FJJJTDUN3w9Y5qFzP3pKnCdkSAY6qXIxjitkzsVNRYUaPl4doQZU2CeukC
+         Rs8Y2EMvgNK5RIRIYh/+BDjHNWE+yIh9TuECtIGh41jv31dh3/BdXNoMU0+dIbmr9AcH
+         FXFdKDE4HCDHmgBsiwtWslcMblVsBo3K8W276NJDNGQ2sDphIDzAuM/4CP7eYA1uoZEn
+         MTN+oN71HkIj0hedEa7ePDFKxog+4eRbe2LYmH1IIj7oC2lamu4NCt3x+K56m+yzsFZZ
+         5K0g==
+X-Gm-Message-State: AOAM531Vp7d73OZioQONtjFGe3LQs6Fs4Aw/PVcJFAi04siREGUCz3qB
+        80aM7ehAIs4wS4VxSceUlpirbA==
+X-Google-Smtp-Source: ABdhPJwoRg8obuWEqLY+gYStieJPIHXgUsTUSpgt9B5G+awAdRdZhGFqY8ZPjyjvL7QqNgZHMMsaIw==
+X-Received: by 2002:a92:c54b:0:b0:2cc:3de1:ae5b with SMTP id a11-20020a92c54b000000b002cc3de1ae5bmr13217754ilj.288.1651160373684;
+        Thu, 28 Apr 2022 08:39:33 -0700 (PDT)
+Received: from [192.168.1.172] ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id u1-20020a056e02080100b002cd6b0e772dsm110390ilm.45.2022.04.28.08.39.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 08:39:33 -0700 (PDT)
+Message-ID: <001823d5-13cb-1b03-9ffa-686081123d08@kernel.dk>
+Date:   Thu, 28 Apr 2022 09:39:31 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [syzbot] KASAN: use-after-free Read in add_wait_queue
+Content-Language: en-US
+To:     syzbot <syzbot+950cee6d91e62329be2c@syzkaller.appspotmail.com>,
+        asml.silence@gmail.com, gregkh@linuxfoundation.org,
+        io-uring@vger.kernel.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <000000000000765a6105ddb8a8b9@google.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <000000000000765a6105ddb8a8b9@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The INTEGRITY_CAPABILITIES MSR is enumerated by bit 2 of the
-CORE_CAPABILITIES MSR.
+#syz fix: io_uring: fix assuming triggered poll waitqueue is the single poll
 
-Add defines for the CORE_CAPS enumeration as well as for the integrity
-MSR.
-
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Tony Luck <tony.luck@intel.com>
----
- arch/x86/include/asm/msr-index.h | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
-index ee15311b6be1..c3dc7ae32f1f 100644
---- a/arch/x86/include/asm/msr-index.h
-+++ b/arch/x86/include/asm/msr-index.h
-@@ -76,6 +76,8 @@
- 
- /* Abbreviated from Intel SDM name IA32_CORE_CAPABILITIES */
- #define MSR_IA32_CORE_CAPS			  0x000000cf
-+#define MSR_IA32_CORE_CAPS_INTEGRITY_CAPS_BIT	  2
-+#define MSR_IA32_CORE_CAPS_INTEGRITY_CAPS	  BIT(MSR_IA32_CORE_CAPS_INTEGRITY_CAPS_BIT)
- #define MSR_IA32_CORE_CAPS_SPLIT_LOCK_DETECT_BIT  5
- #define MSR_IA32_CORE_CAPS_SPLIT_LOCK_DETECT	  BIT(MSR_IA32_CORE_CAPS_SPLIT_LOCK_DETECT_BIT)
- 
-@@ -154,6 +156,11 @@
- #define MSR_IA32_POWER_CTL		0x000001fc
- #define MSR_IA32_POWER_CTL_BIT_EE	19
- 
-+/* Abbreviated from Intel SDM name IA32_INTEGRITY_CAPABILITIES */
-+#define MSR_INTEGRITY_CAPS			0x000002d9
-+#define MSR_INTEGRITY_CAPS_PERIODIC_BIST_BIT	4
-+#define MSR_INTEGRITY_CAPS_PERIODIC_BIST	BIT(MSR_INTEGRITY_CAPS_PERIODIC_BIST_BIT)
-+
- #define MSR_LBR_NHM_FROM		0x00000680
- #define MSR_LBR_NHM_TO			0x000006c0
- #define MSR_LBR_CORE_FROM		0x00000040
 -- 
-2.35.1
+Jens Axboe
 
