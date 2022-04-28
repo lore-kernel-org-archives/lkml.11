@@ -2,206 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 263CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 04:11:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 283DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 04:13:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242572AbiD1EPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 00:15:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42358 "EHLO
+        id S242603AbiD1EQX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 00:16:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232239AbiD1EO6 (ORCPT
+        with ESMTP id S232239AbiD1EQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 00:14:58 -0400
-Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2720120BF9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 21:11:45 -0700 (PDT)
-Received: by mail-vs1-xe30.google.com with SMTP id f32so3556733vsv.1
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 21:11:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rPHxqBSJHjTyBBNkveNlu/+ImQludYrH8gxylsd2L5U=;
-        b=O4Nl7pqqsJE65cqguD/4cmcrVpUgkZGe+2BSVVxY6VkzL+o6Ksebcd8Slb/EKpTn09
-         NXw8kb2/lD7b4M8ivoBVpG8ftb353M1m5QBr1uOinHAAjfidMBAZMCnfuFG7lZYl2smM
-         xeNsh/GOaVBXstcbTEpd0JpyNFuI4NH93/EDh/XOi+bMD8RObE0LXeDXXV83BZCuvY31
-         tUWTi6hLa19LZ3LhP48ShyRHMmwCxbWARo5B5prR+bSjsuE/gAboYCWA/Yr6BaUEFuDr
-         eghY5J1nS73KamQajOQ5JWHcfYn6m9Blbu7AA7zgQu4StcKrM80/hMeT5bwDGtRN4LqV
-         KvFA==
+        Thu, 28 Apr 2022 00:16:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EBA7D237E7
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 21:13:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651119188;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZVZ9sUaSJWjUHSw9f04r5KVucc3jL3AUKVcKmJ3NAL4=;
+        b=M3SmHLJo8gLt5UBqQjP4CHnq7WaZNSUuAVT47NjS0kxBQ9UZ9CBNn8bA0vxMBHTeCJVi7N
+        Uongrmj2+rwPSEBgSnrVGpxOJk+IKRgPhCrHP1p5ju781x5auAOYVv53DWoogLqDtpwZGU
+        FNtUGdtwLOYx6DaJPMH/8+sPzKcGp+k=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-503-XZT5Sd9VNYiQNhJWuzdDew-1; Thu, 28 Apr 2022 00:13:05 -0400
+X-MC-Unique: XZT5Sd9VNYiQNhJWuzdDew-1
+Received: by mail-wr1-f69.google.com with SMTP id e21-20020adfa455000000b0020ae075cf35so1427463wra.11
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 21:13:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rPHxqBSJHjTyBBNkveNlu/+ImQludYrH8gxylsd2L5U=;
-        b=SSYVTM2iXy/ymKwxOn0Z/ZFOpY0AeUJg42YAQLwmExeMwX7LH37QdXgJIEdBnZ2Jvl
-         STbC60A2oestq92G+wHQ7anX2k9FhxvivWRD8CneOBXQg0GHONVCQ83TuOBunkSYr49B
-         Km8lbAHKZMtk5LVCDaI5Ox5gsLDJSCXTTgs08ck8WFXaboAJVfC0Liw0xpa0RGT37GH6
-         r4PKcp8o/+VPWEob/3+/jkcWSROoJeOblt077sLHVqr4Z49L3NbxJKM6LCB97cT4wbKR
-         uzX4fvoKsV/TOGOC9JAc04jnrDuWlzm5F58V99x+4fafPfXg1Dw2XSpP4i206ZaL0cFz
-         9OEw==
-X-Gm-Message-State: AOAM530qrKBNnrwtiPKY9Eka+9SEk3en7TrRcM2l4NSV5gp3y+tc2MNd
-        SCv80BcufqzbibiaPropNmkzbwtOHzgzfheYzdFRKw==
-X-Google-Smtp-Source: ABdhPJwhHhVDXgZlnm6v5QaRfQFSBgYyHfAycGpQOqoNK0EmkTaf4aG90EBvcPNN6afAKH8nP9h1JQBWuXcy8TEycKs=
-X-Received: by 2002:a67:f343:0:b0:32c:c4b7:e238 with SMTP id
- p3-20020a67f343000000b0032cc4b7e238mr5905913vsm.77.1651119103832; Wed, 27 Apr
- 2022 21:11:43 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ZVZ9sUaSJWjUHSw9f04r5KVucc3jL3AUKVcKmJ3NAL4=;
+        b=P/7g/JU8R8E/AZVyYinlcfdWxSW4JNVwe0ilSqzKwrztXIS4T3pfoOnYo2XZpqMFxx
+         Y1wl5faHP74PRVsjf9lf6zd3ct2Z7qzxtT23q3GgJG1tYOKOaIcJKT1fpHPtSsgZ+etm
+         hvvHONsYN6Zo/yEytltNJLCGOAgrJ+IxelgbuuJYWP1rAVmlkLocNytbHabjs8ErXazk
+         KR/eB/1rq+Kbgih4yitKfeV13ew1uVgyKH/Wh4o66f4Etfv9PbxLbcocjKyRmHVzfBjC
+         /8mgZEBNp9UovhkoUVVBInD3SHowQIbO55HC93M4nINpIeObwqA0MIL3f0+gCpnwB5jR
+         UVmA==
+X-Gm-Message-State: AOAM533+zjaTOtT1vL43Z1NuKOxlupxNDl0m5AOhkLAsp6gnJOKtlVDJ
+        XCSsmHNNVVZc5DA+1mDh4F+62VnvSTbgBkxBneB65KzNRsiELBZyvCHS6Hg9+qerZciA17s8h9J
+        tkhkfmheS5npqWbJlIpzLGODs
+X-Received: by 2002:adf:ed05:0:b0:20a:f2ce:d751 with SMTP id a5-20020adfed05000000b0020af2ced751mr3382055wro.515.1651119184116;
+        Wed, 27 Apr 2022 21:13:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx916KYb7PiWtad59cylkJTg5tmthcpImGSNLGfOqocrPqE+hsRsFMdJbnz0W3wzYtGgvFY3A==
+X-Received: by 2002:adf:ed05:0:b0:20a:f2ce:d751 with SMTP id a5-20020adfed05000000b0020af2ced751mr3382047wro.515.1651119183898;
+        Wed, 27 Apr 2022 21:13:03 -0700 (PDT)
+Received: from redhat.com ([2.53.18.16])
+        by smtp.gmail.com with ESMTPSA id j8-20020a05600c190800b00393e80a7970sm3029021wmq.7.2022.04.27.21.12.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 21:12:59 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 00:12:54 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Halil Pasic <pasic@linux.ibm.com>
+Cc:     Cornelia Huck <cohuck@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, sgarzare@redhat.com,
+        eperezma@redhat.com, lulu@redhat.com, tglx@linutronix.de,
+        peterz@infradead.org, paulmck@kernel.org, maz@kernel.org
+Subject: Re: [PATCH V3 6/9] virtio-ccw: implement synchronize_cbs()
+Message-ID: <20220428001142-mutt-send-email-mst@kernel.org>
+References: <20220426042911.544477f9.pasic@linux.ibm.com>
+ <20220425233434-mutt-send-email-mst@kernel.org>
+ <20220425233604-mutt-send-email-mst@kernel.org>
+ <ba0c3977-c471-3275-2327-c5910cdd506a@redhat.com>
+ <20220425235134-mutt-send-email-mst@kernel.org>
+ <20220425235415-mutt-send-email-mst@kernel.org>
+ <87o80n7soq.fsf@redhat.com>
+ <20220426124243-mutt-send-email-mst@kernel.org>
+ <87ilqu7u6w.fsf@redhat.com>
+ <20220428044315.3945e660.pasic@linux.ibm.com>
 MIME-Version: 1.0
-References: <CAAPL-u_pSWD6U0yQ8Ws+_Yfb_3ZEmNXJsYcRJjAFBkyDk=nq8g@mail.gmail.com>
- <ea73f6fda9cafdd0cb6ba8351139e6f4b47354a8.camel@intel.com>
- <CAAPL-u-aeceXFUNdok_GYb2aLhZa0zBBuSqHxFznQob3PbJt7Q@mail.gmail.com>
- <a80647053bba44623094995730e061f0e6129677.camel@intel.com>
- <CAAPL-u89Jxutu1VH0LnO5VGdMbkLvc2M9eapuwP-y9oG9QSsrA@mail.gmail.com>
- <610ccaad03f168440ce765ae5570634f3b77555e.camel@intel.com>
- <CAAPL-u9ktM82zAW_OVwqTmQsr-XC8XOPmAsjoiCLo18cxUWA=A@mail.gmail.com>
- <8e31c744a7712bb05dbf7ceb2accf1a35e60306a.camel@intel.com>
- <CAAPL-u9uP+FUh7Yn0ByOECo+EP32ZABnCvNPKQB9JCA68VHEqQ@mail.gmail.com>
- <78b5f4cfd86efda14c61d515e4db9424e811c5be.camel@intel.com>
- <YmKKwXa2XI/nwac0@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
- <200e95cf36c1642512d99431014db8943fed715d.camel@intel.com>
- <CAAPL-u94H9FLjVtYLhi_A2AqLTOCTMRh6=Sx9cX8A3WGNM-OdA@mail.gmail.com>
- <b1f58fd4-e23b-f617-b4a7-b80b1ffbe13f@linux.ibm.com> <CAAPL-u9ZDcM48-76+wJeP-HeJf92YdA8ad3qX65p5d+0A9Puuw@mail.gmail.com>
- <9d9ef67127b1e2cf0b6c72f60cb7304dc573c28b.camel@intel.com>
-In-Reply-To: <9d9ef67127b1e2cf0b6c72f60cb7304dc573c28b.camel@intel.com>
-From:   Wei Xu <weixugc@google.com>
-Date:   Wed, 27 Apr 2022 21:11:32 -0700
-Message-ID: <CAAPL-u-sSg=p1n_Trm9TyrgdCCO1zZ-LbKM=tkp3M827gLv=CA@mail.gmail.com>
-Subject: Re: [PATCH v2 0/5] mm: demotion: Introduce new node state N_DEMOTION_TARGETS
-To:     "ying.huang@intel.com" <ying.huang@intel.com>
-Cc:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Greg Thelen <gthelen@google.com>,
-        MichalHocko <mhocko@kernel.org>,
-        Brice Goglin <brice.goglin@gmail.com>, feng.tang@intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220428044315.3945e660.pasic@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 5:56 PM ying.huang@intel.com
-<ying.huang@intel.com> wrote:
->
-> On Wed, 2022-04-27 at 11:27 -0700, Wei Xu wrote:
-> > On Tue, Apr 26, 2022 at 10:06 PM Aneesh Kumar K V
-> > <aneesh.kumar@linux.ibm.com> wrote:
+On Thu, Apr 28, 2022 at 04:43:15AM +0200, Halil Pasic wrote:
+> On Wed, 27 Apr 2022 11:27:03 +0200
+> Cornelia Huck <cohuck@redhat.com> wrote:
+> 
+> > On Tue, Apr 26 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> > 
+> > > On Tue, Apr 26, 2022 at 05:47:17PM +0200, Cornelia Huck wrote:  
+> > >> On Mon, Apr 25 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> > >>   
+> > >> > On Mon, Apr 25, 2022 at 11:53:24PM -0400, Michael S. Tsirkin wrote:  
+> > >> >> On Tue, Apr 26, 2022 at 11:42:45AM +0800, Jason Wang wrote:  
+> > >> >> > 
+> > >> >> > 在 2022/4/26 11:38, Michael S. Tsirkin 写道:  
+> > >> >> > > On Mon, Apr 25, 2022 at 11:35:41PM -0400, Michael S. Tsirkin wrote:  
+> > >> >> > > > On Tue, Apr 26, 2022 at 04:29:11AM +0200, Halil Pasic wrote:  
+> > >> >> > > > > On Mon, 25 Apr 2022 09:59:55 -0400
+> > >> >> > > > > "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> > >> >> > > > >   
+> > >> >> > > > > > On Mon, Apr 25, 2022 at 10:54:24AM +0200, Cornelia Huck wrote:  
+> > >> >> > > > > > > On Mon, Apr 25 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:  
+> > >> >> > > > > > > > On Mon, Apr 25, 2022 at 10:44:15AM +0800, Jason Wang wrote:  
+> > >> >> > > > > > > > > This patch tries to implement the synchronize_cbs() for ccw. For the
+> > >> >> > > > > > > > > vring_interrupt() that is called via virtio_airq_handler(), the
+> > >> >> > > > > > > > > synchronization is simply done via the airq_info's lock. For the
+> > >> >> > > > > > > > > vring_interrupt() that is called via virtio_ccw_int_handler(), a per
+> > >> >> > > > > > > > > device spinlock for irq is introduced ans used in the synchronization
+> > >> >> > > > > > > > > method.
+> > >> >> > > > > > > > > 
+> > >> >> > > > > > > > > Cc: Thomas Gleixner <tglx@linutronix.de>
+> > >> >> > > > > > > > > Cc: Peter Zijlstra <peterz@infradead.org>
+> > >> >> > > > > > > > > Cc: "Paul E. McKenney" <paulmck@kernel.org>
+> > >> >> > > > > > > > > Cc: Marc Zyngier <maz@kernel.org>
+> > >> >> > > > > > > > > Cc: Halil Pasic <pasic@linux.ibm.com>
+> > >> >> > > > > > > > > Cc: Cornelia Huck <cohuck@redhat.com>
+> > >> >> > > > > > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>  
+> > >> >> > > > > > > > 
+> > >> >> > > > > > > > This is the only one that is giving me pause. Halil, Cornelia,
+> > >> >> > > > > > > > should we be concerned about the performance impact here?
+> > >> >> > > > > > > > Any chance it can be tested?  
+> > >> >> > > > > > > We can have a bunch of devices using the same airq structure, and the
+> > >> >> > > > > > > sync cb creates a choke point, same as registering/unregistering.  
+> > >> >> > > > > > BTW can callbacks for multiple VQs run on multiple CPUs at the moment?  
+> > >> >> > > > > I'm not sure I understand the question.
+> > >> >> > > > > 
+> > >> >> > > > > I do think we can have multiple CPUs that are executing some portion of
+> > >> >> > > > > virtio_ccw_int_handler(). So I guess the answer is yes. Connie what do you think?
+> > >> >> > > > > 
+> > >> >> > > > > On the other hand we could also end up serializing synchronize_cbs()
+> > >> >> > > > > calls for different devices if they happen to use the same airq_info. But
+> > >> >> > > > > this probably was not your question  
+> > >> >> > > > 
+> > >> >> > > > I am less concerned about  synchronize_cbs being slow and more about
+> > >> >> > > > the slowdown in interrupt processing itself.
+> > >> >> > > >   
+> > >> >> > > > > > this patch serializes them on a spinlock.
+> > >> >> > > > > >   
+> > >> >> > > > > Those could then pile up on the newly introduced spinlock.  
+> > >> 
+> > >> How bad would that be in practice? IIUC, we hit on the spinlock when
+> > >> - doing synchronize_cbs (should be rare)
+> > >> - processing queue interrupts for devices using per-device indicators
+> > >>   (which is the non-preferred path, which I would basically only expect
+> > >>   when running on an ancient or non-standard hypervisor)  
 > > >
-> > > On 4/25/22 10:26 PM, Wei Xu wrote:
-> > > > On Sat, Apr 23, 2022 at 8:02 PM ying.huang@intel.com
-> > > > <ying.huang@intel.com> wrote:
-> > > > >
-> > >
-> > > ....
-> > >
-> > > > > 2. For machines with PMEM installed in only 1 of 2 sockets, for example,
-> > > > >
-> > > > > Node 0 & 2 are cpu + dram nodes and node 1 are slow
-> > > > > memory node near node 0,
-> > > > >
-> > > > > available: 3 nodes (0-2)
-> > > > > node 0 cpus: 0 1
-> > > > > node 0 size: n MB
-> > > > > node 0 free: n MB
-> > > > > node 1 cpus:
-> > > > > node 1 size: n MB
-> > > > > node 1 free: n MB
-> > > > > node 2 cpus: 2 3
-> > > > > node 2 size: n MB
-> > > > > node 2 free: n MB
-> > > > > node distances:
-> > > > > node   0   1   2
-> > > > >    0:  10  40  20
-> > > > >    1:  40  10  80
-> > > > >    2:  20  80  10
-> > > > >
-> > > > > We have 2 choices,
-> > > > >
-> > > > > a)
-> > > > > node    demotion targets
-> > > > > 0       1
-> > > > > 2       1
-> > > > >
-> > > > > b)
-> > > > > node    demotion targets
-> > > > > 0       1
-> > > > > 2       X
-> > > > >
-> > > > > a) is good to take advantage of PMEM.  b) is good to reduce cross-socket
-> > > > > traffic.  Both are OK as defualt configuration.  But some users may
-> > > > > prefer the other one.  So we need a user space ABI to override the
-> > > > > default configuration.
-> > > >
-> > > > I think 2(a) should be the system-wide configuration and 2(b) can be
-> > > > achieved with NUMA mempolicy (which needs to be added to demotion).
-> > > >
-> > > > In general, we can view the demotion order in a way similar to
-> > > > allocation fallback order (after all, if we don't demote or demotion
-> > > > lags behind, the allocations will go to these demotion target nodes
-> > > > according to the allocation fallback order anyway).  If we initialize
-> > > > the demotion order in that way (i.e. every node can demote to any node
-> > > > in the next tier, and the priority of the target nodes is sorted for
-> > > > each source node), we don't need per-node demotion order override from
-> > > > the userspace.  What we need is to specify what nodes should be in
-> > > > each tier and support NUMA mempolicy in demotion.
-> > > >
-> > >
-> > > I have been wondering how we would handle this. For ex: If an
-> > > application has specified an MPOL_BIND policy and restricted the
-> > > allocation to be from Node0 and Node1, should we demote pages allocated
-> > > by that application
-> > > to Node10? The other alternative for that demotion is swapping. So from
-> > > the page point of view, we either demote to a slow memory or pageout to
-> > > swap. But then if we demote we are also breaking the MPOL_BIND rule.
-> >
-> > IMHO, the MPOL_BIND policy should be respected and demotion should be
-> > skipped in such cases.  Such MPOL_BIND policies can be an important
-> > tool for applications to override and control their memory placement
-> > when transparent memory tiering is enabled.  If the application
-> > doesn't want swapping, there are other ways to achieve that (e.g.
-> > mlock, disabling swap globally, setting memcg parameters, etc).
-> >
-> >
-> > > The above says we would need some kind of mem policy interaction, but
-> > > what I am not sure about is how to find the memory policy in the
-> > > demotion path.
-> >
-> > This is indeed an important and challenging problem.  One possible
-> > approach is to retrieve the allowed demotion nodemask from
-> > page_referenced() similar to vm_flags.
->
-> This works for mempolicy in struct vm_area_struct, but not for that in
-> struct task_struct.  Mutiple threads in a process may have different
-> mempolicy.
+> > > this one is my concern. I am worried serializing everything on a single lock
+> > > will drastically regress performance here.  
+> > 
+> > Yeah, that case could get much worse. OTOH, how likely is it that any
+> > setup that runs a recent kernel will actually end up with devices using
+> > per-device indicators? Anything running under a QEMU released in the
+> > last couple of years is unlikely to not use airqs, I think. Halil, do
+> > you think that the classic indicator setup would be more common on any
+> > non-QEMU hypervisors?
+> > 
+> 
+> I really don't know. My opinion is that, two stages indicators are kind
+> of recommended for anybody who cares about notifications performance.
+> 
+> > IOW, how much effort is it worth spending on optimizing this case? We
+> > certainly should explore any simple solutions, but I don't think we need
+> > to twist ourselves into pretzels to solve it.
+> > 
+> 
+> Frankly, I would be fine with an rwlock based solution as proposed by
+> Jason. My rationale is: we recommend two stage indicators, and the two
+> stage indicators are already encumbered by an rwlock on the interrupt
+> path.
 
-From vm_area_struct, we can get to mm_struct and then to the owner
-task_struct, which has the process mempolicy.
+Which lock is it? Can we take that lock to synchronize?
 
-It is indeed a problem when a page is shared by different threads or
-different processes that have different thread default mempolicy
-values.
+> Yes, the coalescence of adapter interrupts is architecturally
+> different, and so it is with GISA (without GISA, I'm not even sure), so
+> this rwlock end up being worse than the one for 2 stage. But my feeling
+> is, that it should be fine. On the other hand, I don't feel comfortable
+> with plain spinlock, and I am curious about a more advanced solution.
+> But my guess is that rwlock + some testing for the legacy indicator case
+> just to double check if there is a heavy regression despite of our
+> expectations to see none should do the trick.
+> 
+> Regards,
+> Halil
 
-On the other hand, it can already support most interesting use cases
-for demotion (e.g. selecting the demotion node, mbind to prevent
-demotion) by respecting cpuset and vma mempolicies.
+Makes sense.
 
-> Best Regards,
-> Huang, Ying
->
 > > >
-> > > > Cross-socket demotion should not be too big a problem in practice
-> > > > because we can optimize the code to do the demotion from the local CPU
-> > > > node (i.e. local writes to the target node and remote read from the
-> > > > source node).  The bigger issue is cross-socket memory access onto the
-> > > > demoted pages from the applications, which is why NUMA mempolicy is
-> > > > important here.
-> > > >
-> > > >
-> > > -aneesh
->
->
+> > >  
+> > >> - configuration change interrupts (should be rare)
+> > >> - during setup, reset, etc. (should not be a concern)  
+> > 
+
