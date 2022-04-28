@@ -2,223 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DC0C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9FEBC433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:04:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343797AbiD1IIJ (ORCPT
+        id S1343783AbiD1IH4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35016 "EHLO
+        Thu, 28 Apr 2022 04:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343806AbiD1IIC (ORCPT
+        with ESMTP id S1343614AbiD1IHs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:08:02 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0966F9D4E9;
-        Thu, 28 Apr 2022 01:04:47 -0700 (PDT)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id CE5A46000D;
-        Thu, 28 Apr 2022 08:04:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651133085;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XFs4BoPFxxMdlDnM4BwqsNcAhqErhYQfhGYqvICNnic=;
-        b=mp/2iSH7tfbe8g/5WJ3MiWav+wygO0D+A4ld69PaCo5bU9jE9M5pyY2WpYYMvhE10xe2lY
-        mtIvqWtsvYA3PCbxGlgXbTbEDoqEG1m+xDzrUovm1CYfVOBaDNQlYzpwe8lvXiyCafaVS3
-        zVFguuWu/SLdpeqvTHVavojWQydWEfBNw8iZXfOrE9pQSnsWUulwrG2eCKsZyEImte8tyK
-        6ik1cj/nbQTTh61UqFA6YA35nBhqLAaK3S8EffM1M7DY96sDD45Yk7P4sDV/NlEvf4MhvE
-        v+/ppmeXSHhl2abOjUsm1EvUIdFzWMCYUPK1wMEUTRrKmkKyhIAS/FtvjazP6A==
-Date:   Thu, 28 Apr 2022 10:04:37 +0200
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        Yong Deng <yong.deng@magewell.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Samuel Holland <samuel@sholland.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v4 13/45] media: sun6i-csi: Introduce and use video
- helper functions
-Message-ID: <YmpKlePweCAyeOT0@aptenodytes>
-References: <20220415152811.636419-1-paul.kocialkowski@bootlin.com>
- <20220415152811.636419-14-paul.kocialkowski@bootlin.com>
- <13001485.uLZWGnKmhe@jernej-laptop>
+        Thu, 28 Apr 2022 04:07:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7681C9D4E9
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:04:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A049B82B35
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 08:04:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8839AC385AC;
+        Thu, 28 Apr 2022 08:04:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651133069;
+        bh=a4NV7CQK6Y90eH2eoXqtxoTPh+hLluRrEcM9Svhipig=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=A4LSuu97UOwolzLArNy1m00e0wSNj+xL9+j8kHVdHISRsj4VK4HVv1Wv9r77cAJyk
+         kECIWjHun6ASGD0enxC2oREBdR5/3lDApaYe2RNGRJLYK0081GrKV26vyuIz9/7IdK
+         9EkWrX8scGXD1pymVAWg8Uk/ItsuOg5lzuvt6WRSh0GIQcR9jZkmGn3akFuNSssw2T
+         v+/3tXM2a9JCVrJ21fnn/36WUTp0wtGCwBtFZVnMyLXh0Vpw3hh9eevTL3ZFX6oAKw
+         nkG/cuWvjLVhSkdTq76p/yhn6DNKuuXGPdCgWDa6luLziS3cKEwPxsVrVAtFS7YgUn
+         jnZZvs59IMDTQ==
+Date:   Thu, 28 Apr 2022 10:04:24 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Sargun Dhillon <sargun@sargun.me>
+Cc:     Kees Cook <keescook@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Tycho Andersen <tycho@tycho.pizza>,
+        Andy Lutomirski <luto@kernel.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>
+Subject: Re: [PATCH 1/2] seccomp: Use FIFO semantics to order notifications
+Message-ID: <20220428080424.p3ltkcwtk3icvq6n@wittgenstein>
+References: <20220428015447.13661-1-sargun@sargun.me>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="hbLKg0yuMi8/nDoQ"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <13001485.uLZWGnKmhe@jernej-laptop>
+In-Reply-To: <20220428015447.13661-1-sargun@sargun.me>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Apr 27, 2022 at 06:54:46PM -0700, Sargun Dhillon wrote:
+> Previously, the seccomp notifier used LIFO semantics, where each
+> notification would be added on top of the stack, and notifications
+> were popped off the top of the stack. This could result one process
+> that generates a large number of notifications preventing other
+> notifications from being handled. This patch moves from LIFO (stack)
+> semantics to FIFO (queue semantics).
+> 
+> Signed-off-by: Sargun Dhillon <sargun@sargun.me>
+> ---
 
---hbLKg0yuMi8/nDoQ
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi Jernej,
-
-On Wed 27 Apr 22, 20:50, Jernej =C5=A0krabec wrote:
-> Dne petek, 15. april 2022 ob 17:27:39 CEST je Paul Kocialkowski napisal(a=
-):
-> > Introduce some helpers for buffer and general video configuration.
-> >=20
-> > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > ---
-> >  .../platform/sunxi/sun6i-csi/sun6i_video.c    | 46 +++++++++++--------
-> >  1 file changed, 28 insertions(+), 18 deletions(-)
-> >=20
-> > diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
-> > b/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c index
-> > e6c85fcc65bb..e47eeb27dc4e 100644
-> > --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
-> > +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
-> > @@ -92,6 +92,29 @@ static bool sun6i_video_format_check(u32 format)
-> >  	return false;
-> >  }
-> >=20
-> > +/* Video */
-> > +
-> > +static void sun6i_video_buffer_configure(struct sun6i_csi_device *csi_=
-dev,
-> > +					 struct sun6i_csi_buffer=20
-> *csi_buffer)
-> > +{
-> > +	csi_buffer->queued_to_csi =3D true;
-> > +	sun6i_csi_update_buf_addr(csi_dev, csi_buffer->dma_addr);
-> > +}
-> > +
-> > +static void sun6i_video_configure(struct sun6i_csi_device *csi_dev)
-> > +{
-> > +	struct sun6i_video *video =3D &csi_dev->video;
-> > +	struct sun6i_csi_config config =3D { 0 };
-> > +
-> > +	config.pixelformat =3D video->format.fmt.pix.pixelformat;
-> > +	config.code =3D video->mbus_code;
-> > +	config.field =3D video->format.fmt.pix.field;
-> > +	config.width =3D video->format.fmt.pix.width;
-> > +	config.height =3D video->format.fmt.pix.height;
-> > +
-> > +	sun6i_csi_update_config(csi_dev, &config);
-> > +}
-> > +
-> >  /* Queue */
-> >=20
-> >  static int sun6i_video_queue_setup(struct vb2_queue *queue,
-> > @@ -160,7 +183,6 @@ static int sun6i_video_start_streaming(struct vb2_q=
-ueue
-> > *queue, struct video_device *video_dev =3D &video->video_dev;
-> >  	struct sun6i_csi_buffer *buf;
-> >  	struct sun6i_csi_buffer *next_buf;
-> > -	struct sun6i_csi_config config;
-> >  	struct v4l2_subdev *subdev;
-> >  	unsigned long flags;
-> >  	int ret;
-> > @@ -182,22 +204,13 @@ static int sun6i_video_start_streaming(struct
-> > vb2_queue *queue, goto error_media_pipeline;
-> >  	}
-> >=20
-> > -	config.pixelformat =3D video->format.fmt.pix.pixelformat;
-> > -	config.code =3D video->mbus_code;
-> > -	config.field =3D video->format.fmt.pix.field;
-> > -	config.width =3D video->format.fmt.pix.width;
-> > -	config.height =3D video->format.fmt.pix.height;
-> > -
-> > -	ret =3D sun6i_csi_update_config(csi_dev, &config);
-> > -	if (ret < 0)
-> > -		goto error_media_pipeline;
-> > +	sun6i_video_configure(csi_dev);
->=20
-> What happened to that error handling? New helper function ignores return =
-value=20
-> of sun6i_csi_update_config(). Why?
-
-Ah that's a good point, the error value is still being returned by
-sun6i_csi_update_config so it should be kept around at this stage.
-
-Note that this is a transitional commit and sun6i_video_configure
-(which gets renamed to sun6i_csi_capture_configure) is eventually
-reworked to only configure registers (no checks) and returns void.
-
-If you think it's important to keep it in the meantime I can do that.
-
-Paul
-
-> Best regards,
-> Jernej
->=20
-> >=20
-> >  	spin_lock_irqsave(&video->dma_queue_lock, flags);
-> >=20
-> >  	buf =3D list_first_entry(&video->dma_queue,
-> >  			       struct sun6i_csi_buffer, list);
-> > -	buf->queued_to_csi =3D true;
-> > -	sun6i_csi_update_buf_addr(csi_dev, buf->dma_addr);
-> > +	sun6i_video_buffer_configure(csi_dev, buf);
-> >=20
-> >  	sun6i_csi_set_stream(csi_dev, true);
-> >=20
-> > @@ -219,8 +232,7 @@ static int sun6i_video_start_streaming(struct vb2_q=
-ueue
-> > *queue, * would also drop frame when lacking of queued buffer.
-> >  	 */
-> >  	next_buf =3D list_next_entry(buf, list);
-> > -	next_buf->queued_to_csi =3D true;
-> > -	sun6i_csi_update_buf_addr(csi_dev, next_buf->dma_addr);
-> > +	sun6i_video_buffer_configure(csi_dev, next_buf);
-> >=20
-> >  	spin_unlock_irqrestore(&video->dma_queue_lock, flags);
-> >=20
-> > @@ -294,8 +306,7 @@ void sun6i_video_frame_done(struct sun6i_csi_device
-> > *csi_dev) * for next ISR call.
-> >  	 */
-> >  	if (!next_buf->queued_to_csi) {
-> > -		next_buf->queued_to_csi =3D true;
-> > -		sun6i_csi_update_buf_addr(csi_dev, next_buf->dma_addr);
-> > +		sun6i_video_buffer_configure(csi_dev, next_buf);
-> >  		dev_dbg(csi_dev->dev, "Frame dropped!\n");
-> >  		goto complete;
-> >  	}
-> > @@ -309,8 +320,7 @@ void sun6i_video_frame_done(struct sun6i_csi_device
-> > *csi_dev) /* Prepare buffer for next frame but one.  */
-> >  	if (!list_is_last(&next_buf->list, &video->dma_queue)) {
-> >  		next_buf =3D list_next_entry(next_buf, list);
-> > -		next_buf->queued_to_csi =3D true;
-> > -		sun6i_csi_update_buf_addr(csi_dev, next_buf->dma_addr);
-> > +		sun6i_video_buffer_configure(csi_dev, next_buf);
-> >  	} else {
-> >  		dev_dbg(csi_dev->dev, "Next frame will be dropped!\n");
-> >  	}
->=20
->=20
->=20
->=20
-
---=20
-Paul Kocialkowski, Bootlin
-Embedded Linux and kernel engineering
-https://bootlin.com
-
---hbLKg0yuMi8/nDoQ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmJqSpUACgkQ3cLmz3+f
-v9F9WQf/Yw9U3I/o7JqV+HsxUfKaf4gX6vbH1O2ZCv4jD06TNpE+RVR8CE2SjqVo
-wI0w+RbVZMBT64ueuuqr2dRPuYlJ15WVCgMKU21N8vEAXDxfYVQr4f3/7cj8CBzK
-x6vCvWs5dbqKF3ek3S3h7y9iMhDQ9nbVh7dZlJnQfwcAWK+K/aQEfpqnTBKpL3km
-MCk9PxVjRtk23TS1pS/GtDids1vtMMNjnaDvfRR/NWd3dfEL25wC72N+7bxNv0fX
-06IcEdCHll0ZanSeo/2Rdpy4KFCtC8LI+5xmv4lOZ7M/4+1UdlhI9ArYZvseiK3N
-u8wy39tlfO0JuXma+sRGdMQDtSWPQQ==
-=30KN
------END PGP SIGNATURE-----
-
---hbLKg0yuMi8/nDoQ--
+It has a minimal user-visible impact in a sense but I don't think it
+should be an issue. Makes sense to me,
+Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
