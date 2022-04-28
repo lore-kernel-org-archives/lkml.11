@@ -2,117 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9326EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:04:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE612C4167B
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:04:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233629AbiD1KH2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:07:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51074 "EHLO
+        id S233880AbiD1KHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232211AbiD1KGx (ORCPT
+        with ESMTP id S233418AbiD1KHB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:06:53 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADD63337C
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:55:03 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id x33so7679837lfu.1
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:55:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=V0XeT7IXBftt0apFPjjxPnSRBK1X7ldQ9u0yIYHiPlU=;
-        b=YCg4LQSCCHVcvC/S2cQuookZz0GMC3S83n5ovXl/cTO4vUS871u/K85uaoRnHXZi5n
-         s8HCkmeTShWkJtH/RqXwANzdsUpcmgKpDfbzBqKiXU7uJ6y/1V3S9dxb8m8M+jiijopy
-         QA4yKCLxZguaqkZJ64WGbrnlJOHQkRyG8j9nUnVtKNMnMXpfRSznH0OX9F+VIoHEIv1n
-         ulAWX0gv39ng0xftKnC1sBNS+j1hQ5UpILJw+cEeg9Y66AOHRf+sOQpVKsLiXa64cyui
-         guTOM8XV+qM+BriDGY6F6KIbFr2f9PgoC9XHjHUfqp3QxuZ7owy9GFz3dzitjKq+QOKx
-         RE4g==
+        Thu, 28 Apr 2022 06:07:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A2B3C41FB4
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:55:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651139735;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LAMPVNdq/kHZXC36MFoCnFQzkvkEzOW9H33jASJaclo=;
+        b=e8iDxGHAKJAIfNxeJXWo4UdTvMcUyRzn2EHvGv0hL33HoXebF5I2SlXGyOIedtchp0+7MU
+        ieWz2cSfAjHYVoAUPXliqd1BF0TuXPM8zM2SthmqbhJuzWy1KwTnGBqFIcjnQqv18qWfGA
+        aWKYrVo7EjaaPDwucMgJdQb9YQ9YTdY=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-7-wqhV8_-QMUCYe74Cy9svZw-1; Thu, 28 Apr 2022 05:55:34 -0400
+X-MC-Unique: wqhV8_-QMUCYe74Cy9svZw-1
+Received: by mail-wr1-f69.google.com with SMTP id l11-20020adfc78b000000b0020abc1ce7e4so1736499wrg.1
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:55:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=V0XeT7IXBftt0apFPjjxPnSRBK1X7ldQ9u0yIYHiPlU=;
-        b=oVdZ2f2cP5LtXPndSdeV7o86j5J07UJMos3IkUK///oPpM6AQSdmTDQu53q0PHy4i6
-         VhV82twfwpdMJ9mLR8bOQ8vfDsyqgFJWrs8okeI4s3dRE4kFOeLHvKNFT3DJ+ZRp5O0c
-         zlU9wiXZIz5TlRe1GWEjl0gxeK8usPw3NhuiSCQ6FYRIETOVfWGkdZr7hwqIF8rDVw0z
-         uEpSYzmwnyuHXJO+8a0LV9YiRpdjEaWV0n9V/uzDS4I2Z7l9bIcqY090qISeHnSSfD0z
-         spkQQftv30FIEjeNXSqcg7TGhCWrUOdueP9RUwQQgpEJ1ChBSfEnmw5DEFRg1mr1WuXV
-         Ya/A==
-X-Gm-Message-State: AOAM533n9TBZgRSgnCHpfhV1wUlK4jFeSVdOxfVH1DPBLarYQqhG8gSE
-        65d0qOjHRkmgbzyGpqwA8YdRkytq8z7xG/CRzlQw1Q==
-X-Google-Smtp-Source: ABdhPJy0ybox27E6e84jHMcEqHixOb1KpVI0stK6pmS/L2GkVDTmApxzKoDq6QSEYP6f0A9CtGwOMHzZsfN+e/ROgxI=
-X-Received: by 2002:a05:6512:110c:b0:472:3d96:bd24 with SMTP id
- l12-20020a056512110c00b004723d96bd24mr678751lfg.389.1651139701661; Thu, 28
- Apr 2022 02:55:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220428063924.3570409-1-songyuanzheng@huawei.com> <e4e5bd41-df5b-bb65-b92f-47122d1e7738@amd.com>
-In-Reply-To: <e4e5bd41-df5b-bb65-b92f-47122d1e7738@amd.com>
-From:   Sumit Semwal <sumit.semwal@linaro.org>
-Date:   Thu, 28 Apr 2022 15:24:49 +0530
-Message-ID: <CAO_48GG6vX35HTZNXz5Bqf341K9+6a5M63Jxb+nYSbpWDqMH=w@mail.gmail.com>
-Subject: Re: [PATCH] dma-buf: add the name field to the table header
-To:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Cc:     Yuanzheng Song <songyuanzheng@huawei.com>,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=LAMPVNdq/kHZXC36MFoCnFQzkvkEzOW9H33jASJaclo=;
+        b=OoSVRQKm71/MaEhyN4ex2lF6YlY2F3g0k/1W+3zqN8ndmQmOh1j+StM0TgUU4f0M6p
+         smYe1iDN/yt0amwLjylskHoeTJO4fvssVcyjsglArCqFvNQEQPjxLHXnNK4gGyCs5maV
+         lpoFxKBuRv+RaUOubHfTAMxkLEdm+0E/IIV6L25rMX4MAFshrayHrRzwCHcHqxhvsavC
+         ffVe/N/uVvY3IR1Mpc5NgkQlkSa4GsrK0WqkuGK3WH+E7v/uHLqDKaLHm87AYBk7085B
+         DuLfBTR1BQW7PGng44x2EYg63TNsxKJ0FGEA3bEQ3st20zAlH3XkxQ3Kho5h4HPqdwCK
+         npuw==
+X-Gm-Message-State: AOAM5338ipx6zA92AUElGupwx76K++hnZbxYpMw0vy2k7kiG2Uib3wUS
+        0kty42H8oK4DUo5aXpf7u+uHpHpNJ/Z8KhKVeA0c49cXOr7+w31OcL8upKEIY9x3k26n9M6OiQW
+        Zgm1D5whFVsw6XneMOm2ZIG/p
+X-Received: by 2002:a05:6000:186a:b0:20a:e94c:8e68 with SMTP id d10-20020a056000186a00b0020ae94c8e68mr8644369wri.458.1651139733307;
+        Thu, 28 Apr 2022 02:55:33 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwpPWxFqbdOW5KvLd6q7JL2LVTng4bvaGwfGBgZ2h4Lj1HrF2PRW5cw7a2EJu5Te3nDqhXhaw==
+X-Received: by 2002:a05:6000:186a:b0:20a:e94c:8e68 with SMTP id d10-20020a056000186a00b0020ae94c8e68mr8644352wri.458.1651139733021;
+        Thu, 28 Apr 2022 02:55:33 -0700 (PDT)
+Received: from smtpclient.apple ([2a01:e0a:834:5aa0:80d7:8022:3692:b311])
+        by smtp.gmail.com with ESMTPSA id w12-20020adfbacc000000b0020aeed10962sm3557316wrg.61.2022.04.28.02.55.32
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 28 Apr 2022 02:55:32 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH] virtio-pci: Remove wrong address verification in
+ vp_del_vqs()
+From:   Christophe Marie Francois Dupont de Dinechin <cdupontd@redhat.com>
+In-Reply-To: <B954A683-EE43-4469-B57A-EB8C6B671BEC@redhat.com>
+Date:   Thu, 28 Apr 2022 11:55:31 +0200
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, mopsfelder@gmail.com,
+        Christophe de Dinechin <dinechin@redhat.com>
 Content-Transfer-Encoding: quoted-printable
+Message-Id: <2F2EFFE9-5174-49A8-A71F-EE134D387E07@redhat.com>
+References: <20220415023002.49805-1-muriloo@linux.ibm.com>
+ <e8620e70-16bb-639c-9446-68dcd199253f@linux.ibm.com>
+ <A5CD1C91-F5D0-4109-9894-824184362B5C@redhat.com>
+ <B954A683-EE43-4469-B57A-EB8C6B671BEC@redhat.com>
+To:     Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christian,
 
-On Thu, 28 Apr 2022 at 13:33, Christian K=C3=B6nig <christian.koenig@amd.co=
-m> wrote:
->
-> Am 28.04.22 um 08:39 schrieb Yuanzheng Song:
-> > 'cat /sys/kernel/debug/dma_buf/bufinfo' will print the Dma-buf
-> > Objects' information when the CONFIG_DEBUG_FS=3Dy.
-> > However, the printed table header information does not contain
-> > the name field. So we need to add the name field to the table
-> > header and use the '<none>' to replace the empty buf_obj->name.
-> >
-> > Signed-off-by: Yuanzheng Song <songyuanzheng@huawei.com>
->
-> Reviewed-by: Christian K=C3=B6nig <christian.koenig@amd.com>
->
-> Sumit do you want to push this or should I go ahead?
 
-No worries, I can push it out.
+> On 28 Apr 2022, at 11:51, Christophe Marie Francois Dupont de Dinechin =
+<cdupontd@redhat.com> wrote:
+>=20
+>=20
+>=20
+>> On 28 Apr 2022, at 11:46, Christophe Marie Francois Dupont de =
+Dinechin <cdupontd@redhat.com> wrote:
+>>=20
+>>=20
+>>=20
+>>> On 15 Apr 2022, at 05:51, Murilo Opsfelder Ara=C3=BAjo =
+<muriloo@linux.ibm.com> wrote:
+>>>=20
+>>> On 4/14/22 23:30, Murilo Opsfelder Araujo wrote:
+>>>> GCC 12 enhanced -Waddress when comparing array address to null [0],
+>>>> which warns:
+>>>> drivers/virtio/virtio_pci_common.c: In function =E2=80=98vp_del_vqs=E2=
+=80=99:
+>>>> drivers/virtio/virtio_pci_common.c:257:29: warning: the comparison =
+will always evaluate as =E2=80=98true=E2=80=99 for the pointer operand =
+in =E2=80=98vp_dev->msix_affinity_masks + (sizetype)((long unsigned =
+int)i * 256)=E2=80=99 must not be NULL [-Waddress]
+>>>> 257 | if (vp_dev->msix_affinity_masks[i])
+>>>> | ^~~~~~
+>>>> In fact, the verification is comparing the result of a pointer
+>>>> arithmetic, the address "msix_affinity_masks + i", which will =
+always
+>>>> evaluate to true.
+>>>> Under the hood, free_cpumask_var() calls kfree(), which is safe to =
+pass
+>>>> NULL, not requiring non-null verification. So remove the =
+verification
+>>>> to make compiler happy (happy compiler, happy life).
+>>>> [0] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D102103
+>>>> Signed-off-by: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
+>>>> ---
+>>>> drivers/virtio/virtio_pci_common.c | 3 +--
+>>>> 1 file changed, 1 insertion(+), 2 deletions(-)
+>>>> diff --git a/drivers/virtio/virtio_pci_common.c =
+b/drivers/virtio/virtio_pci_common.c
+>>>> index d724f676608b..5046efcffb4c 100644
+>>>> --- a/drivers/virtio/virtio_pci_common.c
+>>>> +++ b/drivers/virtio/virtio_pci_common.c
+>>>> @@ -254,8 +254,7 @@ void vp_del_vqs(struct virtio_device *vdev)
+>>>> 	if (vp_dev->msix_affinity_masks) {
+>>>> 		for (i =3D 0; i < vp_dev->msix_vectors; i++)
+>>>> -			if (vp_dev->msix_affinity_masks[i])
+>>>> -				=
+free_cpumask_var(vp_dev->msix_affinity_masks[i]);
+>>>> +			=
+free_cpumask_var(vp_dev->msix_affinity_masks[i]);
+>>>> 	}
+>>>> 	if (vp_dev->msix_enabled) {
+>>>=20
+>>> After I sent this message, I realized that Christophe (copied here)
+>>> had already proposed a fix:
+>>>=20
+>>> =
+https://lore.kernel.org/lkml/20220414150855.2407137-4-dinechin@redhat.com/=
 
-Thanks :)
->
-> > ---
-> >   drivers/dma-buf/dma-buf.c | 4 ++--
-> >   1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-> > index 79795857be3e..a2f9a1815e38 100644
-> > --- a/drivers/dma-buf/dma-buf.c
-> > +++ b/drivers/dma-buf/dma-buf.c
-> > @@ -1351,7 +1351,7 @@ static int dma_buf_debug_show(struct seq_file *s,=
- void *unused)
-> >               return ret;
-> >
-> >       seq_puts(s, "\nDma-buf Objects:\n");
-> > -     seq_printf(s, "%-8s\t%-8s\t%-8s\t%-8s\texp_name\t%-8s\n",
-> > +     seq_printf(s, "%-8s\t%-8s\t%-8s\t%-8s\texp_name\t%-8s\tname\n",
-> >                  "size", "flags", "mode", "count", "ino");
-> >
-> >       list_for_each_entry(buf_obj, &db_list.head, list_node) {
-> > @@ -1368,7 +1368,7 @@ static int dma_buf_debug_show(struct seq_file *s,=
- void *unused)
-> >                               file_count(buf_obj->file),
-> >                               buf_obj->exp_name,
-> >                               file_inode(buf_obj->file)->i_ino,
-> > -                             buf_obj->name ?: "");
-> > +                             buf_obj->name ?: "<none>");
-> >               spin_unlock(&buf_obj->name_lock);
-> >
-> >               dma_resv_describe(buf_obj->resv, s);
->
+>>>=20
+>>> Christophe,
+>>>=20
+>>> Since free_cpumask_var() calls kfree() and kfree() is null-safe,
+>>> can we just drop this null verification and call free_cpumask_var() =
+right away?
+>>=20
+>> Apologies for the delay in responding, broken laptop=E2=80=A6
+>>=20
+>> In the case where CONFIG_CPUMASK_OFFSTACK is not defined, we have:
+>>=20
+>> 	typedef struct cpumask cpumask_var_t[1];
+>>=20
+>> So that vp_dev->msix_affinity_masks[i] is statically not null =
+(that=E2=80=99s the warning)
+>> but also a static pointer, so not kfree-safe IMO.
+>=20
+> =E2=80=A6 which also renders my own patch invalid :-/
+>=20
+> Compiler warnings are good. Clearly not sufficient.
 
-Best,
-Sumit.
+Ah, I just noticed that free_cpumask_var is a noop in that case.
+
+So yes, your fix is better :-)=
+
