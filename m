@@ -2,165 +2,273 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C63C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0849AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:40:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344545AbiD1IoC (ORCPT
+        id S1344788AbiD1IoI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55166 "EHLO
+        Thu, 28 Apr 2022 04:44:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344072AbiD1ImH (ORCPT
+        with ESMTP id S1344539AbiD1ImL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:42:07 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7FC52B0E;
-        Thu, 28 Apr 2022 01:37:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1651135011;
-        bh=Q4+3ChFfyhKA+KTPGoIQx0R1D0LMLWXJ6J60qMTKnAc=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=PHaGpcoZ3WPGPl13ST6Zk8WpnU1HwRAWva6B85NnDWN8fUn+CGlkwNQE27vvfLrK0
-         aOIH8AtugWKH2+SxFNHyLGsY5Stf06uOtjX77Zqs2PETm9tOtrShe65I7usUpueheb
-         b5V3i/MnxKlHgVZtrNE841yh2wEMrGzur3bltfsk=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([37.201.215.103]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1M3lc9-1njiWf3chP-000vpD; Thu, 28
- Apr 2022 10:36:50 +0200
-Date:   Thu, 28 Apr 2022 10:36:48 +0200
-From:   Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        linux-clk@vger.kernel.org, openbmc@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>
-Subject: Re: [PATCH 3/7] watchdog: npcm: Enable clock if provided
-Message-ID: <YmpSIFHTYDsuEm85@latitude>
-References: <20220422183012.444674-1-j.neuschaefer@gmx.net>
- <20220422183012.444674-4-j.neuschaefer@gmx.net>
- <20220422183417.GB2637654@roeck-us.net>
+        Thu, 28 Apr 2022 04:42:11 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285605A2E5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:37:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651135059; x=1682671059;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=HwmGF4rIcjwwV8q8uxbE8wsBmcCLazT1Q+3ogCoTicE=;
+  b=A8SOJrCMa4+f87NROAvN5jfY4u9BTZYiyiAnyA8oxrj9ZFT6dKZ3kqIu
+   g0U6wzkhLXcUi2XrJAUGkAxjDdUF2uB6S69kr/gPQHY7ngO4/9Ry/mnjQ
+   vo/cql9sC7A6odBzFpOkSf6UyvcwuiNSpJFP/oxhkVdUyyV4JL5rgtlB7
+   s8D5r+8JqW7EC/A/39I094SgWUK88HAk2uFUsEPkzUballJxYTJPsXQpa
+   8sAOuexLRUHWBijOhGuDcZ6QfrT70LG1pD7eeWWcTRtpsdq1DTKwB5TS1
+   s5TNWymB9Flup+ibXnkHncSf8ORqHdvwa9wI5XpdG4sVAumPmB4J6kA95
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="253589079"
+X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
+   d="scan'208";a="253589079"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 01:37:38 -0700
+X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
+   d="scan'208";a="581158956"
+Received: from shanlinl-mobl.ccr.corp.intel.com ([10.254.212.81])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 01:37:34 -0700
+Message-ID: <cb424fff95cf2b1a6e31616ebb261660e8000425.camel@intel.com>
+Subject: Re: [PATCH v2 0/5] mm: demotion: Introduce new node state
+ N_DEMOTION_TARGETS
+From:   "ying.huang@intel.com" <ying.huang@intel.com>
+To:     Wei Xu <weixugc@google.com>
+Cc:     Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Greg Thelen <gthelen@google.com>,
+        MichalHocko <mhocko@kernel.org>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Tim C Chen <tim.c.chen@intel.com>
+Date:   Thu, 28 Apr 2022 16:37:32 +0800
+In-Reply-To: <CAAPL-u8b3m2yx8A-MhPmJUasuz8Ra9mW2E2dwT2KvJ06FeZofQ@mail.gmail.com>
+References: <CAAPL-u_pSWD6U0yQ8Ws+_Yfb_3ZEmNXJsYcRJjAFBkyDk=nq8g@mail.gmail.com>
+         <ea73f6fda9cafdd0cb6ba8351139e6f4b47354a8.camel@intel.com>
+         <CAAPL-u-aeceXFUNdok_GYb2aLhZa0zBBuSqHxFznQob3PbJt7Q@mail.gmail.com>
+         <a80647053bba44623094995730e061f0e6129677.camel@intel.com>
+         <CAAPL-u89Jxutu1VH0LnO5VGdMbkLvc2M9eapuwP-y9oG9QSsrA@mail.gmail.com>
+         <610ccaad03f168440ce765ae5570634f3b77555e.camel@intel.com>
+         <CAAPL-u9ktM82zAW_OVwqTmQsr-XC8XOPmAsjoiCLo18cxUWA=A@mail.gmail.com>
+         <8e31c744a7712bb05dbf7ceb2accf1a35e60306a.camel@intel.com>
+         <CAAPL-u9uP+FUh7Yn0ByOECo+EP32ZABnCvNPKQB9JCA68VHEqQ@mail.gmail.com>
+         <78b5f4cfd86efda14c61d515e4db9424e811c5be.camel@intel.com>
+         <YmKKwXa2XI/nwac0@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
+         <200e95cf36c1642512d99431014db8943fed715d.camel@intel.com>
+         <CAAPL-u94H9FLjVtYLhi_A2AqLTOCTMRh6=Sx9cX8A3WGNM-OdA@mail.gmail.com>
+         <a1b875913df743355e1ff3752c0eb7ddf74bae91.camel@intel.com>
+         <CAAPL-u8b3m2yx8A-MhPmJUasuz8Ra9mW2E2dwT2KvJ06FeZofQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="3JafQPKgiRq88lVT"
-Content-Disposition: inline
-In-Reply-To: <20220422183417.GB2637654@roeck-us.net>
-X-Provags-ID: V03:K1:p7i6FNHfF3FlpnhFKvMhXgLjFljWIjKMJgX4cNG3EwazOtlZlAl
- A9/tr/ov/cUpHkz6Bg5t0ni5NA6BknxyNVNd0m/B4NnYcuwu0Htmg4MLDdwaoCI8648pFVu
- n06WalmbWJ4P5vfDob6h/zirRlfnoXDRXHpm03nRrLFUP6VtjNLPUgcOkdebrLdC7eKaPcf
- ib6FcoTVFY76Fsz2S3fsg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:q6/F/sBWuO0=:DiOMmpBm+d61DOtlcby/Nm
- zuGYlHuDf/HK8+9VYtfu2zKMt6XjZj8gPYnUIkNNgP/whzdTUtOV67Kfclqz3xRg5Pn4WOgmX
- Nw5tbjCeMZWwLM3hRjCJhsbGK4niQHcO8xJwANvNi1AN5xDV6MeA5wUtEzFtKec9bhg2MC7dV
- 6HvTeERhw9fxajcCa0Rysxlf8+hJekY4WlFQjo9L9oFjfHJTs8dchOy6lGGX3WDHISe2B4fBv
- QOSNPUtq/mwGQgX4Np5DXH13xjd5cUvTMzDGY5k0yA9HzT3YESQiJbO2HHFWJGUKpRJ1yWbul
- 3fTi2gwywW53Pu7XKBqmDBsqKOpmftc1xVnk1lYV+wXWme1nQ2aP4KQyceLf07P4Psv6UIAEw
- KG4tQ4dI6/cJ8/+vM2p6rO77aYwYlzVmEa2ePpTKGpByk2WcDPnewmiGtjtQItIFCo/DTNxDB
- rdqA9N0byNxQuKE8dtiGFg76a/Qsg/ce1PUrBWn0DIq8xm/rdJXwM8fbS+GFtTS/OPnNhVnYM
- Lb1JmjB9oi/BbqQKszE8zDsRMmArEdoo5tASXHXb5rroVZ77HDdiTfMqVVrwfiPrK43rfJIR4
- npKB+3T/UvD7kUmC8hWWa/C3DOVtCZ47ub5EVkBobTsQkk3VlU+wZZtfdQd5xLcyjKs0YCk7t
- +kfDXQqLt4CO8zN+eXyPL+OUdvORZuNKWXezwTJ75nkSKKMbQBCmf4WqNqoBa89iHUf3FZvxJ
- EAH6yO7fOvaSMJoobpfUKdyDprQFiJ83OH2pyhEGZAXVLrtJEIAMdMeJ1kTNjPx0Pzvrmhjqf
- VGsCIyvV/bt/xFR5v7hQkQQkwOfkqsvjQzlQGNPev3jWIvNvH/AZTMUv1OhV0V+OMaWm4DV1k
- 6CncbPWocgPLQNv4yAtwBn99a8UDhxZJPl+fTiIQ3Ue9UiXQMeiUhY/yoP9ou+rtWYpfUNYNV
- x7+Ea0t9n/UPKL57VIrJErYEhxADYY3ok+ESPxUKQpjECO7aMhp1ouHf9q5mYGIufhlcV4tTF
- Y/uq3aerx5n8kb6hQHS6RS8P1I0LtQDQhCwwrTygd1cE7uCYKgkjt8tJWjPmSi7JSb8r2nKUV
- 3omH0tDPMUtQro=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 2022-04-27 at 09:27 -0700, Wei Xu wrote:
+> On Wed, Apr 27, 2022 at 12:11 AM ying.huang@intel.com
+> <ying.huang@intel.com> wrote:
+> > 
+> > On Mon, 2022-04-25 at 09:56 -0700, Wei Xu wrote:
+> > > On Sat, Apr 23, 2022 at 8:02 PM ying.huang@intel.com
+> > > <ying.huang@intel.com> wrote:
+> > > > 
+> > > > Hi, All,
+> > > > 
+> > > > On Fri, 2022-04-22 at 16:30 +0530, Jagdish Gediya wrote:
+> > > > 
+> > > > [snip]
+> > > > 
+> > > > > I think it is necessary to either have per node demotion targets
+> > > > > configuration or the user space interface supported by this patch
+> > > > > series. As we don't have clear consensus on how the user interface
+> > > > > should look like, we can defer the per node demotion target set
+> > > > > interface to future until the real need arises.
+> > > > > 
+> > > > > Current patch series sets N_DEMOTION_TARGET from dax device kmem
+> > > > > driver, it may be possible that some memory node desired as demotion
+> > > > > target is not detected in the system from dax-device kmem probe path.
+> > > > > 
+> > > > > It is also possible that some of the dax-devices are not preferred as
+> > > > > demotion target e.g. HBM, for such devices, node shouldn't be set to
+> > > > > N_DEMOTION_TARGETS. In future, Support should be added to distinguish
+> > > > > such dax-devices and not mark them as N_DEMOTION_TARGETS from the
+> > > > > kernel, but for now this user space interface will be useful to avoid
+> > > > > such devices as demotion targets.
+> > > > > 
+> > > > > We can add read only interface to view per node demotion targets
+> > > > > from /sys/devices/system/node/nodeX/demotion_targets, remove
+> > > > > duplicated /sys/kernel/mm/numa/demotion_target interface and instead
+> > > > > make /sys/devices/system/node/demotion_targets writable.
+> > > > > 
+> > > > > Huang, Wei, Yang,
+> > > > > What do you suggest?
+> > > > 
+> > > > We cannot remove a kernel ABI in practice.  So we need to make it right
+> > > > at the first time.  Let's try to collect some information for the kernel
+> > > > ABI definitation.
+> > > > 
+> > > > The below is just a starting point, please add your requirements.
+> > > > 
+> > > > 1. Jagdish has some machines with DRAM only NUMA nodes, but they don't
+> > > > want to use that as the demotion targets.  But I don't think this is a
+> > > > issue in practice for now, because demote-in-reclaim is disabled by
+> > > > default.
+> > > > 
+> > > > 2. For machines with PMEM installed in only 1 of 2 sockets, for example,
+> > > > 
+> > > > Node 0 & 2 are cpu + dram nodes and node 1 are slow
+> > > > memory node near node 0,
+> > > > 
+> > > > available: 3 nodes (0-2)
+> > > > node 0 cpus: 0 1
+> > > > node 0 size: n MB
+> > > > node 0 free: n MB
+> > > > node 1 cpus:
+> > > > node 1 size: n MB
+> > > > node 1 free: n MB
+> > > > node 2 cpus: 2 3
+> > > > node 2 size: n MB
+> > > > node 2 free: n MB
+> > > > node distances:
+> > > > node   0   1   2
+> > > >   0:  10  40  20
+> > > >   1:  40  10  80
+> > > >   2:  20  80  10
+> > > > 
+> > > > We have 2 choices,
+> > > > 
+> > > > a)
+> > > > node    demotion targets
+> > > > 0       1
+> > > > 2       1
+> > > > 
+> > > > b)
+> > > > node    demotion targets
+> > > > 0       1
+> > > > 2       X
+> > > > 
+> > > > a) is good to take advantage of PMEM.  b) is good to reduce cross-socket
+> > > > traffic.  Both are OK as defualt configuration.  But some users may
+> > > > prefer the other one.  So we need a user space ABI to override the
+> > > > default configuration.
+> > > 
+> > > I think 2(a) should be the system-wide configuration and 2(b) can be
+> > > achieved with NUMA mempolicy (which needs to be added to demotion).
+> > 
+> > Unfortunately, some NUMA mempolicy information isn't available at
+> > demotion time, for example, mempolicy enforced via set_mempolicy() is
+> > for thread. But I think that cpusets can work for demotion.
+> > 
+> > > In general, we can view the demotion order in a way similar to
+> > > allocation fallback order (after all, if we don't demote or demotion
+> > > lags behind, the allocations will go to these demotion target nodes
+> > > according to the allocation fallback order anyway).  If we initialize
+> > > the demotion order in that way (i.e. every node can demote to any node
+> > > in the next tier, and the priority of the target nodes is sorted for
+> > > each source node), we don't need per-node demotion order override from
+> > > the userspace.  What we need is to specify what nodes should be in
+> > > each tier and support NUMA mempolicy in demotion.
+> > 
+> > This sounds interesting. Tier sounds like a natural and general concept
+> > for these memory types. It's attracting to use it for user space
+> > interface too. For example, we may use that for mem_cgroup limits of a
+> > specific memory type (tier).
+> > 
+> > And if we take a look at the N_DEMOTION_TARGETS again from the "tier"
+> > point of view. The nodes are divided to 2 classes via
+> > N_DEMOTION_TARGETS.
+> > 
+> > - The nodes without N_DEMOTION_TARGETS are top tier (or tier 0).
+> > 
+> > - The nodes with N_DEMOTION_TARGETS are non-top tier (or tier 1, 2, 3,
+> > ...)
+> > 
+> 
+> Yes, this is one of the main reasons why we (Google) want this interface.
+> 
+> > So, another possibility is to fit N_DEMOTION_TARGETS and its overriding
+> > into "tier" concept too.  !N_DEMOTION_TARGETS == TIER0.
+> > 
+> > - All nodes start with TIER0
+> > 
+> > - TIER0 can be cleared for some nodes via e.g. kmem driver
+> > 
+> > TIER0 node list can be read or overriden by the user space via the
+> > following interface,
+> > 
+> >   /sys/devices/system/node/tier0
+> > 
+> > In the future, if we want to customize more tiers, we can add tier1,
+> > tier2, tier3, .....  For now, we can add just tier0.  That is, the
+> > interface is extensible in the future compared with
+> > .../node/demote_targets.
+> > 
+> 
+> This more explicit tier definition interface works, too.
+> 
 
---3JafQPKgiRq88lVT
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In addition to make tiering definition explicit, more importantly, this
+makes it much easier to support more than 2 tiers.  For example, for a
+system with HBM (High Bandwidth Memory), CPU+DRAM, DRAM only, and PMEM,
+that is, 3 tiers, we can put HBM in tier 0, CPU+DRAM and DRAM only in
+tier 1, and PMEM in tier 2, automatically, or via user space
+overridding.  N_DEMOTION_TARGETS isn't natural to be extended to support
+this.
 
-On Fri, Apr 22, 2022 at 11:34:17AM -0700, Guenter Roeck wrote:
-> On Fri, Apr 22, 2022 at 08:30:08PM +0200, Jonathan Neusch=C3=A4fer wrote:
-> > On the Nuvoton WPCM450 SoC, with its upcoming clock driver, peripheral
-> > clocks are individually gated and ungated. Therefore, the watchdog
-> > driver must be able to ungate the watchdog clock.
-> >=20
-> > Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-> > ---
-> >  drivers/watchdog/npcm_wdt.c | 9 +++++++++
-> >  1 file changed, 9 insertions(+)
-> >=20
-> > diff --git a/drivers/watchdog/npcm_wdt.c b/drivers/watchdog/npcm_wdt.c
-> > index 28a24caa2627c..6d27f0e16188e 100644
-> > --- a/drivers/watchdog/npcm_wdt.c
-> > +++ b/drivers/watchdog/npcm_wdt.c
-> > @@ -3,6 +3,7 @@
-> >  // Copyright (c) 2018 IBM Corp.
-> >=20
-> >  #include <linux/bitops.h>
-> > +#include <linux/clk.h>
-> >  #include <linux/delay.h>
-> >  #include <linux/interrupt.h>
-> >  #include <linux/kernel.h>
-> > @@ -180,6 +181,7 @@ static int npcm_wdt_probe(struct platform_device *p=
-dev)
-> >  {
-> >  	struct device *dev =3D &pdev->dev;
-> >  	struct npcm_wdt *wdt;
-> > +	struct clk *clk;
-> >  	int irq;
-> >  	int ret;
-> >=20
-> > @@ -191,6 +193,13 @@ static int npcm_wdt_probe(struct platform_device *=
-pdev)
-> >  	if (IS_ERR(wdt->reg))
-> >  		return PTR_ERR(wdt->reg);
-> >=20
-> > +	clk =3D devm_clk_get_optional(&pdev->dev, NULL);
-> > +	if (IS_ERR(clk))
-> > +		return PTR_ERR(clk);
-> > +
-> > +	if (clk)
-> > +		clk_prepare_enable(clk);
-> > +
->=20
-> This needs a matching clk_disable_unprepare().
+Best Regards,
+Huang, Ying
 
-Good point. It's probably easiest if I move the clk calls to the
-watchdog start/stop callbacks, then.
+> > This isn't as flexible as the writable per-node demotion targets.  But
+> > it may be enough for most requirements?
+> 
+> I would think so. Besides, it doesn't really conflict with the
+> per-node demotion target interface if we really want to introduce the
+> latter.
+> 
+> > Best Regards,
+> > Huang, Ying
+> > 
+> > > Cross-socket demotion should not be too big a problem in practice
+> > > because we can optimize the code to do the demotion from the local CPU
+> > > node (i.e. local writes to the target node and remote read from the
+> > > source node).  The bigger issue is cross-socket memory access onto the
+> > > demoted pages from the applications, which is why NUMA mempolicy is
+> > > important here.
+> > > 
+> > > > 3. For machines with HBM (High Bandwidth Memory), as in
+> > > > 
+> > > > https://lore.kernel.org/lkml/39cbe02a-d309-443d-54c9-678a0799342d@gmail.com/
+> > > > 
+> > > > > [1] local DDR = 10, remote DDR = 20, local HBM = 31, remote HBM = 41
+> > > > 
+> > > > Although HBM has better performance than DDR, in ACPI SLIT, their
+> > > > distance to CPU is longer.  We need to provide a way to fix this.  The
+> > > > user space ABI is one way.  The desired result will be to use local DDR
+> > > > as demotion targets of local HBM.
+> > > > 
+> > > > Best Regards,
+> > > > Huang, Ying
+> > > > 
+> > 
+> > 
+> > 
 
 
-Thanks,
-Jonathan
-
---3JafQPKgiRq88lVT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAmJqUhkACgkQCDBEmo7z
-X9utARAApLMgx0770Ai3h8mEawS8c5e/WFuzL9GGC8DU9yxUmSa6RlQk9H3O8lIf
-hiOfIS4Kxvjtmy+mTcgqJK4R37I5eIFC8BKVmHbwqupZGl4Mdzhoa7mvAD/IytUL
-HtRScJ1zyyb5Rlu9J2IHIIVNAUN8ErlA7oJ+evC0ygr+6JySBgdk/0UIfp3ks6Ke
-QxzvAh/VvWNSmcRk2pg61q6VfKks7xr5DEURrUWPJFMpx7SrhdPbaFQ8d7pIAFI3
-Xy/KTzAFwf5Qnpwr5nUkhkpZVPgkKSmTmVj0Ouknm73dt+cnr0XmQ+8mljtlocYs
-Qa8QybxIXqU3leIx6OqbvxTFgBkj90ll3M15b0+Z2KWTrtjZ/E/ng/hzx3X4V5xv
-ZEBgYVTCnZSzOOlU+okXvWwepzR7/w1Zf96TqrXhn/xhB5L6ME+02EVGREJUvT0b
-/kyUXR7krD2tlute5lUQOPnkhgbc8ZecZ9PSWKQ1E/BojQKRxQ9F9GVojZox+9Hx
-8Pgo1J1czreFcFhrAdYv9SR2fWfv8qggYp+cotvhgwTBPLom7ppUrgTPnUYDuvdj
-srCV/12bGLS65rKL7BN6VpkF9hCyi8VUh7qw8XbaiH/rTilA1hWQch7+1MOTA/wG
-EVuRYrnRbWSBOo5GUMtfCrJc8oOWhmWmADLRvO54oPkfjdlUFe4=
-=Ep5M
------END PGP SIGNATURE-----
-
---3JafQPKgiRq88lVT--
