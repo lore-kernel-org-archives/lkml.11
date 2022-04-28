@@ -2,75 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A95C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 22:47:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 106A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 22:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353038AbiD1Wux (ORCPT
+        id S1353039AbiD1WxK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 18:50:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
+        Thu, 28 Apr 2022 18:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353018AbiD1Wut (ORCPT
+        with ESMTP id S234181AbiD1WxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 18:50:49 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5A7C1C8B
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 15:47:31 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id r189so11595991ybr.6
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 15:47:31 -0700 (PDT)
+        Thu, 28 Apr 2022 18:53:08 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1251EC1C87
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 15:49:53 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id w187so11624468ybe.2
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 15:49:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=rNIaKSd9HIOo++vQl55ronwO6gWeoBJTBYDBf9qgIGc=;
-        b=xDEiqUW0WSk4+uzwF0xl2Of3qEC5D1FWLYE5HSp6i6QWdKwKWokbTmpRaSJEmFkQeA
-         rr1smsrUCQokqpRT1zKrUjWADVBVnxFg6L7QhmQV8Zu7tgFSIUx3FxdPzNpFEPk+Ti2B
-         v/Q/t5AwR86jyOqaWihswIPNkAkKFZA4yqgwm3qCv0ROPVz24RdHdvG7PYJi++D8Zbba
-         0R9dXFBQmxW+2Im+ACPlloNLaLfHR2d1N/MY2HEEHn1cDf7LbKRXKWf9Wu+dtvdgvGG9
-         VbkhbKrfVxve/AN3KksU/BPi7ZPHAh1hGFAaNJ8M/7hFZUBRavohA6D+do98WsK9sxkC
-         TzCQ==
+        bh=4y/h2CdaCT5aLcDGH4vyOwMEkajTPv3gIH/CP9hJ7RA=;
+        b=zf0mXXTka8NgKEFkBHSJ/qfYmus5/JFJZILWQI1MilIp9S9gi0aQG4qJtwmC4PxuNO
+         RSYQMGBFZpxLRocrDGZyJPKpZNDphWcnBj53tOuqOuGeRPirZgNm7F8rPOqCqtQzmLdx
+         GaRODpmnNmyCk+M+xuaweNEeOK7dTTwVQdRGyoG4TgIYRP7Zq+EUx0IUUjdxHzuDNXTO
+         lWcLeJyZ5yHgxTW+OLrSpG7B57WiYdo+Av7nQUcy7E636Ziu8Bm+Q3bLop4Zl6FkaEUv
+         uzBgPzLVLRRwHCCZlDPqYou6rERZyuDVyyB9FFq0UjQcplmLwodBNRB4ZJkSqoIxQ0G5
+         Z9KA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=rNIaKSd9HIOo++vQl55ronwO6gWeoBJTBYDBf9qgIGc=;
-        b=ohMjvefNRgCVjRGWkxur7Glni6NllhQZArS4rr6cgG8GUmivBxSeFrNztEhdcJZz4F
-         1k6uvm3gwtij6IFE0txjO6ICR+v0ICj2vpT7NBr+9gZNrtQSmu67i5ltG+lzbiNigFZy
-         pvRsGw0TTlXWDtj3Pf5lFCfGYPC8r2ox7k/epPBejaAV5mbWYhT1kOytSD7c4GGqP75w
-         NoBBq51YJErnKih+qEHhyF1GpQIOJRzJPh7z/AZ6OrJIMfe4pgbAue2wQNZfoTjEWJhW
-         J3RyPoqkPZ5tBWSylvJV8BXk4tJ8mL1v6fkreuC99xgbmqm8dBxxKotFJhgfjUB4UbfF
-         YCOQ==
-X-Gm-Message-State: AOAM531j7tvSR0qqU7q4KsnPYIBpcEE6TGR6BaA3tKrNZVkcrTDn1C3x
-        0CBcPF2gLqQUsFhz2oEHJl27wHkwx53jhE2V2oc9gg==
-X-Google-Smtp-Source: ABdhPJyq3RnHxpIs1eT7rZa7x+L1tgpqQQaWbIkCGc6vz4lOgunasyHNBZt/HD3SsyvhMQZY25MrO/JWCpjUd8WpaCE=
-X-Received: by 2002:a25:a12a:0:b0:644:e94e:5844 with SMTP id
- z39-20020a25a12a000000b00644e94e5844mr32540771ybh.492.1651186050515; Thu, 28
- Apr 2022 15:47:30 -0700 (PDT)
+        bh=4y/h2CdaCT5aLcDGH4vyOwMEkajTPv3gIH/CP9hJ7RA=;
+        b=hvgTjtxfQXd4+yRmbr8KOlgliJigj174RPyW7JFl7pU2sRDZnY9BSy0u0x/q6ASAMe
+         kMftuwqNolLJ+NQuii3bWjvXCsqMngRcahOX3SRYDlp0HnI/3LAS0aJPtsZPhc7H79I6
+         k71u8b7TgWmtnQ7XhU15jdcconm7OprA/0RTi9iwVM6oabTmS+NARSXWIVvbj3zYsiEi
+         UCikkANhtEIq9+7bbsCjhEMEo1X1V9r07yJtPr6zSyJWB49EdBPO67/hm/pESB8hCXW0
+         Yziw9hr7NpMpR/WNA0wAoFQ8g8fG0p6/XDeqIx3nkBhjIXuuy3MIoD/KRfS9vsKH7X8S
+         66+A==
+X-Gm-Message-State: AOAM5338dQGgdFb6KjYrfdDebbGaXVpejX4jrI8jSC4bv8MsRrEgjwWT
+        gTD14+OXRPu39CVy36woLnvn6fU1NlNlugEKl56gIg==
+X-Google-Smtp-Source: ABdhPJzqCCPSOEN3jFOUYTqgtVwOHJNyh29726bF/LKrEzWJCg+CybXlzXS2RFlHdIdfZ3PbxqUrieuD6UWUK9NlNZM=
+X-Received: by 2002:a5b:dc5:0:b0:624:f16d:7069 with SMTP id
+ t5-20020a5b0dc5000000b00624f16d7069mr33306209ybr.295.1651186190787; Thu, 28
+ Apr 2022 15:49:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220413192918.3777234-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20220413192918.3777234-1-horatiu.vultur@microchip.com>
+References: <20220422105339.78810-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220422105339.78810-1-krzysztof.kozlowski@linaro.org>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 29 Apr 2022 00:47:19 +0200
-Message-ID: <CACRpkdbMxK=w4DDsPUrdzkJcjHRhZfuY585gUR8j0HP88m19dQ@mail.gmail.com>
-Subject: Re: [PATCH] pinctrl: ocelot: Fix for lan966x
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kavyasree.kotagiri@microchip.com, alexandre.belloni@bootlin.com
+Date:   Fri, 29 Apr 2022 00:49:39 +0200
+Message-ID: <CACRpkdbKYYfeVnLBU3o1E6KJAy8gpg70aCxMcEb1SGGdG1Rfkg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] pinctrl: mvebu: Fix irq_of_parse_and_map() return value
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 9:26 PM Horatiu Vultur
-<horatiu.vultur@microchip.com> wrote:
+On Fri, Apr 22, 2022 at 12:53 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
 
-> For lan966x, the GPIO 35 has the wrong function for alternate mode 2.
-> The mode is not none but is PTP sync.
+> The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 >
-> Fixes: 531d6ab36571c2 ("pinctrl: ocelot: Extend support for lan966x")
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> Fixes: 2f227605394b ("pinctrl: armada-37xx: Add irqchip support")
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Patch applied for fixes.
+Patch applied!
 
 Yours,
 Linus Walleij
