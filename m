@@ -2,223 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88BA6C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:00:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A36C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345993AbiD1MDu (ORCPT
+        id S1345968AbiD1MF1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 08:03:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49062 "EHLO
+        Thu, 28 Apr 2022 08:05:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234745AbiD1MDo (ORCPT
+        with ESMTP id S233548AbiD1MFY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 08:03:44 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296E01D0D4
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 05:00:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651147229; x=1682683229;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=cs13BxOFJSg71gWJj66Zszu9dl6cxkj1Zdm4Ew2RCLs=;
-  b=EvS//lNauLdUGW3UDd7NYvkGrSLXsOGYiY1sahQoPv4xy+zRUWqGYIr2
-   yGh5l1mAmfPt7Uv7m0hxBu2phU+ZXeaXi4aBIh1/mSydexQbAVA6HLmTZ
-   q5t73n9JqKFmgN1UcFqvga4S3PxmiuRh6NKz94Qpdte+4qB5/PQSIcAyR
-   yGlx32RfDyNuAzFISJ4FJI7NGCKhdeZK8zj3eSSzgxFDDfE+QimsnJuRb
-   n0eXSibskYH0L40sEQjy08KNkMkRfdmk5JodsC/ZXp/TaW7YbJxpoDuXJ
-   HtSx4TfmxllSc2XrT+IG+qFjdYy6lXRRsdvQQnXlQuTtnLj+3JPO2h0L0
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="326760428"
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="326760428"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 05:00:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="618104029"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 28 Apr 2022 05:00:25 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nk2or-0005KZ-5O;
-        Thu, 28 Apr 2022 12:00:25 +0000
-Date:   Thu, 28 Apr 2022 20:00:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>
-Subject: arch/h8300/kernel/signal.c:112:14: sparse: sparse: incorrect type in
- argument 1 (different address spaces)
-Message-ID: <202204281940.PxJNtrGR-lkp@intel.com>
+        Thu, 28 Apr 2022 08:05:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8DBBADD60;
+        Thu, 28 Apr 2022 05:02:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A45DAB82BA0;
+        Thu, 28 Apr 2022 12:02:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92278C385A0;
+        Thu, 28 Apr 2022 12:02:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651147327;
+        bh=z/rcuQ6bVDZnTEpAnS4QlRzB5Yc+lFfj8TR9qyt755Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=si2hzBVdSNFEBs1SgfQe/IMiNDmiaAebPForIezTbJrYcMWx8DUqOFoD3nbKycvFX
+         xJVX5eLCianPJHhpZCYyFuJrVdU3zLaVbnFQPLbJtjFrBJBBdHfISwgbSy4weuFDqV
+         Yzs1wECbO0Yq+9bvY8V0fhs7z5JbOGPOi6+LhNskOT0L/e8tsXxhMW2tfs3jrsqIDD
+         D1ASAm2ReV+JfUbpHHro8c1ZQsD5gBO2zgDQEaqYx9hdphw4k2kLUPM1X35rIGujjq
+         3XSOQc2obb2oK11OPs4V/dN6JrLsvw4Lp4m8MpZb2BoLKeRd07bUOsR4MJa66X3GkQ
+         bvEvwzh+J+81A==
+Date:   Thu, 28 Apr 2022 13:02:01 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Jiaxin Yu <jiaxin.yu@mediatek.com>
+Cc:     robh+dt@kernel.org, angelogioacchino.delregno@collabora.com,
+        aaronyu@google.com, matthias.bgg@gmail.com, trevor.wu@mediatek.com,
+        tzungbi@google.com, julianbraha@gmail.com,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Subject: Re: [v4 13/18] ASoC: mediatek: mt8186: add platform driver
+Message-ID: <YmqCORqp6nYuQJZf@sirena.org.uk>
+References: <20220428093355.16172-1-jiaxin.yu@mediatek.com>
+ <20220428093355.16172-14-jiaxin.yu@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jdU3xo2gQbe9oqCP"
 Content-Disposition: inline
+In-Reply-To: <20220428093355.16172-14-jiaxin.yu@mediatek.com>
+X-Cookie: Bedfellows make strange politicians.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   8f4dd16603ce834d1c5c4da67803ea82dd282511
-commit: 12700c17fc286149324f92d6d380bc48e43f253d uaccess: generalize access_ok()
-date:   9 weeks ago
-config: h8300-randconfig-s031-20220428 (https://download.01.org/0day-ci/archive/20220428/202204281940.PxJNtrGR-lkp@intel.com/config)
-compiler: h8300-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=12700c17fc286149324f92d6d380bc48e43f253d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 12700c17fc286149324f92d6d380bc48e43f253d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=h8300 SHELL=/bin/bash arch/h8300/kernel/ kernel/debug/kdb/
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+--jdU3xo2gQbe9oqCP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Thu, Apr 28, 2022 at 05:33:50PM +0800, Jiaxin Yu wrote:
+> Add mt8186 platform and affiliated driver.
+>=20
+> Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
+> ---
+>  sound/soc/mediatek/Kconfig                    |   44 +
+>  sound/soc/mediatek/Makefile                   |    1 +
+>  sound/soc/mediatek/mt8186/Makefile            |   22 +
+>  sound/soc/mediatek/mt8186/mt8186-afe-common.h |  235 ++
+>  .../soc/mediatek/mt8186/mt8186-afe-control.c  |  261 ++
+>  sound/soc/mediatek/mt8186/mt8186-afe-pcm.c    | 3005 +++++++++++++++++
+>  .../mediatek/mt8186/mt8186-interconnection.h  |   69 +
+>  .../soc/mediatek/mt8186/mt8186-misc-control.c |  294 ++
+>  .../mediatek/mt8186/mt8186-mt6366-common.c    |   59 +
+>  .../mediatek/mt8186/mt8186-mt6366-common.h    |   17 +
+>  sound/soc/mediatek/mt8186/mt8186-reg.h        | 2913 ++++++++++++++++
+>  11 files changed, 6920 insertions(+)
 
-sparse warnings: (new ones prefixed by >>)
->> arch/h8300/kernel/signal.c:112:14: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __user *ptr @@     got struct rt_sigframe *frame @@
-   arch/h8300/kernel/signal.c:112:14: sparse:     expected void const [noderef] __user *ptr
-   arch/h8300/kernel/signal.c:112:14: sparse:     got struct rt_sigframe *frame
-   arch/h8300/kernel/signal.c:114:37: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got struct sigset_t * @@
-   arch/h8300/kernel/signal.c:114:37: sparse:     expected void const [noderef] __user *from
-   arch/h8300/kernel/signal.c:114:37: sparse:     got struct sigset_t *
-   arch/h8300/kernel/signal.c:122:31: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct sigaltstack const [noderef] [usertype] __user * @@     got struct sigaltstack * @@
-   arch/h8300/kernel/signal.c:122:31: sparse:     expected struct sigaltstack const [noderef] [usertype] __user *
-   arch/h8300/kernel/signal.c:122:31: sparse:     got struct sigaltstack *
-   arch/h8300/kernel/signal.c:105:16: sparse: sparse: symbol 'sys_rt_sigreturn' was not declared. Should it be static?
-   arch/h8300/kernel/signal.c:165:15: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct rt_sigframe *frame @@     got void [noderef] __user * @@
-   arch/h8300/kernel/signal.c:165:15: sparse:     expected struct rt_sigframe *frame
-   arch/h8300/kernel/signal.c:165:15: sparse:     got void [noderef] __user *
-   arch/h8300/kernel/signal.c:167:14: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __user *ptr @@     got struct rt_sigframe *frame @@
-   arch/h8300/kernel/signal.c:167:14: sparse:     expected void const [noderef] __user *ptr
-   arch/h8300/kernel/signal.c:167:14: sparse:     got struct rt_sigframe *frame
-   arch/h8300/kernel/signal.c:171:46: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct siginfo [noderef] [usertype] __user *to @@     got struct siginfo * @@
-   arch/h8300/kernel/signal.c:171:46: sparse:     expected struct siginfo [noderef] [usertype] __user *to
-   arch/h8300/kernel/signal.c:171:46: sparse:     got struct siginfo *
-   arch/h8300/kernel/signal.c:174:16: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __user *ptr @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:174:16: sparse:     expected void const volatile [noderef] __user *ptr
-   arch/h8300/kernel/signal.c:174:16: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:174:16: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __user *to @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:174:16: sparse:     expected void [noderef] __user *to
-   arch/h8300/kernel/signal.c:174:16: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:175:16: sparse: sparse: Using plain integer as NULL pointer
-   arch/h8300/kernel/signal.c:175:16: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __user *ptr @@     got struct ucontext ** @@
-   arch/h8300/kernel/signal.c:175:16: sparse:     expected void const volatile [noderef] __user *ptr
-   arch/h8300/kernel/signal.c:175:16: sparse:     got struct ucontext **
-   arch/h8300/kernel/signal.c:175:16: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __user *to @@     got struct ucontext ** @@
-   arch/h8300/kernel/signal.c:175:16: sparse:     expected void [noderef] __user *to
-   arch/h8300/kernel/signal.c:175:16: sparse:     got struct ucontext **
-   arch/h8300/kernel/signal.c:176:33: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct sigaltstack [noderef] [usertype] __user * @@     got struct sigaltstack * @@
-   arch/h8300/kernel/signal.c:176:33: sparse:     expected struct sigaltstack [noderef] [usertype] __user *
-   arch/h8300/kernel/signal.c:176:33: sparse:     got struct sigaltstack *
-   arch/h8300/kernel/signal.c:177:34: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct sigcontext [noderef] __user *sc @@     got struct sigcontext * @@
-   arch/h8300/kernel/signal.c:177:34: sparse:     expected struct sigcontext [noderef] __user *sc
-   arch/h8300/kernel/signal.c:177:34: sparse:     got struct sigcontext *
-   arch/h8300/kernel/signal.c:178:30: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got struct sigset_t * @@
-   arch/h8300/kernel/signal.c:178:30: sparse:     expected void [noderef] __user *to
-   arch/h8300/kernel/signal.c:178:30: sparse:     got struct sigset_t *
-   arch/h8300/kernel/signal.c:185:24: sparse: sparse: cast removes address space '__user' of expression
-   arch/h8300/kernel/signal.c:188:24: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __user *ptr @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:188:24: sparse:     expected void const volatile [noderef] __user *ptr
-   arch/h8300/kernel/signal.c:188:24: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:188:24: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __user *to @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:188:24: sparse:     expected void [noderef] __user *to
-   arch/h8300/kernel/signal.c:188:24: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:190:24: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __user *ptr @@     got unsigned short * @@
-   arch/h8300/kernel/signal.c:190:24: sparse:     expected void const volatile [noderef] __user *ptr
-   arch/h8300/kernel/signal.c:190:24: sparse:     got unsigned short *
-   arch/h8300/kernel/signal.c:190:24: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __user *to @@     got unsigned short * @@
-   arch/h8300/kernel/signal.c:190:24: sparse:     expected void [noderef] __user *to
-   arch/h8300/kernel/signal.c:190:24: sparse:     got unsigned short *
-   arch/h8300/kernel/signal.c:193:16: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __user *ptr @@     got char ** @@
-   arch/h8300/kernel/signal.c:193:16: sparse:     expected void const volatile [noderef] __user *ptr
-   arch/h8300/kernel/signal.c:193:16: sparse:     got char **
-   arch/h8300/kernel/signal.c:193:16: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __user *to @@     got char ** @@
-   arch/h8300/kernel/signal.c:193:16: sparse:     expected void [noderef] __user *to
-   arch/h8300/kernel/signal.c:193:16: sparse:     got char **
-   arch/h8300/kernel/signal.c:86:9: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __user *__p @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:86:9: sparse:     expected void const [noderef] __user *__p
-   arch/h8300/kernel/signal.c:86:9: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:87:9: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __user *__p @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:87:9: sparse:     expected void const [noderef] __user *__p
-   arch/h8300/kernel/signal.c:87:9: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:88:9: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __user *__p @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:88:9: sparse:     expected void const [noderef] __user *__p
-   arch/h8300/kernel/signal.c:88:9: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:89:9: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __user *__p @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:89:9: sparse:     expected void const [noderef] __user *__p
-   arch/h8300/kernel/signal.c:89:9: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:90:9: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __user *__p @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:90:9: sparse:     expected void const [noderef] __user *__p
-   arch/h8300/kernel/signal.c:90:9: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:92:9: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __user *__p @@     got unsigned short * @@
-   arch/h8300/kernel/signal.c:92:9: sparse:     expected void const [noderef] __user *__p
-   arch/h8300/kernel/signal.c:92:9: sparse:     got unsigned short *
-   arch/h8300/kernel/signal.c:97:16: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __user *ptr @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:97:16: sparse:     expected void const volatile [noderef] __user *ptr
-   arch/h8300/kernel/signal.c:97:16: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:97:16: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:97:16: sparse:     expected void const [noderef] __user *from
-   arch/h8300/kernel/signal.c:97:16: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:97:16: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:97:16: sparse:     expected void const [noderef] __user *from
-   arch/h8300/kernel/signal.c:97:16: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:97:16: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:97:16: sparse:     expected void const [noderef] __user *from
-   arch/h8300/kernel/signal.c:97:16: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:97:16: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:97:16: sparse:     expected void const [noderef] __user *from
-   arch/h8300/kernel/signal.c:97:16: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:100:16: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __user *ptr @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:100:16: sparse:     expected void const volatile [noderef] __user *ptr
-   arch/h8300/kernel/signal.c:100:16: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:100:16: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got unsigned long * @@
-   arch/h8300/kernel/signal.c:100:16: sparse:     expected void const [noderef] __user *from
-   arch/h8300/kernel/signal.c:100:16: sparse:     got unsigned long *
-   arch/h8300/kernel/signal.c:100:16: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got unsigned long * @@
+This looks mostly good though it is enormous so I might've missed some
+things.  The patch series is already very large but it might still be
+worth splitting this up a bit more, perhaps split the code and data
+tables/register definitions into separate patches?
 
-vim +112 arch/h8300/kernel/signal.c
+A few relatively minor issues with the controls.
 
-883251dd163c55 Yoshinori Sato    2015-05-11  104  
-883251dd163c55 Yoshinori Sato    2015-05-11  105  asmlinkage int sys_rt_sigreturn(void)
-883251dd163c55 Yoshinori Sato    2015-05-11  106  {
-883251dd163c55 Yoshinori Sato    2015-05-11  107  	unsigned long usp = rdusp();
-883251dd163c55 Yoshinori Sato    2015-05-11  108  	struct rt_sigframe *frame = (struct rt_sigframe *)(usp - 4);
-883251dd163c55 Yoshinori Sato    2015-05-11  109  	sigset_t set;
-883251dd163c55 Yoshinori Sato    2015-05-11  110  	int er0;
-883251dd163c55 Yoshinori Sato    2015-05-11  111  
-96d4f267e40f95 Linus Torvalds    2019-01-03 @112  	if (!access_ok(frame, sizeof(*frame)))
-883251dd163c55 Yoshinori Sato    2015-05-11  113  		goto badframe;
-883251dd163c55 Yoshinori Sato    2015-05-11  114  	if (__copy_from_user(&set, &frame->uc.uc_sigmask, sizeof(set)))
-883251dd163c55 Yoshinori Sato    2015-05-11  115  		goto badframe;
-883251dd163c55 Yoshinori Sato    2015-05-11  116  
-883251dd163c55 Yoshinori Sato    2015-05-11  117  	set_current_blocked(&set);
-883251dd163c55 Yoshinori Sato    2015-05-11  118  
-883251dd163c55 Yoshinori Sato    2015-05-11  119  	if (restore_sigcontext(&frame->uc.uc_mcontext, &er0))
-883251dd163c55 Yoshinori Sato    2015-05-11  120  		goto badframe;
-883251dd163c55 Yoshinori Sato    2015-05-11  121  
-883251dd163c55 Yoshinori Sato    2015-05-11  122  	if (restore_altstack(&frame->uc.uc_stack))
-883251dd163c55 Yoshinori Sato    2015-05-11  123  		goto badframe;
-883251dd163c55 Yoshinori Sato    2015-05-11  124  
-883251dd163c55 Yoshinori Sato    2015-05-11  125  	return er0;
-883251dd163c55 Yoshinori Sato    2015-05-11  126  
-883251dd163c55 Yoshinori Sato    2015-05-11  127  badframe:
-3cf5d076fb4d48 Eric W. Biederman 2019-05-23  128  	force_sig(SIGSEGV);
-883251dd163c55 Yoshinori Sato    2015-05-11  129  	return 0;
-883251dd163c55 Yoshinori Sato    2015-05-11  130  }
-883251dd163c55 Yoshinori Sato    2015-05-11  131  
+> +/* this order must match reg bit amp_div_ch1/2 */
+> +static const char * const mt8186_sgen_amp_str[] =3D {
+> +	"1/128", "1/64", "1/32", "1/16", "1/8", "1/4", "1/2", "1" };
+> +static const char * const mt8186_sgen_mute_str[] =3D {
+> +	"Off", "On"
+> +};
 
-:::::: The code at line 112 was first introduced by commit
-:::::: 96d4f267e40f9509e8a66e2b39e8b95655617693 Remove 'type' argument from access_ok() function
+On/off controls should be normal Switch controls not enums so userspace
+can display things sensibly.
 
-:::::: TO: Linus Torvalds <torvalds@linux-foundation.org>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+> +static int mt8186_sgen_set(struct snd_kcontrol *kcontrol,
+> +			   struct snd_ctl_elem_value *ucontrol)
+> +{
+> +	struct snd_soc_component *cmpnt =3D snd_soc_kcontrol_component(kcontrol=
+);
+> +	struct mtk_base_afe *afe =3D snd_soc_component_get_drvdata(cmpnt);
+> +	struct mt8186_afe_private *afe_priv =3D afe->platform_priv;
+> +	struct soc_enum *e =3D (struct soc_enum *)kcontrol->private_value;
+> +	int mode;
+> +	int mode_idx;
+> +
+> +	if (ucontrol->value.enumerated.item[0] >=3D e->items)
+> +		return -EINVAL;
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+=2E..
+
+> +				   0x3f << INNER_LOOP_BACK_MODE_SFT);
+> +	}
+> +
+> +	afe_priv->sgen_mode =3D mode;
+> +
+> +	return 0;
+> +}
+
+This should return 1 if the value is different from the previous value
+so event generation works, please run mixer-test against a system using
+the driver to help spot issues like this.  The same issue applies to at
+least some of the other custom controls.
+
+> +static int mt8186_sgen_mute_set(struct snd_kcontrol *kcontrol,
+> +				struct snd_ctl_elem_value *ucontrol)
+> +{
+> +	struct snd_soc_component *cmpnt =3D snd_soc_kcontrol_component(kcontrol=
+);
+> +	struct mtk_base_afe *afe =3D snd_soc_component_get_drvdata(cmpnt);
+> +	struct soc_enum *e =3D (struct soc_enum *)kcontrol->private_value;
+> +	int mute;
+> +
+> +	if (ucontrol->value.enumerated.item[0] >=3D e->items)
+> +		return -EINVAL;
+> +
+> +	mute =3D ucontrol->value.integer.value[0];
+> +
+> +	dev_dbg(afe->dev, "%s(), kcontrol name %s, mute %d\n",
+> +		__func__, kcontrol->id.name, mute);
+> +
+> +	if (strcmp(kcontrol->id.name, SGEN_MUTE_CH1_KCONTROL_NAME) =3D=3D 0) {
+> +		regmap_update_bits(afe->regmap, AFE_SINEGEN_CON0,
+> +				   MUTE_SW_CH1_MASK_SFT,
+> +				   mute << MUTE_SW_CH1_SFT);
+> +	} else {
+> +		regmap_update_bits(afe->regmap, AFE_SINEGEN_CON0,
+> +				   MUTE_SW_CH2_MASK_SFT,
+> +				   mute << MUTE_SW_CH2_SFT);
+> +	}
+> +
+> +	return 0;
+> +}
+
+I can't tell why some of these are done with custom code rather than
+using a normal SOC_SINGLE()?
+
+--jdU3xo2gQbe9oqCP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJqgjgACgkQJNaLcl1U
+h9AdWgf/f48ddKYw5UEk9XqJetzu+AKnHMJdiGhcXVL8VJHS8NjNHgAIEkf7OtdR
+IViyQ7xxZBoVqVIdFG6R9agx3aFmdzL4xB1pujeQBINZxBU9AUsNZYVYvoPcOCVE
+1mTboTs+xpDB6w2l8wWS5LSep9LWUHZbNCVhjuauariDNPMIE1PtIsLdwrbFFn98
+TfLbVeGSNsabtkj1gp8Uy+7vMz8EyhsCZ+vVYLTbY9+vrFtMkKHo9kmNn/AfFSQE
+w4q2Jl2ktlwuhsQ3PYl+436ODLdrmUtBoV6RjRUn30TbpnGW2Z5qtR8+eMUR5PzZ
+nmzRcM5BGt4HvdA3tf5kTA6VLsD2Dw==
+=uhVL
+-----END PGP SIGNATURE-----
+
+--jdU3xo2gQbe9oqCP--
