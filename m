@@ -2,77 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55FAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 076C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234801AbiD1Kae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:30:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43962 "EHLO
+        id S234831AbiD1Ka4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233754AbiD1Kac (ORCPT
+        with ESMTP id S234813AbiD1Kaw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:30:32 -0400
-X-Greylist: delayed 465 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Apr 2022 03:27:16 PDT
-Received: from todd.t-8ch.de (todd.t-8ch.de [IPv6:2a01:4f8:c010:41de::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94F53E0D9
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 03:27:16 -0700 (PDT)
-From:   =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=weissschuh.net;
-        s=mail; t=1651141165;
-        bh=HDPmPUonfLA18N3RXFt5kVLnPCi7amyMZQTy67dXQwc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=P8aClK6Y0g1CHjYNxqx8xMgauuxlIqa6OfRoobMHCHTXG9xjBjjn8tiNM8DUx5OnE
-         xamrBg2R/Lo2vMt/tzrqJ69VyX4+jmZLqlQIZp1qaTrhe8F0DFWiOcweVmwLhLY/2p
-         0upI/wdk01BVAItbB9EvqqedIndHQaK88SmPSiW4=
-To:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>, linux-kernel@vger.kernel.org
-Cc:     linux-nvme@lists.infradead.org,
-        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
-Subject: [PATCH] nvme-pci: fix host memory buffer allocation size
-Date:   Thu, 28 Apr 2022 12:19:22 +0200
-Message-Id: <20220428101922.14216-1-linux@weissschuh.net>
-X-Mailer: git-send-email 2.36.0
+        Thu, 28 Apr 2022 06:30:52 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CFF649C8F;
+        Thu, 28 Apr 2022 03:27:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=39bYJZ1yrDJNMDn/aX063F9Jn6M2z3AydqcJ0Ax4Cek=; b=AU4Hc6WJRxDBT3Z2XgPMH/3xIB
+        SqLp057cjQGHsuq13Z3QFhOkjs/KT6Sysa6d1iHl4AFa3vraX171VHKNyZaLCM8ti5zIARL7uYI8h
+        UZ9WYH2uJFwhB+hNzzablZd4hW6I0goAz7YAhVYpnz1KRO/Q+WRFQBDL1+uZgxXu8K6iGE7iFIr+v
+        ptBV34hak3xJFDheSShKtWVbUD3bMz3tXZh12L2DG/gUJhl9fqQkv+ETxKbXzhXXgX1w+vHOaBXBH
+        oDSu6U+fYtGgeslHhOFd26Ftei/YhhGVXuwTucMlVSz+5xsNLNIAPvhIAcMGV3yU2Kg/SOJ61LwTj
+        6qMNOCqg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nk1Mf-009Jtp-WB; Thu, 28 Apr 2022 10:27:14 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C99A830031D;
+        Thu, 28 Apr 2022 12:27:11 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id B45312029F872; Thu, 28 Apr 2022 12:27:11 +0200 (CEST)
+Date:   Thu, 28 Apr 2022 12:27:11 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
+        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 1/9] signal: Rename send_signal send_signal_locked
+Message-ID: <Ympr/+PX4XgT/UKU@hirez.programming.kicks-ass.net>
+References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+ <20220426225211.308418-1-ebiederm@xmission.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1651141162; l=1214; s=20211113; h=from:subject; bh=HDPmPUonfLA18N3RXFt5kVLnPCi7amyMZQTy67dXQwc=; b=OiwSDn/v0nel5RXEG7W+KHVEVkvgcbHiVXm+yYEAd5FC4Uc0EuTF1Bc4BT4EmxhFl3URAIeaUSar WqhLdmDgADR5QqlPiuV66HUNIO7gCIYQd5x4wifwMCtLXLp4B9q9
-X-Developer-Key: i=linux@weissschuh.net; a=ed25519; pk=9LP6KM4vD/8CwHW7nouRBhWLyQLcK1MkP6aTZbzUlj4=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220426225211.308418-1-ebiederm@xmission.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We want to allocate the smallest possible amount of buffers with the
-largest possible size (1 buffer of size "hmpre").
+On Tue, Apr 26, 2022 at 05:52:03PM -0500, Eric W. Biederman wrote:
+> Rename send_signal send_signal_locked and make to make
+> it usable outside of signal.c.
+> 
+> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+> ---
+>  include/linux/signal.h |  2 ++
+>  kernel/signal.c        | 24 ++++++++++++------------
+>  2 files changed, 14 insertions(+), 12 deletions(-)
+> 
+> diff --git a/include/linux/signal.h b/include/linux/signal.h
+> index a6db6f2ae113..55605bdf5ce9 100644
+> --- a/include/linux/signal.h
+> +++ b/include/linux/signal.h
+> @@ -283,6 +283,8 @@ extern int do_send_sig_info(int sig, struct kernel_siginfo *info,
+>  extern int group_send_sig_info(int sig, struct kernel_siginfo *info,
+>  			       struct task_struct *p, enum pid_type type);
+>  extern int __group_send_sig_info(int, struct kernel_siginfo *, struct task_struct *);
+> +extern int send_signal_locked(int sig, struct kernel_siginfo *info,
+> +			      struct task_struct *p, enum pid_type type);
+>  extern int sigprocmask(int, sigset_t *, sigset_t *);
+>  extern void set_current_blocked(sigset_t *);
+>  extern void __set_current_blocked(const sigset_t *);
+> diff --git a/kernel/signal.c b/kernel/signal.c
+> index 30cd1ca43bcd..b0403197b0ad 100644
+> --- a/kernel/signal.c
+> +++ b/kernel/signal.c
+> @@ -1071,8 +1071,8 @@ static inline bool legacy_queue(struct sigpending *signals, int sig)
+>  	return (sig < SIGRTMIN) && sigismember(&signals->signal, sig);
+>  }
+>  
+> -static int __send_signal(int sig, struct kernel_siginfo *info, struct task_struct *t,
+> -			enum pid_type type, bool force)
+> +static int __send_signal_locked(int sig, struct kernel_siginfo *info,
+> +				struct task_struct *t, enum pid_type type, bool force)
+>  {
+>  	struct sigpending *pending;
+>  	struct sigqueue *q;
 
-Previously we were allocating as many buffers as possible of the smallest
-possible size.
-This also lead to "hmpre" to not be satisifed as not enough buffer slots
-where available.
+While there, could you please replace that assert_spin_locked() with
+lockdep_assert_held(&t->sighand->siglock) ?
 
-Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
----
-
-Also discussed at https://lore.kernel.org/linux-nvme/f94565db-f217-4a56-83c3-c6429807185c@t-8ch.de/
-
- drivers/nvme/host/pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 3aacf1c0d5a5..0546523cc20b 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -2090,7 +2090,7 @@ static int __nvme_alloc_host_mem(struct nvme_dev *dev, u64 preferred,
- 
- static int nvme_alloc_host_mem(struct nvme_dev *dev, u64 min, u64 preferred)
- {
--	u64 min_chunk = min_t(u64, preferred, PAGE_SIZE * MAX_ORDER_NR_PAGES);
-+	u64 min_chunk = max_t(u64, preferred, PAGE_SIZE * MAX_ORDER_NR_PAGES);
- 	u64 hmminds = max_t(u32, dev->ctrl.hmminds * 4096, PAGE_SIZE * 2);
- 	u64 chunk_size;
- 
-
-base-commit: 46cf2c613f4b10eb12f749207b0fd2c1bfae3088
--- 
-2.36.0
-
+The distinction being that assert_spin_locked() checks if the lock is
+held *by*anyone* whereas lockdep_assert_held() asserts the current
+context holds the lock.  Also, the check goes away if you build without
+lockdep.
