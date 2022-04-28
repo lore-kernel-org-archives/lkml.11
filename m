@@ -2,80 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65FE9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86456C433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:12:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229606AbiD1JLc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 05:11:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50240 "EHLO
+        id S1344699AbiD1JLk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 05:11:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344447AbiD1JLM (ORCPT
+        with ESMTP id S229709AbiD1JLh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 05:11:12 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A7A5EDD2
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:07:59 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23S85tWM016496;
-        Thu, 28 Apr 2022 04:07:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=qelkuXXhI7j9+bgOOt/afSN3KCYXxCAlz6N2wmeGKIw=;
- b=GQ4B3y14y2EK/kFXganY54q3e8Li5dqA47V23JKUE4ykUwxZ416fLL2fdKL4CK2xQ080
- i9SRkr2I1AGdBWebYXTvbplHsgJhEYOxjoEXbFbVYs5+8EtuA09asI6gX/0Mh6dcw8Nh
- KQdkIXegs379TkSzZDaAmF9hnIf/EhJvoX6isWi9NPjPp1kKERFSHpoYWfxLfcob+TRU
- 4eRpFF7ohwLjToCQTXW+DnjtK1IC9hNa/9cqtTeV/PJf6fcGz0jJbLPAMQxxZiMyndsd
- a/ivvWWjkFTtkDPpwu07D+CrpuUscwVLSPqEaN/G/3NrjZBPw08CmGl7YWVObziFHFuW 7Q== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3fprtb1v8y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 28 Apr 2022 04:07:12 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Apr
- 2022 10:07:10 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Thu, 28 Apr 2022 10:07:10 +0100
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id ABC8946C;
-        Thu, 28 Apr 2022 09:07:10 +0000 (UTC)
-Date:   Thu, 28 Apr 2022 09:07:10 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Vitaly Rodionov <vitalyr@opensource.cirrus.com>
-CC:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Mark Brown <broonie@kernel.org>, <alsa-devel@alsa-project.org>,
-        <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: Re: [PATCH 07/26] ASoC: cs35l41: Move cs35l41 fs errata into shared
- code
-Message-ID: <20220428090710.GL38351@ediswmail.ad.cirrus.com>
-References: <20220427150720.9194-1-vitalyr@opensource.cirrus.com>
- <20220427150720.9194-8-vitalyr@opensource.cirrus.com>
+        Thu, 28 Apr 2022 05:11:37 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DB453E19;
+        Thu, 28 Apr 2022 02:08:21 -0700 (PDT)
+Received: (Authenticated sender: herve.codina@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id BD0C824000C;
+        Thu, 28 Apr 2022 09:08:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651136900;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3ZaVxd+2WjygVQXWswdisAkNx+oA7fl9OUz2pidyb4k=;
+        b=M9NQEgqxVS+N0oyyjs4W4Whgk+JUc7I5Mfy1xvbtI9cZ6obYaEXP6mqwwDvcbuwULXvquQ
+        7mwoiCOmTjWbeoYn8PQKndMWvWDBVUdlb+5ezUH26//GxEhuBCZn5VswA09Kw0xhGNxA4J
+        9jCKV/zOSETAqDJQbqmEFBnRm9YcdSjqhbU6ozCZzBRWz6vEuIB2B8qMWmvt4jug2XL2c3
+        mUNTarLAOxOATtEo/qk6AuwGbrelDf5RhXS1awQqX4wo0H/IW3jwucBaXR9TeWztDdDkfv
+        8f/W7ARWVQR+kx9IjVZsNw/xHaL5Cdjzx5xZ24Sz3MdlaZ57cmswJxjmhoHgBg==
+Date:   Thu, 28 Apr 2022 11:08:17 +0200
+From:   Herve Codina <herve.codina@bootlin.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?= <kw@linux.com>,
+        Rob Herring <robh@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: Re: [PATCH v3 2/8] dt-bindings: PCI: renesas,pci-rcar-gen2: Add
+ device tree support for r9a06g032
+Message-ID: <20220428110817.07ce92a6@bootlin.com>
+In-Reply-To: <CAMuHMdVB2-Sv1AWFr43erOioui0me5A4TfvazKHp9hTF3gJCwg@mail.gmail.com>
+References: <20220422120850.769480-1-herve.codina@bootlin.com>
+        <20220422120850.769480-3-herve.codina@bootlin.com>
+        <CAMuHMdVB2-Sv1AWFr43erOioui0me5A4TfvazKHp9hTF3gJCwg@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220427150720.9194-8-vitalyr@opensource.cirrus.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-ORIG-GUID: qOq2t3v99asS5a4Cp8ufLVpzTWToPi9V
-X-Proofpoint-GUID: qOq2t3v99asS5a4Cp8ufLVpzTWToPi9V
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 04:07:01PM +0100, Vitaly Rodionov wrote:
-> From: Stefan Binding <sbinding@opensource.cirrus.com>
-> 
-> This sequence is required to setup firmware, and will
-> be needed for hda driver.
-> 
-> Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
-> Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
-> ---
+Hi Geert,
 
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+On Wed, 27 Apr 2022 17:15:15 +0200
+Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 
-Thanks,
-Charles
+> Hi Herv=C3=A9,
+>=20
+> On Fri, Apr 22, 2022 at 2:09 PM Herve Codina <herve.codina@bootlin.com> w=
+rote:
+> > Add internal PCI bridge support for the r9a06g032 SOC. The Renesas
+> > RZ/N1D (R9A06G032) internal PCI bridge is compatible with the one
+> > present in the R-Car Gen2 family.
+> > Compared to the R-Car Gen2 family, it needs three clocks instead of
+> > one.
+> >
+> > Signed-off-by: Herve Codina <herve.codina@bootlin.com> =20
+>=20
+> Thanks for your patch!
+>=20
+> > --- a/Documentation/devicetree/bindings/pci/renesas,pci-rcar-gen2.yaml
+> > +++ b/Documentation/devicetree/bindings/pci/renesas,pci-rcar-gen2.yaml
+> > @@ -113,6 +113,37 @@ required:
+> >    - "#size-cells"
+> >    - "#interrupt-cells"
+> >
+> > +if:
+> > +  properties:
+> > +    compatible:
+> > +      contains:
+> > +        enum:
+> > +          - renesas,pci-rzn1
+> > +
+> > +then:
+> > +  properties:
+> > +    clocks:
+> > +      items:
+> > +        - description: Internal bus clock (AHB) for HOST
+> > +        - description: Internal bus clock (AHB) Power Management
+> > +        - description: PCI clock for USB subsystem
+> > +    clock-names:
+> > +      items:
+> > +        - const: hclk_usbh
+> > +        - const: hclk_usbpm
+> > +        - const: clk_pci_usb =20
+>=20
+> These are the provider names.
+> I think they should use the consumer names: usb_hclkh, usb_hclkpm,
+> and usb_pciclk.
+
+Yes, it makes sense.
+I will changed in v4.
+
+>=20
+> The rest looks good to me.
+
+Perfect.
+
+Thanks for the review,
+Herv=C3=A9
+
+
+--=20
+Herv=C3=A9 Codina, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
