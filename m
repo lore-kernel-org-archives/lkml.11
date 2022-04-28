@@ -2,111 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E1BC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6379C4167E
 	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 09:19:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345197AbiD1JRl (ORCPT
+        id S1345570AbiD1JRp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 05:17:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58580 "EHLO
+        Thu, 28 Apr 2022 05:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345389AbiD1JPD (ORCPT
+        with ESMTP id S1345427AbiD1JPS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 05:15:03 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7225DE40;
-        Thu, 28 Apr 2022 02:11:49 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 11:11:46 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651137108;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nNOLzMN4GCAqBBfW+r8eqm5hDs3n5cjsSXnK/5QFPds=;
-        b=q9fWvipxeyuuIhq4+NB4f0zZUeNRO9fKzRYos5WIhZ2FTHy8dYPMHVGR9bzNa3ITWgsq2J
-        GqMGra6y+XiQ2aQl1i6HqvOofzVtblPQQe/dj5SbfpGTubLf0kTNg2rqcXkHFtoGFjfYah
-        FOdw4duodfVpezANBfBJdprbLmZSXtsN77r9ambMrOqTOOcDrN/PBd8qGZjPyFsYKWU+Lu
-        F9otqnAOa3RCZUVVm+f7geBY8fqswq1YvvsEZv0EipvwvgCwnY9ASCte0o0X80KAVIYABr
-        u3P705AiBQ9FpbhbcZLHkPoiHWPDp5q61rGw597YAjo3wgVEOMtpqIwweRWW6A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651137108;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nNOLzMN4GCAqBBfW+r8eqm5hDs3n5cjsSXnK/5QFPds=;
-        b=7dCD8xWto1maJxrNTxYG+xqLePiWvXHnBLrZmkaeDiRqei49ZmGnJxR9LO7zRcSbHpPRjy
-        ep9UlPjhOTH1ebCQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, outreachy@lists.linux.dev,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCH v3 1/4] mm/highmem: Fix kernel-doc warnings in highmem*.h
-Message-ID: <YmpaUgxIk0rrwt2G@linutronix.de>
-References: <20220427183821.1979-1-fmdefrancesco@gmail.com>
- <20220427183821.1979-2-fmdefrancesco@gmail.com>
+        Thu, 28 Apr 2022 05:15:18 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C705DE40
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:12:04 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23S85KKX014079;
+        Thu, 28 Apr 2022 04:11:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=GNIWocH5RL4/4+L/+i4OpILLi3MARmooLeD42GzbnLg=;
+ b=JTGGqEZDbnFgB/FHIpQfUNpqxsAXSlUMjlGwYZl7PMQGj+Xikf290Xx1il2Mw8r6Gd88
+ c0F8FFfDPSBBO3CyZWjWCvjezZXJH7j4q1OW0JDwT3sQrp+icOi6sT0m/p7eo5NL8QIU
+ 6hsYYDy9tS/WiYF1Neb7SnDJ64d6/mu+th1hAmiBIGj20uOdtt8JPSOMynMvEirqe6Qu
+ kQ+z5+jXsAFqZMZhUUV+FSK9fepkfwgy3/ITWa/AAxTumG3/RGsjDLFPDywFDryRYp8c
+ D5Q2hYXHvyfM9a3qu2oGem5DTiYIOYa5FE7BHoiYmZrNlrHvKhUpu9Mj61wwQK4owQdz KA== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fprt61w3s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 28 Apr 2022 04:11:22 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Apr
+ 2022 10:11:20 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Thu, 28 Apr 2022 10:11:20 +0100
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 6DA47B10;
+        Thu, 28 Apr 2022 09:11:19 +0000 (UTC)
+Date:   Thu, 28 Apr 2022 09:11:19 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+CC:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Mark Brown <broonie@kernel.org>, <alsa-devel@alsa-project.org>,
+        <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>,
+        Stefan Binding <sbinding@opensource.cirrus.com>
+Subject: Re: [PATCH 19/26] ALSA: cs35l41: Do not print error when waking from
+ hibernation
+Message-ID: <20220428091119.GO38351@ediswmail.ad.cirrus.com>
+References: <20220427150720.9194-1-vitalyr@opensource.cirrus.com>
+ <20220427150720.9194-20-vitalyr@opensource.cirrus.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220427183821.1979-2-fmdefrancesco@gmail.com>
+In-Reply-To: <20220427150720.9194-20-vitalyr@opensource.cirrus.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-GUID: _59qDnNUtRHXae41tWGQ6wwiCZZzJ5Jy
+X-Proofpoint-ORIG-GUID: _59qDnNUtRHXae41tWGQ6wwiCZZzJ5Jy
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-27 20:38:18 [+0200], Fabio M. De Francesco wrote:
-> --- a/include/linux/highmem-internal.h
-> +++ b/include/linux/highmem-internal.h
-> @@ -236,9 +236,18 @@ static inline unsigned long totalhigh_pages(void) { =
-return 0UL; }
-> =20
->  #endif /* CONFIG_HIGHMEM */
-> =20
-> -/*
-> - * Prevent people trying to call kunmap_atomic() as if it were kunmap()
-> - * kunmap_atomic() should get the return value of kmap_atomic, not the p=
-age.
-> +/**
-> + * kunmap_atomic - Unmap the virtual address mapped by kmap_atomic() - d=
-eprecated!
-> + * @__addr:       Virtual address to be unmapped
-> + *
-> + * Unmaps an address previously mapped by kmap_atomic() and re-enables
-> + * pagefaults, migration, preemption (the latter was disabled only for
-> + * !PREEMP_RT configurations). Mappings should be unmapped in the reverse
+On Wed, Apr 27, 2022 at 04:07:13PM +0100, Vitaly Rodionov wrote:
+> From: Stefan Binding <sbinding@opensource.cirrus.com>
+> 
+> When waking from hibernation, it is possible for the function
+> which sends the wake command to fail initially, but after a
+> retry it will succeed. There is no need to print an error if
+> the initial attempts fail.
+> 
+> Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+> Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+> ---
 
-Not sure how detailed you want to put it here as "reverses kmap_atomic()
-doing." might be okay ;) This indicates the "migration" is disabled for
-!PREEMPT_RT which is not the case. So maybe something like
+Commit message should be ASoC: not ALSA:, but otherwise looks
+good.
 
- * Unmaps an address previously mapped by kmap_atomic() and re-enables
- * pagefaults, CPU migration (CONFIG_PREEMPT_RT) or preemption
- * (!CONFIG_PREEMPT_RT). Mappings should be unmapped in the reverse
-
-will make it clear.
-=E2=80=A6
-> --- a/include/linux/highmem.h
-> +++ b/include/linux/highmem.h
-> @@ -138,24 +138,14 @@ static inline void *kmap_local_folio(struct folio *=
-folio, size_t offset);
->   *
->   * Returns: The virtual address of the mapping
->   *
-> - * Effectively a wrapper around kmap_local_page() which disables pagefau=
-lts
-> - * and preemption.
-> + * In fact a wrapper around kmap_local_page() which disables pagefaults,
-> + * migration, preemption (the latter disabled only for !PREEMP_RT
-> + * configurations).
-
-and here.
-
-Sebastian
+Thanks,
+Charles
