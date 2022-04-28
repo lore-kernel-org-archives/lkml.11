@@ -2,91 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84DA8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:36:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1910C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243545AbiD1KjN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:39:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
+        id S241391AbiD1Kln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:41:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233489AbiD1KjM (ORCPT
+        with ESMTP id S238851AbiD1Klk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:39:12 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29D706A02A;
-        Thu, 28 Apr 2022 03:35:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651142158; x=1682678158;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gNerj3kD6Y8mhAk9ompGhzAXz6vRVhoVMUf84Vky2Bs=;
-  b=AxB1IynCFV/sawUjAe7ALmfcYROgwH6GcBZGsVj4cvVOSqEo5m16svKP
-   ppaQb9feuMnoFNUM8dUl6wYU/98C7thSE4BjGt0R9MA4Q2pEfJEgvXXas
-   CvU/lAlL1BIMrNWk1ykOgslvjXO2KYwiNV027mDee9zFH2RwUCxDOw/Xh
-   LPixaeEJlfx+Z/CuYcsY6jA176ndSNYSatuF9N0Hj67Yd1HapjYw/67CD
-   MK2uzQHDkeR/kUKSRsIxuEl4Z/Q+GkqBXjJLm0TeTBhKxrVUqwLNqaZpH
-   WrcWrS1Mg1ZG2GI18FIaVWvoaYE0LA7LCanjJmKErUroOSlU/NNjylDIT
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="253624161"
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="253624161"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 03:35:57 -0700
-X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
-   d="scan'208";a="581267741"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 03:35:55 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nk1V2-009FkD-EH;
-        Thu, 28 Apr 2022 13:35:52 +0300
-Date:   Thu, 28 Apr 2022 13:35:52 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Aubrey Li <aubrey.li@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        Mark Gross <markgross@kernel.org>,
-        platform-driver-x86@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH 2/4] ACPI: LPSS: make the Kconfig dependency on PMC_ATOM
- explicit
-Message-ID: <YmpuCG76aJ+d5lGH@smile.fi.intel.com>
-References: <20220428062430.31010-1-paul.gortmaker@windriver.com>
- <20220428062430.31010-3-paul.gortmaker@windriver.com>
+        Thu, 28 Apr 2022 06:41:40 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85586A410;
+        Thu, 28 Apr 2022 03:38:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=AhbgCqd7BwFlFPAKluXkLDE2fbuPOLW8BZP+83SCshw=; b=l3v//duEcO+RAy1rHKqKk/42N0
+        F9QSzG5+uLtUycqoNrYxD5YjchOb96Z/44n5Gv9NHciZfZXvt6EXsJ6pdaUapRb4eTsA3U7Zg2Cc/
+        yYnGDsOIyG4Zv5yvxP6TqhzFpu530iCkMZZswEugAIO3P93SdG1HNT0iViDrNiJ/gTzuiNg1a8RUb
+        VGI5fyQOb1/Ak1qlbdBglhHzmuzMcXEKUGaJza2YLsZod+FT8aK9IlV87j1zt118M0DqfNK3uh+ZK
+        qFRBNB/WtTMCpV1AyoxvfpJdb74tBHXM4hlWQrAF+lp9IXHA3PDrF/TjeQNDDzuPACDtHiaun52k3
+        eT4DZpLA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nk1XE-009K05-7g; Thu, 28 Apr 2022 10:38:08 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 9745A3001EA;
+        Thu, 28 Apr 2022 12:38:07 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 7ABEE2029F872; Thu, 28 Apr 2022 12:38:07 +0200 (CEST)
+Date:   Thu, 28 Apr 2022 12:38:07 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
+        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 6/9] signal: Always call do_notify_parent_cldstop with
+ siglock held
+Message-ID: <YmpujwzYW/l3RB6O@hirez.programming.kicks-ass.net>
+References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+ <20220426225211.308418-6-ebiederm@xmission.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220428062430.31010-3-paul.gortmaker@windriver.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220426225211.308418-6-ebiederm@xmission.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 02:24:28AM -0400, Paul Gortmaker wrote:
-> The code in acpi_lpss.c has been unconditionally using pmc_atom_read()
-> for about the past six years.  This hasn't been a problem since you
-> currently can't disable PMC_ATOM short of disabling PCI entirely.
+On Tue, Apr 26, 2022 at 05:52:08PM -0500, Eric W. Biederman wrote:
+> Now that siglock keeps tsk->parent and tsk->real_parent constant
+> require that do_notify_parent_cldstop is called with tsk->siglock held
+> instead of the tasklist_lock.
 > 
-> But it doesn't need to be that way, and so that we can change Kconfigs
-> in a subsequent commit, we make sure LPSS selects PMC_ATOM in advance,
-> so that existing .config files can live on with "make oldconfig".
+> As all of the callers of do_notify_parent_cldstop had to drop the
+> siglock and take tasklist_lock this simplifies all of it's callers.
 > 
-> In theory, one could make LPSS build w/o PMC_ATOM, similar to what it
-> did six years ago, but I doubt there is any demand for that now.
+> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+> ---
+>  kernel/signal.c | 156 +++++++++++++++++-------------------------------
+>  1 file changed, 55 insertions(+), 101 deletions(-)
+> 
+> diff --git a/kernel/signal.c b/kernel/signal.c
+> index 72d96614effc..584d67deb3cb 100644
+> --- a/kernel/signal.c
+> +++ b/kernel/signal.c
+> @@ -2121,11 +2121,13 @@ static void do_notify_parent_cldstop(struct task_struct *tsk,
+>  				     bool for_ptracer, int why)
+>  {
+>  	struct kernel_siginfo info;
+> -	unsigned long flags;
+>  	struct task_struct *parent;
+>  	struct sighand_struct *sighand;
+> +	bool lock;
+>  	u64 utime, stime;
+>  
+> +	assert_spin_locked(&tsk->sighand->siglock);
 
-I'm wondering if without LPSS we may use those devices to some extend.
-If it's the case, this patch is half-baked since it's missed the network
-and audio drivers to also enable it (see PMC clock driver registration
-and usage).
-
-That said, I'm not sure it's beneficial to spread this selection over
-the drivers that may be used widely on non-Intel-Atom platforms.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+lockdep_assert_held() please...
