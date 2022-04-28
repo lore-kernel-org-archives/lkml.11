@@ -2,104 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 21:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28464C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 21:01:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351967AbiD1VD0 (ORCPT
+        id S1352000AbiD1VEr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 17:03:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47578 "EHLO
+        Thu, 28 Apr 2022 17:04:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241199AbiD1VDY (ORCPT
+        with ESMTP id S241199AbiD1VEp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 17:03:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 156DDA19C
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 14:00:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651179608;
+        Thu, 28 Apr 2022 17:04:45 -0400
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8A066ACA
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 14:01:28 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id E97536C1D43;
+        Thu, 28 Apr 2022 21:01:27 +0000 (UTC)
+Received: from pdx1-sub0-mail-a237.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 451296C09F0;
+        Thu, 28 Apr 2022 21:01:27 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1651179687; a=rsa-sha256;
+        cv=none;
+        b=IhAyp+fDD0Ymfj6ckD7piAjibXf69cktlIiO+D3XRP5ahs6iYx8aKPlbiRzLgdmv0dXXin
+        1190HyxrxzTPhqy4S9065x9Kq6lUWgiPi5pbQJLUECyg/3pyQpswTWA6dhOgXeqYvT3EID
+        Qu2XDPCWEBj2GskTdr97DE8VLZNlRapCsz6RMOMTRSXZSpz88K1STS3uauWhZ9NpbkU0jW
+        XQHdvY44LTWBXnDGpcYHhgKRapZvh18uuRS1abgka8LvwF3ruekxkqiGgjfx5LWcASEfEY
+        V+iibYs/fSN357gORvmGvy7SEHsWKHVgtbyuz/xcGuS+rO4Dpk0Goc/SSfur7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1651179687;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Gd89wvyW0TX+SL1HQ733QRou6AZK6t/EmbFHHPi83OU=;
-        b=PteJiCDzL2RC5CDSP6P2obQnYwlWml2ciwT1q+wyNNR8VlPM/c/nZFvI6+fIIVoEF+dY7d
-        9f6LUmnAiCeaZRl7WFFFPVLN0k64E0deoxBp0I5YX5AWV5B0hrnx/3WqAVtxRKvjECP1PQ
-        0WZkhiDKCzBlZWYzdnlSX72JYSaJz8w=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-359-eina1oP_NISjhB_PkFm6kg-1; Thu, 28 Apr 2022 17:00:02 -0400
-X-MC-Unique: eina1oP_NISjhB_PkFm6kg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=/X2yWkGBPdmS9II6ZQ63eP0hzSBbs6CX/Rh+Gl/UVqY=;
+        b=sidYiefsnP6I+9fwCpGvVXe9IUwQwTktkng9lGQ3ZF7UKcp6tCpURL6Hy4OXx743tMtuqO
+        fLVirA34xQhtyx/6+0cAxBy73Nz399kGr8aQ58+06U6IsUtH1Ysb+WegKb/oLkT0CzwP5s
+        uesToOTzSX7CA+5hTKA2p2AMg1C98rIiSDKUAuMfrqPXVKwEnRo9UV4IuiFoMuYWq/roDd
+        80/TwqkpRiQLBA0pMZpGmlCKTeoJyPZKcDYbTzcd6du2o11QBP7ZODc2ZDk6BHtyvW56jn
+        aKPVJh0tAOpSOTquxg5xvydPMuaGcsgWheMsiOaRUgNjlCzRJCe0kpF+uhLKnA==
+ARC-Authentication-Results: i=1;
+        rspamd-847dd8955c-chk46;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from pdx1-sub0-mail-a237.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.127.95.124 (trex/6.7.1);
+        Thu, 28 Apr 2022 21:01:27 +0000
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Inform-Desert: 3fe819401b1ebf62_1651179687590_356988341
+X-MC-Loop-Signature: 1651179687590:3622499748
+X-MC-Ingress-Time: 1651179687589
+Received: from offworld (unknown [104.36.31.105])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D94763C10AAA;
-        Thu, 28 Apr 2022 21:00:01 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.151])
-        by smtp.corp.redhat.com (Postfix) with SMTP id C2CD1407E243;
-        Thu, 28 Apr 2022 20:59:58 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Thu, 28 Apr 2022 23:00:01 +0200 (CEST)
-Date:   Thu, 28 Apr 2022 22:59:57 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>, rjw@rjwysocki.net,
-        mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
-        linux-kernel@vger.kernel.org, tj@kernel.org,
-        linux-pm@vger.kernel.org
-Subject: Re: [PATCH v2 2/5] sched,ptrace: Fix ptrace_check_attach() vs
- PREEMPT_RT
-Message-ID: <20220428205956.GG15485@redhat.com>
-References: <20220421150248.667412396@infradead.org>
- <20220421150654.817117821@infradead.org>
- <20220425174719.GB12412@redhat.com>
- <8735hzcr18.fsf@email.froward.int.ebiederm.org>
- <Ymr5Ga3gcqG4ZAMt@hirez.programming.kicks-ass.net>
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a237.dreamhost.com (Postfix) with ESMTPSA id 4Kq7MT5Nwbz1fv;
+        Thu, 28 Apr 2022 14:01:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1651179686;
+        bh=/X2yWkGBPdmS9II6ZQ63eP0hzSBbs6CX/Rh+Gl/UVqY=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=ANAwz6BZg4g/YN37eGi2joJcDpRDNxX/BUrtbYAydlrB1SBL5voZKGR+ES50iL/DH
+         kCCQQW7yuTnwmVMvo8L+onlzyArEalE1ueSpfF2XOQ/iKie5iNJZ0rjOBHqDUA0H3m
+         D7zCKJc52q9so3hPDtF/9YRG6hMiR4sCb+tXn0SkOpxZoJAGp42cxTZqLQvH9qu+JG
+         lGnS4LlKymX7CxJwkOuB+XKLpMXolvibPECUwBUt7qYvjcw7JZNucMQIwVKi7+zzyf
+         P7OZ3YypdCdTsAZagfFmfe1Ev+2AOCcog3lAdHUwk+Gv0yGEb8dmkPkfJ7wUozZGgA
+         WY4lskAns0gyg==
+Date:   Thu, 28 Apr 2022 13:50:01 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Prakash Sangappa <prakash.sangappa@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, tglx@linutronix.de,
+        akpm@linux-foundation.org, peterz@infradead.org,
+        manfred@colorfullife.com
+Subject: Re: [PATCH v3] ipc: Update semtimedop() to use hrtimer
+Message-ID: <20220428205001.hiuzwpn5emxtrh4s@offworld>
+References: <1651178767-447-1-git-send-email-prakash.sangappa@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <Ymr5Ga3gcqG4ZAMt@hirez.programming.kicks-ass.net>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+In-Reply-To: <1651178767-447-1-git-send-email-prakash.sangappa@oracle.com>
+User-Agent: NeoMutt/20220408
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/28, Peter Zijlstra wrote:
+On Thu, 28 Apr 2022, Prakash Sangappa wrote:
+
+>semtimedop() should be converted to use hrtimer like it has been done
+>for most of the system calls with timeouts. This system call already
+>takes a struct timespec as an argument and can therefore provide finer
+>granularity timed wait.
 >
-> Oleg pointed out that the tracee can already be killed such that
-> fatal_signal_pending() is true. In that case signal_wake_up_state()
-> cannot be relied upon to be responsible for the wakeup -- something
-> we're going to want to rely on.
+>Signed-off-by: Prakash Sangappa <prakash.sangappa@oracle.com>
+>Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+>---
+>v1->v2:
+>  - Use timespec64_valid() to validate timeout
+>     and other changes as suggested by Thomas Gleixner
+>v2-v3 Added Reviewed by tag
+>---
 
-Peter, I am all confused...
+The second '---' is not necesary, it's the first one that counts.
 
-If this patch is against the current tree, we don't need it.
+>@@ -2166,10 +2167,8 @@ long __do_semtimedop(int semid, struct sembuf *sops,
+>		sem_unlock(sma, locknum);
+>		rcu_read_unlock();
+>
+>-		if (timeout)
+>-			jiffies_left = schedule_timeout(jiffies_left);
+>-		else
+>-			schedule();
+>+		timed_out = !schedule_hrtimeout_range(exp,
+>+				current->timer_slack_ns, HRTIMER_MODE_ABS);
 
-If it is on top of JOBCTL_TRACED/DELAY_WAKEKILL changes (yours or Eric's),
-then it can't help - SIGKILL can come right after the tracee drops siglock
-and calls schedule().
+I'm wondering if the slack parameter instead of passing the timer_slack_ns
+value immediately, we should do a rt_task() check and pass zero if so.
+And the opposite for the posix mqueue case: bit a little more lenient when
+!rt_task() and pass current->timer_slack_ns instead of zero. Of course mq
+is a lot more rt aware than sysv semaphores, but that doesn't mean both forms
+of ipc are not seen used with or without RT constraints.
 
-Perhaps I missed something, but let me repeat the 3rd time: I'd suggest
-to simply clear JOBCTL_TRACED along with LISTENING/DELAY_WAKEKILL before
-return to close this race.
-
-Oleg.
-
-> --- a/kernel/signal.c
-> +++ b/kernel/signal.c
-> @@ -2226,6 +2226,10 @@ static int ptrace_stop(int exit_code, in
->  		spin_lock_irq(&current->sighand->siglock);
->  	}
->  
-> +	/* Don't stop if the task is dying. */
-> +	if (unlikely(__fatal_signal_pending(current)))
-> +		return exit_code;
-> +
->  	/*
->  	 * schedule() will not sleep if there is a pending signal that
->  	 * can awaken the task.
-> 
-
+Thanks,
+Davidlohr
