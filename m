@@ -2,132 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD098C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:27:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA8FC4167E
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:27:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344088AbiD1IbA (ORCPT
+        id S1344211AbiD1IbJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46892 "EHLO
+        Thu, 28 Apr 2022 04:31:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344138AbiD1Iau (ORCPT
+        with ESMTP id S1344142AbiD1IbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:30:50 -0400
+        Thu, 28 Apr 2022 04:31:02 -0400
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769CBA0BD1;
-        Thu, 28 Apr 2022 01:27:35 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 893EE2186F;
-        Thu, 28 Apr 2022 08:27:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1651134453; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YIozUSFdjDnLnEJpNn98rpE1d2R0anAtFMrgIZeUiR4=;
-        b=kk0y2HUNWPQ6yurCu47RXpWICv/UYYHPEiBz2vwYJUQU92TGjP6YsUB3QW/6bksx3k5t/F
-        F/My4Vm3K9vGazCfRQnqYqYdnsZXWxKy4/0UkrWqH/AOJ7+7WlUXGP+sLpj9pHauw349c/
-        +8XoiuZlexn/SXMwfGzlxoxmq0EliWI=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B95EA0BD2;
+        Thu, 28 Apr 2022 01:27:49 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id D7C5B2C141;
-        Thu, 28 Apr 2022 08:27:32 +0000 (UTC)
-Date:   Thu, 28 Apr 2022 10:27:32 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Lecopzer Chen <lecopzer.chen@mediatek.com>
-Cc:     acme@kernel.org, akpm@linux-foundation.org,
-        alexander.shishkin@linux.intel.com, catalin.marinas@arm.com,
-        davem@davemloft.net, jolsa@redhat.com, jthierry@redhat.com,
-        keescook@chromium.org, kernelfans@gmail.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
-        masahiroy@kernel.org, matthias.bgg@gmail.com, maz@kernel.org,
-        mcgrof@kernel.org, mingo@redhat.com, namhyung@kernel.org,
-        nixiaoming@huawei.com, peterz@infradead.org,
-        sparclinux@vger.kernel.org, sumit.garg@linaro.org,
-        wangqing@vivo.com, will@kernel.org, yj.chiang@mediatek.com
-Subject: Re: [PATCH v3 5/5] arm64: Enable perf events based hard lockup
- detector
-Message-ID: <YmpP9PTa1/pSmuuQ@alley>
-References: <20220421163035.26402-1-lecopzer.chen@mediatek.com>
- <20220426163840.18871-1-lecopzer.chen@mediatek.com>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id CDEBA2186F;
+        Thu, 28 Apr 2022 08:27:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1651134467; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=uHWa92vFc0VKwXbjUTC1XMh188o1HlT0uQD6qb0vP48=;
+        b=ptsNFLPN4AOJ9HLpo2aUFC1C35GqsbNQmwQwd/cc0fkX9rwV4HLRJVj0WiG+95oGxsBYyw
+        5reFV928fpI3wng15ZZWSf2aMaxIkut0k3dO9MjlmOJ7aHFGqGsaFIzVlip6U6aXsYeVwo
+        KQjHMdo/P4x1VKzfCdDMkbEiS1Pfu8Q=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EF6F413491;
+        Thu, 28 Apr 2022 08:27:46 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ApxEOAJQamIBLgAAMHmgww
+        (envelope-from <jgross@suse.com>); Thu, 28 Apr 2022 08:27:46 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-integrity@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH v2 00/19] xen: simplify frontend side ring setup
+Date:   Thu, 28 Apr 2022 10:27:24 +0200
+Message-Id: <20220428082743.16593-1-jgross@suse.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220426163840.18871-1-lecopzer.chen@mediatek.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 2022-04-27 00:38:40, Lecopzer Chen wrote:
-> > What about just introducing the API that will allow to try to
-> > initialize the hardlockup detector later:
-> > 
-> > /*
-> >  * Retry hardlockup detector init. It is useful when it requires some
-> >  * functionality that has to be initialized later on a particular
-> >  * platform.
-> >  */
-> > void __init retry_lockup_detector_init(void)
-> > {
-> > 	/* Must be called before late init calls. */
-> > 	if (!allow_lockup_detector_init_retry)
-> > 		return 0;
-> > 
-> > 	queue_work_on(__smp_processor_id(), system_wq, &detector_work);
-> > }
-> > 
-> > /*
-> >  * Ensure that optional delayed hardlockup init is proceed before
-> >  * the init code and memory is freed.
-> >  */
-> > static int __init lockup_detector_check(void)
-> > {
-> > 	/* Prevent any later retry. */
-> > 	allow_lockup_detector_init_retry = false;
-> > 
-> > 	/* Make sure no work is pending. */
-> > 	flush_work(&detector_work);
-> > }
-> > late_initcall_sync(lockup_detector_check);
-> > 
-> > You could leave lockup_detector_init() as it is. It does not really
-> > matter what was the exact error value returned by watchdog_nmi_probe().
-> > 
-> > Then you could call retry_lockup_detector_init() in
-> > armv8_pmu_driver_init() and be done with it.
-> > 
-> > It will be universal API that might be used on any architecture
-> > for any reason. If nobody calls retry_lockup_detector_init()
-> > then nohing will happen and the code will work as before.
-> > 
-> > It might make sense to provide the API only on architectures that
-> > really need it. We could hide it under
-> > 
-> >    ARCH_NEED_DELAYED_HARDLOCKUP_DETECTOR_INIT
-> > 
-> > , similar to ARCH_NEEDS_CPU_IDLE_COUPLE.
-> > 
-> 
-> During implementation, if I add ARCH_NEED_DELAYED_..., there will contain
-> many enclosed ifdef-endif and is a little bit ugly.
-> Also, I didn't find a must-have reason to this Kconfig after I rebase from
-> your suggestion.
-> 
-> The one calls retry_lockup_detector_init() must fail at lockup_detector_init,
-> so I think anyone who has aleady failed at lockup_detector_init() has right
-> to retry no matter HW, SW or Arch reason.
-> Thus I might not introduce a new Kconfig in v4, and I would be glad to see
-> if any further commet on this.
+Many Xen PV frontends share similar code for setting up a ring page
+(allocating and granting access for the backend) and for tearing it
+down.
 
-Sounds reasonable from my POV. There is not much code. It will be removed
-after the init phase. It will be most likely removed even during
-compilation when linked with gcc LTE optimization and the symbols
-are not used.
+Create new service functions doing all needed steps in one go.
 
-Best Regards,
-Petr
+This requires all frontends to use a common value for an invalid
+grant reference in order to make the functions idempotent.
 
-PS: It might take few days until I do the review of v4. I am a bit
-    overloaded at the moment.
+Changes in V2:
+- new patch 9 and related changes in patches 10-18
+
+Juergen Gross (19):
+  xen/blkfront: switch blkfront to use INVALID_GRANT_REF
+  xen/netfront: switch netfront to use INVALID_GRANT_REF
+  xen/scsifront: remove unused GRANT_INVALID_REF definition
+  xen/usb: switch xen-hcd to use INVALID_GRANT_REF
+  xen/drm: switch xen_drm_front to use INVALID_GRANT_REF
+  xen/sound: switch xen_snd_front to use INVALID_GRANT_REF
+  xen/dmabuf: switch gntdev-dmabuf to use INVALID_GRANT_REF
+  xen/shbuf: switch xen-front-pgdir-shbuf to use INVALID_GRANT_REF
+  xen: update ring.h
+  xen/xenbus: add xenbus_setup_ring() service function
+  xen/blkfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/netfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/tpmfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/drmfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/pcifront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/scsifront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/usbfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/sndfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/xenbus: eliminate xenbus_grant_ring()
+
+ drivers/block/xen-blkfront.c                | 57 +++++---------
+ drivers/char/tpm/xen-tpmfront.c             | 18 +----
+ drivers/gpu/drm/xen/xen_drm_front.h         |  9 ---
+ drivers/gpu/drm/xen/xen_drm_front_evtchnl.c | 43 +++--------
+ drivers/net/xen-netfront.c                  | 85 +++++++--------------
+ drivers/pci/xen-pcifront.c                  | 19 +----
+ drivers/scsi/xen-scsifront.c                | 31 ++------
+ drivers/usb/host/xen-hcd.c                  | 65 ++++------------
+ drivers/xen/gntdev-dmabuf.c                 | 13 +---
+ drivers/xen/xen-front-pgdir-shbuf.c         | 17 +----
+ drivers/xen/xenbus/xenbus_client.c          | 82 +++++++++++++++-----
+ include/xen/interface/io/ring.h             | 19 +++--
+ include/xen/xenbus.h                        |  4 +-
+ sound/xen/xen_snd_front_evtchnl.c           | 44 +++--------
+ sound/xen/xen_snd_front_evtchnl.h           |  9 ---
+ 15 files changed, 179 insertions(+), 336 deletions(-)
+
+-- 
+2.34.1
+
