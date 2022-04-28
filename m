@@ -2,113 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C41AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A065C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:19:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346305AbiD1NWi (ORCPT
+        id S1347119AbiD1NWo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:22:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
+        Thu, 28 Apr 2022 09:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347066AbiD1NWM (ORCPT
+        with ESMTP id S1347125AbiD1NW1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:22:12 -0400
+        Thu, 28 Apr 2022 09:22:27 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0FBC795A32
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:18:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 455419681E
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:19:08 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C34691477;
-        Thu, 28 Apr 2022 06:18:56 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id BF08D3F73B;
-        Thu, 28 Apr 2022 06:18:54 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     joro@8bytes.org, will@kernel.org
-Cc:     iommu@lists.linux-foundation.org, sven@svenpeter.dev,
-        robdclark@gmail.com, m.szyprowski@samsung.com,
-        baolu.lu@linux.intel.com, yong.wu@mediatek.com,
-        mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        zhang.lyra@gmail.com, thierry.reding@gmail.com, vdumpa@nvidia.com,
-        jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 13/14] iommu/virtio: Clean up bus_set_iommu()
-Date:   Thu, 28 Apr 2022 14:18:14 +0100
-Message-Id: <096fa605b5f01df4c5627a6c8abb95f1b940f82f.1650890638.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.35.3.dirty
-In-Reply-To: <cover.1650890638.git.robin.murphy@arm.com>
-References: <cover.1650890638.git.robin.murphy@arm.com>
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EF6831477;
+        Thu, 28 Apr 2022 06:19:07 -0700 (PDT)
+Received: from [10.1.31.24] (e122027.cambridge.arm.com [10.1.31.24])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D568D3F73B;
+        Thu, 28 Apr 2022 06:19:02 -0700 (PDT)
+Message-ID: <37dae9fa-dadf-4b80-fbea-689472fd7dce@arm.com>
+Date:   Thu, 28 Apr 2022 14:19:00 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v5 01/17] drm/panfrost: Put mapping instead of shmem obj
+ on panfrost_mmu_map_fault_addr() error
+Content-Language: en-GB
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Rob Herring <robh@kernel.org>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Qiang Yu <yuq825@gmail.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Dmitry Osipenko <digetx@gmail.com>
+References: <20220424190424.540501-1-dmitry.osipenko@collabora.com>
+ <20220424190424.540501-2-dmitry.osipenko@collabora.com>
+From:   Steven Price <steven.price@arm.com>
+In-Reply-To: <20220424190424.540501-2-dmitry.osipenko@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Stop calling bus_set_iommu() since it's now unnecessary, and simplify
-the probe failure path accordingly.
+On 24/04/2022 20:04, Dmitry Osipenko wrote:
+> When panfrost_mmu_map_fault_addr() fails, the BO's mapping should be
+> unreferenced and not the shmem object that backs that mapping.
+> 
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/virtio-iommu.c | 25 -------------------------
- 1 file changed, 25 deletions(-)
+Fixes: bdefca2d8dc0 ("drm/panfrost: Add the panfrost_gem_mapping concept")
 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 25be4b822aa0..bcbd10ec4ccb 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -7,7 +7,6 @@
- 
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- 
--#include <linux/amba/bus.h>
- #include <linux/delay.h>
- #include <linux/dma-iommu.h>
- #include <linux/dma-map-ops.h>
-@@ -17,7 +16,6 @@
- #include <linux/module.h>
- #include <linux/of_platform.h>
- #include <linux/pci.h>
--#include <linux/platform_device.h>
- #include <linux/virtio.h>
- #include <linux/virtio_config.h>
- #include <linux/virtio_ids.h>
-@@ -1146,26 +1144,6 @@ static int viommu_probe(struct virtio_device *vdev)
- 
- 	iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
- 
--#ifdef CONFIG_PCI
--	if (pci_bus_type.iommu_ops != &viommu_ops) {
--		ret = bus_set_iommu(&pci_bus_type, &viommu_ops);
--		if (ret)
--			goto err_unregister;
--	}
--#endif
--#ifdef CONFIG_ARM_AMBA
--	if (amba_bustype.iommu_ops != &viommu_ops) {
--		ret = bus_set_iommu(&amba_bustype, &viommu_ops);
--		if (ret)
--			goto err_unregister;
--	}
--#endif
--	if (platform_bus_type.iommu_ops != &viommu_ops) {
--		ret = bus_set_iommu(&platform_bus_type, &viommu_ops);
--		if (ret)
--			goto err_unregister;
--	}
--
- 	vdev->priv = viommu;
- 
- 	dev_info(dev, "input address: %u bits\n",
-@@ -1174,9 +1152,6 @@ static int viommu_probe(struct virtio_device *vdev)
- 
- 	return 0;
- 
--err_unregister:
--	iommu_device_sysfs_remove(&viommu->iommu);
--	iommu_device_unregister(&viommu->iommu);
- err_free_vqs:
- 	vdev->config->del_vqs(vdev);
- 
--- 
-2.35.3.dirty
+Reviewed-by: Steven Price <steven.price@arm.com>
+
+Thanks,
+
+Steve
+
+> ---
+>  drivers/gpu/drm/panfrost/panfrost_mmu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+> index d3f82b26a631..b285a8001b1d 100644
+> --- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
+> +++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+> @@ -518,7 +518,7 @@ static int panfrost_mmu_map_fault_addr(struct panfrost_device *pfdev, int as,
+>  err_pages:
+>  	drm_gem_shmem_put_pages(&bo->base);
+>  err_bo:
+> -	drm_gem_object_put(&bo->base.base);
+> +	panfrost_gem_mapping_put(bomapping);
+>  	return ret;
+>  }
+>  
 
