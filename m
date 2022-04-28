@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE470C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1DAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:58:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345131AbiD1LBy (ORCPT
+        id S1345146AbiD1LB5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 07:01:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45262 "EHLO
+        Thu, 28 Apr 2022 07:01:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344975AbiD1LBI (ORCPT
+        with ESMTP id S1344983AbiD1LBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 07:01:08 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB899728B;
-        Thu, 28 Apr 2022 03:57:50 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id p7-20020a05600c358700b00393e80c59daso3821699wmq.0;
-        Thu, 28 Apr 2022 03:57:49 -0700 (PDT)
+        Thu, 28 Apr 2022 07:01:09 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26092972C0;
+        Thu, 28 Apr 2022 03:57:53 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so2801673wmn.1;
+        Thu, 28 Apr 2022 03:57:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
         bh=YHrgbwGuKsi0qBohJI6HWm6IXg77xQmft6cGgAr+KkM=;
-        b=G08PfzWMMNczVdgm19wLhWwXkL0bjiazN2I6VAZLCQodi6Vb+C0Ia1UxSEIcuugs7Y
-         Cc+n2Rtvk6yDrG/5nOM9cuDxyWaFgzzw5r+IxcVHlE7qcLeIoU2rsDae1x/zckgflrQ7
-         iAkSz1mC7rz6t7OwL0y/uHH9tSCQVD47Ixt2w/y+Fhio/pisp51ckJ4T8DE5yB7EC6P8
-         75c6Sw8vIHNXU1h3H7f+W+Md4AavCTscw7yY4vDcEhJlMsQWjyv0rHIUGhogdvt2qc8G
-         hNcUaxATzp4h0NR4DKUY8ZBvl4HOt8LZYRMu9XWlczNx4YLm9CET5MCkMBVw355GOSuG
-         z7TQ==
+        b=geUv/xTB1yFlcqVhQ60GzWNNsG614lPO6/6WQ3DoVYqwbcGCewWErkE+ItiL8s7/6K
+         Y0hz8OYfLZ++20kqDQybviBa6UMxi2i9Dhsfi66cWtpM33lKF1PJh/jTKRe/UTvv2UUt
+         WLC8RqXNQ+OdlYOsNwX93WbIaVQS+VtVBi2q7e17IgClmTDWzwNA58FfL6z6bW8OAAoI
+         XjZHIeqANnZH/2VvzzuoWzCdR09LTBSSw0dkaEl2NkVRW09GxelFWnLV8nN5CUVaIYTg
+         xnuc+R/MZSFtl501LtAYGPpsa3paf8GEsFNZPckcr05S2r21xN2VafXUAZgg/M8bPEqe
+         eYzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
         bh=YHrgbwGuKsi0qBohJI6HWm6IXg77xQmft6cGgAr+KkM=;
-        b=pEKjOzOV9X2KB4ducBiMYfBNxMK/LAqyRUBKCEhrGUvONqpxkgnLMhaEb24mNAuy9U
-         0gpK7M/ZTKO1jnHFyLLXxeNsOL7K8V+Q59REkYZH4uNhK1Gu1jwTHP6VrVWPpyvbObi7
-         Ndwkg1vbuOipv6w8ZTM0KhiTbHXx9dCi2dZODoziXM7BxvSVXiVliMFS/prgHd9eTkF9
-         3SUARfvG/NGqWFqQxCVMjbPNx1bnnYnhKXhjZ5rEC0XDD4T6usInX+ALE0TcYVhTy0wm
-         K2Xl2E8JBqdDh2Wd6qgmLra2dhzsGmxvokE8LlkTeXb5wZIw3C9LzCCtpdo3h9B7MeTe
-         U8hw==
-X-Gm-Message-State: AOAM533ypdlPwCMrm+vNBag8VnAKz1TBnuKJUydmm7tjFA/YXlprIlpe
-        +2pePQQLRegyl5xMLKYrl+JZ1o3bQ7E=
-X-Google-Smtp-Source: ABdhPJwNB3CIXpmBVqQuNvVTeogjYXy4OSUnrAq0pSj4BB/n0N/SyvnNTi7eUWnXrYvPvLrMaAl/PA==
-X-Received: by 2002:a1c:4e0b:0:b0:393:fd8f:e340 with SMTP id g11-20020a1c4e0b000000b00393fd8fe340mr8685091wmh.136.1651143468417;
-        Thu, 28 Apr 2022 03:57:48 -0700 (PDT)
+        b=XlFKFd/rhxKgL1KF/dkxP1GNkfpXQ6uWvq+iXTuSrlmiXyBjGRsbDot3qPwwX/ffVL
+         1MohPgXk9L6XeTjO9Y0uxMWzsdJSNsOm2KpMoaKgtA2blKQIXkRvFksEGxDU2tZ94Q/A
+         cVCwqqNIj2NFCvAn2JY6P7l5d0xJ86Ra9tog2ohbf4qjl9MCtVXp6h7dRlSgorO8v/E6
+         we9kxksxVfxlDgWk1txECfRgy0tYh0syG8kbfhW3A2uMq03h5ZCE9HmlaPJHLEZE+9cG
+         ttgJ6NzpPDyUIBmk0hX7YYxeP8mVHSQSps2d6y/L2HcHlUwU1I5oevIy0BrkPAAHpGvh
+         gG8Q==
+X-Gm-Message-State: AOAM531uEIWml06VyEPjvUk6hoiwSv32Gt4LIXlZRDcp5N8C3Q63RMxF
+        o1FpmhvpkXZ05UJFwLwrQ6B3T51ZTLs=
+X-Google-Smtp-Source: ABdhPJwqKexuoFcmDd5VUkrdgO/u39Kb2z+ybEnox+4E3+l/os8x31qvpzppMSlGlpdKWjQE98Oafg==
+X-Received: by 2002:a05:600c:3b26:b0:393:ec10:26fb with SMTP id m38-20020a05600c3b2600b00393ec1026fbmr17924924wms.69.1651143472044;
+        Thu, 28 Apr 2022 03:57:52 -0700 (PDT)
 Received: from 127.0.0.1localhost (82-132-230-8.dab.02.net. [82.132.230.8])
-        by smtp.gmail.com with ESMTPSA id z11-20020a7bc14b000000b0039419dfbb39sm7547wmi.33.2022.04.28.03.57.47
+        by smtp.gmail.com with ESMTPSA id z11-20020a7bc14b000000b0039419dfbb39sm7547wmi.33.2022.04.28.03.57.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 03:57:48 -0700 (PDT)
+        Thu, 28 Apr 2022 03:57:51 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -56,12 +56,12 @@ Cc:     David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 10/10] ipv6: clean up ip6_setup_cork
-Date:   Thu, 28 Apr 2022 11:56:43 +0100
-Message-Id: <f6eaf38144ac3feb915a594ba476e03563768f8c.1651071506.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 11/11] ipv6: clean up ip6_setup_cork
+Date:   Thu, 28 Apr 2022 11:56:45 +0100
+Message-Id: <683aab669ffa7db48416137c904a406a37e9a0c9.1651071843.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <cover.1651071506.git.asml.silence@gmail.com>
-References: <cover.1651071506.git.asml.silence@gmail.com>
+In-Reply-To: <cover.1651071843.git.asml.silence@gmail.com>
+References: <cover.1651071843.git.asml.silence@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
