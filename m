@@ -2,69 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E9F3C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E847CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:03:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233042AbiD1KGf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50210 "EHLO
+        id S233194AbiD1KG7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:06:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231743AbiD1KGB (ORCPT
+        with ESMTP id S230042AbiD1KGU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:06:01 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C446739B9B;
-        Thu, 28 Apr 2022 02:52:30 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KprVY5CL1zfb99;
-        Thu, 28 Apr 2022 17:51:33 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Apr 2022 17:52:29 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Apr
- 2022 17:52:28 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-leds@vger.kernel.org>
-CC:     <pavel@ucw.cz>
-Subject: [PATCH] leds: netxbig: add missing of_node_put() in netxbig_leds_get_of_pdata()
-Date:   Thu, 28 Apr 2022 18:04:19 +0800
-Message-ID: <20220428100419.543937-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 28 Apr 2022 06:06:20 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA4003DA5B
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:53:26 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id x18so6051699wrc.0
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 02:53:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Xqi3tQeoc1NHno9yKWMqbw4r5YQdgiKDuSb9oAeYHa8=;
+        b=yr78g+MaZhUlHS2UcXn1OUn3doItrjOKC8k1mxoul2Im7B+S6CbbzGMO5FxmG7VARk
+         B7pvcw5TzrbXRgxGIldFIdVA3DM15i8d7f48li84BuKwof+K4h8jJJXwABUBE8A7xGtb
+         PHzESRMgKjoDZjv0vMD1jD3NzpGFDK8sWlO8gM3Zl61C++rp56wfXLpnL7R26QTzraP+
+         xDY4MZ+BEVBP+FqFoFt9LOkDZZ/wHZbau4yo+bq7fAq3+a2j4vhSIRNUvoAY1FLovv+2
+         qrF0EIdo+7RzxS07iAAzFNw7fAD1AUoPYFNEmSDJfhq6UUKpFGVWzCbVEOzo0F9yGCUI
+         p/fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Xqi3tQeoc1NHno9yKWMqbw4r5YQdgiKDuSb9oAeYHa8=;
+        b=ew7QudvdtZ08qS6YHL5wjlok6676NM9kw+HQQpIo9elPITHzzaaO74OUo8NzmQBaXz
+         d6raMcLY+0xw41GlTBDeQ6U9OlMihXkL8kXg0lF7prRYItsaTP3Mw9eJ/krOrxENlnWL
+         DXpavS7XTPBs4QBnhIgAqSmdWa2V24Qezn3Z9mbNw9wCBVfIGBrhe8KtyRqmHG8Dj9D7
+         PddkwqfQBZMDAQz5jTlqItMCzpESc0ljdb35Ht+1kLkK8Y+Z9ExdBu/batdbwDUrVxHm
+         xXfwbdcL5w4CYVhibwzW4zm/B133vwKb+J0lrn3WRsEdGIbJofB0vq9hAFamPq+tk/ZE
+         TurA==
+X-Gm-Message-State: AOAM531mXZVrujZcfimywYX/2vZmQw5rzUQpyewOej5Jjo8q2jK46s/d
+        olQcTzekFznCBxtX7SrX4/2ByQ==
+X-Google-Smtp-Source: ABdhPJww1dXap9RkiBq4VNLp6PdlAcDue9crNwyW2b35J8EzRhEJPe7hKCSwo+1hkrq+KUvXKsMcZg==
+X-Received: by 2002:adf:f30a:0:b0:20a:e193:6836 with SMTP id i10-20020adff30a000000b0020ae1936836mr12101094wro.654.1651139605530;
+        Thu, 28 Apr 2022 02:53:25 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id i15-20020adfaacf000000b0020aee621955sm3721870wrc.34.2022.04.28.02.53.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 02:53:25 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 10:53:23 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 06/10] dt-bindings: mfd: samsung,exynos5433-lpass: fix
+ 'dma-channels/requests' properties
+Message-ID: <YmpkE0FgEhPNneg+@google.com>
+References: <20220427155840.596535-1-krzysztof.kozlowski@linaro.org>
+ <20220427155840.596535-7-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220427155840.596535-7-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add missing of_node_put() in error path in netxbig_leds_get_of_pdata().
+On Wed, 27 Apr 2022, Krzysztof Kozlowski wrote:
 
-Fixes: 9af512e81964 ("leds: netxbig: Convert to use GPIO descriptors")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/leds/leds-netxbig.c | 1 +
- 1 file changed, 1 insertion(+)
+> pl330 DMA controller bindings documented 'dma-channels' and
+> 'dma-requests' properties (without leading hash sign), so fix the DTS to
+> match the bindings.
+> 
+> Reported-by: Rob Herring <robh@kernel.org>
+> Fixes: e18183cefc8b ("mfd: Add DT bindings documentation for Samsung Exynos LPASS")
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  .../devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml     | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/leds/leds-netxbig.c b/drivers/leds/leds-netxbig.c
-index 77213b79f84d..6692de0af68f 100644
---- a/drivers/leds/leds-netxbig.c
-+++ b/drivers/leds/leds-netxbig.c
-@@ -440,6 +440,7 @@ static int netxbig_leds_get_of_pdata(struct device *dev,
- 	}
- 	gpio_ext_pdev = of_find_device_by_node(gpio_ext_np);
- 	if (!gpio_ext_pdev) {
-+		of_node_put(gpio_ext_np);
- 		dev_err(dev, "Failed to find platform device for gpio-ext\n");
- 		return -ENODEV;
- 	}
+Applied, thanks.
+
 -- 
-2.25.1
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
