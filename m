@@ -2,56 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD1C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:28:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 213B5C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344276AbiD1IbP (ORCPT
+        id S1344331AbiD1IbZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47948 "EHLO
+        Thu, 28 Apr 2022 04:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344154AbiD1IbE (ORCPT
+        with ESMTP id S1344131AbiD1IbE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 28 Apr 2022 04:31:04 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 187E8A0BD6;
-        Thu, 28 Apr 2022 01:27:50 -0700 (PDT)
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF106A0BDB
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:27:50 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id B68971F88B;
-        Thu, 28 Apr 2022 08:27:48 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3AA1321873;
+        Thu, 28 Apr 2022 08:27:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1651134468; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1651134469; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JgTSDzyFH4odL3+op3mwwaz3GF9HZ1rzMHlaax9H0jQ=;
-        b=XJSEFs+iNetHUnKTGEZp1HsPSzQlTRyaGB3P+gTZL34FW8MH4Kl98mOgVnhzQzPxlxbka0
-        5HWsPhR50wFcq9np7hRBIg2ejBAmi8i+QnKhcg4+gI+dWtaHjXhpi2cubxv4IcSVVPJlx2
-        B/2ksRkjk3lAWibFGeQNovVIqq/4Ixc=
+        bh=tOhV6YQDouFKSF4kDrscgmAnoCYSHdFmpTsct9Kqzek=;
+        b=h6hwiM9FHRpDwvATx8ZJwxdJgF4aQmHGQmkHLtLJrYUY3ATb3CYZi1lh3cJIcZpfglwM82
+        FnnkX9Ux6gOptve9MuodDmBZFvSvzzfaQd9rtWom4I0jgM9qfoQTzXUk9eOHuFfhhQ3J0o
+        Hsizgzz4vnGMgdDhowBzhKzpG3NUYfc=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6A6DD13491;
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0188D13491;
         Thu, 28 Apr 2022 08:27:48 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id mPaeGARQamIBLgAAMHmgww
+        id EMGoOgRQamIBLgAAMHmgww
         (envelope-from <jgross@suse.com>); Thu, 28 Apr 2022 08:27:48 +0000
 From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, linux-scsi@vger.kernel.org,
+To:     xen-devel@lists.xenproject.org, dri-devel@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
 Cc:     Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH v2 03/19] xen/scsifront: remove unused GRANT_INVALID_REF definition
-Date:   Thu, 28 Apr 2022 10:27:27 +0200
-Message-Id: <20220428082743.16593-4-jgross@suse.com>
+        Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Subject: [PATCH v2 05/19] xen/drm: switch xen_drm_front to use INVALID_GRANT_REF
+Date:   Thu, 28 Apr 2022 10:27:29 +0200
+Message-Id: <20220428082743.16593-6-jgross@suse.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220428082743.16593-1-jgross@suse.com>
 References: <20220428082743.16593-1-jgross@suse.com>
@@ -61,27 +60,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GRANT_INVALID_REF isn't used in scsifront, so remove it.
+Instead of using a private macro for an invalid grant reference use
+the common one.
 
 Signed-off-by: Juergen Gross <jgross@suse.com>
 ---
- drivers/scsi/xen-scsifront.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/gpu/drm/xen/xen_drm_front.h         | 9 ---------
+ drivers/gpu/drm/xen/xen_drm_front_evtchnl.c | 4 ++--
+ 2 files changed, 2 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/scsi/xen-scsifront.c b/drivers/scsi/xen-scsifront.c
-index 56173beecbc6..4c55e479fc36 100644
---- a/drivers/scsi/xen-scsifront.c
-+++ b/drivers/scsi/xen-scsifront.c
-@@ -58,9 +58,6 @@
+diff --git a/drivers/gpu/drm/xen/xen_drm_front.h b/drivers/gpu/drm/xen/xen_drm_front.h
+index cefafe859aba..a987c78abe41 100644
+--- a/drivers/gpu/drm/xen/xen_drm_front.h
++++ b/drivers/gpu/drm/xen/xen_drm_front.h
+@@ -80,15 +80,6 @@ struct drm_pending_vblank_event;
+ /* timeout in ms to wait for backend to respond */
+ #define XEN_DRM_FRONT_WAIT_BACK_MS	3000
  
- #include <asm/xen/hypervisor.h>
- 
--
+-#ifndef GRANT_INVALID_REF
+-/*
+- * Note on usage of grant reference 0 as invalid grant reference:
+- * grant reference 0 is valid, but never exposed to a PV driver,
+- * because of the fact it is already in use/reserved by the PV console.
+- */
 -#define GRANT_INVALID_REF	0
+-#endif
 -
- #define VSCSIFRONT_OP_ADD_LUN	1
- #define VSCSIFRONT_OP_DEL_LUN	2
- #define VSCSIFRONT_OP_READD_LUN	3
+ struct xen_drm_front_info {
+ 	struct xenbus_device *xb_dev;
+ 	struct xen_drm_front_drm_info *drm_info;
+diff --git a/drivers/gpu/drm/xen/xen_drm_front_evtchnl.c b/drivers/gpu/drm/xen/xen_drm_front_evtchnl.c
+index 08b526eeec16..4006568b9e32 100644
+--- a/drivers/gpu/drm/xen/xen_drm_front_evtchnl.c
++++ b/drivers/gpu/drm/xen/xen_drm_front_evtchnl.c
+@@ -147,7 +147,7 @@ static void evtchnl_free(struct xen_drm_front_info *front_info,
+ 		xenbus_free_evtchn(front_info->xb_dev, evtchnl->port);
+ 
+ 	/* end access and free the page */
+-	if (evtchnl->gref != GRANT_INVALID_REF)
++	if (evtchnl->gref != INVALID_GRANT_REF)
+ 		gnttab_end_foreign_access(evtchnl->gref, page);
+ 
+ 	memset(evtchnl, 0, sizeof(*evtchnl));
+@@ -168,7 +168,7 @@ static int evtchnl_alloc(struct xen_drm_front_info *front_info, int index,
+ 	evtchnl->index = index;
+ 	evtchnl->front_info = front_info;
+ 	evtchnl->state = EVTCHNL_STATE_DISCONNECTED;
+-	evtchnl->gref = GRANT_INVALID_REF;
++	evtchnl->gref = INVALID_GRANT_REF;
+ 
+ 	page = get_zeroed_page(GFP_NOIO | __GFP_HIGH);
+ 	if (!page) {
 -- 
 2.34.1
 
