@@ -2,44 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10D45C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:39:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA0DC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:40:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344713AbiD1Imx (ORCPT
+        id S1344544AbiD1In7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54428 "EHLO
+        Thu, 28 Apr 2022 04:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344305AbiD1Ilt (ORCPT
+        with ESMTP id S1344654AbiD1ImF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:41:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFA5D366B4
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:36:36 -0700 (PDT)
+        Thu, 28 Apr 2022 04:42:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 690524F442
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:37:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651134995;
+        s=mimecast20190719; t=1651135034;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zIvoNwFsgnLDv8ForvNvi/2NrWA9Bt7wLjc4srMLAbI=;
-        b=CUM4Qr2GcIQyf0EUr1Ymka+1gPzROg+H+2AJhnTIftF4xvzFwvUrfIgDbK3E9/WNEHGyPk
-        blg6+Z24Cf9bN/s9bBAq5l77O7qYseVjVB3hpkLqf9rWxijLsSRaL+GRbcRPkkxNiEbBF4
-        yGfujFFvJ7bibN3eOt8rimihuyIzo7U=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=q1E+KMue8g2Twd1f0luBts2gnotv4rv0hB9jbuWnJHk=;
+        b=Y1nMONai2mgTxjUBgg+6TWtorD+l0Qv8R5hfhDeFhh6VewmCUJvBjEn3zJUYpLbsFj1aHZ
+        lMsWfBphDXCt88LtZx++/9/UwTPzuh5eknXqn7VvvzfG23OFy/NgwraXouH/vcONDv08p/
+        LRRgTLC10c6vgVGDtwSJhy6KHCG7WDE=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-449-t0I35uw0MPm7ij8sn47SaA-1; Thu, 28 Apr 2022 04:36:32 -0400
-X-MC-Unique: t0I35uw0MPm7ij8sn47SaA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3941C8E91EF;
-        Thu, 28 Apr 2022 08:36:31 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.194.113])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A3429566A32;
-        Thu, 28 Apr 2022 08:36:25 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
+ us-mta-290-rJEzsNo8MP-3O6m1r5W8qw-1; Thu, 28 Apr 2022 04:37:13 -0400
+X-MC-Unique: rJEzsNo8MP-3O6m1r5W8qw-1
+Received: by mail-wm1-f69.google.com with SMTP id r186-20020a1c44c3000000b00393f52ed5ceso3308725wma.7
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:37:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=q1E+KMue8g2Twd1f0luBts2gnotv4rv0hB9jbuWnJHk=;
+        b=moIV0G+bMzTPLl5TPCKjqeMcCBK1ImVA/1WqWFaBd9secoZp6wk1OCiKSWRRtr16TB
+         VV+up0ti80RKFBEc3ucRSITW/EHDQcDXr1JkfrNFjAbtFbLU0uFdFffs+r5yVCzYtJ+q
+         m11GoU87lW/YH2XYgyl5Us4CAVF3k660kt0D6xK4s4ftsfiKlGLnD2h/qD5ayAzv0wO3
+         G3laDyBlaxgZEErPwAMdKHKv4yvuobOe3wZU4z7hKF4H6XqRFfdES4ZXgMuydLAGYjvg
+         i4kqfl+A1cqYqN7gTkgSjxAKCnYW2jSsqpuYD7+J0ByBZB+YgLd2JzJUPiBORDlWcV41
+         GsJA==
+X-Gm-Message-State: AOAM531QWkmfAQsm7ArHauyMXbvz0LNhvyqVektyjcz7f6dGh1EmUjuC
+        7d79ixlVqwWODtyZntl6WShY+OilP/27+x7b7/wq3WFmG6+zos7uqccAxBkeI9UN4egqZMtazBF
+        uXSiMSv5VSPuhizjL4qVvEsGpR5ablxaEmsgR2ednjgdMdWvGky9XRDcAWgRrzQZK/8ggG9Nz
+X-Received: by 2002:a05:600c:1ca6:b0:393:eb0e:afd9 with SMTP id k38-20020a05600c1ca600b00393eb0eafd9mr18424623wms.87.1651135032259;
+        Thu, 28 Apr 2022 01:37:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzSJ0QHTwEs60aBWmopOnQJRhew2BaINvB4E9Ek8+vpssmjqmFKccDSw/5yQr2SZc63ctObjg==
+X-Received: by 2002:a05:600c:1ca6:b0:393:eb0e:afd9 with SMTP id k38-20020a05600c1ca600b00393eb0eafd9mr18424571wms.87.1651135031824;
+        Thu, 28 Apr 2022 01:37:11 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c708:ef00:7443:a23c:26b8:b96? (p200300cbc708ef007443a23c26b80b96.dip0.t-ipconnect.de. [2003:cb:c708:ef00:7443:a23c:26b8:b96])
+        by smtp.gmail.com with ESMTPSA id t8-20020adfa2c8000000b0020ad7121495sm11584858wra.23.2022.04.28.01.37.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 01:37:11 -0700 (PDT)
+Message-ID: <e5e8fdce-eea6-9926-c352-e73dfe3e2579@redhat.com>
+Date:   Thu, 28 Apr 2022 10:37:09 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v4 00/17] mm: COW fixes part 2: reliable GUP pins of
+ anonymous pages
+Content-Language: en-US
 To:     linux-kernel@vger.kernel.org
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Hugh Dickins <hughd@google.com>,
@@ -65,209 +90,188 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Liang Zhang <zhangliang5@huawei.com>,
         Pedro Gomes <pedrodemargomes@gmail.com>,
         Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
-        David Hildenbrand <david@redhat.com>
-Subject: [PATCH v4 17/17] mm/gup: sanity-check with CONFIG_DEBUG_VM that anonymous pages are exclusive when (un)pinning
-Date:   Thu, 28 Apr 2022 10:34:41 +0200
-Message-Id: <20220428083441.37290-18-david@redhat.com>
-In-Reply-To: <20220428083441.37290-1-david@redhat.com>
+        Khalid Aziz <khalid.aziz@oracle.com>
 References: <20220428083441.37290-1-david@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220428083441.37290-1-david@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's verify when (un)pinning anonymous pages that we always deal with
-exclusive anonymous pages, which guarantees that we'll have a reliable
-PIN, meaning that we cannot end up with the GUP pin being inconsistent
-with he pages mapped into the page tables due to a COW triggered
-by a write fault.
+On 28.04.22 10:34, David Hildenbrand wrote:
+> This is roughly what we have in -mm and -next, however, includes one
+> additional patch and some minor differences, especially minor fixes in the
+> patch descriptions.
+> 
+> v4 is located at:
+> 	https://github.com/davidhildenbrand/linux/tree/cow_fixes_part_2_v4
+> 
+> Please refer to to v3 cover letter:
+> 	https://lkml.kernel.org/r/20220329160440.193848-1-david@redhat.com
+> 
+> 
 
-When pinning pages, after conditionally triggering GUP unsharing of
-possibly shared anonymous pages, we should always only see exclusive
-anonymous pages. Note that anonymous pages that are mapped writable
-must be marked exclusive, otherwise we'd have a BUG.
+Essential diff to v3:
 
-When pinning during ordinary GUP, simply add a check after our
-conditional GUP-triggered unsharing checks. As we know exactly how the
-page is mapped, we know exactly in which page we have to check for
-PageAnonExclusive().
 
-When pinning via GUP-fast we have to be careful, because we can race with
-fork(): verify only after we made sure via the seqcount that we didn't
-race with concurrent fork() that we didn't end up pinning a possibly
-shared anonymous page.
-
-Similarly, when unpinning, verify that the pages are still marked as
-exclusive: otherwise something turned the pages possibly shared, which
-can result in random memory corruptions, which we really want to catch.
-
-With only the pinned pages at hand and not the actual page table entries
-we have to be a bit careful: hugetlb pages are always mapped via a
-single logical page table entry referencing the head page and
-PG_anon_exclusive of the head page applies. Anon THP are a bit more
-complicated, because we might have obtained the page reference either via
-a PMD or a PTE -- depending on the mapping type we either have to check
-PageAnonExclusive of the head page (PMD-mapped THP) or the tail page
-(PTE-mapped THP) applies: as we don't know and to make our life easier,
-check that either is set.
-
-Take care to not verify in case we're unpinning during GUP-fast because
-we detected concurrent fork(): we might stumble over an anonymous page
-that is now shared.
-
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
- mm/gup.c         | 61 +++++++++++++++++++++++++++++++++++++++++++++++-
- mm/huge_memory.c |  3 +++
- mm/hugetlb.c     |  3 +++
- 3 files changed, 66 insertions(+), 1 deletion(-)
-
+diff --git a/include/linux/swapops.h b/include/linux/swapops.h
+index 06280fc1c99b..8b6e4cd1fab8 100644
+--- a/include/linux/swapops.h
++++ b/include/linux/swapops.h
+@@ -299,7 +299,7 @@ static inline bool is_pfn_swap_entry(swp_entry_t entry)
+ struct page_vma_mapped_walk;
+ 
+ #ifdef CONFIG_ARCH_ENABLE_THP_MIGRATION
+-extern void set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
++extern int set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
+ 		struct page *page);
+ 
+ extern void remove_migration_pmd(struct page_vma_mapped_walk *pvmw,
+@@ -332,7 +332,7 @@ static inline int is_pmd_migration_entry(pmd_t pmd)
+ 	return !pmd_present(pmd) && is_migration_entry(pmd_to_swp_entry(pmd));
+ }
+ #else
+-static inline void set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
++static inline int set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
+ 		struct page *page)
+ {
+ 	BUILD_BUG();
 diff --git a/mm/gup.c b/mm/gup.c
-index 4d089d467e58..46ffd8c51c6e 100644
+index 5c17d4816441..46ffd8c51c6e 100644
 --- a/mm/gup.c
 +++ b/mm/gup.c
-@@ -29,6 +29,39 @@ struct follow_page_context {
- 	unsigned int page_mask;
- };
- 
-+static inline void sanity_check_pinned_pages(struct page **pages,
-+					     unsigned long npages)
-+{
-+	if (!IS_ENABLED(CONFIG_DEBUG_VM))
-+		return;
-+
-+	/*
-+	 * We only pin anonymous pages if they are exclusive. Once pinned, we
-+	 * can no longer turn them possibly shared and PageAnonExclusive() will
-+	 * stick around until the page is freed.
-+	 *
-+	 * We'd like to verify that our pinned anonymous pages are still mapped
-+	 * exclusively. The issue with anon THP is that we don't know how
-+	 * they are/were mapped when pinning them. However, for anon
-+	 * THP we can assume that either the given page (PTE-mapped THP) or
-+	 * the head page (PMD-mapped THP) should be PageAnonExclusive(). If
-+	 * neither is the case, there is certainly something wrong.
-+	 */
-+	for (; npages; npages--, pages++) {
-+		struct page *page = *pages;
-+		struct folio *folio = page_folio(page);
-+
-+		if (!folio_test_anon(folio))
-+			continue;
-+		if (!folio_test_large(folio) || folio_test_hugetlb(folio))
-+			VM_BUG_ON_PAGE(!PageAnonExclusive(&folio->page), page);
-+		else
-+			/* Either a PTE-mapped or a PMD-mapped THP. */
-+			VM_BUG_ON_PAGE(!PageAnonExclusive(&folio->page) &&
-+				       !PageAnonExclusive(page), page);
-+	}
-+}
-+
- /*
-  * Return the folio with ref appropriately incremented,
-  * or NULL if that failed.
-@@ -204,6 +237,7 @@ bool __must_check try_grab_page(struct page *page, unsigned int flags)
-  */
- void unpin_user_page(struct page *page)
- {
-+	sanity_check_pinned_pages(&page, 1);
- 	gup_put_folio(page_folio(page), 1, FOLL_PIN);
- }
- EXPORT_SYMBOL(unpin_user_page);
-@@ -272,6 +306,7 @@ void unpin_user_pages_dirty_lock(struct page **pages, unsigned long npages,
- 		return;
- 	}
- 
-+	sanity_check_pinned_pages(pages, npages);
- 	for (i = 0; i < npages; i += nr) {
- 		folio = gup_folio_next(pages, npages, i, &nr);
- 		/*
-@@ -344,6 +379,23 @@ void unpin_user_page_range_dirty_lock(struct page *page, unsigned long npages,
- }
- EXPORT_SYMBOL(unpin_user_page_range_dirty_lock);
- 
-+static void unpin_user_pages_lockless(struct page **pages, unsigned long npages)
-+{
-+	unsigned long i;
-+	struct folio *folio;
-+	unsigned int nr;
-+
-+	/*
-+	 * Don't perform any sanity checks because we might have raced with
-+	 * fork() and some anonymous pages might now actually be shared --
-+	 * which is why we're unpinning after all.
-+	 */
-+	for (i = 0; i < npages; i += nr) {
-+		folio = gup_folio_next(pages, npages, i, &nr);
-+		gup_put_folio(folio, nr, FOLL_PIN);
-+	}
-+}
-+
- /**
-  * unpin_user_pages() - release an array of gup-pinned pages.
-  * @pages:  array of pages to be marked dirty and released.
-@@ -367,6 +419,7 @@ void unpin_user_pages(struct page **pages, unsigned long npages)
- 	if (WARN_ON(IS_ERR_VALUE(npages)))
- 		return;
- 
-+	sanity_check_pinned_pages(pages, npages);
- 	for (i = 0; i < npages; i += nr) {
- 		folio = gup_folio_next(pages, npages, i, &nr);
- 		gup_put_folio(folio, nr, FOLL_PIN);
-@@ -510,6 +563,10 @@ static struct page *follow_page_pte(struct vm_area_struct *vma,
- 		page = ERR_PTR(-EMLINK);
+@@ -564,8 +564,8 @@ static struct page *follow_page_pte(struct vm_area_struct *vma,
  		goto out;
  	}
-+
+ 
+-	VM_BUG_ON((flags & FOLL_PIN) && PageAnon(page) &&
+-		  !PageAnonExclusive(page));
 +	VM_BUG_ON_PAGE((flags & FOLL_PIN) && PageAnon(page) &&
 +		       !PageAnonExclusive(page), page);
-+
+ 
  	/* try_grab_page() does nothing unless FOLL_GET or FOLL_PIN is set. */
  	if (unlikely(!try_grab_page(page, flags))) {
- 		page = ERR_PTR(-ENOMEM);
-@@ -2750,8 +2807,10 @@ static unsigned long lockless_pages_from_mm(unsigned long start,
- 	 */
- 	if (gup_flags & FOLL_PIN) {
- 		if (read_seqcount_retry(&current->mm->write_protect_seq, seq)) {
--			unpin_user_pages(pages, nr_pinned);
-+			unpin_user_pages_lockless(pages, nr_pinned);
- 			return 0;
-+		} else {
-+			sanity_check_pinned_pages(pages, nr_pinned);
- 		}
- 	}
- 	return nr_pinned;
 diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 4414111998df..a2f44d8d3d47 100644
+index c7ac1b462543..a2f44d8d3d47 100644
 --- a/mm/huge_memory.c
 +++ b/mm/huge_memory.c
-@@ -1392,6 +1392,9 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
+@@ -1392,8 +1392,8 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
  	if (!pmd_write(*pmd) && gup_must_unshare(flags, page))
  		return ERR_PTR(-EMLINK);
  
+-	VM_BUG_ON((flags & FOLL_PIN) && PageAnon(page) &&
+-		  !PageAnonExclusive(page));
 +	VM_BUG_ON_PAGE((flags & FOLL_PIN) && PageAnon(page) &&
 +			!PageAnonExclusive(page), page);
-+
+ 
  	if (!try_grab_page(page, flags))
  		return ERR_PTR(-ENOMEM);
+@@ -3080,7 +3080,7 @@ late_initcall(split_huge_pages_debugfs);
+ #endif
  
+ #ifdef CONFIG_ARCH_ENABLE_THP_MIGRATION
+-void set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
++int set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
+ 		struct page *page)
+ {
+ 	struct vm_area_struct *vma = pvmw->vma;
+@@ -3092,7 +3092,7 @@ void set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
+ 	pmd_t pmdswp;
+ 
+ 	if (!(pvmw->pmd && !pvmw->pte))
+-		return;
++		return 0;
+ 
+ 	flush_cache_range(vma, address, address + HPAGE_PMD_SIZE);
+ 	pmdval = pmdp_invalidate(vma, address, pvmw->pmd);
+@@ -3100,7 +3100,7 @@ void set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
+ 	anon_exclusive = PageAnon(page) && PageAnonExclusive(page);
+ 	if (anon_exclusive && page_try_share_anon_rmap(page)) {
+ 		set_pmd_at(mm, address, pvmw->pmd, pmdval);
+-		return;
++		return -EBUSY;
+ 	}
+ 
+ 	if (pmd_dirty(pmdval))
+@@ -3118,6 +3118,8 @@ void set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
+ 	page_remove_rmap(page, vma, true);
+ 	put_page(page);
+ 	trace_set_migration_pmd(address, pmd_val(pmdswp));
++
++	return 0;
+ }
+ 
+ void remove_migration_pmd(struct page_vma_mapped_walk *pvmw, struct page *new)
 diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index bbf0ce8cd33d..534747d661dd 100644
+index ee0542f77130..534747d661dd 100644
 --- a/mm/hugetlb.c
 +++ b/mm/hugetlb.c
-@@ -6100,6 +6100,9 @@ long follow_hugetlb_page(struct mm_struct *mm, struct vm_area_struct *vma,
+@@ -6100,8 +6100,8 @@ long follow_hugetlb_page(struct mm_struct *mm, struct vm_area_struct *vma,
  		pfn_offset = (vaddr & ~huge_page_mask(h)) >> PAGE_SHIFT;
  		page = pte_page(huge_ptep_get(pte));
  
+-		VM_BUG_ON((flags & FOLL_PIN) && PageAnon(page) &&
+-			  !PageAnonExclusive(page));
 +		VM_BUG_ON_PAGE((flags & FOLL_PIN) && PageAnon(page) &&
 +			       !PageAnonExclusive(page), page);
-+
+ 
  		/*
  		 * If subpage information not requested, update counters
- 		 * and skip the same_page loop below.
+diff --git a/mm/memory.c b/mm/memory.c
+index 2046de391da2..1a25d28ee5d9 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3132,7 +3132,7 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
+ 			free_swap_cache(old_page);
+ 		put_page(old_page);
+ 	}
+-	return page_copied && !unshare ? VM_FAULT_WRITE : 0;
++	return (page_copied && !unshare) ? VM_FAULT_WRITE : 0;
+ oom_free_new:
+ 	put_page(new_page);
+ oom:
+@@ -4557,7 +4557,7 @@ static inline vm_fault_t wp_huge_pmd(struct vm_fault *vmf)
+ 	const bool unshare = vmf->flags & FAULT_FLAG_UNSHARE;
+ 
+ 	if (vma_is_anonymous(vmf->vma)) {
+-		if (unlikely(unshare) &&
++		if (likely(!unshare) &&
+ 		    userfaultfd_huge_pmd_wp(vmf->vma, vmf->orig_pmd))
+ 			return handle_userfault(vmf, VM_UFFD_WP);
+ 		return do_huge_pmd_wp_page(vmf);
+diff --git a/mm/rmap.c b/mm/rmap.c
+index 00418faaf4ce..12f54fbdb920 100644
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -1217,8 +1217,6 @@ void page_add_new_anon_rmap(struct page *page,
+ 
+ 		__mod_lruvec_page_state(page, NR_ANON_THPS, nr);
+ 	} else {
+-		/* Anon THP always mapped first with PMD */
+-		VM_BUG_ON_PAGE(PageTransCompound(page), page);
+ 		/* increment count (starts at -1) */
+ 		atomic_set(&page->_mapcount, 0);
+ 	}
+@@ -1814,7 +1812,11 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
+ 			VM_BUG_ON_FOLIO(folio_test_hugetlb(folio) ||
+ 					!folio_test_pmd_mappable(folio), folio);
+ 
+-			set_pmd_migration_entry(&pvmw, subpage);
++			if (set_pmd_migration_entry(&pvmw, subpage)) {
++				ret = false;
++				page_vma_mapped_walk_done(&pvmw);
++				break;
++			}
+ 			continue;
+ 		}
+ #endif
+
+
 -- 
-2.35.1
+Thanks,
+
+David / dhildenb
 
