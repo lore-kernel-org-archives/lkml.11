@@ -2,180 +2,265 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70DF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05F08C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:09:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346532AbiD1NM7 (ORCPT
+        id S1346764AbiD1NNI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:12:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41930 "EHLO
+        Thu, 28 Apr 2022 09:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344796AbiD1NMw (ORCPT
+        with ESMTP id S1346446AbiD1NNG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:12:52 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08E6B0A67
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:09:37 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id y3so3350463qtn.8
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:09:37 -0700 (PDT)
+        Thu, 28 Apr 2022 09:13:06 -0400
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB0E7B0A6C
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:09:51 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id a10so5244919oif.9
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:09:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=s18GDO57PNAgRtMK8C6iNS6vfqL/ISq2KJZGUSJ2Tyo=;
-        b=ughLqVdfWYzKzui0OFORJzcx5HA4uYZ7/2xgFrSgtMBgsEMXpOMvBDMBVqiHzZzOqo
-         z4qXmMMNFU0iE3E9X/hmtTtLoTpl7XJxck+ZognpaBrA9pgHE0XrrF9BQGAp1eZvA8X9
-         4yw01krYIybyHtlnTajc+FUoT/IMaBX3NJIw6XbP1X2mxanRnEqRv6yeMx6fh83fnGcL
-         kTdzVjWFoVnZJhGUwk3+BhxdUGqcuU4xEQGy5o/Dhjzm029DPywE8G/3sWuQPRHNdYo/
-         fgh6z+HgiqtGweMTMQ4K+0UHQHHGhsdf6tvZDB0MablUirVqQpKKwVtEd1BtC82F15Rz
-         dACA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=yQhVPEwocqKZE/TgP32Dswwk0+c7D7Jj1pNtxxIXVbo=;
+        b=xbECkeKwHS85QEYeJrd90iT+3TVdNgg2pn7Xu1lVEwMaFzNkQZzmFf5v6rMsEP6jQ8
+         /Z/Betg7Yp+PvW8EQAts2v7NnvkO4u+f50FGNur2e84EX/Rbn7r1fS99ENreroAkqqh8
+         0RYnZ8clcHy7E+gh6tuOlV5tRug7xnNmnqpzZXbmui2cIsu0OSml4erNLcpDxZJzEEQ1
+         reyiP3IJETy+kpP1Kv8LUmRm4XQMxV3K/9UCV1uJ/TJ4d+4ZOccngKXh+fu1zYvL+1qP
+         ydkRtP9FKZnnIiE4hcr9Elbg3WYfMx563POrROpxyLf11LVs+tkywB73dcoX9tulms3u
+         CsGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=s18GDO57PNAgRtMK8C6iNS6vfqL/ISq2KJZGUSJ2Tyo=;
-        b=diGyAhS/9xtjG2ohi/aBf5AtYAEtR7/YGTS7cd9lLxTxpSwsqRQDSJv5BhPxnZySDd
-         l82gzrdeiZaU6nIt6OooO46SuskMvEnwjdqi/otjGJtbmDgmI5ZtvbEeXFL6c0uQzqI5
-         xZWI9rKqsC6GHlW837jE7Q1aXqwXBlIc889FYdL5mP8SBDO+XMjYM4CSoyEnhUWHFVt8
-         KqFQjsqp/kBDlf4VvvlLfZO4EIAYFeISnT4tZSYI304UvRhdf7E3jmMLSpxXD0wuxvuH
-         AU8bB/Dp7L+yc6Vmi1deKrbMHYaTW6cDIu6LNOJl9JObx6mhGWUtVJG/UGanfB/E6vTX
-         eZmQ==
-X-Gm-Message-State: AOAM5325T8YcaNeFEDgxtIpICUeg6zqdX2w6BLWzVe6cgGeIBS8SQLgs
-        k2HkZ3MKSbE2UZNS8YmoS52zag==
-X-Google-Smtp-Source: ABdhPJy3PL9wj4LxTpDUJPtDjChVZiZoa0P6DuFBNAcegYF/81rEJYf19o3Rdp6oi/IqiOtldPzvew==
-X-Received: by 2002:ac8:5a0a:0:b0:2f3:64a5:5ee3 with SMTP id n10-20020ac85a0a000000b002f364a55ee3mr15283649qta.505.1651151377040;
-        Thu, 28 Apr 2022 06:09:37 -0700 (PDT)
-Received: from nicolas-tpx395.localdomain (173-246-12-168.qc.cable.ebox.net. [173.246.12.168])
-        by smtp.gmail.com with ESMTPSA id b11-20020a05622a020b00b002f38fe59f03sm347538qtx.18.2022.04.28.06.09.36
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=yQhVPEwocqKZE/TgP32Dswwk0+c7D7Jj1pNtxxIXVbo=;
+        b=FKIHhC/xTAa0E5ON5BX5ZGlNAIG8I0F5pbSpQxuCjjmdY5CXwQHslEuR++9HHB3hqV
+         tyBRCmkcOBl7OZ2ty9OC1cYsHJ7GWaQ4NO0lGXLRrUNy+SJ1DZiLNKf3re0DWrjN7wau
+         R8lDaS7vyNl+CS/HANaksS9z4kQVam0QwgvhnTD8pkAw6au0vaCrV5Hck4JWunDJ5+MB
+         2nqkORPQd7jfDm5LHQY10uaj7tirOIB6qCOqboSN7w0v6ymCD57kPuiiPVd4tZUpep14
+         2O7YNwtdwAp9eJLnHZB5S/6YxDR2+Dg/UekI+htHvEjQNXBCrFgWcaeNuD73TO4/7tDb
+         fh+A==
+X-Gm-Message-State: AOAM532CRb+s23FK3koKcTmYAw4RMimPXLqYsDNeAHFAKuf5/mMFF7kk
+        Bs5h2EzeVi+WvVvSUfbiNodGTg==
+X-Google-Smtp-Source: ABdhPJyNNu/9YjwEVSqzGB56IIlBp+Ne+BZ4LK5tD0ZCnv3vt9HiHm4vdI6A/vCz3mURFgR20L7wqQ==
+X-Received: by 2002:a05:6808:144a:b0:325:642:f58f with SMTP id x10-20020a056808144a00b003250642f58fmr12209158oiv.221.1651151390975;
+        Thu, 28 Apr 2022 06:09:50 -0700 (PDT)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id u7-20020a4a85c7000000b0035c12c8be73sm7963763ooh.29.2022.04.28.06.09.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 06:09:36 -0700 (PDT)
-Message-ID: <d8de72b8c9c6252e2ea66d790e4a5c938050fb0a.camel@ndufresne.ca>
-Subject: Re: [PATCH v4 03/24] media: videobuf2-v4l2: Warn on holding buffers
- without support
-From:   Nicolas Dufresne <nicolas@ndufresne.ca>
-To:     Hans Verkuil <hverkuil@xs4all.nl>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Sebastian Fricke <sebastian.fricke@collabora.com>,
-        linux-media@vger.kernel.org,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 28 Apr 2022 09:09:35 -0400
-In-Reply-To: <4b7a3d71-629b-56d6-fdc7-d07682390fd2@xs4all.nl>
-References: <20220426125751.108293-1-nicolas.dufresne@collabora.com>
-         <20220426125751.108293-4-nicolas.dufresne@collabora.com>
-         <CAAFQd5C6qmxmn4y=cx5Mtb3p8vcTAFm6Jfc1vMAE8+x9iwhDZg@mail.gmail.com>
-         <a78920881b2ffaf1fba04bc9ebeda591ec0dfd87.camel@ndufresne.ca>
-         <4b7a3d71-629b-56d6-fdc7-d07682390fd2@xs4all.nl>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.0 (3.44.0-1.fc36) 
+        Thu, 28 Apr 2022 06:09:50 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 06:11:44 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Johan Hovold <johan+linaro@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Krzysztof Wilczy??ski <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Prasad Malisetty <quic_pmaliset@quicinc.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-phy@lists.infradead.org
+Subject: Re: [PATCH RFC 1/5] phy: qcom-qmp: add support for pipe clock muxing
+Message-ID: <YmqSkP++4xzisJHp@ripper>
+References: <20220421102041.17345-1-johan+linaro@kernel.org>
+ <20220421102041.17345-2-johan+linaro@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220421102041.17345-2-johan+linaro@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le jeudi 28 avril 2022 =C3=A0 08:12 +0200, Hans Verkuil a =C3=A9crit=C2=A0:
-> On 27/04/2022 17:08, Nicolas Dufresne wrote:
-> > Le mercredi 27 avril 2022 =C3=A0 13:31 +0900, Tomasz Figa a =C3=A9crit=
-=C2=A0:
-> > > Hi Nicolas, Sebastian,
-> > >=20
-> > > On Tue, Apr 26, 2022 at 9:58 PM Nicolas Dufresne
-> > > <nicolas.dufresne@collabora.com> wrote:
-> > > >=20
-> > > > From: Sebastian Fricke <sebastian.fricke@collabora.com>
-> > > >=20
-> > > > Using V4L2_BUF_FLAG_M2M_HOLD_CAPTURE_BUF flag without specifying th=
-e
-> > > > subsystem flag VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF, results i=
-n
-> > > > silently ignoring it.
-> > > > Warn the user via a debug print when the flag is requested but igno=
-red
-> > > > by the videobuf2 framework.
-> > > >=20
-> > > > Signed-off-by: Sebastian Fricke <sebastian.fricke@collabora.com>
-> > > > Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> > > > Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-> > > > ---
-> > > >  drivers/media/common/videobuf2/videobuf2-v4l2.c | 7 ++++++-
-> > > >  1 file changed, 6 insertions(+), 1 deletion(-)
-> > > >=20
-> > >=20
-> > > Thanks for the patch. Please see my comments inline.
-> > >=20
-> > > > diff --git a/drivers/media/common/videobuf2/videobuf2-v4l2.c b/driv=
-ers/media/common/videobuf2/videobuf2-v4l2.c
-> > > > index 6edf4508c636..812c8d1962e0 100644
-> > > > --- a/drivers/media/common/videobuf2/videobuf2-v4l2.c
-> > > > +++ b/drivers/media/common/videobuf2/videobuf2-v4l2.c
-> > > > @@ -329,8 +329,13 @@ static int vb2_fill_vb2_v4l2_buffer(struct vb2=
-_buffer *vb, struct v4l2_buffer *b
-> > > >                  */
-> > > >                 vbuf->flags &=3D ~V4L2_BUF_FLAG_TIMECODE;
-> > > >                 vbuf->field =3D b->field;
-> > > > -               if (!(q->subsystem_flags & VB2_V4L2_FL_SUPPORTS_M2M=
-_HOLD_CAPTURE_BUF))
-> > > > +               if (!(q->subsystem_flags & VB2_V4L2_FL_SUPPORTS_M2M=
-_HOLD_CAPTURE_BUF)) {
-> > > > +                       if (vbuf->flags & V4L2_BUF_FLAG_M2M_HOLD_CA=
-PTURE_BUF)
-> > > > +                               dprintk(q, 1,
-> > > > +                                       "Request holding buffer (%d=
-), unsupported on output queue\n",
-> > > > +                                       b->index);
-> > >=20
-> > > I wonder if we shouldn't just fail such a QBUF operation. Otherwise
-> > > the application would get unexpected behavior from the kernel.
-> > > Although it might be too late to do it now if there are applications
-> > > that rely on this implicit ignore...
-> >=20
-> > In the context of this patchset, the statu quo seems to be the logical =
-thing to
-> > do. We can raise this up in a separate thread. The side effect is of co=
-urse
-> > confusing for developers, but it is hard for me to tell if a hard failu=
-re may
-> > break an existing software.
->=20
-> I am leaning towards returning an error as well. It makes no sense to try
-> to hold on to a buffer when this is not supported.
->=20
-> I also thought that it should be enough to rely on the core to clear the
-> flag upon return if it isn't supported, but looking through the vb2 core =
-code
-> it looks like we're not clearing unknown flags at all, so running this fo=
-r
-> older kernels that do not support holding at all will not clear the flag
-> either.
->=20
-> The handling for flags in vb2 can be improved, I think I'll take a look a=
-t
-> that myself.
->=20
-> I plan to merge this series soon, but will skip this patch for now.
+On Thu 21 Apr 03:20 PDT 2022, Johan Hovold wrote:
 
-Ok, no problem. For me, as long as we do something about it, since it was n=
-ot
-obvious and time consuming to debug.
+> Some QMP PHYs need to remux to their pipe clock input to the pipe clock
+> output generated by the PHY before powering on the PHY and restore the
+> default source during power down.
+> 
+> Add support for an optional pipe clock mux which will be reparented to
+> the generated pipe clock before powering on the PHY and restored to the
+> default reference source on power off.
+> 
 
-regards,
-Nicolas
+After considering this for a while, I have two objections to doing this
+explicitly:
 
->=20
-> Regards,
->=20
-> 	Hans
->=20
-> >=20
-> > regards,
-> > Nicolas
-> >=20
-> > >=20
-> > > Best regards,
-> > > Tomasz
-> >=20
->=20
+1) The QMP block is fed &gcc_pcie_N_pipe_clk (and on sc8280xp)
+gcc_pcie_N_pipediv2_clk. But neither of these clocks are the mux, so
+what this patch (and the existing muxing logic in the controller) does
+is to poke into gcc "internals".
 
+2) The actual reason for the mux dance is that toggling the associated
+GDSC without a valid parent of this clock would cause the clock to lock
+up and GDSC transition to time out. This property is shared with a wide
+range of other clocks (so far we have 84 users of clk_rcg2_shared_ops on
+sc8280xp).
+
+
+
+It would be nice if clk_summary would represent the real state of these
+clocks, but unfortunately I don't think the state matches reality with
+this approach either.
+
+E.g. we prepare/enable the pipe clock before setting
+QPHY_POWER_DOWN_CONTROL, during this time there's shouldn't be any pipe
+clock coming out of the PHY...
+
+Regards,
+Bjorn
+
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> ---
+>  drivers/phy/qualcomm/phy-qcom-qmp.c | 71 ++++++++++++++++++++++++++---
+>  1 file changed, 65 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
+> index 7d2d1ab061f7..bc6db9670291 100644
+> --- a/drivers/phy/qualcomm/phy-qcom-qmp.c
+> +++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
+> @@ -3292,6 +3292,8 @@ struct qmp_phy_combo_cfg {
+>   * @rx2: iomapped memory space for second lane's rx (in dual lane PHYs)
+>   * @pcs_misc: iomapped memory space for lane's pcs_misc
+>   * @pipe_clk: pipe clock
+> + * @pipemux_clk: pipe clock source mux
+> + * @piperef_clk: pipe clock default reference source
+>   * @index: lane index
+>   * @qmp: QMP phy to which this lane belongs
+>   * @lane_rst: lane's reset controller
+> @@ -3311,6 +3313,8 @@ struct qmp_phy {
+>  	void __iomem *rx2;
+>  	void __iomem *pcs_misc;
+>  	struct clk *pipe_clk;
+> +	struct clk *pipemux_clk;
+> +	struct clk *piperef_clk;
+>  	unsigned int index;
+>  	struct qcom_qmp *qmp;
+>  	struct reset_control *lane_rst;
+> @@ -3346,6 +3350,7 @@ struct qcom_qmp {
+>  	void __iomem *dp_com;
+>  
+>  	struct clk_bulk_data *clks;
+> +	struct clk *pipe_clksrc;
+>  	struct reset_control **resets;
+>  	struct regulator_bulk_data *vregs;
+>  
+> @@ -5355,6 +5360,42 @@ static int qcom_qmp_phy_init(struct phy *phy)
+>  	return 0;
+>  }
+>  
+> +static int qcom_qmp_phy_pipe_clk_enable(struct qmp_phy *qphy)
+> +{
+> +	struct qcom_qmp *qmp = qphy->qmp;
+> +	int ret;
+> +
+> +	ret = clk_set_parent(qphy->pipemux_clk, qmp->pipe_clksrc);
+> +	if (ret)
+> +		dev_err(qmp->dev, "failed to reparent pipe clock: %d\n", ret);
+> +
+> +
+> +	ret = clk_prepare_enable(qphy->pipe_clk);
+> +	if (ret) {
+> +		dev_err(qmp->dev, "failed to enable pipe clock: %d\n", ret);
+> +		goto err_restore_parent;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_restore_parent:
+> +	clk_set_parent(qphy->pipemux_clk, qphy->piperef_clk);
+> +
+> +	return ret;
+> +}
+> +
+> +static void qcom_qmp_phy_pipe_clk_disable(struct qmp_phy *qphy)
+> +{
+> +	struct qcom_qmp *qmp = qphy->qmp;
+> +	int ret;
+> +
+> +	clk_disable_unprepare(qphy->pipe_clk);
+> +
+> +	ret = clk_set_parent(qphy->pipemux_clk, qphy->piperef_clk);
+> +	if (ret)
+> +		dev_err(qmp->dev, "failed to reparent pipe clock: %d\n", ret);
+> +}
+> +
+>  static int qcom_qmp_phy_power_on(struct phy *phy)
+>  {
+>  	struct qmp_phy *qphy = phy_get_drvdata(phy);
+> @@ -5379,11 +5420,9 @@ static int qcom_qmp_phy_power_on(struct phy *phy)
+>  		}
+>  	}
+>  
+> -	ret = clk_prepare_enable(qphy->pipe_clk);
+> -	if (ret) {
+> -		dev_err(qmp->dev, "pipe_clk enable failed err=%d\n", ret);
+> +	ret = qcom_qmp_phy_pipe_clk_enable(qphy);
+> +	if (ret)
+>  		goto err_reset_lane;
+> -	}
+>  
+>  	/* Tx, Rx, and PCS configurations */
+>  	qcom_qmp_phy_configure_lane(tx, cfg->regs,
+> @@ -5478,7 +5517,7 @@ static int qcom_qmp_phy_power_on(struct phy *phy)
+>  	return 0;
+>  
+>  err_disable_pipe_clk:
+> -	clk_disable_unprepare(qphy->pipe_clk);
+> +	qcom_qmp_phy_pipe_clk_disable(qphy);
+>  err_reset_lane:
+>  	if (cfg->has_lane_rst)
+>  		reset_control_assert(qphy->lane_rst);
+> @@ -5491,7 +5530,7 @@ static int qcom_qmp_phy_power_off(struct phy *phy)
+>  	struct qmp_phy *qphy = phy_get_drvdata(phy);
+>  	const struct qmp_phy_cfg *cfg = qphy->cfg;
+>  
+> -	clk_disable_unprepare(qphy->pipe_clk);
+> +	qcom_qmp_phy_pipe_clk_disable(qphy);
+>  
+>  	if (cfg->type == PHY_TYPE_DP) {
+>  		/* Assert DP PHY power down */
+> @@ -5777,6 +5816,8 @@ static int phy_pipe_clk_register(struct qcom_qmp *qmp, struct device_node *np)
+>  	if (ret)
+>  		return ret;
+>  
+> +	qmp->pipe_clksrc = fixed->hw.clk;
+> +
+>  	ret = of_clk_add_hw_provider(np, of_clk_hw_simple_get, &fixed->hw);
+>  	if (ret)
+>  		return ret;
+> @@ -6091,6 +6132,24 @@ int qcom_qmp_phy_create(struct device *dev, struct device_node *np, int id,
+>  		qphy->pipe_clk = NULL;
+>  	}
+>  
+> +	/* Get optional pipe clock mux and default reference source clock. */
+> +	qphy->pipemux_clk = of_clk_get_by_name(np, "mux");
+> +	if (IS_ERR(qphy->pipemux_clk)) {
+> +		ret = PTR_ERR(qphy->pipemux_clk);
+> +		if (ret == -EPROBE_DEFER)
+> +			return ret;
+> +
+> +		qphy->pipemux_clk = NULL;
+> +	} else {
+> +		qphy->piperef_clk = of_clk_get_by_name(np, "ref");
+> +		if (IS_ERR(qphy->piperef_clk)) {
+> +			ret = PTR_ERR(qphy->piperef_clk);
+> +			return dev_err_probe(dev, ret,
+> +					     "failed to get lane%d piperef_clk\n",
+> +					     id);
+> +		}
+> +	}
+> +
+>  	/* Get lane reset, if any */
+>  	if (cfg->has_lane_rst) {
+>  		snprintf(prop_name, sizeof(prop_name), "lane%d", id);
+> -- 
+> 2.35.1
+> 
