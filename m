@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0FFFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E26AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:41:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346457AbiD1MoO (ORCPT
+        id S1346471AbiD1MoT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 08:44:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45170 "EHLO
+        Thu, 28 Apr 2022 08:44:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346433AbiD1MoG (ORCPT
+        with ESMTP id S1346453AbiD1MoN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 08:44:06 -0400
+        Thu, 28 Apr 2022 08:44:13 -0400
 Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0FE896324;
-        Thu, 28 Apr 2022 05:40:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC2F514092;
+        Thu, 28 Apr 2022 05:40:57 -0700 (PDT)
 Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 23SCeF1G007482;
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 23SCeF45007484;
         Thu, 28 Apr 2022 14:40:15 +0200
 From:   Willy Tarreau <w@1wt.eu>
 To:     netdev@vger.kernel.org
@@ -28,10 +28,10 @@ Cc:     David Miller <davem@davemloft.net>,
         Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
         Amit Klein <aksecurity@gmail.com>,
         "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net 3/7] tcp: resalt the secret every 10 seconds
-Date:   Thu, 28 Apr 2022 14:39:57 +0200
-Message-Id: <20220428124001.7428-4-w@1wt.eu>
+        linux-kernel@vger.kernel.org, Willy Tarreau <w@1wt.eu>
+Subject: [PATCH v2 net 5/7] tcp: dynamically allocate the perturb table used by source ports
+Date:   Thu, 28 Apr 2022 14:39:59 +0200
+Message-Id: <20220428124001.7428-6-w@1wt.eu>
 X-Mailer: git-send-email 2.17.5
 In-Reply-To: <20220428124001.7428-1-w@1wt.eu>
 References: <20220428124001.7428-1-w@1wt.eu>
@@ -39,62 +39,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-
-In order to limit the ability for an observer to recognize the source
-ports sequence used to contact a set of destinations, we should
-periodically shuffle the secret. 10 seconds looks effective enough
-without causing particular issues.
+We'll need to further increase the size of this table and it's likely
+that at some point its size will not be suitable anymore for a static
+table. Let's allocate it on boot from inet_hashinfo2_init(), which is
+called from tcp_init().
 
 Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
 Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
 Cc: Amit Klein <aksecurity@gmail.com>
-Tested-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
 ---
- net/core/secure_seq.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ net/ipv4/inet_hashtables.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
-index 55aa5cc258e3..2c76aab20403 100644
---- a/net/core/secure_seq.c
-+++ b/net/core/secure_seq.c
-@@ -22,6 +22,8 @@
- static siphash_aligned_key_t net_secret;
- static siphash_aligned_key_t ts_secret;
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 63bb4902f018..48ca07853068 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -731,7 +731,8 @@ EXPORT_SYMBOL_GPL(inet_unhash);
+  * privacy, this only consumes 1 KB of kernel memory.
+  */
+ #define INET_TABLE_PERTURB_SHIFT 8
+-static u32 table_perturb[1 << INET_TABLE_PERTURB_SHIFT];
++#define INET_TABLE_PERTURB_SIZE (1 << INET_TABLE_PERTURB_SHIFT)
++static u32 *table_perturb;
  
-+#define EPHEMERAL_PORT_SHUFFLE_PERIOD (10 * HZ)
+ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 		struct sock *sk, u64 port_offset,
+@@ -774,7 +775,8 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 	if (likely(remaining > 1))
+ 		remaining &= ~1U;
+ 
+-	net_get_random_once(table_perturb, sizeof(table_perturb));
++	net_get_random_once(table_perturb,
++			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
+ 	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
+ 
+ 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
+@@ -912,6 +914,12 @@ void __init inet_hashinfo2_init(struct inet_hashinfo *h, const char *name,
+ 					    low_limit,
+ 					    high_limit);
+ 	init_hashinfo_lhash2(h);
 +
- static __always_inline void net_secret_init(void)
- {
- 	net_get_random_once(&net_secret, sizeof(net_secret));
-@@ -101,10 +103,12 @@ u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
- 		struct in6_addr saddr;
- 		struct in6_addr daddr;
- 		__be16 dport;
-+		unsigned int timeseed;
- 	} __aligned(SIPHASH_ALIGNMENT) combined = {
- 		.saddr = *(struct in6_addr *)saddr,
- 		.daddr = *(struct in6_addr *)daddr,
--		.dport = dport
-+		.dport = dport,
-+		.timeseed = jiffies / EPHEMERAL_PORT_SHUFFLE_PERIOD,
- 	};
- 	net_secret_init();
- 	return siphash(&combined, offsetofend(typeof(combined), dport),
-@@ -145,8 +149,10 @@ EXPORT_SYMBOL_GPL(secure_tcp_seq);
- u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
- {
- 	net_secret_init();
--	return siphash_3u32((__force u32)saddr, (__force u32)daddr,
--			    (__force u16)dport, &net_secret);
-+	return siphash_4u32((__force u32)saddr, (__force u32)daddr,
-+			    (__force u16)dport,
-+			    jiffies / EPHEMERAL_PORT_SHUFFLE_PERIOD,
-+			    &net_secret);
++	/* this one is used for source ports of outgoing connections */
++	table_perturb = kmalloc_array(INET_TABLE_PERTURB_SIZE,
++				      sizeof(*table_perturb), GFP_KERNEL);
++	if (!table_perturb)
++		panic("TCP: failed to alloc table_perturb");
  }
- EXPORT_SYMBOL_GPL(secure_ipv4_port_ephemeral);
- #endif
+ 
+ int inet_hashinfo2_init_mod(struct inet_hashinfo *h)
 -- 
 2.17.5
 
