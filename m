@@ -2,90 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18712C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 01:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3413FC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 01:45:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240883AbiD1BsI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 21:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49646 "EHLO
+        id S240918AbiD1BtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 21:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbiD1BsG (ORCPT
+        with ESMTP id S240848AbiD1Bs7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 21:48:06 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4779198F5C;
-        Wed, 27 Apr 2022 18:44:53 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Kpdhz1Z6Zz4xNl;
-        Thu, 28 Apr 2022 11:44:50 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1651110291;
-        bh=HtXJIGyoTrKSKRAaPLhhcsMtrJTWRfbpZoCE6v8AEbg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Mv39L4HE6xHaDHu1iIOcaAJSCegNylaIPhOWOvUd8S9Uh5h5H4mSS8UeswUGAxvgj
-         v7Mr7lrtpGSAndNWZWbi4q5LGpgYHmzyMfxSX8qXBz3dnATLHwM/s0oLnz7FkLI4SZ
-         TBtXX/DeH1DtuvA4TILCxavSshRUQxe6/zpj333vLLWMjGBigxIPGaA38KFGxWF5mZ
-         NMN4KOkRCf1D2i+4/26kVNrbrrR6lTe0AB8PFDVd4l2VGhR5aW/rjZWm2iAK0NSgVT
-         ZqgRIFrRLw2/29wMiM1f697Whp+T/1BZwFjLZ3UXPyerEexMm+Qgkhi7QqVrOH9MOP
-         x/60AVgarzB9g==
-Date:   Thu, 28 Apr 2022 11:44:49 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Mariusz Tkaczyk <mariusz.tkaczyk@linux.intel.com>,
-        Song Liu <song@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the block tree
-Message-ID: <20220428114449.4b2d2dd6@canb.auug.org.au>
+        Wed, 27 Apr 2022 21:48:59 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90403427DB
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 18:45:46 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id p10so6043168lfa.12
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 18:45:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HPwQIDuV4kr+Z3JfS80ukdJYoRtJwGRQLFz/8EXdtY8=;
+        b=SCPzYsQnPWyQEhotMv9WnMsrFYGqhLzQhyJCSZmC2yd1aMhIzowrM7DocZOsyuBCND
+         +LwiCROHEcaNzZDsvG4C5wkVi5MiKyGzYBTqe13MPpbmjjOEPGQ3P01/J/g7d0R8+Q03
+         n3A3yDLjgffMlcrTHNN1O7ZvDG8Uk5nnzfpAc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HPwQIDuV4kr+Z3JfS80ukdJYoRtJwGRQLFz/8EXdtY8=;
+        b=EmfZwX6tZMPY6LudGrfy6lDaqrTzU7ziT2s9nbPy4RhUSFD9fV/aYgSju5X8V42GGA
+         3ZqsRcK8P+A8YwebvXIlxJNfBLZi4LgBldW/p0WnWOuOq2jEUtmSaEPryl+qpMP9VKbY
+         H0r5pKeAmXYv+CMkZXEmGd3v6rhytrAm4TRS5RTGMvxUSWKFUT5KHULQqidtGyEXVPRz
+         xFVapy64azwRq7HIhbrPRpDfIRCRWSvtjl87Lo2dIJYyImYjkpvaOpz0TGSDH0eZYlpa
+         L6aIfv3JdYybsUJ8IyWqzDVg+6xUiKUoOyB6bTlqzw/0q2sYPsO/0eTL0quOtmrtkNGr
+         i/fA==
+X-Gm-Message-State: AOAM532LE4wpyJtq6DvguRtNp8IQm/QAp6JYKL4Tkpey3x4RoSbbCKRS
+        IFIUekCLCu+YhKZ008B+G/lwHJkT2lHFxCNNP3A=
+X-Google-Smtp-Source: ABdhPJytLLRhheaMb3AQLbSmU57vVb6Rx4jgrDcyVMHgO7JlwbXmr98YaDcTKLz0CDjATfr3qrapDg==
+X-Received: by 2002:a05:6512:2a92:b0:472:ca3:5a with SMTP id dt18-20020a0565122a9200b004720ca3005amr11849205lfb.100.1651110344554;
+        Wed, 27 Apr 2022 18:45:44 -0700 (PDT)
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com. [209.85.208.169])
+        by smtp.gmail.com with ESMTPSA id v28-20020ac25b1c000000b0047201534505sm1417646lfn.282.2022.04.27.18.45.42
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Apr 2022 18:45:43 -0700 (PDT)
+Received: by mail-lj1-f169.google.com with SMTP id l19so4859184ljb.7
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 18:45:42 -0700 (PDT)
+X-Received: by 2002:a2e:9d46:0:b0:24c:7f1d:73cc with SMTP id
+ y6-20020a2e9d46000000b0024c7f1d73ccmr20046313ljj.358.1651110342350; Wed, 27
+ Apr 2022 18:45:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Ne.rD_af4ZXlVFt5OYoEBKb";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <20220425203947.3311308-1-song@kernel.org> <FF2E0EC1-F9D6-4196-8887-919207BDC599@fb.com>
+In-Reply-To: <FF2E0EC1-F9D6-4196-8887-919207BDC599@fb.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 27 Apr 2022 18:45:25 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgA1Uku=ejwknv11ssNhz2pswhD=mJFBPEMQtCspz0YEQ@mail.gmail.com>
+Message-ID: <CAHk-=wgA1Uku=ejwknv11ssNhz2pswhD=mJFBPEMQtCspz0YEQ@mail.gmail.com>
+Subject: Re: [PATCH bpf v2 0/3] bpf: invalidate unused part of bpf_prog_pack
+To:     Song Liu <songliubraving@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <song@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/Ne.rD_af4ZXlVFt5OYoEBKb
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Wed, Apr 27, 2022 at 3:24 PM Song Liu <songliubraving@fb.com> wrote:
+>
+> Could you please share your suggestions on this set? Shall we ship it
+> with 5.18?
 
-Hi all,
+I'd personally prefer to just not do the prog_pack thing at all, since
+I don't think it was actually in a "ready to ship" state for this
+merge window, and the hugepage mapping protection games I'm still
+leery of.
 
-In commit
+Yes, the hugepage protection things probably do work from what I saw
+when I looked through them, but that x86 vmalloc hugepage code was
+really designed for another use (non-refcounted device pages), so the
+fact that it all actually seems surprisingly ok certainly wasn't
+because the code was designed to do that new case.
 
-  57668f0a4cc4 ("raid5: introduce MD_BROKEN")
+Does the prog_pack thing work with small pages?
 
-Fixes tag
+Yes. But that wasn't what it was designed for or its selling point, so
+it all is a bit suspect to me.
 
-  Fixes: fb73b357fb9 ("raid5: block failing device if raid will be failed")
+And I'm looking at those set_memory_xyz() calls, and I'm going "yeah,
+I think it works on x86, but on ppc I look at it and I see
 
-has these problem(s):
+  static inline int set_memory_ro(unsigned long addr, int numpages)
+  {
+        return change_memory_attr(addr, numpages, SET_MEMORY_RO);
+  }
 
-  - SHA1 should be at least 12 digits long
-    This can be fixed for the future by setting core.abbrev to 12 (or
-    more) or (for git v2.11 or later) just making sure it is not set
-    (or set to "auto").
+and then in change_memory_attr() it does
 
---=20
-Cheers,
-Stephen Rothwell
+        if (WARN_ON_ONCE(is_vmalloc_or_module_addr((void *)addr) &&
+                         is_vm_area_hugepages((void *)addr)))
+                return -EINVAL;
 
---Sig_/Ne.rD_af4ZXlVFt5OYoEBKb
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+and I'm "this is all supposedly generic code, but I'm not seeing how
+it works cross-architecture".
 
------BEGIN PGP SIGNATURE-----
+I *think* it's actually because this is all basically x86-specific due
+to x86 being the only architecture that implements
+bpf_arch_text_copy(), and everybody else then ends up erroring out and
+not using the prog_pack thing after all.
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJp8ZEACgkQAVBC80lX
-0GwHeQgAoe5xbEsWz5sVl59f6z/hDkl7A+xF/HNm81EHFLPNrnb925Vw47nhgepD
-XI5C0c/rdYAs2frnJv4vXQjqcPEQT1DKkm3Gl2BwHaEwLgXneCLylVkOJ0E3gfR7
-TEd5gZmq2PXt+inUxH74CS9UqwGWbwHpx/WlpBUOOs57RUXTAHRia05RJ7mnGi7K
-7boajEA6lP5AMdwaustU8r2SMieFKUvJd1DFhi2KIUQ/PMVxheGGguwMQAfcAUyK
-pNfvpTGX/+fNKSNagtPXWBA+i6l6N1yXAPU90ENx4KiWsvypDhd5TXTx14E4Sc6K
-YVlZMKe/RFwNRna3b4Rl2Mgdj2ZtmA==
-=GV7/
------END PGP SIGNATURE-----
+And then one of the two places that use bpf_arch_text_copy() doesn't
+even check the returned error code.
 
---Sig_/Ne.rD_af4ZXlVFt5OYoEBKb--
+So this all ends up just depending on "only x86 will actually succeed
+in bpf_jit_binary_pack_finalize(), everybody else will fail after
+having done all the common setup".
+
+End result: it all seems a bit broken right now. The "generic" code
+only works on x86, and on other architectures it goes through the
+motions and then fails at the end. And even on x86 I worry about
+actually enabling it fully.
+
+I'm not having the warm and fuzzies about this all, in other words.
+
+Maybe people can convince me otherwise, but I think you need to work at it.
+
+And even for 5.19+ kind of timeframes, I'd actually like the x86
+people who maintain arch/x86/mm/pat/set_memory.c also sign off on
+using that code for hugepage vmalloc mappings too.
+
+I *think* it does. But that code has various subtle things going on.
+
+I see PeterZ is cc'd (presumably because of the text_poke() stuff, not
+because of the whole "call set_memory_ro() on virtually mapped kernel
+largepage memory".
+
+Did people even talk to x86 people about this, or did the whole "it
+works, except it turns out set_vm_flush_reset_perms() doesn't work"
+mean that the authors of that code never got involved?
+
+               Linus
