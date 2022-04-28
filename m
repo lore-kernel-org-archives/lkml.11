@@ -2,83 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB32C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 17:09:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90CE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 17:09:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232371AbiD1RMW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 13:12:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47978 "EHLO
+        id S234420AbiD1RMz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 13:12:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiD1RMV (ORCPT
+        with ESMTP id S229507AbiD1RMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 13:12:21 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B7D5EBE3
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 10:09:06 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id t13so4481610pgn.8
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 10:09:06 -0700 (PDT)
+        Thu, 28 Apr 2022 13:12:51 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9115EBE3
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 10:09:36 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id j17so4774923pfi.9
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 10:09:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=zAaIEbwPamypkTPPw9fvYDfeYISE2JHP1U6M9ZYpWS4=;
-        b=AJjXNowARSEkx2jJDk8SuGP51D/AHwAgr8y01TzHn4fMbcil8Pk8LVcjkgOqQmxd7e
-         VwtD3eB9k74BnjLhkr5X1xGFvZcAOnQ1rjnnohYaQko9uvStcEBCb11SK/xkI+SIIQyV
-         3G1aUOHl5525pCxsHhUDLU3xdfvbB1K0cpoq0=
+        bh=fBDyiC8ejx38/XGCdInTXi7p0RF0GjbjfMkRMdvSGv0=;
+        b=PkwH6hgXz4MEQ6AJYKtgR6JdFn8khlfOomPptOtAb4gKvnZVbyITWFLj18HBDE/jVq
+         V52Y2WTHH+Mlon2KaabpIWE26PVgruOF7iMHzxKPxm04JREeCkFaFvsLGw8n02fmKDjZ
+         jBD/fLoL1Haf8fcxb2iA+AcqU3ztg6rPCAFvccJkcIfUESAAgOglJ8SSPGiyM9GwYclN
+         MVuJ9xQujbAgag0ghXdfMxWFU3vpQ5qXhSaQIz6A34VxadwhAlLt0ey9YQrTOyvsDkqT
+         e5ovy538EjH3oNSYBO35UeP82w4JaRIv/rUgEPPUkNpfXcOqGo4e8PbEFsMyVxtWrrOn
+         KPag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=zAaIEbwPamypkTPPw9fvYDfeYISE2JHP1U6M9ZYpWS4=;
-        b=tL6uqLxL+e1MvtLdVSLsX2tCnSl86g3piiWvoucR7H4vXAupW8q8nvI73Ml6MIdpYv
-         4qB2QabGA4uHmejbX9Zn4tEfoZ97pYpXFTbIwtfnarCkRiYtwddFdP0ZfUBaTDfjw0zY
-         p4hHCNF+9TSHwHxF0HRv1mXAUTEaC43vP2rmvbBHKOsMYrIfaeKaVTT6Y3gE7ilj3u4q
-         neTjI5uc2GkEBn/JGvGzyenr2NpM9UNHXckmabvVXhOoOyQseJHYMwZGCz7IxbGWOCJG
-         heWw3IhPnjifPB4reuBt/HEU1eh64B22VNpPf2qljOcJBOx0GG0G0gFSqb8SdsiH1SRL
-         +Jjw==
-X-Gm-Message-State: AOAM530kZub2mYUF+MbhFYFfsyR0GlB7O1/ZMM0WoGRLiPrnCLFkj+pU
-        TbD+fFNo3Di2/rIDHktDAnBPtQ==
-X-Google-Smtp-Source: ABdhPJzYCTkPb/uB5mvHB8Vok2sDusM/OE4zDxiqLzhXiYZyQjZXFkxX8EJQmTdBlmjp/KspQTmSCQ==
-X-Received: by 2002:a63:8749:0:b0:3ab:2603:c80d with SMTP id i70-20020a638749000000b003ab2603c80dmr19023340pge.412.1651165745673;
-        Thu, 28 Apr 2022 10:09:05 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id j5-20020a654d45000000b003c14af50621sm3248047pgt.57.2022.04.28.10.09.05
+        bh=fBDyiC8ejx38/XGCdInTXi7p0RF0GjbjfMkRMdvSGv0=;
+        b=nsHufy9iF+2+NeThDd+7gQcOHIZtZRYSnWZ67rsULHLVyZMt4+jQGlnmFoD7KVeHzw
+         57kH4nWy6E/vlCyglbL5lHaGDDiGhPMTpXZ5Pl2c4ojTQJhL/KVG+TGsfUJ8YJfozCPR
+         lpGy3w4UrHJDumkzGQ51Eo9Cc6Zy4VG2Tfyz88W0YA92SEhhBEf4HygdkeH2cgbqau4N
+         ZswyCne0EauND4YIKaRvFa7SamoAXh4pOCFGnIVuLsa+y+85UBa9+pSgkJN7sBiCbekR
+         U6OcJNrNg9Ub5mb8lH2k+z/e6e36kB+rzVQSsHHRIrrF0jEdA+b2isMTm3KRoTV6213o
+         jrtw==
+X-Gm-Message-State: AOAM53359iNY+RlrhpPEANiIVYPLYAWvikYio/gIZjrbqorXl7e1D09c
+        SbCq7h1ZeFfDurysjQCuO16s
+X-Google-Smtp-Source: ABdhPJxJ1Bxs03N1VpCNGCBPDVOJJta4JTsZ6CuaLJFmn8qQJEEPihJ4pXGGAzycImcb+yUjHIiQZw==
+X-Received: by 2002:aa7:9085:0:b0:50d:35ae:271 with SMTP id i5-20020aa79085000000b0050d35ae0271mr24736247pfa.42.1651165775932;
+        Thu, 28 Apr 2022 10:09:35 -0700 (PDT)
+Received: from thinkpad ([220.158.158.235])
+        by smtp.gmail.com with ESMTPSA id b22-20020a63cf56000000b003c1a1f44736sm320918pgj.90.2022.04.28.10.09.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 10:09:05 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 10:09:04 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Luis Machado <luis.machado@arm.com>,
-        Richard Earnshaw <Richard.Earnshaw@arm.com>
-Subject: Re: [PATCH] elf: Fix the arm64 MTE ELF segment name and value
-Message-ID: <202204281009.57198AEC9@keescook>
-References: <20220425151833.2603830-1-catalin.marinas@arm.com>
+        Thu, 28 Apr 2022 10:09:35 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 22:39:29 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Serge Semin <fancer.lancer@gmail.com>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 25/25] PCI: dwc: Add DW eDMA engine support
+Message-ID: <20220428170929.GC81644@thinkpad>
+References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
+ <20220324014836.19149-26-Sergey.Semin@baikalelectronics.ru>
+ <20220328141521.GA17663@thinkpad>
+ <20220419205403.hdtp67mwoyrl6b6q@mobilestation>
+ <20220423144055.GR374560@thinkpad>
+ <20220428140501.6geybgwvkevqaz7e@mobilestation.baikal.int>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220425151833.2603830-1-catalin.marinas@arm.com>
+In-Reply-To: <20220428140501.6geybgwvkevqaz7e@mobilestation.baikal.int>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 04:18:33PM +0100, Catalin Marinas wrote:
-> Unfortunately, the name/value choice for the MTE ELF segment type
-> (PT_ARM_MEMTAG_MTE) was pretty poor: LOPROC+1 is already in use by
-> PT_AARCH64_UNWIND, as defined in the AArch64 ELF ABI
-> (https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst).
-> 
-> Update the ELF segment type value to LOPROC+2 and also change the define
-> to PT_AARCH64_MEMTAG_MTE to match the AArch64 ELF ABI namespace. The
-> AArch64 ELF ABI document is updating accordingly (segment type not
-> previously mentioned in the document).
-> 
-> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+On Thu, Apr 28, 2022 at 05:05:23PM +0300, Serge Semin wrote:
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+[...]
 
--- 
-Kees Cook
+> > If iATU has unroll enabled then I think we can assume that edma will also be
+> > the same. So I was wondering if we could just depend on iatu_unroll_enabled
+> > here.
+> 
+> I thought about that, but then I decided it was easier to just define
+> a new flag. Anyway according to the hw manuals indeed the unroll
+> mapping is enabled either for both iATU and eDMA modules or for none
+> of them just because they are mapped over a single space. It's
+> determined by the internal VHL parameter CC_UNROLL_ENABLE.
+> On the second thought I agree with you then. I'll convert the
+> iatu_unroll_enabled flag into a more generic 'reg_unroll' and make
+> sure it's used for both modules.
+> 
+
+Sounds good!
+
+> > 
+> > > > 
+> > > > > +	if (pci->edma_unroll_enabled && pci->iatu_unroll_enabled) {
+> > > > > +		pci->edma.mf = EDMA_MF_EDMA_UNROLL;
+> > > > > +		if (pci->atu_base != pci->dbi_base + DEFAULT_DBI_ATU_OFFSET)
+> > > > > +			pci->edma.reg_base = pci->atu_base + PCIE_DMA_UNROLL_BASE;
+> > > > > +		else
+> > > > > +			pci->edma.reg_base = pci->dbi_base + DEFAULT_DBI_DMA_OFFSET;
+> > > > 
+> > > 
+> > > > This assumption won't work on all platforms. Atleast on our platform, the
+> > > > offsets vary. So I'd suggest to try getting the reg_base from DT first and use
+> > > > these offsets as a fallback as we do for iATU.
+> > > 
+> > > I don't know how the eDMA offset can vary at least concerning the
+> > > normal DW PCIe setup. In any case the DW eDMA controller CSRs are
+> > > mapped in the same way as the iATU space: CS2=1 CDM=1. They are either
+> > > created as an unrolled region mapped into the particular MMIO space
+> > > (as a separate MMIO space or as a part of the DBI space), or
+> > > accessible over the PL viewports (as a part of the Port Logic CSRs).
+> > > Nothing else is described in the hardware manuals. Based on that I
+> > > don't see a reason to add one more reg space binding.
+> > > 
+> > 
+> 
+> > This is not true. Vendors can customize the iATU location inside DBI region
+> > for unroll too. That's one of the reason why dw_pcie_iatu_detect() works on
+> > qcom platforms as it tries to get iatu address from DT first and then falls
+> > back to the default offset if not found.
+> > 
+> > So please define an additional DT region for edma.
+> 
+> It's obvious that iATU location can vary. I never said it didn't. We
+> are talking about eDMA here. In accordance with what the DW PCIe hw
+> manuals say eDMA always resides the same space as the iATU. The space
+> is enabled by setting the CS2=1 and CDM=1 wires in case of the Native
+> Controller DBI access. In this case eDMA is defined with the 0x80000
+> offset over the iATU base address while the iATU base can be placed at
+> whatever region platform engineer needs.
+> 
+> Alternatively the AXI Bridge-based DBI access can be enabled thus
+> having the DBI+iATU+eDMA mapped over the same MMIO space with
+> respective offsets 0x0;0x300000;0x380000. This case is handled in the
+> branch of the conditional statement above if it's found that iATU base
+> is having the default offset with respect to the DBI base address
+> (pci->atu_base == pci->dbi_base + DEFAULT_DBI_ATU_OFFSET).
+> 
+> To sum up seeing I couldn't find the eDMA region defined in the qcom
+> bindings and judging by what you say doesn't really contradict to what
+> is done in my code, I guess there must be some misunderstanding either in
+> what you see in the code above or what I understand from what you say.
+> So please be more specific what offsets and whether they are really
+> different from what I use in the code above.
+> 
+
+You won't see any edma register offset because no one bothered to define it
+since it was not used until now. But the memory region should've been
+documented...
+
+Anyway, here is the offset for the Qcom SoC I'm currently working on:
+
+DBI  - 0x0
+iATU - 0x1000
+eDMA - 0x2000
+
+As you can see, these offsets doesn't really fit in both the cases you shared
+above.
+
+I don't have the knowledge about the internal representation of the IP or what
+customization Qcom did apart from some high level information.
+
+Hope this clarifies!
+
+Thanks,
+Mani
