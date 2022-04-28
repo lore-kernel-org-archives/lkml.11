@@ -2,77 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48812C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:06:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19293C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:07:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237540AbiD1KJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59002 "EHLO
+        id S230251AbiD1KK6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:10:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233451AbiD1KHG (ORCPT
+        with ESMTP id S234100AbiD1KKd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 06:07:06 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B7F94433AE;
-        Thu, 28 Apr 2022 02:55:59 -0700 (PDT)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxkNqqZGpiWHIBAA--.7516S5;
-        Thu, 28 Apr 2022 17:55:56 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v2 3/3] bpf, docs: Fix typo "respetively" to "respectively"
-Date:   Thu, 28 Apr 2022 17:55:54 +0800
-Message-Id: <1651139754-4838-4-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <1651139754-4838-1-git-send-email-yangtiezhu@loongson.cn>
-References: <1651139754-4838-1-git-send-email-yangtiezhu@loongson.cn>
-X-CM-TRANSID: AQAAf9BxkNqqZGpiWHIBAA--.7516S5
-X-Coremail-Antispam: 1UD129KBjvdXoWrtF4UCryftFy3Gw13tF48tFb_yoWxCFg_CF
-        17ta1rJayDCryrWw1UCF1fCFyxArWrur4UArnFyrWDAw1qqw4DAr98KryDArW5GrWxuwsx
-        CrZ7Xry3ArnrGjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbfkYjsxI4VW3JwAYFVCjjxCrM7AC8VAFwI0_Wr0E3s1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l82xGYIkIc2x26280x7
-        IE14v26r1rM28IrcIa0xkI8VCY1x0267AKxVW5JVCq3wA2ocxC64kIII0Yj41l84x0c7CE
-        w4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6x
-        kF7I0E14v26F4j6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIE
-        c7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I
-        8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCF
-        s4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCY02Avz4vE14v_GFWl42xK82IYc2Ij64
-        vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8G
-        jcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2I
-        x0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK
-        8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I
-        0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUxiF4DUUUU
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        Thu, 28 Apr 2022 06:10:33 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06DC563EB
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 03:00:17 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id g6so8523272ejw.1
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 03:00:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=JxtII36nbuZuqFFrQ9crloovDc3cIeCGPM1GWAJ7BLU=;
+        b=pCcEyqd+tkY2mhRqzUUk2rMCfWrt8QcgDfnX0gsm1FZpbqGI6rPrEyrizoMKSKapta
+         etMIIfDFbsyRBj8/PTEVu6q3AJRLazQgshAi6dZAJ1UhocnkGxM9ZA1IwhwwrOEdcYVI
+         YhpZ5OD9k77k+MSb2dBpaGNqBPo7mUcTvzjImkOWOKWwcNGf85qD9fe413357VAaKaLV
+         bxZy/sdWDrtJft0G9rYfgpeSWwzuHN7SfP7BZwHeL6Mn+JXXGR1du2CstnxVezhBZx0M
+         wL2Vs1ikBdvgGlsNEWZHASqUOpAfL4mt4eUHjYhGHyWI0qRnfiYez74TN+XDibV04YdP
+         H1SA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JxtII36nbuZuqFFrQ9crloovDc3cIeCGPM1GWAJ7BLU=;
+        b=IHZgwltjrx57BBliA2QIu4+LcduN4gYsE3uV4Lt/cFrgZBLNQxr9SUDpbi6PQkKdST
+         UMFcYVKyDGy94BpNY28kEujC/rgUojCLUiGZW4inyk2Xe8aU4zBgbxgSTAlBjAR+p8vg
+         e5dY/02C3BWKQKIG/BNclRa0VVdQFRzpzsFz7SeNvDY9TkXQaBYOWEan1wwKxGYzgDE6
+         MQiCI3eJrov9jr4QgSme/lsD7WwsUfn+rgzFtB25mHDIznnsMrzZWPReZ5NbzBwq6kjN
+         Wj1OnNdVs/gRVEIoQlVLQ5lxcNE+2Mou+/r8j8CwfHXmFghH5hxSjJzJx+47tMdbn/9B
+         C52w==
+X-Gm-Message-State: AOAM532r8Dn0W6+q13E+eDxG21KpW6XhQ4t5vIamgVV/G7kvxWFgVbWb
+        gECkDtIMST9YhbJtsnSk4qCfQw==
+X-Google-Smtp-Source: ABdhPJwcRvWItyXHeht/LhlESqknYCeryLeRXleMGkm95QPziD8ZUk2gXtIdbAX58t/rHGBMibiUTg==
+X-Received: by 2002:a17:906:4408:b0:6da:bec1:2808 with SMTP id x8-20020a170906440800b006dabec12808mr30471083ejo.543.1651140016399;
+        Thu, 28 Apr 2022 03:00:16 -0700 (PDT)
+Received: from [192.168.0.161] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id o2-20020a170906768200b006e89514a449sm8021480ejm.96.2022.04.28.03.00.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 03:00:15 -0700 (PDT)
+Message-ID: <1399774c-f188-81f1-4d15-367b9d0e4a59@linaro.org>
+Date:   Thu, 28 Apr 2022 12:00:14 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 08/10] ARM: dts: exynos: use proper
+ 'dma-channels/requests' properties
+Content-Language: en-US
+To:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Rob Herring <robh@kernel.org>
+References: <20220427155840.596535-1-krzysztof.kozlowski@linaro.org>
+ <CGME20220427160347eucas1p23ce51e0fb49160d437961d98fd682c28@eucas1p2.samsung.com>
+ <20220427155840.596535-9-krzysztof.kozlowski@linaro.org>
+ <5eeac2a0-4293-675e-9dc2-25ed8ab3fb8f@samsung.com>
+ <6981f93a-ef01-6ba0-4451-26526372d666@linaro.org>
+ <05c908ce-217f-6938-6745-7405ac39d8ea@samsung.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <05c908ce-217f-6938-6745-7405ac39d8ea@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"respetively" should be "respectively".
+On 28/04/2022 11:57, Marek Szyprowski wrote:
+> On 28.04.2022 11:54, Krzysztof Kozlowski wrote:
+>> On 28/04/2022 11:50, Marek Szyprowski wrote:
+>>> On 27.04.2022 17:58, Krzysztof Kozlowski wrote:
+>>>> pl330 DMA controller bindings documented 'dma-channels' and
+>>>> 'dma-requests' properties (without leading hash sign), so fix the DTS to
+>>>> match the bindings.
+>>>>
+>>>> Reported-by: Rob Herring <robh@kernel.org>
+>>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>> Are those properties really needed for PL330 driver on Exynos SoCs? I've
+>>> removed them and I still see the proper values read from registers and
+>>> reported in the log (Exynos4210):
+>>>
+>>> dma-pl330 12680000.dma-controller: Loaded driver for PL330 DMAC-141330
+>>> dma-pl330 12680000.dma-controller:       DBUFF-32x4bytes Num_Chans-8
+>>> Num_Peri-32 Num_Events-32
+>>> dma-pl330 12690000.dma-controller: Loaded driver for PL330 DMAC-141330
+>>> dma-pl330 12690000.dma-controller:       DBUFF-32x4bytes Num_Chans-8
+>>> Num_Peri-32 Num_Events-32
+>>> dma-pl330 12850000.dma-controller: Loaded driver for PL330 DMAC-141330
+>>> dma-pl330 12850000.dma-controller:       DBUFF-64x8bytes Num_Chans-8
+>>> Num_Peri-1 Num_Events-32
+>>>
+>>> I also don't see any code that would read those properties. IMHO they
+>>> should be simply removed at all, at least for the PL330 related nodes.
+>> In current Linux implementation they indeed are not used. Nothing parses
+>> them. However:
+>> 1. They describe (hopefully correct) the hardware.
+>> 2. They might be used by other implementations of pl330 driver.
+>>
+>> I would not remove them from existing sources, but indeed maybe there is
+>> no need to add for new files.
+> 
+> What's the point in having dt properties duplicating data that might be 
+> read from the driver registers?
 
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
- Documentation/bpf/instruction-set.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hm, indeed, there is no point in this. Since they are read from
+registers, what was the idea behind in commit 42cf20980cde?
 
-diff --git a/Documentation/bpf/instruction-set.rst b/Documentation/bpf/instruction-set.rst
-index 00b0800..1de6a57 100644
---- a/Documentation/bpf/instruction-set.rst
-+++ b/Documentation/bpf/instruction-set.rst
-@@ -157,7 +157,7 @@ Examples:
-   dst_reg = htobe64(dst_reg)
- 
- ``BPF_FROM_LE`` and ``BPF_FROM_BE`` exist as aliases for ``BPF_TO_LE`` and
--``BPF_TO_BE`` respetively.
-+``BPF_TO_BE`` respectively.
- 
- 
- Jump instructions
--- 
-2.1.0
-
+Best regards,
+Krzysztof
