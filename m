@@ -2,79 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43394C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 604C1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:36:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245566AbiD1Hjc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:39:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
+        id S245611AbiD1Hji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 03:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245671AbiD1HjK (ORCPT
+        with ESMTP id S245562AbiD1HjV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:39:10 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 19386109F
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:35:56 -0700 (PDT)
-Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Ax+tjMQ2pip1EBAA--.6487S2;
-        Thu, 28 Apr 2022 15:35:51 +0800 (CST)
-From:   Hongchen Zhang <zhanghongchen@loongson.cn>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        Peter Xu <peterx@redhat.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        linux-kernel@vger.kernel.org,
-        Hongchen Zhang <zhanghongchen@loongson.cn>
-Subject: [PATCH] mm/swapops: make is_pmd_migration_entry more strict
-Date:   Thu, 28 Apr 2022 15:35:33 +0800
-Message-Id: <1651131333-6386-1-git-send-email-zhanghongchen@loongson.cn>
-X-Mailer: git-send-email 1.8.3.1
-X-CM-TRANSID: AQAAf9Ax+tjMQ2pip1EBAA--.6487S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7JrykXw1DKr47ZFWkXr1rtFb_yoWftrXEy3
-        y7AayIkF48Jw4j93y0gr4DJry3KryrJ3Z8Wrn3AwsrZa48Kan5t398XFn5Xw47Gws7uryf
-        C3WDXryIyr13XjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb2AFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK6svPMxAI
-        w28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
-        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxG
-        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8Jw
-        CI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY
-        6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
-X-CM-SenderInfo: x2kd0w5krqwupkhqwqxorr0wxvrqhubq/
+        Thu, 28 Apr 2022 03:39:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30F6F9BAD3;
+        Thu, 28 Apr 2022 00:36:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C043861F1B;
+        Thu, 28 Apr 2022 07:36:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F3AAC385A9;
+        Thu, 28 Apr 2022 07:36:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651131361;
+        bh=ugnB0+VxFaXUG+LIM3fB+IZ8PXAmen5TGP1XLvNJDHk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kRMVMro0a49W2h8r9B26ww0tU8NLIPJoDH7f81kqotoWi9h9JezPDBSNEInplz5gt
+         WLitLjH/1xoBqh5q9wTiqpc6tBiHZLJTKU5Zbg0PoBhPPxMVklW1wJ/EUcpjUrIUvc
+         JDCLrspSh7xuB2I/ymUaM2mplR/uLZpoROxL621U=
+Date:   Thu, 28 Apr 2022 09:35:58 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Cc:     arnd@arndb.de, catalin.marinas@arm.com, rostedt@goodmis.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        maz@kernel.org, quic_psodagud@quicinc.com, quic_tsoni@quicinc.com,
+        will@kernel.org
+Subject: Re: [PATCHv11 6/6] asm-generic/io: Add logging support for MMIO
+ accessors
+Message-ID: <YmpD3tIQK2iiqt46@kroah.com>
+References: <cover.1645772606.git.quic_saipraka@quicinc.com>
+ <3de35c9f4a3a070d197bab499acefc709a6f5336.1645772606.git.quic_saipraka@quicinc.com>
+ <YmorayBozWWRlTpP@kroah.com>
+ <96dc5e2e-5d88-52ce-c295-779603e668f2@quicinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <96dc5e2e-5d88-52ce-c295-779603e668f2@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-a pmd migration entry should first be a swap pmd,so
-use is_swap_pmd(pmd) instead of !pmd_present(pmd).
+On Thu, Apr 28, 2022 at 12:59:13PM +0530, Sai Prakash Ranjan wrote:
+> On 4/28/2022 11:21 AM, Greg KH wrote:
+> > On Thu, Apr 28, 2022 at 09:00:13AM +0530, Sai Prakash Ranjan wrote:
+> > > Add logging support for MMIO high level accessors such as read{b,w,l,q}
+> > > and their relaxed versions to aid in debugging unexpected crashes/hangs
+> > > caused by the corresponding MMIO operation. Also add a generic flag
+> > > (__DISABLE_TRACE_MMIO__) which is used to disable MMIO tracing in nVHE KVM
+> > > and if required can be used to disable MMIO tracing for specific drivers.
+> > This "add a build flag to a Makefile to change how a driver operates"
+> > feels very wrong to me given that this is now a totally new way to
+> > control how a driver works at build time.  That's not anything we have
+> > done before for drivers and if added, is only going to create much added
+> > complexity.
+> 
+> Not exactly, there are already many such build flags being used currently across kernel.
+> 
+> Example: "-D__KVM_NVHE_HYPERVISOR__, D__KVM_VHE_HYPERVISOR__,
 
-On the other hand, some architecture (MIPS for example)
-may misjudge a pmd_none entry as a pmd migration entry.
+That's crazy KVM stuff, don't extrapoloate that to all kernel drivers
+please.
 
-Signed-off-by: Hongchen Zhang <zhanghongchen@loongson.cn>
----
- include/linux/swapops.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> -D__NO_FORTIFY, -D__DISABLE_EXPORTS, -DDISABLE_BRANCH_PROFILING".
 
-diff --git a/include/linux/swapops.h b/include/linux/swapops.h
-index d356ab4..1d16569 100644
---- a/include/linux/swapops.h
-+++ b/include/linux/swapops.h
-@@ -304,7 +304,7 @@ static inline pmd_t swp_entry_to_pmd(swp_entry_t entry)
- 
- static inline int is_pmd_migration_entry(pmd_t pmd)
- {
--	return !pmd_present(pmd) && is_migration_entry(pmd_to_swp_entry(pmd));
-+	return is_swap_pmd(pmd) && is_migration_entry(pmd_to_swp_entry(pmd));
- }
- #else
- static inline void set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
--- 
-1.8.3.1
+Those are compiler flags that affect gcc, not kernel code functionality.
 
+> It gives us even more flexibility to disable feature for multiple files under a directory
+> rather than individually cluttering each file, look at "-D__KVM_NVHE_HYPERVISOR__"
+> for files under "arch/arm64/kvm/hyp/nvhe/".
+
+Again, crazy KVM stuff, do not want that for all drivers in the kernel.
+
+> > How about requiring that the #define be in the .c files, and not in the
+> > Makefile, as Makefile changes are much much harder to notice and review
+> > over time.
+> 
+> How is this cleaner, lets say we have many such drivers like all drivers under drivers/serial,
+> so we go and add #define for each of them? That looks more spread out than having all
+> such information under one file (Makefile).
+
+If you have to go and add this to each and every driver, that is a HUGE
+hint that this feature is not a good one and that no one should be using
+it in the first place, right?
+
+Again, this is a new way to modify driver functionality that is outside
+of the driver itself, which is not something that I would like to see
+added without a whole lot of discussion and planning.  To throw it in as
+part of a kvm change is not a nice way to hide such a thing.
+
+> And I didn't understand how is it harder to track changes to makefile? Makefile is  part
+> of the driver directory and any changes to makefile is visible to the corresponding maintainers.
+> Do you mean something else?
+
+I mean that we review driver changes all the time, and code is
+self-contained and the functionality is only affected right now by
+Kconfig options, and what is in the .c files itself.  You are adding a
+new way to change functionality by adding a Makefile configuration
+option as well.  That is a major functional change for how we do our
+configuration logic in Linux.
+
+> > Also, I see that this "disable the trace" feature has already been asked
+> > for for 2 other drivers in the Android kernel tree, why not include
+> > those changes here as well?  That kind of shows that this new feature is
+> > limited in that driver authors are already wanting it disabled, even
+> > before it is accepted.
+> 
+> That can be done later on top of this series right? This series mainly deals with adding
+> initial support for such tracing, there could be numerous drivers who might or might
+> not want the feature which can be added onto later. We can't actually identify all
+> the driver requirements upfront. As an example, we have already used the flag to
+> disable tracing for nVHE KVM, so we know how to use the flag.
+
+Again, make it explicit in the driver file itself that it is doing this,
+not in the Makefile, and I will not have any objections.
+
+> > Because of that, who _will_ be using this feature?
+> > 
+> 
+> Every driver except those two or few more, and it is not a bug or anything, they just want to disable it
+> to limit the logs in case of example UART driver since the reads/writes are very frequent in those cases
+> and the logs are not necessarily useful for them.
+
+I have a feeling that lots more drivers will want this disabled due to
+the noise it will cause.  The fact that we already have 2 requests to
+change this _before_ the code is even merged is proof of that.
+
+thanks,
+
+greg k-h
