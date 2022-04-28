@@ -2,49 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C540BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:34:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C2E1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:34:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347282AbiD1Nhh (ORCPT
+        id S1347296AbiD1Nh6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38316 "EHLO
+        Thu, 28 Apr 2022 09:37:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbiD1Nhc (ORCPT
+        with ESMTP id S1347280AbiD1Nhz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:37:32 -0400
-Received: from theia.8bytes.org (8bytes.org [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B78F674C0
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 06:34:17 -0700 (PDT)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-        id 78C7F374; Thu, 28 Apr 2022 15:34:15 +0200 (CEST)
-Date:   Thu, 28 Apr 2022 15:34:14 +0200
-From:   Joerg Roedel <joro@8bytes.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Lu Baolu <baolu.lu@linux.intel.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [RESEND PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
-Message-ID: <YmqX1kXee3FGGhXf@8bytes.org>
-References: <20220418005000.897664-1-baolu.lu@linux.intel.com>
- <YmpfFA1iIQyGBipX@8bytes.org>
- <20220428115411.GA8364@nvidia.com>
+        Thu, 28 Apr 2022 09:37:55 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38763ADD73;
+        Thu, 28 Apr 2022 06:34:39 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 25E171F4043E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651152877;
+        bh=GU8omeXrJMfiZadEv1lU4ULMJLZKc5nKhQvVWYR6Kng=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Zci5EGF3w5QPmXuuq1SwposSe9d6KMSH+Ii9J0t8fDkjJ+2m3YGMhkSwg7zkTynOT
+         w/Aa2fGUruj+UOOaLFTBHP7XSnhvs+VZnu/ZSce56t3dJYtlEuH4YzuTnuuAU4uiV/
+         4v7+SZ41eHXIbheZq9MCva6QLsLleUNuaKmNUPBk5ridkPajUXpjB/SavbfR2aDPYu
+         eUMpp4ABATl2qO7Ussp78Jy9en/I6kxjO3Fviszdp2mRb7jpY+rx7G+NrfxApud6Rx
+         NrVK166N4mB+o0OPyfdt4yfop/8p1Dyp+ln8isOFls/tXHIqkKSK/Xgpp7mRlgY0gQ
+         s4QpN720ZSaKQ==
+Message-ID: <8007e692-7a67-2930-709a-494d4e7df1de@collabora.com>
+Date:   Thu, 28 Apr 2022 15:34:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220428115411.GA8364@nvidia.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v8 1/2] dt-bindings: arm: Add compatible for MediaTek
+ MT8186
+Content-Language: en-US
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>, hsinyi@chromium.org
+References: <20220428061717.11197-1-allen-kh.cheng@mediatek.com>
+ <20220428061717.11197-2-allen-kh.cheng@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220428061717.11197-2-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 08:54:11AM -0300, Jason Gunthorpe wrote:
-> Can we get this on a topic branch so Alex can pull it? There are
-> conflicts with other VFIO patches
+Il 28/04/22 08:17, Allen-KH Cheng ha scritto:
+> This commit adds dt-binding documentation for the MediaTek MT8186
+> reference board.
+> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 
-Right, we already discussed this. Moved the patches to a separate topic
-branch. It will appear as 'vfio-notifier-fix' once I pushed the changes.
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Regards,
-
-	Joerg
