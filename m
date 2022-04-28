@@ -2,108 +2,374 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D15D8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:19:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9826EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 11:20:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345519AbiD1LWr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 07:22:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51914 "EHLO
+        id S241465AbiD1LXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 07:23:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230231AbiD1LWo (ORCPT
+        with ESMTP id S245064AbiD1LXT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 07:22:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A755EA94F2
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 04:19:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651144769;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Qr2DOGB0z6K0qePNKw8JJPlRt9jZnLNpgbFm3MJ8HzE=;
-        b=eNKVgpbvjOSnx86OScTqbuZpid+U+vejq4zFJTjH0smxRRL+mTTkBGmqPkfl77+KfMAvI9
-        VFKhWaLgnZicHcYoaC9/SlNuqNMB0kfmNExnHU6M/q9dWl5AhH3/TiMpTw0aqfAT2PZLS/
-        hjqts5K8zKjZNx30sP3KAJtsUfREpN8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-416-PeK0j-6rMlibt-Yq8wehuw-1; Thu, 28 Apr 2022 07:19:24 -0400
-X-MC-Unique: PeK0j-6rMlibt-Yq8wehuw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CD7BE1815CFC;
-        Thu, 28 Apr 2022 11:19:17 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.193.96])
-        by smtp.corp.redhat.com (Postfix) with SMTP id C6B052166B18;
-        Thu, 28 Apr 2022 11:19:12 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Thu, 28 Apr 2022 13:19:17 +0200 (CEST)
-Date:   Thu, 28 Apr 2022 13:19:11 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>
-Subject: Re: [PATCH 7/9] ptrace: Simplify the wait_task_inactive call in
- ptrace_check_attach
-Message-ID: <20220428111911.GA3804@redhat.com>
-References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
- <20220426225211.308418-7-ebiederm@xmission.com>
- <20220427151455.GE17421@redhat.com>
- <Ympvf1Pam1ckX+EA@hirez.programming.kicks-ass.net>
+        Thu, 28 Apr 2022 07:23:19 -0400
+Received: from out199-10.us.a.mail.aliyun.com (out199-10.us.a.mail.aliyun.com [47.90.199.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36EA2A94F5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 04:19:57 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=rongwei.wang@linux.alibaba.com;NM=1;PH=DS;RN=17;SR=0;TI=SMTPD_---0VBaQgGw_1651144790;
+Received: from 30.240.98.54(mailfrom:rongwei.wang@linux.alibaba.com fp:SMTPD_---0VBaQgGw_1651144790)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 28 Apr 2022 19:19:52 +0800
+Message-ID: <069b8778-f2b3-fd1d-a197-2d0614fca6b3@linux.alibaba.com>
+Date:   Thu, 28 Apr 2022 19:19:49 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ympvf1Pam1ckX+EA@hirez.programming.kicks-ass.net>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:100.0)
+ Gecko/20100101 Thunderbird/100.0
+Subject: Re: DAMON VA regions don't split on an large Android APP
+Content-Language: en-US
+To:     Barry Song <21cnbao@gmail.com>
+Cc:     sj@kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>, shuah@kernel.org,
+        brendanhiggins@google.com, foersleo@amazon.de, sieberf@amazon.com,
+        Shakeel Butt <shakeelb@google.com>, sjpark@amazon.de,
+        tuhailong@gmail.com, Song Jiang <sjiang88@gmail.com>,
+        =?UTF-8?B?5byg6K+X5piOKFNpbW9uIFpoYW5nKQ==?= 
+        <zhangshiming@oppo.com>,
+        =?UTF-8?B?5p2O5Z+56ZSLKHdpbmsp?= <lipeifeng@oppo.com>,
+        xhao@linux.alibaba.com
+References: <CAGsJ_4x_k9009HwpTswEq1ut_co8XYdpZ9k0BVW=0=HRiifxkA@mail.gmail.com>
+ <e3c1beb1-e3d5-6e26-bae2-06785080b57e@linux.alibaba.com>
+ <CAGsJ_4weJ9onh0EJVy8QXMXZ++4qVyVuRi7oP3wiD0XWnqF-Dg@mail.gmail.com>
+ <CAGsJ_4z8vMNDwL4uYB6_=txvm9zW7LKrFA2HChS2D-+fxhBiKA@mail.gmail.com>
+ <08fff4b9-3ae9-db68-13bb-cf5f0654e20a@linux.alibaba.com>
+ <CAGsJ_4wKqPEnFGdijwjKeCvfRwfdxkk-263EZt2Y21GMyn1_uA@mail.gmail.com>
+From:   Rongwei Wang <rongwei.wang@linux.alibaba.com>
+In-Reply-To: <CAGsJ_4wKqPEnFGdijwjKeCvfRwfdxkk-263EZt2Y21GMyn1_uA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/28, Peter Zijlstra wrote:
->
-> On Wed, Apr 27, 2022 at 05:14:57PM +0200, Oleg Nesterov wrote:
-> > On 04/26, Eric W. Biederman wrote:
-> > >
-> > > Asking wait_task_inactive to verify that tsk->__state == __TASK_TRACED
-> > > was needed to detect the when ptrace_stop would decide not to stop
-> > > after calling "set_special_state(TASK_TRACED)".  With the recent
-> > > cleanups ptrace_stop will always stop after calling set_special_state.
-> > >
-> > > Take advatnage of this by no longer asking wait_task_inactive to
-> > > verify the state.  If a bug is hit and wait_task_inactive does not
-> > > succeed warn and return -ESRCH.
-> >
-> > ACK, but I think that the changelog is wrong.
-> >
-> > We could do this right after may_ptrace_stop() has gone. This doesn't
-> > depend on the previous changes in this series.
->
-> It very much does rely on there not being any blocking between
-> set_special_state() and schedule() tho. So all those PREEMPT_RT
-> spinlock->rt_mutex things need to be gone.
 
-Yes sure. But this patch doesn't add the new problems, imo.
 
-Yes we can hit the WARN_ON_ONCE(!wait_task_inactive()), but this is
-correct in that it should not fail, and this is what we need to fix.
+On 4/28/22 3:37 PM, Barry Song wrote:
+> On Thu, Apr 28, 2022 at 2:05 PM Rongwei Wang
+> <rongwei.wang@linux.alibaba.com> wrote:
+>>
+>>
+>>
+>> On 4/27/22 5:22 PM, Barry Song wrote:
+>>> On Wed, Apr 27, 2022 at 7:44 PM Barry Song <21cnbao@gmail.com> wrote:
+>>>>
+>>>> On Wed, Apr 27, 2022 at 6:56 PM Rongwei Wang
+>>>> <rongwei.wang@linux.alibaba.com> wrote:
+>>>>>
+>>>>>
+>>>>>
+>>>>> On 4/27/22 7:19 AM, Barry Song wrote:
+>>>>>> Hi SeongJae & Andrew,
+>>>>>> (also Cc-ed main damon developers)
+>>>>>> On an Android phone, I tried to use the DAMON vaddr monitor and found
+>>>>>> that vaddr regions don't split well on large Android Apps though
+>>>>>> everything works well on native Apps.
+>>>>>>
+>>>>>> I have tried the below two cases on an Android phone with 12GB memory
+>>>>>> and snapdragon 888 CPU.
+>>>>>> 1. a native program with small memory working set  as below,
+>>>>>> #define size (1024*1024*100)
+>>>>>> main()
+>>>>>> {
+>>>>>>            volatile int *p = malloc(size);
+>>>>>>            memset(p, 0x55, size);
+>>>>>>
+>>>>>>            while(1) {
+>>>>>>                    int i;
+>>>>>>                    for (i = 0; i < size / 4; i++)
+>>>>>>                            (void)*(p + i);
+>>>>>>                    usleep(1000);
+>>>>>>
+>>>>>>                    for (i = 0; i < size / 16; i++)
+>>>>>>                            (void)*(p + i);
+>>>>>>                    usleep(1000);
+>>>>>>
+>>>>>>            }
+>>>>>> }
+>>>>>> For this application, the Damon vaddr monitor works very well.
+>>>>>> I have modified monitor.py in the damo userspace tool a little bit to
+>>>>>> show the raw data getting from the kernel.
+>>>>>> Regions can split decently on this kind of applications, a typical raw
+>>>>>> data is as below,
+>>>>>>
+>>>>>> monitoring_start:             2.224 s
+>>>>>> monitoring_end:               2.329 s
+>>>>>> monitoring_duration:       104.336 ms
+>>>>>> target_id: 0
+>>>>>> nr_regions: 24
+>>>>>> 005fb37b2000-005fb734a000(  59.594 MiB): 0
+>>>>>> 005fb734a000-005fbaf95000(  60.293 MiB): 0
+>>>>>> 005fbaf95000-005fbec0b000(  60.461 MiB): 0
+>>>>>> 005fbec0b000-005fc2910000(  61.020 MiB): 0
+>>>>>> 005fc2910000-005fc6769000(  62.348 MiB): 0
+>>>>>> 005fc6769000-005fca33f000(  59.836 MiB): 0
+>>>>>> 005fca33f000-005fcdc8b000(  57.297 MiB): 0
+>>>>>> 005fcdc8b000-005fd115a000(  52.809 MiB): 0
+>>>>>> 005fd115a000-005fd45bd000(  52.387 MiB): 0
+>>>>>> 007661c59000-007661ee4000(   2.543 MiB): 2
+>>>>>> 007661ee4000-0076623e4000(   5.000 MiB): 3
+>>>>>> 0076623e4000-007662837000(   4.324 MiB): 2
+>>>>>> 007662837000-0076630f1000(   8.727 MiB): 3
+>>>>>> 0076630f1000-007663494000(   3.637 MiB): 2
+>>>>>> 007663494000-007663753000(   2.746 MiB): 1
+>>>>>> 007663753000-007664251000(  10.992 MiB): 3
+>>>>>> 007664251000-0076666fd000(  36.672 MiB): 2
+>>>>>> 0076666fd000-007666e73000(   7.461 MiB): 1
+>>>>>> 007666e73000-007667c89000(  14.086 MiB): 2
+>>>>>> 007667c89000-007667f97000(   3.055 MiB): 0
+>>>>>> 007667f97000-007668112000(   1.480 MiB): 1
+>>>>>> 007668112000-00766820f000(1012.000 KiB): 0
+>>>>>> 007ff27b7000-007ff27d6000( 124.000 KiB): 0
+>>>>>> 007ff27d6000-007ff27d8000(   8.000 KiB): 8
+>>>>>>
+>>>>>> 2. a large Android app like Asphalt 9
+>>>>>> For this case, basically regions can't split very well, but monitor
+>>>>>> works on small vma:
+>>>>>>
+>>>>>> monitoring_start:             2.220 s
+>>>>>> monitoring_end:               2.318 s
+>>>>>> monitoring_duration:        98.576 ms
+>>>>>> target_id: 0
+>>>>>> nr_regions: 15
+>>>>>> 000012c00000-0001c301e000(   6.754 GiB): 0
+>>>>>> 0001c301e000-000371b6c000(   6.730 GiB): 0
+>>>>>> 000371b6c000-000400000000(   2.223 GiB): 0
+>>>>>> 005c6759d000-005c675a2000(  20.000 KiB): 0
+>>>>>> 005c675a2000-005c675a3000(   4.000 KiB): 3
+>>>>>> 005c675a3000-005c675a7000(  16.000 KiB): 0
+>>>>>> 0072f1e14000-0074928d4000(   6.510 GiB): 0
+>>>>>> 0074928d4000-00763c71f000(   6.655 GiB): 0
+>>>>>> 00763c71f000-0077e863e000(   6.687 GiB): 0
+>>>>>> 0077e863e000-00798e214000(   6.590 GiB): 0
+>>>>>> 00798e214000-007b0e48a000(   6.002 GiB): 0
+>>>>>> 007b0e48a000-007c62f00000(   5.323 GiB): 0
+>>>>>> 007c62f00000-007defb19000(   6.199 GiB): 0
+>>>>>> 007defb19000-007f794ef000(   6.150 GiB): 0
+>>>>>> 007f794ef000-007fe8f53000(   1.745 GiB): 0
+>>>>>>
+>>>>>> As you can see, we have some regions which are very very big and they
+>>>>>> are losing the chance to be splitted. But
+>>>>>> Damon can still monitor memory access for those small VMA areas very well like:
+>>>>>> 005c675a2000-005c675a3000(   4.000 KiB): 3
+>>>>> Hi, Barry
+>>>>>
+>>>>> Actually, we also had found the same problem in redis by ourselves
+>>>>> tool[1]. The DAMON can not split the large anon VMA well, and the anon
+>>>>> VMA has 10G~20G memory. I guess the whole region doesn't have sufficient
+>>>>> hot areas to been monitored or found by DAMON, likes one or more address
+>>>>> choose by DAMON not been accessed during sample period.
+>>>>
+>>>> Hi Rongwei,
+>>>> Thanks  for your comments and thanks for sharing your tools.
+>>>>
+>>>> I guess the cause might be:
+>>>> in case a region is very big like 10GiB, we have only 1MiB hot pages
+>>>> in this large region.
+>>>> damon will randomly pick one page to sample, but the page has only
+>>>> 1MiB/10GiB, thus
+>>>> less than 1/10000 chance to hit the hot 1MiB. so probably we need
+>>>> 10000 sample periods
+>>>> to hit the hot 1MiB in order to split this large region?
+>>>>
+>>>> @SeongJae, please correct me if I am wrong.
+>>>>
+>>>>>
+>>>>> I'm not sure whether sets init_regions can deal with the above problem,
+>>>>> or dynamic choose one or limited number VMA to monitor.
+>>>>>
+>>>>
+>>>> I won't set a limited number of VMA as this will make the damon too hard to use
+>>>> as nobody wants to make such complex operations, especially an Android
+>>>> app might have more than 8000 VMAs.
+>>>>
+>>>> I agree init_regions might be the right place to enhance the situation.
+>>>>
+>>>>> I'm not sure, just share my idea.
+>>>>>
+>>>>> [1] https://github.com/aliyun/data-profile-tools.git
+>>>>
+>>>> I suppose this tool is based on damon? How do you finally resolve the problem
+>>>> that large anon VMAs can't be splitted?
+>>>> Anyway, I will give your tool a try.
+>>>
+>>> Unfortunately, data-profile-tools.git doesn't build on aarch64 ubuntu
+>>> though autogen.sh
+>>> runs successfully.
+>>>
+>>> /usr/bin/ld: ./.libs/libdatop.a(disp.o): in function `cons_handler':
+>>> /root/data-profile-tools/src/disp.c:625: undefined reference to `stdscr'
+>>> /usr/bin/ld: /root/data-profile-tools/src/disp.c:625: undefined
+>>> reference to `stdscr'
+>>> /usr/bin/ld: /root/data-profile-tools/src/disp.c:625: undefined
+>>> reference to `wgetch'
+>>> /usr/bin/ld: ./.libs/libdatop.a(reg.o): in function `reg_win_create':
+>>> /root/data-profile-tools/src/reg.c:108: undefined reference to `stdscr'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:108: undefined
+>>> reference to `stdscr'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:108: undefined
+>>> reference to `subwin'
+>>> /usr/bin/ld: ./.libs/libdatop.a(reg.o): in function `reg_erase':
+>>> /root/data-profile-tools/src/reg.c:161: undefined reference to `werase'
+>>> /usr/bin/ld: ./.libs/libdatop.a(reg.o): in function `reg_refresh':
+>>> /root/data-profile-tools/src/reg.c:171: undefined reference to `wrefresh'
+>>> /usr/bin/ld: ./.libs/libdatop.a(reg.o): in function `reg_refresh_nout':
+>>> /root/data-profile-tools/src/reg.c:182: undefined reference to `wnoutrefresh'
+>>> /usr/bin/ld: ./.libs/libdatop.a(reg.o): in function `reg_update_all':
+>>> /root/data-profile-tools/src/reg.c:191: undefined reference to `doupdate'
+>>> /usr/bin/ld: ./.libs/libdatop.a(reg.o): in function `reg_win_destroy':
+>>> /root/data-profile-tools/src/reg.c:200: undefined reference to `delwin'
+>>> /usr/bin/ld: ./.libs/libdatop.a(reg.o): in function `reg_line_write':
+>>> /root/data-profile-tools/src/reg.c:226: undefined reference to `mvwprintw'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:230: undefined
+>>> reference to `wattr_off'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:217: undefined
+>>> reference to `wattr_on'
+>>> /usr/bin/ld: ./.libs/libdatop.a(reg.o): in function `reg_highlight_write':
+>>> /root/data-profile-tools/src/reg.c:245: undefined reference to `wattr_on'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:255: undefined
+>>> reference to `wattr_off'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:252: undefined
+>>> reference to `mvwprintw'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:255: undefined
+>>> reference to `wattr_off'
+>>> /usr/bin/ld: ./.libs/libdatop.a(reg.o): in function `reg_curses_fini':
+>>> /root/data-profile-tools/src/reg.c:367: undefined reference to `stdscr'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:367: undefined
+>>> reference to `stdscr'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:367: undefined
+>>> reference to `wclear'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:368: undefined
+>>> reference to `wrefresh'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:369: undefined
+>>> reference to `endwin'
+>>> /usr/bin/ld: ./.libs/libdatop.a(reg.o): in function `reg_curses_init':
+>>> /root/data-profile-tools/src/reg.c:382: undefined reference to `stdscr'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:381: undefined
+>>> reference to `initscr'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:382: undefined
+>>> reference to `stdscr'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:382: undefined
+>>> reference to `wrefresh'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:383: undefined
+>>> reference to `use_default_colors'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:384: undefined
+>>> reference to `start_color'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:385: undefined
+>>> reference to `keypad'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:386: undefined
+>>> reference to `nonl'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:387: undefined
+>>> reference to `cbreak'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:388: undefined
+>>> reference to `noecho'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:389: undefined
+>>> reference to `curs_set'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:401: undefined
+>>> reference to `stdscr'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:401: undefined
+>>> reference to `mvwprintw'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:403: undefined
+>>> reference to `mvwprintw'
+>>> /usr/bin/ld: /root/data-profile-tools/src/reg.c:405: undefined
+>>> reference to `wrefresh'
+>>> collect2: error: ld returned 1 exit status
+>>> make[1]: *** [Makefile:592: datop] Error 1
+>>> make[1]: Leaving directory '/root/data-profile-tools'
+>>> make: *** [Makefile:438: all] Error 2
+>> Hi, Barry
+>>
+>> Now, the question made me realize that the compatibility of this tool is
+>> very poor. I built a ubuntu environment at yesterday, and fixed above
+>> errors by:
+>>
+>> diff --git a/configure.ac b/configure.ac
+>> index 7922f27..1ed823c 100644
+>> --- a/configure.ac
+>> +++ b/configure.ac
+>> @@ -21,13 +21,9 @@ AC_PROG_INSTALL
+>>    AC_CHECK_LIB([numa], [numa_free])
+>>    AC_CHECK_LIB([pthread], [pthread_create])
+>>
+>> -PKG_CHECK_MODULES([CHECK], [check])
+>> -
+>> -PKG_CHECK_MODULES([NCURSES], [ncursesw ncurses], [LIBS="$LIBS
+>> $ncurses_LIBS"], [
+>> -       AC_SEARCH_LIBS([delwin], [ncursesw ncurses], [], [
+>> -               AC_MSG_ERROR([ncurses is required but was not found])
+>> -       ], [])
+>> -])
+>> +AC_SEARCH_LIBS([stdscr], [ncurses ncursesw], [], [
+>> +       AC_MSG_ERROR([required library libncurses or ncurses not found])
+>> +       ])
+>>
+> 
+> I can confirm the patch fixed the issue I reported yesterday, thanks!
+> 
+>> It works. But I found an another thing will hinder you using this tool.
+>> We had developed other patches about DAMON base on upstream. This tool
+>> only works well in ourselves kernel(anolis kernel, already open source).
+>> Of course, I think it's unnecessary for you to change kernel, just let
+>> you know this tool still has this problem.
+>>
+> 
+> Although I can't use this tool directly as I am not a NUMA right now,
+> ~/data-profile-tools # ./datop --help
+> Not support NUMA fault stat (DAMON)!
+> 
+> I am still quite interested in your design and the purpose of this project.
+> Unfortunately the project seems to be lacking some design doc.
+Thanks for your feedback. I am planning to write these design doc.
+> 
+> And would you like to send patches to lkml regarding what you
+> have changed atop DAMON?
+Actually, Hao Xin had tried to submit these relevant patchset[1]. you 
+can find them in the following link. It seems the latest DAMON has 
+changed too much, makes these patchset can not merge directly. We will 
+send next version for reviewing after adjusting base on latest upstream.
 
-> That is also the reason I couldn't do wait_task_inactive(task, 0)
-
-Ah, I din't notice this patch uses wait_task_inactive(child, 0),
-I think it should do wait_task_inactive(child, __TASK_TRACED).
-
-Oleg.
-
+[1] https://lore.kernel.org/lkml/20220217082939.2850-1-sj@kernel.org/T/
+> 
+>> Anyway, the question that you reported was valuable, made me realize
+>> what we need to improve next.
+>>
+>> Thanks,
+>> Rongwei Wang
+>>>
+>>>>
+>>>>>>
+>>>>>> Typical characteristics of a large Android app is that it has
+>>>>>> thousands of vma and very large virtual address spaces:
+>>>>>> ~/damo # pmap 2550 | wc -l
+>>>>>> 8522
+>>>>>>
+>>>>>> ~/damo # pmap 2550
+>>>>>> ...
+>>>>>> 0000007992bbe000      4K r----   [ anon ]
+>>>>>> 0000007992bbf000     24K rw---   [ anon ]
+>>>>>> 0000007fe8753000      4K -----   [ anon ]
+>>>>>> 0000007fe8754000   8188K rw---   [ stack ]
+>>>>>>     total         36742112K
+>>>>>>
+>>>>>> Because the whole vma list is too long, I have put the list here for
+>>>>>> you to download:
+>>>>>> wget http://www.linuxep.com/patches/android-app-vmas
+>>>>>>
+>>>>>> I can reproduce this problem on other Apps like youtube as well.
+>>>>>> I suppose we need to boost the algorithm of splitting regions for this
+>>>>>> kind of application.
+>>>>>> Any thoughts?
+>>>>>>
+>>>>
+> 
+> Thanks
+> Barry
