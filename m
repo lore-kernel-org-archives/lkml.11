@@ -2,120 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8BEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 18:01:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48DB2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 18:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350697AbiD1SFA (ORCPT
+        id S1350719AbiD1SIJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 14:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37318 "EHLO
+        Thu, 28 Apr 2022 14:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245205AbiD1SE6 (ORCPT
+        with ESMTP id S240271AbiD1SIH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 14:04:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD7C972A7;
-        Thu, 28 Apr 2022 11:01:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7CD5EB82EF7;
-        Thu, 28 Apr 2022 18:01:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FFB5C385A9;
-        Thu, 28 Apr 2022 18:01:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651168900;
-        bh=j73iXb7HRmYNvs62beHpaMLechgWJdFxikbQ4RJV4Ew=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=arTulElWhcwZNgmeTTmFxCr7czn03uLlxgEQVPEn9CVlcEMbvRrkd4EJXHmvbSMZ2
-         grajzT44dJmJGlUT/YtAZhPXTpfeZusEKVKFW3/nfS38asp70m0VXe/Z73TEuudCDo
-         nofjhlUGxzjz1ejBATWeP3SkBaj5wKU+xX9MwShHeu9kQPPLq8+h+XNSPEztkpnBln
-         sO70Pg4FknvIyzw48FwKXHlQLXZi7HYEx4BkVzP8bLM3uM/jzJLuwclqY26sstWLDV
-         vGuqfjf1UffYh8B83NMMeGrxHcB8ZaOOxpiIwErDYTq/s4tb3MGaFfi0/xhmlp/LcZ
-         HyIFJ+wpIFAPw==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id D38FA5C0387; Thu, 28 Apr 2022 11:01:39 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 11:01:39 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Zqiang <qiang1.zhang@intel.com>
-Cc:     frederic@kernel.org, rcu@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] rcutorture: Fix kmemleak in rcu_test_debug_objects()
-Message-ID: <20220428180139.GK1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220427071520.2239030-1-qiang1.zhang@intel.com>
+        Thu, 28 Apr 2022 14:08:07 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D92EA94E8
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 11:04:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651169092; x=1682705092;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=5d2BQCSncgZPjLPNMBnWwYJMHtGtOAvWl//iQAH/zkc=;
+  b=LNHDKIjdMxwLy9cHv9HguUVgQAZhRBEaMnyVcxQl0o66uMUxxRRCBG7H
+   gceNGZ326O1KiaBFGPL7dT1YYXq/d/I8qBEgDIGax90mC58eBOlClG4+P
+   RRTT3UcShXNJzNQJHK6GgfFK7DjmjWaOZ4zcO4psxiY/parEXtX6Sxm4y
+   U0cD0NaW5Bd2RlKl6hejlszgfv/AqvOV8V0xQU4tT/ozf13Hf0eHKncBV
+   oq+ZJMmbqGcuiEUrEn8PfoeYYS34XDCI32xh9oWTLwo+Kpan/tcfrYd9n
+   ec2D7xG8yBQzotmUcvdcv0I6YvGplfgjr+vb0nH5nnjHl10PK8wi1+pMK
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="352804734"
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="352804734"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 11:04:45 -0700
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="559803305"
+Received: from mpoursae-mobl2.amr.corp.intel.com (HELO [10.212.0.84]) ([10.212.0.84])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 11:04:43 -0700
+Message-ID: <9a484750-cf67-289c-78d1-2e1b764441e8@intel.com>
+Date:   Thu, 28 Apr 2022 11:04:59 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220427071520.2239030-1-qiang1.zhang@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4 1/3] x86/tdx: Add TDX Guest attestation interface
+ driver
+Content-Language: en-US
+To:     Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org
+References: <20220422233418.1203092-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220422233418.1203092-2-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <YmrSqEBHXZvWs4a0@fedora>
+ <c771664d-893b-a41e-079f-74673517b3bb@linux.intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <c771664d-893b-a41e-079f-74673517b3bb@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 03:15:20PM +0800, Zqiang wrote:
-> The kmemleak kthread scan to the following:
+On 4/28/22 10:56, Sathyanarayanan Kuppuswamy wrote:
+> On 4/28/22 10:45 AM, Wander Lairson Costa wrote:
+>> On Fri, Apr 22, 2022 at 04:34:16PM -0700, Kuppuswamy Sathyanarayanan
+>> wrote:
+>>> +static long tdx_get_tdreport(void __user *argp)
+>>> +{
+>>> +    void *report_buf = NULL, *tdreport_buf = NULL;
+>>> +    long ret = 0, err;
+>>> +
+>>> +    /* Allocate space for report data */
+>>> +    report_buf = kmalloc(TDX_REPORT_DATA_LEN, GFP_KERNEL);
+>>> +    if (!report_buf)
+>>> +        return -ENOMEM;
+>>> +
+>>> +    /*
+>>> +     * Allocate space for TDREPORT buffer (1024-byte aligned).
+>>> +     * Full page alignment is more than enough.
+>>> +     */
+>>> +    tdreport_buf = (void *)get_zeroed_page(GFP_KERNEL);
+>>
+>> Maybe we should add BUILD_BUG_ON(TDX_TDREPORT_LEN > PAGE_SIZE)
 > 
-> unreferenced object 0xffff95d941135b50 (size 16):
->   comm "swapper/0", pid 1, jiffies 4294667610 (age 1367.451s)
->   hex dump (first 16 bytes):
->     f0 c6 c2 bd d9 95 ff ff 00 00 00 00 00 00 00 00  ................
->   backtrace:
->     [<00000000bc81d9b1>] kmem_cache_alloc_trace+0x2f6/0x500
->     [<00000000d28be229>] rcu_torture_init+0x1235/0x1354
->     [<0000000032c3acd9>] do_one_initcall+0x51/0x210
->     [<000000003c117727>] kernel_init_freeable+0x205/0x259
->     [<000000003961f965>] kernel_init+0x1a/0x120
->     [<000000001998f890>] ret_from_fork+0x22/0x30
-> 
-> the rhp object is not released after use, so call kfree() to
-> release it.
-> 
-> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+> Currently, it is a constant value < PAGE_SIZE. But I can add the
+> BUILD_BUG_ON check for it.
 
-Good catch, thank you!
+That's kinda silly.  If it might ever be bigger than a page, you just do:
 
-I queued this for v5.20 with the wordsmithed commit log shown below.
+	tdreport_buf = alloc_pages();
 
-							Thanx, Paul
+But, seriously, TDX_TDREPORT_LEN is part of the ABI and can't change.
+kmalloc() would work too since TDX_TDREPORT_LEN is a power of 2.
 
-------------------------------------------------------------------------
-
-commit 1a2df31f4026dbc8dc4db17a4c2ed01e67f45c92
-Author: Zqiang <qiang1.zhang@intel.com>
-Date:   Wed Apr 27 15:15:20 2022 +0800
-
-    rcutorture: Fix memory leak in rcu_test_debug_objects()
-    
-    The kernel memory leak detector located the following:
-    
-    unreferenced object 0xffff95d941135b50 (size 16):
-      comm "swapper/0", pid 1, jiffies 4294667610 (age 1367.451s)
-      hex dump (first 16 bytes):
-        f0 c6 c2 bd d9 95 ff ff 00 00 00 00 00 00 00 00  ................
-      backtrace:
-        [<00000000bc81d9b1>] kmem_cache_alloc_trace+0x2f6/0x500
-        [<00000000d28be229>] rcu_torture_init+0x1235/0x1354
-        [<0000000032c3acd9>] do_one_initcall+0x51/0x210
-        [<000000003c117727>] kernel_init_freeable+0x205/0x259
-        [<000000003961f965>] kernel_init+0x1a/0x120
-        [<000000001998f890>] ret_from_fork+0x22/0x30
-    
-    This is caused by the rcu_test_debug_objects() function allocating an
-    rcu_head structure, then failing to free it.  This commit therefore adds
-    the needed kfree() after the last use of this structure.
-    
-    Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-
-diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
-index bb2e1610d0add..faf6b4c7a7572 100644
---- a/kernel/rcu/rcutorture.c
-+++ b/kernel/rcu/rcutorture.c
-@@ -3176,6 +3176,7 @@ static void rcu_test_debug_objects(void)
- 	pr_alert("%s: WARN: Duplicate call_rcu() test complete.\n", KBUILD_MODNAME);
- 	destroy_rcu_head_on_stack(&rh1);
- 	destroy_rcu_head_on_stack(&rh2);
-+	kfree(rhp);
- #else /* #ifdef CONFIG_DEBUG_OBJECTS_RCU_HEAD */
- 	pr_alert("%s: !CONFIG_DEBUG_OBJECTS_RCU_HEAD, not testing duplicate call_rcu()\n", KBUILD_MODNAME);
- #endif /* #else #ifdef CONFIG_DEBUG_OBJECTS_RCU_HEAD */
