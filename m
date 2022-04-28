@@ -2,151 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD774C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:53:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D054C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343494AbiD1H4M (ORCPT
+        id S1343514AbiD1H4i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 03:56:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35822 "EHLO
+        Thu, 28 Apr 2022 03:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245737AbiD1H4L (ORCPT
+        with ESMTP id S1343507AbiD1H4b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 03:56:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B81E5D9F
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:52:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651132376;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fwpLwYRRl15FISsOjXyGpPG6h0phY4GTTlpFR9suoQg=;
-        b=NN6yJnvM33yuTekllCPuiQonV9kJ7Vv0amFz3Vam8gok+/u6gEpzVETXKwJ/qq+fxxzivo
-        ZwFl3NkXul6AvaDLpVoPFRCFzT+9q9Gx5BEJtSujo9cleHxShCLj8bBbk6DD7rm8hFFZji
-        goK9PaP2Uu+nj8OR89K8md40tXgqozU=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-631-OzjKI7QaOGmnqJCm7bWPYw-1; Thu, 28 Apr 2022 03:52:55 -0400
-X-MC-Unique: OzjKI7QaOGmnqJCm7bWPYw-1
-Received: by mail-wm1-f69.google.com with SMTP id n37-20020a05600c502500b0038fdc1394c6so1591574wmr.6
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:52:55 -0700 (PDT)
+        Thu, 28 Apr 2022 03:56:31 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B52465F245
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:53:17 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id l7so7914359ejn.2
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:53:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=0oibHn2Km2ySnvEkLorLPqHJq9AlGnF8cV/IfEW7+rA=;
+        b=jc5jg55FXTDdxCxGDJc6DGnGUOpt1hrU5hKu4fBLqD5wYzvYkglbe4l0yMxfUVQKyd
+         IAZ7Czbm1m5lV5+saZGrgf/efjQgLu//xnv1zpY7XDm7/kYrFfoYBmQ0toBzzdkF+bP7
+         OdiacFiHHUCor7aRXuLDuDTK3gvyLJMAtvuCEzSg5Tq6/7oyRX7PxtsJcIB2p7h2CVwA
+         hEiuY004/DFgdm+4qhfT0D/WnV/KCDH+RlhJHqVQUqkq8uI1E8fiFoXu7rFCHVI2jeiP
+         6FsPW6hbmNyJz4LTb6l7LJWXEuTpGSC3KL9Mu3nwGXOiS9uWYDUVWtDCIypg9A25mLTs
+         UTcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=fwpLwYRRl15FISsOjXyGpPG6h0phY4GTTlpFR9suoQg=;
-        b=QuQ0bdBE7hGIzZ/7fe7uEf5OKbIFxFNquS85XNbL6vaqR7PpqjfJyacBxYGYUZPuE8
-         K5BTBpWODPYzdg9Q+SP0fcYKk30mIWb2g3fBd38CF8rSlv540o+zD7QIMAkJkbTDhdm8
-         ApIfF/l7HN9Mw6gpJ9E238z/O50grEwDpg5cyEscUDOTZq7RZigek7K+kZ+DySjKd01u
-         nckK0EHndqTzG0FN09F6I2HCd7xWbshbL4PU53/daNdtzaNh+vFYyvhQQpQ92zOaxz+G
-         D6fdF1PwVirAfQklMEEkxVZTHI6oBQLz/j+rpzv8D0DVrGm+RTIZMqu8aRBRugrgvBiZ
-         xLlw==
-X-Gm-Message-State: AOAM533qGWQCGm1Kcqnpgca1spCWLPqaLHjN3ASjl+hpz/22oDsePKq8
-        1m9+MLrAk9SWRR88Wy4QeC2wo+LCmmWKi9tCPk1Zu0GlCjDV2VSmBIWiRm8R9qBVD8f4DxPMsZz
-        Hp7BxIiZzsnWClr0MVjl3IHxI
-X-Received: by 2002:adf:db05:0:b0:20a:dbf1:fdf8 with SMTP id s5-20020adfdb05000000b0020adbf1fdf8mr14784253wri.404.1651132374001;
-        Thu, 28 Apr 2022 00:52:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy4nP57a8g94sEy+weZhg736sd16pvG88YCpRY4VbB3lBBzq0jKK+zIIYv2kWADbstM5n+KNA==
-X-Received: by 2002:adf:db05:0:b0:20a:dbf1:fdf8 with SMTP id s5-20020adfdb05000000b0020adbf1fdf8mr14784239wri.404.1651132373697;
-        Thu, 28 Apr 2022 00:52:53 -0700 (PDT)
-Received: from [192.168.1.129] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id 17-20020a05600c021100b00393faf12859sm3826617wmi.18.2022.04.28.00.52.53
+        bh=0oibHn2Km2ySnvEkLorLPqHJq9AlGnF8cV/IfEW7+rA=;
+        b=zjQ8SeReLB5blTV1MTEraencQm0SeLnwFQQpHGtsOMptndJihbNo75yKGAg4Db8dxx
+         1DBhl/cxAePGDnxnmdbbnTnrn2MVoloh82Vr4iyT4KFI8Zyh7upHQXyGLfnVq70fiU1E
+         gjCJpG+w19g54qyPah3IGL8j9ldYS7w4unxa8Zg2pdUhedDtCKVTTnnWI5HTwUqiwTyY
+         +g9zPREnJ7I+fs44UCreGGBB2J5r0LeXIimlwOgZ8gNlcAx+jl9nJyWiVFgkAM0iZrTG
+         BU1GOD3U21C2Ori6AnrmPGuPxz9dqL2XqKkTgeW6y1RGmZoB8fsxkYBx+OGHgRszYYlS
+         b+DQ==
+X-Gm-Message-State: AOAM5337pzmetuyAHyJOjoi+hCaWa/qcD3LwFzZ1Yl3VzC2WEePf1qEg
+        BukSg6gSiTnTVjDdoScwuvnunQ==
+X-Google-Smtp-Source: ABdhPJxx3QKFffHZRJQse3tZOgUc10rVzWRfiShcG9PFJzOjQyDIh5pJC4d6bradtLB2Fbe8B5A4ag==
+X-Received: by 2002:a17:907:7f91:b0:6f3:d6bc:cd5b with SMTP id qk17-20020a1709077f9100b006f3d6bccd5bmr3247671ejc.460.1651132396327;
+        Thu, 28 Apr 2022 00:53:16 -0700 (PDT)
+Received: from [192.168.0.160] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id n11-20020a170906700b00b006f39c00b27fsm5227415ejj.13.2022.04.28.00.53.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 00:52:53 -0700 (PDT)
-Message-ID: <1d456654-6d06-ef35-b9a0-519db7d5b35e@redhat.com>
-Date:   Thu, 28 Apr 2022 09:52:51 +0200
+        Thu, 28 Apr 2022 00:53:15 -0700 (PDT)
+Message-ID: <a76c9312-895f-3626-b9ba-cf71fe285a86@linaro.org>
+Date:   Thu, 28 Apr 2022 09:53:14 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2] drm/display: Select DP helper for DRM_DP_AUX_CHARDEV
- and DRM_DP_CEC
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/7] dt-bindings: usb: mediatek,mtu3: add binding for
+ MT8195 SoC
 Content-Language: en-US
-To:     Thomas Zimmermann <tzimmermann@suse.de>,
+To:     Fabien Parent <fparent@baylibre.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org
-References: <20220427215528.237861-1-javierm@redhat.com>
- <46446e78-60a6-1b8c-1bb6-1c005489d58c@suse.de>
- <6f3b8d37-0a70-a035-e87b-5aa72926fff9@redhat.com>
- <af31d343-202b-ffaa-c6a9-b20247938dfd@suse.de>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <af31d343-202b-ffaa-c6a9-b20247938dfd@suse.de>
+References: <20220426134106.242353-1-fparent@baylibre.com>
+ <20220426134106.242353-2-fparent@baylibre.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220426134106.242353-2-fparent@baylibre.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/28/22 09:45, Thomas Zimmermann wrote:
-
-[snip]
-
->>> You cannot select DISPLAY_DP_HELPER without DISPLAY_HELPER.
->>>
->>
->> That was my original thought as well and what did in v1, but then I noticed
->> that doing that it would force DRM_DISPLAY_HELPER to be set as built-in and
->> not allow to be built as a module.
+On 26/04/2022 15:40, Fabien Parent wrote:
+> Add binding to support the mtu3 driver on the MT8195 SoC.
 > 
-> It was a rhetorical only. I didn't mean to actually set DISPLAY_HELPER.
-> 
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
 
-Ah, sorry for misunderstanding.
 
->>   
->>> Can't you simply make it depend on DISPLAY_DP_HELPER.  The menu entry
->>> will show up as soon as there's a driver that selcets DISPLAY_DP_HELPER.
->>>
->>
->> I could but then that means that once won't be able to select these two config
->> options unless some enable symbol selects DRM_DISPLAY_DP_HELPER.
->>
->> In my opinion, DRM_DP_AUX_CHARDEV and DRM_DP_CEC are different than all other
->> options that select DRM_DISPLAY_DP_HELPER, since those are drivers and want to
->> have both DRM_DISPLAY_DP_HELPER and DRM_DISPLAY_HELPER set.
->>
->> But DRM_DP_AUX_CHARDEV and DRM_DP_CEC are just included in drm_display_helper.o
->> if enabled, and depend on symbols that are present if CONFIG_DRM_DISPLAY_DP_HELPER
->> is enabled. So just need the latter, if DRM_DISPLAY_HELPER is not enabled then it
->> will just be a no-op.
->>
->> Having written that though I noticed that a "depends on DRM_DISPLAY_HELPER" makes
->> sense. If you agree I can add it and post a v3.
-> 
-> Yes please.  These options enable features of the DP code. If there's no 
-> driver with DP, it doesn't make sense to allow them.
-> 
-> I know that there could be an odd situation where userspace might not 
-> have DP, but still wants the chardev file of aux bus.  But that 
-> situation existed already when the code was located within KMS helpers.
-> 
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Agreed.
 
->>
->> Now, pondering more about this issue, probably the most correct thing to do is for
->> the drivers that make use of the symbols exported by DRM_DP_{AUX_CHARDEV,CEC} to
->> select these. What do you think ?
-> 
-> That's not considered good style. Select should not be used for anything 
-> that is user-configurable. [1]
->
-
-Right. So giving even more thought to this, now I think that we should just include
-drm_dp_aux_dev.o, drm_dp_cec.o (and probably drm_dp_aux_bus.o?) unconditionally to
-drm_display_helper-$(CONFIG_DRM_DISPLAY_DP_HELPER).
-
-After all, these are not big objects and drm_display_helper can now be built as module.
-
-I don't see that much value to have separate user-configurable config options...
-
--- 
 Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+Krzysztof
