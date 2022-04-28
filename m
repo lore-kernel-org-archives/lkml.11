@@ -2,112 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F028C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3915C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:52:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229998AbiD1IzS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:55:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34306 "EHLO
+        id S1344327AbiD1Izs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 04:55:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344577AbiD1Iy7 (ORCPT
+        with ESMTP id S244019AbiD1Izj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:54:59 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B58C6DF95
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:51:45 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 711C91F88A;
-        Thu, 28 Apr 2022 08:51:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1651135904; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RJlbReEahztd0FkC1b41gsYtqvdIadAThBNXtHtAHaQ=;
-        b=oRW6E5CswHN9hABWUOgLNlIP9L+7FiCtZZvSLAaOYYRv3FQTt4obLWekKOo6Lha/jWZ3nu
-        LGEEFiv8r/iVU8WLlft6XAvot1eV3ktjeuez1mP3ptoSGbnbh8pXG8ZE64cA7Q+3uBmVSm
-        VZ/swtxERjsiXzaJHV9irrBfrrL4LPM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1651135904;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RJlbReEahztd0FkC1b41gsYtqvdIadAThBNXtHtAHaQ=;
-        b=+lU35ZyVMubP+kUa38il6ZCoXknUkz6shiuL8RVppwgv9sRLP6iyhkqTnrQ/GDgDUsE+bN
-        n5rbbhgoeUAhzJBw==
-Received: from kunlun.suse.cz (unknown [10.100.128.76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 0DA612C141;
-        Thu, 28 Apr 2022 08:51:44 +0000 (UTC)
-Date:   Thu, 28 Apr 2022 10:51:42 +0200
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     Shivaprasad G Bhat <sbhat@linux.ibm.com>
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux NVDIMM <nvdimm@lists.linux.dev>
-Subject: Re: ndctl tests usable?
-Message-ID: <20220428085142.GL163591@kunlun.suse.cz>
-References: <20220426123839.GF163591@kunlun.suse.cz>
- <CAPcyv4j66HAE_x-eAHQR71pNyR0mk5b463S6OfeokLzZHq5ezw@mail.gmail.com>
- <20220426161435.GH163591@kunlun.suse.cz>
- <CAPcyv4iG4L3rA3eX-H=6nVkwhO2FGqDCbQHB2Lv_gLb+jy3+bw@mail.gmail.com>
- <20220426163834.GI163591@kunlun.suse.cz>
- <CAPcyv4jUj3v+4Sf=1i5EjxTeX9Ur65Smib-vkuaBdKYjUrh7yA@mail.gmail.com>
- <20220426180958.GJ163591@kunlun.suse.cz>
- <d2684252-8c85-ba0e-2356-29837e836f6f@linux.ibm.com>
+        Thu, 28 Apr 2022 04:55:39 -0400
+Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3E713D28;
+        Thu, 28 Apr 2022 01:52:25 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by comms.puri.sm (Postfix) with ESMTP id B6F65DF75F;
+        Thu, 28 Apr 2022 01:52:24 -0700 (PDT)
+Received: from comms.puri.sm ([127.0.0.1])
+        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id oin1w0UicEvp; Thu, 28 Apr 2022 01:52:24 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 10:52:19 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
+        t=1651135944; bh=7GvTiudrSeP0yh5rJkP4MPtvGvfvDnupAezm3TDBDt4=;
+        h=Date:From:To:Subject:In-Reply-To:References:From;
+        b=Gb9VNMTeIbJt88M70P2ChZEpLzARsNZPKnW5P1YEvAYAATR1enA3hQDZgB6LB4I3F
+         tvlBKy3Ym2FewMFg7y0vtIPvuYwCrRvjbXAHNmsNzeLJBfjxJU6Udgc7ANH3lKbJQl
+         sq/Ib7WMWWTmqIZVMV/brvdm4sPOkPN0ljnsZqGz9rGhLS6fTiybnNb7DoPp96i/jv
+         NcL+f35HjDsjSfYTrz8hXBAt9d9kOnpyb8pgU65UGAz7n1X+6zyFrkpXlwlh0q9BpV
+         mg9tH3Hz/ibhQpQiyRjaesmQrwhLdDS3hts0KWJJAW0vv3hlSM3qoggwkZ6ZPbyMNp
+         1C80QL0xwe4Ng==
+From:   Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@puri.sm
+Subject: [PATCHv2 2/2] media api: Try to make enum usage clearer
+Message-ID: <20220428105219.4b068b1f.dorota.czaplejewicz@puri.sm>
+In-Reply-To: <20220428083715.75997-1-dorota.czaplejewicz@puri.sm>
+References: <20220428083715.75997-1-dorota.czaplejewicz@puri.sm>
+Organization: Purism
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <d2684252-8c85-ba0e-2356-29837e836f6f@linux.ibm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: multipart/signed; boundary="Sig_/QP/6qVA55yp1tf5Be2CwjWZ";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 10:02:47AM +0530, Shivaprasad G Bhat wrote:
-> On 4/26/22 23:39, Michal Suchánek wrote:
-> > On Tue, Apr 26, 2022 at 09:47:19AM -0700, Dan Williams wrote:
-> > > On Tue, Apr 26, 2022 at 9:43 AM Michal Suchánek <msuchanek@suse.de> wrote:
-> > > > 
-> > > > On Tue, Apr 26, 2022 at 09:32:24AM -0700, Dan Williams wrote:
-> > > > > On Tue, Apr 26, 2022 at 9:15 AM Michal Suchánek <msuchanek@suse.de> wrote:
-> > > > > > 
-> > > > > > On Tue, Apr 26, 2022 at 08:51:25AM -0700, Dan Williams wrote:
-> > > > > > > On Tue, Apr 26, 2022 at 5:39 AM Michal Suchánek <msuchanek@suse.de> wrote:
-> > > > > > > > 
-> > ...
-> > > > > 
-> > > > > The modinfo just tells you what modules are available, but it does not
-> > > > > necessarily indicate which modules are actively loaded in the system
-> > > > > which is what ndctl_test_init() validates.
-> > > > 
-> > > > Isn't what modinfo lists also what modrobe loads?
-> 
-> <snip>
-> 
-> > modules are not loaded before the test.
-> > 
-> > Maybe something goes wrong with the test module build?
-> > 
-> > It is very fragile and requires complete kernel source for each
-> > configuration built. See below for the package
-> > 
-> > https://build.opensuse.org/package/show/home:michals/nfit_test
-> > 
-> > Attaching the log of test run which does not report any missing tools,
-> > only complains about nfit.ko being production.
-> 
-> I have attempted to fix few of the known issues in the first 3 patches of
-> the series posted here.
-> 
-> https://patchwork.kernel.org/project/linux-nvdimm/list/?series=633103
+--Sig_/QP/6qVA55yp1tf5Be2CwjWZ
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for pointing out these series.
+Fixed: typo "format" -> "frame size" in enum-frame-size
+Added: no holes in the enumeration
+Added: enumerations per what?
+Added: who fills in what in calls
+Changed: "zero" -> "0"
+Changed: "given" -> "specified"
+Signed-off-by: Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
+---
+ .../v4l/vidioc-subdev-enum-frame-size.rst     | 44 ++++++++++++-------
+ 1 file changed, 28 insertions(+), 16 deletions(-)
 
-It is certainly of interest but given the test VM is x86 the papr fixes
-don't really apply to this case.
+diff --git a/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-frame=
+-size.rst b/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-frame-=
+size.rst
+index c25a9896df0e..2c6fd291dc44 100644
+--- a/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-frame-size.r=
+st
++++ b/Documentation/userspace-api/media/v4l/vidioc-subdev-enum-frame-size.r=
+st
+@@ -31,18 +31,29 @@ Arguments
+ Description
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+-This ioctl allows applications to enumerate all frame sizes supported by
+-a sub-device on the given pad for the given media bus format. Supported
+-formats can be retrieved with the
++This ioctl allows applications to access the enumeration of frame sizes su=
+pported by
++a sub-device on the specified pad for the specified media bus format.
++Supported formats can be retrieved with the
+ :ref:`VIDIOC_SUBDEV_ENUM_MBUS_CODE`
+ ioctl.
+=20
+-To enumerate frame sizes applications initialize the ``pad``, ``which``
+-, ``code`` and ``index`` fields of the struct
+-:c:type:`v4l2_subdev_mbus_code_enum` and
+-call the :ref:`VIDIOC_SUBDEV_ENUM_FRAME_SIZE` ioctl with a pointer to the
+-structure. Drivers fill the minimum and maximum frame sizes or return an
+-EINVAL error code if one of the input parameters is invalid.
++The enumerations are defined by the driver, and indexed using the ``index`=
+` field
++of the struct :c:type:`v4l2_subdev_mbus_code_enum`.
++Each pair of ``pad`` and ``code`` correspond to a separate enumeration.
++Each enumeeration starts with the ``index`` of 0, and
++the lowest invalid index marks the end of the enumeration.
++
++Therefore, to enumerate frame sizes allowed on the specified pad
++and using the specified mbus format, initialize the
++``pad``, ``which``, and ``code`` fields to desired values,
++and set ``index`` to 0.
++Then call the :ref:`VIDIOC_SUBDEV_ENUM_FRAME_SIZE` ioctl with a pointer to=
+ the
++structure.
++
++A successful call will return with minimum and maximum frame sizes filled =
+in.
++Repeat with increasing ``index`` until ``EINVAL`` is received.
++``EINVAL`` means that either no more entries are available in the enumerat=
+ion,
++or that an input parameter was invalid.
+=20
+ Sub-devices that only support discrete frame sizes (such as most
+ sensors) will return one or more frame sizes with identical minimum and
+@@ -72,26 +83,27 @@ information about try formats.
+=20
+     * - __u32
+       - ``index``
+-      - Number of the format in the enumeration, set by the application.
++      - Index of the frame size in the enumeration
++    belonging to the given pad and format. Filled in by the application.
+     * - __u32
+       - ``pad``
+-      - Pad number as reported by the media controller API.
++      - Pad number as reported by the media controller API. Filled in by t=
+he application.
+     * - __u32
+       - ``code``
+       - The media bus format code, as defined in
+-	:ref:`v4l2-mbus-format`.
++	:ref:`v4l2-mbus-format`. Filled in by the application.
+     * - __u32
+       - ``min_width``
+-      - Minimum frame width, in pixels.
++      - Minimum frame width, in pixels. Filled in by the driver.
+     * - __u32
+       - ``max_width``
+-      - Maximum frame width, in pixels.
++      - Maximum frame width, in pixels. Filled in by the driver.
+     * - __u32
+       - ``min_height``
+-      - Minimum frame height, in pixels.
++      - Minimum frame height, in pixels. Filled in by the driver.
+     * - __u32
+       - ``max_height``
+-      - Maximum frame height, in pixels.
++      - Maximum frame height, in pixels. Filled in by the driver.
+     * - __u32
+       - ``which``
+       - Frame sizes to be enumerated, from enum
+--=20
+2.35.1
 
-Michal
+
+--Sig_/QP/6qVA55yp1tf5Be2CwjWZ
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEExKRqtqfFqmh+lu1oADBpX4S8ZncFAmJqVcMACgkQADBpX4S8
+ZndMLw/+M5xYgoggZzFPYiXC9mDlflEUHKjZ1pRt+vhi22i5O2+FEqT7W4jku7h7
+88vEUg5W8RI9kSeanCa4nFSlVdedu54uW77MIPA7Y6c3uHWZox8HEaotOSEPoz4+
+pV91GXSFdF4jimO55fWIY4oCv2IpP8/X0PtveLt+xFi2bvDApTXKOQ5mkCzccSFc
+iIIj7NLvoP5T1oK3EVFixlm+ggFpiRLyfkE5ktzmBtIF8wGTWifIu0mLuNMCXkDP
+mQ0D+8Dw4sYHxf9742IICBV0TJGCdk87eeRSU+QwCiGzaHffX3MwmbWkoNNhVfku
+Gk7p6LZxw+KKInFplRdl3TNxjNWiMGFX0+PpKFsftKZmzV/f1EtJoov7IjIVowlR
+NzN102hzv7PISaYlSeh1JEwnd3C1fSwHg+Dmolg74lfeW74c0cJXFwIhNLuol6/S
+2SM+f2L5TqNxEgWWDArtrrGJjuCsVfDFzgkJhukDJ2ApYte4AjbNck//BW1rRxk5
+ExY/NOG0QXGz1kdxnw9rSDfBkIyiyXiii143N0tsR02KdhbnPRGpEIrJikrjm3tp
+DLEfObsrLgZtbK3sZ+KrioQZhDkapR0UZ9PBeDNGMyuUNjmQPWMNlLAGkbhLoce6
+4Dec4AYe49/UN0l/KqeAFh5+zyJUDelm6NrncgndGasCTtTay0k=
+=OT3L
+-----END PGP SIGNATURE-----
+
+--Sig_/QP/6qVA55yp1tf5Be2CwjWZ--
