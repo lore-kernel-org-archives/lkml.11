@@ -2,96 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF31C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:41:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F26EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:46:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242507AbiD1Dow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 23:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38838 "EHLO
+        id S242537AbiD1DtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 23:49:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241797AbiD1Dot (ORCPT
+        with ESMTP id S231747AbiD1DtX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 23:44:49 -0400
-Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 1CE9483B1B;
-        Wed, 27 Apr 2022 20:41:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding;
-        bh=TkdTGRGgDnMX8EaddtL3uKayHDJt8/TLy89laRtXYrQ=; b=Bs50JvXElikc8
-        7LmlIXOE0aU/NqN9yLGnQ7AyQbt+K2NN295V1n12wk+whZrxyTZmGCSyvpYbUA+J
-        EpGVSO8EL2gioZXhd9aIUOmNF5RKblRXuWkia1AUjYm4UO6JgDTvUbfLFVax2jyd
-        DgaIxXcp0eeL49A+etI6rCR8xIgzs0=
-Received: from localhost.localdomain (unknown [10.102.183.96])
-        by app1 (Coremail) with SMTP id XAUFCgAHsrnPDGpi9qRkEQ--.26115S4;
-        Thu, 28 Apr 2022 11:41:08 +0800 (CST)
-From:   Xin Xiong <xiongx18@fudan.edu.cn>
-To:     John Johansen <john.johansen@canonical.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Seth Arnold <seth.arnold@canonical.com>,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     yuanxzhang@fudan.edu.cn, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>
-Subject: [PATCH] apparmor: fix reference count leak in aa_pivotroot()
-Date:   Thu, 28 Apr 2022 11:39:08 +0800
-Message-Id: <20220428033907.1658-1-xiongx18@fudan.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        Wed, 27 Apr 2022 23:49:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DDDD941307
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 20:46:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651117569;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PysP071vsdzg+AYtgM43Jv6G4Yc6NYLrTxTaRTUDRRA=;
+        b=f70etNXLxzjbdHVt3lgbtcBa+zsmWB6pmzAL3LWQAYjDqi3T+jW4eaI0aWKOnV3/W/pjO+
+        fADmyN2JqcJNrrcSsgIxUx7URVZu0VBmKoWVCY9dvRUxRSjsspiTqyF2KwRtptnQIkCcIn
+        tp3HvsHZZaTGo4gWdFTzdENjYRbvnD8=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-299-zh3ckDkKOjeeAKrIsdx14w-1; Wed, 27 Apr 2022 23:46:07 -0400
+X-MC-Unique: zh3ckDkKOjeeAKrIsdx14w-1
+Received: by mail-lf1-f69.google.com with SMTP id v13-20020a056512096d00b004487e1503d0so1475355lft.4
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 20:46:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=PysP071vsdzg+AYtgM43Jv6G4Yc6NYLrTxTaRTUDRRA=;
+        b=6t8RdzFib0cinYp9imt+7w2GhiWRNM0yLNKNmpnlrwQE/+KtFDqwmjMw5LARGE2XWa
+         xtJVJ12C1tGN0ndHdpOtxbLu+9l7x2pIV0e8gEyrPzDkUE/cxY2Qqd9iBXQ3FslnzTrx
+         nZab2APCdl+SpfN+KoGeGDib+rNduuGE8DMgvtm3hyrsFRck4F7uYyp8FJiGHfFqgvjs
+         xXyhVoy8XVsUF0uCjjfPQBkaGnXddE4t29NEx4jEkz4w8httUXLmviBLrCjsV5iP9Gsp
+         CMD5JlcNpOGjIcrWrSInx+ylyYaqg4Nvs91OlIeJzc8BW3EYjVrnaRGEpFeEsUEDuil6
+         FPcA==
+X-Gm-Message-State: AOAM532iUx8fH3BXuZurL4VettKXGrDJUyx2PUBJNCnjzAQ9HYKrLOMv
+        QTg0Auykc/yyDqwmmI7cSTr9aC7DwM6ZcD1bV6CkutAnp2Lar7VGTJhYhpVJRNnGKdQ2nVft/8y
+        oSWkR1MwyTWDmpKQUF6fGI++UzPUI5jaIDFwlAao7
+X-Received: by 2002:a05:6512:a8f:b0:471:948b:9b6b with SMTP id m15-20020a0565120a8f00b00471948b9b6bmr23037831lfu.471.1651117565392;
+        Wed, 27 Apr 2022 20:46:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzrMXH3xs932KXDj4oihyw/ZsxZNXihwzCtWef8Zgy1842y47Rf2KL1q1rvwUlz6Fz+FW8fuZHnc8IPfe45plE=
+X-Received: by 2002:a05:6512:a8f:b0:471:948b:9b6b with SMTP id
+ m15-20020a0565120a8f00b00471948b9b6bmr23037823lfu.471.1651117565212; Wed, 27
+ Apr 2022 20:46:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: XAUFCgAHsrnPDGpi9qRkEQ--.26115S4
-X-Coremail-Antispam: 1UD129KBjvdXoWruryruFW5tr4kCFWfGry3Arb_yoWkurc_GF
-        1kZwn5urWUZF1qqF4qkay0gF92934kJr4qga4FkrsrG34Y9a1ayrZxJw1fZry2qw47JF15
-        AFZ3Cr9Iy34xZjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbT8FF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr1j
-        6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-        0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVWUJVW8Jw
-        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAG
-        YxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCFx2
-        IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v2
-        6r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67
-        AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IY
-        s7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxV
-        WUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfUo-BMDUUUU
-X-CM-SenderInfo: arytiiqsuqiimz6i3vldqovvfxof0/1tbiAQ0KEFKp4-Oj6wAAs1
+References: <20220425062735.172576-1-lulu@redhat.com> <CACGkMEuMZJRw1TBfY5pTkSAD5MnGvUCu5Eqi=bWD5yc1-hc9YQ@mail.gmail.com>
+ <CACLfguUOoeiWrq_2s6NrNB4HwaAbeBYy2TGo0mhO-xswy9G7yw@mail.gmail.com>
+ <46c9f96a-8fcf-fae8-5fd7-53557d59c324@redhat.com> <CACLfguW+9OMPMUpehp+Zut7JosFtg2gzr7t7gZ6U-AdtV89S3g@mail.gmail.com>
+ <CACGkMEuJhrSxNc3v7hijSpBdA4X6aC-gA2Ogwed4oODUT_DJ6w@mail.gmail.com> <CACLfguV9Za0fa7vXaPxLEKUY2brnNitW6i=Gofdt00cFBwss_Q@mail.gmail.com>
+In-Reply-To: <CACLfguV9Za0fa7vXaPxLEKUY2brnNitW6i=Gofdt00cFBwss_Q@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Thu, 28 Apr 2022 11:45:53 +0800
+Message-ID: <CACGkMEuiXh-qXrz_ycQT_jjM0RpOe-G36w_eZyJEJNFp2UdVRg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] vdpa: add the check for id_table in struct vdpa_mgmt_dev
+To:     Cindy Lu <lulu@redhat.com>
+Cc:     mst <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The aa_pivotroot() function has a reference counting bug in a specific
-path. When aa_replace_current_label() returns on success, the function
-forgets to decrement the reference count of “target”, which is
-increased earlier by build_pivotroot(), causing a reference leak.
+On Thu, Apr 28, 2022 at 11:21 AM Cindy Lu <lulu@redhat.com> wrote:
+>
+> On Thu, Apr 28, 2022 at 11:07 AM Jason Wang <jasowang@redhat.com> wrote:
+> >
+> > On Thu, Apr 28, 2022 at 9:56 AM Cindy Lu <lulu@redhat.com> wrote:
+> > >
+> > > On Wed, Apr 27, 2022 at 12:04 PM Jason Wang <jasowang@redhat.com> wro=
+te:
+> > > >
+> > > >
+> > > > =E5=9C=A8 2022/4/27 10:01, Cindy Lu =E5=86=99=E9=81=93:
+> > > > > On Mon, Apr 25, 2022 at 5:00 PM Jason Wang <jasowang@redhat.com> =
+wrote:
+> > > > >> On Mon, Apr 25, 2022 at 2:27 PM Cindy Lu <lulu@redhat.com> wrote=
+:
+> > > > >>> To support the dynamic ids in vp_vdpa, we need to add the check=
+ for
+> > > > >>> id table. If the id table is NULL, will not set the device type
+> > > > >>>
+> > > > >>> Signed-off-by: Cindy Lu <lulu@redhat.com>
+> > > > >>> ---
+> > > > >>>   drivers/vdpa/vdpa.c | 11 +++++++----
+> > > > >>>   1 file changed, 7 insertions(+), 4 deletions(-)
+> > > > >>>
+> > > > >>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+> > > > >>> index 1ea525433a5c..09edd92cede0 100644
+> > > > >>> --- a/drivers/vdpa/vdpa.c
+> > > > >>> +++ b/drivers/vdpa/vdpa.c
+> > > > >>> @@ -492,10 +492,13 @@ static int vdpa_mgmtdev_fill(const struct=
+ vdpa_mgmt_dev *mdev, struct sk_buff *m
+> > > > >>>          if (err)
+> > > > >>>                  goto msg_err;
+> > > > >>>
+> > > > >>> -       while (mdev->id_table[i].device) {
+> > > > >>> -               if (mdev->id_table[i].device <=3D 63)
+> > > > >>> -                       supported_classes |=3D BIT_ULL(mdev->id=
+_table[i].device);
+> > > > >>> -               i++;
+> > > > >>> +       if (mdev->id_table !=3D NULL) {
+> > > > >>> +               while (mdev->id_table[i].device) {
+> > > > >>> +                       if (mdev->id_table[i].device <=3D 63)
+> > > > >>> +                               supported_classes |=3D
+> > > > >>> +                                       BIT_ULL(mdev->id_table[=
+i].device);
+> > > > >>> +                       i++;
+> > > > >>> +               }
+> > > > >>>          }
+> > > > >> This will cause 0 to be advertised as the supported classes.
+> > > > >>
+> > > > >> I wonder if we can simply use VIRTIO_DEV_ANY_ID here (and need t=
+o
+> > > > >> export it to via uAPI probably).
+> > > > >>
+> > > > >> Thanks
+> > > > >>
+> > > > > like the below one? not sure if this ok to use like this?
+> > > > > static struct virtio_device_id vp_vdpa_id_table[] =3D {
+> > > > > { VIRTIO_DEV_ANY_ID, VIRTIO_DEV_ANY_ID },
+> > > > > { 0 },
+> > > > > };
+> > > >
+> > > >
+> > > > Something like this.
+> > > >
+> > > > Thanks
+> > > >
+> > > >
+> > > I have checked the code, this maybe can not work, because the
+> > > #define VIRTIO_DEV_ANY_ID 0xffffffff
+> > >  it want't work in
+> > >                 supported_classes |=3D BIT_ULL(mdev->id_table[i].devi=
+ce);
+> > > if we chane to
+> > >             supported_classes |=3D VIRTIO_DEV_ANY_ID;
+> > > the vdpa dev show will be
+> > > pci/0000:00:04.0:
+> > >   supported_classes net block < unknown class > < unknown class > <
+> > > unknown class > < unknown class > < unknown class > < unknow>
+> > >   max_supported_vqs 3
+> >
+> > That's why I suggest exporting the ANY_ID via uAPI and then we can fix
+> > the userspace.
+> >
+> sure.But I think maybe we can fix this in another patch, since it
+> related to userspace
 
-Fix it by decreasing the refcount of “target” in that path.
+Yes.
 
-Fixes: 2ea3ffb7782a ("apparmor: add mount mediation")
-Co-developed-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Co-developed-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
----
- security/apparmor/mount.c | 1 +
- 1 file changed, 1 insertion(+)
+>
+> > >   dev_features CSUM GUEST_CSUM CTRL_GUEST_OFFLOADS MAC GUEST_TSO4
+> > > GUEST_TSO6 GUEST_ECN GUEST_UFO HOST_TSO4 HOST_TSO6 HOST_
+> > >  I think we can use
+> > > static struct virtio_device_id id_table[] =3D {
+> > > { VIRTIO_ID_NET, VIRTIO_DEV_ANY_ID },
+> > > { 0 },
+> > > };
+> > >  if we need to add another type of device, we can add the device id a=
+t that type
+> > >
+> >
+> > My point is that, we have supported any virtio devices before. But
+> > after this change, we only support virtio-net.
+> >
+> > So if we choose to use id arrays, let's just add all possible virtio
+> > devices that are supported by the kernel here.
+> >
+> sorry=EF=BC=8C I didn't make it clearly,  I mean  we can use the vp_vdpa =
+device id as
+>  static struct virtio_device_id id_table[] =3D {
+>  { VIRTIO_ID_NET, VIRTIO_DEV_ANY_ID },
+> { 0 },
+> since it now only support the net device
 
-diff --git a/security/apparmor/mount.c b/security/apparmor/mount.c
-index aa6fcfde3051..d0b19ab9137d 100644
---- a/security/apparmor/mount.c
-+++ b/security/apparmor/mount.c
-@@ -718,6 +718,7 @@ int aa_pivotroot(struct aa_label *label, const struct path *old_path,
- 			aa_put_label(target);
- 			goto out;
- 		}
-+		aa_put_label(target);
- 	} else
- 		/* already audited error */
- 		error = PTR_ERR(target);
--- 
-2.25.1
+This is not what I read from the code:
+
+static int virtio_vdpa_probe(struct vdpa_device *vdpa)
+{
+...
+vd_dev->vdev.id.device =3D ops->get_device_id(vdpa);
+        if (vd_dev->vdev.id.device =3D=3D 0)
+                goto err;
+
+vd_dev->vdev.id.vendor =3D ops->get_vendor_id(vdpa);
+        ret =3D register_virtio_device(&vd_dev->vdev);
+...
+}
+
+?
+
+Thanks
+
+>  and This will make the vp_vdpa work.
+>
+> Thanks
+> cindy
+>
+> > Thanks
+> >
+> > > Thanks
+> > > cindy
+> > >
+> > >
+> > >
+> > > > >
+> > > > >
+> > > > >>>          if (nla_put_u64_64bit(msg, VDPA_ATTR_MGMTDEV_SUPPORTED=
+_CLASSES,
+> > > > >>> --
+> > > > >>> 2.34.1
+> > > > >>>
+> > > >
+> > >
+> >
+>
 
