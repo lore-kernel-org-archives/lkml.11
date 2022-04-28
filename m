@@ -2,791 +2,737 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A1F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D546C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 07:57:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343499AbiD1IAM (ORCPT
+        id S1343652AbiD1IBH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:00:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47182 "EHLO
+        Thu, 28 Apr 2022 04:01:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232537AbiD1IAJ (ORCPT
+        with ESMTP id S1343620AbiD1IAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:00:09 -0400
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F7420BCE
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:56:52 -0700 (PDT)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 23S7hg5h004521;
-        Thu, 28 Apr 2022 15:43:42 +0800 (GMT-8)
-        (envelope-from kuohsiang_chou@aspeedtech.com)
-Received: from localhost.localdomain.com (192.168.2.180) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 28 Apr
- 2022 15:56:14 +0800
-From:   KuoHsiang Chou <kuohsiang_chou@aspeedtech.com>
-To:     <tzimmermann@suse.de>, <dri-devel@lists.freedesktop.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <airlied@redhat.com>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <kuohsiang_chou@aspeedtech.com>, <arc_sung@aspeedtech.com>,
-        <tommy_huang@aspeedtech.com>, <hungju_huang@aspeedtech.com>,
-        <luke_chen@aspeedtech.com>
-Subject: [PATCH v4] drm/ast: Create the driver for ASPEED proprietory Display-Port
-Date:   Thu, 28 Apr 2022 15:56:03 +0800
-Message-ID: <20220428075603.20904-1-kuohsiang_chou@aspeedtech.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <872e0d4b-411a-594f-a194-428986e18c3d@suse.de>
-References: <872e0d4b-411a-594f-a194-428986e18c3d@suse.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.180]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 23S7hg5h004521
+        Thu, 28 Apr 2022 04:00:54 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9349C9D4DE
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:57:38 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id a17-20020a258051000000b00648703d0c56so3841832ybn.22
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 00:57:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=YJUrqLDRkW6XFs1LbuKzWxIFMP68m/VaBzEc39ALE+U=;
+        b=tiVmLpJYc9sLTq3hljAB9UeCbbmiRtZLd4AP6UgZbKHQT+ILZ5mJdvRU554UMkbcRB
+         XVTn/kgY1msKabcL8CxzLh0mKMrDKfB6fgtGuaoEiJjwjb5OYHoWbNZLILU461t3nVw6
+         0o88dzuLGTqEK1Y2upaJRZV1w9E3tSzphBJpY1cE+et1msozSnB6jZHT376GCj9xccry
+         Rd7urBIDCowMrub+uU99IgAE3kWfvSOR464wFTr/T673XQ5gyoPFWwXMmp+XiLPKXbTN
+         RLVEYBt0b4nOVKlgqSq10mE26kb4Jju2+Qrrmf+X+kNv9q3jKyULdJAceUtvZrN7FEzr
+         wWHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=YJUrqLDRkW6XFs1LbuKzWxIFMP68m/VaBzEc39ALE+U=;
+        b=6cwbHY086srnuSB8mEoszMP8BCCP8lXBcr9a09V5FobM1TpLXGdZKBBQl7x3dq18PZ
+         nuEiME2yMlrXYjJI96iXZQGUrTZ/aPcKGGGAaKE6QkB+qHeif1wTgejKaIu+OFbHHcPp
+         18QvT7Z3YCnBBEoq4PV38Dli4833NyHxNA8s3zZMxHo45c+JR4Rb3FB0zPVblmTbY1rl
+         H8e4tHtGIj+RzuGA3zQ1KZS+tCqKtBZboZi4a0Xry9LtU0AxDuUau7dBgm6MXQEK+AcK
+         PvB8g6EQ1FEn6K5wHv2wKnVAF9Vg4SmldgF6NcWK8dt9/vfTJwQn9R5lQy7m2zdJJ28T
+         cFqA==
+X-Gm-Message-State: AOAM530gZwx2P+tB4kum6JBrnP5vThnrlhh56YlOtgGrEj1vrhgw5MQy
+        xqqZUdAxFlYgQ0amIZbaRmLqe0tbvdqv
+X-Google-Smtp-Source: ABdhPJzx0C734IUdOU5ceXOqZse08DmdcPmxgUK0lFcbnPRIHEkmYdfuAV00MGZOKjo3ttr/EjCe6OOIxIpL
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:33c3:c9d8:c4fd:e75c])
+ (user=irogers job=sendgmr) by 2002:a81:2514:0:b0:2f4:e0e6:d82f with SMTP id
+ l20-20020a812514000000b002f4e0e6d82fmr30095090ywl.77.1651132657581; Thu, 28
+ Apr 2022 00:57:37 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 00:57:25 -0700
+In-Reply-To: <20220428075730.797727-1-irogers@google.com>
+Message-Id: <20220428075730.797727-2-irogers@google.com>
+Mime-Version: 1.0
+References: <20220428075730.797727-1-irogers@google.com>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+Subject: [PATCH 2/7] perf vendor events intel: Update ICL events to v1.13
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        James Clark <james.clark@arm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Cc:     Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-V1:
-1. The MCU FW controling ASPEED DP is loaded by BMC boot loader.
-2. Driver starts after CR[3:1] == 111b that indicates Tx is ASTDP,
-   and CRD1[5] has been asserted by BMVC boot loader.
-3. EDID is prioritized by DP monitor.
-4. DP's EDID has high priority to decide resolution supporting.
+Events are generated for Icelake v1.13 with events from:
+https://download.01.org/perfmon/ICL/
 
-V2:
-Modules description:
-1. ASTDP (ASPEED DisplayPort) is controlled by dedicated
-   AST-MCU (ASPEED propriatary MCU).
-2. MCU is looping in charged of HPD, Read EDID, Link Training with
-   DP sink.
-3. ASTDP and AST-MUC reside in BMC (Baseboard Management controller)
-   addressing-space.
-4. ASPEED DRM driver requests MCU to get HPD and EDID by CR-scratched
-   register.
+Using the scripts at:
+https://github.com/intel/event-converter-for-linux-perf/
 
-Booting sequence:
-1. Check if TX is ASTDP					// ast_dp_launch()
-2. Check if DP-MCU FW has loaded					// ast_dp_launch()
-3. Read EDID					// ast_dp_read_edid()
-4. Resolution switch					// ast_dp_SetOutput()
+This change updates descriptions and adds INST_DECODED.DECODERS.
 
-V3:
-1. Remove unneeded semicolon.
-2. Apply to git://anongit.freedesktop.org/drm/drm, instead of
-   git://anongit.freedesktop.org/drm/drm-misc
-3. Resolve auto build test WARNINGs on V1 patch.
-
-V4:
-1. Sync code-base with kernel 5.17_rc6
-2. Remove the define of DPControlPower, because DP chips need to be
-   powered on to be used.
-3. Remove the switches of PHY and Display from EDID procedure.
-4. Revise increaing delay to fixed delay, because this version kernel
-   doesn't detect minitor consistenntly.
-5. Create clean-up code used for reset of power state on errors with
-   -EIO manner.
-6. Revise the DP detection by TX type and its DP-FW status during
-   booting and resume.
-7. Correct the CamelCase Style.
-8. Use register reading while needing, and remove to hold full
-   register.
-9. Instead of 'u8', revise to 'bool' on swwitch of PHY and video.
-10.Correct typo
-11.Remove the duplicated copy of TX definition.
-12.Use EDID_LENGTH as the constant of 128.
-
-Signed-off-by: KuoHsiang Chou <kuohsiang_chou@aspeedtech.com>
+Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- drivers/gpu/drm/ast/Makefile   |   2 +-
- drivers/gpu/drm/ast/ast_dp.c   | 282 +++++++++++++++++++++++++++++++++
- drivers/gpu/drm/ast/ast_drv.h  | 115 ++++++++++++++
- drivers/gpu/drm/ast/ast_main.c |   5 +-
- drivers/gpu/drm/ast/ast_mode.c | 124 ++++++++++++++-
- drivers/gpu/drm/ast/ast_post.c |   4 +-
- 6 files changed, 524 insertions(+), 8 deletions(-)
- create mode 100644 drivers/gpu/drm/ast/ast_dp.c
+ .../pmu-events/arch/x86/icelake/cache.json    | 41 +------------------
+ .../arch/x86/icelake/icl-metrics.json         | 12 ------
+ .../pmu-events/arch/x86/icelake/memory.json   | 10 +----
+ .../pmu-events/arch/x86/icelake/other.json    | 24 -----------
+ .../pmu-events/arch/x86/icelake/pipeline.json | 12 ++++++
+ 5 files changed, 14 insertions(+), 85 deletions(-)
 
-diff --git a/drivers/gpu/drm/ast/Makefile b/drivers/gpu/drm/ast/Makefile
-index 21f71160b..5a53ce51f 100644
---- a/drivers/gpu/drm/ast/Makefile
-+++ b/drivers/gpu/drm/ast/Makefile
-@@ -3,6 +3,6 @@
- # Makefile for the drm device driver.  This driver provides support for the
- # Direct Rendering Infrastructure (DRI) in XFree86 4.1.0 and higher.
-
--ast-y := ast_drv.o ast_i2c.o ast_main.o ast_mm.o ast_mode.o ast_post.o ast_dp501.o
-+ast-y := ast_drv.o ast_i2c.o ast_main.o ast_mm.o ast_mode.o ast_post.o ast_dp501.o ast_dp.o
-
- obj-$(CONFIG_DRM_AST) := ast.o
-diff --git a/drivers/gpu/drm/ast/ast_dp.c b/drivers/gpu/drm/ast/ast_dp.c
-new file mode 100644
-index 000000000..4551bc8a3
---- /dev/null
-+++ b/drivers/gpu/drm/ast/ast_dp.c
-@@ -0,0 +1,282 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2021, ASPEED Technology Inc.
-+// Authors: KuoHsiang Chou <kuohsiang_chou@aspeedtech.com>
-+
-+#include <linux/firmware.h>
-+#include <linux/delay.h>
-+#include <drm/drm_print.h>
-+#include "ast_drv.h"
-+
-+int ast_astdp_read_edid(struct drm_device *dev, u8 *ediddata)
-+{
-+	struct ast_private *ast = to_ast_private(dev);
-+	u8 i = 0, j = 0;
-+
-+	/*
-+	 * CRD1[b5]: DP MCU FW is executing
-+	 * CRDC[b0]: DP link success
-+	 * CRDF[b0]: DP HPD
-+	 * CRE5[b0]: Host reading EDID process is done
-+	 */
-+	if (!(ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xD1, ASTDP_MCU_FW_EXECUTING) &&
-+		ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDC, ASTDP_LINK_SUCCESS) &&
-+		ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDF, ASTDP_HPD) &&
-+		ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE5,
-+								ASTDP_HOST_EDID_READ_DONE_MASK))) {
-+		goto err_astdp_edid_not_ready;
-+	}
-+
-+	ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE5, (u8) ~ASTDP_HOST_EDID_READ_DONE_MASK,
-+							0x00);
-+
-+	for (i = 0; i < 32; i++) {
-+		/*
-+		 * CRE4[7:0]: Read-Pointer for EDID (Unit: 4bytes); valid range: 0~64
-+		 */
-+		ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE4,
-+					(u8) ~ASTDP_EDID_READ_POINTER_MASK, (u8) i);
-+		j = 0;
-+
-+		/*
-+		 * CRD7[b0]: valid flag for EDID
-+		 * CRD6[b0]: mirror read pointer for EDID
-+		 */
-+		while ((ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xD7,
-+				ASTDP_EDID_VALID_FLAG_MASK) != 0x01) ||
-+			(ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xD6,
-+						ASTDP_EDID_READ_POINTER_MASK) != i)) {
-+			/*
-+			 * Delay are getting longer with each retry.
-+			 * 1. The Delays are often 2 loops when users request "Display Settings"
-+			 *	  of right-click of mouse.
-+			 * 2. The Delays are often longer a lot when system resume from S3/S4.
-+			 */
-+			mdelay(j+1);
-+
-+			if (!(ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xD1,
-+							ASTDP_MCU_FW_EXECUTING) &&
-+				ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDC,
-+							ASTDP_LINK_SUCCESS) &&
-+				ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDF, ASTDP_HPD))) {
-+				goto err_astdp_jump_out_loop_of_edid;
-+			}
-+
-+			j++;
-+			if (j > 200)
-+				goto err_astdp_jump_out_loop_of_edid;
-+		}
-+
-+		*(ediddata) = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT,
-+							0xD8, ASTDP_EDID_READ_DATA_MASK);
-+		*(ediddata + 1) = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xD9,
-+								ASTDP_EDID_READ_DATA_MASK);
-+		*(ediddata + 2) = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDA,
-+								ASTDP_EDID_READ_DATA_MASK);
-+		*(ediddata + 3) = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDB,
-+								ASTDP_EDID_READ_DATA_MASK);
-+
-+		if (i == 31) {
-+			/*
-+			 * For 128-bytes EDID_1.3,
-+			 * 1. Add the value of Bytes-126 to Bytes-127.
-+			 *		The Bytes-127 is Checksum. Sum of all 128bytes should
-+			 *		equal 0	(mod 256).
-+			 * 2. Modify Bytes-126 to be 0.
-+			 *		The Bytes-126 indicates the Number of extensions to
-+			 *		follow. 0 represents noextensions.
-+			 */
-+			*(ediddata + 3) = *(ediddata + 3) + *(ediddata + 2);
-+			*(ediddata + 2) = 0;
-+		}
-+
-+		ediddata += 4;
-+	}
-+
-+	ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE5, (u8) ~ASTDP_HOST_EDID_READ_DONE_MASK,
-+							ASTDP_HOST_EDID_READ_DONE);
-+
-+	return 0;
-+
-+err_astdp_jump_out_loop_of_edid:
-+	ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE5,
-+							(u8) ~ASTDP_HOST_EDID_READ_DONE_MASK,
-+							ASTDP_HOST_EDID_READ_DONE);
-+	return (~(j+256) + 1);
-+
-+err_astdp_edid_not_ready:
-+	if (!(ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xD1, ASTDP_MCU_FW_EXECUTING)))
-+		return (~0xD1 + 1);
-+	if (!(ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDC, ASTDP_LINK_SUCCESS)))
-+		return (~0xDC + 1);
-+	if (!(ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDF, ASTDP_HPD)))
-+		return (~0xDF + 1);
-+	if (!(ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE5, ASTDP_HOST_EDID_READ_DONE_MASK)))
-+		return (~0xE5 + 1);
-+
-+	return	0;
-+}
-+
-+/*
-+ * Launch Aspeed DP
-+ */
-+void ast_dp_launch(struct drm_device *dev, u8 bPower)
-+{
-+	u32 i = 0, j = 0, WaitCount = 1;
-+	u8 bDPTX = 0;
-+	u8 bDPExecute = 1;
-+
-+	struct ast_private *ast = to_ast_private(dev);
-+	// S3 come back, need more time to wait BMC ready.
-+	if (bPower)
-+		WaitCount = 300;
-+
-+
-+	// Wait total count by different condition.
-+	for (j = 0; j < WaitCount; j++) {
-+		bDPTX = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xD1, TX_TYPE_MASK);
-+
-+		if (bDPTX)
-+			break;
-+
-+		msleep(100);
-+	}
-+
-+	// 0xE : ASTDP with DPMCU FW handling
-+	if (bDPTX == ASTDP_DPMCU_TX) {
-+		// Wait one second then timeout.
-+		i = 0;
-+
-+		while (ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xD1, COPROCESSOR_LAUNCH) !=
-+			COPROCESSOR_LAUNCH) {
-+			i++;
-+			// wait 100 ms
-+			msleep(100);
-+
-+			if (i >= 10) {
-+				// DP would not be ready.
-+				bDPExecute = 0;
-+				break;
-+			}
-+		}
-+
-+		if (bDPExecute)
-+			ast->tx_chip_type = AST_TX_ASTDP;
-+
-+		ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE5,
-+							(u8) ~ASTDP_HOST_EDID_READ_DONE_MASK,
-+							ASTDP_HOST_EDID_READ_DONE);
-+	} else
-+		ast->tx_chip_type = AST_TX_NONE;
-+}
-+
-+
-+
-+void ast_dp_power_on_off(struct drm_device *dev, bool on)
-+{
-+	struct ast_private *ast = to_ast_private(dev);
-+	// Read and Turn off DP PHY sleep
-+	u8 bE3 = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE3, AST_DP_VIDEO_ENABLE);
-+
-+	// Turn on DP PHY sleep
-+	if (!on)
-+		bE3 |= AST_DP_PHY_SLEEP;
-+
-+	// DP Power on/off
-+	ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE3, (u8) ~AST_DP_PHY_SLEEP, bE3);
-+}
-+
-+
-+
-+void ast_dp_set_on_off(struct drm_device *dev, bool on)
-+{
-+	struct ast_private *ast = to_ast_private(dev);
-+	u8 video_on_off = on;
-+
-+	// Video On/Off
-+	ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE3, (u8) ~AST_DP_VIDEO_ENABLE, on);
-+
-+	// If DP plug in and link successful then check video on / off status
-+	if (ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDC, ASTDP_LINK_SUCCESS) &&
-+		ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDF, ASTDP_HPD)) {
-+		video_on_off <<= 4;
-+		while (ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDF,
-+						ASTDP_MIRROR_VIDEO_ENABLE) != video_on_off) {
-+			// wait 1 ms
-+			mdelay(1);
-+		}
-+	}
-+}
-+
-+void ast_dp_set_mode(struct drm_crtc *crtc, struct ast_vbios_mode_info *vbios_mode)
-+{
-+	struct ast_private *ast = to_ast_private(crtc->dev);
-+
-+	u32 ulRefreshRateIndex;
-+	u8 ModeIdx;
-+
-+	ulRefreshRateIndex = vbios_mode->enh_table->refresh_rate_index - 1;
-+
-+	switch (crtc->mode.crtc_hdisplay) {
-+	case 320:
-+		ModeIdx = ASTDP_320x240_60;
-+		break;
-+	case 400:
-+		ModeIdx = ASTDP_400x300_60;
-+		break;
-+	case 512:
-+		ModeIdx = ASTDP_512x384_60;
-+		break;
-+	case 640:
-+		ModeIdx = (ASTDP_640x480_60 + (u8) ulRefreshRateIndex);
-+		break;
-+	case 800:
-+		ModeIdx = (ASTDP_800x600_56 + (u8) ulRefreshRateIndex);
-+		break;
-+	case 1024:
-+		ModeIdx = (ASTDP_1024x768_60 + (u8) ulRefreshRateIndex);
-+		break;
-+	case 1152:
-+		ModeIdx = ASTDP_1152x864_75;
-+		break;
-+	case 1280:
-+		if (crtc->mode.crtc_vdisplay == 800)
-+			ModeIdx = (ASTDP_1280x800_60_RB - (u8) ulRefreshRateIndex);
-+		else		// 1024
-+			ModeIdx = (ASTDP_1280x1024_60 + (u8) ulRefreshRateIndex);
-+		break;
-+	case 1360:
-+	case 1366:
-+		ModeIdx = ASTDP_1366x768_60;
-+		break;
-+	case 1440:
-+		ModeIdx = (ASTDP_1440x900_60_RB - (u8) ulRefreshRateIndex);
-+		break;
-+	case 1600:
-+		if (crtc->mode.crtc_vdisplay == 900)
-+			ModeIdx = (ASTDP_1600x900_60_RB - (u8) ulRefreshRateIndex);
-+		else		//1200
-+			ModeIdx = ASTDP_1600x1200_60;
-+		break;
-+	case 1680:
-+		ModeIdx = (ASTDP_1680x1050_60_RB - (u8) ulRefreshRateIndex);
-+		break;
-+	case 1920:
-+		if (crtc->mode.crtc_vdisplay == 1080)
-+			ModeIdx = ASTDP_1920x1080_60;
-+		else		//1200
-+			ModeIdx = ASTDP_1920x1200_60;
-+		break;
-+	default:
-+		return;
-+	}
-+
-+	/*
-+	 * CRE0[7:0]: MISC0 ((0x00: 18-bpp) or (0x20: 24-bpp)
-+	 * CRE1[7:0]: MISC1 (default: 0x00)
-+	 * CRE2[7:0]: video format index (0x00 ~ 0x20 or 0x40 ~ 0x50)
-+	 */
-+	ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE0, (u8) ~ASTDP_CLEAR_MASK,
-+				ASTDP_MISC0_24bpp);
-+	ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE1, (u8) ~ASTDP_CLEAR_MASK, ASTDP_MISC1);
-+	ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE2, (u8) ~ASTDP_CLEAR_MASK, ModeIdx);
-+}
-diff --git a/drivers/gpu/drm/ast/ast_drv.h b/drivers/gpu/drm/ast/ast_drv.h
-index a19315b2f..ff1ae314b 100644
---- a/drivers/gpu/drm/ast/ast_drv.h
-+++ b/drivers/gpu/drm/ast/ast_drv.h
-@@ -70,6 +70,7 @@ enum ast_tx_chip {
- 	AST_TX_NONE,
- 	AST_TX_SIL164,
- 	AST_TX_DP501,
-+	AST_TX_ASTDP,
- };
-
- #define AST_DRAM_512Mx16 0
-@@ -184,6 +185,10 @@ struct ast_private {
- 			struct drm_encoder encoder;
- 			struct drm_connector connector;
- 		} dp501;
-+		struct {
-+			struct drm_encoder encoder;
-+			struct drm_connector connector;
-+		} astdp;
- 	} output;
-
- 	bool support_wide_screen;
-@@ -357,10 +362,113 @@ int ast_mode_config_init(struct ast_private *ast);
- #define AST_DP501_EDID_DATA	0xf020
-
- /* Define for Soc scratched reg */
-+#define COPROCESSOR_LAUNCH			BIT(5)
-+
-+/*
-+ * Display Transmitter Type:
-+ */
-+#define TX_TYPE_MASK				GENMASK(3, 1)
-+#define NO_TX						(0 << 1)
-+#define ITE66121_VBIOS_TX			(1 << 1)
-+#define SI164_VBIOS_TX				(2 << 1)
-+#define CH7003_VBIOS_TX			(3 << 1)
-+#define DP501_VBIOS_TX				(4 << 1)
-+#define ANX9807_VBIOS_TX			(5 << 1)
-+#define TX_FW_EMBEDDED_FW_TX		(6 << 1)
-+#define ASTDP_DPMCU_TX				(7 << 1)
-+
- #define AST_VRAM_INIT_STATUS_MASK	GENMASK(7, 6)
- //#define AST_VRAM_INIT_BY_BMC		BIT(7)
- //#define AST_VRAM_INIT_READY		BIT(6)
-
-+/* Define for Soc scratched reg used on ASTDP */
-+#define AST_DP_PHY_SLEEP			BIT(4)
-+#define AST_DP_VIDEO_ENABLE		BIT(0)
-+
-+#define AST_DP_POWER_ON			true
-+#define AST_DP_POWER_OFF			false
-+
-+/*
-+ * CRD1[b5]: DP MCU FW is executing
-+ * CRDC[b0]: DP link success
-+ * CRDF[b0]: DP HPD
-+ * CRE5[b0]: Host reading EDID process is done
-+ */
-+#define ASTDP_MCU_FW_EXECUTING			BIT(5)
-+#define ASTDP_LINK_SUCCESS				BIT(0)
-+#define ASTDP_HPD						BIT(0)
-+#define ASTDP_HOST_EDID_READ_DONE		BIT(0)
-+#define ASTDP_HOST_EDID_READ_DONE_MASK	GENMASK(0, 0)
-+
-+/*
-+ * CRB8[b1]: Enable VSYNC off
-+ * CRB8[b0]: Enable HSYNC off
-+ */
-+#define AST_DPMS_VSYNC_OFF				BIT(1)
-+#define AST_DPMS_HSYNC_OFF				BIT(0)
-+
-+/*
-+ * CRDF[b4]: Mirror of AST_DP_VIDEO_ENABLE
-+ * Precondition:	A. ~AST_DP_PHY_SLEEP  &&
-+ *			B. DP_HPD &&
-+ *			C. DP_LINK_SUCCESS
-+ */
-+#define ASTDP_MIRROR_VIDEO_ENABLE		BIT(4)
-+
-+#define ASTDP_EDID_READ_POINTER_MASK	GENMASK(7, 0)
-+#define ASTDP_EDID_VALID_FLAG_MASK		GENMASK(0, 0)
-+#define ASTDP_EDID_READ_DATA_MASK		GENMASK(7, 0)
-+
-+/*
-+ * ASTDP setmode registers:
-+ * CRE0[7:0]: MISC0 ((0x00: 18-bpp) or (0x20: 24-bpp)
-+ * CRE1[7:0]: MISC1 (default: 0x00)
-+ * CRE2[7:0]: video format index (0x00 ~ 0x20 or 0x40 ~ 0x50)
-+ */
-+#define ASTDP_MISC0_24bpp			BIT(5)
-+#define ASTDP_MISC1				0
-+#define ASTDP_CLEAR_MASK			GENMASK(7, 0)
-+
-+/*
-+ * ASTDP resoultion table:
-+ * EX:	ASTDP_A_B_C:
-+ *		A: Resolution
-+ *		B: Refresh Rate
-+ *		C: Misc information, such as CVT, Reduce Blanked
-+ */
-+#define ASTDP_640x480_60		0x00
-+#define ASTDP_640x480_72		0x01
-+#define ASTDP_640x480_75		0x02
-+#define ASTDP_640x480_85		0x03
-+#define ASTDP_800x600_56		0x04
-+#define ASTDP_800x600_60		0x05
-+#define ASTDP_800x600_72		0x06
-+#define ASTDP_800x600_75		0x07
-+#define ASTDP_800x600_85		0x08
-+#define ASTDP_1024x768_60		0x09
-+#define ASTDP_1024x768_70		0x0A
-+#define ASTDP_1024x768_75		0x0B
-+#define ASTDP_1024x768_85		0x0C
-+#define ASTDP_1280x1024_60		0x0D
-+#define ASTDP_1280x1024_75		0x0E
-+#define ASTDP_1280x1024_85		0x0F
-+#define ASTDP_1600x1200_60		0x10
-+#define ASTDP_320x240_60		0x11
-+#define ASTDP_400x300_60		0x12
-+#define ASTDP_512x384_60		0x13
-+#define ASTDP_1920x1200_60		0x14
-+#define ASTDP_1920x1080_60		0x15
-+#define ASTDP_1280x800_60		0x16
-+#define ASTDP_1280x800_60_RB	0x17
-+#define ASTDP_1440x900_60		0x18
-+#define ASTDP_1440x900_60_RB	0x19
-+#define ASTDP_1680x1050_60		0x1A
-+#define ASTDP_1680x1050_60_RB	0x1B
-+#define ASTDP_1600x900_60		0x1C
-+#define ASTDP_1600x900_60_RB	0x1D
-+#define ASTDP_1366x768_60		0x1E
-+#define ASTDP_1152x864_75		0x1F
-+
- int ast_mm_init(struct ast_private *ast);
-
- /* ast post */
-@@ -381,4 +489,11 @@ void ast_init_3rdtx(struct drm_device *dev);
- /* ast_i2c.c */
- struct ast_i2c_chan *ast_i2c_create(struct drm_device *dev);
-
-+/* aspeed DP */
-+int ast_astdp_read_edid(struct drm_device *dev, u8 *ediddata);
-+void ast_dp_launch(struct drm_device *dev, u8 bPower);
-+void ast_dp_power_on_off(struct drm_device *dev, bool no);
-+void ast_dp_set_on_off(struct drm_device *dev, bool no);
-+void ast_dp_set_mode(struct drm_crtc *crtc, struct ast_vbios_mode_info *vbios_mode);
-+
- #endif
-diff --git a/drivers/gpu/drm/ast/ast_main.c b/drivers/gpu/drm/ast/ast_main.c
-index 22e9e2d3c..1113ee1cb 100644
---- a/drivers/gpu/drm/ast/ast_main.c
-+++ b/drivers/gpu/drm/ast/ast_main.c
-@@ -232,7 +232,7 @@ static int ast_detect_chip(struct drm_device *dev, bool *need_post)
- 			ast->tx_chip_type = AST_TX_SIL164;
- 	}
-
--	if ((ast->chip == AST2300) || (ast->chip == AST2400)) {
-+	if ((ast->chip == AST2300) || (ast->chip == AST2400) || (ast->chip == AST2500)) {
- 		/*
- 		 * On AST2300 and 2400, look the configuration set by the SoC in
- 		 * the SOC scratch register #1 bits 11:8 (interestingly marked
-@@ -256,7 +256,8 @@ static int ast_detect_chip(struct drm_device *dev, bool *need_post)
- 		case 0x0c:
- 			ast->tx_chip_type = AST_TX_DP501;
- 		}
--	}
-+	} else if (ast->chip == AST2600)
-+		ast_dp_launch(&ast->base, 0);
-
- 	/* Print stuff for diagnostic purposes */
- 	switch(ast->tx_chip_type) {
-diff --git a/drivers/gpu/drm/ast/ast_mode.c b/drivers/gpu/drm/ast/ast_mode.c
-index 45b56b39a..4728825b7 100644
---- a/drivers/gpu/drm/ast/ast_mode.c
-+++ b/drivers/gpu/drm/ast/ast_mode.c
-@@ -988,21 +988,41 @@ static int ast_cursor_plane_init(struct ast_private *ast)
- static void ast_crtc_dpms(struct drm_crtc *crtc, int mode)
- {
- 	struct ast_private *ast = to_ast_private(crtc->dev);
-+	u8 ch = AST_DPMS_VSYNC_OFF | AST_DPMS_HSYNC_OFF;
-
- 	/* TODO: Maybe control display signal generation with
- 	 *       Sync Enable (bit CR17.7).
- 	 */
- 	switch (mode) {
- 	case DRM_MODE_DPMS_ON:
--	case DRM_MODE_DPMS_STANDBY:
--	case DRM_MODE_DPMS_SUSPEND:
-+		ast_set_index_reg_mask(ast, AST_IO_SEQ_PORT,  0x01, 0xdf, 0);
-+		ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xb6, 0xfc, 0);
- 		if (ast->tx_chip_type == AST_TX_DP501)
- 			ast_set_dp501_video_output(crtc->dev, 1);
-+
-+		if (ast->tx_chip_type == AST_TX_ASTDP) {
-+			ast_dp_power_on_off(crtc->dev, AST_DP_POWER_ON);
-+			ast_wait_for_vretrace(ast);
-+			ast_dp_set_on_off(crtc->dev, 1);
-+		}
-+
-+		ast_crtc_load_lut(ast, crtc);
- 		break;
-+	case DRM_MODE_DPMS_STANDBY:
-+	case DRM_MODE_DPMS_SUSPEND:
- 	case DRM_MODE_DPMS_OFF:
-+		ch = mode;
- 		if (ast->tx_chip_type == AST_TX_DP501)
- 			ast_set_dp501_video_output(crtc->dev, 0);
- 		break;
-+
-+		if (ast->tx_chip_type == AST_TX_ASTDP) {
-+			ast_dp_set_on_off(crtc->dev, 0);
-+			ast_dp_power_on_off(crtc->dev, AST_DP_POWER_OFF);
-+		}
-+
-+		ast_set_index_reg_mask(ast, AST_IO_SEQ_PORT,  0x01, 0xdf, 0x20);
-+		ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xb6, 0xfc, ch);
- 	}
- }
-
-@@ -1027,7 +1047,7 @@ ast_crtc_helper_mode_valid(struct drm_crtc *crtc, const struct drm_display_mode
-
- 		if ((ast->chip == AST2100) || (ast->chip == AST2200) ||
- 		    (ast->chip == AST2300) || (ast->chip == AST2400) ||
--		    (ast->chip == AST2500)) {
-+		    (ast->chip == AST2500) || (ast->chip == AST2600)) {
- 			if ((mode->hdisplay == 1920) && (mode->vdisplay == 1080))
- 				return MODE_OK;
-
-@@ -1110,6 +1130,7 @@ ast_crtc_helper_atomic_flush(struct drm_crtc *crtc,
- 	struct ast_private *ast = to_ast_private(crtc->dev);
- 	struct ast_crtc_state *ast_crtc_state = to_ast_crtc_state(crtc_state);
- 	struct ast_crtc_state *old_ast_crtc_state = to_ast_crtc_state(old_crtc_state);
-+	struct ast_vbios_mode_info *vbios_mode_info = &ast_crtc_state->vbios_mode_info;
-
- 	/*
- 	 * The gamma LUT has to be reloaded after changing the primary
-@@ -1117,6 +1138,10 @@ ast_crtc_helper_atomic_flush(struct drm_crtc *crtc,
- 	 */
- 	if (old_ast_crtc_state->format != ast_crtc_state->format)
- 		ast_crtc_load_lut(ast, crtc);
-+
-+	//Set Aspeed Display-Port
-+	if (ast->tx_chip_type == AST_TX_ASTDP)
-+		ast_dp_set_mode(crtc, vbios_mode_info);
- }
-
- static void
-@@ -1527,6 +1552,93 @@ static int ast_dp501_output_init(struct ast_private *ast)
- 	return 0;
- }
-
-+/*
-+ * ASPEED Display-Port Connector
-+ */
-+
-+static int ast_astdp_connector_helper_get_modes(struct drm_connector *connector)
-+{
-+	void *edid;
-+
-+	int succ;
-+	int count;
-+
-+	edid = kmalloc(EDID_LENGTH, GFP_KERNEL);
-+	if (!edid)
-+		goto err_drm_connector_update_edid_property;
-+
-+	succ = ast_astdp_read_edid(connector->dev, edid);
-+	if (succ < 0)
-+		goto err_kfree;
-+
-+	drm_connector_update_edid_property(connector, edid);
-+	count = drm_add_edid_modes(connector, edid);
-+	kfree(edid);
-+
-+	return count;
-+
-+err_kfree:
-+	kfree(edid);
-+err_drm_connector_update_edid_property:
-+	drm_connector_update_edid_property(connector, NULL);
-+	return 0;
-+}
-+
-+static const struct drm_connector_helper_funcs ast_astdp_connector_helper_funcs = {
-+	.get_modes = ast_astdp_connector_helper_get_modes,
-+};
-+
-+static const struct drm_connector_funcs ast_astdp_connector_funcs = {
-+	.reset = drm_atomic_helper_connector_reset,
-+	.fill_modes = drm_helper_probe_single_connector_modes,
-+	.destroy = drm_connector_cleanup,
-+	.atomic_duplicate_state = drm_atomic_helper_connector_duplicate_state,
-+	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
-+};
-+
-+static int ast_astdp_connector_init(struct drm_device *dev, struct drm_connector *connector)
-+{
-+	int ret;
-+
-+	ret = drm_connector_init(dev, connector, &ast_astdp_connector_funcs,
-+				 DRM_MODE_CONNECTOR_DisplayPort);
-+	if (ret)
-+		return ret;
-+
-+	drm_connector_helper_add(connector, &ast_astdp_connector_helper_funcs);
-+
-+	connector->interlace_allowed = 0;
-+	connector->doublescan_allowed = 0;
-+
-+	connector->polled = DRM_CONNECTOR_POLL_CONNECT;
-+
-+	return 0;
-+}
-+
-+static int ast_astdp_output_init(struct ast_private *ast)
-+{
-+	struct drm_device *dev = &ast->base;
-+	struct drm_crtc *crtc = &ast->crtc;
-+	struct drm_encoder *encoder = &ast->output.astdp.encoder;
-+	struct drm_connector *connector = &ast->output.astdp.connector;
-+	int ret;
-+
-+	ret = drm_simple_encoder_init(dev, encoder, DRM_MODE_ENCODER_TMDS);
-+	if (ret)
-+		return ret;
-+	encoder->possible_crtcs = drm_crtc_mask(crtc);
-+
-+	ret = ast_astdp_connector_init(dev, connector);
-+	if (ret)
-+		return ret;
-+
-+	ret = drm_connector_attach_encoder(connector, encoder);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
- /*
-  * Mode config
-  */
-@@ -1563,7 +1675,8 @@ int ast_mode_config_init(struct ast_private *ast)
- 	    ast->chip == AST2200 ||
- 	    ast->chip == AST2300 ||
- 	    ast->chip == AST2400 ||
--	    ast->chip == AST2500) {
-+	    ast->chip == AST2500 ||
-+	    ast->chip == AST2600) {
- 		dev->mode_config.max_width = 1920;
- 		dev->mode_config.max_height = 2048;
- 	} else {
-@@ -1594,6 +1707,9 @@ int ast_mode_config_init(struct ast_private *ast)
- 	case AST_TX_DP501:
- 		ret = ast_dp501_output_init(ast);
- 		break;
-+	case AST_TX_ASTDP:
-+		ret = ast_astdp_output_init(ast);
-+		break;
- 	}
- 	if (ret)
- 		return ret;
-diff --git a/drivers/gpu/drm/ast/ast_post.c b/drivers/gpu/drm/ast/ast_post.c
-index b5d92f652..0aa9cf0fb 100644
---- a/drivers/gpu/drm/ast/ast_post.c
-+++ b/drivers/gpu/drm/ast/ast_post.c
-@@ -379,7 +379,9 @@ void ast_post_gpu(struct drm_device *dev)
- 	ast_enable_mmio(dev);
- 	ast_set_def_ext_reg(dev);
-
--	if (ast->config_mode == ast_use_p2a) {
-+	if (ast->chip == AST2600) {
-+		ast_dp_launch(dev, 1);
-+	} else if (ast->config_mode == ast_use_p2a) {
- 		if (ast->chip == AST2500)
- 			ast_post_chip_2500(dev);
- 		else if (ast->chip == AST2300 || ast->chip == AST2400)
-
-base-commit: c54b39a565227538c52ead2349eb17d54aadd6f7
---
-2.27.0
+diff --git a/tools/perf/pmu-events/arch/x86/icelake/cache.json b/tools/perf/pmu-events/arch/x86/icelake/cache.json
+index 375ce490833c..9989f3338f0a 100644
+--- a/tools/perf/pmu-events/arch/x86/icelake/cache.json
++++ b/tools/perf/pmu-events/arch/x86/icelake/cache.json
+@@ -563,7 +563,6 @@
+         "MSRValue": "0x3FC03C0004",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -578,7 +577,6 @@
+         "MSRValue": "0x10003C0004",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -593,7 +591,6 @@
+         "MSRValue": "0x4003C0004",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -608,7 +605,6 @@
+         "MSRValue": "0x2003C0004",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -623,7 +619,6 @@
+         "MSRValue": "0x1003C0004",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -638,7 +633,6 @@
+         "MSRValue": "0x1E003C0004",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -653,7 +647,6 @@
+         "MSRValue": "0x3FC03C0001",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -668,7 +661,6 @@
+         "MSRValue": "0x10003C0001",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -683,7 +675,6 @@
+         "MSRValue": "0x4003C0001",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -698,7 +689,6 @@
+         "MSRValue": "0x2003C0001",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -713,7 +703,6 @@
+         "MSRValue": "0x1003C0001",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -728,7 +717,6 @@
+         "MSRValue": "0x1E003C0001",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -743,7 +731,6 @@
+         "MSRValue": "0x3FC03C0002",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -758,7 +745,6 @@
+         "MSRValue": "0x10003C0002",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -773,7 +759,6 @@
+         "MSRValue": "0x4003C0002",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -788,7 +773,6 @@
+         "MSRValue": "0x2003C0002",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -803,7 +787,6 @@
+         "MSRValue": "0x1003C0002",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -818,7 +801,6 @@
+         "MSRValue": "0x1E003C0002",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -833,7 +815,6 @@
+         "MSRValue": "0x3FC03C0400",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -848,7 +829,6 @@
+         "MSRValue": "0x2003C0400",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -863,7 +843,6 @@
+         "MSRValue": "0x1003C0400",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -878,7 +857,6 @@
+         "MSRValue": "0x3FC03C0010",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -893,7 +871,6 @@
+         "MSRValue": "0x10003C0010",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -908,7 +885,6 @@
+         "MSRValue": "0x4003C0010",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -923,7 +899,6 @@
+         "MSRValue": "0x2003C0010",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -938,7 +913,6 @@
+         "MSRValue": "0x1003C0010",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -953,7 +927,6 @@
+         "MSRValue": "0x1E003C0010",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -968,7 +941,6 @@
+         "MSRValue": "0x3FC03C0020",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -983,7 +955,6 @@
+         "MSRValue": "0x10003C0020",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -998,7 +969,6 @@
+         "MSRValue": "0x4003C0020",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -1013,7 +983,6 @@
+         "MSRValue": "0x2003C0020",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -1028,7 +997,6 @@
+         "MSRValue": "0x1003C0020",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -1043,7 +1011,6 @@
+         "MSRValue": "0x1E003C0020",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -1058,7 +1025,6 @@
+         "MSRValue": "0x3FC03C2380",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -1073,7 +1039,6 @@
+         "MSRValue": "0x4003C8000",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -1088,7 +1053,6 @@
+         "MSRValue": "0x2003C8000",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -1103,7 +1067,6 @@
+         "MSRValue": "0x1003C8000",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -1118,7 +1081,6 @@
+         "MSRValue": "0x1E003C8000",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -1133,7 +1095,6 @@
+         "MSRValue": "0x3FC03C0800",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -1308,4 +1269,4 @@
+         "Speculative": "1",
+         "UMask": "0x4"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/icelake/icl-metrics.json b/tools/perf/pmu-events/arch/x86/icelake/icl-metrics.json
+index ea73bc1889ba..622c392f59be 100644
+--- a/tools/perf/pmu-events/arch/x86/icelake/icl-metrics.json
++++ b/tools/perf/pmu-events/arch/x86/icelake/icl-metrics.json
+@@ -17,18 +17,6 @@
+         "MetricGroup": "Ret;Summary",
+         "MetricName": "IPC"
+     },
+-    {
+-        "BriefDescription": "Uops Per Instruction",
+-        "MetricExpr": "UOPS_RETIRED.RETIRE_SLOTS / INST_RETIRED.ANY",
+-        "MetricGroup": "Pipeline;Ret;Retire",
+-        "MetricName": "UPI"
+-    },
+-    {
+-        "BriefDescription": "Instruction per taken branch",
+-        "MetricExpr": "UOPS_RETIRED.RETIRE_SLOTS / BR_INST_RETIRED.NEAR_TAKEN",
+-        "MetricGroup": "Branches;Fed;FetchBW",
+-        "MetricName": "UpTB"
+-    },
+     {
+         "BriefDescription": "Cycles Per Instruction (per Logical Processor)",
+         "MetricExpr": "1 / (INST_RETIRED.ANY / CPU_CLK_UNHALTED.THREAD)",
+diff --git a/tools/perf/pmu-events/arch/x86/icelake/memory.json b/tools/perf/pmu-events/arch/x86/icelake/memory.json
+index f045e1f6a868..a6f43cbc2d0a 100644
+--- a/tools/perf/pmu-events/arch/x86/icelake/memory.json
++++ b/tools/perf/pmu-events/arch/x86/icelake/memory.json
+@@ -239,7 +239,6 @@
+         "MSRValue": "0x3FFFC00004",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -254,7 +253,6 @@
+         "MSRValue": "0x3FFFC00001",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -269,7 +267,6 @@
+         "MSRValue": "0x3FFFC00002",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -284,7 +281,6 @@
+         "MSRValue": "0x3FFFC00400",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -299,7 +295,6 @@
+         "MSRValue": "0x3FFFC00010",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -314,7 +309,6 @@
+         "MSRValue": "0x3FFFC00020",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -329,7 +323,6 @@
+         "MSRValue": "0x3FFFC08000",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -344,7 +337,6 @@
+         "MSRValue": "0x3FFFC00800",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -570,4 +562,4 @@
+         "Speculative": "1",
+         "UMask": "0x40"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/icelake/other.json b/tools/perf/pmu-events/arch/x86/icelake/other.json
+index 2e177f95a9cb..3055710595c4 100644
+--- a/tools/perf/pmu-events/arch/x86/icelake/other.json
++++ b/tools/perf/pmu-events/arch/x86/icelake/other.json
+@@ -45,7 +45,6 @@
+         "MSRValue": "0x10004",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -60,7 +59,6 @@
+         "MSRValue": "0x184000004",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -75,7 +73,6 @@
+         "MSRValue": "0x184000004",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -90,7 +87,6 @@
+         "MSRValue": "0x10001",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -105,7 +101,6 @@
+         "MSRValue": "0x184000001",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -120,7 +115,6 @@
+         "MSRValue": "0x184000001",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -135,7 +129,6 @@
+         "MSRValue": "0x10002",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -150,7 +143,6 @@
+         "MSRValue": "0x184000002",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -165,7 +157,6 @@
+         "MSRValue": "0x184000002",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -180,7 +171,6 @@
+         "MSRValue": "0x10400",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -195,7 +185,6 @@
+         "MSRValue": "0x184000400",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -210,7 +199,6 @@
+         "MSRValue": "0x184000400",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -225,7 +213,6 @@
+         "MSRValue": "0x10010",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -240,7 +227,6 @@
+         "MSRValue": "0x184000010",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -255,7 +241,6 @@
+         "MSRValue": "0x184000010",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -270,7 +255,6 @@
+         "MSRValue": "0x10020",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -285,7 +269,6 @@
+         "MSRValue": "0x184000020",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -300,7 +283,6 @@
+         "MSRValue": "0x184000020",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -315,7 +297,6 @@
+         "MSRValue": "0x18000",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -330,7 +311,6 @@
+         "MSRValue": "0x184008000",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -345,7 +325,6 @@
+         "MSRValue": "0x184008000",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -360,7 +339,6 @@
+         "MSRValue": "0x10800",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -375,7 +353,6 @@
+         "MSRValue": "0x184000800",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+@@ -390,7 +367,6 @@
+         "MSRValue": "0x184000800",
+         "Offcore": "1",
+         "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+         "SampleAfterValue": "100003",
+         "Speculative": "1",
+         "UMask": "0x1"
+diff --git a/tools/perf/pmu-events/arch/x86/icelake/pipeline.json b/tools/perf/pmu-events/arch/x86/icelake/pipeline.json
+index 2b58cfaaaf39..a017a4727050 100644
+--- a/tools/perf/pmu-events/arch/x86/icelake/pipeline.json
++++ b/tools/perf/pmu-events/arch/x86/icelake/pipeline.json
+@@ -452,6 +452,18 @@
+         "Speculative": "1",
+         "UMask": "0x1"
+     },
++    {
++        "BriefDescription": "Instruction decoders utilized in a cycle",
++        "CollectPEBSRecord": "2",
++        "Counter": "0,1,2,3",
++        "EventCode": "0x55",
++        "EventName": "INST_DECODED.DECODERS",
++        "PEBScounters": "0,1,2,3",
++        "PublicDescription": "Number of decoders utilized in a cycle when the MITE (legacy decode pipeline) fetches instructions.",
++        "SampleAfterValue": "2000003",
++        "Speculative": "1",
++        "UMask": "0x1"
++    },
+     {
+         "BriefDescription": "Number of instructions retired. Fixed Counter - architectural event",
+         "CollectPEBSRecord": "2",
+-- 
+2.36.0.464.gb9c8b46e94-goog
 
