@@ -2,67 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9FEBC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6965BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:06:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343783AbiD1IH4 (ORCPT
+        id S1343990AbiD1IJV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34802 "EHLO
+        Thu, 28 Apr 2022 04:09:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343614AbiD1IHs (ORCPT
+        with ESMTP id S1343847AbiD1IIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:07:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7681C9D4E9
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:04:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 28 Apr 2022 04:08:47 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBBB13F89
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:05:16 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A049B82B35
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 08:04:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8839AC385AC;
-        Thu, 28 Apr 2022 08:04:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651133069;
-        bh=a4NV7CQK6Y90eH2eoXqtxoTPh+hLluRrEcM9Svhipig=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=A4LSuu97UOwolzLArNy1m00e0wSNj+xL9+j8kHVdHISRsj4VK4HVv1Wv9r77cAJyk
-         kECIWjHun6ASGD0enxC2oREBdR5/3lDApaYe2RNGRJLYK0081GrKV26vyuIz9/7IdK
-         9EkWrX8scGXD1pymVAWg8Uk/ItsuOg5lzuvt6WRSh0GIQcR9jZkmGn3akFuNSssw2T
-         v+/3tXM2a9JCVrJ21fnn/36WUTp0wtGCwBtFZVnMyLXh0Vpw3hh9eevTL3ZFX6oAKw
-         nkG/cuWvjLVhSkdTq76p/yhn6DNKuuXGPdCgWDa6luLziS3cKEwPxsVrVAtFS7YgUn
-         jnZZvs59IMDTQ==
-Date:   Thu, 28 Apr 2022 10:04:24 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Sargun Dhillon <sargun@sargun.me>
-Cc:     Kees Cook <keescook@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Tycho Andersen <tycho@tycho.pizza>,
-        Andy Lutomirski <luto@kernel.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>
-Subject: Re: [PATCH 1/2] seccomp: Use FIFO semantics to order notifications
-Message-ID: <20220428080424.p3ltkcwtk3icvq6n@wittgenstein>
-References: <20220428015447.13661-1-sargun@sargun.me>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id C11211F88A;
+        Thu, 28 Apr 2022 08:05:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1651133114; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=98oHi700xFOE02Vfn35dIwzesf4K3FljW87BzHJLrQU=;
+        b=fQhuQ2AbAnE1rRzJrjxkZfleHvwI0UivAXv2yhV069POMNFwFmtBgjvuOdpBKiYsiuAnFF
+        e1JMUtswDgXIG0CMgfiYYgveoQJkji8AB7PYvMBGTtuNJuru8J2WQ5/ZFOB7MRQRZsR4ax
+        DCvv6VLzFxlopelnT5PadpfxpS5sIjs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1651133114;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=98oHi700xFOE02Vfn35dIwzesf4K3FljW87BzHJLrQU=;
+        b=6FcnaTQlmCIMgFemIbEhNxQMu+kfVDrobPwD6SwNuojCE4QEpHcOwY1uK24q3E9zZQZuLX
+        YvdXMN1mtXgKv+Ag==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9F59D13AF8;
+        Thu, 28 Apr 2022 08:05:14 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id RpjOJbpKamJ2IgAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Thu, 28 Apr 2022 08:05:14 +0000
+Message-ID: <7cccce3d-b154-0a9c-31bd-f41f998300da@suse.de>
+Date:   Thu, 28 Apr 2022 10:05:14 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220428015447.13661-1-sargun@sargun.me>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2] drm/display: Select DP helper for DRM_DP_AUX_CHARDEV
+ and DRM_DP_CEC
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Lyude Paul <lyude@redhat.com>
+Cc:     David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org
+References: <20220427215528.237861-1-javierm@redhat.com>
+ <46446e78-60a6-1b8c-1bb6-1c005489d58c@suse.de>
+ <6f3b8d37-0a70-a035-e87b-5aa72926fff9@redhat.com>
+ <af31d343-202b-ffaa-c6a9-b20247938dfd@suse.de>
+ <1d456654-6d06-ef35-b9a0-519db7d5b35e@redhat.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <1d456654-6d06-ef35-b9a0-519db7d5b35e@redhat.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------mvVyOA8ZAtO3EHbb06WV8lLg"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 06:54:46PM -0700, Sargun Dhillon wrote:
-> Previously, the seccomp notifier used LIFO semantics, where each
-> notification would be added on top of the stack, and notifications
-> were popped off the top of the stack. This could result one process
-> that generates a large number of notifications preventing other
-> notifications from being handled. This patch moves from LIFO (stack)
-> semantics to FIFO (queue semantics).
-> 
-> Signed-off-by: Sargun Dhillon <sargun@sargun.me>
-> ---
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------mvVyOA8ZAtO3EHbb06WV8lLg
+Content-Type: multipart/mixed; boundary="------------hYgqoZl4rysfPenpEgA0cNW2";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Javier Martinez Canillas <javierm@redhat.com>,
+ linux-kernel@vger.kernel.org, Jani Nikula <jani.nikula@linux.intel.com>,
+ Lyude Paul <lyude@redhat.com>
+Cc: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org
+Message-ID: <7cccce3d-b154-0a9c-31bd-f41f998300da@suse.de>
+Subject: Re: [PATCH v2] drm/display: Select DP helper for DRM_DP_AUX_CHARDEV
+ and DRM_DP_CEC
+References: <20220427215528.237861-1-javierm@redhat.com>
+ <46446e78-60a6-1b8c-1bb6-1c005489d58c@suse.de>
+ <6f3b8d37-0a70-a035-e87b-5aa72926fff9@redhat.com>
+ <af31d343-202b-ffaa-c6a9-b20247938dfd@suse.de>
+ <1d456654-6d06-ef35-b9a0-519db7d5b35e@redhat.com>
+In-Reply-To: <1d456654-6d06-ef35-b9a0-519db7d5b35e@redhat.com>
 
-It has a minimal user-visible impact in a sense but I don't think it
-should be an issue. Makes sense to me,
-Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+--------------hYgqoZl4rysfPenpEgA0cNW2
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
+
+KGNjIEphbmkgYW5kIEx5dWRlKQ0KDQpBbSAyOC4wNC4yMiB1bSAwOTo1MiBzY2hyaWViIEph
+dmllciBNYXJ0aW5leiBDYW5pbGxhczoNCj4gT24gNC8yOC8yMiAwOTo0NSwgVGhvbWFzIFpp
+bW1lcm1hbm4gd3JvdGU6DQo+IA0KPiBbc25pcF0NCj4gDQo+Pj4+IFlvdSBjYW5ub3Qgc2Vs
+ZWN0IERJU1BMQVlfRFBfSEVMUEVSIHdpdGhvdXQgRElTUExBWV9IRUxQRVIuDQo+Pj4+DQo+
+Pj4NCj4+PiBUaGF0IHdhcyBteSBvcmlnaW5hbCB0aG91Z2h0IGFzIHdlbGwgYW5kIHdoYXQg
+ZGlkIGluIHYxLCBidXQgdGhlbiBJIG5vdGljZWQNCj4+PiB0aGF0IGRvaW5nIHRoYXQgaXQg
+d291bGQgZm9yY2UgRFJNX0RJU1BMQVlfSEVMUEVSIHRvIGJlIHNldCBhcyBidWlsdC1pbiBh
+bmQNCj4+PiBub3QgYWxsb3cgdG8gYmUgYnVpbHQgYXMgYSBtb2R1bGUuDQo+Pg0KPj4gSXQg
+d2FzIGEgcmhldG9yaWNhbCBvbmx5LiBJIGRpZG4ndCBtZWFuIHRvIGFjdHVhbGx5IHNldCBE
+SVNQTEFZX0hFTFBFUi4NCj4+DQo+IA0KPiBBaCwgc29ycnkgZm9yIG1pc3VuZGVyc3RhbmRp
+bmcuDQo+IA0KPj4+ICAgIA0KPj4+PiBDYW4ndCB5b3Ugc2ltcGx5IG1ha2UgaXQgZGVwZW5k
+IG9uIERJU1BMQVlfRFBfSEVMUEVSLiAgVGhlIG1lbnUgZW50cnkNCj4+Pj4gd2lsbCBzaG93
+IHVwIGFzIHNvb24gYXMgdGhlcmUncyBhIGRyaXZlciB0aGF0IHNlbGNldHMgRElTUExBWV9E
+UF9IRUxQRVIuDQo+Pj4+DQo+Pj4NCj4+PiBJIGNvdWxkIGJ1dCB0aGVuIHRoYXQgbWVhbnMg
+dGhhdCBvbmNlIHdvbid0IGJlIGFibGUgdG8gc2VsZWN0IHRoZXNlIHR3byBjb25maWcNCj4+
+PiBvcHRpb25zIHVubGVzcyBzb21lIGVuYWJsZSBzeW1ib2wgc2VsZWN0cyBEUk1fRElTUExB
+WV9EUF9IRUxQRVIuDQo+Pj4NCj4+PiBJbiBteSBvcGluaW9uLCBEUk1fRFBfQVVYX0NIQVJE
+RVYgYW5kIERSTV9EUF9DRUMgYXJlIGRpZmZlcmVudCB0aGFuIGFsbCBvdGhlcg0KPj4+IG9w
+dGlvbnMgdGhhdCBzZWxlY3QgRFJNX0RJU1BMQVlfRFBfSEVMUEVSLCBzaW5jZSB0aG9zZSBh
+cmUgZHJpdmVycyBhbmQgd2FudCB0bw0KPj4+IGhhdmUgYm90aCBEUk1fRElTUExBWV9EUF9I
+RUxQRVIgYW5kIERSTV9ESVNQTEFZX0hFTFBFUiBzZXQuDQo+Pj4NCj4+PiBCdXQgRFJNX0RQ
+X0FVWF9DSEFSREVWIGFuZCBEUk1fRFBfQ0VDIGFyZSBqdXN0IGluY2x1ZGVkIGluIGRybV9k
+aXNwbGF5X2hlbHBlci5vDQo+Pj4gaWYgZW5hYmxlZCwgYW5kIGRlcGVuZCBvbiBzeW1ib2xz
+IHRoYXQgYXJlIHByZXNlbnQgaWYgQ09ORklHX0RSTV9ESVNQTEFZX0RQX0hFTFBFUg0KPj4+
+IGlzIGVuYWJsZWQuIFNvIGp1c3QgbmVlZCB0aGUgbGF0dGVyLCBpZiBEUk1fRElTUExBWV9I
+RUxQRVIgaXMgbm90IGVuYWJsZWQgdGhlbiBpdA0KPj4+IHdpbGwganVzdCBiZSBhIG5vLW9w
+Lg0KPj4+DQo+Pj4gSGF2aW5nIHdyaXR0ZW4gdGhhdCB0aG91Z2ggSSBub3RpY2VkIHRoYXQg
+YSAiZGVwZW5kcyBvbiBEUk1fRElTUExBWV9IRUxQRVIiIG1ha2VzDQo+Pj4gc2Vuc2UuIElm
+IHlvdSBhZ3JlZSBJIGNhbiBhZGQgaXQgYW5kIHBvc3QgYSB2My4NCj4+DQo+PiBZZXMgcGxl
+YXNlLiAgVGhlc2Ugb3B0aW9ucyBlbmFibGUgZmVhdHVyZXMgb2YgdGhlIERQIGNvZGUuIElm
+IHRoZXJlJ3Mgbm8NCj4+IGRyaXZlciB3aXRoIERQLCBpdCBkb2Vzbid0IG1ha2Ugc2Vuc2Ug
+dG8gYWxsb3cgdGhlbS4NCj4+DQo+PiBJIGtub3cgdGhhdCB0aGVyZSBjb3VsZCBiZSBhbiBv
+ZGQgc2l0dWF0aW9uIHdoZXJlIHVzZXJzcGFjZSBtaWdodCBub3QNCj4+IGhhdmUgRFAsIGJ1
+dCBzdGlsbCB3YW50cyB0aGUgY2hhcmRldiBmaWxlIG9mIGF1eCBidXMuICBCdXQgdGhhdA0K
+Pj4gc2l0dWF0aW9uIGV4aXN0ZWQgYWxyZWFkeSB3aGVuIHRoZSBjb2RlIHdhcyBsb2NhdGVk
+IHdpdGhpbiBLTVMgaGVscGVycy4NCj4+DQo+IA0KPiBBZ3JlZWQuDQo+IA0KPj4+DQo+Pj4g
+Tm93LCBwb25kZXJpbmcgbW9yZSBhYm91dCB0aGlzIGlzc3VlLCBwcm9iYWJseSB0aGUgbW9z
+dCBjb3JyZWN0IHRoaW5nIHRvIGRvIGlzIGZvcg0KPj4+IHRoZSBkcml2ZXJzIHRoYXQgbWFr
+ZSB1c2Ugb2YgdGhlIHN5bWJvbHMgZXhwb3J0ZWQgYnkgRFJNX0RQX3tBVVhfQ0hBUkRFVixD
+RUN9IHRvDQo+Pj4gc2VsZWN0IHRoZXNlLiBXaGF0IGRvIHlvdSB0aGluayA/DQo+Pg0KPj4g
+VGhhdCdzIG5vdCBjb25zaWRlcmVkIGdvb2Qgc3R5bGUuIFNlbGVjdCBzaG91bGQgbm90IGJl
+IHVzZWQgZm9yIGFueXRoaW5nDQo+PiB0aGF0IGlzIHVzZXItY29uZmlndXJhYmxlLiBbMV0N
+Cj4+DQo+IA0KPiBSaWdodC4gU28gZ2l2aW5nIGV2ZW4gbW9yZSB0aG91Z2h0IHRvIHRoaXMs
+IG5vdyBJIHRoaW5rIHRoYXQgd2Ugc2hvdWxkIGp1c3QgaW5jbHVkZQ0KPiBkcm1fZHBfYXV4
+X2Rldi5vLCBkcm1fZHBfY2VjLm8gKGFuZCBwcm9iYWJseSBkcm1fZHBfYXV4X2J1cy5vPykg
+dW5jb25kaXRpb25hbGx5IHRvDQo+IGRybV9kaXNwbGF5X2hlbHBlci0kKENPTkZJR19EUk1f
+RElTUExBWV9EUF9IRUxQRVIpLg0KPiANCj4gQWZ0ZXIgYWxsLCB0aGVzZSBhcmUgbm90IGJp
+ZyBvYmplY3RzIGFuZCBkcm1fZGlzcGxheV9oZWxwZXIgY2FuIG5vdyBiZSBidWlsdCBhcyBt
+b2R1bGUuDQo+IA0KPiBJIGRvbid0IHNlZSB0aGF0IG11Y2ggdmFsdWUgdG8gaGF2ZSBzZXBh
+cmF0ZSB1c2VyLWNvbmZpZ3VyYWJsZSBjb25maWcgb3B0aW9ucy4uLg0KPiANCg0KLS0gDQpU
+aG9tYXMgWmltbWVybWFubg0KR3JhcGhpY3MgRHJpdmVyIERldmVsb3Blcg0KU1VTRSBTb2Z0
+d2FyZSBTb2x1dGlvbnMgR2VybWFueSBHbWJIDQpNYXhmZWxkc3RyLiA1LCA5MDQwOSBOw7xy
+bmJlcmcsIEdlcm1hbnkNCihIUkIgMzY4MDksIEFHIE7DvHJuYmVyZykNCkdlc2Now6RmdHNm
+w7xocmVyOiBJdm8gVG90ZXYNCg==
+
+--------------hYgqoZl4rysfPenpEgA0cNW2--
+
+--------------mvVyOA8ZAtO3EHbb06WV8lLg
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmJqSroFAwAAAAAACgkQlh/E3EQov+CY
+UA//f3AJes9k2c+Wi4Qj/QhKkmBa3dWRAxIUNk6V+4sRVBHdnFzHyVCybNuCj0zM+MWM1AOw9PiC
+vPSjX0zA4IOM608gt6vyy8T9IBLey6CdidYEoHiJ0ASokLvRR29/Tw4TN6nbHvUo6+gBogCk7U5Y
+5J6t/BUCz1EmXVRc+IT8dynf4bFaZiqn2SQA7Ca6xJeqimKTrXw8j+Fl9Rd6rtgW7cDjHeW6zj22
+9shl1dIQ6kxgQhJXoiXxrtsxlfiLkfi/w0JSZhgUzF2n2BNYW6sZGsA3rpUVuUFZCfqb1hcxKH9R
++GQC4yUSTyXmiRz2cB9n9MBizBSkmF5020Zs+EjgAgp9/vaTu2lXHT7dnJZDfxlGIiuqojqnTG6d
+upsM9lwpOIvl4K6nWqfpv+Oqs66w+xg3r8YI+BKJvikj148NaSHxgLr15NV/czs1Zg2eEAXJeDqa
+OPnHXoJrbIR8gR3ROvWHKehzNAMn77ERQGKNlJr4XAhnd0yXMeR4A+5iYKVWz3oVlL5a9Vgv9R5W
+SNkxT3jt1nUoFZn2uZt9KAnkNydj9226k3BtL93vDIswT+A2QggA/VDSQRcoIpeRVKI7KOulhKpB
+UzKkq9m48k+lSOcyby4HSXjXdZbYD27iT3gnOuLgztSz+KvIZdulEPt8wyq0n9CjC1PH7mnXIQ65
+j1Q=
+=eWAz
+-----END PGP SIGNATURE-----
+
+--------------mvVyOA8ZAtO3EHbb06WV8lLg--
