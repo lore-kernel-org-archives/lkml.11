@@ -2,146 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDF70C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:25:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 260C7C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 08:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344085AbiD1I2s (ORCPT
+        id S1344095AbiD1I3J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 04:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
+        Thu, 28 Apr 2022 04:29:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344075AbiD1I2q (ORCPT
+        with ESMTP id S1344122AbiD1I27 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 04:28:46 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7968D972D6
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:25:31 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id r13so8038862ejd.5
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:25:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GBFLXMdrqZoM8pTN9XOZZVLOcyL+2U8hpcEKfTTlXlY=;
-        b=acPfvYBo2zGMcnL/ebZtDurllXBYVvGnQWuYbMdEyr/qKgqwEyxoxvyTBSgGBJRepN
-         576veejTCJPrq5g0WnVeEqMKfXhzQy9BrtyfSMjgpZ299k+IXH5ISoEUe3gZsd0S4135
-         94XlelFYgIROHiCxNIMcPrWG5fGhxOUK7zwS0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GBFLXMdrqZoM8pTN9XOZZVLOcyL+2U8hpcEKfTTlXlY=;
-        b=vlRlu4UCtZBjsOGljyDyIIWpMCoMXMf+YLzzT1JcOoqgTNAah9Eg9PfJ+hLf2WahdW
-         lixFmStrQGHLe3EebwilyxayDa1e5GwuMmeQQfGCr0Jkxd2hZSRd9fE1KcZuwxiYMmV/
-         9Yg4Yxa86WBQ+8QZ+DEWw75dwy3NpvsmGb1jSHZDVavRnMOKDm/S/XQa6k151Xrkc75l
-         QrfaL7oL4CF1aVYZuFkU668JthTINncnv4dmDAAap0mB7eSSoz07lMkkO828AIFZO5Bd
-         F9nAGnyUMIfsp7BDsi7UCwpTbhNUiSZNGPhzft12klmVehAOoHxaErgxulLGMfqjWitX
-         sVOw==
-X-Gm-Message-State: AOAM533UTzFa0qZqmhzrIDKru7F3B7F5jumhobgVatuHVcXIUfezWXnp
-        /Pchqckcl0Y+EFEK/TqJ+mglAUlkq1dMX/eIbv2+6w==
-X-Google-Smtp-Source: ABdhPJyyqoaJEPIXQO48nP32E2pidZpyto+Tp7PAetnqqtbxUKQnW+q5FcYhfABf4qMQZGVhvMLBniJjkCWi7+KbQWQ=
-X-Received: by 2002:a17:906:1315:b0:6ef:5903:c5d1 with SMTP id
- w21-20020a170906131500b006ef5903c5d1mr30037607ejb.537.1651134329995; Thu, 28
- Apr 2022 01:25:29 -0700 (PDT)
+        Thu, 28 Apr 2022 04:28:59 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ECD6972DC
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 01:25:42 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23S85KIx014079;
+        Thu, 28 Apr 2022 03:24:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=Pm7r4W1Cm//VcduQTiTK26jaLSZ7r2ZK0U6VdwqHIWA=;
+ b=JHmoA1J4Uuq1Ef7gUpLGXwMVvmgOEVlK+pNeFhphAOhoHQ5abU/AgcnXFwHHhVSqtnrN
+ xrO4FsZeAka+u1k4Ih6L8gsqOs/LBfk8tjmPpyxtT+AlFsu4AMGD+SSMGidnbZMPdpbp
+ tj8BgLo/fgRXxEniXerGvObmR1mhzfBoQKOieQhds58/zs0Z1uS7TvAlgdQ4Mmlt08mr
+ nMMvfa366girDwbc6fA2LdXC1VjpoegKVG/mA/5dFQWLaSvjOEDoy//8v1yb1vO+q0aQ
+ bWdaJbTtKvgyI5rkrivN381EQv0D2Rd1fItidKO2CznKb+c70LAPDGgU2BdhzcHysW6k zg== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fprt61uw4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 28 Apr 2022 03:24:57 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Apr
+ 2022 09:24:56 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Thu, 28 Apr 2022 09:24:56 +0100
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 06E5446C;
+        Thu, 28 Apr 2022 08:24:56 +0000 (UTC)
+Date:   Thu, 28 Apr 2022 08:24:56 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Nicola Lunghi <nick83ola@gmail.com>
+CC:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        <patches@opensource.cirrus.com>, <alsa-devel@alsa-project.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ASoC: wm8960: Add ACPI support
+Message-ID: <20220428082456.GJ38351@ediswmail.ad.cirrus.com>
+References: <20220427212916.40145-1-nick83ola@gmail.com>
 MIME-Version: 1.0
-References: <20220420231230.58499-1-bjorn.andersson@linaro.org>
- <20220420231230.58499-2-bjorn.andersson@linaro.org> <CAMty3ZAw7DUSnBePC05qC8Gn6ESKiu+FHw4a-HPPc05VX1hqhg@mail.gmail.com>
- <20220421082358.ivpmtak3ednvddrc@houat> <YmEdAVwZuA7Wo1Ch@aptenodytes>
- <YmelPCcWCCjALtRU@aptenodytes> <CAMty3ZBwguzvC8A9xA5c0enfoFRGS=4wWCzpfakTUXrsRS9GyA@mail.gmail.com>
- <CGME20220427143420eucas1p1aa7dff284512e1c48c3db414633237ea@eucas1p1.samsung.com>
- <20220427143410.bectqumq62qmlv5x@houat> <8cc97a1b-f03a-3303-4357-fc26abe58fcd@samsung.com>
-In-Reply-To: <8cc97a1b-f03a-3303-4357-fc26abe58fcd@samsung.com>
-From:   Jagan Teki <jagan@amarulasolutions.com>
-Date:   Thu, 28 Apr 2022 13:55:18 +0530
-Message-ID: <CAMty3ZDFCJyXxM1__H=XTupLy-npDwJVbBf2k1H=Yo7LFf82rQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] Revert "drm: of: Lookup if child node has panel or bridge"
-To:     Marek Szyprowski <m.szyprowski@samsung.com>
-Cc:     Maxime Ripard <maxime@cerno.tech>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Rob Clark <robdclark@gmail.com>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Robert Foss <robert.foss@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220427212916.40145-1-nick83ola@gmail.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-GUID: 48N1y2DSeMR1C6Z9PycqBZyN_VANppph
+X-Proofpoint-ORIG-GUID: 48N1y2DSeMR1C6Z9PycqBZyN_VANppph
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marek,
+On Wed, Apr 27, 2022 at 10:29:16PM +0100, Nicola Lunghi wrote:
+> HID made of either Wolfson/CirrusLogic PCI ID + 8960 identifier
+> 
+> This helps enumerate the Waveshare WM8960 WM8960 Hi-Fi Sound
+> Card HAT on the Up2 platform.
+> 
+> The scripts at https://github.com/thesofproject/acpi-scripts
+> can be used to add the ACPI initrd overlay.
+> 
+> This commit is similar to the commit:
+> 960cdd50ca9f ("ASoC: wm8804: Add ACPI support")
+> 
+> Signed-off-by: Nicola Lunghi <nick83ola@gmail.com>
+> ---
 
-On Thu, Apr 28, 2022 at 11:47 AM Marek Szyprowski
-<m.szyprowski@samsung.com> wrote:
->
-> Hi Maxime,
->
-> On 27.04.2022 16:34, Maxime Ripard wrote:
-> > On Tue, Apr 26, 2022 at 01:40:31PM +0530, Jagan Teki wrote:
-> >> On Tue, Apr 26, 2022 at 1:24 PM Paul Kocialkowski
-> >> <paul.kocialkowski@bootlin.com> wrote:
-> >>> On Thu 21 Apr 22, 10:59, Paul Kocialkowski wrote:
-> >>>> On Thu 21 Apr 22, 10:23, Maxime Ripard wrote:
-> >>>>> On Thu, Apr 21, 2022 at 01:15:54PM +0530, Jagan Teki wrote:
-> >>>>>> + Linus
-> >>>>>> + Marek
-> >>>>>> + Laurent
-> >>>>>> + Robert
-> >>>>>>
-> >>>>>> On Thu, Apr 21, 2022 at 4:40 AM Bjorn Andersson
-> >>>>>> <bjorn.andersson@linaro.org> wrote:
-> >>>>>>> Commit '80253168dbfd ("drm: of: Lookup if child node has panel or
-> >>>>>>> bridge")' attempted to simplify the case of expressing a simple panel
-> >>>>>>> under a DSI controller, by assuming that the first non-graph child node
-> >>>>>>> was a panel or bridge.
-> >>>>>>>
-> >>>>>>> Unfortunately for non-trivial cases the first child node might not be a
-> >>>>>>> panel or bridge.  Examples of this can be a aux-bus in the case of
-> >>>>>>> DisplayPort, or an opp-table represented before the panel node.
-> >>>>>>>
-> >>>>>>> In these cases the reverted commit prevents the caller from ever finding
-> >>>>>>> a reference to the panel.
-> >>>>>>>
-> >>>>>>> This reverts commit '80253168dbfd ("drm: of: Lookup if child node has
-> >>>>>>> panel or bridge")', in favor of using an explicit graph reference to the
-> >>>>>>> panel in the trivial case as well.
-> >>>>>> This eventually breaks many child-based devm_drm_of_get_bridge
-> >>>>>> switched drivers.  Do you have any suggestions on how to proceed to
-> >>>>>> succeed in those use cases as well?
-> >>>>> I guess we could create a new helper for those, like
-> >>>>> devm_drm_of_get_bridge_with_panel, or something.
-> >>>> Oh wow I feel stupid for not thinking about that.
-> >>>>
-> >>>> Yeah I agree that it seems like the best option.
-> >>> Should I prepare a patch with such a new helper?
-> >>>
-> >>> The idea would be to keep drm_of_find_panel_or_bridge only for the of graph
-> >>> case and add one for the child node case, maybe:
-> >>> drm_of_find_child_panel_or_bridge.
-> >>>
-> >>> I really don't have a clear idea of which driver would need to be switched
-> >>> over though. Could someone (Jagan?) let me know where it would be needed?
-> >> sun6i_mipi_dsi
-> > It doesn't look like sun6i_mipi_dsi is using devm_drm_of_get_bridge at all?
-> >
-> >> exynos_drm_dsi
-> > If you reference 711c7adc4687, I don't see why we would need to switch
-> > it back to the old behaviour. It wasn't iterating over its child node
-> > before, so what does the switch to drm_of_get_bridge broke exactly?
->
-> It broke getting the panel if it is a direct child of the DSI device
-> node. It worked before because it used following code:
->
-> dsi->panel = of_drm_find_panel(device->dev.of_node);
->
-> which got replaced by devm_drm_of_get_bridge().
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-Yes, we need to revert that change back to find the individual panel
-and bridge. I'm preparing a patch for it.
-
-Jagan.
+Thanks,
+Charles
