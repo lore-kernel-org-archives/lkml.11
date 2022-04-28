@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D493C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:05:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7FC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 10:05:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbiD1KIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 06:08:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36702 "EHLO
+        id S234340AbiD1KIW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 06:08:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233272AbiD1KHG (ORCPT
+        with ESMTP id S230284AbiD1KHG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 28 Apr 2022 06:07:06 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55631434B6;
-        Thu, 28 Apr 2022 02:56:12 -0700 (PDT)
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8954243ACD;
+        Thu, 28 Apr 2022 02:56:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651139772; x=1682675772;
+  t=1651139798; x=1682675798;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=oiJlEqYi2G/M1ak/+E9q5Pf4TyGwzZSyE0d92xpEqUI=;
-  b=axV0O4Z0yhPy3Ev377G25+5qLChdwxKhf86zBKCkfT21TKjrFWTnRmSi
-   6yORlp1Sh2UAprufutU2CSU+bOYicHzWdGVjvbTfp8Fgq5libyANOz6Eb
-   LaBKqehaTavz4xgxycsGMQEmS+nqqPKQGwmnOdmL+nn/yhIvA0eLVSGOU
-   c=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 28 Apr 2022 02:56:11 -0700
+  bh=2SRHszNSlxAzB+vKJpcdy1q4zTfhGNXLAeSWY/14grY=;
+  b=NR4liILLywy/0zzKiUvPZml0b+YUoWbI4trQ+Un7fHlZRJiy2d1+nSVR
+   UhKl8EY9LticQqgUqHDUQ+g4zKjm/LNmtpJBzYkxf1TgfrHs81T9xETud
+   d24ytPhiSvdqbRlsg+r6j496V0GIu2rCF5hJP90sPmyt1vw5r7LIZ9M+Y
+   g=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 28 Apr 2022 02:56:37 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 02:56:11 -0700
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 02:56:36 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 28 Apr 2022 02:56:10 -0700
+ 15.2.986.22; Thu, 28 Apr 2022 02:56:32 -0700
 Received: from blr-ubuntu-253.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 28 Apr 2022 02:56:06 -0700
+ 15.2.986.22; Thu, 28 Apr 2022 02:56:28 -0700
 From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 To:     <arnd@arndb.de>, <catalin.marinas@arm.com>,
         <gregkh@linuxfoundation.org>, <rostedt@goodmis.org>
@@ -46,15 +46,15 @@ CC:     <linux-arm-kernel@lists.infradead.org>,
         <maz@kernel.org>, <quic_psodagud@quicinc.com>,
         <quic_tsoni@quicinc.com>, <will@kernel.org>,
         Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Subject: [PATCHv12 3/9] irqchip/tegra: Fix overflow implicit truncation warnings
-Date:   Thu, 28 Apr 2022 15:25:26 +0530
-Message-ID: <19756648814ae293263bfefacd340a16507fab05.1651139070.git.quic_saipraka@quicinc.com>
+Subject: [PATCHv12 7/9] asm-generic/io: Add logging support for MMIO accessors
+Date:   Thu, 28 Apr 2022 15:25:30 +0530
+Message-ID: <6673a2e73d3dd4c7aa01fee9b26cc4a52176ba7a.1651139070.git.quic_saipraka@quicinc.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <cover.1651139070.git.quic_saipraka@quicinc.com>
 References: <cover.1651139070.git.quic_saipraka@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
 X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
@@ -62,64 +62,254 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix -Woverflow warnings for tegra irqchip driver which is a result
-of moving arm64 custom MMIO accessor macros to asm-generic function
-implementations giving a bonus type-checking now and uncovering these
-overflow warnings.
+Add logging support for MMIO high level accessors such as read{b,w,l,q}
+and their relaxed versions to aid in debugging unexpected crashes/hangs
+caused by the corresponding MMIO operation.
 
-drivers/irqchip/irq-tegra.c: In function ‘tegra_ictlr_suspend’:
-drivers/irqchip/irq-tegra.c:151:18: warning: large integer implicitly truncated to unsigned type [-Woverflow]
-   writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-                  ^
-
-Cc: Marc Zyngier <maz@kernel.org>
-Suggested-by: Marc Zyngier <maz@kernel.org>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 ---
- drivers/irqchip/irq-tegra.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ include/asm-generic/io.h | 82 ++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 78 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/irqchip/irq-tegra.c b/drivers/irqchip/irq-tegra.c
-index e1f771c72fc4..ad3e2c1b3c87 100644
---- a/drivers/irqchip/irq-tegra.c
-+++ b/drivers/irqchip/irq-tegra.c
-@@ -148,10 +148,10 @@ static int tegra_ictlr_suspend(void)
- 		lic->cop_iep[i] = readl_relaxed(ictlr + ICTLR_COP_IEP_CLASS);
+diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
+index 7ce93aaf69f8..99090722cb4b 100644
+--- a/include/asm-generic/io.h
++++ b/include/asm-generic/io.h
+@@ -10,6 +10,7 @@
+ #include <asm/page.h> /* I/O is all done through memory accesses */
+ #include <linux/string.h> /* for memset() and memcpy() */
+ #include <linux/types.h>
++#include <linux/instruction_pointer.h>
  
- 		/* Disable COP interrupts */
--		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
+ #ifdef CONFIG_GENERIC_IOMAP
+ #include <asm-generic/iomap.h>
+@@ -61,6 +62,35 @@
+ #define __io_par(v)     __io_ar(v)
+ #endif
  
- 		/* Disable CPU interrupts */
--		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
++#if IS_ENABLED(CONFIG_TRACE_MMIO_ACCESS) && !(defined(__DISABLE_TRACE_MMIO__))
++#include <linux/tracepoint-defs.h>
++
++DECLARE_TRACEPOINT(rwmmio_write);
++DECLARE_TRACEPOINT(rwmmio_post_write);
++DECLARE_TRACEPOINT(rwmmio_read);
++DECLARE_TRACEPOINT(rwmmio_post_read);
++
++void log_write_mmio(u64 val, u8 width, volatile void __iomem *addr,
++		    unsigned long caller_addr);
++void log_post_write_mmio(u64 val, u8 width, volatile void __iomem *addr,
++			 unsigned long caller_addr);
++void log_read_mmio(u8 width, const volatile void __iomem *addr,
++		   unsigned long caller_addr);
++void log_post_read_mmio(u64 val, u8 width, const volatile void __iomem *addr,
++			unsigned long caller_addr);
++
++#else
++
++static inline void log_write_mmio(u64 val, u8 width, volatile void __iomem *addr,
++				  unsigned long caller_addr) {}
++static inline void log_post_write_mmio(u64 val, u8 width, volatile void __iomem *addr,
++				       unsigned long caller_addr) {}
++static inline void log_read_mmio(u8 width, const volatile void __iomem *addr,
++				 unsigned long caller_addr) {}
++static inline void log_post_read_mmio(u64 val, u8 width, const volatile void __iomem *addr,
++				      unsigned long caller_addr) {}
++
++#endif /* CONFIG_TRACE_MMIO_ACCESS */
  
- 		/* Enable the wakeup sources of ictlr */
- 		writel_relaxed(lic->ictlr_wake_mask[i], ictlr + ICTLR_CPU_IER_SET);
-@@ -172,12 +172,12 @@ static void tegra_ictlr_resume(void)
+ /*
+  * __raw_{read,write}{b,w,l,q}() access memory in native endianness.
+@@ -149,9 +179,11 @@ static inline u8 readb(const volatile void __iomem *addr)
+ {
+ 	u8 val;
  
- 		writel_relaxed(lic->cpu_iep[i],
- 			       ictlr + ICTLR_CPU_IEP_CLASS);
--		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
- 		writel_relaxed(lic->cpu_ier[i],
- 			       ictlr + ICTLR_CPU_IER_SET);
- 		writel_relaxed(lic->cop_iep[i],
- 			       ictlr + ICTLR_COP_IEP_CLASS);
--		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
- 		writel_relaxed(lic->cop_ier[i],
- 			       ictlr + ICTLR_COP_IER_SET);
- 	}
-@@ -312,7 +312,7 @@ static int __init tegra_ictlr_init(struct device_node *node,
- 		lic->base[i] = base;
++	log_read_mmio(8, addr, _THIS_IP_);
+ 	__io_br();
+ 	val = __raw_readb(addr);
+ 	__io_ar(val);
++	log_post_read_mmio(val, 8, addr, _THIS_IP_);
+ 	return val;
+ }
+ #endif
+@@ -162,9 +194,11 @@ static inline u16 readw(const volatile void __iomem *addr)
+ {
+ 	u16 val;
  
- 		/* Disable all interrupts */
--		writel_relaxed(~0UL, base + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), base + ICTLR_CPU_IER_CLR);
- 		/* All interrupts target IRQ */
- 		writel_relaxed(0, base + ICTLR_CPU_IEP_CLASS);
++	log_read_mmio(16, addr, _THIS_IP_);
+ 	__io_br();
+ 	val = __le16_to_cpu((__le16 __force)__raw_readw(addr));
+ 	__io_ar(val);
++	log_post_read_mmio(val, 16, addr, _THIS_IP_);
+ 	return val;
+ }
+ #endif
+@@ -175,9 +209,11 @@ static inline u32 readl(const volatile void __iomem *addr)
+ {
+ 	u32 val;
+ 
++	log_read_mmio(32, addr, _THIS_IP_);
+ 	__io_br();
+ 	val = __le32_to_cpu((__le32 __force)__raw_readl(addr));
+ 	__io_ar(val);
++	log_post_read_mmio(val, 32, addr, _THIS_IP_);
+ 	return val;
+ }
+ #endif
+@@ -189,9 +225,11 @@ static inline u64 readq(const volatile void __iomem *addr)
+ {
+ 	u64 val;
+ 
++	log_read_mmio(64, addr, _THIS_IP_);
+ 	__io_br();
+ 	val = __le64_to_cpu(__raw_readq(addr));
+ 	__io_ar(val);
++	log_post_read_mmio(val, 64, addr, _THIS_IP_);
+ 	return val;
+ }
+ #endif
+@@ -201,9 +239,11 @@ static inline u64 readq(const volatile void __iomem *addr)
+ #define writeb writeb
+ static inline void writeb(u8 value, volatile void __iomem *addr)
+ {
++	log_write_mmio(value, 8, addr, _THIS_IP_);
+ 	__io_bw();
+ 	__raw_writeb(value, addr);
+ 	__io_aw();
++	log_post_write_mmio(value, 8, addr, _THIS_IP_);
+ }
+ #endif
+ 
+@@ -211,9 +251,11 @@ static inline void writeb(u8 value, volatile void __iomem *addr)
+ #define writew writew
+ static inline void writew(u16 value, volatile void __iomem *addr)
+ {
++	log_write_mmio(value, 16, addr, _THIS_IP_);
+ 	__io_bw();
+ 	__raw_writew((u16 __force)cpu_to_le16(value), addr);
+ 	__io_aw();
++	log_post_write_mmio(value, 16, addr, _THIS_IP_);
+ }
+ #endif
+ 
+@@ -221,9 +263,11 @@ static inline void writew(u16 value, volatile void __iomem *addr)
+ #define writel writel
+ static inline void writel(u32 value, volatile void __iomem *addr)
+ {
++	log_write_mmio(value, 32, addr, _THIS_IP_);
+ 	__io_bw();
+ 	__raw_writel((u32 __force)__cpu_to_le32(value), addr);
+ 	__io_aw();
++	log_post_write_mmio(value, 32, addr, _THIS_IP_);
+ }
+ #endif
+ 
+@@ -232,9 +276,11 @@ static inline void writel(u32 value, volatile void __iomem *addr)
+ #define writeq writeq
+ static inline void writeq(u64 value, volatile void __iomem *addr)
+ {
++	log_write_mmio(value, 64, addr, _THIS_IP_);
+ 	__io_bw();
+ 	__raw_writeq(__cpu_to_le64(value), addr);
+ 	__io_aw();
++	log_post_write_mmio(value, 64, addr, _THIS_IP_);
+ }
+ #endif
+ #endif /* CONFIG_64BIT */
+@@ -248,7 +294,12 @@ static inline void writeq(u64 value, volatile void __iomem *addr)
+ #define readb_relaxed readb_relaxed
+ static inline u8 readb_relaxed(const volatile void __iomem *addr)
+ {
+-	return __raw_readb(addr);
++	u8 val;
++
++	log_read_mmio(8, addr, _THIS_IP_);
++	val = __raw_readb(addr);
++	log_post_read_mmio(val, 8, addr, _THIS_IP_);
++	return val;
+ }
+ #endif
+ 
+@@ -256,7 +307,12 @@ static inline u8 readb_relaxed(const volatile void __iomem *addr)
+ #define readw_relaxed readw_relaxed
+ static inline u16 readw_relaxed(const volatile void __iomem *addr)
+ {
+-	return __le16_to_cpu(__raw_readw(addr));
++	u16 val;
++
++	log_read_mmio(16, addr, _THIS_IP_);
++	val = __le16_to_cpu(__raw_readw(addr));
++	log_post_read_mmio(val, 16, addr, _THIS_IP_);
++	return val;
+ }
+ #endif
+ 
+@@ -264,7 +320,12 @@ static inline u16 readw_relaxed(const volatile void __iomem *addr)
+ #define readl_relaxed readl_relaxed
+ static inline u32 readl_relaxed(const volatile void __iomem *addr)
+ {
+-	return __le32_to_cpu(__raw_readl(addr));
++	u32 val;
++
++	log_read_mmio(32, addr, _THIS_IP_);
++	val = __le32_to_cpu(__raw_readl(addr));
++	log_post_read_mmio(val, 32, addr, _THIS_IP_);
++	return val;
+ }
+ #endif
+ 
+@@ -272,7 +333,12 @@ static inline u32 readl_relaxed(const volatile void __iomem *addr)
+ #define readq_relaxed readq_relaxed
+ static inline u64 readq_relaxed(const volatile void __iomem *addr)
+ {
+-	return __le64_to_cpu(__raw_readq(addr));
++	u64 val;
++
++	log_read_mmio(64, addr, _THIS_IP_);
++	val = __le64_to_cpu(__raw_readq(addr));
++	log_post_read_mmio(val, 64, addr, _THIS_IP_);
++	return val;
+ }
+ #endif
+ 
+@@ -280,7 +346,9 @@ static inline u64 readq_relaxed(const volatile void __iomem *addr)
+ #define writeb_relaxed writeb_relaxed
+ static inline void writeb_relaxed(u8 value, volatile void __iomem *addr)
+ {
++	log_write_mmio(value, 8, addr, _THIS_IP_);
+ 	__raw_writeb(value, addr);
++	log_post_write_mmio(value, 8, addr, _THIS_IP_);
+ }
+ #endif
+ 
+@@ -288,7 +356,9 @@ static inline void writeb_relaxed(u8 value, volatile void __iomem *addr)
+ #define writew_relaxed writew_relaxed
+ static inline void writew_relaxed(u16 value, volatile void __iomem *addr)
+ {
++	log_write_mmio(value, 16, addr, _THIS_IP_);
+ 	__raw_writew(cpu_to_le16(value), addr);
++	log_post_write_mmio(value, 16, addr, _THIS_IP_);
+ }
+ #endif
+ 
+@@ -296,7 +366,9 @@ static inline void writew_relaxed(u16 value, volatile void __iomem *addr)
+ #define writel_relaxed writel_relaxed
+ static inline void writel_relaxed(u32 value, volatile void __iomem *addr)
+ {
++	log_write_mmio(value, 32, addr, _THIS_IP_);
+ 	__raw_writel(__cpu_to_le32(value), addr);
++	log_post_write_mmio(value, 32, addr, _THIS_IP_);
+ }
+ #endif
+ 
+@@ -304,7 +376,9 @@ static inline void writel_relaxed(u32 value, volatile void __iomem *addr)
+ #define writeq_relaxed writeq_relaxed
+ static inline void writeq_relaxed(u64 value, volatile void __iomem *addr)
+ {
++	log_write_mmio(value, 64, addr, _THIS_IP_);
+ 	__raw_writeq(__cpu_to_le64(value), addr);
++	log_post_write_mmio(value, 64, addr, _THIS_IP_);
+ }
+ #endif
  
 -- 
 2.33.1
