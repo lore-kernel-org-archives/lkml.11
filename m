@@ -2,114 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2FE3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 01:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B4F4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 01:07:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240291AbiD1BIA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 21:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40158 "EHLO
+        id S231425AbiD1BK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 21:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240123AbiD1BHl (ORCPT
+        with ESMTP id S229887AbiD1BKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 21:07:41 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FFB562A16;
-        Wed, 27 Apr 2022 18:04:25 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 6B70B5C0219;
-        Wed, 27 Apr 2022 21:04:24 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 27 Apr 2022 21:04:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1651107864; x=1651194264; bh=hF
-        ubptiKk+WdrpVFqA1+L1fyR6PoDcD+g1uY9JtK+1Y=; b=C8sbB9RsZ8DqF2YunK
-        QO8ZGFnsm0sSJwnkZedL7kF4S3V2+om/3RJNfuujI/Aq1EK2YIDEY/7Ky3UGHzJE
-        ejhDkZOI4Y58GFf1cSKqH4tPi6ewWlPZ4VmG+u/mD0szPVsurpnLcOucN+0GE0hb
-        q7VXHKbWGWHbcsZL1HEE44u1TFwrXgwHcOlHnEcrRewXwIRKYpH87EAtMFUDxCfT
-        b9HnbAR+ovOzBAzTOrHuaXztLTSQ/HGgEKd22z0Sf0ar1D5S8O2mHzo/cZy+iDeA
-        Ihr3AEVpK6uHm3+XU02NijWue0UHo81iYKvDTr6TKktM+4bxfN9b2sioPeVLQiKS
-        jwBg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1651107864; x=1651194264; bh=hFubptiKk+WdrpVFqA1+L1fyR6PoDcD+g1u
-        Y9JtK+1Y=; b=GjhI6f+Pz9p0zo90iyPRMPtUKuvdgZ/J7OIC35knre2KqvDLmXm
-        aVLQ6pGKePTlnZ/FL2u35xYoraNRJB5HInSy4NzVG4u5jbK7X431JxfZDRyIL0Z3
-        PCy1m159Oe2HEVJOWtzLIlCmXHB03cHW5ewZmFlHNkIejoaZ34gpo4H92a2GgsE7
-        CX+rqJp1Gl401Vy4aqBB7anhzBmE3HGCuIyOdN722wnWzcoVKgyYItDd3ExV1qab
-        OI7uKxn3bcsWHXHrpx+vKqmnSojBipRX/90+cgKBbklqg4vsZoE885gMV5zpL5uV
-        ueF2u7SRQ73qrzSRB+KIV4ITInzHwcGTK4w==
-X-ME-Sender: <xms:GOhpYkzuiH-p_RNEUJ44ZLyxHBO4-cUlnNBoFJv2Tko_7s80VKG97Q>
-    <xme:GOhpYoTaazEJH3OU1bwC_a3smKj0eiKGkHh9sH_giXcPOAKTpBKkgmXa8XEwmSZdz
-    _i0g1kzTHQ0XoJNzA>
-X-ME-Received: <xmr:GOhpYmX6TtK5aKLmKgb_3qIUV0fev2ATMnCqdy1SazcJPHqFt9Ry-qIFI8AaT5Ho7XUBwVF5pdTjUNX1KwfruDs0Qb2TJOQPozkyjjKEytdVNViFecz4xDDVAjs7I1OKHJNbjg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeigdegfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
-    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
-    frrghtthgvrhhnpedukeetueduhedtleetvefguddvvdejhfefudelgfduveeggeehgfdu
-    feeitdevteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:GOhpYijHljBkJp2PzRTqlHSfedQ5_NGUCB75LV80pMV5k41s0F26BA>
-    <xmx:GOhpYmCARKzorQwB8vkObTo8V7A812hrtRleBBqLqlVmD5sqWlBFCg>
-    <xmx:GOhpYjKF5_09Ka5F4m_B7JUDEAhgj6K-s9kUZL3mbrHHp2-9mshpQg>
-    <xmx:GOhpYsQRm8BtqOCvFxTWXTU43XlJ-mz68drClYskBalye7AdoPUVtA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 27 Apr 2022 21:04:23 -0400 (EDT)
-From:   Samuel Holland <samuel@sholland.org>
-To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        iommu@lists.linux-foundation.org
-Cc:     Heiko Stuebner <heiko@sntech.de>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        linux-riscv@lists.infradead.org,
-        Samuel Holland <samuel@sholland.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: [PATCH 5/5] iommu/sun50i: Ensure the IOMMU can be used for DMA
-Date:   Wed, 27 Apr 2022 20:04:00 -0500
-Message-Id: <20220428010401.11323-6-samuel@sholland.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220428010401.11323-1-samuel@sholland.org>
-References: <20220428010401.11323-1-samuel@sholland.org>
+        Wed, 27 Apr 2022 21:10:55 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1A76A064;
+        Wed, 27 Apr 2022 18:07:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651108062; x=1682644062;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=2gBxdgt48nj77jzRla0ic/dl45U8oWm98zru5apAGlA=;
+  b=jV3o/oRDzfSVeSwkYHfKYXOC9Ta1Zi97+hTCtD4vgpNekXxYmA06kli5
+   Te+h4hsawr+M0waL160hOZ5HSl/5aplTJcjhHqyJ/7q6aNn0ytVMkYyFM
+   C1hxyH2cIen6sTJq2eDjMNTiAjlCAqeRsJMecpFLZjbjjHboDviqgxvR8
+   5YMjW+XPi19bGGEJONse5rDxpxj58J3mJR8j+qN8Xocv62PgeFoSjbde8
+   Ia9pX0SnbNK7gQgaZL44scHaynW7VINFfmKrsGqVlw17+nF10fsXU/RMG
+   TYVZ9Hxdted6U32CGqMtwyOdEURNhh6ElzlzXR89uZQA+YO/ETLR9B1CG
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="253503506"
+X-IronPort-AV: E=Sophos;i="5.90,294,1643702400"; 
+   d="scan'208";a="253503506"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 18:07:42 -0700
+X-IronPort-AV: E=Sophos;i="5.90,294,1643702400"; 
+   d="scan'208";a="513988230"
+Received: from lcdaughe-mobl1.amr.corp.intel.com (HELO [10.212.72.252]) ([10.212.72.252])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 18:07:41 -0700
+Message-ID: <1624e839-81e5-7bc7-533b-c5c838d35f47@intel.com>
+Date:   Wed, 27 Apr 2022 18:07:57 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 10/21] x86/virt/tdx: Add placeholder to coveret all
+ system RAM as TDX memory
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+References: <cover.1649219184.git.kai.huang@intel.com>
+ <6230ef28be8c360ab326c8f592acf1964ac065c1.1649219184.git.kai.huang@intel.com>
+ <d69c08da-80fa-2001-bbe8-8c45552e74ae@intel.com>
+ <228cfa7e5326fa378c1dde2b5e9022146f97b706.camel@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <228cfa7e5326fa378c1dde2b5e9022146f97b706.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-So far, the driver has relied on arch/arm64/Kconfig to select IOMMU_DMA.
-Unsurprisingly, this does not work on RISC-V, so the driver must select
-IOMMU_DMA itself.
+On 4/27/22 17:53, Kai Huang wrote:
+> On Wed, 2022-04-27 at 15:24 -0700, Dave Hansen wrote:
+>> On 4/5/22 21:49, Kai Huang wrote:
+>>> TDX provides increased levels of memory confidentiality and integrity.
+>>> This requires special hardware support for features like memory
+>>> encryption and storage of memory integrity checksums.  Not all memory
+>>> satisfies these requirements.
+>>>
+>>> As a result, TDX introduced the concept of a "Convertible Memory Region"
+>>> (CMR).  During boot, the firmware builds a list of all of the memory
+>>> ranges which can provide the TDX security guarantees.  The list of these
+>>> ranges, along with TDX module information, is available to the kernel by
+>>> querying the TDX module.
+>>>
+>>> In order to provide crypto protection to TD guests, the TDX architecture
+>>
+>> There's that "crypto protection" thing again.  I'm not really a fan of
+>> the changes made to this changelog since I wrote it. :)
+> 
+> Sorry about that.  I'll remove "In order to provide crypto protection to TD
+> guests".
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
----
+Seriously, though.  I took the effort to write these changelogs for you.
+ They were fine.  I'm not stoked about needing to proofread them again.
 
- drivers/iommu/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+>>> also needs additional metadata to record things like which TD guest
+>>> "owns" a given page of memory.  This metadata essentially serves as the
+>>> 'struct page' for the TDX module.  The space for this metadata is not
+>>> reserved by the hardware upfront and must be allocated by the kernel
+>>
+>> 			    ^ "up front"
+> 
+> Thanks will change to "up front".
+> 
+> Btw, the gmail grammar check gives me a red line if I use "up front", but it
+> doesn't complain "upfront".
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index c79a0df090c0..70a0bfa6d907 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -223,6 +223,7 @@ config SUN50I_IOMMU
- 	depends on ARCH_SUNXI || COMPILE_TEST
- 	select ARM_DMA_USE_IOMMU
- 	select IOMMU_API
-+	select IOMMU_DMA
- 	help
- 	  Support for the IOMMU introduced in the Allwinner H6 SoCs.
- 
--- 
-2.35.1
+I'm pretty sure it's wrong.  "up front" is an adverb that applies to
+"reserved".  "Upfront" is an adjective and not how you used it in that
+sentence.
 
+>>> +	 * allocated individually within construct_tdmrs() to meet
+>>> +	 * this requirement.
+>>> +	 */
+>>> +	tdmr_array = kcalloc(tdx_sysinfo.max_tdmrs, sizeof(struct tdmr_info *),
+>>> +			GFP_KERNEL);
+>>
+>> Where, exactly is that alignment provided?  A 'struct tdmr_info *' is 8
+>> bytes so a tdx_sysinfo.max_tdmrs=8 kcalloc() would only guarantee
+>> 64-byte alignment.
+> 
+> The entries in the array only contain a pointer to TDMR_INFO.  The actual
+> TDMR_INFO is allocated separately. The array itself is never used by TDX
+> hardware so it doesn't matter.  We just need to guarantee each TDMR_INFO is
+> 512B-byte aligned.
+
+The comment was clear as mud about this.  If you're going to talk about
+alignment, then do it near the allocation that guarantees the alignment,
+not in some other function near *ANOTHER* allocation.
+
+Also, considering that you're about to go allocate potentially gigabytes
+of physically contiguous memory, it seems laughable that you'd go to any
+trouble at all to allocate an array of pointers here.  Why not just
+
+	kcalloc(tdx_sysinfo.max_tdmrs, sizeof(struct tmdr_info), ...);
+
+Or, heck, just vmalloc() the dang thing.  Why even bother with the array
+of pointers?
+
+
+>>> +	if (!tdmr_array) {
+>>> +		ret = -ENOMEM;
+>>> +		goto out;
+>>> +	}
+>>> +
+>>> +	/* Construct TDMRs to build TDX memory */
+>>> +	ret = construct_tdmrs(tdmr_array, &tdmr_num);
+>>> +	if (ret)
+>>> +		goto out_free_tdmrs;
+>>> +
+>>>  	/*
+>>>  	 * Return -EFAULT until all steps of TDX module
+>>>  	 * initialization are done.
+>>>  	 */
+>>>  	ret = -EFAULT;
+>>
+>> There's the -EFAULT again.  I'd replace these with a better error code.
+> 
+> I couldn't think out a better error code.  -EINVAL looks doesn't suit.  -EAGAIN
+> also doesn't make sense for now since we always shutdown the TDX module in case
+> of any error so caller should never retry.  I think we need some error code to
+> tell "the job isn't done yet".  Perhaps -EBUSY?
+
+Is this going to retry if it sees -EFAULT or -EBUSY?
