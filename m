@@ -2,70 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:41:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E687DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 12:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346426AbiD1Moy (ORCPT
+        id S1346506AbiD1MpB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 08:44:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46982 "EHLO
+        Thu, 28 Apr 2022 08:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346498AbiD1Mom (ORCPT
+        with ESMTP id S1346554AbiD1Mot (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 08:44:42 -0400
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 55502AFAE4;
-        Thu, 28 Apr 2022 05:41:14 -0700 (PDT)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 23SCeFwv007486;
-        Thu, 28 Apr 2022 14:40:15 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        linux-kernel@vger.kernel.org, Willy Tarreau <w@1wt.eu>
-Subject: [PATCH v2 net 7/7] tcp: drop the hash_32() part from the index calculation
-Date:   Thu, 28 Apr 2022 14:40:01 +0200
-Message-Id: <20220428124001.7428-8-w@1wt.eu>
-X-Mailer: git-send-email 2.17.5
-In-Reply-To: <20220428124001.7428-1-w@1wt.eu>
-References: <20220428124001.7428-1-w@1wt.eu>
+        Thu, 28 Apr 2022 08:44:49 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A36F710FC5;
+        Thu, 28 Apr 2022 05:41:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651149690; x=1682685690;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=jDaoso8XSbsD6Q5i89/pk/Xi3K1DdLaMWFukTg8hKeQ=;
+  b=mTcux2E7ZLul7MpCZLIMfoDriwNJqnMz08/1yY6N7lUQOdpSzQlRi2CR
+   XjwiKL17tL2EoGizi8SGPBxtO5mwy0vXEILR3KOD3OmuKa5T60/aArtms
+   uoKLMaoga72Lyl3+fDW2KsCAjYd7U4rmVIIEHhzAoHIPema68eVdxNhWf
+   +EGhhHkh36orMeUZUh7VvGllZ7CcIkvOj2hY2N+zN10NIGL9Shb2TMz5C
+   ejMydCXr/rM8xB/dmkTC2CprTYklu+G+84dySdNZtXcEj09+ItL2k4VJJ
+   bSSXlAcsEIlKlDltX+qXwtzF5b0WrCyygI6s5wc1q0gCQztlSeeOQk0KC
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="352710663"
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="352710663"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 05:41:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="706039981"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
+  by fmsmga001.fm.intel.com with ESMTP; 28 Apr 2022 05:41:23 -0700
+Date:   Thu, 28 Apr 2022 20:37:51 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com
+Subject: Re: [PATCH v5 08/13] KVM: Use memfile_pfn_ops to obtain pfn for
+ private pages
+Message-ID: <20220428123751.GB10508@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+ <20220310140911.50924-9-chao.p.peng@linux.intel.com>
+ <YkJLFu98hZOvTSrL@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkJLFu98hZOvTSrL@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In commit 190cc82489f4 ("tcp: change source port randomizarion at
-connect() time"), the table_perturb[] array was introduced and an
-index was taken from the port_offset via hash_32(). But it turns
-out that hash_32() performs a multiplication while the input here
-comes from the output of SipHash in secure_seq, that is well
-distributed enough to avoid the need for yet another hash.
+On Mon, Mar 28, 2022 at 11:56:06PM +0000, Sean Christopherson wrote:
+> On Thu, Mar 10, 2022, Chao Peng wrote:
+> > @@ -2217,4 +2220,34 @@ static inline void kvm_handle_signal_exit(struct kvm_vcpu *vcpu)
+> >  /* Max number of entries allowed for each kvm dirty ring */
+> >  #define  KVM_DIRTY_RING_MAX_ENTRIES  65536
+> >  
+> > +#ifdef CONFIG_MEMFILE_NOTIFIER
+> > +static inline long kvm_memfile_get_pfn(struct kvm_memory_slot *slot, gfn_t gfn,
+> > +				       int *order)
+> > +{
+> > +	pgoff_t index = gfn - slot->base_gfn +
+> > +			(slot->private_offset >> PAGE_SHIFT);
+> 
+> This is broken for 32-bit kernels, where gfn_t is a 64-bit value but pgoff_t is a
+> 32-bit value.  There's no reason to support this for 32-bit kernels, so...
+> 
+> The easiest fix, and likely most maintainable for other code too, would be to
+> add a dedicated CONFIG for private memory, and then have KVM check that for all
+> the memfile stuff.  x86 can then select it only for 64-bit kernels, and in turn
+> select MEMFILE_NOTIFIER iff private memory is supported.
+> 
+> diff --git a/arch/x86/kvm/Kconfig b/arch/x86/kvm/Kconfig
+> index ca7b2a6a452a..ee9c8c155300 100644
+> --- a/arch/x86/kvm/Kconfig
+> +++ b/arch/x86/kvm/Kconfig
+> @@ -48,7 +48,9 @@ config KVM
+>         select SRCU
+>         select INTERVAL_TREE
+>         select HAVE_KVM_PM_NOTIFIER if PM
+> -       select MEMFILE_NOTIFIER
+> +       select HAVE_KVM_PRIVATE_MEM if X86_64
+> +       select MEMFILE_NOTIFIER if HAVE_KVM_PRIVATE_MEM
+> +
+>         help
+>           Support hosting fully virtualized guest machines using hardware
+>           virtualization extensions.  You will need a fairly recent
+> 
+> And in addition to replacing checks on CONFIG_MEMFILE_NOTIFIER, the probing of
+> whether or not KVM_MEM_PRIVATE is allowed can be:
+> 
+> @@ -1499,23 +1499,19 @@ static void kvm_replace_memslot(struct kvm *kvm,
+>         }
+>  }
+> 
+> -bool __weak kvm_arch_private_memory_supported(struct kvm *kvm)
+> -{
+> -       return false;
+> -}
+> -
+>  static int check_memory_region_flags(struct kvm *kvm,
+>                                 const struct kvm_userspace_memory_region *mem)
+>  {
+>         u32 valid_flags = KVM_MEM_LOG_DIRTY_PAGES;
+> 
+> -       if (kvm_arch_private_memory_supported(kvm))
+> -               valid_flags |= KVM_MEM_PRIVATE;
+> -
+>  #ifdef __KVM_HAVE_READONLY_MEM
+>         valid_flags |= KVM_MEM_READONLY;
+>  #endif
+> 
+> +#ifdef CONFIG_KVM_HAVE_PRIVATE_MEM
+> +       valid_flags |= KVM_MEM_PRIVATE;
+> +#endif
 
-Suggested-by: Amit Klein <aksecurity@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
----
- net/ipv4/inet_hashtables.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+One thing to mention is CONFIG_KVM_HAVE_PRIVATE_MEM is build-time thing.
+Do you think we should or not do that for runtime? E.g. expose by vm_type
+so only when TDX is enabled KVM_MEM_PRIVATE is exposed.
 
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index cc5f66328b47..a5d57fa679ca 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -778,7 +778,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 
- 	net_get_random_once(table_perturb,
- 			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
--	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
-+	index = port_offset & (INET_TABLE_PERTURB_SIZE - 1);
- 
- 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
- 	offset %= remaining;
--- 
-2.17.5
-
+Chao
