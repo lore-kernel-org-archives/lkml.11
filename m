@@ -2,121 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E34D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 20:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 659F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 20:12:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351717AbiD1UP6 (ORCPT
+        id S1351762AbiD1UQB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 16:15:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41484 "EHLO
+        Thu, 28 Apr 2022 16:16:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237519AbiD1UPq (ORCPT
+        with ESMTP id S1351701AbiD1UPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 16:15:46 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB327C0D07
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 13:12:30 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: bbeckett)
-        with ESMTPSA id 731041F45C29
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1651176749;
-        bh=xMYv7v3aHxlEQIE2QtkE00E2gW9W0dS8yiKhilZWusw=;
+        Thu, 28 Apr 2022 16:15:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5D8DBF958;
+        Thu, 28 Apr 2022 13:12:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B35961E71;
+        Thu, 28 Apr 2022 20:12:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF03CC385AE;
+        Thu, 28 Apr 2022 20:12:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651176753;
+        bh=T76x8sAnMa9QYAi+4HM2HG5atz742DfkdDvuDq9jtVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GHE62b0zXG9Zbb01yXl/9o1jKD7eRLGa7fZ8AoXiSWo8oc7nPRV2/oPeJhwcmcq/R
-         MLDytWP8JD2Ht6ntoGla4eQf5SvTE6I3mYkP9Z+XYsPKWJ75BjAxK0dX2X9EWav+Oz
-         rvrB1YRRD4SIgn5Elruhi4AOZ92Encsxdq1OzvKu6JWdLRQC+XC34bmozfekVFs/n+
-         pFY//SzkT8KabXz8Va6mEHqXWhLrCe3i712zSU7YM+Ws6lEHEzOjI438eAlIKbTdcm
-         cEJDVNTPyVhd0EiH6aOS+MLDn9z4mPT5uq/XwC7h9Hfr/dKcTil+9Kbpnlby5FW2tf
-         /MDmdaiTQ+Ogg==
-From:   Robert Beckett <bob.beckett@collabora.com>
-To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Robert Beckett <bob.beckett@collabora.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 5/6] drm/i915: allow memory region creators to alloc and free the region
-Date:   Thu, 28 Apr 2022 20:11:24 +0000
-Message-Id: <20220428201125.412896-6-bob.beckett@collabora.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220428201125.412896-1-bob.beckett@collabora.com>
-References: <20220428201125.412896-1-bob.beckett@collabora.com>
+        b=qU25aXDefjDTCiJXG9eTlO5Gsw75CqRnqnB80Tqrxl2XfAp6dM2AnlwHwrG+QifUA
+         7Rn4nmot81H9XBPz/zf7uzTiouKG4wfeOGvy8H5gHJ8OlFauYTmQzT8341Qs8QdoJw
+         Gu9wLih0fQVFQkxu31TPbXwFw58hevGzPHlK2BLVFyzctI8kfbX9D7O3LWNNVbWVbb
+         NMDxO5O7eGyGpAcyKPD18RKFW8n9q21cfJ41SkVEd+lqRsOO9++pW2AXZJ6DTx3oXN
+         T7UVuYm7V7WT+KYzam1JwCU+PXMu9SSklJygBbMAkNLPUZwbJmNFVI1gwy2ovkvaPo
+         Qsd1uzuwfv9Bw==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCHv4 bpf-next 2/5] ftrace: Add ftrace_lookup_symbols function
+Date:   Thu, 28 Apr 2022 22:12:04 +0200
+Message-Id: <20220428201207.954552-3-jolsa@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220428201207.954552-1-jolsa@kernel.org>
+References: <20220428201207.954552-1-jolsa@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-add callbacks for alloc and free.
-this allows region creators to allocate any extra storage they may
-require.
+Adding ftrace_lookup_symbols function that resolves array of symbols
+with single pass over kallsyms.
 
-Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+The user provides array of string pointers with count and pointer to
+allocated array for resolved values.
+
+  int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt,
+                            unsigned long *addrs)
+
+It iterates all kallsyms symbols and tries to loop up each in provided
+symbols array with bsearch. The symbols array needs to be sorted by
+name for this reason.
+
+We also check each symbol to pass ftrace_location, because this API
+will be used for fprobe symbols resolving.
+
+Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- drivers/gpu/drm/i915/intel_memory_region.c | 16 +++++++++++++---
- drivers/gpu/drm/i915/intel_memory_region.h |  2 ++
- 2 files changed, 15 insertions(+), 3 deletions(-)
+ include/linux/ftrace.h |  6 ++++
+ kernel/kallsyms.c      |  1 +
+ kernel/trace/ftrace.c  | 62 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 69 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/intel_memory_region.c b/drivers/gpu/drm/i915/intel_memory_region.c
-index e38d2db1c3e3..3da07a712f90 100644
---- a/drivers/gpu/drm/i915/intel_memory_region.c
-+++ b/drivers/gpu/drm/i915/intel_memory_region.c
-@@ -231,7 +231,10 @@ intel_memory_region_create(struct drm_i915_private *i915,
- 	struct intel_memory_region *mem;
- 	int err;
+diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
+index 4816b7e11047..820500430eae 100644
+--- a/include/linux/ftrace.h
++++ b/include/linux/ftrace.h
+@@ -303,6 +303,8 @@ int unregister_ftrace_function(struct ftrace_ops *ops);
+ extern void ftrace_stub(unsigned long a0, unsigned long a1,
+ 			struct ftrace_ops *op, struct ftrace_regs *fregs);
  
--	mem = kzalloc(sizeof(*mem), GFP_KERNEL);
-+	if (ops->alloc)
-+		mem = ops->alloc();
-+	else
-+		mem = kzalloc(sizeof(*mem), GFP_KERNEL);
- 	if (!mem)
- 		return ERR_PTR(-ENOMEM);
++
++int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs);
+ #else /* !CONFIG_FUNCTION_TRACER */
+ /*
+  * (un)register_ftrace_function must be a macro since the ops parameter
+@@ -313,6 +315,10 @@ extern void ftrace_stub(unsigned long a0, unsigned long a1,
+ static inline void ftrace_kill(void) { }
+ static inline void ftrace_free_init_mem(void) { }
+ static inline void ftrace_free_mem(struct module *mod, void *start, void *end) { }
++static inline int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs)
++{
++	return -EOPNOTSUPP;
++}
+ #endif /* CONFIG_FUNCTION_TRACER */
  
-@@ -265,7 +268,10 @@ intel_memory_region_create(struct drm_i915_private *i915,
- 	if (mem->ops->release)
- 		mem->ops->release(mem);
- err_free:
--	kfree(mem);
-+	if (mem->ops->free)
-+		mem->ops->free(mem);
-+	else
-+		kfree(mem);
- 	return ERR_PTR(err);
+ struct ftrace_func_entry {
+diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+index fdfd308bebc4..fbdf8d3279ac 100644
+--- a/kernel/kallsyms.c
++++ b/kernel/kallsyms.c
+@@ -29,6 +29,7 @@
+ #include <linux/compiler.h>
+ #include <linux/module.h>
+ #include <linux/kernel.h>
++#include <linux/bsearch.h>
+ 
+ /*
+  * These will be re-linked against their real values
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 4f1d2f5e7263..07d87c7a525d 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -7964,3 +7964,65 @@ ftrace_enable_sysctl(struct ctl_table *table, int write,
+ 	mutex_unlock(&ftrace_lock);
+ 	return ret;
  }
- 
-@@ -288,7 +294,11 @@ void intel_memory_region_destroy(struct intel_memory_region *mem)
- 
- 	GEM_WARN_ON(!list_empty_careful(&mem->objects.list));
- 	mutex_destroy(&mem->objects.lock);
--	if (!ret)
-+	if (ret)
-+		return;
-+	if (mem->ops->free)
-+		mem->ops->free(mem);
-+	else
- 		kfree(mem);
- }
- 
-diff --git a/drivers/gpu/drm/i915/intel_memory_region.h b/drivers/gpu/drm/i915/intel_memory_region.h
-index 3d8378c1b447..048955b5429f 100644
---- a/drivers/gpu/drm/i915/intel_memory_region.h
-+++ b/drivers/gpu/drm/i915/intel_memory_region.h
-@@ -61,6 +61,8 @@ struct intel_memory_region_ops {
- 			   resource_size_t size,
- 			   resource_size_t page_size,
- 			   unsigned int flags);
-+	struct intel_memory_region *(*alloc)(void);
-+	void (*free)(struct intel_memory_region *mem);
- };
- 
- struct intel_memory_region {
++
++static int symbols_cmp(const void *a, const void *b)
++{
++	const char **str_a = (const char **) a;
++	const char **str_b = (const char **) b;
++
++	return strcmp(*str_a, *str_b);
++}
++
++struct kallsyms_data {
++	unsigned long *addrs;
++	const char **syms;
++	size_t cnt;
++	size_t found;
++};
++
++static int kallsyms_callback(void *data, const char *name,
++			     struct module *mod, unsigned long addr)
++{
++	struct kallsyms_data *args = data;
++
++	if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
++		return 0;
++
++	addr = ftrace_location(addr);
++	if (!addr)
++		return 0;
++
++	args->addrs[args->found++] = addr;
++	return args->found == args->cnt ? 1 : 0;
++}
++
++/**
++ * ftrace_lookup_symbols - Lookup addresses for array of symbols
++ *
++ * @sorted_syms: array of symbols pointers symbols to resolve,
++ * must be alphabetically sorted
++ * @cnt: number of symbols/addresses in @syms/@addrs arrays
++ * @addrs: array for storing resulting addresses
++ *
++ * This function looks up addresses for array of symbols provided in
++ * @syms array (must be alphabetically sorted) and stores them in
++ * @addrs array, which needs to be big enough to store at least @cnt
++ * addresses.
++ *
++ * This function returns 0 if all provided symbols are found,
++ * -ESRCH otherwise.
++ */
++int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs)
++{
++	struct kallsyms_data args;
++	int err;
++
++	args.addrs = addrs;
++	args.syms = sorted_syms;
++	args.cnt = cnt;
++	args.found = 0;
++	err = kallsyms_on_each_symbol(kallsyms_callback, &args);
++	if (err < 0)
++		return err;
++	return args.found == args.cnt ? 0 : -ESRCH;
++}
 -- 
-2.25.1
+2.35.1
 
