@@ -2,288 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F73C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC2B6C433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 13:17:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346957AbiD1NUX (ORCPT
+        id S1346905AbiD1NUC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 09:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37298 "EHLO
+        Thu, 28 Apr 2022 09:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235700AbiD1NUO (ORCPT
+        with ESMTP id S235700AbiD1NTZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 09:20:14 -0400
-Received: from mo-csw.securemx.jp (mo-csw1114.securemx.jp [210.130.202.156])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BFA5A16D;
-        Thu, 28 Apr 2022 06:16:58 -0700 (PDT)
-Received: by mo-csw.securemx.jp (mx-mo-csw1114) id 23SDGY2t008287; Thu, 28 Apr 2022 22:16:34 +0900
-X-Iguazu-Qid: 2wGrMWgEdCUHF3269w
-X-Iguazu-QSIG: v=2; s=0; t=1651151794; q=2wGrMWgEdCUHF3269w; m=H4vxTdawM46Is6vT9+1VDOpDyLYbzVWfAdppRvox4IE=
-Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
-        by relay.securemx.jp (mx-mr1110) id 23SDGXLn030069
-        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 28 Apr 2022 22:16:33 +0900
-X-SA-MID: 3363561
-From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, yuji2.ishikawa@toshiba.co.jp
-Subject: [PATCH 2/4] soc: visconti: Add Toshiba Visconti image processing accelerator common source
-Date:   Thu, 28 Apr 2022 22:11:26 +0900
-X-TSB-HOP2: ON
-Message-Id: <20220428131128.5053-3-yuji2.ishikawa@toshiba.co.jp>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220428131128.5053-1-yuji2.ishikawa@toshiba.co.jp>
-References: <20220428131128.5053-1-yuji2.ishikawa@toshiba.co.jp>
+        Thu, 28 Apr 2022 09:19:25 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545753B57C;
+        Thu, 28 Apr 2022 06:15:56 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id D93E35C0107;
+        Thu, 28 Apr 2022 09:15:53 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 28 Apr 2022 09:15:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tycho.pizza; h=
+        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1651151753; x=1651238153; bh=zddeKWyxC/
+        TAt6LDXLxofwc+G7l0sx6z+g7NouKJEpY=; b=XmJyvgZYy9VnIeFSXqe6ON9sGj
+        SUWWb886ONya30ixz9byMgApEglKBPm2RzI4wRIyyDHRJAYzRvTgayuzQAikeQCT
+        3ngIKtsePx99rDKawU9bPkVOboVNdQNJTBaiqgWWQPeGGd5oPXjIQVakIL1qf8Zd
+        HM4lc180HPJZZWGNfYOZTjt4+TBYo/OjaESZ83VDsk9gVQyBSGinuX/cJsraKsmo
+        YkeWN4JBjq2M6/5TkGgipNb1+Y83lL7ljqsWGNIvA/6C+Z6bBqkxp0/dT11+OKyI
+        6ur7nL0NOTdvYHB7e0R30wB4b5PjzDUoriYY920qZOMwaBNPlGfWDM/ec+Bg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1651151753; x=
+        1651238153; bh=zddeKWyxC/TAt6LDXLxofwc+G7l0sx6z+g7NouKJEpY=; b=I
+        gEBqwoihU7BZ0GC2y1S+qih7WZL4iySYd6Qg+QEPbyCiHymKVZekKQQDwAk20QtU
+        046UCTfKSLM+cQIsoqrK8Ui2iJQFe1w8C3/K6nL+uaim8aedz+4as+vr5HnnzXSE
+        v9VgNFYbfSxtHgyoO4KNXbL5jOcJQ+QMt/j7qr944pDVZOKFgN4kUpQ5cJL5laKV
+        cf/epzYtpQ4Tuf+K/GcGcPgGBvqFXd2DEs2dPX0eo3qhq0zt6Fk0+cviLS1yhxni
+        p+uFOrhzJU0Gsy2tzXwsrybH8RIUVF6tWC9gb5K+a8BuZ1VhfIkiFemZRKHL+aLz
+        tIPzHJlHPvol9KoKkOGjw==
+X-ME-Sender: <xms:iZNqYnsck8djimQ7q0MpPtrNAoRB8IpWlTOiEe4qOxeimnetk-8P_w>
+    <xme:iZNqYoe-k1ifv5EkVkFRlfE9kq0iO_mEmYO9revuXfscWL9Ej8Cb4kvTdTGKViE7c
+    tXBeEq3BnWRW29VvxE>
+X-ME-Received: <xmr:iZNqYqzB6SFiJmfaaiK3uhvNMGNZNKpKrYQPkiyBZyQSFZ_NcS-SlP2WQZSyzxALHwjrnNI3aKDRfgFHaBi72hOR>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudejgdeivdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefvhigthhho
+    ucetnhguvghrshgvnhcuoehthigthhhosehthigthhhordhpihiiiigrqeenucggtffrrg
+    htthgvrhhnpeeutedttefgjeefffehffffkeejueevieefudelgeejuddtfeffteeklefh
+    leelteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hthigthhhosehthigthhhordhpihiiiigr
+X-ME-Proxy: <xmx:iZNqYmNq-2vE8UUCLTpL2OvGwnubSLvczaJDzmvQgnovSyqNE7mdHA>
+    <xmx:iZNqYn8CKQWBEdncV90Wbp_-ggI3LgvYZxn1axOkzEOHODlgp2o3wg>
+    <xmx:iZNqYmXGrvrSPfFMI93d2y5R3_rkmurLi2QYM_GT2dS-R5zpMCixRg>
+    <xmx:iZNqYjZBvEBluG1458zOcDPFysaGXOZa-9fD53_-ZPqcquyg-jfG8g>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 28 Apr 2022 09:15:52 -0400 (EDT)
+Date:   Thu, 28 Apr 2022 07:15:51 -0600
+From:   Tycho Andersen <tycho@tycho.pizza>
+To:     Sargun Dhillon <sargun@sargun.me>
+Cc:     Kees Cook <keescook@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH 2/2] selftests/seccomp: Ensure that notifications come in
+ FIFO order
+Message-ID: <YmqTh68UkjVsTnUX@cisco>
+References: <20220428015447.13661-1-sargun@sargun.me>
+ <20220428015447.13661-2-sargun@sargun.me>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220428015447.13661-2-sargun@sargun.me>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit adds common definitions shared among image processing accelerator drivers
-for Toshiba Visconti SoCs.
+On Wed, Apr 27, 2022 at 06:54:47PM -0700, Sargun Dhillon wrote:
+> +	/* Start children, and them generate notifications */
+                           ^^ - they maybe?
 
-Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
----
- drivers/soc/Kconfig               |  1 +
- drivers/soc/Makefile              |  1 +
- drivers/soc/visconti/Kconfig      |  1 +
- drivers/soc/visconti/Makefile     |  6 +++
- drivers/soc/visconti/ipa_common.c | 55 +++++++++++++++++++
- drivers/soc/visconti/ipa_common.h | 18 +++++++
- drivers/soc/visconti/uapi/ipa.h   | 88 +++++++++++++++++++++++++++++++
- 7 files changed, 170 insertions(+)
- create mode 100644 drivers/soc/visconti/Kconfig
- create mode 100644 drivers/soc/visconti/Makefile
- create mode 100644 drivers/soc/visconti/ipa_common.c
- create mode 100644 drivers/soc/visconti/ipa_common.h
- create mode 100644 drivers/soc/visconti/uapi/ipa.h
+> +	for (i = 0; i < ARRAY_SIZE(pids); i++) {
+> +		pid = fork();
+> +		if (pid == 0) {
+> +			ret = syscall(__NR_getppid);
+> +			exit(ret != USER_NOTIF_MAGIC);
+> +		}
+> +		pids[i] = pid;
+> +	}
+> +
+> +	/* This spins until all of the children are sleeping */
+> +restart_wait:
+> +	for (i = 0; i < ARRAY_SIZE(pids); i++) {
+> +		if (get_proc_stat(pids[i]) != 'S') {
+> +			nanosleep(&delay, NULL);
+> +			goto restart_wait;
+> +		}
+> +	}
 
-diff --git a/drivers/soc/Kconfig b/drivers/soc/Kconfig
-index e8a30c4c5..c99139aa8 100644
---- a/drivers/soc/Kconfig
-+++ b/drivers/soc/Kconfig
-@@ -22,6 +22,7 @@ source "drivers/soc/tegra/Kconfig"
- source "drivers/soc/ti/Kconfig"
- source "drivers/soc/ux500/Kconfig"
- source "drivers/soc/versatile/Kconfig"
-+source "drivers/soc/visconti/Kconfig"
- source "drivers/soc/xilinx/Kconfig"
- 
- endmenu
-diff --git a/drivers/soc/Makefile b/drivers/soc/Makefile
-index a05e9fbcd..455b993c2 100644
---- a/drivers/soc/Makefile
-+++ b/drivers/soc/Makefile
-@@ -28,4 +28,5 @@ obj-$(CONFIG_ARCH_TEGRA)	+= tegra/
- obj-y				+= ti/
- obj-$(CONFIG_ARCH_U8500)	+= ux500/
- obj-$(CONFIG_PLAT_VERSATILE)	+= versatile/
-+obj-$(CONFIG_ARCH_VISCONTI)	+= visconti/
- obj-y				+= xilinx/
-diff --git a/drivers/soc/visconti/Kconfig b/drivers/soc/visconti/Kconfig
-new file mode 100644
-index 000000000..8b1378917
---- /dev/null
-+++ b/drivers/soc/visconti/Kconfig
-@@ -0,0 +1 @@
-+
-diff --git a/drivers/soc/visconti/Makefile b/drivers/soc/visconti/Makefile
-new file mode 100644
-index 000000000..8d710da08
---- /dev/null
-+++ b/drivers/soc/visconti/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for the Visconti specific device drivers.
-+#
-+
-+obj-y += ipa_common.o
-diff --git a/drivers/soc/visconti/ipa_common.c b/drivers/soc/visconti/ipa_common.c
-new file mode 100644
-index 000000000..6345f33c5
---- /dev/null
-+++ b/drivers/soc/visconti/ipa_common.c
-@@ -0,0 +1,55 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-+/* Toshiba Visconti Image Processing Accelerator Support
-+ *
-+ * (C) Copyright 2022 TOSHIBA CORPORATION
-+ * (C) Copyright 2022 Toshiba Electronic Devices & Storage Corporation
-+ */
-+
-+#include "ipa_common.h"
-+
-+int ipa_attach_dmabuf(struct device *dev, int fd, struct dma_buf_attachment **a,
-+		      struct sg_table **s, dma_addr_t *addr, enum dma_data_direction dma_dir)
-+{
-+	struct dma_buf_attachment *attachment;
-+	struct dma_buf *dmabuf;
-+	struct sg_table *sgt;
-+	int ret;
-+
-+	dmabuf = dma_buf_get(fd);
-+	if (IS_ERR(dmabuf)) {
-+		dev_err(dev, "Invalid dmabuf FD\n");
-+		return PTR_ERR(dmabuf);
-+	}
-+	attachment = dma_buf_attach(dmabuf, dev);
-+
-+	if (IS_ERR(attachment)) {
-+		dev_err(dev, "Failed to attach dmabuf\n");
-+		ret = PTR_ERR(attachment);
-+		goto err_put;
-+	}
-+	sgt = dma_buf_map_attachment(attachment, dma_dir);
-+	if (IS_ERR(sgt)) {
-+		dev_err(dev, "Failed to get dmabufs sg_table\n");
-+		ret = PTR_ERR(sgt);
-+		goto err_detach;
-+	}
-+	if (sgt->nents != 1) {
-+		dev_err(dev, "Sparse DMA region is unsupported\n");
-+		ret = -EINVAL;
-+		goto err_unmap;
-+	}
-+
-+	*addr = sg_dma_address(sgt->sgl);
-+	*a = attachment;
-+	*s = sgt;
-+
-+	return 0;
-+
-+err_unmap:
-+	dma_buf_unmap_attachment(attachment, sgt, dma_dir);
-+err_detach:
-+	dma_buf_detach(dmabuf, attachment);
-+err_put:
-+	dma_buf_put(dmabuf);
-+	return ret;
-+}
-diff --git a/drivers/soc/visconti/ipa_common.h b/drivers/soc/visconti/ipa_common.h
-new file mode 100644
-index 000000000..786988c52
---- /dev/null
-+++ b/drivers/soc/visconti/ipa_common.h
-@@ -0,0 +1,18 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
-+/* Toshiba Visconti Image Processing Accelerator Support
-+ *
-+ * (C) Copyright 2022 TOSHIBA CORPORATION
-+ * (C) Copyright 2022 Toshiba Electronic Devices & Storage Corporation
-+ */
-+
-+#include <linux/dma-mapping.h>
-+#include <linux/dma-buf.h>
-+
-+#define COHERENT_ADDRESS_BIT   (0x400000000ULL)
-+#define IPA_POLL_EVENT_NONE    (0)
-+#define IPA_POLL_EVENT_DONE    (1)
-+#define IPA_POLL_EVENT_ERROR   (2)
-+#define IPA_WAKEUP_RETRY_DELAY (300 * 1000) /*usec*/
-+
-+int ipa_attach_dmabuf(struct device *dev, int fd, struct dma_buf_attachment **a,
-+		      struct sg_table **s, dma_addr_t *addr, enum dma_data_direction dma_dir);
-diff --git a/drivers/soc/visconti/uapi/ipa.h b/drivers/soc/visconti/uapi/ipa.h
-new file mode 100644
-index 000000000..e5c919ea2
---- /dev/null
-+++ b/drivers/soc/visconti/uapi/ipa.h
-@@ -0,0 +1,88 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/* Toshiba Visconti Image Processing Accelerator Support
-+ *
-+ * (C) Copyright 2022 TOSHIBA CORPORATION
-+ * (C) Copyright 2022 Toshiba Electronic Devices & Storage Corporation
-+ */
-+
-+#ifndef _UAPI_LINUX_IPA_H
-+#define _UAPI_LINUX_IPA_H
-+
-+/**
-+ * enum drv_ipa_state - state of Visconti IPA driver
-+ *
-+ * @DRV_IPA_STATE_IDLE:     driver is idle
-+ * @DRV_IPA_STATE_BUSY:     device is busy
-+ */
-+enum drv_ipa_state { DRV_IPA_STATE_IDLE = 0, DRV_IPA_STATE_BUSY };
-+
-+/**
-+ * enum drv_ipa_buffer_direction - usage of buffer
-+ *
-+ * @DRV_IPA_DIR_BIDIRECTION: cpu writes/reads data
-+ * @DRV_IPA_DIR_TO_DEVICE:   cpu writes data
-+ * @DRV_IPA_DIR_FROM_DEVICE: cpu reads data
-+ * @DRV_IPA_DIR_NONE:        cpu not access or non-coherent
-+ */
-+enum drv_ipa_buffer_direction {
-+	DRV_IPA_DIR_BIDIRECTION = 0,
-+	DRV_IPA_DIR_TO_DEVICE,
-+	DRV_IPA_DIR_FROM_DEVICE,
-+	DRV_IPA_DIR_NONE
-+};
-+
-+/**
-+ * struct drv_ipa_buffer_info - buffer information for Visconti IPA drivers
-+ *
-+ * @fd:        file descriptor of Ion allocated heap
-+ * @coherent:  allocated via coherent bus or not
-+ * @direction: buffer direction (to/from device)
-+ *
-+ * note: When the Ion heap is allocated wit ION_FLAG_CACHED,
-+ * &struct drv_ipa_buffer_info.coherent should be true.
-+ * Else, it should be false.
-+ */
-+struct drv_ipa_buffer_info {
-+	u32 fd;
-+	bool coherent;
-+	enum drv_ipa_buffer_direction direction;
-+};
-+
-+/**
-+ * struct drv_ipa_addr - address structure for Visconti IPA drivers
-+ *
-+ * @buffer_index: array index of &struct drv_ipa_buffer_info
-+ * @offset:       offset from the top of Ion heap
-+ */
-+struct drv_ipa_addr {
-+	u32 buffer_index : 4;
-+	u32 offset : 28;
-+};
-+
-+#define IPA_BUFFER_INDEX_MAX (16)
-+#define IPA_INVALID_ADDR                                                                           \
-+	{                                                                                          \
-+		.buffer_index = 0xfu, .offset = 0xfffffffu                                         \
-+	}
-+
-+static inline struct drv_ipa_addr drv_ipa_invalid_addr(void)
-+{
-+	struct drv_ipa_addr invalid_addr = IPA_INVALID_ADDR;
-+	return invalid_addr;
-+}
-+
-+static inline bool drv_ipa_is_invalid_addr(struct drv_ipa_addr addr)
-+{
-+	struct drv_ipa_addr invalid_addr = IPA_INVALID_ADDR;
-+
-+	if (addr.buffer_index == invalid_addr.buffer_index && addr.offset == invalid_addr.offset) {
-+		return true;
-+	}
-+	return false;
-+}
-+
-+#define IOC_IPA_MAGIC	   'I'
-+#define IOC_IPA_START	   _IO(IOC_IPA_MAGIC, 0)
-+#define IOC_IPA_GET_STATUS _IO(IOC_IPA_MAGIC, 1)
-+
-+#endif /* _UAPI_LINUX_IPA_H */
--- 
-2.17.1
+I wonder if we should/can combine this loop with the previous one, and
+wait for the child to sleep in getppid() before we fork the next one.
+Otherwise isn't racy in the case that your loop continues to the next
+iteration before the child processes are scheduled, so things might be
+out of order? Maybe I'm missing something.
 
+In any case, this change seems reasonable to me.
 
+Tycho
