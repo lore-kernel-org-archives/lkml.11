@@ -2,139 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92501C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:51:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87BFDC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 16:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245475AbiD1Qye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 12:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51348 "EHLO
+        id S1350382AbiD1Qz1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 12:55:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235333AbiD1Qyc (ORCPT
+        with ESMTP id S235369AbiD1Qz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 12:54:32 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664038C7C7;
-        Thu, 28 Apr 2022 09:51:13 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:46722)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nk7MD-006d9A-2m; Thu, 28 Apr 2022 10:51:09 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:36046 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nk7MC-000I0h-0D; Thu, 28 Apr 2022 10:51:08 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>
-References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
-        <20220426225211.308418-9-ebiederm@xmission.com>
-        <87czh2160k.fsf@email.froward.int.ebiederm.org>
-        <20220428151110.GB15485@redhat.com>
-Date:   Thu, 28 Apr 2022 11:50:19 -0500
-In-Reply-To: <20220428151110.GB15485@redhat.com> (Oleg Nesterov's message of
-        "Thu, 28 Apr 2022 17:11:11 +0200")
-Message-ID: <875ymtywxg.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Thu, 28 Apr 2022 12:55:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96927A8896;
+        Thu, 28 Apr 2022 09:52:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E50EB82EE5;
+        Thu, 28 Apr 2022 16:52:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7A9CC385A0;
+        Thu, 28 Apr 2022 16:52:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651164729;
+        bh=fx5RkNquTGCkXNjnkB5LE4zNNi++sI7qkDCeTKCbAew=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NGbGDVjEsm0opha5U9ftTxdHryAA/VQKRKn2EUlfLdiZSAt5RdBUzepHdH1Bsou2r
+         D1kaevHCxz4DSnOQJRYjlstVmjgqBYxUm3bEPabei3aSztnyRE22TfuuS+99hrNVXz
+         RHpZOuqqfO4kYxhXZObR4iWYowI793SCcC3EQoq7M8/Y8ANrjHvzU568zMdZgGmaL3
+         8SnDE6gUR8xBGYTzLAodht3V0gfqDwtdbwmFzujoLoWQKHzOETT4iEA5z5NOOtVypT
+         Cbs46T73rCklEXXTQ7boOSv8njZTGDprtA3V8OeGHrGs2oc1yhcxuwdgUzrB4OdN3L
+         iFHdrKuCcryKA==
+Date:   Thu, 28 Apr 2022 09:52:07 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <grygorii.strashko@ti.com>, <davem@davemloft.net>
+Subject: Re: [PATCH] net: cpsw: add missing of_node_put() in cpsw_probe_dt()
+Message-ID: <20220428095207.6a8ce4ed@kernel.org>
+In-Reply-To: <20220428014514.2509940-1-yangyingliang@huawei.com>
+References: <20220428014514.2509940-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nk7MC-000I0h-0D;;;mid=<875ymtywxg.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+Nj5WvQO35/e863lcGlkfLjjTdj24OUTQ=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 9/9] ptrace: Don't change __state
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Oleg Nesterov <oleg@redhat.com> writes:
+On Thu, 28 Apr 2022 09:45:14 +0800 Yang Yingliang wrote:
+> If devm_kcalloc() fails, 'tmp_node' should be put in cpsw_probe_dt().
+> 
+> Fixes: ed3525eda4c4 ("net: ethernet: ti: introduce cpsw switchdev based driver part 1 - dual-emac")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-> On 04/27, Eric W. Biederman wrote:
->>
->> "Eric W. Biederman" <ebiederm@xmission.com> writes:
->>
->> > diff --git a/include/linux/sched/signal.h b/include/linux/sched/signal.h
->> > index 3c8b34876744..1947c85aa9d9 100644
->> > --- a/include/linux/sched/signal.h
->> > +++ b/include/linux/sched/signal.h
->> > @@ -437,7 +437,8 @@ extern void signal_wake_up_state(struct task_struct *t, unsigned int state);
->> >
->> >  static inline void signal_wake_up(struct task_struct *t, bool resume)
->> >  {
->> > -	signal_wake_up_state(t, resume ? TASK_WAKEKILL : 0);
->> > +	bool wakekill = resume && !(t->jobctl & JOBCTL_DELAY_WAKEKILL);
->> > +	signal_wake_up_state(t, wakekill ? TASK_WAKEKILL : 0);
->> >  }
->> >  static inline void ptrace_signal_wake_up(struct task_struct *t, bool resume)
->> >  {
->>
->> Grrr.  While looking through everything today I have realized that there
->> is a bug.
->>
->> Suppose we have 3 processes: TRACER, TRACEE, KILLER.
->>
->> Meanwhile TRACEE is in the middle of ptrace_stop, just after siglock has
->> been dropped.
->>
->> The TRACER process has performed ptrace_attach on TRACEE and is in the
->> middle of a ptrace operation and has just set JOBCTL_DELAY_WAKEKILL.
->>
->> Then comes in the KILLER process and sends the TRACEE a SIGKILL.
->> The TRACEE __state remains TASK_TRACED, as designed.
->>
->> The bug appears when the TRACEE makes it to schedule().  Inside
->> schedule there is a call to signal_pending_state() which notices
->> a SIGKILL is pending and refuses to sleep.
->
-> And I think this is fine. This doesn't really differ from the case
-> when the tracee was killed before it takes siglock.
+Why does the error path (the err_node_put label) 
+not put the tmp_node reference either?
 
-Hmm.  Maybe.
-
-> The only problem (afaics) is that, once we introduce JOBCTL_TRACED,
-> ptrace_stop() can leak this flag. That is why I suggested to clear
-> it along with LISTENING/DELAY_WAKEKILL before return, exactly because
-> schedule() won't block if fatal_signal_pending() is true.
->
-> But may be I misunderstood you concern?
-
-Prior to JOBCTL_DELAY_WAKEKILL once __state was set to __TASK_TRACED
-we were guaranteed that schedule() would stop if a SIGKILL was
-received after that point.  As well as being immune from wake-ups
-from SIGKILL.
-
-I guess we are immune from wake-ups with JOBCTL_DELAY_WAKEKILL as I have
-implemented it.
-
-The practical concern then seems to be that we are not guaranteed
-wait_task_inactive will succeed.  Which means that it must continue
-to include the TASK_TRACED bit.
-
-Previously we were actually guaranteed in ptrace_check_attach that after
-ptrace_freeze_traced would succeed as any pending fatal signal would
-cause ptrace_freeze_traced to fail.  Any incoming fatal signal would not
-stop schedule from sleeping.  The ptraced task would continue to be
-ptraced, as all other ptrace operations are blocked by virtue of ptrace
-being single threaded.
-
-I think in my tired mind yesterday I thought it would messing things
-up after schedule decided to sleep.  Still I would like to be able to
-let wait_task_inactive not care about the state of the process it is
-going to sleep for.
-
-Eric
+> diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
+> index bd4b1528cf99..b81179f7d738 100644
+> --- a/drivers/net/ethernet/ti/cpsw_new.c
+> +++ b/drivers/net/ethernet/ti/cpsw_new.c
+> @@ -1246,8 +1246,10 @@ static int cpsw_probe_dt(struct cpsw_common *cpsw)
+>  	data->slave_data = devm_kcalloc(dev, CPSW_SLAVE_PORTS_NUM,
+>  					sizeof(struct cpsw_slave_data),
+>  					GFP_KERNEL);
+> -	if (!data->slave_data)
+> +	if (!data->slave_data) {
+> +		of_node_put(tmp_node);
+>  		return -ENOMEM;
+> +	}
+>  
+>  	/* Populate all the child nodes here...
+>  	 */
 
