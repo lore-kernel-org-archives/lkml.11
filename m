@@ -2,146 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30FC3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 19:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C802C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 19:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380414AbiD2Tzo (ORCPT
+        id S1380425AbiD2Tz7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 15:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52156 "EHLO
+        Fri, 29 Apr 2022 15:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239376AbiD2Tzl (ORCPT
+        with ESMTP id S239376AbiD2Tz4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 15:55:41 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC07A28E2C
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 12:52:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651261942; x=1682797942;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=GARhOmNBd1ME0CHLOJNqer0adibXv0bWTEQcGPSkh6s=;
-  b=QnV1iObSw5fuDPJZqFbbH7AljkXvfHWQ/l0Fm1splVuzEpQoMdzatMyT
-   aMF0UAgCviX8YZwrZzMKUjrSUr9Z3Bz+ie73knpS8IXp8Zl+IqUYBhYGM
-   rddA7C8Opa3XgWWReQdjL1ZDcQXDb0hf7LvYgX7aiO4/9YlVij6nxHejJ
-   cgOy1q98AfmFZVx89ayZ1QRZb9oEfVil9XaC962a+RSG+0YrcqCWLKRvb
-   PTmbrNtxGwK9XvBcLFqRFDT1QwBM8PrW9lUgVZppnXwV8bznvqzkMIprO
-   s5CLoWBDCL0JFFNn8GtINlerP2nqZMWZGLIwfSEIfbTdFq6u9OGxDiZA7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="246673132"
-X-IronPort-AV: E=Sophos;i="5.91,186,1647327600"; 
-   d="scan'208";a="246673132"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 12:52:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,186,1647327600"; 
-   d="scan'208";a="534660010"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 29 Apr 2022 12:52:21 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nkWf6-0006ad-Rp;
-        Fri, 29 Apr 2022 19:52:20 +0000
-Date:   Sat, 30 Apr 2022 03:52:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ioannis Angelakopoulos <iangelak@redhat.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [rhvgoyal:ioannis-fanotify 10/18] fs/fuse/inode.c:1246:24: warning:
- extra tokens at end of #ifdef directive
-Message-ID: <202204300354.BZkrhejM-lkp@intel.com>
+        Fri, 29 Apr 2022 15:55:56 -0400
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20EBD89331;
+        Fri, 29 Apr 2022 12:52:37 -0700 (PDT)
+Received: by mail-ot1-f48.google.com with SMTP id x8-20020a056830114800b00605fa3c9e90so1149873otq.2;
+        Fri, 29 Apr 2022 12:52:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=H9Vjs85xufky4aYHkz/e+mx0EVbxLmlUBWCH/SDU9N0=;
+        b=SQHEch20euMKuTSXy3R69ZKlNlOm1LSsUJROmmJTBSaEYGAu0Sz+SvfMdgNqcS2iqI
+         bfAWUenKtw2bsNck/7hYNRTaeLecKKlcFAV+m8KxmZ/PqIu8X/B/TvNIvyG1Jiy3U/SR
+         BuhyoL0artH6wETt/riyQB2i2DoR8O0ZzN3m023J2nUcpOJrCBmGanxcXB+I9jY1/zHP
+         RV9b0QTAOpJrEcRJzWvpA+4D8BlF2KNH20TLySic9G4rWJWXjIMW+SkJ2z8LahHkpx0e
+         a0j8i+YsL5dSaFyOU9lJ1f+CuboPQuwurmy0PExflG9kNw3QjcmyrfrGiaYKz/TDVEuV
+         VvNg==
+X-Gm-Message-State: AOAM533v5MIjPXRF7G5GGix9WucFrjOaIrhDaNm2+6vSgf3Mk6wXT5Wh
+        jQGNrHDtHgmuZrzy5PbLRg==
+X-Google-Smtp-Source: ABdhPJzn35H2MS02cc8yGaHGcxHK11y6uZhf2K7MMyY/rbTIg05isBDCaeiyEjVzOMpsxaGopmMCjw==
+X-Received: by 2002:a9d:6ac2:0:b0:605:d9b6:b150 with SMTP id m2-20020a9d6ac2000000b00605d9b6b150mr385127otq.50.1651261956341;
+        Fri, 29 Apr 2022 12:52:36 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id f11-20020a4ae60b000000b0035eb4e5a6bdsm831129oot.19.2022.04.29.12.52.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 12:52:35 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: pinctrl: Allow values for drive-push-pull and drive-open-drain
+Date:   Fri, 29 Apr 2022 14:46:11 -0500
+Message-Id: <20220429194610.2741437-1-robh@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/rhvgoyal/linux ioannis-fanotify
-head:   10887e7003a6a801e521d59daff76f0c035f061f
-commit: c76a3b348db49e81d723d06f9cdf37bc3a7d51e8 [10/18] FUSE: Add the remote fsnotify support capability to FUSE
-config: x86_64-randconfig-a015 (https://download.01.org/0day-ci/archive/20220430/202204300354.BZkrhejM-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/rhvgoyal/linux/commit/c76a3b348db49e81d723d06f9cdf37bc3a7d51e8
-        git remote add rhvgoyal https://github.com/rhvgoyal/linux
-        git fetch --no-tags rhvgoyal ioannis-fanotify
-        git checkout c76a3b348db49e81d723d06f9cdf37bc3a7d51e8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/fuse/
+A few platforms, at91 and tegra, use drive-push-pull and
+drive-open-drain with a 0 or 1 value. There's not really a need for values
+as '1' should be equivalent to no value (it wasn't treated that way) and
+drive-push-pull disabled is equivalent to drive-open-drain. So dropping the
+value can't be done without breaking existing OSs. As we don't want new
+cases, mark the case with values as deprecated.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Jonathan Hunter <jonathanh@nvidia.com>
+Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/pinctrl/pincfg-node.yaml     | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-All warnings (new ones prefixed by >>):
-
-   fs/fuse/inode.c: In function 'fuse_send_init':
->> fs/fuse/inode.c:1246:24: warning: extra tokens at end of #ifdef directive
-    1246 | #ifdef CONFIG_FANOTIFY ||  CONFIG_INOTIFY_USER
-         |                        ^~
-
-
-vim +1246 fs/fuse/inode.c
-
-  1217	
-  1218	void fuse_send_init(struct fuse_mount *fm)
-  1219	{
-  1220		struct fuse_init_args *ia;
-  1221		u64 flags;
-  1222	
-  1223		ia = kzalloc(sizeof(*ia), GFP_KERNEL | __GFP_NOFAIL);
-  1224	
-  1225		ia->in.major = FUSE_KERNEL_VERSION;
-  1226		ia->in.minor = FUSE_KERNEL_MINOR_VERSION;
-  1227		ia->in.max_readahead = fm->sb->s_bdi->ra_pages * PAGE_SIZE;
-  1228		flags =
-  1229			FUSE_ASYNC_READ | FUSE_POSIX_LOCKS | FUSE_ATOMIC_O_TRUNC |
-  1230			FUSE_EXPORT_SUPPORT | FUSE_BIG_WRITES | FUSE_DONT_MASK |
-  1231			FUSE_SPLICE_WRITE | FUSE_SPLICE_MOVE | FUSE_SPLICE_READ |
-  1232			FUSE_FLOCK_LOCKS | FUSE_HAS_IOCTL_DIR | FUSE_AUTO_INVAL_DATA |
-  1233			FUSE_DO_READDIRPLUS | FUSE_READDIRPLUS_AUTO | FUSE_ASYNC_DIO |
-  1234			FUSE_WRITEBACK_CACHE | FUSE_NO_OPEN_SUPPORT |
-  1235			FUSE_PARALLEL_DIROPS | FUSE_HANDLE_KILLPRIV | FUSE_POSIX_ACL |
-  1236			FUSE_ABORT_ERROR | FUSE_MAX_PAGES | FUSE_CACHE_SYMLINKS |
-  1237			FUSE_NO_OPENDIR_SUPPORT | FUSE_EXPLICIT_INVAL_DATA |
-  1238			FUSE_HANDLE_KILLPRIV_V2 | FUSE_SETXATTR_EXT | FUSE_INIT_EXT |
-  1239			FUSE_SECURITY_CTX;
-  1240	#ifdef CONFIG_FUSE_DAX
-  1241		if (fm->fc->dax)
-  1242			flags |= FUSE_MAP_ALIGNMENT;
-  1243		if (fuse_is_inode_dax_mode(fm->fc->dax_mode))
-  1244			flags |= FUSE_HAS_INODE_DAX;
-  1245	#endif
-> 1246	#ifdef CONFIG_FANOTIFY ||  CONFIG_INOTIFY_USER
-  1247		flags |= FUSE_HAVE_FSNOTIFY;
-  1248	#endif
-  1249		if (fm->fc->auto_submounts)
-  1250			flags |= FUSE_SUBMOUNTS;
-  1251	
-  1252		ia->in.flags = flags;
-  1253		ia->in.flags2 = flags >> 32;
-  1254	
-  1255		ia->args.opcode = FUSE_INIT;
-  1256		ia->args.in_numargs = 1;
-  1257		ia->args.in_args[0].size = sizeof(ia->in);
-  1258		ia->args.in_args[0].value = &ia->in;
-  1259		ia->args.out_numargs = 1;
-  1260		/* Variable length argument used for backward compatibility
-  1261		   with interface version < 7.5.  Rest of init_out is zeroed
-  1262		   by do_get_request(), so a short reply is not a problem */
-  1263		ia->args.out_argvar = true;
-  1264		ia->args.out_args[0].size = sizeof(ia->out);
-  1265		ia->args.out_args[0].value = &ia->out;
-  1266		ia->args.force = true;
-  1267		ia->args.nocreds = true;
-  1268		ia->args.end = process_init_reply;
-  1269	
-  1270		if (fuse_simple_background(fm, &ia->args, GFP_KERNEL) != 0)
-  1271			process_init_reply(fm, &ia->args, -ENOTCONN);
-  1272	}
-  1273	EXPORT_SYMBOL_GPL(fuse_send_init);
-  1274	
-
+diff --git a/Documentation/devicetree/bindings/pinctrl/pincfg-node.yaml b/Documentation/devicetree/bindings/pinctrl/pincfg-node.yaml
+index 4b22a9e3a447..f5a121311f61 100644
+--- a/Documentation/devicetree/bindings/pinctrl/pincfg-node.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/pincfg-node.yaml
+@@ -52,11 +52,19 @@ properties:
+       hardware supporting it the pull strength in Ohm.
+ 
+   drive-push-pull:
+-    type: boolean
++    oneOf:
++      - type: boolean
++      - $ref: /schemas/types.yaml#/definitions/uint32
++        enum: [ 0, 1 ]
++        deprecated: true
+     description: drive actively high and low
+ 
+   drive-open-drain:
+-    type: boolean
++    oneOf:
++      - type: boolean
++      - $ref: /schemas/types.yaml#/definitions/uint32
++        const: 1    # No known cases of 0
++        deprecated: true
+     description: drive with open drain
+ 
+   drive-open-source:
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
