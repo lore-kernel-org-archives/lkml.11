@@ -2,100 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9515AC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66FD9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357649AbiD2KpN (ORCPT
+        id S1357619AbiD2KpT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56464 "EHLO
+        Fri, 29 Apr 2022 06:45:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357561AbiD2Ko4 (ORCPT
+        with ESMTP id S1357586AbiD2KpF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:44:56 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8908C12FF;
-        Fri, 29 Apr 2022 03:41:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651228899; x=1682764899;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=pXFB7NHcDCItTBt2mpH7jbaa68A7uQ0UnpA7fbg8+bw=;
-  b=0by1ELDgDQXxFVsxOYUbLaYUQ/bBXUAaUvyOaysysnen4u5yDHiUEpig
-   D6NGUPFmurhgrBhY3qtzki7b3RhlIsAgVULmFRIB0bL+0/jB02DkfGbbr
-   0xikhgGcH1ApU7XJ8KbouwdxZiqKSSeNRI+Q8q2n9gkmLrDpi5dxMOepb
-   p0+ICvvtyfEXiKUyWMZ8YFocbB2lsZJUDAlxtdiJdx5S57ZmxnTuGj+Bw
-   Jn2cpC+THYexoj6S8iukBah3X2yptSDFyecSLuXJMy3mv5RszQ94e4GGq
-   7hLBecf6AniJOd8wiKTQT31sJwCMgqqmJYRrYpQrnWNhXWlOky5mVNIha
-   A==;
-X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
-   d="scan'208";a="154297294"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Apr 2022 03:41:38 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 29 Apr 2022 03:41:38 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 29 Apr 2022 03:41:35 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        Cyril Jean <Cyril.Jean@microchip.com>,
-        <devicetree@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, "Arnd Bergmann" <arnd@arndb.de>
-Subject: [PATCH v1 4/8] dt-bindings: riscv: microchip: document icicle reference design
-Date:   Fri, 29 Apr 2022 11:40:37 +0100
-Message-ID: <20220429104040.197161-5-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220429104040.197161-1-conor.dooley@microchip.com>
-References: <20220429104040.197161-1-conor.dooley@microchip.com>
+        Fri, 29 Apr 2022 06:45:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06C4C6ED7;
+        Fri, 29 Apr 2022 03:41:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D2D8B8344F;
+        Fri, 29 Apr 2022 10:41:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D888C385A4;
+        Fri, 29 Apr 2022 10:41:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651228901;
+        bh=bpq7XH8KqcoY0LbK7M7v1M575hE7glHNC4hi5Cns6o4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lkAJD3OaZHLrkFi4wpenvDt0ZNWQ9m/EqhEZrnlVxAQFV2g6506G7IgSLntMlcgRV
+         Ag4njXunGd5Bcao4VZKHnt/HyhMxfdWSBolp2T4h19MvOUz2w1RMBEZSoYQU/vZ+Ux
+         8PH94khyINOYTPzSCAZ/v18TcG63uN1IOyVm1jSY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>, X86 ML <x86@kernel.org>,
+        Daniel Xu <dxu@dxuuu.xyz>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Abhishek Sagar <sagar.abhishek@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Paul McKenney <paulmck@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>
+Subject: [PATCH 4.19 10/12] ia64: kprobes: Fix to pass correct trampoline address to the handler
+Date:   Fri, 29 Apr 2022 12:41:27 +0200
+Message-Id: <20220429104048.762619339@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220429104048.459089941@linuxfoundation.org>
+References: <20220429104048.459089941@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a compatible for the icicle kit's reference design. This represents
-the FPGA fabric's contents & is versioned to denote which release of the
-reference design it applies to.
+From: Masami Hiramatsu <mhiramat@kernel.org>
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+commit a7fe2378454cf46cd5e2776d05e72bbe8f0a468c upstream.
+
+The following commit:
+
+   Commit e792ff804f49 ("ia64: kprobes: Use generic kretprobe trampoline handler")
+
+Passed the wrong trampoline address to __kretprobe_trampoline_handler(): it
+passes the descriptor address instead of function entry address.
+
+Pass the right parameter.
+
+Also use correct symbol dereference function to get the function address
+from 'kretprobe_trampoline' - an IA64 special.
+
+Link: https://lkml.kernel.org/r/163163042696.489837.12551102356265354730.stgit@devnote2
+
+Fixes: e792ff804f49 ("ia64: kprobes: Use generic kretprobe trampoline handler")
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: X86 ML <x86@kernel.org>
+Cc: Daniel Xu <dxu@dxuuu.xyz>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Abhishek Sagar <sagar.abhishek@gmail.com>
+Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc: Paul McKenney <paulmck@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../devicetree/bindings/riscv/microchip.yaml          | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ arch/ia64/kernel/kprobes.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/riscv/microchip.yaml b/Documentation/devicetree/bindings/riscv/microchip.yaml
-index 3f981e897126..c9d8fcc7a69e 100644
---- a/Documentation/devicetree/bindings/riscv/microchip.yaml
-+++ b/Documentation/devicetree/bindings/riscv/microchip.yaml
-@@ -17,10 +17,13 @@ properties:
-   $nodename:
-     const: '/'
-   compatible:
--    items:
--      - enum:
--          - microchip,mpfs-icicle-kit
--      - const: microchip,mpfs
-+    oneOf:
-+      - items:
-+          - enum:
-+              - microchip,mpfs-icicle-kit
-+          - const: microchip,mpfs
-+      - items:
-+          - const: microchip,mpfs-icicle-reference-rtlv2203
+--- a/arch/ia64/kernel/kprobes.c
++++ b/arch/ia64/kernel/kprobes.c
+@@ -424,7 +424,7 @@ int __kprobes trampoline_probe_handler(s
+ 	struct hlist_node *tmp;
+ 	unsigned long flags, orig_ret_address = 0;
+ 	unsigned long trampoline_address =
+-		((struct fnptr *)kretprobe_trampoline)->ip;
++		(unsigned long)dereference_function_descriptor(kretprobe_trampoline);
  
- additionalProperties: true
+ 	INIT_HLIST_HEAD(&empty_rp);
+ 	kretprobe_hash_lock(current, &head, &flags);
+@@ -500,7 +500,7 @@ void __kprobes arch_prepare_kretprobe(st
+ 	ri->ret_addr = (kprobe_opcode_t *)regs->b0;
  
--- 
-2.35.2
+ 	/* Replace the return addr with trampoline addr */
+-	regs->b0 = ((struct fnptr *)kretprobe_trampoline)->ip;
++	regs->b0 = (unsigned long)dereference_function_descriptor(kretprobe_trampoline);
+ }
+ 
+ /* Check the instruction in the slot is break */
+@@ -1030,14 +1030,14 @@ static struct kprobe trampoline_p = {
+ int __init arch_init_kprobes(void)
+ {
+ 	trampoline_p.addr =
+-		(kprobe_opcode_t *)((struct fnptr *)kretprobe_trampoline)->ip;
++		dereference_function_descriptor(kretprobe_trampoline);
+ 	return register_kprobe(&trampoline_p);
+ }
+ 
+ int __kprobes arch_trampoline_kprobe(struct kprobe *p)
+ {
+ 	if (p->addr ==
+-		(kprobe_opcode_t *)((struct fnptr *)kretprobe_trampoline)->ip)
++		dereference_function_descriptor(kretprobe_trampoline))
+ 		return 1;
+ 
+ 	return 0;
+
 
