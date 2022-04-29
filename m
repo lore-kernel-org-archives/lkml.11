@@ -2,58 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56EFDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:31:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD20DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:32:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379677AbiD2RfO (ORCPT
+        id S1379690AbiD2RfU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 13:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58792 "EHLO
+        Fri, 29 Apr 2022 13:35:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379714AbiD2RfI (ORCPT
+        with ESMTP id S1379679AbiD2RfN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 13:35:08 -0400
-X-Greylist: delayed 911 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 29 Apr 2022 10:31:36 PDT
-Received: from brightrain.aerifal.cx (brightrain.aerifal.cx [216.12.86.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 451ACD557D
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:31:36 -0700 (PDT)
-Date:   Fri, 29 Apr 2022 13:16:24 -0400
-From:   Rich Felker <dalias@libc.org>
-To:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>, linux-sh@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v3] sh: avoid using IRQ0 on SH3/4
-Message-ID: <20220429171623.GQ7074@brightrain.aerifal.cx>
-References: <2584ba18-9653-9310-efc1-8b3b3e221eea@omp.ru>
- <11021433-66c0-3c56-42bd-207a5ae8d267@physik.fu-berlin.de>
+        Fri, 29 Apr 2022 13:35:13 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7ED1CFD1
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:31:55 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id h29so8001914lfj.2
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:31:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N0kkFtjr8AAODbzY6xXTEuPCKSjxOceWVMdgDTFE29s=;
+        b=mgIC9mziFYsMyFAHOYErUONAUawV3Zg6+lF8pT/M6IY7fvSpudmNbt4xMfL1Vd2RZx
+         GRbqYgrUPkpUb1qIgmFCl6xJfsXc+8QBV/bZoVyuCFU9lyvOvItgw59wlPOkLOyEx1eF
+         NBBZ6U0kEq0EsOP1AclJls1dMXQKtiyFRh/C0aj18X2kqqSZfC5FI+dlQF6XC7Lnst0D
+         GVthXsYt+FAc9t+OJroj/dn/jrsfrIz35QU/yHkVBuNOUt7r5YqIBqhYCUWp2leSjIGF
+         AXZ0AZePI0Yg/9Yp6om1xQ5NmkFLw6YKQZQtDp/u5C92+dDSXqKCEwCSytQZPNLzqGNl
+         2jvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N0kkFtjr8AAODbzY6xXTEuPCKSjxOceWVMdgDTFE29s=;
+        b=D92ypfqxckZM6oM7YaxjVNZoN/4zvyHD9VwIsoHHx86C4eb0DT2UNUOEv+xPY54aah
+         7ON/98XhiWkoUQ3ec/2XMjLVH6gxoIDYlRd9wUfBeoWigrNp3C8nGiUSVwiEfaQWSbMb
+         p9cxwIcAGc/+iBvK5IrgftLbJDDpm4OIl9l5jHp9x4zo5d4vyJK6jXtUYcqHBVIbSCE6
+         t6vGB1E2v3BUrwNhqzAziw6HBp9Gk6/l0AcpsLSgCQ04j7IoVSGL8U8lNxzdrPdL8uaq
+         U+aQ7Cv9rjrd8Mynxu/+sWxL3SF6RH6pm6ffnyzZXD6o5Xbyi0e1KGu2At/q45RVdIgr
+         g9IQ==
+X-Gm-Message-State: AOAM532ibWxO//oVjgjdZzRLYOZiO1F5Kir7r9RvBKW3WDqf7Gev5i3f
+        sGt0nfBilDO5HLP2OJesTIL/xD5UgutIdg==
+X-Google-Smtp-Source: ABdhPJw8gix5aeuUfeN7PkSk0yv5kUFc9OzEkRCT9VAiDCM3AZPANunBQCFwT38GwbnX95LzdG/twg==
+X-Received: by 2002:a05:6512:3052:b0:472:7f8:f344 with SMTP id b18-20020a056512305200b0047207f8f344mr222161lfb.380.1651253513254;
+        Fri, 29 Apr 2022 10:31:53 -0700 (PDT)
+Received: from eriador.lan ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id h7-20020ac24d27000000b004720819b691sm284731lfk.130.2022.04.29.10.31.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 10:31:52 -0700 (PDT)
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Rob Clark <robdclark@gmail.com>, freedreno@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org
+Subject: [PATCH] MAINTAINERS: Add Dmitry as MSM DRM driver co-maintainer
+Date:   Fri, 29 Apr 2022 20:31:51 +0300
+Message-Id: <20220429173151.3645415-1-dmitry.baryshkov@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <11021433-66c0-3c56-42bd-207a5ae8d267@physik.fu-berlin.de>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 04:24:04PM +0200, John Paul Adrian Glaubitz wrote:
-> Hi Sergey!
-> 
-> On 4/27/22 20:46, Sergey Shtylyov wrote:
-> > Using IRQ0 by the platform devices is going to be disallowed soon (see [1])
-> > and even now, when IRQ0 is about to be returned by platfrom_get_irq(), you
-> > see a big warning.  The code supporting SH3/4 SoCs maps the IRQ #s starting
-> > at 0 -- modify that code to start the IRQ #s from 16 instead.
-> > 
-> > The patch should mostly affect the AP-SH4A-3A/AP-SH4AD-0A boards as they
-> > indeed use IRQ0 for the SMSC911x compatible Ethernet chip...
-> 
-> Maybe try getting it landed through Andrew Morton's tree?
+For the past several releases I have been assisting Rob by writing,
+collecting, testing and integrating patches for non-GPU and non-core
+parts of MSM DRM driver, while Rob is more interested in improving the
+GPU-related part. Let's note this in the MAINTAINERS file.
 
-Hi. I'm alive and looking at it. If it needs to go in for this cycle I
-will send a pull request for just this and anything else critical. Was
-trying to get to it last night but had some unpleasant surprises come
-up that took me away from the computer.
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-Rich
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 61d9f114c37f..3d7c7d6b0346 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6255,6 +6255,7 @@ F:	drivers/gpu/drm/tiny/panel-mipi-dbi.c
+ DRM DRIVER FOR MSM ADRENO GPU
+ M:	Rob Clark <robdclark@gmail.com>
+ M:	Sean Paul <sean@poorly.run>
++M:	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+ R:	Abhinav Kumar <quic_abhinavk@quicinc.com>
+ L:	linux-arm-msm@vger.kernel.org
+ L:	dri-devel@lists.freedesktop.org
+-- 
+2.35.1
+
