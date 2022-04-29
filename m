@@ -2,107 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6369C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 19:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE221C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 19:33:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380338AbiD2TgE (ORCPT
+        id S1380345AbiD2Tgp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 15:36:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52684 "EHLO
+        Fri, 29 Apr 2022 15:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380316AbiD2TgA (ORCPT
+        with ESMTP id S1380316AbiD2Tgm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 15:36:00 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 415587560B;
-        Fri, 29 Apr 2022 12:32:41 -0700 (PDT)
-Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id CE5891EC04AD;
-        Fri, 29 Apr 2022 21:32:35 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1651260755;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nna9CBQPo5PQdjexXCZm9F8VHeCuCj+Y77aOAoFRonk=;
-        b=pxCCzpFBWH45lDHBL3Agrpu0tz38S5FnS1E78+JDahCXr/AgakNfG0sBAwOPK/CFqBO9f3
-        HiHwX/vdJLn5HhsC3Ja9Z7e8LId9cSnw+SAHZKIWIyfso/bwol5nBhgqsBitYowZy6uG5J
-        iVce5CBstNkh+56eEW28YQwI/7k6jk0=
-Date:   Fri, 29 Apr 2022 21:32:33 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Jon Kohler <jon@nutanix.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Balbir Singh <sblbir@amazon.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Waiman Long <longman@redhat.com>
-Subject: Re: [PATCH v3] x86/speculation, KVM: only IBPB for
- switch_mm_always_ibpb on vCPU load
-Message-ID: <Ymw9UZDpXym2vXJs@zn.tnic>
-References: <20220422162103.32736-1-jon@nutanix.com>
- <YmwZYEGtJn3qs0j4@zn.tnic>
- <645E4ED5-F6EE-4F8F-A990-81F19ED82BFA@nutanix.com>
+        Fri, 29 Apr 2022 15:36:42 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C2ED081E
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 12:33:22 -0700 (PDT)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23THBoiH013291;
+        Fri, 29 Apr 2022 19:33:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
+ to : cc : references : in-reply-to : message-id : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=vDWU27AKQEo+oH1UUdtPi7S1oftQMcr2YMRcrvYvg6Y=;
+ b=Ha+HeItJqD/hLvxIfUIm85LpIh46wsIxbzYkIoMiJxamVDtjZVGw0TVKrjMmYyREqPD5
+ +sgAKWm32g2m3OxTx/OmNp77x96xojUEJwOzF2L/vAQDTkrzPd+PNhmYb+sM9B4ZtVn3
+ E9SsCiyieZCx5Bz8YADOlP+jHc89QLxz8ZlaYilwLC7sjZuZIodoQSB+pZqbLvox7Qt4
+ F1YuO8SJrj9y/Vp7ut4c5z+kx/+FcKYeLtZTtrZ381oRb/rdgt7cZc/dyGCilYu9jsmB
+ dOgyjkYyHOMSAcHEXWn27maYbfgSxNv9zU0aRdhH7cj2k3WK9AVhJawO409x/wKtA/AW SA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fr27h871g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 19:33:08 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23TJDOQV028169;
+        Fri, 29 Apr 2022 19:33:08 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fr27h8715-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 19:33:08 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TJX0wP022750;
+        Fri, 29 Apr 2022 19:33:06 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 3fm9391j12-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 19:33:06 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TJXCnj26476904
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 29 Apr 2022 19:33:12 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1021342045;
+        Fri, 29 Apr 2022 19:33:04 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9A2F642041;
+        Fri, 29 Apr 2022 19:33:03 +0000 (GMT)
+Received: from localhost (unknown [9.43.18.217])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 29 Apr 2022 19:33:03 +0000 (GMT)
+Date:   Sat, 30 Apr 2022 01:03:01 +0530
+From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Subject: Re: [PATCH v2 2/2] ftrace: recordmcount: Handle sections with no
+ non-weak symbols
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        llvm@lists.linux.dev, Michael Ellerman <mpe@ellerman.id.au>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+References: <cover.1651166001.git.naveen.n.rao@linux.vnet.ibm.com>
+        <126aca34935cf1c7168e17970c706e36577094e7.1651166001.git.naveen.n.rao@linux.vnet.ibm.com>
+        <20220428184212.18fbf438@gandalf.local.home>
+        <1651252324.js9790ngjg.naveen@linux.ibm.com>
+        <20220429135916.47c3e623@gandalf.local.home>
+In-Reply-To: <20220429135916.47c3e623@gandalf.local.home>
+User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
+Message-Id: <1651257788.xtscezsfky.naveen@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 5IRCrmEecLVBqTwYK1etJSIMvr9ZJZ8s
+X-Proofpoint-GUID: c1YO3hElOo7wYmNNZFeFbyj3webXVoOo
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <645E4ED5-F6EE-4F8F-A990-81F19ED82BFA@nutanix.com>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-29_09,2022-04-28_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
+ clxscore=1015 adultscore=0 priorityscore=1501 mlxlogscore=299
+ suspectscore=0 malwarescore=0 spamscore=0 phishscore=0 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204290103
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 05:31:16PM +0000, Jon Kohler wrote:
-> Selftests IIUC, but there may be other VMMs that do funny stuff. Said
-> another way, I don’t think we actively restrict user space from doing
-> this as far as I know.
+Steven Rostedt wrote:
+> On Fri, 29 Apr 2022 23:09:19 +0530
+> "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> wrote:
+>=20
+>> If I'm understanding your suggestion right:
+>> - we now create a new section in each object file: __mcount_loc_weak,=20
+>>   and capture such relocations using weak symbols there.
+>=20
+> Yes, but it would be putting the same information it puts into __mcount_l=
+oc
+> but also add it here too. That is, it will duplicate the data.
+>=20
+>> - we then ask the linker to put these separately between, say,=20
+>>   __start_mcount_loc_weak and __stop_mcount_loc_weak
+>=20
+> Yes, but it will also go in the location between __start_mcount_loc and
+> __stop_mcount_loc.
+>=20
+>> - on ftrace init, we go through entries in this range, but discard those=
+=20
+>>   that belong to functions that also have an entry between=20
+>>   __start_mcount_loc and __stop_mcount loc.
+>=20
+> But we should be able to know if it was overridden or not, by seeing if
+> there's another function that was called. Or at least, we can validate th=
+em
+> to make sure that they are correct.
+>=20
+>>=20
+>> The primary issue I see here is that the mcount locations within the new=
+=20
+>> weak section will end up being offsets from a different function in=20
+>> vmlinux, since the linker does not create a symbol for the weak=20
+>> functions that were over-ridden.
+>=20
+> The point of this section is to know which functions in __mcount_loc may
+> have been overridden, as they would be found in the __mcount_loc_weak
+> section. And then we can do something "special" to them.
 
-"selftests", "there may be"?!
+I'm not sure I follow that. How are you intending to figure out which=20
+functions were overridden by looking at entries in the __mcount_loc_weak=20
+section?
 
-This doesn't sound like a real-life use case to me and we don't do
-changes just because. Sorry.
+In the final vmlinux image, we only get offsets into .text for all=20
+mcount locations, but no symbol information. The only hint is the fact=20
+that a single kallsym symbol has multiple mcount locations within it.=20
+Even then, the symbol with duplicate mcount entries won't be the=20
+function that was overridden.
 
-> The paranoid aspect here is KVM is issuing an *additional* IBPB on
-> top of what already happens in switch_mm(). 
+We could do a kallsyms_lookup() on each entry and consult the=20
+__mcount_loc_weak section to identify duplicates, but that looks to be=20
+very expensive.
 
-Yeah, I know how that works.
+Did you have a different approach in mind?
 
-> IMHO KVM side IBPB for most use cases isn’t really necessarily but 
-> the general concept is that you want to protect vCPU from guest A
-> from guest B, so you issue a prediction barrier on vCPU switch.
-> 
-> *however* that protection already happens in switch_mm(), because
-> guest A and B are likely to use different mm_struct, so the only point
-> of having this support in KVM seems to be to “kill it with fire” for 
-> paranoid users who might be doing some tomfoolery that would 
-> somehow bypass switch_mm() protection (such as somehow 
-> sharing a struct).
+>=20
+>>=20
+>> As an example, in the issue described in this patch set, if powerpc=20
+>> starts over-riding kexec_arch_apply_relocations(), then the current weak=
+=20
+>> implementation in kexec_file.o gets carried over to the final vmlinux,=20
+>> but the instructions will instead appear under the previous function in=
+=20
+>> kexec_file.o: crash_prepare_elf64_headers(). This function may or may=20
+>> not be traced to begin with, so we won't be able to figure out if this=20
+>> is valid or not.
+>=20
+> If it was overridden, then there would be two entries for function that
+> overrides the weak function in the __mcount_loc section, right? One for t=
+he
+> new function, and one that was overridden.
 
-Yeah, no, this all sounds like something highly hypothetical or there's
-a use case of which you don't want to talk about publicly.
+In the final vmlinux, we will have two entries: one pointing at the=20
+correct function, while the other will point to some other function=20
+name. So, at least from kallsym perspective, duplicate mcount entries=20
+won't be for the function that was overridden, but some arbitrary=20
+function that came before the weak function in the object file.
 
-Either way, from what I'm reading I'm not in the least convinced that
-this is needed.
+> Of course this could be more
+> complex if the new function had been marked notrace.
+>=20
+> I was thinking of doing this just so that we know what functions are weak
+> and perhaps need extra processing.
+>=20
+> Another issue with weak functions and ftrace just came up here:
+>=20
+>   https://lore.kernel.org/all/20220428095803.66c17c32@gandalf.local.home/
 
--- 
-Regards/Gruss,
-    Boris.
+I noticed this just yesterday:
 
-https://people.kernel.org/tglx/notes-about-netiquette
+  # cat available_filter_functions | sort | uniq -d | wc -l
+  430
+
+I'm fairly certain that some of those are due to weak functions -- I=20
+just wasn't sure if all of those were.
+
+I suppose this will now also be a problem with ftrace_location(), given=20
+that it was recently changed to look at an entire function for mcount=20
+locations?
+
+
+Thanks,
+Naveen
