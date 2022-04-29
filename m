@@ -2,147 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:03:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFDCAC43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379386AbiD2RGZ (ORCPT
+        id S1379393AbiD2RGn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 13:06:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54366 "EHLO
+        Fri, 29 Apr 2022 13:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378535AbiD2RGW (ORCPT
+        with ESMTP id S1379389AbiD2RGk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 13:06:22 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CD9E7563C;
-        Fri, 29 Apr 2022 10:03:04 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id k25-20020a056830169900b00605f215e55dso2171680otr.13;
-        Fri, 29 Apr 2022 10:03:04 -0700 (PDT)
+        Fri, 29 Apr 2022 13:06:40 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A44B0A7D
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:03:21 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso2430267pjb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:03:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cP3k5kUuoWg5JR2OnDd92i4XFuEk9RrNw2XTYs8+nHQ=;
-        b=J4UGuTtuXijrsWLpCIDKsVNcOlRwtCJB+Dge/RcmmqI3XLLu3oqSHHWB81RXtKxWbB
-         dcpdUVaQC8StWrr75rhw0N67W8IfmJhPl82AtQcM1Jy8rX7TOH7SeECOu8SPi0j2oSJC
-         lR/xnUZTW2ylPgn1Oae7xp4RGYamBuRHNvUNXM9rppG6rYva78Z/qha3rac5G/2qsRET
-         BVhO3O+6Lmnaq79GWLwLyroVm33bfNv4/u4EZeZ6PNoEgSK1eiK2KoH6AJXq4ABAgQt9
-         Scd8DnwZtGT4sNFK/pSRiyYE8OUqgxanKI92+Wz6fsT+OYDaWiMMLaedwooMeQJov58K
-         d1Sw==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=RkN7JUMz0DAtONAVPRmRHnP64HBiaCnPPuSBpGqI0Eo=;
+        b=APvmC5k2WUKy0VF/8OFRKt3sJeb7n0edWipqz/MuxQSpQdH6U840xRClQNgeSB0/HP
+         CorEabT7uAif+i25odVZeixSMo+CrYTYX0OCnVriOtMIrhAOjQNKxMuoqgWXTAZgMl2P
+         nSOmNzDXu54i8slffbv/+iAa3TqxxKOgSzJCyGmNjc48RJVfqclQY74gl/+qZEQWQaRL
+         G5fGahViQBcY78yDKgrE3WecQcf8RitMoYp1YinysH+SnU/xWu61GQYEH15+arqh/kUj
+         FWhXZjI9jmGQM1gJbsagSphVpJWn67RBBedRQD6AunGL/AormBN2S16j4yeB+1GMnWCZ
+         r4tQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cP3k5kUuoWg5JR2OnDd92i4XFuEk9RrNw2XTYs8+nHQ=;
-        b=lQyVhm3AfT7Z8Bw10zIu4QXAbJU9ooxw7yp9Ng8kezixDpnmLlseSOvLRIiitL/XOP
-         gD7yyrZr7EVu9RP+0KGA1vNSoKQ5W+xMA2LvxFSB/Ud1I1vJjbJd1iY5srTIz2P+e7pZ
-         n6ixNy0QB3nf+gHNAzMwcUOVVRv1CF3P33dV+RhKt7IiH3SXbpZiZEF1GvKhO3agTfG3
-         2CrIuCzHnLK2cwzdQOg7MGYkmzscuekJbGxltrhEaVI1dMuwN2Pa9FhdhZa3VcD69nyj
-         ukLTtbAro29eZU9Z+tNIPdFPJpjATj8RPXjJdmOGFPkCfVyH7bFRoyg+kySvGWdVoYE/
-         KSKg==
-X-Gm-Message-State: AOAM530feSzX2fWzZJ6NssArwDksAkTKq713U0/OEz7NtF9PJRswVbKg
-        sZvBoBc5o4X45Aaoh9g5slE=
-X-Google-Smtp-Source: ABdhPJzewteeoRai5yOxCPAaxMcsmX2oilokDlj7mjkEf3C0syrfnE0N29DHjdHjC/EZcdezN6J83Q==
-X-Received: by 2002:a05:6830:1081:b0:605:e78a:ea4d with SMTP id y1-20020a056830108100b00605e78aea4dmr99480oto.315.1651251783432;
-        Fri, 29 Apr 2022 10:03:03 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id j72-20020a9d17ce000000b005e6b89f9f54sm1285246otj.32.2022.04.29.10.03.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 10:03:02 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <dbbe0db1-9a0d-4f14-f8e9-81fae4422d31@roeck-us.net>
-Date:   Fri, 29 Apr 2022 10:02:24 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=RkN7JUMz0DAtONAVPRmRHnP64HBiaCnPPuSBpGqI0Eo=;
+        b=Sh8tEA9QOFU+5dfK95qJvFaWpSS4n5zIowEK79k6Y9Di254j2lYJD6tC5AuXzLEuvd
+         eUWhu7CvQ3bMArFhlKXPypqUnSXPWVuUg2xG0cwnVfxflgF/K/XOQNqGakHP5kX7GXJX
+         eesRKi1VHpSapiilyf8upA6trsMGZPKswdJtfGVd+Ch1JfyuAbXuE5F/6SHO+eLzGLdC
+         dVSj8b9w+fnHyIDWUbuTNnC4yXJvqxwBrefpbeXwLNZUo89gzo7B006s3te4fPCZOXPY
+         9ICqCIMsfP2OpNRmqHLzUJldZK2k6GBqVi8U4NE7Ix9HY4/eyBtMcBS4J0GC1NU06416
+         iaCg==
+X-Gm-Message-State: AOAM531bCYrO24YQ9KiRHYI8W3wIV/gOZW8jMFJRCziEbK+Ze4ggg+d1
+        WU99Wix65ThDsUsxxgOvDHyKMA==
+X-Google-Smtp-Source: ABdhPJxa3u/ecjwn+3JjLKK6oRMJ5TZ6P/zhBeChiNrcd61l1FaXIYCxObf1ewlGxrCmBH+ZJBZv7Q==
+X-Received: by 2002:a17:90a:ab81:b0:1ca:8a76:cdda with SMTP id n1-20020a17090aab8100b001ca8a76cddamr5005883pjq.26.1651251801115;
+        Fri, 29 Apr 2022 10:03:21 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id l5-20020a63ea45000000b003c1b2bea056sm2061378pgk.84.2022.04.29.10.03.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 10:03:20 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 17:03:17 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        mlevitsk@redhat.com, stable@vger.kernel.org
+Subject: Re: [PATCH 1/3] KVM: x86: make vendor code check for all nested
+ events
+Message-ID: <YmwaVY5vERO43CRI@google.com>
+References: <20220427173758.517087-1-pbonzini@redhat.com>
+ <20220427173758.517087-2-pbonzini@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v4 2/2] misc: Add a mechanism to detect stalls on guest
- vCPUs
-Content-Language: en-US
-To:     Sebastian Ene <sebastianene@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Derek Kiernan <derek.kiernan@xilinx.com>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        Arnd Bergmann <arnd@arndb.de>, devicetree@vger.kernel.org,
-        qperret@google.com, will@kernel.org,
-        Rob Herring <robh+dt@kernel.org>
-References: <20220429083030.3241640-1-sebastianene@google.com>
- <20220429083030.3241640-3-sebastianene@google.com>
- <YmunAm8ooJkNCx5D@kroah.com> <YmuvQvuPF/mn5S4C@google.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <YmuvQvuPF/mn5S4C@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220427173758.517087-2-pbonzini@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/29/22 02:26, Sebastian Ene wrote:
-> On Fri, Apr 29, 2022 at 10:51:14AM +0200, Greg Kroah-Hartman wrote:
->> On Fri, Apr 29, 2022 at 08:30:33AM +0000, Sebastian Ene wrote:
->>> This driver creates per-cpu hrtimers which are required to do the
->>> periodic 'pet' operation. On a conventional watchdog-core driver, the
->>> userspace is responsible for delivering the 'pet' events by writing to
->>> the particular /dev/watchdogN node. In this case we require a strong
->>> thread affinity to be able to account for lost time on a per vCPU.
->>>
->>> This part of the driver is the 'frontend' which is reponsible for
->>> delivering the periodic 'pet' events, configuring the virtual peripheral
->>> and listening for cpu hotplug events. The other part of the driver
->>> handles the peripheral emulation and this part accounts for lost time by
->>> looking at the /proc/{}/task/{}/stat entries and is located here:
->>> https://chromium-review.googlesource.com/c/chromiumos/platform/crosvm/+/3548817
->>>
->>> Signed-off-by: Sebastian Ene <sebastianene@google.com>
->>> ---
->>>   drivers/misc/Kconfig       |  12 +++
->>>   drivers/misc/Makefile      |   1 +
->>>   drivers/misc/vm-watchdog.c | 206 +++++++++++++++++++++++++++++++++++++
->>>   3 files changed, 219 insertions(+)
->>>   create mode 100644 drivers/misc/vm-watchdog.c
->>>
->>> diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
->>> index 2b9572a6d114..26c3a99e269c 100644
->>> --- a/drivers/misc/Kconfig
->>> +++ b/drivers/misc/Kconfig
->>> @@ -493,6 +493,18 @@ config OPEN_DICE
->>>   
->>>   	  If unsure, say N.
->>>   
->>> +config VM_WATCHDOG
->>> +	tristate "Virtual Machine Watchdog"
->>> +	select LOCKUP_DETECTOR
->>> +	help
->>> +	  Detect CPU locks on the virtual machine. This driver relies on the
->>> +	  hrtimers which are CPU-binded to do the 'pet' operation. When a vCPU
->>> +	  has to do a 'pet', it exits the guest through MMIO write and the
->>> +	  backend driver takes into account the lost ticks for this particular
->>> +	  CPU.
+On Wed, Apr 27, 2022, Paolo Bonzini wrote:
+> Right now, the VMX preemption timer is special cased via the
+> hv_timer_pending, but the purpose of the callback can be easily
+> extended to observing any event that can occur only in non-root
+> mode.  Interrupts, NMIs etc. are already handled properly by
+> the *_interrupt_allowed callbacks, so what is missing is only
+> MTF.  Check it in the newly-renamed callback, so that
+> kvm_vcpu_running's call to kvm_check_nested_events
+> becomes redundant.
 > 
-> Hi,
+> Cc: stable@vger.kernel.org
+> Reported-by: Maxim Levitsky <mlevitsk@redhat.com>
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> ---
+>  arch/x86/include/asm/kvm_host.h | 2 +-
+>  arch/x86/kvm/vmx/nested.c       | 7 ++++++-
+>  arch/x86/kvm/x86.c              | 8 ++++----
+>  3 files changed, 11 insertions(+), 6 deletions(-)
 > 
->>
->> There's nothing to keep this tied to a virtual machine at all, right?
->> You are just relying on some iomem address to be updated, so it should
->> be a "generic_iomem_watchdog" driver as there's nothing specific to vms
->> at all from what I can tell.
->>
->> thanks,
->>
->> greg k-h
-> 
-> That's right although I might think of using the term "generic lockup detector"
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index 4ff36610af6a..e2e4f60159e9 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -1504,7 +1504,7 @@ struct kvm_x86_ops {
+>  struct kvm_x86_nested_ops {
+>  	void (*leave_nested)(struct kvm_vcpu *vcpu);
+>  	int (*check_events)(struct kvm_vcpu *vcpu);
+> -	bool (*hv_timer_pending)(struct kvm_vcpu *vcpu);
+> +	bool (*has_events)(struct kvm_vcpu *vcpu);
+>  	void (*triple_fault)(struct kvm_vcpu *vcpu);
+>  	int (*get_state)(struct kvm_vcpu *vcpu,
+>  			 struct kvm_nested_state __user *user_kvm_nested_state,
+> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+> index 856c87563883..54672025c3a1 100644
+> --- a/arch/x86/kvm/vmx/nested.c
+> +++ b/arch/x86/kvm/vmx/nested.c
+> @@ -3857,6 +3857,11 @@ static bool nested_vmx_preemption_timer_pending(struct kvm_vcpu *vcpu)
+>  	       to_vmx(vcpu)->nested.preemption_timer_expired;
+>  }
+>  
+> +static bool vmx_has_nested_events(struct kvm_vcpu *vcpu)
+> +{
+> +	return nested_vmx_preemption_timer_pending(vcpu) || vmx->nested.mtf_pending;
 
-Agreed, that would be a much better name.
+This doesn't even compile...
 
-Guenter
-
-
-> instead of watchdog. The only reason why I would keep "virtual machine"
-> word in, is that there is no actual hardware for this.
-> 
-> Thanks,
-> Seb
-
+arch/x86/kvm/vmx/nested.c: In function ‘vmx_has_nested_events’:
+arch/x86/kvm/vmx/nested.c:3862:61: error: ‘vmx’ undeclared (first use in this function)
+ 3862 |         return nested_vmx_preemption_timer_pending(vcpu) || vmx->nested.mtf_pending;
+      |                                                             ^~~
+arch/x86/kvm/vmx/nested.c:3862:61: note: each undeclared identifier is reported only once for each function it appears in
+  CC [M]  arch/x86/kvm/svm/svm_onhyperv.o
+arch/x86/kvm/vmx/nested.c:3863:1: error: control reaches end of non-void function [-Werror=return-type]
+ 3863 | }
+      | ^
+cc1: all warnings being treated as errors
+  LD [M]  arch/x86/kvm/kvm.o
