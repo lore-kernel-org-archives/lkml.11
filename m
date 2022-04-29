@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0372EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:45:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BAC7C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357752AbiD2KsT (ORCPT
+        id S1357756AbiD2KsX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:48:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59528 "EHLO
+        Fri, 29 Apr 2022 06:48:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357932AbiD2Krd (ORCPT
+        with ESMTP id S1357869AbiD2Krn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:47:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B68C9B49;
-        Fri, 29 Apr 2022 03:43:07 -0700 (PDT)
+        Fri, 29 Apr 2022 06:47:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933B1C9B70;
+        Fri, 29 Apr 2022 03:43:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AFB6B8344E;
-        Fri, 29 Apr 2022 10:43:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93397C385A7;
-        Fri, 29 Apr 2022 10:43:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30941B83406;
+        Fri, 29 Apr 2022 10:43:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E615C385A4;
+        Fri, 29 Apr 2022 10:43:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651228985;
-        bh=PH2fEo2gX2WYr22TAaYwcnFxMKwrIJ2TF9uLgs2SCVQ=;
+        s=korg; t=1651228990;
+        bh=5hML3BYk9jAqNKodacb7w/XigQeBkKDM22lvUbUubU4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ElcljPtxIN9sMuK7AOvpVX45MfxTr6/o+Ys2gRF9O+wd7QOVbfBCgr2URI8rzvVQm
-         pNNZEQLvwUBSKd3Fill3Svs+5bSR8a4Udn0/Xl8bHpo5vGl30c8giwobsbNIOpNq9x
-         AlQ67eHigy/UNq0qijR9yx2jfgXJl4Fd4zNslkY0=
+        b=D7u8QCDn9ArjvvMH5iFdvJ98N+nOHTJWcTnCRvnLmOm1esAFxrbjRU/JmAowGFnds
+         QfpG/lsNAqLLMw2RMaU9cbvsblME3j9I2V3GZ/3L70r5vJvD7a8969JJULAEhUN9Ur
+         ulKiNZs2zXH4OYGtCuU8ObIqWQqjKUJtSBnoJl+0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.15 03/33] bpf: Replace ARG_XXX_OR_NULL with ARG_XXX | PTR_MAYBE_NULL
-Date:   Fri, 29 Apr 2022 12:41:50 +0200
-Message-Id: <20220429104052.444732851@linuxfoundation.org>
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Anand Jain <anand.jain@oracle.com>
+Subject: [PATCH 5.15 22/33] gfs2: Eliminate ip->i_gh
+Date:   Fri, 29 Apr 2022 12:42:09 +0200
+Message-Id: <20220429104052.982069766@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220429104052.345760505@linuxfoundation.org>
 References: <20220429104052.345760505@linuxfoundation.org>
@@ -49,198 +49,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Luo <haoluo@google.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-commit 48946bd6a5d695c50b34546864b79c1f910a33c1 upstream.
+commit 1b223f7065bc7d89c4677c27381817cc95b117a8 upstream
 
-We have introduced a new type to make bpf_arg composable, by
-reserving high bits of bpf_arg to represent flags of a type.
+Now that gfs2_file_buffered_write is the only remaining user of
+ip->i_gh, we can move the glock holder to the stack (or rather, use the
+one we already have on the stack); there is no need for keeping the
+holder in the inode anymore.
 
-One of the flags is PTR_MAYBE_NULL which indicates a pointer
-may be NULL. When applying this flag to an arg_type, it means
-the arg can take NULL pointer. This patch switches the
-qualified arg_types to use this flag. The arg_types changed
-in this patch include:
+This is slightly complicated by the fact that we're using ip->i_gh for
+the statfs inode in gfs2_file_buffered_write as well.  Writing to the
+statfs inode isn't very common, so allocate the statfs holder
+dynamically when needed.
 
-1. ARG_PTR_TO_MAP_VALUE_OR_NULL
-2. ARG_PTR_TO_MEM_OR_NULL
-3. ARG_PTR_TO_CTX_OR_NULL
-4. ARG_PTR_TO_SOCKET_OR_NULL
-5. ARG_PTR_TO_ALLOC_MEM_OR_NULL
-6. ARG_PTR_TO_STACK_OR_NULL
-
-This patch does not eliminate the use of these arg_types, instead
-it makes them an alias to the 'ARG_XXX | PTR_MAYBE_NULL'.
-
-Signed-off-by: Hao Luo <haoluo@google.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20211217003152.48334-3-haoluo@google.com
-Cc: stable@vger.kernel.org # 5.15.x
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Anand Jain <anand.jain@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/bpf.h   |   15 +++++++++------
- kernel/bpf/verifier.c |   39 ++++++++++++++-------------------------
- 2 files changed, 23 insertions(+), 31 deletions(-)
+ fs/gfs2/file.c   |   34 +++++++++++++++++++++-------------
+ fs/gfs2/incore.h |    3 +--
+ 2 files changed, 22 insertions(+), 15 deletions(-)
 
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -327,13 +327,11 @@ enum bpf_arg_type {
- 	ARG_PTR_TO_MAP_KEY,	/* pointer to stack used as map key */
- 	ARG_PTR_TO_MAP_VALUE,	/* pointer to stack used as map value */
- 	ARG_PTR_TO_UNINIT_MAP_VALUE,	/* pointer to valid memory used to store a map value */
--	ARG_PTR_TO_MAP_VALUE_OR_NULL,	/* pointer to stack used as map value or NULL */
- 
- 	/* the following constraints used to prototype bpf_memcmp() and other
- 	 * functions that access data on eBPF program stack
- 	 */
- 	ARG_PTR_TO_MEM,		/* pointer to valid memory (stack, packet, map value) */
--	ARG_PTR_TO_MEM_OR_NULL, /* pointer to valid memory or NULL */
- 	ARG_PTR_TO_UNINIT_MEM,	/* pointer to memory does not need to be initialized,
- 				 * helper function must fill all bytes or clear
- 				 * them in error case.
-@@ -343,26 +341,31 @@ enum bpf_arg_type {
- 	ARG_CONST_SIZE_OR_ZERO,	/* number of bytes accessed from memory or 0 */
- 
- 	ARG_PTR_TO_CTX,		/* pointer to context */
--	ARG_PTR_TO_CTX_OR_NULL,	/* pointer to context or NULL */
- 	ARG_ANYTHING,		/* any (initialized) argument is ok */
- 	ARG_PTR_TO_SPIN_LOCK,	/* pointer to bpf_spin_lock */
- 	ARG_PTR_TO_SOCK_COMMON,	/* pointer to sock_common */
- 	ARG_PTR_TO_INT,		/* pointer to int */
- 	ARG_PTR_TO_LONG,	/* pointer to long */
- 	ARG_PTR_TO_SOCKET,	/* pointer to bpf_sock (fullsock) */
--	ARG_PTR_TO_SOCKET_OR_NULL,	/* pointer to bpf_sock (fullsock) or NULL */
- 	ARG_PTR_TO_BTF_ID,	/* pointer to in-kernel struct */
- 	ARG_PTR_TO_ALLOC_MEM,	/* pointer to dynamically allocated memory */
--	ARG_PTR_TO_ALLOC_MEM_OR_NULL,	/* pointer to dynamically allocated memory or NULL */
- 	ARG_CONST_ALLOC_SIZE_OR_ZERO,	/* number of allocated bytes requested */
- 	ARG_PTR_TO_BTF_ID_SOCK_COMMON,	/* pointer to in-kernel sock_common or bpf-mirrored bpf_sock */
- 	ARG_PTR_TO_PERCPU_BTF_ID,	/* pointer to in-kernel percpu type */
- 	ARG_PTR_TO_FUNC,	/* pointer to a bpf program function */
--	ARG_PTR_TO_STACK_OR_NULL,	/* pointer to stack or NULL */
-+	ARG_PTR_TO_STACK,	/* pointer to stack */
- 	ARG_PTR_TO_CONST_STR,	/* pointer to a null terminated read-only string */
- 	ARG_PTR_TO_TIMER,	/* pointer to bpf_timer */
- 	__BPF_ARG_TYPE_MAX,
- 
-+	/* Extended arg_types. */
-+	ARG_PTR_TO_MAP_VALUE_OR_NULL	= PTR_MAYBE_NULL | ARG_PTR_TO_MAP_VALUE,
-+	ARG_PTR_TO_MEM_OR_NULL		= PTR_MAYBE_NULL | ARG_PTR_TO_MEM,
-+	ARG_PTR_TO_CTX_OR_NULL		= PTR_MAYBE_NULL | ARG_PTR_TO_CTX,
-+	ARG_PTR_TO_SOCKET_OR_NULL	= PTR_MAYBE_NULL | ARG_PTR_TO_SOCKET,
-+	ARG_PTR_TO_ALLOC_MEM_OR_NULL	= PTR_MAYBE_NULL | ARG_PTR_TO_ALLOC_MEM,
-+	ARG_PTR_TO_STACK_OR_NULL	= PTR_MAYBE_NULL | ARG_PTR_TO_STACK,
-+
- 	/* This must be the last entry. Its purpose is to ensure the enum is
- 	 * wide enough to hold the higher bits reserved for bpf_type_flag.
- 	 */
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -478,14 +478,9 @@ static bool arg_type_may_be_refcounted(e
- 	return type == ARG_PTR_TO_SOCK_COMMON;
+--- a/fs/gfs2/file.c
++++ b/fs/gfs2/file.c
+@@ -877,16 +877,25 @@ out_uninit:
+ 	return written ? written : ret;
  }
  
--static bool arg_type_may_be_null(enum bpf_arg_type type)
-+static bool type_may_be_null(u32 type)
+-static ssize_t gfs2_file_buffered_write(struct kiocb *iocb, struct iov_iter *from)
++static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
++					struct iov_iter *from,
++					struct gfs2_holder *gh)
  {
--	return type == ARG_PTR_TO_MAP_VALUE_OR_NULL ||
--	       type == ARG_PTR_TO_MEM_OR_NULL ||
--	       type == ARG_PTR_TO_CTX_OR_NULL ||
--	       type == ARG_PTR_TO_SOCKET_OR_NULL ||
--	       type == ARG_PTR_TO_ALLOC_MEM_OR_NULL ||
--	       type == ARG_PTR_TO_STACK_OR_NULL;
-+	return type & PTR_MAYBE_NULL;
- }
+ 	struct file *file = iocb->ki_filp;
+ 	struct inode *inode = file_inode(file);
+ 	struct gfs2_inode *ip = GFS2_I(inode);
+ 	struct gfs2_sbd *sdp = GFS2_SB(inode);
++	struct gfs2_holder *statfs_gh = NULL;
+ 	ssize_t ret;
  
- /* Determine whether the function releases some resources allocated by another
-@@ -4796,9 +4791,8 @@ static int process_timer_func(struct bpf
- 
- static bool arg_type_is_mem_ptr(enum bpf_arg_type type)
- {
--	return type == ARG_PTR_TO_MEM ||
--	       type == ARG_PTR_TO_MEM_OR_NULL ||
--	       type == ARG_PTR_TO_UNINIT_MEM;
-+	return base_type(type) == ARG_PTR_TO_MEM ||
-+	       base_type(type) == ARG_PTR_TO_UNINIT_MEM;
- }
- 
- static bool arg_type_is_mem_size(enum bpf_arg_type type)
-@@ -4932,31 +4926,26 @@ static const struct bpf_reg_types *compa
- 	[ARG_PTR_TO_MAP_KEY]		= &map_key_value_types,
- 	[ARG_PTR_TO_MAP_VALUE]		= &map_key_value_types,
- 	[ARG_PTR_TO_UNINIT_MAP_VALUE]	= &map_key_value_types,
--	[ARG_PTR_TO_MAP_VALUE_OR_NULL]	= &map_key_value_types,
- 	[ARG_CONST_SIZE]		= &scalar_types,
- 	[ARG_CONST_SIZE_OR_ZERO]	= &scalar_types,
- 	[ARG_CONST_ALLOC_SIZE_OR_ZERO]	= &scalar_types,
- 	[ARG_CONST_MAP_PTR]		= &const_map_ptr_types,
- 	[ARG_PTR_TO_CTX]		= &context_types,
--	[ARG_PTR_TO_CTX_OR_NULL]	= &context_types,
- 	[ARG_PTR_TO_SOCK_COMMON]	= &sock_types,
- #ifdef CONFIG_NET
- 	[ARG_PTR_TO_BTF_ID_SOCK_COMMON]	= &btf_id_sock_common_types,
- #endif
- 	[ARG_PTR_TO_SOCKET]		= &fullsock_types,
--	[ARG_PTR_TO_SOCKET_OR_NULL]	= &fullsock_types,
- 	[ARG_PTR_TO_BTF_ID]		= &btf_ptr_types,
- 	[ARG_PTR_TO_SPIN_LOCK]		= &spin_lock_types,
- 	[ARG_PTR_TO_MEM]		= &mem_types,
--	[ARG_PTR_TO_MEM_OR_NULL]	= &mem_types,
- 	[ARG_PTR_TO_UNINIT_MEM]		= &mem_types,
- 	[ARG_PTR_TO_ALLOC_MEM]		= &alloc_mem_types,
--	[ARG_PTR_TO_ALLOC_MEM_OR_NULL]	= &alloc_mem_types,
- 	[ARG_PTR_TO_INT]		= &int_ptr_types,
- 	[ARG_PTR_TO_LONG]		= &int_ptr_types,
- 	[ARG_PTR_TO_PERCPU_BTF_ID]	= &percpu_btf_ptr_types,
- 	[ARG_PTR_TO_FUNC]		= &func_ptr_types,
--	[ARG_PTR_TO_STACK_OR_NULL]	= &stack_ptr_types,
-+	[ARG_PTR_TO_STACK]		= &stack_ptr_types,
- 	[ARG_PTR_TO_CONST_STR]		= &const_str_ptr_types,
- 	[ARG_PTR_TO_TIMER]		= &timer_types,
- };
-@@ -4970,7 +4959,7 @@ static int check_reg_type(struct bpf_ver
- 	const struct bpf_reg_types *compatible;
- 	int i, j;
- 
--	compatible = compatible_reg_types[arg_type];
-+	compatible = compatible_reg_types[base_type(arg_type)];
- 	if (!compatible) {
- 		verbose(env, "verifier internal error: unsupported arg type %d\n", arg_type);
- 		return -EFAULT;
-@@ -5051,15 +5040,14 @@ static int check_func_arg(struct bpf_ver
- 		return -EACCES;
- 	}
- 
--	if (arg_type == ARG_PTR_TO_MAP_VALUE ||
--	    arg_type == ARG_PTR_TO_UNINIT_MAP_VALUE ||
--	    arg_type == ARG_PTR_TO_MAP_VALUE_OR_NULL) {
-+	if (base_type(arg_type) == ARG_PTR_TO_MAP_VALUE ||
-+	    base_type(arg_type) == ARG_PTR_TO_UNINIT_MAP_VALUE) {
- 		err = resolve_map_arg_type(env, meta, &arg_type);
- 		if (err)
- 			return err;
- 	}
- 
--	if (register_is_null(reg) && arg_type_may_be_null(arg_type))
-+	if (register_is_null(reg) && type_may_be_null(arg_type))
- 		/* A NULL register has a SCALAR_VALUE type, so skip
- 		 * type checking.
- 		 */
-@@ -5128,10 +5116,11 @@ skip_type_check:
- 		err = check_helper_mem_access(env, regno,
- 					      meta->map_ptr->key_size, false,
- 					      NULL);
--	} else if (arg_type == ARG_PTR_TO_MAP_VALUE ||
--		   (arg_type == ARG_PTR_TO_MAP_VALUE_OR_NULL &&
--		    !register_is_null(reg)) ||
--		   arg_type == ARG_PTR_TO_UNINIT_MAP_VALUE) {
-+	} else if (base_type(arg_type) == ARG_PTR_TO_MAP_VALUE ||
-+		   base_type(arg_type) == ARG_PTR_TO_UNINIT_MAP_VALUE) {
-+		if (type_may_be_null(arg_type) && register_is_null(reg))
-+			return 0;
+-	gfs2_holder_init(ip->i_gl, LM_ST_EXCLUSIVE, 0, &ip->i_gh);
+-	ret = gfs2_glock_nq(&ip->i_gh);
++	if (inode == sdp->sd_rindex) {
++		statfs_gh = kmalloc(sizeof(*statfs_gh), GFP_NOFS);
++		if (!statfs_gh)
++			return -ENOMEM;
++	}
 +
- 		/* bpf_map_xxx(..., map_ptr, ..., value) call:
- 		 * check [value, value + map->value_size) validity
- 		 */
++	gfs2_holder_init(ip->i_gl, LM_ST_EXCLUSIVE, 0, gh);
++	ret = gfs2_glock_nq(gh);
+ 	if (ret)
+ 		goto out_uninit;
+ 
+@@ -894,7 +903,7 @@ static ssize_t gfs2_file_buffered_write(
+ 		struct gfs2_inode *m_ip = GFS2_I(sdp->sd_statfs_inode);
+ 
+ 		ret = gfs2_glock_nq_init(m_ip->i_gl, LM_ST_EXCLUSIVE,
+-					 GL_NOCACHE, &m_ip->i_gh);
++					 GL_NOCACHE, statfs_gh);
+ 		if (ret)
+ 			goto out_unlock;
+ 	}
+@@ -905,16 +914,15 @@ static ssize_t gfs2_file_buffered_write(
+ 	if (ret > 0)
+ 		iocb->ki_pos += ret;
+ 
+-	if (inode == sdp->sd_rindex) {
+-		struct gfs2_inode *m_ip = GFS2_I(sdp->sd_statfs_inode);
+-
+-		gfs2_glock_dq_uninit(&m_ip->i_gh);
+-	}
++	if (inode == sdp->sd_rindex)
++		gfs2_glock_dq_uninit(statfs_gh);
+ 
+ out_unlock:
+-	gfs2_glock_dq(&ip->i_gh);
++	gfs2_glock_dq(gh);
+ out_uninit:
+-	gfs2_holder_uninit(&ip->i_gh);
++	gfs2_holder_uninit(gh);
++	if (statfs_gh)
++		kfree(statfs_gh);
+ 	return ret;
+ }
+ 
+@@ -969,7 +977,7 @@ static ssize_t gfs2_file_write_iter(stru
+ 			goto out_unlock;
+ 
+ 		iocb->ki_flags |= IOCB_DSYNC;
+-		buffered = gfs2_file_buffered_write(iocb, from);
++		buffered = gfs2_file_buffered_write(iocb, from, &gh);
+ 		if (unlikely(buffered <= 0)) {
+ 			if (!ret)
+ 				ret = buffered;
+@@ -990,7 +998,7 @@ static ssize_t gfs2_file_write_iter(stru
+ 		if (!ret || ret2 > 0)
+ 			ret += ret2;
+ 	} else {
+-		ret = gfs2_file_buffered_write(iocb, from);
++		ret = gfs2_file_buffered_write(iocb, from, &gh);
+ 		if (likely(ret > 0))
+ 			ret = generic_write_sync(iocb, ret);
+ 	}
+--- a/fs/gfs2/incore.h
++++ b/fs/gfs2/incore.h
+@@ -387,9 +387,8 @@ struct gfs2_inode {
+ 	u64 i_generation;
+ 	u64 i_eattr;
+ 	unsigned long i_flags;		/* GIF_... */
+-	struct gfs2_glock *i_gl; /* Move into i_gh? */
++	struct gfs2_glock *i_gl;
+ 	struct gfs2_holder i_iopen_gh;
+-	struct gfs2_holder i_gh; /* for prepare/commit_write only */
+ 	struct gfs2_qadata *i_qadata; /* quota allocation data */
+ 	struct gfs2_holder i_rgd_gh;
+ 	struct gfs2_blkreserv i_res; /* rgrp multi-block reservation */
 
 
