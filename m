@@ -2,89 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 03:33:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A4B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 03:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382104AbiD3DhN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 23:37:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59130 "EHLO
+        id S240637AbiD3DkD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 23:40:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232757AbiD3DhL (ORCPT
+        with ESMTP id S232757AbiD3DkB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 23:37:11 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CB7A76D4;
-        Fri, 29 Apr 2022 20:33:51 -0700 (PDT)
-Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 23U3XaJ2029668;
-        Sat, 30 Apr 2022 12:33:37 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 23U3XaJ2029668
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1651289617;
-        bh=TIGdeb7xdEs/9JV0A7VVLKMrZAPeq/6T37UNVZaHg3A=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=lhUWW5QN/Ne1yWqXx1I52pvBhj3CHTCAlLDnmKDwUo+cSdC4LMDZSpByuTqtoa5zE
-         uPZE79G5UvSYRfhV+x3EdslLYWr3kTWMPAfqCjxhTMtG3wZ/crFVfSwMdM3JFzllr5
-         XDXrpbjQUNAuVCDpfUqmV16CG80fXjhcH/9U2eRM+SzSKNQZz0PW4I6pbGPH/UNT9p
-         P8F3k+c9mkITW9PqFx/duH+MN9UYVo0B8r3lZzb8PMVWMMnhLQrIqyjGw4QxWqV/IJ
-         8aRaZRyuHyqffnrBYUAEiYosrczmEMt6z960wi5hbO9YkSeXYtVBiT2GBOdezyNSo0
-         /3XV6rPebGmrg==
-X-Nifty-SrcIP: [209.85.216.47]
-Received: by mail-pj1-f47.google.com with SMTP id p6so8601359pjm.1;
-        Fri, 29 Apr 2022 20:33:37 -0700 (PDT)
-X-Gm-Message-State: AOAM530VAjprWwTSyaY5dw72Pho6bGH881O/5m2EC0+w7CGGhjGMLGq4
-        NT5vzBpVgb1C+gJjZjmSu14mzHAZCJt2Di27Dys=
-X-Google-Smtp-Source: ABdhPJyA7Kh8t38Tgnc7vWeywS0wR/hs6+Uy9mFeW8PUhdl6yVt/CqvOS2lmy8s86o/fRQJQo7INLG5ZVa4ItHZCUPw=
-X-Received: by 2002:a17:90a:e517:b0:1d7:5bbd:f9f0 with SMTP id
- t23-20020a17090ae51700b001d75bbdf9f0mr2302881pjy.77.1651289616490; Fri, 29
- Apr 2022 20:33:36 -0700 (PDT)
+        Fri, 29 Apr 2022 23:40:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1F58165B;
+        Fri, 29 Apr 2022 20:36:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31FA8B838BF;
+        Sat, 30 Apr 2022 03:36:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58302C385A7;
+        Sat, 30 Apr 2022 03:36:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651289795;
+        bh=/wxIu6sulo5yHNBHDR4kSxJL1m5XWpAKeneenD0KkMc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=n3vErz3f7a2glcLdJ3Psi2sZ9Zi9+BWPoAyM/Kql35yPY9CcHBEiyF3NKiccIkkrD
+         khXF+teJTcv8lgCgdrgAOi4Vj+3Azc2hsiUz5PlidjCauBCrSC62qL2jITG35JuCTm
+         Oprz5PMBy08+ah4wN6kD7ToJoxfLm/8VzxSe2eA4IJvkGWCIH+Ekvs3X6QZPXo5qVO
+         XQuXozQeq9Q7ZOHg8LzxWeo3RYChK9WSGvoMzTI1FysMrYN3U7XbO+grU5C8Oj8eb2
+         bHn+vKtYLVJz3z+ZEW87oU2uL9gyDAsVd4BvZxae9xy26S1qbX1Mf3fb7fItOdpOM8
+         wX/xTNhBabYew==
+From:   Chao Yu <chao@kernel.org>
+To:     jaegeuk@kernel.org
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>
+Subject: [PATCH] f2fs: fix deadloop in foreground GC
+Date:   Sat, 30 Apr 2022 04:46:31 +0800
+Message-Id: <20220429204631.7241-1-chao@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220426035318.3932-1-rdunlap@infradead.org>
-In-Reply-To: <20220426035318.3932-1-rdunlap@infradead.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Sat, 30 Apr 2022 12:32:33 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAR86Z2R+CsPZSk-cwi950HGMDptEkdXUD1ZmDz9byfwgg@mail.gmail.com>
-Message-ID: <CAK7LNAR86Z2R+CsPZSk-cwi950HGMDptEkdXUD1ZmDz9byfwgg@mail.gmail.com>
-Subject: Re: [PATCH v2] Makefile: fix 2 typos
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 12:53 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> Fix typos in comments so that they make sense.
->
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Masahiro Yamada <masahiroy@kernel.org>
-> Cc: linux-kbuild@vger.kernel.org
-> ---
-> v2: drop an extra adjective (Masahiro)
->
->  Makefile |    4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -1386,8 +1386,8 @@ scripts_unifdef: scripts_basic
->  # Install
->
->  # Many distributions have the custom install script, /sbin/installkernel.
-> -# If DKMS is installed, 'make install' will eventually recuses back
-> -# to the this Makefile to build and install external modules.
-> +# If DKMS is installed, 'make install' will eventually recurse back
-> +# to this Makefile to build and install external modules.
->  # Cancel sub_make_done so that options such as M=, V=, etc. are parsed.
->
->  install: sub_make_done :=
+As Yanming reported in bugzilla:
 
-Applied to linux-kbuild. Thanks.
+https://bugzilla.kernel.org/show_bug.cgi?id=215914
 
+The root cause is: in a very small sized image, it's very easy to
+exceed threshold of foreground GC, if we calculate free space and
+dirty data based on section granularity, in corner case,
+has_not_enough_free_secs() will always return true, result in
+deadloop in f2fs_gc().
 
+So this patch refactors has_not_enough_free_secs() as below to fix
+this issue:
+1. calculate needed space based on block granularity, and separate
+all blocks to two parts, section part, and block part, comparing
+section part to free section, and comparing block part to free space
+in openned log.
+2. account F2FS_DIRTY_NODES, F2FS_DIRTY_IMETA and F2FS_DIRTY_DENTS
+as node block consumer;
+3. account F2FS_DIRTY_DENTS as data block consumer;
+
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+---
+ fs/f2fs/segment.h | 30 +++++++++++++++++-------------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
+
+diff --git a/fs/f2fs/segment.h b/fs/f2fs/segment.h
+index 8a591455d796..28f7aa9b40bf 100644
+--- a/fs/f2fs/segment.h
++++ b/fs/f2fs/segment.h
+@@ -575,11 +575,10 @@ static inline int reserved_sections(struct f2fs_sb_info *sbi)
+ 	return GET_SEC_FROM_SEG(sbi, reserved_segments(sbi));
+ }
+ 
+-static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi)
++static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi,
++			unsigned int node_blocks, unsigned int dent_blocks)
+ {
+-	unsigned int node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
+-					get_pages(sbi, F2FS_DIRTY_DENTS);
+-	unsigned int dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
++
+ 	unsigned int segno, left_blocks;
+ 	int i;
+ 
+@@ -605,19 +604,24 @@ static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi)
+ static inline bool has_not_enough_free_secs(struct f2fs_sb_info *sbi,
+ 					int freed, int needed)
+ {
+-	int node_secs = get_blocktype_secs(sbi, F2FS_DIRTY_NODES);
+-	int dent_secs = get_blocktype_secs(sbi, F2FS_DIRTY_DENTS);
+-	int imeta_secs = get_blocktype_secs(sbi, F2FS_DIRTY_IMETA);
++	unsigned int total_node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
++					get_pages(sbi, F2FS_DIRTY_DENTS) +
++					get_pages(sbi, F2FS_DIRTY_IMETA);
++	unsigned int total_dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
++	unsigned int node_secs = total_node_blocks / BLKS_PER_SEC(sbi);
++	unsigned int dent_secs = total_dent_blocks / BLKS_PER_SEC(sbi);
++	unsigned int node_blocks = total_node_blocks % BLKS_PER_SEC(sbi);
++	unsigned int dent_blocks = total_dent_blocks % BLKS_PER_SEC(sbi);
+ 
+ 	if (unlikely(is_sbi_flag_set(sbi, SBI_POR_DOING)))
+ 		return false;
+ 
+-	if (free_sections(sbi) + freed == reserved_sections(sbi) + needed &&
+-			has_curseg_enough_space(sbi))
+-		return false;
+-	return (free_sections(sbi) + freed) <=
+-		(node_secs + 2 * dent_secs + imeta_secs +
+-		reserved_sections(sbi) + needed);
++	if (free_sections(sbi) + freed <=
++			node_secs + dent_secs + reserved_sections(sbi) + needed)
++		return true;
++	if (!has_curseg_enough_space(sbi, node_blocks, dent_blocks))
++		return true;
++	return false;
+ }
+ 
+ static inline bool f2fs_is_checkpoint_ready(struct f2fs_sb_info *sbi)
 -- 
-Best Regards
-Masahiro Yamada
+2.32.0
+
