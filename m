@@ -2,80 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:05:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 855C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:05:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244390AbiD2JIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 05:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37462 "EHLO
+        id S1356250AbiD2JJJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 05:09:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238640AbiD2JIj (ORCPT
+        with ESMTP id S1349144AbiD2JJG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 05:08:39 -0400
-Received: from outbound-smtp20.blacknight.com (outbound-smtp20.blacknight.com [46.22.139.247])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF6E137BDC
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 02:05:19 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail05.blacknight.ie [81.17.254.26])
-        by outbound-smtp20.blacknight.com (Postfix) with ESMTPS id 734271C4674
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:05:16 +0100 (IST)
-Received: (qmail 24973 invoked from network); 29 Apr 2022 09:05:16 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 29 Apr 2022 09:05:16 -0000
-Date:   Fri, 29 Apr 2022 10:05:11 +0100
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Minchan Kim <minchan@kernel.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-Subject: Re: [PATCH 5/6] mm/page_alloc: Protect PCP lists with a spinlock
-Message-ID: <20220429090511.GA3441@techsingularity.net>
-References: <20220420095906.27349-1-mgorman@techsingularity.net>
- <20220420095906.27349-6-mgorman@techsingularity.net>
- <YmhHCHaUy+zARWxi@google.com>
+        Fri, 29 Apr 2022 05:09:06 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519D04DF79
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 02:05:48 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KqRQR6mG0zhYtW;
+        Fri, 29 Apr 2022 17:05:03 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 29 Apr
+ 2022 17:05:24 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <cl@linux.com>, <penberg@kernel.org>, <rientjes@google.com>,
+        <iamjoonsoo.kim@lge.com>, <akpm@linux-foundation.org>,
+        <vbabka@suse.cz>
+CC:     <roman.gushchin@linux.dev>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
+Subject: [PATCH] mm/slub: remove unused kmem_cache_order_objects max
+Date:   Fri, 29 Apr 2022 17:05:45 +0800
+Message-ID: <20220429090545.33413-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <YmhHCHaUy+zARWxi@google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 12:24:56PM -0700, Minchan Kim wrote:
-> > @@ -3450,10 +3496,19 @@ void free_unref_page(struct page *page, unsigned int order)
-> >  void free_unref_page_list(struct list_head *list)
-> >  {
-> >  	struct page *page, *next;
-> > +	struct per_cpu_pages *pcp;
-> > +	struct zone *locked_zone;
-> >  	unsigned long flags;
-> >  	int batch_count = 0;
-> >  	int migratetype;
-> >  
-> > +	/*
-> > +	 * An empty list is possible. Check early so that the later
-> > +	 * lru_to_page() does not potentially read garbage.
-> > +	 */
-> > +	if (list_empty(list))
-> > +		return;
-> > +
-> >  	/* Prepare pages for freeing */
-> >  	list_for_each_entry_safe(page, next, list, lru) {
-> >  		unsigned long pfn = page_to_pfn(page);
-> > @@ -3474,8 +3529,26 @@ void free_unref_page_list(struct list_head *list)
-> >  		}
-> >  	}
-> >  
-> > +	VM_BUG_ON(in_hardirq());
-> 
-> You need to check the list_empty here again and bail out if it is.
-> 
+max field holds the largest slab order that was ever used for a slab cache.
+But it's unused now. Remove it.
 
-You're right, every page could have failed to prepare or was isolated.
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ include/linux/slub_def.h | 1 -
+ mm/slub.c                | 2 --
+ 2 files changed, 3 deletions(-)
 
+diff --git a/include/linux/slub_def.h b/include/linux/slub_def.h
+index 33c5c0e3bd8d..f9c68a9dac04 100644
+--- a/include/linux/slub_def.h
++++ b/include/linux/slub_def.h
+@@ -105,7 +105,6 @@ struct kmem_cache {
+ 	struct kmem_cache_order_objects oo;
+ 
+ 	/* Allocation and freeing of slabs */
+-	struct kmem_cache_order_objects max;
+ 	struct kmem_cache_order_objects min;
+ 	gfp_t allocflags;	/* gfp flags to use on each alloc */
+ 	int refcount;		/* Refcount for slab cache destroy */
+diff --git a/mm/slub.c b/mm/slub.c
+index 1f699ddfff7f..e5535020e0fd 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -4162,8 +4162,6 @@ static int calculate_sizes(struct kmem_cache *s)
+ 	 */
+ 	s->oo = oo_make(order, size);
+ 	s->min = oo_make(get_order(size), size);
+-	if (oo_objects(s->oo) > oo_objects(s->max))
+-		s->max = s->oo;
+ 
+ 	return !!oo_objects(s->oo);
+ }
 -- 
-Mel Gorman
-SUSE Labs
+2.23.0
+
