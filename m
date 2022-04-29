@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5B17C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75393C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:04:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353807AbiD2BID (ORCPT
+        id S1353847AbiD2BIG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 21:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34592 "EHLO
+        Thu, 28 Apr 2022 21:08:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353757AbiD2BHr (ORCPT
+        with ESMTP id S1353763AbiD2BHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 21:07:47 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07C4BC865
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:04:30 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id o7-20020a17090a0a0700b001d93c491131so6052126pjo.6
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:04:30 -0700 (PDT)
+        Thu, 28 Apr 2022 21:07:51 -0400
+Received: from mail-oa1-x4a.google.com (mail-oa1-x4a.google.com [IPv6:2001:4860:4864:20::4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1C1BCB40
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:04:34 -0700 (PDT)
+Received: by mail-oa1-x4a.google.com with SMTP id 586e51a60fabf-e981f65611so2817573fac.16
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:04:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=jRYQ+NLKeR4ZgpGCTvtPE0cYfeNV63Iwo0ARpwv/qPY=;
-        b=JhGpL8syvU+MGBw8KnylH1ePm331NSeic9lS7Z5ZF5e7M+15hOH6EFGvCEgcioZEMz
-         jeWl8tHkY81V2r9sZsrDcraO0AXwwpmpLDxEYf1zTpi6juZuuj829DVfOOYFQHVz4L78
-         C5V2bnBrlGidvmXfsklJlULpLwYuTQCC/ytMTJmV8/HPrkzCywCqhpXBsIUAvyNCqS35
-         vOzZySnkbujZuFi1YkM+eoQgFp8VEfEdDERdfzR5uVl2a78uZxK2RT0Don7aQA7l2lQy
-         quMSePLzEiNwz7p80QqEvxyLpYH6TjUy0BPS5zExsOSBQ0WElKokq4f+b7roou2nyDfe
-         68Sw==
+        bh=NHfyCHEJZYENeoLwqQFAfCF8L8X/o5WJjfhCbB2cHt4=;
+        b=EfExUhXUiLrwyV7994PFB6YkzupgYDTk1fOzzD43sqWEIhnqz4VxlMsUs6rJYkL2c2
+         UHkj4j+jJP1M82ORtLm3BFtNlJ+D5dTmiAvtsB2GhRYxsuuKq893xPiGwZ0ei23FWBQC
+         ZjEt9zcYLlb7NuG2lE4aWW7MOU+hMnf2O0Jzjfx+IO9aT39X6aFXV4s9TaayfaIepy32
+         p319sAP05bz7FbG9qej14u1NCj1cauMo/32ziEfPT2Tge0fn9wlyN8e85GdmJ2qI65TJ
+         LWoGLOBjJe4LRnmIuXwxmbrw1JZOh6dG7deOIVf8eG7QSk7wiZq2R1iQbm9wgMDbuNzs
+         SpQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=jRYQ+NLKeR4ZgpGCTvtPE0cYfeNV63Iwo0ARpwv/qPY=;
-        b=yRLDHDi8gs2ecuoTRZlFwj2fi1RiHC4JmPIo51UDIzNkwYsqHaMoZPUu0bu8Kj0Llx
-         aAMgCwMMdb4H0KquK3Y6nmFTSw5DQfoS1NMaIbL3FEkaZVZYKPJRDUbXqYl1oU/C2rdN
-         xzvjp66w6AlWN3SlJHfjVT/Id4tOKLHSSVRMJrgZMQXdadYlMT7nG4ssPdxDHnvAMHBJ
-         L/TpZPKhDwMhu81dSAjLl3hjIElyxegeEYk0APEN4gORn0QlUrpkSJLT7ZhcFCkbY+U6
-         jsh5Bjogtx9PMHs9sLSnCdeP4P6T/7tCf3gP2X5+0q38g4yyv1wN46XVD+yecUQyXGq+
-         fxeA==
-X-Gm-Message-State: AOAM5307A1nO9BIwABKGbLGsiCw99711BqF2UyAj6Rp7mDwWDveQE/8J
-        HTbWSFl2XLPAgVDEK2KqY+/+yWu8tRM=
-X-Google-Smtp-Source: ABdhPJzrPQf/+XtQJlw+fhpbt6qxsFNut9jsl6arSE5+6bvYrQrbs0GqX9KGmNI0vl2lemqfU/3OXErlNpw=
+        bh=NHfyCHEJZYENeoLwqQFAfCF8L8X/o5WJjfhCbB2cHt4=;
+        b=K+GpamidIY+arzesydPElaOXqtxkB0VzN0Gup2j2PxuoPf7HVa8HfRybx7GCZRizHF
+         483IWYIYwTZIOwafyqVIXlhRpoK/ZZzN3IajysSNdTXTjW5b+lNe8c1YiIlM5Z5JQyi0
+         ITOqssoVX67nIOYRx2rPNlRJ1xNeW3GMmuBQUxWzw3NZ+2YE8PADg/etT0YNJv3OBOSA
+         1uTGNg8ouuXVOU9tTGCyx1VYAhUVQq3Ge1Mq1xMIliLweiYqt+0jlN7bepgSczzCTpQO
+         K9H6mrNY0jZGVcdX4EidG7EM2oA/aWpUJYUL+5qSjs6mEgk1lJDFw2usUafv+9Ywi6Re
+         lpeg==
+X-Gm-Message-State: AOAM532sQDKAdCD4afqljY7rsQVv4O6FtKolnB4a2K/JCSNMHnXxKpCj
+        qsnMtm0r5+OH/b+ODR7k+hy/T8YMdEw=
+X-Google-Smtp-Source: ABdhPJy9ZN6claN5bUS4Gx7s4Oh/ztbqa0ljq+2apJ+cSltsX6m1OwIlCwyVg4+xVNlXleEnqdXkgU/VZ1M=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:ad2:b0:4f1:2734:a3d9 with SMTP id
- c18-20020a056a000ad200b004f12734a3d9mr37921713pfl.61.1651194270433; Thu, 28
- Apr 2022 18:04:30 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6808:e8c:b0:322:4b82:d33d with SMTP id
+ k12-20020a0568080e8c00b003224b82d33dmr426226oil.21.1651194273924; Thu, 28 Apr
+ 2022 18:04:33 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 29 Apr 2022 01:04:13 +0000
+Date:   Fri, 29 Apr 2022 01:04:15 +0000
 In-Reply-To: <20220429010416.2788472-1-seanjc@google.com>
-Message-Id: <20220429010416.2788472-8-seanjc@google.com>
+Message-Id: <20220429010416.2788472-10-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220429010416.2788472-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 07/10] KVM: Remove kvm_vcpu_gfn_to_page() and kvm_vcpu_gpa_to_page()
+Subject: [PATCH 09/10] KVM: Rename/refactor kvm_is_reserved_pfn() to kvm_pfn_to_refcounted_page()
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -68,103 +68,225 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop helpers to convert a gfn/gpa to a 'struct page' in the context of a
-vCPU.  KVM doesn't require that guests be backed by 'struct page' memory,
-thus any use of helpers that assume 'struct page' is bound to be flawed,
-as was the case for the recently removed last user in x86's nested VMX.
+Rename and refactor kvm_is_reserved_pfn() to kvm_pfn_to_refcounted_page()
+to better reflect what KVM is actually checking, and to eliminate extra
+pfn_to_page() lookups.  The kvm_release_pfn_*() an kvm_try_get_pfn()
+helpers in particular benefit from "refouncted" nomenclature, as it's not
+all that obvious why KVM needs to get/put refcounts for some PG_reserved
+pages (ZERO_PAGE and ZONE_DEVICE).
+
+Add a comment to call out that the list of exceptions to PG_reserved is
+all but guaranteed to be incomplete.  The list has mostly been compiled
+by people throwing noodles at KVM and finding out they stick a little too
+well, e.g. the ZERO_PAGE's refcount overflowed and ZONE_DEVICE pages
+didn't get freed.
 
 No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- include/linux/kvm_host.h |  7 -------
- virt/kvm/kvm_main.c      | 35 +++++++++++++----------------------
- 2 files changed, 13 insertions(+), 29 deletions(-)
+ arch/x86/kvm/mmu/mmu.c     | 15 +++++----
+ arch/x86/kvm/mmu/tdp_mmu.c |  2 +-
+ include/linux/kvm_host.h   |  2 +-
+ virt/kvm/kvm_main.c        | 66 ++++++++++++++++++++++++++++++--------
+ 4 files changed, 63 insertions(+), 22 deletions(-)
 
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 5cf1436adecd..7da6741d6ea7 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -587,6 +587,7 @@ static int mmu_spte_clear_track_bits(struct kvm *kvm, u64 *sptep)
+ 	kvm_pfn_t pfn;
+ 	u64 old_spte = *sptep;
+ 	int level = sptep_to_sp(sptep)->role.level;
++	struct page *page;
+ 
+ 	if (!spte_has_volatile_bits(old_spte))
+ 		__update_clear_spte_fast(sptep, 0ull);
+@@ -601,11 +602,13 @@ static int mmu_spte_clear_track_bits(struct kvm *kvm, u64 *sptep)
+ 	pfn = spte_to_pfn(old_spte);
+ 
+ 	/*
+-	 * KVM does not hold the refcount of the page used by
+-	 * kvm mmu, before reclaiming the page, we should
+-	 * unmap it from mmu first.
++	 * KVM doesn't hold a reference to any pages mapped into the guest, and
++	 * instead uses the mmu_notifier to ensure that KVM unmaps any pages
++	 * before they are reclaimed.  Sanity check that, if the pfn is backed
++	 * by a refcounted page, the refcount is elevated.
+ 	 */
+-	WARN_ON(!kvm_is_reserved_pfn(pfn) && !page_count(pfn_to_page(pfn)));
++	page = kvm_pfn_to_refcounted_page(pfn);
++	WARN_ON(page && !page_count(page));
+ 
+ 	if (is_accessed_spte(old_spte))
+ 		kvm_set_pfn_accessed(pfn);
+@@ -2877,7 +2880,7 @@ void kvm_mmu_hugepage_adjust(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
+ 	if (unlikely(fault->max_level == PG_LEVEL_4K))
+ 		return;
+ 
+-	if (is_error_noslot_pfn(fault->pfn) || kvm_is_reserved_pfn(fault->pfn))
++	if (is_error_noslot_pfn(fault->pfn) || !kvm_pfn_to_refcounted_page(fault->pfn))
+ 		return;
+ 
+ 	if (kvm_slot_dirty_track_enabled(slot))
+@@ -5947,7 +5950,7 @@ static bool kvm_mmu_zap_collapsible_spte(struct kvm *kvm,
+ 		 * the guest, and the guest page table is using 4K page size
+ 		 * mapping if the indirect sp has level = 1.
+ 		 */
+-		if (sp->role.direct && !kvm_is_reserved_pfn(pfn) &&
++		if (sp->role.direct && kvm_pfn_to_refcounted_page(pfn) &&
+ 		    sp->role.level < kvm_mmu_max_mapping_level(kvm, slot, sp->gfn,
+ 							       pfn, PG_LEVEL_NUM)) {
+ 			pte_list_remove(kvm, rmap_head, sptep);
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index 566548a3efa7..de2cc963dbec 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -1737,7 +1737,7 @@ static void zap_collapsible_spte_range(struct kvm *kvm,
+ 			continue;
+ 
+ 		pfn = spte_to_pfn(iter.old_spte);
+-		if (kvm_is_reserved_pfn(pfn) ||
++		if (!kvm_pfn_to_refcounted_page(pfn) ||
+ 		    iter.level >= kvm_mmu_max_mapping_level(kvm, slot, iter.gfn,
+ 							    pfn, PG_LEVEL_NUM))
+ 			continue;
 diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index e32fbde79298..7e59bc5ec8c7 100644
+index 4ccc309a43f2..9d5818b782f9 100644
 --- a/include/linux/kvm_host.h
 +++ b/include/linux/kvm_host.h
-@@ -1207,7 +1207,6 @@ struct kvm_memory_slot *kvm_vcpu_gfn_to_memslot(struct kvm_vcpu *vcpu, gfn_t gfn
- kvm_pfn_t kvm_vcpu_gfn_to_pfn_atomic(struct kvm_vcpu *vcpu, gfn_t gfn);
- kvm_pfn_t kvm_vcpu_gfn_to_pfn(struct kvm_vcpu *vcpu, gfn_t gfn);
- int kvm_vcpu_map(struct kvm_vcpu *vcpu, gpa_t gpa, struct kvm_host_map *map);
--struct page *kvm_vcpu_gfn_to_page(struct kvm_vcpu *vcpu, gfn_t gfn);
- void kvm_vcpu_unmap(struct kvm_vcpu *vcpu, struct kvm_host_map *map, bool dirty);
- unsigned long kvm_vcpu_gfn_to_hva(struct kvm_vcpu *vcpu, gfn_t gfn);
- unsigned long kvm_vcpu_gfn_to_hva_prot(struct kvm_vcpu *vcpu, gfn_t gfn, bool *writable);
-@@ -1695,12 +1694,6 @@ static inline hpa_t pfn_to_hpa(kvm_pfn_t pfn)
- 	return (hpa_t)pfn << PAGE_SHIFT;
- }
+@@ -1547,7 +1547,7 @@ void kvm_arch_sync_events(struct kvm *kvm);
  
--static inline struct page *kvm_vcpu_gpa_to_page(struct kvm_vcpu *vcpu,
--						gpa_t gpa)
--{
--	return kvm_vcpu_gfn_to_page(vcpu, gpa_to_gfn(gpa));
--}
--
- static inline bool kvm_is_error_gpa(struct kvm *kvm, gpa_t gpa)
- {
- 	unsigned long hva = gfn_to_hva(kvm, gpa_to_gfn(gpa));
+ int kvm_cpu_has_pending_timer(struct kvm_vcpu *vcpu);
+ 
+-bool kvm_is_reserved_pfn(kvm_pfn_t pfn);
++struct page *kvm_pfn_to_refcounted_page(kvm_pfn_t pfn);
+ bool kvm_is_zone_device_page(struct page *page);
+ 
+ struct kvm_irq_ack_notifier {
 diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index a987188a426f..661390243b9e 100644
+index cbc6d58081d4..656c47037eea 100644
 --- a/virt/kvm/kvm_main.c
 +++ b/virt/kvm/kvm_main.c
-@@ -2698,24 +2698,25 @@ int gfn_to_page_many_atomic(struct kvm_memory_slot *slot, gfn_t gfn,
+@@ -178,19 +178,36 @@ bool kvm_is_zone_device_page(struct page *page)
+ 	return is_zone_device_page(page);
  }
- EXPORT_SYMBOL_GPL(gfn_to_page_many_atomic);
  
--static struct page *kvm_pfn_to_page(kvm_pfn_t pfn)
--{
--	if (is_error_noslot_pfn(pfn))
--		return KVM_ERR_PTR_BAD_PAGE;
--
--	if (kvm_is_reserved_pfn(pfn))
--		return KVM_ERR_PTR_BAD_PAGE;
--
--	return pfn_to_page(pfn);
--}
--
+-bool kvm_is_reserved_pfn(kvm_pfn_t pfn)
 +/*
-+ * Do not use this helper unless you are absolutely certain the gfn _must_ be
-+ * backed by 'struct page'.  A valid example is if the backing memslot is
-+ * controlled by KVM.  Note, if the returned page is valid, it's refcount has
-+ * been elevated by gfn_to_pfn().
++ * Returns a 'struct page' if the pfn is "valid" and backed by a refcounted
++ * page, NULL otherwise.  Note, the list of refcounted PG_reserved page types
++ * is likely incomplete, it has been compiled purely through people wanting to
++ * back guest with a certain type of memory and encountering issues.
 + */
++struct page *kvm_pfn_to_refcounted_page(kvm_pfn_t pfn)
+ {
++	struct page *page;
++
++	if (!pfn_valid(pfn))
++		return NULL;
++
++	page = pfn_to_page(pfn);
++	if (!PageReserved(page))
++		return page;
++
++	/* The ZERO_PAGE(s) is marked PG_reserved, but is refcounted. */
++	if (is_zero_pfn(pfn))
++		return page;
++
+ 	/*
+ 	 * ZONE_DEVICE pages currently set PG_reserved, but from a refcounting
+ 	 * perspective they are "normal" pages, albeit with slightly different
+ 	 * usage rules.
+ 	 */
+-	if (pfn_valid(pfn))
+-		return PageReserved(pfn_to_page(pfn)) &&
+-		       !is_zero_pfn(pfn) &&
+-		       !kvm_is_zone_device_page(pfn_to_page(pfn));
++	if (kvm_is_zone_device_page(page))
++		return page;
+ 
+-	return true;
++	return NULL;
+ }
+ 
+ /*
+@@ -2479,9 +2496,12 @@ static bool vma_is_valid(struct vm_area_struct *vma, bool write_fault)
+ 
+ static int kvm_try_get_pfn(kvm_pfn_t pfn)
+ {
+-	if (kvm_is_reserved_pfn(pfn))
++	struct page *page = kvm_pfn_to_refcounted_page(pfn);
++
++	if (!page)
+ 		return 1;
+-	return get_page_unless_zero(pfn_to_page(pfn));
++
++	return get_page_unless_zero(page);
+ }
+ 
+ static int hva_to_pfn_remapped(struct vm_area_struct *vma,
+@@ -2706,6 +2726,7 @@ EXPORT_SYMBOL_GPL(gfn_to_page_many_atomic);
+  */
  struct page *gfn_to_page(struct kvm *kvm, gfn_t gfn)
  {
++	struct page *page;
  	kvm_pfn_t pfn;
  
  	pfn = gfn_to_pfn(kvm, gfn);
+@@ -2713,10 +2734,11 @@ struct page *gfn_to_page(struct kvm *kvm, gfn_t gfn)
+ 	if (is_error_noslot_pfn(pfn))
+ 		return KVM_ERR_PTR_BAD_PAGE;
  
--	return kvm_pfn_to_page(pfn);
-+	if (is_error_noslot_pfn(pfn))
-+		return KVM_ERR_PTR_BAD_PAGE;
-+
-+	if (kvm_is_reserved_pfn(pfn))
-+		return KVM_ERR_PTR_BAD_PAGE;
-+
-+	return pfn_to_page(pfn);
+-	if (kvm_is_reserved_pfn(pfn))
++	page = kvm_pfn_to_refcounted_page(pfn);
++	if (!page)
+ 		return KVM_ERR_PTR_BAD_PAGE;
+ 
+-	return pfn_to_page(pfn);
++	return page;
  }
  EXPORT_SYMBOL_GPL(gfn_to_page);
  
-@@ -2786,16 +2787,6 @@ void kvm_vcpu_unmap(struct kvm_vcpu *vcpu, struct kvm_host_map *map, bool dirty)
- }
- EXPORT_SYMBOL_GPL(kvm_vcpu_unmap);
+@@ -2819,8 +2841,16 @@ EXPORT_SYMBOL_GPL(kvm_release_page_clean);
  
--struct page *kvm_vcpu_gfn_to_page(struct kvm_vcpu *vcpu, gfn_t gfn)
--{
--	kvm_pfn_t pfn;
--
--	pfn = kvm_vcpu_gfn_to_pfn(vcpu, gfn);
--
--	return kvm_pfn_to_page(pfn);
--}
--EXPORT_SYMBOL_GPL(kvm_vcpu_gfn_to_page);
--
- static bool kvm_is_ad_tracked_page(struct page *page)
+ void kvm_release_pfn_clean(kvm_pfn_t pfn)
  {
- 	/*
+-	if (!is_error_noslot_pfn(pfn) && !kvm_is_reserved_pfn(pfn))
+-		kvm_release_page_clean(pfn_to_page(pfn));
++	struct page *page;
++
++	if (is_error_noslot_pfn(pfn))
++		return;
++
++	page = kvm_pfn_to_refcounted_page(pfn);
++	if (!page)
++		return;
++
++	kvm_release_page_clean(page);
+ }
+ EXPORT_SYMBOL_GPL(kvm_release_pfn_clean);
+ 
+@@ -2835,8 +2865,16 @@ EXPORT_SYMBOL_GPL(kvm_release_page_dirty);
+ 
+ void kvm_release_pfn_dirty(kvm_pfn_t pfn)
+ {
+-	if (!is_error_noslot_pfn(pfn) && !kvm_is_reserved_pfn(pfn))
+-		kvm_release_page_dirty(pfn_to_page(pfn));
++	struct page *page;
++
++	if (is_error_noslot_pfn(pfn))
++		return;
++
++	page = kvm_pfn_to_refcounted_page(pfn);
++	if (!page)
++		return;
++
++	kvm_release_page_dirty(page);
+ }
+ EXPORT_SYMBOL_GPL(kvm_release_pfn_dirty);
+ 
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
