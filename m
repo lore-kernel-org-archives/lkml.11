@@ -2,121 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EB69C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 22:12:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 270EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 22:14:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381445AbiD2WP5 (ORCPT
+        id S1381270AbiD2WRu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 18:15:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36284 "EHLO
+        Fri, 29 Apr 2022 18:17:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381448AbiD2WPt (ORCPT
+        with ESMTP id S236462AbiD2WRq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 18:15:49 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE9FDCE06;
-        Fri, 29 Apr 2022 15:12:24 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:38182)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nkYSx-00AIAD-EI; Fri, 29 Apr 2022 15:47:55 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:36454 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nkYSv-005dKg-DP; Fri, 29 Apr 2022 15:47:55 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     rjw@rjwysocki.net, oleg@redhat.com, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>, linux-ia64@vger.kernel.org
-References: <20220421150248.667412396@infradead.org>
-        <20220421150654.817117821@infradead.org>
-        <87czhap9dy.fsf@email.froward.int.ebiederm.org>
-        <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
-Date:   Fri, 29 Apr 2022 16:46:59 -0500
-In-Reply-To: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org> (Eric
-        W. Biederman's message of "Tue, 26 Apr 2022 17:50:21 -0500")
-Message-ID: <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Fri, 29 Apr 2022 18:17:46 -0400
+Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C4FDCAAC;
+        Fri, 29 Apr 2022 15:14:27 -0700 (PDT)
+Received: by mail-ot1-f41.google.com with SMTP id r14-20020a9d750e000000b00605446d683eso6012463otk.10;
+        Fri, 29 Apr 2022 15:14:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bi/IlfS1Ukb6XMHfNsEGeVVbCrcuj1nGB3hThqmSiwQ=;
+        b=Z2vnOfoEnVDTTBN394tbg78Mc5nr55a8kAg3VrI2Z2Lv2ejZcW4qqIKM2yf28ipcLF
+         gn3EEl71+DcgpmjYw3mET7fTH9Exq2pbek7mL6OszAFw0rG/Fs9fMGto8g15+opCY2ZT
+         qZ4J0a0MAeDbqQXEnF9hWYm1e959nRDA9jsI3NiMrD/BzcsInluQQJLsARwmMy9bI/r5
+         rf0rnI+WzYyUekyPY2guHVzcn4pxn7UuwF8+GFOakY8/nHkWo03n+5HSez7mdaWX4fpq
+         NZN7C7AZ2CsgseCR+Is0MVyvkrNJ218W3QxTlIX38VtAK+AY2olZJlnRHQW0Y2XFl0Eb
+         OC7A==
+X-Gm-Message-State: AOAM531z6g6Cmdgk44wAzWdBYGbXxTB6aw85fvi+9QzfiTm9XOjshg3m
+        Mzb+fGbtFlSMVniBUKpNGA==
+X-Google-Smtp-Source: ABdhPJwlXVbatqkkPMaUm3EJhQzZsLtenNHi0mY9dn7N6UxAXPHnrV03XX+ytU8kGo+MpLfr7Crv6Q==
+X-Received: by 2002:a05:6830:2f3:b0:605:f29f:502c with SMTP id r19-20020a05683002f300b00605f29f502cmr559739ote.24.1651270466297;
+        Fri, 29 Apr 2022 15:14:26 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id w11-20020a4adecb000000b0035eb4e5a6cesm1267473oou.36.2022.04.29.15.14.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 15:14:25 -0700 (PDT)
+Received: (nullmailer pid 2991411 invoked by uid 1000);
+        Fri, 29 Apr 2022 22:14:24 -0000
+Date:   Fri, 29 Apr 2022 17:14:24 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Drew Fustini <dfustini@baylibre.com>
+Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Dave Gerlach <d-gerlach@ti.com>, linux-kernel@vger.kernel.org,
+        Nishanth Menon <nm@ti.com>, Tony Lindgren <tony@atomide.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        devicetree@vger.kernel.org, Keerthy <j-keerthy@ti.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: wkup-m3-ipc: Add ti,scale-data-fw
+ property
+Message-ID: <YmxjQCckMnE8de6s@robh.at.kernel.org>
+References: <20220426193253.663582-1-dfustini@baylibre.com>
+ <20220426193253.663582-2-dfustini@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nkYSv-005dKg-DP;;;mid=<87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+ZIVHGWhwXaAZQuMgvUvy1NsqcM6xYpoc=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH 0/12] ptrace: cleaning up ptrace_stop
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220426193253.663582-2-dfustini@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 26 Apr 2022 12:32:52 -0700, Drew Fustini wrote:
+> From: Dave Gerlach <d-gerlach@ti.com>
+> 
+> Add documentation for ti,scale-data-fw property to enable I2C PMIC
+> voltage scaling during deep sleep. The property contains the name of a
+> binary file for the CM3 firmware to load.
+> 
+> Based on previous work by Russ Dill.
+> 
+> Signed-off-by: Dave Gerlach <d-gerlach@ti.com>
+> Signed-off-by: Keerthy <j-keerthy@ti.com>
+> [dfustini: split from driver patch and convert to json-schema]
+> Signed-off-by: Drew Fustini <dfustini@baylibre.com>
+> ---
+> Changes from v1:
+> - change 'ti,scale-data-fw' to 'firmware-name'
+> - add 'firmware-name' property to the examples
+> 
+>  .../devicetree/bindings/soc/ti/wkup-m3-ipc.yaml      | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
 
-The states TASK_STOPPED and TASK_TRACE are special in they can not
-handle spurious wake-ups.  This plus actively depending upon and
-changing the value of tsk->__state causes problems for PREEMPT_RT and
-Peter's freezer rewrite.
-
-There are a lot of details we have to get right to sort out the
-technical challenges and this is my parred back version of the changes
-that contains just those problems I see good solutions to that I believe
-are ready.
-
-In particular I don't have a solution that is ready for the challenges
-presented by wait_task_inactive.
-
-I hope we can review these changes and then have a firm foundation
-for the rest of the challenges.
-
-There are cleanups to the ptrace support for xtensa, um, and
-ia64.
-
-I have sucked in the first patch of Peter's freezer change as
-with minor modifications I believe it is ready to go.
-
-Eric W. Biederman (12):
-      signal: Rename send_signal send_signal_locked
-      signal: Replace __group_send_sig_info with send_signal_locked
-      ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP
-      ptrace/xtensa: Replace PT_SINGLESTEP with TIF_SINGLESTEP
-      signal: Use lockdep_assert_held instead of assert_spin_locked
-      ptrace: Reimplement PTRACE_KILL by always sending SIGKILL
-      ptrace: Don't change __state
-      ptrace: Remove arch_ptrace_attach
-      ptrace: Always take siglock in ptrace_resume
-      ptrace: Only return signr from ptrace_stop if it was provided
-      ptrace: Always call schedule in ptrace_stop
-      sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state
-
- arch/ia64/include/asm/ptrace.h    |   4 --
- arch/ia64/kernel/ptrace.c         |  57 ----------------
- arch/um/include/asm/thread_info.h |   2 +
- arch/um/kernel/exec.c             |   2 +-
- arch/um/kernel/process.c          |   2 +-
- arch/um/kernel/ptrace.c           |   8 +--
- arch/um/kernel/signal.c           |   4 +-
- arch/xtensa/kernel/ptrace.c       |   4 +-
- arch/xtensa/kernel/signal.c       |   4 +-
- drivers/tty/tty_jobctrl.c         |   4 +-
- include/linux/ptrace.h            |   7 --
- include/linux/sched.h             |  10 ++-
- include/linux/sched/jobctl.h      |  10 +++
- include/linux/sched/signal.h      |  23 ++++++-
- include/linux/signal.h            |   3 +-
- kernel/ptrace.c                   |  88 +++++++++----------------
- kernel/signal.c                   | 135 +++++++++++++++++---------------------
- kernel/time/posix-cpu-timers.c    |   6 +-
- 18 files changed, 145 insertions(+), 228 deletions(-)
-
-Eric
+Applied, thanks!
