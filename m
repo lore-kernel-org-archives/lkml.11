@@ -2,232 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 13:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 040BAC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 13:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376301AbiD2NlM (ORCPT
+        id S1376287AbiD2NlU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 09:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55582 "EHLO
+        Fri, 29 Apr 2022 09:41:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359863AbiD2Nkw (ORCPT
+        with ESMTP id S1376309AbiD2Nky (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 09:40:52 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37403CB027
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 06:37:32 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id g8so4536190pfh.5
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 06:37:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=23JDuOeXS3qapCnfe9+MGlUBuO57K6IKT3rd6Zq9kR4=;
-        b=MHSRX303E6gAt323/IxcNAaiiuJtGUdH5cveE5vIqfJsvePabyp0uPeIkm0nDQ8x+z
-         mCEeA/j/KM/zmasCI3NTuE8qHxZdXOOfIfcn8do+VN9VYhVXhI+g+9WAniNW4BEPE+Hr
-         J9OlM7BM2PT4gmQ+NP52DmvU2IhXT/3tZBir8W+BpSrREGb9XJc337kADy/ZkI4Obkb1
-         fYgKvKZsYGfcnMZSjdbXdUQsBbzcAXrLxtXnir6+P37YT8MteDij0NXzVlxDMbO/OmKK
-         fvdicx7MXbzcUO6F6lxiLRamPoU1KEA+G/pfvWZB5UwwmBvNGsfLlRTWzI28/+l7upAy
-         HoeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=23JDuOeXS3qapCnfe9+MGlUBuO57K6IKT3rd6Zq9kR4=;
-        b=AaEMXa2wLiEsY/4gzMXF4Z4vPj5cLwvakJr8O/o7o1gT2hOZ/yIkP4M6mUE+gNGoSH
-         +TkucfOFFLUaLWwcguLrv+KfziWtUHNMmcD96533LVfB/lBSOy1fM3SAA78Qgc8QlYRV
-         4qhRTRVShbVeUKXlLE1sOTK3GpofytoKwjaL8Hx2YrrPXQi3FDMlR6v611SbRSc02Aro
-         cGrMHJr7NaZKRSSTk7GJ6pih9eLowmh08TioAfyp0OWaRlkZDC4ji4bcgl3bRjayAct8
-         Svrh/05/rMb3dBV+0pFj4fa1eYIEWS/sJadizWeEjX0Oev8O97nu+ZUNhBnKlZT9r0ve
-         6woA==
-X-Gm-Message-State: AOAM531yh283cNShRQnrxI2KKjHw6pZcFzcaRH4vm2/PGIc4xXgs/hhs
-        i927YWAY0wnbu7iFsv4Fbw7B4w==
-X-Google-Smtp-Source: ABdhPJzyfarjjWMZT/Urjo6R6jR7MFp2VAkxiYz4i0cDzXZXP0EBlBsAWmKDRDq8ix5Fv+EZW5xpSg==
-X-Received: by 2002:a63:5847:0:b0:399:3452:ffe4 with SMTP id i7-20020a635847000000b003993452ffe4mr32556539pgm.406.1651239451972;
-        Fri, 29 Apr 2022 06:37:31 -0700 (PDT)
-Received: from localhost.localdomain ([139.177.225.240])
-        by smtp.gmail.com with ESMTPSA id m8-20020a17090a414800b001d81a30c437sm10681977pjg.50.2022.04.29.06.37.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 06:37:31 -0700 (PDT)
-From:   Qi Zheng <zhengqi.arch@bytedance.com>
-To:     akpm@linux-foundation.org, tglx@linutronix.de,
-        kirill.shutemov@linux.intel.com, mika.penttila@nextfour.com,
-        david@redhat.com, jgg@nvidia.com, tj@kernel.org, dennis@kernel.org,
-        ming.lei@redhat.com
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, songmuchun@bytedance.com,
-        zhouchengming@bytedance.com, Qi Zheng <zhengqi.arch@bytedance.com>
-Subject: [RFC PATCH 13/18] mm: add try_to_free_user_pte() helper
-Date:   Fri, 29 Apr 2022 21:35:47 +0800
-Message-Id: <20220429133552.33768-14-zhengqi.arch@bytedance.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
-In-Reply-To: <20220429133552.33768-1-zhengqi.arch@bytedance.com>
-References: <20220429133552.33768-1-zhengqi.arch@bytedance.com>
+        Fri, 29 Apr 2022 09:40:54 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1EF1CB02C;
+        Fri, 29 Apr 2022 06:37:35 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 27DF61F46597
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651239454;
+        bh=kcEQjWB3+aoh/KNYmS+gc/t6zz5Iohch35uok/tdZ2g=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ebK2702xHh6jZr+XuacSG3T6K77O0e6jE4yrdtu4TG85TlKoWWfyhRSUooxkXDMXR
+         0OoI3Ng05ua+RkKFNWUxH4AKEsV2ra3A4nupIfjQHulZQbrn6NeJ3nCemO0i8EO37n
+         Zy4XpKKUqXxOTV8OlHIP6DfbqvUFKinAR4IbQvSyfDWJSguh8+h9IFwVR4AczojijI
+         fHPfWMfaBjbACP1E9gfPgSRultAXHSnBqumARBke0iTzk2dgTcyd8nlMhywjJYwjXY
+         90Lw1KN5skaMwO/WgwifwowJDIbGtdpeo4AnFoss0MfbjjpxdBGDAD+TB59o8vj/XP
+         k4LE+kVxfrPkg==
+Message-ID: <5f252726-3757-b063-d34f-c76beaa5d31b@collabora.com>
+Date:   Fri, 29 Apr 2022 15:37:30 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] rpmsg: mtk_rpmsg: Fix circular locking dependency
+Content-Language: en-US
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc:     bjorn.andersson@linaro.org, matthias.bgg@gmail.com,
+        pihsun@chromium.org, linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com
+References: <20220114144737.375621-1-angelogioacchino.delregno@collabora.com>
+ <20220428173148.GA2268704@p14s>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220428173148.GA2268704@p14s>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Normally, the percpu_ref of the user PTE page table page is in
-percpu mode. This patch add try_to_free_user_pte() to switch
-the percpu_ref to atomic mode and check if it is 0. If the
-percpu_ref is 0, which means that no one is using the user PTE
-page table page, then we can safely reclaim it.
+Il 28/04/22 19:31, Mathieu Poirier ha scritto:
+> On Fri, Jan 14, 2022 at 03:47:37PM +0100, AngeloGioacchino Del Regno wrote:
+>> During execution of the worker that's used to register rpmsg devices
+>> we are safely locking the channels mutex but, when creating a new
+>> endpoint for such devices, we are registering a IPI on the SCP, which
+>> then makes the SCP to trigger an interrupt, lock its own mutex and in
+>> turn register more subdevices.
+>> This creates a circular locking dependency situation, as the mtk_rpmsg
+>> channels_lock will then depend on the SCP IPI lock.
+>>
+>> [   18.014514]  Possible unsafe locking scenario:
+>> [   18.014515]        CPU0                    CPU1
+>> [   18.014517]        ----                    ----
+>> [   18.045467]   lock(&mtk_subdev->channels_lock);
+>> [   18.045474]                                lock(&scp->ipi_desc[i].lock);
+>> [   18.228399]                                lock(&mtk_subdev->channels_lock);
+>> [   18.228405]   lock(&scp->ipi_desc[i].lock);
+>> [   18.264405]
+> 
+> I finally understand the problem, something that would have been impossible
+> without the pastebin you provided in your latest email.  Please add the content
+> of that pastebin to the changelog and send another revision (checkpatch
+> warnings can be ignored).
+> 
 
-Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
----
- include/linux/pte_ref.h |  7 +++
- mm/pte_ref.c            | 99 ++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 104 insertions(+), 2 deletions(-)
+Thanks for giving it another look... I'll add a cover letter with the contents
+of the pastebin to avoid possible confusion for anyone looking at the patch.
 
-diff --git a/include/linux/pte_ref.h b/include/linux/pte_ref.h
-index bfe620038699..379c3b45a6ab 100644
---- a/include/linux/pte_ref.h
-+++ b/include/linux/pte_ref.h
-@@ -16,6 +16,8 @@ void free_user_pte(struct mm_struct *mm, pmd_t *pmd, unsigned long addr);
- bool pte_tryget(struct mm_struct *mm, pmd_t *pmd, unsigned long addr);
- void __pte_put(pgtable_t page);
- void pte_put(pte_t *ptep);
-+void try_to_free_user_pte(struct mm_struct *mm, pmd_t *pmd, unsigned long addr,
-+			  bool switch_back);
- 
- #else /* !CONFIG_FREE_USER_PTE */
- 
-@@ -47,6 +49,11 @@ static inline void pte_put(pte_t *ptep)
- {
- }
- 
-+static inline void try_to_free_user_pte(struct mm_struct *mm, pmd_t *pmd,
-+					unsigned long addr, bool switch_back)
-+{
-+}
-+
- #endif /* CONFIG_FREE_USER_PTE */
- 
- #endif /* _LINUX_PTE_REF_H */
-diff --git a/mm/pte_ref.c b/mm/pte_ref.c
-index 5b382445561e..bf9629272c71 100644
---- a/mm/pte_ref.c
-+++ b/mm/pte_ref.c
-@@ -8,6 +8,9 @@
- #include <linux/pte_ref.h>
- #include <linux/percpu-refcount.h>
- #include <linux/slab.h>
-+#include <linux/hugetlb.h>
-+#include <asm/tlbflush.h>
-+#include <asm/pgalloc.h>
- 
- #ifdef CONFIG_FREE_USER_PTE
- 
-@@ -44,8 +47,6 @@ void pte_ref_free(pgtable_t pte)
- 	kfree(ref);
- }
- 
--void free_user_pte(struct mm_struct *mm, pmd_t *pmd, unsigned long addr) {}
--
- /*
-  * pte_tryget - try to get the pte_ref of the user PTE page table page
-  * @mm: pointer the target address space
-@@ -102,4 +103,98 @@ void pte_put(pte_t *ptep)
- }
- EXPORT_SYMBOL(pte_put);
- 
-+#ifdef CONFIG_DEBUG_VM
-+void pte_free_debug(pmd_t pmd)
-+{
-+	pte_t *ptep = (pte_t *)pmd_page_vaddr(pmd);
-+	int i = 0;
-+
-+	for (i = 0; i < PTRS_PER_PTE; i++)
-+		BUG_ON(!pte_none(*ptep++));
-+}
-+#else
-+static inline void pte_free_debug(pmd_t pmd)
-+{
-+}
-+#endif
-+
-+static inline void pte_free_rcu(struct rcu_head *rcu)
-+{
-+	struct page *page = container_of(rcu, struct page, rcu_head);
-+
-+	pgtable_pte_page_dtor(page);
-+	__free_page(page);
-+}
-+
-+/*
-+ * free_user_pte - free the user PTE page table page
-+ * @mm: pointer the target address space
-+ * @pmd: pointer to a PMD
-+ * @addr: start address of the tlb range to be flushed
-+ *
-+ * Context: The pmd range has been unmapped and TLB purged. And the user PTE
-+ *	    page table page will be freed by rcu handler.
-+ */
-+void free_user_pte(struct mm_struct *mm, pmd_t *pmd, unsigned long addr)
-+{
-+	struct vm_area_struct vma = TLB_FLUSH_VMA(mm, 0);
-+	spinlock_t *ptl;
-+	pmd_t pmdval;
-+
-+	ptl = pmd_lock(mm, pmd);
-+	pmdval = *pmd;
-+	if (pmd_none(pmdval) || pmd_leaf(pmdval)) {
-+		spin_unlock(ptl);
-+		return;
-+	}
-+	pmd_clear(pmd);
-+	flush_tlb_range(&vma, addr, addr + PMD_SIZE);
-+	spin_unlock(ptl);
-+
-+	pte_free_debug(pmdval);
-+	mm_dec_nr_ptes(mm);
-+	call_rcu(&pmd_pgtable(pmdval)->rcu_head, pte_free_rcu);
-+}
-+
-+/*
-+ * try_to_free_user_pte - try to free the user PTE page table page
-+ * @mm: pointer the target address space
-+ * @pmd: pointer to a PMD
-+ * @addr: virtual address associated with pmd
-+ * @switch_back: indicates if switching back to percpu mode is required
-+ */
-+void try_to_free_user_pte(struct mm_struct *mm, pmd_t *pmd, unsigned long addr,
-+			  bool switch_back)
-+{
-+	pgtable_t pte;
-+
-+	if (&init_mm == mm)
-+		return;
-+
-+	if (!pte_tryget(mm, pmd, addr))
-+		return;
-+	pte = pmd_pgtable(*pmd);
-+	percpu_ref_switch_to_atomic_sync(pte->pte_ref);
-+	rcu_read_lock();
-+	/*
-+	 * Here we can safely put the pte_ref because we already hold the rcu
-+	 * lock, which guarantees that the user PTE page table page will not
-+	 * be released.
-+	 */
-+	__pte_put(pte);
-+	if (percpu_ref_is_zero(pte->pte_ref)) {
-+		rcu_read_unlock();
-+		free_user_pte(mm, pmd, addr & PMD_MASK);
-+		return;
-+	}
-+	rcu_read_unlock();
-+
-+	if (switch_back) {
-+		if (pte_tryget(mm, pmd, addr)) {
-+			percpu_ref_switch_to_percpu(pte->pte_ref);
-+			__pte_put(pte);
-+		}
-+	}
-+}
-+
- #endif /* CONFIG_FREE_USER_PTE */
--- 
-2.20.1
+>>
+>> To solve this, simply unlock the channels_lock mutex before calling
+>> mtk_rpmsg_register_device() and relock it right after, as safety is
+>> still ensured by the locking mechanism that happens right after
+>> through SCP.
+> 
+> The integrity of the subdev->channels list is guaranteed by relocking the
+> mutex, I'm not sure what "through SCP" adds to the sentence.
 
+I'll clarify the commit message.
+
+> 
+>> Notably, mtk_rpmsg_register_device() does not even require locking.
+>>
+> 
+> I don't agree with the above sentence - if locking doesn't happen in
+> mtk_rpmsg_create_device(), there can be two CPUs accessing the list at the same
+> time.
+> 
+
+That's right, I have largely underestimated that for some reason, sorry about that.
+
+Regards,
+Angelo
+
+> Thanks,
+> Mathieu
+> 
