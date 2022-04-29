@@ -2,88 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C14C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:39:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3612C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377705AbiD2Omx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33534 "EHLO
+        id S237055AbiD2OnI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 10:43:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377723AbiD2Olc (ORCPT
+        with ESMTP id S1377672AbiD2Om0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:41:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C0D366B9;
-        Fri, 29 Apr 2022 07:37:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 29 Apr 2022 10:42:26 -0400
+X-Greylist: delayed 559 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 29 Apr 2022 07:37:40 PDT
+Received: from sonata.ens-lyon.org (domu-toccata.ens-lyon.fr [140.77.166.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADB83B558;
+        Fri, 29 Apr 2022 07:37:39 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by sonata.ens-lyon.org (Postfix) with ESMTP id 18E2120164;
+        Fri, 29 Apr 2022 16:28:19 +0200 (CEST)
+Received: from sonata.ens-lyon.org ([127.0.0.1])
+        by localhost (sonata.ens-lyon.org [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id SY08BDkqk9Wk; Fri, 29 Apr 2022 16:28:19 +0200 (CEST)
+Received: from begin (nat-inria-interne-52-gw-01-bso.bordeaux.inria.fr [194.199.1.52])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE571615B1;
-        Fri, 29 Apr 2022 14:37:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D82EDC385A7;
-        Fri, 29 Apr 2022 14:37:23 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="nmURRhmF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651243042;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=n4+Hrsa3/2uZn2FjMlvF3cp+u5Zrs5QPWYxXzJ56pZo=;
-        b=nmURRhmF7lDoOMEuvqYf5EPmb7EXSskhUre4xdQLNsIN+4cuYCHOmHNQhBaPDYGm/gbqHu
-        FIEb7BcrkFVYDN+GU04ur3OVWSYQ0HDv5fi/JxtwxcTtuIky5uSNDSjqPkBZFToy7rwhd2
-        xqjE2Xs3Jg20BItfi3t2/9BNQJa0aew=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9798adb4 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 29 Apr 2022 14:37:21 +0000 (UTC)
-Date:   Fri, 29 Apr 2022 16:37:12 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Willy Tarreau <w@1wt.eu>, edumazet@google.com
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net 3/7] tcp: resalt the secret every 10 seconds
-Message-ID: <Ymv4GAezJlA1+Vfs@zx2c4.com>
-References: <20220428124001.7428-1-w@1wt.eu>
- <20220428124001.7428-4-w@1wt.eu>
+        by sonata.ens-lyon.org (Postfix) with ESMTPSA id 6C8A82015D;
+        Fri, 29 Apr 2022 16:28:18 +0200 (CEST)
+Received: from samy by begin with local (Exim 4.95)
+        (envelope-from <samuel.thibault@ens-lyon.org>)
+        id 1nkRbV-006Sju-NJ;
+        Fri, 29 Apr 2022 16:28:17 +0200
+Date:   Fri, 29 Apr 2022 16:28:17 +0200
+From:   Samuel Thibault <samuel.thibault@ens-lyon.org>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        William Hubbs <w.d.hubbs@gmail.com>,
+        Chris Brannon <chris@the-brannons.com>,
+        Kirk Reiser <kirk@reisers.ca>,
+        "open list:SPEAKUP CONSOLE SPEECH DRIVER" <speakup@linux-speakup.org>
+Subject: Re: [PATCH 06/37] speakup: add HAS_IOPORT dependency for
+ SPEAKUP_SERIALIO
+Message-ID: <20220429142817.knvopowhs2ibzz6z@begin>
+Mail-Followup-To: Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        William Hubbs <w.d.hubbs@gmail.com>,
+        Chris Brannon <chris@the-brannons.com>,
+        Kirk Reiser <kirk@reisers.ca>,
+        "open list:SPEAKUP CONSOLE SPEECH DRIVER" <speakup@linux-speakup.org>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+ <20220429135108.2781579-12-schnelle@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220428124001.7428-4-w@1wt.eu>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220429135108.2781579-12-schnelle@linux.ibm.com>
+Organization: I am not organized
+User-Agent: NeoMutt/20170609 (1.8.3)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Eric,
-
-On Thu, Apr 28, 2022 at 02:39:57PM +0200, Willy Tarreau wrote:
-> From: Eric Dumazet <edumazet@google.com>
+Niklas Schnelle, le ven. 29 avril 2022 15:50:09 +0200, a ecrit:
+> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
+> not being declared. SPEAKUP_SERIALIO thus needs to depend on HAS_IOPORT.
 > 
-> In order to limit the ability for an observer to recognize the source
-> ports sequence used to contact a set of destinations, we should
-> periodically shuffle the secret. 10 seconds looks effective enough
-Nit: "periodically re-salt the input".
-> without causing particular issues.
+> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 
-Just FYI, moving from siphash_3u32 to siphash_4u32 is not free, as it
-bumps us up from siphash_3u32 to siphash_2u64, which does two more
-siphash rounds. Maybe this doesn't matter much, but just FYI.
+Reviewed-by: Samuel Thibault <samuel.thibault@ens-lyon.org>
 
-I wonder, though, about your "10 seconds looks effective enough without
-causing particular issues." I surmise from that sentence that a lower
-value might cause particular issues, but that you found 10 seconds to be
-okay in practice. Fine. But what happens if one caller hits this at
-second 9 and the next caller hits it at second 0? In that case, the
-interval might have been 1 second, not 10. In other words, if you need
-a certain minimum quantization for this to not cause "particular
-issues", it might not work the way you wanted it to.
+> ---
+>  drivers/accessibility/speakup/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/accessibility/speakup/Kconfig b/drivers/accessibility/speakup/Kconfig
+> index 07ecbbde0384..e84fb617acc4 100644
+> --- a/drivers/accessibility/speakup/Kconfig
+> +++ b/drivers/accessibility/speakup/Kconfig
+> @@ -46,6 +46,7 @@ if SPEAKUP
+>  config SPEAKUP_SERIALIO
+>  	def_bool y
+>  	depends on ISA || COMPILE_TEST
+> +	depends on HAS_IOPORT
+>  
+>  config SPEAKUP_SYNTH_ACNTSA
+>  	tristate "Accent SA synthesizer support"
+> -- 
+> 2.32.0
+> 
 
-Additionally, that problem aside, if you round EPHEMERAL_PORT_SHUFFLE_PERIOD
-to the nearest power of two, you can turn the expensive division into a
-bit shift right.
-
-Regards,
-Jason
+-- 
+Samuel
+---
+Pour une évaluation indépendante, transparente et rigoureuse !
+Je soutiens la Commission d'Évaluation de l'Inria.
