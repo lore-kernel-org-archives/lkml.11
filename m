@@ -2,91 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A54C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 00:46:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A50B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 00:49:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347836AbiD2Atk (ORCPT
+        id S1353030AbiD2Awa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 20:49:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42340 "EHLO
+        Thu, 28 Apr 2022 20:52:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353180AbiD2Ata (ORCPT
+        with ESMTP id S237189AbiD2Aw3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 20:49:30 -0400
-Received: from mail-m121145.qiye.163.com (mail-m121145.qiye.163.com [115.236.121.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660C4888D3;
-        Thu, 28 Apr 2022 17:46:12 -0700 (PDT)
-Received: from localhost.localdomain (unknown [58.22.7.114])
-        by mail-m121145.qiye.163.com (Hmail) with ESMTPA id 74245800280;
-        Fri, 29 Apr 2022 08:46:09 +0800 (CST)
-From:   Jianqun Xu <jay.xu@rock-chips.com>
-To:     kuba@kernel.org, davem@davemloft.net, joabreu@synopsys.com,
-        alexandre.torgue@st.com, peppe.cavallaro@st.com
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        Jianqun Xu <jay.xu@rock-chips.com>
-Subject: [PATCH V2] ethernet: stmmac: support driver work for DTs without child queue node
-Date:   Fri, 29 Apr 2022 08:46:05 +0800
-Message-Id: <20220429004605.1010751-1-jay.xu@rock-chips.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220428010927.526310-1-jay.xu@rock-chips.com>
-References: <20220428010927.526310-1-jay.xu@rock-chips.com>
+        Thu, 28 Apr 2022 20:52:29 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F37887AD;
+        Thu, 28 Apr 2022 17:49:12 -0700 (PDT)
+Subject: Re: [PATCH v2 00/12] Improve Raid5 Lock Contention
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1651193351;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=D9uNLyxy24U8cwCidXNlnBYk/A7+jJ6jFr9CcVcV/Es=;
+        b=U5r5GPhyzH8g2Kj75Xv/YHm+AjYWFh/NIdFTuupxFoYM4l5wRQ5LtF+LIBiqWiXUMrGVHW
+        NdkXX/W4RYAYLW3jNUi3yVRmUNRaU2p4YPavBAfD8tt6ufIfqcbgH3tW5rwAnNua7dFDCf
+        rWk09wsNSKfS3B+8okqOnlEGJlqyrYI=
+To:     Logan Gunthorpe <logang@deltatee.com>, Xiao Ni <xni@redhat.com>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        linux-raid <linux-raid@vger.kernel.org>,
+        Song Liu <song@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Stephen Bates <sbates@raithlin.com>,
+        Martin Oliveira <Martin.Oliveira@eideticom.com>,
+        David Sloan <David.Sloan@eideticom.com>
+References: <20220420195425.34911-1-logang@deltatee.com>
+ <CALTww28fwNpm0O_jc7-2Xr0JSX9i6F1kgoUQ8m_k6ZgPa1XxXw@mail.gmail.com>
+ <c14c0103-9cbd-7d0f-486b-344dd33725ab@deltatee.com>
+ <4094aed9-d22d-d14f-07a7-5abe599beeab@linux.dev>
+ <8d8fbf24-51b5-a076-b7ad-fcbb7d5c275e@deltatee.com>
+ <CALTww28SuvhzCL6p4L9y9ZH5Mmgss-tTm_QzbEo60hZOXAUS0A@mail.gmail.com>
+ <4f0b44aa-77a4-9896-b780-eb52241954ae@deltatee.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Guoqing Jiang <guoqing.jiang@linux.dev>
+Message-ID: <cba5f13e-0481-9dc9-36a4-ed29bf34220f@linux.dev>
+Date:   Fri, 29 Apr 2022 08:49:03 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUlKS0tKN1dZLVlBSVdZDwkaFQgSH1lBWRlDH0NWS0tMTU1PHx
-        hDQx5NVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktISkNVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MRg6GRw5ED02EBEfIxgJN0of
-        TjoKCwhVSlVKTU5KSkJISkxLSk5CVTMWGhIXVREaAlUDDjsJFBgQVhgTEgsIVRgUFkVZV1kSC1lB
-        WU5DVUlJVUxVSkpPWVdZCAFZQUlCSE83Bg++
-X-HM-Tid: 0a8072c84756b03akuuu74245800280
+In-Reply-To: <4f0b44aa-77a4-9896-b780-eb52241954ae@deltatee.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver use the value of property 'snps,rx-queues-to-use' to loop
-same numbers child nodes as queues, such as:
 
-    gmac {
-        rx-queues-config {
-            snps,rx-queues-to-use = <1>;
-            queue0 {
-                // nothing need here.
-	    };
-	};
-    };
 
-Since a patch for dtc from rockchip will delete all node without any
-properties or child node, the queue0 node will be deleted, that caused
-the driver fail to probe:
+On 4/29/22 5:22 AM, Logan Gunthorpe wrote:
+>
+> On 2022-04-25 10:12, Xiao Ni wrote:
+>>> I do know that lkp-tests has run it on this series as I did get an error
+>>> from it. But while I'm pretty sure that error has been resolved, I was
+>>> never able to figure out how to run them locally.
+>>>
+>> Hi Logan
+>>
+>> You can clone the mdadm repo at
+>> git://git.kernel.org/pub/scm/utils/mdadm/mdadm.git
+>> Then you can find there is a script test under the directory. It's not
+>> under the tests directory.
+>> The test cases are under tests directory.
+> So I've been fighting with this and it seems there are just a ton of
+> failures in these tests without my changes. Running on the latest master
+> (52c67fcdd6dad) with stock v5.17.5 I see major brokenness. About 17 out
+> of 44 tests that run failed. I had to run with --disable-integrity
+> because those tests seem to hang on an infinite loop waiting for the md
+> array to go into the U state (even though it appears idle).
+>
+> Even though I ran the tests with '--keep-going', the testing stopped
+> after the 07revert-grow reported errors in dmesg -- even though the only
+> errors printed to dmesg were that of mdadm segfaulting.
+>
+> Running on md/md-next seems to get a bit further (to
+> 10ddf-create-fail-rebuild) and stops with the same segfaulting issue (or
+> perhaps the 07 test only randomly fails first -- I haven't run it that
+> many times). Though most of the tests between these points fail anyway.
+>
+> My upcoming v3 patches cause no failures that are different from the
+> md/md-next branch. But it seems these tests have rotted to the point
+> that they aren't all that useful; or maybe there are a ton of
+> regressions in the kernel already and nobody was paying much attention.
 
-    rk_gmac-dwmac: probe of ffa80000.ethernet failed with error -22
+I can't agree with you anymore. I would say some patches were submitted
+without run enough tests, then after one by one kernel release, the thing
+becomes worse.
 
-This patch try to support driver work well for DTs without setting for
-the child queue nodes and then have none child queue nodes.
+This is also the reason that I recommend run mdadm tests since md raid
+is a complex subsystem, perhaps a simple change could cause regression.
+And considering there are really limited developers and reviewers in the
+community, the chance to cause regression get bigger.
 
-Signed-off-by: Jianqun Xu <jay.xu@rock-chips.com>
----
-v2:
- - change subject and update commit comment, sugguested by Kicinski
+> I have also tried to test certain cases that appear broken in recent
+> kernels anyway (like reducing the number of disks in a raid5 array hangs
+> on the first stripe to reshape).
+>
+> In any case I have a very rough ad-hoc test suite I've been expanding
+> that is targeted at testing my specific changes. Testing these changes
+> has definitely been challenging. In any case, I've published my tests here:
+>
+> https://github.com/Eideticom/raid5-tests
 
- drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If I may, is it possible to submit your tests to mdadm as well? So we can
+have one common place to contain enough tests.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index 2d8c095f3856..4f01a41c485c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -279,7 +279,7 @@ static int stmmac_mtl_setup(struct platform_device *pdev,
- 
- 		queue++;
- 	}
--	if (queue != plat->tx_queues_to_use) {
-+	if (queue != plat->tx_queues_to_use && of_get_child_count(tx_node)) {
- 		ret = -EINVAL;
- 		dev_err(&pdev->dev, "Not all TX queues were configured\n");
- 		goto out;
--- 
-2.25.1
-
+Thanks,
+Guoqing
