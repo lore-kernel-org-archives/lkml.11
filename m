@@ -2,343 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B531C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:19:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD18AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357472AbiD2KXB (ORCPT
+        id S1357427AbiD2KYK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38784 "EHLO
+        Fri, 29 Apr 2022 06:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357388AbiD2KWe (ORCPT
+        with ESMTP id S239081AbiD2KYG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:22:34 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3153BC6EC4;
-        Fri, 29 Apr 2022 03:19:16 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id s14so6745026plk.8;
-        Fri, 29 Apr 2022 03:19:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=B3NCzom8hJlx0zEy79Sz4qhJxcFl7hPctwsRA5jCJVg=;
-        b=n5e2gCVMetK60EV0yAY1ZD2lqkuRIIdUATIgR3jexzzkaMC8uaAWT9rNxFUAdvCLbH
-         vVZ9m9DA9XA5BSYrmH3+/xL2rYNAqdrF7ij4qDlpioRQO92Vgf+pCqUUoOYcCG+OFAFe
-         gLlcOVSONcpXDQiy68mGWbJkbJ8NHcMMR7ThVXFUncaJgdAPS+ztw0aNBSN7r/p+/GO+
-         fQYAHjthDn1s6T9Qee7aR9YX13QKL6LrL0jvPvQbuBV/ad8BaN0ev0Uru72L4ZVrM5zp
-         gtzvQQ8KAacKFsk2fR0omTbWb8f7AWXNHyRiGcvMKq9xcWEXF/YyZRFyxfqYWZogCwYl
-         xBXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=B3NCzom8hJlx0zEy79Sz4qhJxcFl7hPctwsRA5jCJVg=;
-        b=ZlcNf0NsRTWQTyRiuhrceCT5Wre/3il+nDB/BKpcQDcVli3Nqj7sAWVBWOOPJ2ia/t
-         AoYgVH0LvDy9CB/R0J2yzpdDbfbwAv2BMBrGqkHJMj2NfOvrz1s1bGlJSq81dOzLhlxf
-         GnvVFk0/Fp5yJf2rIO0bN/zV6KRBPyhRyW36O7bVievQ1y3BYREr5bjvGG4GCC+KxWWv
-         gOMPF5U+tjYJS+jsc8bZfpM6kSI0kQ7E8G3fH/2TiJRNykWGNsTmAV+BTOQNdJwHuK4E
-         9CLDUDQRbsmAiayZMR6bVKK1IZr/8t3iZXeIxa71CvIIr6FqtTlXfulf7FTc3F+OSN4X
-         Etxg==
-X-Gm-Message-State: AOAM533gWUJfdFcAl1qhcIGnpPep0GVP/rRhN18V0i1J6HFXINP+MzU/
-        zIewtbBkui0gAwfcY95aPWGqWYyhaQc=
-X-Google-Smtp-Source: ABdhPJyRVy4Th8+Q8iCMIdMzGLmF4M6s5YI9UwjImZYV5uDo9pI0HszSp7nM2ZUuUPrSn3m3XiDrXA==
-X-Received: by 2002:a17:90a:c402:b0:1d9:a003:3f8a with SMTP id i2-20020a17090ac40200b001d9a0033f8amr3065685pjt.18.1651227555375;
-        Fri, 29 Apr 2022 03:19:15 -0700 (PDT)
-Received: from HOWEYXU-MB0.tencent.com ([106.53.33.166])
-        by smtp.gmail.com with ESMTPSA id k17-20020a628e11000000b0050d8d373331sm2600016pfe.214.2022.04.29.03.19.13
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 29 Apr 2022 03:19:15 -0700 (PDT)
-From:   Hao Xu <haoxu.linux@gmail.com>
-To:     io-uring@vger.kernel.org
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 9/9] io_uring: add register fixed worker interface
-Date:   Fri, 29 Apr 2022 18:18:58 +0800
-Message-Id: <20220429101858.90282-10-haoxu.linux@gmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220429101858.90282-1-haoxu.linux@gmail.com>
-References: <20220429101858.90282-1-haoxu.linux@gmail.com>
+        Fri, 29 Apr 2022 06:24:06 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C28108B;
+        Fri, 29 Apr 2022 03:20:47 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id E962045F;
+        Fri, 29 Apr 2022 12:20:45 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1651227646;
+        bh=YGQZ9FdIXcFg1Ief9zdOSawPpmwRJCKGsGEdTnBu7wI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=koBR8rQvFYiirFZva0Q0lYzKn3RvenTeCjbVh1dZ1Or2mc03pz8s6K9Nu6V1YGMWj
+         WG83G80i4+S5KevOh2BkDKBCH/MxQ3dHIWWKDMn/wwtilN3Rpq8EGvzphFQgjPJ9jw
+         lO3rJou9VDJIKpHIBvG0Fw0ttp73Bw1ZuZcWLFHY=
+Date:   Fri, 29 Apr 2022 13:20:45 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Hans Verkuil <hverkuil@xs4all.nl>
+Cc:     Jacopo Mondi <jacopo@jmondi.org>, Eugen.Hristev@microchip.com,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu.Beznea@microchip.com, robh+dt@kernel.org,
+        Nicolas.Ferre@microchip.com
+Subject: Re: [PATCH v9 08/13] media: atmel: atmel-isc: change format
+ propagation to subdev into only verification
+Message-ID: <Ymu7/VWrvT0bZfeP@pendragon.ideasonboard.com>
+References: <20220310095202.2701399-1-eugen.hristev@microchip.com>
+ <20220310095202.2701399-9-eugen.hristev@microchip.com>
+ <39f541ec-313f-fe15-b93f-dd78469b2366@xs4all.nl>
+ <b6630c65-0720-3633-d5ed-aadf4716f206@microchip.com>
+ <dabbff36-a10c-0a8a-94e8-ce7c2d896403@xs4all.nl>
+ <20220429095848.ec4xnul6tin6n7sf@uno.localdomain>
+ <Ymu4ywjEvX5HbE/W@pendragon.ideasonboard.com>
+ <a10a255c-e3b7-4c5f-2a7e-9474e0526a61@xs4all.nl>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <a10a255c-e3b7-4c5f-2a7e-9474e0526a61@xs4all.nl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Xu <howeyxu@tencent.com>
+On Fri, Apr 29, 2022 at 12:13:46PM +0200, Hans Verkuil wrote:
+> On 29/04/2022 12:07, Laurent Pinchart wrote:
+> > On Fri, Apr 29, 2022 at 11:58:48AM +0200, Jacopo Mondi wrote:
+> >> On Fri, Apr 29, 2022 at 10:43:09AM +0200, Hans Verkuil wrote:
+> >>> On 29/04/2022 10:28, Eugen.Hristev@microchip.com wrote:
+> >>>> On 4/29/22 11:17 AM, Hans Verkuil wrote:
+> >>>>> On 10/03/2022 10:51, Eugen Hristev wrote:
+> >>>>>> As a top MC video driver, the atmel-isc should not propagate the format to the
+> >>>>>> subdevice, it should rather check at start_streaming() time if the subdev is properly
+> >>>>>> configured with a compatible format.
+> >>>>>> Removed the whole format finding logic, and reworked the format verification
+> >>>>>> at start_streaming time, such that the ISC will return an error if the subdevice
+> >>>>>> is not properly configured. To achieve this, media_pipeline_start
+> >>>>>> is called and a link_validate callback is created to check the formats.
+> >>>>>> With this being done, the module parameter 'sensor_preferred' makes no sense
+> >>>>>> anymore. The ISC should not decide which format the sensor is using. The
+> >>>>>> ISC should only cope with the situation and inform userspace if the streaming
+> >>>>>> is possible in the current configuration.
+> >>>>>> The redesign of the format propagation has also risen the question of the
+> >>>>>> enumfmt callback. If enumfmt is called with an mbus_code, the enumfmt handler
+> >>>>>> should only return the formats that are supported for this mbus_code.
+> >>>>>> Otherwise, the enumfmt will report all the formats that the ISC could output.
+> >>>>>> With this rework, the dynamic list of user formats is removed. It makes no
+> >>>>>> more sense to identify at complete time which formats the sensor could emit,
+> >>>>>> and add those into a separate dynamic list.
+> >>>>>> The ISC will start with a simple preconfigured default format, and at
+> >>>>>> link validate time, decide whether it can use the format that is configured
+> >>>>>> on the sink or not.
+> >>>>>>
+> >>>>>> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+> >>>>>> Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
+> >>>>>> ---
+> >>>>>> Changes in v9:
+> >>>>>> - isc_link_validate now static
+> >>>>>>
+> >>>>>> Changes in v7:
+> >>>>>> - minor typos as suggested by Jacopo
+> >>>>>> - small changes, reduce some indentation, modified an index, as suggested by
+> >>>>>> Jacopo
+> >>>>>>
+> >>>>>> Changes in v6:
+> >>>>>> - reworked a bit enum_fmt as suggested by Jacopo
+> >>>>>>
+> >>>>>> Changes in v5:
+> >>>>>> - removed user_formats dynamic list as it is now pointless
+> >>>>>> - greatly simplified the enum_fmt function
+> >>>>>> - removed some init code that was useless now
+> >>>>>>
+> >>>>>> Changes in v4:
+> >>>>>> - moved validation code into link_validate and used media_pipeline_start
+> >>>>>> - merged this patch with the enum_fmt patch which was previously in v3 of
+> >>>>>> the series
+> >>>>>>
+> >>>>>> Changes in v3:
+> >>>>>> - clamp to maximum resolution once the frame size from the subdev is found
+> >>>>>>   drivers/media/platform/atmel/atmel-isc-base.c | 412 ++++++++----------
+> >>>>>>   .../media/platform/atmel/atmel-isc-scaler.c   |   5 +
+> >>>>>>   drivers/media/platform/atmel/atmel-isc.h      |  13 +-
+> >>>>>>   .../media/platform/atmel/atmel-sama5d2-isc.c  |  20 +
+> >>>>>>   .../media/platform/atmel/atmel-sama7g5-isc.c  |  20 +
+> >>>>>>   5 files changed, 236 insertions(+), 234 deletions(-)
+> >>>>>>
+> >>>>>> diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
+> >>>>>> index ee1dda6707a0..fe2c0af58060 100644
+> >>>>>> --- a/drivers/media/platform/atmel/atmel-isc-base.c
+> >>>>>> +++ b/drivers/media/platform/atmel/atmel-isc-base.c
+> >>>>>> @@ -36,11 +36,6 @@ static unsigned int debug;
+> >>>>>>   module_param(debug, int, 0644);
+> >>>>>>   MODULE_PARM_DESC(debug, "debug level (0-2)");
+> >>>>>>
+> >>>>>> -static unsigned int sensor_preferred = 1;
+> >>>>>> -module_param(sensor_preferred, uint, 0644);
+> >>>>>> -MODULE_PARM_DESC(sensor_preferred,
+> >>>>>> -              "Sensor is preferred to output the specified format (1-on 0-off), default 1");
+> >>>>>> -
+> >>>>>>   #define ISC_IS_FORMAT_RAW(mbus_code) \
+> >>>>>>        (((mbus_code) & 0xf000) == 0x3000)
+> >>>>>>
+> >>>>>> @@ -337,6 +332,10 @@ static int isc_start_streaming(struct vb2_queue *vq, unsigned int count)
+> >>>>>>        unsigned long flags;
+> >>>>>>        int ret;
+> >>>>>>
+> >>>>>> +     ret = media_pipeline_start(&isc->video_dev.entity, &isc->mpipe);
+> >>>>>
+> >>>>> The pipeline validation is done in start_streaming, but I don't think that
+> >>>>> is the best place: if STREAMON is called before buffers are queued, then
+> >>>>> an invalid pipeline isn't discovered until enough buffers are queued to
+> >>>>> kick off start_streaming.
+> >>>>>
+> >>>>> Drivers like vsp1, omap3isp and the samsung drivers all do this in streamon().
+> >>>>>
+> >>>>> I think that is the correct time to do this.
+> >>>>
+> >>>> Hello Hans,
+> >>>>
+> >>>> Initially (v2, v3) I had this in streamon(). The problem that I faced at
+> >>>> that time was that streamoff was never called, so I could not call
+> >>>> media_pipeline_stop(). Then Jacopo told me to move it to start_streaming
+> >>>> (see change log for v4) , and I did not face any more problems.
+> >>
+> >> Yes indeed, seems I suggested to use media_pipeline_handler in a
+> >> comment on your v3
+> >>
+> >> "at s_stream time your top driver calls media_pipeline_start()"
+> >>
+> >> sorry about that, I should have looked around a bit more carefully and
+> >> notice most drivers do so at vb2 streamon
+> >>
+> >> However I don't see media_pipeline_start being called at all in v3 of
+> >> the patch
+> >>
+> >>> It's a mess. Looking at some drivers I see that omap3isp calls media_pipeline_stop
+> >>> in streamoff (so will have the same problem as you described if VIDIOC_STREAMOFF
+> >>> isn't called), exynos4-is does the same, but it also checks the streaming state in
+> >>> the release() fop callback, so that would fix this problem. And vimc does this
+> >>> in stop_streaming.
+> >>>
+> >>> I'm in favor of fixing this in vb2, that framework knows exactly when this needs
+> >>> to be called.
+> >>
+> >> Are you suggesting to have vb2 to call media_pipeline_start() or is it
+> >> more complex than this ?
+> > 
+> > I think Hans meant adding a .validate() operation to vb2.
+> > 
+> > vb2 is already quite complex, I don't think adding more features is a
+> > good idea. I'd rather have vb2 focus on buffer management only
+> > (.start_streaming() and .stop_streaming() shouldn't have been in there
+> > in my opinion), and handle validation in the .streamon() handler. I'd
+> > expect most drivers that deal with media pipelines to do more work in
+> > .streamon() anyway.
+> 
+> I disagree with that :-)
+> 
+> It's vb2 that keeps track of the streaming state and when what actions
+> need to be taken. Drivers really shouldn't need to care about the ioctls
+> themselves, and just implement the relevant vb2 callbacks. Relying on
+> drivers to handle any of the streaming ioctls is asking for problems,
+> as this shows: most drivers implement this wrong today.
+> 
+> The vb2 framework knows when e.g. the pipeline needs to be started or
+> stopped, and can do this at the best time, without drivers needing to
+> keep track of when streamon/off/release is called. Keep that logic in
+> vb2.
 
-Add an io_uring_register() interface to register fixed workers and
-indicate its work capacity.
-The argument is an array of two elements each is
-    struct {
-    	__s32 nr_workers;
-    	__s32 max_works;
-    }
-(nr_workers, max_works)                        meaning
+Pipeline management and buffer management are two different issues.
+Don't forget about devices that have multiple video nodes, part of the
+same pipeline (possibly a combination of output and capture nodes, or
+all of the same type). Forcing drivers to go through vb2 operations to
+handle the pipeline will be messy, will result in more bloat in vb2, and
+make the result more bug-prone and harder to maintain.
 
-nr_workers or max_works <  -1                  invalid
-nr_workers or max_works == -1           get the old value back
-nr_workers or max_works >=  0        get the old value and set to the
-                                     new value
+If pipeline management is too complex, let's simplify it, new helpers
+can make sense, but not through vb2.
 
-Signed-off-by: Hao Xu <howeyxu@tencent.com>
----
- fs/io-wq.c                    | 101 ++++++++++++++++++++++++++++++++++
- fs/io-wq.h                    |   3 +
- fs/io_uring.c                 |  71 ++++++++++++++++++++++++
- include/uapi/linux/io_uring.h |  11 ++++
- 4 files changed, 186 insertions(+)
-
-diff --git a/fs/io-wq.c b/fs/io-wq.c
-index df2d480395e8..c1e87b29c960 100644
---- a/fs/io-wq.c
-+++ b/fs/io-wq.c
-@@ -1671,6 +1671,107 @@ int io_wq_max_workers(struct io_wq *wq, int *new_count)
- 	return 0;
- }
- 
-+/*
-+ * Set max number of fixed workers and the capacity of private work list,
-+ * returns old value. If new_count is -1, then just return the old value.
-+ */
-+int io_wq_fixed_workers(struct io_wq *wq,
-+			struct io_uring_fixed_worker_arg *new_count)
-+{
-+	struct io_uring_fixed_worker_arg prev[IO_WQ_ACCT_NR];
-+	bool first_node = true;
-+	int i, node;
-+	bool readonly[2] = {
-+		(new_count[0].nr_workers == -1 && new_count[0].max_works == -1),
-+		(new_count[1].nr_workers == -1 && new_count[1].max_works == -1),
-+	};
-+
-+	BUILD_BUG_ON((int) IO_WQ_ACCT_BOUND   != (int) IO_WQ_BOUND);
-+	BUILD_BUG_ON((int) IO_WQ_ACCT_UNBOUND != (int) IO_WQ_UNBOUND);
-+	BUILD_BUG_ON((int) IO_WQ_ACCT_NR      != 2);
-+
-+	for (i = 0; i < IO_WQ_ACCT_NR; i++) {
-+		if (new_count[i].nr_workers > task_rlimit(current, RLIMIT_NPROC))
-+			new_count[i].nr_workers =
-+				task_rlimit(current, RLIMIT_NPROC);
-+	}
-+
-+	rcu_read_lock();
-+	for_each_node(node) {
-+		int j;
-+		struct io_wqe *wqe = wq->wqes[node];
-+
-+		for (i = 0; i < IO_WQ_ACCT_NR; i++) {
-+			struct io_wqe_acct *acct = &wqe->fixed_acct[i];
-+			int *nr_fixed, *max_works;
-+			struct io_worker **fixed_workers;
-+			int nr = new_count[i].nr_workers;
-+
-+			raw_spin_lock(&acct->lock);
-+			nr_fixed = &acct->nr_fixed;
-+			max_works = &acct->max_works;
-+			fixed_workers = acct->fixed_workers;
-+			if (first_node) {
-+				prev[i].nr_workers = *nr_fixed;
-+				prev[i].max_works = *max_works;
-+			}
-+			if (readonly[i]) {
-+				raw_spin_unlock(&acct->lock);
-+				continue;
-+			}
-+			if (*nr_fixed == nr || nr == -1) {
-+				*max_works = new_count[i].max_works;
-+				raw_spin_unlock(&acct->lock);
-+				continue;
-+			}
-+			for (j = 0; j < *nr_fixed; j++) {
-+				struct io_worker *worker = fixed_workers[j];
-+
-+				if (!worker)
-+					continue;
-+				worker->flags |= IO_WORKER_F_EXIT;
-+				/*
-+				 * Mark index to -1 to avoid false deletion
-+				 * in io_fixed_worker_exit()
-+				 */
-+				worker->index = -1;
-+				/*
-+				 * Once a worker is in fixed_workers array
-+				 * it is definitely there before we release
-+				 * the acct->lock below. That's why we don't
-+				 * need to increment the worker->ref here.
-+				 */
-+				wake_up_process(worker->task);
-+			}
-+			kfree(fixed_workers);
-+			acct->fixed_workers = NULL;
-+			*nr_fixed = 0;
-+			*max_works = new_count[i].max_works;
-+			acct->fixed_workers = kzalloc_node(
-+						sizeof(*fixed_workers) * nr,
-+						GFP_KERNEL, wqe->node);
-+			if (!acct->fixed_workers) {
-+				raw_spin_unlock(&acct->lock);
-+				return -ENOMEM;
-+			}
-+			raw_spin_unlock(&acct->lock);
-+			for (j = 0; j < nr; j++)
-+				io_wqe_create_worker(wqe, acct);
-+
-+			acct->fixed_worker_registered = !!nr;
-+		}
-+		first_node = false;
-+	}
-+	rcu_read_unlock();
-+
-+	for (i = 0; i < IO_WQ_ACCT_NR; i++) {
-+		new_count[i].nr_workers = prev[i].nr_workers;
-+		new_count[i].max_works = prev[i].max_works;
-+	}
-+
-+	return 0;
-+}
-+
- static __init int io_wq_init(void)
- {
- 	int ret;
-diff --git a/fs/io-wq.h b/fs/io-wq.h
-index ef3ce577e6b7..bf90488b0283 100644
---- a/fs/io-wq.h
-+++ b/fs/io-wq.h
-@@ -2,6 +2,7 @@
- #define INTERNAL_IO_WQ_H
- 
- #include <linux/refcount.h>
-+#include <uapi/linux/io_uring.h>
- 
- struct io_wq;
- 
-@@ -202,6 +203,8 @@ void io_wq_hash_work(struct io_wq_work *work, void *val);
- 
- int io_wq_cpu_affinity(struct io_wq *wq, cpumask_var_t mask);
- int io_wq_max_workers(struct io_wq *wq, int *new_count);
-+int io_wq_fixed_workers(struct io_wq *wq,
-+			struct io_uring_fixed_worker_arg *new_count);
- 
- static inline bool io_wq_is_hashed(struct io_wq_work *work)
- {
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 1e7466079af7..c0c7c1fd94fd 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -11806,6 +11806,71 @@ static __cold int io_register_iowq_max_workers(struct io_ring_ctx *ctx,
- 	return ret;
- }
- 
-+static __cold int io_register_iowq_fixed_workers(struct io_ring_ctx *ctx,
-+						 void __user *arg)
-+	__must_hold(&ctx->uring_lock)
-+{
-+	struct io_uring_task *tctx = NULL;
-+	struct io_sq_data *sqd = NULL;
-+	struct io_uring_fixed_worker_arg new_count[2];
-+	int i, ret;
-+
-+	if (copy_from_user(new_count, arg, sizeof(new_count)))
-+		return -EFAULT;
-+	for (i = 0; i < ARRAY_SIZE(new_count); i++) {
-+		int nr_workers = new_count[i].nr_workers;
-+		int max_works = new_count[i].max_works;
-+
-+		if (nr_workers < -1 || max_works < -1)
-+			return -EINVAL;
-+	}
-+
-+	if (ctx->flags & IORING_SETUP_SQPOLL) {
-+		sqd = ctx->sq_data;
-+		if (sqd) {
-+			/*
-+			 * Observe the correct sqd->lock -> ctx->uring_lock
-+			 * ordering. Fine to drop uring_lock here, we hold
-+			 * a ref to the ctx.
-+			 */
-+			refcount_inc(&sqd->refs);
-+			mutex_unlock(&ctx->uring_lock);
-+			mutex_lock(&sqd->lock);
-+			mutex_lock(&ctx->uring_lock);
-+			if (sqd->thread)
-+				tctx = sqd->thread->io_uring;
-+		}
-+	} else {
-+		tctx = current->io_uring;
-+	}
-+
-+	if (tctx && tctx->io_wq) {
-+		ret = io_wq_fixed_workers(tctx->io_wq, new_count);
-+		if (ret)
-+			goto err;
-+	} else {
-+		memset(new_count, -1, sizeof(new_count));
-+	}
-+
-+	if (sqd) {
-+		mutex_unlock(&sqd->lock);
-+		io_put_sq_data(sqd);
-+	}
-+
-+	if (copy_to_user(arg, new_count, sizeof(new_count)))
-+		return -EFAULT;
-+
-+	/* that's it for SQPOLL, only the SQPOLL task creates requests */
-+	if (sqd)
-+		return 0;
-+
-+err:
-+	if (sqd) {
-+		mutex_unlock(&sqd->lock);
-+		io_put_sq_data(sqd);
-+	}
-+	return ret;
-+}
- static int __io_uring_register(struct io_ring_ctx *ctx, unsigned opcode,
- 			       void __user *arg, unsigned nr_args)
- 	__releases(ctx->uring_lock)
-@@ -11934,6 +11999,12 @@ static int __io_uring_register(struct io_ring_ctx *ctx, unsigned opcode,
- 	case IORING_UNREGISTER_RING_FDS:
- 		ret = io_ringfd_unregister(ctx, arg, nr_args);
- 		break;
-+	case IORING_REGISTER_IOWQ_FIXED_WORKERS:
-+		ret = -EINVAL;
-+		if (!arg || nr_args != 2)
-+			break;
-+		ret = io_register_iowq_fixed_workers(ctx, arg);
-+		break;
- 	default:
- 		ret = -EINVAL;
- 		break;
-diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
-index fad63564678a..f0ec9523ab42 100644
---- a/include/uapi/linux/io_uring.h
-+++ b/include/uapi/linux/io_uring.h
-@@ -360,6 +360,12 @@ enum {
- 	IORING_REGISTER_RING_FDS		= 20,
- 	IORING_UNREGISTER_RING_FDS		= 21,
- 
-+	/* set number of fixed workers and number
-+	 * of works in a private work list which
-+	 * belongs to a fixed worker
-+	 */
-+	IORING_REGISTER_IOWQ_FIXED_WORKERS	= 22,
-+
- 	/* this goes last */
- 	IORING_REGISTER_LAST
- };
-@@ -457,4 +463,9 @@ struct io_uring_getevents_arg {
- 	__u64	ts;
- };
- 
-+struct io_uring_fixed_worker_arg {
-+	__s32	nr_workers;
-+	__s32	max_works;
-+};
-+
- #endif
 -- 
-2.36.0
+Regards,
 
+Laurent Pinchart
