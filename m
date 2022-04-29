@@ -2,125 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A09DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:42:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 017B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357754AbiD2Kp4 (ORCPT
+        id S1357808AbiD2Kp7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:45:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57366 "EHLO
+        Fri, 29 Apr 2022 06:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357652AbiD2KpF (ORCPT
+        with ESMTP id S1357693AbiD2KpS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:45:05 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D290C6654;
-        Fri, 29 Apr 2022 03:41:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651228903; x=1682764903;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ZIx9dKuH/3orJrOjJjxDcAuttBoqSt/MgnaZFFvvMus=;
-  b=h5cZ1GwRfhciSbH0/oBU5Dmhe/bPcYchShadbje6fJJ8hHk1WCOaDtwy
-   QyYTxUbnJAgW7YpW5Clzfhk9WOlV2OXHyfFR1MrNKNaDaehSmKuYLmmAv
-   +ySCF9O9grQTobIUxzEdRampJ4xfirr78uMh+ANBYUgigx2nbXAoIkHJU
-   /3gxK+JenyxtaYCTMzPG/e9MGxEqu7bMJwMM5Pibtgz7S4K7cfwNit9w0
-   E2AmKsnNr5wLm/AoBPBKK9Vkr4+VgoovN0aC2cj+lGKXMVLHXmhTpXBvS
-   MD0gqHzKhiRHKXMdMNklIoPJBP7r7ZfhwNULXZyL01tPlvgaSrgbAfg+G
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
-   d="scan'208";a="161799773"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Apr 2022 03:41:42 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 29 Apr 2022 03:41:41 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 29 Apr 2022 03:41:38 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        Cyril Jean <Cyril.Jean@microchip.com>,
-        <devicetree@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, "Arnd Bergmann" <arnd@arndb.de>
-Subject: [PATCH v1 5/8] riscv: dts: microchip: make the fabric dtsi board specific
-Date:   Fri, 29 Apr 2022 11:40:38 +0100
-Message-ID: <20220429104040.197161-6-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220429104040.197161-1-conor.dooley@microchip.com>
-References: <20220429104040.197161-1-conor.dooley@microchip.com>
+        Fri, 29 Apr 2022 06:45:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8880C6EEB;
+        Fri, 29 Apr 2022 03:41:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F90B6235C;
+        Fri, 29 Apr 2022 10:41:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B298C385A4;
+        Fri, 29 Apr 2022 10:41:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651228915;
+        bh=VtJerBDQCYbUCgpxXLdGU8t1nlWfii6eDosdmY9hF0w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qsIvg/8koiR/jibFaflGX+sd8V0/R6CX0ojZ3EUhf6ZesaWD3PI8z2SFe1I4M7177
+         f6XSLQJsNsmzYwLVcNpt0OO5ZMIUePOCNKF2/0lrbzRLTk0T6Vvo7SeNQgna7g7CB6
+         KWEOttgo4BN8/+Mk1C1lQW1NCDRKmFKdEIbZWeP4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 4.19 04/12] hamradio: remove needs_free_netdev to avoid UAF
+Date:   Fri, 29 Apr 2022 12:41:21 +0200
+Message-Id: <20220429104048.588599421@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220429104048.459089941@linuxfoundation.org>
+References: <20220429104048.459089941@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently mpfs-fabric.dtsi is included by mpfs.dtsi - which is fine
-currently since there is only one board with this SoC upstream.
+From: Lin Ma <linma@zju.edu.cn>
 
-However if another board was added, it would include the fabric contents
-of the Icicle Kit's reference design. To avoid this, rename
-mpfs-fabric.dtsi to mpfs-icicle-kit-fabric.dtsi & include it in the dts
-rather than mpfs.dtsi.
+commit 81b1d548d00bcd028303c4f3150fa753b9b8aa71 upstream.
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+The former patch "defer 6pack kfree after unregister_netdev" reorders
+the kfree of two buffer after the unregister_netdev to prevent the race
+condition. It also adds free_netdev() function in sixpack_close(), which
+is a direct copy from the similar code in mkiss_close().
+
+However, in sixpack driver, the flag needs_free_netdev is set to true in
+sp_setup(), hence the unregister_netdev() will free the netdev
+automatically. Therefore, as the sp is netdev_priv, use-after-free
+occurs.
+
+This patch removes the needs_free_netdev = true and just let the
+free_netdev to finish this deallocation task.
+
+Fixes: 0b9111922b1f ("hamradio: defer 6pack kfree after unregister_netdev")
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Link: https://lore.kernel.org/r/20211111141402.7551-1-linma@zju.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../microchip/{mpfs-fabric.dtsi => mpfs-icicle-kit-fabric.dtsi} | 2 ++
- arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts               | 1 +
- arch/riscv/boot/dts/microchip/mpfs.dtsi                         | 1 -
- 3 files changed, 3 insertions(+), 1 deletion(-)
- rename arch/riscv/boot/dts/microchip/{mpfs-fabric.dtsi => mpfs-icicle-kit-fabric.dtsi} (93%)
+ drivers/net/hamradio/6pack.c |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-fabric.dtsi b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-similarity index 93%
-rename from arch/riscv/boot/dts/microchip/mpfs-fabric.dtsi
-rename to arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-index ccaac3371cf9..7ee592e78c05 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-fabric.dtsi
-+++ b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-@@ -2,6 +2,8 @@
- /* Copyright (c) 2020-2021 Microchip Technology Inc */
- 
- / {
-+	compatible = "microchip,mpfs-icicle-reference-rtlv2203";
-+
- 	core_pwm0: pwm@41000000 {
- 		compatible = "microchip,corepwm-rtl-v4";
- 		reg = <0x0 0x41000000 0x0 0xF0>;
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-index 84b0015dfd47..739dfa52bed1 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-+++ b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-@@ -4,6 +4,7 @@
- /dts-v1/;
- 
- #include "mpfs.dtsi"
-+#include "mpfs-icicle-kit-fabric.dtsi"
- 
- /* Clock frequency (in Hz) of the rtcclk */
- #define RTCCLK_FREQ		1000000
-diff --git a/arch/riscv/boot/dts/microchip/mpfs.dtsi b/arch/riscv/boot/dts/microchip/mpfs.dtsi
-index cc3386068c2d..695c4e2807f5 100644
---- a/arch/riscv/boot/dts/microchip/mpfs.dtsi
-+++ b/arch/riscv/boot/dts/microchip/mpfs.dtsi
-@@ -3,7 +3,6 @@
- 
- /dts-v1/;
- #include "dt-bindings/clock/microchip,mpfs-clock.h"
--#include "mpfs-fabric.dtsi"
- 
- / {
- 	#address-cells = <2>;
--- 
-2.35.2
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -311,7 +311,6 @@ static void sp_setup(struct net_device *
+ {
+ 	/* Finish setting up the DEVICE info. */
+ 	dev->netdev_ops		= &sp_netdev_ops;
+-	dev->needs_free_netdev	= true;
+ 	dev->mtu		= SIXP_MTU;
+ 	dev->hard_header_len	= AX25_MAX_HEADER_LEN;
+ 	dev->header_ops 	= &ax25_header_ops;
+
 
