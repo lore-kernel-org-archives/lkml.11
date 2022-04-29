@@ -2,129 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 066F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1863C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359271AbiD2MfM (ORCPT
+        id S1359225AbiD2MgE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 08:35:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54660 "EHLO
+        Fri, 29 Apr 2022 08:36:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359220AbiD2MfI (ORCPT
+        with ESMTP id S238640AbiD2MgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 08:35:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00986C90CA;
-        Fri, 29 Apr 2022 05:31:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92897621B7;
-        Fri, 29 Apr 2022 12:31:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EE14C385B4;
-        Fri, 29 Apr 2022 12:31:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651235509;
-        bh=SR30SRUGpIrkdXGfxFhbhtwcmEyED8PObTGdvWsRM14=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y3ixgwhgWJLEfARoa3da3astT6U/FbRks8z3kgcvOsg79q+rLvyJ2qKg2H5JdxeE+
-         gYDIMnLGHHZEx3y4taU3uC8mQSMtrItRW5MlajvOvP4ts/bsdxGqnksVcGEQxKgQ4K
-         Qg7Xiwr9/Ajh5PA3IZZQEVDoV1oqbS8W2KnMOAnOIa2hfycJ6qzAAkN01oCCOYMzeD
-         xH3LSsaTufCVdkEDblV1LZyWTDNkCcOnT3rXGylReSPEutZjHgVavYiDgkRKRZSv2y
-         NSiLA1QuyxJ/naJb/PWVs284Rr0GzvCPJHIrunzxbPQtGwtPP7cUBBCh/GBowaiszc
-         741KnnTeixmgw==
-From:   matthias.bgg@kernel.org
-To:     mturquette@baylibre.com, sboyd@kernel.org
-Cc:     allen-kh.cheng@mediatek.com, weiyi.lu@mediatek.com,
-        chun-jie.chen@mediatek.com, linux-kernel@vger.kernel.org,
-        ikjn@chromium.org, miles.chen@mediatek.com, robh+dt@kernel.org,
-        linux-mediatek@lists.infradead.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        angelogioacchino.delregno@collabora.com,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Subject: [PATCH v2 2/2] clk: mediatek: Delete MT8192 msdc gate
-Date:   Fri, 29 Apr 2022 14:31:32 +0200
-Message-Id: <20220429123133.28869-3-matthias.bgg@kernel.org>
+        Fri, 29 Apr 2022 08:36:03 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA01BC90DF;
+        Fri, 29 Apr 2022 05:32:44 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id bv19so15169759ejb.6;
+        Fri, 29 Apr 2022 05:32:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d/OGdX6ezZfA+C3V9bkjavIidBPFXQJ8k9aS4M9oYCU=;
+        b=RNR5FBdfY2fbTwEZHpnPn5nrS4OjzLjJLlmWqKSanKzBjCEiva2xKgiAzqC/oYRkry
+         t5RPSbnerXz+aQS7T1Hf6Yk+c15GvQ2wsguiNc1LS4y/nCDet00oJdqFlkWyr/OUBiWS
+         3JbI0Djze8F0PNReQQjygqVA08gzB7o7QycgZm75Jn9S1qyk3K41naF703kPgzMvBVPa
+         16NviTl86/v83NHgcpR/vGJq4uUnwgsRXf/JZCli4gGdxdcSgejwxW0hQ8s7jcYn9UaW
+         0mTB60RLQ/0/S/Q9bR028GcVUe0I69fuQNPI6XB8u0zIHp0c5d08bIbqRfrv8px6CwRd
+         IQJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d/OGdX6ezZfA+C3V9bkjavIidBPFXQJ8k9aS4M9oYCU=;
+        b=RdvxsRX7RlNOIHdID07Mrrad+B3t75wTk8FAK5TWZS279Zyr320ZCddkrEJ5PD5dDf
+         wT7eBwOcA2XcaUVqcT1QodzZ6X2VZ2ZQMK8sbK4icZiAIrBrRKnfV/uCl0dMSzJIzzKw
+         /nThdpA9z5onN7dUUV5LrD+fXGOFfTw+AuGAyIOyVcST8xNWRbsNTkyHA8XCOQSx2nr2
+         rR8+hflf7gRu5DSTx85oEgqW/SwFejeZb4WdtzxsOxNA+X/Az7L6p4IappGU5hWDXHCW
+         kUk+CBdL6JV3nUMdbmg+iY8Okln3VUAKdwpYwjJySdEGAzjoIRIngcT6PusMcEvMbYXg
+         h6vw==
+X-Gm-Message-State: AOAM533PPJGzPQFTev2mVLroObJGrdrBmkrTGJsoypYgppWi7WvG7Szx
+        QHQhm4ksIgt7f84ttvSSbQ8=
+X-Google-Smtp-Source: ABdhPJx6nxFL98kXdmVpNp7vq698ZpWhXj2R9jvlVWWQzwmDnbBITQOZM6fHRhopcYJ+00jwsMIV4A==
+X-Received: by 2002:a17:906:8306:b0:6f3:da72:5ca1 with SMTP id j6-20020a170906830600b006f3da725ca1mr8025427ejx.606.1651235563426;
+        Fri, 29 Apr 2022 05:32:43 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id hf27-20020a1709072c5b00b006f3ef214e33sm601176ejc.153.2022.04.29.05.32.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 05:32:43 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [PATCH 0/2] PXO fixes for ipq8064 dtsi
+Date:   Fri, 29 Apr 2022 14:29:49 +0200
+Message-Id: <20220429122951.13828-1-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220429123133.28869-1-matthias.bgg@kernel.org>
-References: <20220429123133.28869-1-matthias.bgg@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias Brugger <matthias.bgg@gmail.com>
+This small series is a fix for a long lasting error present in ipq8064
+dtsi. At times the kpss-gcc driver was defined in the dts with
+<&gcc PXO_SRC> a pxo clock. While PXO_SRC exist in the includes, the gcc
+driver never expose it and if a driver try to actually use it the result
+is a kernel panic even before any log is init.
 
-The msdc gate is part of the MMC driver. Delete the not used code.
+To prepare for correct conversion of the different krait drivers to
+parent data and to reflect what is defined in the Documentation with
+actual driver and dts implementation, fix this error by using the now
+defined pxo_board fixed clock.
 
-Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Ansuel Smith (2):
+  ARM: dts: qcom: add syscon and cxo/pxo clock to gcc node for ipq8064
+  ARM: dts: qcom: replace gcc PXO with pxo_board fixed clock
 
----
+ arch/arm/boot/dts/qcom-ipq8064.dtsi | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-Changes in v2:
-- add Reviewed-by tag
-
- drivers/clk/mediatek/clk-mt8192-msdc.c | 21 ---------------------
- 1 file changed, 21 deletions(-)
-
-diff --git a/drivers/clk/mediatek/clk-mt8192-msdc.c b/drivers/clk/mediatek/clk-mt8192-msdc.c
-index 87c3b79b79cf..635f7a0b629a 100644
---- a/drivers/clk/mediatek/clk-mt8192-msdc.c
-+++ b/drivers/clk/mediatek/clk-mt8192-msdc.c
-@@ -12,28 +12,15 @@
- 
- #include <dt-bindings/clock/mt8192-clk.h>
- 
--static const struct mtk_gate_regs msdc_cg_regs = {
--	.set_ofs = 0xb4,
--	.clr_ofs = 0xb4,
--	.sta_ofs = 0xb4,
--};
--
- static const struct mtk_gate_regs msdc_top_cg_regs = {
- 	.set_ofs = 0x0,
- 	.clr_ofs = 0x0,
- 	.sta_ofs = 0x0,
- };
- 
--#define GATE_MSDC(_id, _name, _parent, _shift)	\
--	GATE_MTK(_id, _name, _parent, &msdc_cg_regs, _shift, &mtk_clk_gate_ops_no_setclr_inv)
--
- #define GATE_MSDC_TOP(_id, _name, _parent, _shift)	\
- 	GATE_MTK(_id, _name, _parent, &msdc_top_cg_regs, _shift, &mtk_clk_gate_ops_no_setclr_inv)
- 
--static const struct mtk_gate msdc_clks[] = {
--	GATE_MSDC(CLK_MSDC_AXI_WRAP, "msdc_axi_wrap", "axi_sel", 22),
--};
--
- static const struct mtk_gate msdc_top_clks[] = {
- 	GATE_MSDC_TOP(CLK_MSDC_TOP_AES_0P, "msdc_top_aes_0p", "aes_msdcfde_sel", 0),
- 	GATE_MSDC_TOP(CLK_MSDC_TOP_SRC_0P, "msdc_top_src_0p", "infra_msdc0_src", 1),
-@@ -52,11 +39,6 @@ static const struct mtk_gate msdc_top_clks[] = {
- 	GATE_MSDC_TOP(CLK_MSDC_TOP_AHB2AXI_BRG_AXI, "msdc_top_ahb2axi_brg_axi", "axi_sel", 14),
- };
- 
--static const struct mtk_clk_desc msdc_desc = {
--	.clks = msdc_clks,
--	.num_clks = ARRAY_SIZE(msdc_clks),
--};
--
- static const struct mtk_clk_desc msdc_top_desc = {
- 	.clks = msdc_top_clks,
- 	.num_clks = ARRAY_SIZE(msdc_top_clks),
-@@ -64,9 +46,6 @@ static const struct mtk_clk_desc msdc_top_desc = {
- 
- static const struct of_device_id of_match_clk_mt8192_msdc[] = {
- 	{
--		.compatible = "mediatek,mt8192-msdc",
--		.data = &msdc_desc,
--	}, {
- 		.compatible = "mediatek,mt8192-msdc_top",
- 		.data = &msdc_top_desc,
- 	}, {
 -- 
 2.34.1
 
