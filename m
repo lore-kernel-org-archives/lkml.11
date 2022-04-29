@@ -2,139 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92EDBC43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:35:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17079C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377474AbiD2OiY (ORCPT
+        id S1377492AbiD2Oi0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52482 "EHLO
+        Fri, 29 Apr 2022 10:38:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344646AbiD2OiV (ORCPT
+        with ESMTP id S1350640AbiD2OiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:38:21 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDEC72A71A
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:35:02 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso7185553wma.0
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:35:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MNfUquSBQXRdU8AFXuKgswA3BnrGyLe9et79dGaHCHo=;
-        b=aCrclNQan4DsysNx5+Nj3TiV0fkI/4mECyTS4zEiZJ1dbrslZNfdTJXWueSAZWJnj9
-         DwSOotBRoD0nJ/o2/tSmtSJ5R306TVL+nnpVT5ZaYo5fsHtkNVj8ZEHVmr176n4+JxPx
-         SjomnHzojd/oFkir7xR7lTB3rXs3zZOZtmb3rziM8Pbx95QK36YxjUQC9D7AUyOGlfPJ
-         6pXmo870wnuuYI1pL69PpSShVXLUfeCJy82zRSiD0TAKehsScy7PPWZdcH+jqaCj02QL
-         kFZCgZunayVK8ji/YGjOacvZv+7UCpBUAbWAN+ZvMnrNGupxBZg4rfrn4HU1c5SoPpA/
-         JKcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MNfUquSBQXRdU8AFXuKgswA3BnrGyLe9et79dGaHCHo=;
-        b=i3MNFuPOVGB0T2I3QvWpwl4jnDBTlMtkwod6dVpU/0nTKsTfcpoJgiwubb+1nwf9gD
-         G86Cbv6cNwHnMeG0y80DvPSChITXnBUESXyjZAt8QR6LricAwmcnrLCv9LjSX95z0xYz
-         SZrRjfJNbY06RQa7Y40O5Q0QwUBDcLHp2IsBp+5wQrh9o20SfGi2A10RB5s/wuh+mm0K
-         jZCyal6MVzbH2mKu8MixJmy4+KMyvN71B53zHXQbgvAB1RpnB+7/aReE7jDdMmTLybGb
-         b8mPFTmntFKiktDJ6r2WwszC6j0warCHbCbaVKKhi8x1o6qbfo8dQrZjOMjt1kQaQQEA
-         mDjw==
-X-Gm-Message-State: AOAM53222ARsdhQqcWZJH7IZ15riMouO7Koa2v3AvdmglV3iG3TKtkdm
-        I+t76Q0qfo0CcYsWNQW3IuYG0w==
-X-Google-Smtp-Source: ABdhPJxKHrquOOAsrXP0Ic/O71Wk33ou9E5855eyzUO0XSRyB3TpmdWISR92SDQl7rOKCjBmfNPoLA==
-X-Received: by 2002:a05:600c:2e08:b0:394:24c:2da4 with SMTP id o8-20020a05600c2e0800b00394024c2da4mr3532185wmf.134.1651242901408;
-        Fri, 29 Apr 2022 07:35:01 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id m35-20020a05600c3b2300b00393ebe201a6sm7075995wms.44.2022.04.29.07.35.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 07:35:00 -0700 (PDT)
-Date:   Fri, 29 Apr 2022 15:34:36 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Fenghua Yu <fenghua.yu@intel.com>
-Cc:     Baolu Lu <baolu.lu@linux.intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>, robin.murphy@arm.com,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        iommu <iommu@lists.linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, zhangfei.gao@linaro.org,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Message-ID: <Ymv3fC4xXqe+oMRK@myrica>
-References: <76ec6342-0d7c-7c7b-c132-2892e4048fa1@intel.com>
- <YmavoKkVu+hd+x0M@myrica>
- <22b659c7-e972-7a56-2bd7-8df3b4820d4e@intel.com>
- <YmbO/l5IwfBCHrl8@myrica>
- <8c044e49-74bb-df56-8a60-663013c0910e@intel.com>
- <YmgiQZZyFxsJ+9um@myrica>
- <63582490-a794-fd11-0380-44b27cc660b7@intel.com>
- <YmpSv48aPIbVXqGi@myrica>
- <044595e6-e5d0-26c2-af8e-fc9d06906179@linux.intel.com>
- <YmvtVRlwVJjStXc0@fyu1.sc.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmvtVRlwVJjStXc0@fyu1.sc.intel.com>
+        Fri, 29 Apr 2022 10:38:22 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D566237D4;
+        Fri, 29 Apr 2022 07:35:03 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TE1ble023952;
+        Fri, 29 Apr 2022 14:34:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=+Pd3boeYYOqUdToIy6lpJJ2YBcwWkKSMUxL2UvbDusM=;
+ b=jNrHUS/pBYDQPbFWUWAghjJm+dqdxE5F5A4zbP+Ari9Btc9h+Tfvx/rGcpkhOi2f/pWV
+ /IFBe4uILurpXkAx34h949EDBk5HzRtz3tdCl/AVIEhAN6e18Q8CnpXXPuBGdbinMtWs
+ 3gHaJvouoz8fizD+aTcexiA1zswhFuAVYZOPj9ea2vLkgeT16Znmtr7rIgoYH0SKSTq7
+ 1Y/fBlX0T3ta9FQMm9X5o8OUaL3kr3i7d6DizQGz1+0+mpWVlszvk+TpsVz3atEjK7ZQ
+ SvpgqNk3qw1Hh7r5St2alP1bSZ1evkAOVcbSuHHwWXgRLkC5Npbh38dVEX3pdnctZxwY 1g== 
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqsyj6aqr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 14:34:58 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TEJrxj028887;
+        Fri, 29 Apr 2022 14:34:57 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma03fra.de.ibm.com with ESMTP id 3fm938yc4y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 14:34:57 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TELk1B47317424
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 29 Apr 2022 14:21:46 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CDAFC5204F;
+        Fri, 29 Apr 2022 14:34:54 +0000 (GMT)
+Received: from sig-9-145-61-57.uk.ibm.com (unknown [9.145.61.57])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 549235204E;
+        Fri, 29 Apr 2022 14:34:54 +0000 (GMT)
+Message-ID: <928ea2335e2838919ccbf69ed5a0242ce0358259.camel@linux.ibm.com>
+Subject: Re: [PATCH 24/37] power: add HAS_IOPORT dependencies
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        "open list:SYSTEM RESET/SHUTDOWN DRIVERS" <linux-pm@vger.kernel.org>
+Date:   Fri, 29 Apr 2022 16:34:53 +0200
+In-Reply-To: <20220429135108.2781579-43-schnelle@linux.ibm.com>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+         <20220429135108.2781579-43-schnelle@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: iOfkkkzev1-foE0aZqz_2GmmdC5GTPXH
+X-Proofpoint-ORIG-GUID: iOfkkkzev1-foE0aZqz_2GmmdC5GTPXH
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-29_07,2022-04-28_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ priorityscore=1501 spamscore=0 impostorscore=0 mlxscore=0 malwarescore=0
+ mlxlogscore=410 suspectscore=0 phishscore=0 adultscore=0 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204290080
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 06:51:17AM -0700, Fenghua Yu wrote:
-> Hi, Baolu,
+On Fri, 2022-04-29 at 15:50 +0200, Niklas Schnelle wrote:
+> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
+> not being declared. We thus need to add HAS_IOPORT as dependency for
+> those drivers using them.
 > 
-> On Fri, Apr 29, 2022 at 03:53:57PM +0800, Baolu Lu wrote:
-> > On 2022/4/28 16:39, Jean-Philippe Brucker wrote:
-> > > > The address space is what the OOM killer is after.  That gets refcounted
-> > > > with mmget()/mmput()/mm->mm_users.  The OOM killer is satiated by the
-> > > > page freeing done in __mmput()->exit_mmap().
-> > > > 
-> > > > Also, all the VMAs should be gone after exit_mmap().  So, even if
-> > > > vma->vm_file was holding a reference to a device driver, that reference
-> > > > should be gone by the time __mmdrop() is actually freeing the PASID.
-> > > 
-> > > I agree with all that. The concern was about tearing down the PASID in the
-> > > IOMMU and device from the release() MMU notifier, which would happen in
-> > > exit_mmap(). But doing the teardown at or before __mmdrop() is fine. And
-> > > since the IOMMU drivers need to hold mm->mm_count anyway between bind()
-> > > and unbind(), I think Fenghua's fix works.
-> > 
-> > But I didn't find mmgrab()/mmdrop() get called in both arm and intel
-> > IOMMU drivers.
-> > 
-> > $ git grep mmgrab drivers/iommu/
-> > [no output]
-> > 
-> > Do we need to add these in a separated fix patch, or I missed anything
-> > here?
-> 
-> On both ARM and X86, sva_bind() calls mmu_notifier_register()->mmgrab() and
-> sva_unbind() calls mmu_notifier_unregister()/mmu_notifier_put()->mmdrop().
+> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
 
-Yes, although for Arm I realized the mmu_notifier grab wasn't sufficient
-so I sent a separate fix that should go in 5.18 as well
-https://lore.kernel.org/linux-iommu/20220426130444.300556-1-jean-philippe@linaro.org/
-The Arm driver still touches the arch mm context after mmu_notifier_put().
-I don't think X86 has that problem.
+Sorry everyone. I sent this as PATCH in error while preparing to sent
+the same series as RFC. Since e-mail has no remote delete and I lack a
+time machine let's just all pretend you only got the RFC.
 
-Thanks,
-Jean
-
-> So mm->mm_count are already counted in existing ARM and X86 binding and
-> unbinding. The fix patch just frees the PASID in __mmdrop() after
-> no more mm->mm_count.
-> 
-> There is no need to add extra  mmgrab() and mmdrop() pair.
-> 
-> Thanks.
-> 
-> -Fenghua
-> 
->  
