@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B267C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:46:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CB11C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:46:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358209AbiD2Ktj (ORCPT
+        id S1356307AbiD2Ktt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58234 "EHLO
+        Fri, 29 Apr 2022 06:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358103AbiD2Ksn (ORCPT
+        with ESMTP id S1358149AbiD2Ksz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:48:43 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F2CC8AA5;
-        Fri, 29 Apr 2022 03:43:49 -0700 (PDT)
+        Fri, 29 Apr 2022 06:48:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBBACAB84;
+        Fri, 29 Apr 2022 03:44:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 40D76CE31AD;
-        Fri, 29 Apr 2022 10:43:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 132B3C385A4;
-        Fri, 29 Apr 2022 10:43:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 983B2B83406;
+        Fri, 29 Apr 2022 10:43:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 707A7C385A7;
+        Fri, 29 Apr 2022 10:43:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651229026;
-        bh=mWPHCwfnorDUKoGwIR8JWWT0hdTgZibNfC/ufegyDYQ=;
+        s=korg; t=1651229038;
+        bh=OBsWue1A2fhd8M5Du5vxJ4LxAot1H5ZCUuTpoLcQ89A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pcjgSnKo0nQCkc2oS+hneev0w479l6el8OjhqpDJ3Tm9v5EeYYLK7zwvJfmLcEb8o
-         aToX36o5hIseCpVMHAAFLXxwUcbjSKGUniIhe+5eY11w0KL/sRiKpzjEZOYxjqE3M5
-         Z4PA6IYcf9JNOkNGvauuC2k4cXgdlHhP00Cye/no=
+        b=gHDMedxxRWHDe1CuKWSs769B/3y4c83kQvmRyg0twdoawyhY3RWy8amawZpgNxD5E
+         Dv1tjG8NVBrnuzOQ5boq95Vea4MKOefNkM1/lnsfLXtUL3qiMJpe+An6qOefQ2ef9e
+         vjT5kcyhYMdLpF+BVtBSnHP1TSrodTRFFVqmkZgE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.15 06/33] bpf: Introduce MEM_RDONLY flag
-Date:   Fri, 29 Apr 2022 12:41:53 +0200
-Message-Id: <20220429104052.529152711@linuxfoundation.org>
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
+Subject: [PATCH 5.15 10/33] bpf/selftests: Test PTR_TO_RDONLY_MEM
+Date:   Fri, 29 Apr 2022 12:41:57 +0200
+Message-Id: <20220429104052.643178141@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220429104052.345760505@linuxfoundation.org>
 References: <20220429104052.345760505@linuxfoundation.org>
@@ -51,253 +52,89 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Hao Luo <haoluo@google.com>
 
-commit 20b2aff4bc15bda809f994761d5719827d66c0b4 upstream.
+commit 9497c458c10b049438ef6e6ddda898edbc3ec6a8 upstream.
 
-This patch introduce a flag MEM_RDONLY to tag a reg value
-pointing to read-only memory. It makes the following changes:
-
-1. PTR_TO_RDWR_BUF -> PTR_TO_BUF
-2. PTR_TO_RDONLY_BUF -> PTR_TO_BUF | MEM_RDONLY
+This test verifies that a ksym of non-struct can not be directly
+updated.
 
 Signed-off-by: Hao Luo <haoluo@google.com>
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20211217003152.48334-6-haoluo@google.com
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20211217003152.48334-10-haoluo@google.com
 Cc: stable@vger.kernel.org # 5.15.x
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/bpf.h       |    8 ++--
- kernel/bpf/btf.c          |    3 -
- kernel/bpf/map_iter.c     |    4 +-
- kernel/bpf/verifier.c     |   84 +++++++++++++++++++++++++++-------------------
- net/core/bpf_sk_storage.c |    2 -
- net/core/sock_map.c       |    2 -
- 6 files changed, 60 insertions(+), 43 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/ksyms_btf.c             |   14 ++++
+ tools/testing/selftests/bpf/progs/test_ksyms_btf_write_check.c |   29 ++++++++++
+ 2 files changed, 43 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_btf_write_check.c
 
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -307,7 +307,10 @@ enum bpf_type_flag {
- 	/* PTR may be NULL. */
- 	PTR_MAYBE_NULL		= BIT(0 + BPF_BASE_TYPE_BITS),
+--- a/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
++++ b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+@@ -7,6 +7,7 @@
+ #include "test_ksyms_btf.skel.h"
+ #include "test_ksyms_btf_null_check.skel.h"
+ #include "test_ksyms_weak.skel.h"
++#include "test_ksyms_btf_write_check.skel.h"
  
--	__BPF_TYPE_LAST_FLAG	= PTR_MAYBE_NULL,
-+	/* MEM is read-only. */
-+	MEM_RDONLY		= BIT(1 + BPF_BASE_TYPE_BITS),
-+
-+	__BPF_TYPE_LAST_FLAG	= MEM_RDONLY,
- };
+ static int duration;
  
- /* Max number of base types. */
-@@ -488,8 +491,7 @@ enum bpf_reg_type {
- 	 * an explicit null check is required for this struct.
- 	 */
- 	PTR_TO_MEM,		 /* reg points to valid memory region */
--	PTR_TO_RDONLY_BUF,	 /* reg points to a readonly buffer */
--	PTR_TO_RDWR_BUF,	 /* reg points to a read/write buffer */
-+	PTR_TO_BUF,		 /* reg points to a read/write buffer */
- 	PTR_TO_PERCPU_BTF_ID,	 /* reg points to a percpu kernel variable */
- 	PTR_TO_FUNC,		 /* reg points to a bpf program function */
- 	__BPF_REG_TYPE_MAX,
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -4804,8 +4804,7 @@ bool btf_ctx_access(int off, int size, e
- 
- 		type = base_type(ctx_arg_info->reg_type);
- 		flag = type_flag(ctx_arg_info->reg_type);
--		if (ctx_arg_info->offset == off &&
--		    (type == PTR_TO_RDWR_BUF || type == PTR_TO_RDONLY_BUF) &&
-+		if (ctx_arg_info->offset == off && type == PTR_TO_BUF &&
- 		    (flag & PTR_MAYBE_NULL)) {
- 			info->reg_type = ctx_arg_info->reg_type;
- 			return true;
---- a/kernel/bpf/map_iter.c
-+++ b/kernel/bpf/map_iter.c
-@@ -174,9 +174,9 @@ static const struct bpf_iter_reg bpf_map
- 	.ctx_arg_info_size	= 2,
- 	.ctx_arg_info		= {
- 		{ offsetof(struct bpf_iter__bpf_map_elem, key),
--		  PTR_TO_RDONLY_BUF | PTR_MAYBE_NULL },
-+		  PTR_TO_BUF | PTR_MAYBE_NULL | MEM_RDONLY },
- 		{ offsetof(struct bpf_iter__bpf_map_elem, value),
--		  PTR_TO_RDWR_BUF | PTR_MAYBE_NULL },
-+		  PTR_TO_BUF | PTR_MAYBE_NULL },
- 	},
- };
- 
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -458,6 +458,11 @@ static bool reg_type_may_be_refcounted_o
- 		base_type(type) == PTR_TO_MEM;
+@@ -109,6 +110,16 @@ cleanup:
+ 	test_ksyms_weak__destroy(skel);
  }
  
-+static bool type_is_rdonly_mem(u32 type)
++static void test_write_check(void)
 +{
-+	return type & MEM_RDONLY;
++	struct test_ksyms_btf_write_check *skel;
++
++	skel = test_ksyms_btf_write_check__open_and_load();
++	ASSERT_ERR_PTR(skel, "unexpected load of a prog writing to ksym memory\n");
++
++	test_ksyms_btf_write_check__destroy(skel);
 +}
 +
- static bool arg_type_may_be_refcounted(enum bpf_arg_type type)
+ void test_ksyms_btf(void)
  {
- 	return type == ARG_PTR_TO_SOCK_COMMON;
-@@ -533,7 +538,7 @@ static bool is_cmpxchg_insn(const struct
- static const char *reg_type_str(struct bpf_verifier_env *env,
- 				enum bpf_reg_type type)
- {
--	char postfix[16] = {0};
-+	char postfix[16] = {0}, prefix[16] = {0};
- 	static const char * const str[] = {
- 		[NOT_INIT]		= "?",
- 		[SCALAR_VALUE]		= "inv",
-@@ -553,8 +558,7 @@ static const char *reg_type_str(struct b
- 		[PTR_TO_BTF_ID]		= "ptr_",
- 		[PTR_TO_PERCPU_BTF_ID]	= "percpu_ptr_",
- 		[PTR_TO_MEM]		= "mem",
--		[PTR_TO_RDONLY_BUF]	= "rdonly_buf",
--		[PTR_TO_RDWR_BUF]	= "rdwr_buf",
-+		[PTR_TO_BUF]		= "buf",
- 		[PTR_TO_FUNC]		= "func",
- 		[PTR_TO_MAP_KEY]	= "map_key",
- 	};
-@@ -567,8 +571,11 @@ static const char *reg_type_str(struct b
- 			strncpy(postfix, "_or_null", 16);
- 	}
+ 	int percpu_datasec;
+@@ -136,4 +147,7 @@ void test_ksyms_btf(void)
  
--	snprintf(env->type_str_buf, TYPE_STR_BUF_LEN, "%s%s",
--		 str[base_type(type)], postfix);
-+	if (type & MEM_RDONLY)
-+		strncpy(prefix, "rdonly_", 16);
+ 	if (test__start_subtest("weak_ksyms"))
+ 		test_weak_syms();
 +
-+	snprintf(env->type_str_buf, TYPE_STR_BUF_LEN, "%s%s%s",
-+		 prefix, str[base_type(type)], postfix);
- 	return env->type_str_buf;
++	if (test__start_subtest("write_check"))
++		test_write_check();
  }
- 
-@@ -2546,8 +2553,7 @@ static bool is_spillable_regtype(enum bp
- 	case PTR_TO_TCP_SOCK:
- 	case PTR_TO_XDP_SOCK:
- 	case PTR_TO_BTF_ID:
--	case PTR_TO_RDONLY_BUF:
--	case PTR_TO_RDWR_BUF:
-+	case PTR_TO_BUF:
- 	case PTR_TO_PERCPU_BTF_ID:
- 	case PTR_TO_MEM:
- 	case PTR_TO_FUNC:
-@@ -4275,22 +4281,28 @@ static int check_mem_access(struct bpf_v
- 	} else if (reg->type == CONST_PTR_TO_MAP) {
- 		err = check_ptr_to_map_access(env, regs, regno, off, size, t,
- 					      value_regno);
--	} else if (reg->type == PTR_TO_RDONLY_BUF) {
--		if (t == BPF_WRITE) {
--			verbose(env, "R%d cannot write into %s\n",
--				regno, reg_type_str(env, reg->type));
--			return -EACCES;
-+	} else if (base_type(reg->type) == PTR_TO_BUF) {
-+		bool rdonly_mem = type_is_rdonly_mem(reg->type);
-+		const char *buf_info;
-+		u32 *max_access;
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_ksyms_btf_write_check.c
+@@ -0,0 +1,29 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2021 Google */
 +
-+		if (rdonly_mem) {
-+			if (t == BPF_WRITE) {
-+				verbose(env, "R%d cannot write into %s\n",
-+					regno, reg_type_str(env, reg->type));
-+				return -EACCES;
-+			}
-+			buf_info = "rdonly";
-+			max_access = &env->prog->aux->max_rdonly_access;
-+		} else {
-+			buf_info = "rdwr";
-+			max_access = &env->prog->aux->max_rdwr_access;
- 		}
++#include "vmlinux.h"
 +
- 		err = check_buffer_access(env, reg, regno, off, size, false,
--					  "rdonly",
--					  &env->prog->aux->max_rdonly_access);
--		if (!err && value_regno >= 0)
--			mark_reg_unknown(env, regs, value_regno);
--	} else if (reg->type == PTR_TO_RDWR_BUF) {
--		err = check_buffer_access(env, reg, regno, off, size, false,
--					  "rdwr",
--					  &env->prog->aux->max_rdwr_access);
--		if (!err && t == BPF_READ && value_regno >= 0)
-+					  buf_info, max_access);
++#include <bpf/bpf_helpers.h>
 +
-+		if (!err && value_regno >= 0 && (rdonly_mem || t == BPF_READ))
- 			mark_reg_unknown(env, regs, value_regno);
- 	} else {
- 		verbose(env, "R%d invalid mem access '%s'\n", regno,
-@@ -4551,8 +4563,10 @@ static int check_helper_mem_access(struc
- 				   struct bpf_call_arg_meta *meta)
- {
- 	struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
-+	const char *buf_info;
-+	u32 *max_access;
- 
--	switch (reg->type) {
-+	switch (base_type(reg->type)) {
- 	case PTR_TO_PACKET:
- 	case PTR_TO_PACKET_META:
- 		return check_packet_access(env, regno, reg->off, access_size,
-@@ -4571,18 +4585,20 @@ static int check_helper_mem_access(struc
- 		return check_mem_region_access(env, regno, reg->off,
- 					       access_size, reg->mem_size,
- 					       zero_size_allowed);
--	case PTR_TO_RDONLY_BUF:
--		if (meta && meta->raw_mode)
--			return -EACCES;
--		return check_buffer_access(env, reg, regno, reg->off,
--					   access_size, zero_size_allowed,
--					   "rdonly",
--					   &env->prog->aux->max_rdonly_access);
--	case PTR_TO_RDWR_BUF:
-+	case PTR_TO_BUF:
-+		if (type_is_rdonly_mem(reg->type)) {
-+			if (meta && meta->raw_mode)
-+				return -EACCES;
++extern const int bpf_prog_active __ksym; /* int type global var. */
 +
-+			buf_info = "rdonly";
-+			max_access = &env->prog->aux->max_rdonly_access;
-+		} else {
-+			buf_info = "rdwr";
-+			max_access = &env->prog->aux->max_rdwr_access;
-+		}
- 		return check_buffer_access(env, reg, regno, reg->off,
- 					   access_size, zero_size_allowed,
--					   "rdwr",
--					   &env->prog->aux->max_rdwr_access);
-+					   buf_info, max_access);
- 	case PTR_TO_STACK:
- 		return check_stack_range_initialized(
- 				env,
-@@ -4858,8 +4874,8 @@ static const struct bpf_reg_types mem_ty
- 		PTR_TO_MAP_KEY,
- 		PTR_TO_MAP_VALUE,
- 		PTR_TO_MEM,
--		PTR_TO_RDONLY_BUF,
--		PTR_TO_RDWR_BUF,
-+		PTR_TO_BUF,
-+		PTR_TO_BUF | MEM_RDONLY,
- 	},
- };
- 
---- a/net/core/bpf_sk_storage.c
-+++ b/net/core/bpf_sk_storage.c
-@@ -929,7 +929,7 @@ static struct bpf_iter_reg bpf_sk_storag
- 		{ offsetof(struct bpf_iter__bpf_sk_storage_map, sk),
- 		  PTR_TO_BTF_ID_OR_NULL },
- 		{ offsetof(struct bpf_iter__bpf_sk_storage_map, value),
--		  PTR_TO_RDWR_BUF | PTR_MAYBE_NULL },
-+		  PTR_TO_BUF | PTR_MAYBE_NULL },
- 	},
- 	.seq_info		= &iter_seq_info,
- };
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -1575,7 +1575,7 @@ static struct bpf_iter_reg sock_map_iter
- 	.ctx_arg_info_size	= 2,
- 	.ctx_arg_info		= {
- 		{ offsetof(struct bpf_iter__sockmap, key),
--		  PTR_TO_RDONLY_BUF | PTR_MAYBE_NULL },
-+		  PTR_TO_BUF | PTR_MAYBE_NULL | MEM_RDONLY },
- 		{ offsetof(struct bpf_iter__sockmap, sk),
- 		  PTR_TO_BTF_ID_OR_NULL },
- 	},
++SEC("raw_tp/sys_enter")
++int handler(const void *ctx)
++{
++	int *active;
++	__u32 cpu;
++
++	cpu = bpf_get_smp_processor_id();
++	active = (int *)bpf_per_cpu_ptr(&bpf_prog_active, cpu);
++	if (active) {
++		/* Kernel memory obtained from bpf_{per,this}_cpu_ptr
++		 * is read-only, should _not_ pass verification.
++		 */
++		/* WRITE_ONCE */
++		*(volatile int *)active = -1;
++	}
++
++	return 0;
++}
++
++char _license[] SEC("license") = "GPL";
 
 
