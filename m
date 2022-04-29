@@ -2,134 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86849C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 13:57:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6378C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 13:57:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232037AbiD2OAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54332 "EHLO
+        id S1377062AbiD2OAZ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 10:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376829AbiD2N5V (ORCPT
+        with ESMTP id S1376762AbiD2N5j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 09:57:21 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6944CFB8C;
-        Fri, 29 Apr 2022 06:52:12 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TBjftJ027272;
-        Fri, 29 Apr 2022 13:51:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=+C8FlDhVWJtR+w96yXAxLPw9WZXAz/K2Ln7dWnWiEIo=;
- b=CPx7e9v83GZ1g/pvUbuUZVqNFk2aW1a7ec8+ZlRY/qM/6L+ahZ+RNCVmKJnRwzqNV++D
- cxdl6/KXnal3HMjBIqG/0l2kFd8t3mskkR2Qum9g/iqkWDJOeyQ+45TQW5E72UYPl4+N
- /z2LwxBgI2F5lN3diyCnPqevLJej16CiWu2+sN2AVjw98MKp+gTf6tmacdwY+XMjxj+M
- oAgTc8vLyi9nUemQ2LmHn+PK+x/zKLZbcZZVL8+zXtFiHhlq+s7ZnlAy/mkX+bBLB1lG
- oS3em+6Yq+T+5eMyCjAa6H1LvlB0GP+rIqPbQxPH2bxkNLgzuaB3BNRH0ssmpliA53yc nw== 
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqundujts-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 13:51:46 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TDSWZU024572;
-        Fri, 29 Apr 2022 13:51:43 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma01fra.de.ibm.com with ESMTP id 3fm938yac7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 13:51:43 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TDpfYQ51904820
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 29 Apr 2022 13:51:41 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4835B4C04E;
-        Fri, 29 Apr 2022 13:51:41 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F13184C040;
-        Fri, 29 Apr 2022 13:51:40 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 29 Apr 2022 13:51:40 +0000 (GMT)
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-watchdog@vger.kernel.org (open list:WATCHDOG DEVICE DRIVERS)
-Subject: [PATCH 30/37] watchdog: add HAS_IOPORT dependencies
-Date:   Fri, 29 Apr 2022 15:50:52 +0200
-Message-Id: <20220429135108.2781579-55-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220429135108.2781579-1-schnelle@linux.ibm.com>
-References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+        Fri, 29 Apr 2022 09:57:39 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77193CFBA4;
+        Fri, 29 Apr 2022 06:52:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651240337; x=1682776337;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=MNsNGb1KS2Bfdr9wXlInMU/yiClX+gR7Udk3isZ3pC0=;
+  b=GIvTE60Um0eexIffT68jOrR/ookVsCABp2hJ6h4k4HKG4WFkiQTiS+To
+   tPCb71A9SUEOe5wJ363Wg3mYcKopHaL1XObTlgsJUgbi5NKEvk+vgvWPe
+   0W3UGaXVxMXYAESlGGcwTvv6QW+8iqymMTrEDZVRqo3cOFPRGO2SCsDdr
+   A4AiiJKL973njv8PGq3jv1/3zrMAfbE1TOGUjRUvmqOXD8TRJx+XUgGyC
+   h9TvCjWzsTxRFst/WM0gpAieNcpvlUFEVaiNtwpTss9c/oiUy6bACuaNW
+   wAjckclQCQMf6oUySrqPBaOOCesR/yCd+5JhWZfEmUAToftg0pMrbyC+e
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="246563217"
+X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
+   d="scan'208";a="246563217"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 06:52:06 -0700
+X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
+   d="scan'208";a="582135045"
+Received: from jinggu-mobl1.amr.corp.intel.com (HELO [10.212.30.227]) ([10.212.30.227])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 06:52:05 -0700
+Message-ID: <a651a489-ecc5-2439-61b1-03ff43cff7f6@intel.com>
+Date:   Fri, 29 Apr 2022 06:52:21 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: dGJViNfn9kW-AcmsD2uPJMeKTlkEinsO
-X-Proofpoint-GUID: dGJViNfn9kW-AcmsD2uPJMeKTlkEinsO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-29_06,2022-04-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1011
- adultscore=0 mlxscore=0 lowpriorityscore=0 spamscore=0 malwarescore=0
- mlxlogscore=836 impostorscore=0 phishscore=0 bulkscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204290078
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 12/21] x86/virt/tdx: Create TDMRs to cover all system
+ RAM
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+References: <cover.1649219184.git.kai.huang@intel.com>
+ <6cc984d5c23e06c9c87b4c7342758b29f8c8c022.1649219184.git.kai.huang@intel.com>
+ <fa4d15d5-4690-9e63-f0c9-af4b58e4325c@intel.com>
+ <695f319e637e7afb33f228a230566f0c671e3a03.camel@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <695f319e637e7afb33f228a230566f0c671e3a03.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-not being declared. We thus need to add HAS_IOPORT as dependency for
-those drivers using them.
+On 4/29/22 00:24, Kai Huang wrote:
+> On Thu, 2022-04-28 at 09:22 -0700, Dave Hansen wrote:
+>> On 4/5/22 21:49, Kai Huang wrote:
+>>> implies that one TDMR could cover multiple e820 RAM entries.  If a RAM
+>>> entry spans the 1GB boundary and the former part is already covered by
+>>> the previous TDMR, just create a new TDMR for the latter part.
+>>>
+>>> TDX only supports a limited number of TDMRs (currently 64).  Abort the
+>>> TDMR construction process when the number of TDMRs exceeds this
+>>> limitation.
+>>
+>> ... and what does this *MEAN*?  Is TDX disabled?  Does it throw away the
+>> RAM?  Does it eat puppies?
+> 
+> How about:
+> 
+> 	TDX only supports a limited number of TDMRs.  Simply return error when
+> 	the number of TDMRs exceeds the limitation.  TDX is disabled in this
+> 	case.
 
-Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- drivers/watchdog/Kconfig | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Better, but two things there that need to be improved.  This is a cover
+letter.  Talking at the function level ("return error") is too
+low-level.  It's also slipping into passive mode "is disabled".  Fixing
+those, it looks like this:
 
-diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
-index c4e82a8d863f..3242be37b2d7 100644
---- a/drivers/watchdog/Kconfig
-+++ b/drivers/watchdog/Kconfig
-@@ -453,6 +453,7 @@ config 21285_WATCHDOG
- config 977_WATCHDOG
- 	tristate "NetWinder WB83C977 watchdog"
- 	depends on (FOOTBRIDGE && ARCH_NETWINDER) || (ARM && COMPILE_TEST)
-+	depends on HAS_IOPORT
- 	help
- 	  Say Y here to include support for the WB977 watchdog included in
- 	  NetWinder machines. Alternatively say M to compile the driver as
-@@ -1235,6 +1236,7 @@ config ITCO_WDT
- 	select WATCHDOG_CORE
- 	depends on I2C || I2C=n
- 	depends on MFD_INTEL_PMC_BXT || !MFD_INTEL_PMC_BXT
-+	depends on HAS_IOPORT # for I2C_I801
- 	select LPC_ICH if !EXPERT
- 	select I2C_I801 if !EXPERT && I2C
- 	help
-@@ -2090,7 +2092,7 @@ comment "PCI-based Watchdog Cards"
- 
- config PCIPCWATCHDOG
- 	tristate "Berkshire Products PCI-PC Watchdog"
--	depends on PCI
-+	depends on PCI && HAS_IOPORT
- 	help
- 	  This is the driver for the Berkshire Products PCI-PC Watchdog card.
- 	  This card simply watches your kernel to make sure it doesn't freeze,
-@@ -2105,7 +2107,7 @@ config PCIPCWATCHDOG
- 
- config WDTPCI
- 	tristate "PCI-WDT500/501 Watchdog timer"
--	depends on PCI
-+	depends on PCI && HAS_IOPORT
- 	help
- 	  If you have a PCI-WDT500/501 watchdog board, say Y here, otherwise N.
- 
--- 
-2.32.0
+	TDX only supports a limited number of TDMRs.  Disable TDX if all
+	TDMRs are consumed but there is more RAM to cover.
 
