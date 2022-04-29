@@ -2,112 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 977A7C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:44:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05BDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377681AbiD2OsF (ORCPT
+        id S1377747AbiD2Os0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:48:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34504 "EHLO
+        Fri, 29 Apr 2022 10:48:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377257AbiD2OsD (ORCPT
+        with ESMTP id S1377135AbiD2OsY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:48:03 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF59787212;
-        Fri, 29 Apr 2022 07:44:43 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 66EB240006;
-        Fri, 29 Apr 2022 14:44:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651243482;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6VZp545cL1tkFy7Ufnki1RQqtXzhp7N0eLBFHK/NFwQ=;
-        b=Jn07hk8vRLFNfuylZda/8CXThhdBxH2nk8vdeQK3qdjSvA67vX8dTZVbEGnoBS3sCx9bFB
-        mLFGVf8Xd0EwSIzSMbTYcXzBb28FT+URogjj8ucrOt6c1+L1tziEzxlpqxSY5x6SFFE5kx
-        m6K25lC1yiSoZPeBI7LqnS22SYbwq2LOKTd3MyMr0no8VWxsNlqzBTyiVb2JIGwargLMPS
-        D9bnUcl0X7F8n4d7cvHLfU2QET85EtLw2g8QTk8MGhyqRsUUs/YGTU3csHlT5WFxx7PPzb
-        wyj2/5KGuWA2YuQvvmfD0ZXN331NP/bXmLcSBvgt9dxfmF8VbwnLZro3smfIOA==
-Date:   Fri, 29 Apr 2022 16:43:22 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [net-next v2 04/12] net: pcs: add Renesas MII converter driver
-Message-ID: <20220429164322.3f5cedd2@fixe.home>
-In-Reply-To: <20220429143505.88208-5-clement.leger@bootlin.com>
-References: <20220429143505.88208-1-clement.leger@bootlin.com>
-        <20220429143505.88208-5-clement.leger@bootlin.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Fri, 29 Apr 2022 10:48:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B835912AB4;
+        Fri, 29 Apr 2022 07:45:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70E9EB80C82;
+        Fri, 29 Apr 2022 14:45:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A046C385A7;
+        Fri, 29 Apr 2022 14:45:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651243503;
+        bh=io/+OPI9dei5Q8+p9fscebrNqMGOirbaNL6vlPLV/ro=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gcvPrXrr54Akq96wqB6c5szu1SPIlj/6VwHjxNrLK4zjPFjPK6esrrLD19xM6b9ey
+         E7f3yz7Za/OLQBFXEMQEQqFHfuE1Ow/PQi0ymbxIu1qPn48W/B8fOQDXJRNLW74NLW
+         K0kqRDBDca1a2B+PmBRkdFYJIK2KlQEb1CbqYavzjV7HpH+57CUKaZFeYLlZdULJDQ
+         QCNq64HOzHB+HWv5lIWCxaM2nufxF4c8WfjtExeh/pQ7PwsLc73I+18li8qbmQ2J/w
+         XBXiH+xSnR5H8qxtjNhx0SvcHtC5pxLwKBls6eD8XhG3HMWZ7Sm7kmnqdSg/CH/Ekq
+         vMWuCbjGq2Y9g==
+From:   Chao Yu <chao@kernel.org>
+To:     jaegeuk@kernel.org
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>
+Subject: [PATCH] f2fs: fix to do sanity check on total_data_blocks
+Date:   Fri, 29 Apr 2022 22:44:56 +0800
+Message-Id: <20220429144456.22232-1-chao@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Fri, 29 Apr 2022 16:34:57 +0200,
-Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com> a =C3=A9crit :
+As Yanming reported in bugzilla:
 
-> +
-> +static struct miic_port *phylink_pcs_to_miic_port(struct phylink_pcs *pc=
-s)
-> +{
-> +	return container_of(pcs, struct miic_port, pcs);
-> +}
-> +
-> +static void miic_reg_writel(struct miic *miic, int offset, u32 value)
-> +{
-> +	writel(value, miic->base + offset);
-> +
-> +	pr_err("Udpdating MIIC register %d with val %x\n", offset, value);
+https://bugzilla.kernel.org/show_bug.cgi?id=215916
 
-Spurious error message.
+The kernel message is shown below:
 
-> +
-> +static void miic_link_up(struct phylink_pcs *pcs, unsigned int mode,
-> +			 phy_interface_t interface, int speed, int duplex)
-> +{
-> +	struct miic_port *miic_port =3D phylink_pcs_to_miic_port(pcs);
-> +	struct miic *miic =3D miic_port->miic;
-> +	int port =3D miic_port->port;
-> +	u32 conv_speed =3D 0, val =3D 0;
+kernel BUG at fs/f2fs/segment.c:2560!
+Call Trace:
+ allocate_segment_by_default+0x228/0x440
+ f2fs_allocate_data_block+0x13d1/0x31f0
+ do_write_page+0x18d/0x710
+ f2fs_outplace_write_data+0x151/0x250
+ f2fs_do_write_data_page+0xef9/0x1980
+ move_data_page+0x6af/0xbc0
+ do_garbage_collect+0x312f/0x46f0
+ f2fs_gc+0x6b0/0x3bc0
+ f2fs_balance_fs+0x921/0x2260
+ f2fs_write_single_data_page+0x16be/0x2370
+ f2fs_write_cache_pages+0x428/0xd00
+ f2fs_write_data_pages+0x96e/0xd50
+ do_writepages+0x168/0x550
+ __writeback_single_inode+0x9f/0x870
+ writeback_sb_inodes+0x47d/0xb20
+ __writeback_inodes_wb+0xb2/0x200
+ wb_writeback+0x4bd/0x660
+ wb_workfn+0x5f3/0xab0
+ process_one_work+0x79f/0x13e0
+ worker_thread+0x89/0xf60
+ kthread+0x26a/0x300
+ ret_from_fork+0x22/0x30
+RIP: 0010:new_curseg+0xe8d/0x15f0
 
-Missing reverse christmas tree declaration.
-> +
-> +static void miic_dump_conf(struct device *dev,
-> +			   s8 conf[MIIC_MODCTRL_CONF_CONV_NUM])
-> +{
-> +	int i;
-> +	const char *conf_name;
+The root cause is: ckpt.valid_block_count is inconsistent with SIT table,
+stat info indicates filesystem has free blocks, but SIT table indicates
+filesystem has no free segment.
 
-Ditto.
+So that during garbage colloection, it triggers panic when LFS allocator
+fails to find free segment.
 
+This patch tries to fix this issue by checking consistency in between
+ckpt.valid_block_count and block accounted from SIT.
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+---
+ fs/f2fs/segment.c | 24 +++++++++++++++++++++---
+ 1 file changed, 21 insertions(+), 3 deletions(-)
+
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index 8c17fed8987e..eddaf3b45b25 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -4462,6 +4462,7 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 	unsigned int readed, start_blk = 0;
+ 	int err = 0;
+ 	block_t total_node_blocks = 0;
++	block_t total_data_blocks = 0;
+ 
+ 	do {
+ 		readed = f2fs_ra_meta_pages(sbi, start_blk, BIO_MAX_VECS,
+@@ -4488,6 +4489,8 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 			seg_info_from_raw_sit(se, &sit);
+ 			if (IS_NODESEG(se->type))
+ 				total_node_blocks += se->valid_blocks;
++			else
++				total_data_blocks += se->valid_blocks;
+ 
+ 			if (f2fs_block_unit_discard(sbi)) {
+ 				/* build discard map only one time */
+@@ -4529,6 +4532,8 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 		old_valid_blocks = se->valid_blocks;
+ 		if (IS_NODESEG(se->type))
+ 			total_node_blocks -= old_valid_blocks;
++		else
++			total_data_blocks -= old_valid_blocks;
+ 
+ 		err = check_block_count(sbi, start, &sit);
+ 		if (err)
+@@ -4536,6 +4541,8 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 		seg_info_from_raw_sit(se, &sit);
+ 		if (IS_NODESEG(se->type))
+ 			total_node_blocks += se->valid_blocks;
++		else
++			total_data_blocks += se->valid_blocks;
+ 
+ 		if (f2fs_block_unit_discard(sbi)) {
+ 			if (is_set_ckpt_flags(sbi, CP_TRIMMED_FLAG)) {
+@@ -4557,13 +4564,24 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 	}
+ 	up_read(&curseg->journal_rwsem);
+ 
+-	if (!err && total_node_blocks != valid_node_count(sbi)) {
++	if (err)
++		return err;
++
++	if (total_node_blocks != valid_node_count(sbi)) {
+ 		f2fs_err(sbi, "SIT is corrupted node# %u vs %u",
+ 			 total_node_blocks, valid_node_count(sbi));
+-		err = -EFSCORRUPTED;
++		return -EFSCORRUPTED;
+ 	}
+ 
+-	return err;
++	if (total_data_blocks + total_node_blocks !=
++				valid_user_blocks(sbi)) {
++		f2fs_err(sbi, "SIT is corrupted data# %u vs %u",
++			 total_data_blocks,
++			 valid_user_blocks(sbi) - total_node_blocks);
++		return -EFSCORRUPTED;
++	}
++
++	return 0;
+ }
+ 
+ static void init_free_segmap(struct f2fs_sb_info *sbi)
+-- 
+2.25.1
+
