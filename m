@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 188EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:21:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0550C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:21:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357618AbiD2KZE (ORCPT
+        id S1357638AbiD2KZJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47860 "EHLO
+        Fri, 29 Apr 2022 06:25:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357377AbiD2KYv (ORCPT
+        with ESMTP id S1357604AbiD2KY5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:24:51 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E8766FA4
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 03:21:34 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KqT1P4ZZzzCsLX;
-        Fri, 29 Apr 2022 18:16:57 +0800 (CST)
+        Fri, 29 Apr 2022 06:24:57 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86EEA6D4C4
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 03:21:39 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KqT3l2frJzGpKh;
+        Fri, 29 Apr 2022 18:18:59 +0800 (CST)
 Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 18:21:32 +0800
+ 15.1.2375.24; Fri, 29 Apr 2022 18:21:33 +0800
 Received: from localhost.localdomain.localdomain (10.175.113.25) by
  dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 18:21:31 +0800
+ 15.1.2375.24; Fri, 29 Apr 2022 18:21:32 +0800
 From:   Kefeng Wang <wangkefeng.wang@huawei.com>
 To:     <catalin.marinas@arm.com>, <will@kernel.org>,
         <akpm@linux-foundation.org>,
@@ -34,9 +34,9 @@ To:     <catalin.marinas@arm.com>, <will@kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC:     <linux-mm@kvack.org>, <hch@infradead.org>, <arnd@arndb.de>,
         Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH v2 3/5] mm: ioremap: Add arch_ioremap/iounmap()
-Date:   Fri, 29 Apr 2022 18:32:23 +0800
-Message-ID: <20220429103225.75121-4-wangkefeng.wang@huawei.com>
+Subject: [PATCH v2 5/5] arm64: Add HAVE_IOREMAP_PROT support
+Date:   Fri, 29 Apr 2022 18:32:25 +0800
+Message-ID: <20220429103225.75121-6-wangkefeng.wang@huawei.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220429103225.75121-1-wangkefeng.wang@huawei.com>
 References: <20220429103225.75121-1-wangkefeng.wang@huawei.com>
@@ -51,87 +51,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add special hook for architecture to verify addr, size and prot
-or setup when ioremap() or iounmap(), which will make the generic
-ioremap more useful.
-
-  arch_ioremap() return a 'void __iomem *',
-    - IS_ERR means return an error
-    - NULL means continue to remap
-    - a non-NULL, non-IS_ERR pointer is directly returned
-  arch_iounmap() return a int value,
-    - 0 means continue to vunmap
-    - error code means skip vunmap and return directly
+With ioremap_prot() defination from generic ioremap, also move
+pte_pgprot() from hugetlbpage.c into pgtable.h, then arm64 could
+have HAVE_IOREMAP_PROT, which will enable generic_access_phys()
+code.
 
 Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 ---
- include/asm-generic/io.h | 14 ++++++++++++++
- mm/ioremap.c             | 14 +++++++++++++-
- 2 files changed, 27 insertions(+), 1 deletion(-)
+ .../features/vm/ioremap_prot/arch-support.txt          |  2 +-
+ arch/arm64/Kconfig                                     |  1 +
+ arch/arm64/include/asm/pgtable.h                       | 10 ++++++++++
+ arch/arm64/mm/hugetlbpage.c                            | 10 ----------
+ 4 files changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
-index e6ffa2519f08..f2f9aeedb5e8 100644
---- a/include/asm-generic/io.h
-+++ b/include/asm-generic/io.h
-@@ -964,6 +964,20 @@ static inline void iounmap(volatile void __iomem *addr)
- #elif defined(CONFIG_GENERIC_IOREMAP)
- #include <linux/pgtable.h>
- 
-+#ifndef arch_ioremap
-+static inline void __iomem *arch_ioremap(phys_addr_t phys_addr, size_t size, unsigned long prot)
-+{
-+	return NULL;
-+}
-+#endif
-+
-+#ifndef arch_iounmap
-+static inline int arch_iounmap(void __iomem *addr)
-+{
-+	return 0;
-+}
-+#endif
-+
- void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long prot);
- void iounmap(volatile void __iomem *addr);
- 
-diff --git a/mm/ioremap.c b/mm/ioremap.c
-index 7cb9996b0c12..de5a2e899e14 100644
---- a/mm/ioremap.c
-+++ b/mm/ioremap.c
-@@ -16,6 +16,7 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long pro
- 	unsigned long offset, vaddr;
- 	phys_addr_t last_addr;
- 	struct vm_struct *area;
-+	void __iomem *base;
- 
- 	/* Disallow wrap-around or zero size */
- 	last_addr = phys_addr + size - 1;
-@@ -27,6 +28,12 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long pro
- 	phys_addr -= offset;
- 	size = PAGE_ALIGN(size + offset);
- 
-+	base = arch_ioremap(phys_addr, size, prot);
-+	if (IS_ERR(base))
-+		return NULL;
-+	else if (base)
-+		return base;
-+
- 	area = get_vm_area_caller(size, VM_IOREMAP,
- 			__builtin_return_address(0));
- 	if (!area)
-@@ -45,6 +52,11 @@ EXPORT_SYMBOL(ioremap_prot);
- 
- void iounmap(volatile void __iomem *addr)
- {
--	vunmap((void *)((unsigned long)addr & PAGE_MASK));
-+	void *vaddr = (void *)((unsigned long)addr & PAGE_MASK);
-+
-+	if (arch_iounmap(vaddr))
-+		return;
-+
-+	vunmap(vaddr);
+diff --git a/Documentation/features/vm/ioremap_prot/arch-support.txt b/Documentation/features/vm/ioremap_prot/arch-support.txt
+index a6dcbe5f47b6..b39ad5d61216 100644
+--- a/Documentation/features/vm/ioremap_prot/arch-support.txt
++++ b/Documentation/features/vm/ioremap_prot/arch-support.txt
+@@ -9,7 +9,7 @@
+     |       alpha: | TODO |
+     |         arc: |  ok  |
+     |         arm: | TODO |
+-    |       arm64: | TODO |
++    |       arm64: |  ok  |
+     |        csky: | TODO |
+     |       h8300: | TODO |
+     |     hexagon: | TODO |
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 56673209fdb9..5e5889049af0 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -186,6 +186,7 @@ config ARM64
+ 	select HAVE_FUNCTION_GRAPH_TRACER
+ 	select HAVE_GCC_PLUGINS
+ 	select HAVE_HW_BREAKPOINT if PERF_EVENTS
++	select HAVE_IOREMAP_PROT
+ 	select HAVE_IRQ_TIME_ACCOUNTING
+ 	select HAVE_KVM
+ 	select HAVE_NMI
+diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+index dff2b483ea50..1402a2739024 100644
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -402,6 +402,16 @@ static inline pgprot_t mk_pmd_sect_prot(pgprot_t prot)
+ 	return __pgprot((pgprot_val(prot) & ~PMD_TABLE_BIT) | PMD_TYPE_SECT);
  }
- EXPORT_SYMBOL(iounmap);
+ 
++/*
++ * Select all bits except the pfn
++ */
++static inline pgprot_t pte_pgprot(pte_t pte)
++{
++	unsigned long pfn = pte_pfn(pte);
++
++	return __pgprot(pte_val(pfn_pte(pfn, __pgprot(0))) ^ pte_val(pte));
++}
++
+ #ifdef CONFIG_NUMA_BALANCING
+ /*
+  * See the comment in include/linux/pgtable.h
+diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
+index cbace1c9e137..38d03406f6aa 100644
+--- a/arch/arm64/mm/hugetlbpage.c
++++ b/arch/arm64/mm/hugetlbpage.c
+@@ -100,16 +100,6 @@ int pud_huge(pud_t pud)
+ #endif
+ }
+ 
+-/*
+- * Select all bits except the pfn
+- */
+-static inline pgprot_t pte_pgprot(pte_t pte)
+-{
+-	unsigned long pfn = pte_pfn(pte);
+-
+-	return __pgprot(pte_val(pfn_pte(pfn, __pgprot(0))) ^ pte_val(pte));
+-}
+-
+ static int find_num_contig(struct mm_struct *mm, unsigned long addr,
+ 			   pte_t *ptep, size_t *pgsize)
+ {
 -- 
 2.35.3
 
