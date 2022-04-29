@@ -2,71 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 774ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 20:37:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F9EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 20:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380899AbiD2UlE (ORCPT
+        id S1381036AbiD2UlI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 16:41:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51132 "EHLO
+        Fri, 29 Apr 2022 16:41:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380854AbiD2Uk3 (ORCPT
+        with ESMTP id S1380900AbiD2Uku (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 16:40:29 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1448A83B24
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 13:37:10 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id b6-20020a5b0b46000000b006457d921729so8367601ybr.23
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 13:37:10 -0700 (PDT)
+        Fri, 29 Apr 2022 16:40:50 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105C984EED
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 13:37:17 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id d129-20020a254f87000000b006411bf3f331so8384039ybb.4
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 13:37:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc:content-transfer-encoding;
-        bh=5hCa0Th+W5/EJvbV2Mxb+ItoW5xxwAS7kF6LUvID5mc=;
-        b=S0N+CrTDZPvcK92q2enU+oVhR8rVjO0uZ5+G+H/+XSr0HLDhtVQlnf3XdP2RpmbQTB
-         qxib2RNe+lgYyVAC/K4UeXT5QGc0R00zizFDHp3tWHZqzalRZrtj6xsSrA36fRYOAmHY
-         RnJyYZqHEruYZOOBGjwd/Go7AWOCMlZ5QMLRILy3Ev8qGB/6Y0qYjhU14rV+0nU/g/sH
-         M3hWk+95HJeec8dFyf5hxRyv7r+cCx02MHG30C9DdAWXmaBjn4GAy2+GpXeVpkmkD2hV
-         Yi/dbME+Gg3iSIXmapnP/Ol0jDRfngnUdvKw1FSR5l6MFtv3fNCo0nEc7aXEBh0Hu06o
-         3vtg==
+         :cc;
+        bh=RZXa52/+Ccn/FZBSGLGkE2FGb19e6hj/BpUe4CISMqY=;
+        b=josmFUY6sljvn74nbHLbhRTJAUNE7yBBD98Qcf7w5EQ59pm5LnY3aEdiKslS4uyUdq
+         QWXZZukalNl6IxfYG+j3MTT6SVuufgTk6h/3imVwbyFtypJ6Eb+5iu3zX7OiWNC9ee2D
+         gU1FQ1Soj99CCEaCdQg9uDLpFiUCbqfluZmHnaRKKZ3ArEv1Sx4V24aJ+iEs8lBrJR7M
+         C4OFl191/L8Z6I8Mod4iBF6Zpbj90sePJz8AFJfeAilDgco+WL483HO8WXxphkwVe9u+
+         C2/ErRnmGzDy4hQ6Ef1n8xa1Ppzw8CJfQ/J9CE6NwUZfHasM7w1iM2pyCxDImgTQLavS
+         PgIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc:content-transfer-encoding;
-        bh=5hCa0Th+W5/EJvbV2Mxb+ItoW5xxwAS7kF6LUvID5mc=;
-        b=uGvSGOTS2bnNcLn2glA5O3Qm59noIOWTTJy52HPchqx9V7hDZFs736P1Fy5M4/sKbm
-         hpRPsvR0pBm5GfiDYXry3sBKbSS/q9SkohVGKT2SEInBwKIAPIHfrp327yq4gRvoXSEr
-         lYvyfXfJbnS+ezNO7fDvuXaK/ur/mcXFwAFVfbGcW8dcJLHt3zLLfFbiVPD3ROc02Ug/
-         xChAeNIt+jDbd1+NcwR1zGf3boOZyoS6L9PVS55jRdVIk1a8aVRazsd/Lu8a6qVTWkw7
-         xbelCnzH8jwmOGg2TvzfMvDgDdHp8ye3Af9nwxwFRQIJEXjw0r1/7Y3SsgZmuDEUKrGR
-         CyhA==
-X-Gm-Message-State: AOAM533NoqLIdObqomij+FFfJqGrbR/7UQGFclspkfJoyKC+rHl2WZGy
-        sy/VABfiDaCJudXKzU0BQDHksqpo9nJ6JCxpxv3jRZadqsVI1L4rxhaauStlyWfPXz44Tj0CaVi
-        1hG3lbtMQmFd9CR18gs+XgZiTXcj8IXu1GxpvO8DBaxYKhDLpQXmPS5ElvirWhuZki3fVNfqLLx
-        +kvW0X9XsIWg==
-X-Google-Smtp-Source: ABdhPJz+eDKnS2W33vUCyhR6WhYeLBeYAFhDRUfMiHJY50CUszLf61iMmFxt93d2j2RTvlyfCCPtlhqeWBFFGoC3YyE=
+         :references:subject:from:to:cc;
+        bh=RZXa52/+Ccn/FZBSGLGkE2FGb19e6hj/BpUe4CISMqY=;
+        b=oMYpc3Y/3i3/dyJ1bBmjmND2hC6LtuC6D4BvUkWKqfHgHJrflSI8bxGUoJR4TjG71X
+         Z/0Wk1OP0TuDXHC9clUVuwMQZxYdXRtxAY/J/tfQHT4ng63RxjMEkRJ7DufIlpty10n2
+         f3SIvsBMwAGraMvjD5sNYxXtDjWC3xK/7PV1MI+pnA7cjJtnjbYQaiMvzuha+CBrI2NI
+         ziQWySGc7ZC8Ljrxsvs7XWH+31+I+vB5RF0ngKhjaAMLBwH2KF75CTfiB0RE28Z9GktZ
+         NczV+6ryo5GZLdx28E4SPTZ148dQ+4S1oHgsbLJShST7WuoZHM3NJOPGUM0on5coacqs
+         VgVQ==
+X-Gm-Message-State: AOAM531F0d9jGfkw0csY94Nr5eiE9vToGH5p58DFwWE7DyDueh4ZYhjs
+        xMa7SYict2XsEm2LYC/RzJTtqMO9OxXB1Uh68FgKjx/1pwqVYFkJla8pPdQGghZzS/POCm9id6n
+        SQTISASJ6+SkRB0ZRjjfeDpVxiTbwuOWWbo2R+5HQICu14mUKHGQrZEoMyBec2su18saQdQ357v
+        I+6wCxfVUuCw==
+X-Google-Smtp-Source: ABdhPJzYWDvyPKIoG6j4qeVpD8eaxo3WYBiOn2SGRCv1SlZnlvNloHm83UTXxElMZg7DUXgIBs568v8KMUh01iV6d8E=
 X-Received: from samitolvanen1.mtv.corp.google.com ([2620:15c:201:2:351:bea9:f158:1021])
- (user=samitolvanen job=sendgmr) by 2002:a25:9d12:0:b0:63e:5463:9161 with SMTP
- id i18-20020a259d12000000b0063e54639161mr1245278ybp.520.1651264629191; Fri,
- 29 Apr 2022 13:37:09 -0700 (PDT)
-Date:   Fri, 29 Apr 2022 13:36:32 -0700
+ (user=samitolvanen job=sendgmr) by 2002:a05:6902:187:b0:63d:9c95:edca with
+ SMTP id t7-20020a056902018700b0063d9c95edcamr1205951ybh.81.1651264636219;
+ Fri, 29 Apr 2022 13:37:16 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 13:36:35 -0700
 In-Reply-To: <20220429203644.2868448-1-samitolvanen@google.com>
-Message-Id: <20220429203644.2868448-10-samitolvanen@google.com>
+Message-Id: <20220429203644.2868448-13-samitolvanen@google.com>
 Mime-Version: 1.0
 References: <20220429203644.2868448-1-samitolvanen@google.com>
 X-Developer-Key: i=samitolvanen@google.com; a=openpgp; fpr=35CCFB63B283D6D3AEB783944CB5F6848BBC56EE
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4436; h=from:subject;
- bh=NE+VmE0GV2F5TAg2wjWn2y0FVE5ul0MCwcRd3JvOCxM=; b=owEB7QES/pANAwAKAUy19oSLvFbuAcsmYgBibExWtMuY47WbpGwUnz3/EYOP7dO1dD9ixSIlsYG3
- x8Cd/pyJAbMEAAEKAB0WIQQ1zPtjsoPW0663g5RMtfaEi7xW7gUCYmxMVgAKCRBMtfaEi7xW7rmmC/
- 9YbnECwIsbp/HZ5mIfeFER1Ea+SidGBDwevjph92DWZRHHBk+vWKzcN4tx2RqzfmU/WvZ50K3w9BCw
- qwWWAs9udhv1ocs1hOPeO12RlgvSuSTw8kYQIJIrepC1qXFD3lUUl8yDxipO/T4mSTysgs5AReakBS
- Yt32fnxwnduGRpVjea7S6gSqDnZtoVDV7jrcJgyIG1SlDlZPKsIpn9+nE4fpaDVKsDQq5NGKa8UJKk
- 3qfqREIt7aV262NXiQxLF1qGmNffIZgOSyxdY6tQWT9vrXbBCub2HgKUx+u2DEQHrveMTyg8Y8YT7+
- 8Pms4AMGpH2I11QDsLNutbwe5QI70n3ytnK5J+apZiYU0Cv3lKxDt2Odxl623Ly+CVShBd2zIsafj2
- j14rVS/5d6DaDtTs5ckt62TAIZzmhvcZkyF+MULQnjhDQGhteaK9K5BCp74kSh0K92dYKMf4D44gK9
- 4J75YA3echFB0WWw7aq3WXfsP+NT7W6VM6M20yqGC2sIA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2028; h=from:subject;
+ bh=EW4LD0wCU9ODc4AbUHEIgMCEO+Bkbwf1AVkfBUZqjt0=; b=owEB7QES/pANAwAKAUy19oSLvFbuAcsmYgBibExXM3pFXxbECykde0/DaTjsNNDc6R96rQVSD0FL
+ 7MXUJzOJAbMEAAEKAB0WIQQ1zPtjsoPW0663g5RMtfaEi7xW7gUCYmxMVwAKCRBMtfaEi7xW7u7RC/
+ 4mjffA2OiXywm1kgxwD0ET4V0DIkVj3mDteDH4c0+AAADiJNYraamuovVFmW7kqZD95ZrDQ0DtWzBN
+ De7f5Z9BRZNMX6MVRoo9GZ+vvVTpybMWnZxExbIai3lN4abSxarO4qyBYYddytuOn7gyGtnzCK/9T6
+ fz+QovIirBiumarGHSecOncP1veI4GDHBeWLjZLhj+f+visgFFCKO3BZd+O3yCUjY79lkYmAJnKXOF
+ q4s8uzinImXbHIZaD63mvPzR2dr8R/gU36JxBAIE4D84O9KH2YyUpSl7DUuDJo+y3ty8PQ61/7hh3n
+ GVilTp+N13t+4iSU/hLKu3hczF8y7OLaIjw+//vL/DV9uKs4+sgDgrob11gvGDZHpUd/4udw+ihg7k
+ IwIiS0ak6/a21tSjs4EolviB/Au3/qiKjXvicRjakYv6pd9r5zR2TpEWYQ9HMxDaDTl52r3Y56gYVX
+ 6Q07g4a5BTbZvyMK4W4T30XQuWwzx6kapZdydxqypIsT0=
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [RFC PATCH 09/21] arm64: Add CFI error handling
+Subject: [RFC PATCH 12/21] treewide: Drop __cficanonical
 From:   Sami Tolvanen <samitolvanen@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
@@ -84,145 +84,66 @@ Cc:     Kees Cook <keescook@chromium.org>,
         linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev,
         Sami Tolvanen <samitolvanen@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With -fsanitize=3Dkcfi, CFI always traps. Add arm64 support for handling
-CFI failures and determining the target address.
+CONFIG_CFI_CLANG doesn't use a jump table anymore and therefore,
+won't change function references to point elsewhere. Remove the
+__cficanonical attribute and all uses of it.
 
 Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
 ---
- arch/arm64/include/asm/brk-imm.h |  2 ++
- arch/arm64/include/asm/insn.h    |  1 +
- arch/arm64/kernel/traps.c        | 57 ++++++++++++++++++++++++++++++++
- 3 files changed, 60 insertions(+)
+ include/linux/compiler_types.h | 4 ----
+ include/linux/init.h           | 4 ++--
+ include/linux/pci.h            | 4 ++--
+ 3 files changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm64/include/asm/brk-imm.h b/arch/arm64/include/asm/brk-=
-imm.h
-index ec7720dbe2c8..3a50b70b4404 100644
---- a/arch/arm64/include/asm/brk-imm.h
-+++ b/arch/arm64/include/asm/brk-imm.h
-@@ -16,6 +16,7 @@
-  * 0x400: for dynamic BRK instruction
-  * 0x401: for compile time BRK instruction
-  * 0x800: kernel-mode BUG() and WARN() traps
-+ * 0x801: Control-Flow Integrity traps
-  * 0x9xx: tag-based KASAN trap (allowed values 0x900 - 0x9ff)
-  */
- #define KPROBES_BRK_IMM			0x004
-@@ -25,6 +26,7 @@
- #define KGDB_DYN_DBG_BRK_IMM		0x400
- #define KGDB_COMPILED_DBG_BRK_IMM	0x401
- #define BUG_BRK_IMM			0x800
-+#define CFI_BRK_IMM			0x801
- #define KASAN_BRK_IMM			0x900
- #define KASAN_BRK_MASK			0x0ff
-=20
-diff --git a/arch/arm64/include/asm/insn.h b/arch/arm64/include/asm/insn.h
-index 1e5760d567ae..12225bdfa776 100644
---- a/arch/arm64/include/asm/insn.h
-+++ b/arch/arm64/include/asm/insn.h
-@@ -334,6 +334,7 @@ __AARCH64_INSN_FUNCS(store_pre,	0x3FE00C00, 0x38000C00)
- __AARCH64_INSN_FUNCS(load_pre,	0x3FE00C00, 0x38400C00)
- __AARCH64_INSN_FUNCS(store_post,	0x3FE00C00, 0x38000400)
- __AARCH64_INSN_FUNCS(load_post,	0x3FE00C00, 0x38400400)
-+__AARCH64_INSN_FUNCS(ldur,	0x3FE00C00, 0x38400000)
- __AARCH64_INSN_FUNCS(str_reg,	0x3FE0EC00, 0x38206800)
- __AARCH64_INSN_FUNCS(ldadd,	0x3F20FC00, 0x38200000)
- __AARCH64_INSN_FUNCS(ldclr,	0x3F20FC00, 0x38201000)
-diff --git a/arch/arm64/kernel/traps.c b/arch/arm64/kernel/traps.c
-index 0529fd57567e..b524411ba663 100644
---- a/arch/arm64/kernel/traps.c
-+++ b/arch/arm64/kernel/traps.c
-@@ -26,6 +26,7 @@
- #include <linux/syscalls.h>
- #include <linux/mm_types.h>
- #include <linux/kasan.h>
-+#include <linux/cfi.h>
-=20
- #include <asm/atomic.h>
- #include <asm/bug.h>
-@@ -990,6 +991,55 @@ static struct break_hook bug_break_hook =3D {
- 	.imm =3D BUG_BRK_IMM,
- };
-=20
-+#ifdef CONFIG_CFI_CLANG
-+void *arch_get_cfi_target(unsigned long addr, struct pt_regs *regs)
-+{
-+	/* The expected CFI check instruction sequence:
-+	 *   ldur=C2=A0 =C2=A0 wA, [xN, #-4]
-+	 *   movk=C2=A0 =C2=A0 wB, #nnnnn
-+	 *   movk=C2=A0 =C2=A0 wB, #nnnnn, lsl #16
-+	 *   cmp =C2=A0 =C2=A0 wA, wB
-+	 *   b.eq=C2=A0 =C2=A0 .Ltmp1
-+	 *   brk =C2=A0 =C2=A0 #0x801		; <- addr
-+	 *   .Ltmp1:
-+	 *
-+	 * Therefore, the target address is in the xN register, which we can
-+	 * decode from the ldur instruction.
-+	 */
-+	u32 insn, rn;
-+	void *p =3D (void *)(addr - 5 * AARCH64_INSN_SIZE);
-+
-+	if (aarch64_insn_read(p, &insn) || !aarch64_insn_is_ldur(insn))
-+		return NULL;
-+
-+	rn =3D aarch64_insn_decode_register(AARCH64_INSN_REGTYPE_RN, insn);
-+	return (void *)regs->regs[rn];
-+}
-+
-+static int cfi_handler(struct pt_regs *regs, unsigned int esr)
-+{
-+	switch (report_cfi(regs->pc, regs)) {
-+	case BUG_TRAP_TYPE_BUG:
-+		die("Oops - CFI", regs, 0);
-+		break;
-+
-+	case BUG_TRAP_TYPE_WARN:
-+		break;
-+
-+	default:
-+		return DBG_HOOK_ERROR;
-+	}
-+
-+	arm64_skip_faulting_instruction(regs, AARCH64_INSN_SIZE);
-+	return DBG_HOOK_HANDLED;
-+}
-+
-+static struct break_hook cfi_break_hook =3D {
-+	.fn =3D cfi_handler,
-+	.imm =3D CFI_BRK_IMM,
-+};
-+#endif /* CONFIG_CFI_CLANG */
-+
- static int reserved_fault_handler(struct pt_regs *regs, unsigned int esr)
- {
- 	pr_err("%s generated an invalid instruction at %pS!\n",
-@@ -1063,6 +1113,10 @@ int __init early_brk64(unsigned long addr, unsigned =
-int esr,
-=20
- 	if ((comment & ~KASAN_BRK_MASK) =3D=3D KASAN_BRK_IMM)
- 		return kasan_handler(regs, esr) !=3D DBG_HOOK_HANDLED;
-+#endif
-+#ifdef CONFIG_CFI_CLANG
-+	if ((esr & ESR_ELx_BRK64_ISS_COMMENT_MASK) =3D=3D CFI_BRK_IMM)
-+		return cfi_handler(regs, esr) !=3D DBG_HOOK_HANDLED;
+diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
+index 1c2c33ae1b37..bdd2526af46a 100644
+--- a/include/linux/compiler_types.h
++++ b/include/linux/compiler_types.h
+@@ -263,10 +263,6 @@ struct ftrace_likely_data {
+ # define __nocfi
  #endif
- 	return bug_handler(regs, esr) !=3D DBG_HOOK_HANDLED;
- }
-@@ -1070,6 +1124,9 @@ int __init early_brk64(unsigned long addr, unsigned i=
-nt esr,
- void __init trap_init(void)
- {
- 	register_kernel_break_hook(&bug_break_hook);
-+#ifdef CONFIG_CFI_CLANG
-+	register_kernel_break_hook(&cfi_break_hook);
-+#endif
- 	register_kernel_break_hook(&fault_break_hook);
- #ifdef CONFIG_KASAN_SW_TAGS
- 	register_kernel_break_hook(&kasan_break_hook);
---=20
+ 
+-#ifndef __cficanonical
+-# define __cficanonical
+-#endif
+-
+ /*
+  * Any place that could be marked with the "alloc_size" attribute is also
+  * a place to be marked with the "malloc" attribute. Do this as part of the
+diff --git a/include/linux/init.h b/include/linux/init.h
+index baf0b29a7010..76058c9e0399 100644
+--- a/include/linux/init.h
++++ b/include/linux/init.h
+@@ -220,8 +220,8 @@ extern bool initcall_debug;
+ 	__initcall_name(initstub, __iid, id)
+ 
+ #define __define_initcall_stub(__stub, fn)			\
+-	int __init __cficanonical __stub(void);			\
+-	int __init __cficanonical __stub(void)			\
++	int __init __stub(void);				\
++	int __init __stub(void)					\
+ 	{ 							\
+ 		return fn();					\
+ 	}							\
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 60adf42460ab..3cc50c4e3c64 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -2021,8 +2021,8 @@ enum pci_fixup_pass {
+ #ifdef CONFIG_LTO_CLANG
+ #define __DECLARE_PCI_FIXUP_SECTION(sec, name, vendor, device, class,	\
+ 				  class_shift, hook, stub)		\
+-	void __cficanonical stub(struct pci_dev *dev);			\
+-	void __cficanonical stub(struct pci_dev *dev)			\
++	void stub(struct pci_dev *dev);					\
++	void stub(struct pci_dev *dev)					\
+ 	{ 								\
+ 		hook(dev); 						\
+ 	}								\
+-- 
 2.36.0.464.gb9c8b46e94-goog
 
