@@ -2,123 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E76C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 22:12:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EB69C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 22:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381441AbiD2WPU (ORCPT
+        id S1381445AbiD2WP5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 18:15:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34214 "EHLO
+        Fri, 29 Apr 2022 18:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381434AbiD2WPO (ORCPT
+        with ESMTP id S1381448AbiD2WPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 18:15:14 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B43DCA9A
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:11:54 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id j2so16874997ybu.0
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:11:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kQmy1DozY+MQOT3hFFbQpwCpNXFgxLxF1Kty1xOxQWk=;
-        b=NXqbBHZ9VwKIGp+CDR7YbK8pDPAtXozUwHomoZTwJmAZ2M3hstU8pa1vh7vhM4oOf8
-         yKlzpf12tt3NEbYWw/M3P2JssWpEIlYCNGtpE20iS30ujXNRHzhWXTR/TS9X+H6QVMqv
-         RmFG5RG94XX0N/XsMzpk7hJ8g/y6PNSmuAvfoWguTAm8NZWeh/xflsMvQpd+dKRWmZrL
-         bFsRsKO9rJg47tTn2cjJqVWrVuHf81ODE/rxIVKA6yp0cALACqLr1pdjwakTPIH1FrNB
-         ZwyPw69sPfUuQVP9+cm4VRXVZoCdkgL6LujmOptTta/Igd85lrUN3OYsWDikeNfwUynu
-         lKCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kQmy1DozY+MQOT3hFFbQpwCpNXFgxLxF1Kty1xOxQWk=;
-        b=faPCpvtdeKLLOWpvUXou5fqMUSYfI/XEPdWWPkDEL0MbmRulEujk6P2jTETN39rMej
-         jnQxk4bSgDLN2m3XqjdFzUHy9Ut4+BRUNim6zBGBVYOnzm0T/vrqLMKca+1QI/OrNVJW
-         IA92bHJnvRZePRbE9ybhoJVYpvWd6oE+Drast5BrvmOb4qvQJGZh00lGwph4ZL3nLfQf
-         NQcqOi1Pl2skblUNCSWrXc3rBFyJgJUntMibyuBVmlFQOs7D8YfIDcJMHrHYrxFAXM7e
-         6lBCaDTw1x59f+v834nFc66who/RluGdYAhYVH0AwaVxT5hiN3b2VtUCXeeUamumlHkC
-         NFnA==
-X-Gm-Message-State: AOAM531gXQTRRN1wWtG19RjPfaMWQj/gVqzET9VBjJqQ6TbwXPT/zgl+
-        PovvnbCQ/wg3FJyE3bisefWod6/n8JrM1Jf4smDO75qSJeQ=
-X-Google-Smtp-Source: ABdhPJxzIJP/0PkOy5+GtHE3C3pGZwvHAQEfBkVhZ6+DOtcVRXUTJB9lIYq49Ni06eLmgj6PImuYp5yRHVO65D+B7j0=
-X-Received: by 2002:a25:242:0:b0:648:76ff:88a8 with SMTP id
- 63-20020a250242000000b0064876ff88a8mr1646913ybc.603.1651270313696; Fri, 29
- Apr 2022 15:11:53 -0700 (PDT)
+        Fri, 29 Apr 2022 18:15:49 -0400
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE9FDCE06;
+        Fri, 29 Apr 2022 15:12:24 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:38182)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nkYSx-00AIAD-EI; Fri, 29 Apr 2022 15:47:55 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:36454 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nkYSv-005dKg-DP; Fri, 29 Apr 2022 15:47:55 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     rjw@rjwysocki.net, oleg@redhat.com, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>, linux-ia64@vger.kernel.org
+References: <20220421150248.667412396@infradead.org>
+        <20220421150654.817117821@infradead.org>
+        <87czhap9dy.fsf@email.froward.int.ebiederm.org>
+        <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+Date:   Fri, 29 Apr 2022 16:46:59 -0500
+In-Reply-To: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org> (Eric
+        W. Biederman's message of "Tue, 26 Apr 2022 17:50:21 -0500")
+Message-ID: <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-References: <CA+G9fYveMF-NU-rvrsbaora2g2QWxrkF7AWViuDrJyN9mNScJg@mail.gmail.com>
- <20220429160317.GA71@qian>
-In-Reply-To: <20220429160317.GA71@qian>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Sat, 30 Apr 2022 03:41:41 +0530
-Message-ID: <CA+G9fYui9OuyFbg7SV8D_4ueC_Jc=71ybbhBeif0bczo957Hqg@mail.gmail.com>
-Subject: Re: [next] mm: libhugetlbfs: WARNING: at mm/page_alloc.c:5368 __alloc_pages
-To:     Qian Cai <quic_qiancai@quicinc.com>
-Cc:     Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        lkft-triage@lists.linaro.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Arnd Bergmann <arnd@arndb.de>, Zi Yan <ziy@nvidia.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        David Hildenbrand <david@redhat.com>,
-        Eric Ren <renzhengeek@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Minchan Kim <minchan@kernel.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Chen Wandun <chenwandun@huawei.com>, NeilBrown <neilb@suse.de>,
-        joao.m.martins@oracle.com, mawupeng1@huawei.com,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Song Liu <song@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-XM-SPF: eid=1nkYSv-005dKg-DP;;;mid=<87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1+ZIVHGWhwXaAZQuMgvUvy1NsqcM6xYpoc=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [PATCH 0/12] ptrace: cleaning up ptrace_stop
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Apr 2022 at 21:33, Qian Cai <quic_qiancai@quicinc.com> wrote:
->
-> On Fri, Apr 29, 2022 at 04:50:25PM +0530, Naresh Kamboju wrote:
-> > Following kernel warning notices on Linux next-20220427 till date next-20220429
-> > on qemu_arm64 and arm64 devices.
-> >
-> > While testing libhugetlbfs test suite and ltp mm and hugetlb.
-> >
-> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> >
-> > Test log:
-> > ----------
-> > truncate_above_4GB (2M: 64): PASS
-> > brk_near_huge (2M: 64): brk_near_huge: malloc.c:2401: sysmalloc:
-> > Assertion `(old_top == initial_top (av) && old_size == 0) ||
-> > ((unsigned long) (old_size) >= MINSIZE && prev_inuse (old_top) &&
-> > ((unsigned long) old_end & (pagesize - 1)) == 0)' failed.
-> > [   15.685019] audit: type=1701 audit(1651222753.772:25):
-> > auid=4294967295 uid=0 gid=0 ses=4294967295 pid=454
-> > comm=\"brk_near_huge\"
-> > exe=\"/usr/lib/libhugetlbfs/tests/obj64/brk_near_huge\" sig=6 res=1
-> > [   15.685629] ------------[ cut here ]------------
-> > [   15.685631] WARNING: CPU: 2 PID: 454 at mm/page_alloc.c:5368
->
-> Naresh, I am having difficult to reproduce this reliablely. If you have
-> spare cycles, do you mind reverting those to see if you can still
-> reproduce? I can't seems to find other recent commits more suspicious
-> than that series.
->
-> 37e73e3b0a9d drivers: virtio_mem: use pageblock size as the minimum virtio_mem size.
-> d2b9cd2acb2b mm: cma: use pageblock_order as the single alignment
-> 7f125582227e mm: page_isolation: enable arbitrary range page isolation.
-> fb009b307b21 mm: make alloc_contig_range work at pageblock granularity
-> 7c7e18d510f4 mm: page_isolation: check specified range for unmovable pages
-> 6a242a94b883 mm: page_isolation: move has_unmovable_pages() to mm/page_isolation.c
->
-> $ git revert --no-edit e389355485b7..37e73e3b0a9d
 
-The reported kernel warning was not solved by reverted above patches.
+The states TASK_STOPPED and TASK_TRACE are special in they can not
+handle spurious wake-ups.  This plus actively depending upon and
+changing the value of tsk->__state causes problems for PREEMPT_RT and
+Peter's freezer rewrite.
 
+There are a lot of details we have to get right to sort out the
+technical challenges and this is my parred back version of the changes
+that contains just those problems I see good solutions to that I believe
+are ready.
 
-- Naresh
+In particular I don't have a solution that is ready for the challenges
+presented by wait_task_inactive.
+
+I hope we can review these changes and then have a firm foundation
+for the rest of the challenges.
+
+There are cleanups to the ptrace support for xtensa, um, and
+ia64.
+
+I have sucked in the first patch of Peter's freezer change as
+with minor modifications I believe it is ready to go.
+
+Eric W. Biederman (12):
+      signal: Rename send_signal send_signal_locked
+      signal: Replace __group_send_sig_info with send_signal_locked
+      ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP
+      ptrace/xtensa: Replace PT_SINGLESTEP with TIF_SINGLESTEP
+      signal: Use lockdep_assert_held instead of assert_spin_locked
+      ptrace: Reimplement PTRACE_KILL by always sending SIGKILL
+      ptrace: Don't change __state
+      ptrace: Remove arch_ptrace_attach
+      ptrace: Always take siglock in ptrace_resume
+      ptrace: Only return signr from ptrace_stop if it was provided
+      ptrace: Always call schedule in ptrace_stop
+      sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state
+
+ arch/ia64/include/asm/ptrace.h    |   4 --
+ arch/ia64/kernel/ptrace.c         |  57 ----------------
+ arch/um/include/asm/thread_info.h |   2 +
+ arch/um/kernel/exec.c             |   2 +-
+ arch/um/kernel/process.c          |   2 +-
+ arch/um/kernel/ptrace.c           |   8 +--
+ arch/um/kernel/signal.c           |   4 +-
+ arch/xtensa/kernel/ptrace.c       |   4 +-
+ arch/xtensa/kernel/signal.c       |   4 +-
+ drivers/tty/tty_jobctrl.c         |   4 +-
+ include/linux/ptrace.h            |   7 --
+ include/linux/sched.h             |  10 ++-
+ include/linux/sched/jobctl.h      |  10 +++
+ include/linux/sched/signal.h      |  23 ++++++-
+ include/linux/signal.h            |   3 +-
+ kernel/ptrace.c                   |  88 +++++++++----------------
+ kernel/signal.c                   | 135 +++++++++++++++++---------------------
+ kernel/time/posix-cpu-timers.c    |   6 +-
+ 18 files changed, 145 insertions(+), 228 deletions(-)
+
+Eric
