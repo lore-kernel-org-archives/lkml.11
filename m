@@ -2,164 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58FABC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 20:12:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62043C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 20:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380599AbiD2UP3 (ORCPT
+        id S1380565AbiD2UQR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 16:15:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60736 "EHLO
+        Fri, 29 Apr 2022 16:16:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380603AbiD2UPK (ORCPT
+        with ESMTP id S1380566AbiD2UQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 16:15:10 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D56D3FBD3
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 13:11:51 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id t14-20020a1709028c8e00b0015cf7e541feso4661961plo.1
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 13:11:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=S3BBsZ5bvk4uzoCkIECYzRGc2TYJKfjLopd3GTSDAKA=;
-        b=jyU87f8rJUN/0hbg4f3kdULDqmUiyc07Xb66s8cBmC8eSW5afxPVORIXgO/XcbFugu
-         /GO6FtfJ4ZPnIibnkDPCd2vWdazZzlWxhMF1+MfgeVHE4EB8soDI4WiD7pxUHc0XysjZ
-         dz0NPsguoIx0yCM0GzW+6AJFD3eMtBn5IljqCyl24S9cni2H7/qF97uyykmSQ8zzR3qj
-         0ctQn1mlUvVg2EZJl93vg7f3fTcTbPn8ws29rj4RPyM04s2wTJC2/9P5OL5vwTLWBxg5
-         QDDNee7lmxpZqa2y/Fn8/pPEocI38Oecy4dHL012AY61PD0PXJ/gQDtUls02A2N8uheX
-         E/zA==
+        Fri, 29 Apr 2022 16:16:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E51256FB9
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 13:12:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651263174;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VFq3FS22EtZGeQS1oNCaYOBGWZnQDFBvgQIs9pjL7WE=;
+        b=D9nU/HBYSTX7frAtfLJIywl0vP9vmHxuOVp926xoQK7ZISD/VQP3m5nJlGe3/EDp7N0H8c
+        vzArSzoU8ACVoCS2BKmoCcR4Ei6ktrqX1CmHa52NRaQA4IbWXXOTQQ2YPoJyOUO3TOMVwD
+        VNZ9GZswMSYiyaKFnceznVyDMs2TLnQ=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-212-yyWaouqwPX-SUWhK5M3Btw-1; Fri, 29 Apr 2022 16:12:53 -0400
+X-MC-Unique: yyWaouqwPX-SUWhK5M3Btw-1
+Received: by mail-qv1-f69.google.com with SMTP id p3-20020a05621421e300b004562c4a6b08so6762109qvj.3
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 13:12:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=S3BBsZ5bvk4uzoCkIECYzRGc2TYJKfjLopd3GTSDAKA=;
-        b=j5NN3TdpV0tMXGIklfqHyT5sFtnZ6UuYxVdLDzEjONeez32ClNh5VZXDAEqVaNEnJk
-         mqNfk2+eI0GKOK7RrC9+s+jjJSQoV5OblYqHt8MTzej7Um5MVRhPTjldkvrbLHYTeAZk
-         h3EOrMa543hWY0KynpJzULTVYI/Mbkz38v0iK8qZ0m1nHwm0Dw7XJVUJbs8CLGzaBDMc
-         /EHVSthbN5sbYTK4neEC+ZZe5XnNp5wuoBilrSyF3nrQNNWjTgoo/8GrgusYXLMrjUvD
-         bowiTBAIM2KoV4FkLfEDdbL/qdDhz1jTZBHM6doq4w7UL8/xXi11B1jz0rlXeueBEuMx
-         sDXw==
-X-Gm-Message-State: AOAM533bPU8OCNwwUfSquGCDkWZbANJ00BCbWOv7YOFK25vIWfJHgCXy
-        w1R+o5dD4YH+kiGG11YM3hPaQxxRE+qL7Lwe
-X-Google-Smtp-Source: ABdhPJxOmVuJGvLk2Hjh+EQ9JUFzd7qmz4ZeddVRcuaWheP9plljXX7Xz37I8NLuX36SAI5J9foHUODTgkzaf7D4
-X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
- (user=yosryahmed job=sendgmr) by 2002:a05:6a00:1411:b0:4fd:e594:fac0 with
- SMTP id l17-20020a056a00141100b004fde594fac0mr831484pfu.79.1651263110818;
- Fri, 29 Apr 2022 13:11:50 -0700 (PDT)
-Date:   Fri, 29 Apr 2022 20:11:31 +0000
-In-Reply-To: <20220429201131.3397875-1-yosryahmed@google.com>
-Message-Id: <20220429201131.3397875-5-yosryahmed@google.com>
-Mime-Version: 1.0
-References: <20220429201131.3397875-1-yosryahmed@google.com>
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v4 4/4] KVM: arm64/mmu: count KVM s2 mmu usage in secondary
- pagetable stats
-From:   Yosry Ahmed <yosryahmed@google.com>
-To:     Tejun Heo <tj@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Oliver Upton <oupton@google.com>
-Cc:     cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm@vger.kernel.org, linux-mm@kvack.org,
-        Yosry Ahmed <yosryahmed@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VFq3FS22EtZGeQS1oNCaYOBGWZnQDFBvgQIs9pjL7WE=;
+        b=D2ZzcXmvO2DKJPeGt8C9C1dBbaif/2YDmBBNg9cRJVxGwHdHlre06xIebi/fF/PqRv
+         LFbnrPnhO7FENXJ9g6PjXmu6JKFueINhSRgl9a7WEOLRCOmB8Cbg5r7ELsO2kN/SAjYF
+         uhCek/N1A7I7JTYtEkmHaeKow9AkZbt5MWJSHBqh2NXq7QRgqWiFcgCsQMwXKd/HoQel
+         yysGX3U2imhcrXrjsM7Cj6e3VtzQVqsO+0nN8mE5im73A04ebojtApCpPTDpLv+2TERZ
+         W4rUTdcuEe4+VG4GAzAb3a0IDK648AfA3Z8Ob9EcjZLrOFJqoilxdTltmjfeTVqIoCiJ
+         cxjw==
+X-Gm-Message-State: AOAM532jv+NpOutSGBSQpYfThZ8Bu1SoA25bq4lHZpMjyEFuYeiSFdCn
+        BVuBLQD9yW377LuLfJLdnegXu1geTqNdIxksMHX9Jr6X3h6z5w2xssBdbah1EK0Qnz/Os340PZ/
+        U7fo1pZTgzTICUBs3drvcCX9I
+X-Received: by 2002:a05:622a:5:b0:2f3:7dd0:3d13 with SMTP id x5-20020a05622a000500b002f37dd03d13mr1036009qtw.362.1651263172761;
+        Fri, 29 Apr 2022 13:12:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzWwL5xKqhCNor6yaHrMCbJD5xi0aZ8jf94JlgbQ9LACtypq6Go9z5qVCLrD1q7s7iJ8ycSVg==
+X-Received: by 2002:a05:622a:5:b0:2f3:7dd0:3d13 with SMTP id x5-20020a05622a000500b002f37dd03d13mr1035998qtw.362.1651263172562;
+        Fri, 29 Apr 2022 13:12:52 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::15])
+        by smtp.gmail.com with ESMTPSA id x1-20020ac87a81000000b002f39b99f6a7sm94599qtr.65.2022.04.29.13.12.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 13:12:52 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 13:12:49 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, mark.rutland@arm.com, linux-kernel@vger.kernel.org,
+        linux-toolchains@vger.kernel.org
+Subject: Re: [PATCH] linkage: Fix issue with missing symbol size
+Message-ID: <20220429201249.5hjcutds4wmkhemr@treble>
+References: <20220429091859.GS2731@worktop.programming.kicks-ass.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220429091859.GS2731@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Count the pages used by KVM in arm64 for stage2 mmu in secondary pagetable
-stats.
+On Fri, Apr 29, 2022 at 11:18:59AM +0200, Peter Zijlstra wrote:
+> 
+> Occasionally, typically when a function doesn't end with 'ret', an
+> alias on that function will have 0 size.
+> 
+> The difference between what GCC generates and our linkage magic, is
+> that GCC doesn't appear to provide .size for the alias'ed symbol at
+> all. And indeed, removing this directive cures the issue.
+> 
+> Additionally, GCC also doesn't emit .type for alias symbols either, so
+> also omit that.
+> 
+> Fixes: e0891269a8c2 ("linkage: add SYM_FUNC_ALIAS{,_LOCAL,_WEAK}()")
+> Suggested-by: Mark Rutland <mark.rutland@arm.com>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 
-Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
----
- arch/arm64/kvm/mmu.c | 35 +++++++++++++++++++++++++++++++----
- 1 file changed, 31 insertions(+), 4 deletions(-)
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
 
-diff --git a/arch/arm64/kvm/mmu.c b/arch/arm64/kvm/mmu.c
-index 53ae2c0640bc..fc5030307cce 100644
---- a/arch/arm64/kvm/mmu.c
-+++ b/arch/arm64/kvm/mmu.c
-@@ -92,9 +92,13 @@ static bool kvm_is_device_pfn(unsigned long pfn)
- static void *stage2_memcache_zalloc_page(void *arg)
- {
- 	struct kvm_mmu_memory_cache *mc = arg;
-+	void *virt;
- 
- 	/* Allocated with __GFP_ZERO, so no need to zero */
--	return kvm_mmu_memory_cache_alloc(mc);
-+	virt = kvm_mmu_memory_cache_alloc(mc);
-+	if (virt)
-+		kvm_account_pgtable_pages(virt, +1);
-+	return virt;
- }
- 
- static void *kvm_host_zalloc_pages_exact(size_t size)
-@@ -102,6 +106,20 @@ static void *kvm_host_zalloc_pages_exact(size_t size)
- 	return alloc_pages_exact(size, GFP_KERNEL_ACCOUNT | __GFP_ZERO);
- }
- 
-+static void *kvm_s2_zalloc_pages_exact(size_t size)
-+{
-+	void *virt = kvm_host_zalloc_pages_exact(size);
-+	if (virt)
-+		kvm_account_pgtable_pages(virt, +(size >> PAGE_SHIFT));
-+	return virt;
-+}
-+
-+static void kvm_s2_free_pages_exact(void *virt, size_t size)
-+{
-+	kvm_account_pgtable_pages(virt, -(size >> PAGE_SHIFT));
-+	free_pages_exact(virt, size);
-+}
-+
- static void kvm_host_get_page(void *addr)
- {
- 	get_page(virt_to_page(addr));
-@@ -112,6 +130,15 @@ static void kvm_host_put_page(void *addr)
- 	put_page(virt_to_page(addr));
- }
- 
-+static void kvm_s2_put_page(void *addr)
-+{
-+	struct page *p = virt_to_page(addr);
-+	/* Dropping last refcount, the page will be freed */
-+	if (page_count(p) == 1)
-+		kvm_account_pgtable_pages(addr, -1);
-+	put_page(p);
-+}
-+
- static int kvm_host_page_count(void *addr)
- {
- 	return page_count(virt_to_page(addr));
-@@ -603,10 +630,10 @@ static int get_user_mapping_size(struct kvm *kvm, u64 addr)
- 
- static struct kvm_pgtable_mm_ops kvm_s2_mm_ops = {
- 	.zalloc_page		= stage2_memcache_zalloc_page,
--	.zalloc_pages_exact	= kvm_host_zalloc_pages_exact,
--	.free_pages_exact	= free_pages_exact,
-+	.zalloc_pages_exact	= kvm_s2_zalloc_pages_exact,
-+	.free_pages_exact	= kvm_s2_free_pages_exact,
- 	.get_page		= kvm_host_get_page,
--	.put_page		= kvm_host_put_page,
-+	.put_page		= kvm_s2_put_page,
- 	.page_count		= kvm_host_page_count,
- 	.phys_to_virt		= kvm_host_va,
- 	.virt_to_phys		= kvm_host_pa,
 -- 
-2.36.0.464.gb9c8b46e94-goog
+Josh
 
