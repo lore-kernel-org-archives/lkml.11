@@ -2,184 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1F81C4321E
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 18:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1588C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 18:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380000AbiD2Scx (ORCPT
+        id S1379899AbiD2Seq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 14:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36552 "EHLO
+        Fri, 29 Apr 2022 14:34:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379995AbiD2Scu (ORCPT
+        with ESMTP id S238511AbiD2Sel (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 14:32:50 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0AE2D3AEC
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:29:29 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id r13so16989395ejd.5
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:29:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=1Zn4UF57t4pnfMwkACd31jjeal5RhpHnkwFarZTu/dQ=;
-        b=Yju2gP3H7feQ0jeMIY/hZkOEOoSoa00CEibfna6oVQzF9/eQ5+ytMAsdLe5WX7mHeQ
-         J61qzVV7hJgD2E7DTMm799fD1ExZWC92O5Z5MQJ3Izz75VW5dcvN/q6CSgHUbws9RglY
-         83cEuaWdBuKpqQTXIrafNSDyCsuv2Ew28D74WXz/Ik2eST10Un3FzGmvqMC8O+fYL4PC
-         8JQYD4vG/i4KtH8ZMZH0GPFGUg6Nz8RKmYkXLtDfxBXypISaZi6+WTwWX/9LGj3oj9Ql
-         L8++NV0TVRjT6Iqj0aHMEIgQOGyyJP0xnB5R1z3nGhE9kAKq1TuJQ1gQ5SW7rPZfWhCn
-         o50w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1Zn4UF57t4pnfMwkACd31jjeal5RhpHnkwFarZTu/dQ=;
-        b=lIA0xq9et5qyc0kxO2IhatFSgi3sNqsnCdtt5he94ii0z+DfZfk1xxHIw2NHvhdIJQ
-         6Kb9XB9L42RAqjyJmQmQms/GssEKgyyDqVQBHZqRwQCOm9CE0H9mSf+3tFs5yW895wjM
-         XkEBoFWOK8vfQnihfrm1gK1pNmgSd5FaKoDdSeo5bK2JmUmWMnTuz+1m87CA7XhJEStR
-         umoEipKgPfnyh+k53P71vTfv1jagBEc72T0WsR07KEyDhRVcJzFBH7rzCjXrvbfgi0WD
-         KkwkVJmh5JmYNZYtvuF0aRIqcrq2erlxMo9651raVmKtwp8mReAA7A1dg/8PvGOrQM69
-         j/Eg==
-X-Gm-Message-State: AOAM532ex9NIAwZ9QxxtrTmVkBDaZ9rfYu7oiih3lQ/SHwdzFUjumpJg
-        SCvMNQpB38Mdy0ysQM3cnMNklQ==
-X-Google-Smtp-Source: ABdhPJxnnexTfm1ciFrnHmiTZVvUaiD85uL4/xEhS6m4C1gFLe/tyvaZCnOhPWZFKjyEpqAej5KZuQ==
-X-Received: by 2002:a17:907:2cc6:b0:6f0:2de3:9446 with SMTP id hg6-20020a1709072cc600b006f02de39446mr581569ejc.690.1651256968301;
-        Fri, 29 Apr 2022 11:29:28 -0700 (PDT)
-Received: from [192.168.0.175] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id h14-20020a1709070b0e00b006f3ef214db9sm858906ejl.31.2022.04.29.11.29.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 11:29:27 -0700 (PDT)
-Message-ID: <cbf9aad1-cbdb-8886-f979-a793b070e2a1@linaro.org>
-Date:   Fri, 29 Apr 2022 20:29:25 +0200
+        Fri, 29 Apr 2022 14:34:41 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BCBF45ADD
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:31:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651257082; x=1682793082;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=22k+uDUKRz+4AKVJv51f6r8phWje2KTHsjePCuxnph4=;
+  b=jIm/EJPOLGCvxWhYwrhVZXRUK9kw7PtNoYBb/O6WgiAPGQauF2NsEQ0D
+   6pk66UkIt91u+s85BSwTY7vxZs2US5n6Lb/Pqph/fcmQi5nIBnvKqI0hX
+   TzpwjU0r5d+93I/MIHUUsLxA6+kqNko3AdYF2HG3rD+oni7vYRauRzwSY
+   ++UhgQV73PJaaKW5B1G3nq0yTf2v7tCTCsOwgYGHrss8CC6Kh3cBOmSOO
+   cdhWac31R9KUx7hsJGKjoz9Vcuf9Y3Dr0c1ipXIfHSZO5kNiInZ5iPzCi
+   k17K3UIhaquyluGasUj7LbKYtmcaDd7EGS0+e/sOtuaoNuvRoAPbBEL5E
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="247295940"
+X-IronPort-AV: E=Sophos;i="5.91,186,1647327600"; 
+   d="scan'208";a="247295940"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 11:31:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,186,1647327600"; 
+   d="scan'208";a="542747392"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 29 Apr 2022 11:31:20 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nkVOh-0006Yd-Ik;
+        Fri, 29 Apr 2022 18:31:19 +0000
+Date:   Sat, 30 Apr 2022 02:30:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Fuad Tabba <tabba@google.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Marc Zyngier <maz@kernel.org>
+Subject: arch/arm64/kvm/hyp/nvhe/switch.c:196: warning: expecting prototype
+ for Handler for protected floating(). Prototype was for
+ kvm_handle_pvm_fpsimd() instead
+Message-ID: <202204300241.xkeys5UL-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v7 12/12] rpmsg: Fix kfree() of static memory on setting
- driver_override
-Content-Language: en-US
-To:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Stuart Yoder <stuyoder@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-References: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org>
- <20220419113435.246203-13-krzysztof.kozlowski@linaro.org>
- <CGME20220429122942eucas1p1820d0cd17a871d4953bac2b3de1dcdd9@eucas1p1.samsung.com>
- <870885de-33f3-e0ba-4d56-71c3c993ac87@samsung.com>
- <75b94ccd-b739-2164-bc4a-20025356cc34@linaro.org>
- <6e21f7d3-49d0-eda7-7a89-0f8ac69596a4@samsung.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <6e21f7d3-49d0-eda7-7a89-0f8ac69596a4@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/04/2022 16:51, Marek Szyprowski wrote:
-> On 29.04.2022 16:16, Krzysztof Kozlowski wrote:
->> On 29/04/2022 14:29, Marek Szyprowski wrote:
->>> On 19.04.2022 13:34, Krzysztof Kozlowski wrote:
->>>> The driver_override field from platform driver should not be initialized
->>>> from static memory (string literal) because the core later kfree() it,
->>>> for example when driver_override is set via sysfs.
->>>>
->>>> Use dedicated helper to set driver_override properly.
->>>>
->>>> Fixes: 950a7388f02b ("rpmsg: Turn name service into a stand alone driver")
->>>> Fixes: c0cdc19f84a4 ("rpmsg: Driver for user space endpoint interface")
->>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->>>> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
->>> This patch landed recently in linux-next as commit 42cd402b8fd4 ("rpmsg:
->>> Fix kfree() of static memory on setting driver_override"). In my tests I
->>> found that it triggers the following issue during boot of the
->>> DragonBoard410c SBC (arch/arm64/boot/dts/qcom/apq8016-sbc.dtb):
->>>
->>> ------------[ cut here ]------------
->>> DEBUG_LOCKS_WARN_ON(lock->magic != lock)
->>> WARNING: CPU: 1 PID: 8 at kernel/locking/mutex.c:582
->>> __mutex_lock+0x1ec/0x430
->>> Modules linked in:
->>> CPU: 1 PID: 8 Comm: kworker/u8:0 Not tainted 5.18.0-rc4-next-20220429 #11815
->>> Hardware name: Qualcomm Technologies, Inc. APQ 8016 SBC (DT)
->>> Workqueue: events_unbound deferred_probe_work_func
->>> pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->>> pc : __mutex_lock+0x1ec/0x430
->>> lr : __mutex_lock+0x1ec/0x430
->>> ..
->>> Call trace:
->>>    __mutex_lock+0x1ec/0x430
->>>    mutex_lock_nested+0x38/0x64
->>>    driver_set_override+0x124/0x150
->>>    qcom_smd_register_edge+0x2a8/0x4ec
->>>    qcom_smd_probe+0x54/0x80
->>>    platform_probe+0x68/0xe0
->>>    really_probe.part.0+0x9c/0x29c
->>>    __driver_probe_device+0x98/0x144
->>>    driver_probe_device+0xac/0x14c
->>>    __device_attach_driver+0xb8/0x120
->>>    bus_for_each_drv+0x78/0xd0
->>>    __device_attach+0xd8/0x180
->>>    device_initial_probe+0x14/0x20
->>>    bus_probe_device+0x9c/0xa4
->>>    deferred_probe_work_func+0x88/0xc4
->>>    process_one_work+0x288/0x6bc
->>>    worker_thread+0x248/0x450
->>>    kthread+0x118/0x11c
->>>    ret_from_fork+0x10/0x20
->>> irq event stamp: 3599
->>> hardirqs last  enabled at (3599): [<ffff80000919053c>]
->>> _raw_spin_unlock_irqrestore+0x98/0x9c
->>> hardirqs last disabled at (3598): [<ffff800009190ba4>]
->>> _raw_spin_lock_irqsave+0xc0/0xcc
->>> softirqs last  enabled at (3554): [<ffff800008010470>] _stext+0x470/0x5e8
->>> softirqs last disabled at (3549): [<ffff8000080a4514>]
->>> __irq_exit_rcu+0x180/0x1ac
->>> ---[ end trace 0000000000000000 ]---
->>>
->>> I don't see any direct relation between the $subject and the above log,
->>> but reverting the $subject on top of linux next-20220429 hides/fixes it.
->>> Maybe there is a kind of memory trashing somewhere there and your change
->>> only revealed it?
->> Thanks for the report. I think the error path of my patch is wrong - I
->> should not kfree(rpdev->driver_override) from the rpmsg code. That's the
->> only thing I see now...
->>
->> Could you test following patch and tell if it helps?
->> https://pastebin.ubuntu.com/p/rp3q9Z5fXj/
-> 
-> This doesn't help, the issue is still reported.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   38d741cb70b30741c0e802cbed7bd9cf4fd15fa4
+commit: 1423afcb411780c7a6a68f801fdcfb6920ad6f06 KVM: arm64: Trap access to pVM restricted features
+date:   7 months ago
+config: arm64-defconfig (https://download.01.org/0day-ci/archive/20220430/202204300241.xkeys5UL-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=1423afcb411780c7a6a68f801fdcfb6920ad6f06
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 1423afcb411780c7a6a68f801fdcfb6920ad6f06
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/
 
-I think I screwed this part of code. The new helper uses device_lock()
-(the mutexes you see in backtrace) but in rpmsg it is called before
-device_register() which initializes the device.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-I don't have a device using qcom-smd rpmsg, so it's a bit tricky to
-reproduce.
+All warnings (new ones prefixed by >>):
 
-Best regards,
-Krzysztof
+   arch/arm64/kvm/hyp/nvhe/switch.c:126: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * Disable host events, enable guest events
+   arch/arm64/kvm/hyp/nvhe/switch.c:146: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * Disable guest events, enable host events
+   arch/arm64/kvm/hyp/nvhe/switch.c:164: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * Handler for protected VM restricted exceptions.
+   arch/arm64/kvm/hyp/nvhe/switch.c:176: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * Handler for protected VM MSR, MRS or System instruction execution in AArch64.
+   arch/arm64/kvm/hyp/nvhe/switch.c:196: warning: Function parameter or member 'vcpu' not described in 'kvm_handle_pvm_fpsimd'
+   arch/arm64/kvm/hyp/nvhe/switch.c:196: warning: Function parameter or member 'exit_code' not described in 'kvm_handle_pvm_fpsimd'
+>> arch/arm64/kvm/hyp/nvhe/switch.c:196: warning: expecting prototype for Handler for protected floating(). Prototype was for kvm_handle_pvm_fpsimd() instead
+
+
+vim +196 arch/arm64/kvm/hyp/nvhe/switch.c
+
+   188	
+   189	/**
+   190	 * Handler for protected floating-point and Advanced SIMD accesses.
+   191	 *
+   192	 * Returns true if the hypervisor has handled the exit, and control should go
+   193	 * back to the guest, or false if it hasn't.
+   194	 */
+   195	static bool kvm_handle_pvm_fpsimd(struct kvm_vcpu *vcpu, u64 *exit_code)
+ > 196	{
+   197		/* Linux guests assume support for floating-point and Advanced SIMD. */
+   198		BUILD_BUG_ON(!FIELD_GET(ARM64_FEATURE_MASK(ID_AA64PFR0_FP),
+   199					PVM_ID_AA64PFR0_ALLOW));
+   200		BUILD_BUG_ON(!FIELD_GET(ARM64_FEATURE_MASK(ID_AA64PFR0_ASIMD),
+   201					PVM_ID_AA64PFR0_ALLOW));
+   202	
+   203		return kvm_hyp_handle_fpsimd(vcpu, exit_code);
+   204	}
+   205	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
