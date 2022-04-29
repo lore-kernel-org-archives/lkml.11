@@ -2,70 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68FC6C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:21:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B61C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356444AbiD2JYT (ORCPT
+        id S1356455AbiD2JZI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 05:24:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41526 "EHLO
+        Fri, 29 Apr 2022 05:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238781AbiD2JYQ (ORCPT
+        with ESMTP id S238781AbiD2JZF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 05:24:16 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5020AB53EB;
-        Fri, 29 Apr 2022 02:20:55 -0700 (PDT)
-Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 737251EC054E;
-        Fri, 29 Apr 2022 11:20:49 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1651224049;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=pYYZ0Cioy1jpcXSOacJzPaCa0t3YepuHT13CF6yP8d8=;
-        b=FQeEqncoOupnPKtGAZqypsEerMJVj5FF4EDivZfRtwrdRHCuIE9Emt4QettTKVBHp9rXLL
-        WTIzOyTF9i14IBfOoJMJaxh6gHR4ciHZldXcA43Y8hPcE4gqF9FKQ+DK+8ur4yvXIWeiTU
-        otL2GidG+/bXU7zxeaAhPnm6FPn7big=
-Date:   Fri, 29 Apr 2022 11:20:44 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     cgel.zte@gmail.com
-Cc:     jlu@pengutronix.de, mchehab@kernel.org, tony.luck@intel.com,
-        james.morse@arm.com, rric@kernel.org, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] edac: Make use of the helper function
- devm_platform_ioremap_resource()
-Message-ID: <Ymut7ExGPcj5Lmby@zn.tnic>
-References: <20220421084621.2615517-1-lv.ruyi@zte.com.cn>
+        Fri, 29 Apr 2022 05:25:05 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 080B5B6D3D;
+        Fri, 29 Apr 2022 02:21:46 -0700 (PDT)
+X-UUID: a683860e2ba94204b1542030cbdf980d-20220429
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:57cf52b3-97af-4ecd-bf7d-6369f6dfdad6,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.4,REQID:57cf52b3-97af-4ecd-bf7d-6369f6dfdad6,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:faefae9,CLOUDID:11a1f4c6-85ee-4ac1-ac05-bd3f1e72e732,C
+        OID:IGNORED,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil,QS:0
+        ,BEC:nil
+X-UUID: a683860e2ba94204b1542030cbdf980d-20220429
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <jiaxin.yu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 830141353; Fri, 29 Apr 2022 17:21:40 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 29 Apr 2022 17:21:40 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 29 Apr 2022 17:21:39 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 29 Apr 2022 17:21:38 +0800
+Message-ID: <990e0f5b27203d99c502d3cb2fcacc0b9767b848.camel@mediatek.com>
+Subject: Re: [v4 00/18] ASoC: mediatek: Add support for MT8186 SoC
+From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
+To:     Mark Brown <broonie@kernel.org>
+CC:     <robh+dt@kernel.org>, <angelogioacchino.delregno@collabora.com>,
+        <aaronyu@google.com>, <matthias.bgg@gmail.com>,
+        <trevor.wu@mediatek.com>, <tzungbi@google.com>,
+        <julianbraha@gmail.com>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Fri, 29 Apr 2022 17:21:38 +0800
+In-Reply-To: <YmqGXCg97X6Vqvs+@sirena.org.uk>
+References: <20220428093355.16172-1-jiaxin.yu@mediatek.com>
+         <YmqGXCg97X6Vqvs+@sirena.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220421084621.2615517-1-lv.ruyi@zte.com.cn>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 08:46:21AM +0000, cgel.zte@gmail.com wrote:
-> From: Lv Ruyi <lv.ruyi@zte.com.cn>
+On Thu, 2022-04-28 at 13:19 +0100, Mark Brown wrote:
+> On Thu, Apr 28, 2022 at 05:33:37PM +0800, Jiaxin Yu wrote:
+> > This series of patches adds support for Mediatek AFE of MT8186 Soc.
+> > Patches are based on broonie tree "for-next" branch.
 > 
-> Use the devm_platform_ioremap_resource() helper instead of calling
-> platform_get_resource() and devm_ioremap_resource() separately.Make the
-> code simpler without functional changes.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-> ---
->  drivers/edac/armada_xp_edac.c | 18 ++----------------
->  1 file changed, 2 insertions(+), 16 deletions(-)
+> This looks mostly good from a framework point of view - I did notice
+> a
+> few minor issues which I commented on (some of the control things are
+> repeated in other patches) but the overwhelming bulk of the code
+> looks
+> good.
+Hi Mark,
 
-Applied, thanks.
+Thank you very much for your review. I will check the codes with your
+comments carefully.
 
--- 
-Regards/Gruss,
-    Boris.
+Best Regards
+Jiaxin.Yu
 
-https://people.kernel.org/tglx/notes-about-netiquette
