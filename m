@@ -2,227 +2,357 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11464C4167B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:06:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF5E1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377219AbiD2OJk (ORCPT
+        id S1377049AbiD2OJn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:09:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55286 "EHLO
+        Fri, 29 Apr 2022 10:09:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376904AbiD2OJ3 (ORCPT
+        with ESMTP id S1377115AbiD2OJb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:09:29 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A7538BA;
-        Fri, 29 Apr 2022 07:00:35 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id c11so1088414wrn.8;
-        Fri, 29 Apr 2022 07:00:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=UXw9dRUog+dEg/XP99Hw1iqvRPucaZ7bzcG1rwJHhio=;
-        b=YBd0+nTmzcoM2bp3hiXsuMNdPweajYXNtZrZPbniRjboy65K24zviiuLtMl5mJj60Y
-         lGp3dU3D8okBn+ixe9o2sRzIW+TV+YaQp2DH7qI5AbiMQ5NPw044NSExSv8Wi8f+OyrT
-         mm2TpGZewa0FjO4w6wneZ7n7gckwh1FVfTOWtx4grI94mq8uZhPbMjkEgbWyfE3+Pzb2
-         HX3ZpJviFMo4mVpYilbLYEogCNK92s/Y1ll50Xv/GRNdgn3OTx/5Pp8+8HmBjg4tsCN8
-         OHCH0rIySZ1wVcH4CI1ny32UzRDqzLISbA6fsM4hRJdAx4A2tleff3aa4juuguNGAYeN
-         ieLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=UXw9dRUog+dEg/XP99Hw1iqvRPucaZ7bzcG1rwJHhio=;
-        b=3c6bNlt4ZMtiC3PUA2slX2wicgxEnxV5mOGg5eosJu4HEs/Tg5Yo8fzqfj6Fbm/DKM
-         2MTItMOtlH1fogZaLj9DNMcYK4BrkQP9uKS8lQ782VANo10nMeECPIhhW2wRPQYeiBKH
-         Z1W9ZEFYesRf4qRNdZvaJVID++TPZDfTzsk/pW5QvyANAsC61WIMzsaCpenlJbXTp+/t
-         vZ1HxwJsc8hFvHPoK/aG408OCQltqQ+pTSva5O1FqTIRzCA+eqh+LU2dvQw3+TryhGs9
-         5uC9TCliJ2VgTQn9R+vDDH5ReIfLJBCcsmeksnai7bjM0qCd0pTxKx1IMrO6wbBNhpAt
-         t51A==
-X-Gm-Message-State: AOAM531mhBbQeK2o6BH9+Khmr55mT7mLDNBlH2Ezh+bi+cdwfe5h1UJ2
-        aoasH4/4501JJbTFz3nMjsk=
-X-Google-Smtp-Source: ABdhPJzUbO5VBiVmnymikmHFglcyLkJ2PMGYgcMmAt5zqGiCuS9Z+l25Ny/E4zFagkiIjHOEMjVlwQ==
-X-Received: by 2002:adf:e8c1:0:b0:20a:e116:408a with SMTP id k1-20020adfe8c1000000b0020ae116408amr17196519wrn.672.1651240834295;
-        Fri, 29 Apr 2022 07:00:34 -0700 (PDT)
-Received: from [192.168.0.43] (static-35-180-85-188.ipcom.comunitel.net. [188.85.180.35])
-        by smtp.gmail.com with ESMTPSA id m6-20020a1c2606000000b00393fbf75a56sm2631655wmm.29.2022.04.29.07.00.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 07:00:33 -0700 (PDT)
-Message-ID: <f4256b5e-e6b8-f9de-fe97-3e9c6cdcb00c@gmail.com>
-Date:   Fri, 29 Apr 2022 16:00:32 +0200
+        Fri, 29 Apr 2022 10:09:31 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FA1D117B;
+        Fri, 29 Apr 2022 07:01:10 -0700 (PDT)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TBDTcs021204;
+        Fri, 29 Apr 2022 13:51:17 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=DSYmU2KyqXgcAYYRjyeArvgju810FAKBNpHnSvEJAOk=;
+ b=VSKE1evyZCC76igMGiQhDdrXgKlUgBp9E4rGzJEMpEl+r+FtKKRfe0GPBelcbfDoI0OA
+ pRQpK3XIySZFZUERD0SEKUK0/vB45gjEvQzoPFu4j8SW7xV1PjEbwCmpWf2Xz8p1mFnX
+ 5VN3qOC/XfXyoYEdC2S9NAubnSDDwSluJP+FTgGde/6/pnY15+3EcfzeIY+PqXq0RBSp
+ fieeTMm7OY5w9Ex+S0DzS95m9wLf3d5YarZBjvL6Eo4T8UhJmzoQJFAGizulSJF0DArR
+ KwLnXgutqDPaWsvAYuiCMR24XDxm2ycWIVax7pwi3QMgnfd0T2bWQ7Ablex/adugEKiH jQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fr27h15yk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 13:51:17 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23TDm9iZ018377;
+        Fri, 29 Apr 2022 13:51:16 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fr27h15xf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 13:51:16 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TDS7M1025989;
+        Fri, 29 Apr 2022 13:51:14 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma05fra.de.ibm.com with ESMTP id 3fm938yafv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 13:51:13 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TDc24F51577340
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 29 Apr 2022 13:38:02 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 418974C044;
+        Fri, 29 Apr 2022 13:51:11 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 32F8D4C040;
+        Fri, 29 Apr 2022 13:51:10 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 29 Apr 2022 13:51:10 +0000 (GMT)
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michal Simek <monstr@monstr.eu>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
+        linux-alpha@vger.kernel.org (open list:ALPHA PORT),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM PORT),
+        linux-ia64@vger.kernel.org (open list:IA64 (Itanium) PLATFORM),
+        linux-m68k@lists.linux-m68k.org (open list:M68K ARCHITECTURE),
+        linux-mips@vger.kernel.org (open list:MIPS),
+        linux-parisc@vger.kernel.org (open list:PARISC ARCHITECTURE),
+        linuxppc-dev@lists.ozlabs.org (open list:LINUX FOR POWERPC (32-BIT AND
+        64-BIT)),
+        linux-riscv@lists.infradead.org (open list:RISC-V ARCHITECTURE),
+        linux-sh@vger.kernel.org (open list:SUPERH),
+        sparclinux@vger.kernel.org (open list:SPARC + UltraSPARC
+        (sparc/sparc64))
+Subject: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select it as necessary
+Date:   Fri, 29 Apr 2022 15:49:59 +0200
+Message-Id: <20220429135108.2781579-2-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 5/7] arm64: dts: mediatek: mt8195-demo: enable ethernet
-Content-Language: en-US
-To:     Macpaul Lin <macpaul.lin@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220426134106.242353-1-fparent@baylibre.com>
- <20220426134106.242353-6-fparent@baylibre.com>
- <c0cf89c05ee708ec3648b267c1c0a0baa1331836.camel@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <c0cf89c05ee708ec3648b267c1c0a0baa1331836.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: -P9J6AB2n6AMBUugkA7mMRpNV34BmBS_
+X-Proofpoint-GUID: RcRk9MDBXbun4qDsErZKbZJh7zT5Xep-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-29_06,2022-04-28_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
+ clxscore=1011 adultscore=0 priorityscore=1501 mlxlogscore=804
+ suspectscore=0 malwarescore=0 spamscore=0 phishscore=0 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204290078
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+We introduce a new HAS_IOPORT Kconfig option to indicate support for
+I/O Port access. In a future patch HAS_IOPORT=n will disable compilation
+of the I/O accessor functions inb()/outb() and friends on architectures
+which can not meaningfully support legacy I/O spaces such as s390 or
+where such support is optional. The "depends on" relations on HAS_IOPORT
+in drivers as well as ifdefs for HAS_IOPORT specific sections will be
+added in subsequent patches on a per subsystem basis.
 
+Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+ arch/alpha/Kconfig      | 1 +
+ arch/arm/Kconfig        | 1 +
+ arch/arm64/Kconfig      | 1 +
+ arch/ia64/Kconfig       | 1 +
+ arch/m68k/Kconfig       | 1 +
+ arch/microblaze/Kconfig | 1 +
+ arch/mips/Kconfig       | 1 +
+ arch/parisc/Kconfig     | 1 +
+ arch/powerpc/Kconfig    | 1 +
+ arch/riscv/Kconfig      | 1 +
+ arch/sh/Kconfig         | 1 +
+ arch/sparc/Kconfig      | 1 +
+ arch/x86/Kconfig        | 1 +
+ drivers/bus/Kconfig     | 2 +-
+ lib/Kconfig             | 4 ++++
+ lib/Kconfig.kgdb        | 1 +
+ 16 files changed, 19 insertions(+), 1 deletion(-)
 
-On 27/04/2022 08:25, Macpaul Lin wrote:
-> On Tue, 2022-04-26 at 15:41 +0200, Fabien Parent wrote:
->> Enable ethernet on the MT8195 demo board.
->>
->> Signed-off-by: Fabien Parent <fparent@baylibre.com>
->> ---
->>   arch/arm64/boot/dts/mediatek/mt8195-demo.dts | 108
->> +++++++++++++++++++
->>   1 file changed, 108 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
->> b/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
->> index 08cab3b3943b..0b7985486e2a 100644
->> --- a/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
->> +++ b/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
->> @@ -80,6 +80,30 @@ optee_reserved: optee@43200000 {
->>   	};
->>   };
->>   
->> +&eth {
->> +	phy-mode = "rgmii-rxid";
->> +	phy-handle = <&eth_phy>;
->> +	snps,reset-gpio = <&pio 93 GPIO_ACTIVE_HIGH>;
->> +	snps,reset-delays-us = <0 10000 10000>;
->> +	mediatek,tx-delay-ps = <2030>;
->> +	pinctrl-names = "default", "sleep";
->> +	pinctrl-0 = <&eth_default_pins>;
->> +	pinctrl-1 = <&eth_sleep_pins>;
->> +	status = "okay";
->> +
->> +	mdio {
->> +		compatible = "snps,dwmac-mdio";
->> +		#address-cells = <1>;
->> +		#size-cells = <0>;
->> +
->> +		eth_phy: phy@1 {
->> +			compatible = "ethernet-phy-id001c.c916";
->> +			#phy-cells = <0>;
->> +			reg = <0x1>;
->> +		};
->> +	};
->> +};
->> +
->>   &i2c6 {
->>   	clock-frequency = <400000>;
->>   	pinctrl-0 = <&i2c6_pins>;
->> @@ -260,6 +284,90 @@ &mt6359_vsram_others_ldo_reg {
->>   };
->>   
->>   &pio {
->> +	eth_default_pins: eth-default-pins {
->> +		pins-cc {
->> +			pinmux = <PINMUX_GPIO85__FUNC_GBE_TXC>,
->> +				 <PINMUX_GPIO88__FUNC_GBE_TXEN>,
->> +				 <PINMUX_GPIO87__FUNC_GBE_RXDV>,
->> +				 <PINMUX_GPIO86__FUNC_GBE_RXC>;
->> +			drive-strength = <MTK_DRIVE_8mA>;
->> +		};
->> +
->> +		pins-mdio {
->> +			pinmux = <PINMUX_GPIO89__FUNC_GBE_MDC>,
->> +				 <PINMUX_GPIO90__FUNC_GBE_MDIO>;
->> +			input-enable;
->> +		};
->> +
->> +		pins-phy-reset {
->> +			pinmux = <PINMUX_GPIO93__FUNC_GPIO93>;
->> +		};
->> +
->> +		pins-power {
->> +			pinmux = <PINMUX_GPIO91__FUNC_GPIO91>,
->> +				 <PINMUX_GPIO92__FUNC_GPIO92>;
->> +			output-high;
->> +		};
->> +
->> +		pins-rxd {
->> +			pinmux = <PINMUX_GPIO81__FUNC_GBE_RXD3>,
->> +				 <PINMUX_GPIO82__FUNC_GBE_RXD2>,
->> +				 <PINMUX_GPIO83__FUNC_GBE_RXD1>,
->> +				 <PINMUX_GPIO84__FUNC_GBE_RXD0>;
->> +		};
->> +
->> +		pins-txd {
->> +			pinmux = <PINMUX_GPIO77__FUNC_GBE_TXD3>,
->> +				 <PINMUX_GPIO78__FUNC_GBE_TXD2>,
->> +				 <PINMUX_GPIO79__FUNC_GBE_TXD1>,
->> +				 <PINMUX_GPIO80__FUNC_GBE_TXD0>;
->> +			drive-strength = <MTK_DRIVE_8mA>;
->> +		};
->> +	};
->> +
->> +	eth_sleep_pins: eth-sleep-pins {
->> +		pins-cc {
->> +			pinmux = <PINMUX_GPIO85__FUNC_GPIO85>,
->> +				 <PINMUX_GPIO88__FUNC_GPIO88>,
->> +				 <PINMUX_GPIO87__FUNC_GPIO87>,
->> +				 <PINMUX_GPIO86__FUNC_GPIO86>;
->> +		};
->> +
->> +		pins-mdio {
->> +			pinmux = <PINMUX_GPIO89__FUNC_GPIO89>,
->> +				 <PINMUX_GPIO90__FUNC_GPIO90>;
->> +			input-disable;
->> +			bias-disable;
->> +		};
->> +
->> +		pins-phy-reset {
->> +			pinmux = <PINMUX_GPIO93__FUNC_GPIO93>;
->> +			input-disable;
->> +			bias-disable;
->> +		};
->> +
->> +		pins-power {
->> +			pinmux = <PINMUX_GPIO91__FUNC_GPIO91>,
->> +				 <PINMUX_GPIO92__FUNC_GPIO92>;
->> +			input-disable;
->> +			bias-disable;
->> +		};
->> +
->> +		pins-rxd {
->> +			pinmux = <PINMUX_GPIO81__FUNC_GPIO81>,
->> +				 <PINMUX_GPIO82__FUNC_GPIO82>,
->> +				 <PINMUX_GPIO83__FUNC_GPIO83>,
->> +				 <PINMUX_GPIO84__FUNC_GPIO84>;
->> +		};
->> +
->> +		pins-txd {
->> +			pinmux = <PINMUX_GPIO77__FUNC_GPIO77>,
->> +				 <PINMUX_GPIO78__FUNC_GPIO78>,
->> +				 <PINMUX_GPIO79__FUNC_GPIO79>,
->> +				 <PINMUX_GPIO80__FUNC_GPIO80>;
->> +		};
->> +	};
->> +
->>   	gpio_keys_pins: gpio-keys-pins {
->>   		pins {
->>   			pinmux = <PINMUX_GPIO106__FUNC_GPIO106>;
-> 
-> Tested-by: Macpaul Lin <macpaul.lin@mediatek.com>
-> 
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 7d0d26b5b3f5..2b9cf1b0bdb8 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -27,6 +27,7 @@ config ALPHA
+ 	select AUDIT_ARCH
+ 	select GENERIC_CPU_VULNERABILITIES
+ 	select GENERIC_SMP_IDLE_THREAD
++	select HAS_IOPORT
+ 	select HAVE_ARCH_AUDITSYSCALL
+ 	select HAVE_MOD_ARCH_SPECIFIC
+ 	select MODULES_USE_ELF_RELA
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 2e8091e2d8a8..603ce00033a5 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -69,6 +69,7 @@ config ARM
+ 	select GENERIC_SCHED_CLOCK
+ 	select GENERIC_SMP_IDLE_THREAD
+ 	select HARDIRQS_SW_RESEND
++	select HAS_IOPORT
+ 	select HAVE_ARCH_AUDITSYSCALL if AEABI && !OABI_COMPAT
+ 	select HAVE_ARCH_BITREVERSE if (CPU_32v7M || CPU_32v7) && !CPU_32v6
+ 	select HAVE_ARCH_JUMP_LABEL if !XIP_KERNEL && !CPU_ENDIAN_BE32 && MMU
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 20ea89d9ac2f..234dc89a7654 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -136,6 +136,7 @@ config ARM64
+ 	select GENERIC_GETTIMEOFDAY
+ 	select GENERIC_VDSO_TIME_NS
+ 	select HARDIRQS_SW_RESEND
++	select HAS_IOPORT
+ 	select HAVE_MOVE_PMD
+ 	select HAVE_MOVE_PUD
+ 	select HAVE_PCI
+diff --git a/arch/ia64/Kconfig b/arch/ia64/Kconfig
+index cb93769a9f2a..0fffe5130a80 100644
+--- a/arch/ia64/Kconfig
++++ b/arch/ia64/Kconfig
+@@ -25,6 +25,7 @@ config IA64
+ 	select PCI_DOMAINS if PCI
+ 	select PCI_MSI
+ 	select PCI_SYSCALL if PCI
++	select HAS_IOPORT
+ 	select HAVE_ASM_MODVERSIONS
+ 	select HAVE_UNSTABLE_SCHED_CLOCK
+ 	select HAVE_EXIT_THREAD
+diff --git a/arch/m68k/Kconfig b/arch/m68k/Kconfig
+index 936cce42ae9a..54bf0a40c2f0 100644
+--- a/arch/m68k/Kconfig
++++ b/arch/m68k/Kconfig
+@@ -18,6 +18,7 @@ config M68K
+ 	select GENERIC_CPU_DEVICES
+ 	select GENERIC_IOMAP
+ 	select GENERIC_IRQ_SHOW
++	select HAS_IOPORT if PCI || ISA || ATARI_ROM_ISA
+ 	select HAVE_ASM_MODVERSIONS
+ 	select HAVE_DEBUG_BUGVERBOSE
+ 	select HAVE_EFFICIENT_UNALIGNED_ACCESS if !CPU_HAS_NO_UNALIGNED
+diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
+index 8cf429ad1c84..966a6682f1fc 100644
+--- a/arch/microblaze/Kconfig
++++ b/arch/microblaze/Kconfig
+@@ -21,6 +21,7 @@ config MICROBLAZE
+ 	select GENERIC_IRQ_SHOW
+ 	select GENERIC_PCI_IOMAP
+ 	select GENERIC_SCHED_CLOCK
++	select HAS_IOPORT if PCI
+ 	select HAVE_ARCH_HASH
+ 	select HAVE_ARCH_KGDB
+ 	select HAVE_ARCH_SECCOMP
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index de3b32a507d2..4c55df08d6f1 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -47,6 +47,7 @@ config MIPS
+ 	select GENERIC_SMP_IDLE_THREAD
+ 	select GENERIC_TIME_VSYSCALL
+ 	select GUP_GET_PTE_LOW_HIGH if CPU_MIPS32 && PHYS_ADDR_T_64BIT
++	select HAS_IOPORT
+ 	select HAVE_ARCH_COMPILER_H
+ 	select HAVE_ARCH_JUMP_LABEL
+ 	select HAVE_ARCH_KGDB if MIPS_FP_SUPPORT
+diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
+index 52e550b45692..741c5c64c173 100644
+--- a/arch/parisc/Kconfig
++++ b/arch/parisc/Kconfig
+@@ -46,6 +46,7 @@ config PARISC
+ 	select MODULES_USE_ELF_RELA
+ 	select CLONE_BACKWARDS
+ 	select TTY # Needed for pdc_cons.c
++	select HAS_IOPORT if PCI || EISA
+ 	select HAVE_DEBUG_STACKOVERFLOW
+ 	select HAVE_ARCH_AUDITSYSCALL
+ 	select HAVE_ARCH_HASH
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 174edabb74fa..7133cc35b777 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -182,6 +182,7 @@ config PPC
+ 	select GENERIC_SMP_IDLE_THREAD
+ 	select GENERIC_TIME_VSYSCALL
+ 	select GENERIC_VDSO_TIME_NS
++	select HAS_IOPORT			if PCI
+ 	select HAVE_ARCH_AUDITSYSCALL
+ 	select HAVE_ARCH_HUGE_VMALLOC		if HAVE_ARCH_HUGE_VMAP
+ 	select HAVE_ARCH_HUGE_VMAP		if PPC_RADIX_MMU || PPC_8xx
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index 00fd9c548f26..27fc8a450478 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -67,6 +67,7 @@ config RISCV
+ 	select GENERIC_SMP_IDLE_THREAD
+ 	select GENERIC_TIME_VSYSCALL if MMU && 64BIT
+ 	select GENERIC_VDSO_TIME_NS if HAVE_GENERIC_VDSO
++	select HAS_IOPORT if MMU
+ 	select HAVE_ARCH_AUDITSYSCALL
+ 	select HAVE_ARCH_JUMP_LABEL if !XIP_KERNEL
+ 	select HAVE_ARCH_JUMP_LABEL_RELATIVE if !XIP_KERNEL
+diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
+index 5f220e903e5a..6c1694e82b89 100644
+--- a/arch/sh/Kconfig
++++ b/arch/sh/Kconfig
+@@ -25,6 +25,7 @@ config SUPERH
+ 	select GENERIC_SCHED_CLOCK
+ 	select GENERIC_SMP_IDLE_THREAD
+ 	select GUP_GET_PTE_LOW_HIGH if X2TLB
++	select HAS_IOPORT if HAS_IOPORT_MAP
+ 	select HAVE_ARCH_AUDITSYSCALL
+ 	select HAVE_ARCH_KGDB
+ 	select HAVE_ARCH_SECCOMP_FILTER
+diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
+index 9200bc04701c..64736476dde8 100644
+--- a/arch/sparc/Kconfig
++++ b/arch/sparc/Kconfig
+@@ -32,6 +32,7 @@ config SPARC
+ 	select GENERIC_IRQ_SHOW
+ 	select ARCH_WANT_IPC_PARSE_VERSION
+ 	select GENERIC_PCI_IOMAP
++	select HAS_IOPORT
+ 	select HAVE_NMI_WATCHDOG if SPARC64
+ 	select HAVE_CBPF_JIT if SPARC32
+ 	select HAVE_EBPF_JIT if SPARC64
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index b0142e01002e..9ef0438d1b7d 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -155,6 +155,7 @@ config X86
+ 	select GUP_GET_PTE_LOW_HIGH		if X86_PAE
+ 	select HARDIRQS_SW_RESEND
+ 	select HARDLOCKUP_CHECK_TIMESTAMP	if X86_64
++	select HAS_IOPORT
+ 	select HAVE_ACPI_APEI			if ACPI
+ 	select HAVE_ACPI_APEI_NMI		if ACPI
+ 	select HAVE_ALIGNED_STRUCT_PAGE		if SLUB
+diff --git a/drivers/bus/Kconfig b/drivers/bus/Kconfig
+index 3c68e174a113..a61285100224 100644
+--- a/drivers/bus/Kconfig
++++ b/drivers/bus/Kconfig
+@@ -81,7 +81,7 @@ config MOXTET
+ config HISILICON_LPC
+ 	bool "Support for ISA I/O space on HiSilicon Hip06/7"
+ 	depends on (ARM64 && ARCH_HISI) || (COMPILE_TEST && !ALPHA && !HEXAGON && !PARISC)
+-	depends on HAS_IOMEM
++	depends on HAS_IOPORT
+ 	select INDIRECT_PIO if ARM64
+ 	help
+ 	  Driver to enable I/O access to devices attached to the Low Pin
+diff --git a/lib/Kconfig b/lib/Kconfig
+index 087e06b4cdfd..177fed9cf20a 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -91,6 +91,7 @@ config ARCH_USE_SYM_ANNOTATIONS
+ config INDIRECT_PIO
+ 	bool "Access I/O in non-MMIO mode"
+ 	depends on ARM64
++	depends on HAS_IOPORT
+ 	help
+ 	  On some platforms where no separate I/O space exists, there are I/O
+ 	  hosts which can not be accessed in MMIO mode. Using the logical PIO
+@@ -493,6 +494,9 @@ config HAS_IOMEM
+ 	depends on !NO_IOMEM
+ 	default y
+ 
++config HAS_IOPORT
++	def_bool ISA
++
+ config HAS_IOPORT_MAP
+ 	bool
+ 	depends on HAS_IOMEM && !NO_IOPORT_MAP
+diff --git a/lib/Kconfig.kgdb b/lib/Kconfig.kgdb
+index 05dae05b6cc9..c68e4d9dcecb 100644
+--- a/lib/Kconfig.kgdb
++++ b/lib/Kconfig.kgdb
+@@ -121,6 +121,7 @@ config KDB_DEFAULT_ENABLE
+ 
+ config KDB_KEYBOARD
+ 	bool "KGDB_KDB: keyboard as input device"
++	depends on HAS_IOPORT
+ 	depends on VT && KGDB_KDB
+ 	default n
+ 	help
+-- 
+2.32.0
 
-I get the following error:
-Error: arch/arm64/boot/dts/mediatek/mt8195.dtsi:582.26-27 syntax error
-
-
-
-How did you test?
-
-Regards,
-Matthias
