@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 13:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C13DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 13:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359832AbiD2Nka (ORCPT
+        id S1359855AbiD2Nkg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 09:40:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53568 "EHLO
+        Fri, 29 Apr 2022 09:40:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359821AbiD2NkQ (ORCPT
+        with ESMTP id S1359864AbiD2Nk3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 09:40:16 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8159CCB01A
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 06:36:52 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id gj17-20020a17090b109100b001d8b390f77bso10556326pjb.1
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 06:36:52 -0700 (PDT)
+        Fri, 29 Apr 2022 09:40:29 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA747CB03D
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 06:37:09 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id b12so7170577plg.4
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 06:37:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=mtrvfydE+wjlh8q+BDcMPZBC4jr9kvSALqoUY6wVrYg=;
-        b=k8n9XhC/kWX+O8zBpqQG6cpY+9Tk08Geziwyjeu7tMaVC30yvyM7eOUm07SBr/4qEX
-         xGqxG4TTH1PT6oqMgQaRTtltsursPhk1i+MdgOQ1+/JIIumQOzWrxXnaddl/A1Tn59BI
-         cgiuxGNjxUI1TWVPKG3eDAjqjWUBdRQBpMufheg8/dbNPMOFvTm1MSRw1X4GaUzRJLAi
-         68ZJScRb/+LlLB4Z4jQd070JkFSQskomWSs4klopW+l35QRFY/XgBDVCI8aVPLQramu0
-         VklkPI8+1fbvC+YaQ6exBpg29zS3OdVQh36+iqKyd4OEuTm0Yh9T6sP0mw9P1ytkJmvV
-         B+Cg==
+        bh=DGl50d69T/46DVPYmj2DL1x7ncKmmZ54JyK/lw6nQrc=;
+        b=ARePECzUIuI/o7LaJ6U30K3W4hzXRsvLwyPDJjZN5Ir39F24/V1LJiWa1QSu1EMnH5
+         A1GdbC0XtJEshbkbFIKnlj/USWQUZJ1ZbMvKe6cExn1vdQNp2EvKrmONYlgc4UfzDqDN
+         NPrE/d77mWvSMe8t+Pj6PUpwZJtO1lp6YSqboATYrrZ7UX43LUsVHKLtdYbl0QShre5S
+         KTKyDJkzYVYEsW858cbU/F6b9nm45sIAiNbvtYGtEbXr8MjkUHvyh6vh9G95S67sc/Qd
+         5bayvVPY/1MQqIcZ8qKIQkAnNN6I1m7O69zc83csx5Wy9gJ5vcWF0bOjLvSmoOPA1ADx
+         MHpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=mtrvfydE+wjlh8q+BDcMPZBC4jr9kvSALqoUY6wVrYg=;
-        b=fmHmZdLrqnGoQqA9DjHp8QmfRUwwjguaHx1Cx9C25R3mBwgjhXa6TBa+TEJ9Age0RT
-         9p6HiKhQ35EE+599O4fSOpPj4S1ITzvCNv/jQtay5Y18hp5iuK+BYhmt7o/QGfhtWfE+
-         grX7NrW/Ji2epmOxgnXkKb/yE6mSodrUoqExDsGnaedOiLmPBpariIKT6lKLRT9tNDw/
-         aOvkaMyPGWK7Or/N5DVUqEXsZ8E0bOOQ6CmQlR1ARSVABZq9Sb18oTbcUEr0kqcWqwxd
-         4nOd/SjcsmSO7JvkQ00RmCD25mYU45mlcUMRKxG7uZ533MFhz3YjRqTXRg4CMfMOVWEb
-         7ijQ==
-X-Gm-Message-State: AOAM531DzLdHkRCSfO+Sq039Sdfy/lcFjwWM8fLDZBZL3V4UnUodgnCC
-        OHY8TLnTPgh4Ma/sXCYLTx0yFg==
-X-Google-Smtp-Source: ABdhPJxkwZhomXI1CyZvZSH/IPeC0YUXjZY29+uiw0fkUp1dwm5zxcysMSj/RCsHmgPONsDBh4zerQ==
-X-Received: by 2002:a17:90b:1a8b:b0:1d9:971d:4269 with SMTP id ng11-20020a17090b1a8b00b001d9971d4269mr4032863pjb.65.1651239412204;
-        Fri, 29 Apr 2022 06:36:52 -0700 (PDT)
+        bh=DGl50d69T/46DVPYmj2DL1x7ncKmmZ54JyK/lw6nQrc=;
+        b=f2SAKy+KcJ4eo9NxgaKdwsY6/uXJIZJ6OL9L6gj3y1aiuBvPaooSedp9oLPzGqVWVw
+         50swfm8XRZtUNYLIFuTtV0J49WUpSRi7vMjSy1ajkHyGbfMOZYRSalCEZvIxuRIZF7PT
+         DsYPGCs8vwzOSwtHdFz5p4CWI5+ExGVOWrPrOB+UV/CXesge1ZVwitIPKadxCSkAf/Jf
+         5Kp++hM/Xm+c3fKOO4Gx2pwwp3sfV9ySpwaCe1DqWNB6ednh12AZ6iOmfK6u5bnjDzaT
+         cPjrnXQj2Q5btZahrMlozYUtnOSI8yfnpLfubPDbYcs1IFPud98zEyWFmooval/3vxOb
+         zFog==
+X-Gm-Message-State: AOAM533xK15QqRM2q8e1NKDMnEGEWsQrT9xt3xJDGX7RfSya7malVK7P
+        xwtaZQKJ/ksut1ydxzwDFSbtAQ==
+X-Google-Smtp-Source: ABdhPJwkDEFr/eSiIXsECiLskFgBvhXhvx+Ht6goriTOJRM12m+x++WpdKjE8bfOm4QcHnGGrKiSMQ==
+X-Received: by 2002:a17:90b:380e:b0:1da:2943:b975 with SMTP id mq14-20020a17090b380e00b001da2943b975mr4006350pjb.42.1651239429455;
+        Fri, 29 Apr 2022 06:37:09 -0700 (PDT)
 Received: from localhost.localdomain ([139.177.225.240])
-        by smtp.gmail.com with ESMTPSA id m8-20020a17090a414800b001d81a30c437sm10681977pjg.50.2022.04.29.06.36.46
+        by smtp.gmail.com with ESMTPSA id m8-20020a17090a414800b001d81a30c437sm10681977pjg.50.2022.04.29.06.37.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 06:36:51 -0700 (PDT)
+        Fri, 29 Apr 2022 06:37:08 -0700 (PDT)
 From:   Qi Zheng <zhengqi.arch@bytedance.com>
 To:     akpm@linux-foundation.org, tglx@linutronix.de,
         kirill.shutemov@linux.intel.com, mika.penttila@nextfour.com,
@@ -57,9 +57,9 @@ To:     akpm@linux-foundation.org, tglx@linutronix.de,
 Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-mm@kvack.org, songmuchun@bytedance.com,
         zhouchengming@bytedance.com, Qi Zheng <zhengqi.arch@bytedance.com>
-Subject: [RFC PATCH 06/18] mm: introduce CONFIG_FREE_USER_PTE
-Date:   Fri, 29 Apr 2022 21:35:40 +0800
-Message-Id: <20220429133552.33768-7-zhengqi.arch@bytedance.com>
+Subject: [RFC PATCH 09/18] pte_ref: add pte_tryget() and {__,}pte_put() helper
+Date:   Fri, 29 Apr 2022 21:35:43 +0800
+Message-Id: <20220429133552.33768-10-zhengqi.arch@bytedance.com>
 X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 In-Reply-To: <20220429133552.33768-1-zhengqi.arch@bytedance.com>
 References: <20220429133552.33768-1-zhengqi.arch@bytedance.com>
@@ -69,39 +69,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This configuration variable will be used to build the code needed to
-free user PTE page table pages.
+The user PTE page table page may be freed when the last
+percpu_ref is dropped. So we need to try to get its
+percpu_ref before accessing the PTE page to prevent it
+form being freed during the access process.
 
-The PTE page table setting and clearing functions(such as set_pte_at())
-are in the architecture's files, and these functions will be hooked to
-implement FREE_USER_PTE, so the architecture support is needed.
+This patch adds pte_tryget() and {__,}pte_put() to help us
+to get and put the percpu_ref of user PTE page table pages.
 
 Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
 ---
- mm/Kconfig | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ include/linux/pte_ref.h | 23 ++++++++++++++++
+ mm/pte_ref.c            | 58 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 81 insertions(+)
 
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 034d87953600..af99ed626732 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -909,6 +909,16 @@ config ANON_VMA_NAME
- 	  area from being merged with adjacent virtual memory areas due to the
- 	  difference in their name.
+diff --git a/include/linux/pte_ref.h b/include/linux/pte_ref.h
+index d3963a151ca5..bfe620038699 100644
+--- a/include/linux/pte_ref.h
++++ b/include/linux/pte_ref.h
+@@ -12,6 +12,10 @@
  
-+config ARCH_SUPPORTS_FREE_USER_PTE
-+	def_bool n
-+
-+config FREE_USER_PTE
-+	bool "Free user PTE page tables"
-+	default y
-+	depends on ARCH_SUPPORTS_FREE_USER_PTE && MMU && SMP
-+	help
-+	  Try to free user PTE page table page when its all entries are none.
-+
- source "mm/damon/Kconfig"
+ bool pte_ref_init(pgtable_t pte);
+ void pte_ref_free(pgtable_t pte);
++void free_user_pte(struct mm_struct *mm, pmd_t *pmd, unsigned long addr);
++bool pte_tryget(struct mm_struct *mm, pmd_t *pmd, unsigned long addr);
++void __pte_put(pgtable_t page);
++void pte_put(pte_t *ptep);
  
- endmenu
+ #else /* !CONFIG_FREE_USER_PTE */
+ 
+@@ -24,6 +28,25 @@ static inline void pte_ref_free(pgtable_t pte)
+ {
+ }
+ 
++static inline void free_user_pte(struct mm_struct *mm, pmd_t *pmd,
++				 unsigned long addr)
++{
++}
++
++static inline bool pte_tryget(struct mm_struct *mm, pmd_t *pmd,
++			      unsigned long addr)
++{
++	return true;
++}
++
++static inline void __pte_put(pgtable_t page)
++{
++}
++
++static inline void pte_put(pte_t *ptep)
++{
++}
++
+ #endif /* CONFIG_FREE_USER_PTE */
+ 
+ #endif /* _LINUX_PTE_REF_H */
+diff --git a/mm/pte_ref.c b/mm/pte_ref.c
+index 52e31be00de4..5b382445561e 100644
+--- a/mm/pte_ref.c
++++ b/mm/pte_ref.c
+@@ -44,4 +44,62 @@ void pte_ref_free(pgtable_t pte)
+ 	kfree(ref);
+ }
+ 
++void free_user_pte(struct mm_struct *mm, pmd_t *pmd, unsigned long addr) {}
++
++/*
++ * pte_tryget - try to get the pte_ref of the user PTE page table page
++ * @mm: pointer the target address space
++ * @pmd: pointer to a PMD.
++ * @addr: virtual address associated with pmd.
++ *
++ * Return: true if getting the pte_ref succeeded. And false otherwise.
++ *
++ * Before accessing the user PTE page table, we need to hold a refcount to
++ * protect against the concurrent release of the PTE page table.
++ * But we will fail in the following case:
++ * 	- The content mapped in @pmd is not a PTE page
++ * 	- The pte_ref is zero, it may be reclaimed
++ */
++bool pte_tryget(struct mm_struct *mm, pmd_t *pmd, unsigned long addr)
++{
++	bool retval = true;
++	pmd_t pmdval;
++	pgtable_t pte;
++
++	rcu_read_lock();
++	pmdval = READ_ONCE(*pmd);
++	pte = pmd_pgtable(pmdval);
++	if (unlikely(pmd_none(pmdval) || pmd_leaf(pmdval))) {
++		retval = false;
++	} else if (!percpu_ref_tryget(pte->pte_ref)) {
++		rcu_read_unlock();
++		/*
++		 * Also do free_user_pte() here to prevent missed reclaim due
++		 * to race condition.
++		 */
++		free_user_pte(mm, pmd, addr & PMD_MASK);
++		return false;
++	}
++	rcu_read_unlock();
++
++	return retval;
++}
++
++void __pte_put(pgtable_t page)
++{
++	percpu_ref_put(page->pte_ref);
++}
++
++void pte_put(pte_t *ptep)
++{
++	pgtable_t page;
++
++	if (pte_huge(*ptep))
++		return;
++
++	page = pte_to_page(ptep);
++	__pte_put(page);
++}
++EXPORT_SYMBOL(pte_put);
++
+ #endif /* CONFIG_FREE_USER_PTE */
 -- 
 2.20.1
 
