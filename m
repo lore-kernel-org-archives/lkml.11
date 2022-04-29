@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DCFAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD96C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:38:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377659AbiD2OmD (ORCPT
+        id S1377633AbiD2OmI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33200 "EHLO
+        Fri, 29 Apr 2022 10:42:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377751AbiD2Okb (ORCPT
+        with ESMTP id S1377590AbiD2Ok2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:40:31 -0400
+        Fri, 29 Apr 2022 10:40:28 -0400
 Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D4431DDC;
-        Fri, 29 Apr 2022 07:36:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 473AB2E9DF;
+        Fri, 29 Apr 2022 07:36:49 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 6F5984001B;
-        Fri, 29 Apr 2022 14:36:51 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 552F640014;
+        Fri, 29 Apr 2022 14:36:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651243013;
+        t=1651243007;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5xaIwQ5hDv0qxSJacdWpuQ9JgL0/eZQcSImQIJecyes=;
-        b=hE1SgDO49OBizdDU/7aSAnXQPCIYTDst8rggAfrdBafRJpv/Zbk3/PaOkyolpSeYs+QvT0
-        Btj1iynFWkAVnWV6FTVzDmZ2st0+lNOy4JSVIhuCF0+m9gnQSExYPpnhBEbpOlebXN7AHW
-        7mF639GVh8K+w3pnsuqamkgFrzXnb/MNj0GAD4N4ExH9BBy6tfSD8Kt0rrt9+M4ZtuXIEG
-        HFGNjtPpFNgm6JodyI25TiqyPZeLrslax8HNP/myyQQ94K63DB+SsXFl5Vs8lRsjEPB6/V
-        OJMc6Eyd/zfnhQ38D1Of06gK7gxj1prcO4e26pX6w22anp3I0XfaJyvKTN+lAw==
+        bh=t+VSoRKrrkiMmUR8Yb+QBBnNHmvoSLeomJACWRjYbRk=;
+        b=U9HX9Q5Zb3PEq4hM7ZeUSREUl5+Y6Duo/c7b/VBuFIUjoOUeNKIiw/Hy78SppR7cbrjElI
+        LwogZTIIpDgrziCZSDnixQ7rkW+8N4NJIYOeIiU8w7QuPJX+Jfgok8RHpGrzgFABDqbnTP
+        EpkRarHg82/WJpoYScm3q3t0pZEypQnfmVrbtJQocRanq9Pf1pDT9ngp01mOiFM9lrQSup
+        jq/8uYx7h9ztrMUVLIZ7nr83Ww/kQtaQOTU3v1s164crun0LJtonM1YUAp8xBk06vqnAaD
+        21h4kdjUwmoZXXcqV0N6jd+BAfQZG2IkpLSbZxKHwazaCVnDVLoN2FjYirVNUg==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -55,9 +55,9 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [net-next v2 12/12] MAINTAINERS: add Renesas RZ/N1 switch related driver entry
-Date:   Fri, 29 Apr 2022 16:35:05 +0200
-Message-Id: <20220429143505.88208-13-clement.leger@bootlin.com>
+Subject: [net-next v2 09/12] ARM: dts: r9a06g032: describe MII converter
+Date:   Fri, 29 Apr 2022 16:35:02 +0200
+Message-Id: <20220429143505.88208-10-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220429143505.88208-1-clement.leger@bootlin.com>
 References: <20220429143505.88208-1-clement.leger@bootlin.com>
@@ -68,36 +68,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After contributing the drivers, volunteer for maintenance and add
-myself as the maintainer for Renesas RZ/N1 switch related drivers.
+Add the MII converter node which describes the MII converter that is
+present on the RZ/N1 SoC.
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- MAINTAINERS | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ arch/arm/boot/dts/r9a06g032.dtsi | 37 ++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b5f2a647e2cb..8af5888a7040 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16866,6 +16866,17 @@ S:	Supported
- F:	Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml
- F:	drivers/iio/adc/rzg2l_adc.c
+diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
+index 636a6ab31c58..f2d474a236fd 100644
+--- a/arch/arm/boot/dts/r9a06g032.dtsi
++++ b/arch/arm/boot/dts/r9a06g032.dtsi
+@@ -200,6 +200,43 @@ nand_controller: nand-controller@40102000 {
+ 			status = "disabled";
+ 		};
  
-+RENESAS RZ/N1 A5PSW SWITCH DRIVER
-+M:	Clément Léger <clement.leger@bootlin.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-+F:	Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
-+F:	drivers/net/dsa/rzn1_a5psw*
-+F:	drivers/net/pcs/pcs-rzn1-miic.c
-+F:	include/dt-bindings/net/pcs-rzn1-miic.h
-+F:	include/linux/pcs-rzn1-miic.h
-+F:	net/dsa/tag_rzn1_a5psw.c
++		eth_miic: eth-miic@44030000 {
++			compatible = "renesas,r9a06g032-miic", "renesas,rzn1-miic";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0x44030000 0x10000>;
++			clocks = <&sysctrl R9A06G032_CLK_MII_REF>,
++				 <&sysctrl R9A06G032_CLK_RGMII_REF>,
++				 <&sysctrl R9A06G032_CLK_RMII_REF>,
++				 <&sysctrl R9A06G032_HCLK_SWITCH_RG>;
++			status = "disabled";
 +
- RENESAS R-CAR GEN3 & RZ/N1 NAND CONTROLLER DRIVER
- M:	Miquel Raynal <miquel.raynal@bootlin.com>
- L:	linux-mtd@lists.infradead.org
++			mii_conv1: mii-conv@1 {
++				reg = <1>;
++				status = "disabled";
++			};
++
++			mii_conv2: mii-conv@2 {
++				reg = <2>;
++				status = "disabled";
++			};
++
++			mii_conv3: mii-conv@3 {
++				reg = <3>;
++				status = "disabled";
++			};
++
++			mii_conv4: mii-conv@4 {
++				reg = <4>;
++				status = "disabled";
++			};
++
++			mii_conv5: mii-conv@5 {
++				reg = <5>;
++				status = "disabled";
++			};
++		};
++
+ 		gic: interrupt-controller@44101000 {
+ 			compatible = "arm,gic-400", "arm,cortex-a7-gic";
+ 			interrupt-controller;
 -- 
 2.34.1
 
