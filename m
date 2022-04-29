@@ -2,95 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26DADC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CEFC43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:04:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358841AbiD2MGj (ORCPT
+        id S1358834AbiD2MHv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 08:06:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49148 "EHLO
+        Fri, 29 Apr 2022 08:07:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237453AbiD2MGf (ORCPT
+        with ESMTP id S236364AbiD2MHq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 08:06:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2CBC6EFF;
-        Fri, 29 Apr 2022 05:03:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51F75B83466;
-        Fri, 29 Apr 2022 12:03:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6B3AC385A7;
-        Fri, 29 Apr 2022 12:03:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651233795;
-        bh=ytyjAxLH3gz2/+/Nvl7NSG5DpaklWaIPupUTXXz4Z6o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=M3Kft7g64LMqPsBtPppqKDSqU2/JwxE6tj9ZgKi7eNrTAgJY9NH+trStdssuA61RR
-         GDtaGqaf/2jfPvXkpL9hLc2toOdMdtgPlLUvu8GG34/rrreGSDFLIO1RXnEjS9gYdw
-         h/MY72M6UYx0zaVrev6GwWCW4n3c7Ns2AYlYLGYBaNIdDWCyFWp7eNWDINaIZynqhv
-         /RI11TfnHO4oomloq8xvKG1fcTV3oD8YpHpC0bTx9LBYmTV1JTmUvFGNmbFAPsWuXf
-         rz0CSFaRKA4hWRbXasbSYjh8imH7N7eknZJaf9EVzfBadftLWVKZYI0Vl9XyDvTnK8
-         fIePNVgw/hYsw==
-Date:   Fri, 29 Apr 2022 13:03:08 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Markuss Broks <markuss.broks@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        lee.jones@linaro.org, phone-devel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v6 2/5] dt-bindings: regulator: Add bindings for Silicon
- Mitus SM5703 regulators
-Message-ID: <YmvT/LL+1jB8xK77@sirena.org.uk>
-References: <20220429113927.5145-1-markuss.broks@gmail.com>
- <YmvQhpO8dg6VLHNP@sirena.org.uk>
- <2a18073b-974f-00d4-5811-8df577e943a8@gmail.com>
+        Fri, 29 Apr 2022 08:07:46 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB10EC864B;
+        Fri, 29 Apr 2022 05:04:27 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id p4so8888413edx.0;
+        Fri, 29 Apr 2022 05:04:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZDXW/gHKMHWr4XCaRCd5FkSwtpihwObu66H7PIUemjo=;
+        b=bcckHpxFLgWw62oWN6veplwFoPqe86R7LpKyhQzfVOKVhcepK+jOHqmm746lKkVKU5
+         W1r/bsUQkGC90wNd94KRUuC8TV5rpxDIsa98qDy/lJuC83HO5geV0Chof4LYjlB/JtQ7
+         q60LGOVk5FERiTmx7nLDsMXaivnycIIUBVep5cF5bzz4mwTCvqmVmSD/3GEjspJMDrd5
+         g97bdlErRxpZYRJuAYoCAlnymhrViiO8tJyYh1qgwD7VyWKqh+baqILyUV0udvWW6Zlh
+         v4MH/xJw3oe1hwg9k/wpGlvLTlGWpxDF3oABWqYKF3xD/S+EFWaxWDMxg62YqRs01iQk
+         4/3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZDXW/gHKMHWr4XCaRCd5FkSwtpihwObu66H7PIUemjo=;
+        b=VGOp0u0ZUXbf52CurcHgC/2f/TewymKbeE9gkYPtQd2QzbPZGRwODLZtr77ku8s3OP
+         Rjg6QSzOqMeW3OnfeaEMDdFeAJ+mz6mDTWQ4aRhV5jrhEzr+KgfxmP6lHsdupuTdsjMo
+         EzDPF7ONEWwYAWlJpBrolf3mrDikkDPufWCGTjvExdM+rlXecJ2LsCgbSHnhrvLPpqmy
+         YlQhTNAi83/vkKeKsgnyNTOtKwZT9KG56PwQZFbJVmryirBFND5we9SHPaQQhehIbPHi
+         i04LG1Wra72M+SxQ9gBNaU/Xwtf4oO+0j1c3Z97A0odTm0Xy5MQkVF0vzhQroJ5f1evI
+         jnng==
+X-Gm-Message-State: AOAM530AALiho2bPVOhZkwvf4Zp2N5BUbnhzOKoZNOIrbL0L+DJ4eQB3
+        d93alg5fhROriUYiCA8UXPU=
+X-Google-Smtp-Source: ABdhPJx4XFt5/Rsn/IZeluPvzf1O4xt9bGEEJcILXi5vd3CSiYKhRSHUHvPHydjdcoAYikLMJ9m3Jw==
+X-Received: by 2002:a05:6402:1592:b0:425:edec:992d with SMTP id c18-20020a056402159200b00425edec992dmr24684618edv.283.1651233866124;
+        Fri, 29 Apr 2022 05:04:26 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id eo9-20020a1709069b0900b006f3ef214e02sm581338ejc.104.2022.04.29.05.04.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 05:04:25 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sricharan R <sricharan@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [PATCH 0/4] Small fixes/improvement for hfpll and krait
+Date:   Fri, 29 Apr 2022 14:01:04 +0200
+Message-Id: <20220429120108.9396-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="sXfYcVX2i2N4NMSP"
-Content-Disposition: inline
-In-Reply-To: <2a18073b-974f-00d4-5811-8df577e943a8@gmail.com>
-X-Cookie: Are you still an ALCOHOLIC?
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This series has small fixes/improvement to the hfpll and krait clk
+driver.
 
---sXfYcVX2i2N4NMSP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This comes from another series that got split to better facilitate the
+merge since it was grown to 21 patches and was getting hard to review.
 
-On Fri, Apr 29, 2022 at 02:51:03PM +0300, Markuss Broks wrote:
-> On 4/29/22 14:48, Mark Brown wrote:
+For hfpll, a conversion to read_poll macro and introduction
+of a timeout to prevent a stall.
+For krait, a fix for the mux sel logic, an extra check for
+div2_rount_rate and an introduction for 8064 errata.
 
-> > As Rob said please send an incremental patch with any fixes needed.
+Ansuel Smith (4):
+  clk: qcom: clk-hfpll: use poll_timeout macro
+  clk: qcom: clk-krait: unlock spin after mux completion
+  clk: qcom: clk-krait: add hw_parent check for div2_round_rate
+  clk: qcom: clk-krait: add apq/ipq8064 errata workaround
 
-> I'm sorry, I didn't understand it correctly. Does "incremental patch" mean I
-> should send a separate follow-up patch with those fixes?
+ drivers/clk/qcom/clk-hfpll.c | 15 +++++++++------
+ drivers/clk/qcom/clk-krait.c | 30 ++++++++++++++++++++++++++++--
+ drivers/clk/qcom/clk-krait.h |  1 +
+ drivers/clk/qcom/krait-cc.c  |  1 +
+ 4 files changed, 39 insertions(+), 8 deletions(-)
 
-Yes.  It means on top of what's already applied.
+-- 
+2.34.1
 
-Please also don't label patches that aren't part of a patch series as
-though they were in a series, it just creates confusion.
-
---sXfYcVX2i2N4NMSP
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJr0/wACgkQJNaLcl1U
-h9AxeQf/fsN26iHbjaWq030/gMA7pkIRcKce/G0iIcxx5adMpYB85hZF85tzX9WF
-YqJ9haQgJNOJd73UpiJZ7YSaehjMFNY6DW7bB3z1euU5YqHPV1lBdWaQhCXmKt0S
-ghGZZvoYqL20iizrBMP6GQR5NJKj1LrohhhhhMOODnxNIbJKazkhjhnGS0LwyNXo
-7QsNmOXjiW83nPYA7+x1YeyhHXP6rCJTchISj3rn3tabrYYMD9z4v55OWtHLVN/J
-bmqlixvWYrAoJho9Urnj/tvaQBo1XlBuggJ2vXzg9ItRLJMpOJam4Jlw5yOYyn7H
-zkrbR8aE6f7AkG/fkQMrPAhj/Y3s6g==
-=Lsum
------END PGP SIGNATURE-----
-
---sXfYcVX2i2N4NMSP--
