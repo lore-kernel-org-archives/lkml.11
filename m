@@ -2,80 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B477EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:41:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30D10C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:41:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354025AbiD2BoR (ORCPT
+        id S1354038AbiD2BoZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 21:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46866 "EHLO
+        Thu, 28 Apr 2022 21:44:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235461AbiD2BoP (ORCPT
+        with ESMTP id S1354030AbiD2BoY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 21:44:15 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0EF55FF14;
-        Thu, 28 Apr 2022 18:40:59 -0700 (PDT)
+        Thu, 28 Apr 2022 21:44:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC5D46211F
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:41:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0D715CE2F98;
-        Fri, 29 Apr 2022 01:40:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF7CBC385AC;
-        Fri, 29 Apr 2022 01:40:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5076662206
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 01:41:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F5BCC385AC;
+        Fri, 29 Apr 2022 01:41:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651196456;
-        bh=Hz6ulH+o/XA3d/ohY6QMo3a7cl6ZEDIejB0K3veZ9gw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hbqr3sYCWquHPPIGT12Ir8IJ8M2rIRjkIx6bydazwbRTF3vsdVxWbwmYa17j93Y1T
-         CmPDfLH9/sDfXM56lx64FfPeN3m/SyTtFt+mBdpbqM9RpLRfUKY9JiEPiPJUQgKhe5
-         ili1hZR4k4Jg/LhXv3cRQZ+mnkM/L307Xkmuws0+bkoIKJD9JPiuJ5uCmPW0G/LgHs
-         xvD8NR0nSQsQf+KwKIfjHsO89fGbTNUkhpu5/B4Qs1xveASSPEqOjG6sd4w+0f7v+S
-         40LohYVRzYdxcPUfmec/UFYagUWtr32Qt/8I7TdWHZiGPlgW/XEijZHyWCaXzku6vH
-         La9YD2kGDcCWA==
-Date:   Thu, 28 Apr 2022 18:40:54 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jianqun Xu <jay.xu@rock-chips.com>
-Cc:     davem@davemloft.net, joabreu@synopsys.com, alexandre.torgue@st.com,
-        peppe.cavallaro@st.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH V2] ethernet: stmmac: support driver work for DTs
- without child queue node
-Message-ID: <20220428184054.3dd72784@kernel.org>
-In-Reply-To: <20220429004605.1010751-1-jay.xu@rock-chips.com>
-References: <20220428010927.526310-1-jay.xu@rock-chips.com>
-        <20220429004605.1010751-1-jay.xu@rock-chips.com>
+        s=k20201202; t=1651196466;
+        bh=QaiGLwnV4ie7NhguJL5G5yOfx2MqdqKnJRaCmm3yGmc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VqyGSyfwAWMJPosrNjo78l7QttkzKimLp5uEz2Z1f4ZdZ8kQZokKGtHZHhICNHK/t
+         u9xiipupnG/DRSra8Gn0kq0EN8MHaev+9Bu5wqjjzUcbzrY0YCbNFWabCipzNHg7Ym
+         7tvu0nshPqWb8w6UVZnF/tpAiqu5hUIR3Fe59FnQmfwbVG2a/sIjUtxY1so1Bbg1dY
+         oNW3Er5zKsWxSMAkQUcME3VHVqxVZb6dZ/T97k8NTlGvN6HxzSOo45aABmEFhibkZF
+         kI8+2HyG9BfDaf3qP+/WHMdlxjxNXSo1aeyT8K+tVzx9tRG13FVGbhfL0uuuzTaI32
+         s6Cxxt3dNsr3w==
+Date:   Thu, 28 Apr 2022 19:41:03 -0600
+From:   Keith Busch <kbusch@kernel.org>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH 1/2] mm/dmapool: replace linked list with xarray
+Message-ID: <YmtCL0wzshmW02Xr@kbusch-mbp.dhcp.thefacebook.com>
+References: <20220428202714.17630-1-kbusch@kernel.org>
+ <20220428202714.17630-2-kbusch@kernel.org>
+ <YmsOVVfcycVdbzUs@casper.infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmsOVVfcycVdbzUs@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Apr 2022 08:46:05 +0800 Jianqun Xu wrote:
-> The driver use the value of property 'snps,rx-queues-to-use' to loop
-> same numbers child nodes as queues, such as:
+On Thu, Apr 28, 2022 at 10:59:49PM +0100, Matthew Wilcox wrote:
+> On Thu, Apr 28, 2022 at 02:27:13PM -0600, kbusch@kernel.org wrote:
+> > @@ -316,13 +316,14 @@ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
+> >  {
+> >  	unsigned long flags;
+> >  	struct dma_page *page;
+> > +	unsigned long i;
+> >  	size_t offset;
+> >  	void *retval;
+> >  
+> >  	might_alloc(mem_flags);
+> >  
+> >  	spin_lock_irqsave(&pool->lock, flags);
+> > -	list_for_each_entry(page, &pool->page_list, page_list) {
+> > +	xa_for_each(&pool->pages, i, page) {
+> >  		if (page->offset < pool->allocation)
+> >  			goto ready;
+> >  	}
 > 
->     gmac {
->         rx-queues-config {
->             snps,rx-queues-to-use = <1>;
->             queue0 {
->                 // nothing need here.
-> 	    };
-> 	};
->     };
+> A further optimisation you could do is use xarray search marks to
+> search for only pages which have free entries.
 
-I think you mean tx, not rx, given the code.
-
->  
->  		queue++;
->  	}
-> -	if (queue != plat->tx_queues_to_use) {
-> +	if (queue != plat->tx_queues_to_use && of_get_child_count(tx_node)) {
->  		ret = -EINVAL;
->  		dev_err(&pdev->dev, "Not all TX queues were configured\n");
->  		goto out;
-
-Also what about the init to defaults I asked about?
+That's an interesting idea. I didn't consider setting marks since patch 2
+replaces this search with essentially a stack pop. If a marked entry can be
+returned in a similar time, though, I could drop patch 2. I can't tell from the
+xarray code if that operation time is in the same ballpark, though, so I'll
+just rerun the the benchmark. :)
