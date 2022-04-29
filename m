@@ -2,103 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B01E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:51:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17006C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:55:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354065AbiD2Byz (ORCPT
+        id S1354076AbiD2B6T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 21:54:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46588 "EHLO
+        Thu, 28 Apr 2022 21:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231922AbiD2Byy (ORCPT
+        with ESMTP id S231922AbiD2B6S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 21:54:54 -0400
-Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108CA78FDD
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:51:34 -0700 (PDT)
-X-UUID: 2ab20950c02e4493b64e1d83814cadc0-20220429
-X-UUID: 2ab20950c02e4493b64e1d83814cadc0-20220429
-Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
-        (envelope-from <pengfuyuan@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 54080229; Fri, 29 Apr 2022 09:49:55 +0800
-X-ns-mid: postfix-626B449E-3508122180
-Received: from localhost.localdomain (unknown [172.20.4.120])
-        by cs2c.com.cn (NSMail) with ESMTPA id 20BCC3848647;
-        Fri, 29 Apr 2022 01:51:26 +0000 (UTC)
-From:   pengfuyuan <pengfuyuan@kylinos.cn>
-To:     Alex Deucher <alexander.deucher@amd.com>
-Cc:     christian.koenig@amd.com, Xinhui.Pan@amd.com,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        pengfuyuan <pengfuyuan@kylinos.cn>
-Subject: [PATCH] gpu/drm/radeon: Fix spelling typo in comments
-Date:   Fri, 29 Apr 2022 09:51:14 +0800
-Message-Id: <20220429015114.29795-1-pengfuyuan@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 28 Apr 2022 21:58:18 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB57BB0AE;
+        Thu, 28 Apr 2022 18:54:58 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id m6so4230336iob.4;
+        Thu, 28 Apr 2022 18:54:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=YNr4dv3JNnMf5I1DjV2JKVssdmjDHBNzpOU5voLiAd8=;
+        b=bcY/QvagGm6wnaiLh7HIpm1nJWUo0J8Kqi7JVPwT+GO7FzLIYnLE1hJw6pEk0+2QjV
+         nRgH/n2ha4GRwWYv7HPeegKvd7hmjZyNyvakANTKr6MaHAKhnHyqqvFXBhVgoVi3oV0x
+         res1FAtFZeEoHWekc5USVup5nCF3f4vICvBqeiI1s5NYtkbVciu4T+ZQD5QB9mS07l6M
+         be795bir8IC5jm3+Hix/ZynnWwSmODOQ90A5111DskfACowJFBU6HwZvKdNf53mhtBGf
+         ZQO5lrNRhWCdDyyUNtaLbag/YFYTLtoleHt1Y9yWvvLy909Us6mZ6xyB0nM7Iw9IiWQ8
+         TQuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=YNr4dv3JNnMf5I1DjV2JKVssdmjDHBNzpOU5voLiAd8=;
+        b=7p8AsfAVceQgzRqwTod56Po0bSkYNIFpx64eZBhQ/k+qfR+G53jvjrjJNvYC8IoRmk
+         gyOVbEC7NzUJZLC6L+j2I7/AExu5nhzTcEKUHZgg737Sk6LpTje0wW+PA5ebS5WHcDzQ
+         PZHBswHPk87SINF48b6fuM64iAdGWOUd4L7eadMGC/re0cj7rua0vJHM3EHet8cuAEJ3
+         Da8LrEcVFrIBD3khIDIKhcaO1N9mESCWCCGrWTtzmaq3oTmjWhSkXsHe66nefDMRQ5+5
+         8txnAXuuyDKMzbZZv7m9uxMJrUCtieyVP0cQ8CE0AJ/4oxg1zvSVLSER40ocJ/eHq7dX
+         9tOw==
+X-Gm-Message-State: AOAM5326yT/Oacy51HyKbDKPggu2MzlgWcdm2l8XYsE61zBYcR4NVbbW
+        XI2ryIEzHtbVAH9r/wQ8LLPFNM6ShxZVvEpSAXo=
+X-Google-Smtp-Source: ABdhPJxtaktnOnC6Jze7ekAknMust1zCbi4KjcY7JcVhMPZwKAzxl/2IgeH/EkSzRJoUAingHwsKsKx7qHhnv1wmfMo=
+X-Received: by 2002:a05:6602:2f12:b0:654:b304:b016 with SMTP id
+ q18-20020a0566022f1200b00654b304b016mr14632824iow.60.1651197297569; Thu, 28
+ Apr 2022 18:54:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <e05ec742-c3dc-df7c-c5d7-29358d0a7081@linux.intel.com>
+ <20220424015757.21993-1-surong.pang@gmail.com> <YmfdN97xtmwSOo59@kroah.com> <CAEDbmAQmYQdMNY8sANnSuauBcsemrV1MFR3bB83JJ7cHNdWGmA@mail.gmail.com>
+In-Reply-To: <CAEDbmAQmYQdMNY8sANnSuauBcsemrV1MFR3bB83JJ7cHNdWGmA@mail.gmail.com>
+From:   surong pang <surong.pang@gmail.com>
+Date:   Fri, 29 Apr 2022 09:54:46 +0800
+Message-ID: <CAEDbmARx0EvvUo_d7w5-gtTvSp3YiTatsMZoBJVZc2O7-M+cWw@mail.gmail.com>
+Subject: Re: [PATCH V2] xhci-plat: Let usb phy shutdown later
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Mathias Nyman <mathias.nyman@linux.intel.com>,
+        mathias.nyman@intel.com, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, Orson.Zhai@unisoc.com,
+        yunguo.wu@unisoc.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix spelling typo in comments.
+Dear Greg,
+Sorry for html email response.
+Yes, The subject should say "xhci-plat". And it didn't fix a specific commi=
+t id.
 
-Signed-off-by: pengfuyuan <pengfuyuan@kylinos.cn>
----
- drivers/gpu/drm/radeon/atombios.h | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/gpu/drm/radeon/atombios.h b/drivers/gpu/drm/radeon/atombios.h
-index bd5dc09e860f..da35a970fcc0 100644
---- a/drivers/gpu/drm/radeon/atombios.h
-+++ b/drivers/gpu/drm/radeon/atombios.h
-@@ -3599,7 +3599,7 @@ typedef struct  _ATOM_LCD_RTS_RECORD
-   UCHAR     ucRTSValue;
- }ATOM_LCD_RTS_RECORD;
- 
--//!! If the record below exits, it shoud always be the first record for easy use in command table!!! 
-+//!! If the record below exists, it should always be the first record for easy use in command table!!!
- // The record below is only used when LVDS_Info is present. From ATOM_LVDS_INFO_V12, use ucLCDPanel_SpecialHandlingCap instead.
- typedef struct  _ATOM_LCD_MODE_CONTROL_CAP
- {
-@@ -3823,7 +3823,7 @@ typedef struct _ATOM_DPCD_INFO
- // Note1: This table is filled by SetBiosReservationStartInFB in CoreCommSubs.asm
- //        at running time.   
- // note2: From RV770, the memory is more than 32bit addressable, so we will change 
--//        ucTableFormatRevision=1,ucTableContentRevision=4, the strcuture remains 
-+//        ucTableFormatRevision=1,ucTableContentRevision=4, the structure remains
- //        exactly same as 1.1 and 1.2 (1.3 is never in use), but ulStartAddrUsedByFirmware 
- //        (in offset to start of memory address) is KB aligned instead of byte aligend.
- /***********************************************************************************/	
-@@ -3858,7 +3858,7 @@ typedef struct _ATOM_VRAM_USAGE_BY_FIRMWARE
-   ATOM_FIRMWARE_VRAM_RESERVE_INFO	asFirmwareVramReserveInfo[ATOM_MAX_FIRMWARE_VRAM_USAGE_INFO];
- }ATOM_VRAM_USAGE_BY_FIRMWARE;
- 
--// change verion to 1.5, when allow driver to allocate the vram area for command table access. 
-+// change version to 1.5, when allow driver to allocate the vram area for command table access.
- typedef struct _ATOM_FIRMWARE_VRAM_RESERVE_INFO_V1_5
- {
-   ULONG   ulStartAddrUsedByFirmware;
-@@ -5973,7 +5973,7 @@ typedef struct _ATOM_ASIC_INTERNAL_SS_INFO_V3
- #define CLEAR_ATOM_S7_DOS_8BIT_DAC_EN         ((ATOM_DOS_MODE_INFO_DEF << 8 )|ATOM_S7_DOS_8BIT_DAC_EN_SHIFT | ATOM_FLAG_CLEAR )
- 
- /****************************************************************************/	
--//Portion II: Definitinos only used in Driver
-+//Portion II: Definitions only used in Driver
- /****************************************************************************/
- 
- // Macros used by driver
-@@ -7162,7 +7162,7 @@ typedef struct _DP_ENCODER_SERVICE_PARAMETERS
- 
- // ucAction
- #define ATOM_DP_ACTION_GET_SINK_TYPE							0x01
--/* obselete */
-+/* obsolete */
- #define ATOM_DP_ACTION_TRAINING_START							0x02
- #define ATOM_DP_ACTION_TRAINING_COMPLETE					0x03
- #define ATOM_DP_ACTION_TRAINING_PATTERN_SEL				0x04
--- 
-2.25.1
-
+surong pang <surong.pang@gmail.com> =E4=BA=8E2022=E5=B9=B44=E6=9C=8828=E6=
+=97=A5=E5=91=A8=E5=9B=9B 14:26=E5=86=99=E9=81=93=EF=BC=9A
+>
+> Dear Greg,
+> No,  It's just a patch to call usb_phy_shutdown later.
+>
+>
+> Greg KH <gregkh@linuxfoundation.org> =E4=BA=8E2022=E5=B9=B44=E6=9C=8826=
+=E6=97=A5=E5=91=A8=E4=BA=8C 19:53=E5=86=99=E9=81=93=EF=BC=9A
+>>
+>> On Sun, Apr 24, 2022 at 09:57:57AM +0800, Surong Pang wrote:
+>> > From: Surong Pang <surong.pang@unisoc.com>
+>> >
+>> > Let usb phy shutdown later in xhci_plat_remove function.
+>> > Some phy driver doesn't divide 3.0/2.0 very clear.
+>> > If calls usb_phy_shutdown earlier than usb_remove_hcd(hcd),
+>> > It will case 10s cmd timeout issue.
+>> >
+>> > Call usb phy shutdown later has better compatibility.
+>> >
+>> > Signed-off-by: Surong Pang <surong.pang@unisoc.com>
+>>
+>> The subject should say "xhci-plat", right?
+>>
+>> > ---
+>> >  drivers/usb/host/xhci-plat.c | 2 +-
+>> >  1 file changed, 1 insertion(+), 1 deletion(-)
+>> >
+>> > diff --git a/drivers/usb/host/xhci-plat.c b/drivers/usb/host/xhci-plat=
+.c
+>> > index 649ffd861b44..fe492ed99cb7 100644
+>> > --- a/drivers/usb/host/xhci-plat.c
+>> > +++ b/drivers/usb/host/xhci-plat.c
+>> > @@ -390,13 +390,13 @@ static int xhci_plat_remove(struct platform_devi=
+ce *dev)
+>> >
+>> >       usb_remove_hcd(shared_hcd);
+>> >       xhci->shared_hcd =3D NULL;
+>> > -     usb_phy_shutdown(hcd->usb_phy);
+>> >
+>> >       usb_remove_hcd(hcd);
+>> >       usb_put_hcd(shared_hcd);
+>> >
+>> >       clk_disable_unprepare(clk);
+>> >       clk_disable_unprepare(reg_clk);
+>> > +     usb_phy_shutdown(hcd->usb_phy);
+>> >       usb_put_hcd(hcd);
+>>
+>> Does this fix a specific commit id?
+>>
+>> thanks,
+>>
+>> greg k-h
