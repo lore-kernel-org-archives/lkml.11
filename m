@@ -2,93 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D5AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:15:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30CECC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358974AbiD2MSc (ORCPT
+        id S1358981AbiD2MVz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 08:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52194 "EHLO
+        Fri, 29 Apr 2022 08:21:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238748AbiD2MSa (ORCPT
+        with ESMTP id S238748AbiD2MVx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 08:18:30 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FBD2205D3;
-        Fri, 29 Apr 2022 05:15:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=nJbZKj7+pWCDUFlNUm1wgYBm08byh6iVe5oLUsV2N0I=; b=5S
-        j/EYV/8pbsLLSu8n1/uFFbh2LWnTM81hBfk5ByckrGFEz/Rzm0HXbq8JtQJgO5q8+P9NvMdC1CJYr
-        pRPj16atkhl+PJjTdufp6ZRrDM4Le5t3OVL/LfORBPTg8OyraEq2jc4EYMRjWXLyKwzmhkOZxajJq
-        SdpcKlQ30SYXps4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nkPWS-000TZv-69; Fri, 29 Apr 2022 14:14:56 +0200
-Date:   Fri, 29 Apr 2022 14:14:56 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "jay.xu@rock-chips.com" <jay.xu@rock-chips.com>
-Cc:     kuba <kuba@kernel.org>, davem <davem@davemloft.net>,
-        joabreu <joabreu@synopsys.com>,
-        "alexandre.torgue" <alexandre.torgue@st.com>,
-        "peppe.cavallaro" <peppe.cavallaro@st.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Device Tree <devicetree@vger.kernel.org>
-Subject: Re: Re: [PATCH V2] ethernet: stmmac: support driver work for DTs
- without child queue node
-Message-ID: <YmvWwIgE71iwZhgp@lunn.ch>
-References: <20220428010927.526310-1-jay.xu@rock-chips.com>
- <20220429004605.1010751-1-jay.xu@rock-chips.com>
- <Yms3ynT8RGmldAkm@lunn.ch>
- <2022042909545741446644@rock-chips.com>
+        Fri, 29 Apr 2022 08:21:53 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8BDEAAE3C
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 05:18:33 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id u7so6964094plg.13
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 05:18:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3RkULuqhhhX3uuLQ5CElh2Ii/L2usT9wtqwuaXqStls=;
+        b=6dgC+bHSAeFJrC8KYg2z7/2H3/R6h6zeIP2/TJM/lbA1VYy7SbJIMRyIrieRowIaQv
+         kJ1SOEdSzpZW5RWIfKHc50pJY+MknWf6wyZ9mBDTSwdQHraDZEU1pDlp0hOXMDHzylgF
+         ifJ3CIfECLSdzzd+Hs1I8D9emPRAiSTJWuOdPodBLLugKQxYi5DQ2J5LWb0UXB3GKT35
+         VjwlylSkcqgoLK/lJASS0z3jk/BKMsGyUtgguRSoE/UUVpx+Q6mT8cdv95iEao6gZnq5
+         eaE7vV4dtDupThy77SS0zIM29gLGBKU0oYc7ymGlICVJ/7p6SROAx9I4jN05YRtw2b5Q
+         sVgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3RkULuqhhhX3uuLQ5CElh2Ii/L2usT9wtqwuaXqStls=;
+        b=LqZJhoCYQBXAwN7g6F2V6++bk35dHbUYZlXXLSUlSldhlH0CdozIsse4BpD/PfjDbC
+         djIOXsR9D2ByD/kLMLs8cVPfCTRaR65GDhhrAY1XznM6Ec1v7n5qN+0JUKQ2FNZvM0hm
+         Lfkanm7Jb2+THe3+7d0JMIoD8POi2CPB4PM7I3e3ZYzHAWdrsT/JdZDpLiIsBZ7Ds1Wb
+         2HeYZostwCOt2Hy09muQcTIXFVzSOraxctHMIzvdBI6HWGj9M5v/MpQLh5Hwjh6H8an7
+         hmbLzrQ/4KzisKX/YtKL7OpyxOUVmQXh6tabcCOezedXaBC2Ashh84Zo9MC4d2fM/nkm
+         vx6Q==
+X-Gm-Message-State: AOAM531qLo2BvVrPRlZLCcFP09LZnx8D10p/Ok7IrBXKL0YhlWmR5mFC
+        bFC7UM0fz+jFeioDBn1z73mlpg==
+X-Google-Smtp-Source: ABdhPJxtE+CaijPiIC9LAoGrQDqYJS3f51fjNp6Dgr2elQX0PSrsGMqnZLLhoG9YQBepjs7VbKUriQ==
+X-Received: by 2002:a17:902:7d83:b0:158:c7e9:1ff3 with SMTP id a3-20020a1709027d8300b00158c7e91ff3mr38794664plm.55.1651234713265;
+        Fri, 29 Apr 2022 05:18:33 -0700 (PDT)
+Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.239])
+        by smtp.gmail.com with ESMTPSA id k11-20020a056a00168b00b004f7e1555538sm3101421pfc.190.2022.04.29.05.18.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 05:18:32 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
+        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
+        osalvador@suse.de, david@redhat.com, masahiroy@kernel.org
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v9 0/4] add hugetlb_optimize_vmemmap sysctl
+Date:   Fri, 29 Apr 2022 20:18:12 +0800
+Message-Id: <20220429121816.37541-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <2022042909545741446644@rock-chips.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding device tree list.
+This series is based on next-20220428.
 
-This is mostly a device tree issue, so the device tree Maintainers
-should be part of the discussion.
+This series amis to add hugetlb_optimize_vmemmap sysctl to enable or disable
+the feature of optimizing vmemmap pages associated with HugeTLB pages.
 
-> >On Fri, Apr 29, 2022 at 08:46:05AM +0800, Jianqun Xu wrote:
-> >> The driver use the value of property 'snps,rx-queues-to-use' to loop
-> >> same numbers child nodes as queues, such as:
-> >>
-> >>     gmac {
-> >>         rx-queues-config {
-> >>             snps,rx-queues-to-use = <1>;
-> >>             queue0 {
-> >>                 // nothing need here.
-> >>     };
-> >> };
-> >>     };
-> >>
-> >> Since a patch for dtc from rockchip will delete all node without any
-> >> properties or child node, the queue0 node will be deleted, that caused
-> >> the driver fail to probe:
-> >
-> >Is this the in tree dtc? Do you have a commit hash for it? That should
-> >probably be used as a Fixes: tag. Or that change to dtc needs
-> >reverting because it breaks stuff.
-> > 
-> The patch is a hack patch for some products and have not in tree dtc, I said that to
-> explain a possible case how things happed, it's only a case of no child queue node.
+v9:
+  - Go back to v3 since checking the size of struct page at config time is
+    very complex.
 
-So this has nothing to do with the kernel dtc, or the upstream
-dtc. This is only a 'vendor crap' dtc which has been hacked?
+v8:
+  - Fix compilation (scripts/selinux/mdp/mdp.c) error when
+    CONFIG_SECURITY_SELINUX is selected.
 
-Why should mainline care? Is there anything in the DT standard which
-says the compiler can optimise out empty properties?
+v7:
+  - Fix circular dependency issue reported by kernel test robot.
+  - Introduce CONFIG_HUGETLB_PAGE_HAS_OPTIMIZE_VMEMMAP instead of
+    STRUCT_PAGE_SIZE_IS_POWER_OF_2.
+  - Add more comments into vm.rst to explain hugetlb_optimize_vmemmap (Andrew).
+  - Drop the patch "sysctl: allow to set extra1 to SYSCTL_ONE".
+  - Add a new patch "use kstrtobool for hugetlb_vmemmap param parsing".
+  - Reuse static_key's refcount to count the number of HugeTLB pages with
+    vmemmap pages optimized to simplify the lock scheme.
 
-     Andrew
+v6:
+  - Remove "make syncconfig" from Kbuild.
+
+v5:
+  - Fix not working properly if one is workig off of a very clean build
+    reported by Luis Chamberlain.
+  - Add Suggested-by for Luis Chamberlain.
+
+v4:
+  - Introduce STRUCT_PAGE_SIZE_IS_POWER_OF_2 inspired by Luis.
+
+v3:
+  - Add pr_warn_once() (Mike).
+  - Handle the transition from enabling to disabling (Luis)
+
+v2:
+  - Fix compilation when !CONFIG_MHP_MEMMAP_ON_MEMORY reported by kernel
+    test robot <lkp@intel.com>.
+  - Move sysctl code from kernel/sysctl.c to mm/hugetlb_vmemmap.c.
+
+Muchun Song (4):
+  mm: hugetlb_vmemmap: disable hugetlb_optimize_vmemmap when struct page
+    crosses page boundaries
+  mm: memory_hotplug: override memmap_on_memory when
+    hugetlb_free_vmemmap=on
+  mm: hugetlb_vmemmap: use kstrtobool for hugetlb_vmemmap param parsing
+  mm: hugetlb_vmemmap: add hugetlb_optimize_vmemmap sysctl
+
+ Documentation/admin-guide/kernel-parameters.txt |   6 +-
+ Documentation/admin-guide/sysctl/vm.rst         |  30 +++++++
+ include/linux/memory_hotplug.h                  |   9 ++
+ mm/hugetlb_vmemmap.c                            | 104 ++++++++++++++++++++----
+ mm/hugetlb_vmemmap.h                            |   4 +-
+ mm/memory_hotplug.c                             |  27 ++++--
+ 6 files changed, 155 insertions(+), 25 deletions(-)
+
+-- 
+2.11.0
+
