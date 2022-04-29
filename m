@@ -2,155 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE5DCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:38:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C49AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:39:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354677AbiD2Glk (ORCPT
+        id S1354621AbiD2Gmm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 02:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46678 "EHLO
+        Fri, 29 Apr 2022 02:42:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354621AbiD2GlZ (ORCPT
+        with ESMTP id S234036AbiD2Gml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 02:41:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E842BAB80
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 23:38:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651214287;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Qh2pYsSv0Jsq4yPSrKOGS/h5dSBWkO2z1DpVXJerATU=;
-        b=WwOVjwmBqYbsKeue3S5FdRjm4cJSwHydgaY9rhe51l6OHqKZ8EjhUQwPMDu3Ku6FY+Nmns
-        W+Wn3TrwZsgDoXD/CUfN8w8YAWe+DBn22BBUpRP225o7Gm6py6Cm+psDTLeLbwa0pvqal9
-        TA2Ipww26IshopTUPMBL1ktSDS9TvwU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-96-g8Utg0-KMFW-Rd9hjjEMvg-1; Fri, 29 Apr 2022 02:38:04 -0400
-X-MC-Unique: g8Utg0-KMFW-Rd9hjjEMvg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Fri, 29 Apr 2022 02:42:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F0DBABA1
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 23:39:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 87A8E1C07382;
-        Fri, 29 Apr 2022 06:38:02 +0000 (UTC)
-Received: from thuth.com (unknown [10.39.192.118])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EC86914A5060;
-        Fri, 29 Apr 2022 06:37:59 +0000 (UTC)
-From:   Thomas Huth <thuth@redhat.com>
-To:     kvm@vger.kernel.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Hildenbrand <david@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        linux-s390@vger.kernel.org
-Subject: [PATCH v3 4/4] KVM: s390: selftests: Use TAP interface in the reset test
-Date:   Fri, 29 Apr 2022 08:37:24 +0200
-Message-Id: <20220429063724.480919-5-thuth@redhat.com>
-In-Reply-To: <20220429063724.480919-1-thuth@redhat.com>
-References: <20220429063724.480919-1-thuth@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4F8BB832F5
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 06:39:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB805C385A7;
+        Fri, 29 Apr 2022 06:39:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651214362;
+        bh=5c8F2sq+4CEvKl5AkGR/1+aWdhR+TKH8lu0tldZgVqE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=umbpuzVpvhhaRNlWnfx/nGJYtLvJUERYtcx/xz4Be93SbW1C3kWnYpEW+lhW+iv6V
+         KmvAVC68u57wvTshflOSqi0k2uAoXeLo+TkatozuB9r6soy9LzkFVMw31V38j1KTD7
+         SjDrO64gp1wEgUN3VJvBc23W3FmwT9Af4RmL5ohc=
+Date:   Fri, 29 Apr 2022 08:39:14 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Zhang Jianhua <chris.zjh@huawei.com>
+Cc:     jirislaby@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] vt: defkeymap.c_shipped remove unused variables
+Message-ID: <YmuIEoOnJqYLy3CE@kroah.com>
+References: <20220429014814.988829-1-chris.zjh@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220429014814.988829-1-chris.zjh@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's standardize the s390x KVM selftest output to the TAP output
-generated via the kselftests.h interface.
+On Fri, Apr 29, 2022 at 09:48:14AM +0800, Zhang Jianhua wrote:
+> The global variables 'funcbufptr' 'funcbufsize' and 'funcbufleft' have
+> been initialized but not used, they are redundant and remove them.
+> 
+> --------
 
-Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
-Signed-off-by: Thomas Huth <thuth@redhat.com>
----
- tools/testing/selftests/kvm/s390x/resets.c | 38 +++++++++++++++++-----
- 1 file changed, 30 insertions(+), 8 deletions(-)
+Why this extra "------" line?
 
-diff --git a/tools/testing/selftests/kvm/s390x/resets.c b/tools/testing/selftests/kvm/s390x/resets.c
-index b143db6d8693..889449a22e7a 100644
---- a/tools/testing/selftests/kvm/s390x/resets.c
-+++ b/tools/testing/selftests/kvm/s390x/resets.c
-@@ -12,6 +12,7 @@
- 
- #include "test_util.h"
- #include "kvm_util.h"
-+#include "kselftest.h"
- 
- #define VCPU_ID 3
- #define LOCAL_IRQS 32
-@@ -202,7 +203,7 @@ static void inject_irq(int cpu_id)
- 
- static void test_normal(void)
- {
--	pr_info("Testing normal reset\n");
-+	ksft_print_msg("Testing normal reset\n");
- 	/* Create VM */
- 	vm = vm_create_default(VCPU_ID, 0, guest_code_initial);
- 	run = vcpu_state(vm, VCPU_ID);
-@@ -225,7 +226,7 @@ static void test_normal(void)
- 
- static void test_initial(void)
- {
--	pr_info("Testing initial reset\n");
-+	ksft_print_msg("Testing initial reset\n");
- 	vm = vm_create_default(VCPU_ID, 0, guest_code_initial);
- 	run = vcpu_state(vm, VCPU_ID);
- 	sync_regs = &run->s.regs;
-@@ -247,7 +248,7 @@ static void test_initial(void)
- 
- static void test_clear(void)
- {
--	pr_info("Testing clear reset\n");
-+	ksft_print_msg("Testing clear reset\n");
- 	vm = vm_create_default(VCPU_ID, 0, guest_code_initial);
- 	run = vcpu_state(vm, VCPU_ID);
- 	sync_regs = &run->s.regs;
-@@ -266,14 +267,35 @@ static void test_clear(void)
- 	kvm_vm_free(vm);
- }
- 
-+struct testdef {
-+	const char *name;
-+	void (*test)(void);
-+	bool needs_cap;
-+} testlist[] = {
-+	{ "initial", test_initial, false },
-+	{ "normal", test_normal, true },
-+	{ "clear", test_clear, true },
-+};
-+
- int main(int argc, char *argv[])
- {
-+	bool has_s390_vcpu_resets = kvm_check_cap(KVM_CAP_S390_VCPU_RESETS);
-+	int idx;
-+
- 	setbuf(stdout, NULL);	/* Tell stdout not to buffer its content */
- 
--	test_initial();
--	if (kvm_check_cap(KVM_CAP_S390_VCPU_RESETS)) {
--		test_normal();
--		test_clear();
-+	ksft_print_header();
-+	ksft_set_plan(ARRAY_SIZE(testlist));
-+
-+	for (idx = 0; idx < ARRAY_SIZE(testlist); idx++) {
-+		if (!testlist[idx].needs_cap || has_s390_vcpu_resets) {
-+			testlist[idx].test();
-+			ksft_test_result_pass("%s\n", testlist[idx].name);
-+		} else {
-+			ksft_test_result_skip("%s - no VCPU_RESETS capability\n",
-+					      testlist[idx].name);
-+		}
- 	}
--	return 0;
-+
-+	ksft_finished();	/* Print results and exit() accordingly */
- }
--- 
-2.27.0
+> 
+> Signed-off-by: Zhang Jianhua <chris.zjh@huawei.com>
+> ---
+>  drivers/tty/vt/defkeymap.c_shipped | 4 ----
+>  1 file changed, 4 deletions(-)
+> 
+> diff --git a/drivers/tty/vt/defkeymap.c_shipped b/drivers/tty/vt/defkeymap.c_shipped
+> index 094d95bf0005..80dee50bcb7a 100644
+> --- a/drivers/tty/vt/defkeymap.c_shipped
+> +++ b/drivers/tty/vt/defkeymap.c_shipped
+> @@ -185,10 +185,6 @@ char func_buf[] = {
+>  	'\033', '[', 'P', 0, 
+>  };
+>  
+> -char *funcbufptr = func_buf;
+> -int funcbufsize = sizeof(func_buf);
+> -int funcbufleft = 0;          /* space left */
+> -
+>  char *func_table[MAX_NR_FUNC] = {
+>  	func_buf + 0,
+>  	func_buf + 5,
+> -- 
+> 2.31.0
+> 
 
+Shouldn't you fix up the loadkeys tool instead?  As the top of this file
+says, it is auto-generated and is not something to be hand-edited at
+all.
+
+thanks,
+
+greg k-h
