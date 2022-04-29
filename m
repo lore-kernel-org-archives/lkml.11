@@ -2,91 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1C2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 00:43:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 157FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 00:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352717AbiD2Aqy (ORCPT
+        id S1352831AbiD2Ar5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 20:46:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36394 "EHLO
+        Thu, 28 Apr 2022 20:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237629AbiD2Aqv (ORCPT
+        with ESMTP id S237629AbiD2Ar4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 20:46:51 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1F0C972A3;
-        Thu, 28 Apr 2022 17:43:33 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id z26so8254122iot.8;
-        Thu, 28 Apr 2022 17:43:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Xc0ET8Batlb6U/Lg0I9CS2P6YAlMdChkuQuGfUJdrV4=;
-        b=XBDQ9UQndwImYPyBveiw9mLb5HIMyJ8CS2CVm3JqVe36/CQoGL2O9nHXFKwU1hH/RE
-         srYCEBiYlUmJ3V1+cHJfWE6uKBE9I2DxRv/AQ2YFJiu5mdxyk9g9sjUFvLpBbX9FKhLV
-         hTv++pnFSDW58TtXUfjdcwES3JlKsUj9Bbl8xP36Zk5EdocRsUQ4Ui14jZysEPhgUi8s
-         qzMxsPc3Ez1Vcea07IGWflZ9f7le8MU9XoeZmXC9aU6+34kp9I9BVQqdy8MZwAHBWCvP
-         DqCikgp0HR+jgxYrlGgAmnsvOcoHC15L2W4MUwfLJ7kV9aWPPpTiuvVGOW+/WOQMrXX4
-         Z1SQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Xc0ET8Batlb6U/Lg0I9CS2P6YAlMdChkuQuGfUJdrV4=;
-        b=6W8Pnj5yrL8aUYiqsZ+4ZhLB9orEXDHAgyIy8+C/eNqaeDMQINwlSUJiEhqY5mwleq
-         JWQiwdcky7q+OxhJG5ST0KKj3JsufaNA807L968HLZAnc/8KnsZjq5iZTQektBQUTNsw
-         Oz41w7pPl5WpUwfaVxTi1d8Q41Wyn519WbaSFGg/ohwhqnARINxuBwdWVAn26dCuRNWm
-         HIVO8fmCtW1YSxz9c2z9HSr0r5sVBmvc46X6R53ndHLBEWDeIdotFtfMPdEWRIqJhNKK
-         tYN1jdA0chThri+J+mk1F/toojqeoJFEa02+cGa936GrsmMIa5yavHELpu6jmU6HchDE
-         V41A==
-X-Gm-Message-State: AOAM531qe46wj7/89vrf+oRJxF/mOWnZP1WCEXsogPRfVQWw8D/lXYiO
-        oedkWGfj1NqXLhJ+6qsPvC8=
-X-Google-Smtp-Source: ABdhPJwx4W+My2QTL5LGVwIKMcLHUkInIP3RHfhzx12TTm7rgrZExQQU4ZUoUODtaESA812DXk7j6w==
-X-Received: by 2002:a05:6638:491b:b0:32b:2786:cb23 with SMTP id cx27-20020a056638491b00b0032b2786cb23mr3601703jab.214.1651193013318;
-        Thu, 28 Apr 2022 17:43:33 -0700 (PDT)
-Received: from localhost.localdomain ([205.185.209.216])
-        by smtp.googlemail.com with ESMTPSA id t3-20020a92b103000000b002cde6e3530csm134006ilh.86.2022.04.28.17.43.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 17:43:32 -0700 (PDT)
-From:   Noah Goldstein <goldstein.w.n@gmail.com>
-Cc:     goldstein.w.n@gmail.com, axboe@kernel.dk, asml.silence@gmail.com,
-        io-uring@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1] io_uring: Fix memory leak if file setup fails.
-Date:   Thu, 28 Apr 2022 19:42:45 -0500
-Message-Id: <20220429004244.3557063-1-goldstein.w.n@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 28 Apr 2022 20:47:56 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BDF9BB906;
+        Thu, 28 Apr 2022 17:44:39 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 250941F37F;
+        Fri, 29 Apr 2022 00:44:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1651193078; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=BJfveXdsbtj8APvKzD0BIya71Qy3rY7o+Fk5zYeGnnQ=;
+        b=RyavaI8lgG76n7q0sPYbSMUMFc9luHJ3GA6SM7c0TWZlGtZJfjrus57ObJtQWEW7Bv73Sg
+        fyh+SOo8/yrrSppAY1Z+3S+5hygF41/xIBLaTTGSnBLLnHjyeMm874G7/H9Csz7uHxeU59
+        ta+CuX3BPUhe+L5sqOx77OMWWHDDSr8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1651193078;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=BJfveXdsbtj8APvKzD0BIya71Qy3rY7o+Fk5zYeGnnQ=;
+        b=bzegBzIwDeKakEk4yow335y2vcO5jeRjuzj0Tu7ffed+VoRxFxNkVyOzo5VHpcdeHCgAoD
+        ++UYDODtKON52PCg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 094D013491;
+        Fri, 29 Apr 2022 00:44:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ty5kLvM0a2IjSgAAMHmgww
+        (envelope-from <neilb@suse.de>); Fri, 29 Apr 2022 00:44:35 +0000
+Subject: [PATCH 0/2] Finalising swap-over-NFS patches
+From:   NeilBrown <neilb@suse.de>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Christoph Hellwig <hch@lst.de>,
+        Miaohe Lin <linmiaohe@huawei.com>, linux-nfs@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Date:   Fri, 29 Apr 2022 10:43:34 +1000
+Message-ID: <165119280115.15698.2629172320052218921.stgit@noble.brown>
+User-Agent: StGit/1.5
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If `get_unused_fd_flags` files fails (either in setting up `ctx` as
-`tctx->last` or `get_unused_fd_flags`) `ctx` will never be freed.
+Hi Andrew,
+Two patches for current -mm branch.
 
-Signed-off-by: Noah Goldstein <goldstein.w.n@gmail.com>
+First fixes an omission pointed out by Miaohe Lin.  Huge pages weren't
+handled correctly.
+
+Second changes NFS to use the new ->swap_rw
+
+With this, swap over NFS largely works again.  I think there is a little
+more work to do in NFS/SUNRPC code to make allocations on the swap out
+path behave optimally.  Any such changes can go through the NFS tree.
+
+Thanks,
+NeilBrown
+
 ---
-I very well may be missing something (or there may be a double
-free if the failure is after `get_unused_fd_flags`) but looks
-to me to be a memory leak.
- fs/io_uring.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index a3b76e63f9da..9685a7be48e3 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -11863,7 +11863,7 @@ static __cold int io_uring_create(unsigned entries, struct io_uring_params *p,
- 	if (ret < 0) {
- 		/* fput will clean it up */
- 		fput(file);
--		return ret;
-+		goto err;
- 	}
- 
- 	trace_io_uring_create(ret, ctx, p->sq_entries, p->cq_entries, p->flags);
--- 
-2.25.1
+NeilBrown (2):
+      MM: handle THP in swap_*page_fs()
+      NFS: rename nfs_direct_IO and use as ->swap_rw
+
+
+ fs/nfs/direct.c        | 23 ++++++++++-------------
+ fs/nfs/file.c          |  5 +----
+ include/linux/nfs_fs.h |  2 +-
+ mm/page_io.c           | 23 +++++++++++++----------
+ 4 files changed, 25 insertions(+), 28 deletions(-)
+
+--
+Signature
 
