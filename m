@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 684A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:40:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E93A0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:40:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354662AbiD2Gnx (ORCPT
+        id S1354684AbiD2GoJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 02:43:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51700 "EHLO
+        Fri, 29 Apr 2022 02:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354650AbiD2Gnv (ORCPT
+        with ESMTP id S1354649AbiD2Gnv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Apr 2022 02:43:51 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D045B9F1B
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 23:40:34 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KqNCP0CRZzhYq6;
-        Fri, 29 Apr 2022 14:40:17 +0800 (CST)
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE637B9F1A
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 23:40:33 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KqNBb5XYmz1JBqW;
+        Fri, 29 Apr 2022 14:39:35 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 29 Apr
- 2022 14:40:32 +0800
+ 2022 14:40:31 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>, <vitaly.wool@konsulko.com>
 CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <linmiaohe@huawei.com>
-Subject: [PATCH 2/9] mm/z3fold: fix possible null pointer dereferencing
-Date:   Fri, 29 Apr 2022 14:40:44 +0800
-Message-ID: <20220429064051.61552-3-linmiaohe@huawei.com>
+Subject: [PATCH 1/9] mm/z3fold: fix sheduling while atomic
+Date:   Fri, 29 Apr 2022 14:40:43 +0800
+Message-ID: <20220429064051.61552-2-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220429064051.61552-1-linmiaohe@huawei.com>
 References: <20220429064051.61552-1-linmiaohe@huawei.com>
@@ -44,41 +44,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-alloc_slots could fail to allocate memory under heavy memory pressure. So
-we should check zhdr->slots against NULL to avoid future null pointer
-dereferencing.
+z3fold's page_lock is always held when calling alloc_slots. So gfp should
+be GFP_ATOMIC to avoid "scheduling while atomic" bug.
 
 Fixes: fc5488651c7d ("z3fold: simplify freeing slots")
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- mm/z3fold.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ mm/z3fold.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/mm/z3fold.c b/mm/z3fold.c
-index c2260f5a5885..5d8c21f2bc59 100644
+index 83b5a3514427..c2260f5a5885 100644
 --- a/mm/z3fold.c
 +++ b/mm/z3fold.c
-@@ -940,9 +940,19 @@ static inline struct z3fold_header *__z3fold_alloc(struct z3fold_pool *pool,
- 		}
+@@ -941,8 +941,7 @@ static inline struct z3fold_header *__z3fold_alloc(struct z3fold_pool *pool,
  	}
  
--	if (zhdr && !zhdr->slots)
-+	if (zhdr && !zhdr->slots) {
- 		zhdr->slots = alloc_slots(pool, GFP_ATOMIC);
-+		if (!zhdr->slots)
-+			goto out_fail;
-+	}
+ 	if (zhdr && !zhdr->slots)
+-		zhdr->slots = alloc_slots(pool,
+-					can_sleep ? GFP_NOIO : GFP_ATOMIC);
++		zhdr->slots = alloc_slots(pool, GFP_ATOMIC);
  	return zhdr;
-+
-+out_fail:
-+	if (!kref_put(&zhdr->refcount, release_z3fold_page_locked)) {
-+		add_to_unbuddied(pool, zhdr);
-+		z3fold_page_unlock(zhdr);
-+	}
-+	return NULL;
  }
  
- /*
 -- 
 2.23.0
 
