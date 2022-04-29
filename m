@@ -2,105 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C802C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 19:52:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5AEFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 19:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380425AbiD2Tz7 (ORCPT
+        id S1380078AbiD2T5w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 15:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52340 "EHLO
+        Fri, 29 Apr 2022 15:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239376AbiD2Tz4 (ORCPT
+        with ESMTP id S232481AbiD2T5u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 15:55:56 -0400
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20EBD89331;
-        Fri, 29 Apr 2022 12:52:37 -0700 (PDT)
-Received: by mail-ot1-f48.google.com with SMTP id x8-20020a056830114800b00605fa3c9e90so1149873otq.2;
-        Fri, 29 Apr 2022 12:52:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H9Vjs85xufky4aYHkz/e+mx0EVbxLmlUBWCH/SDU9N0=;
-        b=SQHEch20euMKuTSXy3R69ZKlNlOm1LSsUJROmmJTBSaEYGAu0Sz+SvfMdgNqcS2iqI
-         bfAWUenKtw2bsNck/7hYNRTaeLecKKlcFAV+m8KxmZ/PqIu8X/B/TvNIvyG1Jiy3U/SR
-         BuhyoL0artH6wETt/riyQB2i2DoR8O0ZzN3m023J2nUcpOJrCBmGanxcXB+I9jY1/zHP
-         RV9b0QTAOpJrEcRJzWvpA+4D8BlF2KNH20TLySic9G4rWJWXjIMW+SkJ2z8LahHkpx0e
-         a0j8i+YsL5dSaFyOU9lJ1f+CuboPQuwurmy0PExflG9kNw3QjcmyrfrGiaYKz/TDVEuV
-         VvNg==
-X-Gm-Message-State: AOAM533v5MIjPXRF7G5GGix9WucFrjOaIrhDaNm2+6vSgf3Mk6wXT5Wh
-        jQGNrHDtHgmuZrzy5PbLRg==
-X-Google-Smtp-Source: ABdhPJzn35H2MS02cc8yGaHGcxHK11y6uZhf2K7MMyY/rbTIg05isBDCaeiyEjVzOMpsxaGopmMCjw==
-X-Received: by 2002:a9d:6ac2:0:b0:605:d9b6:b150 with SMTP id m2-20020a9d6ac2000000b00605d9b6b150mr385127otq.50.1651261956341;
-        Fri, 29 Apr 2022 12:52:36 -0700 (PDT)
-Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id f11-20020a4ae60b000000b0035eb4e5a6bdsm831129oot.19.2022.04.29.12.52.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 12:52:35 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: pinctrl: Allow values for drive-push-pull and drive-open-drain
-Date:   Fri, 29 Apr 2022 14:46:11 -0500
-Message-Id: <20220429194610.2741437-1-robh@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Fri, 29 Apr 2022 15:57:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 438C928E2C
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 12:54:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651262070;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=nORssVNFSPGiam+YA0wQPxcM033zLAladfHr6fH3pgg=;
+        b=TW11FjojLoApI2YcVnpYykYL9QMg48RBZuL1SUGU1KVfREn4i14L4R0jG097n7VgchBTyY
+        bykvwXGs+XYj6rcgVp3mkGZBgVQiJcgtjsjQT50zgM42wLBQ4k7dXiPDwsVBTLDc1RyTUm
+        rBPDqtHEHZIddrZ04ofwcTE7MtZVIFE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-110-hizdAN70OnGH8m37kkElmw-1; Fri, 29 Apr 2022 15:54:26 -0400
+X-MC-Unique: hizdAN70OnGH8m37kkElmw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 346B183395E;
+        Fri, 29 Apr 2022 19:54:26 +0000 (UTC)
+Received: from emerald.lyude.net (unknown [10.22.16.90])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6AF2B2166B4D;
+        Fri, 29 Apr 2022 19:54:22 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     nouveau@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Cc:     Ben Skeggs <bskeggs@redhat.com>, Karol Herbst <kherbst@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] drm/nouveau/subdev/bus: Ratelimit logging for fault errors
+Date:   Fri, 29 Apr 2022 15:53:47 -0400
+Message-Id: <20220429195350.85620-1-lyude@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A few platforms, at91 and tegra, use drive-push-pull and
-drive-open-drain with a 0 or 1 value. There's not really a need for values
-as '1' should be equivalent to no value (it wasn't treated that way) and
-drive-push-pull disabled is equivalent to drive-open-drain. So dropping the
-value can't be done without breaking existing OSs. As we don't want new
-cases, mark the case with values as deprecated.
+There's plenty of ways to fudge the GPU when developing on nouveau by
+mistake, some of which can result in nouveau seriously spamming dmesg with
+fault errors. This can be somewhat annoying, as it can quickly overrun the
+message buffer (or your terminal emulator's buffer) and get rid of actually
+useful feedback from the driver. While working on my new atomic only MST
+branch, I ran into this issue a couple of times.
 
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Jonathan Hunter <jonathanh@nvidia.com>
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
+So, let's fix this by adding nvkm_error_ratelimited(), and using it to
+ratelimit errors from faults. This should be fine for developers, since
+it's nearly always only the first few faults that we care about seeing.
+Plus, you can turn off rate limiting in the kernel if you really need to.
+
+Signed-off-by: Lyude Paul <lyude@redhat.com>
 ---
- .../devicetree/bindings/pinctrl/pincfg-node.yaml     | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h |  2 ++
+ drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c    | 14 +++++++-------
+ drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c     |  6 +++---
+ drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c     |  6 +++---
+ 4 files changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/pincfg-node.yaml b/Documentation/devicetree/bindings/pinctrl/pincfg-node.yaml
-index 4b22a9e3a447..f5a121311f61 100644
---- a/Documentation/devicetree/bindings/pinctrl/pincfg-node.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/pincfg-node.yaml
-@@ -52,11 +52,19 @@ properties:
-       hardware supporting it the pull strength in Ohm.
+diff --git a/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h b/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h
+index 1665738948fb..96113c8bee8c 100644
+--- a/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h
++++ b/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h
+@@ -62,4 +62,6 @@ void nvkm_subdev_intr(struct nvkm_subdev *);
+ #define nvkm_debug(s,f,a...) nvkm_printk((s), DEBUG,   info, f, ##a)
+ #define nvkm_trace(s,f,a...) nvkm_printk((s), TRACE,   info, f, ##a)
+ #define nvkm_spam(s,f,a...)  nvkm_printk((s),  SPAM,    dbg, f, ##a)
++
++#define nvkm_error_ratelimited(s,f,a...) nvkm_printk((s), ERROR, err_ratelimited, f, ##a)
+ #endif
+diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c
+index 53a6651ac225..80b5aaceeaad 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c
+@@ -35,13 +35,13 @@ gf100_bus_intr(struct nvkm_bus *bus)
+ 		u32 addr = nvkm_rd32(device, 0x009084);
+ 		u32 data = nvkm_rd32(device, 0x009088);
  
-   drive-push-pull:
--    type: boolean
-+    oneOf:
-+      - type: boolean
-+      - $ref: /schemas/types.yaml#/definitions/uint32
-+        enum: [ 0, 1 ]
-+        deprecated: true
-     description: drive actively high and low
+-		nvkm_error(subdev,
+-			   "MMIO %s of %08x FAULT at %06x [ %s%s%s]\n",
+-			   (addr & 0x00000002) ? "write" : "read", data,
+-			   (addr & 0x00fffffc),
+-			   (stat & 0x00000002) ? "!ENGINE " : "",
+-			   (stat & 0x00000004) ? "PRIVRING " : "",
+-			   (stat & 0x00000008) ? "TIMEOUT " : "");
++		nvkm_error_ratelimited(subdev,
++				       "MMIO %s of %08x FAULT at %06x [ %s%s%s]\n",
++				       (addr & 0x00000002) ? "write" : "read", data,
++				       (addr & 0x00fffffc),
++				       (stat & 0x00000002) ? "!ENGINE " : "",
++				       (stat & 0x00000004) ? "PRIVRING " : "",
++				       (stat & 0x00000008) ? "TIMEOUT " : "");
  
-   drive-open-drain:
--    type: boolean
-+    oneOf:
-+      - type: boolean
-+      - $ref: /schemas/types.yaml#/definitions/uint32
-+        const: 1    # No known cases of 0
-+        deprecated: true
-     description: drive with open drain
+ 		nvkm_wr32(device, 0x009084, 0x00000000);
+ 		nvkm_wr32(device, 0x001100, (stat & 0x0000000e));
+diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c
+index ad8da523bb22..c75e463f3501 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c
+@@ -45,9 +45,9 @@ nv31_bus_intr(struct nvkm_bus *bus)
+ 		u32 addr = nvkm_rd32(device, 0x009084);
+ 		u32 data = nvkm_rd32(device, 0x009088);
  
-   drive-open-source:
+-		nvkm_error(subdev, "MMIO %s of %08x FAULT at %06x\n",
+-			   (addr & 0x00000002) ? "write" : "read", data,
+-			   (addr & 0x00fffffc));
++		nvkm_error_ratelimited(subdev, "MMIO %s of %08x FAULT at %06x\n",
++				       (addr & 0x00000002) ? "write" : "read", data,
++				       (addr & 0x00fffffc));
+ 
+ 		stat &= ~0x00000008;
+ 		nvkm_wr32(device, 0x001100, 0x00000008);
+diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c
+index 3a1e45adeedc..2055d0b100d3 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c
+@@ -60,9 +60,9 @@ nv50_bus_intr(struct nvkm_bus *bus)
+ 		u32 addr = nvkm_rd32(device, 0x009084);
+ 		u32 data = nvkm_rd32(device, 0x009088);
+ 
+-		nvkm_error(subdev, "MMIO %s of %08x FAULT at %06x\n",
+-			   (addr & 0x00000002) ? "write" : "read", data,
+-			   (addr & 0x00fffffc));
++		nvkm_error_ratelimited(subdev, "MMIO %s of %08x FAULT at %06x\n",
++				       (addr & 0x00000002) ? "write" : "read", data,
++				       (addr & 0x00fffffc));
+ 
+ 		stat &= ~0x00000008;
+ 		nvkm_wr32(device, 0x001100, 0x00000008);
 -- 
-2.34.1
+2.35.1
 
