@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E6AC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 188EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357601AbiD2KY6 (ORCPT
+        id S1357618AbiD2KZE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47768 "EHLO
+        Fri, 29 Apr 2022 06:25:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239061AbiD2KYu (ORCPT
+        with ESMTP id S1357377AbiD2KYv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:24:50 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095DB64718
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 03:21:33 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KqT5Z6TsHz1JBj4;
-        Fri, 29 Apr 2022 18:20:34 +0800 (CST)
+        Fri, 29 Apr 2022 06:24:51 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E8766FA4
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 03:21:34 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KqT1P4ZZzzCsLX;
+        Fri, 29 Apr 2022 18:16:57 +0800 (CST)
 Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 18:21:31 +0800
+ 15.1.2375.24; Fri, 29 Apr 2022 18:21:32 +0800
 Received: from localhost.localdomain.localdomain (10.175.113.25) by
  dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 18:21:30 +0800
+ 15.1.2375.24; Fri, 29 Apr 2022 18:21:31 +0800
 From:   Kefeng Wang <wangkefeng.wang@huawei.com>
 To:     <catalin.marinas@arm.com>, <will@kernel.org>,
         <akpm@linux-foundation.org>,
@@ -34,9 +34,9 @@ To:     <catalin.marinas@arm.com>, <will@kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC:     <linux-mm@kvack.org>, <hch@infradead.org>, <arnd@arndb.de>,
         Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH v2 1/5] mm: ioremap: Use more sensibly name in ioremap_prot()
-Date:   Fri, 29 Apr 2022 18:32:21 +0800
-Message-ID: <20220429103225.75121-2-wangkefeng.wang@huawei.com>
+Subject: [PATCH v2 3/5] mm: ioremap: Add arch_ioremap/iounmap()
+Date:   Fri, 29 Apr 2022 18:32:23 +0800
+Message-ID: <20220429103225.75121-4-wangkefeng.wang@huawei.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220429103225.75121-1-wangkefeng.wang@huawei.com>
 References: <20220429103225.75121-1-wangkefeng.wang@huawei.com>
@@ -51,68 +51,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use more meaningful and sensibly naming phys_addr
-instead addr in ioremap_prot().
+Add special hook for architecture to verify addr, size and prot
+or setup when ioremap() or iounmap(), which will make the generic
+ioremap more useful.
 
-Suggested-by: Andrew Morton <akpm@linux-foundation.org>
+  arch_ioremap() return a 'void __iomem *',
+    - IS_ERR means return an error
+    - NULL means continue to remap
+    - a non-NULL, non-IS_ERR pointer is directly returned
+  arch_iounmap() return a int value,
+    - 0 means continue to vunmap
+    - error code means skip vunmap and return directly
+
 Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 ---
- include/asm-generic/io.h |  2 +-
- mm/ioremap.c             | 12 ++++++------
- 2 files changed, 7 insertions(+), 7 deletions(-)
+ include/asm-generic/io.h | 14 ++++++++++++++
+ mm/ioremap.c             | 14 +++++++++++++-
+ 2 files changed, 27 insertions(+), 1 deletion(-)
 
 diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
-index 7ce93aaf69f8..e6ffa2519f08 100644
+index e6ffa2519f08..f2f9aeedb5e8 100644
 --- a/include/asm-generic/io.h
 +++ b/include/asm-generic/io.h
-@@ -964,7 +964,7 @@ static inline void iounmap(volatile void __iomem *addr)
+@@ -964,6 +964,20 @@ static inline void iounmap(volatile void __iomem *addr)
  #elif defined(CONFIG_GENERIC_IOREMAP)
  #include <linux/pgtable.h>
  
--void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot);
-+void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long prot);
++#ifndef arch_ioremap
++static inline void __iomem *arch_ioremap(phys_addr_t phys_addr, size_t size, unsigned long prot)
++{
++	return NULL;
++}
++#endif
++
++#ifndef arch_iounmap
++static inline int arch_iounmap(void __iomem *addr)
++{
++	return 0;
++}
++#endif
++
+ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long prot);
  void iounmap(volatile void __iomem *addr);
  
- static inline void __iomem *ioremap(phys_addr_t addr, size_t size)
 diff --git a/mm/ioremap.c b/mm/ioremap.c
-index 5fe598ecd9b7..1f9597fbcc07 100644
+index 7cb9996b0c12..de5a2e899e14 100644
 --- a/mm/ioremap.c
 +++ b/mm/ioremap.c
-@@ -11,20 +11,20 @@
- #include <linux/io.h>
- #include <linux/export.h>
- 
--void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot)
-+void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long prot)
- {
+@@ -16,6 +16,7 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long pro
  	unsigned long offset, vaddr;
  	phys_addr_t last_addr;
  	struct vm_struct *area;
++	void __iomem *base;
  
  	/* Disallow wrap-around or zero size */
--	last_addr = addr + size - 1;
--	if (!size || last_addr < addr)
-+	last_addr = phys_addr + size - 1;
-+	if (!size || last_addr < phys_addr)
- 		return NULL;
- 
- 	/* Page-align mappings */
--	offset = addr & (~PAGE_MASK);
--	addr -= offset;
-+	offset = phys_addr & (~PAGE_MASK);
-+	phys_addr -= offset;
+ 	last_addr = phys_addr + size - 1;
+@@ -27,6 +28,12 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long pro
+ 	phys_addr -= offset;
  	size = PAGE_ALIGN(size + offset);
  
++	base = arch_ioremap(phys_addr, size, prot);
++	if (IS_ERR(base))
++		return NULL;
++	else if (base)
++		return base;
++
  	area = get_vm_area_caller(size, VM_IOREMAP,
-@@ -33,7 +33,7 @@ void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot)
- 		return NULL;
- 	vaddr = (unsigned long)area->addr;
+ 			__builtin_return_address(0));
+ 	if (!area)
+@@ -45,6 +52,11 @@ EXPORT_SYMBOL(ioremap_prot);
  
--	if (ioremap_page_range(vaddr, vaddr + size, addr, __pgprot(prot))) {
-+	if (ioremap_page_range(vaddr, vaddr + size, phys_addr, __pgprot(prot))) {
- 		free_vm_area(area);
- 		return NULL;
- 	}
+ void iounmap(volatile void __iomem *addr)
+ {
+-	vunmap((void *)((unsigned long)addr & PAGE_MASK));
++	void *vaddr = (void *)((unsigned long)addr & PAGE_MASK);
++
++	if (arch_iounmap(vaddr))
++		return;
++
++	vunmap(vaddr);
+ }
+ EXPORT_SYMBOL(iounmap);
 -- 
 2.35.3
 
