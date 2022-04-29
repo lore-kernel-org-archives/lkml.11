@@ -2,138 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B353EC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:41:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9515AC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357634AbiD2KpJ (ORCPT
+        id S1357649AbiD2KpN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:45:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56384 "EHLO
+        Fri, 29 Apr 2022 06:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357570AbiD2Koz (ORCPT
+        with ESMTP id S1357561AbiD2Ko4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:44:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4D5B82DD;
-        Fri, 29 Apr 2022 03:41:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3AC162351;
-        Fri, 29 Apr 2022 10:41:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D807C385A4;
-        Fri, 29 Apr 2022 10:41:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651228896;
-        bh=gSIo23UnH9bNLn4a6l75u8Olgj6fvPblKdNnVRDlAiI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=DBqrLoWWlZMHIFq7kMycTfbDayMsNHFBGu2Exu+ievEM7ggfjRwdUKG2RieqFCSOl
-         P4EjmtZUAmbzbVvgwpKVsA4VeAvv68UN0JhJmWprzi/MK49WOkbibVLArxKVtiszLD
-         gU4TlyOxwoKDXJIeYuLzuzl1DKgNAK4JewcK4J2M=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.19 00/12] 4.19.241-rc1 review
-Date:   Fri, 29 Apr 2022 12:41:17 +0200
-Message-Id: <20220429104048.459089941@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
+        Fri, 29 Apr 2022 06:44:56 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8908C12FF;
+        Fri, 29 Apr 2022 03:41:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1651228899; x=1682764899;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=pXFB7NHcDCItTBt2mpH7jbaa68A7uQ0UnpA7fbg8+bw=;
+  b=0by1ELDgDQXxFVsxOYUbLaYUQ/bBXUAaUvyOaysysnen4u5yDHiUEpig
+   D6NGUPFmurhgrBhY3qtzki7b3RhlIsAgVULmFRIB0bL+0/jB02DkfGbbr
+   0xikhgGcH1ApU7XJ8KbouwdxZiqKSSeNRI+Q8q2n9gkmLrDpi5dxMOepb
+   p0+ICvvtyfEXiKUyWMZ8YFocbB2lsZJUDAlxtdiJdx5S57ZmxnTuGj+Bw
+   Jn2cpC+THYexoj6S8iukBah3X2yptSDFyecSLuXJMy3mv5RszQ94e4GGq
+   7hLBecf6AniJOd8wiKTQT31sJwCMgqqmJYRrYpQrnWNhXWlOky5mVNIha
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
+   d="scan'208";a="154297294"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Apr 2022 03:41:38 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 29 Apr 2022 03:41:38 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 29 Apr 2022 03:41:35 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>
+CC:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Cyril Jean <Cyril.Jean@microchip.com>,
+        <devicetree@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, "Arnd Bergmann" <arnd@arndb.de>
+Subject: [PATCH v1 4/8] dt-bindings: riscv: microchip: document icicle reference design
+Date:   Fri, 29 Apr 2022 11:40:37 +0100
+Message-ID: <20220429104040.197161-5-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220429104040.197161-1-conor.dooley@microchip.com>
+References: <20220429104040.197161-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.241-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.19.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.19.241-rc1
-X-KernelTest-Deadline: 2022-05-01T10:40+00:00
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.19.241 release.
-There are 12 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+Add a compatible for the icicle kit's reference design. This represents
+the FPGA fabric's contents & is versioned to denote which release of the
+reference design it applies to.
 
-Responses should be made by Sun, 01 May 2022 10:40:41 +0000.
-Anything received after that time might be too late.
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ .../devicetree/bindings/riscv/microchip.yaml          | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.241-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-and the diffstat can be found below.
-
-thanks,
-
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.19.241-rc1
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    lightnvm: disable the subsystem
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Revert "net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link"
-
-Masami Hiramatsu <mhiramat@kernel.org>
-    ia64: kprobes: Fix to pass correct trampoline address to the handler
-
-Masami Hiramatsu <mhiramat@kernel.org>
-    Revert "ia64: kprobes: Use generic kretprobe trampoline handler"
-
-Masami Hiramatsu <mhiramat@kernel.org>
-    Revert "ia64: kprobes: Fix to pass correct trampoline address to the handler"
-
-Michael Ellerman <mpe@ellerman.id.au>
-    powerpc/64s: Unmerge EX_LR and EX_DAR
-
-Nicholas Piggin <npiggin@gmail.com>
-    powerpc/64/interrupt: Temporarily save PPR on stack to fix register corruption due to SLB miss
-
-Eric Dumazet <edumazet@google.com>
-    net/sched: cls_u32: fix netns refcount changes in u32_change()
-
-Lin Ma <linma@zju.edu.cn>
-    hamradio: remove needs_free_netdev to avoid UAF
-
-Lin Ma <linma@zju.edu.cn>
-    hamradio: defer 6pack kfree after unregister_netdev
-
-Willy Tarreau <w@1wt.eu>
-    floppy: disable FDRAWCMD by default
-
-Dafna Hirschfeld <dafna3@gmail.com>
-    media: vicodec: upon release, call m2m release before freeing ctrl handler
-
-
--------------
-
-Diffstat:
-
- Makefile                                           |  4 +-
- arch/ia64/kernel/kprobes.c                         | 78 +++++++++++++++++++++-
- arch/powerpc/include/asm/exception-64s.h           | 37 +++++-----
- drivers/block/Kconfig                              | 16 +++++
- drivers/block/floppy.c                             | 43 +++++++++---
- drivers/lightnvm/Kconfig                           |  2 +-
- drivers/media/platform/vicodec/vicodec-core.c      |  6 +-
- drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c |  8 +++
- drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h |  4 --
- .../net/ethernet/stmicro/stmmac/dwmac-socfpga.c    | 13 ++--
- drivers/net/hamradio/6pack.c                       |  5 +-
- net/sched/cls_u32.c                                | 18 +++--
- 12 files changed, 181 insertions(+), 53 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/riscv/microchip.yaml b/Documentation/devicetree/bindings/riscv/microchip.yaml
+index 3f981e897126..c9d8fcc7a69e 100644
+--- a/Documentation/devicetree/bindings/riscv/microchip.yaml
++++ b/Documentation/devicetree/bindings/riscv/microchip.yaml
+@@ -17,10 +17,13 @@ properties:
+   $nodename:
+     const: '/'
+   compatible:
+-    items:
+-      - enum:
+-          - microchip,mpfs-icicle-kit
+-      - const: microchip,mpfs
++    oneOf:
++      - items:
++          - enum:
++              - microchip,mpfs-icicle-kit
++          - const: microchip,mpfs
++      - items:
++          - const: microchip,mpfs-icicle-reference-rtlv2203
+ 
+ additionalProperties: true
+ 
+-- 
+2.35.2
 
