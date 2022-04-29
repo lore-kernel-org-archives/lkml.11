@@ -2,93 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D621CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C7BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357447AbiD2K0D (ORCPT
+        id S1353408AbiD2K1Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40026 "EHLO
+        Fri, 29 Apr 2022 06:27:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357576AbiD2KXn (ORCPT
+        with ESMTP id S245656AbiD2K1W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:23:43 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5293D532E7
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 03:20:24 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Fri, 29 Apr 2022 06:27:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2DA0C6EFB;
+        Fri, 29 Apr 2022 03:24:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 334AC22175;
-        Fri, 29 Apr 2022 12:20:22 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1651227622;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=l+V24OcwdobkdB141ZISP+Wg/V3ea1y5pGdeD+L1PAo=;
-        b=fP5aB2yKEL64hfkxO8SHzG4MsVoHyjFivkLCQjdr17mFouICf0I9aTdaYmQ4GsOAhib8Z6
-        I3vKxVz9P3Pa3sYw8Wa3kz7f69K40B3H4iIaSO8SfNLQrQ2l7PZfrkPnvaD/zMoaLXxyWd
-        Bh9KPgQRlkZ2CAGZce090tijdG1iGM0=
-From:   Michael Walle <michael@walle.cc>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 1/2] mtd: spi-nor: export spi_nor_hwcaps_pp2cmd()
-Date:   Fri, 29 Apr 2022 12:20:17 +0200
-Message-Id: <20220429102018.2361038-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7221BB8301B;
+        Fri, 29 Apr 2022 10:24:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55AFAC385A4;
+        Fri, 29 Apr 2022 10:23:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651227840;
+        bh=VrvVa5/GusZJ9VrpG6S/DfT6kLbm0YgE/cVZm1EEsfM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=W01SN75HD/9NKxwPAcdRHgQ6deX+WrGupf3yk6SNkXQIEnduJtYsEYWi3sfbOgTmS
+         6MwopNddRW2Mfuzwh5EyiAjvDtjIiT4ivU/0GV1msqWw/VWzI+LVT98VoZatLxCMCx
+         4qIocUDIsZjHyg/rGXYmYEWUPCg4APwXrUZZ1lcofStDRRmLkQSqYeY/usr+E9V7lF
+         Q/hy3vpb0xK9Dpnr04F6PtJrsvclnxSnJ6fhqjOT7sm5hhQXKRqajLKzMxafVsiOaF
+         5gi8dQtcVzsgxyL9VMlyQYIDePwQpkoJC+wGD6h09G/5Dpg0mYWy9YcrW0BnaHKjqr
+         PZMZv6lhsirPQ==
+Date:   Fri, 29 Apr 2022 11:23:51 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Daniel Vetter <daniel@ffwll.ch>,
+        Luis Chamberlain <mcgrof@kernel.org>, mauro.chehab@intel.com,
+        Kai Vehmanen <kai.vehmanen@intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@intel.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        David Airlie <airlied@linux.ie>,
+        Dan Williams <dan.j.williams@intel.com>
+Subject: Re: [PATCH 1/2] module: add a function to add module references
+Message-ID: <20220429112351.0e044950@sal.lan>
+In-Reply-To: <Ymu5f8EjdC1Mawzt@kroah.com>
+References: <cover.1651212016.git.mchehab@kernel.org>
+        <a078eb2e46d00ec59c8a91ea0afa5190730c9e58.1651212016.git.mchehab@kernel.org>
+        <YmuZovuDaCYDDG4c@phenom.ffwll.local>
+        <20220429090757.1acb943a@sal.lan>
+        <YmuiKcHgl+nABvo/@kroah.com>
+        <20220429101503.4048db5b@sal.lan>
+        <Ymu5f8EjdC1Mawzt@kroah.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function will also be used by the debugfs module.
+Em Fri, 29 Apr 2022 12:10:07 +0200
+Greg KH <gregkh@linuxfoundation.org> escreveu:
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
----
-changes since v2:
- - none
+> On Fri, Apr 29, 2022 at 10:15:03AM +0100, Mauro Carvalho Chehab wrote:
+> > HI Greg,
+> > 
+> > Em Fri, 29 Apr 2022 10:30:33 +0200
+> > Greg KH <gregkh@linuxfoundation.org> escreveu:
+> >   
+> > > On Fri, Apr 29, 2022 at 09:07:57AM +0100, Mauro Carvalho Chehab wrote:  
+> > > > Hi Daniel,
+> > > > 
+> > > > Em Fri, 29 Apr 2022 09:54:10 +0200
+> > > > Daniel Vetter <daniel@ffwll.ch> escreveu:
+> > > >     
+> > > > > On Fri, Apr 29, 2022 at 07:31:15AM +0100, Mauro Carvalho Chehab wrote:    
+> > > > > > Sometimes, device drivers are bound using indirect references,
+> > > > > > which is not visible when looking at /proc/modules or lsmod.
+> > > > > > 
+> > > > > > Add a function to allow setting up module references for such
+> > > > > > cases.
+> > > > > > 
+> > > > > > Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+> > > > > > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>      
+> > > > > 
+> > > > > This sounds like duct tape at the wrong level. We should have a
+> > > > > device_link connecting these devices, and maybe device_link internally
+> > > > > needs to make sure the respective driver modules stay around for long
+> > > > > enough too. But open-coding this all over the place into every driver that
+> > > > > has some kind of cross-driver dependency sounds terrible.
+> > > > > 
+> > > > > Or maybe the bug is that the snd driver keeps accessing the hw/component
+> > > > > side when that is just plain gone. Iirc there's still fundamental issues
+> > > > > there on the sound side of things, which have been attempted to paper over
+> > > > > by timeouts and stuff like that in the past instead of enforcing a hard
+> > > > > link between the snd and i915 side.    
+> > > > 
+> > > > I agree with you that the device link between snd-hda and the DRM driver
+> > > > should properly handle unbinding on both directions. This is something
+> > > > that require further discussions with ALSA and DRM people, and we should
+> > > > keep working on it.
+> > > > 
+> > > > Yet, the binding between those drivers do exist, but, despite other
+> > > > similar inter-driver bindings being properly reported by lsmod, this one
+> > > > is invisible for userspace.
+> > > > 
+> > > > What this series does is to make such binding visible. As simple as that.    
+> > > 
+> > > It also increases the reference count, and creates a user/kernel api
+> > > with the symlinks, right?  Will the reference count increase prevent the
+> > > modules from now being unloadable?
+> > >
+> > > This feels like a very "weak" link between modules that should not be
+> > > needed if reference counting is implemented properly (so that things are
+> > > cleaned up in the correct order.)  
+> > 
+> > The refcount increment exists even without this patch, as
+> > hda_component_master_bind() at sound/hda/hdac_component.c uses 
+> > try_module_get() when it creates the device link.  
+> 
+> Ok, then why shouldn't try_module_get() be creating this link instead of
+> having to manually do it this way again?  You don't want to have to go
+> around and add this call to all users of that function, right?
 
-changes since rfc (v1):
- - none
+Works for me, but this is not a too trivial change, as the new 
+try_module_get() function will require two parameters, instead of one:
 
- drivers/mtd/spi-nor/core.c | 2 +-
- drivers/mtd/spi-nor/core.h | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+	- the module to be referenced;
+	- the module which will reference it.
 
-diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index a31d7fd45eb8..6f61e97ecd75 100644
---- a/drivers/mtd/spi-nor/core.c
-+++ b/drivers/mtd/spi-nor/core.c
-@@ -1850,7 +1850,7 @@ int spi_nor_hwcaps_read2cmd(u32 hwcaps)
- 				  ARRAY_SIZE(hwcaps_read2cmd));
- }
- 
--static int spi_nor_hwcaps_pp2cmd(u32 hwcaps)
-+int spi_nor_hwcaps_pp2cmd(u32 hwcaps)
- {
- 	static const int hwcaps_pp2cmd[][2] = {
- 		{ SNOR_HWCAPS_PP,		SNOR_CMD_PP },
-diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
-index 4788e628c335..007ea9896a06 100644
---- a/drivers/mtd/spi-nor/core.h
-+++ b/drivers/mtd/spi-nor/core.h
-@@ -662,6 +662,7 @@ int spi_nor_otp_lock_sr2(struct spi_nor *nor, unsigned int region);
- int spi_nor_otp_is_locked_sr2(struct spi_nor *nor, unsigned int region);
- 
- int spi_nor_hwcaps_read2cmd(u32 hwcaps);
-+int spi_nor_hwcaps_pp2cmd(u32 hwcaps);
- u8 spi_nor_convert_3to4_read(u8 opcode);
- void spi_nor_set_read_settings(struct spi_nor_read_command *read,
- 			       u8 num_mode_clocks,
--- 
-2.30.2
+On trivial cases, one will be THIS_MODULE, but, in the specific case
+of snd_hda, the binding is done via an ancillary routine under 
+snd_hda_core, but the actual binding happens at snd_hda_intel.
 
+Ok, we could add a __try_module_get() (or whatever other name that
+would properly express what it does) with two parameters, and then
+define try_module_get() as:
+
+	#define try_module_get(mod) __try_module_get(mod, THIS_MODULE)
+
+Would that work for you?
+
+Regards,
+Mauro
