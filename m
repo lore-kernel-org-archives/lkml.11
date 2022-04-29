@@ -2,110 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C805C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 327C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:42:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377735AbiD2OpM (ORCPT
+        id S1377772AbiD2Opa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43928 "EHLO
+        Fri, 29 Apr 2022 10:45:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356120AbiD2Ooa (ORCPT
+        with ESMTP id S1377668AbiD2OpH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:44:30 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A2A539805;
-        Fri, 29 Apr 2022 07:41:07 -0700 (PDT)
-X-UUID: cda3e8c13f17461cb2f6e0565da19b56-20220429
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:2b434df3-0d3f-420c-8f28-a5de4d04bc35,OB:0,LO
-        B:0,IP:0,URL:8,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:-12
-X-CID-META: VersionHash:faefae9,CLOUDID:686afbc6-85ee-4ac1-ac05-bd3f1e72e732,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: cda3e8c13f17461cb2f6e0565da19b56-20220429
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
-        (envelope-from <yf.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1742339527; Fri, 29 Apr 2022 22:41:00 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 29 Apr 2022 22:40:59 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 29 Apr 2022 22:40:58 +0800
-From:   <yf.wang@mediatek.com>
-To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        "Will Deacon" <will@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:MEDIATEK IOMMU DRIVER" <iommu@lists.linux-foundation.org>,
-        "moderated list:MEDIATEK IOMMU DRIVER" 
-        <linux-mediatek@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list" <linux-kernel@vger.kernel.org>
-CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
-        Yong Wu <Yong.Wu@mediatek.com>,
-        Yunfei Wang <yf.wang@mediatek.com>,
-        Ning Li <ning.li@mediatek.com>, <stable@vger.kernel.org>
-Subject: [PATCH 2/2] iommu/mediatek: Enable allocating page table in normal memory
-Date:   Fri, 29 Apr 2022 22:34:10 +0800
-Message-ID: <20220429143411.7640-3-yf.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220429143411.7640-1-yf.wang@mediatek.com>
-References: <20220429143411.7640-1-yf.wang@mediatek.com>
+        Fri, 29 Apr 2022 10:45:07 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8CA060AA5
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:41:43 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id bn33so10773367ljb.6
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:41:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=v2gZtm1Y9EnOM5Lz97MhvmGZH6fMaQCNcq4ssrGXHvA=;
+        b=ClMCvVPqnQvsDrQSnAHoGq7Vw5jDkH20m6A/jFylwgb5q97jAdRdcW5Tq/ZaNiH+Cp
+         yIg47tN6GtmlTBH5mtys7w9mDlDFu5S/h+p9aL/puwS8bYuXt/nFHomvmU3LgQAF6YSY
+         r037KVH5Hozn7/KWxmUuGVfe2fRViCWWRM0skggmZKD3leNVKeniAzLHjebi28EOK5Nr
+         n6giekI/b+HkE2c8faKP8PebkDDPCvZNdKFVksYUzucQrGdb9y63esEM2xL1deU8a37x
+         p1AI8Br8SMlk0CuUVXdCLcjGT+EQfv9Pw3SDNLA28y2JJrwSVpHcX1QA+HZAnMN07QBG
+         NwjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=v2gZtm1Y9EnOM5Lz97MhvmGZH6fMaQCNcq4ssrGXHvA=;
+        b=1UlTjKlcQWbmrRZT9q69bREK7qgaJ0qO+05tu4fqi7u5aCrNi/agM/A6wMv7u/N+47
+         64pmkiquTZZTI/OnCW3pCRbuuvk6VeOZvTYhiilChqTcQs0IqLYzjak5mVs5s4tx6tlT
+         He9HQnDpvODE/u5Ks/cy8HZhxgXP+pb0fm2/Tu8V9ppKywdZ2IzckoHOmW1AZQtV1+z0
+         NVl2hZibaYK7br8TaHEdkjlN8AvVaBrRTv2VR8qQXzvQTNHJV8Wl+vdsvgvtXx+S4OUJ
+         jXGwG//qeCwblLYnzb92Kmvo2jkHnpIHn/T2OAZV5qxWbxzwi+NfI2dC1QP72yCr6cp1
+         ULqQ==
+X-Gm-Message-State: AOAM530s1R5enHepyketzuRtBUtXG9y0uy7uaJ3qJ3K9k2H5U4xqnLPj
+        AZa6nzpsxKPJQqtpJYxV/GUZKErCPEDm5w==
+X-Google-Smtp-Source: ABdhPJx293qUvuCappYWJV4aCE2Kp2oJ/m2hcMh6SW9WP1q60AEQCRl17k3YoPhVKTLl4IVO2KI5Mg==
+X-Received: by 2002:a2e:8e98:0:b0:24f:15e9:ed39 with SMTP id z24-20020a2e8e98000000b0024f15e9ed39mr14240296ljk.460.1651243302165;
+        Fri, 29 Apr 2022 07:41:42 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id h7-20020ac24d27000000b004720819b691sm255343lfk.130.2022.04.29.07.41.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 07:41:41 -0700 (PDT)
+Message-ID: <beb3bd74-a550-b0c1-b6bd-99536dc9b2e1@linaro.org>
+Date:   Fri, 29 Apr 2022 17:41:40 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 2/4] clk: qcom: clk-krait: unlock spin after mux
+ completion
+Content-Language: en-GB
+To:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sricharan R <sricharan@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220429120108.9396-1-ansuelsmth@gmail.com>
+ <20220429120108.9396-3-ansuelsmth@gmail.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220429120108.9396-3-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yunfei Wang <yf.wang@mediatek.com>
+On 29/04/2022 15:01, Ansuel Smith wrote:
+> Unlock spinlock after the mux switch is completed to prevent any corner
+> case of mux request while the switch still needs to be done.
+> 
+> Fixes: 4d7dc77babfe ("clk: qcom: Add support for Krait clocks")
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 
-Add the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT support, so that
-level 2 page table can allocate in normal memory.
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-Signed-off-by: Ning Li <ning.li@mediatek.com>
-Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-Cc: <stable@vger.kernel.org> # 5.10.*
----
- drivers/iommu/mtk_iommu.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+> ---
+>   drivers/clk/qcom/clk-krait.c | 7 ++++++-
+>   1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
+> index 59f1af415b58..90046428693c 100644
+> --- a/drivers/clk/qcom/clk-krait.c
+> +++ b/drivers/clk/qcom/clk-krait.c
+> @@ -32,11 +32,16 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
+>   		regval |= (sel & mux->mask) << (mux->shift + LPL_SHIFT);
+>   	}
+>   	krait_set_l2_indirect_reg(mux->offset, regval);
+> -	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
+>   
+>   	/* Wait for switch to complete. */
+>   	mb();
+>   	udelay(1);
+> +
+> +	/*
+> +	 * Unlock now to make sure the mux register is not
+> +	 * modified while switching to the new parent.
+> +	 */
+> +	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
+>   }
+>   
+>   static int krait_mux_set_parent(struct clk_hw *hw, u8 index)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 6fd75a60abd6..27481f562df7 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -118,6 +118,7 @@
- #define WR_THROT_EN			BIT(6)
- #define HAS_LEGACY_IVRP_PADDR		BIT(7)
- #define IOVA_34_EN			BIT(8)
-+#define PGTABLE_L2_PA_35_EN		BIT(9)
- 
- #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
- 		((((pdata)->flags) & (_x)) == (_x))
-@@ -401,6 +402,9 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
- 		.iommu_dev = data->dev,
- 	};
- 
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_L2_PA_35_EN))
-+		dom->cfg.quirks |= IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT;
-+
- 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
- 		dom->cfg.oas = data->enable_4GB ? 33 : 32;
- 	else
-@@ -1038,7 +1042,8 @@ static const struct mtk_iommu_plat_data mt2712_data = {
- 
- static const struct mtk_iommu_plat_data mt6779_data = {
- 	.m4u_plat      = M4U_MT6779,
--	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN,
-+	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN |
-+			 PGTABLE_L2_PA_35_EN,
- 	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
- 	.iova_region   = single_domain,
- 	.iova_region_nr = ARRAY_SIZE(single_domain),
+
 -- 
-2.18.0
-
+With best wishes
+Dmitry
