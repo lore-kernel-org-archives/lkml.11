@@ -2,121 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4719C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFADC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:15:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353795AbiD2BRk (ORCPT
+        id S1353727AbiD2BSX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 21:17:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38402 "EHLO
+        Thu, 28 Apr 2022 21:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352786AbiD2BRZ (ORCPT
+        with ESMTP id S1352786AbiD2BSR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 21:17:25 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8384BC87F;
-        Thu, 28 Apr 2022 18:14:08 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KqDxy62p0zfbD9;
-        Fri, 29 Apr 2022 09:13:10 +0800 (CST)
-Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 09:14:07 +0800
-Received: from k04.huawei.com (10.67.174.115) by
- dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 09:14:06 +0800
-From:   Pu Lehui <pulehui@huawei.com>
-To:     <bpf@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Pu Lehui <pulehui@huawei.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Subject: [PATCH bpf-next v2 2/2] riscv, bpf: Support riscv jit to provide bpf_line_info
-Date:   Fri, 29 Apr 2022 09:42:40 +0800
-Message-ID: <20220429014240.3434866-3-pulehui@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220429014240.3434866-1-pulehui@huawei.com>
-References: <20220429014240.3434866-1-pulehui@huawei.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.115]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500019.china.huawei.com (7.185.36.180)
-X-CFilter-Loop: Reflected
+        Thu, 28 Apr 2022 21:18:17 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E0EE0BCB41;
+        Thu, 28 Apr 2022 18:14:59 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app4 (Coremail) with SMTP id cS_KCgAnDkX6O2tidX4EAg--.28704S2;
+        Fri, 29 Apr 2022 09:14:46 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-kernel@vger.kernel.org, kuba@kernel.org,
+        krzysztof.kozlowski@linaro.org, gregkh@linuxfoundation.org
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        alexander.deucher@amd.com, akpm@linux-foundation.org,
+        broonie@kernel.org, netdev@vger.kernel.org, linma@zju.edu.cn,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net v5 0/2] Replace improper checks and fix bugs in nfc subsystem
+Date:   Fri, 29 Apr 2022 09:14:31 +0800
+Message-Id: <cover.1651194245.git.duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cS_KCgAnDkX6O2tidX4EAg--.28704S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY-7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr1j
+        6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxa
+        n2IY04v7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_GFWkJr1UJwCFx2IqxV
+        CFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r10
+        6r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxV
+        WUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG
+        6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr
+        1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgIOAVZdtZdEXAA3sJ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for riscv jit to provide bpf_line_info.
-We need to consider the prologue offset in ctx->offset,
-but unlike x86 and arm64, ctx->offset of riscv does not
-provide an extra slot for the prologue, so here we just
-calculate the len of prologue and add it to ctx->offset
-at the end. Both RV64 and RV32 have been tested.
+The first patch is used to replace improper checks in netlink related
+functions of nfc core, the second patch is used to fix bugs in
+nfcmrvl driver.
 
-Signed-off-by: Pu Lehui <pulehui@huawei.com>
----
- arch/riscv/net/bpf_jit.h      | 1 +
- arch/riscv/net/bpf_jit_core.c | 7 ++++++-
- 2 files changed, 7 insertions(+), 1 deletion(-)
+Duoming Zhou (2):
+  nfc: replace improper check device_is_registered() in netlink related
+    functions
+  nfc: nfcmrvl: main: reorder destructive operations in
+    nfcmrvl_nci_unregister_dev to avoid bugs
 
-diff --git a/arch/riscv/net/bpf_jit.h b/arch/riscv/net/bpf_jit.h
-index 2a3715bf29fe..7dbbad7595f0 100644
---- a/arch/riscv/net/bpf_jit.h
-+++ b/arch/riscv/net/bpf_jit.h
-@@ -69,6 +69,7 @@ struct rv_jit_context {
- 	struct bpf_prog *prog;
- 	u16 *insns;		/* RV insns */
- 	int ninsns;
-+	int prologue_offset;
- 	int epilogue_offset;
- 	int *offset;		/* BPF to RV */
- 	int nexentries;
-diff --git a/arch/riscv/net/bpf_jit_core.c b/arch/riscv/net/bpf_jit_core.c
-index be743d700aa7..6383eb591b0d 100644
---- a/arch/riscv/net/bpf_jit_core.c
-+++ b/arch/riscv/net/bpf_jit_core.c
-@@ -44,7 +44,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 	unsigned int prog_size = 0, extable_size = 0;
- 	bool tmp_blinded = false, extra_pass = false;
- 	struct bpf_prog *tmp, *orig_prog = prog;
--	int pass = 0, prev_ninsns = 0, i;
-+	int pass = 0, prev_ninsns = 0, prologue_len, i;
- 	struct rv_jit_data *jit_data;
- 	struct rv_jit_context *ctx;
- 
-@@ -95,6 +95,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 			prog = orig_prog;
- 			goto out_offset;
- 		}
-+		ctx->prologue_offset = ctx->ninsns;
- 		bpf_jit_build_prologue(ctx);
- 		ctx->epilogue_offset = ctx->ninsns;
- 		bpf_jit_build_epilogue(ctx);
-@@ -161,6 +162,10 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 
- 	if (!prog->is_func || extra_pass) {
- 		bpf_jit_binary_lock_ro(jit_data->header);
-+		prologue_len = ctx->epilogue_offset - ctx->prologue_offset;
-+		for (i = 0; i < prog->len; i++)
-+			ctx->offset[i] = ninsns_rvoff(prologue_len + ctx->offset[i]);
-+		bpf_prog_fill_jited_linfo(prog, ctx->offset);
- out_offset:
- 		kfree(ctx->offset);
- 		kfree(jit_data);
+ drivers/nfc/nfcmrvl/main.c |  2 +-
+ include/net/nfc/nfc.h      |  1 +
+ net/nfc/core.c             | 26 ++++++++++++++------------
+ 3 files changed, 16 insertions(+), 13 deletions(-)
+
 -- 
-2.25.1
+2.17.1
 
