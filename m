@@ -2,101 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E05C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 13:19:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBFE3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 13:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359739AbiD2NXL (ORCPT
+        id S1359748AbiD2NXo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 09:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55806 "EHLO
+        Fri, 29 Apr 2022 09:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359731AbiD2NXI (ORCPT
+        with ESMTP id S1359723AbiD2NXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 09:23:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02F8C8485;
-        Fri, 29 Apr 2022 06:19:50 -0700 (PDT)
+        Fri, 29 Apr 2022 09:23:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6C6FD34;
+        Fri, 29 Apr 2022 06:20:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2093862287;
-        Fri, 29 Apr 2022 13:19:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABB19C385AC;
-        Fri, 29 Apr 2022 13:19:46 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C536FCE2A31;
+        Fri, 29 Apr 2022 13:20:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E519DC385A7;
+        Fri, 29 Apr 2022 13:20:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651238389;
-        bh=19u80WrRYBrn0euhR5t2IahZXsXYVRXAnPVdCH6q/OA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uzp9dNrw1fq7kaRwzsuipBWIEcIQrGCJXYGUQ+EJvcUn1wqUYdAMvlbx+LuUGhAKn
-         8xd69n0H8JX0CPgb6WjcW1q7XAfUofjuWy9WQ+fQO4NnJ5mRBJAAknOmVRLDPzOHCS
-         OS+7RFvMnFVE+xOeV77jBorf1wah47euXafGH6skPCZhCuZrgiFz/g+Lbv5N9ZTIMu
-         b5T8hbIzNmL26tDus1GewZO5h9kWYbB+tHrfcBxxkKFQIM3IS7wJgdMb+XHDJ/Xvn2
-         3jABx64hHlDYm6X8MbIoOTloGjf005gkwoSMRILhEkLYoCmCClXJdky2dowXC2lUUk
-         AT0KiiAs5SSzg==
-Date:   Fri, 29 Apr 2022 14:19:43 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     YC Hung <yc.hung@mediatek.com>, Rob Herring <robh@kernel.org>,
-        robh+dt@kernel.org, daniel.baluta@nxp.com, trevor.wu@mediatek.com,
-        tiwai@suse.com, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, cezary.rojewski@intel.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        allen-kh.cheng@mediatek.com
-Subject: Re: [PATCH v4] dt-bindings: dsp: mediatek: add mt8195 dsp document
-Message-ID: <Ymvl7x9NTJor/vfx@sirena.org.uk>
-References: <20220106064847.15588-1-yc.hung@mediatek.com>
- <Yd4yNkeGlzdULNlv@robh.at.kernel.org>
- <68895a40-559b-13ce-d433-f9b32c648323@gmail.com>
- <9965188904de2e89bc5390fa6c71d9fb243f9d12.camel@mediatek.com>
- <cf9b425e-84ff-af12-72a7-4056b8cbf90d@gmail.com>
+        s=k20201202; t=1651238419;
+        bh=W0F62x4ZZOH2j54MPXWZcj4w3N1F+atcMVbtEoqkWr8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=l328/irFh6BO2aAxvUJPBmxX/X8CRjQyhrbT4dMb5WH1sLSW33JdnfTnOQ0sUbkiq
+         5EAzCPDIGqPPIWdVbPFUa35q1WSrnkmwkjy+geWl0QD6w07nXbURqlKxnKAbwnHoyN
+         4P5rF+bmRHnmGxShuYwwzhsIpaiKRlTRnSVdxYCLf4QKkH8KMCDtS7k4nZZm7AM+5+
+         gj2qqD/sI/rO+Rhl+DC/1kuAAzekts4jsmFQzFj8LZbGqwXzFPGE0bg6JfyaeLzr9n
+         aF1iUH8pvcWB22C34vCZNd3T43NEA7i54L7oUptiQKoPhBj8qcuQc6Ay6/vqj5ehi9
+         SGxFDwlmoZODA==
+Received: by pali.im (Postfix)
+        id 49A35CAF; Fri, 29 Apr 2022 15:20:16 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/2] dt-bindings: watchdog: max63xx: Add GPIO binding
+Date:   Fri, 29 Apr 2022 15:13:48 +0200
+Message-Id: <20220429131349.21229-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qbtHrth/VF0HNcN8"
-Content-Disposition: inline
-In-Reply-To: <cf9b425e-84ff-af12-72a7-4056b8cbf90d@gmail.com>
-X-Cookie: Are you still an ALCOHOLIC?
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+GPIO is optional and used for WDI logic.
 
---qbtHrth/VF0HNcN8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+ Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-On Fri, Apr 29, 2022 at 02:57:12PM +0200, Matthias Brugger wrote:
-> On 29/04/2022 07:59, YC Hung wrote:
+diff --git a/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml b/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml
+index ab9641e845db..a97aa0135ef9 100644
+--- a/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml
++++ b/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml
+@@ -27,6 +27,10 @@ properties:
+     description: This is a 1-byte memory-mapped address
+     maxItems: 1
+ 
++  gpios:
++    description: Optional GPIO used for controlling WDI when WDI bit is not mapped to memory
++    maxItems: 1
++
+ required:
+   - compatible
+   - reg
+-- 
+2.20.1
 
-> > Sorry I miss this mail.
-> > Could you please help to check this patch? Thanks.
-
-> Rob gave his reviewed-by. I just saw that the driver maintainer is Mark, so
-> I expect him to take the patch through his tree. Didn't realized this
-> beforehand.
-
-TBH I'd missed this since there was nothing in the subject line that
-drew my attention to it.  Seen it now though.
-
-Please submit patches using subject lines reflecting the style for the
-subsystem, this makes it easier for people to identify relevant patches.
-Look at what existing commits in the area you're changing are doing and
-make sure your subject lines visually resemble what they're doing.
-There's no need to resubmit to fix this alone.
-
---qbtHrth/VF0HNcN8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJr5e4ACgkQJNaLcl1U
-h9B6jQf/dW9MqjjZQdTkinE+KFUJIRcK4SQ+e5QvdyqXMZ17f40lR3vhJ4Xo1NME
-uNZx34lYDN8jy1PAvJa8HlyqyL0nVzOuxN7qjRuMr/uBlg/qhLEYFUcaxZXXc/wR
-aGaaF3csCsN0+n/CMwkWP/my21AyyzhXfu8ygvhEVqhdJhetwOtYNfOB/aIHOId7
-oszASoq1Jvbpvz7CRKq/Vqqk8O9ASXDpvSERh6iWSkWH4ShJMteoAipC4MndSgSI
-rc0LLIZ2+wq+MAdE5KoqccPfGnx2UsJ9+6MzcYc7SbpRx/LirYjr5THGGkLWS/m3
-kqvXdGrUS8RZNjj07qJ/cqGj8a/mOw==
-=Hfdr
------END PGP SIGNATURE-----
-
---qbtHrth/VF0HNcN8--
