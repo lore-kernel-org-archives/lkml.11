@@ -2,117 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB36C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 13:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 099A8C4167D
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 13:51:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237638AbiD2NyL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 09:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47750 "EHLO
+        id S1376409AbiD2Nym (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 09:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376432AbiD2NyH (ORCPT
+        with ESMTP id S236916AbiD2Nyl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 09:54:07 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC5F4F447
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 06:50:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651240248; x=1682776248;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=I1IC3ER1bbr2Gmvx8B3VxE2I1iNqvQIOt1Apf8a8gjM=;
-  b=Q+R2uzwBMxC0zni3P1Ice41Jm3MswIW3NLiAtrj/h/bVxDLffWHKH37x
-   /GmWZyDwiXwgHieorh/pXGRqkllXqP2i+C2CfzLONwL2o3dkQu1WNoMRW
-   rR6Cv9gniF1wnz4LA7rz+2hRx9dyWhc5CjhjAjZM25t0iAwC+cXAfYkaq
-   qtywpsJ1HHl3HHUTQ9GJe4/H1ZbDGlCAyCGw4+f5QGt5Nxwqmln7ERifS
-   6I/4ld0N6b7aYp6xhXoWY3f8F8SgmdLlSb9nKspf7Op6ZtpP2rQk+dd7A
-   vOcZV3ntnMyFq5tHmhBihNBjeWFgx1O4s03QsCstOG9cQNGPTwkB7sBGr
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="254034670"
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="254034670"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 06:50:48 -0700
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="560349710"
-Received: from fyu1.sc.intel.com ([172.25.103.126])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 06:50:47 -0700
-Date:   Fri, 29 Apr 2022 06:51:17 -0700
-From:   Fenghua Yu <fenghua.yu@intel.com>
-To:     Baolu Lu <baolu.lu@linux.intel.com>
-Cc:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>, robin.murphy@arm.com,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        iommu <iommu@lists.linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, zhangfei.gao@linaro.org,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Message-ID: <YmvtVRlwVJjStXc0@fyu1.sc.intel.com>
-References: <Yman5hLomw9/c+bi@myrica>
- <76ec6342-0d7c-7c7b-c132-2892e4048fa1@intel.com>
- <YmavoKkVu+hd+x0M@myrica>
- <22b659c7-e972-7a56-2bd7-8df3b4820d4e@intel.com>
- <YmbO/l5IwfBCHrl8@myrica>
- <8c044e49-74bb-df56-8a60-663013c0910e@intel.com>
- <YmgiQZZyFxsJ+9um@myrica>
- <63582490-a794-fd11-0380-44b27cc660b7@intel.com>
- <YmpSv48aPIbVXqGi@myrica>
- <044595e6-e5d0-26c2-af8e-fc9d06906179@linux.intel.com>
+        Fri, 29 Apr 2022 09:54:41 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9229E562D9;
+        Fri, 29 Apr 2022 06:51:21 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TCc7IM017289;
+        Fri, 29 Apr 2022 13:51:17 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=Eq0FMquyakrOETyRO4K7GtqDNLFbcsjoIDDRXzFTiyc=;
+ b=QqbGJ3mrfKHIFVv4t8ug3JJf/R51KEnMkHAqiXqPI+dHa95daxda4JD5J3LaYV25Zo3u
+ 7XHom8H0+UktAzPNzuKAF5BD/qzgWm9ZQ3rLvBbT1AdRo2UadgDs8dyIDVvVbKlL1li8
+ iZ1X2T05vc+HF/MpAI6tVO8QTtll8CI7IBByuT/mq54fdrG57XJVI2UZ8p6pZ/y5mzk8
+ /5eigxyvvF/Kk1Xo2YagAwqg5ctqdMiPa0RGLo+2sJ8tjhH9s2fcpZS6X69hyJ9bmiwo
+ u0m46Lp+nLb15MdQ/w4qLUhQAIcSRiB8iF5u2im0V9St4zui0VAjLYHoUZNxDRS+88iw 2w== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqqtnsuc6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 13:51:16 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TDSDwO005080;
+        Fri, 29 Apr 2022 13:51:15 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 3fm8qj988q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 13:51:14 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TDpCtY33882452
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 29 Apr 2022 13:51:12 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B65D04C04E;
+        Fri, 29 Apr 2022 13:51:12 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6702C4C040;
+        Fri, 29 Apr 2022 13:51:12 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 29 Apr 2022 13:51:12 +0000 (GMT)
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-acpi@vger.kernel.org (open list:ACPI)
+Subject: [PATCH 03/37] ACPI: add dependency on HAS_IOPORT
+Date:   Fri, 29 Apr 2022 15:50:02 +0200
+Message-Id: <20220429135108.2781579-5-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <044595e6-e5d0-26c2-af8e-fc9d06906179@linux.intel.com>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: lTqkzfDWJP9KC-JHFCnLf7dyrcsW4Qkv
+X-Proofpoint-GUID: lTqkzfDWJP9KC-JHFCnLf7dyrcsW4Qkv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-29_06,2022-04-28_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ adultscore=0 impostorscore=0 malwarescore=0 suspectscore=0 phishscore=0
+ priorityscore=1501 spamscore=0 clxscore=1015 mlxlogscore=859
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204290078
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Baolu,
+In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
+not being declared. As ACPI always uses I/O port access we simply depend
+on HAS_IOPORT.
 
-On Fri, Apr 29, 2022 at 03:53:57PM +0800, Baolu Lu wrote:
-> On 2022/4/28 16:39, Jean-Philippe Brucker wrote:
-> > > The address space is what the OOM killer is after.  That gets refcounted
-> > > with mmget()/mmput()/mm->mm_users.  The OOM killer is satiated by the
-> > > page freeing done in __mmput()->exit_mmap().
-> > > 
-> > > Also, all the VMAs should be gone after exit_mmap().  So, even if
-> > > vma->vm_file was holding a reference to a device driver, that reference
-> > > should be gone by the time __mmdrop() is actually freeing the PASID.
-> > 
-> > I agree with all that. The concern was about tearing down the PASID in the
-> > IOMMU and device from the release() MMU notifier, which would happen in
-> > exit_mmap(). But doing the teardown at or before __mmdrop() is fine. And
-> > since the IOMMU drivers need to hold mm->mm_count anyway between bind()
-> > and unbind(), I think Fenghua's fix works.
-> 
-> But I didn't find mmgrab()/mmdrop() get called in both arm and intel
-> IOMMU drivers.
-> 
-> $ git grep mmgrab drivers/iommu/
-> [no output]
-> 
-> Do we need to add these in a separated fix patch, or I missed anything
-> here?
+Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+ drivers/acpi/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-On both ARM and X86, sva_bind() calls mmu_notifier_register()->mmgrab() and
-sva_unbind() calls mmu_notifier_unregister()/mmu_notifier_put()->mmdrop().
+diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
+index 1e34f846508f..c90c983db94c 100644
+--- a/drivers/acpi/Kconfig
++++ b/drivers/acpi/Kconfig
+@@ -9,6 +9,7 @@ config ARCH_SUPPORTS_ACPI
+ menuconfig ACPI
+ 	bool "ACPI (Advanced Configuration and Power Interface) Support"
+ 	depends on ARCH_SUPPORTS_ACPI
++	depends on HAS_IOPORT
+ 	select PNP
+ 	select NLS
+ 	select CRC32
+-- 
+2.32.0
 
-So mm->mm_count are already counted in existing ARM and X86 binding and
-unbinding. The fix patch just frees the PASID in __mmdrop() after
-no more mm->mm_count.
-
-There is no need to add extra  mmgrab() and mmdrop() pair.
-
-Thanks.
-
--Fenghua
-
- 
