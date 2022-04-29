@@ -2,120 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A1A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:16:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21808C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:17:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353860AbiD2BT7 (ORCPT
+        id S1353879AbiD2BUs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 21:19:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46494 "EHLO
+        Thu, 28 Apr 2022 21:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353759AbiD2BT4 (ORCPT
+        with ESMTP id S1353873AbiD2BUp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 21:19:56 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51C474C42D
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:16:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651195000; x=1682731000;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=JKAWPyMmGWeSqGKBDfdla8W3JVW6ENVJgotiQ/gpd0k=;
-  b=JefPqd0bwkIiXMo1EGx+k9zKmvtfeXN/Lf+XLsMKnpcaSC1/pt10hlhJ
-   yvE/TmbNDDqWc306S9D/cCCoImUNTwS5qvbKmwcHjb8/yxCH+Jx4tSQqr
-   ZAHrgIZPP/oWPmtnQezN4gwiy6iIpACP2fPy/CXgwuhw0T2nxoFiM9M9u
-   EGAeEqAK0B9QmUVWAK00SlgmZeLardLe4xGBe2BK13Zr0OAoWw26kggno
-   9lfIFVk9xY0vvL3IEk5IalZqLr3xHgwN4YhpsHzXNCuddhvATmHJfiE42
-   ECkybxmqeawH7EFNDmLHEotFFBsUNlIdENH+MQd/YaXY1ShPUB9oUA8w0
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="266301000"
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="266301000"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 18:16:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="731798937"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 28 Apr 2022 18:16:38 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nkFFO-0005qB-8I;
-        Fri, 29 Apr 2022 01:16:38 +0000
-Date:   Fri, 29 Apr 2022 09:15:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [trondmy-nfs-2.6:testing 4/10] net/sunrpc/xprtsock.c:1436:23:
- warning: variable 'transport' is uninitialized when used here
-Message-ID: <202204290947.alhq7Gbj-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Thu, 28 Apr 2022 21:20:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D72C89334
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:17:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 444F3B8328E
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 01:17:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EB69BC385AA;
+        Fri, 29 Apr 2022 01:17:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651195047;
+        bh=+1+Pa7/k7iU0K7EVW6U9WrMKZNxIwirWlYL+7ZzpGFw=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=MEaERdWJtyUY9Ry/GAT/NWc7Hl1ALBWWdfAxOX7uo52BuN74XDT5sYVofNBOWg5ZV
+         KFSuP6pyVOfuWsO4+7Rze0m2a7hoqZGQyUpJjLbqR4EDcdP0a778vIpA6BFfGlXbz9
+         1zeJpexlr08dLs4vhUk7dTSuC78fVCJjV8O0NRuExlgGbhIwcI8Fcq+IMULavQ/VQB
+         0pLIYO9E1ijKAYUcCScobvSkHAxhD9cL1nCjWFklr+ttHT5UeEaLlh6eG8YfpLJxi8
+         uqCTHrYiu3k/b0m/7fWBB5biD4lpYFceCrsyqYD68vhJr4/LtxS9+/iP913tqCcCMR
+         hxs/vMnBqabQA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D72B7E8DD85;
+        Fri, 29 Apr 2022 01:17:26 +0000 (UTC)
+Subject: Re: [git pull] drm fixes for 5.18-rc5
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <CAPM=9tydvfoBFBAY_Vba2vX=26ePwBZumRxnKWA7Lj5+G+tr5g@mail.gmail.com>
+References: <CAPM=9tydvfoBFBAY_Vba2vX=26ePwBZumRxnKWA7Lj5+G+tr5g@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAPM=9tydvfoBFBAY_Vba2vX=26ePwBZumRxnKWA7Lj5+G+tr5g@mail.gmail.com>
+X-PR-Tracked-Remote: git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-04-29
+X-PR-Tracked-Commit-Id: 9d9f720733b7e8d11e4cc53b53f461b117dab839
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 38d741cb70b30741c0e802cbed7bd9cf4fd15fa4
+Message-Id: <165119504687.10581.12524472299040777629.pr-tracker-bot@kernel.org>
+Date:   Fri, 29 Apr 2022 01:17:26 +0000
+To:     Dave Airlie <airlied@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.linux-nfs.org/projects/trondmy/nfs-2.6.git testing
-head:   b44c0c653b27127aba20075ef53b0d641a36a3ae
-commit: 8869b563cd42a4cb725604322454ed4fb29a0c18 [4/10] SUNRPC: Ensure timely close of disconnected AF_LOCAL sockets
-config: x86_64-randconfig-a012 (https://download.01.org/0day-ci/archive/20220429/202204290947.alhq7Gbj-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c59473aacce38cd7dd77eebceaf3c98c5707ab3b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add trondmy-nfs-2.6 git://git.linux-nfs.org/projects/trondmy/nfs-2.6.git
-        git fetch --no-tags trondmy-nfs-2.6 testing
-        git checkout 8869b563cd42a4cb725604322454ed4fb29a0c18
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash net/sunrpc/
+The pull request you sent on Fri, 29 Apr 2022 10:50:25 +1000:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-04-29
 
-All warnings (new ones prefixed by >>):
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/38d741cb70b30741c0e802cbed7bd9cf4fd15fa4
 
-   In file included from net/sunrpc/xprtsock.c:36:
-   In file included from include/linux/sunrpc/clnt.h:20:
-   In file included from include/linux/sunrpc/sched.h:19:
-   include/linux/sunrpc/xdr.h:734:10: warning: result of comparison of constant 4611686018427387903 with expression of type '__u32' (aka 'unsigned int') is always false [-Wtautological-constant-out-of-range-compare]
-           if (len > SIZE_MAX / sizeof(*p))
-               ~~~ ^ ~~~~~~~~~~~~~~~~~~~~~
->> net/sunrpc/xprtsock.c:1436:23: warning: variable 'transport' is uninitialized when used here [-Wuninitialized]
-                   xs_run_error_worker(transport, XPRT_SOCK_WAKE_DISCONNECT);
-                                       ^~~~~~~~~
-   net/sunrpc/xprtsock.c:1429:29: note: initialize the variable 'transport' to silence this warning
-           struct sock_xprt *transport;
-                                      ^
-                                       = NULL
-   2 warnings generated.
-
-
-vim +/transport +1436 net/sunrpc/xprtsock.c
-
-  1420	
-  1421	/**
-  1422	 * xs_local_state_change - callback to handle AF_LOCAL socket state changes
-  1423	 * @sk: socket whose state has changed
-  1424	 *
-  1425	 */
-  1426	static void xs_local_state_change(struct sock *sk)
-  1427	{
-  1428		struct rpc_xprt *xprt;
-  1429		struct sock_xprt *transport;
-  1430	
-  1431		if (!(xprt = xprt_from_sock(sk)))
-  1432			return;
-  1433		if (sk->sk_shutdown & SHUTDOWN_MASK) {
-  1434			clear_bit(XPRT_CONNECTED, &xprt->state);
-  1435			/* Trigger the socket release */
-> 1436			xs_run_error_worker(transport, XPRT_SOCK_WAKE_DISCONNECT);
-  1437		}
-  1438	}
-  1439	
+Thank you!
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
