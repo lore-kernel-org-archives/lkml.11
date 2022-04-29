@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6D03C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B531C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:19:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357463AbiD2KW6 (ORCPT
+        id S1357472AbiD2KXB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:22:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38716 "EHLO
+        Fri, 29 Apr 2022 06:23:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357391AbiD2KWb (ORCPT
+        with ESMTP id S1357388AbiD2KWe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:22:31 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A25C6ED8;
-        Fri, 29 Apr 2022 03:19:11 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id fv2so6727941pjb.4;
-        Fri, 29 Apr 2022 03:19:11 -0700 (PDT)
+        Fri, 29 Apr 2022 06:22:34 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3153BC6EC4;
+        Fri, 29 Apr 2022 03:19:16 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id s14so6745026plk.8;
+        Fri, 29 Apr 2022 03:19:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=NpPFG4XRH1a1LgmEG5Xpjkc4A8sSdHnFyJLNANxCbg0=;
-        b=dK9IAaPlt9ujn+B5tqW/USQCvnaupj4k+JHAVPywrFLWuoQHXoWHTIESjY0H5EtVwF
-         3vTzukISs4GltKcLJcEUAJ/vIOR9cUM3sb6ZyLoZn0xruh2qUzogdm5m193ixKaPqtiN
-         8FMyRHYrb0k9+63KtyaOG80uRDRTBbOP1jVw53N70PcXHuwELhHw+pt8NvIAyHkixR/M
-         BLQVloHkY0mcsh5JrF6Kplg3r/6Nyh9Bi9Jbfv71wJ+Y5i1L6YQ0+FHaEfJiWZITX9uf
-         jbFOKduS6laY0pVKfJQSa1S/WlYY750VS55iwZGBtJrdGhpTXLPEwTmEYfo/se51yCSc
-         10+Q==
+        bh=B3NCzom8hJlx0zEy79Sz4qhJxcFl7hPctwsRA5jCJVg=;
+        b=n5e2gCVMetK60EV0yAY1ZD2lqkuRIIdUATIgR3jexzzkaMC8uaAWT9rNxFUAdvCLbH
+         vVZ9m9DA9XA5BSYrmH3+/xL2rYNAqdrF7ij4qDlpioRQO92Vgf+pCqUUoOYcCG+OFAFe
+         gLlcOVSONcpXDQiy68mGWbJkbJ8NHcMMR7ThVXFUncaJgdAPS+ztw0aNBSN7r/p+/GO+
+         fQYAHjthDn1s6T9Qee7aR9YX13QKL6LrL0jvPvQbuBV/ad8BaN0ev0Uru72L4ZVrM5zp
+         gtzvQQ8KAacKFsk2fR0omTbWb8f7AWXNHyRiGcvMKq9xcWEXF/YyZRFyxfqYWZogCwYl
+         xBXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NpPFG4XRH1a1LgmEG5Xpjkc4A8sSdHnFyJLNANxCbg0=;
-        b=tLhSglLoPYXCe9sCsuIG0ou3ku3iWS+31PWonMEzvHM2DY2bG7MfRq54ZFrQb6hY6r
-         9E6Jj2l/hGxn4PFFJCcRwplRLnHjkDgN1pT8Mi/Pb6ie3eTRRlw/jEq3edvjXlD+Dvz3
-         QpkWb94sBVctR8jRs3MvMTqH17HWkG8FUA4VvEXOL91UKWGG3FbLIM/2WpjWX7BgQSOt
-         UwOUCu9XJQtAmzoPk+wMjyvdzO0WSipzv8JoBVVte4VTge32qx8/GwCUQ0ZYCEliGOxZ
-         aRF4T9NaykHXA+g3zBJvB4PjIY/gnMwDJDGjsJDai0APiUj+ayQpd+ldi/7+mpBe61VA
-         u7pw==
-X-Gm-Message-State: AOAM532KiKGDm5dbB3dWYGaDDwbeyn3krjsRfjqOd7tdCALafblYP25p
-        N1ULYwsXch0zq9hL1YXXZkZK9yoVvKU=
-X-Google-Smtp-Source: ABdhPJw7hWIEZ+pKMbdG9T9TYW1aAji3AdnP9yc3HWJuQ65rYBUyZXNdr9ob8qrGrVlrHWVoSQ/VaQ==
-X-Received: by 2002:a17:902:e5c2:b0:15e:8061:87 with SMTP id u2-20020a170902e5c200b0015e80610087mr1096130plf.123.1651227550942;
-        Fri, 29 Apr 2022 03:19:10 -0700 (PDT)
+        bh=B3NCzom8hJlx0zEy79Sz4qhJxcFl7hPctwsRA5jCJVg=;
+        b=ZlcNf0NsRTWQTyRiuhrceCT5Wre/3il+nDB/BKpcQDcVli3Nqj7sAWVBWOOPJ2ia/t
+         AoYgVH0LvDy9CB/R0J2yzpdDbfbwAv2BMBrGqkHJMj2NfOvrz1s1bGlJSq81dOzLhlxf
+         GnvVFk0/Fp5yJf2rIO0bN/zV6KRBPyhRyW36O7bVievQ1y3BYREr5bjvGG4GCC+KxWWv
+         gOMPF5U+tjYJS+jsc8bZfpM6kSI0kQ7E8G3fH/2TiJRNykWGNsTmAV+BTOQNdJwHuK4E
+         9CLDUDQRbsmAiayZMR6bVKK1IZr/8t3iZXeIxa71CvIIr6FqtTlXfulf7FTc3F+OSN4X
+         Etxg==
+X-Gm-Message-State: AOAM533gWUJfdFcAl1qhcIGnpPep0GVP/rRhN18V0i1J6HFXINP+MzU/
+        zIewtbBkui0gAwfcY95aPWGqWYyhaQc=
+X-Google-Smtp-Source: ABdhPJyRVy4Th8+Q8iCMIdMzGLmF4M6s5YI9UwjImZYV5uDo9pI0HszSp7nM2ZUuUPrSn3m3XiDrXA==
+X-Received: by 2002:a17:90a:c402:b0:1d9:a003:3f8a with SMTP id i2-20020a17090ac40200b001d9a0033f8amr3065685pjt.18.1651227555375;
+        Fri, 29 Apr 2022 03:19:15 -0700 (PDT)
 Received: from HOWEYXU-MB0.tencent.com ([106.53.33.166])
-        by smtp.gmail.com with ESMTPSA id k17-20020a628e11000000b0050d8d373331sm2600016pfe.214.2022.04.29.03.19.09
+        by smtp.gmail.com with ESMTPSA id k17-20020a628e11000000b0050d8d373331sm2600016pfe.214.2022.04.29.03.19.13
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 29 Apr 2022 03:19:10 -0700 (PDT)
+        Fri, 29 Apr 2022 03:19:15 -0700 (PDT)
 From:   Hao Xu <haoxu.linux@gmail.com>
 To:     io-uring@vger.kernel.org
 Cc:     Jens Axboe <axboe@kernel.dk>,
         Pavel Begunkov <asml.silence@gmail.com>,
         linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 7/9] io-wq: implement fixed worker logic
-Date:   Fri, 29 Apr 2022 18:18:56 +0800
-Message-Id: <20220429101858.90282-8-haoxu.linux@gmail.com>
+Subject: [PATCH 9/9] io_uring: add register fixed worker interface
+Date:   Fri, 29 Apr 2022 18:18:58 +0800
+Message-Id: <20220429101858.90282-10-haoxu.linux@gmail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220429101858.90282-1-haoxu.linux@gmail.com>
 References: <20220429101858.90282-1-haoxu.linux@gmail.com>
@@ -68,328 +68,277 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Hao Xu <howeyxu@tencent.com>
 
-The current implementation of io-wq has big spinlock contension. The
-main reason is the single work list model. All producers(who insert
-works) and consumers(io-workers) have to grap wqe->lock to move ahead.
-Set max_worker to 3 or 4, do a fio read test, we can see 40%~50% lock
-contension.
-Introduce fixed io-workers which sticks there to handle works and have
-their own work list.
+Add an io_uring_register() interface to register fixed workers and
+indicate its work capacity.
+The argument is an array of two elements each is
+    struct {
+    	__s32 nr_workers;
+    	__s32 max_works;
+    }
+(nr_workers, max_works)                        meaning
 
-previous:
-
-  producer0 ---insert---> work_list ---get---> io-worker0,1,2
-
-now:
-
-                     ---> private work_list0 --get--> fixed-worker0
-                    /
-  producer0 --insert----> private work_list1 --get--> fixed-worker1
-      |             \
-      |              ---> private work_list2 --get--> fixed-worker2
-      |
-      |---insert---> public work_list --get--> (normal)io-worker
-
-Since each fixed-worker has a private work list, the contension will be
-limited to a smaller range(the private work list).
-Logic of fixed-worker: first handle private works then public ones.
-Logic of normal io-worker: only handle public works.
-Logic of producer: 1) randomly pick a private work list and check if it
-                      is full, insert the work if it's not
-                   2) insert the work to the public work list if 1)
-                      fails.
-The get logic of a private list: fixed-worker grab all the works in
-its private work list(like what tctx_task_work() does) rather than one
-by one.(this code is in the next patches as a optimization)
-
-To achieve this, we need to add an io_wqe_acct for each fixed-worker
-struct, and though this we can leverage the old code as much as
-possible, which makes the new design clean and compatible.
-
-Good things of this feature:
-  1) bound and unbound work lists now have different spinlocks.
-  2) much smaller contension between work producers and consumers.
-  3) fixed workers are friendly for users to control: binding cpus,
-     reset priority etc.
-
-Wrote a nop test program to test it, 3 fixed-workers VS 3 normal workers.
-normal workers:
-./run_nop_wqe.sh nop_wqe_normal 200000 100 3 1-3
-        time spent: 10464397 usecs      IOPS: 1911242
-        time spent: 9610976 usecs       IOPS: 2080954
-        time spent: 9807361 usecs       IOPS: 2039284
-
-fixed workers:
-./run_nop_wqe.sh nop_wqe_fixed 200000 100 3 1-3
-        time spent: 17314274 usecs      IOPS: 1155116
-        time spent: 17016942 usecs      IOPS: 1175299
-        time spent: 17908684 usecs      IOPS: 1116776
-
-About 2x improvement. From perf result, almost no acct->lock contension.
-Test program: https://github.com/HowHsu/liburing/tree/fixed_worker
+nr_workers or max_works <  -1                  invalid
+nr_workers or max_works == -1           get the old value back
+nr_workers or max_works >=  0        get the old value and set to the
+                                     new value
 
 Signed-off-by: Hao Xu <howeyxu@tencent.com>
 ---
- fs/io-wq.c | 148 +++++++++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 122 insertions(+), 26 deletions(-)
+ fs/io-wq.c                    | 101 ++++++++++++++++++++++++++++++++++
+ fs/io-wq.h                    |   3 +
+ fs/io_uring.c                 |  71 ++++++++++++++++++++++++
+ include/uapi/linux/io_uring.h |  11 ++++
+ 4 files changed, 186 insertions(+)
 
 diff --git a/fs/io-wq.c b/fs/io-wq.c
-index 2feff19970ca..aaa9cea7d39a 100644
+index df2d480395e8..c1e87b29c960 100644
 --- a/fs/io-wq.c
 +++ b/fs/io-wq.c
-@@ -70,6 +70,7 @@ struct io_wqe_acct {
- 	unsigned max_workers;
- 	unsigned nr_fixed;
- 	unsigned max_works;
-+	unsigned work_seq;
- 	union {
- 		struct io_wq_work_list work_list;
- 		struct io_worker **fixed_workers;
-@@ -624,9 +625,9 @@ static void io_assign_current_work(struct io_worker *worker,
- 
- static void io_wqe_enqueue(struct io_wqe *wqe, struct io_wq_work *work);
- 
--static void io_worker_handle_work(struct io_worker *worker)
-+static void io_worker_handle_work(struct io_worker *worker,
-+				  struct io_wqe_acct *acct)
- {
--	struct io_wqe_acct *acct = io_wqe_get_acct(worker);
- 	struct io_wqe *wqe = worker->wqe;
- 	struct io_wq *wq = wqe->wq;
- 	bool do_kill = test_bit(IO_WQ_BIT_EXIT, &wq->state);
-@@ -698,19 +699,31 @@ static void io_worker_handle_work(struct io_worker *worker)
- 	} while (1);
+@@ -1671,6 +1671,107 @@ int io_wq_max_workers(struct io_wq *wq, int *new_count)
+ 	return 0;
  }
  
-+static inline void io_worker_handle_private_work(struct io_worker *worker)
++/*
++ * Set max number of fixed workers and the capacity of private work list,
++ * returns old value. If new_count is -1, then just return the old value.
++ */
++int io_wq_fixed_workers(struct io_wq *wq,
++			struct io_uring_fixed_worker_arg *new_count)
 +{
-+	io_worker_handle_work(worker, &worker->acct);
-+}
++	struct io_uring_fixed_worker_arg prev[IO_WQ_ACCT_NR];
++	bool first_node = true;
++	int i, node;
++	bool readonly[2] = {
++		(new_count[0].nr_workers == -1 && new_count[0].max_works == -1),
++		(new_count[1].nr_workers == -1 && new_count[1].max_works == -1),
++	};
 +
-+static inline void io_worker_handle_public_work(struct io_worker *worker)
-+{
-+	io_worker_handle_work(worker, io_wqe_get_acct(worker));
-+}
++	BUILD_BUG_ON((int) IO_WQ_ACCT_BOUND   != (int) IO_WQ_BOUND);
++	BUILD_BUG_ON((int) IO_WQ_ACCT_UNBOUND != (int) IO_WQ_UNBOUND);
++	BUILD_BUG_ON((int) IO_WQ_ACCT_NR      != 2);
 +
- static int io_wqe_worker(void *data)
- {
- 	struct io_worker *worker = data;
--	struct io_wqe_acct *acct = io_wqe_get_acct(worker);
- 	struct io_wqe *wqe = worker->wqe;
- 	struct io_wq *wq = wqe->wq;
--	bool last_timeout = false;
-+	struct io_wqe_acct *acct =
-+		io_get_acct(wqe, worker->flags & IO_WORKER_F_BOUND, false);
- 	bool fixed = worker->flags & IO_WORKER_F_FIXED;
-+	bool last_timeout = false;
- 	char buf[TASK_COMM_LEN];
- 
- 	worker->flags |= (IO_WORKER_F_UP | IO_WORKER_F_RUNNING);
- 
--	snprintf(buf, sizeof(buf), "iou-wrk-%d", wq->task->pid);
-+	snprintf(buf, sizeof(buf), fixed ? "iou-fix-%d" : "iou-wrk-%d",
-+		 wq->task->pid);
- 	set_task_comm(current, buf);
- 
- 	audit_alloc_kernel(current);
-@@ -722,13 +735,24 @@ static int io_wqe_worker(void *data)
- 			break;
- 
- 		set_current_state(TASK_INTERRUPTIBLE);
--		while (!(worker->flags & IO_WORKER_F_EXIT) &&
--		       io_acct_run_queue(acct))
--			io_worker_handle_work(worker);
--
-+		if (fixed) {
-+			while (io_acct_run_queue(&worker->acct))
-+				io_worker_handle_private_work(worker);
-+			if (io_acct_run_queue(acct))
-+				io_worker_handle_public_work(worker);
-+		} else {
-+			while (io_acct_run_queue(acct))
-+				io_worker_handle_public_work(worker);
-+		}
- 		raw_spin_lock(&wqe->lock);
--		/* timed out, exit unless we're the last worker */
--		if (last_timeout && acct->nr_workers > 1) {
-+		/* timed out, a worker will exit only if:
-+		 * - not a fixed worker
-+		 * - not the last non-fixed worker
-+		 *
-+		 * the second condition is due to we need at least one worker to
-+		 * handle the public work list.
-+		 */
-+		if (last_timeout && !fixed && acct->nr_workers > 1) {
- 			acct->nr_workers--;
- 			raw_spin_unlock(&wqe->lock);
- 			__set_current_state(TASK_RUNNING);
-@@ -754,10 +778,18 @@ static int io_wqe_worker(void *data)
- 		last_timeout = !ret;
- 	}
- 
--	if (test_bit(IO_WQ_BIT_EXIT, &wq->state))
--		io_worker_handle_work(worker);
--	if (fixed)
-+	if (test_bit(IO_WQ_BIT_EXIT, &wq->state) && !fixed)
-+		io_worker_handle_public_work(worker);
-+	if (fixed) {
- 		io_fixed_worker_exit(worker);
-+		/*
-+		 * Check and handle private work list again
-+		 * to avoid race with private work insertion
-+		 * TODO: an alternative way is to deliver
-+		 * works to the public work list
-+		 */
-+		io_worker_handle_private_work(worker);
-+	}
- 
- 	audit_free(current);
- 	io_worker_exit(worker);
-@@ -1001,9 +1033,9 @@ static void io_run_cancel(struct io_wq_work *work, struct io_wqe *wqe)
- 	} while (work);
- }
- 
--static void io_wqe_insert_work(struct io_wqe *wqe, struct io_wq_work *work)
-+static void io_wqe_insert_work(struct io_wqe *wqe, struct io_wq_work *work,
-+			       struct io_wqe_acct *acct)
- {
--	struct io_wqe_acct *acct = io_work_get_acct(wqe, work);
- 	unsigned int hash;
- 	struct io_wq_work *tail;
- 
-@@ -1022,6 +1054,45 @@ static void io_wqe_insert_work(struct io_wqe *wqe, struct io_wq_work *work)
- 	wq_list_add_after(&work->list, &tail->list, &acct->work_list);
- }
- 
-+static bool io_wqe_insert_private_work(struct io_wqe *wqe,
-+				       struct io_wq_work *work,
-+				       struct io_wqe_acct *acct)
-+{
-+	unsigned int nr_fixed;
-+	struct io_worker *fixed_worker;
-+	struct io_wqe_acct *iw_acct;
-+	unsigned int fixed_worker_index;
-+
-+	raw_spin_lock(&acct->lock);
-+	nr_fixed = acct->nr_fixed;
-+	if (!nr_fixed) {
-+		raw_spin_unlock(&acct->lock);
-+		return false;
-+	}
-+
-+	fixed_worker_index = (acct->work_seq++) % nr_fixed;
-+	fixed_worker = acct->fixed_workers[fixed_worker_index];
-+	if (!fixed_worker || fixed_worker->flags & IO_WORKER_F_EXIT) {
-+		raw_spin_unlock(&acct->lock);
-+		return false;
-+	}
-+	iw_acct = &fixed_worker->acct;
-+
-+	raw_spin_lock(&iw_acct->lock);
-+	if (iw_acct->nr_works < iw_acct->max_works) {
-+		io_wqe_insert_work(wqe, work, iw_acct);
-+		iw_acct->nr_works++;
-+		raw_spin_unlock(&iw_acct->lock);
-+		wake_up_process(fixed_worker->task);
-+		raw_spin_unlock(&acct->lock);
-+		return true;
-+	}
-+	raw_spin_unlock(&iw_acct->lock);
-+	raw_spin_unlock(&acct->lock);
-+
-+	return false;
-+}
-+
- static bool io_wq_work_match_item(struct io_wq_work *work, void *data)
- {
- 	return work == data;
-@@ -1030,6 +1101,7 @@ static bool io_wq_work_match_item(struct io_wq_work *work, void *data)
- static void io_wqe_enqueue(struct io_wqe *wqe, struct io_wq_work *work)
- {
- 	struct io_wqe_acct *acct = io_work_get_acct(wqe, work);
-+	struct io_wqe_acct *fixed_acct;
- 	struct io_cb_cancel_data match;
- 	unsigned work_flags = work->flags;
- 	bool do_create;
-@@ -1044,8 +1116,14 @@ static void io_wqe_enqueue(struct io_wqe *wqe, struct io_wq_work *work)
- 		return;
- 	}
- 
-+	fixed_acct = io_get_acct(wqe, !acct->index, true);
-+	if (fixed_acct->fixed_worker_registered && !io_wq_is_hashed(work)) {
-+		if (io_wqe_insert_private_work(wqe, work, fixed_acct))
-+			return;
-+	}
-+
- 	raw_spin_lock(&acct->lock);
--	io_wqe_insert_work(wqe, work);
-+	io_wqe_insert_work(wqe, work, acct);
- 	clear_bit(IO_ACCT_STALLED_BIT, &acct->flags);
- 	raw_spin_unlock(&acct->lock);
- 
-@@ -1131,9 +1209,9 @@ static bool io_wq_worker_cancel(struct io_worker *worker, void *data)
- 
- static inline void io_wqe_remove_pending(struct io_wqe *wqe,
- 					 struct io_wq_work *work,
--					 struct io_wq_work_node *prev)
-+					 struct io_wq_work_node *prev,
-+					 struct io_wqe_acct *acct)
- {
--	struct io_wqe_acct *acct = io_work_get_acct(wqe, work);
- 	unsigned int hash = io_get_work_hash(work);
- 	struct io_wq_work *prev_work = NULL;
- 
-@@ -1160,7 +1238,7 @@ static bool io_acct_cancel_pending_work(struct io_wqe *wqe,
- 		work = container_of(node, struct io_wq_work, list);
- 		if (!match->fn(work, match->data))
- 			continue;
--		io_wqe_remove_pending(wqe, work, prev);
-+		io_wqe_remove_pending(wqe, work, prev, acct);
- 		raw_spin_unlock(&acct->lock);
- 		io_run_cancel(work, wqe);
- 		match->nr_pending++;
-@@ -1175,17 +1253,35 @@ static bool io_acct_cancel_pending_work(struct io_wqe *wqe,
- static void io_wqe_cancel_pending_work(struct io_wqe *wqe,
- 				       struct io_cb_cancel_data *match)
- {
--	int i;
--retry:
--	for (i = 0; i < IO_WQ_ACCT_NR; i++) {
--		struct io_wqe_acct *acct = io_get_acct(wqe, i == 0, false);
-+	int i, j;
-+	struct io_wqe_acct *acct, *iw_acct;
- 
-+retry_public:
 +	for (i = 0; i < IO_WQ_ACCT_NR; i++) {
-+		acct = io_get_acct(wqe, i == 0, false);
- 		if (io_acct_cancel_pending_work(wqe, acct, match)) {
- 			if (match->cancel_all)
--				goto retry;
--			break;
-+				goto retry_public;
-+			return;
- 		}
- 	}
++		if (new_count[i].nr_workers > task_rlimit(current, RLIMIT_NPROC))
++			new_count[i].nr_workers =
++				task_rlimit(current, RLIMIT_NPROC);
++	}
 +
-+retry_private:
-+	for (i = 0; i < IO_WQ_ACCT_NR; i++) {
-+		acct = io_get_acct(wqe, i == 0, true);
-+		raw_spin_lock(&acct->lock);
-+		for (j = 0; j < acct->nr_fixed; j++) {
-+			iw_acct = &acct->fixed_workers[j]->acct;
-+			if (io_acct_cancel_pending_work(wqe, iw_acct, match)) {
-+				if (match->cancel_all) {
-+					raw_spin_unlock(&acct->lock);
-+					goto retry_private;
-+				}
-+				break;
++	rcu_read_lock();
++	for_each_node(node) {
++		int j;
++		struct io_wqe *wqe = wq->wqes[node];
++
++		for (i = 0; i < IO_WQ_ACCT_NR; i++) {
++			struct io_wqe_acct *acct = &wqe->fixed_acct[i];
++			int *nr_fixed, *max_works;
++			struct io_worker **fixed_workers;
++			int nr = new_count[i].nr_workers;
++
++			raw_spin_lock(&acct->lock);
++			nr_fixed = &acct->nr_fixed;
++			max_works = &acct->max_works;
++			fixed_workers = acct->fixed_workers;
++			if (first_node) {
++				prev[i].nr_workers = *nr_fixed;
++				prev[i].max_works = *max_works;
 +			}
++			if (readonly[i]) {
++				raw_spin_unlock(&acct->lock);
++				continue;
++			}
++			if (*nr_fixed == nr || nr == -1) {
++				*max_works = new_count[i].max_works;
++				raw_spin_unlock(&acct->lock);
++				continue;
++			}
++			for (j = 0; j < *nr_fixed; j++) {
++				struct io_worker *worker = fixed_workers[j];
++
++				if (!worker)
++					continue;
++				worker->flags |= IO_WORKER_F_EXIT;
++				/*
++				 * Mark index to -1 to avoid false deletion
++				 * in io_fixed_worker_exit()
++				 */
++				worker->index = -1;
++				/*
++				 * Once a worker is in fixed_workers array
++				 * it is definitely there before we release
++				 * the acct->lock below. That's why we don't
++				 * need to increment the worker->ref here.
++				 */
++				wake_up_process(worker->task);
++			}
++			kfree(fixed_workers);
++			acct->fixed_workers = NULL;
++			*nr_fixed = 0;
++			*max_works = new_count[i].max_works;
++			acct->fixed_workers = kzalloc_node(
++						sizeof(*fixed_workers) * nr,
++						GFP_KERNEL, wqe->node);
++			if (!acct->fixed_workers) {
++				raw_spin_unlock(&acct->lock);
++				return -ENOMEM;
++			}
++			raw_spin_unlock(&acct->lock);
++			for (j = 0; j < nr; j++)
++				io_wqe_create_worker(wqe, acct);
++
++			acct->fixed_worker_registered = !!nr;
 +		}
-+		raw_spin_unlock(&acct->lock);
++		first_node = false;
 +	}
++	rcu_read_unlock();
++
++	for (i = 0; i < IO_WQ_ACCT_NR; i++) {
++		new_count[i].nr_workers = prev[i].nr_workers;
++		new_count[i].max_works = prev[i].max_works;
++	}
++
++	return 0;
++}
++
+ static __init int io_wq_init(void)
+ {
+ 	int ret;
+diff --git a/fs/io-wq.h b/fs/io-wq.h
+index ef3ce577e6b7..bf90488b0283 100644
+--- a/fs/io-wq.h
++++ b/fs/io-wq.h
+@@ -2,6 +2,7 @@
+ #define INTERNAL_IO_WQ_H
+ 
+ #include <linux/refcount.h>
++#include <uapi/linux/io_uring.h>
+ 
+ struct io_wq;
+ 
+@@ -202,6 +203,8 @@ void io_wq_hash_work(struct io_wq_work *work, void *val);
+ 
+ int io_wq_cpu_affinity(struct io_wq *wq, cpumask_var_t mask);
+ int io_wq_max_workers(struct io_wq *wq, int *new_count);
++int io_wq_fixed_workers(struct io_wq *wq,
++			struct io_uring_fixed_worker_arg *new_count);
+ 
+ static inline bool io_wq_is_hashed(struct io_wq_work *work)
+ {
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 1e7466079af7..c0c7c1fd94fd 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -11806,6 +11806,71 @@ static __cold int io_register_iowq_max_workers(struct io_ring_ctx *ctx,
+ 	return ret;
  }
  
- static void io_wqe_cancel_running_work(struct io_wqe *wqe,
++static __cold int io_register_iowq_fixed_workers(struct io_ring_ctx *ctx,
++						 void __user *arg)
++	__must_hold(&ctx->uring_lock)
++{
++	struct io_uring_task *tctx = NULL;
++	struct io_sq_data *sqd = NULL;
++	struct io_uring_fixed_worker_arg new_count[2];
++	int i, ret;
++
++	if (copy_from_user(new_count, arg, sizeof(new_count)))
++		return -EFAULT;
++	for (i = 0; i < ARRAY_SIZE(new_count); i++) {
++		int nr_workers = new_count[i].nr_workers;
++		int max_works = new_count[i].max_works;
++
++		if (nr_workers < -1 || max_works < -1)
++			return -EINVAL;
++	}
++
++	if (ctx->flags & IORING_SETUP_SQPOLL) {
++		sqd = ctx->sq_data;
++		if (sqd) {
++			/*
++			 * Observe the correct sqd->lock -> ctx->uring_lock
++			 * ordering. Fine to drop uring_lock here, we hold
++			 * a ref to the ctx.
++			 */
++			refcount_inc(&sqd->refs);
++			mutex_unlock(&ctx->uring_lock);
++			mutex_lock(&sqd->lock);
++			mutex_lock(&ctx->uring_lock);
++			if (sqd->thread)
++				tctx = sqd->thread->io_uring;
++		}
++	} else {
++		tctx = current->io_uring;
++	}
++
++	if (tctx && tctx->io_wq) {
++		ret = io_wq_fixed_workers(tctx->io_wq, new_count);
++		if (ret)
++			goto err;
++	} else {
++		memset(new_count, -1, sizeof(new_count));
++	}
++
++	if (sqd) {
++		mutex_unlock(&sqd->lock);
++		io_put_sq_data(sqd);
++	}
++
++	if (copy_to_user(arg, new_count, sizeof(new_count)))
++		return -EFAULT;
++
++	/* that's it for SQPOLL, only the SQPOLL task creates requests */
++	if (sqd)
++		return 0;
++
++err:
++	if (sqd) {
++		mutex_unlock(&sqd->lock);
++		io_put_sq_data(sqd);
++	}
++	return ret;
++}
+ static int __io_uring_register(struct io_ring_ctx *ctx, unsigned opcode,
+ 			       void __user *arg, unsigned nr_args)
+ 	__releases(ctx->uring_lock)
+@@ -11934,6 +11999,12 @@ static int __io_uring_register(struct io_ring_ctx *ctx, unsigned opcode,
+ 	case IORING_UNREGISTER_RING_FDS:
+ 		ret = io_ringfd_unregister(ctx, arg, nr_args);
+ 		break;
++	case IORING_REGISTER_IOWQ_FIXED_WORKERS:
++		ret = -EINVAL;
++		if (!arg || nr_args != 2)
++			break;
++		ret = io_register_iowq_fixed_workers(ctx, arg);
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 		break;
+diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
+index fad63564678a..f0ec9523ab42 100644
+--- a/include/uapi/linux/io_uring.h
++++ b/include/uapi/linux/io_uring.h
+@@ -360,6 +360,12 @@ enum {
+ 	IORING_REGISTER_RING_FDS		= 20,
+ 	IORING_UNREGISTER_RING_FDS		= 21,
+ 
++	/* set number of fixed workers and number
++	 * of works in a private work list which
++	 * belongs to a fixed worker
++	 */
++	IORING_REGISTER_IOWQ_FIXED_WORKERS	= 22,
++
+ 	/* this goes last */
+ 	IORING_REGISTER_LAST
+ };
+@@ -457,4 +463,9 @@ struct io_uring_getevents_arg {
+ 	__u64	ts;
+ };
+ 
++struct io_uring_fixed_worker_arg {
++	__s32	nr_workers;
++	__s32	max_works;
++};
++
+ #endif
 -- 
 2.36.0
 
