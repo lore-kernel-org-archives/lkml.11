@@ -2,129 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11F39C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 08:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B57A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 08:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355469AbiD2Idp (ORCPT
+        id S1355624AbiD2IeB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 04:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56420 "EHLO
+        Fri, 29 Apr 2022 04:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233088AbiD2Ido (ORCPT
+        with ESMTP id S1355718AbiD2Idy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 04:33:44 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052382D1EC;
-        Fri, 29 Apr 2022 01:30:26 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id r11-20020a05600c35cb00b0039409c1111bso3371962wmq.3;
-        Fri, 29 Apr 2022 01:30:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=pzDYNwcRZ4xAFfG5Cz0HtpoBKw3iwLWN7M+n1d0ufeI=;
-        b=L8JNNIx3yL6+VPvirGGQfG5qEMQ1L62P6RU6cfo+ET1qnp9ksDOTWT3fiipiXeJgrC
-         165TQypRVyR6TKKwo21ast7aeHHtC6S7D7IuG3rMeY8bGhzN+oqBqqid5VCol2ad34vG
-         AJSPECgTJKJgRvMBz3C/uANTCdjeJTuWVd2Kfnf8ki104vtjdqXOhoTQ7+Q0+VzE5WmT
-         +qRvOH6W4PIE/6lbuq0ttC5gfJq4EgkI6Cm2auDpFip3szwjLfsviJQMbkwpZ3w9X2L1
-         ozYUQXUIdFBq6Eev+QvltiGSWL4H7de+9K2JoStuCN+B+AmqmctHxxAPuwZhdyrI6qah
-         ytfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=pzDYNwcRZ4xAFfG5Cz0HtpoBKw3iwLWN7M+n1d0ufeI=;
-        b=1lAt07AXahIq0W1E2TtvsqFlOjp59o33yajjsCZeq25D4xFqnrQsNhFdljmXTOjVWA
-         l7RO6xyLODKW+yng0HLMJEBOdystWJf8D1sq8N13g+L7jIMwaYPgBJsBTrujVoEM6GG/
-         qrik0loIzkEfo0oQeZ/Q695mHIp4fvduETvFyPxBPsfsOVKaCyAmLNtswORMbihL5DSQ
-         I4N/oXrZtRKb/2XHMZQeeYtrE2vVOVrzkmj0Pkkl4b8glj9xwbZJyubLEHXlV23sNs6k
-         768ttRc7EnEpaGaSn5Wb6x69ZmpFedxNvTcZSEqcTz5eWN8E8zYohY/RJBQiLuT6AXmb
-         GmFg==
-X-Gm-Message-State: AOAM531LlghyvoFsO1vZSUhF3sxKE8VLzbIPo8+07Gf6YigK0nxTRdPI
-        g3QtZmC2wzSYzekpJ7lNcTE=
-X-Google-Smtp-Source: ABdhPJzqmWhXIVHuMO4icuvn+TWAjrx7f8ORX9ioFZoS1EiScf/chJ6leIztpGIQtn9jusgj1+wLhw==
-X-Received: by 2002:a05:600c:a42:b0:393:d831:bf05 with SMTP id c2-20020a05600c0a4200b00393d831bf05mr2037974wmq.187.1651221024463;
-        Fri, 29 Apr 2022 01:30:24 -0700 (PDT)
-Received: from orome ([62.96.65.119])
-        by smtp.gmail.com with ESMTPSA id n10-20020a5d598a000000b0020a9493bdddsm2115152wri.40.2022.04.29.01.30.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 01:30:23 -0700 (PDT)
-Date:   Fri, 29 Apr 2022 10:30:20 +0200
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Ashish Mhetre <amhetre@nvidia.com>, jonathanh@nvidia.com,
-        digetx@gmail.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, dmitry.osipenko@collabora.com,
-        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-        devicetree@vger.kernel.org, vdumpa@nvidia.com, Snikam@nvidia.com
-Subject: Re: [Patch v9 1/4] memory: tegra: Add memory controller channels
- support
-Message-ID: <YmuiHHcdrtI6zry9@orome>
-References: <20220426073827.25506-1-amhetre@nvidia.com>
- <20220426073827.25506-2-amhetre@nvidia.com>
- <2f600411-d40e-c4e7-fd54-bd15546bf71f@linaro.org>
+        Fri, 29 Apr 2022 04:33:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47D22DA92;
+        Fri, 29 Apr 2022 01:30:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 519C96211E;
+        Fri, 29 Apr 2022 08:30:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED0F6C385A7;
+        Fri, 29 Apr 2022 08:30:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651221036;
+        bh=E+/mVnEPJmiEomQKTEm/f1Hrlo6iyY5JnqbAgew7j1M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eVmFd9aHNPV6gH6tYsg/HMOTi1DD0dsIci9UBwtr1S6hIXqZUlEHy6YHCpXggctC2
+         W94JVuNdK7kOslobvTBfb78EufmiqzqUs+mJ/3YpK7azDGHV+YTUIwuIespz0N59nA
+         UaBgNZzhRne1uhN4UgPi5bAAw6YwRML4vwUaPJNA=
+Date:   Fri, 29 Apr 2022 10:30:33 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Daniel Vetter <daniel@ffwll.ch>,
+        Luis Chamberlain <mcgrof@kernel.org>, mauro.chehab@intel.com,
+        Kai Vehmanen <kai.vehmanen@intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@intel.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        David Airlie <airlied@linux.ie>,
+        Dan Williams <dan.j.williams@intel.com>
+Subject: Re: [PATCH 1/2] module: add a function to add module references
+Message-ID: <YmuiKcHgl+nABvo/@kroah.com>
+References: <cover.1651212016.git.mchehab@kernel.org>
+ <a078eb2e46d00ec59c8a91ea0afa5190730c9e58.1651212016.git.mchehab@kernel.org>
+ <YmuZovuDaCYDDG4c@phenom.ffwll.local>
+ <20220429090757.1acb943a@sal.lan>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="InxfpUkPYpig5M+G"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2f600411-d40e-c4e7-fd54-bd15546bf71f@linaro.org>
-User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
+In-Reply-To: <20220429090757.1acb943a@sal.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Apr 29, 2022 at 09:07:57AM +0100, Mauro Carvalho Chehab wrote:
+> Hi Daniel,
+> 
+> Em Fri, 29 Apr 2022 09:54:10 +0200
+> Daniel Vetter <daniel@ffwll.ch> escreveu:
+> 
+> > On Fri, Apr 29, 2022 at 07:31:15AM +0100, Mauro Carvalho Chehab wrote:
+> > > Sometimes, device drivers are bound using indirect references,
+> > > which is not visible when looking at /proc/modules or lsmod.
+> > > 
+> > > Add a function to allow setting up module references for such
+> > > cases.
+> > > 
+> > > Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+> > > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>  
+> > 
+> > This sounds like duct tape at the wrong level. We should have a
+> > device_link connecting these devices, and maybe device_link internally
+> > needs to make sure the respective driver modules stay around for long
+> > enough too. But open-coding this all over the place into every driver that
+> > has some kind of cross-driver dependency sounds terrible.
+> > 
+> > Or maybe the bug is that the snd driver keeps accessing the hw/component
+> > side when that is just plain gone. Iirc there's still fundamental issues
+> > there on the sound side of things, which have been attempted to paper over
+> > by timeouts and stuff like that in the past instead of enforcing a hard
+> > link between the snd and i915 side.
+> 
+> I agree with you that the device link between snd-hda and the DRM driver
+> should properly handle unbinding on both directions. This is something
+> that require further discussions with ALSA and DRM people, and we should
+> keep working on it.
+> 
+> Yet, the binding between those drivers do exist, but, despite other
+> similar inter-driver bindings being properly reported by lsmod, this one
+> is invisible for userspace.
+> 
+> What this series does is to make such binding visible. As simple as that.
 
---InxfpUkPYpig5M+G
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+It also increases the reference count, and creates a user/kernel api
+with the symlinks, right?  Will the reference count increase prevent the
+modules from now being unloadable?
 
-On Fri, Apr 29, 2022 at 09:11:59AM +0200, Krzysztof Kozlowski wrote:
-> On 26/04/2022 09:38, Ashish Mhetre wrote:
-> > From tegra186 onwards, memory controller support multiple channels.
-> > Add support for mapping address spaces of these channels.
-> > Add number of channels supported by tegra186, tegra194 and tegra234.
-> > In case of old bindings, channels won't be present. If channels are not
-> > present then print warning and continue so that backward compatibility
-> > will be preserved in driver.
-> > During error interrupts from memory controller, appropriate registers
-> > from these channels need to be accessed for logging error info.
-> >=20
-> > Reviewed-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> > Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
-> > ---
-> >  drivers/memory/tegra/mc.c       |  6 ++++++
-> >  drivers/memory/tegra/tegra186.c | 34 +++++++++++++++++++++++++++++++++
-> >  drivers/memory/tegra/tegra194.c |  1 +
-> >  drivers/memory/tegra/tegra234.c |  1 +
->=20
-> This does not apply, neither on my mem-ctrl-next, nor on master.
-> Probably because tegra234 is somewhere else (Thierry?). Either you send
-> it without tegra234 or it goes via Thierry's tree.
+This feels like a very "weak" link between modules that should not be
+needed if reference counting is implemented properly (so that things are
+cleaned up in the correct order.)
 
-Yeah, I can apply these on top of my tree and then forward the whole
-batch to you or ARM SoC next week.
+Please don't paper over the real issue with this hack.
 
-Thierry
+thanks,
 
---InxfpUkPYpig5M+G
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmJrohwACgkQ3SOs138+
-s6GfSRAApRH/MkRUeG/toIfujLJ0hKvdYYF7NncuPtFa8HVN2uJv38YX5v5lokPF
-z+z/AJx+70pQn17T3A+VdbJNsbIlNrMKWZi/O86p3+82MeKD8vuvXYOLa/xD1Wiy
-hmObIWY9XjgAEdnZQxySa2QXJ0lcZVbKctyWWYty74AACxonyt9ovCjOWJ4rbXhc
-Wwa5iq+PQ2O7t1WZD+j7ct4k+tvnq6WNa2KuANMFDQehf6AqmdVkJ1eDOrf/Mp1u
-DE8cQZBJLY6HZh+ib7r3DTs6kbDxFP348QOsrnhHS64+SHQIg4CoBN/5X25TRfaZ
-Qs0VJF/UVUe5hu2uRyzQx2XB3yxC9oYZxfGP8A0Nf6U4kbbb3DaAXOnpLsVLHWfM
-rr3ugBy9sl6XHEhcB0l4bKHEdcPjWO1IndY+zWk5KnVqJBoI2fqjNAGQTiOnfrvY
-67M2KghYQacXIga7QZ7/4B0CeMVF44/n5EpkcDOG1XifPS/RbRn5YjhURpIIyrFf
-gVoydKhmPC3ymjl7dRMYJ77hMAJloBRSWZdmuUvhndJXzG2tmP7DIQv1zXVqI3TZ
-Oz9oRYlaUYDTYeANA9retz6n0lJaktBp/KhZMr9KaOKofuTVnSzOywyhorSFRYN3
-TB7XE9wmBgy8oK7adQULzIFX8FmTrkMGRo7hNF5Lo4l//jKwzf0=
-=hOUr
------END PGP SIGNATURE-----
-
---InxfpUkPYpig5M+G--
+greg k-h
