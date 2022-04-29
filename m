@@ -2,204 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13752C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:22:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC398C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:22:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359045AbiD2MZo (ORCPT
+        id S1359057AbiD2MZs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 08:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41490 "EHLO
+        Fri, 29 Apr 2022 08:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359021AbiD2MXi (ORCPT
+        with ESMTP id S1359021AbiD2MZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 08:23:38 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE4922B3C;
-        Fri, 29 Apr 2022 05:20:19 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id d6so8862943ede.8;
-        Fri, 29 Apr 2022 05:20:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=WNKRQObsIv5de+nakfwyTd/ChTKSJMv+D7NV3DOkQmk=;
-        b=koXKwyF0Qd9+c5S1iJfHv0THBVPr2zB7X7eQ4Rkjr3LpNjDo8nPaD45QByIOwA3sPU
-         Swm9mDHFv8Q9DBifimBYuklmkp4UrwXnhI7ENjrfsCACNpRqWNTwf+v58pK1CCFNjRtr
-         f2F7E2UYv2rgkStzE903i45DZHtsd442NVHdJ+ocZYGGC3iWHAN4SZJ7+pk4qkFDUAk4
-         aTEUntG2CY6sX8trbmYotZoO02fxmu7lcGY10vEZa7NQIVY1ADPNm7Q7ahnXJBAfu5NV
-         Qg0e67W0OBrNJ4ADHhVthZeA4RcUEM6SYXlKaUfKN+R4Q0PK/mlqZTwE1QQH8HuvO5ZN
-         GngA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WNKRQObsIv5de+nakfwyTd/ChTKSJMv+D7NV3DOkQmk=;
-        b=6jmmEWHeyAz0VJFhGk7skkc7+y7nTuQStNa1XCvnYQafAY8rstK+HomZXlb7/OyLrn
-         iq1lEQfBPvO8xD3fZcb5RO/hJRmKcs2931sdi8Hm8+3B4NsrpjBUfi5WERyRIIYFTB9I
-         tLTu3kwVqg+P6KMopHJ56gUHLktVXhdYtmlmYrykut1C9tFZwqI3ecWIhuiiJt/P//Y0
-         SRmmzFgK1/o0HgrpeRVxhIhLjGOtnAzNI77cn8LbJWQuBxr2egbIF9OCOpQWlZ/M2IWf
-         4YIFCXrtGX8CWnrg+nLuxaNscHolwXVGMZyW2ZnrtgQ+3bahIVpP/UYevhx5OG4c7saP
-         onQw==
-X-Gm-Message-State: AOAM533sDwRqtSgb7fG1adKWigvvoaqT4+2SY1d4GeDgO2YuHEVFeiex
-        m2qXJ7JiCcDK1DRh7Gz8v4A=
-X-Google-Smtp-Source: ABdhPJxoKEb9PkXg7l8L/ICVkoFkiNpoq9mBxcw4Ae42CERC1fE83cbEPRwfIcnN/wjCWWUMoL3nkg==
-X-Received: by 2002:a05:6402:350a:b0:423:e41e:75cb with SMTP id b10-20020a056402350a00b00423e41e75cbmr41201090edd.178.1651234817820;
-        Fri, 29 Apr 2022 05:20:17 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id rb48-20020a170907693000b006f3ef214e10sm602694ejc.118.2022.04.29.05.20.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 05:20:17 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH 3/3] dt-bindings: arm: msm: Convert kpss-gcc driver Documentation to yaml
-Date:   Fri, 29 Apr 2022 14:17:39 +0200
-Message-Id: <20220429121739.28584-4-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220429121739.28584-1-ansuelsmth@gmail.com>
-References: <20220429121739.28584-1-ansuelsmth@gmail.com>
+        Fri, 29 Apr 2022 08:25:45 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4958C1C81
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 05:22:24 -0700 (PDT)
+Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 2CF621EC050F;
+        Fri, 29 Apr 2022 14:22:18 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1651234938;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mCSj1Rr6jg+y4hMXAvJQ1cyCjuzpCYT+ry/pDOr9Z8k=;
+        b=TPDb8rNyp6036ZXMsFvjBRNPEo64RwL1NIuTcXgd1Xs+Yxp/zUUWmt2c+baEMP4RzCaDjF
+        xni65Nr3rfZXCXFI6wQVP066stdnM71Na7jOgisHb0WDXHyTiGte95H0jmmwM/nI9ymTx9
+        jnwLv3Av7acu9s7+YGi5kYvB4VnZP4Q=
+Date:   Fri, 29 Apr 2022 14:22:15 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Lai Jiangshan <jiangshanlai@gmail.com>
+Cc:     =?utf-8?Q?J=C3=BCrgen?= Gross <jgross@suse.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, X86 ML <x86@kernel.org>,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>
+Subject: Re: [PATCH V6 6/8] x86/entry: Convert SWAPGS to swapgs and remove
+ the definition of SWAPGS
+Message-ID: <YmvYdy+Vdw5untIA@zn.tnic>
+References: <20220421141055.316239-1-jiangshanlai@gmail.com>
+ <20220421141055.316239-7-jiangshanlai@gmail.com>
+ <Ymu2XC7k8Xj/vMjG@zn.tnic>
+ <CAJhGHyBHPDD=hD-78rQDCj2VfQT21m8JzD-m9DazsUa8VpBVcQ@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJhGHyBHPDD=hD-78rQDCj2VfQT21m8JzD-m9DazsUa8VpBVcQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert kpss-gcc driver Documentation to yaml.
+On Fri, Apr 29, 2022 at 07:45:43PM +0800, Lai Jiangshan wrote:
+> Adding ALTERNATIVE in swapgs_restore_regs_and_return_to_usermode()
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 -------------
- .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 63 +++++++++++++++++++
- 2 files changed, 63 insertions(+), 44 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
- create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+All I'm saying is to do this:
 
-diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-deleted file mode 100644
-index e628758950e1..000000000000
---- a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-+++ /dev/null
-@@ -1,44 +0,0 @@
--Krait Processor Sub-system (KPSS) Global Clock Controller (GCC)
--
--PROPERTIES
--
--- compatible:
--	Usage: required
--	Value type: <string>
--	Definition: should be one of the following. The generic compatible
--			"qcom,kpss-gcc" should also be included.
--			"qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc"
--			"qcom,kpss-gcc-apq8064", "qcom,kpss-gcc"
--			"qcom,kpss-gcc-msm8974", "qcom,kpss-gcc"
--			"qcom,kpss-gcc-msm8960", "qcom,kpss-gcc"
--
--- reg:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: base address and size of the register region
--
--- clocks:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: reference to the pll parents.
--
--- clock-names:
--	Usage: required
--	Value type: <stringlist>
--	Definition: must be "pll8_vote", "pxo".
--
--- clock-output-names:
--	Usage: required
--	Value type: <string>
--	Definition: Name of the output clock. Typically acpu_l2_aux indicating
--		    an L2 cache auxiliary clock.
--
--Example:
--
--	l2cc: clock-controller@2011000 {
--		compatible = "qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc";
--		reg = <0x2011000 0x1000>;
--		clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
--		clock-names = "pll8_vote", "pxo";
--		clock-output-names = "acpu_l2_aux";
--	};
-diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-new file mode 100644
-index 000000000000..17616ef7ba88
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-@@ -0,0 +1,63 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/msm/qcom,kpss-gcc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Krait Processor Sub-system (KPSS) Global Clock Controller (GCC)
-+
-+maintainers:
-+  - Ansuel Smith <ansuelsmth@gmail.com>
-+
-+description: |
-+  Krait Processor Sub-system (KPSS) Global Clock Controller (GCC). Used
-+  to control L2 mux (in the current implementation).
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - qcom,kpss-gcc-ipq8064
-+          - qcom,kpss-gcc-apq8064
-+          - qcom,kpss-gcc-msm8974
-+          - qcom,kpss-gcc-msm8960
-+      - const: qcom,kpss-gcc
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: phandle to pll8_vote
-+      - description: phandle to pxo_board
-+
-+  clock-names:
-+    items:
-+      - const: pll8_vote
-+      - const: pxo
-+
-+  clock-output-names:
-+    const: acpu_l2_aux
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - clock-output-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/qcom,gcc-ipq806x.h>
-+
-+    clock-controller@2011000 {
-+      compatible = "qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc";
-+      reg = <0x2011000 0x1000>;
-+      clocks = <&gcc PLL8_VOTE>, <&pxo_board>;
-+      clock-names = "pll8_vote", "pxo";
-+      clock-output-names = "acpu_l2_aux";
-+    };
-+...
-+
+diff --git a/arch/x86/entry/entry_64_compat.S b/arch/x86/entry/entry_64_compat.S
+index c5aeb0819707..79f0511a4791 100644
+--- a/arch/x86/entry/entry_64_compat.S
++++ b/arch/x86/entry/entry_64_compat.S
+@@ -140,7 +140,7 @@ SYM_INNER_LABEL(entry_SYSENTER_compat_after_hwframe, SYM_L_GLOBAL)
+ 	call	do_SYSENTER_32
+ 	/* XEN PV guests always use IRET path */
+ 	ALTERNATIVE "testl %eax, %eax; jz swapgs_restore_regs_and_return_to_usermode", \
+-		    "jmp swapgs_restore_regs_and_return_to_usermode", X86_FEATURE_XENPV
++		    "jmp xenpv_restore_regs_and_return_to_usermode", X86_FEATURE_XENPV
+ 	jmp	sysret32_from_system_call
+ 
+ .Lsysenter_fix_flags:
+
+which eliminates one JMP in the XENPV case if the CONFIG_DEBUG_ENTRY
+thing is not relevant to XENPV.
+
+But let's see what Jürgen says first...
+
 -- 
-2.34.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
