@@ -2,99 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2DBEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 05:48:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A718C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 05:49:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354228AbiD2FwN (ORCPT
+        id S1354238AbiD2FwO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 01:52:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49344 "EHLO
+        Fri, 29 Apr 2022 01:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344864AbiD2FwE (ORCPT
+        with ESMTP id S1354218AbiD2FwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 01:52:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F415B18A7
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 22:48:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD5B0B831C0
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 05:48:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C68F9C385A4;
-        Fri, 29 Apr 2022 05:48:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651211324;
-        bh=Tp7mTVYH5uoGc7j1fbM0+/1kb8iDMC+MhnSOZBu/DhI=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=Y/eZnUagjyS4EnMcMEB+rP3jCgBiM2JxClAoTs25gOJNtaWM2J2ecCN1BmGCvyfP1
-         Zdwafi2btGRfH2DO9tf8ObERmithgVnAVMpzeDnPqXdhjI1IBjFSbX5gFxhuuQ9ngH
-         Bv8RTiyqvqIF1/0d1fqGvQOzgqddgi/EvhObu6LcNHaJ85WyD6nbhJJzh2mFlKM/zt
-         6hKotk5NtYYn/vQ1o7i9MkxfKPo7H1pya0cNQgQyNfWv5YJPU/uGP3rI0S7PYpiYKv
-         o6CjcX7NfGZ1E36L7MXtmwS8yyB9VDOcx+yhBgrik4grIgtqn/VD06/CkkTLQ+utg8
-         xKUuHw1FGQJcw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Zong-Zhe Yang <kevin_yang@realtek.com>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Ping-Ke Shih <pkshih@realtek.com>
-Subject: Re: [ammarfaizi2-block:kvalo/ath/pending 7/57] drivers/net/wireless/realtek/rtw89/ser.c:319:2: warning: unannotated fall-through between switch labels
-References: <202204290113.w78dhtXk-lkp@intel.com>
-Date:   Fri, 29 Apr 2022 08:48:40 +0300
-In-Reply-To: <202204290113.w78dhtXk-lkp@intel.com> (kernel test robot's
-        message of "Fri, 29 Apr 2022 01:47:27 +0800")
-Message-ID: <87fslwfnif.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Fri, 29 Apr 2022 01:52:07 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 846B1B18B0
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 22:48:49 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id z126so5201676qkb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 22:48:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VRas45N/HJjKkopTpxGekJncxjNBlwm6mL3yMYGLlOo=;
+        b=bc+WNUXF3c5mK3q/tzF4v4JoBy26gajoLNbPDLWyfH0Lj6WYdJCxKSXW7DRkKEfxgf
+         eSEzGQdfD/gk0CK8kbNcBllob6euxIALNnI86XDvGYieK8qr6dgKhAr4DPTyuIki6NMd
+         s7c+4cyP9+Q0UgielsvHPBfJh9ZV40Cfgxmh1e0ER1mRiE0QdJwHJMD4rD/GH7huQooE
+         jhQu3o4gi7C6/IirN9RyFP1WgfX8UC1XCs2p8f+dEwDsdTn1WFODIQ4ZkA+O5mH7iFZh
+         znNNYvUVBQBlraSHDLPriOhQZGoLQ5WSWZctA46uRE02fbX20QJAD2G3X1XrEZguVEXo
+         vRdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VRas45N/HJjKkopTpxGekJncxjNBlwm6mL3yMYGLlOo=;
+        b=66bkVtd+Ls6zhR8CmqeXB3BHJbF7k38GGkkZV7BFWAKGOeOaapV6NpjumG3pl/voLR
+         0nyeklGssBzn27Yrcuwwwy5QxZp40SBgPDh/OMZVb7QGwC9ZP/owd8lK93DEDuCpkKx3
+         Vjf5D9ABuLxOpBZafBdKM+Blv9NR/haZDeQfKt+uiIq7FNlFy2I6g67E6Oz5D7zvYrCl
+         cxQnVhgWuBHCt87e5eB3PihnziRyHbBq2kBzteE+lKx5WGd+y5euC/cwQYGwvY0PMY93
+         sI2dEX8WNrOf5h/UOPd+eCTC68psUshlRV7TEiopgReDMiuk9Vt5jOJxmqL5B+/X0syX
+         reCA==
+X-Gm-Message-State: AOAM531OIUKsyvVJzc35QgiPS01dNthTrc7OPO9sNivwWm1YNA7lTYqK
+        GVKCOTkiyJuITbICDXegC84=
+X-Google-Smtp-Source: ABdhPJynkP2gD+cmS0OSm3ZZXXts2/yMMSLbyMogjKxpLWkfcaqVfWGHjqXfHnAWLyGQEmJ9Yc/AzQ==
+X-Received: by 2002:a05:620a:1981:b0:507:4a52:f310 with SMTP id bm1-20020a05620a198100b005074a52f310mr22121345qkb.611.1651211328690;
+        Thu, 28 Apr 2022 22:48:48 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id y18-20020ac85f52000000b002ed08a7dc8dsm1234094qta.13.2022.04.28.22.48.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 22:48:48 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     alexander.deucher@amd.com
+Cc:     christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] drm/amdgpu: simplify the return expression of iceland_ih_hw_init
+Date:   Fri, 29 Apr 2022 05:48:41 +0000
+Message-Id: <20220429054841.3851915-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kernel test robot <lkp@intel.com> writes:
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-> Hi Zong-Zhe,
->
-> FYI, the error/warning still remains.
->
-> tree:   https://github.com/ammarfaizi2/linux-block kvalo/ath/pending
-> head:   5c6cf64b40b98e4d4247fda11e4b4c859a24585d
-> commit: 14f9f4790048f684c2b151c899895feae0b5731a [7/57] rtw89: ser: control hci interrupts on/off by state
-> config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220429/202204290113.w78dhtXk-lkp@intel.com/config)
-> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c59473aacce38cd7dd77eebceaf3c98c5707ab3b)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # install arm64 cross compiling tool for clang build
->         # apt-get install binutils-aarch64-linux-gnu
->         # https://github.com/ammarfaizi2/linux-block/commit/14f9f4790048f684c2b151c899895feae0b5731a
->         git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
->         git fetch --no-tags ammarfaizi2-block kvalo/ath/pending
->         git checkout 14f9f4790048f684c2b151c899895feae0b5731a
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/misc/lkdtm/ drivers/net/wireless/realtek/rtw89/
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All warnings (new ones prefixed by >>):
->
->>> drivers/net/wireless/realtek/rtw89/ser.c:319:2: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
->            default:
->            ^
->    drivers/net/wireless/realtek/rtw89/ser.c:319:2: note: insert 'break;' to avoid fall-through
->            default:
->            ^
->            break; 
->    1 warning generated.
+Simplify the return expression.
 
-This commit should fix it:
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/gpu/drm/amd/amdgpu/iceland_ih.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git/commit/?id=5ddfffd6da9b94e5f6397843ad1a54d6a211f652
-
+diff --git a/drivers/gpu/drm/amd/amdgpu/iceland_ih.c b/drivers/gpu/drm/amd/amdgpu/iceland_ih.c
+index ddfe4eaeea05..aecad530b10a 100644
+--- a/drivers/gpu/drm/amd/amdgpu/iceland_ih.c
++++ b/drivers/gpu/drm/amd/amdgpu/iceland_ih.c
+@@ -308,14 +308,9 @@ static int iceland_ih_sw_fini(void *handle)
+ 
+ static int iceland_ih_hw_init(void *handle)
+ {
+-	int r;
+ 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
+ 
+-	r = iceland_ih_irq_init(adev);
+-	if (r)
+-		return r;
+-
+-	return 0;
++	return iceland_ih_irq_init(adev);
+ }
+ 
+ static int iceland_ih_hw_fini(void *handle)
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.25.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
