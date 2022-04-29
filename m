@@ -2,187 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98EAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:15:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D197C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353853AbiD2BS3 (ORCPT
+        id S1353874AbiD2BTs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 21:18:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
+        Thu, 28 Apr 2022 21:19:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345538AbiD2BSX (ORCPT
+        with ESMTP id S1353762AbiD2BTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 21:18:23 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4632F5F5C;
-        Thu, 28 Apr 2022 18:15:05 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app4 (Coremail) with SMTP id cS_KCgAnDkX6O2tidX4EAg--.28704S4;
-        Fri, 29 Apr 2022 09:14:54 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org, kuba@kernel.org,
-        krzysztof.kozlowski@linaro.org, gregkh@linuxfoundation.org
-Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        alexander.deucher@amd.com, akpm@linux-foundation.org,
-        broonie@kernel.org, netdev@vger.kernel.org, linma@zju.edu.cn,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net v5 2/2] nfc: nfcmrvl: main: reorder destructive operations in nfcmrvl_nci_unregister_dev to avoid bugs
-Date:   Fri, 29 Apr 2022 09:14:33 +0800
-Message-Id: <bb2769acc79f42d25d61ed8988c8d240c8585f33.1651194245.git.duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1651194245.git.duoming@zju.edu.cn>
-References: <cover.1651194245.git.duoming@zju.edu.cn>
-In-Reply-To: <cover.1651194245.git.duoming@zju.edu.cn>
-References: <cover.1651194245.git.duoming@zju.edu.cn>
-X-CM-TRANSID: cS_KCgAnDkX6O2tidX4EAg--.28704S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxAFW5Xw43WrWUAw17ZFy7Wrg_yoWrZrWUpF
-        4FgFy5Cr1DKr4FqF45tF4qgFyruFZ3GFW5CryfJryfZws0yFWvyw1qyay5ZFnruryUJFWY
-        ka43A348GF4vyFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvm1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
-        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
-        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
-        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IY
-        c2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r
-        4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
-        67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2I
-        x0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2
-        z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnU
-        UI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgIOAVZdtZdEXAA7sF
+        Thu, 28 Apr 2022 21:19:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC67E42A29
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:16:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C0D9621F5
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 01:16:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B74FC385A9;
+        Fri, 29 Apr 2022 01:16:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1651194982;
+        bh=8rkO3kGLo8oHISZ4CrKIFImdjcz1oia8ezyV6cjg3zY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JEhlgYZ0Euy2nONZV9GCgJtpHQj1q1Y7sMi5M6ccGRJMVhdkpn5ggNtrtayoXMwAo
+         r6afTry/M0nFgJxzzzXKbDLGCBnDDdMZZFnn4jwMuip0j4dE/eGCdqk+Ba45Jeq5y0
+         xqqCBJqFy75/eDads3u/hqeBH7dgBMh26iKkpKtk=
+Date:   Thu, 28 Apr 2022 18:16:21 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Yu Zhao <yuzhao@google.com>
+Subject: Re: [PATCH v8 23/70] mm/mmap: change do_brk_flags() to expand
+ existing VMA and add do_brk_munmap()
+Message-Id: <20220428181621.636487e753422ad0faf09bd6@linux-foundation.org>
+In-Reply-To: <20220429003841.cx7uenepca22qbdl@revolver>
+References: <20220426150616.3937571-1-Liam.Howlett@oracle.com>
+        <20220426150616.3937571-24-Liam.Howlett@oracle.com>
+        <20220428201947.GA1912192@roeck-us.net>
+        <20220429003841.cx7uenepca22qbdl@revolver>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are destructive operations such as nfcmrvl_fw_dnld_abort and
-gpio_free in nfcmrvl_nci_unregister_dev. The resources such as firmware,
-gpio and so on could be destructed while the upper layer functions such as
-nfcmrvl_fw_dnld_start and nfcmrvl_nci_recv_frame is executing, which leads
-to double-free, use-after-free and null-ptr-deref bugs.
+On Fri, 29 Apr 2022 00:38:50 +0000 Liam Howlett <liam.howlett@oracle.com> wrote:
 
-There are three situations that could lead to double-free bugs.
+> > mm/mmap.c: In function 'do_brk_flags':
+> > mm/mmap.c:2908:17: error: implicit declaration of function
+> > 	'khugepaged_enter_vma_merge'; did you mean 'khugepaged_enter_vma'?
+> > 
+> > It appears that this is later fixed, but it hurts bisectability
+> > (and prevents me from finding the actual build failure in linux-next
+> > when trying to build corenet64_smp_defconfig).
+> 
+> Yeah, that khugepaged_enter_vma_merge was renamed in another patch set.
+> Andrew made the correction but kept the patch as it was.  I think the
+> suggested change is right.. if you read the commit that introduced
+> khugepaged_enter_vma(), it seems right at least.
 
-The first situation is shown below:
+Things are a bit crazy lately.  Merge issues with mapletree, merge
+issues with mglru on mapletree, me doing a bunch of retooling to start
+publishing/merging via git, mapletree runtime issues, etc.
 
-   (Thread 1)                 |      (Thread 2)
-nfcmrvl_fw_dnld_start         |
- ...                          |  nfcmrvl_nci_unregister_dev
- release_firmware()           |   nfcmrvl_fw_dnld_abort
-  kfree(fw) //(1)             |    fw_dnld_over
-                              |     release_firmware
-  ...                         |      kfree(fw) //(2)
-                              |     ...
+I've dropped the mapletree patches again.  Please scoop up all known
+fixes and redo against the (non-rebasing) mm-stable branch at
+git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm
 
-The second situation is shown below:
+The mm-unstable branch is a rebasing tree which contains mm-stable as
+well as all the quilt-based MM material which isn't final enough to get
+into mm-stable.  So before sending please do a test merge with mm-unstable,
+evaluate any issues which might be encountered.
 
-   (Thread 1)                 |      (Thread 2)
-nfcmrvl_fw_dnld_start         |
- ...                          |
- mod_timer                    |
- (wait a time)                |
- fw_dnld_timeout              |  nfcmrvl_nci_unregister_dev
-   fw_dnld_over               |   nfcmrvl_fw_dnld_abort
-    release_firmware          |    fw_dnld_over
-     kfree(fw) //(1)          |     release_firmware
-     ...                      |      kfree(fw) //(2)
-
-The third situation is shown below:
-
-       (Thread 1)               |       (Thread 2)
-nfcmrvl_nci_recv_frame          |
- if(..->fw_download_in_progress)|
-  nfcmrvl_fw_dnld_recv_frame    |
-   queue_work                   |
-                                |
-fw_dnld_rx_work                 | nfcmrvl_nci_unregister_dev
- fw_dnld_over                   |  nfcmrvl_fw_dnld_abort
-  release_firmware              |   fw_dnld_over
-   kfree(fw) //(1)              |    release_firmware
-                                |     kfree(fw) //(2)
-
-The firmware struct is deallocated in position (1) and deallocated
-in position (2) again.
-
-The crash trace triggered by POC is like below:
-
-[  122.640457] BUG: KASAN: double-free or invalid-free in fw_dnld_over+0x28/0xf0
-[  122.640457] Call Trace:
-[  122.640457]  <TASK>
-[  122.640457]  kfree+0xb0/0x330
-[  122.640457]  fw_dnld_over+0x28/0xf0
-[  122.640457]  nfcmrvl_nci_unregister_dev+0x61/0x70
-[  122.640457]  nci_uart_tty_close+0x87/0xd0
-[  122.640457]  tty_ldisc_kill+0x3e/0x80
-[  122.640457]  tty_ldisc_hangup+0x1b2/0x2c0
-[  122.640457]  __tty_hangup.part.0+0x316/0x520
-[  122.640457]  tty_release+0x200/0x670
-[  122.640457]  __fput+0x110/0x410
-[  122.640457]  task_work_run+0x86/0xd0
-[  122.640457]  exit_to_user_mode_prepare+0x1aa/0x1b0
-[  122.640457]  syscall_exit_to_user_mode+0x19/0x50
-[  122.640457]  do_syscall_64+0x48/0x90
-[  122.640457]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  122.640457] RIP: 0033:0x7f68433f6beb
-
-What's more, there are also use-after-free and null-ptr-deref bugs
-in nfcmrvl_fw_dnld_start. If we deallocate firmware struct, gpio or
-set null to the members of priv->fw_dnld in nfcmrvl_nci_unregister_dev,
-then, we dereference firmware, gpio or the members of priv->fw_dnld in
-nfcmrvl_fw_dnld_start, the UAF or NPD bugs will happen.
-
-This patch reorders destructive operations after nci_unregister_device
-and uses bool variable in nfc_dev to synchronize between cleanup routine
-and firmware download routine. The process is shown below.
-
-       (Thread 1)                 |       (Thread 2)
-nfcmrvl_nci_unregister_dev        |
-  nci_unregister_device           |
-    nfc_unregister_device         | nfc_fw_download
-      device_lock()               |
-      ...                         |
-      dev->dev_register = false;  |   ...
-      device_unlock()             |
-  ...                             |   device_lock()
-  (destructive operations)        |   if(!dev->dev_register)
-                                  |     goto error;
-                                  | error:
-                                  |   device_unlock()
-
-If the device is detaching, the download function will goto error.
-If the download function is executing, nci_unregister_device will
-wait until download function is finished.
-
-Fixes: 3194c6870158 ("NFC: nfcmrvl: add firmware download support")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
-Changes in v5:
-  - Use bool variable added in patch 1/2 to synchronize.
-
- drivers/nfc/nfcmrvl/main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/nfc/nfcmrvl/main.c b/drivers/nfc/nfcmrvl/main.c
-index 2fcf545012b..1a5284de434 100644
---- a/drivers/nfc/nfcmrvl/main.c
-+++ b/drivers/nfc/nfcmrvl/main.c
-@@ -183,6 +183,7 @@ void nfcmrvl_nci_unregister_dev(struct nfcmrvl_private *priv)
- {
- 	struct nci_dev *ndev = priv->ndev;
- 
-+	nci_unregister_device(ndev);
- 	if (priv->ndev->nfc_dev->fw_download_in_progress)
- 		nfcmrvl_fw_dnld_abort(priv);
- 
-@@ -191,7 +192,6 @@ void nfcmrvl_nci_unregister_dev(struct nfcmrvl_private *priv)
- 	if (gpio_is_valid(priv->config.reset_n_io))
- 		gpio_free(priv->config.reset_n_io);
- 
--	nci_unregister_device(ndev);
- 	nci_free_device(ndev);
- 	kfree(priv);
- }
--- 
-2.17.1
-
+I'd prefer to concentrate on getting mapletree stabilized and landed
+for now, worry about mglru after that.
