@@ -2,122 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8559BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:45:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A88C4167D
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:46:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377764AbiD2Osd (ORCPT
+        id S1377799AbiD2Osv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:48:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36148 "EHLO
+        Fri, 29 Apr 2022 10:48:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377755AbiD2Os3 (ORCPT
+        with ESMTP id S1377802AbiD2Osr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:48:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A184635F
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:45:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651243509;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=reLN1pG1/CChgH6ozCSwMmfyN+LJMqKj0Ol22hvsDgw=;
-        b=Vpp4qT6PMzFJlWeMiynSYd74/XZKoPYXDfSSnQPMVDwK1rSf8IyfXfVmgiTvYzIQJQUiDV
-        S19RYua3pYegIPuUO37ivfXYNKJmw0D0mSMP/pyMb4q/QAuz2wgBEiSX28BrmS6IEGnzBK
-        ETSXFtX8V6H7DfdT9p/WBOVN8coOqps=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-605-jmi4oePoOtekRW4ReXOqQA-1; Fri, 29 Apr 2022 10:45:07 -0400
-X-MC-Unique: jmi4oePoOtekRW4ReXOqQA-1
-Received: by mail-ej1-f71.google.com with SMTP id l20-20020a170906795400b006f3f30daf18so1185071ejo.22
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:45:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=reLN1pG1/CChgH6ozCSwMmfyN+LJMqKj0Ol22hvsDgw=;
-        b=BiDdbfJbf/4XhkCoqWWrgtuUANIxRpP6/BRl1I0htnrNtQ9sDoCSnNpub21U+pahRo
-         FupWEMKTMGOIOFrDpdDdje9JAqsO7sBosgcdZOdcWX7qbALBXdVagKCKj8wl48tleupG
-         wXGr8MV+DODoZCzdN9ruq+qLpxivmGuUo+H4Ke9mj24QtnVo9UELyBbzflUyi/40pZ1m
-         ID7Tu9JU/0vtVc+QlQz3gos5SQZRgjFBgFopvoBRCL//YfMwD+AA2blFw+pMSR13LzKH
-         BbdHGxqrVdzsAd1GL3b/GRsPz2BpVfeRrK3LEaTg1L4cPCfPKXUorNfjUN4iPfduTX4Z
-         j0Rg==
-X-Gm-Message-State: AOAM530YgjrSY4tAQod46MucS078AS02pmBHUQP/mZBlP5aVLJEyFKF4
-        C7PjVHBUF9ElwpVwBuNC3v5CSaCQHveLVagV9TJwVvW/w8jFEu+sKzsAgEWhCAli+7b2Sptplko
-        9vWQUN/QIItEuDZiZsYjc3PPr
-X-Received: by 2002:a17:907:3f91:b0:6d7:16c0:ae1b with SMTP id hr17-20020a1709073f9100b006d716c0ae1bmr36173033ejc.74.1651243506537;
-        Fri, 29 Apr 2022 07:45:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzrRMmBaW56vukrRtL88Onw+W9T5clAHH2pPU49YFnPmyqnQ5xD7Ht1ZUTszCVALYKc3un4wQ==
-X-Received: by 2002:a17:907:3f91:b0:6d7:16c0:ae1b with SMTP id hr17-20020a1709073f9100b006d716c0ae1bmr36173012ejc.74.1651243506264;
-        Fri, 29 Apr 2022 07:45:06 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
-        by smtp.googlemail.com with ESMTPSA id t19-20020aa7d4d3000000b0042617ba63c2sm3038883edr.76.2022.04.29.07.45.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 07:45:05 -0700 (PDT)
-Message-ID: <67222fe0-7bf0-ec7a-0791-a4d48391a15e@redhat.com>
-Date:   Fri, 29 Apr 2022 16:45:03 +0200
+        Fri, 29 Apr 2022 10:48:47 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B1C7DA8E;
+        Fri, 29 Apr 2022 07:45:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=cEz0jvzYMJy/+PnSroZ/Hi6xu9Xg7ihjZ6KqkMsyEVA=; b=TtjJWVYR2YAsPylCOEsPMfdeP3
+        uewJTDxZvNwqz8faFaLHrMu4SGCc7XKgfqXs0N9Eqi4GqpadVMfaDxlWZzVPKQLi8ni/s2ddxpu3K
+        tP6hsTWVLR98QNCsrf0212qd1xvVl1Ei20QGO6x8V4HGcJkkz3V8HTUpxBZ8YdMeJOhwfqc/a8/uJ
+        6uvHWRRLoq8CaJRaw2R8nKQ6rT+OEKWXBb4ItDaXeeq0xIrWs1dLGM6n+SsKoTqhKb432TBldb0L4
+        ADdMsHTu5tPPflo8jyg6MaAv6SnfkenTNCGCscDeHdEnB08Cvtm9IbN9EZtdJb4wh68LkWeJPFXS4
+        x01q8OQw==;
+Received: from [179.113.53.197] (helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1nkRru-0009vz-Hw; Fri, 29 Apr 2022 16:45:14 +0200
+Message-ID: <b81cf509-60d5-a733-0b06-374d9c146559@igalia.com>
+Date:   Fri, 29 Apr 2022 11:44:43 -0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
+Subject: Re: [PATCH 17/30] tracing: Improve panic/die notifiers
 Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Mingwei Zhang <mizhang@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220429031757.2042406-1-mizhang@google.com>
- <4b0936bf-fd3e-950a-81af-fd393475553f@redhat.com>
- <Ymv3vwBEgCH0CMPH@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH] KVM: x86/mmu: fix potential races when walking host page
- table
-In-Reply-To: <Ymv3vwBEgCH0CMPH@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, senozhatsky@chromium.org,
+        stern@rowland.harvard.edu, tglx@linutronix.de, vgoyal@redhat.com,
+        vkuznets@redhat.com, will@kernel.org
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-18-gpiccoli@igalia.com>
+ <b8771b37-01f5-f50b-dbb3-9db4ee26e67e@gmail.com>
+ <20220429092351.10bca4dd@gandalf.local.home>
+ <832eecc5-9569-1d95-6ab8-f029b660dfcb@igalia.com>
+ <20220429095654.26d00b79@gandalf.local.home>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <20220429095654.26d00b79@gandalf.local.home>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/29/22 16:35, Sean Christopherson wrote:
-> On Fri, Apr 29, 2022, Paolo Bonzini wrote:
->>> +out:
->>> +	local_irq_restore(flags);
->>> +	return level;
->>> +}
->>> +EXPORT_SYMBOL_GPL(kvm_lookup_address_level_in_mm);
->>
->> Exporting is not needed.
->>
->> Thanks for writing the walk code though.  I'll adapt it and integrate the
->> patch.
+On 29/04/2022 10:56, Steven Rostedt wrote:
+> [...]
+> No. The fallthrough keyword is only needed when there's code between case
+> labels. As it is very common to list multiple cases for the same code path.
+> That is:
 > 
-> But why are we fixing this only in KVM?  I liked the idea of stealing perf's
-> implementation because it was a seemlingly perfect fit and wouldn't introduce
-> new code (ignoring wrappers, etc...).
+> 	case DIE_OOPS:
+>  	case PANIC_NOTIFIER:
+>  		do_dump = 1;
+>  		break;
 > 
-> We _know_ that at least one subsystem is misusing lookup_address_in_pgd() and
-> given that its wrappers are exported, I highly doubt KVM is the only offender.
-> It really feels like we're passing the buck here by burying the fix in KVM.
+> Does not need a fall through label, as there's no code between the DIE_OOPS
+> and the PANIC_NOTIFIER. But if you had:
+> 
+> 	case DIE_OOPS:
+> 		x = true;
+>  	case PANIC_NOTIFIER:
+>  		do_dump = 1;
+>  		break;
+> 
+> Then you do.
+> 
+> -- Steve
 
-There are two ways to do it:
-
-* having a generic function in mm/.  The main issue there is the lack of 
-a PG_LEVEL_{P4D,PUD,PMD,PTE} enum at the mm/ level.  We could use 
-(ctz(x) - 12) / 9 to go from size to level, but it's ugly and there 
-could be architectures with heterogeneous page table sizes.
-
-* having a generic function in arch/x86/.  In this case KVM seems to be 
-the odd one that doesn't need the PTE.  For example vc_slow_virt_to_phys 
-needs the PTE, and needs the size rather than the "level" per se.
-
-So for now I punted, while keeping open the door for moving code from 
-arch/x86/kvm/ to mm/ if anyone else (even other KVM ports) need the same 
-logic.
-
-Paolo
-
+Thanks a bunch for the clarification, changed that for V2 =)
