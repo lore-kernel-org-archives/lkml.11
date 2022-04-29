@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06CAAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 23:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7FB8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 23:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381807AbiD2XdE (ORCPT
+        id S1381747AbiD2XdO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 19:33:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51616 "EHLO
+        Fri, 29 Apr 2022 19:33:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381792AbiD2Xc5 (ORCPT
+        with ESMTP id S1381795AbiD2Xc7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 19:32:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A450781663
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 16:29:38 -0700 (PDT)
+        Fri, 29 Apr 2022 19:32:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44595CD64A;
+        Fri, 29 Apr 2022 16:29:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F5E0623C2
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 23:29:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A4FE6C385A4;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01396B828F1;
+        Fri, 29 Apr 2022 23:29:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B76C4C385A7;
         Fri, 29 Apr 2022 23:29:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1651274977;
-        bh=00C53HimrHYPq+ZpEdfMbpGXvsJIr48Qg15VAcABdXw=;
+        bh=kZrs/xiAEckX+b0ic9RlGktgTrirB1chaLCHBLfQVEU=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=cOEcEVIS1dSHi3eWXbCQ/0vs+jsZAC/RVW8gNl6UrefbLat03JIDv3bmkoqpzcMvG
-         0Fgd1p4wCPQxBgi0zPOdYpsqc0MSfP+pEpA/6dx3/w5XrqHp301x9PtZyVYjIFF48q
-         2/ZzinIqBmn8DVZID5JD+Z7ZNGc7LmI5B7tS6qgzn/j+UKYgwx2gCAYpBi2iNpgUMK
-         x5aeheOXICSzK/rYVbHK3nwJEiZL/KNfBDtyaG2AP6ICeXyc+n1/bN5hRVu5pELViK
-         bA3L4qOS9F6GXDrzM32RIhz6awdxiKToNjczm6PFf9YYmA5c2DwfHICvI4uTyDf3Ok
-         MYar+w46iW4AQ==
+        b=PF6C0k2AyIDq/f7Vlj67fHL0ychlUlAZzUl24SoNmdpMhrsuwIudm6ngma0FPt04s
+         VFW5aObZKNnlPYEzWlHR82lF5OeLVCQQf4n8lXR3WY9WjLwnUI7C9wtrtD2Ps2Py/N
+         LQ/MeOG76qt0qaeKWGYeI6dhw3mxBrLT16nj+N4R7t/JzLUm0DkH6dWHCibHVm6i1m
+         TtctMYQR4nzkeYXV52UeBG3s2QLKyx5YGx3uKM5iheZIFHTilUqB8awPvQOGeWeu/r
+         CmYPTbeqx77/MoTiaVSeohhVYFEK0l143TxFTVnvh2T93Qu2BhO1Efc7Slbe+h5Jp0
+         eY8po4Jpg2hFA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 93380E8DBDA;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A15CBF0383D;
         Fri, 29 Apr 2022 23:29:37 +0000 (UTC)
-Subject: Re: [GIT PULL] random number generator fixes for 5.18-rc5
+Subject: Re: [GIT PULL] Ceph fixes for 5.18-rc5
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220429145935.2549453-1-Jason@zx2c4.com>
-References: <20220429145935.2549453-1-Jason@zx2c4.com>
+In-Reply-To: <20220429162632.29934-1-idryomov@gmail.com>
+References: <20220429162632.29934-1-idryomov@gmail.com>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220429145935.2549453-1-Jason@zx2c4.com>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.18-rc5-for-linus
-X-PR-Tracked-Commit-Id: 5a7e470e460fb90657343d843732325e53bb875f
+X-PR-Tracked-Message-Id: <20220429162632.29934-1-idryomov@gmail.com>
+X-PR-Tracked-Remote: https://github.com/ceph/ceph-client.git tags/ceph-for-5.18-rc5
+X-PR-Tracked-Commit-Id: 7acae6183cf37c48b8da48bbbdb78820fb3913f3
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: bdda8303f764d844e7b2fb69e5fd21c650c60943
-Message-Id: <165127497759.20495.14560672243372796785.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: bd383b8e32f6aab08c9485b1fe86e2e932b1df69
+Message-Id: <165127497765.20495.16396468291637508679.pr-tracker-bot@kernel.org>
 Date:   Fri, 29 Apr 2022 23:29:37 +0000
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Ilya Dryomov <idryomov@gmail.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
+        ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 29 Apr 2022 16:59:35 +0200:
+The pull request you sent on Fri, 29 Apr 2022 18:26:32 +0200:
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.18-rc5-for-linus
+> https://github.com/ceph/ceph-client.git tags/ceph-for-5.18-rc5
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/bdda8303f764d844e7b2fb69e5fd21c650c60943
+https://git.kernel.org/torvalds/c/bd383b8e32f6aab08c9485b1fe86e2e932b1df69
 
 Thank you!
 
