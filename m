@@ -2,167 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C63B7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 00:44:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED7A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 00:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353013AbiD2AsK (ORCPT
+        id S1353120AbiD2Asr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 20:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37076 "EHLO
+        Thu, 28 Apr 2022 20:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237629AbiD2AsJ (ORCPT
+        with ESMTP id S1353142AbiD2Aso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 20:48:09 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3596BB902;
-        Thu, 28 Apr 2022 17:44:52 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Thu, 28 Apr 2022 20:48:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82D6A8879D
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 17:45:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651193125;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=dTvROQQ49sVjYocOeNNYIv0FPtF4+TnxaG7UpbtPvKI=;
+        b=EcTjT064BlXb+HVMxnvi2zV6oQWmIs2n5lcvS9ToigdfDmFSap3Geef7eOEhiBeAgFWm2P
+        iqmjqLlEQQ8vqmxRlE860YrcstRidKUHBYsskKXInOgk4EfPy58aVhLFXWSkQofzO/KKfI
+        9ktCXFsaJZgBxWxLkuP1hfDIZ3N+YJ4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-410-tfhRk1WJMIivilljplxVuQ-1; Thu, 28 Apr 2022 20:45:22 -0400
+X-MC-Unique: tfhRk1WJMIivilljplxVuQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id B2C411F37F;
-        Fri, 29 Apr 2022 00:44:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1651193091; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iDTLraYqnWApa1mXlMLLgzsQSZO/JsdcUgftlr7aovM=;
-        b=bXzdo1Li8rr31MrGP07OcLcXDfd+rqubbWEqzYmjFEDlXdbtGc0KLHhGyJjrU0cnYqWm40
-        IqBCEwDGvwIoA/HnKTxK7aOaSLe1o1TNZc0f5qPWLHCDXC9s1sriGavJJP/8mMHSq77gDx
-        9qLBQP+jKfuTloZX4Igjg5LrB92+6Xg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1651193091;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iDTLraYqnWApa1mXlMLLgzsQSZO/JsdcUgftlr7aovM=;
-        b=1wMQN6a64l7rZ/v4UXE8U90xh7OGxjydYxyu1kmSUBId/NHpwcPt6Mw4IPLABKipjSx/M9
-        35I2hF4rrmhDshCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9A17E13491;
-        Fri, 29 Apr 2022 00:44:49 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id blhJFgE1a2IzSgAAMHmgww
-        (envelope-from <neilb@suse.de>); Fri, 29 Apr 2022 00:44:49 +0000
-Subject: [PATCH 2/2] NFS: rename nfs_direct_IO and use as ->swap_rw
-From:   NeilBrown <neilb@suse.de>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Christoph Hellwig <hch@lst.de>,
-        Miaohe Lin <linmiaohe@huawei.com>, linux-nfs@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Date:   Fri, 29 Apr 2022 10:43:34 +1000
-Message-ID: <165119301493.15698.7491285551903597618.stgit@noble.brown>
-In-Reply-To: <165119280115.15698.2629172320052218921.stgit@noble.brown>
-References: <165119280115.15698.2629172320052218921.stgit@noble.brown>
-User-Agent: StGit/1.5
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7D7DE185A7A4;
+        Fri, 29 Apr 2022 00:45:21 +0000 (UTC)
+Received: from madcap2.tricolour.com (ovpn-0-8.rdu2.redhat.com [10.22.0.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B78A19E8F;
+        Fri, 29 Apr 2022 00:44:54 +0000 (UTC)
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Linux-Audit Mailing List <linux-audit@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Cc:     Paul Moore <paul@paul-moore.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Steve Grubb <sgrubb@redhat.com>,
+        Richard Guy Briggs <rgb@redhat.com>, Jan Kara <jack@suse.cz>
+Subject: [PATCH v2 0/3] fanotify: Allow user space to pass back additional audit info
+Date:   Thu, 28 Apr 2022 20:44:33 -0400
+Message-Id: <cover.1651174324.git.rgb@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The nfs_direct_IO() exists to support SWAP IO, but hasn't worked for a
-while.  We now need a ->swap_rw function which behaves slightly
-differently, returning zero for success rather than a byte count.
+The Fanotify API can be used for access control by requesting permission
+event notification. The user space tooling that uses it may have a
+complicated policy that inherently contains additional context for the
+decision. If this information were available in the audit trail, policy
+writers can close the loop on debugging policy. Also, if this additional
+information were available, it would enable the creation of tools that
+can suggest changes to the policy similar to how audit2allow can help
+refine labeled security.
 
-So modify nfs_direct_IO accordingly, rename it, and use it as the
-->swap_rw function.
+This patch defines 2 additional fields within the response structure
+returned from user space on a permission event. The first field is 16
+bits for the context type. The context type will describe what the
+meaning is of the second field. The audit system will separate the
+pieces and log them individually.
 
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be> (on Renesas RSK+RZA1 with 32 MiB of SDRAM)
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: NeilBrown <neilb@suse.de>
----
- fs/nfs/direct.c        |   23 ++++++++++-------------
- fs/nfs/file.c          |    5 +----
- include/linux/nfs_fs.h |    2 +-
- 3 files changed, 12 insertions(+), 18 deletions(-)
+The audit function was updated to log the additional information in the
+AUDIT_FANOTIFY record. The following is an example of the new record
+format:
 
-diff --git a/fs/nfs/direct.c b/fs/nfs/direct.c
-index 11c566d8769f..4eb2a8380a28 100644
---- a/fs/nfs/direct.c
-+++ b/fs/nfs/direct.c
-@@ -153,28 +153,25 @@ nfs_direct_count_bytes(struct nfs_direct_req *dreq,
- }
- 
- /**
-- * nfs_direct_IO - NFS address space operation for direct I/O
-+ * nfs_swap_rw - NFS address space operation for swap I/O
-  * @iocb: target I/O control block
-  * @iter: I/O buffer
-  *
-- * The presence of this routine in the address space ops vector means
-- * the NFS client supports direct I/O. However, for most direct IO, we
-- * shunt off direct read and write requests before the VFS gets them,
-- * so this method is only ever called for swap.
-+ * Perform IO to the swap-file.  This is much like direct IO.
-  */
--ssize_t nfs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
-+int nfs_swap_rw(struct kiocb *iocb, struct iov_iter *iter)
- {
--	struct inode *inode = iocb->ki_filp->f_mapping->host;
--
--	/* we only support swap file calling nfs_direct_IO */
--	if (!IS_SWAPFILE(inode))
--		return 0;
-+	ssize_t ret;
- 
- 	VM_BUG_ON(iov_iter_count(iter) != PAGE_SIZE);
- 
- 	if (iov_iter_rw(iter) == READ)
--		return nfs_file_direct_read(iocb, iter, true);
--	return nfs_file_direct_write(iocb, iter, true);
-+		ret = nfs_file_direct_read(iocb, iter, true);
-+	else
-+		ret = nfs_file_direct_write(iocb, iter, true);
-+	if (ret < 0)
-+		return ret;
-+	return 0;
- }
- 
- static void nfs_direct_release_pages(struct page **pages, unsigned int npages)
-diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index e1d10a3e086a..bfb4b707b07e 100644
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -490,10 +490,6 @@ static int nfs_swap_activate(struct swap_info_struct *sis, struct file *file,
- 	struct rpc_clnt *clnt = NFS_CLIENT(inode);
- 	struct nfs_client *cl = NFS_SERVER(inode)->nfs_client;
- 
--	if (!file->f_mapping->a_ops->swap_rw)
--		/* Cannot support swap */
--		return -EINVAL;
--
- 	spin_lock(&inode->i_lock);
- 	blocks = inode->i_blocks;
- 	isize = inode->i_size;
-@@ -550,6 +546,7 @@ const struct address_space_operations nfs_file_aops = {
- 	.error_remove_page = generic_error_remove_page,
- 	.swap_activate = nfs_swap_activate,
- 	.swap_deactivate = nfs_swap_deactivate,
-+	.swap_rw = nfs_swap_rw,
- };
- 
- /*
-diff --git a/include/linux/nfs_fs.h b/include/linux/nfs_fs.h
-index b48b9259e02c..fd5543486a3f 100644
---- a/include/linux/nfs_fs.h
-+++ b/include/linux/nfs_fs.h
-@@ -507,7 +507,7 @@ static inline const struct cred *nfs_file_cred(struct file *file)
- /*
-  * linux/fs/nfs/direct.c
-  */
--extern ssize_t nfs_direct_IO(struct kiocb *, struct iov_iter *);
-+int nfs_swap_rw(struct kiocb *iocb, struct iov_iter *iter);
- ssize_t nfs_file_direct_read(struct kiocb *iocb,
- 			     struct iov_iter *iter, bool swap);
- ssize_t nfs_file_direct_write(struct kiocb *iocb,
+type=FANOTIFY msg=audit(1600385147.372:590): resp=2 fan_type=1 fan_ctx=17
 
+changelog:
+v1:
+- first version by Steve Grubb <sgrubb@redhat.com>
+Link: https://lore.kernel.org/r/2042449.irdbgypaU6@x2
+
+v2:
+- enhancements suggested by Jan Kara <jack@suse.cz>
+- 1/3 change %d to %u in pr_debug
+- 2/3 change response from __u32 to __u16
+- mod struct fanotify_response and fanotify_perm_event add extra_info_type, extra_info_buf
+- extra_info_buf size max FANOTIFY_MAX_RESPONSE_EXTRA_LEN, add struct fanotify_response_audit_rule
+- extend debug statements
+- remove unneeded macros
+- [internal] change interface to finish_permission_event() and process_access_response()
+- 3/3 update format of extra information
+- [internal] change interface to audit_fanotify()
+- change ctx_type= to fan_type=
+Link: https://lore.kernel.org/r/cover.1651174324.git.rgb@redhat.com
+
+Richard Guy Briggs (3):
+  fanotify: Ensure consistent variable type for response
+  fanotify: define struct members to hold response decision context
+  fanotify: Allow audit to use the full permission event response
+
+ fs/notify/fanotify/fanotify.c      |  5 ++-
+ fs/notify/fanotify/fanotify.h      |  4 +-
+ fs/notify/fanotify/fanotify_user.c | 59 ++++++++++++++++++++----------
+ include/linux/audit.h              |  8 ++--
+ include/linux/fanotify.h           |  3 ++
+ include/uapi/linux/fanotify.h      | 27 +++++++++++++-
+ kernel/auditsc.c                   | 18 +++++++--
+ 7 files changed, 94 insertions(+), 30 deletions(-)
+
+-- 
+2.27.0
 
