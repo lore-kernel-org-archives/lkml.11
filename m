@@ -2,166 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90C73C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:00:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2A4CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378146AbiD2PEL (ORCPT
+        id S1377455AbiD2PFg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 11:04:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38142 "EHLO
+        Fri, 29 Apr 2022 11:05:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377480AbiD2PEG (ORCPT
+        with ESMTP id S230170AbiD2PFe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 11:04:06 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A79249274
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 08:00:48 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id k12so14519894lfr.9
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 08:00:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=NgFkGj6t89cfDU8h18lUmisWIQlxbc4WZbzdRxKCz3k=;
-        b=ZM760YPSenzfkt5aBOoPjNBgfTdCSoJabilxAb31qUx0+VOyg/Rvq1RSyyfthjlack
-         jaPIsBBJa9FfKzabWuy0hU0klkaaJiRUNTJv7viZZZ3rIniQFoc+fFS14Am0OE1OLc/8
-         qHQUXE1OjRmio8fPFYt3y9S+tyJsChNCf56o4pb1pXd4/ITENpa9rt3zTNkXtqw5c1ul
-         XWk3AaCrI/cCu7Regsnr7m0ovfUXDCv8p0BWMJ8nXO9dSNSQxNv7OCscZu/O9QL7nYIy
-         8yJGyrKCFS5u2lEMCiDxO3Lfb/VA7VYF291UArHY0SWE6DC6sZgVo2lkcoT4QCQZZcDb
-         aGgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=NgFkGj6t89cfDU8h18lUmisWIQlxbc4WZbzdRxKCz3k=;
-        b=UeWqutRLonmtPbSswIfbiifLHYkdy43wtUfhU/6x3j3P2B6xFSRkkWJ9sya8EIRKqE
-         abZ9JeaJwq/UQICaznxzOo2JftqPulfcwrTAD/Brygl861N5hKo8TTCcjUwGrCEX0vUh
-         cdGz6ZfC+ipS3iXcUGQq8i9f7v2NHfJPzCmoP1q2bO7MRwPUkdRZDL02jqv9qVWa0oRl
-         WJ5Y2DzZ6d7DxGB9CVeOHf0ojoFRFaducIDfRdo6SoTh6MnvLZFxgzWCUtDlOkr49jDh
-         REoe2cGXD0ditGJW0auXg8Ez1GSJM00VYZKGu6Bh0UtI+liZpi7APmJsA5HEy0NlmzAq
-         5lhA==
-X-Gm-Message-State: AOAM530u5SL2TWPaOkzIXSIyYQAAruo03QHLqawLPUABHUs+9ntd6M+O
-        tv0yYXEC66ZC6cqv98FLlAMsPg==
-X-Google-Smtp-Source: ABdhPJzWIXVhuKwvYZXjinlH9r7h5lT6+559NNN6Eh6+ovZcHLnhD1b/kd0AUEPpSfSv69hOp7fAHg==
-X-Received: by 2002:a05:6512:3a89:b0:471:c6ba:c522 with SMTP id q9-20020a0565123a8900b00471c6bac522mr27979319lfu.371.1651244446464;
-        Fri, 29 Apr 2022 08:00:46 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id d19-20020a193853000000b0047210b434ffsm259348lfj.27.2022.04.29.08.00.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 08:00:46 -0700 (PDT)
-Message-ID: <1f013429-8a5b-47c8-a146-41bb66af3f03@linaro.org>
-Date:   Fri, 29 Apr 2022 18:00:45 +0300
+        Fri, 29 Apr 2022 11:05:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47187CD338;
+        Fri, 29 Apr 2022 08:02:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 029FAB82B31;
+        Fri, 29 Apr 2022 15:02:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A1B1C385A7;
+        Fri, 29 Apr 2022 15:02:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651244533;
+        bh=Q9J8nfFbLcH6u/qm4eHj84G34KDbxXld+7fzihyYfPc=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=SFfCAJ/UJgPZA4oKecLcRClW9Fno8hmmkOuJIQMxdyyKOV9qPnwDc4fbFS10xuLxv
+         XtTPLfkk5ePWl35qAHXSY5+VW4l5vn3a7AgM7jAleqtkxNyVWZeSh96eXXW23MB7OF
+         Kr7nUnMC/GTNn/b75wVf0J/i4Ikr5paHMZTu2fHNTbb1riEk2lJo+i2a5OLu4aJ9NZ
+         39VzDKDjiVYV4Gvm/c31qka5PbHJcxgdsuhArOPTClpVrGq2XJrabP62XZKiuQ3qDR
+         X/cplXnllK7b3WHU4Gno1RX6I7IcmdhCTKImvOKNSBNrqSQPoCtAp1u/K9xds+RUWY
+         glyyXxana3kQw==
+From:   Mark Brown <broonie@kernel.org>
+To:     matthias.bgg@gmail.com, tiwai@suse.com, robh+dt@kernel.org,
+        yc.hung@mediatek.com
+Cc:     trevor.wu@mediatek.com, daniel.baluta@nxp.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        allen-kh.cheng@mediatek.com, alsa-devel@alsa-project.org,
+        cezary.rojewski@intel.com
+In-Reply-To: <20220106064847.15588-1-yc.hung@mediatek.com>
+References: <20220106064847.15588-1-yc.hung@mediatek.com>
+Subject: Re: [PATCH v4] dt-bindings: dsp: mediatek: add mt8195 dsp document
+Message-Id: <165124453080.141488.6009641744846773699.b4-ty@kernel.org>
+Date:   Fri, 29 Apr 2022 16:02:10 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 4/4] clk: qcom: clk-krait: add apq/ipq8064 errata
- workaround
-Content-Language: en-GB
-To:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sricharan R <sricharan@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220429120108.9396-1-ansuelsmth@gmail.com>
- <20220429120108.9396-5-ansuelsmth@gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220429120108.9396-5-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/04/2022 15:01, Ansuel Smith wrote:
-> Add apq/ipq8064 errata workaround where the sec_src clock gating needs to
-> be disabled during switching. To enable this set disable_sec_src_gating
-> in the mux struct.
+On Thu, 6 Jan 2022 14:48:48 +0800, YC Hung wrote:
+> From: "YC Hung" <yc.hung@mediatek.com>
 > 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->   drivers/clk/qcom/clk-krait.c | 16 ++++++++++++++++
->   drivers/clk/qcom/clk-krait.h |  1 +
->   drivers/clk/qcom/krait-cc.c  |  1 +
->   3 files changed, 18 insertions(+)
+> This patch adds mt8195 dsp document. The dsp is used for Sound Open
+> Firmware driver node. It includes registers,  clocks, memory regions,
+> and mailbox for dsp.
 > 
-> diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
-> index 6c367ad6506a..4a9b3296c45b 100644
-> --- a/drivers/clk/qcom/clk-krait.c
-> +++ b/drivers/clk/qcom/clk-krait.c
-> @@ -18,13 +18,23 @@
->   static DEFINE_SPINLOCK(krait_clock_reg_lock);
->   
->   #define LPL_SHIFT	8
-> +#define SECCLKAGD	BIT(4)
-> +
->   static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
->   {
->   	unsigned long flags;
->   	u32 regval;
->   
->   	spin_lock_irqsave(&krait_clock_reg_lock, flags);
-> +
->   	regval = krait_get_l2_indirect_reg(mux->offset);
-> +
-> +	/* apq/ipq8064 Errata: disable sec_src clock gating during switch. */
-> +	if (mux->disable_sec_src_gating) {
-> +		regval |= SECCLKAGD;
-> +		krait_set_l2_indirect_reg(mux->offset, regval);
-> +	}
-> +
->   	regval &= ~(mux->mask << mux->shift);
->   	regval |= (sel & mux->mask) << mux->shift;
->   	if (mux->lpl) {
-> @@ -33,6 +43,12 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
->   	}
->   	krait_set_l2_indirect_reg(mux->offset, regval);
->   
-> +	/* apq/ipq8064 Errata: re-enabled sec_src clock gating. */
-> +	if (mux->disable_sec_src_gating) {
-> +		regval &= ~SECCLKAGD;
-> +		krait_set_l2_indirect_reg(mux->offset, regval);
-> +	}
-> +
->   	/* Wait for switch to complete. */
->   	mb();
->   	udelay(1);
-> diff --git a/drivers/clk/qcom/clk-krait.h b/drivers/clk/qcom/clk-krait.h
-> index 9120bd2f5297..f930538c539e 100644
-> --- a/drivers/clk/qcom/clk-krait.h
-> +++ b/drivers/clk/qcom/clk-krait.h
-> @@ -15,6 +15,7 @@ struct krait_mux_clk {
->   	u8		safe_sel;
->   	u8		old_index;
->   	bool		reparent;
-> +	bool		disable_sec_src_gating;
->   
->   	struct clk_hw	hw;
->   	struct notifier_block   clk_nb;
-> diff --git a/drivers/clk/qcom/krait-cc.c b/drivers/clk/qcom/krait-cc.c
-> index 4d4b657d33c3..0f88bf41ec6e 100644
-> --- a/drivers/clk/qcom/krait-cc.c
-> +++ b/drivers/clk/qcom/krait-cc.c
-> @@ -138,6 +138,7 @@ krait_add_sec_mux(struct device *dev, int id, const char *s,
->   	mux->parent_map = sec_mux_map;
->   	mux->hw.init = &init;
->   	mux->safe_sel = 0;
-> +	mux->disable_sec_src_gating = true;
+> 
+> [...]
 
-This has to be guarded with the of_compatible checks. Otherwise you'd 
-apply this errata to all Krait CPUs, not only apq/ipq8064.
+Applied to
 
-At least this should be limited to krait-cc-v1 with the note that there 
-is no way to distinguish between platforms.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
->   
->   	init.name = kasprintf(GFP_KERNEL, "krait%s_sec_mux", s);
->   	if (!init.name)
+Thanks!
 
+[1/1] dt-bindings: dsp: mediatek: add mt8195 dsp document
+      commit: 66727cdb250ec5d3f42558e33ace5c7d0fbd9477
 
--- 
-With best wishes
-Dmitry
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
