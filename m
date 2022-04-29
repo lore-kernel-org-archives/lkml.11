@@ -2,141 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CBF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 02:09:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7841FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 02:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354093AbiD2CNG (ORCPT
+        id S1354132AbiD2CNn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 22:13:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60750 "EHLO
+        Thu, 28 Apr 2022 22:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229673AbiD2CNC (ORCPT
+        with ESMTP id S1354118AbiD2CNb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 22:13:02 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210CCBF51D
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 19:09:45 -0700 (PDT)
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 23T29RMY020789
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:09:27 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 23T29RMY020789
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1651198167;
-        bh=7SFGnUXP06F5Gny6HedRf2nc4WJTXIahAj4+JBfLO6g=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=tFHEDH3kCljzwtknsfQHeMObxy2fRvRh5soEQRTLU9T97uNJ3ocnaFpN8nDqAglFv
-         Huo6mhgjGAz0PrtRX3gEoQr7JXY8fMkt1esuDYFaHb50G17f4QvnAYp66Udzz7WnV4
-         vHWLHNzeDmdfIMI5A0NssfFeCKvLSFzDhbwZXw2D3kTIqmyD463BUDDg0/AkReCn3u
-         LeC/C6m2UtXV7VGLSMy6rRQoIW3quG70g832J7oWLdbaU7m4KPi0j0QyHj0M+vG3i6
-         Vk2S1tJHqVY+YHtVAGZ0g+X2VzTXKMy5JB6snO24fFqIN5iYRi6NWXUqLNvBhC9KNb
-         4JtkSEbbtugRA==
-X-Nifty-SrcIP: [209.85.214.174]
-Received: by mail-pl1-f174.google.com with SMTP id h12so5898314plf.12
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 19:09:27 -0700 (PDT)
-X-Gm-Message-State: AOAM532GO1DOG8VmHq4cm9oLYcuzS2c4VBR71iEjNh6V9lQliGew7lXt
-        afH9qc+CccX5hZLmRFNXV1F/eQgFUzoTh2Y1yZ4=
-X-Google-Smtp-Source: ABdhPJyjLglSkmGOqYNcBk8dvwS8zBtRDwgaev2G02+jebOoMZpxLeJxvMJYStRgQwUndL0BhbYfF5WhA2tE65R7ayQ=
-X-Received: by 2002:a17:902:bf07:b0:158:d334:852f with SMTP id
- bi7-20020a170902bf0700b00158d334852fmr36336467plb.136.1651198166686; Thu, 28
- Apr 2022 19:09:26 -0700 (PDT)
+        Thu, 28 Apr 2022 22:13:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2073E4C424;
+        Thu, 28 Apr 2022 19:10:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51B8C62228;
+        Fri, 29 Apr 2022 02:10:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A0AF4C385AA;
+        Fri, 29 Apr 2022 02:10:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651198212;
+        bh=K4HqasmbcBW+6+Fpei5RSbbzln03UK9Up/+VSen0q1E=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TxT2B7bYdgnenhHtkKGeubItTiA9Zdrnn4BjaiXkdaXcVQ5bAGCFJHgvIcW+aHpxx
+         fcL/uiyVyKsRps+9zh+Q6f+czGcflDvHh8MxXmKFbMmjbxObFuMxzTF35+zaWhWhKZ
+         ec8ZAi3eHVaT8siQVeA1CEbKVbq/aG4d5MY9tOk16j8U8rJeZVAIe6WAhTvBKVT7qX
+         cpEmjyfSMV+dJw8XLn5ikRXMqeLg/oJacxhT5Db6c1gtGO9RA1QHX5E1KDMi1hSCFN
+         m1j1FVYS2Vbsg2/nCKEg4ZlMFLiFBniFaIq/R0bXZk2JzPTjZvlVXi6YcW7HzAd/o2
+         vpF7JqNNSkBBg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8717AE8DD85;
+        Fri, 29 Apr 2022 02:10:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220428043850.1706973-1-aik@ozlabs.ru>
-In-Reply-To: <20220428043850.1706973-1-aik@ozlabs.ru>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 29 Apr 2022 11:08:23 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASiK8RtcDTM-WgFN=ARdhFQ6v=pNYMSafp16OBF_8JgtQ@mail.gmail.com>
-Message-ID: <CAK7LNASiK8RtcDTM-WgFN=ARdhFQ6v=pNYMSafp16OBF_8JgtQ@mail.gmail.com>
-Subject: Re: [PATCH kernel] RFC: zstd: Fixing mixed module-builtin objects
-To:     Alexey Kardashevskiy <aik@ozlabs.ru>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Tom Rix <trix@redhat.com>, Nick Terrell <terrelln@fb.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: prestera: add police action support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165119821254.31798.12575009523722700259.git-patchwork-notify@kernel.org>
+Date:   Fri, 29 Apr 2022 02:10:12 +0000
+References: <1651061148-21321-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+In-Reply-To: <1651061148-21321-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+To:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
+Cc:     netdev@vger.kernel.org, taras.chornyi@plvision.eu,
+        serhiy.pshyk@plvision.eu, tchornyi@marvell.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 1:39 PM Alexey Kardashevskiy <aik@ozlabs.ru> wrote:
->
-> With CONFIG_ZSTD_COMPRESS=m and CONFIG_ZSTD_DECOMPRESS=y we end up in
-> a situation when files from lib/zstd/common/ are compiled once for
-> ZSTD_DECOMPRESS (build-in) and ZSTD_COMPRESS (module) even though
-> CFLAGS are different for builtins and modules. So far somehow
-> this was not a problem until enabling LLVM LTO where it fails:
+Hello:
 
-I did not notice this potential issue, but you are right.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-When an object is shared between vmlinux and a module,
-it is compiled with module flags (module wins).
+On Wed, 27 Apr 2022 15:05:48 +0300 you wrote:
+> - Add HW api to configure policer:
+>   - SR TCM policer mode is only supported for now.
+>   - Policer ingress/egress direction support.
+> - Add police action support into flower
+> 
+> Signed-off-by: Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
+> 
+> [...]
 
+Here is the summary with links:
+  - [net-next] net: prestera: add police action support
+    https://git.kernel.org/netdev/net-next/c/dde2daa0a279
 
-I did not come up with a clean solution in Kbuild.
-To avoid this situation, Kbuild must compile different
-objects for each, but doing that would complicate Kbuild.
-
-
-
-I'd suggest to stop object sharing among modules.
-
-One possible solution might be to move common objects
-to a separate zstd_common.ko
-
-  - zstd_compress.ko
-  - zstd_decompress.ko
-  - zstd_common.ko
-
-You may need to add some EXPORT_SYMBOL
-to common functions.
-
-
-
-
-> ld.lld: error: linking module flags 'Code Model': IDs have conflicting values in 'lib/built-in.a(zstd_common.o at 5868)' and 'ld-temp.o'
->
-> This particular conflict is caused by KBUILD_CFLAGS=-mcmodel=medium vs.
-> KBUILD_CFLAGS_MODULE=-mcmodel=large , modules use the large model on
-> POWERPC as explained at
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/powerpc/Makefile?h=v5.18-rc4#n127
-> but the current use of common files is wrong anyway.
->
-> This works around the issue by inlining common files and fixing few
-> conflicts.
->
-> Cc: Masahiro Yamada <masahiroy@kernel.org>
-> Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-> ---
->
-> I tried fixing it by hacking Makefile to produce a separate .o for "y" and
-> "m", like this:
->
-> +obj-common-y =  common/debug-y.o \
-> +               common/entropy_common-y.o \
-> +               common/error_private-y.o \
-> +               common/fse_decompress-y.o \
-> +               common/zstd_common-y.o
-> +obj-common-m =  common/debug-m.o \
-> +               common/entropy_common-m.o \
-> +               common/error_private-m.o \
-> +               common/fse_decompress-m.o \
-> +               common/zstd_common-m.o
-> +obj-common-m := $(addprefix $(obj)/, $(obj-common-m))
-> +obj-common-y := $(addprefix $(obj)/, $(obj-common-y))
-> +
-> +$(obj-common-m): $(obj)/%-m.o: %.c FORCE
-> +        $(call if_changed_dep,cc_o_c)
-> +$(obj-common-y): $(obj)/%-y.o: %.c FORCE
-> +        $(call if_changed_dep,cc_o_c)
-> +
-
-
-I did not look into this closely, but you need to
-use if_changed_rule instead of if_changed_dep at least.
-
-
-
-
-
+You are awesome, thank you!
 -- 
-Best Regards
-Masahiro Yamada
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
