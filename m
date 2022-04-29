@@ -2,211 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC7F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5E32C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:46:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354763AbiD2GsB (ORCPT
+        id S1354765AbiD2Gtl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 02:48:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33064 "EHLO
+        Fri, 29 Apr 2022 02:49:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354694AbiD2Gr7 (ORCPT
+        with ESMTP id S1347623AbiD2Gti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 02:47:59 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD0CBB092
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 23:44:41 -0700 (PDT)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23T4XFuL012806;
-        Fri, 29 Apr 2022 06:42:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=H1GlisjeBSGQKI4etVGVdomJpiXkB+lqDYSPiLSRBBQ=;
- b=B5CkBIZj/KYiJ4KJ5sYACdOQXFITqMWTCEIIxORYIDMrOUrC4Sao7phvjc/45hagbtC1
- jkpvTADF11qmjgNbABFmM+AX3Cs917PU+Qk9bdQa4SRgK1O1jeBnESfmFB5yA3LnVItc
- AEopiMACMp8MeV01csCB0reI0bCPnkSwdPejw+GD6dp3W1WdPppphC4koRUMEfYUFi7A
- xjpozYeX+ngHAa3WihBX0qr6V9YXbsJ9fEpg8KF+v068qN60wxmQawpjWqeH5NtHzGFA
- 1SThyw5Yxd4PWCPOlCVcQ0M0XePPnxC2ADo2meujF4OMpZaQ1+2W1E060t9nj4Waaqam 3A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqtvxd2bb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 06:42:08 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23T6g7i4029805;
-        Fri, 29 Apr 2022 06:42:07 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqtvxd2ar-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 06:42:07 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23T6MnjB022954;
-        Fri, 29 Apr 2022 06:42:05 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma06ams.nl.ibm.com with ESMTP id 3fm8qj8n66-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 06:42:05 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23T6g3MP52822490
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 29 Apr 2022 06:42:03 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 18B0CA4054;
-        Fri, 29 Apr 2022 06:42:03 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E01ACA405B;
-        Fri, 29 Apr 2022 06:41:57 +0000 (GMT)
-Received: from [9.43.116.127] (unknown [9.43.116.127])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 29 Apr 2022 06:41:57 +0000 (GMT)
-Message-ID: <100fa9f0-fc24-7a3f-33c6-3d4e7f6f4a93@linux.ibm.com>
-Date:   Fri, 29 Apr 2022 12:11:56 +0530
+        Fri, 29 Apr 2022 02:49:38 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D5D4EF42
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 23:46:21 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id bv19so13614032ejb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 23:46:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=xrvbVTYSX718CzoTpb87YI9jX7d2f6okuPzmrfDd5oE=;
+        b=xNVFNFY3Yyl8v2oJkDosbR3b1ZGnJSLguQsNF3lKuBhGL2kxMx7xSGtK7IRL49NmC1
+         fy8DaSfoY9BdGhtGFNFovlrJyW3A8R9DoUtUb8Y7+VxHCvAlN0WIv9ebko+UKVB+T7YK
+         2P3Bn2+9zX7wy832/UWEI+rG/3G+TaZAeaG2xjqYe+NHkz3AHCpMUkykrxExfupZaEH4
+         ckyAWBfHZxpmgwIIttJxvE16ActebkFCSDYMKm0/ESuWI0Tl3ZmTxKioSv686do1zUU8
+         zI0dcSl3OWlbmfRo9RnuL1Xi6RfC51JpYdjEv3XDOjmKKYb5oMSr5Z3eNLDrdMXObegy
+         zVTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xrvbVTYSX718CzoTpb87YI9jX7d2f6okuPzmrfDd5oE=;
+        b=tRK50lob6AvUz7lNU+/fEJJwWA81NU4qaBj14kIwbkhdbcImCaU4VgSLyy0aoVL7pC
+         kFylJBEICmYJPq9p4is573e8E5IC2PsxpEEzMQ3R6D3lQxtydMWpZbx/DyTmteQQkmRZ
+         sCFoKUU/DFxZZuKVmjdjz3n55RKL+1X8tYdH8QPD2/1zFbRYLrIymOIl51SjOSJ/cKLi
+         +FDW/m79bYBSEjG0hCEeCC4dwFx6LM3/jNLg9WzBJoqzbJ5ovGyJseQ7QMyxbi8dWh1o
+         Q44b8RSp97R1hiPruJpjKxp/q5y5+afxr1D79/D0U56SV13DU1NrDzx4k4vsykti+VdC
+         mJpg==
+X-Gm-Message-State: AOAM530bEqfFO0ELqTqvH07T4ynllz90enZT+hgn0IPvL29sOS+1NevB
+        h29Fd38Zemf9ZpVR1FFhVDELrQ==
+X-Google-Smtp-Source: ABdhPJyuO3oZ/QiDbGWXSb64bqbYgx5YfcpXNcJaXAf8/j0v4zYwZp7O7t6DpPDOfTAGtkYuWXD+RA==
+X-Received: by 2002:a17:907:3f8f:b0:6f3:d4a0:e80c with SMTP id hr15-20020a1709073f8f00b006f3d4a0e80cmr8215819ejc.709.1651214779739;
+        Thu, 28 Apr 2022 23:46:19 -0700 (PDT)
+Received: from [192.168.0.168] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id og39-20020a1709071de700b006f3ef214e61sm345251ejc.199.2022.04.28.23.46.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 23:46:19 -0700 (PDT)
+Message-ID: <b279040a-a782-a2ca-2acb-2d8f07709081@linaro.org>
+Date:   Fri, 29 Apr 2022 08:46:18 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v7 2/8] x86/crash: Introduce new options to support cpu
- and memory hotplug
+Subject: Re: [PATCH v2 1/2] dt-bindings: mtd: partitions: Add binding for
+ Sercomm parser
 Content-Language: en-US
-To:     Eric DeVolder <eric.devolder@oracle.com>,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, bhe@redhat.com, vgoyal@redhat.com
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com,
-        nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
-References: <20220413164237.20845-1-eric.devolder@oracle.com>
- <20220413164237.20845-3-eric.devolder@oracle.com>
- <d90f4299-e821-f5d5-957a-1e84f16816e0@linux.ibm.com>
- <300a485c-4bc5-c58a-d34a-bacdb1fa4510@oracle.com>
-From:   Sourabh Jain <sourabhjain@linux.ibm.com>
-In-Reply-To: <300a485c-4bc5-c58a-d34a-bacdb1fa4510@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Mikhail Zhilkin <csharper2005@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     NOGUCHI Hiroshi <drvlabo@gmail.com>, Karim <Karimdplay@gmail.com>,
+        M <x1@disroot.org>, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220406195557.1956-1-csharper2005@gmail.com>
+ <20220406195946.2019-1-csharper2005@gmail.com>
+ <8d0d8b27-35ff-3693-cf80-897b80c26b4e@linaro.org>
+ <57bebf2f-af4c-b2d9-10e5-19e5104946fb@gmail.com>
+ <29cfa017-bbaf-3aba-fe1d-06771957dbaa@linaro.org>
+ <1b391399-984b-7a63-3265-62ef09caec39@gmail.com>
+ <bd533827-b575-caad-c230-af060851b231@gmail.com>
+ <db70e53b-7484-43bf-e9c8-b6a2dce1fbb5@linaro.org>
+ <25da3f43-c46e-8108-2da9-0e4f2b7cc1a4@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <25da3f43-c46e-8108-2da9-0e4f2b7cc1a4@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: pgTu7MglxuyTKy8vd5PooGgD6kUmZlll
-X-Proofpoint-GUID: nWEWkH0OBaRbsrSOpvCUJ2cyuk97UxDN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-29_05,2022-04-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- lowpriorityscore=0 priorityscore=1501 spamscore=0 suspectscore=0
- clxscore=1015 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- phishscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204290036
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 28/04/2022 17:24, Mikhail Zhilkin wrote:
+> 
+> Hi, Krzysztof,
+> 
+> On 4/10/2022 11:18 AM, Krzysztof Kozlowski wrote:
+>> I am sorry, but you changed now a lot in the bindings and it looks
+>> entirely different. Things previously being correct now are wrong, so
+>> rather start from your old bindings...
+> 
+> 
+> Looks like I'm a bit confused... I use dual "compatible" in my real dts
+> and I realized that:
+> 
+> 1. Therefore I have to use  dual "compatible" in example too:
+> 
+> compatible = "sercomm,sc-partitions", "fixed-partitions";
+> 
+> 2. When I'm trying to reuse "fixed-partitions" compatible from
+> fixed-partitions.yaml in my new .yaml I get "too long" errors.
 
-On 26/04/22 20:09, Eric DeVolder wrote:
->
->
-> On 4/25/22 23:21, Sourabh Jain wrote:
->>
->> On 13/04/22 22:12, Eric DeVolder wrote:
->>> CRASH_HOTPLUG is to enable cpu and memory hotplug support of crash.
->>>
->>> CRASH_HOTPLUG_ELFCOREHDR_SZ is used to specify the maximum size of
->>> the elfcorehdr buffer/segment.
->>>
->>> This is a preparation for later usage.
->>>
->>> Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
->>> Acked-by: Baoquan He <bhe@redhat.com>
->>> ---
->>>   arch/x86/Kconfig | 26 ++++++++++++++++++++++++++
->>>   1 file changed, 26 insertions(+)
->>>
->>> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
->>> index b0142e01002e..f7b92ee1bcc7 100644
->>> --- a/arch/x86/Kconfig
->>> +++ b/arch/x86/Kconfig
->>> @@ -2072,6 +2072,32 @@ config CRASH_DUMP
->>>         (CONFIG_RELOCATABLE=y).
->>>         For more details see Documentation/admin-guide/kdump/kdump.rst
->>> +config CRASH_HOTPLUG
->>> +    bool "kernel updates of crash elfcorehdr"
->>> +    depends on CRASH_DUMP && (HOTPLUG_CPU || MEMORY_HOTPLUG) && 
->>> KEXEC_FILE
->>> +    help
->>> +      Enable the kernel to update the crash elfcorehdr (which contains
->>> +      the list of CPUs and memory regions) directly when hot 
->>> plug/unplug
->>> +      of CPUs or memory. Otherwise userspace must monitor these hot
->>> +      plug/unplug change notifications via udev in order to
->>> +      unload-then-reload the crash kernel so that the list of CPUs and
->>> +      memory regions is kept up-to-date. Note that the udev CPU and
->>> +      memory change notifications still occur (however, userspace 
->>> is not
->>> +      required to monitor for crash dump purposes).
->>> +
->>> +config CRASH_HOTPLUG_ELFCOREHDR_SZ
->>> +    depends on CRASH_HOTPLUG
->>> +    int
->>> +    default 131072
->>> +    help
->>> +      Specify the maximum size of the elfcorehdr buffer/segment.
->>> +      The 128KiB default is sized so that it can accommodate 2048
->>> +      Elf64_Phdr, where each Phdr represents either a CPU or a
->>> +      region of memory.
->>> +      For example, this size can accommodate a machine with up to 1024
->>> +      CPUs and up to 1024 memory regions, eg. as represented by the
->>> +      'System RAM' entries in /proc/iomem.
->>
->> Is it possible to get rid of CRASH_HOTPLUG_ELFCOREHDR_SZ?
-> At the moment, I do not think so. The idea behind this value is to 
-> represent the largest number of CPUs and memory regions possible in 
-> the system. Today there is NR_CPUS which could be used for CPUs, but 
-> there isn't a similar value for memory. I also am not aware of a 
-> kernel variable that could be utilized to represent the maximum number 
-> of memory regions. If there is, please let me know!
->>
->> How about finding the additional buffer space needed for future CPU 
->> and memory
->> add during the kdump load? Not sure about the feasibility of doing 
->> this in
->> kexec tool (userspace).
->
-> I may not understand what you are asking, but the x86 code, for 
-> kexec_file_load, does in fact allocate all the space needed (currently 
-> via CRASH_HOTPLUG_ELFCOREHDR_SZ) upon kdump load.
->
-> For kexec_load, I've had no problem asking the kexec tool to allocate 
-> a larger piece of memory for the elfcorehdr. But it is the same 
-> problem as CRASH_HOTPLUG_ELFCOREHDR_SZ; how big? In my workspace I 
-> tell kexec tool how big. If there are sysfs visible values for NR_CPU 
-> and memory, then we could have kexec pull those and compute.
+Yes, the fixed-partitions.yaml would have to be changed to allow extension.
 
-Yeah dynamic calculation for PT_LOAD sections needed for possible memory 
-may not be straightforward. But still I did not get the rational for 
-limiting the possible PT_LOAD sections or memory ranges to only 1024. 
-Although in kexec tool the max memory ranges for x86 is 32K.
+> 
+> Real dts:
+> 
+> Link:
+> https://github.com/openwrt/openwrt/blob/edcc1a9a734bb3fcdc9242025290d3f173e71b78/target/linux/ramips/dts/mt7621_beeline_smartbox-giga.dts#L79
+> 
+> So, I currently found another solution - to extend fixed-partitions.yaml
+> with "sercomm,sc-partitions". Is It ok from your side? Can I use this
+> code in v3?
 
-commit 1bc7bc7649fa29d95c98f6a6d8dd2f08734a865c
-Author: David Hildenbrand <david@redhat.com>
-Date:   Tue Mar 23 11:01:10 2021 +0100
+Not really, I don't understand why do you need it and it does not
+include our previous talks.
 
-     crashdump/x86: increase CRASH_MAX_MEMORY_RANGES to 32k
+> 
+> diff --git
+> a/Documentation/devicetree/bindings/mtd/partitions/fixed-partitions.yaml
+> b/Documentation/devicetree/bindings/mtd/partitions/fixed-partitions.yaml
+> index ea4cace6a955..9eebe39a57fb 100644
+> --- a/Documentation/devicetree/bindings/mtd/partitions/fixed-partitions.yaml
+> +++ b/Documentation/devicetree/bindings/mtd/partitions/fixed-partitions.yaml
+> @@ -19,7 +19,11 @@ maintainers:
+>  
+>  properties:
+>    compatible:
+> -    const: fixed-partitions
+> +    oneOf:
+> +      - const: fixed-partitions
+> +      - items:
+> +          - const: sercomm,sc-partitions
+> +          - const: fixed-partitions
+>  
+>    "#address-cells": true
+>  
+> @@ -27,7 +31,18 @@ properties:
+>  
+>  patternProperties:
+>    "@[0-9a-f]+$":
+> -    $ref: "partition.yaml#"
+> +    allOf:
+> +      - $ref: "partition.yaml#"
+> +      - if:
+> +          properties:
+> +            compatible:
+> +              contains:
+> +                const: sercomm,sc-partitions
+> +        then:
+> +          properties:
+> +            scpart-id:
 
-     virtio-mem in Linux adds/removes individual memory blocks (e.g., 128 MB
-     each). Linux merges adjacent memory blocks added by virtio-mem 
-devices, but
-     we can still end up with a very sparse memory layout when unplugging
-     memory in corner cases.
+It still misses vendor prefix and we agreed you don't need it, didn't we?
 
-     Let's increase the maximum number of crash memory ranges from ~2k 
-to 32k.
-     32k should be sufficient for a very long time.
 
-     e_phnum field in the header is 16 bits wide, so we can fit a maximum of
-     ~64k entries in there, shared with other entries (i.e., CPU). 
-Therefore,
-     using up to 32k memory ranges is fine. (if we ever need more than ~64k,
-
-Do you see any issue if we increase the memory range count to 32K?
-
-Thanks,
-Sourabh Jain
-
+Best regards,
+Krzysztof
