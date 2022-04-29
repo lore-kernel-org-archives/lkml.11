@@ -2,218 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5873C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:21:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD6D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:21:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235915AbiD2RY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 13:24:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52388 "EHLO
+        id S236289AbiD2RYh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 13:24:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235457AbiD2RY0 (ORCPT
+        with ESMTP id S236057AbiD2RY3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 13:24:26 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404AB4C790;
-        Fri, 29 Apr 2022 10:21:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651252867; x=1682788867;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LDN4LTmiRFBu3yewHsXaqx2iqRnXy9xm2ypIZ36Kb28=;
-  b=PhSXqXUVilFIPk6P1a2eWhFgUAfrSPYAfwn3AyoVvOPhBL7Dbc4NJjYv
-   lgmprFH0G0HhoNonzQiYyCycAagq1ERkd5SMLmNbkJEhPhwktRdWZlJnZ
-   hYzrSNi/+w5JaKlCaMMqjhuCQ8SIX35sfz9bqwWNvnM22XxfP7/6XYQ/N
-   63LGENw2Uf+Re8J//I+xNX0kpt4daMiEWPu5HVd8vwvS56nDped55q6Gp
-   /iN194BfS+qVCIrK1e0UTqJFRkhLvIPbbXzipGzCmnSta1tqJB+9j88oR
-   kwTUZa7q3O+5Bba+dcYAw4eeXx10PmXwQvNtIYdZqDD46Xnrp/a0fjXu3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="266869745"
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="266869745"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 10:20:55 -0700
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="651838350"
-Received: from nadelgad-mobl.amr.corp.intel.com (HELO localhost) ([10.212.108.243])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 10:20:54 -0700
-Date:   Fri, 29 Apr 2022 10:20:54 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH V8 04/10] cxl/pci: Create auxiliary devices for each DOE
- mailbox
-Message-ID: <YmwedkzLrsOmsQt/@iweiny-desk3>
-References: <20220414203237.2198665-1-ira.weiny@intel.com>
- <20220414203237.2198665-5-ira.weiny@intel.com>
- <20220429165502.00000d01@huawei.com>
+        Fri, 29 Apr 2022 13:24:29 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADD64C790;
+        Fri, 29 Apr 2022 10:21:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1651252840;
+        bh=KjOTaewkXeg9gD63/HWGEfLtPHd2o/Nc1ZX9pL1ItJU=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=fFKo+3FN3UNC4U+2YAFSv/d5O/JNFoCcTVYmlaK5MK5v6vvEtXWx+xJ38FybQNk8n
+         pi7K5syL1mamdZl4Quns2rgkcxH/0y8KCi2IDGmQNgsP/ej60Q8cfRcViOv821f9jL
+         sxrpMltzCuNOk0DtF+db46Fi/H6Uw+OtcMHlwi1w=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([37.201.215.103]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MvK0X-1o2ZLN1Vx3-00rFqR; Fri, 29
+ Apr 2022 19:20:40 +0200
+From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     linux-clk@vger.kernel.org, openbmc@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH v2 2/7] clocksource: timer-npcm7xx: Enable timer 1 clock before use
+Date:   Fri, 29 Apr 2022 19:20:25 +0200
+Message-Id: <20220429172030.398011-3-j.neuschaefer@gmx.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220429172030.398011-1-j.neuschaefer@gmx.net>
+References: <20220429172030.398011-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220429165502.00000d01@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:F0+IFMLwve1L01E5CbdzpXZxEC0gnGkE9a9+pZhDgs7EwhdNaGh
+ E1hluldQg3kkl+1INd3E7S8dTQgQ9HPZR2BbRTxEokRuS3BFevdFBa13+ypjpPS6lKM/EdL
+ 9piJW4rKikAiJZwMwKGIvJRj5ZQm7HdNQIF8NQe/EoGdcJN7Q0Hdu6h72LC1KRLn6/d4LtK
+ NaXntm46PxSIKEGKff71A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:i9zb9H0jIH8=:GjPNtl7S/40sSf5720RMYP
+ eT78eAyQB5ybkGXAP74BN0IdHf19AmQk16ZrbNCkPBc2jgUofVhI1gNCaQwLcZWmOqajQ02HP
+ UDe+R7Om/NRe2Y93Q3j/NblA4AfQBgZg8pB2kn7CKcAWtOOpRsX+1WW/SQIcUgtRN3TCD6QkW
+ RPQKtSdMbTxDVObbBakJP4yk2F8YjnZABQyF9YiY3c29GDlavTTPJT4U/BstLYVL7R3U9XCaj
+ 75vW5TCFDZ3rjrkOweqwRR1X9Xu3X2TeZCDJM3JMy7JCsQCt7tRwqTtS1OLMBR7A1c9olYhXB
+ WAHawMIrSiFnSAOa4eaXHOu4pv7GS6TZnwv1sht5Y2HCvncPKntmVjRiNqCyf/elrRDIchywb
+ 1wKSbNNpYQtm5PYHNzX0m/eZjRd1wbYm2EbHrh+ZHge0GpjdC1OygAKqb77fg6oyTijkNvi8S
+ xC6tsmbAHllH/S6gik7zOgUBtcrYDpSjtiS8fhARU6WWMztEBn1EQE8dmHEn+TT1qgK6U9TSw
+ 5pydtrW1BQqaDJgOnfr7A0DkdsCk2P+gghsIm+sk3CKV2L2SEcrF5GC5O0ArLirb0KJNdE7s/
+ I736sLwQkscHcbEW4/+B1clyyzE6Hrk0GTWsKdf6sc28aXtoKcSmvcKmR6iq1nUvWZdpmQkDR
+ PEFg79afpMOhljpt54QccOqjlan26P04dJpTlhTntnKnagUKhDz8xUuIuDoQPbdmKS+Y+RX3q
+ y1ws/xCjVfZWebyd+lIKpxl0ewn0K3+snNQJPwVMdOjyOCa/UgbSGXokLHd/T0cs+7BUJrxiG
+ t3WLwkn/Gd4H6T8djfPLqyV4PGtXoZf652RXJopHcNAg9WWMLaq7XRufq1uEGqplzgN8h57ul
+ TAllRufMmrbelvcTHnZjORlg7IceaI2cRqZ60FYPnV+sk4cUHzisPGnhk9zLETMUqnj0JfPMM
+ G4XnEsJ2ZMA9gGdGBKTNvniirSfL7Bx2udvV3uDLI1jZ//OsHn00n9H35Io+8B5bPr3U/2Xt0
+ OHIu9uEs5az8CG91t82K15C3Dkj1RP8IT+lStp9MZAfk9WTvzy6fU5xIftBdSmJFFPukL4ouS
+ KuhLYz+pwn4q94=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 04:55:02PM +0100, Jonathan Cameron wrote:
-> On Thu, 14 Apr 2022 13:32:31 -0700
-> ira.weiny@intel.com wrote:
-> 
-> > From: Ira Weiny <ira.weiny@intel.com>
-> > 
+In the WPCM450 SoC, the clocks for each timer can be gated individually.
+To prevent the timer 1 clock from being gated, enable it explicitly.
 
-[snip]
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+=2D--
 
-> > +
-> > +/**
-> > + * cxl_pci_create_doe_devices - Create auxiliary bus DOE devices for all DOE
-> > + *				mailboxes found
-> > + *
-> > + * @pci_dev: The PCI device to scan for DOE mailboxes
-> > + *
-> > + * There is no coresponding destroy of these devices.  This function associates
-> > + * the DOE auxiliary devices created with the pci_dev passed in.  That
-> > + * association is device managed (devm_*) such that the DOE auxiliary device
-> > + * lifetime is always less than or equal to the lifetime of the pci_dev.
-> > + *
-> > + * RETURNS: 0 on success -ERRNO on failure.
-> > + */
-> > +static int cxl_pci_create_doe_devices(struct pci_dev *pdev)
-> > +{
-> > +	struct device *dev = &pdev->dev;
-> > +	bool use_irq = true;
-> > +	int irqs = 0;
-> > +	u16 off = 0;
-> > +	int rc;
-> > +
-> > +	pci_doe_for_each_off(pdev, off)
-> > +		irqs++;
-> I believe this is insufficient because there may be other irqs in use
-> on the device.
+v2:
+- Provide context in pr_warn message
 
-I did not think that was true for any current CXL device.  From what I could
-tell all CXL devices would be covered by this simple calculation.  I left it to
-the reader to determine if a new CXL device came along which needed other irq's
-to lift this somewhere to cover those allocations.  I probably should have made
-some comment.  Sorry.
+v1:
+- https://lore.kernel.org/lkml/20220422183012.444674-3-j.neuschaefer@gmx.n=
+et/
+=2D--
+ drivers/clocksource/timer-npcm7xx.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-> In a similar fashion to that done in pcie/portdrv_core.c
-> I think we need to instead find the maximum msi/msix vector number
-> by reading the config space.
+diff --git a/drivers/clocksource/timer-npcm7xx.c b/drivers/clocksource/tim=
+er-npcm7xx.c
+index a00520cbb660a..9af30af5f989a 100644
+=2D-- a/drivers/clocksource/timer-npcm7xx.c
++++ b/drivers/clocksource/timer-npcm7xx.c
+@@ -188,6 +188,7 @@ static void __init npcm7xx_clocksource_init(void)
 
-I was not aware I could do that...
+ static int __init npcm7xx_timer_init(struct device_node *np)
+ {
++	struct clk *clk;
+ 	int ret;
 
-> Then we request one more vector
-> than that max value to ensure the vector we need has been requested.
+ 	ret =3D timer_of_init(np, &npcm7xx_to);
+@@ -199,6 +200,15 @@ static int __init npcm7xx_timer_init(struct device_no=
+de *np)
+ 	npcm7xx_to.of_clk.rate =3D npcm7xx_to.of_clk.rate /
+ 		(NPCM7XX_Tx_MIN_PRESCALE + 1);
 
-Yea at some point I figured this would be lifted out of here as part of a
-larger 'allocate all the vectors for the device' function.
++	/* Enable the clock for timer1, if it exists */
++	clk =3D of_clk_get(np, 1);
++	if (clk) {
++		if (!IS_ERR(clk))
++			clk_prepare_enable(clk);
++		else
++			pr_warn("%pOF: Failed to get clock for timer1: %pe", np, clk);
++	}
++
+ 	npcm7xx_clocksource_init();
+ 	npcm7xx_clockevents_init();
 
-But for now this is the only place that needs irqs so I punted.  I can lift
-this into something like
+=2D-
+2.35.1
 
-cxl_pci_alloc_irq_vectors(...) and then pass use_irq here.
-
-But to move this series forward I would propose that
-cxl_pci_alloc_irq_vectors() do what I'm doing here for now.
-
-Ira
-
-> 
-> Jonathan
-> 
-> > +	pci_info(pdev, "Found %d DOE mailbox's\n", irqs);
-> > +
-> > +	/*
-> > +	 * Allocate enough vectors for the DOE's
-> > +	 */
-> > +	rc = pci_alloc_irq_vectors(pdev, irqs, irqs, PCI_IRQ_MSI |
-> > +						     PCI_IRQ_MSIX);
-> > +	if (rc != irqs) {
-> > +		pci_err(pdev,
-> > +			"Not enough interrupts for all the DOEs; use polling\n");
-> > +		use_irq = false;
-> > +		/* Some got allocated; clean them up */
-> > +		if (rc > 0)
-> > +			cxl_pci_free_irq_vectors(pdev);
-> > +	} else {
-> > +		/*
-> > +		 * Enabling bus mastering is require for MSI/MSIx.  It could be
-> > +		 * done later within the DOE initialization, but as it
-> > +		 * potentially has other impacts keep it here when setting up
-> > +		 * the IRQ's.
-> > +		 */
-> > +		pci_set_master(pdev);
-> > +		rc = devm_add_action_or_reset(dev,
-> > +					      cxl_pci_free_irq_vectors,
-> > +					      pdev);
-> > +		if (rc)
-> > +			return rc;
-> > +	}
-> > +
-> > +	pci_doe_for_each_off(pdev, off) {
-> > +		struct auxiliary_device *adev;
-> > +		struct cxl_doe_dev *new_dev;
-> > +		int id;
-> > +
-> > +		new_dev = kzalloc(sizeof(*new_dev), GFP_KERNEL);
-> > +		if (!new_dev)
-> > +			return -ENOMEM;
-> > +
-> > +		new_dev->pdev = pdev;
-> > +		new_dev->cap_offset = off;
-> > +		new_dev->use_irq = use_irq;
-> > +
-> > +		/* Set up struct auxiliary_device */
-> > +		adev = &new_dev->adev;
-> > +		id = ida_alloc(&pci_doe_adev_ida, GFP_KERNEL);
-> > +		if (id < 0) {
-> > +			kfree(new_dev);
-> > +			return -ENOMEM;
-> > +		}
-> > +
-> > +		adev->id = id;
-> > +		adev->name = DOE_DEV_NAME;
-> > +		adev->dev.release = cxl_pci_doe_dev_release;
-> > +		adev->dev.parent = dev;
-> > +
-> > +		if (auxiliary_device_init(adev)) {
-> > +			cxl_pci_doe_dev_release(&adev->dev);
-> > +			return -EIO;
-> > +		}
-> > +
-> > +		if (auxiliary_device_add(adev)) {
-> > +			auxiliary_device_uninit(adev);
-> > +			return -EIO;
-> > +		}
-> > +
-> > +		rc = devm_add_action_or_reset(dev, cxl_pci_doe_destroy_device,
-> > +					      adev);
-> > +		if (rc)
-> > +			return rc;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >  static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-> >  {
-> >  	struct cxl_register_map map;
-> > @@ -630,6 +753,10 @@ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-> >  	if (rc)
-> >  		return rc;
-> >  
-> > +	rc = cxl_pci_create_doe_devices(pdev);
-> > +	if (rc)
-> > +		return rc;
-> > +
-> >  	cxl_dvsec_ranges(cxlds);
-> >  
-> >  	cxlmd = devm_cxl_add_memdev(cxlds);
-> 
