@@ -2,260 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C9C2C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFDABC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:10:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378106AbiD2PMb (ORCPT
+        id S1377722AbiD2POK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 11:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56266 "EHLO
+        Fri, 29 Apr 2022 11:14:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377609AbiD2PMa (ORCPT
+        with ESMTP id S238261AbiD2POH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 11:12:30 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B22AD4450;
-        Fri, 29 Apr 2022 08:09:10 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TF209x006498;
-        Fri, 29 Apr 2022 15:09:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=nXnPsHhXpKm8qqmbPkjZpTlHaRtF0ZtvBMSv/HUfRUE=;
- b=JzGpUN9kgvgcH0i6sLyuyr0T9yfY3/eI+navoKzI/B26xcjiyxvkkDheQwgVMliuZ/GT
- 3DWFuUqhXTWAthL34N0oy3FFkiDXW80AcS+8rYNmcSHbdEX1iaKxghkeGaY+a8ng6r42
- bcyXvTHfPrCjY8HwEev9MZnO3Qo0TogYp2ywAv4SfolMsPyN+a60/cnbgIIefgZ9iVdF
- szxLSsi0zyAbwHMUxdB+wnU+nka+NV2TcOn3h52o5/3EQMUThRstJMu0NQu4K4eORQi8
- 9NN89omHmn9+Qd4GDe0M2Ra6PN+fsJZCQQmRl7yxTaDCyE9Cj/XsdLP4md1jzOAVK0qb ag== 
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqt9ed9gg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 15:09:08 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TEqiHO015190;
-        Fri, 29 Apr 2022 15:09:07 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma01dal.us.ibm.com with ESMTP id 3fm93bd292-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 15:09:07 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TF96AN10223944
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 29 Apr 2022 15:09:06 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5149AAC066;
-        Fri, 29 Apr 2022 15:09:06 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 17E97AC06C;
-        Fri, 29 Apr 2022 15:09:06 +0000 (GMT)
-Received: from [9.47.158.152] (unknown [9.47.158.152])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-        Fri, 29 Apr 2022 15:09:06 +0000 (GMT)
-Message-ID: <026c9596-9ebe-d148-fc5f-442a7e16f48b@linux.ibm.com>
-Date:   Fri, 29 Apr 2022 11:09:05 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v8 4/7] ima: define a new template field named 'd-ngv2'
- and templates
-Content-Language: en-US
-To:     Mimi Zohar <zohar@linux.ibm.com>, linux-integrity@vger.kernel.org
-Cc:     Eric Biggers <ebiggers@kernel.org>, linux-fscrypt@vger.kernel.org,
+        Fri, 29 Apr 2022 11:14:07 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37BC3D445B
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 08:10:49 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id 17so10903870lji.1
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 08:10:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=pBiFdJVBK7XJGcpZMBcNpezNa6QIqErstaAn3kJpmDo=;
+        b=dZwSRZ2uUt8/WpZywemY6gH9zX1bSy62uuhUOu5pOWQT+dn18k2SDQQu6GJeCR1fmI
+         B9i/eUnvM463HnUn9gPQ4mIHvkU2iyDkHZb6gVT4C6czaSHmrvBGn8LgplqbU9XWyyGU
+         J4w9GZKmjIVcfqj51GhpnuXtNWhRwHVmfxq8rrhs2c+yKxtv/p5YTOUohXke7TESuHwl
+         ngFhgzPPHRJotN6GR9+KG4f0FM0F+tyMW9UsJtBUtKHgKcdM7uXUD7PlGvKOFStGFvkC
+         ZRhqVMfg6QSxwiqmYL54PQdkBEtWRtax0cv5wzeGjGXGRBFFqty9gQWjVObdZ5Jwma+l
+         W+wA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=pBiFdJVBK7XJGcpZMBcNpezNa6QIqErstaAn3kJpmDo=;
+        b=Hn+N2ZI3k0VYHgDPuHdOzJaxJWiLMZQWs/9TJ0EsQQFtcnI7/Jx/8HOu7RtTKdMrmD
+         rMi4+avhJ8NIk+7BW6aMXF2McJNPtPp8wNC6oU67pmfZY5sJFSI8YIyhkqw8dji3paGT
+         w9jqzdvAwjOHtml97Qa0EWOIgG8f+sFoXS6eBrC2cBbw6W2L6IeoB1bims2DSSuI/qCw
+         t/2djmx4LE4bM14sDS+hpiA8LFChT+eDlqIZy1flRzfUIlcXIGwPBIpZMpVgFxpHNaeq
+         Pjkeozv3MSeKzUoZGhV+bGGk1G73tC1AFj7t8obKBfx028HfnMvhIz9kVV1aF81YC1u1
+         fHgQ==
+X-Gm-Message-State: AOAM531wQqcJJ7HDdNMzQrLxam8WxMGoOP7JOJOHDRHxw6yLyypHRqG8
+        6xvXdh20SzXr5WswIl34l+BSGW9/lJM=
+X-Google-Smtp-Source: ABdhPJwIjn/TgfjiVJ+PFQMmSwVNO9odm3G/qZjzSdU0Ck0X7LMwl8OoTfIdYYrpdzx9s+oxgWnlKg==
+X-Received: by 2002:a2e:9e8e:0:b0:24a:d2d4:4509 with SMTP id f14-20020a2e9e8e000000b0024ad2d44509mr24544459ljk.69.1651245047368;
+        Fri, 29 Apr 2022 08:10:47 -0700 (PDT)
+Received: from [192.168.1.7] ([212.22.223.21])
+        by smtp.gmail.com with ESMTPSA id i14-20020a198c4e000000b0044a279d25d2sm258572lfj.244.2022.04.29.08.10.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 08:10:46 -0700 (PDT)
+Subject: Re: [PATCH v2 19/19] xen/xenbus: eliminate xenbus_grant_ring()
+To:     Juergen Gross <jgross@suse.com>, xen-devel@lists.xenproject.org,
         linux-kernel@vger.kernel.org
-References: <20220429112601.1421947-1-zohar@linux.ibm.com>
- <20220429112601.1421947-5-zohar@linux.ibm.com>
-From:   Stefan Berger <stefanb@linux.ibm.com>
-In-Reply-To: <20220429112601.1421947-5-zohar@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 7hi85gtDLXvoLMDbGKY3cdtE_k2Naw2W
-X-Proofpoint-ORIG-GUID: 7hi85gtDLXvoLMDbGKY3cdtE_k2Naw2W
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+Cc:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>
+References: <20220428082743.16593-1-jgross@suse.com>
+ <20220428082743.16593-20-jgross@suse.com>
+From:   Oleksandr <olekstysh@gmail.com>
+Message-ID: <bf14e3e1-fc4d-1eee-1dfb-1ba3423f0b6f@gmail.com>
+Date:   Fri, 29 Apr 2022 18:10:45 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-29_07,2022-04-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
- mlxscore=0 suspectscore=0 priorityscore=1501 spamscore=0 mlxlogscore=999
- adultscore=0 lowpriorityscore=0 impostorscore=0 clxscore=1011 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204290082
+In-Reply-To: <20220428082743.16593-20-jgross@suse.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+On 28.04.22 11:27, Juergen Gross wrote:
 
-On 4/29/22 07:25, Mimi Zohar wrote:
-> In preparation to differentiate between unsigned regular IMA file
-> hashes and fs-verity's file digests in the IMA measurement list,
-> define a new template field named 'd-ngv2'.
-> 
-> Also define two new templates named 'ima-ngv2' and 'ima-sigv2', which
-> include the new 'd-ngv2' field.
-> 
-> Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+
+Hello Juergen
+
+
+> There is no external user of xenbus_grant_ring() left, so merge it into
+> the only caller xenbus_setup_ring().
+>
+> Signed-off-by: Juergen Gross <jgross@suse.com>
 > ---
->   .../admin-guide/kernel-parameters.txt         |  3 +-
->   Documentation/security/IMA-templates.rst      |  4 +
->   security/integrity/ima/ima_template.c         |  4 +
->   security/integrity/ima/ima_template_lib.c     | 79 ++++++++++++++++---
->   security/integrity/ima/ima_template_lib.h     |  4 +
->   5 files changed, 82 insertions(+), 12 deletions(-)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index 3f1cc5e317ed..5e866be89f5d 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1903,7 +1903,8 @@
->   
->   	ima_template=	[IMA]
->   			Select one of defined IMA measurements template formats.
-> -			Formats: { "ima" | "ima-ng" | "ima-sig" }
-> +			Formats: { "ima" | "ima-ng" | "ima-ngv2" | "ima-sig" |
-> +				   "ima-sigv2" }
->   			Default: "ima-ng"
->   
->   	ima_template_fmt=
-> diff --git a/Documentation/security/IMA-templates.rst b/Documentation/security/IMA-templates.rst
-> index cab97f49971d..eafc4e34f890 100644
-> --- a/Documentation/security/IMA-templates.rst
-> +++ b/Documentation/security/IMA-templates.rst
-> @@ -67,6 +67,8 @@ descriptors by adding their identifier to the format string
->    - 'n': the name of the event (i.e. the file name), with size up to 255 bytes;
->    - 'd-ng': the digest of the event, calculated with an arbitrary hash
->      algorithm (field format: <hash algo>:digest);
-> + - 'd-ngv2': same as d-ng, but prefixed with the "ima" digest type
-> +   (field format: <digest type>:<hash algo>:digest);
->    - 'd-modsig': the digest of the event without the appended modsig;
->    - 'n-ng': the name of the event, without size limitations;
->    - 'sig': the file signature, or the EVM portable signature if the file
-> @@ -87,7 +89,9 @@ Below, there is the list of defined template descriptors:
->   
->    - "ima": its format is ``d|n``;
->    - "ima-ng" (default): its format is ``d-ng|n-ng``;
-> + - "ima-ngv2": its format is ``d-ngv2|n-ng``;
->    - "ima-sig": its format is ``d-ng|n-ng|sig``;
-> + - "ima-sigv2": its format is ``d-ngv2|n-ng|sig``;
->    - "ima-buf": its format is ``d-ng|n-ng|buf``;
->    - "ima-modsig": its format is ``d-ng|n-ng|sig|d-modsig|modsig``;
->    - "evm-sig": its format is ``d-ng|n-ng|evmsig|xattrnames|xattrlengths|xattrvalues|iuid|igid|imode``;
-> diff --git a/security/integrity/ima/ima_template.c b/security/integrity/ima/ima_template.c
-> index db1ad6d7a57f..c25079faa208 100644
-> --- a/security/integrity/ima/ima_template.c
-> +++ b/security/integrity/ima/ima_template.c
-> @@ -20,6 +20,8 @@ static struct ima_template_desc builtin_templates[] = {
->   	{.name = IMA_TEMPLATE_IMA_NAME, .fmt = IMA_TEMPLATE_IMA_FMT},
->   	{.name = "ima-ng", .fmt = "d-ng|n-ng"},
->   	{.name = "ima-sig", .fmt = "d-ng|n-ng|sig"},
-> +	{.name = "ima-ngv2", .fmt = "d-ngv2|n-ng"},
-> +	{.name = "ima-sigv2", .fmt = "d-ngv2|n-ng|sig"},
->   	{.name = "ima-buf", .fmt = "d-ng|n-ng|buf"},
->   	{.name = "ima-modsig", .fmt = "d-ng|n-ng|sig|d-modsig|modsig"},
->   	{.name = "evm-sig",
-> @@ -38,6 +40,8 @@ static const struct ima_template_field supported_fields[] = {
->   	 .field_show = ima_show_template_string},
->   	{.field_id = "d-ng", .field_init = ima_eventdigest_ng_init,
->   	 .field_show = ima_show_template_digest_ng},
-> +	{.field_id = "d-ngv2", .field_init = ima_eventdigest_ngv2_init,
-> +	 .field_show = ima_show_template_digest_ngv2},
->   	{.field_id = "n-ng", .field_init = ima_eventname_ng_init,
->   	 .field_show = ima_show_template_string},
->   	{.field_id = "sig", .field_init = ima_eventsig_init,
-> diff --git a/security/integrity/ima/ima_template_lib.c b/security/integrity/ima/ima_template_lib.c
-> index 4b6706f864d4..ff82e699149c 100644
-> --- a/security/integrity/ima/ima_template_lib.c
-> +++ b/security/integrity/ima/ima_template_lib.c
-> @@ -24,11 +24,22 @@ static bool ima_template_hash_algo_allowed(u8 algo)
->   enum data_formats {
->   	DATA_FMT_DIGEST = 0,
->   	DATA_FMT_DIGEST_WITH_ALGO,
-> +	DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO,
->   	DATA_FMT_STRING,
->   	DATA_FMT_HEX,
->   	DATA_FMT_UINT
->   };
->   
-> +enum digest_type {
-> +	DIGEST_TYPE_IMA,
-> +	DIGEST_TYPE__LAST
-> +};
-> +
-> +#define DIGEST_TYPE_NAME_LEN_MAX 4	/* including NULL */
-
-You probably mean 'NUL' ('\0') here: 
-https://man7.org/linux/man-pages/man7/ascii.7.html
-
-> +static const char * const digest_type_name[DIGEST_TYPE__LAST] = {
-> +	[DIGEST_TYPE_IMA] = "ima"
-> +};
-> +
->   static int ima_write_template_field_data(const void *data, const u32 datalen,
->   					 enum data_formats datafmt,
->   					 struct ima_field_data *field_data)
-> @@ -72,8 +83,9 @@ static void ima_show_template_data_ascii(struct seq_file *m,
->   	u32 buflen = field_data->len;
->   
->   	switch (datafmt) {
-> +	case DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO:
->   	case DATA_FMT_DIGEST_WITH_ALGO:
-> -		buf_ptr = strnchr(field_data->data, buflen, ':');
-> +		buf_ptr = strrchr(field_data->data, ':');
->   		if (buf_ptr != field_data->data)
->   			seq_printf(m, "%s", field_data->data);
->   
-> @@ -178,6 +190,14 @@ void ima_show_template_digest_ng(struct seq_file *m, enum ima_show_type show,
->   				     field_data);
+> V2:
+> - make error message more precise (Andrew Cooper)
+> ---
+>   drivers/xen/xenbus/xenbus_client.c | 65 +++++++++---------------------
+>   include/xen/xenbus.h               |  2 -
+>   2 files changed, 19 insertions(+), 48 deletions(-)
+>
+> diff --git a/drivers/xen/xenbus/xenbus_client.c b/drivers/xen/xenbus/xenbus_client.c
+> index 1a2e0d94ccd1..d6fdd2d209d3 100644
+> --- a/drivers/xen/xenbus/xenbus_client.c
+> +++ b/drivers/xen/xenbus/xenbus_client.c
+> @@ -363,50 +363,6 @@ static void xenbus_switch_fatal(struct xenbus_device *dev, int depth, int err,
+>   		__xenbus_switch_state(dev, XenbusStateClosing, 1);
 >   }
 >   
-> +void ima_show_template_digest_ngv2(struct seq_file *m, enum ima_show_type show,
-> +				   struct ima_field_data *field_data)
-> +{
-> +	ima_show_template_field_data(m, show,
-> +				     DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO,
-> +				     field_data);
-> +}
+> -/**
+> - * xenbus_grant_ring
+> - * @dev: xenbus device
+> - * @vaddr: starting virtual address of the ring
+> - * @nr_pages: number of pages to be granted
+> - * @grefs: grant reference array to be filled in
+> - *
+> - * Grant access to the given @vaddr to the peer of the given device.
+> - * Then fill in @grefs with grant references.  Return 0 on success, or
+> - * -errno on error.  On error, the device will switch to
+> - * XenbusStateClosing, and the error will be saved in the store.
+> - */
+> -int xenbus_grant_ring(struct xenbus_device *dev, void *vaddr,
+> -		      unsigned int nr_pages, grant_ref_t *grefs)
+> -{
+> -	int err;
+> -	unsigned int i;
+> -	grant_ref_t gref_head;
+> -
+> -	err = gnttab_alloc_grant_references(nr_pages, &gref_head);
+> -	if (err) {
+> -		xenbus_dev_fatal(dev, err, "granting access to ring page");
+> -		return err;
+> -	}
+> -
+> -	for (i = 0; i < nr_pages; i++) {
+> -		unsigned long gfn;
+> -
+> -		if (is_vmalloc_addr(vaddr))
+> -			gfn = pfn_to_gfn(vmalloc_to_pfn(vaddr));
+> -		else
+> -			gfn = virt_to_gfn(vaddr);
+> -
+> -		grefs[i] = gnttab_claim_grant_reference(&gref_head);
+> -		gnttab_grant_foreign_access_ref(grefs[i], dev->otherend_id,
+> -						gfn, 0);
+> -
+> -		vaddr = vaddr + XEN_PAGE_SIZE;
+> -	}
+> -
+> -	return 0;
+> -}
+> -EXPORT_SYMBOL_GPL(xenbus_grant_ring);
+> -
+>   /*
+>    * xenbus_setup_ring
+>    * @dev: xenbus device
+> @@ -424,6 +380,7 @@ int xenbus_setup_ring(struct xenbus_device *dev, gfp_t gfp, void **vaddr,
+>   		      unsigned int nr_pages, grant_ref_t *grefs)
+>   {
+>   	unsigned long ring_size = nr_pages * XEN_PAGE_SIZE;
+> +	grant_ref_t gref_head;
+>   	unsigned int i;
+>   	int ret;
+>   
+> @@ -433,9 +390,25 @@ int xenbus_setup_ring(struct xenbus_device *dev, gfp_t gfp, void **vaddr,
+>   		goto err;
+>   	}
+>   
+> -	ret = xenbus_grant_ring(dev, *vaddr, nr_pages, grefs);
+> -	if (ret)
+> +	ret = gnttab_alloc_grant_references(nr_pages, &gref_head);
+> +	if (ret) {
+> +		xenbus_dev_fatal(dev, ret, "granting access to %u ring pages",
+> +				 nr_pages);
+>   		goto err;
+> +	}
 > +
->   void ima_show_template_string(struct seq_file *m, enum ima_show_type show,
->   			      struct ima_field_data *field_data)
->   {
-> @@ -265,28 +285,38 @@ int ima_parse_buf(void *bufstartp, void *bufendp, void **bufcurp,
->   }
->   
->   static int ima_eventdigest_init_common(const u8 *digest, u32 digestsize,
-> -				       u8 hash_algo,
-> +				       u8 digest_type, u8 hash_algo,
->   				       struct ima_field_data *field_data)
->   {
->   	/*
->   	 * digest formats:
->   	 *  - DATA_FMT_DIGEST: digest
->   	 *  - DATA_FMT_DIGEST_WITH_ALGO: <hash algo> + ':' + '\0' + digest,
-> +	 *  - DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO:
-> +	 *	<digest type> + ':' + <hash algo> + ':' + '\0' + digest,
->   	 *
->   	 *    where 'DATA_FMT_DIGEST' is the original digest format ('d')
->   	 *      with a hash size limitation of 20 bytes,
-> +	 *    where <digest type> is "ima",
->   	 *    where <hash algo> is the hash_algo_name[] string.
->   	 */
-> -	u8 buffer[CRYPTO_MAX_ALG_NAME + 2 + IMA_MAX_DIGEST_SIZE] = { 0 };
-> +	u8 buffer[DIGEST_TYPE_NAME_LEN_MAX + CRYPTO_MAX_ALG_NAME + 2 +
-> +		IMA_MAX_DIGEST_SIZE] = { 0 };
->   	enum data_formats fmt = DATA_FMT_DIGEST;
->   	u32 offset = 0;
->   
-> -	if (hash_algo < HASH_ALGO__LAST) {
-> +	if (digest_type < DIGEST_TYPE__LAST && hash_algo < HASH_ALGO__LAST) {
-> +		fmt = DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO;
-> +		offset += 1 + sprintf(buffer, "%*s:%*s:",
-> +				      (int)strlen(digest_type_name[digest_type]),
-> +				      digest_type_name[digest_type],
-> +				      (int)strlen(hash_algo_name[hash_algo]),
-> +				      hash_algo_name[hash_algo]);
+> +	for (i = 0; i < nr_pages; i++) {
+> +		unsigned long gfn;
+> +
+> +		if (is_vmalloc_addr(*vaddr))
+> +			gfn = pfn_to_gfn(vmalloc_to_pfn(vaddr[i]));
+> +		else
+> +			gfn = virt_to_gfn(vaddr[i]);
+> +
+> +		grefs[i] = gnttab_claim_grant_reference(&gref_head);
 
-'%*s' seems to be for right-alignment but only makes sense if the length 
-indicator is different than then following string. sprintf(buffer, 
-"|%*s|",5,"test") prints | test|. Otherwise it seems to behave like 
-plain '%s' in this case... ?
+gnttab_claim_grant_reference() can return error if no free grant 
+reference remains.
+
+I understand this patch only moves the code, but probably it would be 
+better to add a missing check here (and likely rollback already 
+processed grants if any?).
+
+
+
+> +		gnttab_grant_foreign_access_ref(grefs[i], dev->otherend_id,
+> +						gfn, 0);
+> +	}
+>   
+>   	return 0;
+>   
+> diff --git a/include/xen/xenbus.h b/include/xen/xenbus.h
+> index b533b4adc835..eaa932b99d8a 100644
+> --- a/include/xen/xenbus.h
+> +++ b/include/xen/xenbus.h
+> @@ -224,8 +224,6 @@ int xenbus_watch_pathfmt(struct xenbus_device *dev, struct xenbus_watch *watch,
+>   			 const char *pathfmt, ...);
+>   
+>   int xenbus_switch_state(struct xenbus_device *dev, enum xenbus_state new_state);
+> -int xenbus_grant_ring(struct xenbus_device *dev, void *vaddr,
+> -		      unsigned int nr_pages, grant_ref_t *grefs);
+>   int xenbus_setup_ring(struct xenbus_device *dev, gfp_t gfp, void **vaddr,
+>   		      unsigned int nr_pages, grant_ref_t *grefs);
+>   void xenbus_teardown_ring(void **vaddr, unsigned int nr_pages,
+
+-- 
+Regards,
+
+Oleksandr Tyshchenko
+
