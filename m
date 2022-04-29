@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A96EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 22:11:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E2AC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 22:11:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381358AbiD2WO1 (ORCPT
+        id S1381381AbiD2WOg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 18:14:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58260 "EHLO
+        Fri, 29 Apr 2022 18:14:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381346AbiD2WOS (ORCPT
+        with ESMTP id S1381345AbiD2WOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 18:14:18 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5475DDC998
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:10:57 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id i5so12396387wrc.13
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:10:57 -0700 (PDT)
+        Fri, 29 Apr 2022 18:14:23 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8001DCA8F
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:10:59 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id k2so12426433wrd.5
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:10:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ikgHs40vdBUX8T0eyysqTVem5s1bu/qxES/4SSz3DNk=;
-        b=phvnE3uuj71Cx4MfMQR329J9omgFRW2pVTQVHm9CCot1WDveqako6/8YF33c2oeI5G
-         l49zQM/n/8dF4BkwbwBKyqMp71O2ua+UIHWeisu43F4MqJx9e1ipYqkFKm14Q6SesF3q
-         hSZcklg4D2GnIhutRxPv+l30SbeXix8z6EH0ZkogyKWtG73jlbqUpgTodotaBSi/TNHg
-         EbNqJauniXYeJkZXng3AZY+LCP7thliG4YgvUqYCaiDs1Ad25YkBfJ5yrEomoh0diBXe
-         sRjA9O1ioH4j5rVwim5Z1EPX3NvQt1Evj+ns/W0VX5/B/RrfcgQ4Dngc7BTnShPCZYe5
-         txcA==
+        bh=Mr/Ab2xAPHfL1M2ZSg869cFwm/CVFez2aeVteALSWZ4=;
+        b=lvbIQwPUQzPzrQEb1MfPdomxW8Ge/hYg65LhqO0RfR0Sf4K/vEXl6IB/bXasUkbnSJ
+         cDcf1Dw2wNF/+SiD598cuGC2xYf8LF2gCQG9BTtogpPI3/hpu1rht4flU+BRqeklemVv
+         jg13oQCGesfHPeT4sL8kFYr8eKPEgL2lYsA2Bp8mDBOrk5cD2HfglDSbiiJfz2E+HqiM
+         ege4OmN+an4wpiLpFQXZoQ0Jaufn6ck4Pu5PfFlwMeRBr2Iga8JfKAGFcr89iI9C3B1e
+         X9AsxW/SleHlBa+qk8wzN4KBTxCdF7ZB4ui7S56vzjWK+FwwImRbJR6wW3eKLZMmzW4a
+         MsFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ikgHs40vdBUX8T0eyysqTVem5s1bu/qxES/4SSz3DNk=;
-        b=qRrj21bBVK1+sWMAv9C9g6aVN7IhIfWLb2XR2BqvrH+E+gWyP4bsEEz2tJsnfFgPtn
-         Pvc5en7whmrOi6qAgjs91YlOW3ppcdBQi/04deUrSjqwIfjkHxqmotXgK0KDeLth7ra9
-         HxDMNNwFsYFThj+Oo5N+JSKtfuZjmoz1/cBkYWyl6PNHpkU/9jKVQc8B7POz8rundcl1
-         k7QYy2EzwdAuNW9EAYBt8/xl5iSw84AyarVSkTASpi/cpM5HOlhpu4cMWDC2I6Xvdb2h
-         tZmJywwuTgkKBZ0rxx38Zrui3h4xwPEmXxV1SBJ5prMdbGrkaIWfOsNZQj7d4T3WUDo4
-         Rb/g==
-X-Gm-Message-State: AOAM532D0gT6CYOJZVErOIGO5i2TXADkKAQrZUoL7jKDZuKe/pUZx9s/
-        Z4szVVhZ6akoTLS8VWVQvsqYFw==
-X-Google-Smtp-Source: ABdhPJycxWn5Z8i9P1Zn1Bl3nw/XXanJkDBFJ8LjPD0SwERXX6ik4ye/MlGtnyDq/xmgt4CAkh3ycw==
-X-Received: by 2002:a5d:444f:0:b0:20a:cd55:8c32 with SMTP id x15-20020a5d444f000000b0020acd558c32mr854156wrr.586.1651270255783;
-        Fri, 29 Apr 2022 15:10:55 -0700 (PDT)
+        bh=Mr/Ab2xAPHfL1M2ZSg869cFwm/CVFez2aeVteALSWZ4=;
+        b=WDuXW6o0PKr/xtQBVPsG6GR4PK0bBIxeRbRf1pu12+zabsEeTugOkE+EO3bQLSvFjJ
+         Cf/Pk51OSvzeZ79CoUQkzYjo5pESIcxLvgTlFVQZGsPvEa3l0P6xMlwdonhjxC6c3eob
+         ZS1bFhMrSZNsm/DXdSO79vzDKsSuQfMZr0RYdOvV8Q4GFMTrDzk41ljdaSkFw440eGFh
+         tPow0raxFOVPTBk/U6fEMMA6Kcd6A+jcCFv5Gza/lFKHU3wRQ7B5VlmLsz5SCKWiqNOy
+         kAc4Ye2HOrUo4F6ROWT/zk09AICR7IXO1ZP/9v7CojLCIsz73CJqu0B2S6GcBGFzcjze
+         Je8w==
+X-Gm-Message-State: AOAM531xKg/YAhRbLo1nmIisRrlOdvX2CXZvx2oMXKzpNj5oGrbS5uo0
+        P2pqVFFeRM95J9VcH4YI9FxX9A==
+X-Google-Smtp-Source: ABdhPJw+RexDrVvpiyrXClauBLGo1wmOJdOppaLqzwDd3YlKhBJK7+z3y8qZJb4bSOoPvv7UK6wdhQ==
+X-Received: by 2002:a5d:6da5:0:b0:20a:8805:6988 with SMTP id u5-20020a5d6da5000000b0020a88056988mr780933wrs.317.1651270258290;
+        Fri, 29 Apr 2022 15:10:58 -0700 (PDT)
 Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
-        by smtp.gmail.com with ESMTPSA id q7-20020a1cf307000000b003942a244ebfsm291985wmq.4.2022.04.29.15.10.54
+        by smtp.gmail.com with ESMTPSA id q7-20020a1cf307000000b003942a244ebfsm291985wmq.4.2022.04.29.15.10.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 15:10:55 -0700 (PDT)
+        Fri, 29 Apr 2022 15:10:57 -0700 (PDT)
 From:   Caleb Connolly <caleb.connolly@linaro.org>
 To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -61,10 +61,11 @@ To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org
 Cc:     Jami Kettunen <jami.kettunen@somainline.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>
-Subject: [PATCH v14 01/10] spmi: add a helper to look up an SPMI device from a device node
-Date:   Fri, 29 Apr 2022 23:08:56 +0100
-Message-Id: <20220429220904.137297-2-caleb.connolly@linaro.org>
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: [PATCH v14 03/10] mfd: qcom-spmi-pmic: read fab id on supported PMICs
+Date:   Fri, 29 Apr 2022 23:08:58 +0100
+Message-Id: <20220429220904.137297-4-caleb.connolly@linaro.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220429220904.137297-1-caleb.connolly@linaro.org>
 References: <20220429220904.137297-1-caleb.connolly@linaro.org>
@@ -74,58 +75,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The helper function spmi_device_from_of() takes a device node and
-returns the SPMI device associated with it.
-This is like of_find_device_by_node but for SPMI devices.
+The PMI8998 and PM660 expose the fab_id, this is needed by drivers like
+the RRADC to calibrate ADC values.
 
 Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Tested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
- drivers/spmi/spmi.c  | 17 +++++++++++++++++
- include/linux/spmi.h |  3 +++
- 2 files changed, 20 insertions(+)
+ drivers/mfd/qcom-spmi-pmic.c      | 7 +++++++
+ include/soc/qcom/qcom-spmi-pmic.h | 1 +
+ 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/spmi/spmi.c b/drivers/spmi/spmi.c
-index b37ead9e2fad..a456ce5141e1 100644
---- a/drivers/spmi/spmi.c
-+++ b/drivers/spmi/spmi.c
-@@ -386,6 +386,23 @@ static struct bus_type spmi_bus_type = {
- 	.uevent		= spmi_drv_uevent,
+diff --git a/drivers/mfd/qcom-spmi-pmic.c b/drivers/mfd/qcom-spmi-pmic.c
+index 5403306b1863..4e8b34554814 100644
+--- a/drivers/mfd/qcom-spmi-pmic.c
++++ b/drivers/mfd/qcom-spmi-pmic.c
+@@ -19,6 +19,7 @@
+ #define PMIC_REV4		0x103
+ #define PMIC_TYPE		0x104
+ #define PMIC_SUBTYPE		0x105
++#define PMIC_FAB_ID		0x1f2
+ 
+ #define PMIC_TYPE_VALUE		0x51
+ 
+@@ -157,6 +158,12 @@ static int pmic_spmi_load_revid(struct regmap *map, struct device *dev,
+ 	if (ret < 0)
+ 		return ret;
+ 
++	if (pmic->subtype == PMI8998_SUBTYPE || pmic->subtype == PM660_SUBTYPE) {
++		ret = regmap_read(map, PMIC_FAB_ID, &pmic->fab_id);
++		if (ret < 0)
++			return ret;
++	}
++
+ 	/*
+ 	 * In early versions of PM8941 and PM8226, the major revision number
+ 	 * started incrementing from 0 (eg 0 = v1.0, 1 = v2.0).
+diff --git a/include/soc/qcom/qcom-spmi-pmic.h b/include/soc/qcom/qcom-spmi-pmic.h
+index 440e94235bfc..a2c9ac22c230 100644
+--- a/include/soc/qcom/qcom-spmi-pmic.h
++++ b/include/soc/qcom/qcom-spmi-pmic.h
+@@ -52,6 +52,7 @@ struct qcom_spmi_pmic {
+ 	unsigned int major;
+ 	unsigned int minor;
+ 	unsigned int rev2;
++	unsigned int fab_id;
+ 	const char *name;
  };
  
-+/**
-+ * spmi_device_from_of() - get the associated SPMI device from a device node
-+ *
-+ * @np:		device node
-+ *
-+ * Returns the struct spmi_device associated with a device node or NULL.
-+ */
-+struct spmi_device *spmi_device_from_of(struct device_node *np)
-+{
-+	struct device *dev = bus_find_device_by_of_node(&spmi_bus_type, np);
-+
-+	if (dev)
-+		return to_spmi_device(dev);
-+	return NULL;
-+}
-+EXPORT_SYMBOL_GPL(spmi_device_from_of);
-+
- /**
-  * spmi_controller_alloc() - Allocate a new SPMI device
-  * @ctrl:	associated controller
-diff --git a/include/linux/spmi.h b/include/linux/spmi.h
-index 729bcbf9f5ad..eac1956a8727 100644
---- a/include/linux/spmi.h
-+++ b/include/linux/spmi.h
-@@ -164,6 +164,9 @@ static inline void spmi_driver_unregister(struct spmi_driver *sdrv)
- 	module_driver(__spmi_driver, spmi_driver_register, \
- 			spmi_driver_unregister)
- 
-+struct device_node;
-+
-+struct spmi_device *spmi_device_from_of(struct device_node *np);
- int spmi_register_read(struct spmi_device *sdev, u8 addr, u8 *buf);
- int spmi_ext_register_read(struct spmi_device *sdev, u8 addr, u8 *buf,
- 			   size_t len);
 -- 
 2.36.0
 
