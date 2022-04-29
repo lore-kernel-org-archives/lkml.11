@@ -2,162 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9922C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8278C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350934AbiD2BRQ (ORCPT
+        id S1353649AbiD2BR3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 21:17:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38240 "EHLO
+        Thu, 28 Apr 2022 21:17:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbiD2BRP (ORCPT
+        with ESMTP id S1352695AbiD2BRZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 21:17:15 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A8436300;
-        Thu, 28 Apr 2022 18:13:58 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KqDyq4p5Tz4ySf;
-        Fri, 29 Apr 2022 11:13:55 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1651194836;
-        bh=JKudEto56hkdtDEXe6pYOk1Gxjv2rBMewH8G3gmz+Ok=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ul6O/K/qdKqclNjpEv94zZbvB9l8rwUaR9IyBr7bBeZSMZW3phDEpfGnfKVcb3GGl
-         WE6uFX5uiTzo4zV4Tc4mZPtAqH/p6F571uzwIAOmYu5cFa4ZCBE3BDl9KvrrpimuYV
-         BV3dI37bFDLBqYRLMHucOAjAflnrZljTaUdOeK2/szEh7I75qtTWEgIKcXRPmgyzh7
-         IiBHt2DkqGXA0hANiw1LzPeSSFU2QON4Ya/nnvBbgz58xDiTN9TcUFlw7cpWW1V/r8
-         ZcH3qlWAmJE3jr+fLdMOXEwh9LFGJ8PSvf8qL9MgPizIWUI7bGQgPew35gTar4QDQg
-         xdN1eAjnQYZ5g==
-Date:   Fri, 29 Apr 2022 11:13:54 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Alex Deucher <alexdeucher@gmail.com>,
-        Dave Airlie <airlied@linux.ie>
-Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        DRI <dri-devel@lists.freedesktop.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the amdgpu tree with the drm-misc
- tree
-Message-ID: <20220429111354.197c6dee@canb.auug.org.au>
-In-Reply-To: <20220413101014.6b6c4db2@canb.auug.org.au>
-References: <20220406103405.299c06b9@canb.auug.org.au>
-        <20220413101014.6b6c4db2@canb.auug.org.au>
+        Thu, 28 Apr 2022 21:17:25 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8144BC875;
+        Thu, 28 Apr 2022 18:14:08 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KqDxy30SdzfbB2;
+        Fri, 29 Apr 2022 09:13:10 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 29 Apr 2022 09:14:06 +0800
+Received: from k04.huawei.com (10.67.174.115) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 29 Apr 2022 09:14:06 +0800
+From:   Pu Lehui <pulehui@huawei.com>
+To:     <bpf@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Pu Lehui <pulehui@huawei.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Subject: [PATCH bpf-next v2 0/2] Support riscv jit to provide
+Date:   Fri, 29 Apr 2022 09:42:38 +0800
+Message-ID: <20220429014240.3434866-1-pulehui@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/IkXKkyei2vl1p3JTY1CZNbt";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.115]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/IkXKkyei2vl1p3JTY1CZNbt
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+patch 1 fix an issue that could not print bpf line info due
+to data inconsistency in 32-bit environment.
 
-Hi all,
+patch 2 add support for riscv jit to provide bpf_line_info.
+Both RV32 and RV64 tests have been passed as like follow:
 
-On Wed, 13 Apr 2022 10:10:14 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> On Wed, 6 Apr 2022 10:34:05 +1000 Stephen Rothwell <sfr@canb.auug.org.au>=
- wrote:
-> >
-> > Today's linux-next merge of the amdgpu tree got a conflict in:
-> >=20
-> >   drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
-> >=20
-> > between commit:
-> >=20
-> >   fee2ede15542 ("drm/ttm: rework bulk move handling v5")
-> >=20
-> > from the drm-misc tree and commit:
-> >=20
-> >   184a69ca4d41 ("drm/amdgpu: separate VM PT handling into amdgpu_vm_pt.=
-c")
-> >=20
-> > from the amdgpu tree.
-> >=20
-> > I fixed it up (I used this file from the latter and added the following
-> > patch) and can carry the fix as necessary. This is now fixed as far as
-> > linux-next is concerned, but any non trivial conflicts should be mentio=
-ned
-> > to your upstream maintainer when your tree is submitted for merging.
-> > You may also want to consider cooperating with the maintainer of the
-> > conflicting tree to minimise any particularly complex conflicts.
-> >=20
-> > From: Stephen Rothwell <sfr@canb.auug.org.au>
-> > Date: Wed, 6 Apr 2022 10:28:53 +1000
-> > Subject: [PATCH] fix up for "drm/ttm: rework bulk move handling v5"
-> >=20
-> > Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> > ---
-> >  drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c | 9 +++++++--
-> >  1 file changed, 7 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c b/drivers/gpu/dr=
-m/amd/amdgpu/amdgpu_vm_pt.c
-> > index 958d7ed97882..a29933fa001f 100644
-> > --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c
-> > +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c
-> > @@ -630,7 +630,14 @@ static void amdgpu_vm_pt_free(struct amdgpu_vm_bo_=
-base *entry)
-> > =20
-> >  	if (!entry->bo)
-> >  		return;
-> > +
-> >  	shadow =3D amdgpu_bo_shadowed(entry->bo);
-> > +	if (shadow) {
-> > +		ttm_bo_set_bulk_move(&shadow->tbo, NULL);
-> > +		amdgpu_bo_unref(&shadow);
-> > +	}
-> > +
-> > +	ttm_bo_set_bulk_move(&entry->bo->tbo, NULL);
-> >  	entry->bo->vm_bo =3D NULL;
-> >  	list_del(&entry->vm_status);
-> >  	amdgpu_bo_unref(&shadow);
-> > @@ -653,8 +660,6 @@ static void amdgpu_vm_pt_free_dfs(struct amdgpu_dev=
-ice *adev,
-> >  	struct amdgpu_vm_pt_cursor cursor;
-> >  	struct amdgpu_vm_bo_base *entry;
-> > =20
-> > -	vm->bulk_moveable =3D false;
-> > -
-> >  	for_each_amdgpu_vm_pt_dfs_safe(adev, vm, start, cursor, entry)
-> >  		amdgpu_vm_pt_free(entry);
-> > =20
-> > --=20
-> > 2.35.1 =20
->=20
-> This is now a conflict between the drm tree and the amdgpu tree.
+./test_progs -a btf
+#19 btf:OK
+Summary: 1/215 PASSED, 0 SKIPPED, 0 FAILED
 
-I noticed that commit 184a69ca4d41 was merged into the drm tree but
-only the second hunk of this merge fixup was applied.  So is the first
-hunk above unnecessary?
+v2:
+- Remove some trivial code
 
---=20
-Cheers,
-Stephen Rothwell
+v1: https://lore.kernel.org/bpf/20220426140924.3308472-1-pulehui@huawei.com
 
---Sig_/IkXKkyei2vl1p3JTY1CZNbt
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+Pu Lehui (2):
+  bpf: Unify data extension operation of jited_ksyms and jited_linfo
+  riscv, bpf: Support riscv jit to provide bpf_line_info
 
------BEGIN PGP SIGNATURE-----
+ arch/riscv/net/bpf_jit.h      | 1 +
+ arch/riscv/net/bpf_jit_core.c | 7 ++++++-
+ kernel/bpf/syscall.c          | 5 ++++-
+ 3 files changed, 11 insertions(+), 2 deletions(-)
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJrO9IACgkQAVBC80lX
-0GxCTQgAlhLO3UAe6juc9E9Jkvm4SgXtBEkla/qeqaYtIVYSYQbat2pNpdmBAHhM
-HCN+7O+lPMkX9AkCMwqCxQJ1eAwor4jFlblP6q5IwoHrHLkXAXOR7dVqCTUQYLJV
-dUlCy+N3uDZR6EUHIeeyR2j6qaR1WI7VTs3lQYVTOjzq+CLvOjVt8s0u4qjUu+t2
-7oqNt6ujs940L4bzuGq8dYEyJ3fkibjrdmlnkUyHDs650ZtgBfRK335fiz/Ojeus
-D/yiS5K4wgn+0gY8liMDESeyzciDt9W7iVHaAU6E8GRhgUVKGKliXcdM+t5u6Vzv
-eDg1c4OfL4xvu7UTGWiaQR0SHYVi2Q==
-=Z4Tp
------END PGP SIGNATURE-----
+-- 
+2.25.1
 
---Sig_/IkXKkyei2vl1p3JTY1CZNbt--
