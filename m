@@ -2,249 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 665B1C4167B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4DCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:20:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358984AbiD2MYJ (ORCPT
+        id S1359027AbiD2MYL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 08:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41440 "EHLO
+        Fri, 29 Apr 2022 08:24:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353508AbiD2MXh (ORCPT
+        with ESMTP id S1359045AbiD2MXv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 08:23:37 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276CD205CD;
-        Fri, 29 Apr 2022 05:20:18 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id z99so8869574ede.5;
-        Fri, 29 Apr 2022 05:20:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2jO8iQFRsavkZH0i8n1gjUFOf09L/MY+4sf/fbVG9MQ=;
-        b=f2BZWRV2LBKXH/7uVWkd9+7wi7GfY27JxC45DIQ7OQEAz9gy9aa+EY2WFjHsbj7Fdr
-         /YGVKX7hgu/LFnjIvCrzybjYHH3Jgf2VvGPh1Yt3wL3Ho27zujWp/2u49/YhHwCPeVG/
-         z0ppT0JeP9FNG5TMJDemWdqRmAoicXbX+yqVr0LWmgDwlA0ViosYecmG6/KKuiDjBDPc
-         UeGxFeofIshTU2kju8Z57a5uJw9U+VIUaCb8TDZ6vtwB0oV570jGPvyG2uvHJJmRMyRO
-         6OL6z0ZbPO7/ZopL+saXJnHwmdTnkqGCFCNQg03ENHMEYXEt2qO6NjxcOxmhPPPLtVhI
-         WaUA==
+        Fri, 29 Apr 2022 08:23:51 -0400
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5DAC44A1B
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 05:20:31 -0700 (PDT)
+Received: by mail-ej1-f50.google.com with SMTP id j6so15062799ejc.13
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 05:20:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2jO8iQFRsavkZH0i8n1gjUFOf09L/MY+4sf/fbVG9MQ=;
-        b=ONkAb/DHsbCpro8rTcKFcd6EX5jTfaEvvtUEMqgNAYrTxnfVuRVar/o6sNqwBTnT7b
-         JkeWqUUOjlrYsyGytA5SRpQAhngiADbwE+LE7bWtwvBQocnrBI7hpLGKZgiWT/+eUx3Y
-         NL9Xh63HbkXI2vmeVcEOJKkjTwOVMiqIiwljlS0Q7n+gfC1Kl4tpBnbObNiAP/CXex+0
-         bnPoZ357LjxQNVfj+dCGJtO7vx6l38K8MGr75ol8x3sL/SRU/oCa5tGC0D1YnKxwxHlm
-         gNCqVsAuJVABA56sVPAfX9N9yO7YQ4jmLoQzefOs6iMv9ZIohba9zoRH0zuqomxOcRF9
-         hmcg==
-X-Gm-Message-State: AOAM533iF77efVUyJrQvnJs3m6m4PqEI1QLgIs6ToqZdKii6CFV5M0+a
-        oUp0MJfkxBFu29CMjkRCRuU=
-X-Google-Smtp-Source: ABdhPJxE3LKcCgKYwMS/eAlJbMIZso8DmyhEMwuUf34ioGF2XkQtIS5Ufq8i/IiL8nk6qXNEUsrbWg==
-X-Received: by 2002:a05:6402:3492:b0:426:19be:bf36 with SMTP id v18-20020a056402349200b0042619bebf36mr12678605edc.36.1651234816564;
-        Fri, 29 Apr 2022 05:20:16 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id rb48-20020a170907693000b006f3ef214e10sm602694ejc.118.2022.04.29.05.20.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 05:20:16 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH 2/3] dt-bindings: arm: msm: Convert kpss-acc driver Documentation to yaml
-Date:   Fri, 29 Apr 2022 14:17:38 +0200
-Message-Id: <20220429121739.28584-3-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220429121739.28584-1-ansuelsmth@gmail.com>
-References: <20220429121739.28584-1-ansuelsmth@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oKaet2TJN9yDQhg2o4o9RJ2bTM/lmyY9KQMHlDiAIXI=;
+        b=3VtlJfopV8Q7oqD3QB1WjdScXkGz1PPuSXXcXYzZL5qiSiK/wFGL3Q7isUYZDVQStF
+         MbQ2bn8uxhrarzGrFAnYGtoI3RJE/uPFM7haEf7kStLhMsoiFQH6t4gr0v6OSJS8IfUq
+         pY8c8AaZgC/gS97bQxFM5jT+/0OBOIuQIErQq0qsvniElG2GZgF82NQ0WG0yN2ysSQVv
+         iV+ewCl2L9XzwKuZd2/4RmcbfoCnLJeo9NFOOPyKUUlPKY1yGZHbqDtWZUhtOnDDIV6U
+         Wb3ymkH+z7rGV38Rv0YMvCyhecVyOpqoOXAYE3UQR/2CAIGDwqUhg4F9J3clQh/RBjse
+         rzng==
+X-Gm-Message-State: AOAM531Ji3XHUdp2L8wgeha0ycJUw3S9LzMHjZxh03zWg5BRBYKoGaav
+        wsumAKYcizIgoGV0bqxQoQ4L1wA8HVW1+Q==
+X-Google-Smtp-Source: ABdhPJzfSFugP6A7LNPL3C50OYflcHNGDX055rPubCOKirwxZ/562owBR+FMkvR7iTVI5iA6LjAF9w==
+X-Received: by 2002:a17:907:a411:b0:6f3:e579:dce3 with SMTP id sg17-20020a170907a41100b006f3e579dce3mr6417344ejc.141.1651234830417;
+        Fri, 29 Apr 2022 05:20:30 -0700 (PDT)
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
+        by smtp.gmail.com with ESMTPSA id w14-20020a170907270e00b006f3ef214e3bsm579026ejk.161.2022.04.29.05.20.29
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 05:20:29 -0700 (PDT)
+Received: by mail-wr1-f47.google.com with SMTP id u3so10574743wrg.3
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 05:20:29 -0700 (PDT)
+X-Received: by 2002:a5d:4882:0:b0:207:97dd:111c with SMTP id
+ g2-20020a5d4882000000b0020797dd111cmr32080192wrq.115.1651234829363; Fri, 29
+ Apr 2022 05:20:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <165109503652.611257.12851860419631266883.stgit@warthog.procyon.org.uk>
+In-Reply-To: <165109503652.611257.12851860419631266883.stgit@warthog.procyon.org.uk>
+From:   Marc Dionne <marc.dionne@auristor.com>
+Date:   Fri, 29 Apr 2022 09:20:17 -0300
+X-Gmail-Original-Message-ID: <CAB9dFdtU05RgYwscCm-WX3ZNMiD0gbd2kTS61HvRHrPN=f25UA@mail.gmail.com>
+Message-ID: <CAB9dFdtU05RgYwscCm-WX3ZNMiD0gbd2kTS61HvRHrPN=f25UA@mail.gmail.com>
+Subject: Re: [PATCH] rxrpc: Enable IPv6 checksums on transport socket
+To:     David Howells <dhowells@redhat.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        Vadim Fedorenko <vfedorenko@novek.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-afs@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert kpss-acc driver Documentation to yaml.
-The original Documentation was wrong all along. Fix it while we are
-converting it.
-The example was wrong as kpss-acc-v2 should only expose the regs but we
-don't have any driver that expose additional clocks. The kpss-acc driver
-is only specific to v1. For this exact reason, limit all the additional
-bindings (clocks, clock-names, clock-output-names and #clock-cells) to
-v1 and also flag that these bindings should NOT be used for v2.
+On Wed, Apr 27, 2022 at 6:30 PM David Howells <dhowells@redhat.com> wrote:
+>
+> AF_RXRPC doesn't currently enable IPv6 UDP Tx checksums on the transport
+> socket it opens and the checksums in the packets it generates end up 0.
+>
+> It probably should also enable IPv6 UDP Rx checksums and IPv4 UDP
+> checksums.  The latter only seem to be applied if the socket family is
+> AF_INET and don't seem to apply if it's AF_INET6.  IPv4 packets from an
+> IPv6 socket seem to have checksums anyway.
+>
+> What seems to have happened is that the inet_inv_convert_csum() call didn't
+> get converted to the appropriate udp_port_cfg parameters - and
+> udp_sock_create() disables checksums unless explicitly told not too.
+>
+> Fix this by enabling the three udp_port_cfg checksum options.
+>
+> Fixes: 1a9b86c9fd95 ("rxrpc: use udp tunnel APIs instead of open code in rxrpc_open_socket")
+> Reported-by: Marc Dionne <marc.dionne@auristor.com>
+> Signed-off-by: David Howells <dhowells@redhat.com>
+> cc: Xin Long <lucien.xin@gmail.com>
+> cc: Vadim Fedorenko <vfedorenko@novek.ru>
+> cc: David S. Miller <davem@davemloft.net>
+> cc: linux-afs@lists.infradead.org
+> ---
+>
+>  net/rxrpc/local_object.c |    3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
+> index a4111408ffd0..6a1611b0e303 100644
+> --- a/net/rxrpc/local_object.c
+> +++ b/net/rxrpc/local_object.c
+> @@ -117,6 +117,7 @@ static int rxrpc_open_socket(struct rxrpc_local *local, struct net *net)
+>                local, srx->transport_type, srx->transport.family);
+>
+>         udp_conf.family = srx->transport.family;
+> +       udp_conf.use_udp_checksums = true;
+>         if (udp_conf.family == AF_INET) {
+>                 udp_conf.local_ip = srx->transport.sin.sin_addr;
+>                 udp_conf.local_udp_port = srx->transport.sin.sin_port;
+> @@ -124,6 +125,8 @@ static int rxrpc_open_socket(struct rxrpc_local *local, struct net *net)
+>         } else {
+>                 udp_conf.local_ip6 = srx->transport.sin6.sin6_addr;
+>                 udp_conf.local_udp_port = srx->transport.sin6.sin6_port;
+> +               udp_conf.use_udp6_tx_checksums = true;
+> +               udp_conf.use_udp6_rx_checksums = true;
+>  #endif
+>         }
+>         ret = udp_sock_create(net, &udp_conf, &local->socket);
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
----
- .../bindings/arm/msm/qcom,kpss-acc.txt        | 49 ----------
- .../bindings/arm/msm/qcom,kpss-acc.yaml       | 94 +++++++++++++++++++
- 2 files changed, 94 insertions(+), 49 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
- create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
+Works for me, and I think we want all 3 settings, as a socket created
+by a userspace application other than kafs may be a V4 socket.
 
-diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
-deleted file mode 100644
-index 7f696362a4a1..000000000000
---- a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
-+++ /dev/null
-@@ -1,49 +0,0 @@
--Krait Processor Sub-system (KPSS) Application Clock Controller (ACC)
--
--The KPSS ACC provides clock, power domain, and reset control to a Krait CPU.
--There is one ACC register region per CPU within the KPSS remapped region as
--well as an alias register region that remaps accesses to the ACC associated
--with the CPU accessing the region.
--
--PROPERTIES
--
--- compatible:
--	Usage: required
--	Value type: <string>
--	Definition: should be one of:
--			"qcom,kpss-acc-v1"
--			"qcom,kpss-acc-v2"
--
--- reg:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: the first element specifies the base address and size of
--		    the register region. An optional second element specifies
--		    the base address and size of the alias register region.
--
--- clocks:
--        Usage: required
--        Value type: <prop-encoded-array>
--        Definition: reference to the pll parents.
--
--- clock-names:
--        Usage: required
--        Value type: <stringlist>
--        Definition: must be "pll8_vote", "pxo".
--
--- clock-output-names:
--	Usage: optional
--	Value type: <string>
--	Definition: Name of the output clock. Typically acpuX_aux where X is a
--		    CPU number starting at 0.
--
--Example:
--
--	clock-controller@2088000 {
--		compatible = "qcom,kpss-acc-v2";
--		reg = <0x02088000 0x1000>,
--		      <0x02008000 0x1000>;
--		clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
--		clock-names = "pll8_vote", "pxo";
--		clock-output-names = "acpu0_aux";
--	};
-diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
-new file mode 100644
-index 000000000000..707a81a6c30e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
-@@ -0,0 +1,94 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/msm/qcom,kpss-acc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Krait Processor Sub-system (KPSS) Application Clock Controller (ACC)
-+
-+maintainers:
-+  - Ansuel Smith <ansuelsmth@gmail.com>
-+
-+description: |
-+  The KPSS ACC provides clock, power domain, and reset control to a Krait CPU.
-+  There is one ACC register region per CPU within the KPSS remapped region as
-+  well as an alias register region that remaps accesses to the ACC associated
-+  with the CPU accessing the region.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - qcom,kpss-acc-v1
-+      - qcom,kpss-acc-v2
-+
-+  reg:
-+    items:
-+      - description: Base address and size of the register region
-+      - description: Optional base address and size of the alias register region
-+
-+  clocks:
-+    items:
-+      - description: phandle to pll8_vote
-+      - description: phandle to pxo_board
-+
-+  clock-names:
-+    items:
-+      - const: pll8_vote
-+      - const: pxo
-+
-+  clock-output-names:
-+    description: Name of the aux clock. Krait can have at most 4 cpu.
-+    enum:
-+      - acpu0_aux
-+      - acpu1_aux
-+      - acpu2_aux
-+      - acpu3_aux
-+
-+  '#clock-cells':
-+    const: 0
-+
-+required:
-+  - compatible
-+  - reg
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: qcom,kpss-acc-v1
-+      then:
-+        required:
-+          - clocks
-+          - clock-names
-+          - clock-output-names
-+          - '#clock-cells'
-+    else:
-+      properties:
-+        clocks: false
-+        clock-names: false
-+        clock-output-names: false
-+        '#clock-cells': false
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/qcom,gcc-ipq806x.h>
-+
-+    clock-controller@2088000 {
-+      compatible = "qcom,kpss-acc-v1";
-+      reg = <0x02088000 0x1000>, <0x02008000 0x1000>;
-+      clocks = <&gcc PLL8_VOTE>, <&pxo_board>;
-+      clock-names = "pll8_vote", "pxo";
-+      clock-output-names = "acpu0_aux";
-+      #clock-cells = <0>;
-+    };
-+
-+  - |
-+    clock-controller@f9088000 {
-+      compatible = "qcom,kpss-acc-v2";
-+      reg = <0xf9088000 0x1000>,
-+            <0xf9008000 0x1000>;
-+    };
-+...
--- 
-2.34.1
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
 
+Marc
