@@ -2,213 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D48B4C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 18:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D66C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 18:04:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379870AbiD2SGl (ORCPT
+        id S1379876AbiD2SHy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 14:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45256 "EHLO
+        Fri, 29 Apr 2022 14:07:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379866AbiD2SGj (ORCPT
+        with ESMTP id S1358440AbiD2SHw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 14:06:39 -0400
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F995D4C4D
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:03:19 -0700 (PDT)
-Received: by mail-io1-xd2e.google.com with SMTP id h8so10520911iov.12
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:03:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+UEKgXrrD0bBkveYKV1BzyuG02j+m4QM4Vug4t1K1Lc=;
-        b=QTAhsROB7PeybDtVIea7NpCcw6Y2SGXrxVNMO7ueaeqMjkvhygrvrO0CB92dH9jYHv
-         /1nCwI6Csg2CaPABJV27UPGb+RZGethrwyW6l9S/0RC4pDBGuwKfa+1q7I/+z5H21Z+w
-         +7l5ZduiDLL6NLD8GFd41Tsa7yF5dg6x6s+q3kbxi4YNf3F7vWX1I2KU7vW2wJ2z/HrJ
-         TdeOd6pFhgxZGYn+oda5ArqSaiiM9auNh6u6kBlG8er/5Dn7LqYesgqm6k8RG1rG2swV
-         jLFb9vwGPv4PNejd+S6r4d5/N9/J7CVn5pzUglxFfDhAg7y/B0z64DikIAot0VeJMD+r
-         oaRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+UEKgXrrD0bBkveYKV1BzyuG02j+m4QM4Vug4t1K1Lc=;
-        b=088KfxnmexoKybaMgmNHz7A0C12vA8vFT8k1raEf0G5X4V1kQEwuJ5k6pweNEfuf1+
-         PWTcLKKBno9b6CskswJD+Bbv09U0o7juXiSmWWoQUOpP749BqEqzXjkNRxyKu+AzJsPN
-         jE0BuNbo2yKFNoLHtiHV1eapC29dVysgQzZgOMjSAgGBUNSPI14eglSFwzX7nsWUmEP6
-         mVx0FPGJBsSH4PMMB5iJtqY9EeSTob0+peDxh2Y2JAUmkOaHpgfVhRsydE0jYROxxAQU
-         ZJgiVKb1PqSD8poI0XFcjgswHYqUHWLE0JTM9DtbSK0Jix81U5WCNXBqvqe6PZhAWmG9
-         wR7Q==
-X-Gm-Message-State: AOAM530Dt9GLbgMk1fAaJg+LBLq7lb1GduuOE3z9quW9TE+A9dYQfKuJ
-        Z4PiZwx9LpgKt/HMLg+WxOFBTjH9ed0qxxFl86fSmeFBsbE=
-X-Google-Smtp-Source: ABdhPJxlXzGicn38bpRJBvIzpXXTfNsqk06DDdDi/Q9CDMeryZztyna/X6hAAJIMQXteAb0adbuW7DcpXj+kgmwV6hg=
-X-Received: by 2002:a02:7a06:0:b0:32b:1b83:649a with SMTP id
- a6-20020a027a06000000b0032b1b83649amr229323jac.29.1651255398079; Fri, 29 Apr
- 2022 11:03:18 -0700 (PDT)
+        Fri, 29 Apr 2022 14:07:52 -0400
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F78AD4C64
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:04:33 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 8ACD522394;
+        Fri, 29 Apr 2022 18:04:32 +0000 (UTC)
+Received: from pdx1-sub0-mail-a237.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id BAB8521AD5;
+        Fri, 29 Apr 2022 18:04:31 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1651255471; a=rsa-sha256;
+        cv=none;
+        b=e2vW5LDOABtcDwMO9nrpDnKWl7foC30cIcJzw8vmDM3jy35sn7pIckXBsig6b5LWhktt3Y
+        i0xsnsGmyiSIvt3U75CrVvRl8aCNl7bd90QYp0aS7LhfRb9m6qkFZg6wBG/4wIgRzcSdWi
+        TvULqjK9FpOILn/tOLWRykfMTm0NnE/JjtY2/NgHea8cvt6P235b+Cf8si7mWP5M1PMV7h
+        xSjyTiE2ljMU95OyLIkD1tE1csdIDF2iJRxBv01q9W7qIuzYRPTIKuOQYonNTdPAtu2SId
+        MNlNZceQBUzqrRQqkLB7lKoJOxlw64LqtIl6EbuNjdsP+qOP3o+4me1hVHhjfA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1651255471;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=x7QY8w9HZbfutoKEmDXdfj5zyEYHVxBD/6XSq0S0Jz0=;
+        b=hNCLU9ArDFxQFmeq0mKDn2x8F2ewqx7bxztaCeiQ/EkWUZXj3xLR4FrTXoGwbSxmX/N8wQ
+        yS+DDypwjtODJM378KIfcfWLQ6nsJT+sojqR1b3oezvGDTELVoc61++c3ieCnrkGvZyqjg
+        gWZ2qvUa1eAjL2K1pfC2e7slLOlG5y3CcR7rss5DuEa3RTwgP09jEh0WSBbvSbpNMLrJxK
+        06QYEYGF36w+V+FGd9ceJ6ecDwQG+JbxpSChzqbX4BPK1K0gOwnFQvOeUA7Nv/26r6OMQm
+        RxpT4ZdaimzDNBEDsXIQ/KeGg12sZ603GsNaeM+GQ17SCVZkSYQWmGoE8eA04A==
+ARC-Authentication-Results: i=1;
+        rspamd-fdd564cbf-wtlq9;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from pdx1-sub0-mail-a237.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.124.238.121 (trex/6.7.1);
+        Fri, 29 Apr 2022 18:04:32 +0000
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Supply-Skirt: 2b4f6c645ed48411_1651255472207_305874068
+X-MC-Loop-Signature: 1651255472207:3564681490
+X-MC-Ingress-Time: 1651255472207
+Received: from offworld (unknown [104.36.31.105])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a237.dreamhost.com (Postfix) with ESMTPSA id 4KqgNv0mBfz1N6;
+        Fri, 29 Apr 2022 11:04:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1651255471;
+        bh=x7QY8w9HZbfutoKEmDXdfj5zyEYHVxBD/6XSq0S0Jz0=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=rFwoUTerPiXPjmqnj3cPqtG0Y8QZVrh6rZCTf65p6ANTDQfugW5e3Q2KfhH0VbVfG
+         0PDo1AKMToBWhgGP/lSbP2bRKUdtpLoXOqAO4QvbMM1oeYh3Bclou/+64XUaqblyry
+         XCfbO+Bg6tPBj+igNS0KjxyRzjQwUT/MXKLTmI+x2mD/Q2cmUYGxvvesJl28rZZAZQ
+         TrSmTKBo3AhRiYydCbowexr6IDwjtT3sfO8JIm+QAFcKPXBgmJXqX6c0VJBwVm9rMV
+         s82lrYYoIvA+gay72JPPCqaFygpu74n/dFpFDJwlglpPtuEyHW8LzF1VerjQrqIp0l
+         vBP6I4K5JAhow==
+Date:   Fri, 29 Apr 2022 10:53:04 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Prakash Sangappa <prakash.sangappa@oracle.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "manfred@colorfullife.com" <manfred@colorfullife.com>
+Subject: Re: [PATCH v3] ipc: Update semtimedop() to use hrtimer
+Message-ID: <20220429175304.kv3cfgrsea65afej@offworld>
+References: <1651178767-447-1-git-send-email-prakash.sangappa@oracle.com>
+ <20220428205001.hiuzwpn5emxtrh4s@offworld>
+ <87zgk4ooi6.ffs@tglx>
+ <5FEE7AB6-7560-4998-A7A3-B60A4B32E1DE@oracle.com>
+ <87tuacomps.ffs@tglx>
 MIME-Version: 1.0
-References: <20220412224348.1038613-1-tansuresh@google.com>
- <20220412224348.1038613-2-tansuresh@google.com> <CAJZ5v0ivNq3aYCEcxPYMosLJCAyWiAnucwOCmRBzkM=sbyPWgQ@mail.gmail.com>
-In-Reply-To: <CAJZ5v0ivNq3aYCEcxPYMosLJCAyWiAnucwOCmRBzkM=sbyPWgQ@mail.gmail.com>
-From:   Tanjore Suresh <tansuresh@google.com>
-Date:   Fri, 29 Apr 2022 11:03:07 -0700
-Message-ID: <CALVARr6v5hcY0Vcf1izPUX-tXNJyyNXBMANbKX4CW9wfRf-pYQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] driver core: Support asynchronous driver shutdown
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-nvme <linux-nvme@lists.infradead.org>,
-        Linux PCI <linux-pci@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <87tuacomps.ffs@tglx>
+User-Agent: NeoMutt/20220408
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rafael,
+On Fri, 29 Apr 2022, Thomas Gleixner wrote:
 
-That is a good observation, however, many of the use cases in data
-centers (deployment of devices in data centers) do not exploit device
-power management. Therefore, I'm not sure that is the right way to
-design this.
+>No. What I meant is a function which handles this internally, not an inline
+>function which has to be invoked on various call sites.
 
-Also if you look into device_shutdown (drivers/base/core.c) generic
-kernel routine does not exploit the shutdown method suggested by you
-instead use the generic shutdown methods defined in bus, class,
-drivers structures. Therefore, adopting to expand on those generic
-shutdown interfaces is the incremental choice to not confuse driver
-developers.
+Originally I was also thinking about it on a per-user basis, but
+after more thought I agree it's better if it is done by the hrtimer.
 
-Hope this clarifies why this extension is proposed when compared to
-overloading a generic shutdown entry point with device power
-management requirements.
+Something like so?
 
-Thanks
-sureshtk
+Thanks,
+Davidlohr
 
+---------------8<-----------------------------------------------------
+[PATCH] hrtimer: Ignore slack time for RT tasks
 
+While in theory the timer can be triggered before expires+delta,
+for the cases of RT tasks they really have no business giving
+any lenience for extra slack time, so override any passed value
+by the user and always use zero.
 
-On Fri, Apr 15, 2022 at 7:42 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
->
-> On Wed, Apr 13, 2022 at 12:44 AM Tanjore Suresh <tansuresh@google.com> wrote:
-> >
-> > This changes the bus driver interface with additional entry points
-> > to enable devices to implement asynchronous shutdown. The existing
-> > synchronous interface to shutdown is unmodified and retained for
-> > backward compatibility.
-> >
-> > This changes the common device shutdown code to enable devices to
-> > participate in asynchronous shutdown implementation.
-> >
-> > Signed-off-by: Tanjore Suresh <tansuresh@google.com>
->
-> Is there any specific reason why you didn't follow the design of, say,
-> dpm_suspend(), where the "async" devices only need to have a flag set
-> and the driver is not required to implement any new callbacks?
->
-> IMO having different driver interfaces for asynchronous suspend and
-> shutdown would be quite confusing for driver developers, wouldn't it?
->
-> > ---
-> >  drivers/base/core.c        | 38 +++++++++++++++++++++++++++++++++++++-
-> >  include/linux/device/bus.h | 12 ++++++++++++
-> >  2 files changed, 49 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/base/core.c b/drivers/base/core.c
-> > index 3d6430eb0c6a..ba267ae70a22 100644
-> > --- a/drivers/base/core.c
-> > +++ b/drivers/base/core.c
-> > @@ -4479,6 +4479,7 @@ EXPORT_SYMBOL_GPL(device_change_owner);
-> >  void device_shutdown(void)
-> >  {
-> >         struct device *dev, *parent;
-> > +       LIST_HEAD(async_shutdown_list);
-> >
-> >         wait_for_device_probe();
-> >         device_block_probing();
-> > @@ -4523,7 +4524,13 @@ void device_shutdown(void)
-> >                                 dev_info(dev, "shutdown_pre\n");
-> >                         dev->class->shutdown_pre(dev);
-> >                 }
-> > -               if (dev->bus && dev->bus->shutdown) {
-> > +               if (dev->bus && dev->bus->async_shutdown_start) {
-> > +                       if (initcall_debug)
-> > +                               dev_info(dev, "async_shutdown_start\n");
-> > +                       dev->bus->async_shutdown_start(dev);
-> > +                       list_add_tail(&dev->kobj.entry,
-> > +                               &async_shutdown_list);
-> > +               } else if (dev->bus && dev->bus->shutdown) {
-> >                         if (initcall_debug)
-> >                                 dev_info(dev, "shutdown\n");
-> >                         dev->bus->shutdown(dev);
-> > @@ -4543,6 +4550,35 @@ void device_shutdown(void)
-> >                 spin_lock(&devices_kset->list_lock);
-> >         }
-> >         spin_unlock(&devices_kset->list_lock);
-> > +
-> > +       /*
-> > +        * Second pass spin for only devices, that have configured
-> > +        * Asynchronous shutdown.
-> > +        */
-> > +       while (!list_empty(&async_shutdown_list)) {
-> > +               dev = list_entry(async_shutdown_list.next, struct device,
-> > +                               kobj.entry);
-> > +               parent = get_device(dev->parent);
-> > +               get_device(dev);
-> > +               /*
-> > +                * Make sure the device is off the  list
-> > +                */
-> > +               list_del_init(&dev->kobj.entry);
-> > +               if (parent)
-> > +                       device_lock(parent);
-> > +               device_lock(dev);
-> > +               if (dev->bus && dev->bus->async_shutdown_end) {
-> > +                       if (initcall_debug)
-> > +                               dev_info(dev,
-> > +                               "async_shutdown_end called\n");
-> > +                       dev->bus->async_shutdown_end(dev);
-> > +               }
-> > +               device_unlock(dev);
-> > +               if (parent)
-> > +                       device_unlock(parent);
-> > +               put_device(dev);
-> > +               put_device(parent);
-> > +       }
-> >  }
-> >
-> >  /*
-> > diff --git a/include/linux/device/bus.h b/include/linux/device/bus.h
-> > index a039ab809753..f582c9d21515 100644
-> > --- a/include/linux/device/bus.h
-> > +++ b/include/linux/device/bus.h
-> > @@ -49,6 +49,16 @@ struct fwnode_handle;
-> >   *             will never get called until they do.
-> >   * @remove:    Called when a device removed from this bus.
-> >   * @shutdown:  Called at shut-down time to quiesce the device.
-> > + * @async_shutdown_start:      Called at the shutdown-time to start
-> > + *                             the shutdown process on the device.
-> > + *                             This entry point will be called only
-> > + *                             when the bus driver has indicated it would
-> > + *                             like to participate in asynchronous shutdown
-> > + *                             completion.
-> > + * @async_shutdown_end:        Called at shutdown-time  to complete the shutdown
-> > + *                     process of the device. This entry point will be called
-> > + *                     only when the bus drive has indicated it would like to
-> > + *                     participate in the asynchronous shutdown completion.
-> >   *
-> >   * @online:    Called to put the device back online (after offlining it).
-> >   * @offline:   Called to put the device offline for hot-removal. May fail.
-> > @@ -93,6 +103,8 @@ struct bus_type {
-> >         void (*sync_state)(struct device *dev);
-> >         void (*remove)(struct device *dev);
-> >         void (*shutdown)(struct device *dev);
-> > +       void (*async_shutdown_start)(struct device *dev);
-> > +       void (*async_shutdown_end)(struct device *dev);
-> >
-> >         int (*online)(struct device *dev);
-> >         int (*offline)(struct device *dev);
-> > --
-> > 2.36.0.rc0.470.gd361397f0d-goog
-> >
+Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
+---
+  kernel/time/hrtimer.c | 8 ++++++++
+  1 file changed, 8 insertions(+)
+
+diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
+index 0ea8702eb516..5ef0f1651040 100644
+--- a/kernel/time/hrtimer.c
++++ b/kernel/time/hrtimer.c
+@@ -2297,6 +2297,13 @@ schedule_hrtimeout_range_clock(ktime_t *expires, u64 delta,
+		return -EINTR;
+	}
+
++	/*
++	 * Override any slack passed by the user if under
++	 * rt contraints.
++	 */
++	if (rt_task(current))
++		delta = 0;
++
+	hrtimer_init_sleeper_on_stack(&t, clock_id, mode);
+	hrtimer_set_expires_range_ns(&t.timer, *expires, delta);
+	hrtimer_sleeper_start_expires(&t, mode);
+@@ -2326,6 +2333,7 @@ schedule_hrtimeout_range_clock(ktime_t *expires, u64 delta,
+   * actual wakeup to a time that is both power and performance friendly.
+   * The kernel give the normal best effort behavior for "@expires+@delta",
+   * but may decide to fire the timer earlier, but no earlier than @expires.
++ * For scenarios under realtime constraints, @delta is always zero.
+   *
+   * You can set the task state as follows -
+   *
+--
+2.36.0
