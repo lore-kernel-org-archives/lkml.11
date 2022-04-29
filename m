@@ -2,189 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DB81C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:00:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF37C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:01:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357191AbiD2KDR (ORCPT
+        id S1356864AbiD2KFH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33358 "EHLO
+        Fri, 29 Apr 2022 06:05:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245313AbiD2KDO (ORCPT
+        with ESMTP id S234948AbiD2KFD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:03:14 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D8BC6652;
-        Fri, 29 Apr 2022 02:59:56 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id f38so13603792ybi.3;
-        Fri, 29 Apr 2022 02:59:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AQSV+QWSMrNw5VJ+vqoDbTeHdj6QMGyrAo741kb/mH0=;
-        b=D+3Hj7lsJ9qWdwbyHHbudss4pbecp1JUNMrmF08My+268hqYaOjo3CxkTwAt4Qt2bA
-         T0KNvt/jGQchHNUiIXD1YB1m4MzLbk00glMENXR+HN0X2/qSWhfOjon+Xf+tbBHgQODC
-         A47IFW0kdtbs/repN9IOQiGHmTtebaV9q0Ye6Du54vKuyLThQzCtM5hJXEJDstY3WrU3
-         cffdprv5dWIokgb6jAN0S55gG8t+knMU6y6v2qH3VneN0I6nVaApmpfKpfu9KfYkV8R+
-         UEC/RdIOFGDN9ITgD/6N307jEuHk2kMcGwVddeQMuk5EDIEda/6CmDz1JLJ9PayAp1rK
-         XHmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AQSV+QWSMrNw5VJ+vqoDbTeHdj6QMGyrAo741kb/mH0=;
-        b=KKbHa7Ddk6J82uP7IVbpQ4ufFWmtal68b+fm59KvcJ21UbEfhtrzWGi7q/oyVOOYe0
-         K/I34Fvu6rt32BOsqLagv6yIWCZ7CW6U62G9Bpi6zhBUg6pStidv0K2SNrsRWQnJlfcZ
-         EBSR9NiLzRt04oPBwligrY66941Bh3W2p69kJ7orvTpuwmEtlOCN3l/jSplXDbshhKfS
-         GGTxI9MgLjcVJaZXZSooiF8RrFErZ7DO8KCp1qevXowLHMFptCZ+3pnSVdzE1unzQBza
-         gBZCWSFqXzG/CunVpPPvLRcHiIsn74dJr4d3XAqYGEhthpx+8Z/tsq1dM0rixSCEWSpS
-         Sh9g==
-X-Gm-Message-State: AOAM530koqc7I5kD1Pag/GSS/V3c7e/0qicmbyIDf2lip+DMcrRIiLSQ
-        3Z6d/IIRVXae+WrEntddwILGPGZwVsS8tpzCvckFaLbFzPcemA==
-X-Google-Smtp-Source: ABdhPJxK+mSRIxbq7ZjY3oQpbn9XxNGyi2jVcDrPy7XVZ7bKs1bNhVxfTDneDCTglx1rHsYTBsckyEPChVL/nMFyQoM=
-X-Received: by 2002:a25:2a52:0:b0:648:f7b4:7cb8 with SMTP id
- q79-20020a252a52000000b00648f7b47cb8mr6535056ybq.431.1651226395982; Fri, 29
- Apr 2022 02:59:55 -0700 (PDT)
+        Fri, 29 Apr 2022 06:05:03 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C645578FD4;
+        Fri, 29 Apr 2022 03:01:43 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1nkNRW-0002HQ-01; Fri, 29 Apr 2022 12:01:42 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 438A7C01CB; Fri, 29 Apr 2022 12:01:28 +0200 (CEST)
+Date:   Fri, 29 Apr 2022 12:01:28 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] MIPS: Fix CP0 counter erratum detection for R4k CPUs
+Message-ID: <20220429100128.GB11365@alpha.franken.de>
+References: <alpine.DEB.2.21.2204240214430.9383@angie.orcam.me.uk>
 MIME-Version: 1.0
-References: <20220421221159.31729-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220421221159.31729-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CAMuHMdVqk1ryzzK9-BZCMDPeyjfF1-8hMpzUoEPCcg8pJ2-ang@mail.gmail.com>
- <CA+V-a8tosEeNqzPZsdX=VCKTrkQfAhpMRWQDwva+fpQGc8x+jA@mail.gmail.com> <CAMuHMdWTQkxZjCtWhcRnOo6w-Vz6SKrjuaK-YOMr=qfwLnD7Rg@mail.gmail.com>
-In-Reply-To: <CAMuHMdWTQkxZjCtWhcRnOo6w-Vz6SKrjuaK-YOMr=qfwLnD7Rg@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Fri, 29 Apr 2022 10:59:29 +0100
-Message-ID: <CA+V-a8sJrODEXosafcsk64gwPRRu6Bv+bO5JDfmbXZpqw-W2Og@mail.gmail.com>
-Subject: Re: [PATCH 2/2] irqchip: Add RZ/G2L IA55 Interrupt Controller driver
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.2204240214430.9383@angie.orcam.me.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert,
+On Sun, Apr 24, 2022 at 12:46:23PM +0100, Maciej W. Rozycki wrote:
+> Fix the discrepancy between the two places we check for the CP0 counter 
+> erratum in along with the incorrect comparison of the R4400 revision 
+> number against 0x30 which matches none and consistently consider all 
+> R4000 and R4400 processors affected, as documented in processor errata 
+> publications[1][2][3], following the mapping between CP0 PRId register 
+> values and processor models:
+> 
+>   PRId   |  Processor Model
+> ---------+--------------------
+> 00000422 | R4000 Revision 2.2
+> 00000430 | R4000 Revision 3.0
+> 00000440 | R4400 Revision 1.0
+> 00000450 | R4400 Revision 2.0
+> 00000460 | R4400 Revision 3.0
 
-On Fri, Apr 29, 2022 at 10:53 AM Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
->
-> Hi Prabhakar,
->
-> On Fri, Apr 29, 2022 at 11:43 AM Lad, Prabhakar
-> <prabhakar.csengg@gmail.com> wrote:
-> > On Thu, Apr 28, 2022 at 10:42 AM Geert Uytterhoeven
-> > <geert@linux-m68k.org> wrote:
-> > > On Fri, Apr 22, 2022 at 12:12 AM Lad Prabhakar
-> > > <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > > > Add a driver for the Renesas RZ/G2L Interrupt Controller.
-> > > >
-> > > > This supports external pins being used as interrupts. It supports
-> > > > one line for NMI, 8 external pins and 32 GPIO pins (out of 123)
-> > > > to be used as IRQ lines.
-> > > >
-> > > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->
-> > > > --- /dev/null
-> > > > +++ b/drivers/irqchip/irq-renesas-rzg2l.c
-> > > > @@ -0,0 +1,447 @@
-> > > > +// SPDX-License-Identifier: GPL-2.0
-> > > > +/*
-> > > > + * Renesas RZ/G2L IRQC Driver
-> > > > + *
-> > > > + * Copyright (C) 2022 Renesas Electronics Corporation.
-> > > > + *
-> > > > + * Author: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > > > + */
-> > > > +
-> > > > +#include <linux/clk.h>
-> > > > +#include <linux/err.h>
-> > > > +#include <linux/io.h>
-> > > > +#include <linux/irqchip.h>
-> > > > +#include <linux/irqdomain.h>
-> > > > +#include <linux/of_address.h>
-> > > > +#include <linux/reset.h>
-> > > > +#include <linux/spinlock.h>
-> > > > +
-> > > > +#define IRQC_IRQ_START                 1
-> > > > +#define IRQC_IRQ_COUNT                 8
-> > > > +#define IRQC_TINT_START                        9
-> > >
-> > > = IRQC_IRQ_START + IRQC_IRQ_COUNT
-> > >
-> > OK
-> >
-> > > > +#define IRQC_TINT_COUNT                        32
-> > > > +#define IRQC_NUM_IRQ                   41
-> > >
-> > > = IRQC_TINT_START + IRQC_TINT_COUNT
-> > >
-> > OK.
-> >
-> > > Should these be in a DT binding header file?
-> > >
-> > > Combining all types into a single linear number space makes it hard
-> > > to extend the range, when reusing for an SoC that supports more
-> > > interrupt sources.
-> > >
-> > Or  DT data maybe?
->
-> Let's leave it for now. As I missed that DT consumers will refer to
-> external interrupt numbers only (is that actually enforced?), there
-> won't be an issue.
->
-> The driver can be changed later to derive IRQC_IRQ_COUNT from the
-> compatible value, when needed.
->
-Agreed.
+interesting, where is this documented ? And it's quite funny that so far
+everybody messed up revision printing for R4400 CPUs. 
 
-> > > > +       u32 reg;
-> > > > +
-> > > > +       reg = readl_relaxed(priv->base + ISCR);
-> > > > +       if (reg & bit)
-> > > > +               writel_relaxed(GENMASK(IRQC_IRQ_COUNT - 1, 0) & ~bit,
-> > >
-> > > As writes to the unused upper bits are ignored, you can drop the
-> > > masking with GENMASK(IRQC_IRQ_COUNT - 1, 0), and be prepared for more
-> > > interrupt sources.
-> > >
-> > Agreed.
+>  Please review the requirements for SNI platforms.  In the case of an 
+> erratic CP0 timer we give precedence to the use as a clock event rather 
+> than clock source device; see `time_init' in arch/mips/kernel/time.c. 
+> Therefore if SNI systems have no alternative timer interrupt source, then 
+> the CP0 timer is supposed to still do regardless of the erratum.
 >
-> > > > +       u32 bit = BIT(hw_irq - IRQC_TINT_START);
-> > > > +       u32 reg;
-> > > > +
-> > > > +       reg = readl_relaxed(priv->base + TSCR);
-> > > > +       if (reg & bit)
-> > > > +               writel_relaxed(GENMASK(IRQC_TINT_COUNT - 1, 0) & ~bit,
-> > >
-> > > Drop the masking with all-ones?
-> > >
-> > You mean instead of a mask just use the reg instead?
->
-> No, I meant to drop the masking with GENMASK(IRQC_TINT_COUNT - 1, 0),
-> cfr. for external interrupts.
->
-Ahh right, I missed that.
+>  Conversely a system can do without a high-precision clock source, in
+> which case jiffies will be used.  Of course such a system will suffer if 
+> used for precision timekeeping, but such is the price for broken hardware.  
+> Don't SNI systems have any alternative timer available, not even the 
+> venerable 8254?
 
-Cheers,
-Prabhakar
+all SNI systems have a i8254 in their EISA/PCI chipsets. But they aren't
+that nice for clock events as their interupts are connected via an i8259
+addresses via ISA PIO. 
 
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+>  With the considerations above in mind, please apply.
+
+will do later.
+
+Thomas.
+
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
