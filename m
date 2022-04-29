@@ -2,140 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11FB3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 03:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B46CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 03:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235314AbiD2DLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 23:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35548 "EHLO
+        id S235509AbiD2DOY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 23:14:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235082AbiD2DLK (ORCPT
+        with ESMTP id S235312AbiD2DOU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 23:11:10 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB00BF511
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 20:07:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651201672; x=1682737672;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=2iHIsrBa2knnJykbFhp1efOf6SAVl4Em/gOza0SzJbY=;
-  b=XYiWrTxQrJMtFX46pWqRlYJ83RgHOfweG0wAwB9V1BJ7FkhPZG649uv7
-   8kifd63m1fxV6fgbDEpiqlIsrcmQ3vuGdkp9MLrHPXIw98ihU4szC7Qz1
-   Xl2xTozQUyQQIbKzZSggY7zMitQz8/Lnuze6q3o7JEawJw+LmuML3Kfs7
-   cWNXmcBNZsYIC1g5in3RzS2yXSUimH/jDKxF1piAfhBF6Du00lmZeFgIH
-   G7l6wxCjsd/KfpS/zyw+fOQlhcKMQY7bctRVjmkuhULZdJGewCWhOp95o
-   nu8FXL0BFTbxwchmWW8Wv1IBXD51bC5omIqRXtLl2cxT45G9BipsN+BIe
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="327003975"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="327003975"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 20:07:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="651553327"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 28 Apr 2022 20:07:50 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nkGyz-0005vd-ND;
-        Fri, 29 Apr 2022 03:07:49 +0000
-Date:   Fri, 29 Apr 2022 11:07:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [peterz-queue:sched/wip.freezer 3/7]
- include/linux/sched/jobctl.h:23:2: error: expected identifier or '('
-Message-ID: <202204291119.HDMwqfSJ-lkp@intel.com>
+        Thu, 28 Apr 2022 23:14:20 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43FA05AEEC;
+        Thu, 28 Apr 2022 20:11:03 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id y21so7599985edo.2;
+        Thu, 28 Apr 2022 20:11:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=5yWxeiyZ6vHx0drNR9JwHfUkwjBMQSY8QqadvukEfwo=;
+        b=jeQ3TCZ0/gj2lnmdW2fhqoGTawDk3i4GCN3vXTiT+0iSfV8yZdnI26cWcoSlq3kwnF
+         BL+gG4+ZMdbtd6Io7j6m8BiV/kcc9Z77ki8RmMBLTjyFBdQlvKUMTmaI9Yer7tMvLYh0
+         GFr2/N1T5l0RZBBeAzlDue8SnQHfyvYy4XTiIVrN34gt4cfqhV/nYPSzvjC9ROfEeUyM
+         ZWeNAoun0YBiSNoA1iv1wNtgzg5oJsQmEZF4OivfTBJ1x01blC2EEGx1C3PyUw0rr5EM
+         o8HHCk0LWsWR812DGo3HzkGl2U7hJ9kK+ELFCcefERK4xsZmO/EPOK2myQYyvEDoW3q3
+         BDHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=5yWxeiyZ6vHx0drNR9JwHfUkwjBMQSY8QqadvukEfwo=;
+        b=AX4l03wp9u3jzA3ZbGDf69ZT1+5z672vJN8AB1wgpo+TUnMNKaAUarL1XGvcLCfv7S
+         IQFm6Mck6d05DdVxl5aTsoPpunj0ekpqIciBL4Y9YfbbrXnSzh2ef9wP6ix8GgQX/e/t
+         9IQbc2aI4eBD+7zxV98EqPq2yq+wQ9awxRe4hvcl/ZDSOv7Z9XFMzLdga3l+MOMbX5ny
+         gQBg9XCSse3cMcOY29WA61UzT1Fx9zeHbiJvs6hzQKUzZZ0/eqFZv/IxRAiwjMnUVdnH
+         RoQanvB+5X81Gw3dvYBGfjOPOTCZQOvzs+eQTn+5lF4Umh1vxJRRsN1V6ntJJO31SrCg
+         v3mg==
+X-Gm-Message-State: AOAM5332OwCx0K3BKC0inFYA9AkDtY5SFgcsKbMvGTYYzEQ8gV/v3msf
+        5fMCel5KAebmRNTB+0ag3IlQ7g6TO9apHbQMgPS6x+AvSb0=
+X-Google-Smtp-Source: ABdhPJzH6EEzbaWRN8GzVwz7rn/mesI6PKlonYuijCERccP1Kmoyd7e/MHif4gpALhNeHBqFD2Hh5nt83WTDnSGhx8M=
+X-Received: by 2002:a50:954b:0:b0:41a:c9cb:8778 with SMTP id
+ v11-20020a50954b000000b0041ac9cb8778mr39073565eda.165.1651201861778; Thu, 28
+ Apr 2022 20:11:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220426083259.526685-1-starzhangzsd@gmail.com>
+ <alpine.DEB.2.21.2204270130210.9383@angie.orcam.me.uk> <CANubcdWwHXqC4gUztNseoConYHp+G4nUSYFaO-Te3jFVqT=1sw@mail.gmail.com>
+ <alpine.DEB.2.21.2204271156190.9383@angie.orcam.me.uk> <CANubcdUPQJcJ=dryJGsnQLhjcTouLUARD-GwCd7UjurUm+-GXg@mail.gmail.com>
+ <alpine.DEB.2.21.2204280951510.9383@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2204280951510.9383@angie.orcam.me.uk>
+From:   Stephen Zhang <starzhangzsd@gmail.com>
+Date:   Fri, 29 Apr 2022 11:10:25 +0800
+Message-ID: <CANubcdXSHpV8xOBidXksMt+kLQ=jgNer4uisKbV5z9zxHp8dMw@mail.gmail.com>
+Subject: Re: [PATCH] arch/mips/kernel/traps: add CONFIG_MIPS_FP_SUPPORT when
+ using handle_fpe
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Joshua Kinard <kumba@gentoo.org>, liam.howlett@oracle.com,
+        ebiederm@xmission.com, dbueso@suse.de, alobakin@pm.me,
+        f.fainelli@gmail.com, zhangshida <zhangshida@kylinos.cn>,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git sched/wip.freezer
-head:   a1b437cfec0d2b0060cf85538c2379c74fb63ad5
-commit: 4cb4f3dc01c45f8a1621f13b55705ba4a6844081 [3/7] sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state
-config: hexagon-randconfig-r005-20220428 (https://download.01.org/0day-ci/archive/20220429/202204291119.HDMwqfSJ-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c59473aacce38cd7dd77eebceaf3c98c5707ab3b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=4cb4f3dc01c45f8a1621f13b55705ba4a6844081
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue sched/wip.freezer
-        git checkout 4cb4f3dc01c45f8a1621f13b55705ba4a6844081
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon prepare
+Maciej W. Rozycki <macro@orcam.me.uk> =E4=BA=8E2022=E5=B9=B44=E6=9C=8828=E6=
+=97=A5=E5=91=A8=E5=9B=9B 17:00=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Thu, 28 Apr 2022, Stephen Zhang wrote:
+>  Thanks.
+>
+>  The bug is in arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h,
+> which has:
+>
+> #define cpu_has_fpu                     1
+>
+> (and similarly arch/mips/include/asm/mach-ip30/cpu-feature-overrides.h).
+> This is not supported, as noted in arch/mips/include/asm/cpu-features.h:
+>
+> /* Don't override `cpu_has_fpu' to 1 or the "nofpu" option won't work.  *=
+/
+>
+> Perhaps we should explicitly undefine `cpu_has_fpu' if set to 1?
+>
+>   Maciej
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:8:
-   include/linux/sched/jobctl.h:23:1: error: unknown type name 'q'
-   q#define JOBCTL_STOPPED_BIT     25      /* do_signal_stop() */
-   ^
->> include/linux/sched/jobctl.h:23:2: error: expected identifier or '('
-   q#define JOBCTL_STOPPED_BIT     25      /* do_signal_stop() */
-    ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
->> include/linux/sched/signal.h:298:22: error: use of undeclared identifier 'JOBCTL_STOPPED_BIT'
-                   current->jobctl |= JOBCTL_STOPPED;
-                                      ^
-   include/linux/sched/jobctl.h:35:33: note: expanded from macro 'JOBCTL_STOPPED'
-   #define JOBCTL_STOPPED          (1UL << JOBCTL_STOPPED_BIT)
-                                           ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   include/linux/sched/signal.h:444:18: error: use of undeclared identifier 'JOBCTL_STOPPED_BIT'
-                   t->jobctl &= ~(JOBCTL_STOPPED | JOBCTL_TRACED);
-                                  ^
-   include/linux/sched/jobctl.h:35:33: note: expanded from macro 'JOBCTL_STOPPED'
-   #define JOBCTL_STOPPED          (1UL << JOBCTL_STOPPED_BIT)
-                                           ^
-   4 errors generated.
-   make[2]: *** [scripts/Makefile.build:120: arch/hexagon/kernel/asm-offsets.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1194: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
-
-
-vim +23 include/linux/sched/jobctl.h
-
-    13	
-    14	#define JOBCTL_STOP_DEQUEUED_BIT 16	/* stop signal dequeued */
-    15	#define JOBCTL_STOP_PENDING_BIT	17	/* task should stop for group stop */
-    16	#define JOBCTL_STOP_CONSUME_BIT	18	/* consume group stop count */
-    17	#define JOBCTL_TRAP_STOP_BIT	19	/* trap for STOP */
-    18	#define JOBCTL_TRAP_NOTIFY_BIT	20	/* trap for NOTIFY */
-    19	#define JOBCTL_TRAPPING_BIT	21	/* switching to TRACED */
-    20	#define JOBCTL_LISTENING_BIT	22	/* ptracer is listening for events */
-    21	#define JOBCTL_TRAP_FREEZE_BIT	23	/* trap for cgroup freezer */
-    22	#define JOBCTL_DELAY_WAKEKILL_BIT	24	/* delay killable wakeups */
-  > 23	q#define JOBCTL_STOPPED_BIT	25	/* do_signal_stop() */
-    24	#define JOBCTL_TRACED_BIT	26	/* ptrace_stop() */
-    25	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks for your detailed explanation and suggestion. I will make a v2 patch=
+.
