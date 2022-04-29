@@ -2,117 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B03C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24E6AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:14:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354460AbiD2GRI (ORCPT
+        id S1354461AbiD2GR6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 02:17:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45110 "EHLO
+        Fri, 29 Apr 2022 02:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354447AbiD2GRF (ORCPT
+        with ESMTP id S232981AbiD2GR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 02:17:05 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443CEA94D1
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 23:13:47 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id r13so13502428ejd.5
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 23:13:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=viXcLhXltMgVR3wPsqIa9KtMGQ0jNk7lgpVp7rd3Rfw=;
-        b=c4S2DE6YQasUz7KtVf9WKicc51SIwdA4vtns/C0gbrBKxX752dqlpGq5nrrdu9ttDG
-         4AS0XIWR+DiDf+gl78G23wL4MALcaanxjf2qcQu+68jJWlJYo6/iMHObdtVx++NDK0L0
-         aEYJfH3j74coSi8uP/iUjGUNNfBZTvWqoZLhEWjayN4MkCBjZOLKaO0VBEVEvbN4DDkW
-         wFlm6Cxodm0nnoPafgK3SJnO6vopQvJw3QouDMfIw8osaUj6tAuxwxp2BdToIKWmVC/T
-         LYNHmLEu50NLl+W2N7QxA1R2T4/jUrqQ4yYkK/oqIQzo7YkKlMglHbhXDJNvGx5t8X6D
-         bVqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=viXcLhXltMgVR3wPsqIa9KtMGQ0jNk7lgpVp7rd3Rfw=;
-        b=bcUW6RLpHk80LS4CD9a+bv+sqmTSXyFNNviXCxwLJ9rzYKgMb9nnbnc+BAb1CCIOL8
-         ichGSywGk/D5eGzjJWwvh5oQCmLXDedpgVNB78a2b+JxJ9/z8PnqED48+0scBB6cThQj
-         3GQv6n2G6XzqypS+YUrQDibcaMtai3pM41by6BWL0c10HgUig4NPe0PbgtQjbpd+hY5d
-         shh/InV0t9cZ3pURhG2OEjTWiaY4ePfNXr8vNgxQhbWCFeVN5Kmj8bVFvGVen0w3y+h0
-         rnsghRK7p/y4/Or2sghme0iXtLNk45wl9AOP/f8tvwuK90b6d7CoC9U5VZVWDTMi/nyA
-         Lm7Q==
-X-Gm-Message-State: AOAM530dDGJ4vhTtbANnE5E6aBdsWV1Qyv2ysj9yV2sb3Q0gltSUGugX
-        e1NBEe2Bbl51jcVdkTQGK5E/Pw==
-X-Google-Smtp-Source: ABdhPJzibRTftl8rRIfJFXNZNDkzUnH8FJ1U5QhJrp0S97Px3s2qSHl6zZovZaiIRGJ1vbejJA19rw==
-X-Received: by 2002:a17:907:e88:b0:6ef:bce9:ff6a with SMTP id ho8-20020a1709070e8800b006efbce9ff6amr36798968ejc.275.1651212825606;
-        Thu, 28 Apr 2022 23:13:45 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id t25-20020aa7db19000000b0042617ba63besm2532191eds.72.2022.04.28.23.13.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 23:13:45 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Prathamesh Shete <pshete@nvidia.com>,
-        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] pinctrl: tegra: tegra194: drop unused pin groups
-Date:   Fri, 29 Apr 2022 08:13:32 +0200
-Message-Id: <20220429061332.25135-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        Fri, 29 Apr 2022 02:17:56 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527A92BB1D;
+        Thu, 28 Apr 2022 23:14:39 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23T6EUd9077933;
+        Fri, 29 Apr 2022 01:14:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1651212870;
+        bh=xXkrQ3q3z0PdAf/m6HeYDXI5BYXEer6eG+MZS/t7BHQ=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=CJlYJhERM3SB4xjH5NOuMbeuATBA2za+toHXAeMzbcojYcENz/qtleUQO0v8bOWnL
+         s+KFbenpw0YTQcC7AI/176jA6yf0fiywucv3y/TE1ClpcoU8/3NTNT8m1y8MspAlki
+         TLlwN5d4LDNoTNxHVzhXTh7TBmOdLC77HDl6Ma60=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23T6EUiC123358
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 29 Apr 2022 01:14:30 -0500
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 29
+ Apr 2022 01:14:30 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 29 Apr 2022 01:14:29 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23T6ETeq027808;
+        Fri, 29 Apr 2022 01:14:29 -0500
+Date:   Fri, 29 Apr 2022 11:44:28 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>
+CC:     <michael@walle.cc>, <miquel.raynal@bootlin.com>, <richard@nod.at>,
+        <vigneshr@ti.com>, <linux-mtd@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>
+Subject: Re: [PATCH v2] mtd: spi-nor: core: Skip setting erase types when
+ SPI_NOR_NO_ERASE is set
+Message-ID: <20220429061428.uouoycktw2i3qamb@ti.com>
+References: <20220308091135.88615-1-tudor.ambarus@microchip.com>
+ <20220401200556.d6amfxdvyf66npyj@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220401200556.d6amfxdvyf66npyj@ti.com>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The sdmmc1_hv_trim_pins, sdmmc3_hv_trim_pins and sys_reset_n_pins are
-not defined as pin groups:
+On 02/04/22 01:35AM, Pratyush Yadav wrote:
+> On 08/03/22 11:11AM, Tudor Ambarus wrote:
+> > Even if SPI_NOR_NO_ERASE was specified at flash declaration, the erase
+> > type of size nor->info->sector_size was incorrectly set as supported.
+> > Don't set erase types when SPI_NOR_NO_ERASE is set.
+> 
+> Does this have any practical implications? Since we set MTD_NO_ERASE, 
+> erase should never be called for this flash anyway, right?
+> 
+> > 
+> > Fixes: b199489d37b2 ("mtd: spi-nor: add the framework for SPI NOR")
+> > Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> > Cc: stable@vger.kernel.org
+> > ---
+> > v2:
+> > - add comment, update commit message, split change in individual commit
+> > - add fixes tag and cc to stable.
+> > 
+> >  drivers/mtd/spi-nor/core.c | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> > 
+> > diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+> > index b4f141ad9c9c..64cf7b9df621 100644
+> > --- a/drivers/mtd/spi-nor/core.c
+> > +++ b/drivers/mtd/spi-nor/core.c
+> > @@ -2392,6 +2392,10 @@ static void spi_nor_no_sfdp_init_params(struct spi_nor *nor)
+> >  					SPINOR_OP_PP, SNOR_PROTO_8_8_8_DTR);
+> >  	}
+> >  
+> > +	/* Skip setting erase types when SPI_NOR_NO_ERASE is set. */
+> > +	if (nor->info->flags & SPI_NOR_NO_ERASE)
+> > +		return;
 
-  drivers/pinctrl/tegra/pinctrl-tegra194.c:1119:27: error: ‘sdmmc3_hv_trim_pins’ defined but not used [-Werror=unused-const-variable=]
-   1119 | static const unsigned int sdmmc3_hv_trim_pins[] = {
+Can you instead do
 
-Proper fix would be to define them, but this requires knowledge from
-datasheet.  Removal should not cause any harm and at least it silences
-the warnings.
+	if (!(nor->info->flags & SPI_NOR_NO_ERASE)) {
+		...
+	}
 
-Fixes: 613c0826081b ("pinctrl: tegra: Add pinmux support for Tegra194")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- drivers/pinctrl/tegra/pinctrl-tegra194.c | 9 ---------
- 1 file changed, 9 deletions(-)
+This way when someone adds code to the bottom of this function that sets 
+something other than erase types it will execute for flashes with 
+SPI_NOR_NO_ERASE as well.
 
-diff --git a/drivers/pinctrl/tegra/pinctrl-tegra194.c b/drivers/pinctrl/tegra/pinctrl-tegra194.c
-index 5c1dfcb46749..f6c5d5e6dbb6 100644
---- a/drivers/pinctrl/tegra/pinctrl-tegra194.c
-+++ b/drivers/pinctrl/tegra/pinctrl-tegra194.c
-@@ -1110,24 +1110,15 @@ static const unsigned int sdmmc4_dat0_pins[] = {
- static const unsigned int sdmmc1_comp_pins[] = {
- 	TEGRA_PIN_SDMMC1_COMP,
- };
--static const unsigned int sdmmc1_hv_trim_pins[] = {
--	TEGRA_PIN_SDMMC1_HV_TRIM,
--};
- static const unsigned int sdmmc3_comp_pins[] = {
- 	TEGRA_PIN_SDMMC3_COMP,
- };
--static const unsigned int sdmmc3_hv_trim_pins[] = {
--	TEGRA_PIN_SDMMC3_HV_TRIM,
--};
- static const unsigned int eqos_comp_pins[] = {
- 	TEGRA_PIN_EQOS_COMP,
- };
- static const unsigned int qspi_comp_pins[] = {
- 	TEGRA_PIN_QSPI_COMP,
- };
--static const unsigned int sys_reset_n_pins[] = {
--	TEGRA_PIN_SYS_RESET_N,
--};
- static const unsigned int shutdown_n_pins[] = {
- 	TEGRA_PIN_SHUTDOWN_N,
- };
+> > +
+> >  	/*
+> >  	 * Sector Erase settings. Sort Erase Types in ascending order, with the
+> >  	 * smallest erase size starting at BIT(0).
+> > -- 
+> > 2.25.1
+> > 
+> 
+> -- 
+> Regards,
+> Pratyush Yadav
+> Texas Instruments Inc.
+> 
+> ______________________________________________________
+> Linux MTD discussion mailing list
+> http://lists.infradead.org/mailman/listinfo/linux-mtd/
+
 -- 
-2.32.0
-
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
