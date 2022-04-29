@@ -2,378 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21EC7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 08:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FF92C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 08:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355894AbiD2Iq2 (ORCPT
+        id S1355918AbiD2Iqc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 04:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44852 "EHLO
+        Fri, 29 Apr 2022 04:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355836AbiD2Iq0 (ORCPT
+        with ESMTP id S1355898AbiD2Iqa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 04:46:26 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F74C3EA5
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 01:43:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651221788; x=1682757788;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=vA0NqCkhKtzvPRkVpnLt7sgGT5KJ9S+BtpP4+DnoEf0=;
-  b=IgHzzyir2QZEYPIShGYItwwJh33omvZ0ZQtYkZ3EKs4+7+7I2sxsMzkJ
-   xE1Y/BrFi21tXm7J2CurLMfAUjc+KDy/AvgB2l6IAOepk2MhM85kxDcpA
-   PVMHCPRw0FLgqDBWzqyvBQXCVVHMFhxa9ffV8J27R3ufEs54Gorzz2irQ
-   P6NqlEWQ8Ll+4Z0Fr30sqOObpaCMUA+hYvaa5f6k79nSryXwHP07TLT9A
-   sZqK9NEBxi4InI/xdbaIc6lowibBxAqyFJjCl8QiDbbco6Vw6OuD26iLY
-   WKw9gwPC8h4X3FqhxcS0S6jYv302Ghqs53fnaJYU2Gc3WBpkKfSBqtJyU
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="291747518"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="291747518"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 01:43:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="731964086"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 29 Apr 2022 01:43:02 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nkMDN-00069f-TY;
-        Fri, 29 Apr 2022 08:43:01 +0000
-Date:   Fri, 29 Apr 2022 16:42:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [peterz-queue:sched/wip.freezer 4/7] kernel/signal.c:2371:73: error:
- 'JOBCTL_TRACE_QUIESCE' undeclared; did you mean 'JOBCTL_TRACED_QUIESCE'?
-Message-ID: <202204291627.uVmY0Bhj-lkp@intel.com>
+        Fri, 29 Apr 2022 04:46:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DABD5F75
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 01:43:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651221790;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=O+D/lXpklfq+8wvoJL4WqSLyZYHeykKORq3ghDDfCNk=;
+        b=OpjGa+fMoybempB8Z6gDmUOUyhHQhmvPHHqQN4OtYdFjUV6KGfkOOtCfP+LUufEX+JxJNV
+        jQiEvyVeHvh+I+DrA9G/BBR8o4KRcpOuQ2ygkWDl7Eh31hhH7LI745PXFU25uWTBsikwP1
+        ByGgfFynMB1vs1CwEL8Uqpsbtw/a0eg=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-518-hyXm6fXCOE-ueZEnB81bDA-1; Fri, 29 Apr 2022 04:43:08 -0400
+X-MC-Unique: hyXm6fXCOE-ueZEnB81bDA-1
+Received: by mail-wm1-f71.google.com with SMTP id c125-20020a1c3583000000b0038e3f6e871aso2700838wma.8
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 01:43:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=O+D/lXpklfq+8wvoJL4WqSLyZYHeykKORq3ghDDfCNk=;
+        b=blHOf5ir73PVbiAb+WFUPiNgKUcHrmkvTIztMhdJdFih4lBEju9qe2HwgJaylYzVJz
+         dTd4AQJe0vXcqrbrUy+FQBeZcn0znV9g+gCZ5qAGwT/CaPOWqMU7Hp8x5uAfa8+PsfR6
+         egitPW/HXr6rCHN1X0uwZnuXQ394wslpTCOIapt9LJt7oWl/cDHxAemGxrtNwgvSvPnu
+         t92/4gf7x0e2w5H9ajVZ9TluMmumE2UryZQVuyUbs54L3pJvXka/9Pp8TAF9qQOX6IXn
+         5QJ96TPwyAoCGCDyvuvtsH2uWJtBCp5Iwi449gNLK6PLEW7R3os83CEoJJiCrklgkR+H
+         /PCg==
+X-Gm-Message-State: AOAM532MZ3gEzSQ2pw8WdEo4jNxLQG7H+RKy5va63+bD4harxKNTjng2
+        1NMbmJTmRD54CROu6N0Ph4EfjBQMg5cHBbZrbX02+qVokk5T/NAKjFxfdikC1FYhF2+GSqqQz+l
+        sfKmuztdvJyfYhJgATQ2uH+IUKge3V2jegk91AV9t/GwS3P77qy44/0QULHOsYrt+m473BvHPID
+        s=
+X-Received: by 2002:a05:600c:1f0e:b0:392:8b04:9b26 with SMTP id bd14-20020a05600c1f0e00b003928b049b26mr2125594wmb.106.1651221786919;
+        Fri, 29 Apr 2022 01:43:06 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyFPu5i9uIaA8HyARC22sqTOXWCEAPFZw0X8BSM+9g/zQpViY352JC38fzukmqcZeLoqR+Pfw==
+X-Received: by 2002:a05:600c:1f0e:b0:392:8b04:9b26 with SMTP id bd14-20020a05600c1f0e00b003928b049b26mr2125550wmb.106.1651221786551;
+        Fri, 29 Apr 2022 01:43:06 -0700 (PDT)
+Received: from minerva.home ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id f7-20020a05600c4e8700b00393f1393abfsm7199256wmq.41.2022.04.29.01.43.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 01:43:06 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     dri-devel@lists.freedesktop.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Borislav Petkov <bp@suse.de>,
+        Changcheng Deng <deng.changcheng@zte.com.cn>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Peter Jones <pjones@redhat.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        linux-doc@vger.kernel.org, linux-fbdev@vger.kernel.org
+Subject: [RFC PATCH v4 00/11] Fix some race between sysfb device registration and drivers probe
+Date:   Fri, 29 Apr 2022 10:42:42 +0200
+Message-Id: <20220429084253.1085911-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git sched/wip.freezer
-head:   a1b437cfec0d2b0060cf85538c2379c74fb63ad5
-commit: 0939e54b718e81f64027116177863954d7d6d879 [4/7] sched,ptrace: Fix ptrace_check_attach() vs PREEMPT_RT
-config: um-x86_64_defconfig (https://download.01.org/0day-ci/archive/20220429/202204291627.uVmY0Bhj-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=0939e54b718e81f64027116177863954d7d6d879
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue sched/wip.freezer
-        git checkout 0939e54b718e81f64027116177863954d7d6d879
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=x86_64 SHELL=/bin/bash
+Hello,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The patches in this series contain mostly changes suggested by Daniel Vetter
+Thomas Zimmermann. They aim to fix existing races between the Generic System
+Framebuffer (sysfb) infrastructure and the fbdev and DRM device registration.
 
-All errors (new ones prefixed by >>):
+For example, it is currently possible for sysfb to register a platform
+device after a real DRM driver was registered and requested to remove the
+conflicting framebuffers. Or is possible for a simple{fb,drm} to match with
+a device previously registered by sysfb, even after a real driver is present.
 
-         |  ^
-   include/linux/sched/jobctl.h:23:1: error: unknown type name 'q'
-      23 | q#define JOBCTL_STOPPED_BIT     25      /* do_signal_stop() */
-         | ^
-   include/linux/sched/jobctl.h:23:10: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'JOBCTL_STOPPED_BIT'
-      23 | q#define JOBCTL_STOPPED_BIT     25      /* do_signal_stop() */
-         |          ^~~~~~~~~~~~~~~~~~
-   include/linux/sched/signal.h: In function 'kernel_signal_stop':
-   include/linux/sched/jobctl.h:36:41: error: 'JOBCTL_STOPPED_BIT' undeclared (first use in this function); did you mean 'JOBCTL_STOPPED'?
-      36 | #define JOBCTL_STOPPED          (1UL << JOBCTL_STOPPED_BIT)
-         |                                         ^~~~~~~~~~~~~~~~~~
-   include/linux/sched/signal.h:298:36: note: in expansion of macro 'JOBCTL_STOPPED'
-     298 |                 current->jobctl |= JOBCTL_STOPPED;
-         |                                    ^~~~~~~~~~~~~~
-   include/linux/sched/jobctl.h:36:41: note: each undeclared identifier is reported only once for each function it appears in
-      36 | #define JOBCTL_STOPPED          (1UL << JOBCTL_STOPPED_BIT)
-         |                                         ^~~~~~~~~~~~~~~~~~
-   include/linux/sched/signal.h:298:36: note: in expansion of macro 'JOBCTL_STOPPED'
-     298 |                 current->jobctl |= JOBCTL_STOPPED;
-         |                                    ^~~~~~~~~~~~~~
-   include/linux/sched/signal.h: In function 'signal_wake_up':
-   include/linux/sched/jobctl.h:36:41: error: 'JOBCTL_STOPPED_BIT' undeclared (first use in this function); did you mean 'JOBCTL_STOPPED'?
-      36 | #define JOBCTL_STOPPED          (1UL << JOBCTL_STOPPED_BIT)
-         |                                         ^~~~~~~~~~~~~~~~~~
-   include/linux/sched/signal.h:444:32: note: in expansion of macro 'JOBCTL_STOPPED'
-     444 |                 t->jobctl &= ~(JOBCTL_STOPPED | JOBCTL_TRACED | JOBCTL_TRACED_QUIESCE);
-         |                                ^~~~~~~~~~~~~~
-   In file included from include/uapi/asm-generic/bpf_perf_event.h:4,
-                    from ./arch/um/include/generated/asm/bpf_perf_event.h:1,
-                    from include/uapi/linux/bpf_perf_event.h:11,
-                    from include/linux/perf_event.h:18,
-                    from include/linux/trace_events.h:10,
-                    from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from kernel/signal.c:30:
-   include/linux/ptrace.h: In function 'ptrace_init_task':
-   include/linux/ptrace.h:220:25: error: implicit declaration of function 'task_set_jobctl_pending'; did you mean 'task_clear_jobctl_pending'? [-Werror=implicit-function-declaration]
-     220 |                         task_set_jobctl_pending(child, JOBCTL_TRAP_STOP);
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~
-         |                         task_clear_jobctl_pending
-   kernel/signal.c: At top level:
-   kernel/signal.c:284:6: warning: no previous prototype for 'task_set_jobctl_pending' [-Wmissing-prototypes]
-     284 | bool task_set_jobctl_pending(struct task_struct *task, unsigned long mask)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~
-   kernel/signal.c:284:6: error: conflicting types for 'task_set_jobctl_pending'; have 'bool(struct task_struct *, long unsigned int)' {aka '_Bool(struct task_struct *, long unsigned int)'}
-   In file included from include/uapi/asm-generic/bpf_perf_event.h:4,
-                    from ./arch/um/include/generated/asm/bpf_perf_event.h:1,
-                    from include/uapi/linux/bpf_perf_event.h:11,
-                    from include/linux/perf_event.h:18,
-                    from include/linux/trace_events.h:10,
-                    from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from kernel/signal.c:30:
-   include/linux/ptrace.h:220:25: note: previous implicit declaration of 'task_set_jobctl_pending' with type 'int()'
-     220 |                         task_set_jobctl_pending(child, JOBCTL_TRAP_STOP);
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~
-   In file included from include/linux/sched/signal.h:8,
-                    from include/linux/sched/cputime.h:5,
-                    from kernel/signal.c:22:
-   kernel/signal.c: In function 'prepare_signal':
-   include/linux/sched/jobctl.h:36:41: error: 'JOBCTL_STOPPED_BIT' undeclared (first use in this function); did you mean 'JOBCTL_STOPPED'?
-      36 | #define JOBCTL_STOPPED          (1UL << JOBCTL_STOPPED_BIT)
-         |                                         ^~~~~~~~~~~~~~~~~~
-   kernel/signal.c:937:47: note: in expansion of macro 'JOBCTL_STOPPED'
-     937 |                                 t->jobctl &= ~JOBCTL_STOPPED;
-         |                                               ^~~~~~~~~~~~~~
-   kernel/signal.c: In function 'wants_signal':
-   include/linux/sched/jobctl.h:36:41: error: 'JOBCTL_STOPPED_BIT' undeclared (first use in this function); did you mean 'JOBCTL_STOPPED'?
-      36 | #define JOBCTL_STOPPED          (1UL << JOBCTL_STOPPED_BIT)
-         |                                         ^~~~~~~~~~~~~~~~~~
-   include/linux/sched.h:123:70: note: in expansion of macro 'JOBCTL_STOPPED'
-     123 | #define task_is_stopped_or_traced(task) ((READ_ONCE(task->jobctl) & (JOBCTL_STOPPED | JOBCTL_TRACED)) != 0)
-         |                                                                      ^~~~~~~~~~~~~~
-   kernel/signal.c:991:13: note: in expansion of macro 'task_is_stopped_or_traced'
-     991 |         if (task_is_stopped_or_traced(p))
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from include/asm-generic/bug.h:5,
-                    from ./arch/um/include/generated/asm/bug.h:1,
-                    from include/linux/bug.h:5,
-                    from include/linux/mmdebug.h:5,
-                    from include/linux/gfp.h:5,
-                    from include/linux/slab.h:15,
-                    from kernel/signal.c:14:
-   kernel/signal.c: In function 'do_notify_parent':
-   include/linux/sched/jobctl.h:36:41: error: 'JOBCTL_STOPPED_BIT' undeclared (first use in this function); did you mean 'JOBCTL_STOPPED'?
-      36 | #define JOBCTL_STOPPED          (1UL << JOBCTL_STOPPED_BIT)
-         |                                         ^~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:78:45: note: in definition of macro 'unlikely'
-      78 | # define unlikely(x)    __builtin_expect(!!(x), 0)
-         |                                             ^
-   kernel/signal.c:2041:9: note: in expansion of macro 'BUG_ON'
-    2041 |         BUG_ON(task_is_stopped_or_traced(tsk));
-         |         ^~~~~~
-   include/linux/sched.h:123:70: note: in expansion of macro 'JOBCTL_STOPPED'
-     123 | #define task_is_stopped_or_traced(task) ((READ_ONCE(task->jobctl) & (JOBCTL_STOPPED | JOBCTL_TRACED)) != 0)
-         |                                                                      ^~~~~~~~~~~~~~
-   kernel/signal.c:2041:16: note: in expansion of macro 'task_is_stopped_or_traced'
-    2041 |         BUG_ON(task_is_stopped_or_traced(tsk));
-         |                ^~~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/signal.c: In function 'ptrace_stop':
->> kernel/signal.c:2371:73: error: 'JOBCTL_TRACE_QUIESCE' undeclared (first use in this function); did you mean 'JOBCTL_TRACED_QUIESCE'?
-    2371 |         current->jobctl &= ~(JOBCTL_LISTENING | JOBCTL_DELAY_WAKEKILL | JOBCTL_TRACE_QUIESCE);
-         |                                                                         ^~~~~~~~~~~~~~~~~~~~
-         |                                                                         JOBCTL_TRACED_QUIESCE
-   In file included from include/linux/sched/signal.h:8,
-                    from include/linux/sched/cputime.h:5,
-                    from kernel/signal.c:22:
-   kernel/signal.c: In function 'do_signal_stop':
-   include/linux/sched/jobctl.h:36:41: error: 'JOBCTL_STOPPED_BIT' undeclared (first use in this function); did you mean 'JOBCTL_STOPPED'?
-      36 | #define JOBCTL_STOPPED          (1UL << JOBCTL_STOPPED_BIT)
-         |                                         ^~~~~~~~~~~~~~~~~~
-   include/linux/sched.h:122:69: note: in expansion of macro 'JOBCTL_STOPPED'
-     122 | #define task_is_stopped(task)           ((READ_ONCE(task->jobctl) & JOBCTL_STOPPED) != 0)
-         |                                                                     ^~~~~~~~~~~~~~
-   kernel/signal.c:2482:30: note: in expansion of macro 'task_is_stopped'
-    2482 |                         if (!task_is_stopped(t) &&
-         |                              ^~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+A symptom of this issue, was worked around with by commit fb561bf9abde
+("fbdev: Prevent probing generic drivers if a FB is already registered")
+but that's really a hack and should be reverted.
 
+This series attempt to fix it more correctly and revert the mentioned hack.
+That will also allow to make the num_registered_fb variable not visible to
+drivers anymore, since that's internal to fbdev core.
 
-vim +2371 kernel/signal.c
+Even though the series is a v4, I've marked it as RFC again since some of
+the patches are controversial and the approach will need more discussion.
 
-  2207	
-  2208	/*
-  2209	 * This must be called with current->sighand->siglock held.
-  2210	 *
-  2211	 * This should be the path for all ptrace stops.
-  2212	 * We always set current->last_siginfo while stopped here.
-  2213	 * That makes it a way to test a stopped process for
-  2214	 * being ptrace-stopped vs being job-control-stopped.
-  2215	 *
-  2216	 * Returns the signal the ptracer requested the code resume
-  2217	 * with.  If the code did not stop because the tracer is gone,
-  2218	 * the stop signal remains unchanged unless clear_code.
-  2219	 */
-  2220	static int ptrace_stop(int exit_code, int why, int clear_code,
-  2221				unsigned long message, kernel_siginfo_t *info)
-  2222		__releases(&current->sighand->siglock)
-  2223		__acquires(&current->sighand->siglock)
-  2224	{
-  2225		bool gstop_done = false;
-  2226		bool read_code = true;
-  2227	
-  2228		if (arch_ptrace_stop_needed()) {
-  2229			/*
-  2230			 * The arch code has something special to do before a
-  2231			 * ptrace stop.  This is allowed to block, e.g. for faults
-  2232			 * on user stack pages.  We can't keep the siglock while
-  2233			 * calling arch_ptrace_stop, so we must release it now.
-  2234			 * To preserve proper semantics, we must do this before
-  2235			 * any signal bookkeeping like checking group_stop_count.
-  2236			 */
-  2237			spin_unlock_irq(&current->sighand->siglock);
-  2238			arch_ptrace_stop();
-  2239			spin_lock_irq(&current->sighand->siglock);
-  2240		}
-  2241	
-  2242		/* Don't stop if the task is dying. */
-  2243		if (unlikely(__fatal_signal_pending(current)))
-  2244			return exit_code;
-  2245	
-  2246		/*
-  2247		 * schedule() will not sleep if there is a pending signal that
-  2248		 * can awaken the task.
-  2249		 */
-  2250		current->jobctl |= JOBCTL_TRACED | JOBCTL_TRACED_QUIESCE;
-  2251		set_special_state(TASK_TRACED);
-  2252	
-  2253		/*
-  2254		 * We're committing to trapping.  TRACED should be visible before
-  2255		 * TRAPPING is cleared; otherwise, the tracer might fail do_wait().
-  2256		 * Also, transition to TRACED and updates to ->jobctl should be
-  2257		 * atomic with respect to siglock and should be done after the arch
-  2258		 * hook as siglock is released and regrabbed across it.
-  2259		 *
-  2260		 *     TRACER				    TRACEE
-  2261		 *
-  2262		 *     ptrace_attach()
-  2263		 * [L]   wait_on_bit(JOBCTL_TRAPPING)	[S] set_special_state(TRACED)
-  2264		 *     do_wait()
-  2265		 *       set_current_state()                smp_wmb();
-  2266		 *       ptrace_do_wait()
-  2267		 *         wait_task_stopped()
-  2268		 *           task_stopped_code()
-  2269		 * [L]         task_is_traced()		[S] task_clear_jobctl_trapping();
-  2270		 */
-  2271		smp_wmb();
-  2272	
-  2273		current->ptrace_message = message;
-  2274		current->last_siginfo = info;
-  2275		current->exit_code = exit_code;
-  2276	
-  2277		/*
-  2278		 * If @why is CLD_STOPPED, we're trapping to participate in a group
-  2279		 * stop.  Do the bookkeeping.  Note that if SIGCONT was delievered
-  2280		 * across siglock relocks since INTERRUPT was scheduled, PENDING
-  2281		 * could be clear now.  We act as if SIGCONT is received after
-  2282		 * TASK_TRACED is entered - ignore it.
-  2283		 */
-  2284		if (why == CLD_STOPPED && (current->jobctl & JOBCTL_STOP_PENDING))
-  2285			gstop_done = task_participate_group_stop(current);
-  2286	
-  2287		/* any trap clears pending STOP trap, STOP trap clears NOTIFY */
-  2288		task_clear_jobctl_pending(current, JOBCTL_TRAP_STOP);
-  2289		if (info && info->si_code >> 8 == PTRACE_EVENT_STOP)
-  2290			task_clear_jobctl_pending(current, JOBCTL_TRAP_NOTIFY);
-  2291	
-  2292		/* entering a trap, clear TRAPPING */
-  2293		task_clear_jobctl_trapping(current);
-  2294	
-  2295		spin_unlock_irq(&current->sighand->siglock);
-  2296		read_lock(&tasklist_lock);
-  2297		if (likely(current->ptrace)) {
-  2298			/*
-  2299			 * Notify parents of the stop.
-  2300			 *
-  2301			 * While ptraced, there are two parents - the ptracer and
-  2302			 * the real_parent of the group_leader.  The ptracer should
-  2303			 * know about every stop while the real parent is only
-  2304			 * interested in the completion of group stop.  The states
-  2305			 * for the two don't interact with each other.  Notify
-  2306			 * separately unless they're gonna be duplicates.
-  2307			 */
-  2308			do_notify_parent_cldstop(current, true, why);
-  2309			if (gstop_done && ptrace_reparented(current))
-  2310				do_notify_parent_cldstop(current, false, why);
-  2311	
-  2312			/*
-  2313			 * Don't want to allow preemption here, because
-  2314			 * sys_ptrace() needs this task to be inactive.
-  2315			 */
-  2316			preempt_disable();
-  2317			read_unlock(&tasklist_lock);
-  2318			cgroup_enter_frozen(); // XXX broken on PREEMPT_RT !!!
-  2319	
-  2320			/*
-  2321			 * JOBCTL_TRACE_QUIESCE bridges the gap between
-  2322			 * set_current_state(TASK_TRACED) above and schedule() below.
-  2323			 * There must not be any blocking (specifically anything that
-  2324			 * touched ->saved_state on PREEMPT_RT) between here and
-  2325			 * schedule().
-  2326			 *
-  2327			 * ptrace_check_attach() relies on this with its
-  2328			 * wait_task_inactive() usage.
-  2329			 */
-  2330			clear_traced_quiesce();
-  2331	
-  2332			preempt_enable_no_resched();
-  2333			freezable_schedule();
-  2334	
-  2335			cgroup_leave_frozen(true);
-  2336		} else {
-  2337			/*
-  2338			 * By the time we got the lock, our tracer went away.
-  2339			 * Don't drop the lock yet, another tracer may come.
-  2340			 *
-  2341			 * If @gstop_done, the ptracer went away between group stop
-  2342			 * completion and here.  During detach, it would have set
-  2343			 * JOBCTL_STOP_PENDING on us and we'll re-enter
-  2344			 * TASK_STOPPED in do_signal_stop() on return, so notifying
-  2345			 * the real parent of the group stop completion is enough.
-  2346			 */
-  2347			if (gstop_done)
-  2348				do_notify_parent_cldstop(current, false, why);
-  2349	
-  2350			/* tasklist protects us from ptrace_freeze_traced() */
-  2351			__set_current_state(TASK_RUNNING);
-  2352			read_code = false;
-  2353			if (clear_code)
-  2354				exit_code = 0;
-  2355			read_unlock(&tasklist_lock);
-  2356		}
-  2357	
-  2358		/*
-  2359		 * We are back.  Now reacquire the siglock before touching
-  2360		 * last_siginfo, so that we are sure to have synchronized with
-  2361		 * any signal-sending on another CPU that wants to examine it.
-  2362		 */
-  2363		spin_lock_irq(&current->sighand->siglock);
-  2364		if (read_code)
-  2365			exit_code = current->exit_code;
-  2366		current->last_siginfo = NULL;
-  2367		current->ptrace_message = 0;
-  2368		current->exit_code = 0;
-  2369	
-  2370		/* LISTENING can be set only during STOP traps, clear it */
-> 2371		current->jobctl &= ~(JOBCTL_LISTENING | JOBCTL_DELAY_WAKEKILL | JOBCTL_TRACE_QUIESCE);
-  2372	
-  2373		/*
-  2374		 * Queued signals ignored us while we were stopped for tracing.
-  2375		 * So check for any that we should take before resuming user mode.
-  2376		 * This sets TIF_SIGPENDING, but never clears it.
-  2377		 */
-  2378		recalc_sigpending_tsk(current);
-  2379		return exit_code;
-  2380	}
-  2381	
+Patches 1-3 add a new DRIVER_FIRMWARE capability to denote that a DRM driver
+uses a firmware provided framebuffer, to mark the emulated fbdev registered
+also as a firmware provided framebuffer.
+
+Pach 4 is just a simple cleanup in preparation for later patches.
+
+Patch 5 add a sysfb_disable() and sysfb_try_unregister() helpers to allow
+disabling sysfb and attempt to unregister registered devices respectively.
+
+Patch 6 changes how is dealt with conflicting framebuffers unregistering,
+rather than having a variable to determine if a lock should be take, it
+just drops the lock before unregistering the platform device.
+
+Patch 7 changes the fbdev core to not attempt to unregister devices that
+were registered by sysfb, let the same code doing the registration to also
+handle the unregistration.
+
+Patch 8 fixes the race that exists between sysfb devices registration and
+fbdev framebuffer devices registration.
+
+Patch 9 does the same but to fix the race that exists between sysfb and
+the DRM subsystem.
+
+Patch 10 is the revert patch that was posted by Daniel before but dropped
+from his set and finally patch 11 is the one that makes num_registered_fb
+private to fbmem.c and not allow drivers to use it anymore.
+
+The patches were tested on a rpi4 with the vc4, simpledrm and simplefb
+drivers, using different combinations of built-in and as a module. But
+being an RFC, I didn't test all possible cases.
+
+Best regards,
+Javier
+
+Changes in v4:
+- Make sysfb_disable() to also attempt to unregister a device.
+- Drop call to sysfb_disable() in fbmem since is done in other places now.
+- Add patch to make registered_fb[] private.
+- Add patches that introduce the DRM_FIRMWARE capability and usage.
+
+Changes in v3:
+- Add Thomas Zimmermann's Reviewed-by tag to patch #1.
+- Call sysfb_disable() when a fbdev framebuffer is registered rather
+  than when conflicting framebuffers are removed (Thomas Zimmermann).
+- Drop Daniel Vetter's Reviewed-by tag since patch changed a lot.
+- Call sysfb_disable() when a DRM device is registered rather than
+  when conflicting framebuffers are removed (Thomas Zimmermann).
+- Rebase on top of latest drm-misc-next branch.
+
+Changes in v2:
+- Rebase on top of latest drm-misc-next and fix conflicts (Daniel Vetter).
+- Add kernel-doc comments and include in other_interfaces.rst (Daniel Vetter).
+- Explain in the commit message that fbmem has to unregister the device
+  as fallback if a driver registered the device itself (Daniel Vetter).
+- Also explain that fallback in a comment in the code (Daniel Vetter).
+- Don't encode in fbmem the assumption that sysfb will always register
+  platform devices (Daniel Vetter).
+- Add a FIXME comment about drivers registering devices (Daniel Vetter).
+- Explain in the commit message that fbmem has to unregister the device
+  as fallback if a driver registered the device itself (Daniel Vetter).
+- Also explain that fallback in a comment in the code (Daniel Vetter).
+- Don't encode in fbmem the assumption that sysfb will always register
+  platform devices (Daniel Vetter).
+- Add a FIXME comment about drivers registering devices (Daniel Vetter).
+- Drop RFC prefix since patches were already reviewed by Daniel Vetter.
+- Add Daniel Reviewed-by tags to the patches.
+
+Daniel Vetter (2):
+  Revert "fbdev: Prevent probing generic drivers if a FB is already
+    registered"
+  fbdev: Make registered_fb[] private to fbmem.c
+
+Javier Martinez Canillas (9):
+  drm: Add a capability flag for simple framebuffer drivers
+  drm/fb-helper: Set FBINFO_MISC_FIRMWARE flag for DRIVER_FIRMWARE fb
+  drm/simpledrm: Set the DRM_FIRMWARE capability
+  firmware: sysfb: Make sysfb_create_simplefb() return a pdev pointer
+  firmware: sysfb: Add helpers to unregister a pdev and disable
+    registration
+  fbdev: Restart conflicting fb removal loop when unregistering devices
+  fbdev: Make sysfb to unregister its own registered devices
+  fbdev: Fix race between sysfb and framebuffer devices registration
+  drm: Fix race between sysfb and DRM devices registration
+
+ .../driver-api/firmware/other_interfaces.rst  |  6 ++
+ drivers/firmware/sysfb.c                      | 91 +++++++++++++++++--
+ drivers/firmware/sysfb_simplefb.c             | 16 ++--
+ drivers/gpu/drm/drm_drv.c                     | 12 +++
+ drivers/gpu/drm/drm_fb_helper.c               |  4 +
+ drivers/gpu/drm/tiny/simpledrm.c              |  2 +-
+ drivers/video/fbdev/core/fbmem.c              | 67 +++++++++++---
+ drivers/video/fbdev/efifb.c                   | 11 ---
+ drivers/video/fbdev/simplefb.c                | 11 ---
+ include/drm/drm_drv.h                         |  6 ++
+ include/linux/fb.h                            |  8 +-
+ include/linux/sysfb.h                         | 29 +++++-
+ 12 files changed, 201 insertions(+), 62 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
