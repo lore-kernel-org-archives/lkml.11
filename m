@@ -2,76 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A86CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:49:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76AA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:49:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377943AbiD2Owe (ORCPT
+        id S1377945AbiD2Owy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:52:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52960 "EHLO
+        Fri, 29 Apr 2022 10:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377932AbiD2Ow3 (ORCPT
+        with ESMTP id S242886AbiD2Oww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:52:29 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CAABA8898;
-        Fri, 29 Apr 2022 07:49:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C3B4CCE32AB;
-        Fri, 29 Apr 2022 14:49:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B387C385A4;
-        Fri, 29 Apr 2022 14:49:07 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="M8F8RPlr"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651243746;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5kY/+HKQBdEE0OK2pw/26od2YREsYrBdJoXKkFBM3wg=;
-        b=M8F8RPlrmla90D9ds6+HP7EXyc1/aZdxybcOycx50xrVs2vuyX2wehLYW4ple+XbG+Exaw
-        8t0nw/oR69S1R2jZa5oQyrJa3VyhOgLAMNJg/9TSImCKLz3pnQTC52LkoMA1FJ1+aaXAFe
-        RLUAAEM/8o3z3lprv+4qCcUtn/8jKTU=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 358250f3 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 29 Apr 2022 14:49:05 +0000 (UTC)
-Received: by mail-yb1-f172.google.com with SMTP id d12so14888949ybc.4;
-        Fri, 29 Apr 2022 07:49:05 -0700 (PDT)
-X-Gm-Message-State: AOAM530xo3Q8A9xkK3hDjMlpj6lZz04Yldnet8AFf5pxILdJLSzSks65
-        uQX0bGyds/96mQlALH+pvNdyICWne/191nRR86o=
-X-Google-Smtp-Source: ABdhPJyfEG/vnw/eTywo3qhWhBaxQxGzbo0e51Bq7f5mB+qsLSibc7sIgvNROq6WTrUNcOxp6TPY6YaQpbyjnqMxFrM=
-X-Received: by 2002:a5b:8c5:0:b0:648:d88b:3dd5 with SMTP id
- w5-20020a5b08c5000000b00648d88b3dd5mr12370317ybq.267.1651243744309; Fri, 29
- Apr 2022 07:49:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220428124001.7428-1-w@1wt.eu> <20220428124001.7428-4-w@1wt.eu>
-In-Reply-To: <20220428124001.7428-4-w@1wt.eu>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 29 Apr 2022 16:48:52 +0200
-X-Gmail-Original-Message-ID: <CAHmME9pYj85hCS0=37+XsaJSgNXoJ96N6TdiJ9TWBYTXQx0LAA@mail.gmail.com>
-Message-ID: <CAHmME9pYj85hCS0=37+XsaJSgNXoJ96N6TdiJ9TWBYTXQx0LAA@mail.gmail.com>
-Subject: Re: [PATCH v2 net 3/7] tcp: resalt the secret every 10 seconds
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>
+        Fri, 29 Apr 2022 10:52:52 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73AAB89B5;
+        Fri, 29 Apr 2022 07:49:31 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TDsA3K015859;
+        Fri, 29 Apr 2022 14:49:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=xoywMIV1matZOHY8izfXpbGzTngIRjvpfi88UXGscU0=;
+ b=lTlsTIJwxQOY8VeQz+Hpos1Oi3zycc/3coARHSS9dg8mTmBlrZHxNhBzR9WjO/lGvjnu
+ sFUSJtWdChJMDTeM3YB2j1PolHgCZYwJ0qvuBUERuYCfoPeuLzLpdRvi2lI7y9fz/Cef
+ f3wLxBCFN7MhBwmtMTlKuAgvV0dDRzQJ+dGLflRSu+MRIJ02FzR4tI9ZZliVZtK83yB7
+ YtUbKNaMWBMimazGTOmeBSkRXtOnfL0wFlCKz+Vq7hfOtMF4UTxHl8BZxFyT1IWsIXQJ
+ 4LV5yjpYA7TcYKsTU02o98r5a+1xi1Ovkv6yUCXDu6O4aY1yiTXAF2aAvXwrXJK0Loaz jg== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fque1dwns-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 14:49:25 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TEgh4W028005;
+        Fri, 29 Apr 2022 14:49:23 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma03ams.nl.ibm.com with ESMTP id 3fm9391a0k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 14:49:23 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TEaCmn48628194
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 29 Apr 2022 14:36:12 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 49E7511C050;
+        Fri, 29 Apr 2022 14:49:21 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7EE9C11C04C;
+        Fri, 29 Apr 2022 14:49:20 +0000 (GMT)
+Received: from sig-9-145-61-57.uk.ibm.com (unknown [9.145.61.57])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 29 Apr 2022 14:49:20 +0000 (GMT)
+Message-ID: <c557350bdcb1fc2bf73aa30dd631d198f41a5071.camel@linux.ibm.com>
+Subject: Re: [PATCH 36/37] usb: handle HAS_IOPORT dependencies
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>
+Date:   Fri, 29 Apr 2022 16:49:20 +0200
+In-Reply-To: <20220429135108.2781579-66-schnelle@linux.ibm.com>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+         <20220429135108.2781579-66-schnelle@linux.ibm.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: UN4aB-gpZNQg5N9UU37zP7etRSe9_sx1
+X-Proofpoint-GUID: UN4aB-gpZNQg5N9UU37zP7etRSe9_sx1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-29_07,2022-04-28_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
+ priorityscore=1501 spamscore=0 impostorscore=0 mlxscore=0
+ lowpriorityscore=0 adultscore=0 phishscore=0 malwarescore=0
+ mlxlogscore=438 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2204290080
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 2:40 PM Willy Tarreau <w@1wt.eu> wrote:
-> @@ -101,10 +103,12 @@ u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
->                 struct in6_addr saddr;
->                 struct in6_addr daddr;
->                 __be16 dport;
-> +               unsigned int timeseed;
+On Fri, 2022-04-29 at 15:51 +0200, Niklas Schnelle wrote:
+> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
+> not being declared. We thus need to guard sections of code calling them
+> as alternative access methods with CONFIG_HAS_IOPORT checks. Similarly
+> drivers requiring these functions need to depend on HAS_IOPORT.
+> 
+> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
 
-Also, does the struct packing (or lack thereof) lead to problems here?
-Uninitialized bytes might not make a stable hash.
+Sorry everyone. I sent this as PATCH in error while preparing to sent
+the same series as RFC. Since e-mail has no remote delete and I lack a
+time machine let's just all pretend you only got the RFC.
+
