@@ -2,136 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A20DCC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 18:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79715C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 18:21:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379979AbiD2SYP (ORCPT
+        id S1379989AbiD2SYU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 14:24:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34602 "EHLO
+        Fri, 29 Apr 2022 14:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237037AbiD2SXx (ORCPT
+        with ESMTP id S1379953AbiD2SYG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 14:23:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A298933366;
-        Fri, 29 Apr 2022 11:20:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C95D6244C;
-        Fri, 29 Apr 2022 18:20:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C6C7C385A7;
-        Fri, 29 Apr 2022 18:20:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651256432;
-        bh=7UlwWJyNgO5O8HAPQY4CevoguxGtN71USDYsxCC4Y1I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=u0+tCCPLMcAPDoyXRHMoixV/Z0LeuwRRZuVV6YJqDPXCMAyu6bp1HqrLhdZjG9Cyh
-         QYJFW5R7kiAcrSezRCwm7ENodSCUhCJjtpqzm8cd/HFpkS4sMGegRRQASH5n2SihkJ
-         71HJ1xTMFivjTVqgd4DPNTs7LM6lfZnZ8DzEzNE0oyYqPlKCdTvIv23u3eGTMBYaOt
-         2wiCePOny8nv8PLW7e+Nz32vtmsDfQhUnorB1/3LgjVu9HRSU6K6LoPIEjrMtXRAwq
-         gSkSxWg9xur9RU7CW+BnHL/qWaY7Tt1AlSEuqbaVhcTiKCDIrzlj5v67mhP4+8Bla0
-         PK6vOCY0vQL6g==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nkVED-0080Zl-Vn; Fri, 29 Apr 2022 19:20:30 +0100
-Date:   Fri, 29 Apr 2022 19:20:29 +0100
-Message-ID: <87mtg392fm.wl-maz@kernel.org>
-From:   Marc Zyngier <maz@kernel.org>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH 02/30] ARM: kexec: Disable IRQs/FIQs also on crash CPUs shutdown path
-In-Reply-To: <20220427224924.592546-3-gpiccoli@igalia.com>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
-        <20220427224924.592546-3-gpiccoli@igalia.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: gpiccoli@igalia.com, akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de, corbe
- t@lwn.net, d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com, dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org, mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com, jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org, luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org, senozhatsky@chromium.org, stern@rowland.harvard.edu, tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com, will@kernel.org, linux@armlinux.org.uk
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+        Fri, 29 Apr 2022 14:24:06 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F274E51E52
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:20:47 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id y38so7584786pfa.6
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:20:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Wslry1R5bdUpJUavzlBpF5vlXqV0PAn4Lq3cXrzKpPY=;
+        b=FmCks5NcpzpThewGRhqXd390ERLh+Ej3sl/zL7F2La/EKtFEj+O6ipQDuzfWBjJVvc
+         UQ7134+lqi2v0KtVDCKkohCbeHBwcHpqPyDxFGpwyxmI9EjUiv7ScFctGMSzUOYkvQBN
+         7ZfBmB/5I6eX3og6wAC1PklxmvEEI13+UhJzY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Wslry1R5bdUpJUavzlBpF5vlXqV0PAn4Lq3cXrzKpPY=;
+        b=ajN0kqTwjn4e8y9VNsW0bt6gCHB0H6Ag6OmDv1DDMGcsjVGnI7xa21Dcuq6AQrwE6+
+         zWzC32lyqBOaPNNVm10oQb67q9JUygILjc8Mo7ZHfA7XxUpO9ffebXViK79CIm40Bc7I
+         2K3OtVxFItVYLbnDDrCpb2MK0EMnHneZ1Kf1UyPFW3mvg76pVnoTngzWE/fXOXnSVQN3
+         jrh0fMXVhqrpZj8A92TmPr1RuZzbh+n9PbyI/h0EhS8SmmggMVhbMdYU7ehG9vXJME5D
+         I4/lJUlTMfhPfrgiGxB/C48af7q+GCjrN645KIRZPQoVvyvAVJUdbP7Y0WDLM4UCJD7K
+         PjFQ==
+X-Gm-Message-State: AOAM5308y1yR9u2ib4Ox3FG9sMX2cEy0a769HU/vJwLfR8vq7ceof4bO
+        LvmjOTwqCVf/j1lc2GEfE5tHhA==
+X-Google-Smtp-Source: ABdhPJx4rNrDd2yoQUGY47nYl8Nqg+8LDGgJFTSrthoyKbJguRDIjFWd5ndLhqs6MjPCWKyjHh5CRA==
+X-Received: by 2002:a65:62d0:0:b0:381:d38:c7b0 with SMTP id m16-20020a6562d0000000b003810d38c7b0mr519075pgv.186.1651256447529;
+        Fri, 29 Apr 2022 11:20:47 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id 1-20020a17090a1a0100b001dbe11be891sm6170057pjk.44.2022.04.29.11.20.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 11:20:47 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 11:20:46 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Sargun Dhillon <sargun@sargun.me>
+Cc:     Rodrigo Campos <rodrigo@kinvolk.io>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Containers <containers@lists.linux-foundation.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        Will Drewry <wad@chromium.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Alban Crequy <alban@kinvolk.io>
+Subject: Re: [PATCH v3 1/2] seccomp: Add wait_killable semantic to seccomp
+ user notifier
+Message-ID: <202204291120.428EB85@keescook>
+References: <20220429023113.74993-1-sargun@sargun.me>
+ <20220429023113.74993-2-sargun@sargun.me>
+ <CACaBj2bW8XkENHoLNXEprQ_d8=_aLT_XQdjCZtSOiPJis8G_pQ@mail.gmail.com>
+ <20220429171437.GA1267404@ircssh-3.c.rugged-nimbus-611.internal>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220429171437.GA1267404@ircssh-3.c.rugged-nimbus-611.internal>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Apr 2022 23:48:56 +0100,
-"Guilherme G. Piccoli" <gpiccoli@igalia.com> wrote:
+On Fri, Apr 29, 2022 at 05:14:37PM +0000, Sargun Dhillon wrote:
+> On Fri, Apr 29, 2022 at 11:42:15AM +0200, Rodrigo Campos wrote:
+> > On Fri, Apr 29, 2022 at 4:32 AM Sargun Dhillon <sargun@sargun.me> wrote:
+> > > the concept is searchable. If the notifying process is signaled prior
+> > > to the notification being received by the userspace agent, it will
+> > > be handled as normal.
+> > 
+> > Why is that? Why not always handle in the same way (if wait killable
+> > is set, wait like that)
+> > 
 > 
-> Currently the regular CPU shutdown path for ARM disables IRQs/FIQs
-> in the secondary CPUs - smp_send_stop() calls ipi_cpu_stop(), which
-> is responsible for that. This makes sense, since we're turning off
-> such CPUs, putting them in an endless busy-wait loop.
+> The goal is to avoid two things:
+> 1. Unncessary work - Often times, we see workloads that implement techniques
+>    like hedging (Also known as request racing[1]). In fact, RFC3484
+>    (destination address selection) gets implemented where the DNS library
+>    will connect to many backend addresses and whichever one comes back first
+>    "wins".
+> 2. Side effects - We don't want a situation where a syscall is in progress
+>    that is non-trivial to rollback (mount), and from user space's perspective
+>    this syscall never completed.
 > 
-> Problem is that there is an alternative path for disabling CPUs,
-> in the form of function crash_smp_send_stop(), used for kexec/panic
-> paths. This functions relies in a SMP call that also triggers a
-> busy-wait loop [at machine_crash_nonpanic_core()], but *without*
-> disabling interrupts. This might lead to odd scenarios, like early
-> interrupts in the boot of kexec'd kernel or even interrupts in
-> other CPUs while the main one still works in the panic path and
-> assumes all secondary CPUs are (really!) off.
+> Blocking before the syscall even starts is excessive. When we looked at this
+> we found that with runtimes like Golang, they can get into a bad situation
+> if they have many (1000s) of threads that are in the middle of a syscall
+> because all of them need to elide prior to GC. In this case the runtime
+> prioritizes the liveness of GC vs. the syscalls.
 > 
-> This patch mimics the ipi_cpu_stop() interrupt disable mechanism
-> in the crash CPU shutdown path, hence disabling IRQs/FIQs in all
-> secondary CPUs in the kexec/panic path as well.
-> 
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Russell King <linux@armlinux.org.uk>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-> ---
->  arch/arm/kernel/machine_kexec.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/arch/arm/kernel/machine_kexec.c b/arch/arm/kernel/machine_kexec.c
-> index f567032a09c0..ef788ee00519 100644
-> --- a/arch/arm/kernel/machine_kexec.c
-> +++ b/arch/arm/kernel/machine_kexec.c
-> @@ -86,6 +86,9 @@ void machine_crash_nonpanic_core(void *unused)
->  	set_cpu_online(smp_processor_id(), false);
->  	atomic_dec(&waiting_for_crash_ipi);
->  
-> +	local_fiq_disable();
-> +	local_irq_disable();
-> +
+> That being said, there may be some syscalls in a filter that need the suggested 
+> behaviour. I can imagine introducing a new flag
+> (say SECCOMP_FILTER_FLAG_WAIT_KILLABLE) that applies to all states.
+> Alternatively, in one implementation, I put the behaviour in the data
+> field of the return from the BPF filter.
 
-My expectations would be that, since we're getting here using an IPI,
-interrupts are already masked. So what reenabled them the first place?
-
-Thanks,
-
-	M.
+I'd add something like the above to the commit log, just to have it
+around.
 
 -- 
-Without deviation from the norm, progress is not possible.
+Kees Cook
