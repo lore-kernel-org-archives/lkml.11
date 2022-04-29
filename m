@@ -2,138 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF56C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:37:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E73C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354575AbiD2Gk6 (ORCPT
+        id S1354592AbiD2GlO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 02:40:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44262 "EHLO
+        Fri, 29 Apr 2022 02:41:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232281AbiD2Gkw (ORCPT
+        with ESMTP id S1354580AbiD2GlM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 02:40:52 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC68B8982;
-        Thu, 28 Apr 2022 23:37:34 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id d6so7928073ede.8;
-        Thu, 28 Apr 2022 23:37:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nCh6oNjAx5FSblxx+ha1zviQ3WYAVbuqIr2sZ2uR4I4=;
-        b=iHgEG3TivvCfzr52JvRgNAZju6J95yv92A2qoKNoJMXpUMbwf9Kc39zMa3n4qUnk2L
-         A2klT0lUGRgnXnD8WbpULxdkEojyi3XscpGE+CqbZ7Bj7BnqviQXWRrDtqSxWul6LTqi
-         2HROOAwn1q/uNuAE6NB/pkUtTDf9G1VJhkaKy9ov4/oqylfUUZZcY6PD3h13SOMFHgqU
-         4zq5Cwl1Snm5q+rLMbeuNcuNULvA71Xr/XD0+/bP4bnTQLwA4CJ4P7cr0xHtsRt3isBQ
-         cHLn1jr5cl4wTa2e0fZvGnfD44XUm7/tvaS8NvQOlZotNo9ODdaysiz7zDsD/Dok680F
-         286g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=nCh6oNjAx5FSblxx+ha1zviQ3WYAVbuqIr2sZ2uR4I4=;
-        b=zzAKdnixOUD/0GYf6xtbsfevPKvvmNbGUj6BPC0eIqXxlPnuANtbCQrjMQJXFKh2IN
-         hboTC5RJlBwcxDuef8uAPHrSUWMFiJMNb2caHS7AvEFVOE5kMqvVrLaAXfShDrNgBXh6
-         g/dQWLEzGa+qJ4YjKHnsla6fJE4WrYvT8wqnr07eBS+/52Nr0UZCRMTWqXVxZVKSv5HE
-         J3WOyR3xPq2+cOUTueHD/v4rkPfBC398qgK3MadMpzyBArXxgCHUdPlClE6HiFIAaZSJ
-         GGk1OJHhddhqQobqMW2eIkIQXYGYnyhq6IH0T9FWvr5Q688Qiq4MalfFudIhf5/WWqzG
-         OpmA==
-X-Gm-Message-State: AOAM5312tQF4iiQTMHStPGWHymas4TXZ6mZV1OUo0bgUMvhfuzD/MHjj
-        448i3u4bD/LhxmcwqTW30gw=
-X-Google-Smtp-Source: ABdhPJwMWErbg5tUE6ecjecll6VEyFASIGhMqJeTjGGGjDBTNnu0r84VpI9YskE7O58vNjFpZn67dA==
-X-Received: by 2002:aa7:d9d9:0:b0:425:fcc7:d132 with SMTP id v25-20020aa7d9d9000000b00425fcc7d132mr17610649eds.89.1651214253014;
-        Thu, 28 Apr 2022 23:37:33 -0700 (PDT)
-Received: from eldamar (c-82-192-242-114.customer.ggaweb.ch. [82.192.242.114])
-        by smtp.gmail.com with ESMTPSA id z15-20020aa7d40f000000b0042617ba63b9sm2577858edq.67.2022.04.28.23.37.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 23:37:31 -0700 (PDT)
-Sender: Salvatore Bonaccorso <salvatore.bonaccorso@gmail.com>
-Date:   Fri, 29 Apr 2022 08:37:30 +0200
-From:   Salvatore Bonaccorso <carnil@debian.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
-        Dusty Mabe <dustymabe@redhat.com>, Stefan Roese <sr@denx.de>,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Marek Vasut <marex@denx.de>, x86@kernel.org, maz@kernel.org,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        Juergen Gross <jgross@suse.com>,
-        Noah Meyerhans <noahm@debian.org>
-Subject: Re: [tip: irq/urgent] PCI/MSI: Mask MSI-X vectors only on success
-Message-ID: <YmuHqi5K/P8QWYyO@eldamar.lan>
-References: <20211210161025.3287927-1-sr@denx.de>
- <163948488617.23020.3934435568065766936.tip-bot2@tip-bot2>
- <Yi9vH2F2OBDprwd8@jpiotrowski-Surface-Book-3>
- <43418c23-5efd-4d14-706f-f536c504b75a@denx.de>
- <c4a65b9a-d1e2-bf0d-2519-aac7185931d5@redhat.com>
- <Yi+lwVRTu8xxi9Gy@jpiotrowski-Surface-Book-3>
- <Ymj3zzjQ9PwYaX/p@eldamar.lan>
- <87v8uuwhs4.ffs@tglx>
- <87wnf9uxnw.ffs@tglx>
- <YmrgO09bqePgiJJd@eldamar.lan>
+        Fri, 29 Apr 2022 02:41:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9144B9F34
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 23:37:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651214274;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ChtMPYjIydjIkCxEWfVnTdwnIsFyeKywjaIjoMKSQMA=;
+        b=EZJ2tMAHsPQHyw9fJ47vj46AsyY/ooo5U0KT8+hhHLtHVc/KwEH3RaiyLdG4TP0i7AU95+
+        sUFUixCdU+FWU3ZWXSzHX+Qz8TZrTKyvCUW4TiMnT9H7E/VmrB1N1sufvXjdYfKQc+Uuen
+        4YCYJTMnmqGUolMHv/jILktBlxBlU04=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-324-4MFba-kINFGyzLeVHgCkVw-1; Fri, 29 Apr 2022 02:37:51 -0400
+X-MC-Unique: 4MFba-kINFGyzLeVHgCkVw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AB1E2800186;
+        Fri, 29 Apr 2022 06:37:50 +0000 (UTC)
+Received: from thuth.com (unknown [10.39.192.118])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B508F14A5060;
+        Fri, 29 Apr 2022 06:37:47 +0000 (UTC)
+From:   Thomas Huth <thuth@redhat.com>
+To:     kvm@vger.kernel.org,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>
+Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Hildenbrand <david@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        linux-s390@vger.kernel.org
+Subject: [PATCH v3 0/4] KVM: s390: selftests: Provide TAP output in tests
+Date:   Fri, 29 Apr 2022 08:37:20 +0200
+Message-Id: <20220429063724.480919-1-thuth@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmrgO09bqePgiJJd@eldamar.lan>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+This patch series is motivated by Shuah's suggestion here:
 
-On Thu, Apr 28, 2022 at 08:43:10PM +0200, Salvatore Bonaccorso wrote:
-> Hi Thomas,
-> 
-> On Thu, Apr 28, 2022 at 03:48:03PM +0200, Thomas Gleixner wrote:
-> > On Wed, Apr 27 2022 at 19:35, Thomas Gleixner wrote:
-> > > On Wed, Apr 27 2022 at 09:59, Salvatore Bonaccorso wrote:
-> > > XEN guests do not use the common PCI mask/unmask machinery which would
-> > > unmask the interrupt on request_irq().
-> > >
-> > > So I assume that the following happens:
-> > >
-> > > Guest                     Hypervisor
-> > >
-> > > msix_capabilities_init()
-> > >         ....
-> > >         alloc_irq()
-> > >            xen_magic()  -> alloc_msix_interrupt()
-> > >                            request_irq()
-> > >
-> > >         msix_mask_all() -> trap
-> > >                              do_magic()
-> > > request_irq()
-> > >    unmask()
-> > >      xen_magic()
-> > >        unmask_evtchn()  -> do_more_magic()
-> > >
-> > > So I assume further that msix_mask_all() actually is able to mask the
-> > > interrupts in the hardware (ctrl word of the vector table) despite the
-> > > hypervisor having allocated and requested the interrupt already.
-> > >
-> > > Nothing in XEN_HVM handles PCI/MSI[-X] mask/unmask in the guest, so I
-> > > really have to ask why XEN_HVM does not disable PCI/MSI[-X] masking like
-> > > XEN_PV does. I can only assume the answer is voodoo...
-> > >
-> > > Maybe the XEN people have some more enlightened answers to that.
-> > 
-> > So I was talking to Juergen about this and he agrees, that for the case
-> > where a XEN HVM guest uses the PIRQ/Eventchannel mechanism PCI/MSI[-X]
-> > masking should be disabled like it is done for XEN PV.
-> > 
-> > Why the hypervisor grants the mask write is still mysterious, but I
-> > leave that to the folks who can master the XEN voodoo.
-> > 
-> > I'll send out a patch in minute.
-> 
-> Thank you. We are having Noah Meyerhans now testing the patch and he
-> will report back if it works (Cc'ed here now).
+ https://lore.kernel.org/kvm/d576d8f7-980f-3bc6-87ad-5a6ae45609b8@linuxfoundation.org/
 
-To confirm: Noah tested the patch on various different Xen (and other
-VM configurations) and works well.
+Many s390x KVM selftests do not output any information about which
+tests have been run, so it's hard to say whether a test binary
+contains a certain sub-test or not. To improve this situation let's
+add some TAP output via the kselftest.h interface to these tests,
+so that it easier to understand what has been executed or not.
 
-Regards,
-Salvatore
+v3:
+ - Added comments / fixed cosmetics according to Janosch's and
+   Janis' reviews of the v2 series
+ - Added Reviewed-by tags from the v2 series
+
+v2:
+ - Reworked the extension checking in the first patch
+ - Make sure to always print the TAP 13 header in the second patch
+ - Reworked the SKIP printing in the third patch
+
+Thomas Huth (4):
+  KVM: s390: selftests: Use TAP interface in the memop test
+  KVM: s390: selftests: Use TAP interface in the sync_regs test
+  KVM: s390: selftests: Use TAP interface in the tprot test
+  KVM: s390: selftests: Use TAP interface in the reset test
+
+ tools/testing/selftests/kvm/s390x/memop.c     | 90 +++++++++++++++----
+ tools/testing/selftests/kvm/s390x/resets.c    | 38 ++++++--
+ .../selftests/kvm/s390x/sync_regs_test.c      | 87 +++++++++++++-----
+ tools/testing/selftests/kvm/s390x/tprot.c     | 29 ++++--
+ 4 files changed, 193 insertions(+), 51 deletions(-)
+
+-- 
+2.27.0
+
