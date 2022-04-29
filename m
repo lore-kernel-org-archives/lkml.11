@@ -2,103 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBE8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F97C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379228AbiD2QcV (ORCPT
+        id S1379298AbiD2QcW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50032 "EHLO
+        Fri, 29 Apr 2022 12:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379148AbiD2Qba (ORCPT
+        with ESMTP id S1379111AbiD2Qbv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:31:30 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B99DA6C7
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:11 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id 129so4941928wmz.0
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=n6UdGjglGGl2o68okNMCWRoHD27qYPYjCIK44vNqbmw=;
-        b=mLR8GE0xljfHjRwIpR00IuUH4ajV5rkAbtuzZQWZ9ye1q7WdeOW9nbqXgQgAoD+if1
-         2IbJ4TfCWai3QtRKqlIYYyaairHBF0YBL2QcVQdyzoMF5vSLpAA7sQbWvV8+dEsVZglU
-         XI5JM4Otl8bKjyR+tQ0H//pa55qrA6RmQjtexbAmmXmSpqb0s8K5dJKnrsX6fIqN4lyY
-         KzJ1irL9de3rUIHd4Ltcn7BC7QcWqlqjdZp2d4pVF8b4tA4XgFp5s3TD8VLBcxuBP6sq
-         gt7z2MhnLm+Dh90oyaVV7i/EAOo6inFS8FeAUGVkmYnyimYFxHpDhJq8cYhVu6JWRJE5
-         ukwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=n6UdGjglGGl2o68okNMCWRoHD27qYPYjCIK44vNqbmw=;
-        b=Ri+Dzlyt/criczKfNxtJBWcW6x+u6bESUHrYRFLcsPfb2F9UjpH5IytRxZaqhVWgWS
-         FmmJJB8gutDmEckrEwNGECuNZ9xNyPiiwLzNDH1BPYa4N8pb5SjdX4ZNCTKaCAuLO/qF
-         jM0qud8YnsvCo5DTyhfKvq+7PaYJCcwo9L4gr+JIHkwi+ksa2ufg3AW7U8uo8r4TsiLE
-         EEFWfQ+frj3D3eOnxRYNZ9UQ3EEwc3zTL7/H1Q53e5aiDOSqOlK7d+h2YViXyNJzMrvk
-         7vOBjk0DtCRzzkO9OTZuFK/5w5eyvnMzagF30AXmGJ5GaugameGH/+5lZtPk5CVY4++S
-         y1Nw==
-X-Gm-Message-State: AOAM531vsMv+oZ+ZRCAqBrTwNlMDVxVKe7G/3nWQ0E6Yof91pDawunKg
-        t+zGqmysZ8VJRunrj1Yq2YAJJw==
-X-Google-Smtp-Source: ABdhPJx9EL0kst0SGBzlo9RFppStnRTgrHv9x7iJWPywk+HlWQU3e8LLzGwqzT+lXRRJqXQWhOb8ug==
-X-Received: by 2002:a05:600c:a44:b0:38e:3ce3:3148 with SMTP id c4-20020a05600c0a4400b0038e3ce33148mr3956407wmq.26.1651249689799;
-        Fri, 29 Apr 2022 09:28:09 -0700 (PDT)
-Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id b5-20020adff905000000b0020a8781be70sm2781801wrr.12.2022.04.29.09.28.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 09:28:09 -0700 (PDT)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org,
-        Sean Anderson <sean.anderson@seco.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 14/16] dt-bindings: nvmem: sfp: Add compatible binding for TA 2.1 SFPs
-Date:   Fri, 29 Apr 2022 17:26:59 +0100
-Message-Id: <20220429162701.2222-15-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220429162701.2222-1-srinivas.kandagatla@linaro.org>
-References: <20220429162701.2222-1-srinivas.kandagatla@linaro.org>
+        Fri, 29 Apr 2022 12:31:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A25EDA6ED;
+        Fri, 29 Apr 2022 09:28:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFA10B83698;
+        Fri, 29 Apr 2022 16:28:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 749FCC385B2;
+        Fri, 29 Apr 2022 16:28:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651249699;
+        bh=zqptO1N6BDGu0LrGJkssck2mGdxM1qreWWihBCeLsaA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hreF3EozLcRhO/KxxXTt20IKe3Z2u+ysUMWQizRzm/ToaKDwlC7dk+QD+JH56qnk/
+         6zD1j5+1VWjUIEQ+wB5hMfhH8PBggD+IMHCpuecJ1lml62GkBAhUGvMgGdupLdV7Aq
+         iallFkk1Iq7oxH4OmPPqlg/qeXpRUuH+aYhmsuSRr3uxFSNgEHKj7y9paChRnkXBNw
+         ECn1L2g30gV6aLGFVYQqyJNinYgEAwl6RlUzpJy1Qn1WDwULtevuZhC5qBiUBMPxNS
+         aH9NtSueOr9okZ9ImGuSjkzKy795ht6CpYfu1J0f5dkuIw7HCC66WGMA1FN5uEH6Nf
+         H+mH/jPXHps7A==
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>
+Subject: [PATCH 0/4] rtla: v5.18-rc4 fixes
+Date:   Fri, 29 Apr 2022 18:28:09 +0200
+Message-Id: <cover.1651247710.git.bristot@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Anderson <sean.anderson@seco.com>
+Hi Steven,
 
-Trust Architecture (TA) 2.1 devices include the LS1012A, LS1021A,
-LS1043A, and LS1046A. The SFP device on TA 2.1 devices is very similar
-to the SFP on TA 3.0 devices. The primary difference is a few fields in
-the control register. Add a compatible string.
+Here are some v5.18-rc4 fixes for RTLA that I think are ready to be
+queued.
 
-Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
----
- .../devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml    | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+Daniel Bristot de Oliveira (1):
+  rtla: Fix __set_sched_attr error message
 
-diff --git a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-index c5d7375b840a..3b4e6e94cb81 100644
---- a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-+++ b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-@@ -18,8 +18,13 @@ allOf:
- 
- properties:
-   compatible:
--    enum:
--      - fsl,ls1028a-sfp
-+    oneOf:
-+      - description: Trust architecture 2.1 SFP
-+        items:
-+          - const: fsl,ls1021a-sfp
-+      - description: Trust architecture 3.0 SFP
-+        items:
-+          - const: fsl,ls1028a-sfp
- 
-   reg:
-     maxItems: 1
+John Kacur (2):
+  rtla: Don't overwrite existing directory mode
+  rtla: Minor grammar fix for rtla README
+
+Wan Jiabing (1):
+  rtla: Avoid record NULL pointer dereference
+
+ tools/tracing/rtla/Makefile            |  3 ++-
+ tools/tracing/rtla/README.txt          | 12 +++++-------
+ tools/tracing/rtla/src/osnoise_hist.c  |  5 +++--
+ tools/tracing/rtla/src/osnoise_top.c   |  9 +++++----
+ tools/tracing/rtla/src/timerlat_hist.c | 11 ++++++-----
+ tools/tracing/rtla/src/timerlat_top.c  | 11 ++++++-----
+ tools/tracing/rtla/src/utils.c         |  2 +-
+ 7 files changed, 28 insertions(+), 25 deletions(-)
+
 -- 
-2.21.0
+2.32.0
 
