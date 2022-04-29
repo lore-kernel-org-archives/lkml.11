@@ -2,101 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7500C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 19:40:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B844BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 19:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380371AbiD2Tna (ORCPT
+        id S1380390AbiD2ToD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 15:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44582 "EHLO
+        Fri, 29 Apr 2022 15:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236736AbiD2Tn1 (ORCPT
+        with ESMTP id S1380409AbiD2Tn4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 15:43:27 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1668A270B
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 12:40:06 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id p12so15803274lfs.5
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 12:40:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=mwwKTzefmTJKE4K4xtYs5yV3nVraWz0ZikLnWGl59aE=;
-        b=lFm3iQKYv+iXNQnPNgYbCjemLYCoLZ+6q3E1x5ZMCZD5yY5Lk3h4X7aYbN3drSWwRq
-         CZR+ejaRvWTyJYhdfolC2BRIb3vwePu/AuaOIJBvbr/O8vgAUGwbvcXCgL2qQbuKN9Yt
-         D6BhohHanWNoi3TeFJqIOyOcbGaZiW03aJle0blhFeqHz8o2E4TtUDsM/rLXL4UJyaUz
-         sb2pclaEe80ffX92ViuVUvI5/jBhF5n9FySGqMvkJ8P/K5MPg0degFfETklPUxnLkw6m
-         Sx9KK0aVCKgguvLJQxxQwj03fos43udYhs3ZE8/xNVjOwD+tL+3uKwMGc5DeY8UCeISv
-         b8tQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=mwwKTzefmTJKE4K4xtYs5yV3nVraWz0ZikLnWGl59aE=;
-        b=qcdBYyXn+IlyMepA2xWpcdqz1Xmn8ygzEmhSlfMenXBkXGQe63bKDN2nKoBc2rwlV6
-         jGT40zTi+71mzB6MIt7eoavReye/lySnZOyvDjntBACJ/pRLEiO81ZWLL6AuwGtDGj3S
-         z+xdAEwEu3M2jg2l4cKzk+0RAGlDVv90KbS0ZqkT8Cw1v/1LENJ4F8UhzwWKs/TGYK88
-         L6JEhLtDRvoIAJ59m42SKiUZHdUmWRSvZ8aWj1CYQXPPpQgvb3WAxcJO2qxnMrbYBn+1
-         mscERyNmC1GLRhCbHtdzfeYycOqRUGrXD+3NJtHDyLedNrSxsL19IjafcvrLPdeILDw0
-         H76A==
-X-Gm-Message-State: AOAM530zUtdcuUmxkwwH28J7ujeps0pSebghtTu7UYwNA0HWWSmgWKwr
-        o4ho7JDSi7BTdL4B8eG7gYxXiaNuSGI3Mb1V
-X-Google-Smtp-Source: ABdhPJwLT2ZuEsOVkBi1kQnU4XUi1G08j+m8GU1+lKJy45lTkkivaxkbrGinKlPedfjaN/CuQeBHKw==
-X-Received: by 2002:ac2:4884:0:b0:472:344:1c86 with SMTP id x4-20020ac24884000000b0047203441c86mr551948lfc.628.1651261204509;
-        Fri, 29 Apr 2022 12:40:04 -0700 (PDT)
-Received: from [10.0.0.42] (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
-        by smtp.gmail.com with ESMTPSA id q14-20020ac2514e000000b0047255d211acsm7463lfd.219.2022.04.29.12.40.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 12:40:03 -0700 (PDT)
-Message-ID: <8db28ee0-6aff-24aa-5bc1-45a639592f88@gmail.com>
-Date:   Fri, 29 Apr 2022 22:46:46 +0300
+        Fri, 29 Apr 2022 15:43:56 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD3625EBB;
+        Fri, 29 Apr 2022 12:40:35 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651261233;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=G90v80vwxgYebC2KpfsavbID4TjF7nvhmIxKehMfUYQ=;
+        b=pZPNUNH38ZyrulW1gVyK7RQHeNmUxDGxyKgocGuGA19UkVDw77lNYg5EFi5BwOeT7yETco
+        NHonRRs0NIfW1kh5aDjhpTxWrIMx4AY1us7hehofLPLMe8YzWT/vm+qXNP1frMm0vKEf9J
+        HJqztNhv0R65XwUzK5gzW2SZBFkErw6J/T+pX4SFSHswSIIkaw58lDe2Gv84rDnJDbfgJs
+        av7E0MHU9UfZa44TGzDjD1gXQKExFbwGQgW/oYUWT3LmPHgt5iHkKmiRZqBS7mozdSPbyD
+        aSGHodTcutREinGB0y8eVSGWQwUBrvf+x60WIPHXr5P6e7B+AO2y9tEsUFYRMg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651261233;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=G90v80vwxgYebC2KpfsavbID4TjF7nvhmIxKehMfUYQ=;
+        b=Dco0825afeNJzSw4/gXGisLWZg8ApVZ3M34zsr6XMae0tshtLBu71pGg4BXyHcfj75GOAZ
+        KTZTrUdUTEoRe1CQ==
+To:     Marc Zyngier <maz@kernel.org>, Thomas Pfaff <tpfaff@pcs.com>
+Cc:     linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org,
+        Hillf Danton <hdanton@sina.com>
+Subject: Re: [PATCH v2] irq/core: synchronize irq_thread startup
+In-Reply-To: <87sfpv98j0.wl-maz@kernel.org>
+References: <1e3f96b7-9294-1534-e83b-efe3602f876f@pcs.com>
+ <87sfpv98j0.wl-maz@kernel.org>
+Date:   Fri, 29 Apr 2022 21:40:32 +0200
+Message-ID: <87fslvoez3.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2] ASoC: ti: davinci-mcasp: Add dma-type for bcdma
-Content-Language: en-US
-To:     Jai Luthra <j-luthra@ti.com>
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Jayesh Choudhary <j-choudhary@ti.com>
-References: <20220422054001.3738-1-j-luthra@ti.com>
-From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
-In-Reply-To: <20220422054001.3738-1-j-luthra@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Apr 29 2022 at 17:08, Marc Zyngier wrote:
+> On Fri, 29 Apr 2022 12:52:48 +0100,
+> Thomas Pfaff <tpfaff@pcs.com> wrote:
 
+ > +static void wait_for_irq_thread_startup(struct irq_desc *desc,
+ > +		struct irqaction *action)
 
-On 4/22/22 08:40, Jai Luthra wrote:
-> From: Jayesh Choudhary <j-choudhary@ti.com>
-> 
-> Set DMA type for ti-bcdma controller for AM62-SK.
+ and this would be wait_for_irq_thread_ready().
 
-Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+which is sill a misnomer as this actually wakes and waits.
 
-> Signed-off-by: Jayesh Choudhary <j-choudhary@ti.com>
-> Signed-off-by: Jai Luthra <j-luthra@ti.com>
-> ---
->  sound/soc/ti/davinci-mcasp.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/sound/soc/ti/davinci-mcasp.c b/sound/soc/ti/davinci-mcasp.c
-> index 2c146b91fca3..377be2e2b6ee 100644
-> --- a/sound/soc/ti/davinci-mcasp.c
-> +++ b/sound/soc/ti/davinci-mcasp.c
-> @@ -2047,6 +2047,8 @@ static int davinci_mcasp_get_dma_type(struct davinci_mcasp *mcasp)
->  		return PCM_SDMA;
->  	else if (strstr(tmp, "udmap"))
->  		return PCM_UDMA;
-> +	else if (strstr(tmp, "bcdma"))
-> +		return PCM_UDMA;
->  
->  	return PCM_EDMA;
->  }
+>> @@ -1522,6 +1548,8 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
+>>  		}
+>>  	}
+>>  
+>> +	init_waitqueue_head(&desc->wait_for_threads);
+>> +
+>
+> I'm trying to convince myself that this one is safe.
+>
+> It was so far only done when registering the first handler of a
+> threaded interrupt, while it is now done on every call to
+> __setup_irq().  However, this is now done outside of the protection of
+> any of the locks, meaning that a concurrent __setup_irq() for a shared
+> interrupt can now barge in and corrupt the wait queue.
+>
+> So I don't think this is right. You may be able to hoist the
+> request_lock up, but I haven't checked what could break, if anything.
 
--- 
-Péter
+It can't be moved here, but I can see why Thomas wants to move it. With
+a spurious wakeup of the irq thread (should not happen), the thread
+would try to invoke wake_up() on a non initialize wait queue head.
+
+Something like this should do the trick.
+
+diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
+index 939d21cd55c3..0099b87dd853 100644
+--- a/kernel/irq/irqdesc.c
++++ b/kernel/irq/irqdesc.c
+@@ -407,6 +407,7 @@ static struct irq_desc *alloc_desc(int irq, int node, unsigned int flags,
+ 	lockdep_set_class(&desc->lock, &irq_desc_lock_class);
+ 	mutex_init(&desc->request_mutex);
+ 	init_rcu_head(&desc->rcu);
++	init_waitqueue_head(&desc->wait_for_threads);
+ 
+ 	desc_set_defaults(irq, desc, node, affinity, owner);
+ 	irqd_set(&desc->irq_data, flags);
+@@ -575,6 +576,7 @@ int __init early_irq_init(void)
+ 		raw_spin_lock_init(&desc[i].lock);
+ 		lockdep_set_class(&desc[i].lock, &irq_desc_lock_class);
+ 		mutex_init(&desc[i].request_mutex);
++		init_waitqueue_head(&desc[i].wait_for_threads);
+ 		desc_set_defaults(i, &desc[i], node, NULL, NULL);
+ 	}
+ 	return arch_early_irq_init();
+diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+index c03f71d5ec10..6a0942f4d068 100644
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -1683,8 +1683,6 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
+ 	}
+ 
+ 	if (!shared) {
+-		init_waitqueue_head(&desc->wait_for_threads);
+-
+ 		/* Setup the type (level, edge polarity) if configured: */
+ 		if (new->flags & IRQF_TRIGGER_MASK) {
+ 			ret = __irq_set_trigger(desc,
+
+Thanks,
+
+        tglx
