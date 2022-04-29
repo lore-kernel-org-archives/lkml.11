@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C136FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:28:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9622C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:28:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379201AbiD2QcB (ORCPT
+        id S1379232AbiD2QcE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:32:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49942 "EHLO
+        Fri, 29 Apr 2022 12:32:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379139AbiD2Qb0 (ORCPT
+        with ESMTP id S1379143AbiD2Qb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:31:26 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06ED2D95E7
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:08 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id q23so11476480wra.1
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:07 -0700 (PDT)
+        Fri, 29 Apr 2022 12:31:28 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2042ED95F5
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:10 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id t6so11478949wra.4
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wNZl86uMJorfXA8YdaBQDFZ0Yywm37xZeE+vqOeu9Ys=;
-        b=tTtmG5ITracw98AElK2wGYZFgMVtS5GATrhIyywYnctxEqC2KdKXjU/sAfGJPEW61e
-         u81nGj49K+HIxJvy3tHy9MpwjPbTx9TmiLP76mntO+kcTsPhBNttkwp2lLkqV2Ih6z5/
-         oLhb//OMO02yvj6ih/K9gBWsUZ4v7eVA6fjQ/TzFXSfx30Ky78Ol/qgZB/6o/Wk7gQLM
-         LLWyFKWOpc4SYCx96jl4O3b74UJRF/pa+wwuf72FHFP5swUQPOJGmatBlLuYTcFdodFU
-         j5QQJ5yQY27CfFi3o1OvtHwxEB0vjUTrfWtjdLANqhYsTzX+TY6hHLaV1wop/ZJplV1l
-         xsNg==
+        bh=CqYXAEE5hciWC62isgzvygxsJPM9qOYnGSv8u0xpx1w=;
+        b=Y6cwe+piOZJTEGcF9JxJ/32QGYiHzEmVm/tYUrHsHFt9YD2RCzXemvwgHhz7LRZ72A
+         8geGPzzh5wA/PkPSSoGGGYEkZTa5O2QOTAvLtY7BmTngxKuLa/zgYNqic+nBJgfB3wcY
+         EvsBM3M/oUAG6KVKqueiVP43NsFOnlG1CR+LDgvczoknEkYNDJB5MxOEtlFAcGiJT3/9
+         75ct5scBdKp8ho22dsq3OT3BvJ9E12C7q9Vh4K5Mat3dP1InYZjch9x6djtHEE9Ry24L
+         Ww/m8fpl0PdzaSSA7267H1RMqfMUpwwJNtKDUyLetb/ITmE/czILUnz+V8Ht8sFcWIWl
+         TX8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wNZl86uMJorfXA8YdaBQDFZ0Yywm37xZeE+vqOeu9Ys=;
-        b=h9WiE0O/yhWm3po02DW0q2OFduAynKpSDn2BcKXOAK7sSPQ0fQoKqVvLN7ddVfFdPe
-         NoHwv9Kyvk6ogESirtVKcT/0B8nW/dVdn3cHmK9NtJiryvpocESBG1jXoE9UM0vykwRM
-         8uqK1saUxZPUGQRh3rdWP7JCA+BhRL07y+nwPQS0ji56DC3tDYhDCCpqjlnK+h79Lchn
-         hDgtt0qH45kcXkydtwzIk0srWPJX6FFJeGhVIMdmR3z6g3rLnclQXtZFAGbZW1v6QTXx
-         qpA96JkxmA5fobupv+mAKVVOl0Ae8XmG9ks9oBoeoyCx8eqIeyOGemrn+kL3uZ2WSOr5
-         I6GA==
-X-Gm-Message-State: AOAM530DnlRTS7boDxlQ7bj/atr4uCdbwAfXps1ndfOupPD140wp/Kxw
-        BS2EEx3tcuZuuOjp7H7GXbVaKg==
-X-Google-Smtp-Source: ABdhPJxn+Wsf89S1prK+hMTL0miaxMXZ2a8Lx/22gTwY2kgtm/h7b3BpVWWX9iiwcQxsM+rgcimbtg==
-X-Received: by 2002:adf:ef01:0:b0:20a:8068:ca5e with SMTP id e1-20020adfef01000000b0020a8068ca5emr30868564wro.661.1651249686606;
-        Fri, 29 Apr 2022 09:28:06 -0700 (PDT)
+        bh=CqYXAEE5hciWC62isgzvygxsJPM9qOYnGSv8u0xpx1w=;
+        b=JTXZmUCdDj9GoxilOPJw8gUheEX27Dc8aJIqBQwYrY+dyKTVvmw5gZL+3+P8ietJTM
+         oPtnQknxXBwfnKJaTeo8PHFtvRNBpgfVJ3ZhXZfPTLF4+BHeJ8EUJlnNVBbeh7mtuyGx
+         CuzzKC03lhOxCSGQHzO2U+3BHABeb1atR6LYeh0nkEgiIaEh+L/ejGiUiTcoYaVgncVD
+         K0glcCjNVF98AV+vhic+rQsYH9y1M01Tp/hqIgw7OdVm0jjKsrulksBh/q+1qQTtX8os
+         +SMJiJ64AYOxu6HT5V2jJZs/EXwljgORpqYtIYPhdc8eUp23mHD4fGfZoxhCPRMzrdka
+         M8ZA==
+X-Gm-Message-State: AOAM532AaQrJwcy2f5gmp9aivqXKir7feJ6QU2dBNjO8zxbSY2twK9fi
+        0qqS2HJ7MJs7SkFv3aVRlgWy1A==
+X-Google-Smtp-Source: ABdhPJx/FdjPsAC9fThal/9IUXJnCdi3dQmA7tuwKC7Ie5x894ukc46mDl7j/heKfjAafdYI/pyh0Q==
+X-Received: by 2002:adf:c805:0:b0:209:e1aa:87a5 with SMTP id d5-20020adfc805000000b00209e1aa87a5mr30853195wrh.701.1651249688729;
+        Fri, 29 Apr 2022 09:28:08 -0700 (PDT)
 Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id b5-20020adff905000000b0020a8781be70sm2781801wrr.12.2022.04.29.09.28.05
+        by smtp.gmail.com with ESMTPSA id b5-20020adff905000000b0020a8781be70sm2781801wrr.12.2022.04.29.09.28.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 09:28:06 -0700 (PDT)
+        Fri, 29 Apr 2022 09:28:08 -0700 (PDT)
 From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-kernel@vger.kernel.org,
         Sean Anderson <sean.anderson@seco.com>,
-        Michael Walle <michael@walle.cc>, Andrew Lunn <andrew@lunn.ch>,
+        Andrew Lunn <andrew@lunn.ch>,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 11/16] dt-bindings: nvmem: sfp: Fix typo
-Date:   Fri, 29 Apr 2022 17:26:56 +0100
-Message-Id: <20220429162701.2222-12-srinivas.kandagatla@linaro.org>
+Subject: [PATCH 13/16] dt-bindings: nvmem: sfp: Add TA_PROG_SFP supply
+Date:   Fri, 29 Apr 2022 17:26:58 +0100
+Message-Id: <20220429162701.2222-14-srinivas.kandagatla@linaro.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220429162701.2222-1-srinivas.kandagatla@linaro.org>
 References: <20220429162701.2222-1-srinivas.kandagatla@linaro.org>
@@ -69,29 +69,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Anderson <sean.anderson@seco.com>
 
-There is a small grammatical error in the description. Fix it.
+The TA_PROG_SFP supply must be enabled to program the fuses, and
+disabled to read the fuses (such as at power-on-reset). On many boards,
+this supply is controlled by a jumper. The user must manually insert or
+remove it at the appropriate time in the programming process. However,
+on other boards this supply is controlled by an FPGA or a GPIO. In
+these cases, the driver can automatically enable and disable it as
+necessary.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-Reviewed-by: Michael Walle <michael@walle.cc>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 ---
- Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml        | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-index 80914b93638e..b7798e903191 100644
+index 54086f50157d..c5d7375b840a 100644
 --- a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
 +++ b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-@@ -10,7 +10,7 @@ maintainers:
-   - Michael Walle <michael@walle.cc>
+@@ -32,6 +32,11 @@ properties:
+   clock-names:
+     const: sfp
  
- description: |
--  SFP is the security fuse processor which among other things provide a
-+  SFP is the security fuse processor which among other things provides a
-   unique identifier per part.
- 
- allOf:
++  ta-prog-sfp-supply:
++    description:
++      The regulator for the TA_PROG_SFP pin. It will be enabled for programming
++      and disabled for reading.
++
+ required:
+   - compatible
+   - reg
 -- 
 2.21.0
 
