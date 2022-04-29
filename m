@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1161C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C82C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:45:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358161AbiD2Ks4 (ORCPT
+        id S1357986AbiD2KtK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59086 "EHLO
+        Fri, 29 Apr 2022 06:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357997AbiD2KsE (ORCPT
+        with ESMTP id S1357941AbiD2KsK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:48:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3AF3C90F3;
-        Fri, 29 Apr 2022 03:43:17 -0700 (PDT)
+        Fri, 29 Apr 2022 06:48:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CEBEC74BB;
+        Fri, 29 Apr 2022 03:43:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 842DE62370;
-        Fri, 29 Apr 2022 10:43:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89822C385A7;
-        Fri, 29 Apr 2022 10:43:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E790A60BA5;
+        Fri, 29 Apr 2022 10:43:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0137EC385AD;
+        Fri, 29 Apr 2022 10:43:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651228997;
-        bh=m9uHld/2Afw0iDRGRG2PyWPGIDnBmhadS3dACiiHojs=;
+        s=korg; t=1651229008;
+        bh=yev4YVhz4TqL9QVu2gmiOjdvuLjycoPHhe9TkN33Ie4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xw177wjD/Qcx+XBPq+bjINq9Td1R9gbQsDKu6LSmJc127JQIfy2GRUtZvB1UXm1Lw
-         KRpXmcgOqdWV00UgldwxnR7DSOxLSrTMibiYPZkDGtcgSlBtWlu8EwgDa4/odoYWv7
-         XxQTW0BbxCK6NkZ0twiYd29+MygyB9cdOEax5v/E=
+        b=AcJkylpIbGURPRj4QtTHmsE5z2Ql32iJAadevFTljoMw8bhcrberlzq5mibYCNs+F
+         Gy6UtTmG/ZYvWyPdfw3tdeeZo4x/8qW/2Y6q2gBW73jpnbsQPjxthclMV1D1OqDsQg
+         0LlLyw9UIJ03ggrIANBQI4mZt5h1FjLLryTkQxzk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andreas Gruenbacher <agruenba@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
         Anand Jain <anand.jain@oracle.com>
-Subject: [PATCH 5.15 24/33] iomap: Fix iomap_dio_rw return value for user copies
-Date:   Fri, 29 Apr 2022 12:42:11 +0200
-Message-Id: <20220429104053.039706422@linuxfoundation.org>
+Subject: [PATCH 5.15 28/33] iov_iter: Introduce nofault flag to disable page faults
+Date:   Fri, 29 Apr 2022 12:42:15 +0200
+Message-Id: <20220429104053.153348855@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220429104052.345760505@linuxfoundation.org>
 References: <20220429104052.345760505@linuxfoundation.org>
@@ -53,42 +51,87 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andreas Gruenbacher <agruenba@redhat.com>
 
-commit 42c498c18a94eed79896c50871889af52fa0822e upstream
+commit 3337ab08d08b1a375f88471d9c8b1cac968cb054 upstream
 
-When a user copy fails in one of the helpers of iomap_dio_rw, fail with
--EFAULT instead of returning 0.  This matches what iomap_dio_bio_actor
-returns when it gets an -EFAULT from bio_iov_iter_get_pages.  With these
-changes, iomap_dio_actor now consistently fails with -EFAULT when a user
-page cannot be faulted in.
+Introduce a new nofault flag to indicate to iov_iter_get_pages not to
+fault in user pages.
+
+This is implemented by passing the FOLL_NOFAULT flag to get_user_pages,
+which causes get_user_pages to fail when it would otherwise fault in a
+page. We'll use the ->nofault flag to prevent iomap_dio_rw from faulting
+in pages when page faults are not allowed.
 
 Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Anand Jain <anand.jain@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/iomap/direct-io.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ include/linux/uio.h |    1 +
+ lib/iov_iter.c      |   20 +++++++++++++++-----
+ 2 files changed, 16 insertions(+), 5 deletions(-)
 
---- a/fs/iomap/direct-io.c
-+++ b/fs/iomap/direct-io.c
-@@ -371,6 +371,8 @@ static loff_t iomap_dio_hole_iter(const
- 	loff_t length = iov_iter_zero(iomap_length(iter), dio->submit.iter);
+--- a/include/linux/uio.h
++++ b/include/linux/uio.h
+@@ -35,6 +35,7 @@ struct iov_iter_state {
  
- 	dio->size += length;
-+	if (!length)
-+		return -EFAULT;
- 	return length;
- }
+ struct iov_iter {
+ 	u8 iter_type;
++	bool nofault;
+ 	bool data_source;
+ 	size_t iov_offset;
+ 	size_t count;
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -514,6 +514,7 @@ void iov_iter_init(struct iov_iter *i, u
+ 	WARN_ON(direction & ~(READ | WRITE));
+ 	*i = (struct iov_iter) {
+ 		.iter_type = ITER_IOVEC,
++		.nofault = false,
+ 		.data_source = direction,
+ 		.iov = iov,
+ 		.nr_segs = nr_segs,
+@@ -1529,13 +1530,17 @@ ssize_t iov_iter_get_pages(struct iov_it
+ 		return 0;
  
-@@ -402,6 +404,8 @@ static loff_t iomap_dio_inline_iter(cons
- 		copied = copy_to_iter(inline_data, length, iter);
- 	}
- 	dio->size += copied;
-+	if (!copied)
-+		return -EFAULT;
- 	return copied;
- }
+ 	if (likely(iter_is_iovec(i))) {
++		unsigned int gup_flags = 0;
+ 		unsigned long addr;
  
++		if (iov_iter_rw(i) != WRITE)
++			gup_flags |= FOLL_WRITE;
++		if (i->nofault)
++			gup_flags |= FOLL_NOFAULT;
++
+ 		addr = first_iovec_segment(i, &len, start, maxsize, maxpages);
+ 		n = DIV_ROUND_UP(len, PAGE_SIZE);
+-		res = get_user_pages_fast(addr, n,
+-				iov_iter_rw(i) != WRITE ?  FOLL_WRITE : 0,
+-				pages);
++		res = get_user_pages_fast(addr, n, gup_flags, pages);
+ 		if (unlikely(res <= 0))
+ 			return res;
+ 		return (res == n ? len : res * PAGE_SIZE) - *start;
+@@ -1651,15 +1656,20 @@ ssize_t iov_iter_get_pages_alloc(struct
+ 		return 0;
+ 
+ 	if (likely(iter_is_iovec(i))) {
++		unsigned int gup_flags = 0;
+ 		unsigned long addr;
+ 
++		if (iov_iter_rw(i) != WRITE)
++			gup_flags |= FOLL_WRITE;
++		if (i->nofault)
++			gup_flags |= FOLL_NOFAULT;
++
+ 		addr = first_iovec_segment(i, &len, start, maxsize, ~0U);
+ 		n = DIV_ROUND_UP(len, PAGE_SIZE);
+ 		p = get_pages_array(n);
+ 		if (!p)
+ 			return -ENOMEM;
+-		res = get_user_pages_fast(addr, n,
+-				iov_iter_rw(i) != WRITE ?  FOLL_WRITE : 0, p);
++		res = get_user_pages_fast(addr, n, gup_flags, p);
+ 		if (unlikely(res <= 0)) {
+ 			kvfree(p);
+ 			*pages = NULL;
 
 
