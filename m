@@ -2,162 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3AB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:43:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B82C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:43:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357926AbiD2KqZ (ORCPT
+        id S1357933AbiD2Kqm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59136 "EHLO
+        Fri, 29 Apr 2022 06:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357827AbiD2Kps (ORCPT
+        with ESMTP id S1357772AbiD2Kp5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:45:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32E5C12FF;
-        Fri, 29 Apr 2022 03:42:13 -0700 (PDT)
+        Fri, 29 Apr 2022 06:45:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F51CC84B6;
+        Fri, 29 Apr 2022 03:42:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id F1CBCCE31AD;
-        Fri, 29 Apr 2022 10:42:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF7FDC385A4;
-        Fri, 29 Apr 2022 10:42:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8C9362325;
+        Fri, 29 Apr 2022 10:42:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84D54C385AF;
+        Fri, 29 Apr 2022 10:42:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651228930;
-        bh=wGlm1kAKpp82offW2XF87L2almALkRD2RWNUhTrrz4c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nfCS6r/ThQQi3+kxoSL5Qal0H9SQzN0PNq3PeB9yLwEin8uFZM9cBe2qC+pmIFSVr
-         U+cE14hts8kzwWgIYd21cBOMqcivD3QzWkhhPDsSNA5vQqRE05LsRF07gMZQ05irJV
-         moySONt9/klIultkVvPf6YZAW6R4/Bp9HVneQXUQ=
+        s=korg; t=1651228943;
+        bh=N70vpHwtSZMmTCxmNgAEjaI0uS0fBsx6POmU54uAECo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mEJzroUUuK6GnVQGQsxKvNEdL6Y8bqxuQcIP3Ba95o1KDcd1qNk5RJwXa698tfu4l
+         sHwjuRaa4NBdAJvrwk8spd/5HsCswihFUpL4KGiHZ5pLhbrEEaLMxB1YxWL+KlDJbn
+         h4cK/2tuDcj0kSf1h//u1vh2WyTlCplM4IuxrN70=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [PATCH 4.19 09/12] Revert "ia64: kprobes: Use generic kretprobe trampoline handler"
-Date:   Fri, 29 Apr 2022 12:41:26 +0200
-Message-Id: <20220429104048.733242837@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.15 00/33] 5.15.37-rc1 review
+Date:   Fri, 29 Apr 2022 12:41:47 +0200
+Message-Id: <20220429104052.345760505@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220429104048.459089941@linuxfoundation.org>
-References: <20220429104048.459089941@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.37-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.15.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.15.37-rc1
+X-KernelTest-Deadline: 2022-05-01T10:40+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masami Hiramatsu <mhiramat@kernel.org>
+This is the start of the stable review cycle for the 5.15.37 release.
+There are 33 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-This reverts commit d3380de483d55d904fb94a241406b34ed2fada7d.
+Responses should be made by Sun, 01 May 2022 10:40:41 +0000.
+Anything received after that time might be too late.
 
-Since this commit is a part of generic kretprobe trampoline
-handler series, without the other patches in that series, this
-causes a build error on ia64.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.37-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+and the diffstat can be found below.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/ia64/kernel/kprobes.c |   77 +++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 75 insertions(+), 2 deletions(-)
+thanks,
 
---- a/arch/ia64/kernel/kprobes.c
-+++ b/arch/ia64/kernel/kprobes.c
-@@ -409,9 +409,83 @@ static void kretprobe_trampoline(void)
- {
- }
- 
-+/*
-+ * At this point the target function has been tricked into
-+ * returning into our trampoline.  Lookup the associated instance
-+ * and then:
-+ *    - call the handler function
-+ *    - cleanup by marking the instance as unused
-+ *    - long jump back to the original return address
-+ */
- int __kprobes trampoline_probe_handler(struct kprobe *p, struct pt_regs *regs)
- {
--	regs->cr_iip = __kretprobe_trampoline_handler(regs, kretprobe_trampoline, NULL);
-+	struct kretprobe_instance *ri = NULL;
-+	struct hlist_head *head, empty_rp;
-+	struct hlist_node *tmp;
-+	unsigned long flags, orig_ret_address = 0;
-+	unsigned long trampoline_address =
-+		((struct fnptr *)kretprobe_trampoline)->ip;
-+
-+	INIT_HLIST_HEAD(&empty_rp);
-+	kretprobe_hash_lock(current, &head, &flags);
-+
-+	/*
-+	 * It is possible to have multiple instances associated with a given
-+	 * task either because an multiple functions in the call path
-+	 * have a return probe installed on them, and/or more than one return
-+	 * return probe was registered for a target function.
-+	 *
-+	 * We can handle this because:
-+	 *     - instances are always inserted at the head of the list
-+	 *     - when multiple return probes are registered for the same
-+	 *       function, the first instance's ret_addr will point to the
-+	 *       real return address, and all the rest will point to
-+	 *       kretprobe_trampoline
-+	 */
-+	hlist_for_each_entry_safe(ri, tmp, head, hlist) {
-+		if (ri->task != current)
-+			/* another task is sharing our hash bucket */
-+			continue;
-+
-+		orig_ret_address = (unsigned long)ri->ret_addr;
-+		if (orig_ret_address != trampoline_address)
-+			/*
-+			 * This is the real return address. Any other
-+			 * instances associated with this task are for
-+			 * other calls deeper on the call stack
-+			 */
-+			break;
-+	}
-+
-+	regs->cr_iip = orig_ret_address;
-+
-+	hlist_for_each_entry_safe(ri, tmp, head, hlist) {
-+		if (ri->task != current)
-+			/* another task is sharing our hash bucket */
-+			continue;
-+
-+		if (ri->rp && ri->rp->handler)
-+			ri->rp->handler(ri, regs);
-+
-+		orig_ret_address = (unsigned long)ri->ret_addr;
-+		recycle_rp_inst(ri, &empty_rp);
-+
-+		if (orig_ret_address != trampoline_address)
-+			/*
-+			 * This is the real return address. Any other
-+			 * instances associated with this task are for
-+			 * other calls deeper on the call stack
-+			 */
-+			break;
-+	}
-+	kretprobe_assert(ri, orig_ret_address, trampoline_address);
-+
-+	kretprobe_hash_unlock(current, &flags);
-+
-+	hlist_for_each_entry_safe(ri, tmp, &empty_rp, hlist) {
-+		hlist_del(&ri->hlist);
-+		kfree(ri);
-+	}
- 	/*
- 	 * By returning a non-zero value, we are telling
- 	 * kprobe_handler() that we don't want the post_handler
-@@ -424,7 +498,6 @@ void __kprobes arch_prepare_kretprobe(st
- 				      struct pt_regs *regs)
- {
- 	ri->ret_addr = (kprobe_opcode_t *)regs->b0;
--	ri->fp = NULL;
- 
- 	/* Replace the return addr with trampoline addr */
- 	regs->b0 = ((struct fnptr *)kretprobe_trampoline)->ip;
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.15.37-rc1
+
+Kumar Kartikeya Dwivedi <memxor@gmail.com>
+    selftests/bpf: Add test for reg2btf_ids out of bounds access
+
+Linus Torvalds <torvalds@linux-foundation.org>
+    mm: gup: make fault_in_safe_writeable() use fixup_user_fault()
+
+Filipe Manana <fdmanana@suse.com>
+    btrfs: fallback to blocking mode when doing async dio over multiple extents
+
+Filipe Manana <fdmanana@suse.com>
+    btrfs: fix deadlock due to page faults during direct IO reads and writes
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    gfs2: Fix mmap + page fault deadlocks for direct I/O
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    iov_iter: Introduce nofault flag to disable page faults
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    gup: Introduce FOLL_NOFAULT flag to disable page faults
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    iomap: Add done_before argument to iomap_dio_rw
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    iomap: Support partial direct I/O on user copy failures
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    iomap: Fix iomap_dio_rw return value for user copies
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    gfs2: Fix mmap + page fault deadlocks for buffered I/O
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    gfs2: Eliminate ip->i_gh
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    gfs2: Move the inode glock locking to gfs2_file_buffered_write
+
+Bob Peterson <rpeterso@redhat.com>
+    gfs2: Introduce flag for glock holder auto-demotion
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    gfs2: Clean up function may_grant
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    gfs2: Add wrapper for iomap_file_buffered_write
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    iov_iter: Introduce fault_in_iov_iter_writeable
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    iov_iter: Turn iov_iter_fault_in_readable into fault_in_iov_iter_readable
+
+Andreas Gruenbacher <agruenba@redhat.com>
+    gup: Turn fault_in_pages_{readable,writeable} into fault_in_{readable,writeable}
+
+Muchun Song <songmuchun@bytedance.com>
+    mm: kfence: fix objcgs vector allocation
+
+Dinh Nguyen <dinguyen@kernel.org>
+    ARM: dts: socfpga: change qspi to "intel,socfpga-qspi"
+
+Dinh Nguyen <dinguyen@kernel.org>
+    spi: cadence-quadspi: fix write completion support
+
+Kumar Kartikeya Dwivedi <memxor@gmail.com>
+    bpf: Fix crash due to out of bounds access into reg2btf_ids.
+
+Hao Luo <haoluo@google.com>
+    bpf/selftests: Test PTR_TO_RDONLY_MEM
+
+Hao Luo <haoluo@google.com>
+    bpf: Add MEM_RDONLY for helper args that are pointers to rdonly mem.
+
+Hao Luo <haoluo@google.com>
+    bpf: Make per_cpu_ptr return rdonly PTR_TO_MEM.
+
+Hao Luo <haoluo@google.com>
+    bpf: Convert PTR_TO_MEM_OR_NULL to composable types.
+
+Hao Luo <haoluo@google.com>
+    bpf: Introduce MEM_RDONLY flag
+
+Hao Luo <haoluo@google.com>
+    bpf: Replace PTR_TO_XXX_OR_NULL with PTR_TO_XXX | PTR_MAYBE_NULL
+
+Hao Luo <haoluo@google.com>
+    bpf: Replace RET_XXX_OR_NULL with RET_XXX | PTR_MAYBE_NULL
+
+Hao Luo <haoluo@google.com>
+    bpf: Replace ARG_XXX_OR_NULL with ARG_XXX | PTR_MAYBE_NULL
+
+Hao Luo <haoluo@google.com>
+    bpf: Introduce composable reg, ret and arg types.
+
+Willy Tarreau <w@1wt.eu>
+    floppy: disable FDRAWCMD by default
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                           |   4 +-
+ arch/arm/boot/dts/socfpga.dtsi                     |   2 +-
+ arch/arm/boot/dts/socfpga_arria10.dtsi             |   2 +-
+ arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi  |   2 +-
+ arch/arm64/boot/dts/intel/socfpga_agilex.dtsi      |   2 +-
+ arch/powerpc/kernel/kvm.c                          |   3 +-
+ arch/powerpc/kernel/signal_32.c                    |   4 +-
+ arch/powerpc/kernel/signal_64.c                    |   2 +-
+ arch/x86/kernel/fpu/signal.c                       |   7 +-
+ drivers/block/Kconfig                              |  16 +
+ drivers/block/floppy.c                             |  43 +-
+ drivers/gpu/drm/armada/armada_gem.c                |   7 +-
+ drivers/spi/spi-cadence-quadspi.c                  |  24 +-
+ fs/btrfs/file.c                                    | 142 +++++-
+ fs/btrfs/inode.c                                   |  28 ++
+ fs/btrfs/ioctl.c                                   |   5 +-
+ fs/erofs/data.c                                    |   2 +-
+ fs/ext4/file.c                                     |   5 +-
+ fs/f2fs/file.c                                     |   2 +-
+ fs/fuse/file.c                                     |   2 +-
+ fs/gfs2/bmap.c                                     |  60 +--
+ fs/gfs2/file.c                                     | 252 ++++++++++-
+ fs/gfs2/glock.c                                    | 330 ++++++++++----
+ fs/gfs2/glock.h                                    |  20 +
+ fs/gfs2/incore.h                                   |   4 +-
+ fs/iomap/buffered-io.c                             |   2 +-
+ fs/iomap/direct-io.c                               |  29 +-
+ fs/ntfs/file.c                                     |   2 +-
+ fs/ntfs3/file.c                                    |   2 +-
+ fs/xfs/xfs_file.c                                  |   6 +-
+ fs/zonefs/super.c                                  |   4 +-
+ include/linux/bpf.h                                | 101 ++++-
+ include/linux/bpf_verifier.h                       |  18 +
+ include/linux/iomap.h                              |  11 +-
+ include/linux/mm.h                                 |   3 +-
+ include/linux/pagemap.h                            |  58 +--
+ include/linux/uio.h                                |   4 +-
+ kernel/bpf/btf.c                                   |  16 +-
+ kernel/bpf/cgroup.c                                |   2 +-
+ kernel/bpf/helpers.c                               |  12 +-
+ kernel/bpf/map_iter.c                              |   4 +-
+ kernel/bpf/ringbuf.c                               |   2 +-
+ kernel/bpf/syscall.c                               |   2 +-
+ kernel/bpf/verifier.c                              | 488 ++++++++++-----------
+ kernel/trace/bpf_trace.c                           |  22 +-
+ lib/iov_iter.c                                     |  98 ++++-
+ mm/filemap.c                                       |   4 +-
+ mm/gup.c                                           | 120 ++++-
+ mm/kfence/core.c                                   |  11 +-
+ mm/kfence/kfence.h                                 |   3 +
+ net/core/bpf_sk_storage.c                          |   2 +-
+ net/core/filter.c                                  |  64 +--
+ net/core/sock_map.c                                |   2 +-
+ tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  14 +
+ .../bpf/progs/test_ksyms_btf_write_check.c         |  29 ++
+ tools/testing/selftests/bpf/verifier/calls.c       |  19 +
+ 56 files changed, 1472 insertions(+), 652 deletions(-)
 
 
