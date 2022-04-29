@@ -2,109 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF531C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:26:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7041DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:27:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356954AbiD2O3u (ORCPT
+        id S1377266AbiD2Oaj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
+        Fri, 29 Apr 2022 10:30:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377257AbiD2O3o (ORCPT
+        with ESMTP id S1346129AbiD2Oah (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:29:44 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA5EA1471
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:26:19 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id cx11-20020a17090afd8b00b001d9fe5965b3so8727495pjb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:26:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=T+xkL3YWKNIwUvhcyT6Zc2yQzS0rBzFbHurjbmprYM8=;
-        b=laYz416cOyIijfEQ+pVXTypoycAPoNCaBjiFp2ErDhoCqHrvU9sC6Xq1SEKRHCT5vK
-         rchwEpxXSozP9Xnq07+2MlLlnCDZd3VqHfgrAwYi3GvcAOf/mcN/ae3HU0hC/UeTbfSW
-         oro3O4iW0oH0MkXAFc3reyccrgWCR8LbWKWu5FIB5uRP464LJRHDEX26SVXpwgM3sUTt
-         h3pwoOL3p/4eyF3dHBgxHbQhBGEylGN2GU4HfvD2gea+DcI3HvjuRVpEEbjvKruhbLFM
-         j1/nBj8+dvlmBs/UvP/YCL+26jOspr/4lvcICuGTh49aCmIfAVn1eSDAhGB+pD4td6PJ
-         05Rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=T+xkL3YWKNIwUvhcyT6Zc2yQzS0rBzFbHurjbmprYM8=;
-        b=WQaBUfBABQTJ6UoNyEFU4KbhV1zQmyuBCylaOe884sfnpoBYk6xyNLMCHNsSlD9n/N
-         l1kJl7m0BaMYwl17gXzTAfz6oywZuu14RJbjboPcUf9z6Ji9+JPTSJ8A0gCWMoq40Bn1
-         Ukox88wlTER1AkK+/4l3AKieFOrFLFFoonfhtYmXAPwurR4WyeKWC3QPR0jx2qSA5Bl/
-         rmRPiC21rimpcjz1lsqs2kh1xk30ByZ9B0C6C9J6ktglLJ8/4F/8QJAvwPuSUBdjX4W2
-         eM5Arb3sfRm9uXgXEPscF9RxFX6cO3PINhYjIdGOoTyMUNc4PdGBQHFU7EvPitz0dGTM
-         JP6A==
-X-Gm-Message-State: AOAM5324R7PCT5HWD35CCkEGRfAPKakqpTQ3OjThT8UpQrayoKr8LRHq
-        qpaCh/Wfu6um5mnzj2hozxKutA==
-X-Google-Smtp-Source: ABdhPJz3haJXofXKco6B7+t0Ls+9sd0gtckJfaYdpRJH2uZO9g060KFNm7+1zgYdOuEcI+B3n7xNHA==
-X-Received: by 2002:a17:902:f792:b0:153:1566:18 with SMTP id q18-20020a170902f79200b0015315660018mr38572615pln.115.1651242378746;
-        Fri, 29 Apr 2022 07:26:18 -0700 (PDT)
-Received: from always-x1.www.tendawifi.com ([139.177.225.247])
-        by smtp.gmail.com with ESMTPSA id a38-20020a056a001d2600b004fae885424dsm3494734pfx.72.2022.04.29.07.26.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 07:26:18 -0700 (PDT)
-From:   zhenwei pi <pizhenwei@bytedance.com>
-To:     akpm@linux-foundation.org, naoya.horiguchi@nec.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        zhenwei pi <pizhenwei@bytedance.com>,
-        Wu Fengguang <fengguang.wu@intel.com>
-Subject: [PATCH 4/4] mm/memofy-failure.c: add hwpoison_filter for soft offline
-Date:   Fri, 29 Apr 2022 22:22:06 +0800
-Message-Id: <20220429142206.294714-5-pizhenwei@bytedance.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220429142206.294714-1-pizhenwei@bytedance.com>
-References: <20220429142206.294714-1-pizhenwei@bytedance.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 29 Apr 2022 10:30:37 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9B7A146B;
+        Fri, 29 Apr 2022 07:27:18 -0700 (PDT)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TECBb8000392;
+        Fri, 29 Apr 2022 14:27:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=+Pd3boeYYOqUdToIy6lpJJ2YBcwWkKSMUxL2UvbDusM=;
+ b=HOL6V3ZUrK6dMiGN7wwleOG7c/ckGbOyS1c/4GoFcGnk1jw5hpi8kEBUAxNCrKXb52C7
+ ZpCeP0zPBUfiGxMOgc3yXP1mZ2lqMeDyPd21m+2skkG+2bFxgeE+fLG4WyAxqCcLHw+W
+ XDG6vNvoIdZO9ip1/053+LDuQQ/W5nx2bI6JG0kTMO7qUJTPIn6nFPrbIr5ga77ybXzw
+ hPAFJLatJJmc8r07nnL6ax51z/pp7PUEt/lBAXdYsPgZz/iV16Q8iyPvzQkALgq21nmn
+ jP60j2a+fOxCuHi2IYJ07MWC5F5kcMOM7VdIrCPkF8mltbshWsGajJ1FT3QIRbVvmZm2 lw== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqtdndx1n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 14:27:13 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TEKrnh032650;
+        Fri, 29 Apr 2022 14:27:10 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04ams.nl.ibm.com with ESMTP id 3fm93918a4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 14:27:10 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TER8lg41484774
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 29 Apr 2022 14:27:08 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6FE1E5204F;
+        Fri, 29 Apr 2022 14:27:08 +0000 (GMT)
+Received: from sig-9-145-61-57.uk.ibm.com (unknown [9.145.61.57])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id EE6125204E;
+        Fri, 29 Apr 2022 14:27:07 +0000 (GMT)
+Message-ID: <7af52d5eea98b6ce07b424586e585fdba88972d0.camel@linux.ibm.com>
+Subject: Re: [PATCH 02/37] ata: add HAS_IOPORT dependencies
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
+        <linux-ide@vger.kernel.org>
+Date:   Fri, 29 Apr 2022 16:27:07 +0200
+In-Reply-To: <20220429135108.2781579-4-schnelle@linux.ibm.com>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+         <20220429135108.2781579-4-schnelle@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: uDBFU9gsGOC3kEIrn58ktvy_zk_lYd1f
+X-Proofpoint-ORIG-GUID: uDBFU9gsGOC3kEIrn58ktvy_zk_lYd1f
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-29_07,2022-04-28_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ priorityscore=1501 mlxscore=0 bulkscore=0 phishscore=0 suspectscore=0
+ mlxlogscore=532 clxscore=1015 impostorscore=0 malwarescore=0 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204290079
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hwpoison_filter is missing in the soft offline path, this leads an
-issue: after enabling the corrupt filter, the user process still has
-a chance to inject hwpoison fault by
-madvise(addr, len, MADV_SOFT_OFFLINE) at PFN which is expected to
-reject.
+On Fri, 2022-04-29 at 15:50 +0200, Niklas Schnelle wrote:
+> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
+> not being declared. We thus need to add HAS_IOPORT as dependency for
+> those drivers using them.
+> 
+> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
 
-Cc: Wu Fengguang <fengguang.wu@intel.com>
-Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
----
- mm/memory-failure.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index a6a27c8b800f..6564f5a34658 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -2313,7 +2313,9 @@ static void put_ref_page(struct page *page)
-  * @pfn: pfn to soft-offline
-  * @flags: flags. Same as memory_failure().
-  *
-- * Returns 0 on success, otherwise negated errno.
-+ * Returns 0 on success
-+ *         -EOPNOTSUPP for memory_filter() filtered the error event
-+ *         < 0 otherwise negated errno.
-  *
-  * Soft offline a page, by migration or invalidation,
-  * without killing anything. This is for the case when
-@@ -2350,6 +2352,11 @@ int soft_offline_page(unsigned long pfn, int flags)
- 		return -EIO;
- 	}
- 
-+	if (hwpoison_filter(page)) {
-+		put_ref_page(ref_page);
-+		return -EOPNOTSUPP;
-+	}
-+
- 	mutex_lock(&mf_mutex);
- 
- 	if (PageHWPoison(page)) {
--- 
-2.20.1
+Sorry everyone. I sent this as PATCH in error while preparing to sent
+the same series as RFC. Since e-mail has no remote delete and I lack a
+time machine let's just all pretend you only got the RFC.
 
