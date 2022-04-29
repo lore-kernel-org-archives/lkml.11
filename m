@@ -2,91 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2A4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:02:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 867B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:02:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377455AbiD2PFg (ORCPT
+        id S1377967AbiD2PFp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 11:05:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
+        Fri, 29 Apr 2022 11:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230170AbiD2PFe (ORCPT
+        with ESMTP id S1377483AbiD2PFn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 11:05:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47187CD338;
-        Fri, 29 Apr 2022 08:02:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 029FAB82B31;
-        Fri, 29 Apr 2022 15:02:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A1B1C385A7;
-        Fri, 29 Apr 2022 15:02:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651244533;
-        bh=Q9J8nfFbLcH6u/qm4eHj84G34KDbxXld+7fzihyYfPc=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=SFfCAJ/UJgPZA4oKecLcRClW9Fno8hmmkOuJIQMxdyyKOV9qPnwDc4fbFS10xuLxv
-         XtTPLfkk5ePWl35qAHXSY5+VW4l5vn3a7AgM7jAleqtkxNyVWZeSh96eXXW23MB7OF
-         Kr7nUnMC/GTNn/b75wVf0J/i4Ikr5paHMZTu2fHNTbb1riEk2lJo+i2a5OLu4aJ9NZ
-         39VzDKDjiVYV4Gvm/c31qka5PbHJcxgdsuhArOPTClpVrGq2XJrabP62XZKiuQ3qDR
-         X/cplXnllK7b3WHU4Gno1RX6I7IcmdhCTKImvOKNSBNrqSQPoCtAp1u/K9xds+RUWY
-         glyyXxana3kQw==
-From:   Mark Brown <broonie@kernel.org>
-To:     matthias.bgg@gmail.com, tiwai@suse.com, robh+dt@kernel.org,
-        yc.hung@mediatek.com
-Cc:     trevor.wu@mediatek.com, daniel.baluta@nxp.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        allen-kh.cheng@mediatek.com, alsa-devel@alsa-project.org,
-        cezary.rojewski@intel.com
-In-Reply-To: <20220106064847.15588-1-yc.hung@mediatek.com>
-References: <20220106064847.15588-1-yc.hung@mediatek.com>
-Subject: Re: [PATCH v4] dt-bindings: dsp: mediatek: add mt8195 dsp document
-Message-Id: <165124453080.141488.6009641744846773699.b4-ty@kernel.org>
-Date:   Fri, 29 Apr 2022 16:02:10 +0100
+        Fri, 29 Apr 2022 11:05:43 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2691CCD67E;
+        Fri, 29 Apr 2022 08:02:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=FWCGga2NwFtl2WJVRbR0+x5nY0E6GFEiFEIQiEh0aDI=; b=nd0C0YhSkMyx/VBQxvNGDviF35
+        b4hcz/MDiayfv5OMOwHlMLqrdxLyiopVPrSBCUV3hcRluZw2OXonnN/JE7Xec2kXWDlJJKfxpE5Vr
+        JY6z1zQFxlB9DeUZB7BShcOFFqfzvowQiekvk8OGmTXQZLSrl4uOQbIwfwZcABkvc0Jd3yneVopit
+        jVz9FcQM+iPF1WUBDfQFMSdkt0Nr1Bf2a/4fdSmkCrbZ5Ic9zy84ZNxcGXqPwpIpIhdtnb936B410
+        cI2AJ/uPCj1pCUrbDhnJFi18oyOScAjfpoLCGyep1fytQ5prukL7IiVtTC5Lx0xrSL+ozLQOceWa9
+        6wHE0rkQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nkS8H-00BhoU-W1; Fri, 29 Apr 2022 15:02:10 +0000
+Date:   Fri, 29 Apr 2022 08:02:09 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        kernel test robot <lkp@intel.com>,
+        Jens Frederich <jfrederich@gmail.com>,
+        Jon Nettleton <jon.nettleton@gmail.com>,
+        linux-staging@lists.linux.dev,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
+        Matthew Wilcox <willy@infradead.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        linux-fbdev@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Changcheng Deng <deng.changcheng@zte.com.cn>
+Subject: Re: [RFC PATCH v4 11/11] fbdev: Make registered_fb[] private to
+ fbmem.c
+Message-ID: <Ymv98Y85rW/2r9m8@infradead.org>
+References: <20220429084253.1085911-1-javierm@redhat.com>
+ <20220429084253.1085911-12-javierm@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220429084253.1085911-12-javierm@redhat.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 6 Jan 2022 14:48:48 +0800, YC Hung wrote:
-> From: "YC Hung" <yc.hung@mediatek.com>
+On Fri, Apr 29, 2022 at 10:42:53AM +0200, Javier Martinez Canillas wrote:
+> From: Daniel Vetter <daniel.vetter@ffwll.ch>
 > 
-> This patch adds mt8195 dsp document. The dsp is used for Sound Open
-> Firmware driver node. It includes registers,  clocks, memory regions,
-> and mailbox for dsp.
+> Well except when the olpc dcon fbdev driver is enabled, that thing
+> digs around in there in rather unfixable ways.
 > 
+> Cc oldc_dcon maintainers as fyi.
 > 
-> [...]
+> v2: I typoed the config name (0day)
 
-Applied to
-
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
-
-Thanks!
-
-[1/1] dt-bindings: dsp: mediatek: add mt8195 dsp document
-      commit: 66727cdb250ec5d3f42558e33ace5c7d0fbd9477
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+We should not keep broken code and/or core code ifdefs around for
+staging drivers.  Just disable the driver if it is in such a bad
+state.
