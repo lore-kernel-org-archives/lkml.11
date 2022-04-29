@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E52C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 20:28:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDD8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 20:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380731AbiD2UcO (ORCPT
+        id S1380738AbiD2UcR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 16:32:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
+        Fri, 29 Apr 2022 16:32:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380708AbiD2UcK (ORCPT
+        with ESMTP id S1380718AbiD2UcM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 16:32:10 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19DAD5EA5;
-        Fri, 29 Apr 2022 13:28:50 -0700 (PDT)
-Date:   Fri, 29 Apr 2022 20:28:48 -0000
+        Fri, 29 Apr 2022 16:32:12 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1952D5EA5;
+        Fri, 29 Apr 2022 13:28:52 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 20:28:50 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651264129;
+        s=2020; t=1651264131;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UW7K9N3A3auzYpRLwTp+c3IV2cf0c6gZLPYYx8hXS9s=;
-        b=u36OGIG+Cq/IUfL9YHrSaCABD2b0EmQXlAW+OHbWijM2MYVnlFZJd4M0mg4w93vwUYuZHW
-        zjltlO4l3MCqTAkNPivlnexfO2fTEBsDPsrT806rTQ8HxogpTsWWFKjg5cBnjcBGP1KBZD
-        azY6MQSqZvLUQEG+aoV4FNINFYWIk5ZVQklnxrZpvTzRdCjQjtXCY5lW0qTcDMpxK5SS2+
-        um2gLp+I7x+xTCcIyYqNKdcp5pAYXUvpgt9SfzJ02GZ176di7pPypuEmOOg2v/MIZe83nG
-        rrhYuQHEPFl6ZHEWDDI7V04aBtPEkkuiOh6mEvydRwmj8KkKXP7OHXOGpv578A==
+        bh=wDMC3O9FGES+pwQdgJZJIdzFTgQngrTYX1ydnS2y2wc=;
+        b=HcVk71SHS8ZIACyRsWnptEDOPPAAiikJjCD1lw9l6HtvbqKEIv3xG/UkutgDLuPc45RuIZ
+        xUYonrKqntIxj/wQWCnsReTD5t5/Bg+xtpY9r2yXNruPUgBfsu+U0+fIKiIe35NujK4gAu
+        W4NFb73kuav4A2xcJLP6IiyCx+5ZILfI6yapqZIvYwp/3dk++OFwqPS+LvCrazNAEWxsxX
+        mxiC7n2cZi8OwNnil06Kg2uelsUHdL+HFaIMydgve0hs2vGZM/fmME0FPF9e+5HBLDmpsI
+        TuN1Z5cGHeyqTTU1ZLmTEp0XuaciOwYZ42zqxfKK0EORIRBNhQDC7GfhC2hkjA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651264129;
+        s=2020e; t=1651264131;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UW7K9N3A3auzYpRLwTp+c3IV2cf0c6gZLPYYx8hXS9s=;
-        b=NSeo9lGTTEjR2OwRI/pGzg3AwhJufXsat0tDdZGfwsm2g0GhcN27mw1NPEM1vUwsh/o7jB
-        VvJJ4M6uYS+Y3jBw==
+        bh=wDMC3O9FGES+pwQdgJZJIdzFTgQngrTYX1ydnS2y2wc=;
+        b=AqiYo7NE8jy6G0Mr/m5rMTdHnnaD7m94ZYIbh0bZxmmtXFzCSuA9Gm7vpaRkD7N32J43ae
+        vkfa1IBzflZ6hECg==
 From:   "tip-bot2 for Sandipan Das" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/core] kvm: x86/cpuid: Fix CPUID leaf 0xA
-Cc:     Vasant Hegde <vasant.hegde@amd.com>,
-        Sandipan Das <sandipan.das@amd.com>,
+Subject: [tip: perf/core] perf/x86/amd/core: Add PerfMonV2 counter control
+Cc:     Sandipan Das <sandipan.das@amd.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: =?utf-8?q?=3C54bc7fe4cadf6bdef823bab1fba43d4891d2e1a9=2E16505?=
+In-Reply-To: =?utf-8?q?=3Cdfe8e934074aaabc6ba748dfaccd0a77c974bb82=2E16505?=
  =?utf-8?q?15382=2Egit=2Esandipan=2Edas=40amd=2Ecom=3E?=
-References: =?utf-8?q?=3C54bc7fe4cadf6bdef823bab1fba43d4891d2e1a9=2E165051?=
+References: =?utf-8?q?=3Cdfe8e934074aaabc6ba748dfaccd0a77c974bb82=2E165051?=
  =?utf-8?q?5382=2Egit=2Esandipan=2Edas=40amd=2Ecom=3E?=
 MIME-Version: 1.0
-Message-ID: <165126412838.4207.9648561218200979307.tip-bot2@tip-bot2>
+Message-ID: <165126413025.4207.8163999518057742829.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -65,52 +64,139 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the perf/core branch of tip:
 
-Commit-ID:     fafd15ab6dc1fdfff66908e6d9231b124e1875cf
-Gitweb:        https://git.kernel.org/tip/fafd15ab6dc1fdfff66908e6d9231b124e1875cf
+Commit-ID:     e1f13d813df8d83f13b9dcca02656e41b29b2167
+Gitweb:        https://git.kernel.org/tip/e1f13d813df8d83f13b9dcca02656e41b29b2167
 Author:        Sandipan Das <sandipan.das@amd.com>
-AuthorDate:    Thu, 21 Apr 2022 11:16:59 +05:30
+AuthorDate:    Thu, 21 Apr 2022 11:16:57 +05:30
 Committer:     Peter Zijlstra <peterz@infradead.org>
 CommitterDate: Fri, 29 Apr 2022 11:06:27 +02:00
 
-kvm: x86/cpuid: Fix CPUID leaf 0xA
+perf/x86/amd/core: Add PerfMonV2 counter control
 
-On some x86 processors, CPUID leaf 0xA provides information
-on Architectural Performance Monitoring features. It
-advertises a PMU version which Qemu uses to determine the
-availability of additional MSRs to manage the PMCs.
+If AMD Performance Monitoring Version 2 (PerfMonV2) is
+supported, use a new scheme to manage the Core PMCs using
+the new global control and status registers. This will be
+bypassed on unsupported hardware (x86_pmu.version < 2).
 
-Upon receiving a KVM_GET_SUPPORTED_CPUID ioctl request for
-the same, the kernel constructs return values based on the
-x86_pmu_capability irrespective of the vendor.
+Currently, all PMCs have dedicated control (PERF_CTL) and
+counter (PERF_CTR) registers. For a given PMC, the enable
+(En) bit of its PERF_CTL register is used to start or stop
+counting.
 
-This leaf and the additional MSRs are not supported on AMD
-processors. If PerfMonV2 is detected, the PMU version is
-set to 2 and guest startup breaks because of an attempt to
-access a non-existent MSR. Return zeros to avoid this.
+The Performance Counter Global Control (PerfCntrGlobalCtl)
+register has enable (PerfCntrEn) bits for each PMC. For a
+PMC to start counting, both PERF_CTL and PerfCntrGlobalCtl
+enable bits must be set. If either of those are cleared,
+the PMC stops counting.
 
-Fixes: a6c06ed1a60a ("KVM: Expose the architectural performance monitoring CPUID leaf")
-Reported-by: Vasant Hegde <vasant.hegde@amd.com>
+In x86_pmu_{en,dis}able_all(), the PERF_CTL registers of
+all active PMCs are written to in a loop. Ideally, PMCs
+counting the same event that were started and stopped at
+the same time should record the same counts. Due to delays
+in between writes to the PERF_CTL registers across loop
+iterations, the PMCs cannot be enabled or disabled at the
+same instant and hence, record slightly different counts.
+This is fixed by enabling or disabling all active PMCs at
+the same time with a single write to the PerfCntrGlobalCtl
+register.
+
 Signed-off-by: Sandipan Das <sandipan.das@amd.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/54bc7fe4cadf6bdef823bab1fba43d4891d2e1a9.1650515382.git.sandipan.das@amd.com
+Link: https://lkml.kernel.org/r/dfe8e934074aaabc6ba748dfaccd0a77c974bb82.1650515382.git.sandipan.das@amd.com
 ---
- arch/x86/kvm/cpuid.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/x86/events/amd/core.c | 50 +++++++++++++++++++++++++++++++++----
+ 1 file changed, 45 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index b24ca7f..ae1d963 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -887,6 +887,12 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
- 		union cpuid10_eax eax;
- 		union cpuid10_edx edx;
+diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
+index 52fd794..a339c3e 100644
+--- a/arch/x86/events/amd/core.c
++++ b/arch/x86/events/amd/core.c
+@@ -664,6 +664,11 @@ static void amd_pmu_cpu_dead(int cpu)
+ 	amd_pmu_cpu_reset(cpu);
+ }
  
-+		if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
-+		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
-+			entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
-+			break;
-+		}
++static inline void amd_pmu_set_global_ctl(u64 ctl)
++{
++	wrmsrl(MSR_AMD64_PERF_CNTR_GLOBAL_CTL, ctl);
++}
 +
- 		perf_get_x86_pmu_capability(&cap);
+ /*
+  * When a PMC counter overflows, an NMI is used to process the event and
+  * reset the counter. NMI latency can result in the counter being updated
+@@ -693,15 +698,11 @@ static void amd_pmu_wait_on_overflow(int idx)
+ 	}
+ }
  
- 		/*
+-static void amd_pmu_disable_all(void)
++static void amd_pmu_check_overflow(void)
+ {
+ 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+ 	int idx;
+ 
+-	amd_brs_disable_all();
+-
+-	x86_pmu_disable_all();
+-
+ 	/*
+ 	 * This shouldn't be called from NMI context, but add a safeguard here
+ 	 * to return, since if we're in NMI context we can't wait for an NMI
+@@ -748,6 +749,26 @@ static void amd_pmu_enable_all(int added)
+ 	}
+ }
+ 
++static void amd_pmu_v2_enable_event(struct perf_event *event)
++{
++	struct hw_perf_event *hwc = &event->hw;
++
++	/*
++	 * Testing cpu_hw_events.enabled should be skipped in this case unlike
++	 * in x86_pmu_enable_event().
++	 *
++	 * Since cpu_hw_events.enabled is set only after returning from
++	 * x86_pmu_start(), the PMCs must be programmed and kept ready.
++	 * Counting starts only after x86_pmu_enable_all() is called.
++	 */
++	__x86_pmu_enable_event(hwc, ARCH_PERFMON_EVENTSEL_ENABLE);
++}
++
++static void amd_pmu_v2_enable_all(int added)
++{
++	amd_pmu_set_global_ctl(amd_pmu_global_cntr_mask);
++}
++
+ static void amd_pmu_disable_event(struct perf_event *event)
+ {
+ 	x86_pmu_disable_event(event);
+@@ -765,6 +786,20 @@ static void amd_pmu_disable_event(struct perf_event *event)
+ 	amd_pmu_wait_on_overflow(event->hw.idx);
+ }
+ 
++static void amd_pmu_disable_all(void)
++{
++	amd_brs_disable_all();
++	x86_pmu_disable_all();
++	amd_pmu_check_overflow();
++}
++
++static void amd_pmu_v2_disable_all(void)
++{
++	/* Disable all PMCs */
++	amd_pmu_set_global_ctl(0);
++	amd_pmu_check_overflow();
++}
++
+ static void amd_pmu_add_event(struct perf_event *event)
+ {
+ 	if (needs_branch_stack(event))
+@@ -1216,6 +1251,11 @@ static int __init amd_core_pmu_init(void)
+ 		x86_pmu.num_counters = ebx.split.num_core_pmc;
+ 
+ 		amd_pmu_global_cntr_mask = (1ULL << x86_pmu.num_counters) - 1;
++
++		/* Update PMC handling functions */
++		x86_pmu.enable_all = amd_pmu_v2_enable_all;
++		x86_pmu.disable_all = amd_pmu_v2_disable_all;
++		x86_pmu.enable = amd_pmu_v2_enable_event;
+ 	}
+ 
+ 	/*
