@@ -2,103 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B118C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:06:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A74F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:07:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376645AbiD2OKM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:10:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55780 "EHLO
+        id S239066AbiD2OKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 10:10:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377077AbiD2OKB (ORCPT
+        with ESMTP id S1376823AbiD2OK2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:10:01 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0918ED17DF
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:03:28 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id 15so6611552pgf.4
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:03:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=i1D89wm0y1+2ttrMK4C0YhPCHvNZx6BJRyJ0Ab+onwc=;
-        b=D3fiCVWDjVYH74rFcWDw6TSzScyaNn/YLsOnwQycGvlmYWofvSA2dsoLXEW1ZDUKy3
-         orSzO6DhlU1lDaoDsOUcjge2e1Xjvlm0soP4F/2EEnMeIG+41OqgpsnysM6kvWmqgMxA
-         jcd6gM6W8GrQszvjKzjfkrgA0qhDIdNfP99Xv3Cfv/Pfy4amXgo6E1YYY8mvMkTTLNkf
-         c0HdIi7N5do2+JqD7R/fI3JB5lhEvyoeOuTj6e21BdecHaZTWgh0Nc+SkiAR/heUysqE
-         CNafI8FTuXztT7EqWFDUW3gPUnNX4hpGXsXeI8UVQQI6uftadfP5oOwPSvnxwIzUImrv
-         x6yw==
+        Fri, 29 Apr 2022 10:10:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DE5E48CCD3
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:05:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651241157;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xKDdsM4MIWkc8vNQb6ubKyY0KGO/jrEC70jcj8M7HbU=;
+        b=hr9XfIQggxXRuC+NyhlFjiXLz8kEPpVCV2M3e2P/oQkdfdO1FH8vCLgygvz/rX/zJYtzWF
+        8M/a9KzzUhghnzMTmQIDh+Um3oqmNkkR0j5H4gVvfdWUV1q9/u0anGXHt2N3WPQSg1X9Sp
+        UZGemGjbGrGmPpSxAsjxPCjEPVMDpCE=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-86-tUeShRsZMbiGDiEL3RcGsg-1; Fri, 29 Apr 2022 10:05:55 -0400
+X-MC-Unique: tUeShRsZMbiGDiEL3RcGsg-1
+Received: by mail-ej1-f70.google.com with SMTP id hs26-20020a1709073e9a00b006f3b957ebb4so4587099ejc.7
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:05:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=i1D89wm0y1+2ttrMK4C0YhPCHvNZx6BJRyJ0Ab+onwc=;
-        b=JlrBYcioU66MDxFbgAPzJHpoB3JJLcG9ERW6sgEzBov1xs7ZcfngraKvQF8N6UpnX9
-         Yexfb7bxv1fRO1dB+U5shwWwO098GgWzlrm4eEdAQ4HgYZWhaTl8YTmZHlTlJTZsJ6MR
-         G3cxjOFWk8FFWj8j20HOWSGOL9bvRbjDPXyLP1WAg0+LsQrPrumnoErwvS+8+uJRW7U3
-         Asr3Qcm0uCtu/AkWKd3IgTMKbKB9gfbSxlJtU+QpA3i7ZwRtINvnAu0sXyBHf6x+rm6p
-         bF902Dxge/1QXd51MPI1fN/5b9FLjXnVMVpvs/2S9INdqRzd9XSe2KhwGSXgl6F1cu8H
-         JoLQ==
-X-Gm-Message-State: AOAM531nDmFgZ7iFFqtSVUfiEhVyMwjy+umUnu9o+A+ty47Fs5Xchhdh
-        vs9YVsiVWVQ7v9grhLm/4EtMgQ==
-X-Google-Smtp-Source: ABdhPJwgyDUF45ewN3iHEmvtIwn2Ru736PHK8amVA2azQ5KwegekVLqd9QJh16tj1X3JePKGpJTVvQ==
-X-Received: by 2002:a65:6b92:0:b0:39c:c97b:1b57 with SMTP id d18-20020a656b92000000b0039cc97b1b57mr33367430pgw.517.1651241007311;
-        Fri, 29 Apr 2022 07:03:27 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id j6-20020a632306000000b003c14af50615sm6514095pgj.45.2022.04.29.07.03.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 07:03:26 -0700 (PDT)
-Date:   Fri, 29 Apr 2022 14:03:23 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xKDdsM4MIWkc8vNQb6ubKyY0KGO/jrEC70jcj8M7HbU=;
+        b=OFgWNqL5VdCYBtiCblTJEpeCjahDISKn7lyj+1Zuy9fb4qifqcepvRPowD0MAELffo
+         UFrXuX2yPnehoYSHMo85LFJncJs8LeObn9axdUaLdgDGp5lbAIuAOHeBLJUJXz24mQ5Q
+         FcAYl7nQwWqo5wSs10Wy73yhP+jkpnFpyafcIHM1FN7ylGJPBIsweM/FMMwmoQSTn9we
+         FFmLETytg4KYHZ3Ttx+fpaeKSIEyRGD/RtJuH1YLwNyjr3AdaF+SAUSukwoZC9e7+V87
+         gE6vTPVZqPPj6YTAJL/GIvIBQzdXrlePnRF7JeGSM5LyqPfSaKy8FaNp0vR7BimJYRL0
+         ypGg==
+X-Gm-Message-State: AOAM5315LsjRfsXAXX8jZcuqbZxZyvGW45yiMw2PkdDLoh4yL3ucD6na
+        MQB7pJxnNCnmQmrTToJSyeUxed9K4eQbABQzNPu2KDEtpSVNkbJF1WE+Hno9xYcizYcCCr+OpvO
+        mCCDT3m3MOaavT+kFvLty0iNz
+X-Received: by 2002:aa7:c58e:0:b0:425:b5e3:6c51 with SMTP id g14-20020aa7c58e000000b00425b5e36c51mr1321403edq.99.1651241154215;
+        Fri, 29 Apr 2022 07:05:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxVA32tC1Jm5pRpOfD7vJcD40YR0MhY1LIRWmSQXXpuV+3PjRXFG7z+RLgbuUJ5MVEEPQKoBQ==
+X-Received: by 2002:aa7:c58e:0:b0:425:b5e3:6c51 with SMTP id g14-20020aa7c58e000000b00425b5e36c51mr1321389edq.99.1651241154023;
+        Fri, 29 Apr 2022 07:05:54 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
+        by smtp.googlemail.com with ESMTPSA id qs24-20020a170906459800b006f3ef214e1bsm689383ejc.129.2022.04.29.07.05.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 07:05:53 -0700 (PDT)
+Message-ID: <bbf38496-658a-d6ca-b76c-d3642609b8fb@redhat.com>
+Date:   Fri, 29 Apr 2022 16:05:52 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH for-5.18] KVM: fix bad user ABI for KVM_EXIT_SYSTEM_EVENT
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
         Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
         Peter Gonda <pgonda@google.com>
-Subject: Re: [PATCH for-5.18] KVM: fix bad user ABI for KVM_EXIT_SYSTEM_EVENT
-Message-ID: <YmvwK0MeKpsQkZN4@google.com>
 References: <20220422103013.34832-1-pbonzini@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422103013.34832-1-pbonzini@redhat.com>
+ <YmvwK0MeKpsQkZN4@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YmvwK0MeKpsQkZN4@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022, Paolo Bonzini wrote:
-> For compatibility with userspace that was using the flags field,
-> a union overlaps flags with data[0].
+On 4/29/22 16:03, Sean Christopherson wrote:
+> On Fri, Apr 22, 2022, Paolo Bonzini wrote:
+>> For compatibility with userspace that was using the flags field,
+>> a union overlaps flags with data[0].
+> 
+> I think "compatibility" is slightly misleading, e.g. the offset of the field is
+> changing for 32-bit userspace.
 
-I think "compatibility" is slightly misleading, e.g. the offset of the field is
-changing for 32-bit userspace. 
+Well, the only such userspace AFAIK is crosvm on ARM and there's no 
+compat ABI for ARM.  But yeah, your wording below sounds good.
 
-  To avoid breaking compilation of userspace that was using the flags
-  field, provide a userspace-only union to overlap flags with data[0].
+>    To avoid breaking compilation of userspace that was using the flags
+>    field, provide a userspace-only union to overlap flags with data[0].
+> 
+>> diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+>> index 91a6fe4e02c0..f903ab0c8d7a 100644
+>> --- a/include/uapi/linux/kvm.h
+>> +++ b/include/uapi/linux/kvm.h
+>> @@ -445,7 +445,11 @@ struct kvm_run {
+>>   #define KVM_SYSTEM_EVENT_RESET          2
+>>   #define KVM_SYSTEM_EVENT_CRASH          3
+>>   			__u32 type;
+>> -			__u64 flags;
+>> +			__u32 ndata;
+>> +			union {
+>> +				__u64 flags;
+> 
+> As alluded to above, what about wrapping flags in
+> 
+> #ifndef __KERNEL__
+> 				__u64 flags;
+> #endif
+> 
+> so that KVM doesn't try to use flags?
 
-> diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-> index 91a6fe4e02c0..f903ab0c8d7a 100644
-> --- a/include/uapi/linux/kvm.h
-> +++ b/include/uapi/linux/kvm.h
-> @@ -445,7 +445,11 @@ struct kvm_run {
->  #define KVM_SYSTEM_EVENT_RESET          2
->  #define KVM_SYSTEM_EVENT_CRASH          3
->  			__u32 type;
-> -			__u64 flags;
-> +			__u32 ndata;
-> +			union {
-> +				__u64 flags;
+Interesting idea.  I'll apply it and push the patch.
 
-As alluded to above, what about wrapping flags in 
+Thanks for the review!
 
-#ifndef __KERNEL__
-				__u64 flags;
-#endif
+Paolo
 
-so that KVM doesn't try to use flags?
+>> +				__u64 data[16];
+>> +			};
+>>   		} system_event;
+>>   		/* KVM_EXIT_S390_STSI */
+>>   		struct {
+> 
 
-> +				__u64 data[16];
-> +			};
->  		} system_event;
->  		/* KVM_EXIT_S390_STSI */
->  		struct {
