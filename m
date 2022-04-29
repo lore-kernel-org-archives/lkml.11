@@ -2,598 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:47:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA1B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358135AbiD2KuS (ORCPT
+        id S1346039AbiD2KuY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59190 "EHLO
+        Fri, 29 Apr 2022 06:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358123AbiD2Ksp (ORCPT
+        with ESMTP id S1358066AbiD2KtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:48:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44F5CA0F8;
-        Fri, 29 Apr 2022 03:43:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DB0460C8E;
-        Fri, 29 Apr 2022 10:43:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81DADC385AD;
-        Fri, 29 Apr 2022 10:43:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651229034;
-        bh=0WNEd8stFqmhkeHmsOuxdI4qhlt1ptMG4LxZUvXajJk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V50rODOy1J6VdZ20INfRi5z2v/A3EQtBYRnKx6PADa/dYUzVzC1H/HNdinmJjw4KQ
-         pseRdYJ7k4mxnh7GKw4FzIGpxLUZZXPztHz/0gW/GpwasqxBgYar7M4ssA3gTI/gdm
-         GW6s6hFLUhW8+kzrG4qP5UvBatrhhPuEPUEQJnkY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.15 09/33] bpf: Add MEM_RDONLY for helper args that are pointers to rdonly mem.
-Date:   Fri, 29 Apr 2022 12:41:56 +0200
-Message-Id: <20220429104052.613931896@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220429104052.345760505@linuxfoundation.org>
-References: <20220429104052.345760505@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Fri, 29 Apr 2022 06:49:16 -0400
+Received: from GBR01-LO2-obe.outbound.protection.outlook.com (mail-lo2gbr01on2106.outbound.protection.outlook.com [40.107.10.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B31CCABA5;
+        Fri, 29 Apr 2022 03:44:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BORkrA9n+vGr+eR7C15z0WtTJ3gNsCsyL9y3t1CllSAGjikn88EhfHpBY+pCL+0ee3FcaZIJfh9i4E7KWwUxvFz2dcOZXympWVkNQ9SDHDzW5n8dTTxlksW/MRiSdVJ2+WzJ1kgYoytLrhxR11kdZgjGY3uJT1rBBHpzYZf+DVrbE3GWsjYO75suhr6xV24Rzw7JjbztvxIJcuLn92Qwpp7gp7QZlpMKN86pTu2VoAZnhvnkrt/uNSZI+vTa9GDmpNHe7/vnioiTDKVVb3n530vUtblandY4K3BNZNp4vFkpMuLCiLwG2Ofc7AjpPvCXrYWbYzrT5zMTWpI1Lohv5A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=J1jv3A8b/jlzR1f3orh9FinfcD9ZCCwUSWYX0tGx6PI=;
+ b=TBkSWSxJhATNwIGt39zCTp4MLnNZS9oueeaQ4K8EPpapJAJsqagb3+ogX+JmxY/ziYL+JzJRF11mumcb7hDoGV7tQYIEaHmCpsV5IqHU6WJ8LOyxQ3AEZ3df1X3Jir3YJbUGMNt9kIVQYVG5Ngj3csOu9GKW8ludU0oSLSmVYl0AdLdiVYoWzU2qJb0eetCIMQzieEecF+172wdPa4Xy93hy6v6oIrQ5k4R6RaP/x8rAQ7APv9WSOigiGULdzY9Xp7wcXp50eGR+hjmQTy+fQHWHNv49/+Oeael9jlc+5CvPOa4/jT6ttDUEjzZsGqDAF4sQ/6TQtaCpGD0Okubu9A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=purelifi.com; dmarc=pass action=none header.from=purelifi.com;
+ dkim=pass header.d=purelifi.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=purelifi.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J1jv3A8b/jlzR1f3orh9FinfcD9ZCCwUSWYX0tGx6PI=;
+ b=nm9Rq4mU/UQjBqpYC4kQsdW4esKa7Ma3Csdhpl93IGeRtnf+eskjudBodfOfsw5+ZjCJJlIOKyt8NQpvYMQEYzrzSn6CcNTfDEgpYH4dH94lj1z70D4vYzPBNyXm5yD6kg9yKqTminoQzxdz4kUDxdx74DB09HBJ8FpjzrX1Tbs=
+Received: from CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:bb::9) by
+ CWLP265MB6514.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:1da::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5206.13; Fri, 29 Apr 2022 10:44:22 +0000
+Received: from CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::9d97:7966:481:5c10]) by CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::9d97:7966:481:5c10%7]) with mapi id 15.20.5186.026; Fri, 29 Apr 2022
+ 10:44:22 +0000
+From:   Srinivasan Raju <srini.raju@purelifi.com>
+CC:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "open list:NETWORKING DRIVERS (WIRELESS)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH] [v2] plfxlc: fix le16_to_cpu warning for beacon_interval
+Thread-Topic: [PATCH] [v2] plfxlc: fix le16_to_cpu warning for beacon_interval
+Thread-Index: AQHYW7VCSGKUmXooIkS/HDoSbm90EA==
+Date:   Fri, 29 Apr 2022 10:44:22 +0000
+Message-ID: <CWLP265MB32172ACD5B2F2ECD0A512F0DE0FC9@CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=purelifi.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 64e49a2f-e5fb-49d0-0442-08da29cd38e0
+x-ms-traffictypediagnostic: CWLP265MB6514:EE_
+x-microsoft-antispam-prvs: <CWLP265MB65144AA6DE4FF475F897B2CCE0FC9@CWLP265MB6514.GBRP265.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2PnyOTmK1IJ9pB9OD1KYw+TDWc1bCbjYlQWGBh70GJLLJA4BPyrSS/YPk5CCfJyC/0nWyKvXrQp5CvgppM2JUK9BYMO2A44s8S0SaVZquMfbAU8Sxy0J9SRPw0gYTgr50+/cWGFouQm66WgVa+FVJZUk1uGw/jsysucIeulATCDa4AXGq3/YiF5/XY284tQwMv4CR1cRi8Ykq4MGfV1boFucksuWaW9IZH4tdbqMj173XE1kSLjfUeBSdpTlQckOc/9txTVxT7b+WmxE9Bo5bsAAEkvlCLamc6KdJaM7sGqUlTvfLruyqigp47ZvRIefeDQWh1EWYeV4K8oH9UnCUT+BHo9MTXK/K+urVOp8ffll0qk+WW9GGq6ROvOOaVmLzIgAgRPJ26UxCDt495PqBJosBODj/LbuTPa+HVVFJ8C7xh+qk+Ik7UWBXWdaIjT5rJmv0C0R+q5HKWrk/Mtg9RghgGEh613KmFIvuMZ7nSmfj8W/oKtEGmiEHs5Gx6qfc1dGbl+r46IOwHTHbUtg1r5WHcqLcqA9suVXofpDJEz4QHjmbfRbKrCL3rqN5PfBrBsVlZG53wS2KfgLKpxhVLF0lmbAAwtNsioZKbtZUGj0AuaMX/HKUulg1C9Vqb6AtxEa4pGxl5AMh4VmHLq1JPLk9nr8OI00bsnDKxhlBy/MA1HqfZSzxtkpAJ6cZsqkeEwbxfk0exDOQPEp1fVCZg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(396003)(346002)(376002)(39830400003)(136003)(366004)(66446008)(66476007)(83380400001)(66946007)(91956017)(64756008)(66556008)(5660300002)(86362001)(76116006)(186003)(6506007)(9686003)(38100700002)(38070700005)(26005)(2906002)(7696005)(8676002)(55016003)(109986005)(71200400001)(54906003)(4326008)(122000001)(52536014)(8936002)(33656002)(508600001)(316002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?kpUnt4q3f5EnvynyU3CoTqBmtdcQ2P5lHQwJIbkhVOZ4yyzSuW2pSycK/S?=
+ =?iso-8859-1?Q?jdCGXYySILKFFAB/m3hUQ4f5AEqmSVpgMEBGas1mrXOScGLZeI/Uc0Hk9B?=
+ =?iso-8859-1?Q?quVatOXrZRi2lcSrkTUXputAPyXHc6N++8qAWNGODVSZ7sTGMMPO7Eb5oy?=
+ =?iso-8859-1?Q?PnU7t6c8PS6okqr1OjcTHX/T179aozuo/vVZ495JPvZVdoRF8Af3iqRpFR?=
+ =?iso-8859-1?Q?jz+LGBIqOwOgRe17SbnbzZxanOwhfzIgVrvcMpapTy1KodggwEoAQzbM8e?=
+ =?iso-8859-1?Q?bMQnBr35ypVUZViTwSUoiw863TavY46ABL+OL0poLHP0zkY8O5GtIIoIQ3?=
+ =?iso-8859-1?Q?N5NUBknj5U4WFUC9wf/Mk28P+cJ+rmgmFYUG1Lrm0df3PH8Ab/d8ihoJfK?=
+ =?iso-8859-1?Q?HZ1QyutopI4p6DC0NH5RoHuJ7xDFk45PxbEVmn4nNpveqjw7HTGDqYp98J?=
+ =?iso-8859-1?Q?xc1RR2awM5YDULJUAL/hl2NeDzcdvY1HvTBvUs9cofzgRZIh1EmQMUR4UL?=
+ =?iso-8859-1?Q?jRKPO4GS9nKaCBD0DEJapEpOnXIJWHZmKn6a7j5AdcD6qboLLVsa1BrdBr?=
+ =?iso-8859-1?Q?CxMfoY2j39dK1DOu4YY/WxiYamgleSS3BERa/nx3SdgEIxBhIO+dMqtWgb?=
+ =?iso-8859-1?Q?fiPZCtD58Oj3d88ybVqqILF7bg4GCJ0qVgHEv/B17pA28NNjbrBfdu6zEq?=
+ =?iso-8859-1?Q?A+uHff7X6vy0jTdk45uKxRDBRfssFD/tlE03whpKGRGDzPeSxgvA+3XsFC?=
+ =?iso-8859-1?Q?gHnzKfZLEa2IbvDW8SpWk+Sodbo21BjdpkVgjXPaJ9f2aiRel52l7DOpOT?=
+ =?iso-8859-1?Q?5YKI5s+2FNWiCi8ySvBidW0WTdFOgxWifndWXz8tjMcbNA28c7/aDKtWf0?=
+ =?iso-8859-1?Q?kBB7uKEnNRSSaQm/OwXr8LOk1ErNkgbied4C8/WALWUyRZX7fVqnJZ4sfP?=
+ =?iso-8859-1?Q?BIU08iKKyIP9soyCIfSp2LSod0YxyDVOYOW2bioUiXFzQjla4AbjIEETJy?=
+ =?iso-8859-1?Q?SeRaXxDKgMfqoyjKoYvK44rcOwXZcCI3Ct2sAiUsq7xoM1SY0ZKmMsYujR?=
+ =?iso-8859-1?Q?Rawa0CezXafMVOr4pcHcHz245cZA0VxJunqP2Xwj0XJ8hMtUU3YxOJuKF5?=
+ =?iso-8859-1?Q?z464lbtOY3R3F137ypdHolylit2SnXJ3gAvfBsHK4OsLmBQtPL1g8+8sdO?=
+ =?iso-8859-1?Q?9i0gZiOHcUqc4MtDgZGCFDNGyxghygGFfZJOaTANCuqh1jIs4zVOzAiQ9k?=
+ =?iso-8859-1?Q?WfAWa8Arl4GsYUGb9BvCxKyKx83uCfuOrf3/XGcyalOSTK8cj8nP/aTNMc?=
+ =?iso-8859-1?Q?XcWQDpsCPtFYOFJd0irZWgXQ5gqPY7/3dzfsiiJ0m6MAJ2iQN+ssDVgKUJ?=
+ =?iso-8859-1?Q?rG4hb1zEJ+AfRBaIXeZ0eU4oxCT9LakMCiTIWcWj8fLqK08ZOnV08LRg5A?=
+ =?iso-8859-1?Q?AZEa446hbCNqX/Ae5uefrfMee8PMqZLca0uFj3mTAF2tpar0oBhcSQwuIC?=
+ =?iso-8859-1?Q?zLSZeJZz7147/cQMb6d0ypBzXZfhKwD2sm6npRbeFXLDakeKkkfwWsmbOd?=
+ =?iso-8859-1?Q?JQ4X2Bah+2ZaPkBl9t69IEfr0wz2MCoVMTBi55qDI6xRC1OVVn3w1Gb0tp?=
+ =?iso-8859-1?Q?BaCegQqdCV1d8MuHvxFhKo8Q7+2OBRM2n49Xhh+yIyO/pklcgEhrWevGIZ?=
+ =?iso-8859-1?Q?Y0/BrR6q6uUVx5ZyuSKDoDP0hSbjz7J6Abl8sHQj3wpQobZL+GJmlzifgy?=
+ =?iso-8859-1?Q?s7VtF4Ns5HrAR2HdpFITBiNpfFovAhKhHrTmVvz588YSxjFXY5XtQ2VeOw?=
+ =?iso-8859-1?Q?6a6tNPOnrQ=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: purelifi.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 64e49a2f-e5fb-49d0-0442-08da29cd38e0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Apr 2022 10:44:22.5430
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5cf4eba2-7b8f-4236-bed4-a2ac41f1a6dc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: BxKqbVAcG62hv0JnL/SpCB4NUh92jyRElkYhcyckxh7etoTh5QPzMagH8rX0dp9x+mhPZyTeem7lx5hRe77Y7w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWLP265MB6514
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Luo <haoluo@google.com>
-
-commit 216e3cd2f28dbbf1fe86848e0e29e6693b9f0a20 upstream.
-
-Some helper functions may modify its arguments, for example,
-bpf_d_path, bpf_get_stack etc. Previously, their argument types
-were marked as ARG_PTR_TO_MEM, which is compatible with read-only
-mem types, such as PTR_TO_RDONLY_BUF. Therefore it's legitimate,
-but technically incorrect, to modify a read-only memory by passing
-it into one of such helper functions.
-
-This patch tags the bpf_args compatible with immutable memory with
-MEM_RDONLY flag. The arguments that don't have this flag will be
-only compatible with mutable memory types, preventing the helper
-from modifying a read-only memory. The bpf_args that have
-MEM_RDONLY are compatible with both mutable memory and immutable
-memory.
-
-Signed-off-by: Hao Luo <haoluo@google.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20211217003152.48334-9-haoluo@google.com
-Cc: stable@vger.kernel.org # 5.15.x
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/linux/bpf.h      |    4 ++
- kernel/bpf/btf.c         |    2 -
- kernel/bpf/cgroup.c      |    2 -
- kernel/bpf/helpers.c     |    8 ++---
- kernel/bpf/ringbuf.c     |    2 -
- kernel/bpf/syscall.c     |    2 -
- kernel/bpf/verifier.c    |   20 ++++++++++++--
- kernel/trace/bpf_trace.c |   22 ++++++++--------
- net/core/filter.c        |   64 +++++++++++++++++++++++------------------------
- 9 files changed, 71 insertions(+), 55 deletions(-)
-
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -307,7 +307,9 @@ enum bpf_type_flag {
- 	/* PTR may be NULL. */
- 	PTR_MAYBE_NULL		= BIT(0 + BPF_BASE_TYPE_BITS),
- 
--	/* MEM is read-only. */
-+	/* MEM is read-only. When applied on bpf_arg, it indicates the arg is
-+	 * compatible with both mutable and immutable memory.
-+	 */
- 	MEM_RDONLY		= BIT(1 + BPF_BASE_TYPE_BITS),
- 
- 	__BPF_TYPE_LAST_FLAG	= MEM_RDONLY,
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -6231,7 +6231,7 @@ const struct bpf_func_proto bpf_btf_find
- 	.func		= bpf_btf_find_by_name_kind,
- 	.gpl_only	= false,
- 	.ret_type	= RET_INTEGER,
--	.arg1_type	= ARG_PTR_TO_MEM,
-+	.arg1_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg2_type	= ARG_CONST_SIZE,
- 	.arg3_type	= ARG_ANYTHING,
- 	.arg4_type	= ARG_ANYTHING,
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -1753,7 +1753,7 @@ static const struct bpf_func_proto bpf_s
- 	.gpl_only	= false,
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_CTX,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
- };
- 
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -530,7 +530,7 @@ const struct bpf_func_proto bpf_strtol_p
- 	.func		= bpf_strtol,
- 	.gpl_only	= false,
- 	.ret_type	= RET_INTEGER,
--	.arg1_type	= ARG_PTR_TO_MEM,
-+	.arg1_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg2_type	= ARG_CONST_SIZE,
- 	.arg3_type	= ARG_ANYTHING,
- 	.arg4_type	= ARG_PTR_TO_LONG,
-@@ -558,7 +558,7 @@ const struct bpf_func_proto bpf_strtoul_
- 	.func		= bpf_strtoul,
- 	.gpl_only	= false,
- 	.ret_type	= RET_INTEGER,
--	.arg1_type	= ARG_PTR_TO_MEM,
-+	.arg1_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg2_type	= ARG_CONST_SIZE,
- 	.arg3_type	= ARG_ANYTHING,
- 	.arg4_type	= ARG_PTR_TO_LONG,
-@@ -630,7 +630,7 @@ const struct bpf_func_proto bpf_event_ou
- 	.arg1_type      = ARG_PTR_TO_CTX,
- 	.arg2_type      = ARG_CONST_MAP_PTR,
- 	.arg3_type      = ARG_ANYTHING,
--	.arg4_type      = ARG_PTR_TO_MEM,
-+	.arg4_type      = ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg5_type      = ARG_CONST_SIZE_OR_ZERO,
- };
- 
-@@ -1013,7 +1013,7 @@ const struct bpf_func_proto bpf_snprintf
- 	.arg1_type	= ARG_PTR_TO_MEM_OR_NULL,
- 	.arg2_type	= ARG_CONST_SIZE_OR_ZERO,
- 	.arg3_type	= ARG_PTR_TO_CONST_STR,
--	.arg4_type	= ARG_PTR_TO_MEM_OR_NULL,
-+	.arg4_type	= ARG_PTR_TO_MEM | PTR_MAYBE_NULL | MEM_RDONLY,
- 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
- };
- 
---- a/kernel/bpf/ringbuf.c
-+++ b/kernel/bpf/ringbuf.c
-@@ -444,7 +444,7 @@ const struct bpf_func_proto bpf_ringbuf_
- 	.func		= bpf_ringbuf_output,
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_CONST_MAP_PTR,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE_OR_ZERO,
- 	.arg4_type	= ARG_ANYTHING,
- };
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -4753,7 +4753,7 @@ static const struct bpf_func_proto bpf_s
- 	.gpl_only	= false,
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_ANYTHING,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
- };
- 
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -4890,7 +4890,6 @@ static const struct bpf_reg_types mem_ty
- 		PTR_TO_MAP_VALUE,
- 		PTR_TO_MEM,
- 		PTR_TO_BUF,
--		PTR_TO_BUF | MEM_RDONLY,
- 	},
- };
- 
-@@ -4960,6 +4959,21 @@ static int check_reg_type(struct bpf_ver
- 		return -EFAULT;
- 	}
- 
-+	/* ARG_PTR_TO_MEM + RDONLY is compatible with PTR_TO_MEM and PTR_TO_MEM + RDONLY,
-+	 * but ARG_PTR_TO_MEM is compatible only with PTR_TO_MEM and NOT with PTR_TO_MEM + RDONLY
-+	 *
-+	 * Same for MAYBE_NULL:
-+	 *
-+	 * ARG_PTR_TO_MEM + MAYBE_NULL is compatible with PTR_TO_MEM and PTR_TO_MEM + MAYBE_NULL,
-+	 * but ARG_PTR_TO_MEM is compatible only with PTR_TO_MEM but NOT with PTR_TO_MEM + MAYBE_NULL
-+	 *
-+	 * Therefore we fold these flags depending on the arg_type before comparison.
-+	 */
-+	if (arg_type & MEM_RDONLY)
-+		type &= ~MEM_RDONLY;
-+	if (arg_type & PTR_MAYBE_NULL)
-+		type &= ~PTR_MAYBE_NULL;
-+
- 	for (i = 0; i < ARRAY_SIZE(compatible->types); i++) {
- 		expected = compatible->types[i];
- 		if (expected == NOT_INIT)
-@@ -4969,14 +4983,14 @@ static int check_reg_type(struct bpf_ver
- 			goto found;
- 	}
- 
--	verbose(env, "R%d type=%s expected=", regno, reg_type_str(env, type));
-+	verbose(env, "R%d type=%s expected=", regno, reg_type_str(env, reg->type));
- 	for (j = 0; j + 1 < i; j++)
- 		verbose(env, "%s, ", reg_type_str(env, compatible->types[j]));
- 	verbose(env, "%s\n", reg_type_str(env, compatible->types[j]));
- 	return -EACCES;
- 
- found:
--	if (type == PTR_TO_BTF_ID) {
-+	if (reg->type == PTR_TO_BTF_ID) {
- 		if (!arg_btf_id) {
- 			if (!compatible->btf_id) {
- 				verbose(env, "verifier internal error: missing arg compatible BTF ID\n");
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -345,7 +345,7 @@ static const struct bpf_func_proto bpf_p
- 	.gpl_only	= true,
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_ANYTHING,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
- };
- 
-@@ -394,7 +394,7 @@ static const struct bpf_func_proto bpf_t
- 	.func		= bpf_trace_printk,
- 	.gpl_only	= true,
- 	.ret_type	= RET_INTEGER,
--	.arg1_type	= ARG_PTR_TO_MEM,
-+	.arg1_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg2_type	= ARG_CONST_SIZE,
- };
- 
-@@ -446,9 +446,9 @@ static const struct bpf_func_proto bpf_s
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_BTF_ID,
- 	.arg1_btf_id	= &btf_seq_file_ids[0],
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
--	.arg4_type      = ARG_PTR_TO_MEM_OR_NULL,
-+	.arg4_type      = ARG_PTR_TO_MEM | PTR_MAYBE_NULL | MEM_RDONLY,
- 	.arg5_type      = ARG_CONST_SIZE_OR_ZERO,
- };
- 
-@@ -463,7 +463,7 @@ static const struct bpf_func_proto bpf_s
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_BTF_ID,
- 	.arg1_btf_id	= &btf_seq_file_ids[0],
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE_OR_ZERO,
- };
- 
-@@ -487,7 +487,7 @@ static const struct bpf_func_proto bpf_s
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_BTF_ID,
- 	.arg1_btf_id	= &btf_seq_file_ids[0],
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE_OR_ZERO,
- 	.arg4_type	= ARG_ANYTHING,
- };
-@@ -648,7 +648,7 @@ static const struct bpf_func_proto bpf_p
- 	.arg1_type	= ARG_PTR_TO_CTX,
- 	.arg2_type	= ARG_CONST_MAP_PTR,
- 	.arg3_type	= ARG_ANYTHING,
--	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
- };
- 
-@@ -958,7 +958,7 @@ const struct bpf_func_proto bpf_snprintf
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_MEM,
- 	.arg2_type	= ARG_CONST_SIZE,
--	.arg3_type	= ARG_PTR_TO_MEM,
-+	.arg3_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg4_type	= ARG_CONST_SIZE,
- 	.arg5_type	= ARG_ANYTHING,
- };
-@@ -1207,7 +1207,7 @@ static const struct bpf_func_proto bpf_p
- 	.arg1_type	= ARG_PTR_TO_CTX,
- 	.arg2_type	= ARG_CONST_MAP_PTR,
- 	.arg3_type	= ARG_ANYTHING,
--	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
- };
- 
-@@ -1429,7 +1429,7 @@ static const struct bpf_func_proto bpf_p
- 	.arg1_type	= ARG_PTR_TO_CTX,
- 	.arg2_type	= ARG_CONST_MAP_PTR,
- 	.arg3_type	= ARG_ANYTHING,
--	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
- };
- 
-@@ -1483,7 +1483,7 @@ static const struct bpf_func_proto bpf_g
- 	.gpl_only	= true,
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_CTX,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE_OR_ZERO,
- 	.arg4_type	= ARG_ANYTHING,
- };
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -1713,7 +1713,7 @@ static const struct bpf_func_proto bpf_s
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_CTX,
- 	.arg2_type	= ARG_ANYTHING,
--	.arg3_type	= ARG_PTR_TO_MEM,
-+	.arg3_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg4_type	= ARG_CONST_SIZE,
- 	.arg5_type	= ARG_ANYTHING,
- };
-@@ -2018,9 +2018,9 @@ static const struct bpf_func_proto bpf_c
- 	.gpl_only	= false,
- 	.pkt_access	= true,
- 	.ret_type	= RET_INTEGER,
--	.arg1_type	= ARG_PTR_TO_MEM_OR_NULL,
-+	.arg1_type	= ARG_PTR_TO_MEM | PTR_MAYBE_NULL | MEM_RDONLY,
- 	.arg2_type	= ARG_CONST_SIZE_OR_ZERO,
--	.arg3_type	= ARG_PTR_TO_MEM_OR_NULL,
-+	.arg3_type	= ARG_PTR_TO_MEM | PTR_MAYBE_NULL | MEM_RDONLY,
- 	.arg4_type	= ARG_CONST_SIZE_OR_ZERO,
- 	.arg5_type	= ARG_ANYTHING,
- };
-@@ -2541,7 +2541,7 @@ static const struct bpf_func_proto bpf_r
- 	.gpl_only	= false,
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_ANYTHING,
--	.arg2_type      = ARG_PTR_TO_MEM_OR_NULL,
-+	.arg2_type      = ARG_PTR_TO_MEM | PTR_MAYBE_NULL | MEM_RDONLY,
- 	.arg3_type      = ARG_CONST_SIZE_OR_ZERO,
- 	.arg4_type	= ARG_ANYTHING,
- };
-@@ -4177,7 +4177,7 @@ static const struct bpf_func_proto bpf_s
- 	.arg1_type	= ARG_PTR_TO_CTX,
- 	.arg2_type	= ARG_CONST_MAP_PTR,
- 	.arg3_type	= ARG_ANYTHING,
--	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
- };
- 
-@@ -4191,7 +4191,7 @@ const struct bpf_func_proto bpf_skb_outp
- 	.arg1_btf_id	= &bpf_skb_output_btf_ids[0],
- 	.arg2_type	= ARG_CONST_MAP_PTR,
- 	.arg3_type	= ARG_ANYTHING,
--	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
- };
- 
-@@ -4374,7 +4374,7 @@ static const struct bpf_func_proto bpf_s
- 	.gpl_only	= false,
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_CTX,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
- 	.arg4_type	= ARG_ANYTHING,
- };
-@@ -4400,7 +4400,7 @@ static const struct bpf_func_proto bpf_s
- 	.gpl_only	= false,
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_CTX,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
- };
- 
-@@ -4570,7 +4570,7 @@ static const struct bpf_func_proto bpf_x
- 	.arg1_type	= ARG_PTR_TO_CTX,
- 	.arg2_type	= ARG_CONST_MAP_PTR,
- 	.arg3_type	= ARG_ANYTHING,
--	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
- };
- 
-@@ -4584,7 +4584,7 @@ const struct bpf_func_proto bpf_xdp_outp
- 	.arg1_btf_id	= &bpf_xdp_output_btf_ids[0],
- 	.arg2_type	= ARG_CONST_MAP_PTR,
- 	.arg3_type	= ARG_ANYTHING,
--	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
- };
- 
-@@ -5072,7 +5072,7 @@ const struct bpf_func_proto bpf_sk_setso
- 	.arg1_type	= ARG_PTR_TO_BTF_ID_SOCK_COMMON,
- 	.arg2_type	= ARG_ANYTHING,
- 	.arg3_type	= ARG_ANYTHING,
--	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg5_type	= ARG_CONST_SIZE,
- };
- 
-@@ -5106,7 +5106,7 @@ static const struct bpf_func_proto bpf_s
- 	.arg1_type	= ARG_PTR_TO_CTX,
- 	.arg2_type	= ARG_ANYTHING,
- 	.arg3_type	= ARG_ANYTHING,
--	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg5_type	= ARG_CONST_SIZE,
- };
- 
-@@ -5140,7 +5140,7 @@ static const struct bpf_func_proto bpf_s
- 	.arg1_type	= ARG_PTR_TO_CTX,
- 	.arg2_type	= ARG_ANYTHING,
- 	.arg3_type	= ARG_ANYTHING,
--	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg5_type	= ARG_CONST_SIZE,
- };
- 
-@@ -5315,7 +5315,7 @@ static const struct bpf_func_proto bpf_b
- 	.gpl_only	= false,
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_CTX,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
- };
- 
-@@ -5903,7 +5903,7 @@ static const struct bpf_func_proto bpf_l
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_CTX,
- 	.arg2_type	= ARG_ANYTHING,
--	.arg3_type	= ARG_PTR_TO_MEM,
-+	.arg3_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg4_type	= ARG_CONST_SIZE
- };
- 
-@@ -5913,7 +5913,7 @@ static const struct bpf_func_proto bpf_l
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_CTX,
- 	.arg2_type	= ARG_ANYTHING,
--	.arg3_type	= ARG_PTR_TO_MEM,
-+	.arg3_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg4_type	= ARG_CONST_SIZE
- };
- 
-@@ -5956,7 +5956,7 @@ static const struct bpf_func_proto bpf_l
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_CTX,
- 	.arg2_type	= ARG_ANYTHING,
--	.arg3_type	= ARG_PTR_TO_MEM,
-+	.arg3_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg4_type	= ARG_CONST_SIZE
- };
- 
-@@ -6044,7 +6044,7 @@ static const struct bpf_func_proto bpf_l
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_CTX,
- 	.arg2_type	= ARG_ANYTHING,
--	.arg3_type	= ARG_PTR_TO_MEM,
-+	.arg3_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg4_type	= ARG_CONST_SIZE
- };
- 
-@@ -6269,7 +6269,7 @@ static const struct bpf_func_proto bpf_s
- 	.pkt_access	= true,
- 	.ret_type	= RET_PTR_TO_SOCK_COMMON_OR_NULL,
- 	.arg1_type	= ARG_PTR_TO_CTX,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
- 	.arg4_type	= ARG_ANYTHING,
- 	.arg5_type	= ARG_ANYTHING,
-@@ -6288,7 +6288,7 @@ static const struct bpf_func_proto bpf_s
- 	.pkt_access	= true,
- 	.ret_type	= RET_PTR_TO_SOCKET_OR_NULL,
- 	.arg1_type	= ARG_PTR_TO_CTX,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
- 	.arg4_type	= ARG_ANYTHING,
- 	.arg5_type	= ARG_ANYTHING,
-@@ -6307,7 +6307,7 @@ static const struct bpf_func_proto bpf_s
- 	.pkt_access	= true,
- 	.ret_type	= RET_PTR_TO_SOCKET_OR_NULL,
- 	.arg1_type	= ARG_PTR_TO_CTX,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
- 	.arg4_type	= ARG_ANYTHING,
- 	.arg5_type	= ARG_ANYTHING,
-@@ -6344,7 +6344,7 @@ static const struct bpf_func_proto bpf_x
- 	.pkt_access     = true,
- 	.ret_type       = RET_PTR_TO_SOCKET_OR_NULL,
- 	.arg1_type      = ARG_PTR_TO_CTX,
--	.arg2_type      = ARG_PTR_TO_MEM,
-+	.arg2_type      = ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type      = ARG_CONST_SIZE,
- 	.arg4_type      = ARG_ANYTHING,
- 	.arg5_type      = ARG_ANYTHING,
-@@ -6367,7 +6367,7 @@ static const struct bpf_func_proto bpf_x
- 	.pkt_access     = true,
- 	.ret_type       = RET_PTR_TO_SOCK_COMMON_OR_NULL,
- 	.arg1_type      = ARG_PTR_TO_CTX,
--	.arg2_type      = ARG_PTR_TO_MEM,
-+	.arg2_type      = ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type      = ARG_CONST_SIZE,
- 	.arg4_type      = ARG_ANYTHING,
- 	.arg5_type      = ARG_ANYTHING,
-@@ -6390,7 +6390,7 @@ static const struct bpf_func_proto bpf_x
- 	.pkt_access     = true,
- 	.ret_type       = RET_PTR_TO_SOCKET_OR_NULL,
- 	.arg1_type      = ARG_PTR_TO_CTX,
--	.arg2_type      = ARG_PTR_TO_MEM,
-+	.arg2_type      = ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type      = ARG_CONST_SIZE,
- 	.arg4_type      = ARG_ANYTHING,
- 	.arg5_type      = ARG_ANYTHING,
-@@ -6409,7 +6409,7 @@ static const struct bpf_func_proto bpf_s
- 	.gpl_only	= false,
- 	.ret_type	= RET_PTR_TO_SOCK_COMMON_OR_NULL,
- 	.arg1_type	= ARG_PTR_TO_CTX,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
- 	.arg4_type	= ARG_ANYTHING,
- 	.arg5_type	= ARG_ANYTHING,
-@@ -6428,7 +6428,7 @@ static const struct bpf_func_proto bpf_s
- 	.gpl_only	= false,
- 	.ret_type	= RET_PTR_TO_SOCKET_OR_NULL,
- 	.arg1_type	= ARG_PTR_TO_CTX,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
- 	.arg4_type	= ARG_ANYTHING,
- 	.arg5_type	= ARG_ANYTHING,
-@@ -6447,7 +6447,7 @@ static const struct bpf_func_proto bpf_s
- 	.gpl_only	= false,
- 	.ret_type	= RET_PTR_TO_SOCKET_OR_NULL,
- 	.arg1_type	= ARG_PTR_TO_CTX,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
- 	.arg4_type	= ARG_ANYTHING,
- 	.arg5_type	= ARG_ANYTHING,
-@@ -6769,9 +6769,9 @@ static const struct bpf_func_proto bpf_t
- 	.pkt_access	= true,
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_BTF_ID_SOCK_COMMON,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
--	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg5_type	= ARG_CONST_SIZE,
- };
- 
-@@ -6838,9 +6838,9 @@ static const struct bpf_func_proto bpf_t
- 	.pkt_access	= true,
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_BTF_ID_SOCK_COMMON,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
--	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg5_type	= ARG_CONST_SIZE,
- };
- 
-@@ -7069,7 +7069,7 @@ static const struct bpf_func_proto bpf_s
- 	.gpl_only	= false,
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_CTX,
--	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
- 	.arg3_type	= ARG_CONST_SIZE,
- 	.arg4_type	= ARG_ANYTHING,
- };
-
-
+Fix the following sparse warnings:=0A=
+=0A=
+drivers/net/wireless/purelifi/plfxlc/chip.c:36:31: sparse: expected unsigne=
+d short [usertype] beacon_interval=0A=
+drivers/net/wireless/purelifi/plfxlc/chip.c:36:31: sparse: got restricted _=
+_le16 [usertype]=0A=
+=0A=
+Reported-by: kernel test robot <lkp@intel.com>=0A=
+Signed-off-by: Srinivasan Raju <srini.raju@purelifi.com>=0A=
+---=0A=
+ drivers/net/wireless/purelifi/plfxlc/chip.c | 5 ++---=0A=
+ 1 file changed, 2 insertions(+), 3 deletions(-)=0A=
+=0A=
+diff --git a/drivers/net/wireless/purelifi/plfxlc/chip.c b/drivers/net/wire=
+less/purelifi/plfxlc/chip.c=0A=
+index a5ec10b66ed5..79d187cf3715 100644=0A=
+--- a/drivers/net/wireless/purelifi/plfxlc/chip.c=0A=
++++ b/drivers/net/wireless/purelifi/plfxlc/chip.c=0A=
+@@ -29,11 +29,10 @@ int plfxlc_set_beacon_interval(struct plfxlc_chip *chip=
+, u16 interval,=0A=
+                               u8 dtim_period, int type)=0A=
+ {=0A=
+        if (!interval ||=0A=
+-           (chip->beacon_set &&=0A=
+-            le16_to_cpu(chip->beacon_interval) =3D=3D interval))=0A=
++           (chip->beacon_set && chip->beacon_interval) =3D=3D interval)=0A=
+                return 0;=0A=
+=0A=
+-       chip->beacon_interval =3D cpu_to_le16(interval);=0A=
++       chip->beacon_interval =3D interval;=0A=
+        chip->beacon_set =3D true;=0A=
+        return plfxlc_usb_wreq(chip->usb.ez_usb,=0A=
+                               &chip->beacon_interval,=0A=
+-- =0A=
+2.25.1=0A=
