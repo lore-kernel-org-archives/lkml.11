@@ -2,162 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFEA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 21:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E8EEC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 21:01:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381248AbiD2VEc (ORCPT
+        id S1359731AbiD2VFF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 17:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
+        Fri, 29 Apr 2022 17:05:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381182AbiD2VEC (ORCPT
+        with ESMTP id S1378579AbiD2VFC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 17:04:02 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68AECD3ACA
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 14:00:43 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id c194-20020a6335cb000000b0039d9a489d44so4227227pga.6
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 14:00:43 -0700 (PDT)
+        Fri, 29 Apr 2022 17:05:02 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A2CD3D9B
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 14:01:43 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id d6so10373929ede.8
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 14:01:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=zP2FwEa8Nl8vyFhUbOzmbrhYzn9cxhFMqsrmIQIuWwA=;
-        b=QK+xPeiwXa6e33Pjngc5P2E6KIFwQs9puOhH3flfkWXWJjvTKXQ4n91xk7xnBs0MNz
-         CaTaxYpqw7PaqazqF3yUJGpzzeZ8ns3tbtrUYeByfLzUy3PLjdebI4YjLp7A2sYGkYzT
-         EJp9fMGmqRLDPZUA4odmFAcwCLnNP35Um8+Ftl6Mr0VdEz0WeJ89UzdHtM8aL34pgIgy
-         tO32M5MDejwBUSal0KDQviidOrx3DfvdQKvqZNAUCp0SKJi4yDWbB8NKxbUMzOvfSKvn
-         J40p4UHDnCJHgrukR+KdzHhjTuPl+GWEBtkh6ZGhIpNnM/nV03UA8bWZWwuJuPOYiD5i
-         CdtA==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=+hPInKpIDooHrKupF5RNs/2guHgbPlSDYet1zTo77CM=;
+        b=wPzuxVUyq4buxSFTI12310NVqICUJ/+JXnauyORm9IhtDwlBC4TKSS92rTZz6IA0Ze
+         gAS8gVzLn+NAo1j/nyet4r/GM76503xZ9FqFlHnZ2runqv7n6clIoPWxv1v3AAR/jmGP
+         n+Rcubc4fckTLI+f7+LLY3m+eiYdvGK9nxuFBXPp9cWmKPYniazuSyTwGgdzekaUjP/N
+         XfC3JZhWEhlmU89UAGAadAp2ug5ruorPWZljOrM4brVnI4vNixQVHZAj4xHb79MtSo99
+         XkUvaF/P8IJmzMEJ8Yu5E4Aqj+bOROp2URTh62M5mCQYNVJXsKbO21KrYKEOxbvK0DTp
+         Og+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=zP2FwEa8Nl8vyFhUbOzmbrhYzn9cxhFMqsrmIQIuWwA=;
-        b=X/GL5ly0lx4mK4xUF8FnfX5k/rIOrY/SWBy3UhGazYwh7gT7kMa3fwwnmXVTKVJ9ot
-         y/ks7imGG8ffIKCECs9KotoGhoieK8rxHEn2ewXHarT6XrSknBj9lwPtOe/aS3Ei3unY
-         b6o6+xnpHuUPCSsBxxmIUNof9oLq3bPEi7LakDN0vYoaYHfwFD/6qedOiRe3amaQS3Wz
-         /zcHMWibe3/35uQpH1pL8ZodopW5ow30l/qhz+Mag3dbds0NSOfc5ktINTuQinTXp0D9
-         NqNSanfmvQQJin7E6BwhJltDZnvPXgcP+7XwK/OSjoNTexvJWVD0ctRorR7Ra5+5BEX/
-         xVzw==
-X-Gm-Message-State: AOAM533yFL1H11xiCciNXwDU/mXxkLlfSX6OcMo9vSgLvyfi4PrhZzJi
-        gsovYUnOfxtxAe5l5UxEtxhKJcgm2qg=
-X-Google-Smtp-Source: ABdhPJz4W33FH39XL8rGj5+zrdiDe0gJH35R1ZBKg0xwvpX8Ebhc6cVEBCEMyApi7dDt9qXfs+Vz2pnMXrs=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:851:b0:50d:62f6:5494 with SMTP id
- q17-20020a056a00085100b0050d62f65494mr799201pfk.75.1651266042949; Fri, 29 Apr
- 2022 14:00:42 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 29 Apr 2022 21:00:25 +0000
-In-Reply-To: <20220429210025.3293691-1-seanjc@google.com>
-Message-Id: <20220429210025.3293691-9-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220429210025.3293691-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v3 8/8] KVM: Do not pin pages tracked by gfn=>pfn caches
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sean Christopherson <seanjc@google.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        David Woodhouse <dwmw@amazon.co.uk>,
-        Mingwei Zhang <mizhang@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+hPInKpIDooHrKupF5RNs/2guHgbPlSDYet1zTo77CM=;
+        b=1eWW52xayPV46wCAyNiOEbXXtKlALfRsWDDT99lorB2k1+OQWXexo1EvX/1k8fq7t2
+         IGXTiXgC9kl3QT7EPCPx/9lQr4jOnQeaSwmwaxqvEX3niFBXOK5hIgydi3IS0Wn7im+P
+         eOBA2fnAFt+TD8mrmZ8tsL+YJYouKa6/3GI+KcOLaxPee2GMzD9yPNrDDFvx2kscK1kP
+         ZjPgF2tl9iU0EoefiDCnmS8iHLucCBpPEIbOPqqbKThEJq94zwbBF42GUtsVCMzh+g5q
+         ipQZvoFZSJQ5YO2dzHvZmQz4asWlscjByiQ+cmL0HP2TbIjV3WAG2DxGcbBwTc+aQN/n
+         CfDQ==
+X-Gm-Message-State: AOAM532TWCQiK+w0oNbM+LjHFYXmqtUt5zhfhMyTLHqQ8KSjAucyZk8a
+        k1Tw+3a6BIXhdNGk2iljS+dwrw==
+X-Google-Smtp-Source: ABdhPJydYUfzRWWlb7jnujGl+WeNXPkeDfWil6Fvx7LhbEmTqT3D2ffUa0UXb/8GKmomagoc6J4XoA==
+X-Received: by 2002:a05:6402:26d1:b0:426:3bc9:67d0 with SMTP id x17-20020a05640226d100b004263bc967d0mr1160939edd.400.1651266102271;
+        Fri, 29 Apr 2022 14:01:42 -0700 (PDT)
+Received: from [192.168.0.176] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id g7-20020aa7d1c7000000b0042617ba63b1sm3379674edp.59.2022.04.29.14.01.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 14:01:41 -0700 (PDT)
+Message-ID: <fff7c77f-452f-2fe4-b405-a6f65e483d3e@linaro.org>
+Date:   Fri, 29 Apr 2022 23:01:40 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V2 1/2] dt-bindings: remoteproc: imx_rproc: support i.MX93
+Content-Language: en-US
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
+        bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com,
+        linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     devicetree@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
+References: <20220429005346.2108279-1-peng.fan@oss.nxp.com>
+ <20220429005346.2108279-2-peng.fan@oss.nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220429005346.2108279-2-peng.fan@oss.nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Put the reference to any struct page mapped/tracked by a gfn=>pfn cache
-upon inserting the pfn into its associated cache, as opposed to putting
-the reference only when the cache is done using the pfn.  In other words,
-don't pin pages while they're in the cache.  One of the major roles of
-the gfn=>pfn cache is to play nicely with invalidation events, i.e. it
-exists in large part so that KVM doesn't rely on pinning pages.
+On 29/04/2022 02:53, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> Add i.MX93 remote processor(Cortex-M33) compatible string, and
+> reorder the strings in alphabetical order
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
+>  .../devicetree/bindings/remoteproc/fsl,imx-rproc.yaml    | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+> 
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- virt/kvm/pfncache.c | 36 ++++++++++++++++++++----------------
- 1 file changed, 20 insertions(+), 16 deletions(-)
 
-diff --git a/virt/kvm/pfncache.c b/virt/kvm/pfncache.c
-index 0535669ea2a1..c4fb81929663 100644
---- a/virt/kvm/pfncache.c
-+++ b/virt/kvm/pfncache.c
-@@ -95,20 +95,16 @@ bool kvm_gfn_to_pfn_cache_check(struct kvm *kvm, struct gfn_to_pfn_cache *gpc,
- }
- EXPORT_SYMBOL_GPL(kvm_gfn_to_pfn_cache_check);
- 
--static void gpc_release_pfn_and_khva(struct kvm *kvm, kvm_pfn_t pfn, void *khva)
-+static void gpc_unmap_khva(struct kvm *kvm, kvm_pfn_t pfn, void *khva)
- {
--	/* Unmap the old page if it was mapped before, and release it */
--	if (!is_error_noslot_pfn(pfn)) {
--		if (khva) {
--			if (pfn_valid(pfn))
--				kunmap(pfn_to_page(pfn));
-+	/* Unmap the old pfn/page if it was mapped before. */
-+	if (!is_error_noslot_pfn(pfn) && khva) {
-+		if (pfn_valid(pfn))
-+			kunmap(pfn_to_page(pfn));
- #ifdef CONFIG_HAS_IOMEM
--			else
--				memunmap(khva);
-+		else
-+			memunmap(khva);
- #endif
--		}
--
--		kvm_release_pfn(pfn, false);
- 	}
- }
- 
-@@ -147,10 +143,10 @@ static kvm_pfn_t hva_to_pfn_retry(struct kvm *kvm, struct gfn_to_pfn_cache *gpc)
- 			 * Keep the mapping if the previous iteration reused
- 			 * the existing mapping and didn't create a new one.
- 			 */
--			if (new_khva == old_khva)
--				new_khva = NULL;
-+			if (new_khva != old_khva)
-+				gpc_unmap_khva(kvm, new_pfn, new_khva);
- 
--			gpc_release_pfn_and_khva(kvm, new_pfn, new_khva);
-+			kvm_release_pfn_clean(new_pfn);
- 
- 			cond_resched();
- 		}
-@@ -222,6 +218,14 @@ static kvm_pfn_t hva_to_pfn_retry(struct kvm *kvm, struct gfn_to_pfn_cache *gpc)
- 	gpc->valid = true;
- 	gpc->pfn = new_pfn;
- 	gpc->khva = new_khva + (gpc->gpa & ~PAGE_MASK);
-+
-+	/*
-+	 * Put the reference to the _new_ pfn.  The pfn is now tracked by the
-+	 * cache and can be safely migrated, swapped, etc... as the cache will
-+	 * invalidate any mappings in response to relevant mmu_notifier events.
-+	 */
-+	kvm_release_pfn_clean(new_pfn);
-+
- 	return 0;
- 
- out_error:
-@@ -308,7 +312,7 @@ int kvm_gfn_to_pfn_cache_refresh(struct kvm *kvm, struct gfn_to_pfn_cache *gpc,
- 	mutex_unlock(&gpc->refresh_lock);
- 
- 	if (old_pfn != new_pfn)
--		gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
-+		gpc_unmap_khva(kvm, old_pfn, old_khva);
- 
- 	return ret;
- }
-@@ -335,7 +339,7 @@ void kvm_gfn_to_pfn_cache_unmap(struct kvm *kvm, struct gfn_to_pfn_cache *gpc)
- 
- 	write_unlock_irq(&gpc->lock);
- 
--	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
-+	gpc_unmap_khva(kvm, old_pfn, old_khva);
- }
- EXPORT_SYMBOL_GPL(kvm_gfn_to_pfn_cache_unmap);
- 
--- 
-2.36.0.464.gb9c8b46e94-goog
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+
+Best regards,
+Krzysztof
