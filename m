@@ -2,88 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BD29C4167B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 08:15:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9213C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 08:15:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355554AbiD2ITD (ORCPT
+        id S1355629AbiD2ITJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 04:19:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55016 "EHLO
+        Fri, 29 Apr 2022 04:19:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355551AbiD2ISX (ORCPT
+        with ESMTP id S1355642AbiD2ISu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 04:18:23 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B9DC3E0E;
-        Fri, 29 Apr 2022 01:14:55 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KqQHS6JzgzfbJv;
-        Fri, 29 Apr 2022 16:13:56 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 16:14:50 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 29 Apr
- 2022 16:14:49 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        <linux-renesas-soc@vger.kernel.org>
-CC:     <linus.walleij@linaro.org>, <geert+renesas@glider.be>
-Subject: [PATCH 2/2] pinctrl: renesas: rzn1: fix possible null-ptr-deref in sh_pfc_map_resources()
-Date:   Fri, 29 Apr 2022 16:26:37 +0800
-Message-ID: <20220429082637.1308182-2-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220429082637.1308182-1-yangyingliang@huawei.com>
-References: <20220429082637.1308182-1-yangyingliang@huawei.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+        Fri, 29 Apr 2022 04:18:50 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F43C1CAE;
+        Fri, 29 Apr 2022 01:15:16 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=31;SR=0;TI=SMTPD_---0VBgmoZg_1651220109;
+Received: from localhost(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VBgmoZg_1651220109)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 29 Apr 2022 16:15:10 +0800
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+To:     akpm@linux-foundation.org, mike.kravetz@oracle.com,
+        catalin.marinas@arm.com, will@kernel.org
+Cc:     tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com,
+        deller@gmx.de, mpe@ellerman.id.au, benh@kernel.crashing.org,
+        paulus@samba.org, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org,
+        davem@davemloft.net, arnd@arndb.de, baolin.wang@linux.alibaba.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: [PATCH 0/3] Fix CONT-PTE/PMD size hugetlb issue when unmapping or migrating
+Date:   Fri, 29 Apr 2022 16:14:40 +0800
+Message-Id: <cover.1651216964.git.baolin.wang@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It will cause null-ptr-deref when using 'res', if platform_get_resource()
-returns NULL, so move using 'res' after devm_ioremap_resource() that
-will check it to avoid null-ptr-deref.
-And use devm_platform_get_and_ioremap_resource() to simplify code.
+Hi,
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/pinctrl/renesas/pinctrl-rzn1.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+Now migrating a hugetlb page or unmapping a poisoned hugetlb page, we'll
+use ptep_clear_flush() and set_pte_at() to nuke the page table entry
+and remap it, and this is incorrect for CONT-PTE or CONT-PMD size hugetlb
+page, which will cause potential data consistent issue. This patch set
+will change to use hugetlb related APIs to fix this issue, please find
+details in each patch. Thanks.
 
-diff --git a/drivers/pinctrl/renesas/pinctrl-rzn1.c b/drivers/pinctrl/renesas/pinctrl-rzn1.c
-index ef5fb25b6016..cddb7804e9e0 100644
---- a/drivers/pinctrl/renesas/pinctrl-rzn1.c
-+++ b/drivers/pinctrl/renesas/pinctrl-rzn1.c
-@@ -865,17 +865,15 @@ static int rzn1_pinctrl_probe(struct platform_device *pdev)
- 	ipctl->mdio_func[0] = -1;
- 	ipctl->mdio_func[1] = -1;
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	ipctl->lev1_protect_phys = (u32)res->start + 0x400;
--	ipctl->lev1 = devm_ioremap_resource(&pdev->dev, res);
-+	ipctl->lev1 = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(ipctl->lev1))
- 		return PTR_ERR(ipctl->lev1);
-+	ipctl->lev1_protect_phys = (u32)res->start + 0x400;
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	ipctl->lev2_protect_phys = (u32)res->start + 0x400;
--	ipctl->lev2 = devm_ioremap_resource(&pdev->dev, res);
-+	ipctl->lev2 = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(ipctl->lev2))
- 		return PTR_ERR(ipctl->lev2);
-+	ipctl->lev2_protect_phys = (u32)res->start + 0x400;
- 
- 	ipctl->clk = devm_clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(ipctl->clk))
+Baolin Wang (3):
+  mm: change huge_ptep_clear_flush() to return the original pte
+  mm: rmap: Fix CONT-PTE/PMD size hugetlb issue when migration
+  mm: rmap: Fix CONT-PTE/PMD size hugetlb issue when unmapping
+
+ arch/arm64/include/asm/hugetlb.h   |  4 +--
+ arch/arm64/mm/hugetlbpage.c        | 12 ++++----
+ arch/ia64/include/asm/hugetlb.h    |  4 +--
+ arch/mips/include/asm/hugetlb.h    |  9 ++++--
+ arch/parisc/include/asm/hugetlb.h  |  4 +--
+ arch/powerpc/include/asm/hugetlb.h |  9 ++++--
+ arch/s390/include/asm/hugetlb.h    |  6 ++--
+ arch/sh/include/asm/hugetlb.h      |  4 +--
+ arch/sparc/include/asm/hugetlb.h   |  4 +--
+ include/asm-generic/hugetlb.h      |  4 +--
+ mm/rmap.c                          | 58 +++++++++++++++++++++++---------------
+ 11 files changed, 67 insertions(+), 51 deletions(-)
+
 -- 
-2.25.1
+1.8.3.1
 
