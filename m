@@ -2,97 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B7B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 07:09:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8BBC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 07:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354973AbiD2HMn (ORCPT
+        id S1354993AbiD2HPW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 03:12:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54584 "EHLO
+        Fri, 29 Apr 2022 03:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232023AbiD2HMm (ORCPT
+        with ESMTP id S1354793AbiD2HPU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 03:12:42 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFD5C0D10;
-        Fri, 29 Apr 2022 00:09:24 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23T78xkP018981;
-        Fri, 29 Apr 2022 02:08:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651216139;
-        bh=bZe0T3BEcDaBIxZVc1RAx4HBK5oQOf4Zlm4e3YLSYrw=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=ItfjC6H/OhwI+bKJaSFPyAKie0rKhEwDqGagdPOdi2CRq6tA2tgVxpX1M+OtHld6V
-         1tJiHj/gBayggQpLzkVsCPm7ljZd0QJCWZIN2kz8rfIaCt2iJ9XoFGaWaqIh47WfdW
-         lYhHKSS8TGdR43Bx5xtM5L/M2ivA7E7Lts+OAkU4=
-Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23T78xUF023417
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 29 Apr 2022 02:08:59 -0500
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 29
- Apr 2022 02:08:59 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 29 Apr 2022 02:08:59 -0500
-Received: from uda0132425.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23T78tWc004448;
-        Fri, 29 Apr 2022 02:08:56 -0500
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-To:     <nm@ti.com>, Jayesh Choudhary <j-choudhary@ti.com>
-CC:     Vignesh Raghavendra <vigneshr@ti.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <robh+dt@kernel.org>,
-        <kristo@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-Subject: Re: [PATCH] arm64: dts: ti: k3-am62: Add SA3UL ranges in cbass_main
-Date:   Fri, 29 Apr 2022 12:38:44 +0530
-Message-ID: <165121610503.1809750.5450608356561848002.b4-ty@ti.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220412075008.10553-1-j-choudhary@ti.com>
-References: <20220412075008.10553-1-j-choudhary@ti.com>
+        Fri, 29 Apr 2022 03:15:20 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B24192BE
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 00:12:02 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id i19so13670772eja.11
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 00:12:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Edd8ZLYtYb/gwlpyDZkQOxSq27PsRFpIp30d8SMER+g=;
+        b=tqpFpORB+WKNr57yBie6HkLBpEWBDwutFEby7Q21Gz862pVw5QVxAdeiQt7SQzvXsg
+         d8XFA7qTsBmWwXDwR1qPiiw8lpFCyNNrNjfJ+0azA3SAMJCyg2COrurBTlmlKkDzzlJP
+         tE9854dsAw5C4y/dCJ2T7ttXIyHf0PzgHqNBzPWYGmaWqYevybj22Sj9Cf2A1CFR8b+1
+         EnILFy5/3CtF8TN/JjKOBAar+YMpFdIJpaH4guyFPc37dhUnqygvIHpEJrr6afnaa8Km
+         FbfDP4X7LgxAISo1exzuxi/G+/IZKX/TtB9EW/N2AXGqQl9Avp2eer/OxELapy9qMjD+
+         P0FA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Edd8ZLYtYb/gwlpyDZkQOxSq27PsRFpIp30d8SMER+g=;
+        b=fJrOCeh/fyQ20tT7Y3cNMpGw6ql5VSZdmOlyFor6nX8/Rk/0bBwV5L/ajtua+FuMXm
+         fE56PbtNA6HMo7WezWcPGwSvnRgtoSATUQeCTAcVPOoH7haMfJniBV2NDxkZeI42RGWK
+         +9OqfKA6D1VCz5nTpeycymVjQygQV7TmrF59erqbCfc/7BzzCJu/Yn5kYOuR49cUJWEm
+         74Wlbaiy6eFJ5+ikB8X9ZS8P+usZwbSY3qQDb0p2qTMSv4hRbx/SJ5bCdhDOvgwXTN0r
+         63rqfa2j2oP3FUmcfhdWhaWjWU02itYBYb63osqqUWdinN/EBDblH3yd+BjZgmBPGCiR
+         9bSw==
+X-Gm-Message-State: AOAM533n9ClC5TAcTSGNNjLOOniG14DTF/qSHjwZi0cKma+xERsZ+OrY
+        PcNNv6p0AAajjxwvXa5XJMgqAg==
+X-Google-Smtp-Source: ABdhPJzt/5R7YhS1n1/Tl1fP5rjgP1BaMd1p1mgvE1MTVa32BuX2e89s7ed/ZnNEEjG7z8VMDAwWCQ==
+X-Received: by 2002:a17:906:5597:b0:6ce:f3cc:14e8 with SMTP id y23-20020a170906559700b006cef3cc14e8mr34343226ejp.426.1651216321471;
+        Fri, 29 Apr 2022 00:12:01 -0700 (PDT)
+Received: from [192.168.0.169] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id jl25-20020a17090775d900b006f3ef214dc5sm365463ejc.43.2022.04.29.00.12.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 00:12:00 -0700 (PDT)
+Message-ID: <2f600411-d40e-c4e7-fd54-bd15546bf71f@linaro.org>
+Date:   Fri, 29 Apr 2022 09:11:59 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [Patch v9 1/4] memory: tegra: Add memory controller channels
+ support
+Content-Language: en-US
+To:     Ashish Mhetre <amhetre@nvidia.com>, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, digetx@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, dmitry.osipenko@collabora.com,
+        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     vdumpa@nvidia.com, Snikam@nvidia.com
+References: <20220426073827.25506-1-amhetre@nvidia.com>
+ <20220426073827.25506-2-amhetre@nvidia.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220426073827.25506-2-amhetre@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jayesh Choudhary,
- 
-On Tue, 12 Apr 2022 13:20:08 +0530, Jayesh Choudhary wrote:
-> Add the address space for SA3UL to the ranges property of the
-> cbass_main node.
+On 26/04/2022 09:38, Ashish Mhetre wrote:
+> From tegra186 onwards, memory controller support multiple channels.
+> Add support for mapping address spaces of these channels.
+> Add number of channels supported by tegra186, tegra194 and tegra234.
+> In case of old bindings, channels won't be present. If channels are not
+> present then print warning and continue so that backward compatibility
+> will be preserved in driver.
+> During error interrupts from memory controller, appropriate registers
+> from these channels need to be accessed for logging error info.
 > 
-> 
- 
-I have applied the following to branch ti-k3-dts-next on [1].
-Thank you!
- 
-[1/1] arm64: dts: ti: k3-am62: Add SA3UL ranges in cbass_main
-      commit: c024c46fe13bb9e9a70d044fd2d63dbee82bbb59
- 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent up the chain during
-the next merge window (or sooner if it is a relevant bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
- 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
- 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
- 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
- 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/ti/linux.git
---
-Vignesh
+> Reviewed-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+> ---
+>  drivers/memory/tegra/mc.c       |  6 ++++++
+>  drivers/memory/tegra/tegra186.c | 34 +++++++++++++++++++++++++++++++++
+>  drivers/memory/tegra/tegra194.c |  1 +
+>  drivers/memory/tegra/tegra234.c |  1 +
 
+This does not apply, neither on my mem-ctrl-next, nor on master.
+Probably because tegra234 is somewhere else (Thierry?). Either you send
+it without tegra234 or it goes via Thierry's tree.
+
+Best regards,
+Krzysztof
