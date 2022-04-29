@@ -2,94 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A30C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 11:51:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F0B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 11:51:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358644AbiD2Ly3 (ORCPT
+        id S1358725AbiD2Lyu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 07:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49932 "EHLO
+        Fri, 29 Apr 2022 07:54:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236184AbiD2LyY (ORCPT
+        with ESMTP id S1358676AbiD2Lyq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 07:54:24 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C46BCAA;
-        Fri, 29 Apr 2022 04:51:06 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id r13so14958408ejd.5;
-        Fri, 29 Apr 2022 04:51:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qpiHoeXtT6bCajJr3pmoRuTkgohV62q00/CK6KJlrC8=;
-        b=Z5KwGaqDlv2xwy4oNuaKmZ8dflQwv1KDwu60+7H/W8OH3PcqC84qUJReN+bktFypLp
-         JK1EdhERzMp/z3LpygA2MVMvZlSEtP7/Dto1jzOD/TriTdOPNpzssejGk4/qIOhhwhjE
-         X4faIhuqF5Pm7Jea4pKddmKDnslWyNtu5aVofMF7KfhjFUvkoaVlhn4VBAoacXYf5sba
-         03BAXSXGLB9CRAHyDfKsJICYavfii82f4R8DDtelPKlpPjPOt+YW07kwlExAMRlwBcJe
-         1ajwPVr/ywq9QQT76ZydYyTRluOZtPTwHhGB5w1y3C92pkRifr0mrLxqTDSqMW1cF4ab
-         CgpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qpiHoeXtT6bCajJr3pmoRuTkgohV62q00/CK6KJlrC8=;
-        b=NA+0+tpkarw3KF2L5fp1t4mJrAgcKYbcxrGIWZm6Jq3v2Hb90asO8ZNtIR8B3T7OHW
-         snWwNADliFis+RYmRwwX5ztmZvqwz4mpDFuwqOd7uoBuGz58CAcRwenVNF58TNLYfAZZ
-         cSeEATaqveHSn3L1zt1QFvQyd3km45DRkGZX8PgVosRDYXmKOHbt2ZOdhAk2XjPNrdsu
-         ADViPS5Bon2w5mc0MT1o+k5rCwfr3BeZpU4uSpil4EzEf288531DB+yxr01tGGgFUeW8
-         rQmSMKMdPUpM2v5ycs7YJydc0duZDZsLWu34kdJeXkPhCktG7sLjb7XL4XqaEOpwaL5U
-         4y3g==
-X-Gm-Message-State: AOAM532uXWdJatPejntI+YHGqHk6Rnb30ezT1IjeqrnrRya+zfY3MGKz
-        MvIUinRiYVhi4yCywT2L4Io=
-X-Google-Smtp-Source: ABdhPJycRE7Z/4NozWquIfWH/J3WCO6gsbfEPi4M5HUv0S8J8xlKazDwLC7ZIv8c8LYRc7nrWb9edA==
-X-Received: by 2002:a17:907:338b:b0:6f4:6e1:ed66 with SMTP id zj11-20020a170907338b00b006f406e1ed66mr770793ejb.341.1651233065473;
-        Fri, 29 Apr 2022 04:51:05 -0700 (PDT)
-Received: from [192.168.35.91] ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id k6-20020aa7d8c6000000b0042617ba63d0sm2887694eds.90.2022.04.29.04.51.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 04:51:05 -0700 (PDT)
-Message-ID: <2a18073b-974f-00d4-5811-8df577e943a8@gmail.com>
-Date:   Fri, 29 Apr 2022 14:51:03 +0300
+        Fri, 29 Apr 2022 07:54:46 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6693AC6EC8;
+        Fri, 29 Apr 2022 04:51:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651233088; x=1682769088;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=vUGUX7Nvc/8LjzsG1/1jXvrhtbo00tkto7h2bu3JZ70=;
+  b=H4DSI1d+94Djdk3XQD/VbKAY2wwOazJtVUnjc6AqU7ayVl8Ihh5xw/hQ
+   djKsrR45uV5NYLqM33Lqa0aIQo6SNYPeAgAI9ZjrQvoXYpYuVCiBHSQve
+   7aN4RqDOzFQpzlfg15Y80nJD5RAirT2kb7D7tgzde/AJzy12LsfpUmi8B
+   GXXb8gy5+ZgLpdim8rHfj9a4tl7+NXpPfNVR2gcWB2ueSUu5ZRchO6SGp
+   fbg0vhNDGrnVtdfk98i5XzgdRafq8xdg5ZxlJ2k/BQkw9DdTtVqACvWOg
+   /NpcPba+nQREkDMy9QbXbcBR1iLaUb2nHhzl0z8gP/5o607bvMxAESrOG
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="329565488"
+X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
+   d="scan'208";a="329565488"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 04:51:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
+   d="scan'208";a="582085655"
+Received: from p12hl01tmin.png.intel.com ([10.158.65.175])
+  by orsmga008.jf.intel.com with ESMTP; 29 Apr 2022 04:51:21 -0700
+From:   Tan Tee Min <tee.min.tan@linux.intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
+        Tan Tee Min <tee.min.tan@linux.intel.com>,
+        Ling Pei Lee <pei.lee.ling@intel.com>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Matthew Hagan <mnhagan88@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
+        Song Yoong Siang <yoong.siang.song@intel.com>,
+        Ong@vger.kernel.org, Boon Leong <boon.leong.ong@intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>,
+        Looi Hong Aun <hong.aun.looi@intel.com>
+Subject: [PATCH net v2 1/1] net: stmmac: disable Split Header (SPH) for Intel platforms
+Date:   Fri, 29 Apr 2022 19:58:07 +0800
+Message-Id: <20220429115807.2198448-1-tee.min.tan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v6 2/5] dt-bindings: regulator: Add bindings for Silicon
- Mitus SM5703 regulators
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        lee.jones@linaro.org, phone-devel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        devicetree@vger.kernel.org
-References: <20220429113927.5145-1-markuss.broks@gmail.com>
- <YmvQhpO8dg6VLHNP@sirena.org.uk>
-From:   Markuss Broks <markuss.broks@gmail.com>
-In-Reply-To: <YmvQhpO8dg6VLHNP@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mark,
+Based on DesignWare Ethernet QoS datasheet, we are seeing the limitation
+of Split Header (SPH) feature is not supported for Ipv4 fragmented packet.
+This SPH limitation will cause ping failure when the packets size exceed
+the MTU size. For example, the issue happens once the basic ping packet
+size is larger than the configured MTU size and the data is lost inside
+the fragmented packet, replaced by zeros/corrupted values, and leads to
+ping fail.
 
-On 4/29/22 14:48, Mark Brown wrote:
-> On Fri, Apr 29, 2022 at 02:39:25PM +0300, Markuss Broks wrote:
->> This patch adds device-tree bindings for regulators on Silicon Mitus
->> SM5703 MFD.
->>
->> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
->> ---
->>   .../siliconmitus,sm5703-regulator.yaml        | 49 +++++++++++++++++++
->>   1 file changed, 49 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
-> As Rob said please send an incremental patch with any fixes needed.
-I'm sorry, I didn't understand it correctly. Does "incremental patch" 
-mean I should send a separate follow-up patch with those fixes?
-- Markuss
+So, disable the Split Header for Intel platforms.
+
+v2: Add fixes tag in commit message.
+
+Fixes: 67afd6d1cfdf("net: stmmac: Add Split Header support and enable it
+in XGMAC cores")
+Cc: <stable@vger.kernel.org> # 5.10.x
+Suggested-by: Ong, Boon Leong <boon.leong.ong@intel.com>
+Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 1 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
+ include/linux/stmmac.h                            | 1 +
+ 3 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 63754a9c4ba7..0b0be0898ac5 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -454,6 +454,7 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
+ 	plat->has_gmac4 = 1;
+ 	plat->force_sf_dma_mode = 0;
+ 	plat->tso_en = 1;
++	plat->sph_disable = 1;
+ 
+ 	/* Multiplying factor to the clk_eee_i clock time
+ 	 * period to make it closer to 100 ns. This value
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 4a4b3651ab3e..2525a80353b7 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -7021,7 +7021,7 @@ int stmmac_dvr_probe(struct device *device,
+ 		dev_info(priv->device, "TSO feature enabled\n");
+ 	}
+ 
+-	if (priv->dma_cap.sphen) {
++	if (priv->dma_cap.sphen && !priv->plat->sph_disable) {
+ 		ndev->hw_features |= NETIF_F_GRO;
+ 		priv->sph_cap = true;
+ 		priv->sph = priv->sph_cap;
+diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+index 24eea1b05ca2..29917850f079 100644
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -270,5 +270,6 @@ struct plat_stmmacenet_data {
+ 	int msi_rx_base_vec;
+ 	int msi_tx_base_vec;
+ 	bool use_phy_wol;
++	bool sph_disable;
+ };
+ #endif
+-- 
+2.25.1
+
