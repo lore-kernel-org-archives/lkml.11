@@ -2,131 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEF91C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 11:59:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358811AbiD2MDO (ORCPT
+        id S1358821AbiD2MEM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 08:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37118 "EHLO
+        Fri, 29 Apr 2022 08:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235150AbiD2MDN (ORCPT
+        with ESMTP id S231992AbiD2MEL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 08:03:13 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6981C8A8E;
-        Fri, 29 Apr 2022 04:59:55 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:6624:6d8d:f790:d5c]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nkPHt-0002CR-PA; Fri, 29 Apr 2022 13:59:54 +0200
-Message-ID: <9811c780-ea28-1461-6347-93a3cf218b6c@leemhuis.info>
-Date:   Fri, 29 Apr 2022 13:59:53 +0200
+        Fri, 29 Apr 2022 08:04:11 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A5013D62
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 05:00:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=gsyUpztCNYmZ96EpQWYmAz5WX7xwnKSKkquJpktJq7A=; b=Hsx5jjk00lixP/qXUD8gXzHFVk
+        WaNixI94vnP836l6T5B5pyGwhaeSy4PRpWlT1p3MckQIimt2kyH2O40kz5CR0ljgiw0p9k0XdnB36
+        aQ7sJFumPBjqwJxhUu7edL+OHJjYUXuSCnki4GZ2RGRazYxV6mhaVS30nUd53fH9C1DrI55tWmEqo
+        MlNWi2mxN35w5Vao20yAI0pmK8O5JHL2m0c32AxBC8LPmS9a+x+7dh5e/dLE+YENBb7dn4W0a7uRt
+        rvAI6nB+k7aGcVr3LM0CoIKlKmAwo3/NBo0v2q5WkV8K6hvhNAc/fXtPE2BPODr9Ra1YQpGJR19yx
+        LtSAjSoQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nkPIk-009bTf-MO; Fri, 29 Apr 2022 12:00:47 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 23149300385;
+        Fri, 29 Apr 2022 14:00:45 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 0673920295B20; Fri, 29 Apr 2022 14:00:45 +0200 (CEST)
+Date:   Fri, 29 Apr 2022 14:00:44 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     x86@kernel.org, jpoimboe@redhat.com
+Cc:     linux-kernel@vger.kernel.org,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH] objtool: Fix STACK_FRAME_NON_STANDARD reloc type
+Message-ID: <YmvTbN966XmLSZk+@hirez.programming.kicks-ass.net>
+References: <20220429092024.GT2731@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [Bug 215872] New: ath11k: QCA6390 firmware crashes after some
- time
-Content-Language: en-US
-References: <bug-215872-62941@https.bugzilla.kernel.org/>
-Cc:     linux-bluetooth@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-        Kai Mast <mail@kai-mast.de>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <bug-215872-62941@https.bugzilla.kernel.org/>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1651233595;7d280789;
-X-HE-SMSGID: 1nkPHt-0002CR-PA
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220429092024.GT2731@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, this is your Linux kernel regression tracker.
-
-I noticed below regression report in bugzilla.kernel.org that afaics
-nobody acted upon since it was reported about a week ago, that's why I
-decided to step in here. Could somebody take a look into below issue? Or
-was this discussed somewhere else already? Or even fixed?
-
-On 21.04.22 22:07, bugzilla-daemon@kernel.org wrote:
-> https://bugzilla.kernel.org/show_bug.cgi?id=215872
+On Fri, Apr 29, 2022 at 11:20:24AM +0200, Peter Zijlstra wrote:
 > 
->             Bug ID: 215872
->            Summary: ath11k: QCA6390 firmware crashes after some time
->            Product: Drivers
->            Version: 2.5
->     Kernel Version: 5.17.3-arch1-1
->           Hardware: x86-64
->                 OS: Linux
->               Tree: Mainline
->             Status: NEW
->           Severity: normal
->           Priority: P1
->          Component: Bluetooth
->           Assignee: linux-bluetooth@vger.kernel.org
->           Reporter: mail@kai-mast.de
->         Regression: No
+> STACK_FRAME_NON_STANDARD results in inconsistent relocation types
+> depending on .c or .S usage:
 > 
-> Created attachment 300786
->   --> https://bugzilla.kernel.org/attachment.cgi?id=300786&action=edit
-> dmesg | grep Bluetooth
-> 
-> I'm on arch Linux. For a while now (multiple kernel versions since 5.15 at
-> least) my qca firwmare seems to crash. Weirdly bluetooth stops working and WiFi
-> still works fine.
-> There is nothing in particular that seems to trigger this. I just have to wait
-> for a while. Sometimes a few minutes after boot sometimes a few hours. 
-> 
-> Rebooting without a power connection or booting into Windows usually resolves
-> this issue.
-> 
-> I'm on a 2020 Dell XPS 9500. Fimrware is up to date at 1.13.
-> 
-> Output of uname -a: Linux kai-xps 5.17.3-arch1-1 #1 SMP PREEMPT Thu, 14 Apr
-> 2022 01:18:36 +0000 x86_64 GNU/Linux
+>   Relocation section '.rela.discard.func_stack_frame_non_standard' at offset 0x3c01090 contains 5 entries:
+>   Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
+>   0000000000000000  00020c2200000002 R_X86_64_PC32          0000000000047b40 do_suspend_lowlevel + 0
+>   0000000000000008  0002461e00000001 R_X86_64_64            00000000000480a0 machine_real_restart + 0
+>   0000000000000010  0000001400000001 R_X86_64_64            0000000000000000 .rodata + b3d4
+>   0000000000000018  0002444600000002 R_X86_64_PC32          00000000000678a0 __efi64_thunk + 0
+>   0000000000000020  0002659d00000001 R_X86_64_64            0000000000113160 __crash_kexec + 0
 
-Anyway, to get this tracked:
+So that weird .rodata entry is optprobe_template_func.
 
-#regzbot introduced: v5.15..v5.17
-#regzbot from: Kai Mast <mail@kai-mast.de>
-#regzbot title: bluetooth: QCA6390 firmware crashes after some time
-#regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=215872
+It being in .rodata also means it's not validated and there is no ORC
+data generated, is that all intentional? The changelog for:
 
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+  877b145f0f47 ("x86/kprobes: Move trampoline code into RODATA")
 
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
+doesn't really say anything useful about any of that :/
 
--- 
-Additional information about regzbot:
-
-If you want to know more about regzbot, check out its web-interface, the
-getting start guide, and the references documentation:
-
-https://linux-regtracking.leemhuis.info/regzbot/
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
-
-The last two documents will explain how you can interact with regzbot
-yourself if your want to.
-
-Hint for reporters: when reporting a regression it's in your interest to
-CC the regression list and tell regzbot about the issue, as that ensures
-the regression makes it onto the radar of the Linux kernel's regression
-tracker -- that's in your interest, as it ensures your report won't fall
-through the cracks unnoticed.
-
-Hint for developers: you normally don't need to care about regzbot once
-it's involved. Fix the issue as you normally would, just remember to
-include 'Link:' tag in the patch descriptions pointing to all reports
-about the issue. This has been expected from developers even before
-regzbot showed up for reasons explained in
-'Documentation/process/submitting-patches.rst' and
-'Documentation/process/5.Posting.rst'.
-
+I also don't see any kprobe/optprobe hooks in unwind.h, so what happens
+if we hit an optprobe?
