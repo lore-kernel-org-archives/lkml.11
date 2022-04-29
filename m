@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB792C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:43:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3AB7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357835AbiD2KqR (ORCPT
+        id S1357926AbiD2KqZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
+        Fri, 29 Apr 2022 06:46:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357770AbiD2Kpb (ORCPT
+        with ESMTP id S1357827AbiD2Kps (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:45:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70558C74BB;
-        Fri, 29 Apr 2022 03:42:07 -0700 (PDT)
+        Fri, 29 Apr 2022 06:45:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32E5C12FF;
+        Fri, 29 Apr 2022 03:42:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C03F5B8344F;
-        Fri, 29 Apr 2022 10:42:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17877C385AD;
-        Fri, 29 Apr 2022 10:42:03 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id F1CBCCE31AD;
+        Fri, 29 Apr 2022 10:42:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF7FDC385A4;
+        Fri, 29 Apr 2022 10:42:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651228924;
-        bh=0F6TBKnCFr61BEFHyfLR4wJLAhzXc4xMHSmn3xx8ndw=;
+        s=korg; t=1651228930;
+        bh=wGlm1kAKpp82offW2XF87L2almALkRD2RWNUhTrrz4c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qJzbRBc0A1bdKmgxeKVJCJd/pk3vXMowgx9sv+voh8lQrZZZRn85xI7PHidR24aMA
-         KH+FRiqJMH+WVzQNCPo1te0CtW4zLfUEKDpXtxmq7WN4gjR8+EC4ub09YUtJxe1ElN
-         xxOMWz1Any2QDnpDLHdlDIJwFpNSSNi9YoKToIgc=
+        b=nfCS6r/ThQQi3+kxoSL5Qal0H9SQzN0PNq3PeB9yLwEin8uFZM9cBe2qC+pmIFSVr
+         U+cE14hts8kzwWgIYd21cBOMqcivD3QzWkhhPDsSNA5vQqRE05LsRF07gMZQ05irJV
+         moySONt9/klIultkVvPf6YZAW6R4/Bp9HVneQXUQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 4.19 07/12] powerpc/64s: Unmerge EX_LR and EX_DAR
-Date:   Fri, 29 Apr 2022 12:41:24 +0200
-Message-Id: <20220429104048.675722620@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: [PATCH 4.19 09/12] Revert "ia64: kprobes: Use generic kretprobe trampoline handler"
+Date:   Fri, 29 Apr 2022 12:41:26 +0200
+Message-Id: <20220429104048.733242837@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220429104048.459089941@linuxfoundation.org>
 References: <20220429104048.459089941@linuxfoundation.org>
@@ -48,117 +49,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Masami Hiramatsu <mhiramat@kernel.org>
 
-The SLB miss handler is not fully re-entrant, it is able to work because
-we ensure that the SLB entries for the kernel text and data segment, as
-well as the kernel stack are pinned in the SLB. Accesses to kernel data
-outside of those areas has to be carefully managed and can only occur in
-certain parts of the code. One way we deal with that is by storing some
-values in temporary slots in the paca.
+This reverts commit d3380de483d55d904fb94a241406b34ed2fada7d.
 
-In v4.13 in commit dbeea1d6b4bd ("powerpc/64s/paca: EX_LR can be merged
-with EX_DAR") we merged the storage for two temporary slots for register
-storage during SLB miss handling. That was safe at the time because the
-two slots were never used at the same time.
+Since this commit is a part of generic kretprobe trampoline
+handler series, without the other patches in that series, this
+causes a build error on ia64.
 
-Unfortunately in v4.17 in commit c2b4d8b7417a ("powerpc/mm/hash64:
-Increase the VA range") we broke that condition, and introduced a case
-where the two slots could be in use at the same time, leading to one
-being corrupted.
-
-Specifically in slb_miss_common() when we detect that we're handling a
-fault for a large virtual address (> 512TB) we go to the "8" label,
-there we store the original fault address into paca->exslb[EX_DAR],
-before jumping to large_addr_slb() (using rfid).
-
-We then use the EXCEPTION_PROLOG_COMMON and RECONCILE_IRQ_STATE macros
-to do exception setup, before reloading the fault address from
-paca->exslb[EX_DAR] and storing it into pt_regs->dar (Data Address
-Register).
-
-However the code generated by those macros can cause a recursive SLB
-miss on a kernel address in three places.
-
-Firstly is the saving of the PPR (Program Priority Register), which
-happens on all CPUs since Power7, the PPR is saved to the thread struct
-which can be anywhere in memory. There is also the call to
-accumulate_stolen_time() if CONFIG_VIRT_CPU_ACCOUNTING_NATIVE=y and
-CONFIG_PPC_SPLPAR=y, and also the call to trace_hardirqs_off() if
-CONFIG_TRACE_IRQFLAGS=y. The latter two call into generic C code and can
-lead to accesses anywhere in memory.
-
-On modern 64-bit CPUs we have 1TB segments, so for any of those accesses
-to cause an SLB fault they must access memory more than 1TB away from
-the kernel text, data and kernel stack. That typically only happens on
-machines with more than 1TB of RAM. However it is possible on multi-node
-Power9 systems, because memory on the 2nd node begins at 32TB in the
-linear mapping.
-
-If we take a recursive SLB fault then we will corrupt the original fault
-address with the LR (Link Register) value, because the EX_DAR and EX_LR
-slots share storage. Subsequently we will think we're trying to fault
-that LR address, which is the wrong address, and will also mostly likely
-lead to a segfault because the LR address will be < 512TB and so will be
-rejected by slb_miss_large_addr().
-
-This appears as a spurious segfault to userspace, and if
-show_unhandled_signals is enabled you will see a fault reported in dmesg
-with the LR address, not the expected fault address, eg:
-
-  prog[123]: segfault (11) at 128a61808 nip 128a618cc lr 128a61808 code 3 in prog[128a60000+10000]
-  prog[123]: code: 4bffffa4 39200040 3ce00004 7d2903a6 3c000200 78e707c6 780083e4 7d3b4b78
-  prog[123]: code: 7d455378 7d7d5b78 7d9f6378 7da46b78 <f8670000> 7d3a4b78 7d465378 7d7c5b78
-
-Notice that the fault address == the LR, and the faulting instruction is
-a simple store that should never use LR.
-
-In upstream this was fixed in v4.20 in commit
-48e7b7695745 ("powerpc/64s/hash: Convert SLB miss handlers to C"),
-however that is a huge rewrite and not backportable.
-
-The minimal fix for stable is to just unmerge the EX_LR and EX_DAR slots
-again, avoiding the corruption of the DAR value. This uses an extra 8
-bytes per CPU, which is negligble.
-
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/exception-64s.h |   15 ++++-----------
- 1 file changed, 4 insertions(+), 11 deletions(-)
+ arch/ia64/kernel/kprobes.c |   77 +++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 75 insertions(+), 2 deletions(-)
 
---- a/arch/powerpc/include/asm/exception-64s.h
-+++ b/arch/powerpc/include/asm/exception-64s.h
-@@ -48,11 +48,12 @@
- #define EX_CCR		52
- #define EX_CFAR		56
- #define EX_PPR		64
-+#define EX_LR		72
- #if defined(CONFIG_RELOCATABLE)
--#define EX_CTR		72
--#define EX_SIZE		10	/* size in u64 units */
-+#define EX_CTR		80
-+#define EX_SIZE		11	/* size in u64 units */
- #else
--#define EX_SIZE		9	/* size in u64 units */
-+#define EX_SIZE		10	/* size in u64 units */
- #endif
+--- a/arch/ia64/kernel/kprobes.c
++++ b/arch/ia64/kernel/kprobes.c
+@@ -409,9 +409,83 @@ static void kretprobe_trampoline(void)
+ {
+ }
  
- /*
-@@ -61,14 +62,6 @@
- #define MAX_MCE_DEPTH	4
++/*
++ * At this point the target function has been tricked into
++ * returning into our trampoline.  Lookup the associated instance
++ * and then:
++ *    - call the handler function
++ *    - cleanup by marking the instance as unused
++ *    - long jump back to the original return address
++ */
+ int __kprobes trampoline_probe_handler(struct kprobe *p, struct pt_regs *regs)
+ {
+-	regs->cr_iip = __kretprobe_trampoline_handler(regs, kretprobe_trampoline, NULL);
++	struct kretprobe_instance *ri = NULL;
++	struct hlist_head *head, empty_rp;
++	struct hlist_node *tmp;
++	unsigned long flags, orig_ret_address = 0;
++	unsigned long trampoline_address =
++		((struct fnptr *)kretprobe_trampoline)->ip;
++
++	INIT_HLIST_HEAD(&empty_rp);
++	kretprobe_hash_lock(current, &head, &flags);
++
++	/*
++	 * It is possible to have multiple instances associated with a given
++	 * task either because an multiple functions in the call path
++	 * have a return probe installed on them, and/or more than one return
++	 * return probe was registered for a target function.
++	 *
++	 * We can handle this because:
++	 *     - instances are always inserted at the head of the list
++	 *     - when multiple return probes are registered for the same
++	 *       function, the first instance's ret_addr will point to the
++	 *       real return address, and all the rest will point to
++	 *       kretprobe_trampoline
++	 */
++	hlist_for_each_entry_safe(ri, tmp, head, hlist) {
++		if (ri->task != current)
++			/* another task is sharing our hash bucket */
++			continue;
++
++		orig_ret_address = (unsigned long)ri->ret_addr;
++		if (orig_ret_address != trampoline_address)
++			/*
++			 * This is the real return address. Any other
++			 * instances associated with this task are for
++			 * other calls deeper on the call stack
++			 */
++			break;
++	}
++
++	regs->cr_iip = orig_ret_address;
++
++	hlist_for_each_entry_safe(ri, tmp, head, hlist) {
++		if (ri->task != current)
++			/* another task is sharing our hash bucket */
++			continue;
++
++		if (ri->rp && ri->rp->handler)
++			ri->rp->handler(ri, regs);
++
++		orig_ret_address = (unsigned long)ri->ret_addr;
++		recycle_rp_inst(ri, &empty_rp);
++
++		if (orig_ret_address != trampoline_address)
++			/*
++			 * This is the real return address. Any other
++			 * instances associated with this task are for
++			 * other calls deeper on the call stack
++			 */
++			break;
++	}
++	kretprobe_assert(ri, orig_ret_address, trampoline_address);
++
++	kretprobe_hash_unlock(current, &flags);
++
++	hlist_for_each_entry_safe(ri, tmp, &empty_rp, hlist) {
++		hlist_del(&ri->hlist);
++		kfree(ri);
++	}
+ 	/*
+ 	 * By returning a non-zero value, we are telling
+ 	 * kprobe_handler() that we don't want the post_handler
+@@ -424,7 +498,6 @@ void __kprobes arch_prepare_kretprobe(st
+ 				      struct pt_regs *regs)
+ {
+ 	ri->ret_addr = (kprobe_opcode_t *)regs->b0;
+-	ri->fp = NULL;
  
- /*
-- * EX_LR is only used in EXSLB and where it does not overlap with EX_DAR
-- * EX_CCR similarly with DSISR, but being 4 byte registers there is a hole
-- * in the save area so it's not necessary to overlap them. Could be used
-- * for future savings though if another 4 byte register was to be saved.
-- */
--#define EX_LR		EX_DAR
--
--/*
-  * EX_R3 is only used by the bad_stack handler. bad_stack reloads and
-  * saves DAR from SPRN_DAR, and EX_DAR is not used. So EX_R3 can overlap
-  * with EX_DAR.
+ 	/* Replace the return addr with trampoline addr */
+ 	regs->b0 = ((struct fnptr *)kretprobe_trampoline)->ip;
 
 
