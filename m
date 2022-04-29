@@ -2,164 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CCD7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:21:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81B0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379202AbiD2RZI (ORCPT
+        id S1379667AbiD2RZZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 13:25:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54534 "EHLO
+        Fri, 29 Apr 2022 13:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379547AbiD2RYv (ORCPT
+        with ESMTP id S1379661AbiD2RZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 13:24:51 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A2E57160;
-        Fri, 29 Apr 2022 10:21:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1651252851;
-        bh=jFeo/rlMoN3F0JvMc3759b06/L1UffYivvp83FqyW6o=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=B7xslFnJ51XNV2ADIknZnclvBN0gfTSbt4TcwaSv6Ps3K+/Dr4hBlmEskFceY0gA5
-         pkV1tifXQaZge56H52Mk/d8OIJng3txyPTfXLb7nIih4fsU/1nMB5fQMevpOWUmbK0
-         TUhRci4P0rZi/jKgsQoEs8eid301qNizICHYK8sY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([37.201.215.103]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MUXtY-1nKByF2qyO-00QPKS; Fri, 29
- Apr 2022 19:20:51 +0200
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-clk@vger.kernel.org, openbmc@lists.ozlabs.org
-Cc:     linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v2 7/7] ARM: dts: wpcm450: Switch clocks to clock controller
-Date:   Fri, 29 Apr 2022 19:20:30 +0200
-Message-Id: <20220429172030.398011-8-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220429172030.398011-1-j.neuschaefer@gmx.net>
-References: <20220429172030.398011-1-j.neuschaefer@gmx.net>
+        Fri, 29 Apr 2022 13:25:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5FB0CC8642
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:21:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651252907;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qfPh0kjKV7Wz4rw1eQJIM18yZvKQM4d4G44x6rYSMsU=;
+        b=Ak3wnRHLiHYnZVxdA3lHlaz7pKFMOD4jMLmbdXrVY2tgR9LUw2QidIx6lyNouLURV1TEss
+        Dnb0VqA5X8Sqt+q2hxH9GoP/ffxVT8C7sQkp/AxJhH8VFZlo3UHxgrjWpo4HFdrqobP9WY
+        kFrgd18gx+aPRjzhKh4dnxZYSZtbvKA=
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
+ [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-83-dZZqh0KqMHmcIjaqKQ81kQ-1; Fri, 29 Apr 2022 13:21:46 -0400
+X-MC-Unique: dZZqh0KqMHmcIjaqKQ81kQ-1
+Received: by mail-pj1-f71.google.com with SMTP id gg5-20020a17090b0a0500b001d9852bd129so4339580pjb.9
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:21:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qfPh0kjKV7Wz4rw1eQJIM18yZvKQM4d4G44x6rYSMsU=;
+        b=A5e3g6sb1TjjKIYbfrtQeeG0IlxkRqDnFf/64FtLtyvn8CTev+NtiOvfKnxbj06x4Y
+         qwgv9Nsz8Fzk0tagseUdSwcemfzFPqHHGtC9ePf57I9s7gPd9Kttc6G9xRsMJVGSWJml
+         Rx1uJMTjDSqU9NFwm/41f926uq9IlG6+GvthPi3UOrvJiCJiEiqgzTSQFNcTo38gZPUQ
+         ojaf9fDfdf/aoc0BVsn89mgkDiBoQVqwezaEX94eF2mPeA1jzWJZzV83ohncEZqKEZ/q
+         zR55BVOezF71522d4GynWmjgYKPYT+iTZCQ/8iDtvLWZmTAEZOdKp0o2TW8sJUbVB0De
+         pJBQ==
+X-Gm-Message-State: AOAM532aoFBAKpNc6hp+7sl2gxcOrb6AtQBDp+PeaM44aJ8utC56264D
+        w9/xVf7joq/54dSIi+59QjMpnNBWofE/wU2bfioW5PTamXpj+ufpO5PAM+xiOWMijueGIGaFmSZ
+        bJespMz5f9DRvQmZsvweZeQYtwo0dhRiDXinYuZNV
+X-Received: by 2002:a17:90a:8591:b0:1b9:da10:2127 with SMTP id m17-20020a17090a859100b001b9da102127mr5054432pjn.13.1651252905188;
+        Fri, 29 Apr 2022 10:21:45 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJybgqQTGFo3aPUV0q7YyahyM+1X9q79zPVfMkdYHvLOVGnT5fGnsEfPpCBwqLhpGPFvVxVgzJb2z2I0F5oFwfY=
+X-Received: by 2002:a17:90a:8591:b0:1b9:da10:2127 with SMTP id
+ m17-20020a17090a859100b001b9da102127mr5054410pjn.13.1651252904923; Fri, 29
+ Apr 2022 10:21:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:CapGnF66PbIaJCrYydROSSzdBD4+jGIG259czWWFShncx/7mfO5
- n7LWPKDdswQhfnHBzXYt8/fCGYBOs/TNhEn25Fwffb80q+MwOOZ/NEiURk+UPXwY48HALAb
- FbieQhHcsWYBrn+zRmzCSCsAlAiOK8G3pN4hGDYJzh4lauaSbA0mrj4YIkwuAW/mxJDP71A
- WtSOAngqDLdX/T5fi7Z+Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:op7guGsTdCo=:wC4SD8Y6g9Umj7VnspIayf
- M+K6RolgpoBePq+LQFfem4hZ/4qtppk6wZv/b5ufzOtFf7pn5u7aptkk68boj8jPa3xOSKeCm
- gvipfpEuKYq6jwsFS5l3nUNpNTle18GMbLDwHoOBahGxOmNyZrl1pPQY5sl1IVs0W2F1iKeTR
- J74wtKyQBw9WsURuXNCp6j9F8MktBcPOo6HSVGT8H9HNV4Ti4fp53S6OzQS2la/BqcZWwPi7s
- wxm//FqpVJutc+WperY1CO5EBT9pMzH08efPnCua8Ek6xBeUKHtnAlxlxlLGDofQcJ95YEmRQ
- xA//2YdM7BrZXFuRtGcdGVn9QDRrVBMyOaT3bX6HwvjR9sEc4Z/IOWhfgPWk5hldVXknze4Vk
- uX9cBpXZMZkwBpg+1RqNzjyLrPUG1e1l1MAl/BUWM1sKkIu775SQJtBF8xgpBoHyl0sySYrqb
- WH8a1koFNspArjEaKdsgNa867z1EsE8FeV1ec2l4fTr18MdA/vC1eeab1Ib30aLklltfp76Cv
- xP7pcO7oPQZI/FWhPoFiFonH1RGGBNXuUqSQkwR8AKZN0aPpc/LoYUOUXnUXMgVdOrGXL9Y32
- z9R/fMTs0xz0hrXAoR12Y6uBZ4XGBS2eqdb3AuMNcadYYNHLWhPeXq8omoaZe1/kniBnF88Tn
- Mk6AZ31Wx2wrI5OCfEnJ2DxnIuz8w7QSUea1K/xzn2xj0B+Ef4fU9aj9jwFSJ4bEX3UGCWXhz
- qb3BTZJ1ELYrxLj5ocIlmWSxEnorHWa6iBGSsRFu4hv7wGTJFojL+iOvxrhhQlRX052pW7cuu
- Gk9lTUcxyeOvMHPGnnta/R8yeasFpp395WVdzy4c4GxowDOmNdkH79Od/BiXM/x1DxUtHjJFB
- lcVIQayLDqnFmRNEoYJ/8y7J2K4M9QJ+Tb/4W4RcHfO4qjaNWwy7gDGwQbV0PQfGR7pgL1/mY
- QcBCw+n+yE56UXHSAdTIDM3Uwh2Agsn7aNZJ7+LP4KSIk09Nmxas2hUkDrNP2j1zJgEo9NJA4
- yRJSkKhI/E9xl/lQQXPs+bEwm96qYbA5l6hDaoB9oFjin3r6pMCPubmsgXG9upCPTcKDBfxJ1
- xKJR09p/xyGTsc=
+References: <20220407195908.633003-1-pgonda@google.com> <CAFNjLiXC0AdOw5f8Ovu47D==ex7F0=WN_Ocirymz4xL=mWvC5A@mail.gmail.com>
+ <CAMkAt6r-Mc_YN-gVHuCpTj4E1EmcvyYpP9jhtHo5HRHnoNJAdA@mail.gmail.com>
+ <CAMkAt6r+OMPWCbV_svUyGWa0qMzjj2UEG29G6P7jb6uH6yko2w@mail.gmail.com>
+ <62e9ece1-5d71-f803-3f65-2755160cf1d1@redhat.com> <CAMkAt6q6YLBfo2RceduSXTafckEehawhD4K4hUEuB4ZNqe2kKg@mail.gmail.com>
+ <4c0edc90-36a1-4f4c-1923-4b20e7bdbb4c@redhat.com> <CAMkAt6oL5qi7z-eh4z7z8WBhpc=Ow6WtcJA5bDi6-aGMnz135A@mail.gmail.com>
+ <CAMkAt6rmDrZfN5DbNOTsKFV57PwEnK2zxgBTCbEPeE206+5v5w@mail.gmail.com>
+ <0d282be4-d612-374d-84ba-067994321bab@redhat.com> <CAMkAt6ragq4OmnX+n628Yd5pn51qFv4qV20upGR6tTvyYw3U5A@mail.gmail.com>
+ <8a2c5f8c-503c-b4f0-75e7-039533c9852d@redhat.com> <CAMkAt6qAW5zFyTAqX_Az2DT2J3KROPo4u-Ak1sC0J+UTUeFfXA@mail.gmail.com>
+ <4afce434-ab25-66d6-76f4-3a987f64e88e@redhat.com> <CAMkAt6o8u9=H_kjr_xyRO05J=RDFUZRiTc_Bw-FFDKEUaiyp2Q@mail.gmail.com>
+In-Reply-To: <CAMkAt6o8u9=H_kjr_xyRO05J=RDFUZRiTc_Bw-FFDKEUaiyp2Q@mail.gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+Date:   Fri, 29 Apr 2022 19:21:33 +0200
+Message-ID: <CABgObfa0ubOwNv2Vi9ziEjHXQMR_Sa6P-fwuXfPq76qy0N61kA@mail.gmail.com>
+Subject: Re: [PATCH v3] KVM: SEV: Mark nested locking of vcpu->lock
+To:     Peter Gonda <pgonda@google.com>
+Cc:     John Sperbeck <jsperbeck@google.com>,
+        kvm list <kvm@vger.kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This change is incompatible with older kernels because it requires the
-clock controller driver, but I think that's acceptable because WPCM450
-support is generally still in an early phase.
+On Fri, Apr 29, 2022 at 7:12 PM Peter Gonda <pgonda@google.com> wrote:
+> Sounds good. Instead of doing this prev_vcpu solution we could just
+> keep the 1st vcpu for source and target. I think this could work since
+> all the vcpu->mutex.dep_maps do not point to the same string.
+>
+> Lock:
+>          bool acquired = false;
+>          kvm_for_each_vcpu(...) {
+>                  if (mutex_lock_killable_nested(&vcpu->mutex, role)
+>                      goto out_unlock;
+>                 acquired = true;
+>                  if (acquired)
+>                       mutex_release(&vcpu->mutex, role)
+>          }
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
+Almost:
 
-v2:
-- no changes
-=2D--
- arch/arm/boot/dts/nuvoton-wpcm450.dtsi | 20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
+          bool first = true;
+          kvm_for_each_vcpu(...) {
+                  if (mutex_lock_killable_nested(&vcpu->mutex, role)
+                      goto out_unlock;
+                  if (first)
+                      ++role, first = false;
+                 else
+                      mutex_release(&vcpu->mutex, role);
+         }
 
-diff --git a/arch/arm/boot/dts/nuvoton-wpcm450.dtsi b/arch/arm/boot/dts/nu=
-voton-wpcm450.dtsi
-index 62d70fda7b520..f868bd7db009a 100644
-=2D-- a/arch/arm/boot/dts/nuvoton-wpcm450.dtsi
-+++ b/arch/arm/boot/dts/nuvoton-wpcm450.dtsi
-@@ -2,6 +2,7 @@
- // Copyright 2021 Jonathan Neusch=C3=A4fer
+and to unlock:
 
- #include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/clock/nuvoton,wpcm450-clk.h>
+          bool first = true;
+          kvm_for_each_vcpu(...) {
+                if (first)
+                      first = false;
+                else
+                      mutex_acquire(&vcpu->mutex, role);
+                mutex_unlock(&vcpu->mutex);
+                acquired = false;
+          }
 
- / {
- 	compatible =3D "nuvoton,wpcm450";
-@@ -32,13 +33,6 @@ cpu@0 {
- 		};
- 	};
+because you cannot use the first vCPU's role again when locking.
 
--	clk24m: clock-24mhz {
--		/* 24 MHz dummy clock */
--		compatible =3D "fixed-clock";
--		clock-frequency =3D <24000000>;
--		#clock-cells =3D <0>;
--	};
--
- 	refclk: clock-48mhz {
- 		/* 48 MHz reference oscillator */
- 		compatible =3D "fixed-clock";
-@@ -73,7 +67,7 @@ serial0: serial@b8000000 {
- 			reg =3D <0xb8000000 0x20>;
- 			reg-shift =3D <2>;
- 			interrupts =3D <7 IRQ_TYPE_LEVEL_HIGH>;
--			clocks =3D <&clk24m>;
-+			clocks =3D <&clk WPCM450_CLK_UART0>;
- 			pinctrl-names =3D "default";
- 			pinctrl-0 =3D <&bsp_pins>;
- 			status =3D "disabled";
-@@ -84,7 +78,7 @@ serial1: serial@b8000100 {
- 			reg =3D <0xb8000100 0x20>;
- 			reg-shift =3D <2>;
- 			interrupts =3D <8 IRQ_TYPE_LEVEL_HIGH>;
--			clocks =3D <&clk24m>;
-+			clocks =3D <&clk WPCM450_CLK_UART1>;
- 			status =3D "disabled";
- 		};
-
-@@ -92,14 +86,18 @@ timer0: timer@b8001000 {
- 			compatible =3D "nuvoton,wpcm450-timer";
- 			interrupts =3D <12 IRQ_TYPE_LEVEL_HIGH>;
- 			reg =3D <0xb8001000 0x1c>;
--			clocks =3D <&clk24m>;
-+			clocks =3D <&clk WPCM450_CLK_TIMER0>,
-+				 <&clk WPCM450_CLK_TIMER1>,
-+				 <&clk WPCM450_CLK_TIMER2>,
-+				 <&clk WPCM450_CLK_TIMER3>,
-+				 <&clk WPCM450_CLK_TIMER4>;
- 		};
-
- 		watchdog0: watchdog@b800101c {
- 			compatible =3D "nuvoton,wpcm450-wdt";
- 			interrupts =3D <1 IRQ_TYPE_LEVEL_HIGH>;
- 			reg =3D <0xb800101c 0x4>;
--			clocks =3D <&clk24m>;
-+			clocks =3D <&clk WPCM450_CLK_WDT>;
- 		};
-
- 		aic: interrupt-controller@b8002000 {
-=2D-
-2.35.1
+Paolo
 
