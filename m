@@ -2,98 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9051C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:30:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E6DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233151AbiD2Qdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50858 "EHLO
+        id S234194AbiD2Qem (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 12:34:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379558AbiD2QdM (ORCPT
+        with ESMTP id S233751AbiD2Qek (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:33:12 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8094D95FB
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:29:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651249783; x=1682785783;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=9JJLmBDdDaVDkWtdj2AlikPdhwkYMqvNxao/Uvuy9zc=;
-  b=faSX+2gqZKNvjLaFl7gO4aws/SQ0PmHcyBFuoEznuyaQbpri350GV34h
-   XMty35ZGQZdsOgN4O6398loTXecglKo5YK5ghglB2q7YFqP3iva9K881n
-   OyWSY2+Wi7ubMqK+PFAGQ05eurAEb1Aj7tdGujZSDBEJ5RBV96/QLvbn+
-   7Nn4KaSPUfRFuroFhZ1myOFx9Bxa56Fp3Pygh2uEBT84j/jC+nELmBFG+
-   yexeRySJUdATOVMN59NSatAruEd/AmjC94BH8J8Qjztat5CQOsdyWSgEa
-   +lRbVJRk3eguCV2AlM82vPSIBk7G35uonepFilzSRIxNO6PRuFo3wuZ3w
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="353120955"
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="353120955"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 09:29:43 -0700
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="685089587"
-Received: from aleeshax-mobl.amr.corp.intel.com (HELO [10.212.139.246]) ([10.212.139.246])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 09:29:42 -0700
-Message-ID: <e9f4001d-a9f4-fae7-521a-76f8880ba82b@linux.intel.com>
-Date:   Fri, 29 Apr 2022 11:19:40 -0500
+        Fri, 29 Apr 2022 12:34:40 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827E1DA6E6
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:31:21 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id r13so16449698ejd.5
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:31:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Nw+YlCrCylKax0rwrziby2pzqjnCzgXqaGAQj14/FEI=;
+        b=cmoLB6uO9PxqaqPypwrFW8YGlt7ClatqYTSlq5iyiVXxV1LWJkogwZIjIiBEj/ZTWb
+         Ql4Q1WdT9KBNm9fCsTjjeqtBBYhwi3Ciq7STsT4lGiEvthpET6Bh4xcjHLtOuCNOTEE8
+         0GPKsSlrX1YwAn0zCgP4wW0NDfcPxDZpALoXA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Nw+YlCrCylKax0rwrziby2pzqjnCzgXqaGAQj14/FEI=;
+        b=qHqdvbDL3GXoGy8FJmZc9AP0touSwWtcACfeT7mJSUdiV1Jhm8+68/aQ7hCPPhMNzS
+         gUmXDS34s2RDX1KDo2B4iTZyvrA7AygT8NXy3SYyMAGIjE+jF6HKr85NX/TX6Fz7ShKT
+         R1oQpMdMb86zYu/Al9ilVcXtHMe1SSitraqeQ3SRhPsVOgIXp6jk0DeZC/6T04/v+vlU
+         6dilZTqp39qSqlXmcOgoF147+2/neZ6edCm/9n/BeJRKNK+04oyV8z5QLrRIO+HQnAQf
+         TAHXNi0ZRLy+Sj6JM4soiuVqUSPgW+MH0VtVWYm4od8454gvoEa2dsnLcMV9I3YNQP7o
+         wbFw==
+X-Gm-Message-State: AOAM531dtdxjq6tJgWtSwZh2mF8EFr2R5CDUJky2/H/IaXtqG/a/+QSX
+        x5RGpOa9/sIQwC0Z5wXEdqbOAHfE7o8mB1nB
+X-Google-Smtp-Source: ABdhPJySn+zRSyWQYp00SUxhEWKqUwLnfYQC/QT+Rqtli3h+dURB6ZlRCb1zna/jpBLbNZaFvZKxsg==
+X-Received: by 2002:a17:906:5d04:b0:6db:7262:570e with SMTP id g4-20020a1709065d0400b006db7262570emr170209ejt.8.1651249879838;
+        Fri, 29 Apr 2022 09:31:19 -0700 (PDT)
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com. [209.85.128.52])
+        by smtp.gmail.com with ESMTPSA id v23-20020aa7d657000000b0042617ba639esm3143741edr.40.2022.04.29.09.31.18
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 09:31:18 -0700 (PDT)
+Received: by mail-wm1-f52.google.com with SMTP id 1-20020a05600c248100b00393fbf11a05so6315900wms.3
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:31:18 -0700 (PDT)
+X-Received: by 2002:a05:600c:3c99:b0:392:b49c:7b79 with SMTP id
+ bg25-20020a05600c3c9900b00392b49c7b79mr3913552wmb.199.1651249878250; Fri, 29
+ Apr 2022 09:31:18 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH] soundwire: qcom: adjust autoenumeration timeout
-Content-Language: en-US
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        vkoul@kernel.org
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        bard.liao@intel.com,
-        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-References: <20220429160928.24614-1-srinivas.kandagatla@linaro.org>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220429160928.24614-1-srinivas.kandagatla@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220427203026.828183-1-swboyd@chromium.org> <20220427203026.828183-2-swboyd@chromium.org>
+In-Reply-To: <20220427203026.828183-2-swboyd@chromium.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 29 Apr 2022 09:31:05 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=Vtnj+8FYdBSvsud9fGEbo7N1HSjXA3rH3f8FMJsuVR1A@mail.gmail.com>
+Message-ID: <CAD=FV=Vtnj+8FYdBSvsud9fGEbo7N1HSjXA3rH3f8FMJsuVR1A@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: google,cros-ec-keyb: Introduce switches
+ only compatible
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        "Joseph S. Barrera III" <joebar@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
-
-On 4/29/22 11:09, Srinivas Kandagatla wrote:
-> Currently timeout for autoenumeration during probe and bus reset is set to
-> 2 secs which is really a big value. This can have an adverse effect on
-> boot time if the slave device is not ready/reset.
-> This was the case with wcd938x which was not reset yet but we spent 2
-> secs waiting in the soundwire controller probe. Reduce this time to
-> 1/10 of Hz which should be good enough time to finish autoenumeration
-> if any slaves are available on the bus.
-
-Can I ask why this is dependent on a software configuration you have no control on?
-
-Why not simply:
-
-#define TIMEOUT_MS		100
-
-?
-
-> 
-> Reported-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+On Wed, Apr 27, 2022 at 1:30 PM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> If the device is a detachable, this device won't have a matrix keyboard
+> but it may have some button switches, e.g. volume buttons and power
+> buttons. Let's add a more specific compatible for this type of device
+> that indicates to the OS that there are only switches and no matrix
+> keyboard present.
+>
+> Cc: Krzysztof Kozlowski <krzk@kernel.org>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: <devicetree@vger.kernel.org>
+> Cc: Benson Leung <bleung@chromium.org>
+> Cc: Guenter Roeck <groeck@chromium.org>
+> Cc: Douglas Anderson <dianders@chromium.org>
+> Cc: Hsin-Yi Wang <hsinyi@chromium.org>
+> Cc: "Joseph S. Barrera III" <joebar@chromium.org>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 > ---
->  drivers/soundwire/qcom.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-> index da1ad7ebb1aa..432e5cb9a4d2 100644
-> --- a/drivers/soundwire/qcom.c
-> +++ b/drivers/soundwire/qcom.c
-> @@ -105,7 +105,7 @@
->  
->  #define SWRM_SPECIAL_CMD_ID	0xF
->  #define MAX_FREQ_NUM		1
-> -#define TIMEOUT_MS		(2 * HZ)
-> +#define TIMEOUT_MS		(HZ/10)
->  #define QCOM_SWRM_MAX_RD_LEN	0x1
->  #define QCOM_SDW_MAX_PORTS	14
->  #define DEFAULT_CLK_FREQ	9600000
+>  .../bindings/input/google,cros-ec-keyb.yaml          | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
+> index e8f137abb03c..edc1194d558d 100644
+> --- a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
+> +++ b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
+> @@ -15,14 +15,20 @@ description: |
+>    Google's ChromeOS EC Keyboard is a simple matrix keyboard
+>    implemented on a separate EC (Embedded Controller) device. It provides
+>    a message for reading key scans from the EC. These are then converted
+> -  into keycodes for processing by the kernel.
+> +  into keycodes for processing by the kernel. This device also supports
+> +  switches/buttons like power and volume buttons.
+>
+>  allOf:
+>    - $ref: "/schemas/input/matrix-keymap.yaml#"
+>
+>  properties:
+>    compatible:
+> -    const: google,cros-ec-keyb
+> +    oneOf:
+> +      - items:
+> +          - const: google,cros-ec-keyb-switches
+> +          - const: google,cros-ec-keyb
+> +      - items:
+> +          - const: google,cros-ec-keyb
+
+nit: if I come back and read this binding later I'm not sure it would
+be obvious which compatible I should pick. Can we give any description
+here that indicates that the first choice is for devices that _only_
+have buttons and switches (the google,cros-ec-keyb is just for
+backward compatibility) and the second choice is for devices that have
+a physical keyboard and _also_ possibly some buttons/switches?
+
+I could also imagine people in the future being confused about whether
+it's allowed to specify matrix properties even for devices that don't
+have a matrix keyboard. It might be worth noting that it's allowed (to
+support old drivers that might still be matching against the
+google,cros-ec-keyb compatible) but not required.
+
+
+>    google,needs-ghost-filter:
+>      description:
+> @@ -50,7 +56,7 @@ examples:
+>    - |
+>      #include <dt-bindings/input/input.h>
+>      cros-ec-keyb {
+> -        compatible = "google,cros-ec-keyb";
+> +        compatible = "google,cros-ec-keyb-switches", "google,cros-ec-keyb";
+
+Feels like we should create a second example?
