@@ -2,128 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B784C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:59:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5B2CC43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 13:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359654AbiD2NDH (ORCPT
+        id S1359657AbiD2NDc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 09:03:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39112 "EHLO
+        Fri, 29 Apr 2022 09:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359644AbiD2NCx (ORCPT
+        with ESMTP id S230480AbiD2ND2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 09:02:53 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F21E5CABA8
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 05:59:32 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BEB481063;
-        Fri, 29 Apr 2022 05:59:32 -0700 (PDT)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D8CB33F5A1;
-        Fri, 29 Apr 2022 05:59:30 -0700 (PDT)
-Message-ID: <0058249a-5f9f-9f67-db5b-f7c3c10c3729@arm.com>
-Date:   Fri, 29 Apr 2022 14:59:16 +0200
+        Fri, 29 Apr 2022 09:03:28 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA07F2BD7;
+        Fri, 29 Apr 2022 06:00:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651237209; x=1682773209;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qehntlNSJq+nSLAk/tGVn281Y3k/WwjxEdBJaH7UQNQ=;
+  b=hLICcUqAu9sXLZxhGCeVcLjS3EaMVTBSa91yN0G2TGsogjo4isj/z7sx
+   XTrEfaxRO57uxHhZQqhays5QWc6EPugS3/z/KZ9vtsL38fA0QRCNrycCj
+   Z3moXFCs+MU9Dip5dJ/pJcg8exoJvII0XB5LV5GrJP4unJFuE5Vk7XhO6
+   s=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 29 Apr 2022 06:00:09 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 06:00:08 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 29 Apr 2022 06:00:08 -0700
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 29 Apr 2022 06:00:00 -0700
+Date:   Fri, 29 Apr 2022 18:29:56 +0530
+From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
+To:     Pavan Kondeti <quic_pkondeti@quicinc.com>
+CC:     Matthias Kaehlcke <mka@chromium.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
+        "Rob Herring" <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Len Brown <len.brown@intel.com>, "Pavel Machek" <pavel@ucw.cz>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "open list:ULTRA-WIDEBAND (UWB) SUBSYSTEM:" 
+        <linux-usb@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        <quic_ppratap@quicinc.com>, <quic_kriskura@quicinc.com>,
+        <quic_vpulyala@quicinc.com>
+Subject: Re: [PATCH v14 2/7] PM / wakeup: Add device_children_wakeup_capable()
+Message-ID: <20220429125956.GD16319@hu-pkondeti-hyd.qualcomm.com>
+References: <1650395470-31333-1-git-send-email-quic_c_sanm@quicinc.com>
+ <1650395470-31333-3-git-send-email-quic_c_sanm@quicinc.com>
+ <CAJZ5v0h2ZKPN6SERPnASPywZfeOWXWncJgNZ1WZa80+=M4DCiQ@mail.gmail.com>
+ <YmL3lMaR79wPMEfY@google.com>
+ <20220425130303.GA16319@hu-pkondeti-hyd.qualcomm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 1/2] sched/core: Avoid obvious double update_rq_clock
- warning
-Content-Language: en-US
-To:     Hao Jia <jiahao.os@bytedance.com>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, rostedt@goodmis.org,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com
-Cc:     linux-kernel@vger.kernel.org
-References: <20220427080014.18483-1-jiahao.os@bytedance.com>
- <20220427080014.18483-2-jiahao.os@bytedance.com>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-In-Reply-To: <20220427080014.18483-2-jiahao.os@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220425130303.GA16319@hu-pkondeti-hyd.qualcomm.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/04/2022 10:00, Hao Jia wrote:
+Hi Matthias,
 
-[...]
+On Mon, Apr 25, 2022 at 06:33:03PM +0530, Pavan Kondeti wrote:
+> Hi Matthias,
+> 
+> On Fri, Apr 22, 2022 at 11:44:36AM -0700, Matthias Kaehlcke wrote:
+> > On Fri, Apr 22, 2022 at 01:57:17PM +0200, Rafael J. Wysocki wrote:
+> > > On Tue, Apr 19, 2022 at 9:11 PM Sandeep Maheswaram
+> > > <quic_c_sanm@quicinc.com> wrote:
+> > > >
+> > > > From: Matthias Kaehlcke <mka@chromium.org>
+> > > >
+> > > > Add device_children_wakeup_capable() which checks whether the device itself
+> > > > or one if its descendants is wakeup capable.
+> > > 
+> > > device_wakeup_path() exists for a very similar purpose.
+> > > 
+> > > Is it not usable for whatever you need the new function introduced here?
+> > 
+> > I wasn't aware of it's function, there are no doc comments and the
+> > name isn't really self explanatory.
+> > 
+> > In a quick test device_wakeup_path() returned inconsistent values for the
+> > root hub, sometimes true, others false when a wakeup capable USB device was
+> > connected.
+> 
+> We will also test the same to double confirm the behavior of
+> device_wakeup_path(). I am assuming that you checked device_wakeup_path()
+> only during system suspend path.
+> 
+> Here is what I understood by looking at __device_suspend(). Please share
+> your thoughts on this.
+> 
+> power.wakeup_path is set to true for the parent *after* a wakeup capable
+> device is suspended. This means when the root hub(s) is suspended, it is
+> propagated to xhci-plat and when xhci-plat is suspended, it is propagated
+> to dwc3. bottom up propgation during system suspend.
+> 
+> I believe we can directly check something like this in the dwc3 driver
+> instead of having another wrapper like device_children_wakeup_capable().
+> 
+> diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+> index 1170b80..a783257 100644
+> --- a/drivers/usb/dwc3/core.c
+> +++ b/drivers/usb/dwc3/core.c
+> @@ -1878,8 +1878,14 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+>  		break;
+>  	case DWC3_GCTL_PRTCAP_HOST:
+>  		if (!PMSG_IS_AUTO(msg)) {
+> +			/*
+> +			 * Don't kill the host when dwc3 is wakeup capable and
+> +			 * its children needs wakeup.
+> +			 */
+> +			if (device_may_wakeup(dwc->dev) && device_wakeup_path(dwc->dev))
+> +				handle_it();
+> +		} else {
+>  			dwc3_core_exit(dwc);
+> -			break;
+>  		}
+>  
+>  		/* Let controller to suspend HSPHY before PHY driver suspends */
+> 
 
-LGTM, comments are only nit-picks.
+device_wakeup_path(dwc->dev) is returning true all the time irrespective of
+the wakeup capability (and enabled status) of the connected USB devices. That
+is because xhci-plat device is configured to wakeup all the time. Since the
+child is wakeup capable, its parent i.e dwc3 has device_wakeup_path() set.
+device_children_wakeup_capable() will also suffer the problem. However,
 
-> Since we directly use raw_spin_rq_lock() to acquire rq lock instead of
-> rq_lock(), there is no corresponding change to rq->clock_update_flags.
-> In particular, we have obtained the rq lock of other cores,
+device_children_wakeup_capable(&hcd->self.root_hub->dev) is what Sandeep's
+patch is using. That is not correct. we have two root hubs (HS and SS) associated
+with a USB3 controller and calling it on one root hub is incorrect. 
+device_children_wakeup_capable() must be called on xhci-plat so that it covers
+both HS and SS root hubs
 
-s/cores/CPUs, with SMT, a core can have multiple (logical) CPUs.
+I am thinking of dynamically enabling/disabling xhci-plat wakeup capability so
+that the wakeup path is correctly propagated to dwc3. something like below.
+Does it make sense to you?
 
-[...]
-
-> So we need to clear RQCF_UPDATED of rq->clock_update_flags synchronously
-> to avoid the WARN_DOUBLE_CLOCK warning.
-
-Why you mention `synchronously` here? Isn't this obvious? (1)
-
-[...]
-
-> @@ -1833,6 +1833,7 @@ select_task_rq_dl(struct task_struct *p, int cpu, int flags)
->  static void migrate_task_rq_dl(struct task_struct *p, int new_cpu __maybe_unused)
->  {
->  	struct rq *rq;
-> +	struct rq_flags rf;
-
--       struct rq *rq;
-        struct rq_flags rf;
-+       struct rq *rq;
-
-Use reverse fir tree order for variable declarations.
-(./Documentation/process/maintainer-tip.rst)
-
-[...]
-
-> +#ifdef CONFIG_SCHED_DEBUG
-> +/*
-> + * In double_lock_balance()/double_rq_lock(), we use raw_spin_rq_lock() to acquire
-> + * rq lock instead of rq_lock(). So at the end of these two functions we need to
-> + * call double_rq_clock_clear_update() synchronously to clear RQCF_UPDATED of
-                                          ^^^^^^^^^^^^^
-                                          (1)
-
-> + * rq->clock_update_flags to avoid the WARN_DOUBLE_CLOCK warning.
-> + */
-> +static inline void double_rq_clock_clear_update(struct rq *rq1, struct rq *rq2)
-> +{
-> +	rq1->clock_update_flags &= (RQCF_REQ_SKIP|RQCF_ACT_SKIP);
-> +	/*
-> +	 * If CONFIG_SMP is not defined, rq1 and rq2 are the same,
-> +	 * so we just clear RQCF_UPDATED one of them.
-> +	 */
-
-Maybe shorter:
-
-      /* rq1 == rq2 for !CONFIG_SMP, so just clear RQCF_UPDATED once. */
-
-[...]
-
-> @@ -2543,14 +2564,15 @@ static inline int _double_lock_balance(struct rq *this_rq, struct rq *busiest)
->  	__acquires(busiest->lock)
->  	__acquires(this_rq->lock)
->  {
-> -	if (__rq_lockp(this_rq) == __rq_lockp(busiest))
-> -		return 0;
-> -
-> -	if (likely(raw_spin_rq_trylock(busiest)))
-> +	if (__rq_lockp(this_rq) == __rq_lockp(busiest) ||
-> +		likely(raw_spin_rq_trylock(busiest))) {
-
-indention:
-
-        if (__rq_lockp(this_rq) == __rq_lockp(busiest) ||
--               likely(raw_spin_rq_trylock(busiest))) {
-+           likely(raw_spin_rq_trylock(busiest))) {
-
-[...]
-
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-
-Tested on Arm64 Juno with mainline & preempt-rt (linux-5.17.y-rt).
+diff --git a/drivers/usb/host/xhci-plat.c b/drivers/usb/host/xhci-plat.c
+index 649ffd8..be0c55b 100644
+--- a/drivers/usb/host/xhci-plat.c
++++ b/drivers/usb/host/xhci-plat.c
+@@ -412,6 +412,9 @@ static int __maybe_unused xhci_plat_suspend(struct device *dev)
+ 	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
+ 	int ret;
+ 
++	if (!device_wakeup_path(dev))
++		device_wakeup_disable(dev);
++
+ 	if (pm_runtime_suspended(dev))
+ 		pm_runtime_resume(dev);
+ 
+@@ -443,6 +446,8 @@ static int __maybe_unused xhci_plat_resume(struct device *dev)
+ 	pm_runtime_set_active(dev);
+ 	pm_runtime_enable(dev);
+ 
++	device_wakeup_enable(dev);
++
+ 	return 0;
+ }
+ 
+Thanks,
+Pavan
