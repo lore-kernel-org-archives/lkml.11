@@ -2,80 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B03D9C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:43:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14207C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:43:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356688AbiD2Jq6 (ORCPT
+        id S1356694AbiD2JrM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 05:46:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59986 "EHLO
+        Fri, 29 Apr 2022 05:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244541AbiD2Jq5 (ORCPT
+        with ESMTP id S244541AbiD2JrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 05:46:57 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B532EBE9F1;
-        Fri, 29 Apr 2022 02:43:39 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 81E111063;
-        Fri, 29 Apr 2022 02:43:39 -0700 (PDT)
-Received: from lpieralisi (unknown [10.57.46.17])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7BE913F73B;
-        Fri, 29 Apr 2022 02:43:35 -0700 (PDT)
-Date:   Fri, 29 Apr 2022 10:43:20 +0100
-From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     Jake Oshins <jakeo@microsoft.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>
-Subject: Re: [EXTERNAL] Re: [PATCH] PCI: hv: Do not set PCI_COMMAND_MEMORY to
- reduce VM boot time
-Message-ID: <YmuzOJy/6F5wSjY7@lpieralisi>
-References: <SN4PR2101MB0878E466880C047D3A0D0C92ABFB9@SN4PR2101MB0878.namprd21.prod.outlook.com>
- <20220428191213.GA36573@bhelgaas>
- <SN4PR2101MB08786192CE6DFC3450BEC571ABFD9@SN4PR2101MB0878.namprd21.prod.outlook.com>
- <BYAPR21MB12709F42ED7C2496D366792EBFFC9@BYAPR21MB1270.namprd21.prod.outlook.com>
+        Fri, 29 Apr 2022 05:47:09 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70E4BE9F1;
+        Fri, 29 Apr 2022 02:43:48 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2ef5380669cso79408227b3.9;
+        Fri, 29 Apr 2022 02:43:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4Kg3hGg7aSQtOExCKtXSFZRSUP75e6nI3Aslv19Y7vA=;
+        b=TZF6d1SWhW6T1e7EkSodGQRYWm/8NaFP8evsK09WZzyAdjhiFi3leY8CW5P+6jJryI
+         j4zxovudMYqZPPzH8LLnKztlVEwxwVGfeks9injDB80fcmwjvwipeAjbCJSV0QzLQHkh
+         /gdK3nQ9svbNJdEOOCq2Igc83rASG+dciYrOu+IIwfH4iuobI3dbh33Uur7VEIol8YYB
+         4ThkbHnT8gLtnzS+Vk5mDTOcGHqb4oBzBHw+ajZOj0WYtE6CTKSxJFobJm/WneFC6Q/L
+         FkyTeoCSXiJy9Q90dJOQilWD7mJiQ0sDMD7JeNBiMB+Ohbz2ZvUGFic8NkdArAn/is/t
+         cgjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4Kg3hGg7aSQtOExCKtXSFZRSUP75e6nI3Aslv19Y7vA=;
+        b=Irvbuu/WqS5S8yDKcHSUDQCiuDdx16TB0Bu2CAcqaVW6sj/8utcWimrJLLWAk+XPLg
+         Os6bjBEM43J73mywG+Fq3kDcCdO2kLLRzUgok7F21ufJWcXG9V7gF5reLncdf4pvOMwf
+         Y4LmrnU3Hvnl88OJ5+/FzAei+Fc0e9wzqinhwJyGku+o1bWOkEZiVa744hher0W7Wnv8
+         pUfkP/VLRYordBmAtEdGosj86BFLanCfId8vKmWcDSG2O/HtrpxnuvnnPxGhXeLtEUss
+         56/MaNcByUSgqEl0a7wthVmqe/kDt3U87vBaFsM3EagLlRMQG8Vhw5a8mRaunY39Dh+w
+         dFLQ==
+X-Gm-Message-State: AOAM5323pIFxQnDCXxPhgZAsMlRBD5zkhz7t+XuEndtF2tskRNwR0agU
+        l3xzZbMifIT/Jdum5MIycKJ7ygwaX2RMc20v8Ow=
+X-Google-Smtp-Source: ABdhPJx1hDX7pnjETYTkdntFjdt5Nq6fxhad4iQ13SDXFdm2nMnRkoJufGnLbvDiVVAaEHweo2vkFXH2I0QzR4maH4Y=
+X-Received: by 2002:a81:6a46:0:b0:2f4:dc3f:e8f8 with SMTP id
+ f67-20020a816a46000000b002f4dc3fe8f8mr38317183ywc.292.1651225427891; Fri, 29
+ Apr 2022 02:43:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BYAPR21MB12709F42ED7C2496D366792EBFFC9@BYAPR21MB1270.namprd21.prod.outlook.com>
+References: <20220421221159.31729-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220421221159.31729-3-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdVqk1ryzzK9-BZCMDPeyjfF1-8hMpzUoEPCcg8pJ2-ang@mail.gmail.com>
+In-Reply-To: <CAMuHMdVqk1ryzzK9-BZCMDPeyjfF1-8hMpzUoEPCcg8pJ2-ang@mail.gmail.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Fri, 29 Apr 2022 10:43:21 +0100
+Message-ID: <CA+V-a8tosEeNqzPZsdX=VCKTrkQfAhpMRWQDwva+fpQGc8x+jA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] irqchip: Add RZ/G2L IA55 Interrupt Controller driver
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 01:11:29AM +0000, Dexuan Cui wrote:
-> > From: Jake Oshins <jakeo@microsoft.com>
-> > Sent: Thursday, April 28, 2022 12:21 PM
-> > ... 
-> > Thanks everybody for responding to my questions.
-> > 
-> > Bjorn, from your response, it sounds like this change is safe until some possible
-> > future which new functionality is introduced for rebalancing resources.
-> > 
-> > Dexuan, I don't have any further objection to the patch.
-> > 
-> > -- Jake Oshins
-> 
-> Thank all for the informative discussion!!
-> 
-> @Bjorn, Lorenzo: can this patch go through the hyperv tree?
-> I see some recent pci-hyperv commits in the hyperv tree:
-> https://git.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git
+Hi Geert,
 
-For this patch it should be fine as long as it does not become a rule,
-we still want to be in the review loop for PCI hyper-V changes.
+Thank you for the review.
 
-I will comment and ACK shortly.
+On Thu, Apr 28, 2022 at 10:42 AM Geert Uytterhoeven
+<geert@linux-m68k.org> wrote:
+>
+> Hi Prabhakar,
+>
+> On Fri, Apr 22, 2022 at 12:12 AM Lad Prabhakar
+> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> > Add a driver for the Renesas RZ/G2L Interrupt Controller.
+> >
+> > This supports external pins being used as interrupts. It supports
+> > one line for NMI, 8 external pins and 32 GPIO pins (out of 123)
+> > to be used as IRQ lines.
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>
+> Thanks for your patch!
+>
+> > --- /dev/null
+> > +++ b/drivers/irqchip/irq-renesas-rzg2l.c
+> > @@ -0,0 +1,447 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/*
+> > + * Renesas RZ/G2L IRQC Driver
+> > + *
+> > + * Copyright (C) 2022 Renesas Electronics Corporation.
+> > + *
+> > + * Author: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > + */
+> > +
+> > +#include <linux/clk.h>
+> > +#include <linux/err.h>
+> > +#include <linux/io.h>
+> > +#include <linux/irqchip.h>
+> > +#include <linux/irqdomain.h>
+> > +#include <linux/of_address.h>
+> > +#include <linux/reset.h>
+> > +#include <linux/spinlock.h>
+> > +
+> > +#define IRQC_IRQ_START                 1
+> > +#define IRQC_IRQ_COUNT                 8
+> > +#define IRQC_TINT_START                        9
+>
+> = IRQC_IRQ_START + IRQC_IRQ_COUNT
+>
+OK
 
-Lorenzo
+> > +#define IRQC_TINT_COUNT                        32
+> > +#define IRQC_NUM_IRQ                   41
+>
+> = IRQC_TINT_START + IRQC_TINT_COUNT
+>
+OK.
+
+> Should these be in a DT binding header file?
+>
+> Combining all types into a single linear number space makes it hard
+> to extend the range, when reusing for an SoC that supports more
+> interrupt sources.
+>
+Or  DT data maybe?
+
+> > +static void rzg2l_irq_eoi(struct irq_data *d)
+> > +{
+> > +       struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
+> > +       unsigned int hw_irq = irqd_to_hwirq(d) - IRQC_IRQ_START;
+> > +       u16 bit = BIT(hw_irq);
+>
+> I guess you can just use u32?
+>
+OK, will do
+
+> > +       u32 reg;
+> > +
+> > +       reg = readl_relaxed(priv->base + ISCR);
+> > +       if (reg & bit)
+> > +               writel_relaxed(GENMASK(IRQC_IRQ_COUNT - 1, 0) & ~bit,
+>
+> As writes to the unused upper bits are ignored, you can drop the
+> masking with GENMASK(IRQC_IRQ_COUNT - 1, 0), and be prepared for more
+> interrupt sources.
+>
+Agreed.
+
+> > +                              priv->base + ISCR);
+> > +}
+> > +
+> > +static void rzg2l_tint_eoi(struct irq_data *d)
+> > +{
+> > +       struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
+> > +       unsigned int hw_irq = irqd_to_hwirq(d);
+>
+> "irqd_to_hwirq(d) - IRQC_TINT_START", for symmetry with
+> rzg2l_irq_eoi()?
+>
+OK.
+
+> > +       u32 bit = BIT(hw_irq - IRQC_TINT_START);
+> > +       u32 reg;
+> > +
+> > +       reg = readl_relaxed(priv->base + TSCR);
+> > +       if (reg & bit)
+> > +               writel_relaxed(GENMASK(IRQC_TINT_COUNT - 1, 0) & ~bit,
+>
+> Drop the masking with all-ones?
+>
+You mean instead of a mask just use the reg instead?
+
+Cheers,
+Prabhakar
+
+> > +                              priv->base + TSCR);
+> > +}
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
