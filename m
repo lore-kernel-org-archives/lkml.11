@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56FEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD38C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378895AbiD2QKG (ORCPT
+        id S1359081AbiD2QKJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:10:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45014 "EHLO
+        Fri, 29 Apr 2022 12:10:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378837AbiD2QJl (ORCPT
+        with ESMTP id S1378835AbiD2QJl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Apr 2022 12:09:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC494B42CE
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:06:22 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3689AD119
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:06:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48967622BD
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 16:06:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A53B2C385B5;
-        Fri, 29 Apr 2022 16:06:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55892622B5
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 16:06:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5661FC385A7;
+        Fri, 29 Apr 2022 16:06:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651248382;
-        bh=Cv+X7Zdka2XOX7Mgz9T3y/uOxQEoK1knJUHHmSETKsc=;
+        s=k20201202; t=1651248380;
+        bh=zphIDwAlOx4AraOOpD9qnDgF92vp43HYR2ijqIVQ3FE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OeUWgT8Bebj61lLMzYOybudEYAPP416ZFwi2by3/sqdXehXM8B3PR+EgS0ElzydKm
-         ltvsnJ+sVutojuyVzT2lT3qRrSdu6Pt61+ittcHfkCIMc5hzw7H5r4ncXI6r6QSZ8b
-         d7Zi9aRrAQVXX6VMPvLejfhjtRGtYNt9zU/wDOOtHmiK9EDzFf/rBPSWOZMKQJnpA3
-         SBvNrVDZ3aXHO4G/dxIRuR2k1VNpkSgd5PQ33DenBsUpt4K+eRk2kgvEExNzArueRt
-         LE3TK3L5g39O2wCMnmxZfagNnaCWA57qO24mahionexdjEIiIfZlcCuUKEnqfPh9g7
-         R9s6LEdO6JOTA==
+        b=IiFOBefnCpp/En8xQTvZ0PLkn4TvB7+NX9zVBmzzidQwa0t3tkv9AgZ1NQpB9JR7d
+         mJka6SIIwY1hWbFWN3GVy/JpTe9PxpFvQef+d1fzlQDCgMje+Vpt85XSm5VDdp0gmI
+         5BhajQSaRmBs0azcQzuHhDVfQ1IR7o6m3XYFgccVHE7zZCbc0QgdJys1doeu9Fphz+
+         ImFemJCNSgn+cNRgpkCqFgw8vNix1/hFQnvOylQs+KN0nTNgEi9Ds3QmSl52mpBkxQ
+         Gf4fjkhYSgmL3b5fgtu3BSC8CCNGJCRFGFhm8yoKwYOuvJe1wcPoGGPPcdU93KWqVF
+         fKT+4lYmnxUhQ==
 From:   sj@kernel.org
 To:     akpm@linux-foundation.org
 Cc:     linux-damon@amazon.com, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org, SeongJae Park <sj@kernel.org>
-Subject: [PATCH 11/14] mm/damon/sysfs: support online inputs update
-Date:   Fri, 29 Apr 2022 16:06:03 +0000
-Message-Id: <20220429160606.127307-12-sj@kernel.org>
+Subject: [PATCH 09/14] mm/damon/sysfs: use enum for 'state' input handling
+Date:   Fri, 29 Apr 2022 16:06:01 +0000
+Message-Id: <20220429160606.127307-10-sj@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220429160606.127307-1-sj@kernel.org>
 References: <20220429160606.127307-1-sj@kernel.org>
@@ -51,184 +51,124 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: SeongJae Park <sj@kernel.org>
 
-Currently, DAMON sysfs interface doesn't provide a way for adjusting
-DAMON input parameters while it is turned on.  Therefore, users who want
-to reconfigure DAMON need to stop DAMON and restart.  This means all the
-monitoring results that accumulated so far, which could be useful,
-should be flushed.  This would be inefficient for many cases.
+DAMON sysfs 'state' file handling code is using string literals in both
+'state_show()' and 'state_store()'.  This makes the code error prone and
+inflexible for future extensions.
 
-For an example, let's suppose a sysadmin was running a DAMON-based
-Operation Scheme to find memory regions not accessed for more than 5
-mins and page out the regions.  If it turns out the 5 mins threshold was
-too long and therefore the sysadmin wants to reduce it to 4 mins, the
-sysadmin should turn off DAMON, restart it, and wait for at least 4 more
-minutes so that DAMON can find the cold memory regions, even though
-DAMON was knowing there are regions that not accessed for 4 mins at the
-time of shutdown.
-
-This commit makes DAMON sysfs interface to support online DAMON input
-parameters updates by adding a new input keyword for the 'state' DAMON
-sysfs file, 'commit'.  Writing the keyword to the 'state' file while the
-corresponding kdamond is running makes the kdamond to read the sysfs
-file values again and update the DAMON context.
+To improve the sitaution, this commit defines possible input strings and
+'enum' for identifying each input keyword only once, and refactors the
+code to reuse those.
 
 Signed-off-by: SeongJae Park <sj@kernel.org>
 ---
- mm/damon/sysfs.c | 99 +++++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 90 insertions(+), 9 deletions(-)
+ mm/damon/sysfs.c | 72 +++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 62 insertions(+), 10 deletions(-)
 
 diff --git a/mm/damon/sysfs.c b/mm/damon/sysfs.c
-index 864a215ff809..23030611ae7d 100644
+index 0d6cb9b5bd5b..460af481189a 100644
 --- a/mm/damon/sysfs.c
 +++ b/mm/damon/sysfs.c
-@@ -2061,6 +2061,8 @@ enum damon_sysfs_cmd {
- 	DAMON_SYSFS_CMD_ON,
- 	/* @DAMON_SYSFS_CMD_OFF: Turn the kdamond off. */
- 	DAMON_SYSFS_CMD_OFF,
-+	/* @DAMON_SYSFS_CMD_COMMIT: Update kdamond inputs. */
-+	DAMON_SYSFS_CMD_COMMIT,
- 	/*
- 	 * @DAMON_SYSFS_CMD_UPDATE_SCHEMES_STATS: Update scheme stats sysfs
- 	 * files.
-@@ -2076,6 +2078,7 @@ enum damon_sysfs_cmd {
- static const char * const damon_sysfs_cmd_strs[] = {
- 	"on",
- 	"off",
-+	"commit",
- 	"update_schemes_stats",
- };
- 
-@@ -2194,6 +2197,39 @@ static int damon_sysfs_add_target(struct damon_sysfs_target *sys_target,
- 	return err;
+@@ -2053,6 +2053,32 @@ static bool damon_sysfs_ctx_running(struct damon_ctx *ctx)
+ 	return running;
  }
  
 +/*
-+ * Search a target in a context that corresponds to the sysfs target input.
-+ *
-+ * Return: pointer to the target if found, NULL if not found, or negative
-+ * error code if the search failed.
++ * enum damon_sysfs_cmd - Commands for a specific kdamond.
 + */
-+static struct damon_target *damon_sysfs_existing_target(
-+		struct damon_sysfs_target *sys_target, struct damon_ctx *ctx)
-+{
-+	struct pid *pid;
-+	struct damon_target *t;
++enum damon_sysfs_cmd {
++	/* @DAMON_SYSFS_CMD_ON: Turn the kdamond on. */
++	DAMON_SYSFS_CMD_ON,
++	/* @DAMON_SYSFS_CMD_OFF: Turn the kdamond off. */
++	DAMON_SYSFS_CMD_OFF,
++	/*
++	 * @DAMON_SYSFS_CMD_UPDATE_SCHEMES_STATS: Update scheme stats sysfs
++	 * files.
++	 */
++	DAMON_SYSFS_CMD_UPDATE_SCHEMES_STATS,
++	/*
++	 * @NR_DAMON_SYSFS_CMDS: Total number of DAMON sysfs commands.
++	 */
++	NR_DAMON_SYSFS_CMDS,
++};
 +
-+	if (ctx->ops.id == DAMON_OPS_PADDR) {
-+		/* Up to only one target for paddr could exist */
-+		damon_for_each_target(t, ctx)
-+			return t;
-+		return NULL;
-+	}
++/* Should match with enum damon_sysfs_cmd */
++static const char * const damon_sysfs_cmd_strs[] = {
++	"on",
++	"off",
++	"update_schemes_stats",
++};
 +
-+	/* ops.id should be DAMON_OPS_VADDR or DAMON_OPS_FVADDR */
-+	pid = find_get_pid(sys_target->pid);
-+	if (!pid)
-+		return ERR_PTR(-EINVAL);
-+	damon_for_each_target(t, ctx) {
-+		if (t->pid == pid) {
-+			put_pid(pid);
-+			return t;
-+		}
-+	}
-+	put_pid(pid);
-+	return NULL;
-+}
-+
- static int damon_sysfs_set_targets(struct damon_ctx *ctx,
- 		struct damon_sysfs_targets *sysfs_targets)
+ static ssize_t state_show(struct kobject *kobj, struct kobj_attribute *attr,
+ 		char *buf)
  {
-@@ -2204,8 +2240,15 @@ static int damon_sysfs_set_targets(struct damon_ctx *ctx,
- 		return -EINVAL;
+@@ -2066,7 +2092,9 @@ static ssize_t state_show(struct kobject *kobj, struct kobj_attribute *attr,
+ 	else
+ 		running = damon_sysfs_ctx_running(ctx);
  
- 	for (i = 0; i < sysfs_targets->nr; i++) {
--		err = damon_sysfs_add_target(
--				sysfs_targets->targets_arr[i], ctx);
-+		struct damon_sysfs_target *st = sysfs_targets->targets_arr[i];
-+		struct damon_target *t = damon_sysfs_existing_target(st, ctx);
-+
-+		if (IS_ERR(t))
-+			return PTR_ERR(t);
-+		if (!t)
-+			err = damon_sysfs_add_target(st, ctx);
-+		else
-+			err = damon_sysfs_set_regions(t, st->regions);
- 		if (err)
- 			return err;
- 	}
-@@ -2308,6 +2351,48 @@ static int damon_sysfs_upd_schemes_stats(struct damon_sysfs_kdamond *kdamond)
+-	return sysfs_emit(buf, "%s\n", running ? "on" : "off");
++	return sysfs_emit(buf, "%s\n", running ?
++			damon_sysfs_cmd_strs[DAMON_SYSFS_CMD_ON] :
++			damon_sysfs_cmd_strs[DAMON_SYSFS_CMD_OFF]);
+ }
+ 
+ static int damon_sysfs_set_attrs(struct damon_ctx *ctx,
+@@ -2324,23 +2352,47 @@ static int damon_sysfs_update_schemes_stats(struct damon_sysfs_kdamond *kdamond)
  	return 0;
  }
  
-+static inline bool damon_sysfs_kdamond_running(
-+		struct damon_sysfs_kdamond *kdamond)
-+{
-+	return kdamond->damon_ctx &&
-+		damon_sysfs_ctx_running(kdamond->damon_ctx);
-+}
-+
 +/*
-+ * damon_sysfs_commit_input() - Commit user inputs to a running kdamond.
++ * damon_sysfs_handle_cmd() - Handle a command for a specific kdamond.
++ * @cmd:	The command to handle.
 + * @kdamond:	The kobject wrapper for the associated kdamond.
 + *
-+ * If the sysfs input is wrong, the kdamond will be terminated.
++ * This function handles a DAMON sysfs command for a kdamond.
++ *
++ * Return: 0 on success, negative error code otherwise.
 + */
-+static int damon_sysfs_commit_input(struct damon_sysfs_kdamond *kdamond)
++static int damon_sysfs_handle_cmd(enum damon_sysfs_cmd cmd,
++		struct damon_sysfs_kdamond *kdamond)
 +{
-+	struct damon_ctx *ctx = kdamond->damon_ctx;
-+	struct damon_sysfs_context *sys_ctx;
-+	int err = 0;
-+
-+	if (!damon_sysfs_kdamond_running(kdamond))
-+		return -EINVAL;
-+	/* TODO: Support multiple contexts per kdamond */
-+	if (kdamond->contexts->nr != 1)
-+		return -EINVAL;
-+
-+	sys_ctx = kdamond->contexts->contexts_arr[0];
-+
-+	err = damon_select_ops(ctx, sys_ctx->ops_id);
-+	if (err)
-+		return err;
-+	err = damon_sysfs_set_attrs(ctx, sys_ctx->attrs);
-+	if (err)
-+		return err;
-+	err = damon_sysfs_set_targets(ctx, sys_ctx->targets);
-+	if (err)
-+		return err;
-+	err = damon_sysfs_set_schemes(ctx, sys_ctx->schemes);
-+	if (err)
-+		return err;
-+	return err;
++	switch (cmd) {
++	case DAMON_SYSFS_CMD_ON:
++		return damon_sysfs_turn_damon_on(kdamond);
++	case DAMON_SYSFS_CMD_OFF:
++		return damon_sysfs_turn_damon_off(kdamond);
++	case DAMON_SYSFS_CMD_UPDATE_SCHEMES_STATS:
++		return damon_sysfs_update_schemes_stats(kdamond);
++	default:
++		break;
++	}
++	return -EINVAL;
 +}
 +
- /*
-  * damon_sysfs_cmd_request_callback() - DAMON callback for handling requests.
-  * @c:	The DAMON context of the callback.
-@@ -2330,6 +2415,9 @@ static int damon_sysfs_cmd_request_callback(struct damon_ctx *c)
- 	case DAMON_SYSFS_CMD_UPDATE_SCHEMES_STATS:
- 		err = damon_sysfs_upd_schemes_stats(kdamond);
- 		break;
-+	case DAMON_SYSFS_CMD_COMMIT:
-+		err = damon_sysfs_commit_input(kdamond);
-+		break;
- 	default:
- 		break;
- 	}
-@@ -2414,13 +2502,6 @@ static int damon_sysfs_turn_damon_off(struct damon_sysfs_kdamond *kdamond)
- 	 */
- }
+ static ssize_t state_store(struct kobject *kobj, struct kobj_attribute *attr,
+ 		const char *buf, size_t count)
+ {
+ 	struct damon_sysfs_kdamond *kdamond = container_of(kobj,
+ 			struct damon_sysfs_kdamond, kobj);
+-	ssize_t ret;
++	enum damon_sysfs_cmd cmd;
++	ssize_t ret = -EINVAL;
  
--static inline bool damon_sysfs_kdamond_running(
--		struct damon_sysfs_kdamond *kdamond)
--{
--	return kdamond->damon_ctx &&
--		damon_sysfs_ctx_running(kdamond->damon_ctx);
--}
--
- /*
-  * damon_sysfs_handle_cmd() - Handle a command for a specific kdamond.
-  * @cmd:	The command to handle.
+ 	if (!mutex_trylock(&damon_sysfs_lock))
+ 		return -EBUSY;
+-	if (sysfs_streq(buf, "on"))
+-		ret = damon_sysfs_turn_damon_on(kdamond);
+-	else if (sysfs_streq(buf, "off"))
+-		ret = damon_sysfs_turn_damon_off(kdamond);
+-	else if (sysfs_streq(buf, "update_schemes_stats"))
+-		ret = damon_sysfs_update_schemes_stats(kdamond);
+-	else
+-		ret = -EINVAL;
++	for (cmd = 0; cmd < NR_DAMON_SYSFS_CMDS; cmd++) {
++		if (sysfs_streq(buf, damon_sysfs_cmd_strs[cmd])) {
++			ret = damon_sysfs_handle_cmd(cmd, kdamond);
++			break;
++		}
++	}
+ 	mutex_unlock(&damon_sysfs_lock);
+ 	if (!ret)
+ 		ret = count;
 -- 
 2.25.1
 
