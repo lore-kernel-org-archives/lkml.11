@@ -2,78 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 867B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:02:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 816A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:08:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377967AbiD2PFp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 11:05:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44748 "EHLO
+        id S238977AbiD2PL2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 11:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377483AbiD2PFn (ORCPT
+        with ESMTP id S229958AbiD2PL0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 11:05:43 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2691CCD67E;
-        Fri, 29 Apr 2022 08:02:25 -0700 (PDT)
+        Fri, 29 Apr 2022 11:11:26 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC88ED3AEF
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 08:08:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=FWCGga2NwFtl2WJVRbR0+x5nY0E6GFEiFEIQiEh0aDI=; b=nd0C0YhSkMyx/VBQxvNGDviF35
-        b4hcz/MDiayfv5OMOwHlMLqrdxLyiopVPrSBCUV3hcRluZw2OXonnN/JE7Xec2kXWDlJJKfxpE5Vr
-        JY6z1zQFxlB9DeUZB7BShcOFFqfzvowQiekvk8OGmTXQZLSrl4uOQbIwfwZcABkvc0Jd3yneVopit
-        jVz9FcQM+iPF1WUBDfQFMSdkt0Nr1Bf2a/4fdSmkCrbZ5Ic9zy84ZNxcGXqPwpIpIhdtnb936B410
-        cI2AJ/uPCj1pCUrbDhnJFi18oyOScAjfpoLCGyep1fytQ5prukL7IiVtTC5Lx0xrSL+ozLQOceWa9
-        6wHE0rkQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nkS8H-00BhoU-W1; Fri, 29 Apr 2022 15:02:10 +0000
-Date:   Fri, 29 Apr 2022 08:02:09 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        kernel test robot <lkp@intel.com>,
-        Jens Frederich <jfrederich@gmail.com>,
-        Jon Nettleton <jon.nettleton@gmail.com>,
-        linux-staging@lists.linux.dev,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
-        Matthew Wilcox <willy@infradead.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        linux-fbdev@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Changcheng Deng <deng.changcheng@zte.com.cn>
-Subject: Re: [RFC PATCH v4 11/11] fbdev: Make registered_fb[] private to
- fbmem.c
-Message-ID: <Ymv98Y85rW/2r9m8@infradead.org>
-References: <20220429084253.1085911-1-javierm@redhat.com>
- <20220429084253.1085911-12-javierm@redhat.com>
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=mi2TSvZo2f8k0MBpdpxuDkCmKUSp6wslpH3OmUD8Npk=; b=RPRx8sqJAZRWMU7YVOMFNszmjQ
+        y9R84HG9f1ZYO7Vk+JYtc5CcB7rzNE0ICJ3gvIhUeLBrrvdCPjzUE6zG5cnMMwAVAC/wyZC9XH0Jj
+        EmRFZH2fzKBZaoTjyAWKS7shq3kkeaIIRivEEslTub00NBUnCdno3r7Ehednvg2iQWBWxchf+QMMz
+        qAJfHaBBo6umVnZQt8UOB49KUSiRJ0jQAd7k0cXgUuoG7lLj/eVGc+H2mVk3tF4HE2/E+07RkHbWL
+        uAsP5yH8E8QWJ5OTl+MB2t2X9eGhGMXVRRDq9vwX9qKnagI3kYbYM3FPkSE/yPmsgYgPJN3idHD8F
+        o6ohEQ8w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58438)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nkSDt-0004A4-2p; Fri, 29 Apr 2022 16:07:56 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nkSDp-00021e-0g; Fri, 29 Apr 2022 16:07:53 +0100
+Date:   Fri, 29 Apr 2022 16:07:52 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: Re: [PATCH 2/2] ARM: Clamp MAX_DMA_ADDRESS to 32-bit
+Message-ID: <Ymv/SIqErX3bm1bG@shell.armlinux.org.uk>
+References: <20220324175417.1014562-1-f.fainelli@gmail.com>
+ <20220324175417.1014562-3-f.fainelli@gmail.com>
+ <CAMuHMdWyDLoOit-VYPzLXxLz6W300xpo_wrqj=Pr9sZSwk_OwQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220429084253.1085911-12-javierm@redhat.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <CAMuHMdWyDLoOit-VYPzLXxLz6W300xpo_wrqj=Pr9sZSwk_OwQ@mail.gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 10:42:53AM +0200, Javier Martinez Canillas wrote:
-> From: Daniel Vetter <daniel.vetter@ffwll.ch>
+On Thu, Mar 24, 2022 at 09:31:56PM +0100, Geert Uytterhoeven wrote:
+> Hi Florian,
 > 
-> Well except when the olpc dcon fbdev driver is enabled, that thing
-> digs around in there in rather unfixable ways.
+> On Thu, Mar 24, 2022 at 6:54 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
+> > MAX_DMA_ADDRESS is a virtual address, therefore it needs to fit within a
+> > 32-bit unsigned quantity. Platforms defining a DMA zone size in
+> > their machine descriptor can easily overflow this quantity depending on
+> > the DMA zone size and/or the PAGE_OFFSET setting.
+> >
+> > In most cases this is harmless, however in the case of a
+> > CONFIG_DEBUG_VIRTUAL enabled, __virt_addr_valid() will be unable to
+> > return that MAX_DMA_ADDRESS is valid because the value passed to that
+> > function is an unsigned long which has already overflowed.
+> >
+> > Fixes: e377cd8221eb ("ARM: 8640/1: Add support for CONFIG_DEBUG_VIRTUAL")
+> > Fixes: 2fb3ec5c9503 ("ARM: Replace platform definition of ISA_DMA_THRESHOLD/MAX_DMA_ADDRESS")
+> > Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 > 
-> Cc oldc_dcon maintainers as fyi.
+> > --- a/arch/arm/include/asm/dma.h
+> > +++ b/arch/arm/include/asm/dma.h
+> > @@ -8,10 +8,12 @@
+> >  #ifndef CONFIG_ZONE_DMA
+> >  #define MAX_DMA_ADDRESS        0xffffffffUL
+> >  #else
+> > +#include <linux/minmax.h>
+> >  #define MAX_DMA_ADDRESS        ({ \
+> >         extern phys_addr_t arm_dma_zone_size; \
+> >         arm_dma_zone_size && arm_dma_zone_size < (0x10000000 - PAGE_OFFSET) ? \
 > 
-> v2: I typoed the config name (0day)
+> "arm_dma_zone_size < (0x10000000 - PAGE_OFFSET)" looks
+> like an overflow-avoiding version of
+> "PAGE_OFFSET + arm_dma_zone_size < 0x10000000".
+> However, PAGE_OFFSET is always larger than 0x10000000,
+> so "0x10000000 - PAGE_OFFSET" is a rather large number?
 
-We should not keep broken code and/or core code ifdefs around for
-staging drivers.  Just disable the driver if it is in such a bad
-state.
+This, to me, looks like it should have been:
+
+	arm_dma_zone_size && arm_dma_zone_size < (0x100000000 - PAGE_OFFSET) ? \
+
+since that is the only thing that would make sense - it's the virtual
+space remaining between PAGE_OFFSET and the top of addressable space.
+
+However, 0x100000000 isn't correct - since the vectors live at
+0xffff0000, and we have the vmalloc space etc.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
