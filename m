@@ -2,494 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A44C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 00:52:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA1D6C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 00:52:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353142AbiD2AzX (ORCPT
+        id S1353349AbiD2Azc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 20:55:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33664 "EHLO
+        Thu, 28 Apr 2022 20:55:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237318AbiD2AzW (ORCPT
+        with ESMTP id S237318AbiD2Az3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 20:55:22 -0400
-X-Greylist: delayed 1343 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Apr 2022 17:52:05 PDT
-Received: from skyrocket.fabmicro.ru (skyrocket.fabmicro.ru [217.116.57.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D400887B0
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 17:52:05 -0700 (PDT)
-Received: from mail.fabmicro.ru (skyrocket.fabmicro.ru [217.116.57.130])
-        by skyrocket.fabmicro.ru (8.14.9/8.14.9) with ESMTP id 23T0SfdW045826;
-        Fri, 29 Apr 2022 00:28:41 GMT
-        (envelope-from rz@fabmicro.ru)
+        Thu, 28 Apr 2022 20:55:29 -0400
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10084.outbound.protection.outlook.com [40.107.1.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB98BBB928;
+        Thu, 28 Apr 2022 17:52:12 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aLmBQKgn7qVIrip+3WZHh3ekPXUf2YJbZVPxBwcWF3146O3/xVkRSx5ZJY+fqw5rUBK3Yknck5N+Ngh0yWd2Q3hgXKQDg6zjGvO4g4jvqmHKVKv4aK3UXw9jSxZ8fXMDWFN12CUGiwBFn6CALhVvAKuNKpOPmkloCVA/xFxryu+J/RwgsV5z/5uLgBXvPHQcVzGIgBG+aDgPhQUOMl6Jd95INhpLYdlj65HkydEdXsUPdz6Xpgb9u4+TdFLH5yUqt/Ijy8Rs2LRNUWNFFWb2wKb7O0mQVoe1vqRT+gxXGSjho+ghIZvbHDy/eJULcgRYkz3ctwwp0ZhMfH0hIXwG1w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MoDdzcGg2LBSHO5DoIeVww3gVqxZIYrtydNICycIwM0=;
+ b=oSIN0f5TQgbRqV9uQ4Oc6Wedv5iC7z1/Y5TxLdY6XCoZ02GvHyYgHoJz5QRPisN4hEKF0yBPP2XwkPx1ocFQTYYxppBcH/58C4XVvRh2IftTFskmiltzFNfGT4EAqxlgfsHE5BeeFgnJT/hiRPgqIBFM/bWqQcfBO79dgbfmWr0a0aZUoXYV+34ZaidN2iiM+dli9sXMSPBiJBKRWMyZEXaFxLP39WX/wn+9z3ZqRUdgTOmeWClZyx4NyjObo2i+Wea0+L/8dkGlBU6MnM4Fnf0B06Kl3DXQ9n3IB0uuQYxunWCHpmK1TelxMPXbFIWwPJ6KZ8L72J04pLst4bCLvw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MoDdzcGg2LBSHO5DoIeVww3gVqxZIYrtydNICycIwM0=;
+ b=COTvCkET8S7Kk9v3449QZS4BBYtf/tRKGC8ofmqtfs1biR76vV/KYA9lIX5PBdIRokQBZ65GW3SBMCf+uLwfqcJlR+wok1azV89IgoTRQAX/8ocT4NFh+8q9sz1hDxGmFVwwqGbQ9T5gls4UN//p3oeMZqML+KRwDXkkIHXXOho=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by DB8PR04MB6619.eurprd04.prod.outlook.com (2603:10a6:10:108::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.23; Fri, 29 Apr
+ 2022 00:52:08 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::fc66:662f:2a82:1420]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::fc66:662f:2a82:1420%5]) with mapi id 15.20.5206.014; Fri, 29 Apr 2022
+ 00:52:08 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com,
+        linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     devicetree@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH V2 0/2] remoteproc: add i.MX93 support
+Date:   Fri, 29 Apr 2022 08:53:44 +0800
+Message-Id: <20220429005346.2108279-1-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR01CA0004.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:191::22) To DU0PR04MB9417.eurprd04.prod.outlook.com
+ (2603:10a6:10:358::11)
 MIME-Version: 1.0
-Date:   Fri, 29 Apr 2022 05:28:41 +0500
-From:   Ruslan Zalata <rz@fabmicro.ru>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Jean Delvare <jdelvare@suse.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH v2] hwmon: (sun4i-lradc) Add driver for LRADC found on
- Allwinner A13/A20 SoC
-In-Reply-To: <f79a8edf-36d4-02af-da8f-32b4e491bd47@roeck-us.net>
-References: <20220428210906.29527-1-rz@fabmicro.ru>
- <f79a8edf-36d4-02af-da8f-32b4e491bd47@roeck-us.net>
-User-Agent: Roundcube Webmail/1.4.3
-Message-ID: <e0b57c7587dded38a92411994f353b3d@fabmicro.ru>
-X-Sender: rz@fabmicro.ru
-Organization: Fabmicro, LLC.
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: bb215e97-2171-44dc-c2c4-08da297a7caa
+X-MS-TrafficTypeDiagnostic: DB8PR04MB6619:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <DB8PR04MB661932BA21CA84AA75E1C7D2C9FC9@DB8PR04MB6619.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /WHVkmIhmTGwz72/DUU6aLKZqR+6Lygv0i2wcknPCWVcv47KBPBpYAsaof9IqR5X/VwmfmUWYNALegtD2EhfK1Du4OBzVj4G1fYjb5dELgcYepWvZ5tYkTDBPSVNyzyIBZICv0AM6WG7MBHQiIfb2IHuy0gvwS0wLldVoKzKCuQSfTT8s0WAYy5meOTV+scz/xXG0HetgR+Owdlbs1OxYGK/wwDwvieB10zb7GntImieSpV2GNfGeoMqQa0lVs5/1fXi85s5KkTBWoVPVG+gfVk2xBAb+KPeLDLRWM/5HAHOEnQZ1+8sX4yL6nXnlO8n0RQO0gZjDR15fGL8i3g4vYMofPBlN2BKrqy73gYKxkUKfTWXFTndBXqYZyMzzD8KmVLdk00ngByXosoBz9C+Ae9aoVmFNJoONuqDfWQEF+KtfKYZEksjY6YMW/KHqAQ+33ahsFG4cSfGYWSpwW0t6a/1hn+xlF52ZmtPU8OyAckgPs8EwHXuJVd+PheXkiFG9Bb9eOkdwAZucfVmSpFy13IrzArE2f778841oJrbTzy9uWVzL7NcgoDVaFPdz6jzs0Eid4ert6Y4t5A4c+Y6sZoTjhXEIlDkjGbUhrXfu6WXuDs2hT47G8F5avfo2tmHWWsHEbzQkR5INeSohTYi3ogQwMJzQjkivW1R2dMHNdt73b51GPsrqbVJgJZ6nMXq8PcXjJqCFNz/8yggyJmx/Qtrtye367xr5QjaaElWplc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(1076003)(4744005)(6512007)(2616005)(5660300002)(86362001)(316002)(6486002)(7416002)(508600001)(38100700002)(38350700002)(8936002)(4326008)(6506007)(52116002)(6666004)(186003)(66946007)(66556008)(66476007)(83380400001)(8676002)(2906002)(921005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?t2tuLST27jwt/iJK3IpjvSF+PEjmCneD4mjYBNveq5X5NDZk0seXwfwJTaed?=
+ =?us-ascii?Q?D0RH1zybu7A6kqs+9Ozhv0B2nI/Dgq/FPRjDQ7vtyhw/4ZYPQL079YR6cYVM?=
+ =?us-ascii?Q?tpr5qqyTCQnCjwTmWY9mNtMW3H19Pk/7ELWc2zHIfdnD5UqRfSsus9+A/GuQ?=
+ =?us-ascii?Q?eNoi7+LF4scEOr0yVRhlcAndBtaReDlFs1HC4CBGZ/9FM60pvF8xO/PXLnJg?=
+ =?us-ascii?Q?txNtdOAG9fxarbuvHB11ELlgPTOJk2FTYrkcrx3dyHEzzUZxKVTtvgEAOIW6?=
+ =?us-ascii?Q?CiLp28Ji4dFWEXanM/EFd9FUlWYYIexVHVy/wmt8sbAczZbhxh7JvRkjXhtY?=
+ =?us-ascii?Q?e6if/gN4XZwKenAPj6UeSJ9ay+ypoXBqVd5nOV3dmW3RubtryEZWI9knX7Et?=
+ =?us-ascii?Q?5vW59XlBq5Wya2Um/2MUOVQZgxBZe4ofOjRJ7tq+VzusktJu96coQUUa9mbi?=
+ =?us-ascii?Q?IZBGHQZkA4bGMe8ckoICHwqy6VTuHk1fgQWSV+yVl/aKDJVJRE3y82GTGuqK?=
+ =?us-ascii?Q?if2E5v0meXMnXxP7euIvdnp34Mp6uHuQaps3hWCjOIazZmQk0ZDBD0yGs7/8?=
+ =?us-ascii?Q?ydxBgPH0T9VPMz+RKhEBvITBvhOycAlEkfeiGbEd6HhmT7D4bAFbByjkuFgm?=
+ =?us-ascii?Q?uvZ0OKMe7YC5yzwuWo4SmAGTn5tgIHX8fvmhzrsD6cSojaiFJDwXLHgU2UWY?=
+ =?us-ascii?Q?5irr7DZVB18qVkZWqY1Cv65pXec3thnAUrG53kMRaL7zPI3ABv71+DB6L6Kz?=
+ =?us-ascii?Q?F71BQ+KrpxsbvyieQ3bDfx2M5rZYN5EdstK2X6q83mBMYi4bvIfb4y6GNEu7?=
+ =?us-ascii?Q?vus0wNg/PgMtLwzVsgDnH/2ydDE72kYjhhTPUNEY1KCuuCYEpnBMRqOJX6Ss?=
+ =?us-ascii?Q?mg6y4sqgCJdGsQ2hHgaL/uDcRZMr9FUOTNttgs6W2F1IoecfGaUxGBzRZpbu?=
+ =?us-ascii?Q?zb17BiWvYjyRVdUxHzEelE1jl3+YXCz0xXUQIIaTkN9WNdSXgyQ+MtgX089k?=
+ =?us-ascii?Q?Wg47VL9L6c9z6sUqaf/ONuqsOxoe2oj8Fy/NGwC8e2JMeQYTZjvCTYSly8Qn?=
+ =?us-ascii?Q?OfYT+r1gAks2reZxuXWtTgC6o5p18CQrKGlJOGVx2AJ3IjGm5lzByHiBax95?=
+ =?us-ascii?Q?ffFcbSpxv0zclb16X6J7f9/ZnbTPWNimABkLJFFTtfGJOZh/5QHoWQ9VUDcK?=
+ =?us-ascii?Q?pbI+ZBkiQqjdV9DGmhy4Mjsn9JHPuzMUBF+clvTwItZ2hdFfz64sdWCcYemK?=
+ =?us-ascii?Q?t6DDUas/RyEh+DHpz46098xWqTPIVDGxI70d1JaM3VgkbK/JY+RWU4R7QwBI?=
+ =?us-ascii?Q?WRFCtgDcfe7rCHsTzeCGgNxm/+/Loynaujia4zHiblcuZRt9aU7xFbwKVCQU?=
+ =?us-ascii?Q?JYEyNBCvBjE0jEeS6sSpWWCxfOKndxa2K32G/3OJ/8PFAlGBZk9tpfVdz3QJ?=
+ =?us-ascii?Q?/AV9R8EUyauS09t9Uc716eL96bF896FuRucQCesx1c3LxOv/Bx9AwPj6ac78?=
+ =?us-ascii?Q?bFmgxCB2fBqU3ImIVe0/FukuXhk2UjLTsz9a+a9GcfDMKxMyYoEH8Yl+2JgZ?=
+ =?us-ascii?Q?2SVtLljXMcnTMpmFxtgnD6ePbf3HqqyHyweA+TKHrhBcVPODuh1qd5tB0u55?=
+ =?us-ascii?Q?hS2lC3R+fXjV6lH2Z6h7PUMnftnrKV4PQnkU3fTkL/Jh5CbcP6U7kxWR/oj8?=
+ =?us-ascii?Q?onqinGbbzFD2FGT5XZkjlNJwHSb53iY8WgsWbGe7uTF1YWXNzwiIRzP2b+92?=
+ =?us-ascii?Q?V8Swu8F3fQ=3D=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bb215e97-2171-44dc-c2c4-08da297a7caa
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2022 00:52:08.5517
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Dg7NvSHNIqaSAS/T33lc/XGZ+PlZ6bt0crMLZmXtPVckOwgAinx5kQpToXYHKcT+FjmQafzNl/KlsVcb24apRg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6619
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thank you Guenter for your valuable time.
+From: Peng Fan <peng.fan@nxp.com>
 
-I have added update_interval option (it's in ms units, right?) and fixed 
-all other issues you pointed to. Will test it on real hardware and send 
-third version of the patch for review.
+V2:
+ CC dt maintainers
+ Reorder compatible strings in alphabetical order in patch 1
 
-Regarding IRQ. Alternatively the driver would need to sit and poll 
-conversion ready bit in a loop which might cause a much worse load on 
-system, is not it ? Anyway, the real problem with this piece of hardware 
-is that there's no "conversion ready bit" provided, the only way to know 
-data ready status is to receive an interrupt.
+i.MX93 features a general purpose M33 core, support in with this patchset.
 
-I think it still needs a semaphore/seqlock to synchronize conversions 
-and reads. I.e. two consequent reads should not return same old value. 
-Although it's not an issue in my case, but could be a problem for 
-others.
+Peng Fan (2):
+  dt-bindings: remoteproc: imx_rproc: support i.MX93
+  remoteproc: imx_rproc: support i.MX93
 
----
-Regards,
-Ruslan.
+ .../bindings/remoteproc/fsl,imx-rproc.yaml    |  9 ++---
+ drivers/remoteproc/imx_rproc.c                | 33 +++++++++++++++++++
+ 2 files changed, 38 insertions(+), 4 deletions(-)
 
-Fabmicro, LLC.
+-- 
+2.25.1
 
-On 2022-04-29 02:30, Guenter Roeck wrote:
-> On 4/28/22 14:09, Ruslan Zalata wrote:
->> Some Allwinner SoCs like A13, A20 or T2 are equipped with two-channel
->> low rate (6 bit) ADC that is often used for extra keys. There's a 
->> driver
->> for that already implementing standard input device, but it has these
->> limitations: 1) it cannot be used for general ADC data equisition, and
-> 
-> acquisition
-> 
->> 2) it uses only one LRADC channel of two available.
->> 
->> This driver provides basic hwmon interface to both channels of LRADC 
->> on
->> such Allwinner SoCs.
->> 
->> Signed-off-by: Ruslan Zalata <rz@fabmicro.ru>
-> 
-> Ok, next phase of review.
-> 
-> 
->> ---
->>   MAINTAINERS                       |   6 +
->>   drivers/hwmon/Kconfig             |  13 ++
->>   drivers/hwmon/Makefile            |   1 +
->>   drivers/hwmon/sun4i-lradc-hwmon.c | 280 
->> ++++++++++++++++++++++++++++++
-> 
-> Needs documentation in Documentation/hwmon/sun4i-lradc-hwmon.rst,
-> and don't forget to add it to Documentation/hwmon/index.rst.
-> 
->>   4 files changed, 300 insertions(+)
->>   create mode 100644 drivers/hwmon/sun4i-lradc-hwmon.c
->> 
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index 5e8c2f61176..d9c71e94133 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -18861,6 +18861,12 @@ S:	Maintained
->>   
->> F:	Documentation/devicetree/bindings/input/allwinner,sun4i-a10-lradc-keys.yaml
->>   F:	drivers/input/keyboard/sun4i-lradc-keys.c
->>   +SUN4I LOW RES ADC HWMON DRIVER
->> +M:	Ruslan Zalata <rz@fabmicro.ru>
->> +L:	linux-hwmon@vger.kernel.org
->> +S:	Maintained
->> +F:	drivers/hwmon/sun4i-lradc-hwmon.c
->> +
->>   SUNDANCE NETWORK DRIVER
->>   M:	Denis Kirjanov <kda@linux-powerpc.org>
->>   L:	netdev@vger.kernel.org
->> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
->> index 68a8a27ab3b..86776488a81 100644
->> --- a/drivers/hwmon/Kconfig
->> +++ b/drivers/hwmon/Kconfig
->> @@ -1691,6 +1691,19 @@ config SENSORS_SIS5595
->>   	  This driver can also be built as a module. If so, the module
->>   	  will be called sis5595.
->>   +config SENSORS_SUN4I_LRADC
->> +	tristate "Allwinner A13/A20 LRADC hwmon"
->> +	depends on ARCH_SUNXI && !KEYBOARD_SUN4I_LRADC
->> +	help
->> +	  Say y here to support the LRADC found in Allwinner A13/A20 SoCs.
->> +	  Both channels are supported.
->> +
->> +	  This driver can also be built as module. If so, the module
->> +	  will be called sun4i-lradc-hwmon.
->> +
->> +	  This option is not compatible with KEYBOARD_SUN4I_LRADC, one
-> 
-> only one of these
-> 
->> +	  of these must be used at a time.
->> +
->>   config SENSORS_SY7636A
->>   	tristate "Silergy SY7636A"
->>   	help
->> diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
->> index 8a03289e2aa..3e5dc902acf 100644
->> --- a/drivers/hwmon/Makefile
->> +++ b/drivers/hwmon/Makefile
->> @@ -187,6 +187,7 @@ obj-$(CONFIG_SENSORS_SMSC47M1)	+= smsc47m1.o
->>   obj-$(CONFIG_SENSORS_SMSC47M192)+= smsc47m192.o
->>   obj-$(CONFIG_SENSORS_SPARX5)	+= sparx5-temp.o
->>   obj-$(CONFIG_SENSORS_STTS751)	+= stts751.o
->> +obj-$(CONFIG_SENSORS_SUN4I_LRADC) += sun4i-lradc-hwmon.o
->>   obj-$(CONFIG_SENSORS_SY7636A)	+= sy7636a-hwmon.o
->>   obj-$(CONFIG_SENSORS_AMC6821)	+= amc6821.o
->>   obj-$(CONFIG_SENSORS_TC74)	+= tc74.o
->> diff --git a/drivers/hwmon/sun4i-lradc-hwmon.c 
->> b/drivers/hwmon/sun4i-lradc-hwmon.c
->> new file mode 100644
->> index 00000000000..8d5268b037b
->> --- /dev/null
->> +++ b/drivers/hwmon/sun4i-lradc-hwmon.c
->> @@ -0,0 +1,280 @@
->> +// SPDX-License-Identifier: GPL-2.0-or-later
->> +/*
->> + * Allwinner sun4i (A13/A20) LRADC hwmon driver
->> + *
->> + * Copyright (C) 2022 Fabmicro, LLC., Tyumen, Russia.
->> + * Copyright (C) 2022 Ruslan Zalata <rz@fabmicro.ru>
->> + */
->> +
->> +#include <linux/err.h>
->> +#include <linux/init.h>
->> +#include <linux/input.h>
->> +#include <linux/interrupt.h>
->> +#include <linux/module.h>
->> +#include <linux/of_platform.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/slab.h>
->> +#include <linux/hwmon.h>
->> +#include <linux/hwmon-sysfs.h>
-> 
-> Should not be needed.
-> 
->> +
->> +#define LRADC_CTRL	0x00
->> +#define LRADC_INTC	0x04
->> +#define LRADC_INTS	0x08
->> +#define LRADC_DATA0	0x0c
->> +#define LRADC_DATA1	0x10
->> +
->> +/* LRADC_CTRL bits */
->> +#define FIRST_CONVERT_DLY(x)	((x) << 24) /* 8 bits */
->> +#define CHAN_SELECT(x)		((x) << 22) /* 2 bits */
->> +#define CONTINUE_TIME_SEL(x)	((x) << 16) /* 4 bits */
->> +#define KEY_MODE_SEL(x)		((x) << 12) /* 2 bits */
->> +#define LEVELA_B_CNT(x)		((x) << 8)  /* 4 bits */
->> +#define HOLD_KEY_EN(x)		((x) << 7)
->> +#define HOLD_EN(x)		((x) << 6)
->> +#define LEVELB_VOL(x)		((x) << 4)  /* 2 bits */
->> +#define SAMPLE_RATE(x)		((x) << 2)  /* 2 bits */
->> +#define ENABLE(x)		((x) << 0)
->> +
->> +/* LRADC_INTC and LRADC_INTS bits */
->> +#define CHAN1_KEYUP_IRQ		BIT(12)
->> +#define CHAN1_ALRDY_HOLD_IRQ	BIT(11)
->> +#define CHAN1_HOLD_IRQ		BIT(10)
->> +#define CHAN1_KEYDOWN_IRQ	BIT(9)
->> +#define CHAN1_DATA_IRQ		BIT(8)
->> +#define CHAN0_KEYUP_IRQ		BIT(4)
->> +#define CHAN0_ALRDY_HOLD_IRQ	BIT(3)
->> +#define CHAN0_HOLD_IRQ		BIT(2)
->> +#define CHAN0_KEYDOWN_IRQ	BIT(1)
->> +#define CHAN0_DATA_IRQ		BIT(0)
->> +
->> +struct lradc_variant {
->> +	u32 bits;
->> +	u32 resolution;
->> +	u32 vref;
->> +};
->> +
->> +struct sun4i_lradc_data {
->> +	struct device *dev;
->> +	void __iomem *base;
->> +	const struct lradc_variant *variant;
->> +	struct mutex update_lock; /* atomic read and data updates */
->> +	u32 in[2];
->> +};
->> +
->> +struct lradc_variant variant_sun4i_a10_lradc = {
->> +	.bits = 0x3f,
->> +	.resolution = 63,
->> +	.vref = 2000000, /* Vref = 2.0V from SoC datasheet */
->> +};
->> +
->> +static int sun4i_lradc_read(struct device *dev, enum 
->> hwmon_sensor_types type,
->> +			    u32 attr, int channel, long *val)
->> +{
->> +	struct sun4i_lradc_data *lradc = dev_get_drvdata(dev);
->> +	int in;
->> +
->> +	if (IS_ERR(lradc))
->> +		return PTR_ERR(lradc);
-> 
-> That won't happen. Unnecessary check.
-> 
->> +
->> +	mutex_lock(&lradc->update_lock);
->> +	in = lradc->in[channel];
-> 
-> 
-> Pointless. Just use
-> 
->> +	mutex_unlock(&lradc->update_lock);
->> +
->> +	switch (attr) {
->> +	case hwmon_in_input:
->> +		*val = in;
-> 
-> 		*val = lradc->in[channel];
-> 
-> here. The operation is atomic.
-> 
->> +		break;
->> +
->> +	default:
->> +		return -EOPNOTSUPP;
->> +	}
->> +	return 0;
->> +}
->> +
->> +umode_t sun4i_lradc_is_visible(const void *data, enum 
->> hwmon_sensor_types type,
->> +			       u32 attr, int channel)
->> +{
->> +	return 0444;
->> +}
->> +
->> +static const u32 sun4i_lradc_chip_config[] = {
->> +	HWMON_I_INPUT,
-> 
-> This is wrong. Chip wide attributes are named HWMON_C_XXX.
-> This generated a reset_history attribute which isn't really
-> supported or handled. Chip attributes should only be specified
-> if actually used. Drop this.
-> 
->> +	0
->> +};
->> +
->> +static const struct hwmon_channel_info sun4i_lradc_chip = {
->> +	.type = hwmon_chip,
->> +	.config = sun4i_lradc_chip_config,
->> +};
->> +
->> +static const u32 sun4i_lradc_input_config[] = {
->> +	HWMON_I_INPUT,
->> +	HWMON_I_INPUT,
->> +	0
->> +};
->> +
->> +static const struct hwmon_channel_info sun4i_lradc_input = {
->> +	.type = hwmon_in,
->> +	.config = sun4i_lradc_input_config,
->> +};
->> + > +static const struct hwmon_channel_info *sun4i_lradc_info[] = {
->> +	&sun4i_lradc_chip,
->> +	&sun4i_lradc_input,
->> +	NULL
->> +};
->> +
-> Use the HWMON_CHANNEL_INFO macro instead.
-> 
->> +static const struct hwmon_ops sun4i_lradc_hwmon_ops = {
->> +	.is_visible = sun4i_lradc_is_visible,
->> +	.read = sun4i_lradc_read,
->> +};
->> +
->> +static const struct hwmon_chip_info sun4i_lradc_chip_info = {
->> +	.ops = &sun4i_lradc_hwmon_ops,
->> +	.info = sun4i_lradc_info,
->> +};
->> +
->> +static irqreturn_t sun4i_lradc_irq(int irq, void *dev_id)
->> +{
->> +	struct sun4i_lradc_data *lradc = dev_id;
->> +	u32 ints = readl(lradc->base + LRADC_INTS);
->> +
->> +	mutex_lock(&lradc->update_lock);
->> +
->> +	if (ints & CHAN0_DATA_IRQ)
->> +		lradc->in[0] = (readl(lradc->base + LRADC_DATA0) & 
->> lradc->variant->bits) *
->> +			lradc->variant->vref / lradc->variant->resolution / 1000; /* to mV 
->> */
->> +
->> +	if (ints & CHAN1_DATA_IRQ)
->> +		lradc->in[1] = (readl(lradc->base + LRADC_DATA1) & 
->> lradc->variant->bits) *
->> +			lradc->variant->vref / lradc->variant->resolution / 1000; /* to mV 
->> */
->> +
->> +	mutex_unlock(&lradc->update_lock);
->> +
->> +	writel(ints, lradc->base + LRADC_INTS);
->> +
->> +	return IRQ_HANDLED;
->> +}
->> +
-> 
-> You don't explain why the interrupt handler is needed. It is 
-> undesirable
-> to do this for hwnon devices because it results in extra load on the 
-> system.
-> The ADC should be read only when needed and not continuously. If that 
-> is not
-> possible for some reason it needs to be explained in detail.
-> 
->> +static int sun4i_lradc_start(struct sun4i_lradc_data *lradc)
->> +{
->> +	writel(FIRST_CONVERT_DLY(2) | CHAN_SELECT(3) | LEVELA_B_CNT(1) |
->> +		HOLD_EN(1) | KEY_MODE_SEL(2) | SAMPLE_RATE(3) | ENABLE(1),
->> +		lradc->base + LRADC_CTRL);
->> +
-> 
-> If the update rate is configurable, it might make sense to support
-> the update_interval attribute.
-> 
->> +	writel(CHAN0_DATA_IRQ | CHAN1_DATA_IRQ, lradc->base + LRADC_INTC);
->> +
->> +	return 0;
->> +}
->> +
->> +static void sun4i_lradc_stop(void *data)
->> +{
->> +	struct sun4i_lradc_data *lradc = (struct sun4i_lradc_data *)data;
->> +
->> +	writel(FIRST_CONVERT_DLY(2) | LEVELA_B_CNT(1) | HOLD_EN(1) |
->> +		SAMPLE_RATE(2), lradc->base + LRADC_CTRL);
->> +	writel(0, lradc->base + LRADC_INTC);
->> +}
->> +
->> +static int sun4i_lradc_probe(struct platform_device *pdev)
->> +{
->> +	struct sun4i_lradc_data *lradc;
->> +	struct device *dev = &pdev->dev;
->> +	struct device *hwmon_dev;
->> +	struct resource *res;
->> +	int hwmon_irq, error;
->> +
->> +	lradc = devm_kzalloc(dev, sizeof(struct sun4i_lradc_data), 
->> GFP_KERNEL);
->> +	if (!lradc)
->> +		return -ENOMEM;
->> +
->> +	dev_set_drvdata(dev, lradc);
->> +
->> +	lradc->variant = of_device_get_match_data(&pdev->dev);
->> +	if (!lradc->variant)
->> +		return -EINVAL;
->> +
->> +	lradc->dev = dev;
->> +
-> 
-> I don't immediately see where this is used.
-> 
->> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> +	if (IS_ERR(res))
->> +		return PTR_ERR(res);
->> +
->> +	lradc->base = devm_ioremap_resource(dev, res);
->> +	if (IS_ERR(lradc->base))
->> +		return PTR_ERR(lradc->base);
->> +
->> +	hwmon_irq = platform_get_irq(pdev, 0);
->> +	if (hwmon_irq < 0)
->> +		return hwmon_irq;
->> +
->> +	error = devm_request_irq(dev, hwmon_irq, sun4i_lradc_irq, 0, 
->> "sun4i-lradc-hwmon", lradc);
->> +	if (error) {
->> +		dev_err(dev, "sun4i-lradc-hwmon IRQ failed err=%d\n", error);
->> +		return error;
->> +	}
->> +
->> +	hwmon_dev = devm_hwmon_device_register_with_info(dev, "lradc-hwmon", 
->> lradc,
->> +							 &sun4i_lradc_chip_info, NULL);
->> +
->> +	if (IS_ERR(hwmon_dev)) {
->> +		error = PTR_ERR(hwmon_dev);
->> +		return error;
->> +	}
->> +
->> +	error = devm_add_action_or_reset(dev, sun4i_lradc_stop, lradc);
->> +	if (error)
->> +		return error;
->> +
->> +	error = sun4i_lradc_start(lradc);
->> +
->> +	return error;
->> +}
->> +
->> +#ifdef CONFIG_PM
->> +static int sun4i_lradc_resume(struct device *dev)
->> +{
->> +	struct sun4i_lradc_data *lradc = dev_get_drvdata(dev);
->> +
->> +	return sun4i_lradc_start(lradc);
->> +}
->> +
->> +static int sun4i_lradc_suspend(struct device *dev)
->> +{
->> +	struct sun4i_lradc_data *lradc = dev_get_drvdata(dev);
->> +
->> +	sun4i_lradc_stop(lradc);
->> +	return 0;
->> +}
->> +
->> +#define SUN4I_LRADC_DEV_PM_OPS	(&sun4i_lradc_dev_pm_ops)
->> +#else
->> +#define SUN4I_LRADC_DEV_PM_OPS	NULL
->> +#endif /* CONFIG_PM */
->> +
->> +static const struct dev_pm_ops sun4i_lradc_dev_pm_ops = {
->> +	.suspend = sun4i_lradc_suspend,
->> +	.resume = sun4i_lradc_resume,
->> +};
->> +
->> +static const struct of_device_id sun4i_lradc_of_match[] = {
->> +	{ .compatible = "allwinner,sun4i-a10-lradc-keys", .data = 
->> &variant_sun4i_a10_lradc},
->> +	{ /* sentinel */ }
->> +};
->> +MODULE_DEVICE_TABLE(of, sun4i_lradc_of_match);
->> +
->> +static struct platform_driver sun4i_lradc_driver = {
->> +	.driver = {
->> +		.name	= "sun4i-lradc-hwmon",
->> +		.of_match_table = of_match_ptr(sun4i_lradc_of_match),
->> +		.pm = SUN4I_LRADC_DEV_PM_OPS,
->> +	},
->> +	.probe	= sun4i_lradc_probe,
->> +};
->> +
->> +module_platform_driver(sun4i_lradc_driver);
->> +
->> +MODULE_DESCRIPTION("Allwinner A13/A20 LRADC hwmon driver");
->> +MODULE_AUTHOR("Ruslan Zalata <rz@fabmicro.ru>");
->> +MODULE_LICENSE("GPL");
->> +No empty line at end, please
