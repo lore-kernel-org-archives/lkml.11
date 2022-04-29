@@ -2,110 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A45EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 13:59:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC900C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376746AbiD2ODO (ORCPT
+        id S1377109AbiD2OGj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44446 "EHLO
+        Fri, 29 Apr 2022 10:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376970AbiD2OBo (ORCPT
+        with ESMTP id S1376912AbiD2OG1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:01:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A212AD0ABC
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 06:53:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651240330;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z7yAdUCrz3+5dYbONp1SEfIacy2JTP0wdG6m3C5H/Qc=;
-        b=Z5bD2VyfeSdS/rKqNmATSrryDf0H8L5J/FoZjRmgLS0HEzzDHGqnqgTia89Q2cQ3yG3r/a
-        wGb74lDE9UjpmTLj7mZ6/cT2g0qRAzsQAy2Q5z0U5MiUfnQIW41oLDcAWTGLqQZVcl5nYD
-        x1IT7PUy0BswGvTWFesVOmq+NqDKAAg=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-479-J-nLEa4uMom2c614QcyQew-1; Fri, 29 Apr 2022 09:52:08 -0400
-X-MC-Unique: J-nLEa4uMom2c614QcyQew-1
-Received: by mail-ed1-f70.google.com with SMTP id cn27-20020a0564020cbb00b0041b5b91adb5so4555029edb.15
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 06:52:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Z7yAdUCrz3+5dYbONp1SEfIacy2JTP0wdG6m3C5H/Qc=;
-        b=bnoZuVDsidmok10x1+yIOaFtiUt5DtfBGzsrxIrkU/7T93h7IaKvQXns/qcvEPz3+w
-         W2NcBaVKe4plyNKrAQL6xNvGCofI2WZQ2WRTway8zZzpRoCbVqQtNOqXcrRidH/1tfGr
-         wkDW9IZKDkATa1RFqjdYrytW8TFJpYszDqqQ1c3uI4hfUDVVYLd6LxPVX+zm8G2r7W/L
-         RPNk3zrYIzWzbs7yFGT9EN9WHoLukSPhQN8+uudmAx7w2g28RHA3UmIuZokxVyuQ19h6
-         AbUjk98vV1SL1x3sPI5UzjAdRoCjH0OY1qalvdJAJRLmvjHl1NJaBGYxpDG1X8opCQTS
-         rWKQ==
-X-Gm-Message-State: AOAM533dlE74bV2QzseTrbgfFVlvG3c2rALPddk0alxL/KO52WKVu9kA
-        j00gBz+XYt+p4MNmhOXswolPOmy/cBj8bQjaaB8j1oU9WE7alq4XZzfxpI7sNlYTLS74lQH5MG8
-        9AnLZdBXfwCAqt6P5GlEN8CKn
-X-Received: by 2002:a17:907:7ea9:b0:6f3:de9c:c6fb with SMTP id qb41-20020a1709077ea900b006f3de9cc6fbmr7793992ejc.304.1651240327299;
-        Fri, 29 Apr 2022 06:52:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwSXo0F7Exss/lylDpZAOA7UHVmHWcGdVTMhJKtTRR6xOlptpLZ9t9BCMS9mrHY58kigon4hg==
-X-Received: by 2002:a17:907:7ea9:b0:6f3:de9c:c6fb with SMTP id qb41-20020a1709077ea900b006f3de9cc6fbmr7793983ejc.304.1651240327113;
-        Fri, 29 Apr 2022 06:52:07 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
-        by smtp.googlemail.com with ESMTPSA id p9-20020a056402074900b0042617ba639dsm2979367edy.39.2022.04.29.06.52.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 06:52:06 -0700 (PDT)
-Message-ID: <ed92111b-3b80-0cde-1821-0a491dee2dcf@redhat.com>
-Date:   Fri, 29 Apr 2022 15:52:02 +0200
+        Fri, 29 Apr 2022 10:06:27 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 327FF5BD34;
+        Fri, 29 Apr 2022 06:54:42 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1nkR4B-0004Nf-00; Fri, 29 Apr 2022 15:53:51 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 77961C01CB; Fri, 29 Apr 2022 15:53:38 +0200 (CEST)
+Date:   Fri, 29 Apr 2022 15:53:38 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] MIPS: Fix CP0 counter erratum detection for R4k CPUs
+Message-ID: <20220429135338.GA3357@alpha.franken.de>
+References: <alpine.DEB.2.21.2204240214430.9383@angie.orcam.me.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH for-5.18] KVM: fix bad user ABI for KVM_EXIT_SYSTEM_EVENT
-Content-Language: en-US
-To:     Oliver Upton <oupton@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Peter Gonda <pgonda@google.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <20220422103013.34832-1-pbonzini@redhat.com>
- <Ymtr2mfyujoxLsDR@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <Ymtr2mfyujoxLsDR@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.2204240214430.9383@angie.orcam.me.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/29/22 06:38, Oliver Upton wrote:
->> +                        __u64 data[16];
-> This is out of sync with the union { flags; data; } now.
-
-Yes, that's intentional.  The flags member is mentioned below:
-
-+Previous versions of Linux defined a `flags` member in this struct.  The
-+field is now aliased to `data[0]`.  Userspace can assume that it is only
-+written if ndata is greater than 0.
-
-but I don't want projects to believe it is different in any way from
-`data[0]`.  In particular, `flags` should also be considered valid only
-if the cap is present (unless crosvm wants ARM to be grandfathered in).
-
-> IMO, we should put a giant disclaimer on all of this to*not*  use the
-> flags field and instead only use data. I imagine we wont want to persist
-> the union forever as it is quite ugly, but necessary.
-
-
->> +/* #define KVM_CAP_VM_TSC_CONTROL 214 */
+On Sun, Apr 24, 2022 at 12:46:23PM +0100, Maciej W. Rozycki wrote:
+> Fix the discrepancy between the two places we check for the CP0 counter 
+> erratum in along with the incorrect comparison of the R4400 revision 
+> number against 0x30 which matches none and consistently consider all 
+> R4000 and R4400 processors affected, as documented in processor errata 
+> publications[1][2][3], following the mapping between CP0 PRId register 
+> values and processor models:
 > 
-> This sticks out a bit. Couldn't the VM TSC control patch just use a
-> different number? It seems that there will be a conflict anyway, if only to
-> delete this comment.
+>   PRId   |  Processor Model
+> ---------+--------------------
+> 00000422 | R4000 Revision 2.2
+> 00000430 | R4000 Revision 3.0
+> 00000440 | R4400 Revision 1.0
+> 00000450 | R4400 Revision 2.0
+> 00000460 | R4400 Revision 3.0
+> 
+> No other revision of either processor has ever been spotted.
+> 
+> Contrary to what has been stated in commit ce202cbb9e0b ("[MIPS] Assume 
+> R4000/R4400 newer than 3.0 don't have the mfc0 count bug") marking the 
+> CP0 counter as buggy does not preclude it from being used as either a 
+> clock event or a clock source device.  It just cannot be used as both at 
+> a time, because in that case clock event interrupts will be occasionally 
+> lost, and the use as a clock event device takes precedence.
+> 
+> Compare against 0x4ff in `can_use_mips_counter' so that a single machine 
+> instruction is produced.
+> 
+> References:
+> 
+> [1] "MIPS R4000PC/SC Errata, Processor Revision 2.2 and 3.0", MIPS
+>     Technologies Inc., May 10, 1994, Erratum 53, p.13
+> 
+> [2] "MIPS R4400PC/SC Errata, Processor Revision 1.0", MIPS Technologies
+>     Inc., February 9, 1994, Erratum 21, p.4
+> 
+> [3] "MIPS R4400PC/SC Errata, Processor Revision 2.0 & 3.0", MIPS 
+>     Technologies Inc., January 24, 1995, Erratum 14, p.3
+> 
+> Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+> Fixes: ce202cbb9e0b ("[MIPS] Assume R4000/R4400 newer than 3.0 don't have the mfc0 count bug")
+> Cc: stable@vger.kernel.org # v2.6.24+
+> ---
+> Thomas,
+> 
+>  Please review the requirements for SNI platforms.  In the case of an 
+> erratic CP0 timer we give precedence to the use as a clock event rather 
+> than clock source device; see `time_init' in arch/mips/kernel/time.c. 
+> Therefore if SNI systems have no alternative timer interrupt source, then 
+> the CP0 timer is supposed to still do regardless of the erratum.
+> 
+>  Conversely a system can do without a high-precision clock source, in
+> which case jiffies will be used.  Of course such a system will suffer if 
+> used for precision timekeeping, but such is the price for broken hardware.  
+> Don't SNI systems have any alternative timer available, not even the 
+> venerable 8254?
+> 
+>  Long-term I think this code should be factored out and rewritten so that 
+> it lives in one place and can take advantage of compile-time constants, 
+> which will be the case for the majority of platforms.  For the time being 
+> fix the immediate breakage however.
+> 
+>  With the considerations above in mind, please apply.
+> 
+>   Maciej
+> ---
+>  arch/mips/include/asm/timex.h |    8 ++++----
+>  arch/mips/kernel/time.c       |   11 +++--------
+>  2 files changed, 7 insertions(+), 12 deletions(-)
 
-I don't want to change cap numbers once things have landed in
-kvm/next, because that's when userspace projects pick them.
+applied to mips-fixes.
 
-Paolo
+Thomas.
 
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
