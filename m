@@ -2,169 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96377C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:14:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E87C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356331AbiD2JRQ (ORCPT
+        id S1356345AbiD2JRc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 05:17:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54760 "EHLO
+        Fri, 29 Apr 2022 05:17:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238756AbiD2JRO (ORCPT
+        with ESMTP id S238756AbiD2JR2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 05:17:14 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F32465F8E0;
-        Fri, 29 Apr 2022 02:13:56 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BC7F51063;
-        Fri, 29 Apr 2022 02:13:56 -0700 (PDT)
-Received: from e123648.arm.com (unknown [10.57.14.15])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 474083F73B;
-        Fri, 29 Apr 2022 02:13:54 -0700 (PDT)
-From:   Lukasz Luba <lukasz.luba@arm.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     corbet@lwn.net, mingo@redhat.com, peterz@infradead.org,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com, lukasz.luba@arm.com,
-        xuewen.yan@unisoc.com, linux-doc@vger.kernel.org
-Subject: [PATCH] sched: thermal_load_avg: Change the raising/decaying period mechanism
-Date:   Fri, 29 Apr 2022 10:12:45 +0100
-Message-Id: <20220429091245.12423-1-lukasz.luba@arm.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 29 Apr 2022 05:17:28 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C716F499
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 02:14:11 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id D4B081F891;
+        Fri, 29 Apr 2022 09:14:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1651223649; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+nyhT3dLkkFuRwQR16FxYEjv/si9LeGS52nxdq1BTSI=;
+        b=De5hpi7h1Swr/YmFIUYHtH7KHtiwsBPvG4yMaNcc4ez54xqjBQ86oLjx9fKkJalMjjn6M0
+        3hP7Dh6h/AaLpVQAmM37Xg9Xl5IbR55seLPaddUGgbTeyXKT/vOMA2jq7dZc/PCucPxhfE
+        VV+64MeqN7P68jD3SNctdHt/rjHpN94=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1651223649;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+nyhT3dLkkFuRwQR16FxYEjv/si9LeGS52nxdq1BTSI=;
+        b=7h00ud4S5BsLuRyeRdwlMfa/15AkmnLlC/ft7SgFEZaXNj5HN0Tw4mp3oTZCx8u6t73/eF
+        k3GAsOATHG9ZkJDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AE40913446;
+        Fri, 29 Apr 2022 09:14:09 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id OROKKWGsa2IDewAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Fri, 29 Apr 2022 09:14:09 +0000
+Message-ID: <7ce2f8e1-9cf2-4d89-99c2-b4280e4758ba@suse.de>
+Date:   Fri, 29 Apr 2022 11:14:09 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [RFC PATCH v4 02/11] drm/fb-helper: Set FBINFO_MISC_FIRMWARE flag
+ for DRIVER_FIRMWARE fb
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org
+Cc:     David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel@lists.freedesktop.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20220429084253.1085911-1-javierm@redhat.com>
+ <20220429084253.1085911-3-javierm@redhat.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220429084253.1085911-3-javierm@redhat.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------2UW6C8bX1bdqZGPtnDh7XxPw"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The thermal pressure mechanism consists of two parts:
-1) PELT-like signal with its own clock (rq_clock_thermal()) which is
-   responsible for the raising/decaying characteristics
-2) instantaneous information provided in 'thermal_pressure' variable,
-   which is set by thermal framework or drivers to notify about
-   the throttling.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------2UW6C8bX1bdqZGPtnDh7XxPw
+Content-Type: multipart/mixed; boundary="------------PX7QTzUWG0KO3ZVC40N5d82M";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Javier Martinez Canillas <javierm@redhat.com>,
+ linux-kernel@vger.kernel.org
+Cc: David Airlie <airlied@linux.ie>, Daniel Vetter <daniel.vetter@ffwll.ch>,
+ dri-devel@lists.freedesktop.org,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Message-ID: <7ce2f8e1-9cf2-4d89-99c2-b4280e4758ba@suse.de>
+Subject: Re: [RFC PATCH v4 02/11] drm/fb-helper: Set FBINFO_MISC_FIRMWARE flag
+ for DRIVER_FIRMWARE fb
+References: <20220429084253.1085911-1-javierm@redhat.com>
+ <20220429084253.1085911-3-javierm@redhat.com>
+In-Reply-To: <20220429084253.1085911-3-javierm@redhat.com>
 
-Add a new mechanism which allows to change the raising/decaying
-characteristics of the PELT-like thermal signal. To make this happen
-modify how the rq_clock_thermal() counts. Instead of only slowing down the
-clock, which results in longer raising/decaying periods, make it faster.
-Thanks to that the information about throttling can faster arrive at the
-right place in the scheduler. This faster propagation of information
-is useful for the latency sensitive stuff, such as RT tasks. In
-a situation of CPU capacity inversion, such task might suffer when
-staying on the lower capacity CPU.
+--------------PX7QTzUWG0KO3ZVC40N5d82M
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Change the boot parameter 'sched_thermal_decay_shift' allowed values
-and use the negatives to speed up the thermal clock.
+SGkNCg0KQW0gMjkuMDQuMjIgdW0gMTA6NDIgc2NocmllYiBKYXZpZXIgTWFydGluZXogQ2Fu
+aWxsYXM6DQo+IFRoZSBEUklWRVJfRklSTVdBUkUgZmxhZyBkZW5vdGVzIHRoYXQgYSBEUk0g
+ZHJpdmVyIHVzZXMgYSBmcmFtZWJ1ZmZlcg0KPiB0aGF0IHdhcyBpbml0aWFsaXplZCBhbmQg
+cHJvdmlkZWQgYnkgdGhlIHN5c3RlbSBmaXJtd2FyZSBmb3Igc2Nhbm91dC4NCj4gDQo+IElu
+ZGljYXRlIHRvIHRoZSBmYmRldiBzdWJzeXN0ZW0gdGhhdCB0aGUgcmVnaXN0ZXJlZCBmcmFt
+ZWJ1ZmZlciBpcyBhDQo+IEZCSU5GT19NSVNDX0ZJUk1XQVJFLCBzbyB0aGF0IGl0IGNhbiBo
+YW5kbGUgYWNjb3JkaW5nbHkuIEZvciBleGFtcGxlLA0KPiB3b2xkIGhvdC11bnBsdWcgdGhl
+IGFzc29jaWF0ZWQgZGV2aWNlIGlmIGFza2VkIHRvIHJlbW92ZSBjb25mbGljdGluZw0KPiBm
+cmFtZWJ1ZmZlcnMuDQo+IA0KPiBTdWdnZXN0ZWQtYnk6IFRob21hcyBaaW1tZXJtYW5uIDx0
+emltbWVybWFubkBzdXNlLmRlPg0KPiBTaWduZWQtb2ZmLWJ5OiBKYXZpZXIgTWFydGluZXog
+Q2FuaWxsYXMgPGphdmllcm1AcmVkaGF0LmNvbT4NCj4gLS0tDQo+IA0KPiAobm8gY2hhbmdl
+cyBzaW5jZSB2MSkNCj4gDQo+ICAgZHJpdmVycy9ncHUvZHJtL2RybV9mYl9oZWxwZXIuYyB8
+IDQgKysrKw0KPiAgIDEgZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKykNCj4gDQo+IGRp
+ZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vZHJtX2ZiX2hlbHBlci5jIGIvZHJpdmVycy9n
+cHUvZHJtL2RybV9mYl9oZWxwZXIuYw0KPiBpbmRleCBkMjY1YTczMzEzYzkuLjc2ZGQxMTg4
+ODYyMSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL2RybV9mYl9oZWxwZXIuYw0K
+PiArKysgYi9kcml2ZXJzL2dwdS9kcm0vZHJtX2ZiX2hlbHBlci5jDQo+IEBAIC0xODkxLDYg
+KzE4OTEsMTAgQEAgX19kcm1fZmJfaGVscGVyX2luaXRpYWxfY29uZmlnX2FuZF91bmxvY2so
+c3RydWN0IGRybV9mYl9oZWxwZXIgKmZiX2hlbHBlciwNCj4gICAJCS8qIGRvbid0IGxlYWsg
+YW55IHBoeXNpY2FsIGFkZHJlc3NlcyB0byB1c2Vyc3BhY2UgKi8NCj4gICAJCWluZm8tPmZs
+YWdzIHw9IEZCSU5GT19ISURFX1NNRU1fU1RBUlQ7DQo+ICAgDQo+ICsJLyogSW5kaWNhdGUg
+dGhhdCB0aGUgZnJhbWVidWZmZXIgaXMgcHJvdmlkZWQgYnkgdGhlIGZpcm13YXJlICovDQo+
+ICsJaWYgKGRybV9jb3JlX2NoZWNrX2ZlYXR1cmUoZGV2LCBEUklWRVJfRklSTVdBUkUpKQ0K
+PiArCQlpbmZvLT5mbGFncyB8PSBGQklORk9fTUlTQ19GSVJNV0FSRTsNCj4gKw0KDQpQYXRj
+aGVzIDEgdG8gMyBzaG91bGQgYmUgc3F1YXNoZWQgaW50byBvbmUgYmVmb3JlIGxhbmRpbmcu
+DQoNCldlIGNhbiBkbyB0aGlzIHdpdGggRFJJVkVSX0ZJUk1XQVJFLiBBbHRlcm5hdGl2ZWx5
+LCBJJ2Qgc3VnZ2VzdCB0byB3ZSANCmNvdWxkIGFsc28gdXNlZCB0aGUgZXhpc3RpbmcgZmlu
+YWwgcGFyYW1ldGVyIG9mIA0KZHJtX2ZiZGV2X2dlbmVyaWNfc2V0dXAoKSB0byBwYXNzIGEg
+ZmxhZyB0aGF0IGRlc2lnbmF0ZXMgYSBmaXJtd2FyZSBkZXZpY2UuDQoNCj4gICAJLyogTmVl
+ZCB0byBkcm9wIGxvY2tzIHRvIGF2b2lkIHJlY3Vyc2l2ZSBkZWFkbG9jayBpbg0KPiAgIAkg
+KiByZWdpc3Rlcl9mcmFtZWJ1ZmZlci4gVGhpcyBpcyBvayBiZWNhdXNlIHRoZSBvbmx5IHRo
+aW5nIGxlZnQgdG8gZG8gaXMNCj4gICAJICogcmVnaXN0ZXIgdGhlIGZiZGV2IGVtdWxhdGlv
+biBpbnN0YW5jZSBpbiBrZXJuZWxfZmJfaGVscGVyX2xpc3QuICovDQoNCi0tIA0KVGhvbWFz
+IFppbW1lcm1hbm4NCkdyYXBoaWNzIERyaXZlciBEZXZlbG9wZXINClNVU0UgU29mdHdhcmUg
+U29sdXRpb25zIEdlcm1hbnkgR21iSA0KTWF4ZmVsZHN0ci4gNSwgOTA0MDkgTsO8cm5iZXJn
+LCBHZXJtYW55DQooSFJCIDM2ODA5LCBBRyBOw7xybmJlcmcpDQpHZXNjaMOkZnRzZsO8aHJl
+cjogSXZvIFRvdGV2DQo=
 
-Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
----
-Hi all,
+--------------PX7QTzUWG0KO3ZVC40N5d82M--
 
-This patch addresses an issue of missing configuration for the
-thermal pressure raising/decaying characteristic to be more instantaneous.
-This more sharp signal might be better if the raw thermal signal
-already has 'some logic' or doesn't change that often, like in IPA
-(every 100ms).
+--------------2UW6C8bX1bdqZGPtnDh7XxPw
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-I've prepared a notebook with experiments with different shifter
-values [0, -2, -3, -4, 2, 4] for IPA thermal update periods:
-50ms, 100ms (and also jumping between cooling states 0, 1 or 0, 3).
-It presents two signals: instantaneous thermal update and thermal_load_avg().
-It would be useful for discussion. I can provide more details if needed.
+-----BEGIN PGP SIGNATURE-----
 
-Regards,
-Lukasz Luba
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmJrrGEFAwAAAAAACgkQlh/E3EQov+Cm
+fw/8C0nMZQ9hpHezcO3YkbQjSVDI3XKUx2DpqpADdq2uo8I1KJ6UcIUaJVL7TrW3xKFGFqVGUuoF
+T2Pd8LFt85572TI9FGKSLlzEDhcVMVV2uc3RNo3l+xEh/22DMh9hqtD4KUWS1e2vnIWevoeV5C9o
+yA2CowzWl7tVaUTgSGGSVTdW+qaSrwJ1Z4zATYjm8lJVBtAHM3htgufP3Nx7f9FHuH0WC8b1vkVn
+XgwytNq3VE+4TvngnmEohkSRvlvH3bJThlksAIETemUXalJRuzQ97gpe6cH5thqMwEjxiKtQ71QY
+8ApO1MrVS6GgVyULlZlgZQpMMeRc3T6oDfW8nj1fX5U6wTI74/rDCboMtbxC/FDQa6hCU6lHhdWS
+skmU38bDXLMX3ANkgqFFdumaNe9JKujdaJ3RPH0DXJ9e0Ll4BVpUoOLCEsRzBrh8tCM2xTjupZJM
+pPoPeVYlh/NaoHZScvATWCAJaSMd807E/qBDBXSvZjxaHVV7C/1xr4/v+NYkRG62Uri4YHz5hTLH
+GyhO8vYyU+TjnzDgZ++PP5lAXpFk5sDJ7kqNv8jIY0ESp0zRrNCzTMK8oQy1SNIOt66Pd9i8XeNL
+IR8mp4vUiu0M3qs8K3KCF7jhbTOL/1Q9XmFhYB1AzkAKsg9oIavbpuKxbK+R0SDZhco7lSQYSIvt
+yEc=
+=rVnu
+-----END PGP SIGNATURE-----
 
-[1] https://nbviewer.org/github/lukaszluba-arm/lisa/blob/public_tests/thermal_pressure_delays-all-ipa.ipynb
-
-
-
- Documentation/admin-guide/kernel-parameters.txt | 15 +++++++++++----
- kernel/sched/fair.c                             |  2 +-
- kernel/sched/sched.h                            | 17 +++++++++++++++--
- 3 files changed, 27 insertions(+), 7 deletions(-)
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index c2d1f8b5e8f3..ba32540f1fbf 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5117,15 +5117,22 @@
- 			pressure signal. Thermal pressure signal follows the
- 			default decay period of other scheduler pelt
- 			signals(usually 32 ms but configurable). Setting
--			sched_thermal_decay_shift will left shift the decay
--			period for the thermal pressure signal by the shift
--			value.
-+			a positive value for sched_thermal_decay_shift will
-+			left shift the decay period for the thermal pressure
-+			signal by the shift value. This would make
-+			raising/decaying characteristic longer. Setting
-+			a negative value will right shift the decay period
-+			by the shift value and make the raising/decaying
-+			characteristic more sharp.
- 			i.e. with the default pelt decay period of 32 ms
- 			sched_thermal_decay_shift   thermal pressure decay pr
-+				-2			8 ms
-+				-1			16 ms
-+				0			32 ms
- 				1			64 ms
- 				2			128 ms
- 			and so on.
--			Format: integer between 0 and 10
-+			Format: integer between -5 and 10
- 			Default is 0.
- 
- 	scftorture.holdoff= [KNL]
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 5146163bfabb..93cb7db5939c 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -100,7 +100,7 @@ static int __init setup_sched_thermal_decay_shift(char *str)
- 	if (kstrtoint(str, 0, &_shift))
- 		pr_warn("Unable to set scheduler thermal pressure decay shift parameter\n");
- 
--	sched_thermal_decay_shift = clamp(_shift, 0, 10);
-+	sched_thermal_decay_shift = clamp(_shift, -5, 10);
- 	return 1;
- }
- __setup("sched_thermal_decay_shift=", setup_sched_thermal_decay_shift);
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index de53be905739..cb453c0f3572 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -1478,8 +1478,14 @@ static inline u64 rq_clock_task(struct rq *rq)
- /**
-  * By default the decay is the default pelt decay period.
-  * The decay shift can change the decay period in
-- * multiples of 32.
-+ * multiples of 32 to make it longer or to make it shorter using
-+ * negative values as on the example below.
-  *  Decay shift		Decay period(ms)
-+ *	-5			1
-+ *	-4			2
-+ *	-3			4
-+ *	-2			8
-+ *	-1			16
-  *	0			32
-  *	1			64
-  *	2			128
-@@ -1490,7 +1496,14 @@ extern int sched_thermal_decay_shift;
- 
- static inline u64 rq_clock_thermal(struct rq *rq)
- {
--	return rq_clock_task(rq) >> sched_thermal_decay_shift;
-+	u64 thermal_clock = rq_clock_task(rq);
-+
-+	if (sched_thermal_decay_shift < 0)
-+		thermal_clock <<= -sched_thermal_decay_shift;
-+	else
-+		thermal_clock >>= sched_thermal_decay_shift;
-+
-+	return thermal_clock;
- }
- 
- static inline void rq_clock_skip_update(struct rq *rq)
--- 
-2.17.1
-
+--------------2UW6C8bX1bdqZGPtnDh7XxPw--
