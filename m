@@ -2,122 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00FD0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:41:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA8E7C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:42:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379760AbiD2Ro7 (ORCPT
+        id S1379766AbiD2Rpv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 13:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49644 "EHLO
+        Fri, 29 Apr 2022 13:45:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379753AbiD2Rov (ORCPT
+        with ESMTP id S1379753AbiD2Rpq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 13:44:51 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6965BA27D9;
-        Fri, 29 Apr 2022 10:41:32 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id a14-20020a7bc1ce000000b00393fb52a386so6817658wmj.1;
-        Fri, 29 Apr 2022 10:41:32 -0700 (PDT)
+        Fri, 29 Apr 2022 13:45:46 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DECCFE70;
+        Fri, 29 Apr 2022 10:42:28 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id i11-20020a9d4a8b000000b005cda3b9754aso5562857otf.12;
+        Fri, 29 Apr 2022 10:42:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=ZbduflGai2BniQyEKChWvgw5Vbl22wyDBPYLOeD9fFE=;
-        b=bSYN+B3h2mAeBcH3seOMQdUjesImu5IKiQxaWNE41w9Ju3YhzkXQnQhmcJhGN5Hf6V
-         /gNkzLUOFK9RypYZA9N4rXeDdNDk4FD27/N2hepvIpMEh8JD0q8KorkElnFGPGq8P5eg
-         vj4azpAnhkloekBwwrZExm4ggXkxmYOv3mfY4LWNP0QQc8YcWd1PrGsF9B0/mY44PBN2
-         TpY9XaI9R8Nd8CrabcnLEZrZxBshWhODKsHNHbWRQqPtPX0Pcmv7f5T9eXEJ3Jk2f7dV
-         k8UTOx55qRFyb2ECcDiqvbomkf8UMPCU8UJMxOFa6Me58BbJIQOBPMGeajZfkIZ+8guA
-         SnqA==
+        bh=9z0oLEhMUo0s36vvIh02UNk7tir7g6nfy3uYHA227Nk=;
+        b=BFVgjtTHDF38sq9/Xc3eyU+f5mbUCTUHCGLzkBEp4pgpiOZYELdIjgA2DA68sFhr89
+         XhdrPwINbYmzlVQXplgDQddxEPCW1P+YV2W3c4eqkNIAiPmh3q2YPplseotDaMggWQ+8
+         QYBYqqIIYhV0RD/XaoIT5059YH+ZaVnzE8OEAMnymG8TGZZkF/k4oKb1jqvPK2br0F34
+         AvQkE7aC6RVa9m7DDP2509iIaYTzZhrhxmPV0OY+BRWSGKy3FUl8TIMV0NtR5f97QLOK
+         A8JHelq4uHiBlVzfaw/nDtmgUjXBCE8ucibVmVLEgk0ki2kJhwQglWmwm9PLRo0YPJXg
+         jIMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=ZbduflGai2BniQyEKChWvgw5Vbl22wyDBPYLOeD9fFE=;
-        b=ueKVN23/cDM5OQy5UuJeZUhV70Avj0I7ffTORc26rqrjDEk97q78fHJfdM74T60uUD
-         oopKQ3MFQBaWH0ZnfZ45mh6hotW2KUjH/QJrJrHgtZNFnx2Q7a0hodGzd6x0GjKen+pV
-         bLg/R9GRIyV7HR2RYPQkuT0dQDErRj3KYyYuB5Qg4EDgpPFeCe9h3ixwje9gZdGufysG
-         Ofmz8uRvfxJf8g6nBlF0Rb35wXMvhCwCASfU0b7DFCNJhMqyzJqvdypsmlmObhESkJTZ
-         /zSjpyLLVtEjK5bwDRMMJPwa955utgCwMrB1bEkFeIikiRHSsnwYVgRnS6EdTLbE9Pyw
-         C4PA==
-X-Gm-Message-State: AOAM5328hJ4YWln4R+C2P52v6LXnMrjkqUjlP2RO0YI+9jVjynj3rmrf
-        ESvRZN78PMNduRhBJUvRh/M=
-X-Google-Smtp-Source: ABdhPJxKKYWRWQ5S5qJEUM3jnZxQocd2utbbzGJklRN0c6SAjPtGyPeIE/Q1l5iPcDmbp5WvkMqSUQ==
-X-Received: by 2002:a05:600c:348c:b0:392:990b:cf98 with SMTP id a12-20020a05600c348c00b00392990bcf98mr4225842wmq.194.1651254090842;
-        Fri, 29 Apr 2022 10:41:30 -0700 (PDT)
-Received: from xws.localdomain (pd9e5acba.dip0.t-ipconnect.de. [217.229.172.186])
-        by smtp.gmail.com with ESMTPSA id k28-20020a05600c1c9c00b0039424a07762sm1239921wms.35.2022.04.29.10.41.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 10:41:29 -0700 (PDT)
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ACPI: battery: Add "Not Charging" quirk for Microsoft Surface devices
-Date:   Fri, 29 Apr 2022 19:41:14 +0200
-Message-Id: <20220429174114.1277799-1-luzmaximilian@gmail.com>
-X-Mailer: git-send-email 2.36.0
+        bh=9z0oLEhMUo0s36vvIh02UNk7tir7g6nfy3uYHA227Nk=;
+        b=reLI0azF/dIi4YWXGnwgklVLDEOVMeI843GjjVRAWqDR34vxUZpp8QcqK878AfhnxU
+         6TwTsWeMMadSJaRa3HFgy6IpdI3dpv67tgJG15xmAVJWhQa4gC6RPBoW3VWFkZidOXvN
+         6eJkOvWTYTxjawVQ/bZuxh0mGL//VkF+dnFnikgPyca0KXvhoX/xAmH/79GNq9cuh3pu
+         i9N7dBi1VoeRs6yWXhdLZqaRvB6b2GpqkGCmNnQGu1avybxyyngDA8zHT+zqArGqP4mM
+         +uwroyYR/tg2WgUDaM1zJ9OMfI04HbxKvxP7XHfJz/g8s1wQSzuNvd9w9/UynqcwW9HJ
+         Jbxg==
+X-Gm-Message-State: AOAM533DR4BWhPDq79blyqkUJOAMNWR8BKld3vouGlD2PqiFLmfrOB7j
+        GEZYHnzIOyhRsvS4lP7vK4w=
+X-Google-Smtp-Source: ABdhPJz5e2UfdinEgtc+ze6y3kQhFU9T8UDmBrBsmd/4YwtVPRLBwHmqIvvcLUpZfYNdPNZqQAJJkA==
+X-Received: by 2002:a9d:491c:0:b0:605:c207:1f6b with SMTP id e28-20020a9d491c000000b00605c2071f6bmr186432otf.41.1651254147619;
+        Fri, 29 Apr 2022 10:42:27 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id i8-20020a9d53c8000000b00605f347a4fdsm844322oth.79.2022.04.29.10.42.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 10:42:27 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <aec36ea2-b007-f24a-5709-27b6e87e5177@roeck-us.net>
+Date:   Fri, 29 Apr 2022 10:42:24 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 3/7] watchdog: npcm: Enable clock if provided
+Content-Language: en-US
+To:     =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
+        linux-clk@vger.kernel.org, openbmc@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>
+References: <20220429172030.398011-1-j.neuschaefer@gmx.net>
+ <20220429172030.398011-4-j.neuschaefer@gmx.net>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220429172030.398011-4-j.neuschaefer@gmx.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Microsoft Surface devices have a limiter that sets a fixed maximum
-charge capacity for the battery. When that maximum capacity has been
-reached, charging stops. In that case, _BST returns a battery state
-field with both "charging" and "discharging" bits cleared. The battery
-driver, however, returns "unknown" as status.
+On 4/29/22 10:20, Jonathan Neuschäfer wrote:
+> On the Nuvoton WPCM450 SoC, with its upcoming clock driver, peripheral
+> clocks are individually gated and ungated. Therefore, the watchdog
+> driver must be able to ungate the watchdog clock.
+> 
+> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 
-This seems to be the same behavior as observed on the ThinkPads, so
-let's use the same quirk to handle that.
+Acked-by: Guenter Roeck <linux@roeck-us.net>
 
-Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
----
-
-For what it's worth, I don't think the ACPI spec explicitly states that
-any of the status bits need to be set, or that there are only the
-"charging" and "discharging" states. As far as I can tell, ACPI only
-states:
-
-    Notice that the Charging bit and the Discharging bit are mutually
-    exclusive and must not both be set at the same time. Even in
-    critical state, hardware should report the corresponding
-    charging/discharging state.
-
-But that does not exclude the case that no bit is set. So, strictly
-going by spec, I don't think it's necessary to put all of this behind a
-quirk.
-
----
- drivers/acpi/battery.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/drivers/acpi/battery.c b/drivers/acpi/battery.c
-index dc208f5f5a1f..1c88504aae5b 100644
---- a/drivers/acpi/battery.c
-+++ b/drivers/acpi/battery.c
-@@ -1152,6 +1152,19 @@ static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad"),
- 		},
- 	},
-+	{
-+		/*
-+		 * Microsoft Surface devices have an optional "battery
-+		 * limiter". Due to this, there is a "Not Charging" state
-+		 * similar to the one on the Lenovo ThinkPads, described above.
-+		 */
-+		.callback = battery_quirk_not_charging,
-+		.ident = "Microsoft Surface",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Surface"),
-+		},
-+	},
- 	{
- 		/* Microsoft Surface Go 3 */
- 		.callback = battery_notification_delay_quirk,
--- 
-2.36.0
+> ---
+> 
+> v2:
+> - Add clk_disable_unprepare call, suggested by Guenter Roeck
+> 
+> v1:
+> - https://lore.kernel.org/lkml/20220422183012.444674-4-j.neuschaefer@gmx.net/
+> ---
+>   drivers/watchdog/npcm_wdt.c | 12 ++++++++++++
+>   1 file changed, 12 insertions(+)
+> 
+> diff --git a/drivers/watchdog/npcm_wdt.c b/drivers/watchdog/npcm_wdt.c
+> index 28a24caa2627c..ee08d9805f966 100644
+> --- a/drivers/watchdog/npcm_wdt.c
+> +++ b/drivers/watchdog/npcm_wdt.c
+> @@ -3,6 +3,7 @@
+>   // Copyright (c) 2018 IBM Corp.
+> 
+>   #include <linux/bitops.h>
+> +#include <linux/clk.h>
+>   #include <linux/delay.h>
+>   #include <linux/interrupt.h>
+>   #include <linux/kernel.h>
+> @@ -43,6 +44,7 @@
+>   struct npcm_wdt {
+>   	struct watchdog_device  wdd;
+>   	void __iomem		*reg;
+> +	struct clk		*clk;
+>   };
+> 
+>   static inline struct npcm_wdt *to_npcm_wdt(struct watchdog_device *wdd)
+> @@ -66,6 +68,9 @@ static int npcm_wdt_start(struct watchdog_device *wdd)
+>   	struct npcm_wdt *wdt = to_npcm_wdt(wdd);
+>   	u32 val;
+> 
+> +	if (wdt->clk)
+> +		clk_prepare_enable(wdt->clk);
+> +
+>   	if (wdd->timeout < 2)
+>   		val = 0x800;
+>   	else if (wdd->timeout < 3)
+> @@ -100,6 +105,9 @@ static int npcm_wdt_stop(struct watchdog_device *wdd)
+> 
+>   	writel(0, wdt->reg);
+> 
+> +	if (wdt->clk)
+> +		clk_disable_unprepare(wdt->clk);
+> +
+>   	return 0;
+>   }
+> 
+> @@ -191,6 +199,10 @@ static int npcm_wdt_probe(struct platform_device *pdev)
+>   	if (IS_ERR(wdt->reg))
+>   		return PTR_ERR(wdt->reg);
+> 
+> +	wdt->clk = devm_clk_get_optional(&pdev->dev, NULL);
+> +	if (IS_ERR(wdt->clk))
+> +		return PTR_ERR(wdt->clk);
+> +
+>   	irq = platform_get_irq(pdev, 0);
+>   	if (irq < 0)
+>   		return irq;
+> --
+> 2.35.1
+> 
 
