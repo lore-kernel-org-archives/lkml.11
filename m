@@ -2,166 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB926C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 20:46:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F818C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 20:47:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381042AbiD2Utn (ORCPT
+        id S1381057AbiD2Uu7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 16:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52160 "EHLO
+        Fri, 29 Apr 2022 16:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380913AbiD2Uti (ORCPT
+        with ESMTP id S237448AbiD2Uu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 16:49:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E49084EFA;
-        Fri, 29 Apr 2022 13:46:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63AF2B837B8;
-        Fri, 29 Apr 2022 20:46:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27465C385A7;
-        Fri, 29 Apr 2022 20:46:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651265177;
-        bh=jsYCu34zYnPSZjXO3cgZgGRLcHie+luSSGL0NBVj6U4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=OhO1aPIJflzlkvH6l9NkZnvTQzJN3xMRD3Ywi9dCUkaV/kAI+dCXRhzRIPPq0LJpz
-         wf28K1qPxxmcDjx2bxndbwp8pVwz2WgaZfoUVBtxuVALnXaF5PtVVE4pESISezRiba
-         KSUiijuh+HPypTZnkMzFr1j7EST6O+tTlWMXT6dkmBruRivHrmjntUP1zDgKB4uWgb
-         rcJ44LffqCdtYSfnnvPxMtdKyHY9Xmk+xiT3oggCgyWMBOlETdsPG05vg1mj4vhlOt
-         6DtBTaTiaFj4zVJajRF8qRi0lungzXyrw2JLatoVGPwi267UhYD8S7Wm3uHMHG5C59
-         WzsFopcJEwW3w==
-Received: by mail-pl1-f172.google.com with SMTP id n18so8126741plg.5;
-        Fri, 29 Apr 2022 13:46:17 -0700 (PDT)
-X-Gm-Message-State: AOAM531ZWgSZaIP0K0mvz4klF1iLowWCJJp50kTCu8uIJWE99Ke6e5nQ
-        WWHhsUM6OfIZLBimfNeLJ4oGHYi/ih8AdQ8YzA==
-X-Google-Smtp-Source: ABdhPJxDh/IIqErx1P3QaSmPVmtIcm9I8AiMy3H87xSJ1x1O7WSi1P0R8L8uDtqi7k+/5pFd9rNyA4GgTJdDIZzQBzw=
-X-Received: by 2002:a17:90b:4a85:b0:1dc:64:1980 with SMTP id
- lp5-20020a17090b4a8500b001dc00641980mr5758549pjb.211.1651265176710; Fri, 29
- Apr 2022 13:46:16 -0700 (PDT)
+        Fri, 29 Apr 2022 16:50:57 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F01C84EFA;
+        Fri, 29 Apr 2022 13:47:38 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id be20so10329225edb.12;
+        Fri, 29 Apr 2022 13:47:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=w2mSwMGTVQIhPwit27Nc58ZWfW+X0vro/Zsk4lAnHxg=;
+        b=W9c74T45EQ3BYFz1/j3y0kDNKShmbYYo5/Sj54PkEk0Uc+yy02t4RudR4mndAucjyo
+         ahc5fgsHbmTUqfVP1nYd1Gv0m48mtjQJTfB4o2imt9kdPI64rtYdXs/Ao8EN+i+jcT5s
+         zkDQ40rZO2qBvenXKUl9r1oiTTPtPmbE0J4YnTHM9KzcPbyuMxENw291t17YjS+37Bmd
+         G6eA18wVlw5DeUaf/L7PVaGNZMGo+MUSr0ejq7hjDB89/WUKR8oMbPZoCPe/tmFiHFdP
+         QbHbnt5GUpjVh1r4yUrsQtTQAZb6kg5KPpyaGlzVGuYPJbCz1dSDuNwrWAV6fGBZe1B3
+         nxTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=w2mSwMGTVQIhPwit27Nc58ZWfW+X0vro/Zsk4lAnHxg=;
+        b=7aP0jl73EUU6M9rgPNHSDEDW4e4cwxEp8F7Sz1BUzYarEtrvpiEjU5acitZAcG+ein
+         00lJ4fN+ua1crdN6BjW6fuD7xcA9Cq6RrJa1A2EElGPe7coenGvCv9N+SuvyOy2pxtsk
+         d0bmBOoSNOyTr5ETvLs8SskI6DUF33gn6A4JQs8WUIoACjjGDWcUQUz9OFh7TQL7CMz7
+         ZZEnQhAB/O+FsN0OkrPqkbd7uQFvFT+SGr+h+LNdUEkSDVOlqoXEziYhPO1lmrYbrsXM
+         XYMqmSDfJjIJYshUYnHPESsU2K5BEHKkqwlGnyOJI9C2zonj3omRtQU46L7kAzdWfTfg
+         l3Xw==
+X-Gm-Message-State: AOAM5307i3NfFW8HvnGGxmKn0aseBr90cGA8k+9can8T+XAMLdn4Todv
+        hrgWFSwPs5vQpX2EIP7gD6Q=
+X-Google-Smtp-Source: ABdhPJx4xpAzOPivPzLqutzUWV6igihWN/NO9008Jp540tqeA7zCMyJbaadUOR9O/fFMs1jkSG75iA==
+X-Received: by 2002:a05:6402:26c8:b0:426:2c8b:a2c6 with SMTP id x8-20020a05640226c800b004262c8ba2c6mr1102618edd.61.1651265256581;
+        Fri, 29 Apr 2022 13:47:36 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id g14-20020a056402180e00b0042617ba6389sm3293275edy.19.2022.04.29.13.47.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 13:47:36 -0700 (PDT)
+Message-ID: <626c4ee8.1c69fb81.74b06.15c4@mx.google.com>
+X-Google-Original-Message-ID: <YmxOVWDMjh1xZA+P@Ansuel-xps.>
+Date:   Fri, 29 Apr 2022 22:45:09 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-clk@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 3/3] dt-bindings: arm: msm: Convert kpss-gcc driver
+ Documentation to yaml
+References: <20220429121739.28584-1-ansuelsmth@gmail.com>
+ <20220429121739.28584-4-ansuelsmth@gmail.com>
+ <1651247596.124069.2344494.nullmailer@robh.at.kernel.org>
+ <626c0b64.1c69fb81.1b1e9.4fe6@mx.google.com>
+ <5127b3b5-ad27-fd06-42b7-fdf96d0a10ea@linaro.org>
 MIME-Version: 1.0
-References: <20220425134204.149042-1-sebastianene@google.com>
- <20220425134204.149042-2-sebastianene@google.com> <YmbonypWxzZJbjQ1@robh.at.kernel.org>
- <Ymqksfth+sj5JOWo@google.com>
-In-Reply-To: <Ymqksfth+sj5JOWo@google.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Fri, 29 Apr 2022 15:46:05 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKwR9Dq_zUhG7-KLJpHF=H2yLQBA8x09yfgSRscv2bhhg@mail.gmail.com>
-Message-ID: <CAL_JsqKwR9Dq_zUhG7-KLJpHF=H2yLQBA8x09yfgSRscv2bhhg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] dt-bindings: vm-wdt: Add qemu,vm-watchdog compatible
-To:     Sebastian Ene <sebastianene@google.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Derek Kiernan <derek.kiernan@xilinx.com>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        Arnd Bergmann <arnd@arndb.de>, devicetree@vger.kernel.org,
-        Quentin Perret <qperret@google.com>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5127b3b5-ad27-fd06-42b7-fdf96d0a10ea@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 9:29 AM Sebastian Ene <sebastianene@google.com> wrote:
->
-> On Mon, Apr 25, 2022 at 01:29:51PM -0500, Rob Herring wrote:
-> > On Mon, Apr 25, 2022 at 01:42:05PM +0000, Sebastian Ene wrote:
-> > > The stall detection mechanism allows to configure the expiration
-> > > duration and the internal counter clock frequency measured in Hz.
-> > > Add these properties in the schema.
-> > >
-> > > Signed-off-by: Sebastian Ene <sebastianene@google.com>
-> > > ---
-> > >  .../devicetree/bindings/misc/vm-wdt.yaml      | 44 +++++++++++++++++++
-> > >  1 file changed, 44 insertions(+)
-> > >  create mode 100644 Documentation/devicetree/bindings/misc/vm-wdt.yaml
-> > >
-> > > diff --git a/Documentation/devicetree/bindings/misc/vm-wdt.yaml b/Documentation/devicetree/bindings/misc/vm-wdt.yaml
-> > > new file mode 100644
-> > > index 000000000000..cb7665a0c5af
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/misc/vm-wdt.yaml
-> > > @@ -0,0 +1,44 @@
-> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > > +%YAML 1.2
-> > > +---
-> > > +$id: http://devicetree.org/schemas/misc/vm-wdt.yaml#
-> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > +
-> > > +title: VM watchdog
-> > > +
-> > > +description: |
-> > > +  This binding describes a CPU stall detector mechanism for virtual cpus.
-> > > +
-> > > +maintainers:
-> > > +  - Sebastian Ene <sebastianene@google.com>
-> > > +
-> > > +properties:
-> > > +  compatible:
-> > > +    enum:
-> > > +      - qemu,vm-watchdog
-> > > +  clock:
->
-> Hi,
->
-> >
-> > 'clocks' is already a defined property and 'clock' is too close. It's
-> > also ambiguous what it is. 'clock-frequency' instead perhaps.
-> >
->
-> Yes, I think 'clock-frequency' is a better name. I will update it.
+On Fri, Apr 29, 2022 at 10:43:21PM +0200, Krzysztof Kozlowski wrote:
+> On 29/04/2022 17:57, Ansuel Smith wrote:
+> > On Fri, Apr 29, 2022 at 10:53:16AM -0500, Rob Herring wrote:
+> >> On Fri, 29 Apr 2022 14:17:39 +0200, Ansuel Smith wrote:
+> >>> Convert kpss-gcc driver Documentation to yaml.
+> >>>
+> >>> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> >>> ---
+> >>>  .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 -------------
+> >>>  .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 63 +++++++++++++++++++
+> >>>  2 files changed, 63 insertions(+), 44 deletions(-)
+> >>>  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
+> >>>  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+> >>>
+> >>
+> >> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> >> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> >>
+> >> yamllint warnings/errors:
+> >>
+> >> dtschema/dtc warnings/errors:
+> >> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml: properties: '#clock-cells' is a dependency of 'clock-output-names'
+> > 
+> 
+> The patches were previously sent (even as v6) and somehow the history,
+> changelog and references disappeared...
+> 
 
-You are defining the register interface, so why not define a register
-containing the frequency? Again, make your interface discoverable.
+Mhh with split how this should be handled? Putting the relevant changes
+in the cover letter?
 
-> > > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > > +    description: |
-> > > +      The watchdog internal clock measure in Hz used to decrement the
-> > > +      watchdog counter register on each tick.
-> > > +      Defaults to 10 if unset.
-> > > +  timeout-sec:
-> > > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > > +    description: |
-> > > +      The watchdog expiration timeout measured in seconds.
-> > > +      Defaults to 8 if unset.
-> > > +
-> > > +required:
-> > > +  - compatible
-> > > +
-> > > +additionalProperties: false
-> > > +
-> > > +examples:
-> > > +  - |
-> > > +    watchdog {
-> > > +      compatible = "qemu,vm-watchdog";
-> > > +      clock = <10>;
-> > > +      timeout-sec = <8>;
-> >
-> > How does one access this 'hardware'?
-> >
->
-> This is a MMIO device.
+> > Erm how to fix this? I can't do a 1:1 conversion if the source was
+> > wrong and also have no bot warning.
+> > Or I should just push an additional patch to fix this error after the
+> > conversion?
+> 
+> Didn't we agree that original bindings were not in good shape? Yet the
+> questions raised with your v6 remain actually not answered, till the bot
+> complains.
+> 
+> Please do not send the bindings which do not pass dt_binding_check.
+> 
+> Best regards,
+> Krzysztof
 
-Then how do you discover its address? You need 'reg'.
+In v6 the last mail were with the idea of sending separate series with
+minimal changes and it was mention that it was a good idea to send only
+conversion and then send the changes with the conversion series.
 
-> > Why does this need to be in DT?
-> >
-> > We have DT because h/w designers are incapable of making h/w
-> > discoverable. Why repeat that problem with s/w interfaces?
-> >
->
-> We need to have this one in the DT because in a secure VM we only load
-> trusted DT components.
+Finally got the message. I should NEVER send patch with warning from
+dt_binding_check.
 
-How does using DT make something trusted vs. any other mechanism the
-hypervisor controls?
-
-I would like to know from the virtualization folks (Xen/KVM) how they
-would implement this feature? Certainly this could be reused, but then
-we need an ACPI binding too for non-DT systems.
-
-Why not use virtio?
-
-Rob
+-- 
+	Ansuel
