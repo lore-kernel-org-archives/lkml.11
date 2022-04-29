@@ -2,116 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3790CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:28:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20DADC43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378546AbiD2PbR (ORCPT
+        id S1343928AbiD2PcX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 11:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40668 "EHLO
+        Fri, 29 Apr 2022 11:32:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378419AbiD2Pad (ORCPT
+        with ESMTP id S1378507AbiD2PcJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 11:30:33 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A62D9D4CAF;
-        Fri, 29 Apr 2022 08:27:14 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TCsdmU019426;
-        Fri, 29 Apr 2022 11:27:05 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3fprv535us-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 11:27:04 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 23TFR3D6044433
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 29 Apr 2022 11:27:03 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 29 Apr 2022 11:27:03 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 29 Apr 2022 11:27:02 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 29 Apr 2022 11:27:02 -0400
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 23TFQEcl028122;
-        Fri, 29 Apr 2022 11:26:54 -0400
-From:   <alexandru.tachici@analog.com>
-To:     <andrew@lunn.ch>
-CC:     <o.rempel@pengutronix.de>, <alexandru.tachici@analog.com>,
-        <davem@davemloft.net>, <devicetree@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
-        <netdev@vger.kernel.org>, <robh+dt@kernel.org>
-Subject: [PATCH v7 7/7] dt-bindings: net: phy: Add 10-baseT1L 2.4 Vpp
-Date:   Fri, 29 Apr 2022 18:34:37 +0300
-Message-ID: <20220429153437.80087-8-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220429153437.80087-1-alexandru.tachici@analog.com>
-References: <20220429153437.80087-1-alexandru.tachici@analog.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: VLMYCEFUkzUMXzd-sUKUPP3IGRrCdezs
-X-Proofpoint-ORIG-GUID: VLMYCEFUkzUMXzd-sUKUPP3IGRrCdezs
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-29_07,2022-04-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- phishscore=0 lowpriorityscore=0 spamscore=0 impostorscore=0 adultscore=0
- mlxlogscore=792 mlxscore=0 bulkscore=0 suspectscore=0 clxscore=1015
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204290083
+        Fri, 29 Apr 2022 11:32:09 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38502D4C87
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 08:28:36 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id x12so6785653pgj.7
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 08:28:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e37KpWOvnJl8DV6RpvFm8R8ciIf9e11j1e98qdA+nR0=;
+        b=CQH14jLE8Ms+j8J1oP8clFORtMf0mx0Gh4b+0HDNYIdpNqAe7n8P3wKFp+gPmBt4C2
+         XGh14y7IZWaD/d1rfA5DQcS1OJMA/A89Ahx765rBST+rLzMPQKxuGe47JP9qORF7tHsu
+         0vLmqZAjh4Z4o4FaPUwFm3n74p6oo5io3GYhFz8FjY1dsOISjYDkrBzh72QbOfO3q3+R
+         tnq81POYf+Q1TKbz/w6ZQ3lVKILKwFfBsLJPMqOrTbYtPEgJ87ITuyvw3V0UMTCBPojD
+         gLqEgErM/FJraX1LagRCx1d20ZNyakv3/QZlO8Z+a1+Gbat/3H6QYtbAtIzAokzNNuL7
+         EHIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=e37KpWOvnJl8DV6RpvFm8R8ciIf9e11j1e98qdA+nR0=;
+        b=0yt7aR/BdevW9ktRYbEzSLLw8NZQyK9/gpOMONtiof9IzAFs87IA1APLTcflqs8VVX
+         OUoLYueg8ffh3pO34UtsEse/TrmY+Jk3tvgqF4P/vEzeEAbzmJ2i6xst0kJSpPW3AeJD
+         Re7XFjjGWjXyx1+zjiP2lcPFYMnrIUHVFBny4S4cbFW+gwGX0IyEmWj/+y1FFURo7eIs
+         QgwhL0yQ0ymECmQ/UBT6SdNZwUPBTqtZvUZdDsYdbJIs2cEy7v1EPcJEH2skb17JrOEY
+         vE34oV7c3ke3/iwS+ImCbKK48IamAEkNiNxEUiT6xXPYImcRxkR04tjH76eOf+ofXlTX
+         +lrg==
+X-Gm-Message-State: AOAM531ZeH73Z1YQz/dm3ZuxZXoLDqH3Fp6JgXOqbaOPu33z30h7gy+0
+        6TTXADwtHyPELDY/MlCcct7+OQ==
+X-Google-Smtp-Source: ABdhPJzo5Fg9L/6IHNj66qUgf0n1g8y00zwYhwFSYEOwGBZ58KZH+MxD4trY5ygLoSvgdmUYu2btMg==
+X-Received: by 2002:a63:e513:0:b0:3ab:a3fb:f100 with SMTP id r19-20020a63e513000000b003aba3fbf100mr13900099pgh.70.1651246115507;
+        Fri, 29 Apr 2022 08:28:35 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id m1-20020a637d41000000b003c14af5063esm6628648pgn.86.2022.04.29.08.28.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 08:28:34 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 08:28:34 -0700 (PDT)
+X-Google-Original-Date: Fri, 29 Apr 2022 08:12:57 PDT (-0700)
+Subject:     Re: [PATCH] RISC-V-fixes: relocate DTB if it's outside memory region
+In-Reply-To: <mhng-9aafbd90-eb33-4f43-afa3-b9f9338c2a70@palmer-ri-x1c9>
+CC:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     mick@ics.forth.gr
+Message-ID: <mhng-6c123e84-9530-46f6-a5ec-6b908bb92f95@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandru Tachici <alexandru.tachici@analog.com>
+On Thu, 28 Apr 2022 14:48:14 PDT (-0700), Palmer Dabbelt wrote:
+> On Mon, 25 Apr 2022 23:11:23 PDT (-0700), mick@ics.forth.gr wrote:
+>> Hello Palmer,
+>>
+>> Any updates on this ?
+>
+> Sorry about that, it's on fixes.
 
-Add a tristate property to advertise desired transmit level.
+Not sure if I just wasn't paying attention yesterday or if I'm grumpier 
+this morning, but that "RISC-V-fixes: " prefix is just a bit too odd -- 
+I know we've got a split between "RISC-V" and "riscv" so maybe it 
+doesn't matter, but even that is kind of ugly.
 
-If the device supports the 2.4 Vpp operating mode for 10BASE-T1L,
-as defined in 802.3gc, and the 2.4 Vpp transmit voltage operation
-is desired, property should be set to 1. This property is used
-to select whether Auto-Negotiation advertises a request to
-operate the 10BASE-T1L PHY in increased transmit level mode.
+I re-wrote it, but I'm going to let it round trip through linux-next so 
+I'll send it up next time.
 
-If property is set to 1, the PHY shall advertise a request
-to operate the 10BASE-T1L PHY in increased transmit level mode.
-If property is set to zero, the PHY shall not advertise
-a request to operate the 10BASE-T1L PHY in increased transmit level mode.
+Sorry, I know this happened twice recently but I'll try not to make a 
+habit of it.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
----
- Documentation/devicetree/bindings/net/ethernet-phy.yaml | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-index ee42328a109d..ed1415a4381f 100644
---- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-@@ -77,6 +77,15 @@ properties:
-     description:
-       Maximum PHY supported speed in Mbits / seconds.
- 
-+  phy-10base-t1l-2.4vpp:
-+    description: |
-+      tristate, request/disable 2.4 Vpp operating mode. The values are:
-+      0: Disable 2.4 Vpp operating mode.
-+      1: Request 2.4 Vpp operating mode from link partner.
-+      Absence of this property will leave configuration to default values.
-+    $ref: "/schemas/types.yaml#/definitions/uint32"
-+    enum: [0, 1]
-+
-   broken-turn-around:
-     $ref: /schemas/types.yaml#/definitions/flag
-     description:
--- 
-2.25.1
-
+>
+>>
+>> Regards,
+>> Nick
+>>
+>> On 3/22/22 15:28, Nick Kossifidis wrote:
+>>> In case the DTB provided by the bootloader/BootROM is before the kernel
+>>> image or outside /memory, we won't be able to access it through the
+>>> linear mapping, and get a segfault on setup_arch(). Currently OpenSBI
+>>> relocates DTB but that's not always the case (e.g. if FW_JUMP_FDT_ADDR
+>>> is not specified), and it's also not the most portable approach since
+>>> the default FW_JUMP_FDT_ADDR of the generic platform relocates the DTB
+>>> at a specific offset that may not be available. To avoid this situation
+>>> copy DTB so that it's visible through the linear mapping.
+>>>
+>>> Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
+>>> ---
+>>>   arch/riscv/mm/init.c | 21 +++++++++++++++++++--
+>>>   1 file changed, 19 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
+>>> index 0d588032d..697a9aed4 100644
+>>> --- a/arch/riscv/mm/init.c
+>>> +++ b/arch/riscv/mm/init.c
+>>> @@ -206,8 +206,25 @@ static void __init setup_bootmem(void)
+>>>   	 * early_init_fdt_reserve_self() since __pa() does
+>>>   	 * not work for DTB pointers that are fixmap addresses
+>>>   	 */
+>>> -	if (!IS_ENABLED(CONFIG_BUILTIN_DTB))
+>>> -		memblock_reserve(dtb_early_pa, fdt_totalsize(dtb_early_va));
+>>> +	if (!IS_ENABLED(CONFIG_BUILTIN_DTB)) {
+>>> +		/*
+>>> +		 * In case the DTB is not located in a memory region we won't
+>>> +		 * be able to locate it later on via the linear mapping and
+>>> +		 * get a segfault when accessing it via __va(dtb_early_pa).
+>>> +		 * To avoid this situation copy DTB to a memory region.
+>>> +		 * Note that memblock_phys_alloc will also reserve DTB region.
+>>> +		 */
+>>> +		if (!memblock_is_memory(dtb_early_pa)) {
+>>> +			size_t fdt_size = fdt_totalsize(dtb_early_va);
+>>> +			phys_addr_t new_dtb_early_pa = memblock_phys_alloc(fdt_size, PAGE_SIZE);
+>>> +			void *new_dtb_early_va = early_memremap(new_dtb_early_pa, fdt_size);
+>>> +
+>>> +			memcpy(new_dtb_early_va, dtb_early_va, fdt_size);
+>>> +			early_memunmap(new_dtb_early_va, fdt_size);
+>>> +			_dtb_early_pa = new_dtb_early_pa;
+>>> +		} else
+>>> +			memblock_reserve(dtb_early_pa, fdt_totalsize(dtb_early_va));
+>>> +	}
+>>>
+>>>   	early_init_fdt_scan_reserved_mem();
+>>>   	dma_contiguous_reserve(dma32_phys_limit);
