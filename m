@@ -2,127 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C70E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:59:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44F18C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:59:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378707AbiD2QC7 (ORCPT
+        id S1378718AbiD2QDC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
+        Fri, 29 Apr 2022 12:03:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378709AbiD2QCx (ORCPT
+        with ESMTP id S1378698AbiD2QCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Apr 2022 12:02:53 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CFF08A9F2;
-        Fri, 29 Apr 2022 08:59:34 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id r13so16288027ejd.5;
-        Fri, 29 Apr 2022 08:59:34 -0700 (PDT)
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5D3AC93F
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 08:59:29 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so5000456wmn.1
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 08:59:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CFofsZTrxzYW8g6YUhhQeEdV8aFgV5toOyemA0wEyeo=;
-        b=C1T5dB6hi7U6pTSrjv6swEvw3cKJfbF/qLcR3RQWeut5cPamNKokJimmmheEgPlWme
-         YhLG1gvP8efrP/7tMPVKf+xVQs2czDC5zN4ZYJnxWoO1gHLoxBc8QWMR3lFI90LYQ8yH
-         fQCj28jDmiK1VuQCoK5EoOCANhe/WCHl9j8GHQV/A4Xl8Q1opeoAIcJbiaOVwynM3S4S
-         3HTFpaTxyYWvEWNW/3yr5295gY4zN2rUI3gy3tGCfV8Hbdsz77I4GBBpaCCvcwP51De0
-         3k7zBeevh1t01OZgNmiTI+2opiStvubt/3Fiq7sqdh/jChNPfSbUX90AXjuRQUNAbYax
-         edhQ==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=U8HrbFqgCBfb/RS3uJbNmvqXXJbn594jDlyVmtK764U=;
+        b=OUSBU7IakIZzrQL74ICWLqDfwhhkDremyYGPrYch6LLTeJLPScBA4ElPwRmEUb1YQB
+         tqXV381ukmV/MHplLtVHw+xzdajJH+PDrEr1gv4SJAOfsQdbSJSl5Fm72o+5rCPIDctU
+         YqJZYpgUUmW7hAtlH8TjEB5fko1P5bn53P7fkZg/0WgGvOhMSFHjvE1OCYiIxejwQkJY
+         KAw+n0w6x9IcL+81Uu4g+bTQNgfPJbDPIIjdoBBDUwryvfMZNIKV41Z04awYUjcb/CFr
+         9IKQSo1DbkmTeYGrpZTAahMJTcVmtfj25Oy+yPlGuNChdBq0unl0u11VxuGcUrRlKD9t
+         hGBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CFofsZTrxzYW8g6YUhhQeEdV8aFgV5toOyemA0wEyeo=;
-        b=dEUXNf17EgTIBi1aB8MhZzAGTPe5ZhaUIbHb/dvp2qIwFgahE+TckXDJminsjU/AzI
-         Xp+xicplSYy3vEjfo09tRZwNj9bDtqluxWhKDPvytaRdPLVl4ZSB1p5iENUXuBVCcdkb
-         Y+5DnpZ7Gt1QR4DmU9iPN1xPvcY/rIRqiMjKYFliv6F5QqHojgr7vtpcngHfWpMd4AFl
-         bx12kqSvBHEcqfE8mAkuvxG9NcGG/QpqOIyX9dn1VEIPGD4IrAPeBu+llu8kN4oubq34
-         FUcn32oMsCW1pIZhTZjwMJGcpppOMdCTguH+823xZHTIUseVS7+EY5ddjL1ePeOkS+x6
-         jHmQ==
-X-Gm-Message-State: AOAM530APwPK8XfxZuAxLp/bb9xh+nfe+cG3MyBAzvM8yVPRgJRMXHPb
-        1KfvwaLOFDMmTvB32/ORh0w=
-X-Google-Smtp-Source: ABdhPJxUyrv8UAISq1M4lIXdSzVcLopFibiDLcBRyirwaUmJsMXKf5WYWap0qDwxSikXnmaJhmpYpA==
-X-Received: by 2002:a17:906:7307:b0:6da:92db:c78f with SMTP id di7-20020a170906730700b006da92dbc78fmr36910751ejc.35.1651247972842;
-        Fri, 29 Apr 2022 08:59:32 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id ia5-20020a170907a06500b006f3ef214dffsm756699ejc.101.2022.04.29.08.59.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 08:59:32 -0700 (PDT)
-Message-ID: <626c0b64.1c69fb81.1b1e9.4fe6@mx.google.com>
-X-Google-Original-Message-ID: <YmwK0aa8u7lU6lct@Ansuel-xps.>
-Date:   Fri, 29 Apr 2022 17:57:05 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        linux-clk@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH 3/3] dt-bindings: arm: msm: Convert kpss-gcc driver
- Documentation to yaml
-References: <20220429121739.28584-1-ansuelsmth@gmail.com>
- <20220429121739.28584-4-ansuelsmth@gmail.com>
- <1651247596.124069.2344494.nullmailer@robh.at.kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=U8HrbFqgCBfb/RS3uJbNmvqXXJbn594jDlyVmtK764U=;
+        b=R1qNt8d+lpr0eUAN7yX+ZSHntA3VLrTdifot0ji/jI3kRohwer1hBVwfhuhKzT0PtP
+         ZpQC5p9xtmDmAeCby9pa+QmfU9pwWPTzJ5qIt97uY+jihCzh4HvuMAXaMXU9Tc3bIuNR
+         ENiyp4hV5cXIllR1WrKiDy/3M4NmO9RDf4XpXHxek+VxEXPZK7S89L6dJNJhTsLjwPKJ
+         Beseipzt3T52FDfkCVp6TfEyaF22D0ZB8Xf0FEm9uR3i1BVSonOcUa29zHweovcgvirN
+         sPRjLYb/G2mDfP6mcZbilEKij+gVVwZqWjQBdrgUQjJ+j7J8MK21szN2GZnYkPPtdzI/
+         9F0Q==
+X-Gm-Message-State: AOAM530GvIF5QqbOPWl8tujZUlwpJMDdVVxboeNo640JWdpO82goEiia
+        wFP4cc80D296UtvuX9FCoHeu2ZFwa2c8vg==
+X-Google-Smtp-Source: ABdhPJww59Ilmdm1wcQYRmLg+RLw05DqkftO7wIpU3DywUjRDqpzisiSnOBqRs/YCLN3xi/gJbV5mg==
+X-Received: by 2002:a1c:ed01:0:b0:394:89d:6277 with SMTP id l1-20020a1ced01000000b00394089d6277mr3920685wmh.28.1651247968575;
+        Fri, 29 Apr 2022 08:59:28 -0700 (PDT)
+Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.googlemail.com with ESMTPSA id e9-20020a056000178900b0020a9f995a3csm3190248wrg.24.2022.04.29.08.59.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 08:59:27 -0700 (PDT)
+Message-ID: <28a05a2d-06e7-a958-6873-24634423b4e0@linaro.org>
+Date:   Fri, 29 Apr 2022 16:59:26 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1651247596.124069.2344494.nullmailer@robh.at.kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/5] soundwire: qcom: return error when
+ pm_runtime_get_sync fails
+Content-Language: en-US
+To:     Bard Liao <yung-chuan.liao@linux.intel.com>,
+        alsa-devel@alsa-project.org, vkoul@kernel.org
+Cc:     vinod.koul@linaro.org, linux-kernel@vger.kernel.org,
+        gregkh@linuxfoundation.org, pierre-louis.bossart@linux.intel.com,
+        sanyog.r.kale@intel.com, bard.liao@intel.com
+References: <20220426235623.4253-1-yung-chuan.liao@linux.intel.com>
+ <20220426235623.4253-2-yung-chuan.liao@linux.intel.com>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+In-Reply-To: <20220426235623.4253-2-yung-chuan.liao@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 10:53:16AM -0500, Rob Herring wrote:
-> On Fri, 29 Apr 2022 14:17:39 +0200, Ansuel Smith wrote:
-> > Convert kpss-gcc driver Documentation to yaml.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > ---
-> >  .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 -------------
-> >  .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 63 +++++++++++++++++++
-> >  2 files changed, 63 insertions(+), 44 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-> >  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-> > 
-> 
-> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> 
-> yamllint warnings/errors:
-> 
-> dtschema/dtc warnings/errors:
-> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml: properties: '#clock-cells' is a dependency of 'clock-output-names'
 
-Erm how to fix this? I can't do a 1:1 conversion if the source was
-wrong and also have no bot warning.
-Or I should just push an additional patch to fix this error after the
-conversion?
 
-> 	from schema $id: http://devicetree.org/meta-schemas/clocks.yaml#
-> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml: ignoring, error in schema: properties
-> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.example.dtb: clock-controller@2011000: '#clock-cells' is a dependency of 'clock-output-names'
-> 	From schema: /usr/local/lib/python3.10/dist-packages/dtschema/schemas/clock/clock.yaml
-> Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.example.dtb:0:0: /example-0/clock-controller@2011000: failed to match any schema with compatible: ['qcom,kpss-gcc-ipq8064', 'qcom,kpss-gcc']
-> Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.example.dtb:0:0: /example-0/clock-controller@2011000: failed to match any schema with compatible: ['qcom,kpss-gcc-ipq8064', 'qcom,kpss-gcc']
+On 27/04/2022 00:56, Bard Liao wrote:
+> From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 > 
-> doc reference errors (make refcheckdocs):
+> For some reason there's a missing error return in two places.
 > 
-> See https://patchwork.ozlabs.org/patch/
-> 
-> This check can fail if there are any dependencies. The base for a patch
-> series is generally the most recent rc1.
-> 
-> If you already ran 'make dt_binding_check' and didn't see the above
-> error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> date:
-> 
-> pip3 install dtschema --upgrade
-> 
-> Please check and re-submit.
-> 
+> Fixes: 74e79da9fd46a ("soundwire: qcom: add runtime pm support")
+> Fixes: 04d46a7b38375 ("soundwire: qcom: add in-band wake up interrupt support")
+> Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+> Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+> Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+> ---
 
--- 
-	Ansuel
+Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+
+>   drivers/soundwire/qcom.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+> index f5fc8c27012a..c40c25f2d264 100644
+> --- a/drivers/soundwire/qcom.c
+> +++ b/drivers/soundwire/qcom.c
+> @@ -516,6 +516,7 @@ static irqreturn_t qcom_swrm_wake_irq_handler(int irq, void *dev_id)
+>   				    "pm_runtime_get_sync failed in %s, ret %d\n",
+>   				    __func__, ret);
+>   		pm_runtime_put_noidle(swrm->dev);
+> +		return ret;
+>   	}
+>   
+>   	if (swrm->wake_irq > 0) {
+> @@ -1258,6 +1259,7 @@ static int swrm_reg_show(struct seq_file *s_file, void *data)
+>   				    "pm_runtime_get_sync failed in %s, ret %d\n",
+>   				    __func__, ret);
+>   		pm_runtime_put_noidle(swrm->dev);
+> +		return ret;
+>   	}
+>   
+>   	for (reg = 0; reg <= SWR_MSTR_MAX_REG_ADDR; reg += 4) {
