@@ -2,60 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB8DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:04:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5B17C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:04:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353768AbiD2BIB (ORCPT
+        id S1353807AbiD2BID (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 21:08:01 -0400
+        Thu, 28 Apr 2022 21:08:03 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353737AbiD2BHq (ORCPT
+        with ESMTP id S1353757AbiD2BHr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 21:07:46 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB107BC87D
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:04:27 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id u8-20020a170903124800b0015195a5826cso3494186plh.4
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:04:27 -0700 (PDT)
+        Thu, 28 Apr 2022 21:07:47 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07C4BC865
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:04:30 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id o7-20020a17090a0a0700b001d93c491131so6052126pjo.6
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:04:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=/vObjEr2duI6lVj2DJMiXx7mTG91sHLuRvuGuCnnp5s=;
-        b=BTi4c7Cu302LzqbL4GcUUkcvj9CTYFdTcbPiomOjs7vaKzDfjVRNwHJbs/7uADbHVQ
-         OTpoo7YsC7bnXCgBlljC7OPk26zAEDiYnR0gs7nHjjhjW/6x7PpusRMq0ZWHcwNW34el
-         wksPfyimmN/zO0/29ZJCeSKRCVwaVzS/1vbxxc9WWUcCIHh3cjmoE4x4e0dMjbzhGMZY
-         1x3VEy8+MLdU7e0KJBtaLqY6vhnbcuRJAcbUICS2rWbRV4qZatC9pV93MLFe9pXIU9QL
-         FcV9WBd9WsFMBbHF7Qjkds+qmE32xrEcyfoj6jj4IuoyHlM1J+BoiAFYUL0DyX2tRkh8
-         8MoA==
+        bh=jRYQ+NLKeR4ZgpGCTvtPE0cYfeNV63Iwo0ARpwv/qPY=;
+        b=JhGpL8syvU+MGBw8KnylH1ePm331NSeic9lS7Z5ZF5e7M+15hOH6EFGvCEgcioZEMz
+         jeWl8tHkY81V2r9sZsrDcraO0AXwwpmpLDxEYf1zTpi6juZuuj829DVfOOYFQHVz4L78
+         C5V2bnBrlGidvmXfsklJlULpLwYuTQCC/ytMTJmV8/HPrkzCywCqhpXBsIUAvyNCqS35
+         vOzZySnkbujZuFi1YkM+eoQgFp8VEfEdDERdfzR5uVl2a78uZxK2RT0Don7aQA7l2lQy
+         quMSePLzEiNwz7p80QqEvxyLpYH6TjUy0BPS5zExsOSBQ0WElKokq4f+b7roou2nyDfe
+         68Sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=/vObjEr2duI6lVj2DJMiXx7mTG91sHLuRvuGuCnnp5s=;
-        b=LvmXq8Tz1e4ts/8kc72cSgEoa4OOQaoeU7RP9thveWrJ12UJ4BMPh+PgWvJ5SlZUh0
-         Qtt4rkZUDNqOrf3lcBwRqbBQo9Y8UUUhKA0WNAgy56J/IYbDdaE0eOUU94j7Y6gUqyNm
-         eSLJYBryaqpjoG8N4H3oCb6BptacRGkE7SFFEIW3KEX1OETdHpnF4eX8Jkf7OFWd5PEw
-         8uZkMk+1rt9HFmaatRkv0fIraD3q1ZF20KnVkeWNFesT6a+DvDxTsob/zhZQczMJjeR1
-         OmFSck6+k15U+c+VfBow9NuKZo2yAdR4lXIuPsMxa6cQJGkKmQWW7w/kS3NQK6eTaSqp
-         Stkg==
-X-Gm-Message-State: AOAM531WFa0KVMRWVA1ZJ4fvuznVTSnAxGfQ+DXBTwLlxhnR4ZcL1mN7
-        1Wlu662uj69GYxMHcd4ZkICHkCsmhUU=
-X-Google-Smtp-Source: ABdhPJyfhCif5QV45qKzkrHHL1rKzaRwb2023co9r5r38s2V6rgHOlKAXbndsrdWBD5/pjYZRk7mhxSGPtM=
+        bh=jRYQ+NLKeR4ZgpGCTvtPE0cYfeNV63Iwo0ARpwv/qPY=;
+        b=yRLDHDi8gs2ecuoTRZlFwj2fi1RiHC4JmPIo51UDIzNkwYsqHaMoZPUu0bu8Kj0Llx
+         aAMgCwMMdb4H0KquK3Y6nmFTSw5DQfoS1NMaIbL3FEkaZVZYKPJRDUbXqYl1oU/C2rdN
+         xzvjp66w6AlWN3SlJHfjVT/Id4tOKLHSSVRMJrgZMQXdadYlMT7nG4ssPdxDHnvAMHBJ
+         L/TpZPKhDwMhu81dSAjLl3hjIElyxegeEYk0APEN4gORn0QlUrpkSJLT7ZhcFCkbY+U6
+         jsh5Bjogtx9PMHs9sLSnCdeP4P6T/7tCf3gP2X5+0q38g4yyv1wN46XVD+yecUQyXGq+
+         fxeA==
+X-Gm-Message-State: AOAM5307A1nO9BIwABKGbLGsiCw99711BqF2UyAj6Rp7mDwWDveQE/8J
+        HTbWSFl2XLPAgVDEK2KqY+/+yWu8tRM=
+X-Google-Smtp-Source: ABdhPJzrPQf/+XtQJlw+fhpbt6qxsFNut9jsl6arSE5+6bvYrQrbs0GqX9KGmNI0vl2lemqfU/3OXErlNpw=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a63:1056:0:b0:3a8:2190:9e27 with SMTP id
- 22-20020a631056000000b003a821909e27mr30475002pgq.303.1651194267207; Thu, 28
- Apr 2022 18:04:27 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:ad2:b0:4f1:2734:a3d9 with SMTP id
+ c18-20020a056a000ad200b004f12734a3d9mr37921713pfl.61.1651194270433; Thu, 28
+ Apr 2022 18:04:30 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 29 Apr 2022 01:04:11 +0000
+Date:   Fri, 29 Apr 2022 01:04:13 +0000
 In-Reply-To: <20220429010416.2788472-1-seanjc@google.com>
-Message-Id: <20220429010416.2788472-6-seanjc@google.com>
+Message-Id: <20220429010416.2788472-8-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220429010416.2788472-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 05/10] KVM: nVMX: Use kvm_vcpu_map() to get/pin vmcs12's
- APIC-access page
+Subject: [PATCH 07/10] KVM: Remove kvm_vcpu_gfn_to_page() and kvm_vcpu_gpa_to_page()
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -69,111 +68,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use kvm_vcpu_map() to get/pin the backing for vmcs12's APIC-access page,
-there's no reason it has to be restricted to 'struct page' backing.  The
-APIC-access page actually doesn't need to be backed by anything, which is
-ironically why it got left behind by the series which introduced
-kvm_vcpu_map()[1]; the plan was to shove a dummy pfn into vmcs02[2], but
-that code never got merged.
+Drop helpers to convert a gfn/gpa to a 'struct page' in the context of a
+vCPU.  KVM doesn't require that guests be backed by 'struct page' memory,
+thus any use of helpers that assume 'struct page' is bound to be flawed,
+as was the case for the recently removed last user in x86's nested VMX.
 
-Switching the APIC-access page to kvm_vcpu_map() doesn't preclude using a
-magic pfn in the future, and will allow a future patch to drop
-kvm_vcpu_gpa_to_page().
-
-[1] https://lore.kernel.org/all/1547026933-31226-1-git-send-email-karahmed@amazon.de
-[2] https://lore.kernel.org/lkml/1543845551-4403-1-git-send-email-karahmed@amazon.de
+No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/vmx/nested.c | 39 ++++++++++++---------------------------
- arch/x86/kvm/vmx/vmx.h    |  2 +-
- 2 files changed, 13 insertions(+), 28 deletions(-)
+ include/linux/kvm_host.h |  7 -------
+ virt/kvm/kvm_main.c      | 35 +++++++++++++----------------------
+ 2 files changed, 13 insertions(+), 29 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index a6688663da4d..cc1c7836f172 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -311,11 +311,12 @@ static void free_nested(struct kvm_vcpu *vcpu)
- 	vmx->nested.cached_vmcs12 = NULL;
- 	kfree(vmx->nested.cached_shadow_vmcs12);
- 	vmx->nested.cached_shadow_vmcs12 = NULL;
--	/* Unpin physical memory we referred to in the vmcs02 */
--	if (vmx->nested.apic_access_page) {
--		kvm_release_page_clean(vmx->nested.apic_access_page);
--		vmx->nested.apic_access_page = NULL;
--	}
-+	/*
-+	 * Unpin physical memory we referred to in the vmcs02.  The APIC access
-+	 * page's backing page (yeah, confusing) shouldn't actually be accessed,
-+	 * and if it is written, the contents are irrelevant.
-+	 */
-+	kvm_vcpu_unmap(vcpu, &vmx->nested.apic_access_page_map, false);
- 	kvm_vcpu_unmap(vcpu, &vmx->nested.virtual_apic_map, true);
- 	kvm_vcpu_unmap(vcpu, &vmx->nested.pi_desc_map, true);
- 	vmx->nested.pi_desc = NULL;
-@@ -3159,8 +3160,6 @@ static bool nested_get_vmcs12_pages(struct kvm_vcpu *vcpu)
- 	struct vmcs12 *vmcs12 = get_vmcs12(vcpu);
- 	struct vcpu_vmx *vmx = to_vmx(vcpu);
- 	struct kvm_host_map *map;
--	struct page *page;
--	u64 hpa;
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index e32fbde79298..7e59bc5ec8c7 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -1207,7 +1207,6 @@ struct kvm_memory_slot *kvm_vcpu_gfn_to_memslot(struct kvm_vcpu *vcpu, gfn_t gfn
+ kvm_pfn_t kvm_vcpu_gfn_to_pfn_atomic(struct kvm_vcpu *vcpu, gfn_t gfn);
+ kvm_pfn_t kvm_vcpu_gfn_to_pfn(struct kvm_vcpu *vcpu, gfn_t gfn);
+ int kvm_vcpu_map(struct kvm_vcpu *vcpu, gpa_t gpa, struct kvm_host_map *map);
+-struct page *kvm_vcpu_gfn_to_page(struct kvm_vcpu *vcpu, gfn_t gfn);
+ void kvm_vcpu_unmap(struct kvm_vcpu *vcpu, struct kvm_host_map *map, bool dirty);
+ unsigned long kvm_vcpu_gfn_to_hva(struct kvm_vcpu *vcpu, gfn_t gfn);
+ unsigned long kvm_vcpu_gfn_to_hva_prot(struct kvm_vcpu *vcpu, gfn_t gfn, bool *writable);
+@@ -1695,12 +1694,6 @@ static inline hpa_t pfn_to_hpa(kvm_pfn_t pfn)
+ 	return (hpa_t)pfn << PAGE_SHIFT;
+ }
  
- 	if (!vcpu->arch.pdptrs_from_userspace &&
- 	    !nested_cpu_has_ept(vmcs12) && is_pae_paging(vcpu)) {
-@@ -3175,23 +3174,12 @@ static bool nested_get_vmcs12_pages(struct kvm_vcpu *vcpu)
+-static inline struct page *kvm_vcpu_gpa_to_page(struct kvm_vcpu *vcpu,
+-						gpa_t gpa)
+-{
+-	return kvm_vcpu_gfn_to_page(vcpu, gpa_to_gfn(gpa));
+-}
+-
+ static inline bool kvm_is_error_gpa(struct kvm *kvm, gpa_t gpa)
+ {
+ 	unsigned long hva = gfn_to_hva(kvm, gpa_to_gfn(gpa));
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index a987188a426f..661390243b9e 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -2698,24 +2698,25 @@ int gfn_to_page_many_atomic(struct kvm_memory_slot *slot, gfn_t gfn,
+ }
+ EXPORT_SYMBOL_GPL(gfn_to_page_many_atomic);
  
+-static struct page *kvm_pfn_to_page(kvm_pfn_t pfn)
+-{
+-	if (is_error_noslot_pfn(pfn))
+-		return KVM_ERR_PTR_BAD_PAGE;
+-
+-	if (kvm_is_reserved_pfn(pfn))
+-		return KVM_ERR_PTR_BAD_PAGE;
+-
+-	return pfn_to_page(pfn);
+-}
+-
++/*
++ * Do not use this helper unless you are absolutely certain the gfn _must_ be
++ * backed by 'struct page'.  A valid example is if the backing memslot is
++ * controlled by KVM.  Note, if the returned page is valid, it's refcount has
++ * been elevated by gfn_to_pfn().
++ */
+ struct page *gfn_to_page(struct kvm *kvm, gfn_t gfn)
+ {
+ 	kvm_pfn_t pfn;
  
- 	if (nested_cpu_has2(vmcs12, SECONDARY_EXEC_VIRTUALIZE_APIC_ACCESSES)) {
--		/*
--		 * Translate L1 physical address to host physical
--		 * address for vmcs02. Keep the page pinned, so this
--		 * physical address remains valid. We keep a reference
--		 * to it so we can release it later.
--		 */
--		if (vmx->nested.apic_access_page) { /* shouldn't happen */
--			kvm_release_page_clean(vmx->nested.apic_access_page);
--			vmx->nested.apic_access_page = NULL;
--		}
--		page = kvm_vcpu_gpa_to_page(vcpu, vmcs12->apic_access_addr);
--		if (!is_error_page(page)) {
--			vmx->nested.apic_access_page = page;
--			hpa = page_to_phys(vmx->nested.apic_access_page);
--			vmcs_write64(APIC_ACCESS_ADDR, hpa);
-+		map = &vmx->nested.apic_access_page_map;
+ 	pfn = gfn_to_pfn(kvm, gfn);
+ 
+-	return kvm_pfn_to_page(pfn);
++	if (is_error_noslot_pfn(pfn))
++		return KVM_ERR_PTR_BAD_PAGE;
 +
-+		if (!kvm_vcpu_map(vcpu, gpa_to_gfn(vmcs12->apic_access_addr), map)) {
-+			vmcs_write64(APIC_ACCESS_ADDR, pfn_to_hpa(map->pfn));
- 		} else {
--			pr_debug_ratelimited("%s: no backing 'struct page' for APIC-access address in vmcs12\n",
-+			pr_debug_ratelimited("%s: no backing for APIC-access address in vmcs12\n",
- 					     __func__);
- 			vcpu->run->exit_reason = KVM_EXIT_INTERNAL_ERROR;
- 			vcpu->run->internal.suberror =
-@@ -4627,10 +4615,7 @@ void nested_vmx_vmexit(struct kvm_vcpu *vcpu, u32 vm_exit_reason,
- 	}
++	if (kvm_is_reserved_pfn(pfn))
++		return KVM_ERR_PTR_BAD_PAGE;
++
++	return pfn_to_page(pfn);
+ }
+ EXPORT_SYMBOL_GPL(gfn_to_page);
  
- 	/* Unpin physical memory we referred to in vmcs02 */
--	if (vmx->nested.apic_access_page) {
--		kvm_release_page_clean(vmx->nested.apic_access_page);
--		vmx->nested.apic_access_page = NULL;
--	}
-+	kvm_vcpu_unmap(vcpu, &vmx->nested.apic_access_page_map, false);
- 	kvm_vcpu_unmap(vcpu, &vmx->nested.virtual_apic_map, true);
- 	kvm_vcpu_unmap(vcpu, &vmx->nested.pi_desc_map, true);
- 	vmx->nested.pi_desc = NULL;
-diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
-index 9c6bfcd84008..2498774f36b2 100644
---- a/arch/x86/kvm/vmx/vmx.h
-+++ b/arch/x86/kvm/vmx/vmx.h
-@@ -203,7 +203,7 @@ struct nested_vmx {
- 	 * Guest pages referred to in the vmcs02 with host-physical
- 	 * pointers, so we must keep them pinned while L2 runs.
- 	 */
--	struct page *apic_access_page;
-+	struct kvm_host_map apic_access_page_map;
- 	struct kvm_host_map virtual_apic_map;
- 	struct kvm_host_map pi_desc_map;
+@@ -2786,16 +2787,6 @@ void kvm_vcpu_unmap(struct kvm_vcpu *vcpu, struct kvm_host_map *map, bool dirty)
+ }
+ EXPORT_SYMBOL_GPL(kvm_vcpu_unmap);
  
+-struct page *kvm_vcpu_gfn_to_page(struct kvm_vcpu *vcpu, gfn_t gfn)
+-{
+-	kvm_pfn_t pfn;
+-
+-	pfn = kvm_vcpu_gfn_to_pfn(vcpu, gfn);
+-
+-	return kvm_pfn_to_page(pfn);
+-}
+-EXPORT_SYMBOL_GPL(kvm_vcpu_gfn_to_page);
+-
+ static bool kvm_is_ad_tracked_page(struct page *page)
+ {
+ 	/*
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
