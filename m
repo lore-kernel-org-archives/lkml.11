@@ -2,150 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97ECEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:04:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D111C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:05:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358907AbiD2MIF (ORCPT
+        id S1358904AbiD2MJB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 08:08:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49776 "EHLO
+        Fri, 29 Apr 2022 08:09:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358868AbiD2MHx (ORCPT
+        with ESMTP id S1358868AbiD2MIm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 08:07:53 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE5BC866F;
-        Fri, 29 Apr 2022 05:04:33 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id e23so8798386eda.11;
-        Fri, 29 Apr 2022 05:04:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EC9ILjDGL3YF8DKjgFAU1/3Xp1zrJQq7k7xRaKAybfM=;
-        b=D+iWrmXg19BEad+DLw8cIOPvJlYhItIDdZqTuyZybVcCxroDVkJ97vSPWnwlIXwFzU
-         ZoRoSZ/QLyhOkA1/okvQYXbeS90QiZqtfXswQyGvnOLSCUxkP73g0hpbfXHVl6Ko9mRP
-         XW0nnV3XtvgwPyrBDeDzXEYk3wBi3l7c1qsPEXFIYtTGlAFFbmZPiHRQySrwoAQafHnP
-         J9/baeXOH7Wlw8dN6g1QerJ50e1CTkvwjgHq31SVWWNu1A8JfcXKuEsNgIq6RySt6xVi
-         gGq9zm9cfe15HzTLnjoMOa7nYcWIwT1cyfvIo/V45ODkiltO5AH5fFPQ0+klLrKRUHcV
-         KZPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EC9ILjDGL3YF8DKjgFAU1/3Xp1zrJQq7k7xRaKAybfM=;
-        b=jesgliccKwrpcTjZKtUJgEFUwFZQ04d8gPxQujDBT0dcFqzP90FNUqefngEEzitWr+
-         biXC+uSX24UkmVlZKMmEYVGtpLUwohiwcCe17mLc7aRlRHqEaLXplN608JEAmR+wSbMg
-         9mm49bTREi48lpsZblKUTkq/Khx/hdJyJZk2oHIR2in+PUeJe5WizJl9AOz22yArkDdY
-         79fkL2gAARpjfXjgf8gVLRy7g5WdEbCoHvjEX4mSrsVtemDytVK6CBOpNcdFH50BH6rq
-         4upHuTuAoqjTGJpF+DxJiA+moaV2rEKbR0Y9gssLHbgYhU21k35+wxl/mrwwN5bzw4E9
-         UURQ==
-X-Gm-Message-State: AOAM532P9r6PwR2+gG8lddQULMo0Vy00gX/kBSzzFEHLjWTUwbqfpvk+
-        1o/plEQdXzxxmV3ofmMUJwLb1Qfmjqs=
-X-Google-Smtp-Source: ABdhPJx1+RF5T8GZpmW1o93stK0/PvpCeUxoJ0xeV0iatikrqIWy41vwCDxagNkza9zDakDxP7aiDA==
-X-Received: by 2002:a05:6402:254a:b0:424:1ed9:e173 with SMTP id l10-20020a056402254a00b004241ed9e173mr41785315edb.276.1651233871725;
-        Fri, 29 Apr 2022 05:04:31 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id eo9-20020a1709069b0900b006f3ef214e02sm581338ejc.104.2022.04.29.05.04.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 05:04:31 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sricharan R <sricharan@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [PATCH 4/4] clk: qcom: clk-krait: add apq/ipq8064 errata workaround
-Date:   Fri, 29 Apr 2022 14:01:08 +0200
-Message-Id: <20220429120108.9396-5-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220429120108.9396-1-ansuelsmth@gmail.com>
-References: <20220429120108.9396-1-ansuelsmth@gmail.com>
+        Fri, 29 Apr 2022 08:08:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 889E758E74;
+        Fri, 29 Apr 2022 05:05:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D616620DA;
+        Fri, 29 Apr 2022 12:05:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D720EC385A7;
+        Fri, 29 Apr 2022 12:04:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651233901;
+        bh=51WNgMraDb0YzEABPLR2yD9CPLnar7/70JTrdoVfD90=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kVOjnZP+KmrD+HEDG9rvTDfplbWvxHJ2xxGVUUA8Jgbh4X6vxHzXDUQtp7uuqdIjb
+         3K3wdZZKieOGgvMhKhu6j5qSEUMgH/yn4N/dLgjJCHyBmFVBUxH7v7HUWvx7XNCKnW
+         TGv0XNv5K1M6wb2pIFIqcNSpsCwzoEV7v3Pi1ii6C1jkjdTRmJ5twSPPSuC+qzBC+D
+         NJaaARCPgcP1mNMGbV9IDjfTOFqP0SCUPkbbQgndvY/IC4VOpJwBpl0zrLTKIY/yDo
+         VGavY2EiOfmkr4vaSP4+RK3dKRZBCPO4//VfVwvgDyWbK/7CKp7gGyDiR/Yi7j+l0n
+         SFFXTX8g8Y3VQ==
+Date:   Fri, 29 Apr 2022 14:04:56 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     syzbot <syzbot+2ee18845e89ae76342c5@syzkaller.appspotmail.com>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk,
+        Liam Howlett <liam.howlett@oracle.com>
+Subject: Re: [syzbot] WARNING: suspicious RCU usage in mas_walk
+Message-ID: <20220429120456.qcs7qbtv3o4hiiv6@wittgenstein>
+References: <0000000000006b8dad05ddc47e92@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <0000000000006b8dad05ddc47e92@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add apq/ipq8064 errata workaround where the sec_src clock gating needs to
-be disabled during switching. To enable this set disable_sec_src_gating
-in the mux struct.
+On Thu, Apr 28, 2022 at 10:41:27PM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    bdc61aad77fa Add linux-next specific files for 20220428
+> git tree:       linux-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=15bb3dc2f00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=87767e89da13a759
+> dashboard link: https://syzkaller.appspot.com/bug?extid=2ee18845e89ae76342c5
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1118a5f6f00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=125bd212f00000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+2ee18845e89ae76342c5@syzkaller.appspotmail.com
+> 
+> =============================
+> WARNING: suspicious RCU usage
+> 5.18.0-rc4-next-20220428-syzkaller #0 Not tainted
+> -----------------------------
+> lib/maple_tree.c:844 suspicious rcu_dereference_check() usage!
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- drivers/clk/qcom/clk-krait.c | 16 ++++++++++++++++
- drivers/clk/qcom/clk-krait.h |  1 +
- drivers/clk/qcom/krait-cc.c  |  1 +
- 3 files changed, 18 insertions(+)
+I _think_ for maple tree stuff you want to somehow ensure that
+Liam Howlett <liam.howlett@oracle.com>
+gets Cced.
 
-diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
-index 6c367ad6506a..4a9b3296c45b 100644
---- a/drivers/clk/qcom/clk-krait.c
-+++ b/drivers/clk/qcom/clk-krait.c
-@@ -18,13 +18,23 @@
- static DEFINE_SPINLOCK(krait_clock_reg_lock);
- 
- #define LPL_SHIFT	8
-+#define SECCLKAGD	BIT(4)
-+
- static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
- {
- 	unsigned long flags;
- 	u32 regval;
- 
- 	spin_lock_irqsave(&krait_clock_reg_lock, flags);
-+
- 	regval = krait_get_l2_indirect_reg(mux->offset);
-+
-+	/* apq/ipq8064 Errata: disable sec_src clock gating during switch. */
-+	if (mux->disable_sec_src_gating) {
-+		regval |= SECCLKAGD;
-+		krait_set_l2_indirect_reg(mux->offset, regval);
-+	}
-+
- 	regval &= ~(mux->mask << mux->shift);
- 	regval |= (sel & mux->mask) << mux->shift;
- 	if (mux->lpl) {
-@@ -33,6 +43,12 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
- 	}
- 	krait_set_l2_indirect_reg(mux->offset, regval);
- 
-+	/* apq/ipq8064 Errata: re-enabled sec_src clock gating. */
-+	if (mux->disable_sec_src_gating) {
-+		regval &= ~SECCLKAGD;
-+		krait_set_l2_indirect_reg(mux->offset, regval);
-+	}
-+
- 	/* Wait for switch to complete. */
- 	mb();
- 	udelay(1);
-diff --git a/drivers/clk/qcom/clk-krait.h b/drivers/clk/qcom/clk-krait.h
-index 9120bd2f5297..f930538c539e 100644
---- a/drivers/clk/qcom/clk-krait.h
-+++ b/drivers/clk/qcom/clk-krait.h
-@@ -15,6 +15,7 @@ struct krait_mux_clk {
- 	u8		safe_sel;
- 	u8		old_index;
- 	bool		reparent;
-+	bool		disable_sec_src_gating;
- 
- 	struct clk_hw	hw;
- 	struct notifier_block   clk_nb;
-diff --git a/drivers/clk/qcom/krait-cc.c b/drivers/clk/qcom/krait-cc.c
-index 4d4b657d33c3..0f88bf41ec6e 100644
---- a/drivers/clk/qcom/krait-cc.c
-+++ b/drivers/clk/qcom/krait-cc.c
-@@ -138,6 +138,7 @@ krait_add_sec_mux(struct device *dev, int id, const char *s,
- 	mux->parent_map = sec_mux_map;
- 	mux->hw.init = &init;
- 	mux->safe_sel = 0;
-+	mux->disable_sec_src_gating = true;
- 
- 	init.name = kasprintf(GFP_KERNEL, "krait%s_sec_mux", s);
- 	if (!init.name)
--- 
-2.34.1
-
+> 
+> other info that might help us debug this:
+> 
+> 
+> rcu_scheduler_active = 2, debug_locks = 1
+> 5 locks held by syz-executor842/4211:
+>  #0: ffff88807f0ae460 (sb_writers#8){.+.+}-{0:0}, at: ksys_write+0x127/0x250 fs/read_write.c:644
+>  #1: ffff88801df04488 (&of->mutex){+.+.}-{3:3}, at: kernfs_fop_write_iter+0x28c/0x610 fs/kernfs/file.c:282
+>  #2: ffff8881453b9a00 (kn->active#106){.+.+}-{0:0}, at: kernfs_fop_write_iter+0x2b0/0x610 fs/kernfs/file.c:283
+>  #3: ffffffff8bedc528 (ksm_thread_mutex){+.+.}-{3:3}, at: run_store+0xd1/0xa60 mm/ksm.c:2917
+>  #4: ffff88801e5e8fd8 (&mm->mmap_lock#2){++++}-{3:3}, at: mmap_read_lock include/linux/mmap_lock.h:117 [inline]
+>  #4: ffff88801e5e8fd8 (&mm->mmap_lock#2){++++}-{3:3}, at: unmerge_and_remove_all_rmap_items mm/ksm.c:989 [inline]
+>  #4: ffff88801e5e8fd8 (&mm->mmap_lock#2){++++}-{3:3}, at: run_store+0x2a5/0xa60 mm/ksm.c:2923
+> 
+> stack backtrace:
+> CPU: 0 PID: 4211 Comm: syz-executor842 Not tainted 5.18.0-rc4-next-20220428-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  <TASK>
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+>  mas_root lib/maple_tree.c:844 [inline]
+>  mas_start lib/maple_tree.c:1331 [inline]
+>  mas_state_walk lib/maple_tree.c:3745 [inline]
+>  mas_walk+0x45e/0x670 lib/maple_tree.c:4923
+>  mas_find+0x442/0xc90 lib/maple_tree.c:5861
+>  vma_find include/linux/mm.h:664 [inline]
+>  vma_next include/linux/mm.h:673 [inline]
+>  unmerge_and_remove_all_rmap_items mm/ksm.c:990 [inline]
+>  run_store+0x2ed/0xa60 mm/ksm.c:2923
+>  kobj_attr_store+0x50/0x80 lib/kobject.c:824
+>  sysfs_kf_write+0x110/0x160 fs/sysfs/file.c:136
+>  kernfs_fop_write_iter+0x3f8/0x610 fs/kernfs/file.c:291
+>  call_write_iter include/linux/fs.h:2059 [inline]
+>  new_sync_write+0x38a/0x560 fs/read_write.c:504
+>  vfs_write+0x7c0/0xac0 fs/read_write.c:591
+>  ksys_write+0x127/0x250 fs/read_write.c:644
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> RIP: 0033:0x7f6a91306e79
+> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007ffddeb8cde8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> RAX: ffffffffffffffda RBX: 00000000000f4240 RCX: 00007f6a91306e79
+> RDX: 0000000000000002 RSI: 0000000020000000 RDI: 0000000000000003
+> RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+> R10: 0000000020117000 R11: 0000000000000246 R12: 000000000000cf84
+> R13: 00007ffddeb8cdfc R14: 00007ffddeb8ce10 R15: 00007ffddeb8ce00
+>  </TASK>
+> 
+> 
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
