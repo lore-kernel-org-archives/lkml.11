@@ -2,60 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A478C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 21:01:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3351C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 21:01:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381214AbiD2VET (ORCPT
+        id S1381221AbiD2VEY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 17:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37130 "EHLO
+        Fri, 29 Apr 2022 17:04:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381161AbiD2VD4 (ORCPT
+        with ESMTP id S1381175AbiD2VD7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 17:03:56 -0400
+        Fri, 29 Apr 2022 17:03:59 -0400
 Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5265D3ADC
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 14:00:36 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id mm2-20020a17090b358200b001bf529127dfso4557730pjb.6
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 14:00:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD0AD3AD4
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 14:00:40 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id t15-20020a17090ae50f00b001d925488489so4564571pjy.3
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 14:00:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=PGUqiH/JglfCNg66NlUe0oA1IPz5o9GrdggIDdddkRE=;
-        b=s/vbE87ZICW9wq0xlvyre3d0eVPg+hDf89OEwfE8pjHkZ5PUqoD/1vk4hhdAJKIyHQ
-         8rpJfCXFOB/J0SnSALJ4ick7jy62clfywkqsbYHNqegMPIM5RKcfaYdoboJ1/uyUk/QQ
-         5QD5H/49BtbQaJdfUPDsoY/cXP0CcVkRIwfe17PKpsiFB7eW071pViEO7cKA4yBSN6b2
-         1exe+gLb02QqzYQZCl1Oeljtj6nxa9ghPXX0HsMiFiuP0gCWnB5ZSC2iW+kiu94UQJle
-         PEQhvzTFUVKe5Kp+QKMIhn4o4u87Tkobx7MOFs57gbj+LTg13JTxv4N9YxdvpaOUgAlp
-         73cA==
+        bh=oVHyIBszbDyqiN0B8KQ/gaGeKqiBcFYqK348Whkf25k=;
+        b=bHSvSCXEnTRlSKz9TJdTHolfFAIJ5mv5KXa90YK5sNIw1dDpT7ynOAc6ZfQuzdhZoc
+         CPVvxgkxvFJeKWtamHyMP2S38WjV5YgRF7iUsNZX/uvXqyvOX/Mo0jsMAb6yeTiZrlxK
+         Ar8AKwJgRX812sAM5Criwkt2G1TlF+95FD+aY86fDqDuIaS9z4nzGggEIljvikFmZKA9
+         +vUp2TitWs1TkNd4SgOWNpmFsTrbUTbg0XrzstiYYKHdDnlrrFemJXteYa5sW4nsxQ/C
+         7ZzOki7/Pm2n0FaJoEQ4WKGD8xaGDZ7ACMsRgJ68PASufILGXdyU7LVk1pHoz4Y8j13K
+         sLIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=PGUqiH/JglfCNg66NlUe0oA1IPz5o9GrdggIDdddkRE=;
-        b=KF2KYhhQ4LQbeGfukq11sTfaAbggHAgd93gWUBXXNaFK33AK+oqrXKh1trioBXRfW0
-         xKro+5104C1aOBJLhqTFQJkSmaxsXDJSzAb2Jt5JivLutlxfB68PjY1yDKgO/j87gnJ0
-         jF3R/k/kqKyDOHjTG3GOzgSFuuOFXZo2cuo9c7laUHOScAPcajMwTry0clBb5s8dd0WD
-         tf3DfSHtXQJ/juJakIattTOUWt+R5muzNWHY69ihPA5rfDlep2nipxtxvhMh8p108cpu
-         eP5T2Dyzm1zVjvcCPVmERsaGohNSbn+efx0BECmHyXoyFPlBzH9tO/yHQJZtrbDonnM9
-         IbAQ==
-X-Gm-Message-State: AOAM533iR4zitevXG1GxLlYO2ehXNnKS/T8Q790V47BgoGUQwVSNQ6cV
-        8K2CHroAnN6LwtYitX3GkzjD1e8iHxA=
-X-Google-Smtp-Source: ABdhPJw+Ha/bmwyj6MBf0DPJjOjQzCpbQ3w89P8CYxsLPsL/ID7MWV7hYSLf9zEanA8oDKqLAG74+J5T8kc=
+        bh=oVHyIBszbDyqiN0B8KQ/gaGeKqiBcFYqK348Whkf25k=;
+        b=TTkece6sKwIal3cF6M8lWJYJU4XEBOXKOjIrUiiSZzOvOZWnAgJcOeIyOs4JrCTknG
+         oZl2swK95T8kv5Xf5ydnZVylBYu52d9GlBRqH0CnUl5KpdTFxsZvnmXBBl7tqDoiAqn/
+         FXuJLHZGATXuB2CPx17VOuhxEJV5386htMwa4DCmqM0XtDzRh+gocoS2YT/wpnw3yhzV
+         Rfugf8oPLlcBV0sJ/SI4x5bk/tsOkdWOIrrdX8ClmaVtB7wHjcii2k3nKCMzBS24oH1r
+         qcM75WYgD2zxtA7PDkF+vl/gd2Pxcw3EXtEWwsXSYTJ/MCe5OtwIlBe2Fo79NNYu94iE
+         6Aqg==
+X-Gm-Message-State: AOAM5311PLRqEHDJSwo0lsuoST/SwhkVf7hdmPY88XumhTSW9LKvdxCV
+        4yUj2tFsoUlQf9H6jaGwvu8URjvJa/s=
+X-Google-Smtp-Source: ABdhPJznDy/XL7iYypgDUM2Vbyu+1rRgbREm4VNBI3n8aEqkpL+OB6uGl7AgT7gb/929JVQsmuabyqt3iUo=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:903:240f:b0:158:b871:33ac with SMTP id
- e15-20020a170903240f00b00158b87133acmr1131724plo.135.1651266036182; Fri, 29
- Apr 2022 14:00:36 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:3442:b0:1d9:8af8:28ff with SMTP id
+ lj2-20020a17090b344200b001d98af828ffmr979126pjb.201.1651266039638; Fri, 29
+ Apr 2022 14:00:39 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 29 Apr 2022 21:00:21 +0000
+Date:   Fri, 29 Apr 2022 21:00:23 +0000
 In-Reply-To: <20220429210025.3293691-1-seanjc@google.com>
-Message-Id: <20220429210025.3293691-5-seanjc@google.com>
+Message-Id: <20220429210025.3293691-7-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220429210025.3293691-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v3 4/8] KVM: Put the extra pfn reference when reusing a pfn in
- the gpc cache
+Subject: [PATCH v3 6/8] KVM: Fully serialize gfn=>pfn cache refresh via mutex
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -68,37 +67,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Put the struct page reference to pfn acquired by hva_to_pfn() when the
-old and new pfns for a gfn=>pfn cache match.  The cache already has a
-reference via the old/current pfn, and will only put one reference when
-the cache is done with the pfn.
+Protect gfn=>pfn cache refresh with a mutex to fully serialize refreshes.
+The refresh logic doesn't protect against concurrent refreshes with
+different GPAs (which may or may not be a desired use case, but it's
+allowed in the code), nor does it protect against a false negative on the
+memslot generation.
 
-Fixes: 982ed0de4753 ("KVM: Reinstate gfn_to_pfn_cache with invalidation support")
+If the first refresh sees a stale memslot generation, it will refresh the
+hva and generation before moving on to the hva=>pfn translation.  If it
+then drops gpc->lock, a different user of the cache can come along,
+acquire gpc->lock, see that the memslot generation is fresh, and skip
+the hva=>pfn update due to the userspace address also matching (because
+it too was updated).
+
+The refresh path can already sleep during hva=>pfn resolution, so wrap
+the refresh with a mutex to ensure that any given refresh runs to
+completion before other callers can start their refresh.
+
 Cc: stable@vger.kernel.org
+Cc: Lai Jiangshan <jiangshanlai@gmail.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- virt/kvm/pfncache.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ include/linux/kvm_types.h |  2 ++
+ virt/kvm/pfncache.c       | 10 ++++++++++
+ 2 files changed, 12 insertions(+)
 
+diff --git a/include/linux/kvm_types.h b/include/linux/kvm_types.h
+index ac1ebb37a0ff..f328a01db4fe 100644
+--- a/include/linux/kvm_types.h
++++ b/include/linux/kvm_types.h
+@@ -19,6 +19,7 @@ struct kvm_memslots;
+ enum kvm_mr_change;
+ 
+ #include <linux/bits.h>
++#include <linux/mutex.h>
+ #include <linux/types.h>
+ #include <linux/spinlock_types.h>
+ 
+@@ -69,6 +70,7 @@ struct gfn_to_pfn_cache {
+ 	struct kvm_vcpu *vcpu;
+ 	struct list_head list;
+ 	rwlock_t lock;
++	struct mutex refresh_lock;
+ 	void *khva;
+ 	kvm_pfn_t pfn;
+ 	enum pfn_cache_usage usage;
 diff --git a/virt/kvm/pfncache.c b/virt/kvm/pfncache.c
-index e05a6a1b8eff..40cbe90d52e0 100644
+index 05cb0bcbf662..eaef31462bbe 100644
 --- a/virt/kvm/pfncache.c
 +++ b/virt/kvm/pfncache.c
-@@ -206,6 +206,14 @@ int kvm_gfn_to_pfn_cache_refresh(struct kvm *kvm, struct gfn_to_pfn_cache *gpc,
+@@ -157,6 +157,13 @@ int kvm_gfn_to_pfn_cache_refresh(struct kvm *kvm, struct gfn_to_pfn_cache *gpc,
+ 	if (page_offset + len > PAGE_SIZE)
+ 		return -EINVAL;
  
- 		if (gpc->usage & KVM_HOST_USES_PFN) {
- 			if (new_pfn == old_pfn) {
-+				/*
-+				 * Reuse the existing pfn and khva, but put the
-+				 * reference acquired hva_to_pfn_retry(); the
-+				 * cache still holds a reference to the pfn
-+				 * from the previous refresh.
-+				 */
-+				gpc_release_pfn_and_khva(kvm, new_pfn, NULL);
++	/*
++	 * If another task is refreshing the cache, wait for it to complete.
++	 * There is no guarantee that concurrent refreshes will see the same
++	 * gpa, memslots generation, etc..., so they must be fully serialized.
++	 */
++	mutex_lock(&gpc->refresh_lock);
 +
- 				new_khva = old_khva;
- 				old_pfn = KVM_PFN_ERR_FAULT;
- 				old_khva = NULL;
+ 	write_lock_irq(&gpc->lock);
+ 
+ 	old_pfn = gpc->pfn;
+@@ -248,6 +255,8 @@ int kvm_gfn_to_pfn_cache_refresh(struct kvm *kvm, struct gfn_to_pfn_cache *gpc,
+  out:
+ 	write_unlock_irq(&gpc->lock);
+ 
++	mutex_unlock(&gpc->refresh_lock);
++
+ 	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
+ 
+ 	return ret;
+@@ -288,6 +297,7 @@ int kvm_gfn_to_pfn_cache_init(struct kvm *kvm, struct gfn_to_pfn_cache *gpc,
+ 
+ 	if (!gpc->active) {
+ 		rwlock_init(&gpc->lock);
++		mutex_init(&gpc->refresh_lock);
+ 
+ 		gpc->khva = NULL;
+ 		gpc->pfn = KVM_PFN_ERR_FAULT;
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
