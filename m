@@ -2,163 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C49CBC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:53:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 170B4C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:54:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354783AbiD2G4r (ORCPT
+        id S1354801AbiD2G55 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 02:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53080 "EHLO
+        Fri, 29 Apr 2022 02:57:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348954AbiD2G4p (ORCPT
+        with ESMTP id S1348954AbiD2G5z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 02:56:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C323756768;
-        Thu, 28 Apr 2022 23:53:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E9D3B832F4;
-        Fri, 29 Apr 2022 06:53:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B806DC385AC;
-        Fri, 29 Apr 2022 06:53:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651215204;
-        bh=jFzLIgFDBXvEXK9brj3GiRx598j1W1BP4ZGK9938VXo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TYg+QiGKPQu2FAiyx7bvU2SOo7ce9+OXiJ0n1cAuExR2I38Zq8OapYQCAgiO2T8bV
-         lTY+gdKLQKEKrpiuBBs8AgJje9vxzh9f2nQd9Zyk3aeWv9u6CnW4fjlhykrxXOYPfR
-         pMuewp9WzGC0sO5SHR6BGUlzm/0KxwkerfQwrzBJq17sHM1ukKURBvoO3Hsc2bECHs
-         lRf+J4LuM2YTV0bTPnyI/zMZQO+DudRZTBsAe2x8DAefgFrqKYC+QAXpCLnOsriNZu
-         nxPKOtA+EKE9ILxmzg8Kc5bDPZ9VYIJKt78U5qxiaRTSa9QUZOvH9lyhOU2l65ZBI3
-         fQHdYTnQyNfNg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nkKVI-0001ir-A6; Fri, 29 Apr 2022 08:53:25 +0200
-Date:   Fri, 29 Apr 2022 08:53:24 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Krzysztof Wilczy??ski <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Prasad Malisetty <quic_pmaliset@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-phy@lists.infradead.org
-Subject: Re: [PATCH RFC 1/5] phy: qcom-qmp: add support for pipe clock muxing
-Message-ID: <YmuLZNg+91HW2lsY@hovoldconsulting.com>
-References: <20220421102041.17345-1-johan+linaro@kernel.org>
- <20220421102041.17345-2-johan+linaro@kernel.org>
- <YmqSkP++4xzisJHp@ripper>
+        Fri, 29 Apr 2022 02:57:55 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7098BC85B;
+        Thu, 28 Apr 2022 23:54:36 -0700 (PDT)
+X-UUID: 923ea33612334b65b312dec8ca4421ce-20220429
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:d503e436-be88-453c-8a40-02ef406c7beb,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:95
+X-CID-INFO: VERSION:1.1.4,REQID:d503e436-be88-453c-8a40-02ef406c7beb,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
+        ION:quarantine,TS:95
+X-CID-META: VersionHash:faefae9,CLOUDID:08ff252f-6199-437e-8ab4-9920b4bc5b76,C
+        OID:a1bcb2eecf42,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 923ea33612334b65b312dec8ca4421ce-20220429
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1316699738; Fri, 29 Apr 2022 14:54:31 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 29 Apr 2022 14:54:30 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 29 Apr 2022 14:54:30 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <matthias.bgg@gmail.com>
+CC:     <neal.liu@mediatek.com>, <runyang.chen@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH 1/2] dt-bindings: soc: mediatek: devapc: Add bindings for MT8186
+Date:   Fri, 29 Apr 2022 14:54:28 +0800
+Message-ID: <20220429065429.7957-2-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220429065429.7957-1-rex-bc.chen@mediatek.com>
+References: <20220429065429.7957-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmqSkP++4xzisJHp@ripper>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 06:11:44AM -0700, Bjorn Andersson wrote:
-> On Thu 21 Apr 03:20 PDT 2022, Johan Hovold wrote:
-> 
-> > Some QMP PHYs need to remux to their pipe clock input to the pipe clock
-> > output generated by the PHY before powering on the PHY and restore the
-> > default source during power down.
-> > 
-> > Add support for an optional pipe clock mux which will be reparented to
-> > the generated pipe clock before powering on the PHY and restored to the
-> > default reference source on power off.
-> > 
-> 
-> After considering this for a while, I have two objections to doing this
-> explicitly:
-> 
-> 1) The QMP block is fed &gcc_pcie_N_pipe_clk (and on sc8280xp)
-> gcc_pcie_N_pipediv2_clk. But neither of these clocks are the mux, so
-> what this patch (and the existing muxing logic in the controller) does
-> is to poke into gcc "internals".
+Add the dt-binding to support MT8186 devapc.
 
-I agree that this is perhaps the strongest argument against describing
-the mux in DT (as is also currently done for sc7280).
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+---
+ Documentation/devicetree/bindings/soc/mediatek/devapc.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-> 2) The actual reason for the mux dance is that toggling the associated
-> GDSC without a valid parent of this clock would cause the clock to lock
-> up and GDSC transition to time out. This property is shared with a wide
-> range of other clocks (so far we have 84 users of clk_rcg2_shared_ops on
-> sc8280xp).
+diff --git a/Documentation/devicetree/bindings/soc/mediatek/devapc.yaml b/Documentation/devicetree/bindings/soc/mediatek/devapc.yaml
+index 31e4d3c339bf..d0a4bc3b03e9 100644
+--- a/Documentation/devicetree/bindings/soc/mediatek/devapc.yaml
++++ b/Documentation/devicetree/bindings/soc/mediatek/devapc.yaml
+@@ -20,6 +20,7 @@ properties:
+   compatible:
+     enum:
+       - mediatek,mt6779-devapc
++      - mediatek,mt8186-devapc
+ 
+   reg:
+     description: The base address of devapc register bank
+-- 
+2.18.0
 
-Right, but the situation with rcg2 is a little different. From what I
-gather the problem there is that some downstream clock could have been
-enabled by some other part of the system behind the kernel's back and
-then things go wrong when the kernel configures the clock.
-
-Here it is the kernel that controls the source of the pipe clock mux
-(the PHY PLL) and knows when the source is valid (and the PHY is both
-provider and consumer of the pipe clock).
-
-For rcg2, there's no choice but to work around the hardware in the clock
-driver, while for QMP the PHY power sequences could be made explicit in
-the driver:
-
-	clk_prepare_enable(pipe);
-	clk_set_parent(pipe_src, pll);
-	start_pll();
-	
-	stop_pll();
-	clk_set_parent(pipe_src, xo);
-	clk_disable_unprepare(pipe);
-
-Note that with the above sequences it would be possible to drop the pipe
-clock BRANCH_HALT_SKIP flag, which is only there in the clock driver
-because of the how the PHY works (i.e. that the pipe clock must be
-ungated before the PLL is started).
-
-(This wouldn't be possible with a pipe-mux implementation in the clock
-driver since the parent mux would be enabled before the child pipe
-clock.)
-
-But sure, the requirement to restore XO to prevent a later GDSC hang has
-little to do with the PHY.
-
-> It would be nice if clk_summary would represent the real state of these
-> clocks, but unfortunately I don't think the state matches reality with
-> this approach either.
-> 
-> E.g. we prepare/enable the pipe clock before setting
-> QPHY_POWER_DOWN_CONTROL, during this time there's shouldn't be any pipe
-> clock coming out of the PHY...
-
-Right, there's a small window there where the source is still off (due
-to hardware requirements), but at least the topology is always reported
-correctly, which is really useful when dealing with boot handover.
-
-I have an sc8280xp here where the boot firmware leaves the pipe clock
-muxed in despite the GDSC being disabled. Fortunately, it doesn't seem
-to trigger the lockup when toggling the GDSC as it does on an sa8540p.
-
-My concerns are otherwise mostly related to the implementation of the
-safe-mux (e.g. ad-hoc, missing locking) and can probably be addressed.
-
-As an example, with the current implementation it is not possible to use
-an assigned clock parent in DT to make sure that the XO source is
-selected before toggling the GDSC. The muxing doesn't happen until the
-pipe clock is enabled, which is much too late in case the boot firmware
-left the pipe clock muxed in, and when enabling the pipe clock you
-really want the PHY PLL as source and not the cached XO.
-
-Can you still drop the current safe-mux patches from your tree or would
-they need to be fixed up incrementally? I think you merged v2, but
-there's already a v3 out (addressing the hardcoded mux configuration
-values).
-
-Johan
