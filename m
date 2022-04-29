@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F1E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:29:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBE8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379220AbiD2QcR (ORCPT
+        id S1379228AbiD2QcV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49836 "EHLO
+        Fri, 29 Apr 2022 12:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233386AbiD2Qbc (ORCPT
+        with ESMTP id S1379148AbiD2Qba (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:31:32 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14BEDA6DB
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:13 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id b19so11431324wrh.11
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:13 -0700 (PDT)
+        Fri, 29 Apr 2022 12:31:30 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B99DA6C7
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:11 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id 129so4941928wmz.0
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oxKWDdPeJSszfEeucG2we5seobARL3GADW6N1hKVnQg=;
-        b=F+m2BX1PfLfgcsjPS6StmQGPm0KVXiOgrJOM3YVrl4fnSRDbR0WvBCkFLRxA8qjx5x
-         0STv1ljFF/ClJ3jXwjaCI4hzB2dcigkIqdElO9EkeSr2jCr9Xw0Pl32NPC76l3TnCDsS
-         pmfIu9AMTUbQ3NEUJLvDDo/bHWDyhk5OBfybOvX/i7JwfO/J8C0cHHQqgh+fqq0L051i
-         PfNQ5by2l/AulaE3y+1fDghTHvWFW5oH0ITvCrwjPCglQcSOv/HH4YAjTS9umDXdSF0m
-         P3MZXptsn7y+hkEnsINg4uIuQcnr2GOL2c4yNWs3DCoWi3CcWUZkL1bATZ1DTwUm/QqA
-         qWeQ==
+        bh=n6UdGjglGGl2o68okNMCWRoHD27qYPYjCIK44vNqbmw=;
+        b=mLR8GE0xljfHjRwIpR00IuUH4ajV5rkAbtuzZQWZ9ye1q7WdeOW9nbqXgQgAoD+if1
+         2IbJ4TfCWai3QtRKqlIYYyaairHBF0YBL2QcVQdyzoMF5vSLpAA7sQbWvV8+dEsVZglU
+         XI5JM4Otl8bKjyR+tQ0H//pa55qrA6RmQjtexbAmmXmSpqb0s8K5dJKnrsX6fIqN4lyY
+         KzJ1irL9de3rUIHd4Ltcn7BC7QcWqlqjdZp2d4pVF8b4tA4XgFp5s3TD8VLBcxuBP6sq
+         gt7z2MhnLm+Dh90oyaVV7i/EAOo6inFS8FeAUGVkmYnyimYFxHpDhJq8cYhVu6JWRJE5
+         ukwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oxKWDdPeJSszfEeucG2we5seobARL3GADW6N1hKVnQg=;
-        b=4Ljrf/fOMSSH4/dLsQ0jtZX+ht57YRVaUcsIlL9mgMiQJ06RQ2enS2Fe/sbIbbIBoz
-         JIbJRCwUpXzDc3ZGp1RpcIW1hXxcn8FwWIMbnwYfF5XyYiNPiuCwNl16y5m68bRkSQBA
-         2iNNvQN1y6Emk83KW77DuTLKp14wM2TJ6ELNzRZEh9Kb4ZCe/wwBPwMke6TnHGAe6hD6
-         T/l1gkjLD9+G9EM1mc6+sHgILCemUHZn0v/vK6An86wZll/a9hWuQ7mug1blrjdvMFRX
-         lsmppnETntXFntIrcIV/jH+V4zSDdRb68J9SGCgrt/NxgIe3raseZqPw4g52MeJm1sWO
-         +71w==
-X-Gm-Message-State: AOAM531i74jzPWc2TZM5fAe0IiwdbIMdVFDCCsp97da7aYf9dhkMaVuB
-        tCiWnfSu+PnTCeWJscOlPNwQHjaGGnEOqA==
-X-Google-Smtp-Source: ABdhPJz0K2x+TKnWtFaKI/nX0V6SFQGvQDj+WlELbQZOXGA99cQTLMybn0YGE58/dM+9tcHHXHvQrA==
-X-Received: by 2002:a05:6000:1e08:b0:20a:873f:13b3 with SMTP id bj8-20020a0560001e0800b0020a873f13b3mr29950222wrb.52.1651249692377;
-        Fri, 29 Apr 2022 09:28:12 -0700 (PDT)
+        bh=n6UdGjglGGl2o68okNMCWRoHD27qYPYjCIK44vNqbmw=;
+        b=Ri+Dzlyt/criczKfNxtJBWcW6x+u6bESUHrYRFLcsPfb2F9UjpH5IytRxZaqhVWgWS
+         FmmJJB8gutDmEckrEwNGECuNZ9xNyPiiwLzNDH1BPYa4N8pb5SjdX4ZNCTKaCAuLO/qF
+         jM0qud8YnsvCo5DTyhfKvq+7PaYJCcwo9L4gr+JIHkwi+ksa2ufg3AW7U8uo8r4TsiLE
+         EEFWfQ+frj3D3eOnxRYNZ9UQ3EEwc3zTL7/H1Q53e5aiDOSqOlK7d+h2YViXyNJzMrvk
+         7vOBjk0DtCRzzkO9OTZuFK/5w5eyvnMzagF30AXmGJ5GaugameGH/+5lZtPk5CVY4++S
+         y1Nw==
+X-Gm-Message-State: AOAM531vsMv+oZ+ZRCAqBrTwNlMDVxVKe7G/3nWQ0E6Yof91pDawunKg
+        t+zGqmysZ8VJRunrj1Yq2YAJJw==
+X-Google-Smtp-Source: ABdhPJx9EL0kst0SGBzlo9RFppStnRTgrHv9x7iJWPywk+HlWQU3e8LLzGwqzT+lXRRJqXQWhOb8ug==
+X-Received: by 2002:a05:600c:a44:b0:38e:3ce3:3148 with SMTP id c4-20020a05600c0a4400b0038e3ce33148mr3956407wmq.26.1651249689799;
+        Fri, 29 Apr 2022 09:28:09 -0700 (PDT)
 Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id b5-20020adff905000000b0020a8781be70sm2781801wrr.12.2022.04.29.09.28.11
+        by smtp.gmail.com with ESMTPSA id b5-20020adff905000000b0020a8781be70sm2781801wrr.12.2022.04.29.09.28.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 09:28:11 -0700 (PDT)
+        Fri, 29 Apr 2022 09:28:09 -0700 (PDT)
 From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-kernel@vger.kernel.org,
         Sean Anderson <sean.anderson@seco.com>,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 16/16] nvmem: sfp: Add support for TA 2.1 devices
-Date:   Fri, 29 Apr 2022 17:27:01 +0100
-Message-Id: <20220429162701.2222-17-srinivas.kandagatla@linaro.org>
+Subject: [PATCH 14/16] dt-bindings: nvmem: sfp: Add compatible binding for TA 2.1 SFPs
+Date:   Fri, 29 Apr 2022 17:26:59 +0100
+Message-Id: <20220429162701.2222-15-srinivas.kandagatla@linaro.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220429162701.2222-1-srinivas.kandagatla@linaro.org>
 References: <20220429162701.2222-1-srinivas.kandagatla@linaro.org>
@@ -68,39 +68,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Anderson <sean.anderson@seco.com>
 
-This adds support for Trust Architecture (TA) 2.1 devices to the SFP driver.
-There are few differences between TA 2.1 and TA 3.0, especially for
-read-only support, so just re-use the existing data.
+Trust Architecture (TA) 2.1 devices include the LS1012A, LS1021A,
+LS1043A, and LS1046A. The SFP device on TA 2.1 devices is very similar
+to the SFP on TA 3.0 devices. The primary difference is a few fields in
+the control register. Add a compatible string.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 ---
- drivers/nvmem/layerscape-sfp.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ .../devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml    | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nvmem/layerscape-sfp.c b/drivers/nvmem/layerscape-sfp.c
-index 59083f048921..e2b424561949 100644
---- a/drivers/nvmem/layerscape-sfp.c
-+++ b/drivers/nvmem/layerscape-sfp.c
-@@ -78,12 +78,18 @@ static int layerscape_sfp_probe(struct platform_device *pdev)
- 	return PTR_ERR_OR_ZERO(nvmem);
- }
+diff --git a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
+index c5d7375b840a..3b4e6e94cb81 100644
+--- a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
++++ b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
+@@ -18,8 +18,13 @@ allOf:
  
-+static const struct layerscape_sfp_data ls1021a_data = {
-+	.size = 0x88,
-+	.endian = REGMAP_ENDIAN_BIG,
-+};
-+
- static const struct layerscape_sfp_data ls1028a_data = {
- 	.size = 0x88,
- 	.endian = REGMAP_ENDIAN_LITTLE,
- };
+ properties:
+   compatible:
+-    enum:
+-      - fsl,ls1028a-sfp
++    oneOf:
++      - description: Trust architecture 2.1 SFP
++        items:
++          - const: fsl,ls1021a-sfp
++      - description: Trust architecture 3.0 SFP
++        items:
++          - const: fsl,ls1028a-sfp
  
- static const struct of_device_id layerscape_sfp_dt_ids[] = {
-+	{ .compatible = "fsl,ls1021a-sfp", .data = &ls1021a_data },
- 	{ .compatible = "fsl,ls1028a-sfp", .data = &ls1028a_data },
- 	{},
- };
+   reg:
+     maxItems: 1
 -- 
 2.21.0
 
