@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA1AC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 23:57:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D54BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 23:57:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381883AbiD3AAZ (ORCPT
+        id S1381914AbiD3AA2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 20:00:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60674 "EHLO
+        Fri, 29 Apr 2022 20:00:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381895AbiD3AAY (ORCPT
+        with ESMTP id S1381902AbiD3AAY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Apr 2022 20:00:24 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CBF73DDD5
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 16:56:54 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id w3-20020a17090ac98300b001b8b914e91aso4742614pjt.0
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 16:56:54 -0700 (PDT)
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2B53EA84
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 16:56:59 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id k2-20020a170902ba8200b0015613b12004so4851444pls.22
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 16:56:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=xFhTGH9QeJ5qiB/zXRnDTivkTaz87eqIQdVVal+AQIE=;
-        b=jsTFJVAZ4rGCpZ4ReIt8zBt6uWxZBtjqmkI/o/IJC9aS5dGeOFyznv/dB2oUdWWTEx
-         htv3+XKz3FWRL5ut86hgRwU+3xBqQI/LSj0kcYgZ+hSwTkxrmBJ7cSOsar3iBwmcGGmM
-         vgjqOkvrqOYb+zcWQwfxyMZI8OkfXRBqmS4cKRdN7EcmOw+HEaO+sz+Pm5H0BWj8uFp2
-         +qNwoB+xwjEjqcH7WS1eZLzijKiEEbBiMkK7NKvNnbqjy+++1kA/sgYAedlCcRMTuyvR
-         qV+zG6n79jP6ZjxTGZoM2uk5cs0E/dujv6nH0wo3qmTaFVL9YBytG81ZTK/QBFdmxS+0
-         R7PA==
+        bh=Y2U6N/SaFktITLsdt43NK/igdRg3kVW252737IBt0LU=;
+        b=ZGtQirrtNgXHKRVauFBtG+/sgxRYvk5XZr0WfLUwxPVfzq71bBqkfVmqmZJFCCYzAM
+         EeR6l9JIrhRPwfAFrPtu7ReRC9acMq0O2cxebjqEH3+dd7Aq7Xw5fn7FO86LDCdjh1vM
+         McqYBJcvqSt4izZK5Cx2P14o4+3iJDE5hrGA8ZUvln3LftkJXlqFqhiijXAm4YzEbr1K
+         HgSew1IkNTU2D6cX62XJfYwiOMP9cdMsU3P6sWd+5gEHoT4S/NuKeGQ7LioUaQU9n7gU
+         8rRW4CN8j7cvRn89ri03+6o6a3hs0vGLtCagVgA7AWQMLAcA6hmDMaFTk6YTalDxwADS
+         fsNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=xFhTGH9QeJ5qiB/zXRnDTivkTaz87eqIQdVVal+AQIE=;
-        b=Gn8XzXSPg1Tvp0D4DVt2i93F5bgLmxe5gcwXWNreABO6XPVPr23aP/u6ltwKUXjtmU
-         o4cm0WygDe4U4r6LQ3swbDog6OuS5312K365Xoz/FMsS537uTDB7z48mFMskDxImwRYK
-         jDd79wKJ8sKF1vy9PufxR9aIhre3/DFCve6qyQr8Bsiq4Bqk23b7ZXkcEpU9XMFTTLIG
-         LwumgEp5v++KX1CIUddAuVHCDr2VDf1EoHpGO7M3unh1Svo6getUM+2qjRS+BvYsOLGS
-         6zDApDGbO++b31V8oyw9GiA3eY893p7RkxXbxPhuf4W11CUowE3gluwfxgIQTnYRQPIF
-         V35A==
-X-Gm-Message-State: AOAM532TLfQQeruWqkRta1NdijpTeR/VWx+Z1uTXKbrvflbxTkF//MhB
-        jGLZGDUisbLL6D1sukmSWj2INlJ3l2GBXg==
-X-Google-Smtp-Source: ABdhPJxryxQ/W5f0mnRCA3VXeYsHPAOW3KmhV77eCRQVRyQ7xJ2vWAUFMEAVfxyiYM+pYR8BJB0aKpps/mGfzw==
+        bh=Y2U6N/SaFktITLsdt43NK/igdRg3kVW252737IBt0LU=;
+        b=5ACUWeKKMtC75MRY/h3Azb+8ffy1/nxTset2KwamGSg73xneZD/gScBdCRP4BD3d0u
+         D6XqUgZzz9poazb1Q9C//9Lv/zQ+tJh8Iwe7j4CYmajQyIDTorrXX8eGxrt9a8J8yYH7
+         pNpbrw9eeSBPsg2mUyeJfzR4Nu+Mofmzw43MAWXdjE3YvXGVJz3BtGnWdZvW1qKzJkza
+         DGxHwl50atdXo3VryiBXIxcWzJ4bIJrGI/iu5EH65B1oNF0/988h0DVLFCHLDYllKgyu
+         UMSacomNj8/PzCebuMZsG4SruPiMsO9Yy+9McqbA38VL+6D3b1v5IVzx7Qw70ChO2SCl
+         VgAw==
+X-Gm-Message-State: AOAM532Xsow3S35szZ9GBc0UKyBvfbYb7HjCmnHmWue5GlBweRK18ERj
+        0rzIdtGeiOOvQPJ19AznrcznY2LPHvoqMw==
+X-Google-Smtp-Source: ABdhPJybU3tuDpqq8Uoh7B87O4KK/KSqVfWaE8DjxnMMELo/U7FUT5BAmeuLOCGT+nBWxSAB5NqgEkWT32gRSg==
 X-Received: from zllamas.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:4c])
- (user=cmllamas job=sendgmr) by 2002:a17:902:f70a:b0:153:88c7:774 with SMTP id
- h10-20020a170902f70a00b0015388c70774mr1440396plo.166.1651276613804; Fri, 29
- Apr 2022 16:56:53 -0700 (PDT)
-Date:   Fri, 29 Apr 2022 23:56:40 +0000
+ (user=cmllamas job=sendgmr) by 2002:a17:90a:3486:b0:1d9:3abd:42ed with SMTP
+ id p6-20020a17090a348600b001d93abd42edmr6692184pjb.32.1651276619241; Fri, 29
+ Apr 2022 16:56:59 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 23:56:43 +0000
 In-Reply-To: <20220429235644.697372-1-cmllamas@google.com>
-Message-Id: <20220429235644.697372-2-cmllamas@google.com>
+Message-Id: <20220429235644.697372-5-cmllamas@google.com>
 Mime-Version: 1.0
 References: <20220429235644.697372-1-cmllamas@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v2 1/5] binder: add failed transaction logging info
+Subject: [PATCH v2 4/5] binder: convert logging macros into functions
 From:   Carlos Llamas <cmllamas@google.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "=?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?=" <arve@android.com>,
@@ -73,34 +73,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make sure we log relevant information about failed transactions such as
-the target proc/thread, call type and transaction id. These details are
-particularly important when debugging userspace issues.
+Converting binder_debug() and binder_user_error() macros into functions
+reduces the overall object size by 16936 bytes when cross-compiled with
+aarch64-linux-gnu-gcc 11.2.0:
+
+$ size drivers/android/binder.o.{old,new}
+   text	   data	    bss	    dec	    hex	filename
+  77935	   6168	  20264	 104367	  197af	drivers/android/binder.o.old
+  65551	   1616	  20264	  87431	  15587	drivers/android/binder.o.new
+
+This is particularly beneficial to functions binder_transaction() and
+binder_thread_write() which repeatedly use these macros and are both
+part of the critical path for all binder transactions.
+
+$ nm --size vmlinux.{old,new} |grep ' binder_transaction$'
+0000000000002f60 t binder_transaction
+0000000000002358 t binder_transaction
+
+$ nm --size vmlinux.{old,new} |grep binder_thread_write
+0000000000001c54 t binder_thread_write
+00000000000014a8 t binder_thread_write
 
 Signed-off-by: Carlos Llamas <cmllamas@google.com>
 ---
- drivers/android/binder.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/android/binder.c | 41 ++++++++++++++++++++++++++++------------
+ 1 file changed, 29 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/android/binder.c b/drivers/android/binder.c
-index 8351c5638880..f0885baa53a1 100644
+index b9df0c8a68d3..bfb21e258427 100644
 --- a/drivers/android/binder.c
 +++ b/drivers/android/binder.c
-@@ -3459,8 +3459,12 @@ static void binder_transaction(struct binder_proc *proc,
- 	}
+@@ -133,19 +133,36 @@ static int binder_set_stop_on_user_error(const char *val,
+ module_param_call(stop_on_user_error, binder_set_stop_on_user_error,
+ 	param_get_int, &binder_stop_on_user_error, 0644);
  
- 	binder_debug(BINDER_DEBUG_FAILED_TRANSACTION,
--		     "%d:%d transaction failed %d/%d, size %lld-%lld line %d\n",
--		     proc->pid, thread->pid, return_error, return_error_param,
-+		     "%d:%d transaction %s to %d:%d failed %d/%d/%d, size %lld-%lld line %d\n",
-+		     proc->pid, thread->pid, reply ? "reply" :
-+		     (tr->flags & TF_ONE_WAY ? "async" : "call"),
-+		     target_proc ? target_proc->pid : 0,
-+		     target_thread ? target_thread->pid : 0,
-+		     t_debug_id, return_error, return_error_param,
- 		     (u64)tr->data_size, (u64)tr->offsets_size,
- 		     return_error_line);
+-#define binder_debug(mask, x...) \
+-	do { \
+-		if (binder_debug_mask & mask) \
+-			pr_info_ratelimited(x); \
+-	} while (0)
++static __printf(2, 3) void binder_debug(int mask, const char *format, ...)
++{
++	struct va_format vaf;
++	va_list args;
  
+-#define binder_user_error(x...) \
+-	do { \
+-		if (binder_debug_mask & BINDER_DEBUG_USER_ERROR) \
+-			pr_info_ratelimited(x); \
+-		if (binder_stop_on_user_error) \
+-			binder_stop_on_user_error = 2; \
+-	} while (0)
++	if (binder_debug_mask & mask) {
++		va_start(args, format);
++		vaf.va = &args;
++		vaf.fmt = format;
++		pr_info_ratelimited("%pV", &vaf);
++		va_end(args);
++	}
++}
++
++static __printf(1, 2) void binder_user_error(const char *format, ...)
++{
++	struct va_format vaf;
++	va_list args;
++
++	if (binder_debug_mask & BINDER_DEBUG_USER_ERROR) {
++		va_start(args, format);
++		vaf.va = &args;
++		vaf.fmt = format;
++		pr_info_ratelimited("%pV", &vaf);
++		va_end(args);
++	}
++
++	if (binder_stop_on_user_error)
++		binder_stop_on_user_error = 2;
++}
+ 
+ #define binder_set_extended_error(ee, _id, _command, _param) \
+ 	do { \
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
