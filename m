@@ -2,60 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC98C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:28:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B95BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379146AbiD2Qb3 (ORCPT
+        id S1379159AbiD2Qbe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:31:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49652 "EHLO
+        Fri, 29 Apr 2022 12:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379111AbiD2QbS (ORCPT
+        with ESMTP id S1379118AbiD2QbV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:31:18 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D185D95DE
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:00 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id e24so11442455wrc.9
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:27:59 -0700 (PDT)
+        Fri, 29 Apr 2022 12:31:21 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A536D95ED
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:02 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id t6so11478492wra.4
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fMTHSdsVFd99uvEQJ+DUcG1AXQWszBtxSQFK497UfkQ=;
-        b=TBh1+9jmwKdoH7zISOSlCGCChLX+5SFhwfAW/s0pd5oL72AyCFK/nUX6D/rrewYSGs
-         k+4SeShRSCDgqSQgXBF8ZwlaxlmYCWtHAzTesG7uHQJa0tIZd7ASJsgx7jrnbC8fZl2F
-         0qgDKqsr5M69j8MnMuJVrmP5XvheWBtCoROQ8W/ZNLUjGMpXypiYmoClErIEIR13ZUKI
-         CvMJSIbR1nBIYfrqgVpCAXHvogN1Fnh6/w965s/tPZpncCU3/A7DCll7z2RSp4w2tfOd
-         bvuKSL0muiaa/SCVGLCqWURy37YfbqkLV7Cx6BeNGye/XGycZWJe0/xYxnXS9vwfH1KW
-         m73g==
+        bh=9L3uMLDD1NekAOzWxjVzgekMM2ZB8pgbD0zH/lCgA3Y=;
+        b=eU7WKCkMMDPe/RDCGg8/9raNfZ+VbHtr0YEhI4Dw7ohPsWwZH7TtV8CjANqVFfoB+I
+         8pD3Q8cWU+SYm/FeKnHTJu1ziCF88SIo04o90hUtuhkEIG+8ui6Ie30oyTT27V+FAMUh
+         5u16NAdaT7k934Yc7XSNz8SEVnkxuieVqMQUXrb38NVIAXI9wnmAUeUfhtYqjww7H++o
+         YSzU+aTT24ozVIiODKXCXD/Nm2ubmhjy/QpkgIsg71qgbb19biQFtldm6fidDefsVSXL
+         NIk7+dmS0xs/eMx7sGKzhskAaSFHFFE6Rcg4RV9sfNtAEiCq2VZWLCepFjq2mXl+UX9F
+         SCTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fMTHSdsVFd99uvEQJ+DUcG1AXQWszBtxSQFK497UfkQ=;
-        b=x5h0qRxz+n22394O39xp9x7qXhTmTDq6yzuQXYaoW9uYUGZ499a0oR0WbMXHa8zVuX
-         Ogc+Nqt9GhkmkWDQ4Bh995y6B6yY1KgFP3Lmmb3v9voPlgAo+6PG7+dfCrzsvFP5Tpdb
-         kbDuOXNxdpJlosB6u/zbR3cIeM9tYG/MxTv3peteJLp7cRPnnWkC+SE+Csc34tiX/cbf
-         VNOopa26NVBHEKfZXkdA912rdLiKdW4QB8LY1gzZSXEnkEBvqs4kZs7ZrznQFGsbPMZm
-         7jLbBwTpcQ2J2cxsTZhWGPFenQXWhSwbiYrMozEy+AWHl6ZILUNBPHocjDiqrhOOu/VQ
-         ONBw==
-X-Gm-Message-State: AOAM5339mECQgFWGSG1kQ5e1Bj3uYm2/sxnX3GpvBY5PzR6oFaLW7p2F
-        XVhyP1Q09WtBicX2WL2RY6sAmg==
-X-Google-Smtp-Source: ABdhPJyoK7BUGK4KfNn2zUv3/f0UOihT4V67+sU5fBFqhGpNzML/zqHOMdX+GGrdD6Ib86Llzbn3EA==
-X-Received: by 2002:adf:fc52:0:b0:20a:e296:6e8a with SMTP id e18-20020adffc52000000b0020ae2966e8amr16455921wrs.432.1651249678589;
-        Fri, 29 Apr 2022 09:27:58 -0700 (PDT)
+        bh=9L3uMLDD1NekAOzWxjVzgekMM2ZB8pgbD0zH/lCgA3Y=;
+        b=DNv6IwnUU15hJTVQFx44om+TqkDzjfrpMp5tiuF4q/W3ukOs4uFPpOQ5+C8Pim2A8d
+         7C3Ytve7Liavt4mQFrD53MZw4EdFCzcr2PXX5vGRpbPJ3xlk9P+TjobQpHEDzol5p2T3
+         X3PPF8U8kYYfwWrD9zWZhnYj+yOYRTH25004HSC854pgTS1fzTBDhATUXbk3llq/55sg
+         Rbq8oQu8RzYCj1dVIqd/TohYlcpmqZIIjw9v4QQpfqpTvugjVgekadnNw43ETHvd9keP
+         dwROQR3pQIC2f5eY/1Ly00oAIY/cRD3JAAY+HCYbviWD0zhAkpp/X25LiZzOXRQyyJ0+
+         bPig==
+X-Gm-Message-State: AOAM53148XVO5tOq5v/1ll60jIToqo2E/nJoY56BfgAJTju+6slRE1hl
+        gTGWBMdD7klZrmspneebluyEgw==
+X-Google-Smtp-Source: ABdhPJz8C4bE25s4Hbbz1S65VBmc1+8ge9DJRkv2dMQ3T97TAbqxeZwnrlUF57Aot9ueSu4/c1pr9g==
+X-Received: by 2002:a05:6000:12c7:b0:20a:e00f:da73 with SMTP id l7-20020a05600012c700b0020ae00fda73mr18655912wrx.613.1651249681070;
+        Fri, 29 Apr 2022 09:28:01 -0700 (PDT)
 Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id b5-20020adff905000000b0020a8781be70sm2781801wrr.12.2022.04.29.09.27.57
+        by smtp.gmail.com with ESMTPSA id b5-20020adff905000000b0020a8781be70sm2781801wrr.12.2022.04.29.09.27.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 09:27:57 -0700 (PDT)
+        Fri, 29 Apr 2022 09:28:00 -0700 (PDT)
 From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 To:     gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, Sven Peter <sven@svenpeter.dev>,
+Cc:     linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzk@kernel.org>,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 05/16] nvmem: Add Apple eFuse driver
-Date:   Fri, 29 Apr 2022 17:26:50 +0100
-Message-Id: <20220429162701.2222-6-srinivas.kandagatla@linaro.org>
+Subject: [PATCH 07/16] nvmem: sunplus-ocotp: drop useless probe confirmation
+Date:   Fri, 29 Apr 2022 17:26:52 +0100
+Message-Id: <20220429162701.2222-8-srinivas.kandagatla@linaro.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220429162701.2222-1-srinivas.kandagatla@linaro.org>
 References: <20220429162701.2222-1-srinivas.kandagatla@linaro.org>
@@ -65,138 +66,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Peter <sven@svenpeter.dev>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 
-Apple SoCs contain eFuses used to store factory-programmed data such
-as calibration values for the PCIe or the Type-C PHY. They are organized
-as 32bit values exposed as MMIO.
+Printing probe success is discouraged, because we can use tracing for
+this purpose.  Remove useless print message after Sunplus OCOTP driver
+probe.
 
-Signed-off-by: Sven Peter <sven@svenpeter.dev>
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 ---
- drivers/nvmem/Kconfig        | 12 ++++++
- drivers/nvmem/Makefile       |  2 +
- drivers/nvmem/apple-efuses.c | 80 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 94 insertions(+)
- create mode 100644 drivers/nvmem/apple-efuses.c
+ drivers/nvmem/sunplus-ocotp.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/nvmem/Kconfig b/drivers/nvmem/Kconfig
-index 555aa77a574d..6283e09cc1e9 100644
---- a/drivers/nvmem/Kconfig
-+++ b/drivers/nvmem/Kconfig
-@@ -324,4 +324,16 @@ config NVMEM_SUNPLUS_OCOTP
- 	  This driver can also be built as a module. If so, the module
- 	  will be called nvmem-sunplus-ocotp.
+diff --git a/drivers/nvmem/sunplus-ocotp.c b/drivers/nvmem/sunplus-ocotp.c
+index 2dc59c22eb55..81aba80bdd10 100644
+--- a/drivers/nvmem/sunplus-ocotp.c
++++ b/drivers/nvmem/sunplus-ocotp.c
+@@ -202,8 +202,6 @@ static int sp_ocotp_probe(struct platform_device *pdev)
+ 		(int)QAC628_OTP_NUM_BANKS, (int)OTP_WORDS_PER_BANK,
+ 		(int)OTP_WORD_SIZE, (int)QAC628_OTP_SIZE);
  
-+config NVMEM_APPLE_EFUSES
-+	tristate "Apple eFuse support"
-+	depends on ARCH_APPLE || COMPILE_TEST
-+	default ARCH_APPLE
-+	help
-+	  Say y here to enable support for reading eFuses on Apple SoCs
-+	  such as the M1. These are e.g. used to store factory programmed
-+	  calibration data required for the PCIe or the USB-C PHY.
-+
-+	  This driver can also be built as a module. If so, the module will
-+	  be called nvmem-apple-efuses.
-+
- endif
-diff --git a/drivers/nvmem/Makefile b/drivers/nvmem/Makefile
-index 891958e29d25..00e136a0a123 100644
---- a/drivers/nvmem/Makefile
-+++ b/drivers/nvmem/Makefile
-@@ -65,3 +65,5 @@ obj-$(CONFIG_NVMEM_LAYERSCAPE_SFP)	+= nvmem-layerscape-sfp.o
- nvmem-layerscape-sfp-y		:= layerscape-sfp.o
- obj-$(CONFIG_NVMEM_SUNPLUS_OCOTP)	+= nvmem_sunplus_ocotp.o
- nvmem_sunplus_ocotp-y		:= sunplus-ocotp.o
-+obj-$(CONFIG_NVMEM_APPLE_EFUSES)	+= nvmem-apple-efuses.o
-+nvmem-apple-efuses-y 		:= apple-efuses.o
-diff --git a/drivers/nvmem/apple-efuses.c b/drivers/nvmem/apple-efuses.c
-new file mode 100644
-index 000000000000..9b7c87102104
---- /dev/null
-+++ b/drivers/nvmem/apple-efuses.c
-@@ -0,0 +1,80 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Apple SoC eFuse driver
-+ *
-+ * Copyright (C) The Asahi Linux Contributors
-+ */
-+
-+#include <linux/io.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/nvmem-provider.h>
-+#include <linux/platform_device.h>
-+
-+struct apple_efuses_priv {
-+	void __iomem *fuses;
-+};
-+
-+static int apple_efuses_read(void *context, unsigned int offset, void *val,
-+			     size_t bytes)
-+{
-+	struct apple_efuses_priv *priv = context;
-+	u32 *dst = val;
-+
-+	while (bytes >= sizeof(u32)) {
-+		*dst++ = readl_relaxed(priv->fuses + offset);
-+		bytes -= sizeof(u32);
-+		offset += sizeof(u32);
-+	}
-+
-+	return 0;
-+}
-+
-+static int apple_efuses_probe(struct platform_device *pdev)
-+{
-+	struct apple_efuses_priv *priv;
-+	struct resource *res;
-+	struct nvmem_config config = {
-+		.dev = &pdev->dev,
-+		.read_only = true,
-+		.reg_read = apple_efuses_read,
-+		.stride = sizeof(u32),
-+		.word_size = sizeof(u32),
-+		.name = "apple_efuses_nvmem",
-+		.id = NVMEM_DEVID_AUTO,
-+		.root_only = true,
-+	};
-+
-+	priv = devm_kzalloc(config.dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->fuses = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
-+	if (IS_ERR(priv->fuses))
-+		return PTR_ERR(priv->fuses);
-+
-+	config.priv = priv;
-+	config.size = resource_size(res);
-+
-+	return PTR_ERR_OR_ZERO(devm_nvmem_register(config.dev, &config));
-+}
-+
-+static const struct of_device_id apple_efuses_of_match[] = {
-+	{ .compatible = "apple,efuses", },
-+	{}
-+};
-+
-+MODULE_DEVICE_TABLE(of, apple_efuses_of_match);
-+
-+static struct platform_driver apple_efuses_driver = {
-+	.driver = {
-+		.name = "apple_efuses",
-+		.of_match_table = apple_efuses_of_match,
-+	},
-+	.probe = apple_efuses_probe,
-+};
-+
-+module_platform_driver(apple_efuses_driver);
-+
-+MODULE_AUTHOR("Sven Peter <sven@svenpeter.dev>");
-+MODULE_LICENSE("GPL");
+-	dev_info(dev, "by Sunplus (C) 2020");
+-
+ 	return 0;
+ }
+ 
 -- 
 2.21.0
 
