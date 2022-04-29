@@ -2,104 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C4B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:15:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B58C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:16:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356386AbiD2JTK (ORCPT
+        id S1356377AbiD2JTy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 05:19:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57764 "EHLO
+        Fri, 29 Apr 2022 05:19:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356374AbiD2JSv (ORCPT
+        with ESMTP id S1355713AbiD2JTt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 05:18:51 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E51888C9;
-        Fri, 29 Apr 2022 02:15:29 -0700 (PDT)
-X-UUID: 5b7b56c497b54af38cb68743611774e3-20220429
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:242fe031-ed48-42f4-a271-3e560c49da6a,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:2,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:47
-X-CID-INFO: VERSION:1.1.4,REQID:242fe031-ed48-42f4-a271-3e560c49da6a,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:2,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:47
-X-CID-META: VersionHash:faefae9,CLOUDID:20432c2f-6199-437e-8ab4-9920b4bc5b76,C
-        OID:IGNORED,Recheck:0,SF:28|17|19|48,TC:nil,Content:4,EDM:-3,File:nil,QS:0
-        ,BEC:nil
-X-UUID: 5b7b56c497b54af38cb68743611774e3-20220429
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1146370166; Fri, 29 Apr 2022 17:15:23 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 29 Apr 2022 17:15:23 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 29 Apr 2022 17:15:22 +0800
-Message-ID: <b90426905a486ab720b9d67f00ed869285acd768.camel@mediatek.com>
-Subject: Re: [v4 00/18] ASoC: mediatek: Add support for MT8186 SoC
-From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, <aaronyu@google.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Trevor Wu <trevor.wu@mediatek.com>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        Julian Braha <julianbraha@gmail.com>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Fri, 29 Apr 2022 17:15:22 +0800
-In-Reply-To: <CAMuHMdWYJofetMwkAH4d8UzKZH77hxwRhXrMhaECOs1suQV2PA@mail.gmail.com>
-References: <20220428093355.16172-1-jiaxin.yu@mediatek.com>
-         <CAMuHMdWYJofetMwkAH4d8UzKZH77hxwRhXrMhaECOs1suQV2PA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Fri, 29 Apr 2022 05:19:49 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 608E9A5E91
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 02:16:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651223792; x=1682759792;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Xybt8AugoPhkYIM+CjYQCGzF3Xeoot+D4yzJuWGb0mY=;
+  b=Yt1rBll5YWw8DpgmTlel54b8wC3UXH8Py2m20fVGUulGQe/5jZx9N3rh
+   9egHwaqvl1WkJuyqxw+4n1n2+jUye7vk3HL6YTjShVTE6wKMJk918Vcu+
+   41/QhPNFjTcThWqDMEyDM3UIY6iPN4x77HGPr7bMx/c0cFSneV8EmbuUq
+   XTRyyQGAFFmHhT/TITItbPNTkHj0KgcACnJbfL+FvTdiuTkofblKKzeBI
+   1u681DhLgGGkGGhi0UbHb13TWNrpcuwcJ9w9Edryxo5VlfrVM7240QMLq
+   6ID+fCoB010VDoX5762Rb7IoT8ecWi0Ge3MGM80UBunAm35TVfR1ZkNfd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="264174761"
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="264174761"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 02:16:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="542306400"
+Received: from unknown (HELO localhost.localdomain) ([10.226.216.90])
+  by orsmga002.jf.intel.com with ESMTP; 29 Apr 2022 02:16:30 -0700
+From:   tien.sung.ang@intel.com
+To:     Dinh Nguyen <dinguyen@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Ang Tien Sung <tien.sung.ang@intel.com>
+Subject: [PATCH] firmware: stratix10-svc: To support a command ATF Get Version
+Date:   Fri, 29 Apr 2022 17:16:15 +0800
+Message-Id: <20220429091615.1064585-1-tien.sung.ang@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-04-29 at 10:47 +0200, Geert Uytterhoeven wrote:
-> Hi Jiaxin,
-> 
-> Gmail tends to mark your patches as spam.
-> Can you please make sure to use "PATCH" in the subject line, e.g.
-> "[PATCH v4 00/18] ASoC: mediatek: Add support for MT8186 SoC"?
-> 
-> Thanks!
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- 
-> geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a
-> hacker. But
-> when I'm talking to journalists I just say "programmer" or something
-> like that.
->                                 -- Linus Torvalds
+From: Ang Tien Sung <tien.sung.ang@intel.com>
 
-Hi Geert,
+We are to support a new SMC Command of hexadecimal 0x200 that returns
+the ATF Firmware major and minor version.
 
-Sorry for this mistake, I usually use "git format-patch --subject-
-prefix "v4" --cover-letter -x" to generate a series of patches.
-So it automatically removes "PATCH". I will correct the cmd to "git
-format-patch --subject-prefix "PATCH v4" --cover-letter -x".
+Signed-off-by: Ang Tien Sung <tien.sung.ang@intel.com>
+---
+ drivers/firmware/stratix10-svc.c                | 10 ++++++++++
+ include/linux/firmware/intel/stratix10-smc.h    | 17 +++++++++++++++++
+ .../linux/firmware/intel/stratix10-svc-client.h |  5 +++++
+ 3 files changed, 32 insertions(+)
 
-Thanks,
-Jiaxin.Yu
+diff --git a/drivers/firmware/stratix10-svc.c b/drivers/firmware/stratix10-svc.c
+index 8177a0fae11d..999ffa83e8b3 100644
+--- a/drivers/firmware/stratix10-svc.c
++++ b/drivers/firmware/stratix10-svc.c
+@@ -310,6 +310,11 @@ static void svc_thread_recv_status_ok(struct stratix10_svc_data *p_data,
+ 		cb_data->status = BIT(SVC_STATUS_OK);
+ 		cb_data->kaddr1 = &res.a1;
+ 		break;
++	case COMMAND_SMC_SVC_VERSION:
++		cb_data->status = BIT(SVC_STATUS_OK);
++		cb_data->kaddr1 = &res.a1;
++		cb_data->kaddr2 = &res.a2;
++		break;
+ 	case COMMAND_RSU_DCMF_VERSION:
+ 		cb_data->status = BIT(SVC_STATUS_OK);
+ 		cb_data->kaddr1 = &res.a1;
+@@ -428,6 +433,11 @@ static int svc_normal_to_secure_thread(void *data)
+ 			a1 = 0;
+ 			a2 = 0;
+ 			break;
++		case COMMAND_SMC_SVC_VERSION:
++			a0 = INTEL_SIP_SMC_SVC_VERSION;
++			a1 = 0;
++			a2 = 0;
++			break;
+ 		default:
+ 			pr_warn("it shouldn't happen\n");
+ 			break;
+diff --git a/include/linux/firmware/intel/stratix10-smc.h b/include/linux/firmware/intel/stratix10-smc.h
+index aad497a9ad8b..d44605d2aa71 100644
+--- a/include/linux/firmware/intel/stratix10-smc.h
++++ b/include/linux/firmware/intel/stratix10-smc.h
+@@ -420,4 +420,21 @@ INTEL_SIP_SMC_FAST_CALL_VAL(INTEL_SIP_SMC_FUNCID_FPGA_CONFIG_COMPLETED_WRITE)
+ #define INTEL_SIP_SMC_FIRMWARE_VERSION \
+         INTEL_SIP_SMC_FAST_CALL_VAL(INTEL_SIP_SMC_FUNCID_FIRMWARE_VERSION)
+ 
++/**
++ * Request INTEL_SIP_SMC_SVC_VERSION
++ *
++ * Sync call used to query the SIP SMC API Version
++ *
++ * Call register usage:
++ * a0 INTEL_SIP_SMC_SVC_VERSION
++ * a1-a7 not used
++ *
++ * Return status:
++ * a0 INTEL_SIP_SMC_STATUS_OK
++ * a1 Major
++ * a2 Minor
++ */
++#define INTEL_SIP_SMC_SVC_FUNCID_VERSION 512
++#define INTEL_SIP_SMC_SVC_VERSION \
++		INTEL_SIP_SMC_FAST_CALL_VAL(INTEL_SIP_SMC_SVC_FUNCID_VERSION)
+ #endif
+diff --git a/include/linux/firmware/intel/stratix10-svc-client.h b/include/linux/firmware/intel/stratix10-svc-client.h
+index 18c1841fdb1f..0dfd4672b346 100644
+--- a/include/linux/firmware/intel/stratix10-svc-client.h
++++ b/include/linux/firmware/intel/stratix10-svc-client.h
+@@ -107,6 +107,9 @@ struct stratix10_svc_chan;
+  *
+  * @COMMAND_FIRMWARE_VERSION: query running firmware version, return status
+  * is SVC_STATUS_OK or SVC_STATUS_ERROR
++ *
++ * @COMMAND_SMC_SVC_VERSION: Non-mailbox SMC SVC API Version,
++ * return status is SVC_STATUS_OK
+  */
+ enum stratix10_svc_command_code {
+ 	COMMAND_NOOP = 0,
+@@ -121,6 +124,8 @@ enum stratix10_svc_command_code {
+ 	COMMAND_RSU_MAX_RETRY,
+ 	COMMAND_RSU_DCMF_VERSION,
+ 	COMMAND_FIRMWARE_VERSION,
++	/* Non-mailbox SMC Call */
++	COMMAND_SMC_SVC_VERSION = 200
+ };
+ 
+ /**
+-- 
+2.25.1
 
