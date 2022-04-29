@@ -2,146 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B58C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:16:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:19:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356377AbiD2JTy (ORCPT
+        id S1356421AbiD2JWd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 05:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
+        Fri, 29 Apr 2022 05:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355713AbiD2JTt (ORCPT
+        with ESMTP id S1356405AbiD2JW1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 05:19:49 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 608E9A5E91
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 02:16:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651223792; x=1682759792;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Xybt8AugoPhkYIM+CjYQCGzF3Xeoot+D4yzJuWGb0mY=;
-  b=Yt1rBll5YWw8DpgmTlel54b8wC3UXH8Py2m20fVGUulGQe/5jZx9N3rh
-   9egHwaqvl1WkJuyqxw+4n1n2+jUye7vk3HL6YTjShVTE6wKMJk918Vcu+
-   41/QhPNFjTcThWqDMEyDM3UIY6iPN4x77HGPr7bMx/c0cFSneV8EmbuUq
-   XTRyyQGAFFmHhT/TITItbPNTkHj0KgcACnJbfL+FvTdiuTkofblKKzeBI
-   1u681DhLgGGkGGhi0UbHb13TWNrpcuwcJ9w9Edryxo5VlfrVM7240QMLq
-   6ID+fCoB010VDoX5762Rb7IoT8ecWi0Ge3MGM80UBunAm35TVfR1ZkNfd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="264174761"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="264174761"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 02:16:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="542306400"
-Received: from unknown (HELO localhost.localdomain) ([10.226.216.90])
-  by orsmga002.jf.intel.com with ESMTP; 29 Apr 2022 02:16:30 -0700
-From:   tien.sung.ang@intel.com
-To:     Dinh Nguyen <dinguyen@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Ang Tien Sung <tien.sung.ang@intel.com>
-Subject: [PATCH] firmware: stratix10-svc: To support a command ATF Get Version
-Date:   Fri, 29 Apr 2022 17:16:15 +0800
-Message-Id: <20220429091615.1064585-1-tien.sung.ang@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 29 Apr 2022 05:22:27 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8D7EC42DC;
+        Fri, 29 Apr 2022 02:19:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=OF6k5PLv2VCqzzZahe8Cbkn92KRWSJ1Zt5uYtTCu38Q=; b=hE8hNE3kc3bg9qa7QMSsxL5tV0
+        UNdIypjbAUqso3xZLfPQqukCG+SlBrI5NWTggQc9FrUAJh3P97NyR7Rvj3bi7+YTO/gs8zxz7+2Ux
+        JZbwf9dTgMpJN160hPpkNLvlYzWs1MVZIvw3wH1etdypNtCdGIIrN6xkHkQQLRN5P1Q/c85AAyhSP
+        nM0vnRo5goCbb2iVwl8rDkHB79nppxFfRhIcM4fIoCwjmOixedWTH7mtWd+QVZ5YwQbRFNp5Glr8J
+        RAmBT4MhgHWxNyUmI26Qcy9xc2ipUsZzmBwMoCrWave2NhzAg3cms9DgiK8jxzoJdl/DVOk/U55hq
+        hfmj11AQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nkMmD-00CGsu-9Y; Fri, 29 Apr 2022 09:19:01 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 7124998038F; Fri, 29 Apr 2022 11:18:59 +0200 (CEST)
+Date:   Fri, 29 Apr 2022 11:18:59 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     x86@kernel.org, jpoimboe@redhat.com, mark.rutland@arm.com
+Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
+        linux-toolchains@vger.kernel.org
+Subject: [PATCH] linkage: Fix issue with missing symbol size
+Message-ID: <20220429091859.GS2731@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ang Tien Sung <tien.sung.ang@intel.com>
 
-We are to support a new SMC Command of hexadecimal 0x200 that returns
-the ATF Firmware major and minor version.
+Occasionally, typically when a function doesn't end with 'ret', an
+alias on that function will have 0 size.
 
-Signed-off-by: Ang Tien Sung <tien.sung.ang@intel.com>
+The difference between what GCC generates and our linkage magic, is
+that GCC doesn't appear to provide .size for the alias'ed symbol at
+all. And indeed, removing this directive cures the issue.
+
+Additionally, GCC also doesn't emit .type for alias symbols either, so
+also omit that.
+
+Fixes: e0891269a8c2 ("linkage: add SYM_FUNC_ALIAS{,_LOCAL,_WEAK}()")
+Suggested-by: Mark Rutland <mark.rutland@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- drivers/firmware/stratix10-svc.c                | 10 ++++++++++
- include/linux/firmware/intel/stratix10-smc.h    | 17 +++++++++++++++++
- .../linux/firmware/intel/stratix10-svc-client.h |  5 +++++
- 3 files changed, 32 insertions(+)
+ include/linux/linkage.h |   15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/firmware/stratix10-svc.c b/drivers/firmware/stratix10-svc.c
-index 8177a0fae11d..999ffa83e8b3 100644
---- a/drivers/firmware/stratix10-svc.c
-+++ b/drivers/firmware/stratix10-svc.c
-@@ -310,6 +310,11 @@ static void svc_thread_recv_status_ok(struct stratix10_svc_data *p_data,
- 		cb_data->status = BIT(SVC_STATUS_OK);
- 		cb_data->kaddr1 = &res.a1;
- 		break;
-+	case COMMAND_SMC_SVC_VERSION:
-+		cb_data->status = BIT(SVC_STATUS_OK);
-+		cb_data->kaddr1 = &res.a1;
-+		cb_data->kaddr2 = &res.a2;
-+		break;
- 	case COMMAND_RSU_DCMF_VERSION:
- 		cb_data->status = BIT(SVC_STATUS_OK);
- 		cb_data->kaddr1 = &res.a1;
-@@ -428,6 +433,11 @@ static int svc_normal_to_secure_thread(void *data)
- 			a1 = 0;
- 			a2 = 0;
- 			break;
-+		case COMMAND_SMC_SVC_VERSION:
-+			a0 = INTEL_SIP_SMC_SVC_VERSION;
-+			a1 = 0;
-+			a2 = 0;
-+			break;
- 		default:
- 			pr_warn("it shouldn't happen\n");
- 			break;
-diff --git a/include/linux/firmware/intel/stratix10-smc.h b/include/linux/firmware/intel/stratix10-smc.h
-index aad497a9ad8b..d44605d2aa71 100644
---- a/include/linux/firmware/intel/stratix10-smc.h
-+++ b/include/linux/firmware/intel/stratix10-smc.h
-@@ -420,4 +420,21 @@ INTEL_SIP_SMC_FAST_CALL_VAL(INTEL_SIP_SMC_FUNCID_FPGA_CONFIG_COMPLETED_WRITE)
- #define INTEL_SIP_SMC_FIRMWARE_VERSION \
-         INTEL_SIP_SMC_FAST_CALL_VAL(INTEL_SIP_SMC_FUNCID_FIRMWARE_VERSION)
+--- a/include/linux/linkage.h
++++ b/include/linux/linkage.h
+@@ -171,12 +171,9 @@
  
-+/**
-+ * Request INTEL_SIP_SMC_SVC_VERSION
-+ *
-+ * Sync call used to query the SIP SMC API Version
-+ *
-+ * Call register usage:
-+ * a0 INTEL_SIP_SMC_SVC_VERSION
-+ * a1-a7 not used
-+ *
-+ * Return status:
-+ * a0 INTEL_SIP_SMC_STATUS_OK
-+ * a1 Major
-+ * a2 Minor
-+ */
-+#define INTEL_SIP_SMC_SVC_FUNCID_VERSION 512
-+#define INTEL_SIP_SMC_SVC_VERSION \
-+		INTEL_SIP_SMC_FAST_CALL_VAL(INTEL_SIP_SMC_SVC_FUNCID_VERSION)
+ /* SYM_ALIAS -- use only if you have to */
+ #ifndef SYM_ALIAS
+-#define SYM_ALIAS(alias, name, sym_type, linkage)			\
+-	linkage(alias) ASM_NL						\
+-	.set alias, name ASM_NL						\
+-	.type alias sym_type ASM_NL					\
+-	.set .L__sym_size_##alias, .L__sym_size_##name ASM_NL		\
+-	.size alias, .L__sym_size_##alias
++#define SYM_ALIAS(alias, name, linkage)			\
++	linkage(alias) ASM_NL				\
++	.set alias, name ASM_NL
  #endif
-diff --git a/include/linux/firmware/intel/stratix10-svc-client.h b/include/linux/firmware/intel/stratix10-svc-client.h
-index 18c1841fdb1f..0dfd4672b346 100644
---- a/include/linux/firmware/intel/stratix10-svc-client.h
-+++ b/include/linux/firmware/intel/stratix10-svc-client.h
-@@ -107,6 +107,9 @@ struct stratix10_svc_chan;
-  *
-  * @COMMAND_FIRMWARE_VERSION: query running firmware version, return status
-  * is SVC_STATUS_OK or SVC_STATUS_ERROR
-+ *
-+ * @COMMAND_SMC_SVC_VERSION: Non-mailbox SMC SVC API Version,
-+ * return status is SVC_STATUS_OK
-  */
- enum stratix10_svc_command_code {
- 	COMMAND_NOOP = 0,
-@@ -121,6 +124,8 @@ enum stratix10_svc_command_code {
- 	COMMAND_RSU_MAX_RETRY,
- 	COMMAND_RSU_DCMF_VERSION,
- 	COMMAND_FIRMWARE_VERSION,
-+	/* Non-mailbox SMC Call */
-+	COMMAND_SMC_SVC_VERSION = 200
- };
  
- /**
--- 
-2.25.1
+ /* === code annotations === */
+@@ -261,7 +258,7 @@
+  */
+ #ifndef SYM_FUNC_ALIAS
+ #define SYM_FUNC_ALIAS(alias, name)					\
+-	SYM_ALIAS(alias, name, SYM_T_FUNC, SYM_L_GLOBAL)
++	SYM_ALIAS(alias, name, SYM_L_GLOBAL)
+ #endif
+ 
+ /*
+@@ -269,7 +266,7 @@
+  */
+ #ifndef SYM_FUNC_ALIAS_LOCAL
+ #define SYM_FUNC_ALIAS_LOCAL(alias, name)				\
+-	SYM_ALIAS(alias, name, SYM_T_FUNC, SYM_L_LOCAL)
++	SYM_ALIAS(alias, name, SYM_L_LOCAL)
+ #endif
+ 
+ /*
+@@ -277,7 +274,7 @@
+  */
+ #ifndef SYM_FUNC_ALIAS_WEAK
+ #define SYM_FUNC_ALIAS_WEAK(alias, name)				\
+-	SYM_ALIAS(alias, name, SYM_T_FUNC, SYM_L_WEAK)
++	SYM_ALIAS(alias, name, SYM_L_WEAK)
+ #endif
+ 
+ /* SYM_CODE_START -- use for non-C (special) functions */
 
