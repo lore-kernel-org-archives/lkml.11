@@ -2,126 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C29C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:14:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68FA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:15:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377775AbiD2PSD (ORCPT
+        id S1377963AbiD2PTM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 11:18:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40048 "EHLO
+        Fri, 29 Apr 2022 11:19:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235634AbiD2PSA (ORCPT
+        with ESMTP id S1378276AbiD2PTE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 11:18:00 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D128ED4C4D;
-        Fri, 29 Apr 2022 08:14:41 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id z99so9439431ede.5;
-        Fri, 29 Apr 2022 08:14:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EbtxbOJ1CS59r6WrWpZSN0c1L+UbT9eVGmvmTgjvhcM=;
-        b=AZJb9vMd/ct6885yCM5BV85EznfI7aiq+/eYTkD5CSjyymz+Tjwd1PSMC4SfrRLQ60
-         kyxqw1lBFLjdiq3RZavN4/kOQEINq9E59HMsAVb6MiMu9BG+aYJnkeMFgxYqqYo9Miqn
-         exfc95bL964UI7AcY0OffRRC9UwSepiNlI68QaKQrG2q1STsKAZqIQm3lPhctfI8AUpk
-         pJUbUuGortQ7nnow+ib0WaCtMr2Q763uVzeO9A1cGok6wVEHjD+6qzhzD0NFyG+uTdVi
-         qqNAGlD4b3vsABpdYUEWwGMLGLypnZnc7a9bAdqzLe9SMC7j9k4/q3p4qTcSY3rL1lq6
-         C6qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EbtxbOJ1CS59r6WrWpZSN0c1L+UbT9eVGmvmTgjvhcM=;
-        b=R5m2/3pCiyJyknNjb6fPLKGAPpW+eYOuXe7qvIPTpM2VQhN6bFXIrMoDJRK5trDxt5
-         6gWH2xvrOXbpNO5Da/Aql4++GD/tZ+PgJ8tZmrXCxHetCsfbo5S22DowwF27T5Ck6h2B
-         VlaYuCilPdAMVv8YnT2J8/oieuCbu1qjWMc36y5yHQXdi3aA2HZSoA1O9gjQSzReSZsZ
-         D0ezniDwHh3omvBqVA6isuZSOIPEjrdAK5ziSy9tOfPulkyuAlejv4b1ESQaXlfFsloq
-         2XrX/lLuZ8vNBm962OBLnzMaCg6o6BANIzi6cejveHdp5cyGt2XKQQXaNu49BeaI5ard
-         KJ8Q==
-X-Gm-Message-State: AOAM530nypExt/7/Ms0gS/GwLKgplVPIJaHTQ9q9wBKxn+3pSkTXHX9l
-        7+FkavTjpl/64G5k3LQ+QKlNWOkF1b8=
-X-Google-Smtp-Source: ABdhPJxZ8x2QNACsc1KrtQe/rLXHoh0RG6NB5Vk0qGwuytaWut/I3HaFqvFaoj3TAS9hLjvGsEIF9w==
-X-Received: by 2002:a05:6402:50d0:b0:426:3f36:b43a with SMTP id h16-20020a05640250d000b004263f36b43amr3283083edb.91.1651245280298;
-        Fri, 29 Apr 2022 08:14:40 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id w14-20020a170907270e00b006f3ef214e3bsm709993ejk.161.2022.04.29.08.14.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 08:14:39 -0700 (PDT)
-Message-ID: <626c00df.1c69fb81.a5445.4d7c@mx.google.com>
-X-Google-Original-Message-ID: <YmwATb+baBLo969m@Ansuel-xps.>
-Date:   Fri, 29 Apr 2022 17:12:13 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] ARM: dts: qcom: replace gcc PXO with pxo_board fixed
- clock
-References: <20220429122951.13828-1-ansuelsmth@gmail.com>
- <20220429122951.13828-3-ansuelsmth@gmail.com>
- <f260cf81-9db9-710b-1242-45a232e7c7c4@linaro.org>
+        Fri, 29 Apr 2022 11:19:04 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108F4240A1
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 08:15:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=PLXUVQiV7tikz3YNBMnVyAjxTBooCtamS/BcdAwgm1c=; b=YICZspGI9E6FIZ2AFbKUKz+xsP
+        FS5Dji1YinHJh1pOrKjcscS3Hst7bhQa/f4W/7D3nsngsYMaZ8NdoDBSR2CQ7e7wjot+AmpaNiL98
+        vHLPr3wG9o1OWVzEqdsiegQMQz1SveLe7UUy1Q9y8QfvbNRFAFdbiBiAQkYtWgNXrZTsByc5t26Po
+        Idgv6LpfC23p85e+5E6h+vZZduGPLxInEkVTXD/jVrNrQHh5xhqlqohQ5gt5BtweG8+paKpK+WWZK
+        IZjr4YstZ6jcMZYYUmNx/FaqMPUnzT2oXBzYOtQi5YNErX5X5j+kAtoqxwqM/PtI4ksRS2ryuTvJ9
+        376nWAXQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58440)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nkSLM-0004Ak-NE; Fri, 29 Apr 2022 16:15:40 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nkSLK-00022a-RO; Fri, 29 Apr 2022 16:15:38 +0100
+Date:   Fri, 29 Apr 2022 16:15:38 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        linus.walleij@linaro.org, Rob Herring <robh+dt@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: Re: [PATCH 1/2] ARM: Fix off by one in checking DMA zone size
+Message-ID: <YmwBGh5mvuNIgyRY@shell.armlinux.org.uk>
+References: <20220324175417.1014562-1-f.fainelli@gmail.com>
+ <20220324175417.1014562-2-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f260cf81-9db9-710b-1242-45a232e7c7c4@linaro.org>
+In-Reply-To: <20220324175417.1014562-2-f.fainelli@gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 06:11:21PM +0300, Dmitry Baryshkov wrote:
-> On 29/04/2022 15:29, Ansuel Smith wrote:
-> > Replace gcc PXO phandle to pxo_board fixed clock declared in the dts.
-> > gcc driver doesn't provide PXO_SRC as it's a fixed-clock. This cause a
-> > kernel panic if any driver actually try to use it.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> 
-> Fixes: 40cf5c884a96 ("ARM: dts: qcom: add L2CC and RPM for IPQ8064")
-> 
-> It would be nice if you add Fixes tags to your patches in future. Fixes tags
-> allow picking up patches for stable/LTS trees.
-> 
-> For these two patches I'd suggest reordering them. A fix should go first
-> (you'll have to define pxa_board label in it). It can then be accepted into
-> other kernel without dependency on the other patch.
-> 
-> The gcc patch will come next, it will define cxo_board label and use both
-> clocks in the gcc node. It is not fixing a bug, so there is no need about
-> backporting it.
-> 
-> Generic rule: fixes go first (in the patch series), so that they have
-> minimum inter-dependencies.
->
+On Thu, Mar 24, 2022 at 10:54:16AM -0700, Florian Fainelli wrote:
+> The maximum DMA address is PAGE_OFFSET + arm_dma_zone_size - 1, fix this
+> by doing the appropriate subtraction.
 
-Didn't know about this. Thanks for the hint! Will do the change.
+The question is... is MAX_DMA_ADDRESS inclusive or exclusive. The answer
+is rather indeterminant, unfortunately.
 
-> > ---
-> >   arch/arm/boot/dts/qcom-ipq8064.dtsi | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > index 9817448cfa95..ad30f7c8a5a7 100644
-> > --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > @@ -784,7 +784,7 @@ tcsr: syscon@1a400000 {
-> >   		l2cc: clock-controller@2011000 {
-> >   			compatible = "qcom,kpss-gcc", "syscon";
-> >   			reg = <0x2011000 0x1000>;
-> > -			clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
-> > +			clocks = <&gcc PLL8_VOTE>, <&pxo_board>;
-> >   			clock-names = "pll8_vote", "pxo";
-> >   			clock-output-names = "acpu_l2_aux";
-> >   		};
-> 
-> 
-> -- 
-> With best wishes
-> Dmitry
+drivers/net/wan/cosa.c: if (b + len >= MAX_DMA_ADDRESS)
+
+So, if the buffer address + buffer length is equal to MAX_DMA_ADDRESS,
+then the buffer is not DMA-able. To me this looks completely wrong.
+It's also completely wrong because 'b' is a "unsigned long" which
+means on 32-bit, this can wrap.
+
+drivers/parport/parport_pc.c:
+	unsigned long start = (unsigned long) buf;
+	unsigned long end = (unsigned long) buf + length - 1;
+
+	if (end < MAX_DMA_ADDRESS) {
+
+So, "end" is the last byte of the buffer. If MAX_DMA_ADDRESS is the last
+byte of the virtual address space that supports DMA, then if the two are
+equal, we do not use DMA. This seems wrong to me, and points to it being
+an _exclusive_ value - it's the last byte plus one.
+
+there's a bunch of memblock allocation functions that use
+__pa(MAX_DMA_ADDRESS) as the "min_addr" and if this is a minimum
+address, then surely this means that it is also an exclusive value.
+
+So, I came to the conclusion that MAX_DMA_ADDRESS is supposed to be
+exclusive. In other words, where PAGE_OFFSET + sizeof(ram) if
+sizeof(ram) is the size in bytes of the RAM, limited to the maximum
+addressable virtual address that RAM can be mapped to.
+
+I don't see an inclusive value being correct, at least not for the cases
+I've looekd at.
+
 
 -- 
-	Ansuel
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
