@@ -2,99 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28421C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:01:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F6B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353629AbiD2BEO (ORCPT
+        id S1353635AbiD2BGE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 21:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52254 "EHLO
+        Thu, 28 Apr 2022 21:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244954AbiD2BEN (ORCPT
+        with ESMTP id S244954AbiD2BGD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 21:04:13 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA228A7CA;
-        Thu, 28 Apr 2022 18:00:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651194057; x=1682730057;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=KKNCxTu+99qwXWlFXVm9YNtdsjLfxYjBNRBEyc2G6G4=;
-  b=mAQQbcp2k0zL78W8gC19S7tyUJW6prlN0ZnE4+NGTKPWXVwcB7zIL8Oc
-   HTuYHJKcLNzfsFsZ2J9OglEqEEJhNoWxIVgveCekEcmn4mL0DS4QArGqN
-   sczpap62sfdKkNy12P0q7v2CuWlYD2/mt247OboTzxhi49adm3V8OY8W2
-   CPW0aiwGutNFiX9SiQ75RNkts+dL7FxFRGLnOp65DAfkcXTmsrXIihDjo
-   21/sM0oOLQoFlThvL4QzpbXmHvvNiBtAI+4tl9eLbynkw6DGjapAlWprb
-   QySvn21bb7NgydW3gcqseYJmR3ZwfFMCFH5iEcVtzo4sKny8WQlZ+MtOk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="247038702"
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="247038702"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 18:00:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="629827632"
-Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
-  by fmsmga004.fm.intel.com with ESMTP; 28 Apr 2022 18:00:54 -0700
-From:   Tianfei Zhang <tianfei.zhang@intel.com>
-To:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
-        yilun.xu@intel.com, linux-fpga@vger.kernel.org,
-        gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org,
-        Matthew Gerlach <matthew.gerlach@linux.intel.com>,
-        Tianfei Zhang <tianfei.zhang@intel.com>
-Subject: [PATCH v3] uio: dfl: add HSSI subsystem feature id
-Date:   Thu, 28 Apr 2022 20:57:26 -0400
-Message-Id: <20220429005726.607804-1-tianfei.zhang@intel.com>
-X-Mailer: git-send-email 2.26.2
+        Thu, 28 Apr 2022 21:06:03 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810B6B9F38;
+        Thu, 28 Apr 2022 18:02:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=7Kgksz1U+mpR5yolnT7/amlugtDRmACOMUcwglvKJUc=; b=qKdUTEd5nyy93U0dp1Dz1gWDVZ
+        gF+ddv0L6PzIaNwv4iRlOuv9idXs1gNYlZzsEYCl3Azlk9WGiwxoUDeysOdMcKgGw85BfX3YdAYcC
+        taV00TYA8wNY0fupmJwcH8YGrUiH1W+Zh6rK0oKVhKo6mpA8ar5Mx8zbPEBOZZ5RUheo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nkF1j-000Oz9-FZ; Fri, 29 Apr 2022 03:02:31 +0200
+Date:   Fri, 29 Apr 2022 03:02:31 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Dylan Hung <dylan_hung@aspeedtech.com>,
+        David Wilder <dwilder@us.ibm.com>, openbmc@lists.ozlabs.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Wilder <wilder@us.ibm.com>
+Subject: Re: [PATCH net] net: ftgmac100: Disable hardware checksum on AST2600
+Message-ID: <Yms5JzcVMKDYpR5H@lunn.ch>
+References: <20220428082858.545176-1-joel@jms.id.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220428082858.545176-1-joel@jms.id.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> Fixes: 39bfab8844a0 ("net: ftgmac100: Add support for DT phy-handle property")
+> Reported-by: David Wilder <wilder@us.ibm.com>
+> Signed-off-by: Joel Stanley <joel@jms.id.au>
+> ---
+> Net maintainers, if no one has a counter proposal I would like this
+> merged as a fix. Please give Dylan from Aspeed a chance to reply before
+> applying the patch.
 
-Add the Device Feature List (DFL) feature id for the
-High Speed Serial Interface (HSSI) Subsystem to the
-table of ids supported by the uio_dfl driver.
+What has phy-handle got to do with this? You might want to add an
+explanation why you picked that as a Fixes: commit, if it is in fact
+correct.
 
-The HSSI Subsystem is a configurable set of IP blocks
-to be used as part of a Ethernet or PCS/FEC/PMA pipeline.
-Like the Ethernet group used by the N3000 card, the HSSI
-Subsystem does not fully implement a network device from
-a Linux netdev perspective and is controlled and monitored
-from user space software via the uio interface.
 
-Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
----
-v3: change the name of this feature id to HSSI_SUBSYS and rewrite
-    the git message.
-v2: add HSSI introduction and the git repo of Feature ID table.
----
- drivers/uio/uio_dfl.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/uio/uio_dfl.c b/drivers/uio/uio_dfl.c
-index 89c0fc7b0cbc..8f39cc8bb034 100644
---- a/drivers/uio/uio_dfl.c
-+++ b/drivers/uio/uio_dfl.c
-@@ -45,9 +45,11 @@ static int uio_dfl_probe(struct dfl_device *ddev)
- }
- 
- #define FME_FEATURE_ID_ETH_GROUP	0x10
-+#define FME_FEATURE_ID_HSSI_SUBSYS	0x15
- 
- static const struct dfl_device_id uio_dfl_ids[] = {
- 	{ FME_ID, FME_FEATURE_ID_ETH_GROUP },
-+	{ FME_ID, FME_FEATURE_ID_HSSI_SUBSYS },
- 	{ }
- };
- MODULE_DEVICE_TABLE(dfl, uio_dfl_ids);
--- 
-2.26.2
-
+     Andrew
