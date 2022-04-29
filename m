@@ -2,158 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F3F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 22:58:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F96DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 23:00:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381662AbiD2XBZ (ORCPT
+        id S1381671AbiD2XDm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 19:01:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60124 "EHLO
+        Fri, 29 Apr 2022 19:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239840AbiD2XBX (ORCPT
+        with ESMTP id S1381665AbiD2XDk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 19:01:23 -0400
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1D43CE4B5
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:58:03 -0700 (PDT)
-Received: by mail-lf1-f42.google.com with SMTP id n14so16402553lfu.13
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:58:03 -0700 (PDT)
+        Fri, 29 Apr 2022 19:03:40 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D964317AAB;
+        Fri, 29 Apr 2022 16:00:19 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id d15so8368495plh.2;
+        Fri, 29 Apr 2022 16:00:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dlmPAtCVXUFto+oenKYnRNw/Xs3pnpINvENJYUeN16c=;
+        b=cJF2fEOEEoqrAx/jcayEkxBxGGDVlNLpslj3mUsd8/B4N7l8kBmhGf0vYnVWCW/cKZ
+         bczgoiLlyKfezu90N/Yd/NGxR5Z1RjL/QdrooC7XIbzV997qqTjc5p6hA88y3Ex46Iba
+         +MaWxBvWg1zn4gAyJdD4iuHUgYo2ke8OV1Bk+wpxbkkb9FPVUPBT98m6Cqd5uFvUlA66
+         sDDhF6ZK77uKamkbP0Czt8781Uz/BPfSls5HwoUIRlySZyw9UMd0PZgbkXPtvzxIwHsu
+         Gs8CX+hkzgCb3HuhbxzqNFaP7lGFWnyCxkiDmVpskJfZ0r7LLBTgOKAGVsmYnasrJdVB
+         jJ2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ziMACgLom846eNy1FVlDF6Zdf3bclvVhrrDsjq01XVQ=;
-        b=GD9//itZ405d3WoT0gyQyZCF8Di1tIPT75UAnPWGUUiIW/F79dEy99hQBfPEjotpQg
-         C1xjc3MH44poLjHULsi9e79i5Qstf8JcPGgqYvaPvQ1/L3qMO+h0UbYt3EX89+3h5nzZ
-         mRomNNpsdKDGz2doawQtxS65SgeVDkxVkKF38A3XUZHiHfxBv2eIJhPWJoXqA+pKlKJa
-         WVSrGScZBepeQeNY5ABOSekYj4i5FjLpwUhYzkibgiCqnMeLZRJVLvHKc+MSmLgawvuX
-         ZDC0kVVlOGMbKFB2joeU+aSEvkUzWRU0BvcowGOxgi2onP8WpASjdSQiqPM9WtASfmMG
-         9ZMw==
-X-Gm-Message-State: AOAM533OKdrXPxsM+h1Z5jITYFQQ52+Oddjm9g+bMUE/ozpuFBoklb1G
-        qLmWvyMNsFmKwAUvyjplPgtGX1E0OUqSkpEKnm1wh3o/
-X-Google-Smtp-Source: ABdhPJzXwXLcAqV02XguwoswO04EyM24jEqdyIpWTltYWYwm2cuchZRZB+DcCBf48iFf2zg+GYfNyFD5AdQKHEjTrEQ=
-X-Received: by 2002:a19:6744:0:b0:46d:185f:5322 with SMTP id
- e4-20020a196744000000b0046d185f5322mr1011953lfj.586.1651273081933; Fri, 29
- Apr 2022 15:58:01 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dlmPAtCVXUFto+oenKYnRNw/Xs3pnpINvENJYUeN16c=;
+        b=DBoWSz6680Spxn98W5beaIB97AfC8RuMtexapylndgml5O5DFPsOFygKXQJ6FZhmYa
+         XzyLZHAd+4yZ+I8budzN736TGEmxNNoqAg23tVfO7StGN4Qexz9/AYRPUhGO/wpelAI3
+         zzSeEmrx6Lbtx3KmZq3K/D5cwcRxn+igzGq99e/f/ujNVjEP/r4h71YID1mTuf3um3Eh
+         lxhfX/ZsOqykFte2puX2TPTZdx/QVqfd/cTxf7AKusmVrx54/YHTvzOmrSwTkprMGPKk
+         Bz/P7sGpB/dll9a9M/Id4pFHTXYzQ4c3174LRpEYaZNTP8RBv4u/MgRXnKD/oyPHLipw
+         Rksg==
+X-Gm-Message-State: AOAM530V/Eyj57E7a3Ey+Bbo/udaEi8f288onxskf1SbkVlbz/3f0iWz
+        944zDfeSAoKypKfxdqy8BJg=
+X-Google-Smtp-Source: ABdhPJy6tKo3op8pC1HVFCOodWCd18LjL3zXn+zhgLtkD6QGn8EKs5nxc71an7cx2vr0s06sClN83g==
+X-Received: by 2002:a17:902:9b94:b0:156:2c08:14a5 with SMTP id y20-20020a1709029b9400b001562c0814a5mr1332397plp.60.1651273219221;
+        Fri, 29 Apr 2022 16:00:19 -0700 (PDT)
+Received: from localhost.localdomain (164.174.128.101.dy.bbexcite.jp. [101.128.174.164])
+        by smtp.gmail.com with ESMTPSA id s14-20020a170902ea0e00b0015e8d4eb29esm63140plg.232.2022.04.29.16.00.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 16:00:18 -0700 (PDT)
+From:   Kosuke Fujimoto <fujimotokosuke0@gmail.com>
+To:     shibata@linuxfoundation.org
+Cc:     Kosuke Fujimoto <fujimotokosuke0@gmail.com>, corbet@lwn.net,
+        akiyks@gmail.com, skhan@linuxfoundation.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4] docs/trans/ja_JP/howto: Don't mention specific kernel versions
+Date:   Sat, 30 Apr 2022 08:00:01 +0900
+Message-Id: <20220429230001.6124-1-fujimotokosuke0@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220422162402.147958-1-adrian.hunter@intel.com> <20220422162402.147958-20-adrian.hunter@intel.com>
-In-Reply-To: <20220422162402.147958-20-adrian.hunter@intel.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Fri, 29 Apr 2022 15:57:50 -0700
-Message-ID: <CAM9d7cir40QisAK7AxsO6Rm3ARpPNLy8L6SFHXpHJ=Eu8obA5w@mail.gmail.com>
-Subject: Re: [PATCH RFC 19/21] perf stat: Add requires_cpu flag for uncore
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 9:25 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> Uncore events require a CPU i.e. it cannot be -1.
->
-> The evsel system_wide flag is intended for events that should be on every
-> CPU, which does not make sense for uncore events because uncore events do
-> not map one-to-one with CPUs.
->
-> These 2 requirements are not exactly the same, so introduce a new flag
-> 'requires_cpu' the uncore case.
+This change is based on commit d2b008f134b7
+("Documentation/process/howto: Update for 4.x -> 5.x versioning").
 
-Yeah, I like this change!  I was often confused by the two different things.
+Replace "4.x kernel version" with generic term such as "mainline tree"
 
-Thanks,
-Namhyung
+Signed-off-by: Kosuke Fujimoto <fujimotokosuke0@gmail.com>
+Reviewed-by: Akira Yokosawa <akiyks@gmail.com>
+---
+V2: Reformatted commit log messagae (Yokosawa-san)
+V3: Updated some expressions (Shibata-san)
+- added "version number" in mainline tree section
+- updated from "stable kernel" to "stable tree"
+V4: Added reviewed by tag and removed extra characters (Yokosawa-san)
+---
+ Documentation/translations/ja_JP/howto.rst | 44 +++++++++++-----------
+ 1 file changed, 21 insertions(+), 23 deletions(-)
 
->
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-> ---
->  tools/lib/perf/evlist.c                 | 4 +++-
->  tools/lib/perf/include/internal/evsel.h | 1 +
->  tools/perf/builtin-stat.c               | 5 +----
->  tools/perf/util/evsel.c                 | 1 +
->  tools/perf/util/parse-events.c          | 2 +-
->  5 files changed, 7 insertions(+), 6 deletions(-)
->
-> diff --git a/tools/lib/perf/evlist.c b/tools/lib/perf/evlist.c
-> index 37dfa9d936a7..9fbcca3fc836 100644
-> --- a/tools/lib/perf/evlist.c
-> +++ b/tools/lib/perf/evlist.c
-> @@ -42,7 +42,9 @@ static void __perf_evlist__propagate_maps(struct perf_evlist *evlist,
->         if (!evsel->own_cpus || evlist->has_user_cpus) {
->                 perf_cpu_map__put(evsel->cpus);
->                 evsel->cpus = perf_cpu_map__get(evlist->user_requested_cpus);
-> -       } else if (!evsel->system_wide && perf_cpu_map__empty(evlist->user_requested_cpus)) {
-> +       } else if (!evsel->system_wide &&
-> +                  !evsel->requires_cpu &&
-> +                  perf_cpu_map__empty(evlist->user_requested_cpus)) {
->                 perf_cpu_map__put(evsel->cpus);
->                 evsel->cpus = perf_cpu_map__get(evlist->user_requested_cpus);
->         } else if (evsel->cpus != evsel->own_cpus) {
-> diff --git a/tools/lib/perf/include/internal/evsel.h b/tools/lib/perf/include/internal/evsel.h
-> index cfc9ebd7968e..77fbb8b97e5c 100644
-> --- a/tools/lib/perf/include/internal/evsel.h
-> +++ b/tools/lib/perf/include/internal/evsel.h
-> @@ -50,6 +50,7 @@ struct perf_evsel {
->         /* parse modifier helper */
->         int                      nr_members;
->         bool                     system_wide;
-> +       bool                     requires_cpu;
->         int                      idx;
->  };
->
-> diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-> index a96f106dc93a..8972ae546cfe 100644
-> --- a/tools/perf/builtin-stat.c
-> +++ b/tools/perf/builtin-stat.c
-> @@ -364,9 +364,6 @@ static int read_counter_cpu(struct evsel *counter, struct timespec *rs, int cpu_
->         if (!counter->supported)
->                 return -ENOENT;
->
-> -       if (counter->core.system_wide)
-> -               nthreads = 1;
-> -
->         for (thread = 0; thread < nthreads; thread++) {
->                 struct perf_counts_values *count;
->
-> @@ -2224,7 +2221,7 @@ static void setup_system_wide(int forks)
->                 struct evsel *counter;
->
->                 evlist__for_each_entry(evsel_list, counter) {
-> -                       if (!counter->core.system_wide &&
-> +                       if (!counter->core.requires_cpu &&
->                             strcmp(counter->name, "duration_time")) {
->                                 return;
->                         }
-> diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-> index 2a1729e7aee4..81bbddb6fbc0 100644
-> --- a/tools/perf/util/evsel.c
-> +++ b/tools/perf/util/evsel.c
-> @@ -382,6 +382,7 @@ struct evsel *evsel__clone(struct evsel *orig)
->         evsel->core.threads = perf_thread_map__get(orig->core.threads);
->         evsel->core.nr_members = orig->core.nr_members;
->         evsel->core.system_wide = orig->core.system_wide;
-> +       evsel->core.requires_cpu = orig->core.requires_cpu;
->
->         if (orig->name) {
->                 evsel->name = strdup(orig->name);
-> diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-> index dd84fed698a3..783359017548 100644
-> --- a/tools/perf/util/parse-events.c
-> +++ b/tools/perf/util/parse-events.c
-> @@ -350,7 +350,7 @@ __add_event(struct list_head *list, int *idx,
->         (*idx)++;
->         evsel->core.cpus = cpus;
->         evsel->core.own_cpus = perf_cpu_map__get(cpus);
-> -       evsel->core.system_wide = pmu ? pmu->is_uncore : false;
-> +       evsel->core.requires_cpu = pmu ? pmu->is_uncore : false;
->         evsel->auto_merge_stats = auto_merge_stats;
->
->         if (name)
-> --
-> 2.25.1
->
+diff --git a/Documentation/translations/ja_JP/howto.rst b/Documentation/translations/ja_JP/howto.rst
+index d667f9d8a02a..deac41eb038a 100644
+--- a/Documentation/translations/ja_JP/howto.rst
++++ b/Documentation/translations/ja_JP/howto.rst
+@@ -262,21 +262,21 @@ Linux カーネルの開発プロセスは現在幾つかの異なるメイン
+ チ」と多数のサブシステム毎のカーネルブランチから構成されます。これらの
+ ブランチとは -
+ 
+-  - メインの 4.x カーネルツリー
+-  - 4.x.y -stable カーネルツリー
+-  - サブシステム毎のカーネルツリーとパッチ
+-  - 統合テストのための 4.x -next カーネルツリー
++  - Linus のメインラインツリー
++  - メジャー番号をまたぐ数本の安定版ツリー
++  - サブシステム毎のカーネルツリー
++  - 統合テストのための linux-next カーネルツリー
+ 
+-4.x カーネルツリー
++メインラインツリー
+ ~~~~~~~~~~~~~~~~~~
+ 
+-4.x カーネルは Linus Torvalds によってメンテナンスされ、
+-https://kernel.org の pub/linux/kernel/v4.x/ ディレクトリに存在します。
++メインラインツリーは Linus Torvalds によってメンテナンスされ、
++https://kernel.org のリポジトリに存在します。
+ この開発プロセスは以下のとおり -
+ 
+   - 新しいカーネルがリリースされた直後に、2週間の特別期間が設けられ、
+     この期間中に、メンテナ達は Linus に大きな差分を送ることができます。
+-    このような差分は通常 -next カーネルに数週間含まれてきたパッチです。
++    このような差分は通常 linux-next カーネルに数週間含まれてきたパッチです。
+     大きな変更は git(カーネルのソース管理ツール、詳細は
+     http://git-scm.com/ 参照) を使って送るのが好ましいやり方ですが、パッ
+     チファイルの形式のまま送るのでも十分です。
+@@ -303,20 +303,18 @@ Andrew Morton が Linux-kernel メーリングリストにカーネルリリー
+         前もって決められた計画によってリリースされるものではないから
+         です。」*
+ 
+-4.x.y -stable カーネルツリー
+-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++メジャー番号をまたぐ数本の安定版ツリー
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+ バージョン番号が3つの数字に分かれているカーネルは -stable カーネルです。
+-これには、4.x カーネルで見つかったセキュリティ問題や重大な後戻りに対す
+-る比較的小さい重要な修正が含まれます。
++これには最初の2つのバージョン番号の数字に対応した、
++メインラインリリースで見つかったセキュリティ問題や
++重大な後戻りに対する比較的小さい重要な修正が含まれます。
+ 
+ これは、開発/実験的バージョンのテストに協力することに興味が無く、最新
+ の安定したカーネルを使いたいユーザに推奨するブランチです。
+ 
+-もし、4.x.y カーネルが存在しない場合には、番号が一番大きい 4.x が最新
+-の安定版カーネルです。
+-
+-4.x.y は "stable" チーム <stable@vger.kernel.org> でメンテされており、
++安定版ツリーは"stable" チーム <stable@vger.kernel.org> でメンテされており、
+ 必要に応じてリリースされます。通常のリリース期間は 2週間毎ですが、差
+ し迫った問題がなければもう少し長くなることもあります。セキュリティ関
+ 連の問題の場合はこれに対してだいたいの場合、すぐにリリースがされます。
+@@ -326,7 +324,7 @@ Documentation/process/stable-kernel-rules.rst ファイルにはどのような
+ 類の変更が -stable ツリーに受け入れ可能か、またリリースプロセスがどう
+ 動くかが記述されています。
+ 
+-サブシステム毎のカーネルツリーとパッチ
++サブシステム毎のカーネルツリー
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+ それぞれのカーネルサブシステムのメンテナ達は --- そして多くのカーネル
+@@ -351,19 +349,19 @@ quilt シリーズとして公開されているパッチキューも使われ
+ けることができます。大部分のこれらの patchwork のサイトは
+ https://patchwork.kernel.org/ でリストされています。
+ 
+-統合テストのための 4.x -next カーネルツリー
+-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++統合テストのための linux-next カーネルツリー
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+-サブシステムツリーの更新内容がメインラインの 4.x ツリーにマージされる
++サブシステムツリーの更新内容がメインラインツリーにマージされる
+ 前に、それらは統合テストされる必要があります。この目的のため、実質的に
+ 全サブシステムツリーからほぼ毎日プルされてできる特別なテスト用のリポジ
+ トリが存在します-
+ 
+        https://git.kernel.org/?p=linux/kernel/git/next/linux-next.git
+ 
+-このやり方によって、-next カーネルは次のマージ機会でどんなものがメイン
+-ラインカーネルにマージされるか、おおまかなの展望を提供します。-next カー
+-ネルの実行テストを行う冒険好きなテスターは大いに歓迎されます。
++このやり方によって、linux-next は次のマージ機会でどんなものがメイン
++ラインにマージされるか、おおまかなの展望を提供します。
++linux-next の実行テストを行う冒険好きなテスターは大いに歓迎されます。
+ 
+ バグレポート
+ -------------
+-- 
+2.25.1
+
