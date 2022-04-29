@@ -2,174 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00975C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 18:56:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD1BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 18:57:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380182AbiD2TAF (ORCPT
+        id S1380189AbiD2TAW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 15:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42526 "EHLO
+        Fri, 29 Apr 2022 15:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380172AbiD2TAD (ORCPT
+        with ESMTP id S1380172AbiD2TAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 15:00:03 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6728D6A2
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:56:42 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id BF93A6A127F;
-        Fri, 29 Apr 2022 18:56:41 +0000 (UTC)
-Received: from pdx1-sub0-mail-a237.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id E2A826A15D0;
-        Fri, 29 Apr 2022 18:56:40 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1651258601; a=rsa-sha256;
-        cv=none;
-        b=h+YKgCBIErxGxLCOh3DExzO8Dm6owK6OgpFT8p4jh3D92Rl7IfWyLLPSuBcb3XkpL//OEn
-        JSYLZFFXja2tZBHX5+GArXnjA/5btbavzLEcxwuxRtr92DEXIIbR4NhY9fpWPWQC7S+Z2a
-        bIguA/H1wiRTI7wp3/jYwDE7QON92hm8VMKEvAnP4DMPk20mEex12KdMBXoxw3KA0U2gRo
-        IenUnmE3gLM2316ML3Fm6PA1KqRCIc3TSf+mrOM2+/nWd3WFVVQpl7klB7ce35wuYwvQBj
-        FJjSchlby9VhTbqFGMaXisw8hs2SfyJTG/0LcL+Jgmn50SrjIe1Wy1j4I/uqQw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1651258601;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=q7GK4tNtUdPsCkIB6AGnkYHFR71fuWyelk2LtXFBMMU=;
-        b=nVhx4YrZUrzK/XZ1NJaMjR7/AXqmJZS4+oIaQEKHUSS/aRye545dyQCLcwPAGz6CWUjv2x
-        +wLU4AsVhRA8gzjCIJFKgIFvvmRL7AfWsZCwx+xqb/jz+lDY+N+Pvwl8KS0rqMoK5pPQgb
-        ZNQl0lE2ccHtuGmT0tnZvTxJ3Zxq3lOqCC7oH5T1RKMs+oAdkgw1sZUAvGUizd1yB5/RU6
-        QZ97CwPS/PzC3fB0o7j0wNKiKlBWxLyNXu7YpuGuqvRvTw4N+WOsNRcCUlwDs1Yp0DxFCm
-        dQV740EDhIruL5IlVuqvK3k4kDS/YnaQjAn2I9yGBqviOJ+osI1nZ+yPkaIXcQ==
-ARC-Authentication-Results: i=1;
-        rspamd-847dd8955c-c7snv;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Descriptive-Quick: 6eb74fb32a06ba3c_1651258601427_2688605735
-X-MC-Loop-Signature: 1651258601427:646155923
-X-MC-Ingress-Time: 1651258601427
-Received: from pdx1-sub0-mail-a237.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.125.123.55 (trex/6.7.1);
-        Fri, 29 Apr 2022 18:56:41 +0000
-Received: from offworld (unknown [104.36.31.105])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a237.dreamhost.com (Postfix) with ESMTPSA id 4KqhY373Lgz1NJ;
-        Fri, 29 Apr 2022 11:56:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1651258600;
-        bh=q7GK4tNtUdPsCkIB6AGnkYHFR71fuWyelk2LtXFBMMU=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=p8msJRphPZ9QAdkC+ArXhVohZPhu8xlkp2RMslXXvlyN2bgm2DX+ESggcBI++TQAJ
-         45IDIvAFmoiXtRgrEQSZjhrI334yq2npKbNfc2ozWDUWQlH5T2rAADbMe/QilT4QsU
-         wCsMgtTnkFiVWmk1JN158r9U6g6vOwkju6wZD5z8gC70/zO1aZKMVlny0dMihUGSMK
-         iVvbfeKJwp5sLaE2N85IOI5JQFrUlcUF6fklOTNTqG7ukB9M0T2gvwblBP/Loy1cAk
-         JkrbyfCOoMEOB8pdCb08B6ELcLZYjXjmAC8m7myKJDeqVNgcTVZ0lQJxu/WwzTgLUF
-         lX8dXeJS9yqOA==
-Date:   Fri, 29 Apr 2022 11:45:13 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Waiman Long <longman@redhat.com>,
-        Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] locking/rwsem: Teach contention tracing about optimistic
- spinning
-Message-ID: <20220429184513.vftv4pj72fxzrpm2@offworld>
-References: <20220427155241.26410-1-dave@stgolabs.net>
- <CAM9d7ciQnUcefR-hLBHSDhu6zZovxXvGYW-CdSBiub_GAOfAiA@mail.gmail.com>
+        Fri, 29 Apr 2022 15:00:17 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17ADB82C7
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:56:57 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id q12so7143705pgj.13
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:56:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HUb2AeTNJcZwD078seN9U1UAiMId+LQbZ7Ey7wYnH7M=;
+        b=lCZ+u1S+AFvX2KAPzeeyfNspgNzW2MhKZeU9/82UI2hA3U4Y4FzX7+SkEU6yi6zNjz
+         Mkdm5qWqL6gaskhqOO+vrjp1EBAP9sjnhovlkU9w32PSxUVIe3H3yn9tlxjDLUJDgQCv
+         L7b7Graze7N7RjiBC+Z44qj5QihUoKDeTs4phvkE0Tk9Wzhh59NVtm5sC9bt28DtsF6z
+         WG225h0HcSLmvgkkL3WCwXCMJ6YYpMwxnuo4uy1tXKLw8KiaFF2CDHkI2YqrpS4yA6T4
+         pLvkDvqeo6qYrMiwg+rwOSsI1kn3SCF94CUvINJThFOSwv2RbXGEmXYQbf2Nq6V9uPqR
+         YQJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HUb2AeTNJcZwD078seN9U1UAiMId+LQbZ7Ey7wYnH7M=;
+        b=8E0LsEqZoo0H5I7mHPvnrv2Tpz7DZYgGhiMaxkm6vSiRWYmDaCyurI3p6atbCWBeLH
+         5cSM+ASGb6zd7hoCfr5GOZmVSF5nBbQOy9I4UDyCN/+kMtoi4mZASWR29mleK56lLWJn
+         UhKEk9a1X/tFBxenXaSGYvxUIZXflPvuNlGkZ+E7mcubeQXxj4JxXiCA/7BUGqnYIERz
+         UOWLMP5GoR/8Rnd86iiX/t4sEAvGXFTFqA7FF4b49+ou5vH5+5Kg7H/FSRV9VZvbMrM8
+         YF9X0v5MXJMdzXEJWme+aqMY+ZML4Evgc1krfQV+faJpAAFw0D5Dz0BRjlZ17WXyNFD6
+         Ij6Q==
+X-Gm-Message-State: AOAM532X0UqFQVJ/fwsVtdiZUuHKHfdOFmj5B6RdBCYgXjFV1ULJZSK8
+        yivrIn3QjFQ721cp9EBspgUYmd3LFEqj6pzPt6oreg==
+X-Google-Smtp-Source: ABdhPJyAQ9fwnpAk2Ts6MauMQOVJu3OiitVnvRuUjeBbPPg4ife6hXfiwPfjwiEmGv5y/CBqMtaclPgDWCA1uvplV9o=
+X-Received: by 2002:a62:a105:0:b0:50d:c97b:3084 with SMTP id
+ b5-20020a62a105000000b0050dc97b3084mr177523pff.61.1651258617382; Fri, 29 Apr
+ 2022 11:56:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CAM9d7ciQnUcefR-hLBHSDhu6zZovxXvGYW-CdSBiub_GAOfAiA@mail.gmail.com>
-User-Agent: NeoMutt/20220408
+References: <20220429134039.18252-1-msuchanek@suse.de>
+In-Reply-To: <20220429134039.18252-1-msuchanek@suse.de>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Fri, 29 Apr 2022 11:56:46 -0700
+Message-ID: <CAPcyv4g7wBJvw-yNz58eGcLYSvsSHOGZsZV8Px=WRacQ5Ur2Og@mail.gmail.com>
+Subject: Re: [PATCH] testing: nvdimm: iomap: make __nfit_test_ioremap a macro
+To:     Michal Suchanek <msuchanek@suse.de>
+Cc:     Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>, Zou Wei <zou_wei@huawei.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sorry for the late reply.
-
-On Wed, 27 Apr 2022, Namhyung Kim wrote:
-
->Hi Davidlohr,
+On Fri, Apr 29, 2022 at 6:41 AM Michal Suchanek <msuchanek@suse.de> wrote:
 >
->On Wed, Apr 27, 2022 at 9:04 AM Davidlohr Bueso <dave@stgolabs.net> wrote:
->>
->> Similar to the mutex counterpart, we can further distinguish the
->> types of contention. Similarly this patch also introduces potentially
->> various _begin() tracepoints with a single respective _end().
+> The ioremap passed as argument to __nfit_test_ioremap can be a macro so
+> it cannot be passed as function argument. Make __nfit_test_ioremap into
+> a macro so that ioremap can be passed as untyped macro argument.
 >
->Thanks for doing this.  I was thinking about it as well.
 
-I really like your work on this. I've always wanted a low overhead
-equivalent-ish of lock_stat, which could be used in production and
-look forward to see these tracepoints put to good use.
+Looks reasonable to me and passes tests, applied.
 
->> @@ -115,7 +116,8 @@ TRACE_EVENT(contention_begin,
->>                                 { LCB_F_WRITE,          "WRITE" },
->>                                 { LCB_F_RT,             "RT" },
->>                                 { LCB_F_PERCPU,         "PERCPU" },
->> -                               { LCB_F_MUTEX,          "MUTEX" }
->> +                               { LCB_F_MUTEX,          "MUTEX" },
->> +                               { LCB_F_RWSEM,          "RWSEM" }
->>                           ))
->>  );
+> Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+> ---
+>  tools/testing/nvdimm/test/iomap.c | 18 ++++++++----------
+>  1 file changed, 8 insertions(+), 10 deletions(-)
 >
->Well I'm ok with this but it'd be better if we can do this
->without adding a new flag.  Originally a mutex can be
->identified with 0, and a rwsem with either of READ or WRITE.
+> diff --git a/tools/testing/nvdimm/test/iomap.c b/tools/testing/nvdimm/test/iomap.c
+> index b752ce47ead3..ea956082e6a4 100644
+> --- a/tools/testing/nvdimm/test/iomap.c
+> +++ b/tools/testing/nvdimm/test/iomap.c
+> @@ -62,16 +62,14 @@ struct nfit_test_resource *get_nfit_res(resource_size_t resource)
+>  }
+>  EXPORT_SYMBOL(get_nfit_res);
 >
->The MUTEX flag was added to note optimistic spins
->on mutex and now we need something similar for
->rwsem.  Then can we change the MUTEX to OPTIMISTIC
->if it's not too late?
-
-Ok. Perhaps name it OSQ? I had thought of that but at the
-time was also thinking about potentially the rtmutex and
-rt spinlock spinning too - which don't use osq so the name
-would fit in that sense.
-
-While not in Linus' tree, I wouldn't think it's too late.
-
->>         for (;;) {
->>                 if (rwsem_try_write_lock(sem, &waiter)) {
->> @@ -1161,18 +1167,25 @@ rwsem_down_write_slowpath(struct rw_semaphore *sem, int state)
->>                 if (waiter.handoff_set) {
->>                         enum owner_state owner_state;
->>
->> +                       trace_contention_begin(sem, LCB_F_RWSEM |
->> +                                              LCB_F_WRITE | LCB_F_SPIN);
->>                         preempt_disable();
->>                         owner_state = rwsem_spin_on_owner(sem);
->>                         preempt_enable();
->>
->> -                       if (owner_state == OWNER_NULL)
->> -                               goto trylock_again;
->> +                       if (owner_state == OWNER_NULL) {
->> +                               raw_spin_lock_irq(&sem->wait_lock);
->> +                               if (rwsem_try_write_lock(sem, &waiter))
->> +                                       break;
->> +                               raw_spin_unlock_irq(&sem->wait_lock);
->> +                       }
->> +
->> +                       trace_contention_begin(sem, LCB_F_RWSEM | LCB_F_WRITE);
+> -static void __iomem *__nfit_test_ioremap(resource_size_t offset, unsigned long size,
+> -               void __iomem *(*fallback_fn)(resource_size_t, unsigned long))
+> -{
+> -       struct nfit_test_resource *nfit_res = get_nfit_res(offset);
+> -
+> -       if (nfit_res)
+> -               return (void __iomem *) nfit_res->buf + offset
+> -                       - nfit_res->res.start;
+> -       return fallback_fn(offset, size);
+> -}
+> +#define __nfit_test_ioremap(offset, size, fallback_fn) ({              \
+> +       struct nfit_test_resource *nfit_res = get_nfit_res(offset);     \
+> +       nfit_res ?                                                      \
+> +               (void __iomem *) nfit_res->buf + (offset)               \
+> +                       - nfit_res->res.start                           \
+> +       :                                                               \
+> +               fallback_fn((offset), (size)) ;                         \
+> +})
 >
->I'm afraid that it'd generate many contention_begin
->trace events for a single lock acquisition.
-
-You are right, lets just trace the "normal" optimistic spinning
-at the start of the write slowpath.
-
-Thanks,
-Davidlohr
+>  void __iomem *__wrap_devm_ioremap(struct device *dev,
+>                 resource_size_t offset, unsigned long size)
+> --
+> 2.34.1
+>
