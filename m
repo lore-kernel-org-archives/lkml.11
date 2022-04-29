@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF0C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B30EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:54:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354809AbiD2G57 (ORCPT
+        id S1354822AbiD2G6D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 02:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53436 "EHLO
+        Fri, 29 Apr 2022 02:58:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353499AbiD2G5z (ORCPT
+        with ESMTP id S1354780AbiD2G5z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Apr 2022 02:57:55 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B25CDBCB59;
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31959BCB54;
         Thu, 28 Apr 2022 23:54:37 -0700 (PDT)
-X-UUID: c6e9701ec3244b9789c6d93cd1eb86c9-20220429
+X-UUID: ab076c800ea84e508dbe950d5233044f-20220429
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:0903472b-a29f-43fe-a6eb-556425391ebd,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:95
-X-CID-INFO: VERSION:1.1.4,REQID:0903472b-a29f-43fe-a6eb-556425391ebd,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
-        ION:quarantine,TS:95
-X-CID-META: VersionHash:faefae9,CLOUDID:f00ceec6-85ee-4ac1-ac05-bd3f1e72e732,C
-        OID:d4a98fd054f3,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+X-CID-O-INFO: VERSION:1.1.4,REQID:6c4b6a1f-b654-4e54-a69a-bd4651bef31c,OB:0,LO
+        B:10,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
+        ACTION:release,TS:75
+X-CID-INFO: VERSION:1.1.4,REQID:6c4b6a1f-b654-4e54-a69a-bd4651bef31c,OB:0,LOB:
+        10,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
+        ACTION:quarantine,TS:75
+X-CID-META: VersionHash:faefae9,CLOUDID:fb0ceec6-85ee-4ac1-ac05-bd3f1e72e732,C
+        OID:30f2562fabcb,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
         ,QS:0,BEC:nil
-X-UUID: c6e9701ec3244b9789c6d93cd1eb86c9-20220429
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+X-UUID: ab076c800ea84e508dbe950d5233044f-20220429
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 379590242; Fri, 29 Apr 2022 14:54:31 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 22640415; Fri, 29 Apr 2022 14:54:32 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 29 Apr 2022 14:54:31 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 29 Apr 2022 14:54:30 +0800
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 29 Apr 2022 14:54:30 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
  Transport; Fri, 29 Apr 2022 14:54:30 +0800
@@ -48,10 +51,12 @@ CC:     <neal.liu@mediatek.com>, <runyang.chen@mediatek.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH 0/2] Support MediaTek devapc for MT8186
-Date:   Fri, 29 Apr 2022 14:54:27 +0800
-Message-ID: <20220429065429.7957-1-rex-bc.chen@mediatek.com>
+Subject: [PATCH 2/2] soc: mediatek: devapc: Add support for MT8186
+Date:   Fri, 29 Apr 2022 14:54:29 +0800
+Message-ID: <20220429065429.7957-3-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220429065429.7957-1-rex-bc.chen@mediatek.com>
+References: <20220429065429.7957-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK:  N
@@ -59,19 +64,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series is for supporting devapc implementation in MT8186.
+Add devapc data and compatible to support MT8186 devapc.
 
-V1:
-- Add dt-binding and add devapc data for MT8186.
+Signed-off-by: Runyang Chen <runyang.chen@mediatek.com>
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+---
+ drivers/soc/mediatek/mtk-devapc.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-Rex-BC Chen (2):
-  dt-bindings: soc: mediatek: devapc: Add bindings for MT8186
-  soc: mediatek: devapc: Add support for MT8186
-
- .../devicetree/bindings/soc/mediatek/devapc.yaml  |  1 +
- drivers/soc/mediatek/mtk-devapc.c                 | 15 +++++++++++++++
- 2 files changed, 16 insertions(+)
-
+diff --git a/drivers/soc/mediatek/mtk-devapc.c b/drivers/soc/mediatek/mtk-devapc.c
+index 7c65ad3d1f8a..762e0e4d967d 100644
+--- a/drivers/soc/mediatek/mtk-devapc.c
++++ b/drivers/soc/mediatek/mtk-devapc.c
+@@ -227,10 +227,25 @@ static const struct mtk_devapc_data devapc_mt6779 = {
+ 	.vio_shift_con_offset = 0xF20,
+ };
+ 
++static const struct mtk_devapc_data devapc_mt8186 = {
++	.vio_idx_num = 519,
++	.vio_mask_offset = 0x0,
++	.vio_sta_offset = 0x400,
++	.vio_dbg0_offset = 0x900,
++	.vio_dbg1_offset = 0x904,
++	.apc_con_offset = 0xF00,
++	.vio_shift_sta_offset = 0xF10,
++	.vio_shift_sel_offset = 0xF14,
++	.vio_shift_con_offset = 0xF20,
++};
++
+ static const struct of_device_id mtk_devapc_dt_match[] = {
+ 	{
+ 		.compatible = "mediatek,mt6779-devapc",
+ 		.data = &devapc_mt6779,
++	}, {
++		.compatible = "mediatek,mt8186-devapc",
++		.data = &devapc_mt8186,
+ 	}, {
+ 	},
+ };
 -- 
 2.18.0
 
