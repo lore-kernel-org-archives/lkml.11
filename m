@@ -2,343 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90810C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DBFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359212AbiD2MfG (ORCPT
+        id S1359210AbiD2MfI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 08:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54310 "EHLO
+        Fri, 29 Apr 2022 08:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359183AbiD2MfD (ORCPT
+        with ESMTP id S1359153AbiD2MfE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 08:35:03 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7968F8567A
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 05:31:45 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id n18so7019024plg.5
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 05:31:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Eg2Tfir9pHru+0y52IDTTuwENJ/XlBb6d6nsn8kHlL4=;
-        b=JuupZ9lE2kGKdecH2KpkpiMHWO/wtQ7tX4+41Qums/5G/pWbUqQPJZlIuahxN5xluJ
-         T7IrgGT1P0qfwTWTiwB3b7s1CPIPLY8xyNVZ2hZ7HH4I3P8j4x0E4DvnyoXKXfDavfHi
-         q4/xtM/T/GcP9rUnt/SgqCx+mye/LcrqSNP0iuMtH5p67Dl6oG4bX/6OtH3TCmKZwYIL
-         cHDQibv3XgelOVc1pDq9kNI4ALUbJ1LE3OeBFI+wfXYgLlUcT45Qk7AcpFzujZ4L0Kfn
-         MzhaNBQMTEGxx7I7iRcz2a2p6Uc/89w6b9G2ZHT2EifaYdsBATND7ZPCnP7LrG9zvuJg
-         1DwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Eg2Tfir9pHru+0y52IDTTuwENJ/XlBb6d6nsn8kHlL4=;
-        b=euKvlSCbVnAw9QA/ZQsaK45PPek12W3uukh8H7Slcg/oRSmbxL0AOHHrmkN+IQDw62
-         NGDWa+eL+vWxoyHiSAJ9BoPA8yIS3iFcXNxxLh9Tn8qBm0KqCvVJNSqjVdDSNpYCo75i
-         xwBEHvshaNHGQJZxNq/473O598IzSTV4dOYDF/xMfldaYcr6yOKQaHf8/bxHG5iV/OXD
-         Mm+dCDuv4z9dyuwh9FVtxUUQGjOQh1Huc5FYpzDgekXliGRC/nve2V0pbvwyC1UpJIlt
-         0cu6hiU7Dg57QKpciYZ4gnrizZ3wSSVMpLCbFo3cyGMtluDrZQcg9+gMIkh1kTDjY+YH
-         UhIQ==
-X-Gm-Message-State: AOAM532DwS1GwvT3vsWoyzoLroWanPUEaJBFONXuyiJhTcSpVGhNEWl0
-        5EH7btrmEXqCKIvAbCXl4rsjpQ==
-X-Google-Smtp-Source: ABdhPJyfNbj68vTqtTt4TeAGXgknLMQzbc+FFu6vcDfuPJJMbbJx7qkp2oU8JLINGNSf2tFQrvct1w==
-X-Received: by 2002:a17:902:7c13:b0:156:ca91:877f with SMTP id x19-20020a1709027c1300b00156ca91877fmr38219769pll.15.1651235504904;
-        Fri, 29 Apr 2022 05:31:44 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.239])
-        by smtp.gmail.com with ESMTPSA id g15-20020a056a000b8f00b004fa9dbf27desm3294511pfj.55.2022.04.29.05.31.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 05:31:44 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     cl@linux.com, penberg@kernel.org, rientjes@google.com,
-        iamjoonsoo.kim@lge.com, akpm@linux-foundation.org, vbabka@suse.cz,
-        roman.gushchin@linux.dev
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        smuchun@gmail.com, Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v2] mm: slab: optimize memcg_slab_free_hook()
-Date:   Fri, 29 Apr 2022 20:30:44 +0800
-Message-Id: <20220429123044.37885-1-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+        Fri, 29 Apr 2022 08:35:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83AB2B9F26;
+        Fri, 29 Apr 2022 05:31:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 298D1621D0;
+        Fri, 29 Apr 2022 12:31:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37FDAC385B2;
+        Fri, 29 Apr 2022 12:31:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651235505;
+        bh=U1fnlH5OyGJ5UIzfEScyxiBRXPgHxk+UHE3ZSX1gPvY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ISPMvNcSQFkMZIWSHYxdg5JmBcRxJsqOeGCndtVUOHzFSep/BT5TXtbexxYIN9Zzv
+         +D9a9cf63EfihTrNLiCSYnSITsZ858oBCjHM9OAyLTHtFm/haWeZ6ioTJtFEM4508X
+         W4q4abspHfamRw89c8Qu/vBggzpAMPr5smLkEFCN3X2QRJXSA8oQRWQzbjenxJVFU4
+         vVvWes7+RoHQf0M2d4ygN8Fj6V6mJAIK2a401iKT6MLqVWYU6t/sX2ZbKs9zsTqPq2
+         9k3JTkOU1u4t9YWJ/E3OWsvCRpUR6bsW1GSxvr48e115hufTW00WQFhXx6qalzVU6F
+         IOrrneGjSjqHA==
+From:   matthias.bgg@kernel.org
+To:     mturquette@baylibre.com, sboyd@kernel.org
+Cc:     allen-kh.cheng@mediatek.com, weiyi.lu@mediatek.com,
+        chun-jie.chen@mediatek.com, linux-kernel@vger.kernel.org,
+        ikjn@chromium.org, miles.chen@mediatek.com, robh+dt@kernel.org,
+        linux-mediatek@lists.infradead.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        angelogioacchino.delregno@collabora.com,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org
+Subject: [PATCH v2 1/2] dt-bindings: ARM: Mediatek: Remove msdc binding of MT8192 clock
+Date:   Fri, 29 Apr 2022 14:31:31 +0200
+Message-Id: <20220429123133.28869-2-matthias.bgg@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220429123133.28869-1-matthias.bgg@kernel.org>
+References: <20220429123133.28869-1-matthias.bgg@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Most callers of memcg_slab_free_hook() already know the slab,  which could
-be passed to memcg_slab_free_hook() directly to reduce the overhead of an
-another call of virt_to_slab().  For bulk freeing of objects, the call of
-slab_objcgs() in the loop in memcg_slab_free_hook() is redundant as well.
-Rework memcg_slab_free_hook() and build_detached_freelist() to reduce
-those unnecessary overhead and make memcg_slab_free_hook() can handle bulk
-freeing in slab_free().
+From: Matthias Brugger <matthias.bgg@gmail.com>
 
-Move the calling site of memcg_slab_free_hook() from do_slab_free() to
-slab_free() for slub to make the code clearer since the logic is weird
-(e.g. the caller need to judge whether it needs to call
-memcg_slab_free_hook()). It is easy to make mistakes like missing calling
-of memcg_slab_free_hook() like fixes of:
+The msdc gate is part of the MMC driver. Delete the binding description
+of this node.
 
-  commit d1b2cf6cb84a ("mm: memcg/slab: uncharge during kmem_cache_free_bulk()")
-  commit ae085d7f9365 ("mm: kfence: fix missing objcg housekeeping for SLAB")
+Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
 
-This optimization is mainly for bulk objects freeing.  The following numbers
-is shown for 16-object freeing.
-
-                           before      after
-  kmem_cache_free_bulk:   ~430 ns     ~400 ns
-
-The overhead is reduced by about 7% for 16-object freeing.
-
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
 ---
-v2:
- - Add numbers to commit log.
 
- mm/slab.c |  4 ++--
- mm/slab.h | 30 ++++++++---------------------
- mm/slub.c | 66 +++++++++++++++++++++------------------------------------------
- 3 files changed, 32 insertions(+), 68 deletions(-)
+Changes in v2:
+- Delete compatible in binding descprition as well
 
-diff --git a/mm/slab.c b/mm/slab.c
-index f8cd00f4ba13..2174962055ae 100644
---- a/mm/slab.c
-+++ b/mm/slab.c
-@@ -3406,9 +3406,10 @@ static __always_inline void __cache_free(struct kmem_cache *cachep, void *objp,
- {
- 	bool init;
+ .../bindings/arm/mediatek/mediatek,mt8192-clock.yaml      | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-clock.yaml
+index c8c67c033f8c..b57cc2e69efb 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-clock.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-clock.yaml
+@@ -24,7 +24,6 @@ properties:
+           - mediatek,mt8192-imp_iic_wrap_w
+           - mediatek,mt8192-imp_iic_wrap_n
+           - mediatek,mt8192-msdc_top
+-          - mediatek,mt8192-msdc
+           - mediatek,mt8192-mfgcfg
+           - mediatek,mt8192-imgsys
+           - mediatek,mt8192-imgsys2
+@@ -107,13 +106,6 @@ examples:
+         #clock-cells = <1>;
+     };
  
-+	memcg_slab_free_hook(cachep, virt_to_slab(objp), &objp, 1);
-+
- 	if (is_kfence_address(objp)) {
- 		kmemleak_free_recursive(objp, cachep->flags);
--		memcg_slab_free_hook(cachep, &objp, 1);
- 		__kfence_free(objp);
- 		return;
- 	}
-@@ -3441,7 +3442,6 @@ void ___cache_free(struct kmem_cache *cachep, void *objp,
- 	check_irq_off();
- 	kmemleak_free_recursive(objp, cachep->flags);
- 	objp = cache_free_debugcheck(cachep, objp, caller);
--	memcg_slab_free_hook(cachep, &objp, 1);
- 
- 	/*
- 	 * Skip calling cache_free_alien() when the platform is not numa.
-diff --git a/mm/slab.h b/mm/slab.h
-index db9fb5c8dae7..a8d5eb1c323f 100644
---- a/mm/slab.h
-+++ b/mm/slab.h
-@@ -547,36 +547,22 @@ static inline void memcg_slab_post_alloc_hook(struct kmem_cache *s,
- 	obj_cgroup_put(objcg);
- }
- 
--static inline void memcg_slab_free_hook(struct kmem_cache *s_orig,
-+static inline void memcg_slab_free_hook(struct kmem_cache *s, struct slab *slab,
- 					void **p, int objects)
- {
--	struct kmem_cache *s;
- 	struct obj_cgroup **objcgs;
--	struct obj_cgroup *objcg;
--	struct slab *slab;
--	unsigned int off;
- 	int i;
- 
- 	if (!memcg_kmem_enabled())
- 		return;
- 
--	for (i = 0; i < objects; i++) {
--		if (unlikely(!p[i]))
--			continue;
+-  - |
+-    msdc: clock-controller@11f60000 {
+-        compatible = "mediatek,mt8192-msdc";
+-        reg = <0x11f60000 0x1000>;
+-        #clock-cells = <1>;
+-    };
 -
--		slab = virt_to_slab(p[i]);
--		/* we could be given a kmalloc_large() object, skip those */
--		if (!slab)
--			continue;
--
--		objcgs = slab_objcgs(slab);
--		if (!objcgs)
--			continue;
-+	objcgs = slab_objcgs(slab);
-+	if (!objcgs)
-+		return;
- 
--		if (!s_orig)
--			s = slab->slab_cache;
--		else
--			s = s_orig;
-+	for (i = 0; i < objects; i++) {
-+		struct obj_cgroup *objcg;
-+		unsigned int off;
- 
- 		off = obj_to_index(s, slab, p[i]);
- 		objcg = objcgs[off];
-@@ -628,7 +614,7 @@ static inline void memcg_slab_post_alloc_hook(struct kmem_cache *s,
- {
- }
- 
--static inline void memcg_slab_free_hook(struct kmem_cache *s,
-+static inline void memcg_slab_free_hook(struct kmem_cache *s, struct slab *slab,
- 					void **p, int objects)
- {
- }
-diff --git a/mm/slub.c b/mm/slub.c
-index 1f699ddfff7f..3794afe32b5f 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -3435,9 +3435,6 @@ static __always_inline void do_slab_free(struct kmem_cache *s,
- 	struct kmem_cache_cpu *c;
- 	unsigned long tid;
- 
--	/* memcg_slab_free_hook() is already called for bulk free. */
--	if (!tail)
--		memcg_slab_free_hook(s, &head, 1);
- redo:
- 	/*
- 	 * Determine the currently cpus per cpu slab.
-@@ -3497,9 +3494,10 @@ static __always_inline void do_slab_free(struct kmem_cache *s,
- }
- 
- static __always_inline void slab_free(struct kmem_cache *s, struct slab *slab,
--				      void *head, void *tail, int cnt,
-+				      void *head, void *tail, void **p, int cnt,
- 				      unsigned long addr)
- {
-+	memcg_slab_free_hook(s, slab, p, cnt);
- 	/*
- 	 * With KASAN enabled slab_free_freelist_hook modifies the freelist
- 	 * to remove objects, whose reuse must be delayed.
-@@ -3521,7 +3519,7 @@ void kmem_cache_free(struct kmem_cache *s, void *x)
- 	if (!s)
- 		return;
- 	trace_kmem_cache_free(_RET_IP_, x, s->name);
--	slab_free(s, virt_to_slab(x), x, NULL, 1, _RET_IP_);
-+	slab_free(s, virt_to_slab(x), x, NULL, &x, 1, _RET_IP_);
- }
- EXPORT_SYMBOL(kmem_cache_free);
- 
-@@ -3562,79 +3560,59 @@ static inline
- int build_detached_freelist(struct kmem_cache *s, size_t size,
- 			    void **p, struct detached_freelist *df)
- {
--	size_t first_skipped_index = 0;
- 	int lookahead = 3;
- 	void *object;
- 	struct folio *folio;
--	struct slab *slab;
--
--	/* Always re-init detached_freelist */
--	df->slab = NULL;
--
--	do {
--		object = p[--size];
--		/* Do we need !ZERO_OR_NULL_PTR(object) here? (for kfree) */
--	} while (!object && size);
--
--	if (!object)
--		return 0;
-+	size_t same;
- 
-+	object = p[--size];
- 	folio = virt_to_folio(object);
- 	if (!s) {
- 		/* Handle kalloc'ed objects */
- 		if (unlikely(!folio_test_slab(folio))) {
- 			free_large_kmalloc(folio, object);
--			p[size] = NULL; /* mark object processed */
-+			df->slab = NULL;
- 			return size;
- 		}
- 		/* Derive kmem_cache from object */
--		slab = folio_slab(folio);
--		df->s = slab->slab_cache;
-+		df->slab = folio_slab(folio);
-+		df->s = df->slab->slab_cache;
- 	} else {
--		slab = folio_slab(folio);
-+		df->slab = folio_slab(folio);
- 		df->s = cache_from_obj(s, object); /* Support for memcg */
- 	}
- 
--	if (is_kfence_address(object)) {
--		slab_free_hook(df->s, object, false);
--		__kfence_free(object);
--		p[size] = NULL; /* mark object processed */
--		return size;
--	}
--
- 	/* Start new detached freelist */
--	df->slab = slab;
--	set_freepointer(df->s, object, NULL);
- 	df->tail = object;
- 	df->freelist = object;
--	p[size] = NULL; /* mark object processed */
- 	df->cnt = 1;
- 
-+	if (is_kfence_address(object))
-+		return size;
-+
-+	set_freepointer(df->s, object, NULL);
-+
-+	same = size;
- 	while (size) {
- 		object = p[--size];
--		if (!object)
--			continue; /* Skip processed objects */
--
- 		/* df->slab is always set at this point */
- 		if (df->slab == virt_to_slab(object)) {
- 			/* Opportunity build freelist */
- 			set_freepointer(df->s, object, df->freelist);
- 			df->freelist = object;
- 			df->cnt++;
--			p[size] = NULL; /* mark object processed */
--
-+			same--;
-+			if (size != same)
-+				swap(p[size], p[same]);
- 			continue;
- 		}
- 
- 		/* Limit look ahead search */
- 		if (!--lookahead)
- 			break;
--
--		if (!first_skipped_index)
--			first_skipped_index = size + 1;
- 	}
- 
--	return first_skipped_index;
-+	return same;
- }
- 
- /* Note that interrupts must be enabled when calling this function. */
-@@ -3643,7 +3621,6 @@ void kmem_cache_free_bulk(struct kmem_cache *s, size_t size, void **p)
- 	if (WARN_ON(!size))
- 		return;
- 
--	memcg_slab_free_hook(s, p, size);
- 	do {
- 		struct detached_freelist df;
- 
-@@ -3651,7 +3628,8 @@ void kmem_cache_free_bulk(struct kmem_cache *s, size_t size, void **p)
- 		if (!df.slab)
- 			continue;
- 
--		slab_free(df.s, df.slab, df.freelist, df.tail, df.cnt, _RET_IP_);
-+		slab_free(df.s, df.slab, df.freelist, df.tail, &p[size], df.cnt,
-+			  _RET_IP_);
- 	} while (likely(size));
- }
- EXPORT_SYMBOL(kmem_cache_free_bulk);
-@@ -4554,7 +4532,7 @@ void kfree(const void *x)
- 		return;
- 	}
- 	slab = folio_slab(folio);
--	slab_free(slab->slab_cache, slab, object, NULL, 1, _RET_IP_);
-+	slab_free(slab->slab_cache, slab, object, NULL, &object, 1, _RET_IP_);
- }
- EXPORT_SYMBOL(kfree);
- 
+   - |
+     mfgcfg: clock-controller@13fbf000 {
+         compatible = "mediatek,mt8192-mfgcfg";
 -- 
-2.11.0
+2.34.1
 
