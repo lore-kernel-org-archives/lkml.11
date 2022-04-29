@@ -2,299 +2,299 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5D04C4167B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2F65C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359133AbiD2Mbg (ORCPT
+        id S1359166AbiD2MdH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 08:31:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44698 "EHLO
+        Fri, 29 Apr 2022 08:33:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359136AbiD2Mbe (ORCPT
+        with ESMTP id S237055AbiD2MdF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 08:31:34 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 069D8C8BF5;
-        Fri, 29 Apr 2022 05:28:14 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 44758488;
-        Fri, 29 Apr 2022 14:28:12 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1651235292;
-        bh=glh+plWF8a23OaNEHunDsa7vxFf0EQEyx6aWhvz1i6U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MTnKPyAAsPM29+6LXWx7ZdtDWiGoWbyQkVCH8kO95WfNS1kvLw1vRtm8etGVok4kf
-         5Ze/5lbloPCN4r08NdxOTqwvMBjdCG2kV/2ZIq3tF2ruUPLE33mH8sSGWe6CBv2vsr
-         /qEWWXrZMnO5se+nI70tjW6gmOgdcqN2zfkjS/MU=
-Date:   Fri, 29 Apr 2022 15:28:11 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Hans Verkuil <hverkuil@xs4all.nl>
-Cc:     Jacopo Mondi <jacopo@jmondi.org>, Eugen.Hristev@microchip.com,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Claudiu.Beznea@microchip.com, robh+dt@kernel.org,
-        Nicolas.Ferre@microchip.com
-Subject: Re: [PATCH v9 08/13] media: atmel: atmel-isc: change format
- propagation to subdev into only verification
-Message-ID: <YmvZ2wdJ8RZxdemO@pendragon.ideasonboard.com>
-References: <39f541ec-313f-fe15-b93f-dd78469b2366@xs4all.nl>
- <b6630c65-0720-3633-d5ed-aadf4716f206@microchip.com>
- <dabbff36-a10c-0a8a-94e8-ce7c2d896403@xs4all.nl>
- <20220429095848.ec4xnul6tin6n7sf@uno.localdomain>
- <Ymu4ywjEvX5HbE/W@pendragon.ideasonboard.com>
- <a10a255c-e3b7-4c5f-2a7e-9474e0526a61@xs4all.nl>
- <Ymu7/VWrvT0bZfeP@pendragon.ideasonboard.com>
- <50b07246-39ed-2e5d-05ff-b8b482cb2bcb@xs4all.nl>
- <YmvTxKUbQoxchG2D@pendragon.ideasonboard.com>
- <540a488a-5e3e-6031-b358-a02448b4d52a@xs4all.nl>
+        Fri, 29 Apr 2022 08:33:05 -0400
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D3BC8BF2;
+        Fri, 29 Apr 2022 05:29:46 -0700 (PDT)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220429122943euoutp01458b2a0ffc4189ccec75d50d7637d3e8~qXdUa8Cam0628106281euoutp01T;
+        Fri, 29 Apr 2022 12:29:43 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220429122943euoutp01458b2a0ffc4189ccec75d50d7637d3e8~qXdUa8Cam0628106281euoutp01T
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1651235383;
+        bh=BLy6dEdd66oc6iIL1UsBH6ZK/p3m9vCFckbreG6yqyQ=;
+        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+        b=H9r0wEis0WrtASo5RyQXYHFRUTSdogCLsXPkdtG3fp0K7D5YDo0Aq9cVaNAgN+1Ow
+         t7G/IgyPBabntnsaQ3dmmDK9Y8UGWmyFrhJO3IsWJA7XHfitFLRD4coALiLCtII/1X
+         R+pdVDRPZ/bu2LZZhq5+KAKn5+NQquHd/tg4cacc=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220429122942eucas1p1d34d92cccbe0941ec1bd689c3295e213~qXdUJ3mq70545905459eucas1p1o;
+        Fri, 29 Apr 2022 12:29:42 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id 32.F2.10260.63ADB626; Fri, 29
+        Apr 2022 13:29:42 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220429122942eucas1p1820d0cd17a871d4953bac2b3de1dcdd9~qXdTndi5b0970909709eucas1p1W;
+        Fri, 29 Apr 2022 12:29:42 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220429122942eusmtrp1e50bcb5c9efcd5d86ebcc963f0f23ff4~qXdTj0jhn2535925359eusmtrp16;
+        Fri, 29 Apr 2022 12:29:42 +0000 (GMT)
+X-AuditID: cbfec7f5-bf3ff70000002814-b7-626bda365cbd
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 86.52.09404.63ADB626; Fri, 29
+        Apr 2022 13:29:42 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220429122940eusmtip1946211aaf83d463f473b3f56f8be6032~qXdRsQjxU2403924039eusmtip14;
+        Fri, 29 Apr 2022 12:29:40 +0000 (GMT)
+Message-ID: <870885de-33f3-e0ba-4d56-71c3c993ac87@samsung.com>
+Date:   Fri, 29 Apr 2022 14:29:40 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <540a488a-5e3e-6031-b358-a02448b4d52a@xs4all.nl>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
+        Gecko/20100101 Thunderbird/91.8.0
+Subject: Re: [PATCH v7 12/12] rpmsg: Fix kfree() of static memory on setting
+ driver_override
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Stuart Yoder <stuyoder@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+From:   Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20220419113435.246203-13-krzysztof.kozlowski@linaro.org>
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0xTVxzHc3ov95ZuZZcC4wyYbHWS7AFMGeYkKnMw5UbNokTZMhNHgSsg
+        FEgLqGSJjIobFVkpYqXyFnm7QhGGD15FgVFhDLZOsBKk3RbsSmxAEx4lo73Zxj8nn/M939/5
+        /b4nh4sJHhI+3KTUDEaSKkoREjy8c3B5LHDndHLsh/bGHahNP0+gMdMqjn79RcdB84oBgGpz
+        E5G+dwFHJruOQD3ntQCNq1+6INl1DYEMP9LIUtEEULelg0Tm5o1FazK4oKLeURLZCmZcUEnR
+        cwLJVxoxNHmnjECjFUMEkv0sRIpqGYa+sU2RyKSuIFDHvT4OGjE+Aah8qQRD1oF+DPW3TWOo
+        TnOTRHOFVhLVj274lAN1LmhAO83Zu5VuXcwl6NvqJyRdpc2ktU35BG003CPo4aurOK2o6QN0
+        b3kLSbfXnqOLH9UDOq/LTtJtC10celyeTC9qtxx2+5K3O55JScpiJMFhMbxEW+FtIl3xwZmZ
+        kVY8B9S+IweuXEh9BEc07aSDBVQDgD2XoBzwNngJwBcll3H2YBFA5S1KDrjOgpWVw6ynHsCq
+        Gws4u7EBWPa03lnAp8Lgg8UrhINxahtsVv2Jsbo7/KnU7PR4UbGwvGfGqXtQJ2Df4xaOgzHK
+        G06bK53sSV0G8MZ8KKvrXeFkL+1ggtoO5Va5835Xaj+8rqzGWI8/lHVcwxwDQcrMg+v1VQQb
+        81NoKl3DWfaAz4ZukSz7QX1xAc4mS4P2qyGsfAYaLC0Yy7ugcWyFcFgw6l2ouRPMyp/AuqVC
+        DlvpBh9Z3dkJ3KCyU4WxMh9+d0HAugOgeuiH/3r2j09gCiBUb3oT9abs6k1Z1P/3rQJ4E/Bm
+        MqXiBEYaksqcDpKKxNLM1ISguDSxFmx8eP360Isu0PDMFqQDHC7QAcjFhJ78pbuJsQJ+vOhs
+        NiNJ+0qSmcJIdcCXiwu9+XFJrSIBlSDKYJIZJp2R/HvK4br65HA8sZqosLk3ooOb88Orj0lP
+        +goCldROXs3FtaFjDduW8xq6s1+78NaRXc/dsuJiJ2aiK/xenZr1OLh8vLEgRst/Ohhj3Hqy
+        dNhPEnJ8LcBwZP39yYy+c6uJ+6OOvjQoj87mnl2e1Z34IvRATnDUXouQii7w/3ukLHKP8KEp
+        e7Cyrs5sj7eOPI5QvD0eWZwkQbsPhmuv/Pb76Jb75ozTKk1ZZQR4U5yNSw5lkSGVEd8Of2/x
+        9RlU1Ri8VC3dXvmBPuEx6aUySgyVp/ZNEV4HJv7yv+l1KiAm+us/Pi93P9Su7t8T0LhedH7f
+        JCH+7Np0pMF46ZX7itc7RQ+SLn6ctxS6g567K8SliaLt72ESqegfQlmaV18EAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrCKsWRmVeSWpSXmKPExsVy+t/xu7pmt7KTDA6/4rHYePolm8W5x79Z
+        LK5cPMRk8XLCYUaLJU0ZFqf3v2OxePz3EJvFvpZNjBYXZn1jtWhevJ7N4tp2D4vX81YxWux9
+        vZXd4slqILHp8TVWi4n7z7JbfOy5x2oxdeIHNouuXyuZLS7vmsNmcXbecTaL5vNKFhMWNjNb
+        NH68yW7xeNY8Noutew4wWZy6c5fRYu6XqcwWbw8fZLY4uPEWs8Wy9WvZLR71vWW3WH4WqG7S
+        4WWsFoc33WJyUPbY8LmJzWPnrLvsHgs2lXpsWtXJ5nHn2h42jxMzfrN4TFh0gNFj/9w17B6b
+        l9R7TL6xnNGjdcdfdo+N73YweVzoyvb4vEkugC9Kz6Yov7QkVSEjv7jEVina0MJIz9DSQs/I
+        xFLP0Ng81srIVEnfziYlNSezLLVI3y5BL+Nj3062ggk6FfdObWBpYFyi0sXIwSEhYCLx61dA
+        FyMXh5DAUkaJmZ0NrF2MnEBxGYmT02BsYYk/17rYIIreM0q09N0CS/AK2Ekc/TyNDcRmEVCV
+        WD39GTNEXFDi5MwnLCC2qECSxIttzxlBbGGBOIkDt9cwgdjMAuISt57MZwIZKiIwjVHiUcMZ
+        FojERU6Jy/sSILY1MEpM7LgLNpVNwFCi620X2DZOATeJxZMWMkM0mEl0be1ihLDlJZq3zmae
+        wCg0C8khs5AsnIWkZRaSlgWMLKsYRVJLi3PTc4uN9IoTc4tL89L1kvNzNzECk9u2Yz+37GBc
+        +eqj3iFGJg7GQ4wSHMxKIrxfdmckCfGmJFZWpRblxxeV5qQWH2I0BYbGRGYp0eR8YHrNK4k3
+        NDMwNTQxszQwtTQzVhLn9SzoSBQSSE8sSc1OTS1ILYLpY+LglGpg0uc+eIGt9+u5ab5OJkdU
+        9rrqsvakOobVTZQxW53858w5vQOR166LqqVZf5x9f3n6SdOQeW0RSbIVF41Xr1uXVih5yaLB
+        Qmar2Yn5ynsOsjduLGDQZtyvmrX/n4TIsjNXr6Zr/9GYs+0417m4J7e6l+u5xEkwpDn/6H9X
+        nZinltPNXxn8ZGrc1WCxiwtK/8QtLFGr/7+do+GoanbazNPc7Me5j57k+p16e5LvpIVZ5W4r
+        rkidvm3281DQwsc2Uze1qMRkOkdqsAj+WP7hb0rBvPrOb7q/1jYt9nh3fa9WesjfmTt8dEzT
+        Ve3tz/D78y1wOsD1YolUY8yNCNuzDwxl7k7dold5+tiZjK4L7saBSizFGYmGWsxFxYkAlCo5
+        wvcDAAA=
+X-CMS-MailID: 20220429122942eucas1p1820d0cd17a871d4953bac2b3de1dcdd9
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20220429122942eucas1p1820d0cd17a871d4953bac2b3de1dcdd9
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220429122942eucas1p1820d0cd17a871d4953bac2b3de1dcdd9
+References: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org>
+        <20220419113435.246203-13-krzysztof.kozlowski@linaro.org>
+        <CGME20220429122942eucas1p1820d0cd17a871d4953bac2b3de1dcdd9@eucas1p1.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 02:23:45PM +0200, Hans Verkuil wrote:
-> On 29/04/2022 14:02, Laurent Pinchart wrote:
-> > On Fri, Apr 29, 2022 at 01:17:27PM +0200, Hans Verkuil wrote:
-> >> On 29/04/2022 12:20, Laurent Pinchart wrote:
-> >>> On Fri, Apr 29, 2022 at 12:13:46PM +0200, Hans Verkuil wrote:
-> >>>> On 29/04/2022 12:07, Laurent Pinchart wrote:
-> >>>>> On Fri, Apr 29, 2022 at 11:58:48AM +0200, Jacopo Mondi wrote:
-> >>>>>> On Fri, Apr 29, 2022 at 10:43:09AM +0200, Hans Verkuil wrote:
-> >>>>>>> On 29/04/2022 10:28, Eugen.Hristev@microchip.com wrote:
-> >>>>>>>> On 4/29/22 11:17 AM, Hans Verkuil wrote:
-> >>>>>>>>> On 10/03/2022 10:51, Eugen Hristev wrote:
-> >>>>>>>>>> As a top MC video driver, the atmel-isc should not propagate the format to the
-> >>>>>>>>>> subdevice, it should rather check at start_streaming() time if the subdev is properly
-> >>>>>>>>>> configured with a compatible format.
-> >>>>>>>>>> Removed the whole format finding logic, and reworked the format verification
-> >>>>>>>>>> at start_streaming time, such that the ISC will return an error if the subdevice
-> >>>>>>>>>> is not properly configured. To achieve this, media_pipeline_start
-> >>>>>>>>>> is called and a link_validate callback is created to check the formats.
-> >>>>>>>>>> With this being done, the module parameter 'sensor_preferred' makes no sense
-> >>>>>>>>>> anymore. The ISC should not decide which format the sensor is using. The
-> >>>>>>>>>> ISC should only cope with the situation and inform userspace if the streaming
-> >>>>>>>>>> is possible in the current configuration.
-> >>>>>>>>>> The redesign of the format propagation has also risen the question of the
-> >>>>>>>>>> enumfmt callback. If enumfmt is called with an mbus_code, the enumfmt handler
-> >>>>>>>>>> should only return the formats that are supported for this mbus_code.
-> >>>>>>>>>> Otherwise, the enumfmt will report all the formats that the ISC could output.
-> >>>>>>>>>> With this rework, the dynamic list of user formats is removed. It makes no
-> >>>>>>>>>> more sense to identify at complete time which formats the sensor could emit,
-> >>>>>>>>>> and add those into a separate dynamic list.
-> >>>>>>>>>> The ISC will start with a simple preconfigured default format, and at
-> >>>>>>>>>> link validate time, decide whether it can use the format that is configured
-> >>>>>>>>>> on the sink or not.
-> >>>>>>>>>>
-> >>>>>>>>>> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-> >>>>>>>>>> Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
-> >>>>>>>>>> ---
-> >>>>>>>>>> Changes in v9:
-> >>>>>>>>>> - isc_link_validate now static
-> >>>>>>>>>>
-> >>>>>>>>>> Changes in v7:
-> >>>>>>>>>> - minor typos as suggested by Jacopo
-> >>>>>>>>>> - small changes, reduce some indentation, modified an index, as suggested by
-> >>>>>>>>>> Jacopo
-> >>>>>>>>>>
-> >>>>>>>>>> Changes in v6:
-> >>>>>>>>>> - reworked a bit enum_fmt as suggested by Jacopo
-> >>>>>>>>>>
-> >>>>>>>>>> Changes in v5:
-> >>>>>>>>>> - removed user_formats dynamic list as it is now pointless
-> >>>>>>>>>> - greatly simplified the enum_fmt function
-> >>>>>>>>>> - removed some init code that was useless now
-> >>>>>>>>>>
-> >>>>>>>>>> Changes in v4:
-> >>>>>>>>>> - moved validation code into link_validate and used media_pipeline_start
-> >>>>>>>>>> - merged this patch with the enum_fmt patch which was previously in v3 of
-> >>>>>>>>>> the series
-> >>>>>>>>>>
-> >>>>>>>>>> Changes in v3:
-> >>>>>>>>>> - clamp to maximum resolution once the frame size from the subdev is found
-> >>>>>>>>>>   drivers/media/platform/atmel/atmel-isc-base.c | 412 ++++++++----------
-> >>>>>>>>>>   .../media/platform/atmel/atmel-isc-scaler.c   |   5 +
-> >>>>>>>>>>   drivers/media/platform/atmel/atmel-isc.h      |  13 +-
-> >>>>>>>>>>   .../media/platform/atmel/atmel-sama5d2-isc.c  |  20 +
-> >>>>>>>>>>   .../media/platform/atmel/atmel-sama7g5-isc.c  |  20 +
-> >>>>>>>>>>   5 files changed, 236 insertions(+), 234 deletions(-)
-> >>>>>>>>>>
-> >>>>>>>>>> diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
-> >>>>>>>>>> index ee1dda6707a0..fe2c0af58060 100644
-> >>>>>>>>>> --- a/drivers/media/platform/atmel/atmel-isc-base.c
-> >>>>>>>>>> +++ b/drivers/media/platform/atmel/atmel-isc-base.c
-> >>>>>>>>>> @@ -36,11 +36,6 @@ static unsigned int debug;
-> >>>>>>>>>>   module_param(debug, int, 0644);
-> >>>>>>>>>>   MODULE_PARM_DESC(debug, "debug level (0-2)");
-> >>>>>>>>>>
-> >>>>>>>>>> -static unsigned int sensor_preferred = 1;
-> >>>>>>>>>> -module_param(sensor_preferred, uint, 0644);
-> >>>>>>>>>> -MODULE_PARM_DESC(sensor_preferred,
-> >>>>>>>>>> -              "Sensor is preferred to output the specified format (1-on 0-off), default 1");
-> >>>>>>>>>> -
-> >>>>>>>>>>   #define ISC_IS_FORMAT_RAW(mbus_code) \
-> >>>>>>>>>>        (((mbus_code) & 0xf000) == 0x3000)
-> >>>>>>>>>>
-> >>>>>>>>>> @@ -337,6 +332,10 @@ static int isc_start_streaming(struct vb2_queue *vq, unsigned int count)
-> >>>>>>>>>>        unsigned long flags;
-> >>>>>>>>>>        int ret;
-> >>>>>>>>>>
-> >>>>>>>>>> +     ret = media_pipeline_start(&isc->video_dev.entity, &isc->mpipe);
-> >>>>>>>>>
-> >>>>>>>>> The pipeline validation is done in start_streaming, but I don't think that
-> >>>>>>>>> is the best place: if STREAMON is called before buffers are queued, then
-> >>>>>>>>> an invalid pipeline isn't discovered until enough buffers are queued to
-> >>>>>>>>> kick off start_streaming.
-> >>>>>>>>>
-> >>>>>>>>> Drivers like vsp1, omap3isp and the samsung drivers all do this in streamon().
-> >>>>>>>>>
-> >>>>>>>>> I think that is the correct time to do this.
-> >>>>>>>>
-> >>>>>>>> Hello Hans,
-> >>>>>>>>
-> >>>>>>>> Initially (v2, v3) I had this in streamon(). The problem that I faced at
-> >>>>>>>> that time was that streamoff was never called, so I could not call
-> >>>>>>>> media_pipeline_stop(). Then Jacopo told me to move it to start_streaming
-> >>>>>>>> (see change log for v4) , and I did not face any more problems.
-> >>>>>>
-> >>>>>> Yes indeed, seems I suggested to use media_pipeline_handler in a
-> >>>>>> comment on your v3
-> >>>>>>
-> >>>>>> "at s_stream time your top driver calls media_pipeline_start()"
-> >>>>>>
-> >>>>>> sorry about that, I should have looked around a bit more carefully and
-> >>>>>> notice most drivers do so at vb2 streamon
-> >>>>>>
-> >>>>>> However I don't see media_pipeline_start being called at all in v3 of
-> >>>>>> the patch
-> >>>>>>
-> >>>>>>> It's a mess. Looking at some drivers I see that omap3isp calls media_pipeline_stop
-> >>>>>>> in streamoff (so will have the same problem as you described if VIDIOC_STREAMOFF
-> >>>>>>> isn't called), exynos4-is does the same, but it also checks the streaming state in
-> >>>>>>> the release() fop callback, so that would fix this problem. And vimc does this
-> >>>>>>> in stop_streaming.
-> >>>>>>>
-> >>>>>>> I'm in favor of fixing this in vb2, that framework knows exactly when this needs
-> >>>>>>> to be called.
-> >>>>>>
-> >>>>>> Are you suggesting to have vb2 to call media_pipeline_start() or is it
-> >>>>>> more complex than this ?
-> >>>>>
-> >>>>> I think Hans meant adding a .validate() operation to vb2.
-> >>>>>
-> >>>>> vb2 is already quite complex, I don't think adding more features is a
-> >>>>> good idea. I'd rather have vb2 focus on buffer management only
-> >>>>> (.start_streaming() and .stop_streaming() shouldn't have been in there
-> >>>>> in my opinion), and handle validation in the .streamon() handler. I'd
-> >>>>> expect most drivers that deal with media pipelines to do more work in
-> >>>>> .streamon() anyway.
-> >>>>
-> >>>> I disagree with that :-)
-> >>>>
-> >>>> It's vb2 that keeps track of the streaming state and when what actions
-> >>>> need to be taken. Drivers really shouldn't need to care about the ioctls
-> >>>> themselves, and just implement the relevant vb2 callbacks. Relying on
-> >>>> drivers to handle any of the streaming ioctls is asking for problems,
-> >>>> as this shows: most drivers implement this wrong today.
-> >>>>
-> >>>> The vb2 framework knows when e.g. the pipeline needs to be started or
-> >>>> stopped, and can do this at the best time, without drivers needing to
-> >>>> keep track of when streamon/off/release is called. Keep that logic in
-> >>>> vb2.
-> >>>
-> >>> Pipeline management and buffer management are two different issues.
-> >>> Don't forget about devices that have multiple video nodes, part of the
-> >>> same pipeline (possibly a combination of output and capture nodes, or
-> >>> all of the same type). Forcing drivers to go through vb2 operations to
-> >>> handle the pipeline will be messy, will result in more bloat in vb2, and
-> >>> make the result more bug-prone and harder to maintain.
-> >>>
-> >>> If pipeline management is too complex, let's simplify it, new helpers
-> >>> can make sense, but not through vb2.
-> >>
-> >> But it is vb2 that knows when streaming starts and stops.
-> > 
-> > That's right, but pipeline start (which includes validation and resource
-> > reservation) needs to be performed synchronously with VIDIOC_STREAMON.
-> > The streaming state managed by vb2 is not relevant,
-> > media_pipeline_start() must not be delayed the same way
-> > .start_streaming() is.
-> 
-> It will be the first thing that vb2_streamon calls. This has nothing to do
-> with start_streaming: that's called when sufficient number of buffers are
-> queued up to be able to start the DMA. This proposed prepare_streaming op
-> will be called when VIDIOC_STREAMON is called.
+Hi Krzysztof,
 
-Then it doesn't need vb2's knowledge of the stream state :-)
+On 19.04.2022 13:34, Krzysztof Kozlowski wrote:
+> The driver_override field from platform driver should not be initialized
+> from static memory (string literal) because the core later kfree() it,
+> for example when driver_override is set via sysfs.
+>
+> Use dedicated helper to set driver_override properly.
+>
+> Fixes: 950a7388f02b ("rpmsg: Turn name service into a stand alone driver")
+> Fixes: c0cdc19f84a4 ("rpmsg: Driver for user space endpoint interface")
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-> >> The driver just
-> >> needs to be informed (e.g. prepare_streaming and unprepare_streaming ops).
-> >>
-> >> vb2 deals with buffer management and it keeps track of the streaming state
-> >> and makes the streaming state transitions. That *is* an integral part of
-> >> vb2. What is missing at the moment are callbacks done at streamon time and
-> >> when the streaming stops (streamoff, or close() when is_streaming is true).
-> >>
-> >> If you want to implement stream validation in a driver, then there are a
-> >> lot of things you need to do:
-> >>
-> >> - override streamon, make sure you call vb2_queue_is_busy(), validate the
-> >>   pipeline, then call vb2_streamon, if that fails, remember to stop the
-> >>   pipeline.
-> >>
-> >> - override streamoff, make sure you call vb2_queue_is_busy(), stop the
-> >>   pipeline and call vb2_streamoff.
-> >>
-> >> - in the release() function when the fh is closed, you have to check
-> >>   vb2_is_streaming(), check that you are the owner of the queue, and if true,
-> >>   stop the pipeline.
-> > 
-> > I'm not opposed to helper functions to implement that, they can bundle
-> > vb2 calls and pipeline management.
-> > 
-> >> By moving this to vb2 ops all you need to implement are the prepare and
-> >> unprepare ops.
-> >>
-> >> Esp. the release() implementation is tricky. I'm pretty sure that
-> >> drivers/media/platform/samsung/exynos4-is/fimc-lite.c is wrong, since it
-> >> should only call media_pipeline_stop() for the owner of the queue. Instead
-> >> it calls it for the last user of the queue.
-> >>
-> >> I see that fimc_lite_streamoff() is wrong too: you can safely call
-> >> VIDIOC_STREAMOFF twice: the second streamoff just returns 0 without
-> >> doing anything. Instead media_pipeline_stop is called without testing if
-> >> the queue is streaming.
-> >>
-> >> And yes, this is in part because V4L2 has quite some history and certainly
-> >> API choice were made in the past that we wouldn't make today. But vb2
-> >> shields you from that, and behaves much more like a proper state machine.
-> >>
-> >> I know you prefer to give a lot more control to driver developers, but
-> >> in my experience very few developers can do things like this right. And
-> >> it is really hard as a reviewer to check if all the corner cases are handled
-> >> correctly in a driver. If vb2 is used, then I know things are called at the
-> >> right time, and that makes my life as reviewer so much easier.
-> > 
-> > It's not just about giving more control to drivers, it's about
-> > organizing the software layers in a way that keeps them maintainable,
-> > with layered abstractions and not midlayers.
-> > 
-> > We are extensively reworking the media pipeline management as part of
-> > the stream series, and there will be more work on top of that that will
-> > make even more fundamental changes. I would like to at least postpone
-> > any work on vb2 until then, to be able to evaluate the impact.
-> 
-> I'll make an RFC patch for vb2 so you have a better idea of what it does.
+This patch landed recently in linux-next as commit 42cd402b8fd4 ("rpmsg: 
+Fix kfree() of static memory on setting driver_override"). In my tests I 
+found that it triggers the following issue during boot of the 
+DragonBoard410c SBC (arch/arm64/boot/dts/qcom/apq8016-sbc.dtb):
 
-As long as we don't merge it before I get the chance to send the media
-pipeline management rework, I'm all for RFCs :-)
+------------[ cut here ]------------
+DEBUG_LOCKS_WARN_ON(lock->magic != lock)
+WARNING: CPU: 1 PID: 8 at kernel/locking/mutex.c:582 
+__mutex_lock+0x1ec/0x430
+Modules linked in:
+CPU: 1 PID: 8 Comm: kworker/u8:0 Not tainted 5.18.0-rc4-next-20220429 #11815
+Hardware name: Qualcomm Technologies, Inc. APQ 8016 SBC (DT)
+Workqueue: events_unbound deferred_probe_work_func
+pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+pc : __mutex_lock+0x1ec/0x430
+lr : __mutex_lock+0x1ec/0x430
+..
+Call trace:
+  __mutex_lock+0x1ec/0x430
+  mutex_lock_nested+0x38/0x64
+  driver_set_override+0x124/0x150
+  qcom_smd_register_edge+0x2a8/0x4ec
+  qcom_smd_probe+0x54/0x80
+  platform_probe+0x68/0xe0
+  really_probe.part.0+0x9c/0x29c
+  __driver_probe_device+0x98/0x144
+  driver_probe_device+0xac/0x14c
+  __device_attach_driver+0xb8/0x120
+  bus_for_each_drv+0x78/0xd0
+  __device_attach+0xd8/0x180
+  device_initial_probe+0x14/0x20
+  bus_probe_device+0x9c/0xa4
+  deferred_probe_work_func+0x88/0xc4
+  process_one_work+0x288/0x6bc
+  worker_thread+0x248/0x450
+  kthread+0x118/0x11c
+  ret_from_fork+0x10/0x20
+irq event stamp: 3599
+hardirqs last  enabled at (3599): [<ffff80000919053c>] 
+_raw_spin_unlock_irqrestore+0x98/0x9c
+hardirqs last disabled at (3598): [<ffff800009190ba4>] 
+_raw_spin_lock_irqsave+0xc0/0xcc
+softirqs last  enabled at (3554): [<ffff800008010470>] _stext+0x470/0x5e8
+softirqs last disabled at (3549): [<ffff8000080a4514>] 
+__irq_exit_rcu+0x180/0x1ac
+---[ end trace 0000000000000000 ]---
 
-> >> There may still be a few drivers that really need to do this manually, and
-> >> that's OK, but a driver like the atmel-isc doesn't need that at all.
+I don't see any direct relation between the $subject and the above log, 
+but reverting the $subject on top of linux next-20220429 hides/fixes it. 
+Maybe there is a kind of memory trashing somewhere there and your change 
+only revealed it?
 
+> ---
+>   drivers/rpmsg/rpmsg_internal.h | 13 +++++++++++--
+>   drivers/rpmsg/rpmsg_ns.c       | 14 ++++++++++++--
+>   include/linux/rpmsg.h          |  6 ++++--
+>   3 files changed, 27 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/rpmsg/rpmsg_internal.h b/drivers/rpmsg/rpmsg_internal.h
+> index d4b23fd019a8..3e81642238d2 100644
+> --- a/drivers/rpmsg/rpmsg_internal.h
+> +++ b/drivers/rpmsg/rpmsg_internal.h
+> @@ -94,10 +94,19 @@ int rpmsg_release_channel(struct rpmsg_device *rpdev,
+>    */
+>   static inline int rpmsg_ctrldev_register_device(struct rpmsg_device *rpdev)
+>   {
+> +	int ret;
+> +
+>   	strcpy(rpdev->id.name, "rpmsg_ctrl");
+> -	rpdev->driver_override = "rpmsg_ctrl";
+> +	ret = driver_set_override(&rpdev->dev, &rpdev->driver_override,
+> +				  rpdev->id.name, strlen(rpdev->id.name));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = rpmsg_register_device(rpdev);
+> +	if (ret)
+> +		kfree(rpdev->driver_override);
+>   
+> -	return rpmsg_register_device(rpdev);
+> +	return ret;
+>   }
+>   
+>   #endif
+> diff --git a/drivers/rpmsg/rpmsg_ns.c b/drivers/rpmsg/rpmsg_ns.c
+> index 762ff1ae279f..8eb8f328237e 100644
+> --- a/drivers/rpmsg/rpmsg_ns.c
+> +++ b/drivers/rpmsg/rpmsg_ns.c
+> @@ -20,12 +20,22 @@
+>    */
+>   int rpmsg_ns_register_device(struct rpmsg_device *rpdev)
+>   {
+> +	int ret;
+> +
+>   	strcpy(rpdev->id.name, "rpmsg_ns");
+> -	rpdev->driver_override = "rpmsg_ns";
+> +	ret = driver_set_override(&rpdev->dev, &rpdev->driver_override,
+> +				  rpdev->id.name, strlen(rpdev->id.name));
+> +	if (ret)
+> +		return ret;
+> +
+>   	rpdev->src = RPMSG_NS_ADDR;
+>   	rpdev->dst = RPMSG_NS_ADDR;
+>   
+> -	return rpmsg_register_device(rpdev);
+> +	ret = rpmsg_register_device(rpdev);
+> +	if (ret)
+> +		kfree(rpdev->driver_override);
+> +
+> +	return ret;
+>   }
+>   EXPORT_SYMBOL(rpmsg_ns_register_device);
+>   
+> diff --git a/include/linux/rpmsg.h b/include/linux/rpmsg.h
+> index 02fa9116cd60..20c8cd1cde21 100644
+> --- a/include/linux/rpmsg.h
+> +++ b/include/linux/rpmsg.h
+> @@ -41,7 +41,9 @@ struct rpmsg_channel_info {
+>    * rpmsg_device - device that belong to the rpmsg bus
+>    * @dev: the device struct
+>    * @id: device id (used to match between rpmsg drivers and devices)
+> - * @driver_override: driver name to force a match
+> + * @driver_override: driver name to force a match; do not set directly,
+> + *                   because core frees it; use driver_set_override() to
+> + *                   set or clear it.
+>    * @src: local address
+>    * @dst: destination address
+>    * @ept: the rpmsg endpoint of this channel
+> @@ -51,7 +53,7 @@ struct rpmsg_channel_info {
+>   struct rpmsg_device {
+>   	struct device dev;
+>   	struct rpmsg_device_id id;
+> -	char *driver_override;
+> +	const char *driver_override;
+>   	u32 src;
+>   	u32 dst;
+>   	struct rpmsg_endpoint *ept;
+
+Best regards
 -- 
-Regards,
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-Laurent Pinchart
