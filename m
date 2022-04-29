@@ -2,121 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06693C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B784C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:59:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359646AbiD2NDD (ORCPT
+        id S1359654AbiD2NDH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 09:03:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39110 "EHLO
+        Fri, 29 Apr 2022 09:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359621AbiD2NCx (ORCPT
+        with ESMTP id S1359644AbiD2NCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Apr 2022 09:02:53 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4DCCA0D2;
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F21E5CABA8
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 05:59:32 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BEB481063;
         Fri, 29 Apr 2022 05:59:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651237172; x=1682773172;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=G3cxB0HDg/hWN46WuirekDQTBDL7WfaNTwXNbR3h9l0=;
-  b=WzIFGRUvXNGXuHRTXYalIdBOmr5/cN5iCiLe30i8QeN2Kia5BIh06zg7
-   WEKMtJLgYaQ3MlRLoVZIFE7Ts8NrYg8jRkenRmA6DEiXcRjlFntZpnWU5
-   Qcq/LC/t+vevZI0BYbR/jcHVs69Q0xsuruAh9XlhSKktjcFD+8uUgM3T2
-   T/VnwhqnaPHvhHwW0rj28OAe6G7eiMe3ocw3BIICD3dy/kK2Q0x11qfn0
-   D9bY5pCIJgbkyQCO4BO20BS1FbKfMEt0Lpw/iD79GmEovngdRLQ1ki5mb
-   TmhOsJopOdgK+5sowJa1gI1cMKVvhJjVyh/nTy2mx/YqAKPjCzLEOcRoW
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="266793289"
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="266793289"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 05:59:32 -0700
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="514810215"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 05:59:28 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nkQDV-009iQX-QJ;
-        Fri, 29 Apr 2022 15:59:25 +0300
-Date:   Fri, 29 Apr 2022 15:59:25 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: Re: [PATCH 2/5] lib: add bitmap_{from,to}_arr64
-Message-ID: <YmvhLbIoHDhEhJFq@smile.fi.intel.com>
-References: <20220428205116.861003-1-yury.norov@gmail.com>
- <20220428205116.861003-3-yury.norov@gmail.com>
+Received: from [192.168.178.6] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D8CB33F5A1;
+        Fri, 29 Apr 2022 05:59:30 -0700 (PDT)
+Message-ID: <0058249a-5f9f-9f67-db5b-f7c3c10c3729@arm.com>
+Date:   Fri, 29 Apr 2022 14:59:16 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220428205116.861003-3-yury.norov@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 1/2] sched/core: Avoid obvious double update_rq_clock
+ warning
+Content-Language: en-US
+To:     Hao Jia <jiahao.os@bytedance.com>, mingo@redhat.com,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, rostedt@goodmis.org,
+        bsegall@google.com, mgorman@suse.de, bristot@redhat.com
+Cc:     linux-kernel@vger.kernel.org
+References: <20220427080014.18483-1-jiahao.os@bytedance.com>
+ <20220427080014.18483-2-jiahao.os@bytedance.com>
+From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
+In-Reply-To: <20220427080014.18483-2-jiahao.os@bytedance.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 01:51:13PM -0700, Yury Norov wrote:
-> Manipulating 64-bit arrays with bitmap functions is potentially dangerous
-> because on 32-bit BE machines the order of halfwords doesn't match.
-> Another issue is that compiler may throw a warning about out-of-boundary
-> access.
-> 
-> This patch adds bitmap_{from,to}_arr64 functions in addition to existing
-> bitmap_{from,to}_arr32.
+On 27/04/2022 10:00, Hao Jia wrote:
 
-...
+[...]
 
-> +	bitmap_copy_clear_tail((unsigned long *) (bitmap),	\
-> +			(const unsigned long *) (buf), (nbits))
+LGTM, comments are only nit-picks.
 
-Drop spaces after castings. Besides that it might be placed on a single line.
+> Since we directly use raw_spin_rq_lock() to acquire rq lock instead of
+> rq_lock(), there is no corresponding change to rq->clock_update_flags.
+> In particular, we have obtained the rq lock of other cores,
 
-...
+s/cores/CPUs, with SMT, a core can have multiple (logical) CPUs.
 
+[...]
 
-> +	bitmap_copy_clear_tail((unsigned long *) (buf),		\
-> +			(const unsigned long *) (bitmap), (nbits))
+> So we need to clear RQCF_UPDATED of rq->clock_update_flags synchronously
+> to avoid the WARN_DOUBLE_CLOCK warning.
 
-Ditto.
+Why you mention `synchronously` here? Isn't this obvious? (1)
 
-...
+[...]
 
-> +void bitmap_to_arr64(u64 *buf, const unsigned long *bitmap, unsigned int nbits)
+> @@ -1833,6 +1833,7 @@ select_task_rq_dl(struct task_struct *p, int cpu, int flags)
+>  static void migrate_task_rq_dl(struct task_struct *p, int new_cpu __maybe_unused)
+>  {
+>  	struct rq *rq;
+> +	struct rq_flags rf;
+
+-       struct rq *rq;
+        struct rq_flags rf;
++       struct rq *rq;
+
+Use reverse fir tree order for variable declarations.
+(./Documentation/process/maintainer-tip.rst)
+
+[...]
+
+> +#ifdef CONFIG_SCHED_DEBUG
+> +/*
+> + * In double_lock_balance()/double_rq_lock(), we use raw_spin_rq_lock() to acquire
+> + * rq lock instead of rq_lock(). So at the end of these two functions we need to
+> + * call double_rq_clock_clear_update() synchronously to clear RQCF_UPDATED of
+                                          ^^^^^^^^^^^^^
+                                          (1)
+
+> + * rq->clock_update_flags to avoid the WARN_DOUBLE_CLOCK warning.
+> + */
+> +static inline void double_rq_clock_clear_update(struct rq *rq1, struct rq *rq2)
 > +{
-> +	const unsigned long *end = bitmap + BITS_TO_LONGS(nbits);
-> +
-> +	while (bitmap < end) {
-> +		*buf = *bitmap++;
-> +		if (bitmap < end)
-> +			*buf |= (u64)(*bitmap++) << 32;
-> +		buf++;
-> +	}
->  
-> +	/* Clear tail bits in last element of array beyond nbits. */
-> +	if (nbits % 64)
-> +		buf[-1] &= GENMASK_ULL(nbits, 0);
+> +	rq1->clock_update_flags &= (RQCF_REQ_SKIP|RQCF_ACT_SKIP);
+> +	/*
+> +	 * If CONFIG_SMP is not defined, rq1 and rq2 are the same,
+> +	 * so we just clear RQCF_UPDATED one of them.
+> +	 */
 
-Hmm... if nbits is > 0 and < 64, wouldn't be this problematic, since
-end == bitmap? Or did I miss something?
+Maybe shorter:
 
-> +}
+      /* rq1 == rq2 for !CONFIG_SMP, so just clear RQCF_UPDATED once. */
 
--- 
-With Best Regards,
-Andy Shevchenko
+[...]
 
+> @@ -2543,14 +2564,15 @@ static inline int _double_lock_balance(struct rq *this_rq, struct rq *busiest)
+>  	__acquires(busiest->lock)
+>  	__acquires(this_rq->lock)
+>  {
+> -	if (__rq_lockp(this_rq) == __rq_lockp(busiest))
+> -		return 0;
+> -
+> -	if (likely(raw_spin_rq_trylock(busiest)))
+> +	if (__rq_lockp(this_rq) == __rq_lockp(busiest) ||
+> +		likely(raw_spin_rq_trylock(busiest))) {
 
+indention:
+
+        if (__rq_lockp(this_rq) == __rq_lockp(busiest) ||
+-               likely(raw_spin_rq_trylock(busiest))) {
++           likely(raw_spin_rq_trylock(busiest))) {
+
+[...]
+
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+
+Tested on Arm64 Juno with mainline & preempt-rt (linux-5.17.y-rt).
