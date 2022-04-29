@@ -2,100 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 967E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 11:57:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEF91C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 11:59:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358795AbiD2MAo (ORCPT
+        id S1358811AbiD2MDO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 08:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
+        Fri, 29 Apr 2022 08:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358762AbiD2MAm (ORCPT
+        with ESMTP id S235150AbiD2MDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 08:00:42 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A40B4924C
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 04:57:24 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id i5so10448793wrc.13
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 04:57:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=zhkPJZ5t7XS30nMpTj6bbXYcVhUfzJ6aKAQ3lOWd/GY=;
-        b=nGMih1E129wjT8YxcuJjbbIO6kan3qaZU3FoAzN+SXh1WnJJeUvOsIrThuW7kchSp/
-         P50XSKfkRWjPwm7BX0Lt/so0I6DiTARr9NRdByEHAScgigM6aAqLbziifarR9djETsd2
-         tYs5eCcPnlOuRNp1OdJ0nMXpAjPYtQ4t+Hu0Sq6hkZ+l1zp3SMdAlDN++L+RjM3bA9Mt
-         qPTUih40eH+pmIVllSKcW4UHSYIHWiaRIlkjKumRV3XA5Ix+0uV+mlI7bsfjIU4Ya4Ea
-         J9b4BUNHvCptkdkXmvzxQQ5TZBABXB86XRIEBkHiJ8Utye8FRgGui3zaIF23IPcZyT/M
-         oY7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=zhkPJZ5t7XS30nMpTj6bbXYcVhUfzJ6aKAQ3lOWd/GY=;
-        b=JDpBHWxbhzEeLuEZSdTzbEg7ZAcYqDWFXSEsFJUhSQ6LlrjUoKQ2oSp5Z6JPEj9le/
-         7JLc+lMUnmTCDgyly5f5Vh/e3KNqACfwRusdMa8WwtKNKPVSY8A6x+cTYSTH0Syo02US
-         UotA8x/jnMAYQ9wN7XXXHrol1kYPXiA6uABoz8rOoe5vANAXlBFg7ZjXCbaNeu87v2yy
-         MqlOwkL6BY7sz2E7sC6Z8rXW/cGjDFQEK8I6R5+sv7qSRnyKLdRqlt/pSJ3xWvxLNUt9
-         zAkLvd0iTYkGTJW8ooHHjVBBAY/7LZd03qvi/5VXGAJesGC91uKZW/d/2KGWc4qEJCfV
-         Uhwg==
-X-Gm-Message-State: AOAM530PkIBVZElz+caLQnHZWp0d4dzQmxsO0C1NZa9xyh3ZElNNWNp0
-        tNMhpJgrVZ/pyx3W1o6JekU=
-X-Google-Smtp-Source: ABdhPJxXcg/TSEnSe3oYHf/l5nfkx/75A11A8wZ2bFw/fGOPv1y0qTM6UjmtOK5SSgG/4kvRt4DycQ==
-X-Received: by 2002:a05:6000:100c:b0:20a:c68a:e9a with SMTP id a12-20020a056000100c00b0020ac68a0e9amr30552315wrx.314.1651233442973;
-        Fri, 29 Apr 2022 04:57:22 -0700 (PDT)
-Received: from [192.168.0.43] (static-35-180-85-188.ipcom.comunitel.net. [188.85.180.35])
-        by smtp.gmail.com with ESMTPSA id l11-20020a05600c1d0b00b00393fbabdddfsm2518618wms.36.2022.04.29.04.57.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 04:57:21 -0700 (PDT)
-Message-ID: <91d8eb87-adf0-da62-0c7b-dbf94442f535@gmail.com>
-Date:   Fri, 29 Apr 2022 13:57:20 +0200
+        Fri, 29 Apr 2022 08:03:13 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6981C8A8E;
+        Fri, 29 Apr 2022 04:59:55 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:6624:6d8d:f790:d5c]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nkPHt-0002CR-PA; Fri, 29 Apr 2022 13:59:54 +0200
+Message-ID: <9811c780-ea28-1461-6347-93a3cf218b6c@leemhuis.info>
+Date:   Fri, 29 Apr 2022 13:59:53 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] arm64: dts: mt7622: specify the number of DMA requests
+ Thunderbird/91.8.0
+Subject: Re: [Bug 215872] New: ath11k: QCA6390 firmware crashes after some
+ time
 Content-Language: en-US
-To:     Rui Salvaterra <rsalvaterra@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     ryder.lee@mediatek.com, daniel@makrotopia.org
-References: <20220429084225.298213-1-rsalvaterra@gmail.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220429084225.298213-1-rsalvaterra@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <bug-215872-62941@https.bugzilla.kernel.org/>
+Cc:     linux-bluetooth@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        Kai Mast <mail@kai-mast.de>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <bug-215872-62941@https.bugzilla.kernel.org/>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1651233595;7d280789;
+X-HE-SMSGID: 1nkPHt-0002CR-PA
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi, this is your Linux kernel regression tracker.
 
+I noticed below regression report in bugzilla.kernel.org that afaics
+nobody acted upon since it was reported about a week ago, that's why I
+decided to step in here. Could somebody take a look into below issue? Or
+was this discussed somewhere else already? Or even fixed?
 
-On 29/04/2022 10:42, Rui Salvaterra wrote:
-> The MT7622 device tree never bothered to specify the number of virtual DMA
-> channels for the HSDMA controller, always falling back to the default value of
-> 3. Make this value explicit, in order to avoid the following dmesg notification:
+On 21.04.22 22:07, bugzilla-daemon@kernel.org wrote:
+> https://bugzilla.kernel.org/show_bug.cgi?id=215872
 > 
-> mtk_hsdma 1b007000.dma-controller: Using 3 as missing dma-requests property
+>             Bug ID: 215872
+>            Summary: ath11k: QCA6390 firmware crashes after some time
+>            Product: Drivers
+>            Version: 2.5
+>     Kernel Version: 5.17.3-arch1-1
+>           Hardware: x86-64
+>                 OS: Linux
+>               Tree: Mainline
+>             Status: NEW
+>           Severity: normal
+>           Priority: P1
+>          Component: Bluetooth
+>           Assignee: linux-bluetooth@vger.kernel.org
+>           Reporter: mail@kai-mast.de
+>         Regression: No
 > 
-> Signed-off-by: Rui Salvaterra <rsalvaterra@gmail.com>
-
-Applied, thanks!
-
-> ---
->   arch/arm64/boot/dts/mediatek/mt7622.dtsi | 1 +
->   1 file changed, 1 insertion(+)
+> Created attachment 300786
+>   --> https://bugzilla.kernel.org/attachment.cgi?id=300786&action=edit
+> dmesg | grep Bluetooth
 > 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt7622.dtsi b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-> index 3d6eaf6dd078..5551f004945b 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-> @@ -924,6 +924,7 @@ hsdma: dma-controller@1b007000 {
->   		clock-names = "hsdma";
->   		power-domains = <&scpsys MT7622_POWER_DOMAIN_ETHSYS>;
->   		#dma-cells = <1>;
-> +		dma-requests = <3>;
->   	};
->   
->   	eth: ethernet@1b100000 {
+> I'm on arch Linux. For a while now (multiple kernel versions since 5.15 at
+> least) my qca firwmare seems to crash. Weirdly bluetooth stops working and WiFi
+> still works fine.
+> There is nothing in particular that seems to trigger this. I just have to wait
+> for a while. Sometimes a few minutes after boot sometimes a few hours. 
+> 
+> Rebooting without a power connection or booting into Windows usually resolves
+> this issue.
+> 
+> I'm on a 2020 Dell XPS 9500. Fimrware is up to date at 1.13.
+> 
+> Output of uname -a: Linux kai-xps 5.17.3-arch1-1 #1 SMP PREEMPT Thu, 14 Apr
+> 2022 01:18:36 +0000 x86_64 GNU/Linux
+
+Anyway, to get this tracked:
+
+#regzbot introduced: v5.15..v5.17
+#regzbot from: Kai Mast <mail@kai-mast.de>
+#regzbot title: bluetooth: QCA6390 firmware crashes after some time
+#regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=215872
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
+
+-- 
+Additional information about regzbot:
+
+If you want to know more about regzbot, check out its web-interface, the
+getting start guide, and the references documentation:
+
+https://linux-regtracking.leemhuis.info/regzbot/
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
+
+The last two documents will explain how you can interact with regzbot
+yourself if your want to.
+
+Hint for reporters: when reporting a regression it's in your interest to
+CC the regression list and tell regzbot about the issue, as that ensures
+the regression makes it onto the radar of the Linux kernel's regression
+tracker -- that's in your interest, as it ensures your report won't fall
+through the cracks unnoticed.
+
+Hint for developers: you normally don't need to care about regzbot once
+it's involved. Fix the issue as you normally would, just remember to
+include 'Link:' tag in the patch descriptions pointing to all reports
+about the issue. This has been expected from developers even before
+regzbot showed up for reasons explained in
+'Documentation/process/submitting-patches.rst' and
+'Documentation/process/5.Posting.rst'.
+
