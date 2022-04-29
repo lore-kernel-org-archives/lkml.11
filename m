@@ -2,70 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F0B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 11:51:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43BC5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 11:53:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358725AbiD2Lyu (ORCPT
+        id S1358704AbiD2L43 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 07:54:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52002 "EHLO
+        Fri, 29 Apr 2022 07:56:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358676AbiD2Lyq (ORCPT
+        with ESMTP id S239277AbiD2L42 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 07:54:46 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6693AC6EC8;
-        Fri, 29 Apr 2022 04:51:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651233088; x=1682769088;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=vUGUX7Nvc/8LjzsG1/1jXvrhtbo00tkto7h2bu3JZ70=;
-  b=H4DSI1d+94Djdk3XQD/VbKAY2wwOazJtVUnjc6AqU7ayVl8Ihh5xw/hQ
-   djKsrR45uV5NYLqM33Lqa0aIQo6SNYPeAgAI9ZjrQvoXYpYuVCiBHSQve
-   7aN4RqDOzFQpzlfg15Y80nJD5RAirT2kb7D7tgzde/AJzy12LsfpUmi8B
-   GXXb8gy5+ZgLpdim8rHfj9a4tl7+NXpPfNVR2gcWB2ueSUu5ZRchO6SGp
-   fbg0vhNDGrnVtdfk98i5XzgdRafq8xdg5ZxlJ2k/BQkw9DdTtVqACvWOg
-   /NpcPba+nQREkDMy9QbXbcBR1iLaUb2nHhzl0z8gP/5o607bvMxAESrOG
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="329565488"
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="329565488"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 04:51:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="582085655"
-Received: from p12hl01tmin.png.intel.com ([10.158.65.175])
-  by orsmga008.jf.intel.com with ESMTP; 29 Apr 2022 04:51:21 -0700
-From:   Tan Tee Min <tee.min.tan@linux.intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        Tan Tee Min <tee.min.tan@linux.intel.com>,
-        Ling Pei Lee <pei.lee.ling@intel.com>,
-        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        Matthew Hagan <mnhagan88@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
-        Song Yoong Siang <yoong.siang.song@intel.com>,
-        Ong@vger.kernel.org, Boon Leong <boon.leong.ong@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>,
-        Looi Hong Aun <hong.aun.looi@intel.com>
-Subject: [PATCH net v2 1/1] net: stmmac: disable Split Header (SPH) for Intel platforms
-Date:   Fri, 29 Apr 2022 19:58:07 +0800
-Message-Id: <20220429115807.2198448-1-tee.min.tan@linux.intel.com>
+        Fri, 29 Apr 2022 07:56:28 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FAA1C6ED3;
+        Fri, 29 Apr 2022 04:53:09 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id 1so5140222qvs.8;
+        Fri, 29 Apr 2022 04:53:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KV4krtbeGPg3XtA9N0Vc8Z5tufyrmUvw/0E9B0OLsiM=;
+        b=bCg9/ayXoHRN9e6lsctLLef7ix2gfMMKa/r4qdO+HNeS55VwVPCYqz8uXCcjK/iA7N
+         prqAXk0pQeyCk4gTT8MesUWBka9IN/hQY8Mi8XtV7w8yYW4n2jRmnQCq0W4WeoPMQEKe
+         f4S7jC3c0no7ev4gGIfv3+OueOO7896ImFwOma5vS+NXamSEsABgTguZbe2AWKGYvLo1
+         vGFPw76l0o9pqrpkzsD0v5JfvgbVk6h2w3HToY/vHlac6g270OsvzqIMuaMbZZvmgSj6
+         ITU6mkl8Qdlznxb4LLzxe7WeZaUqqeMEBY9SsNQ+Ede04cAE1+f2iZIiLMGMpbsqc6bn
+         ZEjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KV4krtbeGPg3XtA9N0Vc8Z5tufyrmUvw/0E9B0OLsiM=;
+        b=5j0KrbPamXnX9JMZBu2hauP5JLPUPgB2qE5Cu5+KH9rN1RLFT7QV/Ju74BZEiEEryO
+         Zu8h0LRXYh7gtdln6yAV3TRv6eDx9htTX+NJloecjc+8mysvST1eUjIbqIL4/jKEyPPO
+         SnDsQPcLSmG19Og7XQbsDFjHJoaCFOQnnniOvexRY+TiUjPcS+rxgXqj0ib/0I9M/7N1
+         QSIUPiahmVmGhzyLRu+yd4DOA9LyTYLCrVngaTFbcBh6GLTkAETcvz3thH0fUnyvldKO
+         24jhGNce7uaCCn+OF+DU2744hd1rn85qeDFH55UGVp9jukMFXjmoBrpEOhWpw3+jexL/
+         uc2w==
+X-Gm-Message-State: AOAM530Eq3xPw+YZiss1yLy+BkUnQo732AziEfCndRQLUHZzsvkUiI0v
+        hBUpyZlWZx/e+KuAuLqNdxo=
+X-Google-Smtp-Source: ABdhPJyndl9VV7x3EmnaA3IRvanqu204IsjralKYKEmODgRhfVALtn1dA1ft8TDBZ0kzHckZzoJw6w==
+X-Received: by 2002:ad4:5b85:0:b0:458:1192:77c2 with SMTP id 5-20020ad45b85000000b00458119277c2mr1772036qvp.124.1651233188084;
+        Fri, 29 Apr 2022 04:53:08 -0700 (PDT)
+Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
+        by smtp.gmail.com with ESMTPSA id 123-20020a370c81000000b0069fa408fdb7sm1382505qkm.24.2022.04.29.04.53.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 04:53:07 -0700 (PDT)
+From:   Peter Geis <pgwipeout@gmail.com>
+To:     linux-rockchip@lists.infradead.org
+Cc:     heiko@sntech.de, Peter Geis <pgwipeout@gmail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/7] Add support for several new rk3566 SBCs
+Date:   Fri, 29 Apr 2022 07:52:45 -0400
+Message-Id: <20220429115252.2360496-1-pgwipeout@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -73,67 +64,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Based on DesignWare Ethernet QoS datasheet, we are seeing the limitation
-of Split Header (SPH) feature is not supported for Ipv4 fragmented packet.
-This SPH limitation will cause ping failure when the packets size exceed
-the MTU size. For example, the issue happens once the basic ping packet
-size is larger than the configured MTU size and the data is lost inside
-the fragmented packet, replaced by zeros/corrupted values, and leads to
-ping fail.
+The following series adds support for the following single board
+computers:
+- Pine64 Quartz64 Model B
+- Pine64 SoQuartz SoM with RPi CM4IO carrier board
+- Firefly Station M2
 
-So, disable the Split Header for Intel platforms.
+Patches 1, 2, and 3 add the requisite dt-bindings.
+Patch 4 adds support for the SFC to the rk356x device tree.
+Patch 5 adds the Quartz64 Model B device tree.
+Patch 6 adds the SoQuartz CM4IO device tree.
+Patch 7 adds the Firefly Station M2 device tree.
 
-v2: Add fixes tag in commit message.
+Please review and apply at your convenience.
 
-Fixes: 67afd6d1cfdf("net: stmmac: Add Split Header support and enable it
-in XGMAC cores")
-Cc: <stable@vger.kernel.org> # 5.10.x
-Suggested-by: Ong, Boon Leong <boon.leong.ong@intel.com>
-Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
-Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 1 +
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
- include/linux/stmmac.h                            | 1 +
- 3 files changed, 3 insertions(+), 1 deletion(-)
+Very Respectfully,
+Peter Geis
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 63754a9c4ba7..0b0be0898ac5 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -454,6 +454,7 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
- 	plat->has_gmac4 = 1;
- 	plat->force_sf_dma_mode = 0;
- 	plat->tso_en = 1;
-+	plat->sph_disable = 1;
- 
- 	/* Multiplying factor to the clk_eee_i clock time
- 	 * period to make it closer to 100 ns. This value
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 4a4b3651ab3e..2525a80353b7 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7021,7 +7021,7 @@ int stmmac_dvr_probe(struct device *device,
- 		dev_info(priv->device, "TSO feature enabled\n");
- 	}
- 
--	if (priv->dma_cap.sphen) {
-+	if (priv->dma_cap.sphen && !priv->plat->sph_disable) {
- 		ndev->hw_features |= NETIF_F_GRO;
- 		priv->sph_cap = true;
- 		priv->sph = priv->sph_cap;
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index 24eea1b05ca2..29917850f079 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -270,5 +270,6 @@ struct plat_stmmacenet_data {
- 	int msi_rx_base_vec;
- 	int msi_tx_base_vec;
- 	bool use_phy_wol;
-+	bool sph_disable;
- };
- #endif
+Changelog:
+v2:
+- squash Model B into Model A binding
+- collect acks
+
+Furkan Kardame (1):
+  arm64: dts: rockchip: add dts for Firefly Station M2 rk3566
+
+Peter Geis (6):
+  dt-bindings: arm: rockchip: Add Pine64 Quartz64 Model B
+  dt-bindings: arm: rockchip: Add Pine64 SoQuartz SoM
+  dt-bindings: arm: rockchip: Add Firefly Station M2
+  arm64: dts: rockchip: add rk356x sfc support
+  arm64: dts: rockchip: add Pine64 Quartz64-B device tree
+  arm64: dts: rockchip: add SoQuartz CM4IO dts
+
+ .../devicetree/bindings/arm/rockchip.yaml     |  18 +-
+ arch/arm64/boot/dts/rockchip/Makefile         |   3 +
+ .../boot/dts/rockchip/rk3566-quartz64-b.dts   | 615 ++++++++++++++++++
+ .../arm64/boot/dts/rockchip/rk3566-roc-pc.dts | 580 +++++++++++++++++
+ .../boot/dts/rockchip/rk3566-soquartz-cm4.dts | 167 +++++
+ .../boot/dts/rockchip/rk3566-soquartz.dtsi    | 607 +++++++++++++++++
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi      |  11 +
+ 7 files changed, 1999 insertions(+), 2 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3566-roc-pc.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3566-soquartz.dtsi
+
 -- 
 2.25.1
 
