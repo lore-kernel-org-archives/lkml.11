@@ -2,88 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 073D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:42:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF43C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357724AbiD2Kpc (ORCPT
+        id S1357716AbiD2Kpg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:45:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57362 "EHLO
+        Fri, 29 Apr 2022 06:45:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357650AbiD2KpG (ORCPT
+        with ESMTP id S1357651AbiD2KpG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Apr 2022 06:45:06 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F66DC74A0;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73F2B7C78;
         Fri, 29 Apr 2022 03:41:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651228909; x=1682764909;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2K4Cj/6H3P1EYlVHdrvWMRjc7qbuEecaire9pzMT7ws=;
-  b=sTSsVMottt1PInuvl1U8n0oyt8lf8RjGV44VCgl+NUExwNeBQyYBD+4U
-   P6nfSoInyzS5+idHLi7kxhyvJkSvM0+CK/OW5hLmndnLdXslJ9NiGaEtU
-   y3QD+AeRhnClzyApMzcDBYd+oQjVyFOPJjD0mj7MOtA55afQDB3ZdhVz6
-   79KX2Gqtob4GCGsE7Tjxk4ResWiuZ7Rw4ThJDSzJ5VDoOhGSCZ1PKTa+R
-   LX2zYECMeBWf5xQxetBGFOTJggBakPG69fv+5LTcpzzx0Hl0DhfTbNTmu
-   wekV3+rNQzX3zZ9fNlsw2/p+GCP+NkWXQ6yhGwqT+kThxMa2JIhRNpZi2
-   A==;
-X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
-   d="scan'208";a="161799776"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Apr 2022 03:41:48 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 29 Apr 2022 03:41:46 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 29 Apr 2022 03:41:44 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        Cyril Jean <Cyril.Jean@microchip.com>,
-        <devicetree@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, "Arnd Bergmann" <arnd@arndb.de>
-Subject: [PATCH v1 7/8] dt-bindings: riscv: microchip: add polarberry compatible string
-Date:   Fri, 29 Apr 2022 11:40:40 +0100
-Message-ID: <20220429104040.197161-8-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220429104040.197161-1-conor.dooley@microchip.com>
-References: <20220429104040.197161-1-conor.dooley@microchip.com>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C42662352;
+        Fri, 29 Apr 2022 10:41:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A424C385AD;
+        Fri, 29 Apr 2022 10:41:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651228906;
+        bh=NUGlQeqKpspHLOxESNbDq3TkMZdjeyAo1V/shdzLVZE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XJBKpJU5/Iaq6DP6Wl4QywEVR/1ylNfpvPrj4G6VceCc3wRQ4/O9LrdvTbpHJniZH
+         MWT1EWzreCX5Al/9Z2kM4+GvQrPK+grYKiBXp0x3N3nvVseqtgaDYMi12KaZ1BtI7Y
+         wd1jpZbeQ7EZQabbjNMPNro8su0gSxTGaeHgfh6E=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        =?UTF-8?q?Matias=20Bj=C3=B8rling?= <mb@lightnvm.io>,
+        =?UTF-8?q?Javier=20Gonz=C3=A1lez?= <javier@javigon.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 4.19 12/12] lightnvm: disable the subsystem
+Date:   Fri, 29 Apr 2022 12:41:29 +0200
+Message-Id: <20220429104048.820510483@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220429104048.459089941@linuxfoundation.org>
+References: <20220429104048.459089941@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a binding for the Sundance Polarberry board.
+In commit 9ea9b9c48387 ("remove the lightnvm subsystem") the lightnvm
+subsystem was removed as there is no hardware in the wild for it, and
+the code is known to have problems.  This should also be disabled for
+older LTS kernels as well to prevent anyone from accidentally using it.
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Matias Bjørling <mb@lightnvm.io>
+Cc: Javier González <javier@javigon.com>
+Cc: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/riscv/microchip.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/lightnvm/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/riscv/microchip.yaml b/Documentation/devicetree/bindings/riscv/microchip.yaml
-index c9d8fcc7a69e..7f9296991a56 100644
---- a/Documentation/devicetree/bindings/riscv/microchip.yaml
-+++ b/Documentation/devicetree/bindings/riscv/microchip.yaml
-@@ -21,6 +21,7 @@ properties:
-       - items:
-           - enum:
-               - microchip,mpfs-icicle-kit
-+              - sundance,polarberry
-           - const: microchip,mpfs
-       - items:
-           - const: microchip,mpfs-icicle-reference-rtlv2203
--- 
-2.35.2
+--- a/drivers/lightnvm/Kconfig
++++ b/drivers/lightnvm/Kconfig
+@@ -4,7 +4,7 @@
+ 
+ menuconfig NVM
+ 	bool "Open-Channel SSD target support"
+-	depends on BLOCK && PCI
++	depends on BLOCK && PCI && BROKEN
+ 	select BLK_DEV_NVME
+ 	help
+ 	  Say Y here to get to enable Open-channel SSDs.
+
 
