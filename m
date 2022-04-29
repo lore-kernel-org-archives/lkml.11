@@ -2,120 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C40FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:50:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA803C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:50:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377972AbiD2Oxd (ORCPT
+        id S245006AbiD2OyG convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:53:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55050 "EHLO
+        Fri, 29 Apr 2022 10:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377264AbiD2Ox2 (ORCPT
+        with ESMTP id S1377999AbiD2Oxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:53:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8496962BCE
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:50:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651243807;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=R/HIMZ6Oktz/QstIS528YwovKn42Z3tRqotPYo1Io2Q=;
-        b=WLl1K1Bq5tgPHDoWsow9CdZUHVS6cHAkn7FhdMYj9gSH9tJNi4iSZFIv82y0KvDOAypufo
-        mckefnEP99BR0fBkodWca5/hwxVo+0XHbeCjAhJFmS6e7T922Nh9jA4KRbPIdkMSrQ10V8
-        eAfK/t/ymw+roLL3k0+QSFNCPI5Gn8s=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-379-M3X3tszMNCy_qS1ggAoF8g-1; Fri, 29 Apr 2022 10:50:05 -0400
-X-MC-Unique: M3X3tszMNCy_qS1ggAoF8g-1
-Received: by mail-ej1-f71.google.com with SMTP id qa34-20020a17090786a200b006f3de9cc704so2816437ejc.3
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:50:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=R/HIMZ6Oktz/QstIS528YwovKn42Z3tRqotPYo1Io2Q=;
-        b=wRoBKzRzUdH35/6Na7flyzTa9wJ40afoN/h/zUYZsySykAQmN4krGZiHv6FRgnJxzH
-         3oyFgSv8EyCkPYixq/Thz80jmKByB1BkvkTBROgyHgy10lLahoFrXzB9c3TkEtnuFSFf
-         yEZM2LzvR68P6hGhXc63q3ds3MHM7YfxoqML9eeC7Knw0LUb+x05qdIVo4UuQ7pCXTmM
-         +wbf0t3+zOcHzuUA4eG8AWQrgjex73SBtACTETUaAKccIlmWRBoWG7RZkDN/QgHsNEaV
-         GTHXvLXpiQOqNQt708eR9Odi4DlRbSYUVdo8X+S1BXMPsrzj2wtDWTYUUEY3SFLoAcBF
-         XdTQ==
-X-Gm-Message-State: AOAM532uSMJZR0+18HvP3QUL8ktUc9DBaBxtctJYpsWbth4dvTmDajra
-        mPqyz7IEaG7GLFuxG9qjMe7I53nEhuQy3dKxuQnOvr9zlaGLlPZnKwmT+EhohnhG0PQYPgP6D9Q
-        jOu5DqyOReLBO6eEXj+uaLOZb
-X-Received: by 2002:a17:906:2883:b0:6e8:7012:4185 with SMTP id o3-20020a170906288300b006e870124185mr36210391ejd.204.1651243803839;
-        Fri, 29 Apr 2022 07:50:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwZFcDdJ777PCagHlCFXYEjaFKGxJWoHjheaHR1/IWKZ2cPqT1U3WomCL06afEk7K1d/aYIHw==
-X-Received: by 2002:a17:906:2883:b0:6e8:7012:4185 with SMTP id o3-20020a170906288300b006e870124185mr36210371ejd.204.1651243803634;
-        Fri, 29 Apr 2022 07:50:03 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
-        by smtp.googlemail.com with ESMTPSA id qz24-20020a170907681800b006f3ef214de0sm706876ejc.70.2022.04.29.07.50.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 07:50:03 -0700 (PDT)
-Message-ID: <e5864cb4-cce8-bd32-04b0-ecb60c058d0b@redhat.com>
-Date:   Fri, 29 Apr 2022 16:50:02 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] KVM: x86/mmu: Do not create SPTEs for GFNs that exceed
- host.MAXPHYADDR
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
-        Ben Gardon <bgardon@google.com>,
-        David Matlack <dmatlack@google.com>
-References: <20220428233416.2446833-1-seanjc@google.com>
- <337332ca-835c-087c-c99b-92c35ea8dcd3@redhat.com>
- <Ymv1I5ixX1+k8Nst@google.com>
- <20e1e7b1-ece7-e9e7-9085-999f7a916ac2@redhat.com>
- <Ymv5TR76RNvFBQhz@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <Ymv5TR76RNvFBQhz@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Fri, 29 Apr 2022 10:53:52 -0400
+Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6241911A39;
+        Fri, 29 Apr 2022 07:50:25 -0700 (PDT)
+Received: from smtpclient.apple (p5b3d2ea3.dip0.t-ipconnect.de [91.61.46.163])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 3B3CCCED21;
+        Fri, 29 Apr 2022 16:50:24 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH v1 1/3] dt-bindings: net: bluetooth: Add wlan-gpio entry
+ for wcn6750
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <1651228073-1999-2-git-send-email-quic_bgodavar@quicinc.com>
+Date:   Fri, 29 Apr 2022 16:50:23 +0200
+Cc:     agross@kernel.org, robh+dt@kernel.org, bjorn.andersson@linaro.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Johan Hedberg <johan.hedberg@gmail.com>, mka@chromium.org,
+        linux-bluetooth@vger.kernel.org, quic_hemantg@quicinc.com,
+        quic_saluvala@quicinc.com, quic_rjliao@quicinc.com,
+        mcchou@chromium.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <DDBF36DE-18F1-40ED-90B8-CE2E31841D4A@holtmann.org>
+References: <1651228073-1999-1-git-send-email-quic_bgodavar@quicinc.com>
+ <1651228073-1999-2-git-send-email-quic_bgodavar@quicinc.com>
+To:     Balakrishna Godavarthi <quic_bgodavar@quicinc.com>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/29/22 16:42, Sean Christopherson wrote:
-> On Fri, Apr 29, 2022, Paolo Bonzini wrote:
->> On 4/29/22 16:24, Sean Christopherson wrote:
->>> I don't love the divergent memslot behavior, but it's technically correct, so I
->>> can't really argue.  Do we want to "officially" document the memslot behavior?
->>>
->>
->> I don't know what you mean by officially document,
-> 
-> Something in kvm/api.rst under KVM_SET_USER_MEMORY_REGION.
+Hi Balakrishna,
 
-Not sure if the API documentation is the best place because userspace 
-does not know whether shadow paging is on (except indirectly through 
-other capabilities, perhaps)?
-
-It could even be programmatic, such as returning 52 for 
-CPUID[0x80000008].  A nested KVM on L1 would not be able to use the 
-#PF(RSVD) trick to detect MMIO faults.  That's not a big price to pay, 
-however I'm not sure it's a good idea in general...
-
-Paolo
-
+> This patch adds a wlan-gpio entry and its reference usage for
+> BT SoC wcn6750.
 > 
->> but at least I have relied on it to test KVM's MAXPHYADDR=52 cases before
->> such hardware existed.  :)
+> Signed-off-by: Sai Teja Aluvala <quic_saluvala@quicinc.com>
+> Signed-off-by: Balakrishna Godavarthi <quic_bgodavar@quicinc.com>
+> ---
+> Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml | 6 ++++++
+> 1 file changed, 6 insertions(+)
 > 
-> Ah, that's a very good reason to support this for shadow paging.  Maybe throw
-> something about testing in the changelog?  Without considering the testing angle,
-> it looks like KVM supports max=52 for !TDP just because it can, because practically
-> speaking there's unlikely to be a use case for exposing that much memory to a
-> guest when using shadow paging.
+> diff --git a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
+> index f93c6e7..624f957 100644
+> --- a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
+> +++ b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
+> @@ -24,6 +24,10 @@ properties:
+>       - qcom,qca6390-bt
+>       - qcom,wcn6750-bt
 > 
+> +  wlan-gpios:
+> +    maxItems: 1
+> +    description: gpio specifier used to wlan chip
+> +
+>   enable-gpios:
+>     maxItems: 1
+>     description: gpio specifier used to enable chip
+> @@ -123,6 +127,7 @@ allOf:
+>               - qcom,wcn6750-bt
+>     then:
+>       required:
+> +        - wlan-gpios
+
+why is this in the Bluetooth section? Why should Bluetooth care about any WiFi GPIO?
+
+Regards
+
+Marcel
 
