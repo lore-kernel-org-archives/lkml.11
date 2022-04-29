@@ -2,152 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 216F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FECAC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379446AbiD2RSB (ORCPT
+        id S1379462AbiD2RUE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 13:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34438 "EHLO
+        Fri, 29 Apr 2022 13:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379100AbiD2RR7 (ORCPT
+        with ESMTP id S1379100AbiD2RUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 13:17:59 -0400
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AFB45EDC6
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:14:40 -0700 (PDT)
-Received: by mail-il1-x131.google.com with SMTP id r17so4391786iln.9
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:14:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sargun.me; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=cX0NiBN/CCJrlkMPWV999pJdK+WS9wSu4FXPabVPzBE=;
-        b=CO4nbr5Gh5ZG2PI9QNv28iRmrVEqXqZWN8JGMwCEDHfQUoXkpMAYWE0VfxYtrIbmKF
-         3i38zQpBTsmrPC/OoMLbapA97cEpOK0D3dYW5qcrzl98i/r7fcdYfHm6v9oRqJqqPvxm
-         yafEem6H/ucvvFyl752kB3x5Qby6T5Wl9VoP0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cX0NiBN/CCJrlkMPWV999pJdK+WS9wSu4FXPabVPzBE=;
-        b=2qq4msg4NpluNzifT2g83QzADr/67U2z/g4mvx/9Fa/8hZkqJskNMxL9EEsGrVFzlJ
-         WsE3cN+InTKccUEETbV4wrRBehlYYlo0v13Lz36j52xatcIenNuhuoGdaLKSC0lsUOqW
-         xvitw67DVuDsZ9RqdAVC5coJfpKI+W+NSv+YD4JRrOKyfRcs/XNqiT76+ejzAX/LMoHd
-         +KoAJJi52q2CKQAg3I7dtBToMv6mgVk4VTxH6eRjZt0O7AKZeBIDJfzbOd0y0alPeRZI
-         uBt5KlBSRIAmsUR4BHvwcDYtkg2ILnYRYof4+W2QFGcT8UdKNdevudiG6H4D9J9qE+DC
-         3KAg==
-X-Gm-Message-State: AOAM533zzS3YZFvlIDK3NjmEPmuD7SVgHUH+KZbgDQFszpifhKKzpLY1
-        RFatioB3svIqknAq6cs5i0gDOg==
-X-Google-Smtp-Source: ABdhPJwyIsfzzHI9nzL5YI7bYVXXt4/x4kC28yGge6+2SlA2+WNDxvw9bd4JwLIJ67ShVO9WOxviBQ==
-X-Received: by 2002:a05:6e02:1547:b0:2cd:6214:e8f5 with SMTP id j7-20020a056e02154700b002cd6214e8f5mr151639ilu.220.1651252479279;
-        Fri, 29 Apr 2022 10:14:39 -0700 (PDT)
-Received: from ircssh-3.c.rugged-nimbus-611.internal (80.60.198.104.bc.googleusercontent.com. [104.198.60.80])
-        by smtp.gmail.com with ESMTPSA id k24-20020a02a718000000b0032b3a781778sm713410jam.60.2022.04.29.10.14.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 10:14:38 -0700 (PDT)
-Date:   Fri, 29 Apr 2022 17:14:37 +0000
-From:   Sargun Dhillon <sargun@sargun.me>
-To:     Rodrigo Campos <rodrigo@kinvolk.io>
-Cc:     Kees Cook <keescook@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Containers <containers@lists.linux-foundation.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Giuseppe Scrivano <gscrivan@redhat.com>,
-        Will Drewry <wad@chromium.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Alban Crequy <alban@kinvolk.io>
-Subject: Re: [PATCH v3 1/2] seccomp: Add wait_killable semantic to seccomp
- user notifier
-Message-ID: <20220429171437.GA1267404@ircssh-3.c.rugged-nimbus-611.internal>
-References: <20220429023113.74993-1-sargun@sargun.me>
- <20220429023113.74993-2-sargun@sargun.me>
- <CACaBj2bW8XkENHoLNXEprQ_d8=_aLT_XQdjCZtSOiPJis8G_pQ@mail.gmail.com>
+        Fri, 29 Apr 2022 13:20:00 -0400
+Received: from mailout2.w2.samsung.com (mailout2.w2.samsung.com [211.189.100.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869458878E;
+        Fri, 29 Apr 2022 10:16:41 -0700 (PDT)
+Received: from uscas1p1.samsung.com (unknown [182.198.245.206])
+        by mailout2.w2.samsung.com (KnoxPortal) with ESMTP id 20220429171638usoutp02eb11944212bbad4d6c61b377f484439f~qbX1sF-kC2806928069usoutp02K;
+        Fri, 29 Apr 2022 17:16:38 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w2.samsung.com 20220429171638usoutp02eb11944212bbad4d6c61b377f484439f~qbX1sF-kC2806928069usoutp02K
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1651252598;
+        bh=2XGdYd/SjcBGd5d7dysZkIrck12E/j/iG27vLdTdMNM=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=VPmgXZQK0/RfLExiUeX2A62bn/alMCrbSg6gAKYVsTlURT1kjYybA1dcCa8eSfwGv
+         DQKRvZney48e4UeLY3dmOcsqJwyGBGwlnKNNkTQtAdQC1HXVW2nwwiYOX1aaF/3ZkL
+         fVJVFK+SeAwtaCFEFWaR26IvRwSkrIXrq1XK5o08=
+Received: from ussmges2new.samsung.com (u111.gpu85.samsung.co.kr
+        [203.254.195.111]) by uscas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220429171638uscas1p131c2d50f50206b6e406bc36481e59170~qbX1f9CZE2081520815uscas1p1x;
+        Fri, 29 Apr 2022 17:16:38 +0000 (GMT)
+Received: from uscas1p2.samsung.com ( [182.198.245.207]) by
+        ussmges2new.samsung.com (USCPEMTA) with SMTP id EA.10.09642.67D1C626; Fri,
+        29 Apr 2022 13:16:38 -0400 (EDT)
+Received: from ussmgxs2new.samsung.com (u91.gpu85.samsung.co.kr
+        [203.254.195.91]) by uscas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20220429171638uscas1p23b334cc35b918428c7c3938fb1df6ef2~qbX06f9RV3222232222uscas1p2u;
+        Fri, 29 Apr 2022 17:16:38 +0000 (GMT)
+X-AuditID: cbfec36f-c15ff700000025aa-e6-626c1d76f171
+Received: from SSI-EX4.ssi.samsung.com ( [105.128.2.145]) by
+        ussmgxs2new.samsung.com (USCPEXMTA) with SMTP id C4.43.09672.57D1C626; Fri,
+        29 Apr 2022 13:16:37 -0400 (EDT)
+Received: from SSI-EX3.ssi.samsung.com (105.128.2.228) by
+        SSI-EX4.ssi.samsung.com (105.128.2.229) with Microsoft SMTP Server
+        (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+        15.1.2375.7; Fri, 29 Apr 2022 10:16:36 -0700
+Received: from SSI-EX3.ssi.samsung.com ([105.128.5.228]) by
+        SSI-EX3.ssi.samsung.com ([105.128.5.228]) with mapi id 15.01.2375.007; Fri,
+        29 Apr 2022 10:16:36 -0700
+From:   Adam Manzanares <a.manzanares@samsung.com>
+To:     Pankaj Raghav <p.raghav@samsung.com>
+CC:     "jaegeuk@kernel.org" <jaegeuk@kernel.org>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "snitzer@kernel.org" <snitzer@kernel.org>,
+        "hch@lst.de" <hch@lst.de>, "mcgrof@kernel.org" <mcgrof@kernel.org>,
+        "naohiro.aota@wdc.com" <naohiro.aota@wdc.com>,
+        "sagi@grimberg.me" <sagi@grimberg.me>,
+        "damien.lemoal@opensource.wdc.com" <damien.lemoal@opensource.wdc.com>,
+        "dsterba@suse.com" <dsterba@suse.com>,
+        "johannes.thumshirn@wdc.com" <johannes.thumshirn@wdc.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
+        "clm@fb.com" <clm@fb.com>,
+        "gost.dev@samsung.com" <gost.dev@samsung.com>,
+        "chao@kernel.org" <chao@kernel.org>,
+        "linux-f2fs-devel@lists.sourceforge.net" 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        "josef@toxicpanda.com" <josef@toxicpanda.com>,
+        "jonathan.derrick@linux.dev" <jonathan.derrick@linux.dev>,
+        "agk@redhat.com" <agk@redhat.com>,
+        "kbusch@kernel.org" <kbusch@kernel.org>,
+        "kch@nvidia.com" <kch@nvidia.com>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "dm-devel@redhat.com" <dm-devel@redhat.com>,
+        "bvanassche@acm.org" <bvanassche@acm.org>,
+        "jiangbo.365@bytedance.com" <jiangbo.365@bytedance.com>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "matias.bjorling@wdc.com" <matias.bjorling@wdc.com>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>
+Subject: Re: [PATCH 01/16] block: make blkdev_nr_zones and blk_queue_zone_no
+ generic for npo2 zsze
+Thread-Topic: [PATCH 01/16] block: make blkdev_nr_zones and
+        blk_queue_zone_no generic for npo2 zsze
+Thread-Index: AQHYWlBSHPfSzcQATUGVFhddlprDmK0HmneA
+Date:   Fri, 29 Apr 2022 17:16:36 +0000
+Message-ID: <20220429171628.GA174938@bgt-140510-bm01>
+In-Reply-To: <20220427160255.300418-2-p.raghav@samsung.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [105.128.2.176]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <7E6427266D2D7F4C8C5CD9B93D12C2A5@ssi.samsung.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACaBj2bW8XkENHoLNXEprQ_d8=_aLT_XQdjCZtSOiPJis8G_pQ@mail.gmail.com>
+X-CFilter-Loop: Reflected
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Sf0xTVxTHd997fX3tQB6VwR2oG43OORkDAuRmKmEBwzNG47YMM8RplceP
+        WChpgU3mYhWRUTVUHIRVGFA6EOuGwLJosbqV8dOxThHQDjSV1miQioBKi5BZXk363/fc8/me
+        8z3JpXCRiQymsnLyWHmORComhcTv3c/MHxaslO6LqH4Uilr6u3GkHysjUeWUE0fXKwYwVF5W
+        xUfzA2YcGR1neejfuSMYatZ3YcjWosHRyT+mCLSguvvq7ZgVRy+tkajcNAyQfUiDIaNlPbo5
+        fo6PbmqT0BVjH4EGDdUkqm2085H6+DMc3VbbATrd085Dv048IVCvJSQ+hBm8tZVZ7L1AMqeL
+        HHzGfLeVYAYH8pm286UkU6+swJl23WGmo24GYzruKEnmVJGDZC4X3+MxT64OkUzLb0MEo25v
+        5TEzbat2+KcIN6ax0qwCVv5R3F5hZm2Nk5/bLPpmsqucrwQlfiogoCAdDQf0TqACQkpENwOo
+        vP+IzxXFGDyp/R57TbmOzGFc4xcA60qbPJanAFb94/IUjQA2O2dJt4WkI+B8Tyvu1gH0+/DB
+        rfalUTitehOOVUSrAEUtp9OgpfcTDmFhQ9Mgj9NR0G69SLg1Qa+B3ZXFS1ZfOga2W48uMQJ6
+        A1woa1hiAB0IX/Rf8IwPghZbrSe1P9SevYJzOhAuGqwkp0PhvRfuM918GKzrmCY5HQeNRZWe
+        9/WwsX4C5/b6w74fbQTnfRv+ee424b4X0q1C+EP9IJ9rJEKbXulZEAIXxhoxDioBcEp9lccV
+        agBHJ50eagNcLB3mq8FqjVdyjVcqjVcqjVcqjVeqOsA7D4LyFYrsDFYRlcN+Ha6QZCvyczLC
+        98uy28Crb359sVN2CYxYnoabAEYBE4AULg7wne3I3CfyTZMcLGTlsj3yfCmrMIEQihAH+TZm
+        XZSI6AxJHnuAZXNZ+esuRgmCldg7175a2x9k+bYpbe1DY/fRKLMzPsOanezwebAiJHJseouh
+        f/lOw8tVbHBn0870UZcu2Qc7tSyxYapAl5qw29dYvT+084uJmKTRA+JgvzX/9fbJNpOOxwtv
+        /Nw0xzuo3Xhms0rq0l6e/ZKtiR0ZdhpG7IcT1tU93qXbliAmQ/Wp2ufH2mIjojVzsQJR3vx4
+        ceSy+98VplREFH7OWzF66T1JybVdYXk1PeqZpIdnJidyWbPuRHpvVfwJvy2H2vbeSd3tSP4p
+        ZdN2157qGJmN1xGWvM0YNxsYsOkGWv1WxnMQ5Zfz8Thf2ZX+t+6z1MTj44K/ZNPrPt0hP1R6
+        Y2T+XR/9SqewX0woMiWRH+ByheR/joyx41UEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA02SfUxTVxiHPffe3nvpZFw7Z88E2WRbhmMi9SM52VD0D9x1ZgaTLdtkEYvc
+        ALOAttSBZFmhQKVu6UdCJ50EEMJAmBUKuI0ysaN8SGoJX8Fua9NQTJgbqIxgUcgo1yX973nP
+        +z6/95zk0LjIK9hKZ+fmc/JcqSyGFBLZKsywU7lNlp6gdexDljv9OGr5U0ci08MAjoYrnRgy
+        6i5T6KnThaOeue8FaORJMYaaWxwY8lvMOPqm9yGBVrSetbNSH46e+STIaJ8EaGbCjKEedxwa
+        nW6i0OjV95GtZ4hAY79cIVFN4wyF9OWLOJrSzwBkGLAK0PUH8wQadEcejGTHxo+yq4OtJGtQ
+        z1Gsy9NGsGNOJdt+rYJk61SVOGtt+Jrtrl3A2O57KpL9Vj1Hsj+XeQXs/K8TJGvpmCBYvbVN
+        wC60R6dsOiFMzOBk2ec5+a4Dp4RZNdUB6myzqOAfh5FSAU2EFoTRkNkLl4ufYFogpEVMC4Ar
+        kzcEfPEIwIXHI4AvGgHUqH8kgwrJJMCnA214kDczsfD+uHVdx5mLL8DFQMOaQdMvMRnQPXiI
+        n+Gg6QcT4Hk3nPHdIIJMMG/CflMZFuRwZh+0+kqeb74FYHmFmwo2wpj34Iqufl0AzBa4dKd1
+        XcAZMXT7azD+DQxssLlwnl+Gs9OrAp63Q+/SLMXPvwNrux+TPB+APWrT8/M42Fj3AOcvsQkO
+        VfkJ3n0F3m6aIvQAmkPWmUOizCFR5pAoc0hULRBcA2KlQpGTWaDYnct9Ga+Q5iiUuZnxp/Ny
+        2sHaHxxe/S31J/C7+1G8HWA0sANI4zGbw//tzkoXhWdICy9w8rw0uVLGKewgkiZixOGzJwxp
+        IiZTms+d4biznPz/LkaHbVVh0hc7dF7dpa64122f9CX8MW4anSx5tXSvcJs67t1T8JDNvvNk
+        ctcXlX07quskUrFBGr3xmMx1ZMj3kb+13tnq8xxZ1nfozxn/Kjg8PGXLwizTH+6qIZfuVUdd
+        vzW3/9IZbXJib3ItITuWPnb36tBoQdX+tD1FgLgtGo+qdFT8fTm1r9PYNRD4rOnThNi6CGo1
+        +/TJZcPIFkm5zbnRVXwxdrv74w1LRZaIwjz/cSP1bEPKG2FVnZ78196KKvHcTDVqnCWaaUkR
+        U3b/4OeJdSDpcOYH4vikZvUOdWepTv7VHk2XLynFSx5fZO42wiiPQKgJRM+f/27Ze+Fc/c3e
+        QoetP4ZQZEklb+NyhfQ/zjd7GvIDAAA=
+X-CMS-MailID: 20220429171638uscas1p23b334cc35b918428c7c3938fb1df6ef2
+CMS-TYPE: 301P
+X-CMS-RootMailID: 20220427160257eucas1p21fb58d0129376a135fdf0b9c2fe88895
+References: <20220427160255.300418-1-p.raghav@samsung.com>
+        <CGME20220427160257eucas1p21fb58d0129376a135fdf0b9c2fe88895@eucas1p2.samsung.com>
+        <20220427160255.300418-2-p.raghav@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 11:42:15AM +0200, Rodrigo Campos wrote:
-> On Fri, Apr 29, 2022 at 4:32 AM Sargun Dhillon <sargun@sargun.me> wrote:
-> > the concept is searchable. If the notifying process is signaled prior
-> > to the notification being received by the userspace agent, it will
-> > be handled as normal.
-> 
-> Why is that? Why not always handle in the same way (if wait killable
-> is set, wait like that)
-> 
+On Wed, Apr 27, 2022 at 06:02:40PM +0200, Pankaj Raghav wrote:
+> Adapt blkdev_nr_zones and blk_queue_zone_no function so that it can
+> also work for non-power-of-2 zone sizes.
+>=20
+> As the existing deployments of zoned devices had power-of-2
+> assumption, power-of-2 optimized calculation is kept for those devices.
+>=20
+> There are no direct hot paths modified and the changes just
+> introduce one new branch per call.
+>=20
+> Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
+> Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
+> ---
+>  block/blk-zoned.c      | 8 +++++++-
+>  include/linux/blkdev.h | 8 +++++++-
+>  2 files changed, 14 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/block/blk-zoned.c b/block/blk-zoned.c
+> index 38cd840d8838..1dff4a8bd51d 100644
+> --- a/block/blk-zoned.c
+> +++ b/block/blk-zoned.c
+> @@ -117,10 +117,16 @@ EXPORT_SYMBOL_GPL(__blk_req_zone_write_unlock);
+>  unsigned int blkdev_nr_zones(struct gendisk *disk)
+>  {
+>  	sector_t zone_sectors =3D blk_queue_zone_sectors(disk->queue);
+> +	sector_t capacity =3D get_capacity(disk);
+> =20
+>  	if (!blk_queue_is_zoned(disk->queue))
+>  		return 0;
+> -	return (get_capacity(disk) + zone_sectors - 1) >> ilog2(zone_sectors);
+> +
+> +	if (is_power_of_2(zone_sectors))
+> +		return (capacity + zone_sectors - 1) >>
+> +		       ilog2(zone_sectors);
+> +
+> +	return div64_u64(capacity + zone_sectors - 1, zone_sectors);
+>  }
+>  EXPORT_SYMBOL_GPL(blkdev_nr_zones);
+> =20
+> diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+> index 60d016138997..c4e4c7071b7b 100644
+> --- a/include/linux/blkdev.h
+> +++ b/include/linux/blkdev.h
+> @@ -665,9 +665,15 @@ static inline unsigned int blk_queue_nr_zones(struct=
+ request_queue *q)
+>  static inline unsigned int blk_queue_zone_no(struct request_queue *q,
+>  					     sector_t sector)
+>  {
+> +	sector_t zone_sectors =3D blk_queue_zone_sectors(q);
+> +
+>  	if (!blk_queue_is_zoned(q))
+>  		return 0;
+> -	return sector >> ilog2(q->limits.chunk_sectors);
+> +
+> +	if (is_power_of_2(zone_sectors))
+> +		return sector >> ilog2(zone_sectors);
+> +
+> +	return div64_u64(sector, zone_sectors);
+>  }
+> =20
+>  static inline bool blk_queue_zone_is_seq(struct request_queue *q,
+> --=20
+> 2.25.1
+>
 
-The goal is to avoid two things:
-1. Unncessary work - Often times, we see workloads that implement techniques
-   like hedging (Also known as request racing[1]). In fact, RFC3484
-   (destination address selection) gets implemented where the DNS library
-   will connect to many backend addresses and whichever one comes back first
-   "wins".
-2. Side effects - We don't want a situation where a syscall is in progress
-   that is non-trivial to rollback (mount), and from user space's perspective
-   this syscall never completed.
 
-Blocking before the syscall even starts is excessive. When we looked at this
-we found that with runtimes like Golang, they can get into a bad situation
-if they have many (1000s) of threads that are in the middle of a syscall
-because all of them need to elide prior to GC. In this case the runtime
-prioritizes the liveness of GC vs. the syscalls.
+Looks good.
 
-That being said, there may be some syscalls in a filter that need the suggested 
-behaviour. I can imagine introducing a new flag
-(say SECCOMP_FILTER_FLAG_WAIT_KILLABLE) that applies to all states.
-Alternatively, in one implementation, I put the behaviour in the data
-field of the return from the BPF filter.
-
-
-> > diff --git a/kernel/seccomp.c b/kernel/seccomp.c
-> > index db10e73d06e0..9291b0843cb2 100644
-> > --- a/kernel/seccomp.c
-> > +++ b/kernel/seccomp.c
-> > @@ -1081,6 +1088,12 @@ static void seccomp_handle_addfd(struct seccomp_kaddfd *addfd, struct seccomp_kn
-> >         complete(&addfd->completion);
-> >  }
-> >
-> > +static bool should_sleep_killable(struct seccomp_filter *match,
-> > +                                 struct seccomp_knotif *n)
-> > +{
-> > +       return match->wait_killable_recv && n->state == SECCOMP_NOTIFY_SENT;
-> 
-> Here for some reason we check the notification state to be SENT.
-> 
-Because we don't want to block unless the notification has been received
-by userspace.
-
-> > +}
-> > +
-> >  static int seccomp_do_user_notification(int this_syscall,
-> >                                         struct seccomp_filter *match,
-> >                                         const struct seccomp_data *sd)
-> > @@ -1111,11 +1124,25 @@ static int seccomp_do_user_notification(int this_syscall,
-> >          * This is where we wait for a reply from userspace.
-> >          */
-> >         do {
-> > +               bool wait_killable = should_sleep_killable(match, &n);
-> > +
-> 
-> So here, the first time this runs this will be false even if the
-> wait_killable flag was used in the filter (because that function
-> checks the notification state to be sent, that is not true the first
-> time)
-> 
-> Why not just do wait_for_completion_killable if match->wait_killable
-> and wait_for_completion_interruptible otherwise? Am I missing
-> something?
-Again, this is to allow for the notification to be able to be preempted
-prior to being received by the supervisor.
-
-> 
-> 
-> 
-> Best,
-> Rodrigo
-[1]: https://research.google/pubs/pub40801/
+Reviewed by: Adam Manzanares <a.manzanares@samsung.com>=
