@@ -2,113 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F122C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 279ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:04:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378764AbiD2QGp (ORCPT
+        id S1378773AbiD2QHp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39106 "EHLO
+        Fri, 29 Apr 2022 12:07:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378762AbiD2QGm (ORCPT
+        with ESMTP id S1378763AbiD2QHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:06:42 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9095E72E0F;
-        Fri, 29 Apr 2022 09:03:24 -0700 (PDT)
+        Fri, 29 Apr 2022 12:07:44 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0E385655
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:04:25 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id s137so6855937pgs.5
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:04:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651248204; x=1682784204;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sSK/o9FhKlUdMjW2NdP5Bg7dQkRtO4bEr5mQPkXPNXs=;
-  b=tP5uiMhaIEVwDhNNk++kQsCk2nBi9S34OJdiD03ws7NkRWf4Znij5z/u
-   W3EhPQXpcoybhPU/fBorMt33oYchbgJJpicbuc0SuTN53fqTJ1gPa+Qep
-   nOys+pnbPvmBquqxxpVrtYdc81gkakqZ3wZm1+CLrBSuguCn8NAT4T7cy
-   4=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 29 Apr 2022 09:03:24 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 09:03:23 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 29 Apr 2022 09:03:22 -0700
-Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 29 Apr
- 2022 09:03:19 -0700
-Date:   Fri, 29 Apr 2022 12:03:17 -0400
-From:   Qian Cai <quic_qiancai@quicinc.com>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-CC:     Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        <lkft-triage@lists.linaro.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Arnd Bergmann <arnd@arndb.de>, "Zi Yan" <ziy@nvidia.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "David Hildenbrand" <david@redhat.com>,
-        Eric Ren <renzhengeek@gmail.com>,
-        "kernel test robot" <lkp@intel.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        "Mike Rapoport" <rppt@linux.ibm.com>,
-        Minchan Kim <minchan@kernel.org>,
-        "Oscar Salvador" <osalvador@suse.de>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Chen Wandun <chenwandun@huawei.com>, NeilBrown <neilb@suse.de>,
-        <joao.m.martins@oracle.com>, <mawupeng1@huawei.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Song Liu <song@kernel.org>
-Subject: Re: [next] mm: libhugetlbfs: WARNING: at mm/page_alloc.c:5368
- __alloc_pages
-Message-ID: <20220429160317.GA71@qian>
-References: <CA+G9fYveMF-NU-rvrsbaora2g2QWxrkF7AWViuDrJyN9mNScJg@mail.gmail.com>
+        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CNNorgah8ybYol7gjHDhFHcts5/oLyPdR4o5Dg4a4YY=;
+        b=iz0iLtf5Kgi2CEamDtU3O35n39GYZGMdBjauwSTHbzwKnjawPqftV1+DkTxu8l+fYP
+         t3qSRFrjLVUdYo0fXyr5RNryHNmSK+9EUoIIiyoRIa5/HelC4citWC2v1up652v7KFgz
+         5vVtIgQrwZAO3JA17Uhx16lKZOYVUwKFGXKlwz9h/HCRwreWzGDnMmXkMarfczh4tpWg
+         gwNzy8gHq9PJg4zsTl2I3oI4QnvAJadoE0Dz3iWgf7Dal7FjTiX5rj7kH6vnv8AQMDhg
+         eMExwp74qxVfbIwj+RnyQF2c7ftt9BpB/6tCTPcbqwyHiSir7yAqU3Yfa2sOfp/hYiLq
+         eMzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CNNorgah8ybYol7gjHDhFHcts5/oLyPdR4o5Dg4a4YY=;
+        b=H79VNSLFyz9CiRP5gAQNQB0Wl/Zb/8n8C+68E2XDyLAY1EIUgQ5x/ONO1n59g/LocA
+         dDFupqA+ER8RghR56gRh00p+eCdco2aWUtRxqpLx26uSzUxrbXBiMwZrTmH/FdC9sLcT
+         NwK1Dg0tqKOf5s7yV42Jqhu/HcpuZP0BJbt5bKiP3cxtWwDpdHLGNMixgoAd+xd3ij4d
+         ZOBDf0TRfsK6JdNbpw56+iKWJ/2RdU+fyDG+RxtBefVQWIol3BOMozOMLczFcTiR0R4R
+         q+8RZD3NL77X0UEXd+DXET6958DLwxeCQ9WfoqYVfiNnKiW9BAnZGcn5U/be0Swvl7Hf
+         dsuA==
+X-Gm-Message-State: AOAM5329gN3uPCy03qcHsZAfblSnELpqrx7Ok0Lzo/2vIKiF6qG5h39u
+        Lmt4RVJmnF01SHvb0JI5uwgMTwzC4yvT2DDKfd7h6A==
+X-Google-Smtp-Source: ABdhPJxsrjeODXrBp50VvsilExotJGBqxGmNr9R5vlCqNAXc0PJO2RfQxaGuXWFTfDX9NxLbE7pxdM/KFDsDWvkwkCA=
+X-Received: by 2002:a63:d43:0:b0:3c1:475e:8341 with SMTP id
+ 3-20020a630d43000000b003c1475e8341mr49887pgn.533.1651248265273; Fri, 29 Apr
+ 2022 09:04:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYveMF-NU-rvrsbaora2g2QWxrkF7AWViuDrJyN9mNScJg@mail.gmail.com>
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220405200625.19359-1-tharvey@gateworks.com> <20220411013106.GD129381@dragon>
+ <CAJ+vNU0VVpDGDXivz=r8C4U8dYjA08SqnzPXwmtOv4ujvc3=Zg@mail.gmail.com> <20220418075718.GB391514@dragon>
+In-Reply-To: <20220418075718.GB391514@dragon>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Fri, 29 Apr 2022 09:04:13 -0700
+Message-ID: <CAJ+vNU12t_2Jr_D=YC-ZRJdJuZS2aPQ7EoT0QA8vctGhhLuHtQ@mail.gmail.com>
+Subject: Re: [PATCH] imx8mm-venice-gw7902: update pci refclk
+To:     Shawn Guo <shawnguo@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Device Tree Mailing List <devicetree@vger.kernel.org>,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Richard Zhu <hongxing.zhu@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 04:50:25PM +0530, Naresh Kamboju wrote:
-> Following kernel warning notices on Linux next-20220427 till date next-20220429
-> on qemu_arm64 and arm64 devices.
-> 
-> While testing libhugetlbfs test suite and ltp mm and hugetlb.
-> 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> 
-> Test log:
-> ----------
-> truncate_above_4GB (2M: 64): PASS
-> brk_near_huge (2M: 64): brk_near_huge: malloc.c:2401: sysmalloc:
-> Assertion `(old_top == initial_top (av) && old_size == 0) ||
-> ((unsigned long) (old_size) >= MINSIZE && prev_inuse (old_top) &&
-> ((unsigned long) old_end & (pagesize - 1)) == 0)' failed.
-> [   15.685019] audit: type=1701 audit(1651222753.772:25):
-> auid=4294967295 uid=0 gid=0 ses=4294967295 pid=454
-> comm=\"brk_near_huge\"
-> exe=\"/usr/lib/libhugetlbfs/tests/obj64/brk_near_huge\" sig=6 res=1
-> [   15.685629] ------------[ cut here ]------------
-> [   15.685631] WARNING: CPU: 2 PID: 454 at mm/page_alloc.c:5368
+On Mon, Apr 18, 2022 at 12:57 AM Shawn Guo <shawnguo@kernel.org> wrote:
+>
+> On Mon, Apr 11, 2022 at 12:44:23PM -0700, Tim Harvey wrote:
+> > On Sun, Apr 10, 2022 at 6:31 PM Shawn Guo <shawnguo@kernel.org> wrote:
+> > >
+> > > On Tue, Apr 05, 2022 at 01:06:25PM -0700, Tim Harvey wrote:
+> > > > Use the correct PCI clock bindings.
+> > >
+> > > Please improve the commit log to explain why clock "pcie_phy" can be
+> > > dropped.
+> > >
+> >
+> > Shawn,
+> >
+> > The original PCIe bindings for this board were wrong - they were from
+> > a version of the bindings that was not yet approved (my mistake) and
+> > I'm just trying to bring them up to date.
+> >
+> > That said, I looked at the latest fsl,imx6q-pcie.yaml dt-bindings [1]
+> > and see that there should be a min of 3 clocks called 'pcie',
+> > 'pcie_bus', and 'pcie_phy'. However I notice that all of the current
+> > imx8mm boards that enable PCI have clock-names of 'pcie', 'pcie_aux',
+> > and 'pcie_bus'. It seems like all the imx8mm boards having pcie have
+> > clock-names this way:
+> >
+> > arch/arm64/boot/dts/freescale/imx8mm-beacon-baseboard.dtsi
+> > arch/arm64/boot/dts/freescale/imx8mm-evk.dtsi
+> > arch/arm64/boot/dts/freescale/imx8mm-tqma8mqml-mba8mx.dts
+> > arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
+> > arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
+> > arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
+> > arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dts
+> > arch/arm64/boot/dts/freescale/imx8mm-venice-gw7902.dts
+> > arch/arm64/boot/dts/freescale/imx8mm-venice-gw7903.dts
+> >
+> > Does the binding need to change or do the clock names need to change
+> > in the above?
+>
+> If the bindings is approved/correct, device tree should match bindings.
+>
 
-Naresh, I am having difficult to reproduce this reliablely. If you have
-spare cycles, do you mind reverting those to see if you can still
-reproduce? I can't seems to find other recent commits more suspicious
-than that series.
+Shawn,
 
-37e73e3b0a9d drivers: virtio_mem: use pageblock size as the minimum virtio_mem size.
-d2b9cd2acb2b mm: cma: use pageblock_order as the single alignment
-7f125582227e mm: page_isolation: enable arbitrary range page isolation.
-fb009b307b21 mm: make alloc_contig_range work at pageblock granularity
-7c7e18d510f4 mm: page_isolation: check specified range for unmovable pages
-6a242a94b883 mm: page_isolation: move has_unmovable_pages() to mm/page_isolation.c
+I think the bindings are wrong.
 
-$ git revert --no-edit e389355485b7..37e73e3b0a9d
+Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml has [1]:
+
+  clocks:
+    minItems: 3
+    items:
+      - description: PCIe bridge clock.
+      - description: PCIe bus clock.
+      - description: PCIe PHY clock.
+      - description: Additional required clock entry for imx6sx-pcie,
+          imx8mq-pcie.
+
+  clock-names:
+    minItems: 3
+    items:
+      - const: pcie
+      - const: pcie_bus
+      - const: pcie_phy
+      - const: pcie_inbound_axi for imx6sx-pcie, pcie_aux for imx8mq-pcie
+
+This indicates the "pcie_phy" clock is required yet
+drivers/pci/controller/dwc/pci-imx6.c [2] doesn't require it if it has
+an abstract PHY driver which is the case for IMX8M (and that's why my
+patch drops it)
+
+Additionally I note that the 4th clock described in the bindings could
+use some clarification for imx8mm-pcie as for this "pcie_aux" is
+required.
+
+Best Regards,
+
+Tim
+[1] https://elixir.bootlin.com/linux/v5.18-rc4/source/Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml
+[2] https://elixir.bootlin.com/linux/v5.18-rc4/source/drivers/pci/controller/dwc/pci-imx6.c#L1140
