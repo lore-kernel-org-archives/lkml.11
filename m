@@ -2,82 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B7AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:29:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17DCEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:30:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379190AbiD2Qcd (ORCPT
+        id S1379270AbiD2Qcl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:32:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51088 "EHLO
+        Fri, 29 Apr 2022 12:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379176AbiD2Qb5 (ORCPT
+        with ESMTP id S1379183AbiD2Qb5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Apr 2022 12:31:57 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D98DAA1D
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:27 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id o69so6184615pjo.3
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8o1g1pc1Zo4mdrCDNvDc1CgrtJ8NQHSuN+bpLSURGl8=;
-        b=ElAPM0Q3mcvn5oehIQusEMmbTDC+Tdgr9DqEFZ4e/tgDU5vyB6ZS/+cLvyyGcuo8oc
-         C/0ilD5BPnZuM6mkYjXz3UbEFnuDWtK4dtUPRAjeD+SBy6h7BJROAR+6bF8FEsmPgXIe
-         xna4rWFAgG6K5r3Dz2NDQkPetJpJbDPaZYL0qFiMHfNHOM/IZcIm+ORZgm4DyB70mGOM
-         5EEZO449flHI5al9KIDLWQRt/0BaibHb+UGU0UamjPJOH9s8j90UnfIwBOPhuqGOjTSH
-         Dl2ZKa6xjTxQ6ZuVD7G2GemGFJe+4ob06HhIGd6b6MNIHVn/0PpsiSqBG4h1PmtB8CQh
-         vPsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8o1g1pc1Zo4mdrCDNvDc1CgrtJ8NQHSuN+bpLSURGl8=;
-        b=RVKsFnARNtzf+YjdE1GmkFTg62n6hnYQjd/7Ex2pCHAXzG45vlp3Zv/Q/LmL5QRNDH
-         rWkRKaFjyaXxuwQoo6xvTavmFC5HSbxSaI8V2fh7wWyS0pR1oOrx39L8LbsqSCSGEjx2
-         DmmIhPP5Ufg+2VYXeZiqNC97e10a7F6hfvPy4k35PncYm9xU50lXEmwKFYqHo3dYpUPV
-         BbfCP15tFMxQDQWGqpoRCGDhLCKp0ACGk9Liw0MC6yf4iVPixvOaYggNfBupFhoTLqY6
-         H4g0IWyGAOL5s1JHIcK63cg1CwB2kHYzwDgrrwVV82bgfvQr+ETL3BvOI6IbKBrki5w5
-         n1Pw==
-X-Gm-Message-State: AOAM532aToih+W9UVOTw4I7KRG1oqiqWz7e0Rc2iUsat59uQXYD51jnv
-        /krmfM8ul/Szybj6fYNvcrrtVA==
-X-Google-Smtp-Source: ABdhPJyvdpbS70C6vXVgKYdx6dM5RdCk6nlSpEqUBzE4WMG2pJQzRuzdjOIfLA0gRuSH51lH8EJhzg==
-X-Received: by 2002:a17:902:ba93:b0:157:1905:f4bc with SMTP id k19-20020a170902ba9300b001571905f4bcmr39283151pls.83.1651249706427;
-        Fri, 29 Apr 2022 09:28:26 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s ([134.195.101.46])
-        by smtp.gmail.com with ESMTPSA id e126-20020a621e84000000b0050567191161sm3603680pfe.210.2022.04.29.09.28.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 09:28:26 -0700 (PDT)
-Date:   Sat, 30 Apr 2022 00:28:21 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     German Gomez <german.gomez@arm.com>
-Cc:     coresight@lists.linaro.org, mathieu.poirier@linaro.org,
-        suzuki.poulose@arm.com, james.clark@arm.com, mike.leach@linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] coresight: etm4x: Expose default timestamp source in
- sysfs
-Message-ID: <20220429162821.GA653442@leoy-ThinkPad-X240s>
-References: <20220429123100.268059-1-german.gomez@arm.com>
- <20220429123100.268059-2-german.gomez@arm.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA9F6DAA23;
+        Fri, 29 Apr 2022 09:28:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61276B83698;
+        Fri, 29 Apr 2022 16:28:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0AE1C385B0;
+        Fri, 29 Apr 2022 16:28:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651249705;
+        bh=vRyEqlNcMpIbrSgln4JDEa9oplTOWlImSzdZw5sUCBk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=baepLr4jpL37Oq2cFOG6UyXqVVjrYaexwbyvAgrVKjnp0LMroCSC4Gd70FbRBmCpz
+         9Phbu6WlzSEMBZLa/iHo+24WQ2iRhZg3gNf/VF3Jb/fSEwDZqJ9n4Zqu5N/PaodiYH
+         VGg+jfdRvf7sMXigEw6DdfRH8/OWzZQSLbevUo+3vstolTOY/zR75+tL8fJ4AQVwZo
+         97YiFcowDrRLiDijnz3pSHp6aabR96K2OBxlyg87L/qMTSBTiH2oj16FHzBxK/CqrL
+         9a650fK96J4iel+WS7AaGpwXUwwpxrGZAZN1aQ84L+XTnZCYNkm9LCfdGtMKk9hrw9
+         urKw54HJWd5KQ==
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        John Kacur <jkacur@redhat.com>
+Subject: [PATCH 3/4] rtla: Minor grammar fix for rtla README
+Date:   Fri, 29 Apr 2022 18:28:12 +0200
+Message-Id: <437f0accdde53713ab3cce46f3564be00487e031.1651247710.git.bristot@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <cover.1651247710.git.bristot@kernel.org>
+References: <cover.1651247710.git.bristot@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220429123100.268059-2-german.gomez@arm.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 01:30:59PM +0100, German Gomez wrote:
-> Add a new sysfs interface in /sys/bus/coresight/devices/etm<N>/ts_source
-> indicating the configured timestamp source when the ETM device driver
-> was probed.
-> 
-> The perf tool will use this information to detect if the trace data
-> timestamp matches the kernel time, enabling correlation of CoreSight
-> trace with perf events.
-> 
-> Suggested-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-> Signed-off-by: German Gomez <german.gomez@arm.com>
+From: John Kacur <jkacur@redhat.com>
 
-Reviewed-by: Leo Yan <leo.yan@linaro.org>
+- Change to "The rtla meta-tool includes"
+- Remove an unnecessary "But, "
+- Adjust the formatting of the paragraph resulting from the changes.
+- Simplify the wording for the libraries and tools.
+
+Link: https://lore.kernel.org/r/20220408161012.10544-1-jkacur@redhat.com/
+
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Daniel Bristot de Oliveria <bristot@kernel.org>
+Fixes: 79ce8f43ac5a ("rtla: Real-Time Linux Analysis tool")
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: John Kacur <jkacur@redhat.com>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+---
+ tools/tracing/rtla/README.txt | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/tools/tracing/rtla/README.txt b/tools/tracing/rtla/README.txt
+index 6c88446f7e74..0fbad2640b8c 100644
+--- a/tools/tracing/rtla/README.txt
++++ b/tools/tracing/rtla/README.txt
+@@ -1,15 +1,13 @@
+ RTLA: Real-Time Linux Analysis tools
+ 
+-The rtla is a meta-tool that includes a set of commands that
+-aims to analyze the real-time properties of Linux. But, instead of
+-testing Linux as a black box, rtla leverages kernel tracing
+-capabilities to provide precise information about the properties
+-and root causes of unexpected results.
++The rtla meta-tool includes a set of commands that aims to analyze
++the real-time properties of Linux. Instead of testing Linux as a black box,
++rtla leverages kernel tracing capabilities to provide precise information
++about the properties and root causes of unexpected results.
+ 
+ Installing RTLA
+ 
+-RTLA depends on some libraries and tools. More precisely, it depends on the
+-following libraries:
++RTLA depends on the following libraries and tools:
+ 
+  - libtracefs
+  - libtraceevent
+-- 
+2.32.0
+
