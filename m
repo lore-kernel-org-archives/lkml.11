@@ -2,246 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 584F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 11:27:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9819C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 11:28:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348452AbiD2LbK (ORCPT
+        id S1358433AbiD2LbT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 07:31:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58778 "EHLO
+        Fri, 29 Apr 2022 07:31:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358464AbiD2Lap (ORCPT
+        with ESMTP id S1358506AbiD2Laq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 07:30:45 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F3FC12D2;
-        Fri, 29 Apr 2022 04:26:55 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23TBQkNf064002;
-        Fri, 29 Apr 2022 06:26:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651231606;
-        bh=gRQr7XeEvyTpJ2fKnZIXTDb/h++VKf/bmPBC0uraUJc=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=RLORGy49FxhwOvn4yRN/YR3FcYcWpJhM8Xshnp1XtwB/+FLOBtn2gvMZ5S1gy66UV
-         dUCI5ZqK40efXFOWnZ3Aahc4CPy6QjkOhtiUN7JOFtYKU/6CgPLHRkHCLWyfdNTjBL
-         5+s2bxQQSy0ScZRgv8qnaUElOgMTCpH5se2VdUS4=
-Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23TBQjeS110324
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 29 Apr 2022 06:26:46 -0500
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 29
- Apr 2022 06:26:45 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 29 Apr 2022 06:26:45 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23TBQii7037776;
-        Fri, 29 Apr 2022 06:26:44 -0500
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     <nm@ti.com>
-CC:     <vigneshr@ti.com>, <kristo@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>, <kishon@ti.com>,
-        <a-bhatia1@ti.com>, <r-ravikumar@ti.com>
-Subject: [PATCH v5 1/2] arm64: dts: ti: k3-j721e-*: add DP & DP PHY
-Date:   Fri, 29 Apr 2022 16:56:38 +0530
-Message-ID: <20220429112639.13004-2-r-ravikumar@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220429112639.13004-1-r-ravikumar@ti.com>
-References: <20220429112639.13004-1-r-ravikumar@ti.com>
+        Fri, 29 Apr 2022 07:30:46 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94430C6F1D
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 04:27:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651231630; x=1682767630;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3It1xK2fTiwxEih1Y0ZeBxu8tknG9TCjTzJzz5j6Qvg=;
+  b=K7LMxY78aLtLx9wyj1GgpxJVmps73WXav4eDIujrvVSCLObt0MOegF+k
+   +vjytdwrTT+rQD2UZt9epntm2e7S0l7hRsambfoyAZAt35WS+zWAPC6aq
+   YGWUceqEovZd1rH0BMPa33R8khN5mFxDn3NVfI2pcbX3XUGYNYRtKpqR+
+   wO5j19Vgu6llBWYNUhG1au6CJ0CbZY5feQwguvvCpgNuLYrfsUimqLGK4
+   I0dRHthSTgve180SpQpxBGQO0HTwzqwZIfug6dWnNsrLS/aQCROA3OTDF
+   KqFav5g3IoPXKp6C1rNtuVA+mBeBVxm9z0S0ln4BWRACE7IwoCiFBux4L
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="254001593"
+X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
+   d="scan'208";a="254001593"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 04:27:10 -0700
+X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
+   d="scan'208";a="732018090"
+Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 04:27:08 -0700
+Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
+        by paasikivi.fi.intel.com (Postfix) with SMTP id 2F1E5200F1;
+        Fri, 29 Apr 2022 14:27:06 +0300 (EEST)
+Date:   Fri, 29 Apr 2022 14:27:06 +0300
+From:   Sakari Ailus <sakari.ailus@linux.intel.com>
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>, kbuild@lists.01.org,
+        kbuild test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [sailus-media-tree:master 55/60] drivers/media/i2c/adv7180.c:573
+ adv7180_test_pattern() error: uninitialized symbol 'reg'.
+Message-ID: <YmvLio/xAD4OSgeY@paasikivi.fi.intel.com>
+References: <202204290610.SVJgr8qV-lkp@intel.com>
+ <CAOMZO5A-ZbMUM-17n2JPN2+w+DWLL9fnGwo2SrS=O024M4v0MQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOMZO5A-ZbMUM-17n2JPN2+w+DWLL9fnGwo2SrS=O024M4v0MQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomi Valkeinen <tomi.valkeinen@ti.com>
+On Fri, Apr 29, 2022 at 07:57:41AM -0300, Fabio Estevam wrote:
+> Hi Dan,
+> 
+> On Fri, Apr 29, 2022 at 7:30 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> >
+> > tree:   git://linuxtv.org/sailus/media_tree.git master
+> > head:   ea1280040a678f38a4ce6f1817933c04cfe74552
+> > commit: f3b4b140d87dc7f256229f20a8d70429a7549aca [55/60] media: i2c: adv7180: Add support for the test patterns
+> > config: microblaze-randconfig-m031-20220427 (https://download.01.org/0day-ci/archive/20220429/202204290610.SVJgr8qV-lkp@intel.com/config)
+> > compiler: microblaze-linux-gcc (GCC) 11.3.0
+> >
+> > If you fix the issue, kindly add following tag as appropriate
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> >
+> > smatch warnings:
+> > drivers/media/i2c/adv7180.c:573 adv7180_test_pattern() error: uninitialized symbol 'reg'.
+> 
+> Thanks for the report.
+> 
+> This problem has been resolved in v3:
+> 
+> https://patchwork.linuxtv.org/project/linux-media/patch/20220427135025.3036234-1-festevam@gmail.com/
 
-Add DT nodes for DisplayPort and DisplayPort PHY. The DP is Cadence MHDP
-8546 and the PHY is a Cadence Torrent PHY with TI WIZ wrapper.
+Yeah, my bad. I accidentally took v2. That's fixed now.
 
-Also add the required phy link nodes in the board dts files.
-
-A slight irregularity in the bindings is the DPTX PHY register block,
-which is in the MHDP IP, but is needed and mapped by the PHY.
-
-Signed-off-by: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Signed-off-by: Rahul T R <r-ravikumar@ti.com>
----
- .../dts/ti/k3-j721e-common-proc-board.dts     | 16 ++++
- arch/arm64/boot/dts/ti/k3-j721e-main.dtsi     | 75 ++++++++++++++++++-
- arch/arm64/boot/dts/ti/k3-j721e-sk.dts        | 16 ++++
- 3 files changed, 105 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-index f5ca8e26ed99..2f119e94e783 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-@@ -793,6 +793,22 @@
- 	};
- };
- 
-+&serdes4 {
-+	torrent_phy_dp: phy@0 {
-+		reg = <0>;
-+		resets = <&serdes_wiz4 1>;
-+		cdns,phy-type = <PHY_TYPE_DP>;
-+		cdns,num-lanes = <4>;
-+		cdns,max-bit-rate = <5400>;
-+		#phy-cells = <0>;
-+	};
-+};
-+
-+&mhdp {
-+	phys = <&torrent_phy_dp>;
-+	phy-names = "dpphy";
-+};
-+
- &pcie0_rc {
- 	reset-gpios = <&exp1 6 GPIO_ACTIVE_HIGH>;
- 	phys = <&serdes0_pcie_link>;
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-index db0669985e42..43b6cf5791ee 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-@@ -5,6 +5,7 @@
-  * Copyright (C) 2016-2020 Texas Instruments Incorporated - https://www.ti.com/
-  */
- #include <dt-bindings/phy/phy.h>
-+#include <dt-bindings/phy/phy-ti.h>
- #include <dt-bindings/mux/mux.h>
- #include <dt-bindings/mux/ti-serdes.h>
- 
-@@ -789,6 +790,47 @@
- 		#size-cells = <2>;
- 	};
- 
-+	serdes_wiz4: wiz@5050000 {
-+		compatible = "ti,am64-wiz-10g";
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		power-domains = <&k3_pds 297 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 297 1>, <&k3_clks 297 9>, <&cmn_refclk>;
-+		clock-names = "fck", "core_ref_clk", "ext_ref_clk";
-+		assigned-clocks = <&k3_clks 297 9>;
-+		assigned-clock-parents = <&k3_clks 297 10>;
-+		assigned-clock-rates = <19200000>;
-+		num-lanes = <4>;
-+		#reset-cells = <1>;
-+		#clock-cells = <1>;
-+		ranges = <0x05050000 0x00 0x05050000 0x010000>,
-+			<0x0a030a00 0x00 0x0a030a00 0x40>;
-+
-+		serdes4: serdes@5050000 {
-+			/*
-+			 * Note: we also map DPTX PHY registers as the Torrent
-+			 * needs to manage those.
-+			 */
-+			compatible = "ti,j721e-serdes-10g";
-+			reg = <0x05050000 0x010000>,
-+			      <0x0a030a00 0x40>; /* DPTX PHY */
-+			reg-names = "torrent_phy", "dptx_phy";
-+
-+			resets = <&serdes_wiz4 0>;
-+			reset-names = "torrent_reset";
-+			clocks = <&serdes_wiz4 TI_WIZ_PLL0_REFCLK>;
-+			clock-names = "refclk";
-+			assigned-clocks = <&serdes_wiz4 TI_WIZ_PLL0_REFCLK>,
-+					  <&serdes_wiz4 TI_WIZ_PLL1_REFCLK>,
-+					  <&serdes_wiz4 TI_WIZ_REFCLK_DIG>;
-+			assigned-clock-parents = <&k3_clks 297 9>,
-+						 <&k3_clks 297 9>,
-+						 <&k3_clks 297 9>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+		};
-+	};
-+
- 	main_uart0: serial@2800000 {
- 		compatible = "ti,j721e-uart", "ti,am654-uart";
- 		reg = <0x00 0x02800000 0x00 0x100>;
-@@ -1267,6 +1309,37 @@
- 		};
- 	};
- 
-+	mhdp: dp-bridge@a000000 {
-+		compatible = "ti,j721e-mhdp8546";
-+		/*
-+		 * Note: we do not map DPTX PHY area, as that is handled by
-+		 * the PHY driver.
-+		 */
-+		reg = <0x00 0x0a000000 0x00 0x030a00>, /* DSS_EDP0_V2A_CORE_VP_REGS_APB */
-+		      <0x00 0x04f40000 0x00 0x20>;    /* DSS_EDP0_INTG_CFG_VP */
-+		reg-names = "mhdptx", "j721e-intg";
-+
-+		clocks = <&k3_clks 151 36>;
-+
-+		interrupt-parent = <&gic500>;
-+		interrupts = <GIC_SPI 614 IRQ_TYPE_LEVEL_HIGH>;
-+
-+		power-domains = <&k3_pds 151 TI_SCI_PD_EXCLUSIVE>;
-+
-+		dp0_ports: ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@0 {
-+			    reg = <0>;
-+			};
-+
-+			port@4 {
-+			    reg = <4>;
-+			};
-+		};
-+	};
-+
- 	dss: dss@4a00000 {
- 		compatible = "ti,j721e-dss";
- 		reg =
-@@ -1317,8 +1390,6 @@
- 				  "common_s2";
- 
- 		dss_ports: ports {
--			#address-cells = <1>;
--			#size-cells = <0>;
- 		};
- 	};
- 
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-sk.dts b/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
-index f25d85169e0d..98177a20b45f 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
-@@ -624,6 +624,22 @@
- 	};
- };
- 
-+&serdes4 {
-+	torrent_phy_dp: phy@0 {
-+		reg = <0>;
-+		resets = <&serdes_wiz4 1>;
-+		cdns,phy-type = <PHY_TYPE_DP>;
-+		cdns,num-lanes = <4>;
-+		cdns,max-bit-rate = <5400>;
-+		#phy-cells = <0>;
-+	};
-+};
-+
-+&mhdp {
-+	phys = <&torrent_phy_dp>;
-+	phy-names = "dpphy";
-+};
-+
- &usbss0 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&main_usbss0_pins_default>;
 -- 
-2.17.1
-
+Sakari Ailus
