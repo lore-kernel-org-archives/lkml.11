@@ -2,106 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE3BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:06:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B118C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377170AbiD2OKI (ORCPT
+        id S1376645AbiD2OKM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
+        Fri, 29 Apr 2022 10:10:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377045AbiD2OJh (ORCPT
+        with ESMTP id S1377077AbiD2OKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:09:37 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5047ECE12F;
-        Fri, 29 Apr 2022 07:02:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=kwZz8z1ErGu8KMfXFyk29Ho8CQRFEY51B59OF6or4Ek=; b=PV6iGrw6a2PVwUqtN4K8zn62B4
-        AVOvfuxpf+YqiDNw4wPls4rd7BZZRLk+DlIthCPmmpYzWeS6x1CxEGIJ+6ftYWBgJvBFfwGJOqCh5
-        xlyk58zJVRPZef1SLet0zp5ibM7QDVVnOlmapmbP9P5ItPWzgMAPliAvmIbKMRpx1ZzLU5PWVzzn/
-        sHvml72t32exF/AwwtKJVJzJexH4h9oxDHF0YV+DR3EbrkMYfXiYu6ewm7xFOm0g961CiqJr+h+xh
-        qH6hC6fDAmncBkbOEiIY7tl+ZJgFaXJC+Qr6IL6xzP0mvIw9YmD61TykJP9krK0bs+lwyGwpmSvki
-        syiNIcrw==;
-Received: from [179.113.53.197] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nkRCW-0007vi-1F; Fri, 29 Apr 2022 16:02:28 +0200
-Message-ID: <79472351-c6ce-a060-ef24-f64b6dce1637@igalia.com>
-Date:   Fri, 29 Apr 2022 11:01:59 -0300
+        Fri, 29 Apr 2022 10:10:01 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0918ED17DF
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:03:28 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id 15so6611552pgf.4
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:03:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=i1D89wm0y1+2ttrMK4C0YhPCHvNZx6BJRyJ0Ab+onwc=;
+        b=D3fiCVWDjVYH74rFcWDw6TSzScyaNn/YLsOnwQycGvlmYWofvSA2dsoLXEW1ZDUKy3
+         orSzO6DhlU1lDaoDsOUcjge2e1Xjvlm0soP4F/2EEnMeIG+41OqgpsnysM6kvWmqgMxA
+         jcd6gM6W8GrQszvjKzjfkrgA0qhDIdNfP99Xv3Cfv/Pfy4amXgo6E1YYY8mvMkTTLNkf
+         c0HdIi7N5do2+JqD7R/fI3JB5lhEvyoeOuTj6e21BdecHaZTWgh0Nc+SkiAR/heUysqE
+         CNafI8FTuXztT7EqWFDUW3gPUnNX4hpGXsXeI8UVQQI6uftadfP5oOwPSvnxwIzUImrv
+         x6yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=i1D89wm0y1+2ttrMK4C0YhPCHvNZx6BJRyJ0Ab+onwc=;
+        b=JlrBYcioU66MDxFbgAPzJHpoB3JJLcG9ERW6sgEzBov1xs7ZcfngraKvQF8N6UpnX9
+         Yexfb7bxv1fRO1dB+U5shwWwO098GgWzlrm4eEdAQ4HgYZWhaTl8YTmZHlTlJTZsJ6MR
+         G3cxjOFWk8FFWj8j20HOWSGOL9bvRbjDPXyLP1WAg0+LsQrPrumnoErwvS+8+uJRW7U3
+         Asr3Qcm0uCtu/AkWKd3IgTMKbKB9gfbSxlJtU+QpA3i7ZwRtINvnAu0sXyBHf6x+rm6p
+         bF902Dxge/1QXd51MPI1fN/5b9FLjXnVMVpvs/2S9INdqRzd9XSe2KhwGSXgl6F1cu8H
+         JoLQ==
+X-Gm-Message-State: AOAM531nDmFgZ7iFFqtSVUfiEhVyMwjy+umUnu9o+A+ty47Fs5Xchhdh
+        vs9YVsiVWVQ7v9grhLm/4EtMgQ==
+X-Google-Smtp-Source: ABdhPJwgyDUF45ewN3iHEmvtIwn2Ru736PHK8amVA2azQ5KwegekVLqd9QJh16tj1X3JePKGpJTVvQ==
+X-Received: by 2002:a65:6b92:0:b0:39c:c97b:1b57 with SMTP id d18-20020a656b92000000b0039cc97b1b57mr33367430pgw.517.1651241007311;
+        Fri, 29 Apr 2022 07:03:27 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id j6-20020a632306000000b003c14af50615sm6514095pgj.45.2022.04.29.07.03.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 07:03:26 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 14:03:23 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Peter Gonda <pgonda@google.com>
+Subject: Re: [PATCH for-5.18] KVM: fix bad user ABI for KVM_EXIT_SYSTEM_EVENT
+Message-ID: <YmvwK0MeKpsQkZN4@google.com>
+References: <20220422103013.34832-1-pbonzini@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 09/30] coresight: cpu-debug: Replace mutex with
- mutex_trylock on panic notifier
-Content-Language: en-US
-To:     Suzuki K Poulose <suzuki.poulose@arm.com>,
-        akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Leo Yan <leo.yan@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Leach <mike.leach@linaro.org>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-10-gpiccoli@igalia.com>
- <3cafe4fd-8a0b-2633-44a3-2995abd6c38c@arm.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <3cafe4fd-8a0b-2633-44a3-2995abd6c38c@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422103013.34832-1-pbonzini@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/04/2022 05:11, Suzuki K Poulose wrote:
-> Hi Guilherme,
-> [...] 
-> How would you like to proceed with queuing this ? I am happy
-> either way. In case you plan to push this as part of this
-> series (I don't see any potential conflicts) :
-> 
-> Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+On Fri, Apr 22, 2022, Paolo Bonzini wrote:
+> For compatibility with userspace that was using the flags field,
+> a union overlaps flags with data[0].
 
-Thanks for your review Suzuki, much appreciated!
+I think "compatibility" is slightly misleading, e.g. the offset of the field is
+changing for 32-bit userspace. 
 
-About your question, I'm not sure yet - in case the core changes would
-take a while (like if community find them polemic, require many changes,
-etc) I might split this series in 2 parts, the fixes part vs the
-improvements per se. Either way, a V2 is going to happen for sure, and
-in that moment, I'll let you know what I think it's best.
+  To avoid breaking compilation of userspace that was using the flags
+  field, provide a userspace-only union to overlap flags with data[0].
 
-But either way, any choice you prefer is fine by me as well (like if you
-want to merge it now or postpone to get merged in the future), this is
-not an urgent fix I think =)
-Cheers,
+> diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+> index 91a6fe4e02c0..f903ab0c8d7a 100644
+> --- a/include/uapi/linux/kvm.h
+> +++ b/include/uapi/linux/kvm.h
+> @@ -445,7 +445,11 @@ struct kvm_run {
+>  #define KVM_SYSTEM_EVENT_RESET          2
+>  #define KVM_SYSTEM_EVENT_CRASH          3
+>  			__u32 type;
+> -			__u64 flags;
+> +			__u32 ndata;
+> +			union {
+> +				__u64 flags;
 
+As alluded to above, what about wrapping flags in 
 
-Guilherme
+#ifndef __KERNEL__
+				__u64 flags;
+#endif
+
+so that KVM doesn't try to use flags?
+
+> +				__u64 data[16];
+> +			};
+>  		} system_event;
+>  		/* KVM_EXIT_S390_STSI */
+>  		struct {
