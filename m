@@ -2,92 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1947C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:35:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF56C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 06:37:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354578AbiD2GjB (ORCPT
+        id S1354575AbiD2Gk6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 02:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35682 "EHLO
+        Fri, 29 Apr 2022 02:40:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232281AbiD2Gi7 (ORCPT
+        with ESMTP id S232281AbiD2Gkw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 02:38:59 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A2A81199
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 23:35:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651214142; x=1682750142;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=73uaYpqAPQn+8U/LuREycvqXt3Sws/vKsehS795EZBw=;
-  b=i6sr6lWcYEJH+55IyX+dFV5fWFsBuhSNF2bcnbhQNivfYnnqYQSyNwxf
-   jsvOYRug62qq/YL31uQddm55oFv+ERVHsNIzEHO7Ost9KeFC4l0coeJiB
-   TY5HBrGda5IeHwewcVOZvo8K9x5R272yGZ8thK4xCoR8IPB67OLrcJiJP
-   zKaN9yLOI/yXroGrXFrvFUNJgOH4JDfUXJtT3Rat6hAm9m4B0wWH+3S2c
-   gv+PnYbMfarw1jTuLxl3Rhxk8WW+8MhlbMTEDtjxEfjz7yIM9vWVfUmTK
-   AsirKV1fqsoFcbFU3o1YFsQ3zUbP51Uv28Ev34U1chY7SPNoV1rKwkv1y
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="248479529"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="248479529"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 23:35:42 -0700
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="581924572"
-Received: from lye4-mobl.ccr.corp.intel.com (HELO [10.249.170.95]) ([10.249.170.95])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 23:35:39 -0700
-Message-ID: <d8682159-508b-501b-3642-54c8155a356d@linux.intel.com>
-Date:   Fri, 29 Apr 2022 14:35:36 +0800
+        Fri, 29 Apr 2022 02:40:52 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC68B8982;
+        Thu, 28 Apr 2022 23:37:34 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id d6so7928073ede.8;
+        Thu, 28 Apr 2022 23:37:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nCh6oNjAx5FSblxx+ha1zviQ3WYAVbuqIr2sZ2uR4I4=;
+        b=iHgEG3TivvCfzr52JvRgNAZju6J95yv92A2qoKNoJMXpUMbwf9Kc39zMa3n4qUnk2L
+         A2klT0lUGRgnXnD8WbpULxdkEojyi3XscpGE+CqbZ7Bj7BnqviQXWRrDtqSxWul6LTqi
+         2HROOAwn1q/uNuAE6NB/pkUtTDf9G1VJhkaKy9ov4/oqylfUUZZcY6PD3h13SOMFHgqU
+         4zq5Cwl1Snm5q+rLMbeuNcuNULvA71Xr/XD0+/bP4bnTQLwA4CJ4P7cr0xHtsRt3isBQ
+         cHLn1jr5cl4wTa2e0fZvGnfD44XUm7/tvaS8NvQOlZotNo9ODdaysiz7zDsD/Dok680F
+         286g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=nCh6oNjAx5FSblxx+ha1zviQ3WYAVbuqIr2sZ2uR4I4=;
+        b=zzAKdnixOUD/0GYf6xtbsfevPKvvmNbGUj6BPC0eIqXxlPnuANtbCQrjMQJXFKh2IN
+         hboTC5RJlBwcxDuef8uAPHrSUWMFiJMNb2caHS7AvEFVOE5kMqvVrLaAXfShDrNgBXh6
+         g/dQWLEzGa+qJ4YjKHnsla6fJE4WrYvT8wqnr07eBS+/52Nr0UZCRMTWqXVxZVKSv5HE
+         J3WOyR3xPq2+cOUTueHD/v4rkPfBC398qgK3MadMpzyBArXxgCHUdPlClE6HiFIAaZSJ
+         GGk1OJHhddhqQobqMW2eIkIQXYGYnyhq6IH0T9FWvr5Q688Qiq4MalfFudIhf5/WWqzG
+         OpmA==
+X-Gm-Message-State: AOAM5312tQF4iiQTMHStPGWHymas4TXZ6mZV1OUo0bgUMvhfuzD/MHjj
+        448i3u4bD/LhxmcwqTW30gw=
+X-Google-Smtp-Source: ABdhPJwMWErbg5tUE6ecjecll6VEyFASIGhMqJeTjGGGjDBTNnu0r84VpI9YskE7O58vNjFpZn67dA==
+X-Received: by 2002:aa7:d9d9:0:b0:425:fcc7:d132 with SMTP id v25-20020aa7d9d9000000b00425fcc7d132mr17610649eds.89.1651214253014;
+        Thu, 28 Apr 2022 23:37:33 -0700 (PDT)
+Received: from eldamar (c-82-192-242-114.customer.ggaweb.ch. [82.192.242.114])
+        by smtp.gmail.com with ESMTPSA id z15-20020aa7d40f000000b0042617ba63b9sm2577858edq.67.2022.04.28.23.37.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 23:37:31 -0700 (PDT)
+Sender: Salvatore Bonaccorso <salvatore.bonaccorso@gmail.com>
+Date:   Fri, 29 Apr 2022 08:37:30 +0200
+From:   Salvatore Bonaccorso <carnil@debian.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
+        Dusty Mabe <dustymabe@redhat.com>, Stefan Roese <sr@denx.de>,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Marek Vasut <marex@denx.de>, x86@kernel.org, maz@kernel.org,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        Juergen Gross <jgross@suse.com>,
+        Noah Meyerhans <noahm@debian.org>
+Subject: Re: [tip: irq/urgent] PCI/MSI: Mask MSI-X vectors only on success
+Message-ID: <YmuHqi5K/P8QWYyO@eldamar.lan>
+References: <20211210161025.3287927-1-sr@denx.de>
+ <163948488617.23020.3934435568065766936.tip-bot2@tip-bot2>
+ <Yi9vH2F2OBDprwd8@jpiotrowski-Surface-Book-3>
+ <43418c23-5efd-4d14-706f-f536c504b75a@denx.de>
+ <c4a65b9a-d1e2-bf0d-2519-aac7185931d5@redhat.com>
+ <Yi+lwVRTu8xxi9Gy@jpiotrowski-Surface-Book-3>
+ <Ymj3zzjQ9PwYaX/p@eldamar.lan>
+ <87v8uuwhs4.ffs@tglx>
+ <87wnf9uxnw.ffs@tglx>
+ <YmrgO09bqePgiJJd@eldamar.lan>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4 11/12] iommu: Per-domain I/O page fault handling
-Content-Language: en-US
-To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <20220421052121.3464100-1-baolu.lu@linux.intel.com>
- <20220421052121.3464100-12-baolu.lu@linux.intel.com>
- <YmqrTGcHotvhhaT2@myrica>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <YmqrTGcHotvhhaT2@myrica>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmrgO09bqePgiJJd@eldamar.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/28 22:57, Jean-Philippe Brucker wrote:
-> On Thu, Apr 21, 2022 at 01:21:20PM +0800, Lu Baolu wrote:
->>   static void iopf_handle_group(struct work_struct *work)
->>   {
->>   	struct iopf_group *group;
->> @@ -134,12 +78,23 @@ static void iopf_handle_group(struct work_struct *work)
->>   	group = container_of(work, struct iopf_group, work);
->>   
->>   	list_for_each_entry_safe(iopf, next, &group->faults, list) {
->> +		struct iommu_domain *domain;
->> +
->> +		domain = iommu_get_domain_for_dev_pasid_async(group->dev,
->> +				iopf->fault.prm.pasid);
-> Reading the PCIe spec again (v6.0 10.4.1.1 PASID Usage), all faults within
-> the group have the same PASID so we could move the domain fetch out of the
-> loop. It does deviate from the old behavior, though, so we could change
-> it later.
+Hi Thomas,
 
-Perhaps we can add a pasid member in the struct iopf_group and do a
-sanity check when a new iopf is added to the group? Here, we just fetch
-the domain with group->pasid.
+On Thu, Apr 28, 2022 at 08:43:10PM +0200, Salvatore Bonaccorso wrote:
+> Hi Thomas,
+> 
+> On Thu, Apr 28, 2022 at 03:48:03PM +0200, Thomas Gleixner wrote:
+> > On Wed, Apr 27 2022 at 19:35, Thomas Gleixner wrote:
+> > > On Wed, Apr 27 2022 at 09:59, Salvatore Bonaccorso wrote:
+> > > XEN guests do not use the common PCI mask/unmask machinery which would
+> > > unmask the interrupt on request_irq().
+> > >
+> > > So I assume that the following happens:
+> > >
+> > > Guest                     Hypervisor
+> > >
+> > > msix_capabilities_init()
+> > >         ....
+> > >         alloc_irq()
+> > >            xen_magic()  -> alloc_msix_interrupt()
+> > >                            request_irq()
+> > >
+> > >         msix_mask_all() -> trap
+> > >                              do_magic()
+> > > request_irq()
+> > >    unmask()
+> > >      xen_magic()
+> > >        unmask_evtchn()  -> do_more_magic()
+> > >
+> > > So I assume further that msix_mask_all() actually is able to mask the
+> > > interrupts in the hardware (ctrl word of the vector table) despite the
+> > > hypervisor having allocated and requested the interrupt already.
+> > >
+> > > Nothing in XEN_HVM handles PCI/MSI[-X] mask/unmask in the guest, so I
+> > > really have to ask why XEN_HVM does not disable PCI/MSI[-X] masking like
+> > > XEN_PV does. I can only assume the answer is voodoo...
+> > >
+> > > Maybe the XEN people have some more enlightened answers to that.
+> > 
+> > So I was talking to Juergen about this and he agrees, that for the case
+> > where a XEN HVM guest uses the PIRQ/Eventchannel mechanism PCI/MSI[-X]
+> > masking should be disabled like it is done for XEN PV.
+> > 
+> > Why the hypervisor grants the mask write is still mysterious, but I
+> > leave that to the folks who can master the XEN voodoo.
+> > 
+> > I'll send out a patch in minute.
+> 
+> Thank you. We are having Noah Meyerhans now testing the patch and he
+> will report back if it works (Cc'ed here now).
 
-Best regards,
-baolu
+To confirm: Noah tested the patch on various different Xen (and other
+VM configurations) and works well.
+
+Regards,
+Salvatore
