@@ -2,98 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42636C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:49:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D275C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:51:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379804AbiD2RxI (ORCPT
+        id S1355622AbiD2RzJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 13:53:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35416 "EHLO
+        Fri, 29 Apr 2022 13:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345635AbiD2RxE (ORCPT
+        with ESMTP id S236642AbiD2RzH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 13:53:04 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF74D3993;
-        Fri, 29 Apr 2022 10:49:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651254586; x=1682790586;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=6PO7TJrMwheafNd4JcSQG/q9LVcYu2jJZi/WoopzbnQ=;
-  b=Im816ewbzH10ZU11K4ur7lk5QA+ptUQHg17nidAMQyB83xYvWsxSUzb9
-   Q5c99g1ykPzyIkCePzUpiNRv9/ymjwLC7aFjGTBHjFe91oaDFyMvzKpDb
-   kJkn3z1QsPgGN+2y0J8bP/4defRfgPi4zEhti0Xde3BucPUjHVzPhs8rL
-   rGC/8CQ7Fqil1ULmYrfuWUEx5ya840wgis4S5+8ddk36zRqDujEtf9Oum
-   kweSxv39zZoF3clC/oY3d+ItWfrnzLe8u8Kn+6JndTHbdAXNLWQI/t+9t
-   FxQE0PRgj+is6JtZIWQei4fF5Jml18zOij8dy5/y7DyH7i2/PbTUrkTme
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="291898825"
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="291898825"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 10:47:36 -0700
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="582297691"
-Received: from jinggu-mobl1.amr.corp.intel.com (HELO [10.212.30.227]) ([10.212.30.227])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 10:47:35 -0700
-Message-ID: <4aea41ea-211f-fbde-34e9-4c4467ebc848@intel.com>
-Date:   Fri, 29 Apr 2022 10:47:52 -0700
+        Fri, 29 Apr 2022 13:55:07 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8ED40913
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:51:48 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id i5so11706873wrc.13
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:51:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=q4LKjQ1U2+sf1jDRR/wmFcJSlftJ5m8wtTLrONCN7K8=;
+        b=Mx9deQE4aebSBXjeg6/n+XvihVNWEA+R8LqgPvhusqySIVjYYu8XmzEqUKw6XzJa7I
+         Z08/qGNiLiEyw5O5QmyuF/nV1L3vVx+v4ggEd3Uj2Su3+m0amIxPGQFaeeQfmPJwVcwP
+         P+nSL/8PRJp+3gWuW/Oc1dOSpQhkVJbKlPzx6iKAzRT8JCFcBQbeXbA0rvaP8OhZTwvI
+         t20LVqGVI+rA0pPAufsArJWkTbnbqVDzW5HK3fi0iL2MAKgWXwfRKh26qrH9VMCXYEa/
+         cmDwpt5gRCnYF15UTyZzu1ZgxU8DSL/izY7on7B2LSowGNpRyoa0X+f/pGoFmAH0JhDx
+         yX0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=q4LKjQ1U2+sf1jDRR/wmFcJSlftJ5m8wtTLrONCN7K8=;
+        b=iWTHXO22UUcKUUbioh6QVc+6zaJ4pq7626jHoY9sGkiUP3tXBPru6JQvQDmO42amkR
+         x6FTc1vWqPrPsdKe3pfutVAoFkH9I+KPHC4LfkcNjPcyIuWTInXQbdFQVexV3/JQnJeA
+         um6alR0HFYg1LCD8yVewHInADHj6NO/MymyBpa3BTWPgI7Y+STx2VCGlawmGUzCSnYWj
+         kayUVm9Ilb6z7ATDKIM6KbYlOK5jni1aU0/g5fFUm/nowMwKEVG7TWhwttQBNkDB9sSK
+         UxM2oDXjf/ITGIV6N0WgVtZ/cSnTSby38CDX3q9X2gmNHNLJMFdHeyVf6dBLkVbNEUyB
+         VUjA==
+X-Gm-Message-State: AOAM530A1w0wkwr6kRgMCz0kiBJCUt0/riJ+MEiLZjWtInhgbHdr+hFI
+        uC7Cwpqn7iBxLRCW40eG5V0VtQ==
+X-Google-Smtp-Source: ABdhPJwYldJfCI+pcbRbU7bTqfY3Xe/BYdNH363pA7ya48kQwqt8w0hNEG7l8RuXkES4c+eNj4ts9g==
+X-Received: by 2002:a05:6000:2a6:b0:20a:f2c7:4e70 with SMTP id l6-20020a05600002a600b0020af2c74e70mr205584wry.85.1651254707279;
+        Fri, 29 Apr 2022 10:51:47 -0700 (PDT)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id 62-20020a1c1941000000b00393a1a024desm7422410wmz.14.2022.04.29.10.51.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 10:51:46 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 18:51:44 +0100
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] irqchip/exiu: Fix acknowledgment of edge triggered
+ interrupts
+Message-ID: <20220429175144.czymk5alqvqobzzf@maple.lan>
+References: <20220427142647.1736658-1-daniel.thompson@linaro.org>
+ <CAMj1kXEYO_HRwZ=Wz5aTWN8XZctemVv2op4B2=DbFEozuxTNVw@mail.gmail.com>
+ <20220429132858.gaqhjrxblciacvki@maple.lan>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 09/21] x86/virt/tdx: Get information about TDX module
- and convertible memory
-Content-Language: en-US
-To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
-        tony.luck@intel.com, rafael.j.wysocki@intel.com,
-        reinette.chatre@intel.com, dan.j.williams@intel.com,
-        peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com
-References: <cover.1649219184.git.kai.huang@intel.com>
- <145620795852bf24ba2124a3f8234fd4aaac19d4.1649219184.git.kai.huang@intel.com>
- <f929fb7a-5bdc-2567-77aa-762a098c8513@intel.com>
- <0bab7221179229317a11311386c968bd0d40e344.camel@intel.com>
- <98f81eed-e532-75bc-d2d8-4e020517b634@intel.com>
- <be31134cf44a24d6d38fbf39e9e18ef223e216c6.camel@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <be31134cf44a24d6d38fbf39e9e18ef223e216c6.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220429132858.gaqhjrxblciacvki@maple.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/28/22 16:14, Kai Huang wrote:
-> On Thu, 2022-04-28 at 07:06 -0700, Dave Hansen wrote:
->> On 4/27/22 17:15, Kai Huang wrote:
->>>> Couldn't we get rid of that comment if you did something like:
->>>>
->>>> 	ret = tdx_get_sysinfo(&tdx_cmr_array, &tdx_sysinfo);
->>>
->>> Yes will do.
->>>
->>>> and preferably make the variables function-local.
->>>
->>> 'tdx_sysinfo' will be used by KVM too.
->>
->> In other words, it's not a part of this series so I can't review whether
->> this statement is correct or whether there's a better way to hand this
->> information over to KVM.
->>
->> This (minor) nugget influencing the design also isn't even commented or
->> addressed in the changelog.
+On Fri, Apr 29, 2022 at 02:28:58PM +0100, Daniel Thompson wrote:
+> On Wed, Apr 27, 2022 at 05:29:33PM +0200, Ard Biesheuvel wrote:
+> > On Wed, 27 Apr 2022 at 16:27, Daniel Thompson
+> > <daniel.thompson@linaro.org> wrote:
+> > >
+> > > Currently the EXIU uses the fasteoi interrupt flow that is configured by
+> > > it's parent (irq-gic-v3.c). With this flow the only chance to clear the
+> > > interrupt request happens during .irq_eoi() and (obviously) this happens
+> > > after the interrupt handler has run. EXIU requires edge triggered
+> > > interrupts to be acked prior to interrupt handling. Without this we
+> > > risk incorrect interrupt dismissal when a new interrupt is delivered
+> > > after the handler reads and acknowledges the peripheral but before the
+> > > irq_eoi() takes place.
+> > >
+> > > Fix this by clearing the interrupt request from .irq_ack() instead. This
+> > > requires switching to the fasteoi-ack flow instead of the fasteoi flow.
+> > > This approach is inspired by the nmi code found in irq-sun6i-r.c .
+> > >
+> > 
+> > How are level triggered EXIU interrupts affected by this change?
 > 
-> TDSYSINFO_STRUCT is 1024B and CMR array is 512B, so I don't think it should be
-> in the stack.  I can change to use dynamic allocation at the beginning and free
-> it at the end of the function.  KVM support patches can change it to static
-> variable in the file.
+> Functionally they should not be affected simply because the controller
+> does not care when (or even if) software writes to IREQCLR... and
+> testing on SC2A11/Developerbox with a hacked gpio-keys driver does
+> back this up.
 
-2k of stack is big, but it isn't a deal breaker for something that's not
-nested anywhere and that's only called once in a pretty controlled
-setting and not in interrupt context.  I wouldn't cry about it.
+If, and only if, you do the experiment properly... and this afternoon
+the penny dropped and I fixed that.
+
+In summary, level triggered interrupts require IREQCLR to happen at EOI
+(to avoid spurious re-entry) whilst edge triggered interrupts require
+IREQCLR to be acked before ISR is entered (to avoid spurious dismissal).
+
+v2 is on its way...
+
+
+Daniel.
+
