@@ -2,81 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7DF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0953AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:33:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356616AbiD2Jf0 (ORCPT
+        id S1356635AbiD2JgU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 05:35:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38090 "EHLO
+        Fri, 29 Apr 2022 05:36:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230112AbiD2JfZ (ORCPT
+        with ESMTP id S1354512AbiD2JgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 05:35:25 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0663AC44EA
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 02:32:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651224728; x=1682760728;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=kppcoXj5y75CTMRtENkNzbnrf3SLXeufYjqq0hRy8oc=;
-  b=oC1Otlufe9xig8xuMIUgFGUBJ+D/HBC0iwIw0IuMoEBGa8Ufe82s9vv8
-   f8k/EiRZqt5dA74ejmFeO1Jgv7XGbo1D5s+gRbQAyPXtsS5vAxYC8EuaM
-   yqaZLo0G1KyjB1ULWLsbrxc3jnc4DHRugrITWJscVV/xSA4CQa5P4V5oI
-   26X8VWTsL/smbUqrElTK22OW9gF9mf79C5iIbtP7uSOOzmJb3NubtzJyS
-   8tly4OW2cQCw0KJQbs54iQUPe0aWfp5g6/KQOjJ6wfs69uywzOSyi2hgz
-   CXM4IyO1RN9eVlAo4G05EFr3uDyja4OGNl1deY7gqh9jJJP5KO5XTfXFg
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="246505689"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="246505689"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 02:32:07 -0700
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="662267242"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 02:32:04 -0700
-Received: by lahna (sSMTP sendmail emulation); Fri, 29 Apr 2022 12:28:42 +0300
-Date:   Fri, 29 Apr 2022 12:28:42 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Won Chung <wonchung@google.com>
-Cc:     "Winkler, Tomas" <tomas.winkler@intel.com>,
-        "Usyskin, Alexander" <alexander.usyskin@intel.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        "Ceraolo Spurio, Daniele" <daniele.ceraolospurio@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/2] thunderbolt: Link USB4 ports to their USB Type-C
- connectors
-Message-ID: <Ymuvyujl+bwemc/I@lahna>
-References: <20220418175932.1809770-1-wonchung@google.com>
- <Yl/l7gjRXj41a93q@lahna>
- <CAOvb9yidpOZ4jCjme+u1a4fPTRnLmxUHSTO3yHPPuYtDbe1V0g@mail.gmail.com>
- <YmDy/xEsyktRS6D+@lahna>
- <MW3PR11MB46517BE51D4DCBC02B463C0EEDF99@MW3PR11MB4651.namprd11.prod.outlook.com>
- <CAOvb9yhToxfT7cVzDX9cQhbRj0r2DXyuLJer64J8XSRJuUPcEg@mail.gmail.com>
- <CAOvb9yhPuNOM-HEb+fCfJPZ9kyxYZ9orT6u7BH_iiTU4XPWChg@mail.gmail.com>
+        Fri, 29 Apr 2022 05:36:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A69CDC6144
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 02:33:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651224780;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=I/tOR54sNmC3XZUOFOHQ4Yl+AwgBMX0e/7hZwa5pXik=;
+        b=dyaGkh+SPyK2L6pmQIKfh9yGD3cDE6MBkF0/r2QwHWUCFaD9OWqmQmQqj3lhO5qKFcT40/
+        Ybzhc5YisOtY6ZfuNJInjEb/yKWjoKkUcxvvHkf+nyLyiIfiSYcJSPEHNrR9nBs6+Mg00r
+        aGZni/NfzZuld9ok5WwnTLfGMxNuUJY=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-356-0xx3YCdSMqO8SV0nnCLk2g-1; Fri, 29 Apr 2022 05:32:58 -0400
+X-MC-Unique: 0xx3YCdSMqO8SV0nnCLk2g-1
+Received: by mail-wm1-f71.google.com with SMTP id n26-20020a1c721a000000b003941ea1ced7so355213wmc.7
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 02:32:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=I/tOR54sNmC3XZUOFOHQ4Yl+AwgBMX0e/7hZwa5pXik=;
+        b=vphQ1cBs3q9sZXTMFmuhLgFW563aYcOrlwb5S5TBuqzIf5SrHkJKl4KDOpDnpj2kM9
+         vv6gEaio05vuLYmxFuM1zeTW1xtE7DauS2EqK76l8h0zw3pfboHV3jlGQegho4xr11eG
+         7DWA6Cq0iBRRjrafENcuAQ09TqQ1IXA7T/Jl2p+Z5z7WeSB+HIDJ0UbOuU21lxZc/NWw
+         AbLz6OKZA9RAbFZpWpNqS78m5NJfKk3rodOfHVwLruu85NKah4VUTPszcveKe2IOAU0q
+         ED9GzX09BQWXrggi0dzw0esfUq3z5t8CRpAbGL2H5gfdXiVa8ZyVj0cEI9MBF5VC+pMV
+         RuAg==
+X-Gm-Message-State: AOAM531sQHosVhIDsyDiB/F6VdLVEtk6jjLYD3DkIJ8paSv7IIKtRkGK
+        GFt/mKxwu3ypE5E0mu9tXM218tYLDkv0KcirT/Y9FnYhfVXLucsmWtRQhYYiKErdnJrzf5L+s4g
+        kwzihcO1AqI0mb+8Dq5Npy1q+
+X-Received: by 2002:a05:600c:1d9b:b0:393:ffc8:a09b with SMTP id p27-20020a05600c1d9b00b00393ffc8a09bmr2361944wms.40.1651224777291;
+        Fri, 29 Apr 2022 02:32:57 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwAZpnopCct+J3YhYQM6TcFt5LHE6kqYWM16L6lA6v065iSffCewmWU3++q1gRQMouQtPZgzQ==
+X-Received: by 2002:a05:600c:1d9b:b0:393:ffc8:a09b with SMTP id p27-20020a05600c1d9b00b00393ffc8a09bmr2361932wms.40.1651224777084;
+        Fri, 29 Apr 2022 02:32:57 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:fe00:bbeb:98e6:617a:dea1? (p200300cbc707fe00bbeb98e6617adea1.dip0.t-ipconnect.de. [2003:cb:c707:fe00:bbeb:98e6:617a:dea1])
+        by smtp.gmail.com with ESMTPSA id v3-20020a5d4b03000000b0020af3a12d15sm1966249wrq.2.2022.04.29.02.32.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 02:32:56 -0700 (PDT)
+Message-ID: <44a6d752-6957-0cdc-aafa-eee81725a215@redhat.com>
+Date:   Fri, 29 Apr 2022 11:32:55 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOvb9yhPuNOM-HEb+fCfJPZ9kyxYZ9orT6u7BH_iiTU4XPWChg@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v4] hugetlb: Fix wrong use of nr_online_nodes
+Content-Language: en-US
+To:     Peng Liu <liupeng256@huawei.com>, mike.kravetz@oracle.com,
+        akpm@linux-foundation.org, yaozhenguo1@gmail.com,
+        baolin.wang@linux.alibaba.com, songmuchun@bytedance.com,
+        liuyuntao10@huawei.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, wangkefeng.wang@huawei.com,
+        dave@stgolabs.net
+References: <20220413032915.251254-2-liupeng256@huawei.com>
+ <20220416103526.3287348-1-liupeng256@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220416103526.3287348-1-liupeng256@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Fri, Apr 29, 2022 at 03:34:56AM +0900, Won Chung wrote:
-> Hi Mika,
+On 16.04.22 12:35, Peng Liu wrote:
+> Certain systems are designed to have sparse/discontiguous nodes. In
+> this case, nr_online_nodes can not be used to walk through numa node.
+> Also, a valid node may be greater than nr_online_nodes.
 > 
-> Tomas has given an ack on the first patch on MEI:
-> https://lore.kernel.org/all/0136fcb26ca8433899593208af4351c9@intel.com/
+> However, in hugetlb, it is assumed that nodes are contiguous. Recheck
+> all the places that use nr_online_nodes, and repair them one by one.
 > 
-> Should I resend the patch with an additional "Acked-by" tag?
-> Or could that be added as the patch is merged into the thunderbolt tree?
+> Suggested-by: David Hildenbrand <david@redhat.com>
+> Fixes: 4178158ef8ca ("hugetlbfs: fix issue of preallocation of gigantic pages can't work")
+> Fixes: b5389086ad7b ("hugetlbfs: extend the definition of hugepages parameter to support node allocation")
+> Fixes: e79ce9832316 ("hugetlbfs: fix a truncation issue in hugepages parameter")
+> Fixes: f9317f77a6e0 ("hugetlb: clean up potential spectre issue warnings")
+> Signed-off-by: Peng Liu <liupeng256@huawei.com>
+> ---
 
-Both applied to thunderbolt.git/next, thanks!
+Acked-by: David Hildenbrand <david@redhat.com>
+
+-- 
+Thanks,
+
+David / dhildenb
+
