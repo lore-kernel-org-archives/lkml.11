@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F41CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:04:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 320CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353858AbiD2BIN (ORCPT
+        id S1353817AbiD2BIP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 21:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34598 "EHLO
+        Thu, 28 Apr 2022 21:08:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353727AbiD2BHs (ORCPT
+        with ESMTP id S1353772AbiD2BHw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 21:07:48 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1647BC875
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:04:32 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id k2-20020a170902ba8200b0015613b12004so3476150pls.22
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:04:32 -0700 (PDT)
+        Thu, 28 Apr 2022 21:07:52 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2448EBC879
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:04:36 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id x2-20020a63aa42000000b003aafe948eeeso3209471pgo.0
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 18:04:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=LY2u2lqaDdU2rtmG5LcPIqbe73WGn22NYde+95hPItE=;
-        b=cWLe21WPmchYvaVevotbm3RK57IRXwWPlljEv2giie3TBWz2Dy8eZ8j5HhoeRKHAq3
-         tppq79T1ifh2IfAZ3zdBVjqbioSc54vePGtsAJYJLrQ3YGxKKkqXfOAeb8Z6AVevPDzZ
-         Wk+OXjGSXGZ/Pnv4zueW4U1FusGST5oBLlP9xX1UUce1el75F2HiEa6lphM4K0Ja4EAh
-         9ew+AFPQIpc2IAvgleeicESpsX/Fx9DE9AUes9it8ggC6ewQk57KmSZ0Qf/opTzAoj9S
-         oh5CRIZ85IoRKgKMy9ivtUhxEK5KddmdSo3GyGpWc8LhgfIrbrkoYSay1gtYG/1Jp+GK
-         xB1g==
+        bh=NFp7K8Sjv/vAI1JLTFSd8X9Uxcf8+O/4N0wyohIecW4=;
+        b=MeMNHrhvIY+IQbG/CYO0Q1CrteMY07/gcrCNOfHdmVywdCt8O2Plv1D3u7ZpG3x1nI
+         MM3swrVCIMXp5XaKHm7JyyLeetRDMFAqc8g+KFGypMsa7MLFQJABwBPvsPV+dAQmKRw2
+         X2g/tIBZO/VbKQnAdxN55H7rPoz6jBZSmtjH5hzD1HGDJOcOpP/hwwBHIBAanPDoS9f5
+         +y6cd/4+1MJ6szaQSA8aI5AJq5kahtqBv4IEfVTrcr+glJ1c1JEU68zRmuXzzULqQNJr
+         DvnPR1IO05cHIZcSBcpyvdGFRDjij7wP628IE2/JeRWUxD1cQLvzL/prRi+Eq41aa2Of
+         A8sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=LY2u2lqaDdU2rtmG5LcPIqbe73WGn22NYde+95hPItE=;
-        b=42MJuvTjbe3WOiZEiUZ/D9vTKsnZOMIfxZqUCurWal0Ys3Yblu2FqIjCACcHdPxS9G
-         2qQIhcWmKyczoanrB4eP20BlowhD+gIV1I0HfK9NOlmAFU82/YDEK0WWD3tkOJJfSjSq
-         fsHf05v4ekB2wmzJNIxJcEjVPFoo9SCN2Fk/fn7jOeaQULbe/k5SFV6qYHz5DB1HITqx
-         BL+YAOfDoYxGIJgaOd6h6ivkBaGws6p7+fBRh28BD4iePSJ+v10DzL0FoqsK3V0sfiFB
-         khH7cntAzWnx4QYN4DFs09Ie3GPEgMLORRXicQ3nGjbR5Y5FOyz5BwOIU/ptff+ArD3B
-         /nUw==
-X-Gm-Message-State: AOAM531HlgmB6HUsR9kS1/ttT7Mz0FVbZpqBxq1BhPAxZy7luw+vZqYI
-        z4YLWIaiCmQfWClATRl/4Icet223YHA=
-X-Google-Smtp-Source: ABdhPJzp5bseGEB5+5vqVGWm2HOpRA28amMeej102P4Z1OOptaZUyUaPxYLudkctFqNfk0NQ1rlfb/KXAJk=
+        bh=NFp7K8Sjv/vAI1JLTFSd8X9Uxcf8+O/4N0wyohIecW4=;
+        b=DaUuoDVYjY2YzTL3/lC464rvcmyAT4iUxqNwwmOfYmVPw6EnrnXSLrcwFNIuZNA/0C
+         L/q7rDH/y31O8G6MMJsjSzyXyVqXV2GQOXz4ufNNdoG9Oed/8CaoYSXrp9xkjmR6ETXc
+         VK2Hg2ixnNNd6v6BZSPoSaYc57eIhLrYdrirjgiKjgNFiS8xavanyrHrgsEileVxuRy0
+         FADCMs3SLYrK2gWmKaeM3SS//IY0kKng9WyPKY6LKZ4W5A4mVC0a11yJG69gdOQW2V+g
+         0bnjoJ6cjHJvlBbXgPgh95s7cV44c90hKV7vntOFa+f16Wk1knAYgf2i4xyzJC4y1O6g
+         rSpw==
+X-Gm-Message-State: AOAM531GNw9aDgb/CdtcBc2HxoqMuS7UPlioKaCsQPQDsXja8MyvBVcK
+        aXdQFBNRYpCyKzYSznZQCp4PbfiL+I4=
+X-Google-Smtp-Source: ABdhPJx8581mpEqS+OF/vbbg6/vEcOQagjZDHIrCx+28J0pzty67F/6uDSxH0CAfDbIvZpVClQZVg1o78m0=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:a58d:b0:1db:ed34:e46d with SMTP id
- b13-20020a17090aa58d00b001dbed34e46dmr1146636pjq.124.1651194272182; Thu, 28
- Apr 2022 18:04:32 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:903:2444:b0:15d:281d:87 with SMTP id
+ l4-20020a170903244400b0015d281d0087mr19178900pls.9.1651194275630; Thu, 28 Apr
+ 2022 18:04:35 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 29 Apr 2022 01:04:14 +0000
+Date:   Fri, 29 Apr 2022 01:04:16 +0000
 In-Reply-To: <20220429010416.2788472-1-seanjc@google.com>
-Message-Id: <20220429010416.2788472-9-seanjc@google.com>
+Message-Id: <20220429010416.2788472-11-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220429010416.2788472-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 08/10] KVM: Take a 'struct page', not a pfn in kvm_is_zone_device_page()
+Subject: [PATCH 10/10] KVM: x86/mmu: Shove refcounted page dependency into host_pfn_mapping_level()
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -68,90 +68,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Operate on a 'struct page' instead of a pfn when checking if a page is a
-ZONE_DEVICE page, and rename the helper accordingly.  Generally speaking,
-KVM doesn't actually care about ZONE_DEVICE memory, i.e. shouldn't do
-anything special for ZONE_DEVICE memory.  Rather, KVM wants to treat
-ZONE_DEVICE memory like regular memory, and the need to identify
-ZONE_DEVICE memory only arises as an exception to PG_reserved pages. In
-other words, KVM should only ever check for ZONE_DEVICE memory after KVM
-has already verified that there is a struct page associated with the pfn.
+Move the check that restricts mapping huge pages into the guest to pfns
+that are backed by refcounted 'struct page' memory into the helper that
+actually "requires" a 'struct page', host_pfn_mapping_level().  In
+addition to deduplicating code, moving the check to the helper eliminates
+the subtle requirement that the caller check that the incoming pfn is
+backed by a refcounted struct page, and as an added bonus avoids an extra
+pfn_to_page() lookup.
+
+Note, the is_error_noslot_pfn() check in kvm_mmu_hugepage_adjust() needs
+to stay where it is, as it guards against dereferencing a NULL memslot in
+the kvm_slot_dirty_track_enabled() that follows.
 
 No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/mmu/mmu.c   | 3 ++-
- include/linux/kvm_host.h | 2 +-
- virt/kvm/kvm_main.c      | 8 ++++----
- 3 files changed, 7 insertions(+), 6 deletions(-)
+ arch/x86/kvm/mmu/mmu.c     | 14 +++++++++++---
+ arch/x86/kvm/mmu/tdp_mmu.c |  3 +--
+ 2 files changed, 12 insertions(+), 5 deletions(-)
 
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 904f0faff218..5cf1436adecd 100644
+index 7da6741d6ea7..20c8f3cb6b4d 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -2821,11 +2821,12 @@ static void direct_pte_prefetch(struct kvm_vcpu *vcpu, u64 *sptep)
+@@ -2824,11 +2824,19 @@ static void direct_pte_prefetch(struct kvm_vcpu *vcpu, u64 *sptep)
  static int host_pfn_mapping_level(struct kvm *kvm, gfn_t gfn, kvm_pfn_t pfn,
  				  const struct kvm_memory_slot *slot)
  {
-+	struct page *page = pfn_to_page(pfn);
+-	struct page *page = pfn_to_page(pfn);
  	unsigned long hva;
++	struct page *page;
  	pte_t *pte;
  	int level;
  
--	if (!PageCompound(pfn_to_page(pfn)) && !kvm_is_zone_device_pfn(pfn))
-+	if (!PageCompound(page) && !kvm_is_zone_device_page(page))
++	/*
++	 * Note, @slot must be non-NULL, i.e. the caller is responsible for
++	 * ensuring @pfn isn't garbage and is backed by a memslot.
++	 */
++	page = kvm_pfn_to_refcounted_page(pfn);
++	if (!page)
++		return PG_LEVEL_4K;
++
+ 	if (!PageCompound(page) && !kvm_is_zone_device_page(page))
  		return PG_LEVEL_4K;
  
- 	/*
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 7e59bc5ec8c7..4ccc309a43f2 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -1548,7 +1548,7 @@ void kvm_arch_sync_events(struct kvm *kvm);
- int kvm_cpu_has_pending_timer(struct kvm_vcpu *vcpu);
+@@ -2880,7 +2888,7 @@ void kvm_mmu_hugepage_adjust(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
+ 	if (unlikely(fault->max_level == PG_LEVEL_4K))
+ 		return;
  
- bool kvm_is_reserved_pfn(kvm_pfn_t pfn);
--bool kvm_is_zone_device_pfn(kvm_pfn_t pfn);
-+bool kvm_is_zone_device_page(struct page *page);
+-	if (is_error_noslot_pfn(fault->pfn) || !kvm_pfn_to_refcounted_page(fault->pfn))
++	if (is_error_noslot_pfn(fault->pfn))
+ 		return;
  
- struct kvm_irq_ack_notifier {
- 	struct hlist_node link;
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 661390243b9e..cbc6d58081d4 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -164,7 +164,7 @@ __weak void kvm_arch_mmu_notifier_invalidate_range(struct kvm *kvm,
- {
- }
+ 	if (kvm_slot_dirty_track_enabled(slot))
+@@ -5950,7 +5958,7 @@ static bool kvm_mmu_zap_collapsible_spte(struct kvm *kvm,
+ 		 * the guest, and the guest page table is using 4K page size
+ 		 * mapping if the indirect sp has level = 1.
+ 		 */
+-		if (sp->role.direct && kvm_pfn_to_refcounted_page(pfn) &&
++		if (sp->role.direct &&
+ 		    sp->role.level < kvm_mmu_max_mapping_level(kvm, slot, sp->gfn,
+ 							       pfn, PG_LEVEL_NUM)) {
+ 			pte_list_remove(kvm, rmap_head, sptep);
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index de2cc963dbec..25efaf7da91f 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -1737,8 +1737,7 @@ static void zap_collapsible_spte_range(struct kvm *kvm,
+ 			continue;
  
--bool kvm_is_zone_device_pfn(kvm_pfn_t pfn)
-+bool kvm_is_zone_device_page(struct page *page)
- {
- 	/*
- 	 * The metadata used by is_zone_device_page() to determine whether or
-@@ -172,10 +172,10 @@ bool kvm_is_zone_device_pfn(kvm_pfn_t pfn)
- 	 * the device has been pinned, e.g. by get_user_pages().  WARN if the
- 	 * page_count() is zero to help detect bad usage of this helper.
- 	 */
--	if (!pfn_valid(pfn) || WARN_ON_ONCE(!page_count(pfn_to_page(pfn))))
-+	if (WARN_ON_ONCE(!page_count(page)))
- 		return false;
+ 		pfn = spte_to_pfn(iter.old_spte);
+-		if (!kvm_pfn_to_refcounted_page(pfn) ||
+-		    iter.level >= kvm_mmu_max_mapping_level(kvm, slot, iter.gfn,
++		if (iter.level >= kvm_mmu_max_mapping_level(kvm, slot, iter.gfn,
+ 							    pfn, PG_LEVEL_NUM))
+ 			continue;
  
--	return is_zone_device_page(pfn_to_page(pfn));
-+	return is_zone_device_page(page);
- }
- 
- bool kvm_is_reserved_pfn(kvm_pfn_t pfn)
-@@ -188,7 +188,7 @@ bool kvm_is_reserved_pfn(kvm_pfn_t pfn)
- 	if (pfn_valid(pfn))
- 		return PageReserved(pfn_to_page(pfn)) &&
- 		       !is_zero_pfn(pfn) &&
--		       !kvm_is_zone_device_pfn(pfn);
-+		       !kvm_is_zone_device_page(pfn_to_page(pfn));
- 
- 	return true;
- }
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
