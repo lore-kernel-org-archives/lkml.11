@@ -2,105 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A88C4167D
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ECB3C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:46:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377799AbiD2Osv (ORCPT
+        id S1377816AbiD2Oti (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:48:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
+        Fri, 29 Apr 2022 10:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377802AbiD2Osr (ORCPT
+        with ESMTP id S1377770AbiD2Ost (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:48:47 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B1C7DA8E;
-        Fri, 29 Apr 2022 07:45:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=cEz0jvzYMJy/+PnSroZ/Hi6xu9Xg7ihjZ6KqkMsyEVA=; b=TtjJWVYR2YAsPylCOEsPMfdeP3
-        uewJTDxZvNwqz8faFaLHrMu4SGCc7XKgfqXs0N9Eqi4GqpadVMfaDxlWZzVPKQLi8ni/s2ddxpu3K
-        tP6hsTWVLR98QNCsrf0212qd1xvVl1Ei20QGO6x8V4HGcJkkz3V8HTUpxBZ8YdMeJOhwfqc/a8/uJ
-        6uvHWRRLoq8CaJRaw2R8nKQ6rT+OEKWXBb4ItDaXeeq0xIrWs1dLGM6n+SsKoTqhKb432TBldb0L4
-        ADdMsHTu5tPPflo8jyg6MaAv6SnfkenTNCGCscDeHdEnB08Cvtm9IbN9EZtdJb4wh68LkWeJPFXS4
-        x01q8OQw==;
-Received: from [179.113.53.197] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nkRru-0009vz-Hw; Fri, 29 Apr 2022 16:45:14 +0200
-Message-ID: <b81cf509-60d5-a733-0b06-374d9c146559@igalia.com>
-Date:   Fri, 29 Apr 2022 11:44:43 -0300
+        Fri, 29 Apr 2022 10:48:49 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC544CD70
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:45:28 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 659AA32009AB;
+        Fri, 29 Apr 2022 10:45:27 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Fri, 29 Apr 2022 10:45:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1651243526; x=
+        1651329926; bh=yEAzQ6Fdq8oAhr4/huHbbcTaVuHf0e4I24vYyJuhdC4=; b=r
+        vSmMP3ncPP4LPqBNTFUzjcqK0r4/dI7bh1nwQnQH2b2AgZz1XvZw1DgwxbvheWlY
+        X5w4vpBvN0KAD8y6EmmL2P6JjB6kg/oec6DSw9/jG8P7x5QcRO0kGlrhGzPC3W6G
+        3MnPZ/X4hG06JvaiUERVE5AZeOyD00LFEe7f7KPeZ5pBGvZRfdipurlx+aJEh0Vt
+        kkaNaPkerw9t18Qb+HZr1gVJ+pHO2BZL0r0ez3UcBibbFa2TMf7WHnMDBXgi6Nhv
+        FBJuosCzFbKy2D/aE1EwLOAWZv/OxiNrR4wdeoEBRa9oShJJC0x2LCq+bjCsRoKz
+        ow16qMOv+NEfdVxfKP8Ug==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1651243526; x=1651329926; bh=yEAzQ6Fdq8oAh
+        r4/huHbbcTaVuHf0e4I24vYyJuhdC4=; b=XYYAnTQWTKv3z/s836VnUqz09gFCS
+        N71qbyNcLBsoPqE3MPmyWsX4BZKQURERdKSo5Tlg4m2O2tqFHJGERpkYYlHJXtrG
+        7wOT4bLfhQD6AI2HU7kgZA03dQaNQa7zi1TooFKFiWi8Kv4wVLIDA/EtzNG4fCJC
+        X+aGhJVpSCyx4ZVySw2wIjhF1lASGONlhwjilgtt6vq5yIrfYcR36yISFOpyCkCQ
+        RB2u3IOkHU766WBE/kyXW0HrlXWuPTCNwyrfBW/WeyLFAlGAGWDB6Pky4dCJojcv
+        EyRD1xfScKiUiQfkmVjRqif1nKmudCZcQf6Th1UWmGTBqkn6ks95SEhYw==
+X-ME-Sender: <xms:BfprYruiV7EW5oU8t2QxIO9Lcp1npkVTmSZmPkXlns4U_vJrnzMgFw>
+    <xme:BfprYsdn3rQRM3JDX-QylaXu7kmjlb71h31mylFUdcoMn2BxIU4trEEVyud-SQfSW
+    3Eae4CPwZVqRAzmkSc>
+X-ME-Received: <xmr:BfprYuxRwwiF-CnGZRfZFlJlcBDsJXIBFksqztDYxvwrUaNZ6-yB4ohvPiqoOoBMVnssR_maJr7BQKWQ7PkYuy0zvKNtpiMMPTPqiTc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudelgdejkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefhvfevufffkffojghfgggtgfesthekredtredtjeenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeeuieeggffhffffieefheduieeuvdetgeeufeffvefgtedvffehheekffev
+    udefieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:BfprYqNVN6mq4LdLEehTnRDUbPBBgb1RQaVITV2vVZphdCAABXJX6g>
+    <xmx:BfprYr-sB0ykmLWvzD5ybm5oTDOELNGf-I6MNFZju0yU7N-5sZI0mQ>
+    <xmx:BfprYqXDcqfXclPH2qIUWIavWw5l237u2pxijWJdzOBvoQTECq-BEA>
+    <xmx:BvprYnSN2pZQ8MY6V_dE6qyPnS2uBY8j1uqoMXR45J6ZEvj1sXPPyg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 29 Apr 2022 10:45:25 -0400 (EDT)
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     emma@anholt.net, cgel.zte@gmail.com
+Cc:     Maxime Ripard <maxime@cerno.tech>, mripard@kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        airlied@linux.ie, dri-devel@lists.freedesktop.org,
+        Zeal Robot <zealci@zte.com.cn>, daniel@ffwll.ch
+Subject: Re: (subset) [PATCH] drm/vc4: simplify the return expression of vc4_grab_bin_bo()
+Date:   Fri, 29 Apr 2022 16:45:19 +0200
+Message-Id: <165124351807.924095.3207550688077043465.b4-ty@cerno.tech>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220429090208.3852879-1-chi.minghao@zte.com.cn>
+References: <20220429090208.3852879-1-chi.minghao@zte.com.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 17/30] tracing: Improve panic/die notifiers
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, senozhatsky@chromium.org,
-        stern@rowland.harvard.edu, tglx@linutronix.de, vgoyal@redhat.com,
-        vkuznets@redhat.com, will@kernel.org
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-18-gpiccoli@igalia.com>
- <b8771b37-01f5-f50b-dbb3-9db4ee26e67e@gmail.com>
- <20220429092351.10bca4dd@gandalf.local.home>
- <832eecc5-9569-1d95-6ab8-f029b660dfcb@igalia.com>
- <20220429095654.26d00b79@gandalf.local.home>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <20220429095654.26d00b79@gandalf.local.home>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/04/2022 10:56, Steven Rostedt wrote:
-> [...]
-> No. The fallthrough keyword is only needed when there's code between case
-> labels. As it is very common to list multiple cases for the same code path.
-> That is:
+On Fri, 29 Apr 2022 09:02:08 +0000, cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
 > 
-> 	case DIE_OOPS:
->  	case PANIC_NOTIFIER:
->  		do_dump = 1;
->  		break;
+> Simplify the return expression.
 > 
-> Does not need a fall through label, as there's no code between the DIE_OOPS
-> and the PANIC_NOTIFIER. But if you had:
 > 
-> 	case DIE_OOPS:
-> 		x = true;
->  	case PANIC_NOTIFIER:
->  		do_dump = 1;
->  		break;
-> 
-> Then you do.
-> 
-> -- Steve
 
-Thanks a bunch for the clarification, changed that for V2 =)
+Applied to drm/drm-misc (drm-misc-next).
+
+Thanks!
+Maxime
