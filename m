@@ -2,87 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C331C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:48:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 849DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:49:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359487AbiD2MvR (ORCPT
+        id S1359496AbiD2Mwf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 08:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44940 "EHLO
+        Fri, 29 Apr 2022 08:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237696AbiD2MvQ (ORCPT
+        with ESMTP id S1359292AbiD2Mwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 08:51:16 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BC3C9B77
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 05:47:58 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id h12so7029069plf.12
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 05:47:58 -0700 (PDT)
+        Fri, 29 Apr 2022 08:52:32 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C045C9B75;
+        Fri, 29 Apr 2022 05:49:12 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id x18so10710344wrc.0;
+        Fri, 29 Apr 2022 05:49:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LqkX6XBeIW8TsZdpLdtzQP+p29rZ0uf9pRgwD7D0pIM=;
-        b=mpzLDLmTVzRoHeGa90/5vPbjvJXWXjW3wYCr4FQCoM4lTyqQ2gpD4xho2hxFKlU1iz
-         jbu8guu6c20Ip9M7TGYljqL+OWrKyDTDvZxz38Xt4FbzybJHcLW9WcSgiNtVr3lt6eNd
-         Jd0R2tH+pMK3iWVAD0uIoNWUbxmeJdLxJN7beHE7+qgfNikXnFvknzEt04u4l5yw41yz
-         syhEx6JVjTlimyLM2r645sxW20vr5uedumqSGiaNHF+eeoUpg1kmzpUER0m8YyXWMGZy
-         K5wGtH6nlgRx6JOVBUDtD9jFX6Syy+DjP1Qo8fC6fCY/aU0uoa4zXyX7Tav8CFrRhXXp
-         YCxg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6gx1I2LEKWcJc0uFAMan792S2TeZ8Y9b5WwgAcqsFho=;
+        b=eqsr3iRoOLraeHQfAN1F8lxbHhTSxdIjUQr8ExFzQAGCUmElefmB7guzyjC0kxl5je
+         HT0OIrgMVP7TYB+jH1by1xcLHdxR/iPH0RxBMg5q8hDehljaEk52mNtAkz7VAAAfq6uQ
+         U598+3czQfs9pI2uIeUeVm6xVsHA+ogUhmyhCFfyVDEr1zdRF7yHyA3ybZoPFqixxaT/
+         X/6mA+22S80hqy84zvJQgTv/OkAWwpJyHz4aD/4jYED4VSKNHVEP2I/N4UZ4TPedAj0+
+         bMQcG1Int7xYiYvMjssXccYPNgZwB9G02qDFer0iaKKzUSx93WZuxt9XIQVsQf2k38am
+         8hHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=LqkX6XBeIW8TsZdpLdtzQP+p29rZ0uf9pRgwD7D0pIM=;
-        b=ImyxUxrIuboGywh+ga/ZRR3SYpsdz9U5JyrYE2k7RXfWcWMpSduD1qJo2nDgmU9JiE
-         SCcLW6sRvj6FVkZQkLKDlye/Pvul2wl4TlfOetqPNV6Znt+noCzR+58Ycp1l+il9Fn8r
-         6dG4NRS3KB2V/WS6xTS5X6y6lj4SiaZ9VAQRPvjVmUcOFLYjfavGWa3cq/txcOJkMVe8
-         lQ2M2zjye1ikdsWpShjVdjuEUeeCkglttowHL+Z8a30ejl9KeLCsomnskBaDyxoeH5Ew
-         uO1hsgtsF27xJZrEMnlmP8qgLLOMaWatkEXvpZJwYVcvrO+oJ+diESRoYB55R13BTX/Y
-         x5Tg==
-X-Gm-Message-State: AOAM53387kskigRdUMOZF7JiNCXJhPd+X2UpErmUsteiuXUZEVc8r+7G
-        g8LZQj0pFVv9cMCbSl7cjAF31g==
-X-Google-Smtp-Source: ABdhPJzU+qblFR9OFGJ1fY/MfM/OOEVItbbvb3U7IR5ZJe6SfP7SbtD3DpAdOk++ANiUU8TEidxjqQ==
-X-Received: by 2002:a17:902:ecd2:b0:15b:618a:2a8f with SMTP id a18-20020a170902ecd200b0015b618a2a8fmr38429433plh.140.1651236477929;
-        Fri, 29 Apr 2022 05:47:57 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id u19-20020a63b553000000b003c14af50616sm5885047pgo.46.2022.04.29.05.47.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 05:47:57 -0700 (PDT)
-Message-ID: <8f8d07c1-9276-df86-f1dc-3d272d4ab91d@kernel.dk>
-Date:   Fri, 29 Apr 2022 06:47:55 -0600
+        bh=6gx1I2LEKWcJc0uFAMan792S2TeZ8Y9b5WwgAcqsFho=;
+        b=g2ZUMiRnKtjH6tpnXLB55RVW1enbglb9qsMIRcpUfBbjDjkC8oF+rZHlHUku864Z0x
+         K7DM3XtMnLuS3PJ+uffHJdHUqs+IFbxkoGtzez/+aIGsX2w91cTxDgJsac+uohUwn3+H
+         XXf5ORy8zDYnWCmSzhtrTPgQEPyTSpuUgtbK7Qgf31klmt4evUk0NPPiotvcvXjrbcM3
+         fqiDYbUadTlAdWvkqO5Yx7WOc0GmtgHK7viqtIRbCR5kPRhIpoSDzvOXL7ptN11hSMCm
+         D5oYKc+tD0t5krXdVT81tUsWSzvIAJX9Lb992fxSZqpuYvi8Si2fKNMikLTHAkwnbTrv
+         i2WQ==
+X-Gm-Message-State: AOAM530+4qfI+vypNXtoryLW1vZAVV9GTeM+Vy4+Rx13Mkxq3H99awr/
+        z8Qts5SXxdG5JUuLmyvLN/o=
+X-Google-Smtp-Source: ABdhPJxuNgz+00AZk2K+3MHKXW1rmmSUinMRc2h419aF6uzywdkwSk8Wwqe7afiMqRAzA0LmEjtA6A==
+X-Received: by 2002:a5d:498d:0:b0:20a:dc6b:35c9 with SMTP id r13-20020a5d498d000000b0020adc6b35c9mr19910335wrq.176.1651236550512;
+        Fri, 29 Apr 2022 05:49:10 -0700 (PDT)
+Received: from alaa-emad ([197.57.200.226])
+        by smtp.gmail.com with ESMTPSA id g18-20020a05600c4ed200b00393e810038esm2899835wmq.34.2022.04.29.05.49.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 05:49:10 -0700 (PDT)
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     outreachy@lists.linux.dev, roopa@nvidia.com, jdenham@redhat.com,
+        sbrivio@redhat.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, shshaikh@marvell.com,
+        manishc@marvell.com, razor@blackwall.org,
+        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, GR-Linux-NIC-Dev@marvell.com,
+        bridge@lists.linux-foundation.org,
+        eng.alaamohamedsoliman.am@gmail.com
+Subject: [PATCH net-next v5 0/2] propagate extack to vxlan_fdb_delete
+Date:   Fri, 29 Apr 2022 14:49:05 +0200
+Message-Id: <cover.1651236081.git.eng.alaamohamedsoliman.am@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v1] io_uring: Fix memory leak if file setup fails.
-Content-Language: en-US
-To:     Noah Goldstein <goldstein.w.n@gmail.com>
-Cc:     asml.silence@gmail.com, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220429004244.3557063-1-goldstein.w.n@gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20220429004244.3557063-1-goldstein.w.n@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/28/22 6:42 PM, Noah Goldstein wrote:
-> If `get_unused_fd_flags` files fails (either in setting up `ctx` as
-> `tctx->last` or `get_unused_fd_flags`) `ctx` will never be freed.
+In order to propagate extack to vxlan_fdb_delete and vxlan_fdb_parse,
+add extack to .ndo_fdb_del and edit all fdb del handelers.
 
-There's a comment there telling you why, the fput will end up
-releasing it just like it would when an application closes it.
+Alaa Mohamed (2):
+  rtnetlink: add extack support in fdb del handlers
+  net: vxlan: Add extack support to vxlan_fdb_delete
 
-> I very well may be missing something (or there may be a double
-> free if the failure is after `get_unused_fd_flags`) but looks
-> to me to be a memory leak.
-
-Have you tried synthetically reproducing the two failures you're
-thinking of and tracing cleanup?
+ drivers/net/ethernet/intel/ice/ice_main.c     |  2 +-
+ drivers/net/ethernet/mscc/ocelot_net.c        |  3 +-
+ .../net/ethernet/qlogic/qlcnic/qlcnic_main.c  |  3 +-
+ drivers/net/macvlan.c                         |  3 +-
+ drivers/net/vxlan/vxlan_core.c                | 41 +++++++++++++------
+ include/linux/netdevice.h                     |  2 +-
+ net/bridge/br_fdb.c                           |  3 +-
+ net/bridge/br_private.h                       |  3 +-
+ net/core/rtnetlink.c                          |  4 +-
+ 9 files changed, 43 insertions(+), 21 deletions(-)
 
 -- 
-Jens Axboe
+2.36.0
 
