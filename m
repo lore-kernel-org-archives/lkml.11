@@ -2,107 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C4E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 21:54:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA7FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 21:56:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354636AbiD2V50 (ORCPT
+        id S1356747AbiD2WAG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 17:57:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35714 "EHLO
+        Fri, 29 Apr 2022 18:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349622AbiD2V5W (ORCPT
+        with ESMTP id S1349516AbiD2WAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 17:57:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 177F526549;
-        Fri, 29 Apr 2022 14:54:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EF34B835F1;
-        Fri, 29 Apr 2022 21:54:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40D5DC385AC;
-        Fri, 29 Apr 2022 21:53:59 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="m/dtNXZb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651269236;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mn3JSI7bM+4zDYNaL/aKzg64etYHLIe8pEdP6yUDjKI=;
-        b=m/dtNXZbVfkodWL1Au+zm2bUJFMYnke7DcKuQdah0MUfxHB2B1Q9ivjufyZqV2R1MqYFsc
-        303lGMJRUPOPeWn5McYltn+hOtuGfNMYn1cuor0ibPqaTuNcTz34ep26ZDFUJvXCTxZKHe
-        vwfE03DYmLEVAiGBOohmdyAyNES/EKo=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 4a149c2e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 29 Apr 2022 21:53:56 +0000 (UTC)
-Received: by mail-yb1-f176.google.com with SMTP id d12so16725707ybc.4;
-        Fri, 29 Apr 2022 14:53:56 -0700 (PDT)
-X-Gm-Message-State: AOAM531SKhVGuJWJ/xxRv6kRABsAb7QiYKg+ZB/QL5EghUZNnIjHE7JT
-        QtlWk1rYUPiR0yqs2/TX0O0JsLn6hetFWlcSAFA=
-X-Google-Smtp-Source: ABdhPJyNZroLS5iMypebjYUGTBgFUopOo4fAq7jpbTJBL+j/zs5z9L48Ho1oKqELtGbuoFWxvW4HyIKM0M+w0Ey3V5c=
-X-Received: by 2002:a25:c807:0:b0:649:a5c:a21 with SMTP id y7-20020a25c807000000b006490a5c0a21mr1502634ybf.637.1651269235080;
- Fri, 29 Apr 2022 14:53:55 -0700 (PDT)
+        Fri, 29 Apr 2022 18:00:04 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8171DDBD36;
+        Fri, 29 Apr 2022 14:56:45 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id x77so6133419qkb.3;
+        Fri, 29 Apr 2022 14:56:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2IktU5cP8TErB1eZzzrdy5caCFWOk6wLxe2djT+xI+E=;
+        b=dJVWNiS90V1EftStrt0mAwxui8nKAeifH+Yp7HEV1Q0sIG7lBUrOUmfCBx9zMSGgD8
+         8Ni371s2KYzh6tw445SNe9CLkuuHhudAH3qm2d1JsawE1r+5Rh/Erm49luXVnoGflgzU
+         9nDVO5Gi3aURYAEQPKgyEo6UBpgTVNBW3JPr753/2g6pmyy5SBELD+JJphQAW2Mq8g42
+         tnNiJabRG55VaXVg6GfCX+OP379Zxc2m+1etTWPgc3/5zu6XgM/NaxW4Hsf9BxZloZ01
+         hiKDPIrVZXfb4qAAI2LmzitQnBsxng2bhNEcxjo2wDvklCi9mVp7sJSae8rMn/Yyru11
+         ccNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2IktU5cP8TErB1eZzzrdy5caCFWOk6wLxe2djT+xI+E=;
+        b=xRaqRQdB1sHK9n30RwhyiKkRSCjbpCyj6CD0q91bejKBip4iCSCsBfR8YDjMWSDWhW
+         c6xlJGhhQUy/EPNFICaO4dupbZNQGITiHSB8E8wm2FoH0wr4FP0iX/JxlVqYoj5+rIEs
+         VtMKwdb03CqFfVpIRRGXFy8QfU/ygWiO7OzwPJbwgszgRxnoDPLSRnM64d91zh/p2r4T
+         5PcrmRyP3grCF/N9ozxvuvuD2zwbA6SYZvXNbIym+LrOvrufSuLjOdDd3hkBJUUe1xJa
+         ryObI1WjlMVc5loxtQvQNr30EOU7QJbIy1r1FFaR0tRXBqkNYGKa1DWkJx3kne/qQZYW
+         H/ew==
+X-Gm-Message-State: AOAM5324mW7bhS2iTF19S9s/mN0FF0Qb1oF0vyR04QgorzVNc1b8Ow/3
+        iBM8hzhAfYuYyhNMFI5N236O58rxoiKI6WmMm2m5fqbjoGrZ0g==
+X-Google-Smtp-Source: ABdhPJxxTKocEmDRUVcm9VX7Omzv2dfX1hAPvyXANayJ6pDdW2hd3aw1MQyLYwzHXagxbCxLS4+BgOq6f8je5bz6HmQ=
+X-Received: by 2002:a05:620a:1a01:b0:69c:fda:7404 with SMTP id
+ bk1-20020a05620a1a0100b0069c0fda7404mr910750qkb.522.1651269404666; Fri, 29
+ Apr 2022 14:56:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAHmME9r_DbZWe4FsfebHSSf_iPctSe5S-w9bU3o8BN43raeURg@mail.gmail.com>
- <20151116203709.GA27178@oracle.com> <CAHmME9pNCqbcoqbOnx6p8poehAntyyy1jQhy=0_HjkJ8nvMQdw@mail.gmail.com>
- <1447712932.22599.77.camel@edumazet-glaptop2.roam.corp.google.com>
- <CAHmME9oTU7HwP5=qo=aFWe0YXv5EPGoREpF2k-QY7qTmkDeXEA@mail.gmail.com>
- <YmszSXueTxYOC41G@zx2c4.com> <04f72c85-557f-d67c-c751-85be65cb015a@gmail.com>
- <YmxTo2hVwcwhdvjO@zx2c4.com> <d9854c74-c209-9ea5-6c76-8390e867521b@gmail.com>
-In-Reply-To: <d9854c74-c209-9ea5-6c76-8390e867521b@gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 29 Apr 2022 23:53:44 +0200
-X-Gmail-Original-Message-ID: <CAHmME9qXC-4OPc5xRbC6CQJcpzb96EXzNWAist5A8momYxvVUA@mail.gmail.com>
-Message-ID: <CAHmME9qXC-4OPc5xRbC6CQJcpzb96EXzNWAist5A8momYxvVUA@mail.gmail.com>
-Subject: Re: Routing loops & TTL tracking with tunnel devices
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Eric Dumazet <edumazet@google.com>
+References: <20220429114330.59026-1-robimarko@gmail.com> <20220429114330.59026-2-robimarko@gmail.com>
+ <1b545fbb-eaca-fb98-f77a-15326a7a2e4e@linaro.org>
+In-Reply-To: <1b545fbb-eaca-fb98-f77a-15326a7a2e4e@linaro.org>
+From:   Robert Marko <robimarko@gmail.com>
+Date:   Fri, 29 Apr 2022 23:56:33 +0200
+Message-ID: <CAOX2RU4KiKxCSMGDu+=FZqkdRia0MSBcz-eMn0kGpJ5ABxdkSg@mail.gmail.com>
+Subject: Re: [PATCH 2/6] clk: qcom: Add DT bindings for IPQ8074 APSS clock controller
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        jassisinghbrar@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org, linux-clk@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Eric,
+On Fri, 29 Apr 2022 at 22:46, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 29/04/2022 13:43, Robert Marko wrote:
+> > Add DT-binding for the IPQ8074 APSS clock controller.
+> >
+> > Signed-off-by: Robert Marko <robimarko@gmail.com>
+>
+> These are dt-bindings, so prefix the title matching dt-bindings
+> subsystem and remove "DT bindings" words form the title. Instead "Add
+> clock ID headers for..."
 
-On Fri, Apr 29, 2022 at 11:14 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
-> On 4/29/22 14:07, Jason A. Donenfeld wrote:
->
-> Hi Eric,
->
-> On Fri, Apr 29, 2022 at 01:54:27PM -0700, Eric Dumazet wrote:
->
-> Anyway, it'd be nice if there were a free u8 somewhere in sk_buff that I
-> could use for tracking times through the stack. Other kernels have this
-> but afaict Linux still does not. I looked into trying to overload some
-> existing fields -- tstamp/skb_mstamp_ns or queue_mapping -- which I was
-> thinking might be totally unused on TX?
->
-> if skbs are stored in some internal wireguard queue, can not you use
-> skb->cb[],
->
-> like many other layers do ?
->
-> This isn't for some internal wireguard queue. The packets get sent out
-> of udp_tunnel_xmit_skb(), so they leave wireguard's queues.
->
->
-> OK, where is the queue then ?
->
-> dev_xmit_recursion() is supposed to catch long chains of virtual devices.
+Ok, sorry for the mess-up, will fix up v2.
 
-This is the long-chain-of-virtual-devices case indeed. But
-dev_xmit_recursion() does not help here, since that's just a per-cpu
-increment, assuming that the packet actually gets xmit'd in its
-ndo_start_xmit function. But in reality, wireguard queues up the
-packet, encrypts it in some worker later, and eventually transmits it
-with udp_tunnel_xmit_skb(). All the while ndo_start_xmit() has long
-returned. So no help from dev_xmit_recursion().
+>
+> > ---
+> >  include/dt-bindings/clock/qcom,apss-ipq8074.h | 14 ++++++++++++++
+> >  1 file changed, 14 insertions(+)
+> >  create mode 100644 include/dt-bindings/clock/qcom,apss-ipq8074.h
+> >
+> > diff --git a/include/dt-bindings/clock/qcom,apss-ipq8074.h b/include/dt-bindings/clock/qcom,apss-ipq8074.h
+> > new file mode 100644
+> > index 000000000000..df07766b0146
+> > --- /dev/null
+> > +++ b/include/dt-bindings/clock/qcom,apss-ipq8074.h
+> > @@ -0,0 +1,14 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+>
+> This should be licensed the same as bindings, so GPL|BSD, unless it's a
+> derivative of some other work?
 
-Jason
+It's derivated from IPQ6018 PLL bindings which are marked GPL-2.0 so I
+decided to keep that.
+
+Regards,
+Robert
+>
+> Best regards,
+> Krzysztof
