@@ -2,171 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 906C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:51:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48CF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359588AbiD2Mym (ORCPT
+        id S1359567AbiD2Mz2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 08:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51570 "EHLO
+        Fri, 29 Apr 2022 08:55:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359567AbiD2My0 (ORCPT
+        with ESMTP id S245070AbiD2Mz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 08:54:26 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7D49B3695;
-        Fri, 29 Apr 2022 05:51:06 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id a21so8975260edb.1;
-        Fri, 29 Apr 2022 05:51:06 -0700 (PDT)
+        Fri, 29 Apr 2022 08:55:26 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70548CA0E4;
+        Fri, 29 Apr 2022 05:52:07 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id y2so14274412ybi.7;
+        Fri, 29 Apr 2022 05:52:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=wYLNkQDRIReLtuo3nph35Lv13qW9BGvsKSf7RZPP9xg=;
-        b=A62YDg43ZJFVz+Vc0gpIGYmqdZfuoXw19LxJxPOFelkvshyFVf7ot1cCaV2dhGMSOn
-         mJJ53CdisMbvmESH3a1v/MpSU0FIMn3I5D9zlmrnNOGf+5Q91EdO7HdcQ9+ModUAEegb
-         SgpzCXSfFCvsBnsPkrqHf6hOQ099ysfpwEAbbLXTK9hZbKufE4DAdkZ5osrU2CDfL6Qp
-         yRnDXZZPkTSE51RRa7oA4hCk6H7RpI7qeY2FYPGNqEs6DP1NHVQz3tZOKPnuLUlqHrEv
-         OtJxU5orp0zKXc4IlkPd/XWtw7jz4GQyRBENfOzGl82iilR4KYhJkIgEp47onw6Vyc4l
-         44AQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FZ/8JNTm7vpbFc2YOEAMd+Fo9SryLJ8pTwtRQk4/FOk=;
+        b=WpO4+NLt8Ukw2ZwcrHbAnQOpf98OVlUhSt5NXSdanwU6n/UsXzPSEXnAhaRaWv+umA
+         oNaoj/qqNLSY1rADzGLWH33peBDOWAbfw07ezxxVLrnvFkQ2VJ5sm05LM/1AB+12Ayfp
+         vwPoaUdjKMiHlXSnxykyEnD+dNeN69tef5GI2MYDqqbM45RC2sU7A5E+jHLaOD5MOV8S
+         cXdlSabecyTUnhGXGC51P+VKEBPjw+L7YB+JN1bbywbd1s2/ikRZV8PJnZAWGHcFKVIr
+         t9l+jgDRDnCXoB7q+rwC6kfur/qnMXQCxKXf6/mrUbNcpF2ov8+un6as/MfOks3OBGhw
+         GhSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wYLNkQDRIReLtuo3nph35Lv13qW9BGvsKSf7RZPP9xg=;
-        b=TjD/cIBtf0Fm8jgjk3uTvJXKnT2Rz/tXXhToF5Cj3mn+qLstq5gaDM3tZooTisXlIy
-         HryMt6hrbjQIHqGx4m+TBF7GEGJFbsTexez/BImCRkgEzWQhyogNCdhI8N32sE2t/hUb
-         ufTxh4ZeNWOqf3Bnr89gnYhjvReGy4jFkO1aeGw/SCJ+PepmT1snSVjWSwmr9yZeeBWT
-         kM1qJNR04sNE0aTMcF1Vyj/gpfitdAUzuwmuDDtID57zizZ9uClyGDv8UsYQv0GOPD0D
-         LGxSA8lADrccBMTsOFA/yf7pDG2l208TqcfyYaP8NbJ6hp1CzY1p8bweJlcT272ERywp
-         MeAQ==
-X-Gm-Message-State: AOAM531WZ8Qq080ei00zv9eah0GzId7qyq4dect2m/c0kvFErkwr3I6t
-        CPM0ZzB9B+PRF4Pcm++0UOlcKXUOJa0=
-X-Google-Smtp-Source: ABdhPJwD9ryKCvmVR5tY0PkuFcZhNw6EywaHCs5BHyiQ7YPCknGIaZbHuubrGmR+oMLbh9bnGyyLOQ==
-X-Received: by 2002:a05:6402:3486:b0:425:f2c6:9695 with SMTP id v6-20020a056402348600b00425f2c69695mr24131738edc.2.1651236665223;
-        Fri, 29 Apr 2022 05:51:05 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id hf27-20020a1709072c5b00b006f3ef214e33sm615347ejc.153.2022.04.29.05.51.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 05:51:04 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH v3 2/2] mtd: core: introduce of support for dynamic partitions
-Date:   Fri, 29 Apr 2022 14:48:25 +0200
-Message-Id: <20220429124825.21477-3-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220429124825.21477-1-ansuelsmth@gmail.com>
-References: <20220429124825.21477-1-ansuelsmth@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FZ/8JNTm7vpbFc2YOEAMd+Fo9SryLJ8pTwtRQk4/FOk=;
+        b=F7zKvD2bKgDprIwElUEKbXJq6BUWHV9Yi3ElB9E5Qv4tXt0e10yqA6aITlpiContiV
+         GBViNEvR/YjoIDGlbJLIyu1akcXAoBMl4skrs+d1QlXol37HEOWrxV61V2F0HnVf449T
+         j0Wi0Wi1JBWi/hMuEk/qZvbtjeMGSCwSnr6RUqEIMWIxkpgMl79MDD/P4u7TMU5xOML8
+         Pxt+UFbSASd7OEW+aw0MQOLXi5ONE/cdKb1J79nG99Js+Svl6Dre1fa5w5iOq5PHd/nc
+         n2lByNsBg3SLEjlyjsH0xPVUm0WzlUc2ynTAhq8Ql4xgg1e14v4c50bGAK3KSEI1o6Rs
+         7Wqg==
+X-Gm-Message-State: AOAM530VwUi2I6+P2Xwe8xyloW0R8O6H9/80YQSFWY53f6/tVf7D9pnN
+        wEsaLrzCk7Mz8IcxAAPOZ0pz7ZwypoO5jyJQ+mE=
+X-Google-Smtp-Source: ABdhPJzRNlEiq1/vYE5gH25u17jZRFLjz3wbD2iYLzU01FlXhl/FlC+A6HDjYY9XS8w8L6gcw/IvaA0gnNC3PgK0txQ=
+X-Received: by 2002:a25:600b:0:b0:648:ef9b:172d with SMTP id
+ u11-20020a25600b000000b00648ef9b172dmr9893719ybb.585.1651236726660; Fri, 29
+ Apr 2022 05:52:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220228233057.1140817-1-pgwipeout@gmail.com> <Yh1lboz7VDiuYuZV@shell.armlinux.org.uk>
+ <CAMdYzYrNvUUMom4W4uD9yf9LtFK1h5Xw+9GYc54hB5+iqVmJtw@mail.gmail.com>
+In-Reply-To: <CAMdYzYrNvUUMom4W4uD9yf9LtFK1h5Xw+9GYc54hB5+iqVmJtw@mail.gmail.com>
+From:   Peter Geis <pgwipeout@gmail.com>
+Date:   Fri, 29 Apr 2022 08:51:54 -0400
+Message-ID: <CAMdYzYrFuMw4aj_9L698ZhL7Xqy8=NeXhy9HDz4ug-v3=f4fpw@mail.gmail.com>
+Subject: Re: [PATCH v1] net: phy: fix motorcomm module automatic loading
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We have many parser that register mtd partitions at runtime. One example
-is the cmdlinepart or the smem-part parser where the compatible is defined
-in the dts and the partitions gets detected and registered by the
-parser. This is problematic for the NVMEM subsystem that requires an OF node
-to detect NVMEM cells.
+On Mon, Feb 28, 2022 at 7:44 PM Peter Geis <pgwipeout@gmail.com> wrote:
+>
+> On Mon, Feb 28, 2022 at 7:14 PM Russell King (Oracle)
+> <linux@armlinux.org.uk> wrote:
+> >
+> > On Mon, Feb 28, 2022 at 06:30:57PM -0500, Peter Geis wrote:
+> > > The sentinel compatible entry whitespace causes automatic module loading
+> > > to fail with certain userspace utilities. Fix this by removing the
+> > > whitespace and sentinel comment, which is unnecessary.
+> >
+> > Umm. How does it fail?
+>
+> It simply does not auto load the module by device id match.
+> Manually loading the module after the fact works fine.
+>
+> >
+> > >  static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
+> > >       { PHY_ID_MATCH_EXACT(PHY_ID_YT8511) },
+> > > -     { /* sentinal */ }
+> > > +     {}
+> >
+> > These two should be 100% identical in terms of the object code produced,
+> > and thus should have no bearing on the ability for the module to be
+> > loaded.
+> >
+> > Have you investigated the differences in the produced object code?
+>
+> Yes, you are correct, I just compared the produced files and they are identical.
+> This patch can get dropped then.
+> I'm curious now why it seemed to make a difference.
+>
+> I am not familiar enough with how the various userspace elements
+> decide to match the modules to determine exactly why this is failing.
+> It seems to be hit or miss if userspace decides to auto load this, for
+> instance Ubuntu 20.04 was happy to load my kernel module built with
+> the arm64 official toolchain, but Manjaro will not load their self
+> built kernel module.
+> I originally suspected it was due to the manufacturer id being all zeros.
+> Unless there's some weird compiler optimization that I'm not seeing in
+> my configuration.
+>
+> Any ideas would be appreciated.
+> Thanks!
 
-To fix this problem, introduce an additional logic that will try to
-assign an OF node to the MTD if declared.
+Good Morning,
 
-On MTD addition, it will be checked if the MTD has an OF node and if
-not declared will check if a partition with the same name / label is
-declared in DTS. If an exact match is found, the partition dynamically
-allocated by the parser will have a connected OF node.
+After testing various configurations I found what is actually
+happening here. When libphy is built in but the phy drivers are
+modules and not available in the initrd, the generic phy driver binds
+here. This allows the phy to come up but it is not functional. It also
+prevents the module driver from binding when it becomes available.
+https://elixir.bootlin.com/linux/v5.18-rc4/source/drivers/net/phy/phy_device.c#L1383
 
-The NVMEM subsystem will detect the OF node and register any NVMEM cells
-declared statically in the DTS.
+It seems there is an implicit dependency between phy_device and the
+device specific drivers that isn't realized in the configuration.
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- drivers/mtd/mtdcore.c | 56 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
+I can think of a few ways to fix this, but I think the simplest is to
+make the device specific drivers have a kconfig dependency on libphy
+(which builds phy_device). This means that the only time the device
+specific phy drivers can be modules is if libphy is as well, otherwise
+if libphy is built in, the device specific drivers would need to be as
+well. There are more elegant and complicated solutions I can think of
+here, such as breaking out the generic driver as a module or having a
+device-tree flag that annotates that we need a device specific driver.
 
-diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
-index 7731796024e0..ffca53fcc19a 100644
---- a/drivers/mtd/mtdcore.c
-+++ b/drivers/mtd/mtdcore.c
-@@ -546,6 +546,61 @@ static int mtd_nvmem_add(struct mtd_info *mtd)
- 	return 0;
- }
- 
-+static void mtd_check_of_node(struct mtd_info *mtd)
-+{
-+	struct device_node *partitions, *parent_dn, *mtd_dn = NULL;
-+	const char *mtd_name, *suffix = "-dynamic";
-+	int plen, suffix_len = 8;
-+	struct mtd_info *parent;
-+	bool found = false;
-+
-+	/* Check if MTD already has a device node */
-+	if (dev_of_node(&mtd->dev))
-+		return;
-+
-+	/* Check if a partitions node exist */
-+	parent = mtd->parent;
-+	parent_dn = dev_of_node(&parent->dev);
-+	if (!parent_dn)
-+		return;
-+
-+	partitions = of_get_child_by_name(parent_dn, "partitions");
-+	if (!partitions)
-+		goto exit_parent;
-+
-+	/* Search if a partition is defined with the same name */
-+	for_each_child_of_node(partitions, mtd_dn) {
-+		mtd_name = of_get_property(mtd_dn, "label", &plen);
-+		if (!mtd_name) {
-+			mtd_name = of_get_property(mtd_dn, "name", &plen);
-+
-+			/* Check correct suffix */
-+			if (plen <= suffix_len ||
-+			    strncmp(mtd_name + plen - suffix_len, suffix, suffix_len))
-+				continue;
-+
-+			plen = plen - suffix_len;
-+		}
-+
-+		if (!strncmp(mtd->name, mtd_name, plen)) {
-+			found = true;
-+			break;
-+		}
-+	}
-+
-+	if (!found)
-+		goto exit_partitions;
-+
-+	/* Set of_node only for nvmem */
-+	if (of_device_is_compatible(mtd_dn, "nvmem-cells"))
-+		mtd_set_of_node(mtd, mtd_dn);
-+
-+exit_partitions:
-+	of_node_put(partitions);
-+exit_parent:
-+	of_node_put(parent_dn);
-+}
-+
- /**
-  *	add_mtd_device - register an MTD device
-  *	@mtd: pointer to new MTD device info structure
-@@ -651,6 +706,7 @@ int add_mtd_device(struct mtd_info *mtd)
- 	mtd->dev.devt = MTD_DEVT(i);
- 	dev_set_name(&mtd->dev, "mtd%d", i);
- 	dev_set_drvdata(&mtd->dev, mtd);
-+	mtd_check_of_node(mtd);
- 	of_node_get(mtd_get_of_node(mtd));
- 	error = device_register(&mtd->dev);
- 	if (error)
--- 
-2.34.1
+This isn't realized with most of the common devices such as the
+Realtek driver because they have cross dependencies that ensure they
+are likely to be built in.
 
+Very Respectfully,
+Peter Geis
+
+
+>
+> > If not, please do so, and describe what they were. Thanks.
+> >
+> > --
+> > RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> > FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
