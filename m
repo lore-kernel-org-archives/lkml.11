@@ -2,107 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 19:26:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91FC0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 19:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238694AbiD2T3U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 15:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58296 "EHLO
+        id S238945AbiD2TbZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 15:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234368AbiD2T3S (ORCPT
+        with ESMTP id S234368AbiD2TbX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 15:29:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 325BF8164A
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 12:25:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651260357;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=f98T4BJHfJan6nA7b2NKA9Mwn0L7MATFzgHNudByTF0=;
-        b=i51/qOANEsvU70Wr1A5ryCzOfT/75lQUkiew42TBOhEpmNmTLKzCRIQUn0Aca7fq6rehP+
-        kJLqAb7+5Y6zaCNKN3s9Rk4CX6AofjzpxaHIEqz6FcD7wr8TDLb2HoEbcG1oTc0msQ+4fv
-        017LYkv7XPhfJqodkmZtwyEt566Kilw=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-483-XS1Nj7v1OguIBsNbGBb46w-1; Fri, 29 Apr 2022 15:25:53 -0400
-X-MC-Unique: XS1Nj7v1OguIBsNbGBb46w-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Fri, 29 Apr 2022 15:31:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C788EC74AC;
+        Fri, 29 Apr 2022 12:28:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 516593834C02;
-        Fri, 29 Apr 2022 19:25:53 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 34E7BC15D70;
-        Fri, 29 Apr 2022 19:25:53 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH] KVM: x86: work around QEMU issue with synthetic CPUID leaves
-Date:   Fri, 29 Apr 2022 15:25:53 -0400
-Message-Id: <20220429192553.932611-1-pbonzini@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88A85B8377B;
+        Fri, 29 Apr 2022 19:28:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07D6AC385A4;
+        Fri, 29 Apr 2022 19:28:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651260482;
+        bh=2d+UHz/5zxzsei7MM6RtAJkyGRt88SKqYYvyvFLBWQ0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=AtuF+p54erDmpmGP/kN5VmKNrOGLoRHnlQXQYDa4s4ZLCqvoTyHE9iUYGTNCswaPy
+         ++u1H9HwDsXlNNC7yMdyRE2e/NGv0yUG7PLjul92mXSFcY80NJs3yf92iCqwKAB5Nf
+         JpUSx2JVmvxwvFJQxfA2zhHmV/8MXAwlrnhL6MfW0P4OOg4VumZIA0T7uZ4lieApn+
+         5lE44QF2GJ6bxtk6Gg8b5UaGCuZNtUMOLmG5DUPk+RlOtgdV+SvO3VPMqdBIjmuixx
+         1Crn/SrEEtKFy7rXSwqS6OrLTzz9QQevf990PTJrqgCHufWhSjjiXaQjD4LtZh4dC0
+         Gse8KLDV51xUg==
+Date:   Fri, 29 Apr 2022 12:28:00 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Min Li <min.li.xe@renesas.com>
+Cc:     richardcochran@gmail.com, lee.jones@linaro.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net v2 1/2] ptp: ptp_clockmatrix: Add PTP_CLK_REQ_EXTTS
+ support
+Message-ID: <20220429122800.1df9cd27@kernel.org>
+In-Reply-To: <1651244864-14297-1-git-send-email-min.li.xe@renesas.com>
+References: <1651244864-14297-1-git-send-email-min.li.xe@renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Synthesizing AMD leaves up to 0x80000021 caused problems with QEMU,
-which assumes the *host* CPUID[0x80000000].EAX is higher or equal
-to what KVM_GET_SUPPORTED_CPUID reports.
+On Fri, 29 Apr 2022 11:07:43 -0400 Min Li wrote:
+> -/*
+> +/**
+>   * Maximum absolute value for write phase offset in picoseconds
+>   *
+> + * @channel:  channel
+> + * @delta_ns: delta in nanoseconds
+> + *
 
-This causes QEMU to issue bogus host CPUIDs when preparing the input
-to KVM_SET_CPUID2.  It can even get into an infinite loop, which is
-only terminated by an abort():
+You must have missed my comment about this not being valid kdoc.
 
-   cpuid_data is full, no space for cpuid(eax:0x8000001d,ecx:0x3e)
+  drivers/ptp/ptp_clockmatrix.c:1734: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
 
-To work around this, only synthesize those leaves if 0x8000001d exists
-on the host.  The synthetic 0x80000021 leaf is mostly useful on Zen2,
-which satisfies the condition.
-
-Fixes: f144c49e8c39 ("KVM: x86: synthesize CPUID leaf 0x80000021h if useful")
-Reported-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- arch/x86/kvm/cpuid.c | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
-
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index b24ca7f4ed7c..598334ed5fbc 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -1085,12 +1085,21 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
- 	case 0x80000000:
- 		entry->eax = min(entry->eax, 0x80000021);
- 		/*
--		 * Serializing LFENCE is reported in a multitude of ways,
--		 * and NullSegClearsBase is not reported in CPUID on Zen2;
--		 * help userspace by providing the CPUID leaf ourselves.
-+		 * Serializing LFENCE is reported in a multitude of ways, and
-+		 * NullSegClearsBase is not reported in CPUID on Zen2; help
-+		 * userspace by providing the CPUID leaf ourselves.
-+		 *
-+		 * However, only do it if the host has CPUID leaf 0x8000001d.
-+		 * QEMU thinks that it can query the host blindly for that
-+		 * CPUID leaf if KVM reports that it supports 0x8000001d or
-+		 * above.  The processor merrily returns values from the
-+		 * highest Intel leaf which QEMU tries to use as the guest's
-+		 * 0x8000001d.  Even worse, this can result in an infinite
-+		 * loop if said highest leaf has no subleaves indexed by ECX.
- 		 */
--		if (static_cpu_has(X86_FEATURE_LFENCE_RDTSC)
--		    || !static_cpu_has_bug(X86_BUG_NULL_SEG))
-+		if (entry->eax >= 0x8000001d &&
-+		    (static_cpu_has(X86_FEATURE_LFENCE_RDTSC)
-+		     || !static_cpu_has_bug(X86_BUG_NULL_SEG)))
- 			entry->eax = max(entry->eax, 0x80000021);
- 		break;
- 	case 0x80000001:
--- 
-2.31.1
-
+Also if you're just fixing build issues you can keep Richard's 
+review tags.
