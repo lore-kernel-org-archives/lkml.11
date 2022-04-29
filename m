@@ -2,114 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D00C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 23:55:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C75C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 23:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381474AbiD2X63 (ORCPT
+        id S1381845AbiD2X7v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 19:58:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52412 "EHLO
+        Fri, 29 Apr 2022 19:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347017AbiD2X6Z (ORCPT
+        with ESMTP id S1345729AbiD2X7t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 19:58:25 -0400
-Received: from qproxy1-pub.mail.unifiedlayer.com (qproxy1-pub.mail.unifiedlayer.com [173.254.64.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5612188
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 16:55:03 -0700 (PDT)
-Received: from outbound-ss-761.bluehost.com (outbound-ss-761.bluehost.com [74.220.211.250])
-        by qproxy1.mail.unifiedlayer.com (Postfix) with ESMTP id 2953B802ADC9
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 23:55:02 +0000 (UTC)
-Received: from cmgw12.mail.unifiedlayer.com (unknown [10.0.90.127])
-        by progateway8.mail.pro1.eigbox.com (Postfix) with ESMTP id 64A96100452D7
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 23:55:01 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id kaRwnxHUIb2WGkaRxnEqRM; Fri, 29 Apr 2022 23:55:01 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=SqtVVNC0 c=1 sm=1 tr=0 ts=626c7ad5
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=z0gMJWrwH1QA:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=+zDWKjAZ8tQ8EUFo5UO3FzlqhqC8WXwNkjhLshulIYQ=; b=BgWsa8sTSyRxBJ+/uNLYcEU1k9
-        C6EWJC7qdgwmZVeaRY3hB+KeWUitV19XeSB5bT3m1hhf6rRizUVTw2m4k10k+D4CAmstqUpks0JAU
-        gSmxxiKIPq3++imCkX5OxuO9C8/aStwPVBZjMbNIQUvTyzFdhzVeaw+ObyXGSeDUWKur0jmN17JRQ
-        Znu2NKL8hAlLjyI5IaHkjgOHcSG9XlAALnvNDb+U44VUUhpzT1S3eIAryjqip5Cd/hJirztqP9+eC
-        67NQuxEFpj7V63/5bDbIO0RuE7SPuNTxUlYX2MasNnOXbqShLGQlMVwi3kDULXQcLsriiBkH5hH6D
-        1+lGrh+A==;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:49206 helo=[10.0.1.48])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <re@w6rz.net>)
-        id 1nkaRv-001PEA-On; Fri, 29 Apr 2022 17:54:59 -0600
-Subject: Re: [PATCH 5.15 00/33] 5.15.37-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220429104052.345760505@linuxfoundation.org>
-In-Reply-To: <20220429104052.345760505@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <97a91dad-da08-258b-4b43-7bc6e0e2ba45@w6rz.net>
-Date:   Fri, 29 Apr 2022 16:54:57 -0700
-User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Fri, 29 Apr 2022 19:59:49 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1460F2B1A9
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 16:56:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651276590; x=1682812590;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=h9FcGcVtvJBwLlMdmU+fvN9kgL7m36MVzocVRQWblJs=;
+  b=IU2hdeprezFYlwqglqRaMVvpqzvjJCk8Vq1e16CtJoc++xZOciTDQQxt
+   9OC8UQ6kOls+vgvkF5p2nHBmW52STmzHG8+JL1loVm1wcKdspnG7ypvhH
+   LAouxxOADKIzTMOaWEqel7hxF6ImDbKcqzVrTEeFRrkewiLHlmP/HeyM9
+   nYbFfMqSnt9Fkg6p1yePtXmpjcxLzjLxrYPMAZfmIIWDvDCD7oNhl1DDh
+   5NbIBxe5cbolnMzJhoV/58NsdeEqU6cnroQWSOpIJnz5ydFUEfgMGlpD9
+   f2E/RTfojsFF5NPxWyI4SYK+Uw7KoY4km5uGktGdTefcgw3Jq/pGmZXMa
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="264386032"
+X-IronPort-AV: E=Sophos;i="5.91,186,1647327600"; 
+   d="scan'208";a="264386032"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 16:56:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,186,1647327600"; 
+   d="scan'208";a="597584611"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 29 Apr 2022 16:56:26 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nkaTK-0006h7-67;
+        Fri, 29 Apr 2022 23:56:26 +0000
+Date:   Sat, 30 Apr 2022 07:56:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Mark Rutland <mark.rutland@arm.com>
+Subject: [mark:arm64/ftrace/per-callsite-ops 1/6]
+ kernel/trace/fgraph.c:37:12: warning: no previous prototype for
+ 'ftrace_enable_ftrace_graph_caller'
+Message-ID: <202204300758.ces9aD6G-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1nkaRv-001PEA-On
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:49206
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/29/22 3:41 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.37 release.
-> There are 33 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Sun, 01 May 2022 10:40:41 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.37-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git arm64/ftrace/per-callsite-ops
+head:   2aaba224d039a36f7eca5ad68c77686d3546e4fa
+commit: 718b0fd1ccf6f04340cb3ad48b667ca05bb7a31c [1/6] ftrace: cleanup ftrace_graph_caller enable and disable
+config: sh-buildonly-randconfig-r002-20220428 (https://download.01.org/0day-ci/archive/20220430/202204300758.ces9aD6G-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/commit/?id=718b0fd1ccf6f04340cb3ad48b667ca05bb7a31c
+        git remote add mark https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git
+        git fetch --no-tags mark arm64/ftrace/per-callsite-ops
+        git checkout 718b0fd1ccf6f04340cb3ad48b667ca05bb7a31c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash kernel/trace/
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Tested-by: Ron Economos <re@w6rz.net>
+All warnings (new ones prefixed by >>):
 
+>> kernel/trace/fgraph.c:37:12: warning: no previous prototype for 'ftrace_enable_ftrace_graph_caller' [-Wmissing-prototypes]
+      37 | int __weak ftrace_enable_ftrace_graph_caller(void)
+         |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> kernel/trace/fgraph.c:46:12: warning: no previous prototype for 'ftrace_disable_ftrace_graph_caller' [-Wmissing-prototypes]
+      46 | int __weak ftrace_disable_ftrace_graph_caller(void)
+         |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/trace/fgraph.c:241:15: warning: no previous prototype for 'ftrace_return_to_handler' [-Wmissing-prototypes]
+     241 | unsigned long ftrace_return_to_handler(unsigned long frame_pointer)
+         |               ^~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/trace/fgraph.c:356:6: warning: no previous prototype for 'ftrace_graph_sleep_time_control' [-Wmissing-prototypes]
+     356 | void ftrace_graph_sleep_time_control(bool enable)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/ftrace_enable_ftrace_graph_caller +37 kernel/trace/fgraph.c
+
+    32	
+    33	/*
+    34	 * archs can override this function if they must do something
+    35	 * to enable hook for graph tracer.
+    36	 */
+  > 37	int __weak ftrace_enable_ftrace_graph_caller(void)
+    38	{
+    39		return 0;
+    40	}
+    41	
+    42	/*
+    43	 * archs can override this function if they must do something
+    44	 * to disable hook for graph tracer.
+    45	 */
+  > 46	int __weak ftrace_disable_ftrace_graph_caller(void)
+    47	{
+    48		return 0;
+    49	}
+    50	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
