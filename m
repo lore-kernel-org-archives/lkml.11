@@ -2,108 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A00FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 20:34:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A16C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 20:36:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380805AbiD2Uhe (ORCPT
+        id S1380824AbiD2UjV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 16:37:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42198 "EHLO
+        Fri, 29 Apr 2022 16:39:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348455AbiD2Uhb (ORCPT
+        with ESMTP id S234906AbiD2UjU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 16:37:31 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B77D890E;
-        Fri, 29 Apr 2022 13:34:11 -0700 (PDT)
-Received: from mail-yw1-f180.google.com ([209.85.128.180]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MsI0I-1o0XhT3RYw-00tgcR; Fri, 29 Apr 2022 22:34:10 +0200
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-2f7bb893309so96691527b3.12;
-        Fri, 29 Apr 2022 13:34:09 -0700 (PDT)
-X-Gm-Message-State: AOAM532rxromeFZx8orO5hOHchjbE54LKfDWxMdlUd5Swbw//PE9+j/3
-        UsW6EFR2dL8rmIca8urwxofEZXpk773qXu3qJMs=
-X-Google-Smtp-Source: ABdhPJxmchRzlwbhUzJrTXSW5O46V9uTUf564hU5vkqZRRFSlvWrH3L90d9vRfJr0xR1Zvdx0EHMPavAkqrxafxfaRE=
-X-Received: by 2002:a0d:fc83:0:b0:2e5:b0f4:c125 with SMTP id
- m125-20020a0dfc83000000b002e5b0f4c125mr1115356ywf.347.1651264448577; Fri, 29
- Apr 2022 13:34:08 -0700 (PDT)
+        Fri, 29 Apr 2022 16:39:20 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95D1D8230E;
+        Fri, 29 Apr 2022 13:36:01 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 20:35:58 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651264560;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=K37SKVATOrDEGjpCoOVGz3lZnJ9xwueFxnQ9P6IsH5Y=;
+        b=4A2s2/HoWsO123jM4qHEFMbopSCvs2NgBqCKTmKEwZSx29r843vx5WLqtFIWPgv7ld7wtv
+        Kr7mFjm5zkHjkme4fTHf4drISHk23/9qFu8QzAYdYggZFDTj53qvHi3OumoSG2epiKLIYd
+        twJ90s1kjAIHsMK9UUJ9Blh+9y6K2Jz77U9ItiDp9FSQVaL6V8w/KQuLh+uLlrtmLXqU5j
+        UXM6K+jg05QcG7Er914+m4eHVwp/7YYE5+WJ3AMzGR8ReDrn3qNMWkBf/aaO4BvyRV37DR
+        CYAyyGvCJylSn+VsR/7yfg0q0xVsSCKrI8GoWuuj2iyEAVxbLAUS+uaAsZlzsA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651264560;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=K37SKVATOrDEGjpCoOVGz3lZnJ9xwueFxnQ9P6IsH5Y=;
+        b=qZTwTZDY2N1NsgRO+NZYQXn96nSu3SXjjvsY1JaxJQ2bmMd2fZzLkanQhEMTuXpPyroYU+
+        IJth+slwK9zY0vCw==
+From:   "tip-bot2 for Dietmar Eggemann" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: sched/core] sched/fair: Remove cfs_rq_tg_path()
+Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Qais Yousef <qais.yousef@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220428144338.479094-3-qais.yousef@arm.com>
+References: <20220428144338.479094-3-qais.yousef@arm.com>
 MIME-Version: 1.0
-References: <20220426201539.12829-1-sven@svenpeter.dev> <CAK8P3a1yJkegvgvzHemBd_dowvpyDmxtUnrpiHob8+hiNeO4sw@mail.gmail.com>
- <0f6ea2c3-586d-4f5a-9cee-688cd73b96b3@www.fastmail.com> <CAK8P3a3pPxpoOZ0hm9htBRyYc7L38F6egi-0=41tMtcLRGJ_jw@mail.gmail.com>
- <20220428142412.GA19708@lst.de> <be7e0eb1-c423-455f-bd89-050d52996340@www.fastmail.com>
-In-Reply-To: <be7e0eb1-c423-455f-bd89-050d52996340@www.fastmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 29 Apr 2022 22:33:52 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1CO8_Pa=Hk3hcdNfT_eD3PQK2aWDFB9bwk6TCNbGmtEg@mail.gmail.com>
-Message-ID: <CAK8P3a1CO8_Pa=Hk3hcdNfT_eD3PQK2aWDFB9bwk6TCNbGmtEg@mail.gmail.com>
-Subject: Re: [PATCH v3 0/6] Apple M1 (Pro/Max) NVMe driver
-To:     Sven Peter <sven@svenpeter.dev>
-Cc:     "hch@lst.de" <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
-        Hector Martin <marcan@marcan.st>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Keith Busch <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
-        "sagi@grimberg.me" <sagi@grimberg.me>,
-        Marc Zyngier <maz@kernel.org>, Janne Grunau <j@jannau.net>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-nvme@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:r1FSgC0+iHYSfxL+8Z+moknQ0nCGDDpQkwCtuY53NIDtW2hw1bd
- 849ECg/PwrI6rBtWZcCbZ7kXa6HlPekmQAMMcdSktsetvLR0C7FUi5ETNGlVEiedzg2/j08
- HKcUfkD6f/KAm+1oYZ0tCJXH9s4wxVzbsFAzb6FCOci8KigQzuwf5WyffOMsYaxIUDztAX2
- gQVaOVJAhJJhbX5uttjsg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:htzl+qKV3XQ=:14TACTnPszlg1AVU/JL99l
- E9rL+A6iQRVIjEFsYXqtMTfvvwMgeVYao9jScukS4yrLbmXsiulwjxSrloFO9w/6ydTR00zU0
- kBbfsp+c5TZJxjlv+aDJrwMoZw0l9qmZAlhbup2x+x5BmSjNFx5CrNs0dxi2qnCu6m7Ty5onr
- 4i8BR7jH8xh/T21lWLbshrBKayybO0zn/hxtonpq4LZ/auKk63phg7ben5EYIf/i8Wn5cuL88
- pQzrRlUxhIsltrVcNSHI9b74ydpEkiVUtoWy24CtmRH9r2FgYPc7sd32VK7gfamp+Q+F3nX89
- TPDf/QR29cXsL1lypvFtAlsW9AQx8ciMeT0VRgndtVefhEKimmIIbW8MuGlpQ4b+bLiBBSITi
- XfB4YMvy0xPAxbbjMAOrWu3gFXzNXeaWtcv9y8ks1shRLUhvWIAVblxfGByB+o71oAmo8tPEH
- QKDY4xuXs5aJoGmZPFzsicte3gOdHpfJwJeMW1QzIFZG3AFQrORdk5bSBxVebju+ww5T3x+MD
- JmCyRvhSwA/ZEcEC8bPQMLZ7t9s6ugz589f/XaF1jZkLdPyG6t+IS4V+5NutnZ+4buw722tCU
- U2YUVDr0IHso9YWQzn0DktU2/DJqO078hte/xcetQYzalVt7VtFWStZ6s4Fbx5HkJd1NUATHh
- BV12vkwLdC9HSBJRtUxeBENWlFIE8UPAk6keCCTXz22iM469/hpgWn5MtdOEtbJ5F/Sc=
+Message-ID: <165126455892.4207.1028425150501881014.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 6:37 PM Sven Peter <sven@svenpeter.dev> wrote:
-> On Thu, Apr 28, 2022, at 16:24, hch@lst.de wrote:
-> > On Wed, Apr 27, 2022 at 07:39:49PM +0200, Arnd Bergmann wrote:
-> >> The usual trick is to have a branch with the shared patches and have
-> >> that pulled into every other tree that needs these, but make sure you never
-> >> rebase. In this case, you could have something like
-> >>
-> >> a) rtkit driver in a shared branch (private only)
-> >> b) thunderbolt driver based on branch a), merged through
-> >>      thunderbolt/usb/pci tree (I don't know who is responsible here)
-> >> c) sart driver based on branch a), merged through soc tree
-> >> d) nvme driver based on branch c), merged through nvme tree
-> >>
-> >> since the commit hashes are all identical, each patch only shows up in
-> >> the git tree once, but you get a somewhat funny history.
-> >
-> > Given that the nvme driver is just addition of new code I'm perfectly
-> > fine with sending it through whatever tree is most convenient.
->
-> So If I understand all this correctly either
->         1) I send a pull request with rtkit+sart to Arnd/soc@ followed by
->            a pull request with the same commits + the nvme driver to
->            Christoph/nvme to make sure the commit hashes in both trees
->            are the same.
-> or
->         2) I send a pull request with rtkit+sart+nvme to soc@ and we
->            take the entire driver through there with Christoph's ack
->            if Arnd is fine with carrying it as well.
->
-> In either case SMC (or thunderbolt if I finish in time) can also be based
-> on the same rtkit commit and could go into 5.19 as well.
-> I don't have any preference here (not that my opinion matters much
-> for this decision anyway :-))
+The following commit has been merged into the sched/core branch of tip:
 
-Correct, those are both ok.
+Commit-ID:     97956dd278d3af1b5657026b992b54cf2e1b50b9
+Gitweb:        https://git.kernel.org/tip/97956dd278d3af1b5657026b992b54cf2e1b50b9
+Author:        Dietmar Eggemann <dietmar.eggemann@arm.com>
+AuthorDate:    Thu, 28 Apr 2022 15:43:38 +01:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Fri, 29 Apr 2022 11:06:29 +02:00
 
-        Arnd
+sched/fair: Remove cfs_rq_tg_path()
+
+cfs_rq_tg_path() is used by a tracepoint-to traceevent (tp-2-te)
+converter to format the path of a taskgroup or autogroup respectively.
+It doesn't have any in-kernel users after the removal of the
+sched_trace_cfs_rq_path() helper function.
+
+cfs_rq_tg_path() can be coded in a tp-2-te converter.
+
+Remove it from kernel/sched/fair.c.
+
+Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Signed-off-by: Qais Yousef <qais.yousef@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220428144338.479094-3-qais.yousef@arm.com
+---
+ kernel/sched/fair.c | 19 -------------------
+ 1 file changed, 19 deletions(-)
+
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 19803e1..6ca054b 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -313,19 +313,6 @@ const struct sched_class fair_sched_class;
+ #define for_each_sched_entity(se) \
+ 		for (; se; se = se->parent)
+ 
+-static inline void cfs_rq_tg_path(struct cfs_rq *cfs_rq, char *path, int len)
+-{
+-	if (!path)
+-		return;
+-
+-	if (cfs_rq && task_group_is_autogroup(cfs_rq->tg))
+-		autogroup_path(cfs_rq->tg, path, len);
+-	else if (cfs_rq && cfs_rq->tg->css.cgroup)
+-		cgroup_path(cfs_rq->tg->css.cgroup, path, len);
+-	else
+-		strlcpy(path, "(null)", len);
+-}
+-
+ static inline bool list_add_leaf_cfs_rq(struct cfs_rq *cfs_rq)
+ {
+ 	struct rq *rq = rq_of(cfs_rq);
+@@ -493,12 +480,6 @@ static int se_is_idle(struct sched_entity *se)
+ #define for_each_sched_entity(se) \
+ 		for (; se; se = NULL)
+ 
+-static inline void cfs_rq_tg_path(struct cfs_rq *cfs_rq, char *path, int len)
+-{
+-	if (path)
+-		strlcpy(path, "(null)", len);
+-}
+-
+ static inline bool list_add_leaf_cfs_rq(struct cfs_rq *cfs_rq)
+ {
+ 	return true;
