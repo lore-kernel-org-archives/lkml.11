@@ -2,404 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 193E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 21:19:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97FF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 21:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237786AbiD2VWr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 17:22:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
+        id S237943AbiD2VYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 17:24:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237400AbiD2VWi (ORCPT
+        with ESMTP id S238374AbiD2VYE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 17:22:38 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21B767C159;
-        Fri, 29 Apr 2022 14:19:18 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id be20so10403128edb.12;
-        Fri, 29 Apr 2022 14:19:18 -0700 (PDT)
+        Fri, 29 Apr 2022 17:24:04 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBE921F61B
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 14:20:26 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id cx11-20020a17090afd8b00b001d9fe5965b3so9645696pjb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 14:20:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mvcd9ngThpxLrtFTbDdkKkrSNgOr0gL9mj6TLYj8c1E=;
-        b=kv9hqhmQeZWGX0bHfilCODyDnA7x+ZYSqg8WeZzCuakNQ7R2itoL6+v/Aa915QzlD5
-         KCYghvlP2QdfrXMPOVXeymf4FqX7MIvea3uJ66v3J7JG/MZ3oUJg2CyOsjodPn9gDGbg
-         f6YwodYr4mTXx8EEXobUumVYzlR3UfOfjKVNmrsecObxk93y1AYl7++vFUlNzTXfnsm/
-         Sqd0/tEfLqoKA7plapMqwuRHpsgCO9FvPHkBVA4ODj0+Oyd3fXYhV9nh1bkWhhpsfj9T
-         bRcMDua4oADXL6P7y+vc2w2MVUoMaUpcQKZhzqB5SJTWxOty51pZWWpp6RUeizWxAORb
-         94pQ==
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mv9DFGVUjNjUvqKoeugVcxd/ako81vZgq6bN3/Q4KTM=;
+        b=YX11bDowuMsHld0w/gipG/XgdOmxj1kgDmE5tMo2jIz8rxGjO3VsQu7T2QXaz7Z6sU
+         PU4lSh1a1owSkqGU5yW8N7tGu8dmUCxKlHQhHr3na2wPJCn6XVK1+FZ5r7A87VV+t1XC
+         6xreO4ia6lTVzLB3JRtX+S0Ii6yWsnWGHOjJIZCvthh4xw8WKIrfUn1WeS7ACEdVrqrj
+         NJ2+i2MNj93Wv7koCo0IleJIU0EZLKguMx0uvsSan1YJLoPw5lWGC3m7BHKy/9jTfEoF
+         Ra2cLQQ090Awym3IrQCdk+fev3rLdz+kEfX/tl7cRaKOF6g6gIEMQuEMOeIWJYFnB8CQ
+         RL8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mvcd9ngThpxLrtFTbDdkKkrSNgOr0gL9mj6TLYj8c1E=;
-        b=DGfol0J1ul2r+4DXdLOGHfE+jiRtIgllPKUuucni1j/Yd3VlazafW85yN4WLF74/00
-         94B4BhjF1RHtnLIV1ItoAhmgk3loWWzMKfy1OCuXE2jPnvrY88pqjkxBmYkHin2B1N9V
-         XEp2StbS1bbhnBPPQUWmdlaW9Ege9F9+e9k4Sig4FVy8iS9C46F4efwchBJg6quuNl72
-         bp1BMsy0mOuhS849T44gDO/fl1/M89tELXa1zGbW/KIlgyUoQNx23qHKQd5BqYtkZ2z5
-         /+mMpAZt+xSF71r/iKkxITB4HWgSgXob9xpWVRmcaqNYANq9S/G+x3RJyFFVMFbXxDCH
-         onIw==
-X-Gm-Message-State: AOAM532BFeb0J7DngEuWAAx5uNwHU+49lTXYDRBPCGqrprgcHzLv2n0Z
-        MQMu57c4mT+BP6ouNh3BatB492+YZjA=
-X-Google-Smtp-Source: ABdhPJyPEEM3uwI+14F/GcaQkIZFiVg8b/gFaExTo4fEZN82UcXuJo+oDGM2x2qEAfEXaFt3BExxpg==
-X-Received: by 2002:a05:6402:2754:b0:426:2f8c:c39 with SMTP id z20-20020a056402275400b004262f8c0c39mr1254855edd.224.1651267156571;
-        Fri, 29 Apr 2022 14:19:16 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id hx14-20020a170906846e00b006f3ef214db6sm990143ejc.28.2022.04.29.14.19.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 14:19:16 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-mtd@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [PATCH 1/2] mtd: nand: raw: qcom_nandc: add support for unprotected spare data pages
-Date:   Fri, 29 Apr 2022 23:16:29 +0200
-Message-Id: <20220429211630.7812-2-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220429211630.7812-1-ansuelsmth@gmail.com>
-References: <20220429211630.7812-1-ansuelsmth@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mv9DFGVUjNjUvqKoeugVcxd/ako81vZgq6bN3/Q4KTM=;
+        b=LOuy08AV5dbfUl/mFjGhsserD7C+gK0ZC+ZMGa0uVfZ/kBOgSNeoX+dcQtZyWyVkcr
+         Sxgqx3KFSGnhBeGtRiMekXUzoQaFyq1jUKnlt9HjgOzEx0/Fg/i85nnQT2EdGWiH1qgf
+         OLUWvoYoZe7kXZP0vFogPmORNRZHNUD68v+Yri6Xp6dGkIX2htqeYMszBudy9S9irzlw
+         yo1vYPFThN1zJD2I2aYMKLyGJWKAPzUadRpzCphMOysgEqXs5DMlYWUrOxEnY1wmCEJO
+         j2OZwXTzuuWYGeqIwLlCFtcxif67uZT/Kqh/IA6FNfmeD4yszAFvXP8W9UqMHHZjpEl0
+         imSg==
+X-Gm-Message-State: AOAM531N0T96eKDQtnTCzcxGj4s7RA7SFhWB7uMfWskXUwbiuUyvliI9
+        nXiFBUVDvgcH5Kpc24tK/iNDjQ543N9AZaemtihLAQ==
+X-Google-Smtp-Source: ABdhPJxOI015Sua0vDUUKeCI4dI8/hOf+yDLEE38Ku6igW+0R2tZGclgp0+NOE/F4FBVFyUgX/Ne2S2gL7vatmBgrHc=
+X-Received: by 2002:a17:902:da81:b0:15d:37b9:70df with SMTP id
+ j1-20020a170902da8100b0015d37b970dfmr1257018plx.34.1651267222305; Fri, 29 Apr
+ 2022 14:20:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1649219184.git.kai.huang@intel.com> <522e37eb-68fc-35db-44d5-479d0088e43f@intel.com>
+ <CAPcyv4g5E_TOow=3pFJXyFr=KLV9pTSnDthgz6TuXvru4xDzaQ@mail.gmail.com>
+ <de9b8f4cef5da03226158492988956099199aa60.camel@intel.com>
+ <CAPcyv4iGsXkHAVgf+JZ4Pah_fkCZ=VvUmj7s3C6Rkejtdw_sgQ@mail.gmail.com>
+ <92af7b22-fa8a-5d42-ae15-8526abfd2622@intel.com> <CAPcyv4iG977DErCfYTqhVzuZqjtqFHK3smnaOpO3p+EbxfvXcQ@mail.gmail.com>
+ <4a5143cc-3102-5e30-08b4-c07e44f1a2fc@intel.com> <CAPcyv4i6X6ODNbOnT7+NEzpicLS4m9bNDybZLvN3gqXFTTf=mg@mail.gmail.com>
+ <4d0c7316-3564-ef27-1113-042019d583dc@intel.com> <CAPcyv4gYw3k4YMEV1E26fMx-GNCNCb+zJDERfhieCrROWv_Jxg@mail.gmail.com>
+ <73ed1e55-7e7c-2995-b411-8e26b711cc22@intel.com>
+In-Reply-To: <73ed1e55-7e7c-2995-b411-8e26b711cc22@intel.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Fri, 29 Apr 2022 14:20:11 -0700
+Message-ID: <CAPcyv4gzEvMA4F5ncuhVenRDuz7Tq6aCSJR=z7wVqNGOYGS5Kw@mail.gmail.com>
+Subject: Re: [PATCH v3 00/21] TDX host kernel support
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Kai Huang <kai.huang@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "Brown, Len" <len.brown@intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        Rafael J Wysocki <rafael.j.wysocki@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Isaku Yamahata <isaku.yamahata@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-IPQ8064 nand have special pages where the spare data is not protected by
-ECC. These special page are used by boot partition and on reading them
-lots of warning are reported about wrong ECC data and if written to
-results in broken data and not bootable device.
+On Fri, Apr 29, 2022 at 12:20 PM Dave Hansen <dave.hansen@intel.com> wrote:
+>
+> On 4/29/22 11:47, Dan Williams wrote:
+> > On Fri, Apr 29, 2022 at 11:34 AM Dave Hansen <dave.hansen@intel.com> wrote:
+> >>
+> >> On 4/29/22 10:48, Dan Williams wrote:
+> >>>> But, neither of those really help with, say, a device-DAX mapping of
+> >>>> TDX-*IN*capable memory handed to KVM.  The "new syscall" would just
+> >>>> throw up its hands and leave users with the same result: TDX can't be
+> >>>> used.  The new sysfs ABI for NUMA nodes wouldn't clearly apply to
+> >>>> device-DAX because they don't respect the NUMA policy ABI.
+> >>> They do have "target_node" attributes to associate node specific
+> >>> metadata, and could certainly express target_node capabilities in its
+> >>> own ABI. Then it's just a matter of making pfn_to_nid() do the right
+> >>> thing so KVM kernel side can validate the capabilities of all inbound
+> >>> pfns.
+> >>
+> >> Let's walk through how this would work with today's kernel on tomorrow's
+> >> hardware, without KVM validating PFNs:
+> >>
+> >> 1. daxaddr mmap("/dev/dax1234")
+> >> 2. kvmfd = open("/dev/kvm")
+> >> 3. ioctl(KVM_SET_USER_MEMORY_REGION, { daxaddr };
+> >
+> > At least for a file backed mapping the capability lookup could be done
+> > here, no need to wait for the fault.
+>
+> For DAX mappings, sure.  But, anything that's backed by page cache, you
+> can't know until the RAM is allocated.
+>
+> ...
+> >> Those pledges are hard for anonymous memory though.  To fulfill the
+> >> pledge, we not only have to validate that the NUMA policy is compatible
+> >> at KVM_SET_USER_MEMORY_REGION, we also need to decline changes to the
+> >> policy that might undermine the pledge.
+> >
+> > I think it's less that the kernel needs to enforce a pledge and more
+> > that an interface is needed to communicate the guest death reason.
+> > I.e. "here is the impossible thing you asked for, next time set this
+> > policy to avoid this problem".
+>
+> IF this code is booted on a system where non-TDX-capable memory is
+> discovered, do we:
+> 1. Disable TDX, printk() some nasty message, then boot as normal
+> or,
+> 2a. Boot normally with TDX enabled
+> 2b. Add enhanced error messages in case of TDH.MEM.PAGE.AUG/ADD failure
+>     (the "SEAMCALLs" which are the last line of defense and will reject
+>      the request to add non-TDX-capable memory to a guest).  Or maybe
+>     an even earlier message.
+>
+> For #1, if TDX is on, we are quite sure it will work.  But, it will
+> probably throw up its hands on tomorrow's hardware.  (This patch set).
+>
+> For #2, TDX might break (guests get killed) at runtime on tomorrow's
+> hardware, but it also might be just fine.  Users might be able to work
+> around things by, for instance, figuring out a NUMA policy which
+> excludes TDX-incapable memory. (I think what Dan is looking for)
+>
+> Is that a fair summary?
 
-Under the hood these special page are just normal page with the spare
-data not protected by ECC.
+Yes, just the option for TDX and non-TDX to live alongside each
+other... although in the past I have argued to do option-1 and enforce
+it at the lowest level [1]. Like platform BIOS is responsible to
+disable CXL if CXL support for a given CPU security feature is
+missing. However, I think end users will want to have their
+confidential computing and capacity too. As long as that is not
+precluded to be added after the fact, option-1 can be a way forward
+until a concrete user for mixed mode shows up.
 
-Add support for this by permitting the user to declare these special
-pages in dts by declaring offset and size of the partition. The driver
-internally will convert these value to nand pages.
+Is there something already like this today for people that, for
+example, attempt to use PCI BAR mappings as memory? Or does KVM simply
+allow for garbage-in garbage-out?
 
-On user read/write the page is checked and if it's a boot page the
-correct configuration is applied.
+In the end the patches shouldn't talk about whether or not PMEM is
+supported on a platform or not, that's irrelevant. What matters is
+that misconfigurations can happen, should be rare to non-existent on
+current platforms, and if it becomes a problem the kernel can grow ABI
+to let userspace enumerate the conflicts.
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- drivers/mtd/nand/raw/qcom_nandc.c | 148 +++++++++++++++++++++++++++++-
- 1 file changed, 143 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/mtd/nand/raw/qcom_nandc.c b/drivers/mtd/nand/raw/qcom_nandc.c
-index 1a77542c6d67..ec11599ba689 100644
---- a/drivers/mtd/nand/raw/qcom_nandc.c
-+++ b/drivers/mtd/nand/raw/qcom_nandc.c
-@@ -80,8 +80,10 @@
- #define	DISABLE_STATUS_AFTER_WRITE	4
- #define	CW_PER_PAGE			6
- #define	UD_SIZE_BYTES			9
-+#define	UD_SIZE_BYTES_MASK		GENMASK(18, 9)
- #define	ECC_PARITY_SIZE_BYTES_RS	19
- #define	SPARE_SIZE_BYTES		23
-+#define	SPARE_SIZE_BYTES_MASK		GENMASK(26, 23)
- #define	NUM_ADDR_CYCLES			27
- #define	STATUS_BFR_READ			30
- #define	SET_RD_MODE_AFTER_STATUS	31
-@@ -102,6 +104,7 @@
- #define	ECC_MODE			4
- #define	ECC_PARITY_SIZE_BYTES_BCH	8
- #define	ECC_NUM_DATA_BYTES		16
-+#define	ECC_NUM_DATA_BYTES_MASK		GENMASK(25, 16)
- #define	ECC_FORCE_CLK_OPEN		30
- 
- /* NAND_DEV_CMD1 bits */
-@@ -418,6 +421,19 @@ struct qcom_nand_controller {
- 	const struct qcom_nandc_props *props;
- };
- 
-+/*
-+ * NAND special boot pages
-+ *
-+ * @offset:			offset of the page where spare data is not protected
-+ *				by ECC
-+ * @size:			size of the page where spare data is not protected
-+ *				by ECC
-+ */
-+struct qcom_nand_boot_page {
-+	u32 offset;
-+	u32 size;
-+};
-+
- /*
-  * NAND chip structure
-  *
-@@ -444,6 +460,13 @@ struct qcom_nand_controller {
-  * @cfg0, cfg1, cfg0_raw..:	NANDc register configurations needed for
-  *				ecc/non-ecc mode for the current nand flash
-  *				device
-+ *
-+ * @unprotect_spare_data:	keep track of the current ecc configuration used by
-+ *				the driver for read/write operation.
-+ * @boot_pages_count:		count of the boot pages where spare data is not
-+ *				protected by ECC
-+ * @boot_pages:			array of boot pages where offset and size of the
-+ *				boot pages are stored
-  */
- struct qcom_nand_host {
- 	struct nand_chip chip;
-@@ -466,6 +489,10 @@ struct qcom_nand_host {
- 	u32 ecc_bch_cfg;
- 	u32 clrflashstatus;
- 	u32 clrreadstatus;
-+
-+	bool unprotect_spare_data;
-+	int boot_pages_count;
-+	struct qcom_nand_boot_page *boot_pages;
- };
- 
- /*
-@@ -475,6 +502,7 @@ struct qcom_nand_host {
-  * @is_bam - whether NAND controller is using BAM
-  * @is_qpic - whether NAND CTRL is part of qpic IP
-  * @qpic_v2 - flag to indicate QPIC IP version 2
-+ * @has_boot_pages - whether NAND has different ecc settings for boot pages
-  * @dev_cmd_reg_start - NAND_DEV_CMD_* registers starting offset
-  */
- struct qcom_nandc_props {
-@@ -482,6 +510,7 @@ struct qcom_nandc_props {
- 	bool is_bam;
- 	bool is_qpic;
- 	bool qpic_v2;
-+	bool has_boot_pages;
- 	u32 dev_cmd_reg_start;
- };
- 
-@@ -1701,7 +1730,7 @@ qcom_nandc_read_cw_raw(struct mtd_info *mtd, struct nand_chip *chip,
- 	data_size1 = mtd->writesize - host->cw_size * (ecc->steps - 1);
- 	oob_size1 = host->bbm_size;
- 
--	if (qcom_nandc_is_last_cw(ecc, cw)) {
-+	if (qcom_nandc_is_last_cw(ecc, cw) && !host->unprotect_spare_data) {
- 		data_size2 = ecc->size - data_size1 -
- 			     ((ecc->steps - 1) * 4);
- 		oob_size2 = (ecc->steps * 4) + host->ecc_bytes_hw +
-@@ -1782,7 +1811,7 @@ check_for_erased_page(struct qcom_nand_host *host, u8 *data_buf,
- 	}
- 
- 	for_each_set_bit(cw, &uncorrectable_cws, ecc->steps) {
--		if (qcom_nandc_is_last_cw(ecc, cw)) {
-+		if (qcom_nandc_is_last_cw(ecc, cw) && !host->unprotect_spare_data) {
- 			data_size = ecc->size - ((ecc->steps - 1) * 4);
- 			oob_size = (ecc->steps * 4) + host->ecc_bytes_hw;
- 		} else {
-@@ -1940,7 +1969,7 @@ static int read_page_ecc(struct qcom_nand_host *host, u8 *data_buf,
- 	for (i = 0; i < ecc->steps; i++) {
- 		int data_size, oob_size;
- 
--		if (qcom_nandc_is_last_cw(ecc, i)) {
-+		if (qcom_nandc_is_last_cw(ecc, i) && !host->unprotect_spare_data) {
- 			data_size = ecc->size - ((ecc->steps - 1) << 2);
- 			oob_size = (ecc->steps << 2) + host->ecc_bytes_hw +
- 				   host->spare_bytes;
-@@ -2037,6 +2066,52 @@ static int copy_last_cw(struct qcom_nand_host *host, int page)
- 	return ret;
- }
- 
-+static bool
-+qcom_nandc_is_boot_page(struct qcom_nand_host *host, int page)
-+{
-+	struct qcom_nand_boot_page *boot_page;
-+	u32 start, end;
-+	int i;
-+
-+	for (i = 0; i < host->boot_pages_count; i++) {
-+		boot_page = &host->boot_pages[i];
-+		start = boot_page->offset;
-+		end = start + boot_page->size;
-+		/* Boot page are at the start of the nand.
-+		 * Check the page from the boot page end first
-+		 * to save one extra check.
-+		 */
-+		if (page < end && page >= start)
-+			return 1;
-+	}
-+
-+	return 0;
-+}
-+
-+static void
-+qcom_nandc_check_boot_pages(struct qcom_nand_host *host, int page)
-+{
-+	bool unprotect_spare_data = qcom_nandc_is_boot_page(host, page);
-+
-+	/* Skip conf write if we are already in the correct mode */
-+	if (unprotect_spare_data == host->unprotect_spare_data)
-+		return;
-+
-+	host->unprotect_spare_data = unprotect_spare_data;
-+
-+	host->cw_data = unprotect_spare_data ? 512 : 516;
-+	host->spare_bytes = host->cw_size - host->ecc_bytes_hw -
-+			    host->bbm_size - host->cw_data;
-+
-+	host->cfg0 &= ~(SPARE_SIZE_BYTES_MASK | UD_SIZE_BYTES_MASK);
-+	host->cfg0 |= host->spare_bytes << SPARE_SIZE_BYTES |
-+		      host->cw_data << UD_SIZE_BYTES;
-+
-+	host->ecc_bch_cfg &= ~ECC_NUM_DATA_BYTES_MASK;
-+	host->ecc_bch_cfg |= host->cw_data << ECC_NUM_DATA_BYTES;
-+	host->ecc_buf_cfg = (unprotect_spare_data ? 0x1ff : 0x203) << NUM_STEPS;
-+}
-+
- /* implements ecc->read_page() */
- static int qcom_nandc_read_page(struct nand_chip *chip, uint8_t *buf,
- 				int oob_required, int page)
-@@ -2045,6 +2120,9 @@ static int qcom_nandc_read_page(struct nand_chip *chip, uint8_t *buf,
- 	struct qcom_nand_controller *nandc = get_qcom_nand_controller(chip);
- 	u8 *data_buf, *oob_buf = NULL;
- 
-+	if (host->boot_pages_count)
-+		qcom_nandc_check_boot_pages(host, page);
-+
- 	nand_read_page_op(chip, page, 0, NULL, 0);
- 	data_buf = buf;
- 	oob_buf = oob_required ? chip->oob_poi : NULL;
-@@ -2064,6 +2142,9 @@ static int qcom_nandc_read_page_raw(struct nand_chip *chip, uint8_t *buf,
- 	int cw, ret;
- 	u8 *data_buf = buf, *oob_buf = chip->oob_poi;
- 
-+	if (host->boot_pages_count)
-+		qcom_nandc_check_boot_pages(host, page);
-+
- 	for (cw = 0; cw < ecc->steps; cw++) {
- 		ret = qcom_nandc_read_cw_raw(mtd, chip, data_buf, oob_buf,
- 					     page, cw);
-@@ -2084,6 +2165,9 @@ static int qcom_nandc_read_oob(struct nand_chip *chip, int page)
- 	struct qcom_nand_controller *nandc = get_qcom_nand_controller(chip);
- 	struct nand_ecc_ctrl *ecc = &chip->ecc;
- 
-+	if (host->boot_pages_count)
-+		qcom_nandc_check_boot_pages(host, page);
-+
- 	clear_read_regs(nandc);
- 	clear_bam_transaction(nandc);
- 
-@@ -2104,6 +2188,9 @@ static int qcom_nandc_write_page(struct nand_chip *chip, const uint8_t *buf,
- 	u8 *data_buf, *oob_buf;
- 	int i, ret;
- 
-+	if (host->boot_pages_count)
-+		qcom_nandc_check_boot_pages(host, page);
-+
- 	nand_prog_page_begin_op(chip, page, 0, NULL, 0);
- 
- 	clear_read_regs(nandc);
-@@ -2119,7 +2206,7 @@ static int qcom_nandc_write_page(struct nand_chip *chip, const uint8_t *buf,
- 	for (i = 0; i < ecc->steps; i++) {
- 		int data_size, oob_size;
- 
--		if (qcom_nandc_is_last_cw(ecc, i)) {
-+		if (qcom_nandc_is_last_cw(ecc, i) && !host->unprotect_spare_data) {
- 			data_size = ecc->size - ((ecc->steps - 1) << 2);
- 			oob_size = (ecc->steps << 2) + host->ecc_bytes_hw +
- 				   host->spare_bytes;
-@@ -2176,6 +2263,9 @@ static int qcom_nandc_write_page_raw(struct nand_chip *chip,
- 	u8 *data_buf, *oob_buf;
- 	int i, ret;
- 
-+	if (host->boot_pages_count)
-+		qcom_nandc_check_boot_pages(host, page);
-+
- 	nand_prog_page_begin_op(chip, page, 0, NULL, 0);
- 	clear_read_regs(nandc);
- 	clear_bam_transaction(nandc);
-@@ -2194,7 +2284,7 @@ static int qcom_nandc_write_page_raw(struct nand_chip *chip,
- 		data_size1 = mtd->writesize - host->cw_size * (ecc->steps - 1);
- 		oob_size1 = host->bbm_size;
- 
--		if (qcom_nandc_is_last_cw(ecc, i)) {
-+		if (qcom_nandc_is_last_cw(ecc, i) && !host->unprotect_spare_data) {
- 			data_size2 = ecc->size - data_size1 -
- 				     ((ecc->steps - 1) << 2);
- 			oob_size2 = (ecc->steps << 2) + host->ecc_bytes_hw +
-@@ -2254,6 +2344,9 @@ static int qcom_nandc_write_oob(struct nand_chip *chip, int page)
- 	int data_size, oob_size;
- 	int ret;
- 
-+	if (host->boot_pages_count)
-+		qcom_nandc_check_boot_pages(host, page);
-+
- 	host->use_ecc = true;
- 	clear_bam_transaction(nandc);
- 
-@@ -2902,6 +2995,48 @@ static int qcom_nandc_setup(struct qcom_nand_controller *nandc)
- 
- static const char * const probes[] = { "cmdlinepart", "ofpart", "qcomsmem", NULL };
- 
-+static int qcom_nand_host_parse_boot_pages(struct qcom_nand_controller *nandc,
-+					   struct qcom_nand_host *host,
-+					   struct device_node *dn)
-+{
-+	struct nand_chip *chip = &host->chip;
-+	struct mtd_info *mtd = nand_to_mtd(chip);
-+	struct qcom_nand_boot_page *boot_page;
-+	struct device *dev = nandc->dev;
-+	int pages_count, i, ret;
-+
-+	if (!nandc->props->has_boot_pages)
-+		return 0;
-+
-+	pages_count = of_property_count_u32_elems(dn, "qcom,boot_pages");
-+	if (pages_count < 0) {
-+		dev_err(dev, "Error parsing boot_pages. Ignoring.");
-+		return 0;
-+	}
-+
-+	host->boot_pages_count = pages_count / 2;
-+	host->boot_pages = devm_kcalloc(dev, host->boot_pages_count,
-+					sizeof(*host->boot_pages), GFP_KERNEL);
-+	if (!host->boot_pages)
-+		return 0;
-+
-+	ret = of_property_read_u32_array(dn, "qcom,boot_pages", (u32 *)host->boot_pages,
-+					 pages_count);
-+	if (ret) {
-+		dev_err(dev, "Error reading boot_pages. Ignoring.");
-+		return 0;
-+	}
-+
-+	/* Convert offset to nand pages */
-+	for (i = 0 ; i < host->boot_pages_count; i++) {
-+		boot_page = &host->boot_pages[i];
-+		boot_page->offset /= mtd->writesize;
-+		boot_page->size /= mtd->writesize;
-+	}
-+
-+	return 0;
-+}
-+
- static int qcom_nand_host_init_and_register(struct qcom_nand_controller *nandc,
- 					    struct qcom_nand_host *host,
- 					    struct device_node *dn)
-@@ -2970,6 +3105,8 @@ static int qcom_nand_host_init_and_register(struct qcom_nand_controller *nandc,
- 	if (ret)
- 		nand_cleanup(chip);
- 
-+	qcom_nand_host_parse_boot_pages(nandc, host, dn);
-+
- 	return ret;
- }
- 
-@@ -3135,6 +3272,7 @@ static int qcom_nandc_remove(struct platform_device *pdev)
- static const struct qcom_nandc_props ipq806x_nandc_props = {
- 	.ecc_modes = (ECC_RS_4BIT | ECC_BCH_8BIT),
- 	.is_bam = false,
-+	.has_boot_pages = true,
- 	.dev_cmd_reg_start = 0x0,
- };
- 
--- 
-2.34.1
-
+[1]: https://lore.kernel.org/linux-cxl/CAPcyv4jMQbHYQssaDDDQFEbOR1v14VUnejcSwOP9VGUnZSsCKw@mail.gmail.com/
