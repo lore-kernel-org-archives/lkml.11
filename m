@@ -2,71 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2BE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 00:57:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353609AbiD2BAP (ORCPT
+        id S1353621AbiD2BDP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 21:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43956 "EHLO
+        Thu, 28 Apr 2022 21:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345344AbiD2BAL (ORCPT
+        with ESMTP id S1345344AbiD2BDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 21:00:11 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DE94FC4E;
-        Thu, 28 Apr 2022 17:56:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=NDXFJRM7G+3xMHDd/nLJHZ8nkgsa89rne//SVuZyCYw=; b=n3yQheLliCunMagcTCQKTn1N/Q
-        7GFgv+RtxaFd3YXqdZqpmmiEGCJQVgu8UQoCdnCTKz3/jWNiAJTMML6sS40ZyckLIaovXw5ZqOaFh
-        3FuFSCziyZtxnwXhC3VsplJ7nNdEaZbIZD2yp0ILc7WsAZmvsmDjke4nckGHClTOFy9Q=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nkEw6-000Owc-G4; Fri, 29 Apr 2022 02:56:42 +0200
-Date:   Fri, 29 Apr 2022 02:56:42 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jianqun Xu <jay.xu@rock-chips.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, joabreu@synopsys.com,
-        alexandre.torgue@st.com, peppe.cavallaro@st.com,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH V2] ethernet: stmmac: support driver work for DTs without
- child queue node
-Message-ID: <Yms3ynT8RGmldAkm@lunn.ch>
-References: <20220428010927.526310-1-jay.xu@rock-chips.com>
- <20220429004605.1010751-1-jay.xu@rock-chips.com>
+        Thu, 28 Apr 2022 21:03:13 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA54BB9F38;
+        Thu, 28 Apr 2022 17:59:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651193997; x=1682729997;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=3ekdhigpdA6kzMTJSHW/fF9UhW2DvRZyiyNm6ygRxaM=;
+  b=b2t0j8eRbU2gaJMXjeM1tKPuJbljnOlGQYk1dmwurVv5dK63XgbKXX2x
+   MOa1Wexm2ztTW//hc2iFbdHD2IUynfto3odeI/dnVue2+lWEmAG+wqaR2
+   JA+0CWbFE0obsomVfTmTGqbi/lGbBNnEwb/eu6AzWpsDX8u1V7a+1X6f1
+   z0HWWB9tTWCEuHAAooc3t0/yx9VJdAoNQmqFOM5VxEWeyqyy4pcyzdBIN
+   lGOUF1hW73CpGdYO76pU7pot43/efvOkNWw25Nz5Zk31BPxHYdBVnzzq2
+   YPQFBGUIEhkaXiStRfcCbyBnfm9rg0foGx8NYCzqeBAKB73Ur6Q+oFQQL
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="352912726"
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="352912726"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 17:59:57 -0700
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="706315227"
+Received: from gshechtm-mobl.ger.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.60.191])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 17:59:54 -0700
+Message-ID: <3547101508b3f168cce202827bd73a051224a542.camel@intel.com>
+Subject: Re: [PATCH v3 04/21] x86/virt/tdx: Add skeleton for detecting and
+ initializing TDX on demand
+From:   Kai Huang <kai.huang@intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+Date:   Fri, 29 Apr 2022 12:59:52 +1200
+In-Reply-To: <966b1f45-ba5d-febd-e365-29308a9a59b4@intel.com>
+References: <cover.1649219184.git.kai.huang@intel.com>
+         <32dcf4c7acc95244a391458d79cd6907125c5c29.1649219184.git.kai.huang@intel.com>
+         <ac482f2b-d2d1-0643-faa4-1b36340268c5@intel.com>
+         <22e3adf42b8ea2cae3aabc26f762acb983133fea.camel@intel.com>
+         <c833aff2-b459-a1d7-431f-bce5c5f29182@intel.com>
+         <37efe2074eba47c51bf5c1a2369a05ddf9082885.camel@intel.com>
+         <3731a852-71b8-b081-2426-3b0a650e174c@intel.com>
+         <edcae7ab1e6a074255a6624e8e0536bd77f84eed.camel@intel.com>
+         <0aa81fd0-a491-847d-9fc6-4b853f2cf7b4@intel.com>
+         <af6fccf2f6f8d83593f0eedd003c7cd07f89274d.camel@intel.com>
+         <966b1f45-ba5d-febd-e365-29308a9a59b4@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220429004605.1010751-1-jay.xu@rock-chips.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 08:46:05AM +0800, Jianqun Xu wrote:
-> The driver use the value of property 'snps,rx-queues-to-use' to loop
-> same numbers child nodes as queues, such as:
+On Thu, 2022-04-28 at 17:26 -0700, Dave Hansen wrote:
+> On 4/28/22 17:11, Kai Huang wrote:
+> > This is true.  So I think w/o taking the lock is also fine, as the TDX module
+> > initialization is a state machine.  If any cpu goes offline during logical-cpu
+> > level initialization and TDH.SYS.LP.INIT isn't done on that cpu, then later the
+> > TDH.SYS.CONFIG will fail.  Similarly, if any cpu going offline causes
+> > TDH.SYS.KEY.CONFIG is not done for any package, then TDH.SYS.TDMR.INIT will
+> > fail.
 > 
->     gmac {
->         rx-queues-config {
->             snps,rx-queues-to-use = <1>;
->             queue0 {
->                 // nothing need here.
-> 	    };
-> 	};
->     };
+> Right.  The worst-case scenario is someone is mucking around with CPU
+> hotplug during TDX initialization is that TDX initialization will fail.
 > 
-> Since a patch for dtc from rockchip will delete all node without any
-> properties or child node, the queue0 node will be deleted, that caused
-> the driver fail to probe:
+> We *can* fix some of this at least and provide coherent error messages
+> with a pattern like this:
+> 
+> 	cpus_read_lock();
+> 	// check that all MADT-enumerated CPUs are online
+> 	tdx_init();
+> 	cpus_read_unlock();
+> 
+> That, of course, *does* prevent CPUs from going offline during
+> tdx_init().  It also provides a nice place for an error message:
+> 
+> 	pr_warn("You offlined a CPU then want to use TDX?  Sod off.\n");
 
-Is this the in tree dtc? Do you have a commit hash for it? That should
-probably be used as a Fixes: tag. Or that change to dtc needs
-reverting because it breaks stuff.
+Yes this is better.
 
-	  Andrew
+The problem is how to check MADT-enumerated CPUs are online?
+
+I checked the code, and it seems we can use 'num_processors + disabled_cpus' as
+MADT-enumerated CPUs?  In fact, there should be no 'disabled_cpus' for TDX, so I
+think:
+
+	if (disabled_cpus || num_processors != num_online_cpus()) {
+		pr_err("Initializing the TDX module requires all MADT-
+enumerated CPUs being onine.");
+		return -EINVAL;
+	}
+
+But I may have misunderstanding.
+
+> 
+> > A problem (I realized it exists in current implementation too) is shutting down
+> > the TDX module, which requires calling TDH.SYS.LP.SHUTDOWN on all BIOS-enabled
+> > cpus.  Kernel can do this SEAMCALL at most for all present cpus.  However when
+> > any cpu is offline, this SEAMCALL won't be called on it, and it seems we need to
+> > add new CPU hotplug callback to call this SEAMCALL when the cpu is online again.
+> 
+> Hold on a sec.  If you call TDH.SYS.LP.SHUTDOWN on any CPU, then TDX
+> stops working everywhere, right?  
+> 
+
+Yes.
+
+But tot shut down the TDX module, it's better to call  LP.SHUTDOWN on all 
+logical cpus as suggested by spec.
+
+> But, if someone offlines one CPU, we
+> don't want TDX to stop working everywhere.
+
+Right.   I am talking about when initializing fails due to any reason (i.e. -
+ENOMEM), currently we shutdown the TDX module.  When shutting down the TDX
+module, we want to call LP.SHUTDOWN on all logical cpus.  If there's any CPU
+being offline when we do the shutdown, then LP.SHUTDOWN won't be called for that
+cpu. 
+
+But as you suggested above, if we have an early check whether all MADT-
+enumerated CPUs are online and if not we return w/o shutting down the TDX
+module, then if we shutdown the module the LP.SHUTDOWN will be called on all
+cpus.
+
