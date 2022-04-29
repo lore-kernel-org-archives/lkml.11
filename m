@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61E2BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:06:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B160AC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:06:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378806AbiD2QJh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:09:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44482 "EHLO
+        id S230074AbiD2QJk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 12:09:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378476AbiD2QJf (ORCPT
+        with ESMTP id S245744AbiD2QJg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:09:35 -0400
+        Fri, 29 Apr 2022 12:09:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB0AA27D9
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:06:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49657996BD
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:06:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DAB3622B1
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 16:06:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86FFEC385A4;
-        Fri, 29 Apr 2022 16:06:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D95A46229E
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 16:06:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1535C385A7;
+        Fri, 29 Apr 2022 16:06:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651248375;
-        bh=kX9wsxrQF5lo48sgREIAhlQjmVHS6gEUXUOxmfhc2II=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YTO3+Oe23DUpJby3UQFt6WQjolYvkbKIlw89mqrhDDdaCVv4nwL6QFV3oWJRed/8s
-         9EEDmRuXfUL172NyzyO1UdvIHu/6yktJrRYik3aUFb09BKWT0+8XypBwx6NZOILOEP
-         OHf55HbePzWVybtM/jiQKMZQBUiAkM4/oXmKGnfFf0lzAfA7YNYkcbOEl6ZSxEayJ2
-         29GKZkA5/KccwgKjg26flvFuBN5+0ApmWsaOSCsIvRtbfZRIcjjNAP+ElbXLsJwggr
-         eRWMjgXul/LAbJeREhtZlZobSG3YpcILygXUwak783ccmhyIDr0i9rFBVHF5Cr3+eb
-         tnUywfvPBOpYw==
+        s=k20201202; t=1651248376;
+        bh=dPUAlly+rInfVlu/ufebngY5ioNrRJjd5E6QpTd4Srg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CYTSY51Ulp0QzoV2sDDdn8KZsT+ADsb++kwqoUqlkbCnn1OiUkZP/5BnOm1IrdGg0
+         apCvBrHNZHDI1Lk0CSW2zYGJIYZFPp805kh9YUf1lb6uVDV3MBFc3HSee/xCOQW1wo
+         3nch0GQE60Agc3hIYAjae0fzGvrUKnCITX0A1JwsmT+NZXaR4MSmre0HnoFnBEmB54
+         fUhIrZuVC9p0iigmRl5oLwLkJ/hLX1ddk+YMSaXXPa5cH/YgUkrZuft+N2S0zaU6Ox
+         fDWjnElzn3XPezgyVBs2eakE3exicQTJaP4cv9mwonlBwbBgbDDpSK5kPb5iNMtKdl
+         EjO9Mgdm3wDzg==
 From:   sj@kernel.org
 To:     akpm@linux-foundation.org
 Cc:     linux-damon@amazon.com, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org, SeongJae Park <sj@kernel.org>
-Subject: [PATCH 00/14] mm/damon: Support online tuning
-Date:   Fri, 29 Apr 2022 16:05:52 +0000
-Message-Id: <20220429160606.127307-1-sj@kernel.org>
+Subject: [PATCH 02/14] mm/damon/core: finish kdamond as soon as any callback returns an error
+Date:   Fri, 29 Apr 2022 16:05:54 +0000
+Message-Id: <20220429160606.127307-3-sj@kernel.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220429160606.127307-1-sj@kernel.org>
+References: <20220429160606.127307-1-sj@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -49,67 +50,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: SeongJae Park <sj@kernel.org>
 
-Effects of DAMON and DAMON-based Operation Schemes highly depends on the
-configurations.  Wrong configurations could even result in unexpected
-efficiency degradations.  For finding a best configuration, repeating
-incremental configuration changes and results measurements, in other
-words, online tuning, could be helpful.
+When 'after_sampling()' or 'after_aggregation()' DAMON callbacks return
+an error, kdamond continues the remaining loop once.  It makes no much
+sense to run the remaining part while something wrong already happened.
+The context might be corrupted or having invalid data.  This commit
+therefore makes kdamond skips the remaining works and immediately finish
+in the cases.
 
-Nevertheless, DAMON kernel API supports only restrictive online tuning.
-Worse yet, the sysfs-based DAMON user interface doesn't support online
-tuning at all.  DAMON_RECLAIM also doesn't support online tuning.
+Signed-off-by: SeongJae Park <sj@kernel.org>
+---
+ mm/damon/core.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-This patchset makes the DAMON kernel API, DAMON sysfs interface, and
-DAMON_RECLAIM supports online tuning.
-
-Sequence of patches
--------------------
-
-First two patches enhance DAMON online tuning for kernel API users.
-Specifically, patch 1 let kernel API users to be able to do DAMON online
-tuning without a restriction, and patch 2 makes error handling easier.
-
-Following seven patches (patches 3-9) refactor code for better
-readability and easier reuse of code fragments that will be useful for
-online tuning support.
-
-Patch 10 introduces DAMON callback based user request handling structure
-for DAMON sysfs interface, and patch 11 enables DAMON online tuning via
-DAMON sysfs interface.  Documentation patch (patch 12) for usage of it
-follows.
-
-Patch 13 enables online tuning of DAMON_RECLAIM and finally patch 14
-documents the DAMON_RECLAIM online tuning usage.
-
-SeongJae Park (14):
-  mm/damon/core: add a new callback for watermarks checks
-  mm/damon/core: finish kdamond as soon as any callback returns an error
-  mm/damon/vaddr: generalize damon_va_apply_three_regions()
-  mm/damon/vaddr: move 'damon_set_regions()' to core
-  mm/damon/vaddr: remove damon_va_apply_three_regions()
-  mm/damon/sysfs: prohibit multiple physical address space monitoring
-    targets
-  mm/damon/sysfs: move targets setup code to a separated function
-  mm/damon/sysfs: reuse damon_set_regions() for regions setting
-  mm/damon/sysfs: use enum for 'state' input handling
-  mm/damon/sysfs: update schemes stat in the kdamond context
-  mm/damon/sysfs: support online inputs update
-  Docs/{ABI,admin-guide}/damon: Update for 'state' sysfs file input
-    keyword, 'commit'
-  mm/damon/reclaim: support online inputs update
-  Docs/admin-guide/mm/damon/reclaim: document 'commit_inputs' parameter
-
- .../ABI/testing/sysfs-kernel-mm-damon         |   7 +-
- .../admin-guide/mm/damon/reclaim.rst          |  11 +
- Documentation/admin-guide/mm/damon/usage.rst  |   9 +-
- include/linux/damon.h                         |   9 +
- mm/damon/core.c                               |  89 +++-
- mm/damon/reclaim.c                            |  95 +++--
- mm/damon/sysfs.c                              | 382 +++++++++++++++---
- mm/damon/vaddr-test.h                         |   6 +-
- mm/damon/vaddr.c                              |  73 +---
- 9 files changed, 500 insertions(+), 181 deletions(-)
-
+diff --git a/mm/damon/core.c b/mm/damon/core.c
+index e28fbc3a1969..18c08e90563e 100644
+--- a/mm/damon/core.c
++++ b/mm/damon/core.c
+@@ -1141,8 +1141,10 @@ static int kdamond_fn(void *data)
+ 		if (ctx->ops.prepare_access_checks)
+ 			ctx->ops.prepare_access_checks(ctx);
+ 		if (ctx->callback.after_sampling &&
+-				ctx->callback.after_sampling(ctx))
++				ctx->callback.after_sampling(ctx)) {
+ 			done = true;
++			continue;
++		}
+ 
+ 		kdamond_usleep(ctx->sample_interval);
+ 
+@@ -1154,8 +1156,10 @@ static int kdamond_fn(void *data)
+ 					max_nr_accesses / 10,
+ 					sz_limit);
+ 			if (ctx->callback.after_aggregation &&
+-					ctx->callback.after_aggregation(ctx))
++					ctx->callback.after_aggregation(ctx)) {
+ 				done = true;
++				continue;
++			}
+ 			kdamond_apply_schemes(ctx);
+ 			kdamond_reset_aggregated(ctx);
+ 			kdamond_split_regions(ctx);
 -- 
 2.25.1
 
