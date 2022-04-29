@@ -2,101 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87467C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:09:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB51C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:12:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379431AbiD2RMf (ORCPT
+        id S1379368AbiD2RP7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 13:12:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43830 "EHLO
+        Fri, 29 Apr 2022 13:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244469AbiD2RMb (ORCPT
+        with ESMTP id S244469AbiD2RP5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 13:12:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68F6AD4477
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:09:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651252152;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bR7U7XKW06Rd0hYKWp18hOYc2jittIlTjeGYl3Ta7P4=;
-        b=W13b87P3pFr732ZFQveWPdzWf62N3ITf3u/TtUy8X5S+9SvER+6iKuTMh6kqROmpmy+80d
-        vBGgQfhZ9NBD+6YxvzXjrRDUerOxm9HF2icQOxYmn/fsqBHJP04jdOD3RqyhSVXJpKhehP
-        sZgl8UtNXdWVbganIgFkkxswCdSNXOc=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-392-5XKkvI33OV65GhqwI1iG1Q-1; Fri, 29 Apr 2022 13:09:09 -0400
-X-MC-Unique: 5XKkvI33OV65GhqwI1iG1Q-1
-Received: by mail-ej1-f70.google.com with SMTP id hs26-20020a1709073e9a00b006f3b957ebb4so4842856ejc.7
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:09:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=bR7U7XKW06Rd0hYKWp18hOYc2jittIlTjeGYl3Ta7P4=;
-        b=0+qQ4fwMma1Hy9tDXhYXa8JxGJSL3oh+kzYxL4NMAgXrnY0SEoVERiBIzEieLUQOos
-         a4NQnTE4bb/ZsIoW8gF2jQU5sjTue8EB9rLvtF39LRgiNaIx0m63sQp6l5TIOMG3+eq8
-         y8xL/9X0JZjMpio52mJ3yzGsBSK+TzKyRdrDfTDTiYOArMam63lv0vLLUhJWD4huWEOc
-         ad5tqvycBxJU1D4e8B/zHEaq+lG5quQ/6dMkUCPDG5Qqp9XZvO4Ty0erMYy6RYUCuC+8
-         CkAasze7QL8gyRHnmQ+A3QGys/Sa+k1Vm50B2mNZbIzy7bQJcdeH3iWzfUacobZ/1zbt
-         5y7w==
-X-Gm-Message-State: AOAM532sctMSixWTSPrjXAdcWRSTnVmCSY0x7gC7dB4H3R5pApX/SZib
-        nrA6HKQtGMCteKXq93C4WesKDaBpq24a1p+zV/2K+jPhOLDNWHGVMD3resCbwekZzLgq3Z3za+l
-        4SIv/a/gQMpEmCMEM1frbDyzB
-X-Received: by 2002:a05:6402:5114:b0:423:f33d:b3c with SMTP id m20-20020a056402511400b00423f33d0b3cmr196211edd.199.1651252148302;
-        Fri, 29 Apr 2022 10:09:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwgSmtYizJefurAotPaAGKxQWAIKDpoKa9RhzQgBMvyNJAu2o8gugfd+deHOvkf9pb1W9NpYQ==
-X-Received: by 2002:a05:6402:5114:b0:423:f33d:b3c with SMTP id m20-20020a056402511400b00423f33d0b3cmr196192edd.199.1651252148063;
-        Fri, 29 Apr 2022 10:09:08 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
-        by smtp.googlemail.com with ESMTPSA id g14-20020a056402180e00b0042617ba6389sm3115953edy.19.2022.04.29.10.09.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 10:09:07 -0700 (PDT)
-Message-ID: <0b554e22-6766-8299-287c-c40240c08536@redhat.com>
-Date:   Fri, 29 Apr 2022 19:09:06 +0200
+        Fri, 29 Apr 2022 13:15:57 -0400
+Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BE103914B;
+        Fri, 29 Apr 2022 10:12:38 -0700 (PDT)
+Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46]) (authenticated)
+        by conssluserg-06.nifty.com with ESMTP id 23THCCOg002537;
+        Sat, 30 Apr 2022 02:12:12 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 23THCCOg002537
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1651252333;
+        bh=67OrUMxmi8c2orxD4qJYEnt8eFDU607uv+w+xWvgsbI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=G1+Igqp3LdvVUYVkvD2XWWDkrazVuKwzj3MokRMF2sVuQ77Ti/SyEQE1Sdp4g5rWn
+         pxpdmVave9hNUfHkqAKR1RKablgomr+gn4TrX015VXi/mFi4K8JnSrmXWgGACIhv8h
+         bDCAv+d2Xl0r8aQTe2qGO9gYIBed0rVhHNc3R3ZHvvKYVPfazLh4Ki7FOxhows097j
+         r1cZZM+Y6sLBJ8ylHcX/+U0uSyvt4lohO7FicSPQ9T5Tuxo9ja2ByDO9lVLEt7cyJg
+         wKb2YcVawqveGYXSH/QIt9Dz3Mav2rkrMKljpeAn50pVL1XSWV2r9uy6p6AQnCV1v8
+         8LHZzQ5PybV7w==
+X-Nifty-SrcIP: [209.85.216.46]
+Received: by mail-pj1-f46.google.com with SMTP id iq10so7676981pjb.0;
+        Fri, 29 Apr 2022 10:12:12 -0700 (PDT)
+X-Gm-Message-State: AOAM532cetTCDVZDYT9VFdtI2/Hs6t9rGKyxSbNTeVOivFAwXLm6nvZr
+        RaS+e9QdcgqLsr6jN74HBYNKFKYHAm3mdESvhyo=
+X-Google-Smtp-Source: ABdhPJwdwySlw6cb0FmE+czfzMkfz3BUnPYoAYs+/L1RcfNAhr9w0+UCL8KJjpANjNYpdjIV8RVG9lwGeugMqUdWCdE=
+X-Received: by 2002:a17:90a:e7d1:b0:1da:30d0:9327 with SMTP id
+ kb17-20020a17090ae7d100b001da30d09327mr160696pjb.144.1651252331727; Fri, 29
+ Apr 2022 10:12:11 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 1/3] KVM: x86: make vendor code check for all nested
- events
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        mlevitsk@redhat.com, stable@vger.kernel.org
-References: <20220427173758.517087-1-pbonzini@redhat.com>
- <20220427173758.517087-2-pbonzini@redhat.com> <YmwaVY5vERO43CRI@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <YmwaVY5vERO43CRI@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220426155229.436681-1-mailhol.vincent@wanadoo.fr>
+In-Reply-To: <20220426155229.436681-1-mailhol.vincent@wanadoo.fr>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Sat, 30 Apr 2022 02:11:08 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAST1uRCLaNwfSLbO-sEy9MdjB54i2EkA6NOw=etNi8oBQ@mail.gmail.com>
+Message-ID: <CAK7LNAST1uRCLaNwfSLbO-sEy9MdjB54i2EkA6NOw=etNi8oBQ@mail.gmail.com>
+Subject: Re: [RFC PATCH] kbuild: call checksyscalls.sh and check-atomics.sh
+ only if prerequisites change
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/29/22 19:03, Sean Christopherson wrote:
-> This doesn't even compile...
-> 
-> arch/x86/kvm/vmx/nested.c: In function ‘vmx_has_nested_events’:
-> arch/x86/kvm/vmx/nested.c:3862:61: error: ‘vmx’ undeclared (first use in this function)
->   3862 |         return nested_vmx_preemption_timer_pending(vcpu) || vmx->nested.mtf_pending;
->        |                                                             ^~~
-> arch/x86/kvm/vmx/nested.c:3862:61: note: each undeclared identifier is reported only once for each function it appears in
->    CC [M]  arch/x86/kvm/svm/svm_onhyperv.o
-> arch/x86/kvm/vmx/nested.c:3863:1: error: control reaches end of non-void function [-Werror=return-type]
->   3863 | }
->        | ^
-> cc1: all warnings being treated as errors
->    LD [M]  arch/x86/kvm/kvm.o
+On Wed, Apr 27, 2022 at 12:52 AM Vincent Mailhol
+<mailhol.vincent@wanadoo.fr> wrote:
+>
+> Currently, checksyscalls.sh and check-atomics.sh are executed
+> unconditionally. Most developers will not modify the files being
+> checked by those scripts and thus do not need to execute these again
+> for each iterative make. Change Kbuild target so that those two
+> scripts get executed only if the prerequisite are modified.
+>
+> In order to implement this we:
+>
+>   1. use the if_change macro instead of cmd. c.f. [1]
+>
+>   2. create two dot files: scripts/.checksyscalls and
+>   scripts/atomic/.check-atomics to keep track of whether the script
+>   were already executed or not. Otherwise, the prerequisite would
+>   always be considered as newer than the target (c.f. output "due to
+>   target missing" of make V=2).
+>
+>   3. modify the CLEAN_FILES target of the root Makefile to removed the
+>   two temporary dot files created in 2.
+>
+> We also added an additional dependency to include/linux/atomic/* for
+> check-atomics.sh to make sure that the script gets executed again if
+> the header are modified. check-atomics.sh already has a dependency
+> toward include/generated/asm-offsets.h and so no additional
+> dependencies were added.
+>
+> [1] https://www.kernel.org/doc/html/latest/kbuild/makefiles.html#command-change-detection
+>
+> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> ---
+> Sending this as RFC because I am not an expert of Kbuild. The use of
+> the dot files was my best shot at tackling this issue. Maybe there is
+> a smarter way which I just missed?
+>
+> If I receive no comments for the next two weeks, I will resend this
+> patch without the RFC tag.
+> ---
+>  Kbuild   | 14 ++++++++------
+>  Makefile |  3 ++-
+>  2 files changed, 10 insertions(+), 7 deletions(-)
+>
+> diff --git a/Kbuild b/Kbuild
+> index fa441b98c9f6..d579f4971aa3 100644
+> --- a/Kbuild
+> +++ b/Kbuild
+> @@ -39,21 +39,23 @@ $(offsets-file): arch/$(SRCARCH)/kernel/asm-offsets.s FORCE
+>  #####
+>  # Check for missing system calls
+>
+> -always-y += missing-syscalls
+> +always-y += scripts/.missing-syscalls
+>
+>  quiet_cmd_syscalls = CALL    $<
+>        cmd_syscalls = $(CONFIG_SHELL) $< $(CC) $(c_flags) $(missing_syscalls_flags)
+>
+> -missing-syscalls: scripts/checksyscalls.sh $(offsets-file) FORCE
+> -       $(call cmd,syscalls)
+> +scripts/.missing-syscalls: scripts/checksyscalls.sh $(offsets-file) FORCE
+> +       $(call if_changed,syscalls)
+> +       @touch $@
 
-Yeah, it doesn't.  Of course this will need a v2, also because there are 
-failures in the vmx tests.
+I am not sure about this hunk.
 
-What can I say, testing these patches on AMD hardware wasn't a great idea.
+Avoiding the needless preprocess is good.
+But, it is better to display a warning somewhere (maybe 'all' target)
+until the required syscall is implemented.
 
-Paolo
+Also, you need to check the timestamp of syscall_32.tbl.
+When it is updated (i.e. when a new syscall is added),
+this check must be re-run.
 
+
+>  #####
+>  # Check atomic headers are up-to-date
+>
+> -always-y += old-atomics
+> +always-y += scripts/atomic/.old-atomics
+>
+>  quiet_cmd_atomics = CALL    $<
+>        cmd_atomics = $(CONFIG_SHELL) $<
+>
+> -old-atomics: scripts/atomic/check-atomics.sh FORCE
+> -       $(call cmd,atomics)
+> +scripts/atomic/.old-atomics: scripts/atomic/check-atomics.sh $(wildcard include/linux/atomic/*) FORCE
+> +       $(call if_changed,atomics)
+> +       @touch $@
+
+
+Presumably, this is wrong.
+If the header is manually edited, Kbuild must stop the build.
+
+This change just lets it keep going, and
+what is worse, the warning is completely silenced
+second time.
+
+
+
+
+
+
+
+> diff --git a/Makefile b/Makefile
+> index fa5112a0ec1b..b18af9d4248a 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -1483,7 +1483,8 @@ endif # CONFIG_MODULES
+>  # Directories & files removed with 'make clean'
+>  CLEAN_FILES += include/ksym vmlinux.symvers modules-only.symvers \
+>                modules.builtin modules.builtin.modinfo modules.nsdeps \
+> -              compile_commands.json .thinlto-cache
+> +              compile_commands.json .thinlto-cache \
+> +              scripts/.missing-syscalls scripts/atomic/.old-atomics
+>
+>  # Directories & files removed with 'make mrproper'
+>  MRPROPER_FILES += include/config include/generated          \
+> --
+> 2.35.1
+>
+
+
+-- 
+Best Regards
+Masahiro Yamada
