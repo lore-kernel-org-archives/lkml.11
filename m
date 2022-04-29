@@ -2,232 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE2BC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:27:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B828C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:30:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357454AbiD2KaX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:30:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58304 "EHLO
+        id S231820AbiD2KeM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 06:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231820AbiD2KaV (ORCPT
+        with ESMTP id S1357502AbiD2KeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:30:21 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E2FA2075
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 03:27:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651228023; x=1682764023;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=1tQTauQD/MLKLgiL3ppD3Xgdal2z8SDQOZmYuVwCzk0=;
-  b=NBM1iMJgWdtBBQGcm5LvmNzBKlGMdr105p7k9PndohvZ6g7JxvZiuC7a
-   0Ma1Hw5mxzt3DOfVc10UkklArKu0ABx2rJFQfwirTANSBdm3/ZVQ6eS8Z
-   npuGPFqSFRetRkP2YhvwNidaZkqjdIW0E476g0apjLy5JmpQlDRDtvNwC
-   aTLH1CIGLZOILkC+EF9pPs2OLFq+cfV6xkhMNGb0qMbmnagcws817Qd00
-   RfzxO0AzeNzQKxTJnlnIqRCeV/o+jdXZZokmKmMa7IyjLw16xXTp+iz2L
-   itn47e/v1dMxrZMgKknMHv2/osAlU13QKeS8jUvu3C3biKGLz1VT17B2O
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="266761416"
-X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
-   d="scan'208";a="266761416"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 03:27:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
-   d="scan'208";a="582048289"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga008.jf.intel.com with ESMTP; 29 Apr 2022 03:27:02 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 29 Apr 2022 03:27:02 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Fri, 29 Apr 2022 03:27:02 -0700
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.47) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Fri, 29 Apr 2022 03:27:01 -0700
+        Fri, 29 Apr 2022 06:34:01 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFC325C64
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 03:30:43 -0700 (PDT)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23T9uOTc025802;
+        Fri, 29 Apr 2022 10:30:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
+ bh=xI8rVN+t7Eme1am8QMkZT1rZ9HfFaFIGyoN3LmpYd7M=;
+ b=02hH2EBWV5iOwqdWUGhcnk/Ux1cHYVHy+Df8GfMAkIwgprc8vesU6ueJ++sl4jC05qhq
+ zKgO9mwhhhPXFivp/XcAV4OaFZoUv/LW/VxOle0CGQWxsVySW0RqHJhJQqNErSstdL0T
+ kVQ+URBVNmYdKbZSrULdB4FpC44EQMBwE5v/0wp1l9KJ33iHFi4XyzxaDTAwKnlTL9Z7
+ FXqBZ5vLQU3H1nap712KqmXY4kC8TK40+zjlOSmR6xZzJJe/RW6FY4FBXP+BFEtI5dkH
+ 2CiLLCU7TeFAYa4Ju0X+J6Jjb7OUMuPdGEzK9ZuO7VpA9Gav/f7tzRO9aQe/gpx50YlO fw== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fmb1mxgxs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 29 Apr 2022 10:30:39 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23TAUZK0033589;
+        Fri, 29 Apr 2022 10:30:38 GMT
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2174.outbound.protection.outlook.com [104.47.56.174])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fm7w7v9tb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 29 Apr 2022 10:30:37 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JghovPwLUi88JY4l9L9UjPm8jsQD3lfHco2mYd9oYb6InKWtuElrDLxUhoRHj+9ZRrQoBWAH73aoonWsKuNFx8KR4O/HlKkcprgWle1spXPcBk+Anxy9hjx/c5xWocYOSYGrCtY3NPSj000JtNijmZewMKEUqDg4Iutxda5FB4LlyIxsQaTKBi7yR/dgDORl7RhqrkZLzaPCjmBEuekZKidQ3B9c5S/loyO2bytkiceGOU6snKOZuwttyGN2r+h+FEt0kCeqPbLC3uY6oKQsWd4CvCwDUweQoynV/CTQUbfv9TuCsyTKB56T8h03/ws63/SI5EeYuQVufmRIGKZ+Cg==
+ b=B3s+z3wQLkoveGJdv+7usphapyJEkeHtQgykKt5JcwqPTA1XSw/PWw3+xo9q6JBGFlW77PFcxEhevuvMMUyHWeQQpQ8RkStsINOP6EMePuMdgEU+C8zoo3GlXN61I9z6Tt+FqGkw2E1PFVK0aP59THICkvELT/+cXdFd0Algtt+yMKNkw6t1Hng1G+AWlEL+x9XpOT4o7D+GcuVuSi16XNYjq1p0VrlUB5dVMNsONQgmEd1Vo/JyI1XCx6yIwh8HOPYKtOnsJhn9OwlTGfnZZFag4yypEcXYMncWMffrjEBmAjh8vv+F9O7BiJLNsdTSAovPOsM0UPgbuRNpq6plVg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iIOxT/lNhSwJUkjryy8JBl6/m91659XK9BLAh1YQvJY=;
- b=Qxm1KhJiUg37T9HFObnqwD9smEZ+4/x183zcWOTDtte9+CuLoxdrBq1NLloHH7/I5PS6LCo8uMcs4rYdf+HZ29h3lF9ZDpuLnMB5Ex0NLYHN0RVCe1AvdvwC/TwC0aYLnbMnkKqNQQFMrnjzHD2HucOqy3X674GmHiWJ8bFkbp2ZeqaI7SfRTgj97jXI+lHo86vg9NdJuK/lowq+HzAFQPZWYgfQduJckPr2yGsgvMyerbt6S2KiC7MwjkwqMghZZ6B37hTH2Ji2o/4Ow63IHX2DrIHTyUPixbvW1nNj25h0ToghSJbGBBdSZBdjwUorHxFzEcyWDVmxGt7XZkgsjw==
+ bh=xI8rVN+t7Eme1am8QMkZT1rZ9HfFaFIGyoN3LmpYd7M=;
+ b=J3NdATuG6jIv7QyinyK0lBrooFcyaIgl0Z2HYSgC5PlrlhVlqUHlFCsujhUk6vBfide8NtT1h22+NtSjMGS6QVAC6j7/ahAqIpI0dZJYRDuBf2WUikRAZGehvw/mmYXVRRiV4X77IKWNIcEK2x9Kx+r8+g/ND9MviaMEorCavJREpKVkDZ+Xgr+iXRDiTqY8DGe5HMSW5iNKl9XIZOIiQH4TIalmF/OWy+ClzvMba+RHO31h2VO6IvrplwqU82GyJsp8mUukNye7HElBixYdpR9Gf7W7HsK2iv7C3TdldO01tLYfDAIXx20ek17ockGJE/zX+KZdBim7O951/HwBUw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BYAPR11MB3062.namprd11.prod.outlook.com (2603:10b6:a03:92::18)
- by DM4PR11MB5485.namprd11.prod.outlook.com (2603:10b6:5:388::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Fri, 29 Apr
- 2022 10:26:59 +0000
-Received: from BYAPR11MB3062.namprd11.prod.outlook.com
- ([fe80::90eb:f194:6b40:c4ff]) by BYAPR11MB3062.namprd11.prod.outlook.com
- ([fe80::90eb:f194:6b40:c4ff%5]) with mapi id 15.20.5186.023; Fri, 29 Apr 2022
- 10:26:59 +0000
-Date:   Fri, 29 Apr 2022 18:26:49 +0800
-From:   Aaron Lu <aaron.lu@intel.com>
-To:     Yang Shi <shy828301@gmail.com>
-CC:     "ying.huang@intel.com" <ying.huang@intel.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>
-Subject: Re: [PATCH] mm: swap: determine swap device by using page nid
-Message-ID: <Ymu9acl18pTA5GU6@ziqianlu-desk1>
-References: <20220407020953.475626-1-shy828301@gmail.com>
- <Yk6cutNf5sOuYbDl@ziqianlu-nuc9qn>
- <CAHbLzkq+eKcKCsxXDTiOcBxk8FjMdWBqOxwi4N_NG7PZWbAAkA@mail.gmail.com>
- <Yl/FS9enAD4V8jG3@ziqianlu-nuc9qn>
- <f27ec36beb3cf1dbbfc3b8835e586d5d6fe7f561.camel@intel.com>
- <YmETEHnK/FiNbLO7@ziqianlu-desk1>
- <6f7210be7353d1c01dc9f872b2692b83f87f5452.camel@intel.com>
- <YmJKBaq1yj6/iBJ3@ziqianlu-desk1>
- <CAHbLzkriO6xWzyMNpcVFmyxSn=cqbz2qx+2mJ5d0m-beqPRCUg@mail.gmail.com>
-Content-Type: text/plain; charset="us-ascii"
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xI8rVN+t7Eme1am8QMkZT1rZ9HfFaFIGyoN3LmpYd7M=;
+ b=lBJGi/1caY1cAfRMb7Fc38jYgTDOsb3w2i06kN0iDoFZFlunpTsADV+/BfBlO1x+M2yVY1dQ2mn0SNnDMpAlkrfRIvY7MYCQnae4qCPyTdSyYJJB98Y13DooU0aXify/okF2iN3SqKJ/oLfierxtobmjF1j/PfwJ2/9Vl/oacbo=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by CO1PR10MB4674.namprd10.prod.outlook.com
+ (2603:10b6:303:9c::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.12; Fri, 29 Apr
+ 2022 10:30:33 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::b5d5:7b39:ca2d:1b87]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::b5d5:7b39:ca2d:1b87%5]) with mapi id 15.20.5164.025; Fri, 29 Apr 2022
+ 10:30:33 +0000
+Date:   Fri, 29 Apr 2022 13:30:14 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     kbuild@lists.01.org, Fabio Estevam <festevam@gmail.com>
+Cc:     lkp@intel.com, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>
+Subject: [sailus-media-tree:master 55/60] drivers/media/i2c/adv7180.c:573
+ adv7180_test_pattern() error: uninitialized symbol 'reg'.
+Message-ID: <202204290610.SVJgr8qV-lkp@intel.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHbLzkriO6xWzyMNpcVFmyxSn=cqbz2qx+2mJ5d0m-beqPRCUg@mail.gmail.com>
-X-ClientProxiedBy: HK0PR01CA0052.apcprd01.prod.exchangelabs.com
- (2603:1096:203:a6::16) To BYAPR11MB3062.namprd11.prod.outlook.com
- (2603:10b6:a03:92::18)
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JN2P275CA0045.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:2::33)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6c8f75bc-5172-49a5-fcd7-08da29cacb00
-X-MS-TrafficTypeDiagnostic: DM4PR11MB5485:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-Microsoft-Antispam-PRVS: <DM4PR11MB5485B4478084E705B84621778BFC9@DM4PR11MB5485.namprd11.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: bbb8cf68-26b9-48e8-7f1d-08da29cb4a87
+X-MS-TrafficTypeDiagnostic: CO1PR10MB4674:EE_
+X-Microsoft-Antispam-PRVS: <CO1PR10MB4674F666B4BF73AB461948528EFC9@CO1PR10MB4674.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +VBDEfsgTbycTJAjeuqZN1nwhK4DNnPe6JKCCLaOp20UffGSjDmIa/PFy74Hng6gYA8RRbTgQnHjwlGduqT66OXhurbapvJV2CMTCtsTRffkLpVv67EyxFt867PrVSNLylvn9PHRE9zVfnZhy0s1il8eEACfcEmRwphAObGxl1HhFEMKtp8/k38EecRcLJPD9374WaCy+S5ZCVjezGwMvb4jxWn9C4fB88isLS6GBGoC2YkxWT/XIzInRn1hjsOO2ybaHSBPu6Sikb2VeNzDBU47DaTVbzoKlsKJRaJ52thyuIK9Z1iAVwfo59w0ThaLvv0uMEAhjVjm/mPEVguV030wQWnQRj54AGccwbguojiFJCerd610hF7QBXKWV1AJeNLDy37ICiZe8VE/XoOSgrKkYrelvKMx8Xn50aGd+0WHkQVyCx1QpkC55t2z3r9BHYcxdU3HeKPp8HzV+dsU99pEQVerJ5U4pxVWXu4EPXYUSEbXLp4sr6PWToxRj5rhubwhoizsynZDTdwEEcCBbQ3kQRKWm688YOiv+A2zQftw9jG3x3cbe/7H3qHiqbM/BnshwuddqGvzdxg9mg/zmiDvBnh3Lr+ZNFKhGlYhGgfsSA1Lh+albbQj7V4W0AI9r8hZqNHNU8ZUeJh0CfMynQVqOTqnpIgyIhvALRqM9uU/gmULuRH8Ch6jZ2GgK40svmb17j3BpRe5E95WYmKnrm43iWXs3rRpynLZiwhv2wQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3062.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(2906002)(33716001)(82960400001)(6916009)(6486002)(9686003)(5660300002)(44832011)(83380400001)(66476007)(38100700002)(86362001)(8936002)(53546011)(66556008)(8676002)(508600001)(54906003)(4326008)(66946007)(186003)(6506007)(966005)(316002)(26005)(6666004)(6512007);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 8+WYfFd66jMBxwD75D2ebxm96DOT0yJNWrDyuuojEXZhSwKiI1gcA/Rij+ByJbrYqMNo9AcxqxHMXJFs59ew3/ugCrBa289zZMsfG57jSm4/FGi+tjZnPLnNhTmlCmbTbt/a20r0tJvZTvr4jzd+O4C3TwyUfUxB9Wmn8fRJCUnJt87mFKd4CTgK6+74LYukYlxURhtIR/4cBVOZghlR/WpNLaV3aczozjjFsCF5dsisjcSsveZJYj1HGlPcXz2ghQ9W7u3844jpzZjUf0U3Vd9fcMM3fJh0huKFkuNBb3dHsfDOb9i6+9MDWBiXP1sJewnwpo3cG8A1WMbUYp4kEEYbdLLBZbJf8g8Oh5fUnRWr5cOaEKeIOoA4I+g9nhZPoksq80K6stlV+jUEL2IxgbhsCG2KvekC8KXwGGXa1LbXxyW7WCbrbulW5x0t46Fa6bPmcPpe02kjXdDSYFWpf3sYtwhBXtLlFT93G2sLkBh04cmYocdQAUQ9IhiA4JSkFqqMrnvYK6WQTCJe49E3H5Iy5xVNoff5Jonby5IFt+2cMwY9hzw6w2LzMhxzolzH3nc0W8rbY7THwETY15G+XoeGZewD/lF0pOrk4V26yrRObJwBjOBUnWRVpfzIqFqM1dcbVCWrSGgOHgarrkgqSSbUBLA01lQusXn5UnmXBuO2dACKAFL7WIuCU7ep0yg+gCPeZgLSuOlLlI8ssxjRToI55GCA+pxagRohzOfiv939mFdpze8er7IasXRymoSSF2fYD33hYRmUtZTD0Fd9C2/3NziY4dPpqfPsgpqyiFHYdj8nFj8PJfkOUUjQp/65EoQKSAVZxvQJUwmY/WDPFw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(186003)(83380400001)(6512007)(9686003)(26005)(1076003)(8936002)(2906002)(5660300002)(6506007)(66476007)(66946007)(66556008)(4326008)(8676002)(36756003)(508600001)(38100700002)(6916009)(966005)(6486002)(38350700002)(316002)(44832011)(52116002)(86362001)(6666004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6zCgZS77Z7ljIdsC/ZT8jVgkqnbq2/onqbGZ57mnQkImoDIwpujAhdu8EwiG?=
- =?us-ascii?Q?s9cZkJP2EX5o9PD+FZ3pNkkSdlfHA7aM1Je5B2pZwXYb+92lKju3c2Nb6+YZ?=
- =?us-ascii?Q?l/qE5Eyqh7aXGSn7mOFQ+A7mVl7sKXh/1qR6oobyidZzfjnhKeS8EPgp2vVU?=
- =?us-ascii?Q?6QgJczeOPwDxqffsECfKJldCZVUxVcpaQbKTakVSfULH9xPIr8FBOXH9qt3Y?=
- =?us-ascii?Q?I48MiXInRVDrFJJDG5xOkY5tvMn3udAye5CPInJCwkVf8m4EnRmd1SySfmoX?=
- =?us-ascii?Q?Rspt2uifM7+rgydkz7AmoUpy9+GEruMoyL/YmFos1mGkhiAWdy/Qb5uHSy2j?=
- =?us-ascii?Q?nJY3oPxZTlHfTFKUSHbo5V6JpSQOksonfnDpLd1vFpk8T0lmvcPHoa25/maT?=
- =?us-ascii?Q?ZrR88G+PGKFXVWw6/AVi/I/Ow3Z2XFUy8VCbBKR4ONwqgvIxLfrREZmCb6ku?=
- =?us-ascii?Q?EnCD5luxcEEk2P4U9g9WAk+A8q89WuAd+Wap186Jvids1IQ+623sGc+UKDMK?=
- =?us-ascii?Q?62+cAt7nsk0aMKdFK8bz/ikVu3Efz8aeZ96ArlUSbZ3pb9ii4swNoX9HMOcn?=
- =?us-ascii?Q?ShpaHOzhlpw/EG8qhMffd82BpAXe3D1aANwzzfrzb5nx/8F8xFnJwq9wzPvD?=
- =?us-ascii?Q?86GNPCK/j3ZjyWYD7cq0HEvd+7tzmBlOe1wdGXIBS9fJpodTeyOpW31Yr3h8?=
- =?us-ascii?Q?pXKoUksinYGtle2YR2hckTWIxkW4O9mMivhwFxC4myGpD93BavF8WF3SVrJp?=
- =?us-ascii?Q?9Ff/iDbH0HA9sjs0vyBpaF/gFa17kY5TXTUHcKs/ovMzSknos7EiszhxkQvH?=
- =?us-ascii?Q?xbDNpMGWRcGKHl+VmrKkJltHjJQ0jiQy2O+uJVIc0aGOXQ33U3f9ojz6hgZi?=
- =?us-ascii?Q?LQPzA+u0hd7eelzm9mCVBHHFkvUo06N4IyUkTaOnIeS8mAyZTYYowUzBKFxd?=
- =?us-ascii?Q?0Rw8rkIc+HJ1TVsz62L9+wlLXdfisVb8z0VWFoBZ1FGPtPYDRy+Xi4yDWG+V?=
- =?us-ascii?Q?rUrlkteqUHUmaUbAXJKGiOmCx13/NcZDfcVJm0tKat2yT/52kCBAnBIIjOPe?=
- =?us-ascii?Q?Y5IeWuSWsgYhY3ho1v1N448tBu6kFAzyxz0LzlOkJxDoSfw9nT4yuN6AdAmY?=
- =?us-ascii?Q?uHwH1l///TePI+JyoVNHd4nlGqDUMmsx+E59pivQnv1t2fiUzU8bGPcJouTT?=
- =?us-ascii?Q?ZFhDuDI0LOf/7d7Q+FlZ+uEFe+4XwnHjAnKT72r+pcCeD90WFqMvFf8rPpfX?=
- =?us-ascii?Q?onxviyilbDBbSIa8eaEORna9lgJEbEV4Nril5B2IsDXnk6o3+l9pfUWdeeRZ?=
- =?us-ascii?Q?LklTeyUeQ5Gspa9d6GpJpdOce5w7Qnb5vrqP9Hv4ZMFiiy/HOibETkiBrbZl?=
- =?us-ascii?Q?QNhAa6+JjTdB7ABFkRiuddWfW1qt/nOTdtdRfFHKPJ5UYq+4q3phL8pwTfNB?=
- =?us-ascii?Q?Nx5ZBwpB9SCtPkXUVIbhprsbO3HjpayYS8tSst+PJD+f10UxSfqrj1xJ1wND?=
- =?us-ascii?Q?dF+S5tOYEDbozNm1tTHmhAB/7VeKHn+8IpRCWdSIjsv15iDYFfAU+cURT7UG?=
- =?us-ascii?Q?P51ZPtCsEOOOLmTQ1FPK65shlX85PpwYKvQQ6kLisa/O5esGdv5f6Zktg3BP?=
- =?us-ascii?Q?3Ag0Mv3TE6XnWE2q1pl2tOBo+BmrMv9zBBa2ao3BSL+546Z9ImEMIatC+7bb?=
- =?us-ascii?Q?eQR0xXAFk61mZ1vZKLQdJ683F8a6kQnvc/CkXanQz3tN2rEnwvvvCjvuEQfx?=
- =?us-ascii?Q?rR1OmpMNaA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6c8f75bc-5172-49a5-fcd7-08da29cacb00
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3062.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?A0JJqrSQ+rVTbzFkZLL9Gex5ayD2c4VQ0GI2Yv1C6rKpuD+JRjPhDKfmZgzb?=
+ =?us-ascii?Q?yIa7PUDOhstnehIIdsbUzgabx2F7YioUOjjOH3K5JkDJ03Lmw/hwJn2uU30I?=
+ =?us-ascii?Q?Mq1QzFJ7IYy71YLvYUSBx61hz0OVF39mI3YjWbNodhOiZusgQctPTal0yZqV?=
+ =?us-ascii?Q?lKIIb86BRynJTE4GvC9B02pmGNEk/rFH6Bwv3y8BUgYC3W4VjBesn5Rq5LWM?=
+ =?us-ascii?Q?MQsQjtzEBMDwDOojLC9oZBaOkqSNI5DJ8tltO6snNv+WUs/OtDqGVuevMPmC?=
+ =?us-ascii?Q?mBrDuN/bXuvGYEwDJep5ruZRK3NJym4mgb5OTZuCdhNM8uzzNynzo12eO+Aa?=
+ =?us-ascii?Q?+h90yzjbJutqKvDCGZwOfQUPqc4+4pz4rAxTdwsjR9PYp3fw/8cqngB/l+gf?=
+ =?us-ascii?Q?H3DZACCK7kqkmlkpU2fNCa+BBL+Sn+mcEkrl0i//NCV3ubqeVMkvyWspg9tD?=
+ =?us-ascii?Q?HfdOjXCuRss5PtR+lOF/Za5B//Qb30lMU5+aq3XTlHqTiYnz+V3ICAQRUg4c?=
+ =?us-ascii?Q?TIE3B2tyakPDccaAR9kpJSalTS3ZkPwatFNlA8BcCaVJMwHMl5VVc3fNmgw3?=
+ =?us-ascii?Q?5qDpdMn7VebBxTPvM7WIERxeGe46MQ4fpXXkV5yoFKEf8tRLxdiEaM54pegE?=
+ =?us-ascii?Q?vjGrPQvBFAx038PtRJaMpDCc/IihGh7o85lZcRVu7I86zh7K62nzYC7uUvxy?=
+ =?us-ascii?Q?x3MTbFUiJ4d/TvcTg7WV8FQZYR9xh+9mF47j9P23qcpa3DAw9915p0tAjLTN?=
+ =?us-ascii?Q?jwF6pMrJX/v+eSAwzWHBS+PRnAzFHWUDsmd0wuWtIn5dHCq8G2EBIz3xMoSO?=
+ =?us-ascii?Q?vPVHucD3CTM8lNPJ+TDYKKq2Y+tdvtWUat4X/ZzFI54xYc8Y++GQ9+Nq4nb7?=
+ =?us-ascii?Q?Nv8MtUL66hIS7X6JvuJThqv2N2wboyON4ls50eXLvCfKoqZBMFuRkQaMW+Is?=
+ =?us-ascii?Q?zahqwCO86clI5HAl4lsxhsrjUJSPNZoJKklKL+dJ/KbCog6z7z6O+iiQ58TN?=
+ =?us-ascii?Q?bHzZ0alnxM9MLeE/vbtVKQ8gXLHPAQ3A8y/5BkKR3TdAaEzRPazZqByGC65h?=
+ =?us-ascii?Q?bYL+1OiMFjfnWYS59rtE6jylYqGlyTe+Ua6004D6HDWZrthKK8Ms99SfFcx3?=
+ =?us-ascii?Q?zWzCncy/3RsaHmckosGBQz9NqJNIO3E3snF3Wrhf6GfNOLRqOT9pMQ9bQFAi?=
+ =?us-ascii?Q?OOteQaYd16RGzwrrASt+M3Dm0ErV6uJelK/EcBzl9cIS5TBObRqgtXZp6XJq?=
+ =?us-ascii?Q?DzSqr8aOI2oA6DKuY+mI/GvEPfTVN0Kp9Qvv0y8pku8N8zNXbPhey5RFrWqq?=
+ =?us-ascii?Q?xVfgoP6rp6tcIYLET/vIBcPAl/O3bRwl+1asP4bP9rfUCuCII/uFAEWI/Kbs?=
+ =?us-ascii?Q?RF/6EHR8pc1zBLE7raThuobjky1/rZUa22jJABUX3VJ3D3sVwH/AyKogfgri?=
+ =?us-ascii?Q?1n/tY3tQ0HLUNvyTOxJr4SUw72nDlSLqsneYFJ+O94h1Ubwa69X6sWep/yz4?=
+ =?us-ascii?Q?EUg63WNek0Vf3xr2EsGQsyXndp28US443P7jUYs47SWvGi/Bgo/tccn/lEEI?=
+ =?us-ascii?Q?JL96LlkbrbVgXq5x5u1h05g288002VPtVdh04+LzyFTJl8JOBrYx6N0I4Mrz?=
+ =?us-ascii?Q?t5NNVWNL97Pbaf/njg7VYQUrW+ditfgGW/IKZmtqAGMYNBqPKQFKdfT6wDvD?=
+ =?us-ascii?Q?B3PpJ33gWXjtH8SRJQqWV2fsTkEfluTZ56PC2yNs1dKYYLHIcy0irGcqcTQL?=
+ =?us-ascii?Q?NsAzJx0FBauQ3q1MwMHOB5K3TofpVf8=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bbb8cf68-26b9-48e8-7f1d-08da29cb4a87
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2022 10:26:59.5287
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2022 10:30:33.4027
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yRcIfQgbi+QhAVf3zkNrZQj9ygXE6XMMlMoDMp0zc+B6YI4GY4BX5cQxCd8UMG6yTaknkiu6t9Qa5zCIcJK8KA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5485
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-UserPrincipalName: ur5bXnMaichmZZ5itTWc7a2i9SMhNMaNJrUeZbgt5Pu6HiHk/G/LGiIIMGt0Q86WPGRF4Jwr377YlCsZPqYsm5dZZu9EUGy6X6Q2/WtGeBA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4674
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
+ definitions=2022-04-29_03:2022-04-28,2022-04-29 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999
+ malwarescore=0 mlxscore=0 phishscore=0 bulkscore=0 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204290060
+X-Proofpoint-GUID: pb0nB3Hnm3DzL09nWAyRq6HMh2-vx3ll
+X-Proofpoint-ORIG-GUID: pb0nB3Hnm3DzL09nWAyRq6HMh2-vx3ll
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 10:00:59AM -0700, Yang Shi wrote:
-> On Thu, Apr 21, 2022 at 11:24 PM Aaron Lu <aaron.lu@intel.com> wrote:
-> >
-> > On Thu, Apr 21, 2022 at 04:34:09PM +0800, ying.huang@intel.com wrote:
-> > > On Thu, 2022-04-21 at 16:17 +0800, Aaron Lu wrote:
-> > > > On Thu, Apr 21, 2022 at 03:49:21PM +0800, ying.huang@intel.com wrote:
-> >
-> > ... ...
-> >
-> > > > > For swap-in latency, we can use pmbench, which can output latency
-> > > > > information.
-> > > > >
-> > > >
-> > > > OK, I'll give pmbench a run, thanks for the suggestion.
-> > >
-> > > Better to construct a senario with more swapin than swapout.  For
-> > > example, start a memory eater, then kill it later.
-> >
-> > What about vm-scalability/case-swapin?
-> > https://git.kernel.org/pub/scm/linux/kernel/git/wfg/vm-scalability.git/tree/case-swapin
-> >
-> > I think you are pretty familiar with it but still:
-> > 1) it starts $nr_task processes and each mmaps $size/$nr_task area and
-> >    then consumes the memory, after this, it waits for a signal;
-> > 2) start another process to consume $size memory to push the memory in
-> >    step 1) to swap device;
-> > 3) kick processes in step 1) to start accessing their memory, thus
-> >    trigger swapins. The metric of this testcase is the swapin throughput.
-> >
-> > I plan to restrict the cgroup's limit to $size.
-> >
-> > Considering there is only one NVMe drive attached to node 0, I will run
-> > the test as described before:
-> > 1) bind processes to run on node 0, allocate on node 1 to test the
-> >    performance when reclaimer's node id is the same as swap device's.
-> > 2) bind processes to run on node 1, allocate on node 0 to test the
-> >    performance when page's node id is the same as swap device's.
-> >
+tree:   git://linuxtv.org/sailus/media_tree.git master
+head:   ea1280040a678f38a4ce6f1817933c04cfe74552
+commit: f3b4b140d87dc7f256229f20a8d70429a7549aca [55/60] media: i2c: adv7180: Add support for the test patterns
+config: microblaze-randconfig-m031-20220427 (https://download.01.org/0day-ci/archive/20220429/202204290610.SVJgr8qV-lkp@intel.com/config)
+compiler: microblaze-linux-gcc (GCC) 11.3.0
 
-Thanks to Tim, he has found me a server that has a single Optane disk
-attached to node 0.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Let's use task0_mem0 to denote tasks bound to node 0 and memory bound
-to node 0 through cgroup cpuset. And for the above swapin case:
-when nr_task=1:
-task0_mem0 throughput: [571652, 587158, 594316], avg=584375 -> baseline
-task0_mem1 throughput: [582944, 583752, 589026], avg=585240    +0.15%
-task1_mem0 throughput: [569349, 577459, 581107], avg=575971    -1.4%
-task1_mem1 throughput: [564482, 570664, 571466], avg=568870    -2.6%
+smatch warnings:
+drivers/media/i2c/adv7180.c:573 adv7180_test_pattern() error: uninitialized symbol 'reg'.
 
-task0_mem1 is slightly better than task1_mem0.
+vim +/reg +573 drivers/media/i2c/adv7180.c
 
-For nr_task=8 or nr_task=16, I also gave it a run and the result is
-almost the same for all 4 cases.
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  563  static int adv7180_test_pattern(struct adv7180_state *state, int value)
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  564  {
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  565  	unsigned int reg;
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  566  
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  567  	/* Map menu value into register value */
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  568  	if (value < 3)
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  569  		reg = value;
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  570  	if (value == 3)
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  571  		reg = 5;
 
-> > Ying and Yang,
-> >
-> > Let me know what you think about the case used and the way the test is
-> > conducted.
-> 
-> Looks fine to me. To measure the latency, you could also try the below
-> bpftrace script:
->
+Just write something like:
 
-Trying to install bpftrace on an old distro(Ubuntu 16.04) is a real
-pain, I gave up... But I managed to get an old bcc installed. Using
-the provided funclatency script to profile 30 seconds swap_readpage(),
-there is no obvious difference from the histrogram.
+	if (value < 3)
+		reg = value;
+	else
+		reg = 3;
 
-So for now, from the existing results, it did't show big difference.
-Theoretically, for IO device, when swapping a remote page, using the
-remote swap device that is at the same node as the page can reduce the
-traffic of the interlink and improve performance. I think this is the
-main motivation for this code change?
-On swapin time, it's hard to say which node the task will run on anyway
-so it's hard to say where to swap is beneficial.
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  572  
+f3b4b140d87dc7f Fabio Estevam 2022-04-27 @573  	adv7180_write(state, ADV7180_REG_ANALOG_CLAMP_CTL, reg);
+                                                                                                   ^^^
+Uninitialized
+
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  574  
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  575  	if (value == ARRAY_SIZE(test_pattern_menu) - 1) {
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  576  		reg = adv7180_read(state, ADV7180_REG_DEF_VALUE_Y);
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  577  		reg &= ~ADV7180_DEF_VAL_EN;
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  578  		adv7180_write(state, ADV7180_REG_DEF_VALUE_Y, reg);
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  579  		return 0;
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  580  	}
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  581  
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  582  	reg = adv7180_read(state, ADV7180_REG_DEF_VALUE_Y);
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  583  	reg |= ADV7180_DEF_VAL_EN | ADV7180_DEF_VAL_AUTO_EN;
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  584  	adv7180_write(state, ADV7180_REG_DEF_VALUE_Y, reg);
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  585  
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  586  	return 0;
+f3b4b140d87dc7f Fabio Estevam 2022-04-27  587  }
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
+
