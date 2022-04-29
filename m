@@ -2,228 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89AACC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 21:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA2CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 21:19:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237411AbiD2VVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 17:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42674 "EHLO
+        id S237704AbiD2VWk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 17:22:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236970AbiD2VUu (ORCPT
+        with ESMTP id S237089AbiD2VWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 17:20:50 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858473D1FB
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 14:17:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=D34NuQX1GBXxZROMvCSKmxzJzqzR2dxQL3+sXErw3DA=; b=uBpSf0CIwp/Uwtg33Z10evUfcy
-        PZxIaVBvJ4Z+lSeEzQdjAUOkSqX/4UmM+fgNvNr/K1rMUoytJsAch4s57CuDcDIv5mS+7+nsTMNHx
-        sDs7eaVVQRkdSWTKtt8bl7eW4a3+EmgpfJT2l+v4qJhkxdRofKgR7qsYIvrJVfhhCDOQYx8jj3DXW
-        7pVhZjtkLTnMBsCW8oycmSxHnnTWTQtwL2hd8Wlwe2RF9Kw+fjRd+f9mPGXyAIzqmOQC1utxt1yfS
-        sPjvwrPI5zhJhc653gqqB2mnf1q9FG6Mmp123WJ6mqFAD9bjkWO3azwzsCa/LxeUR5/2tenInLDFT
-        KBSZ/WvQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nkXzO-00Co55-Ba; Fri, 29 Apr 2022 21:17:22 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C10E83001EA;
-        Fri, 29 Apr 2022 23:17:20 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id AB41A20295B20; Fri, 29 Apr 2022 23:17:20 +0200 (CEST)
-Date:   Fri, 29 Apr 2022 23:17:20 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>
-Cc:     X86 ML <x86@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Brian Gerst <brgerst@gmail.com>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH v4] x86,entry: Use PUSH_AND_CLEAR_REGS for compat
-Message-ID: <YmxV4P7zZTN/aAm6@hirez.programming.kicks-ass.net>
-References: <20220429091301.GR2731@worktop.programming.kicks-ass.net>
- <CAJhGHyBUzURTBBnkO5c5xRC+c9+KFvLXw06h5uQ7gODeiSR-QA@mail.gmail.com>
- <YmxU2JoswWMYm4nl@hirez.programming.kicks-ass.net>
+        Fri, 29 Apr 2022 17:22:36 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 120CE75601;
+        Fri, 29 Apr 2022 14:19:17 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id b24so10411478edu.10;
+        Fri, 29 Apr 2022 14:19:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=K2J9IpbhSCPKo6hzR7ThFh9qjKVKTI0ZkWcQbeRkMDk=;
+        b=PwYEjNaLcUkFL2XGgIJqUNbApGZRjWJnK2K7xbQvY6Uq47p9cQ1QHQbwpSwOrKI2LJ
+         bWZEDifkPN25f5ZSWd4wBl9n8dMFaMiwmQvVYMKv75WgJFL52ln6NsWYEjPCrfVjut3t
+         oJHXvSS4JZM9DSEhEP2Nm8Y6cg9H9vCOejhy/Ewt17g6u2iNi9tky+7/oHFz8VPuhR3c
+         YE+0AGOJLTVy9Q2JFBEAS1wE6Dywv4f7B4HYzQqTgSaYRP30k+wrGoUlO+eLGoLcVj1o
+         NNJlsjqwRpUshSLKj+OVjN9UZeKVgj00t3zWpAD/473AVwZI4Qe5ikHPlyV++S+A4O1n
+         6sng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=K2J9IpbhSCPKo6hzR7ThFh9qjKVKTI0ZkWcQbeRkMDk=;
+        b=NzcX3e6mnd1lR0vlL58LWF6//QNbzrUsP+I8pDofpijFnsUiofNhUEnmQGIPK/KEzu
+         1PmIPKsLHdf7v1MmEsoc2pwhjDhXY0TgKlHLLt9lp2uqzky/Hle6QoBkYGf6p/LTmUfh
+         9v19KYC9F20MgvRiMBiaMsLETX7vKja3Wge0PqvS/tWIIvETmfPXAF2aeb8voxc/G5o1
+         +xqXANST9/lNqEwESJec8HJVRpIo7N35mGsWDKfrcSkZwTP7CXqO6sDc1MwG5W8HWmUJ
+         tUGvsLgt+ZuBzquKO15aA0KGZ6KyMrLpMaM9OP7xnYTmPehiRyNPG3ind7tXJjdIoLFc
+         Of5g==
+X-Gm-Message-State: AOAM532Dxkc6AX2ZaR8LShErNnj++aWxSMKosonj+9jqlHTeAyWLmc3d
+        qYqLZY7FB39Z0o6SybopYUY=
+X-Google-Smtp-Source: ABdhPJwBRJhQVI/1OpMBYtbw+lNoE/b14U4g6oyC/i7QkEXxzC6xu7jOcyYah4jtZN+gJaUczzEvfw==
+X-Received: by 2002:aa7:d4c3:0:b0:425:e26d:aee2 with SMTP id t3-20020aa7d4c3000000b00425e26daee2mr1300785edr.64.1651267155541;
+        Fri, 29 Apr 2022 14:19:15 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id hx14-20020a170906846e00b006f3ef214db6sm990143ejc.28.2022.04.29.14.19.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 14:19:15 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-mtd@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [PATCH 0/2] Add support for unprotected spare data page
+Date:   Fri, 29 Apr 2022 23:16:28 +0200
+Message-Id: <20220429211630.7812-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmxU2JoswWMYm4nl@hirez.programming.kicks-ass.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 11:12:56PM +0200, Peter Zijlstra wrote:
-> On Fri, Apr 29, 2022 at 08:00:37PM +0800, Lai Jiangshan wrote:
-> > On Fri, Apr 29, 2022 at 5:13 PM Peter Zijlstra <peterz@infradead.org> wrote:
-> 
-> > > Notably:
-> > >
-> > >  - SYSENTER: didn't clear si, dx, cx.
-> > >  - SYSCALL, INT80: *do* clear si since the C functions don't take a
-> > >    second argument.
-> > >
-> > 
-> > If CLEAR_REGS for SYSCALL, INT80 clears si, it is better, IMO, to
-> > make CLEAR_REGS clear si unconditionally.
-> 
-> Well, I didn't want to add the overhead to 64bit native syscalls, but
-> Linus just suggested the same thing elsewhere. So yeah.
-> 
-> He also suggested cleaning up INT80 like below to get rid of the
-> save_rdi wart.
+Some background about this.
+On original qsdk ipq8064 based firmware there was a big separation from 
+boot partition and user partition. With boot partition we refer to
+partition used to init the router (bootloader, spm firmware and other
+internal stuff) With user partition we refer to linux partition and data
+partition not used to init the router.
+When someone had to write to these boot partition a special mode was
+needed, to switch the nand driver to this special configuration.
 
-Which then results in...
+Upstream version of the nandc driver totally dropped this and the result
+is that if someone try to read data from these partition a CRC warning
+is printed and if someone try to write that (if for example someone
+wants to replace the bootloader) result is a broken system as the data
+is badly written.
 
----
-Subject: x86,entry: Use PUSH_AND_CLEAR_REGS for compat
-From: Peter Zijlstra <peterz@infradead.org>
-Date: Sat, 9 Apr 2022 00:38:27 +0200
+This series comes to fix this.
 
-Since the upper regs don't exist for ia32 code, preserving them
-doesn't hurt and it simplifies the code.
+A user can declare offset and size of these special partition using the
+qcom,boot_pages binding.
 
-If there was any attack surface on this, that attack surface already
-exists for INT80 and needs to be otherwise dealt with.
+An initial implementation of this assumed that the boot_pages started
+from the start of the nand but we discover that some device have backup
+of these special partition and we can have situation where we have this
+partition scheme
+- APPSBL (require special mode)
+- APPSBLENV (doesn't require special mode)
+- ART
+- APPSBLBK (back of APPSBL require special mode)
+- APPSBLENVBK (back of APPSBLENV doesn't require special mode)
+With this configuration we need to declare sparse boot page and we can't
+assume boot_pages always starts from the start of the nand.
 
-Notably:
+A user can use this form to declare sparse boot pages 
+qcom,boot_pages = <0x0 0x0c80000 0x0c80000 0x0500000>;
 
- - 32bit SYSENTER: didn't clear si, dx, cx.
- - 32bit SYSCALL, INT80: *do* clear si since the C functions don't
-   take a second argument.
- - 64bit: don't clear si since the C functions take a second argument.
+The driver internally will parse this array, convert it to nand pages
+and check internally on every read/write if this special configuration
+should used for that page or the normal one.
 
-SYSENTER should be clearing all those 3 registers, nothing uses them
-and selftests pass. Unconditionally clear rsi since it simplifies
-code.
+The reason for all of this is that qcom FOR SOME REASON, disable ECC for
+spare data only for these boot partition and we need to reflect this
+special configuration to mute these warning and to permit actually
+writing to these pages.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- arch/x86/entry/calling.h         |    1 
- arch/x86/entry/entry_64_compat.S |   87 +--------------------------------------
- 2 files changed, 4 insertions(+), 84 deletions(-)
+Ansuel Smith (2):
+  mtd: nand: raw: qcom_nandc: add support for unprotected spare data
+    pages
+  dt-bindings: mtd: qcom_nandc: document qcom,boot_pages binding
 
---- a/arch/x86/entry/calling.h
-+++ b/arch/x86/entry/calling.h
-@@ -99,6 +99,7 @@ For 32-bit we have the following convent
- 	 * well before they could be put to use in a speculative execution
- 	 * gadget.
- 	 */
-+	xorl	%esi,  %esi	/* nospec si  */
- 	xorl	%edx,  %edx	/* nospec dx  */
- 	xorl	%ecx,  %ecx	/* nospec cx  */
- 	xorl	%r8d,  %r8d	/* nospec r8  */
---- a/arch/x86/entry/entry_64_compat.S
-+++ b/arch/x86/entry/entry_64_compat.S
-@@ -83,32 +83,7 @@ SYM_INNER_LABEL(entry_SYSENTER_compat_af
- 	movl	%eax, %eax
- 
- 	pushq	%rax			/* pt_regs->orig_ax */
--	pushq	%rdi			/* pt_regs->di */
--	pushq	%rsi			/* pt_regs->si */
--	pushq	%rdx			/* pt_regs->dx */
--	pushq	%rcx			/* pt_regs->cx */
--	pushq	$-ENOSYS		/* pt_regs->ax */
--	pushq   $0			/* pt_regs->r8  = 0 */
--	xorl	%r8d, %r8d		/* nospec   r8 */
--	pushq   $0			/* pt_regs->r9  = 0 */
--	xorl	%r9d, %r9d		/* nospec   r9 */
--	pushq   $0			/* pt_regs->r10 = 0 */
--	xorl	%r10d, %r10d		/* nospec   r10 */
--	pushq   $0			/* pt_regs->r11 = 0 */
--	xorl	%r11d, %r11d		/* nospec   r11 */
--	pushq   %rbx                    /* pt_regs->rbx */
--	xorl	%ebx, %ebx		/* nospec   rbx */
--	pushq   %rbp                    /* pt_regs->rbp (will be overwritten) */
--	xorl	%ebp, %ebp		/* nospec   rbp */
--	pushq   $0			/* pt_regs->r12 = 0 */
--	xorl	%r12d, %r12d		/* nospec   r12 */
--	pushq   $0			/* pt_regs->r13 = 0 */
--	xorl	%r13d, %r13d		/* nospec   r13 */
--	pushq   $0			/* pt_regs->r14 = 0 */
--	xorl	%r14d, %r14d		/* nospec   r14 */
--	pushq   $0			/* pt_regs->r15 = 0 */
--	xorl	%r15d, %r15d		/* nospec   r15 */
--
-+	PUSH_AND_CLEAR_REGS rax=$-ENOSYS
- 	UNWIND_HINT_REGS
- 
- 	cld
-@@ -225,35 +200,7 @@ SYM_INNER_LABEL(entry_SYSCALL_compat_saf
- SYM_INNER_LABEL(entry_SYSCALL_compat_after_hwframe, SYM_L_GLOBAL)
- 	movl	%eax, %eax		/* discard orig_ax high bits */
- 	pushq	%rax			/* pt_regs->orig_ax */
--	pushq	%rdi			/* pt_regs->di */
--	pushq	%rsi			/* pt_regs->si */
--	xorl	%esi, %esi		/* nospec   si */
--	pushq	%rdx			/* pt_regs->dx */
--	xorl	%edx, %edx		/* nospec   dx */
--	pushq	%rbp			/* pt_regs->cx (stashed in bp) */
--	xorl	%ecx, %ecx		/* nospec   cx */
--	pushq	$-ENOSYS		/* pt_regs->ax */
--	pushq   $0			/* pt_regs->r8  = 0 */
--	xorl	%r8d, %r8d		/* nospec   r8 */
--	pushq   $0			/* pt_regs->r9  = 0 */
--	xorl	%r9d, %r9d		/* nospec   r9 */
--	pushq   $0			/* pt_regs->r10 = 0 */
--	xorl	%r10d, %r10d		/* nospec   r10 */
--	pushq   $0			/* pt_regs->r11 = 0 */
--	xorl	%r11d, %r11d		/* nospec   r11 */
--	pushq   %rbx                    /* pt_regs->rbx */
--	xorl	%ebx, %ebx		/* nospec   rbx */
--	pushq   %rbp                    /* pt_regs->rbp (will be overwritten) */
--	xorl	%ebp, %ebp		/* nospec   rbp */
--	pushq   $0			/* pt_regs->r12 = 0 */
--	xorl	%r12d, %r12d		/* nospec   r12 */
--	pushq   $0			/* pt_regs->r13 = 0 */
--	xorl	%r13d, %r13d		/* nospec   r13 */
--	pushq   $0			/* pt_regs->r14 = 0 */
--	xorl	%r14d, %r14d		/* nospec   r14 */
--	pushq   $0			/* pt_regs->r15 = 0 */
--	xorl	%r15d, %r15d		/* nospec   r15 */
--
-+	PUSH_AND_CLEAR_REGS rax=$-ENOSYS
- 	UNWIND_HINT_REGS
- 
- 	movq	%rsp, %rdi
-@@ -380,35 +327,7 @@ SYM_CODE_START(entry_INT80_compat)
- 	pushq	0*8(%rax)		/* regs->orig_ax */
- .Lint80_keep_stack:
- 
--	pushq	%rdi			/* pt_regs->di */
--	pushq	%rsi			/* pt_regs->si */
--	xorl	%esi, %esi		/* nospec   si */
--	pushq	%rdx			/* pt_regs->dx */
--	xorl	%edx, %edx		/* nospec   dx */
--	pushq	%rcx			/* pt_regs->cx */
--	xorl	%ecx, %ecx		/* nospec   cx */
--	pushq	$-ENOSYS		/* pt_regs->ax */
--	pushq   %r8			/* pt_regs->r8 */
--	xorl	%r8d, %r8d		/* nospec   r8 */
--	pushq   %r9			/* pt_regs->r9 */
--	xorl	%r9d, %r9d		/* nospec   r9 */
--	pushq   %r10			/* pt_regs->r10*/
--	xorl	%r10d, %r10d		/* nospec   r10 */
--	pushq   %r11			/* pt_regs->r11 */
--	xorl	%r11d, %r11d		/* nospec   r11 */
--	pushq   %rbx                    /* pt_regs->rbx */
--	xorl	%ebx, %ebx		/* nospec   rbx */
--	pushq   %rbp                    /* pt_regs->rbp */
--	xorl	%ebp, %ebp		/* nospec   rbp */
--	pushq   %r12                    /* pt_regs->r12 */
--	xorl	%r12d, %r12d		/* nospec   r12 */
--	pushq   %r13                    /* pt_regs->r13 */
--	xorl	%r13d, %r13d		/* nospec   r13 */
--	pushq   %r14                    /* pt_regs->r14 */
--	xorl	%r14d, %r14d		/* nospec   r14 */
--	pushq   %r15                    /* pt_regs->r15 */
--	xorl	%r15d, %r15d		/* nospec   r15 */
--
-+	PUSH_AND_CLEAR_REGS rax=$-ENOSYS
- 	UNWIND_HINT_REGS
- 
- 	cld
+ .../devicetree/bindings/mtd/qcom,nandc.yaml   |  13 ++
+ drivers/mtd/nand/raw/qcom_nandc.c             | 148 +++++++++++++++++-
+ 2 files changed, 156 insertions(+), 5 deletions(-)
+
+-- 
+2.34.1
+
