@@ -2,119 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F03FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 02:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80749C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 02:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234551AbiD2Crs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 22:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32956 "EHLO
+        id S234727AbiD2CuP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 22:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231529AbiD2Crr (ORCPT
+        with ESMTP id S234656AbiD2CuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 22:47:47 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC78BAB8D;
-        Thu, 28 Apr 2022 19:44:29 -0700 (PDT)
-Received: from kwepemi100018.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KqGyC1wT8zfb6t;
-        Fri, 29 Apr 2022 10:43:31 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi100018.china.huawei.com (7.221.188.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 10:44:27 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 10:44:26 +0800
-From:   Peng Liu <liupeng256@huawei.com>
-To:     <mike.kravetz@oracle.com>, <david@redhat.com>,
-        <akpm@linux-foundation.org>, <yaozhenguo1@gmail.com>,
-        <baolin.wang@linux.alibaba.com>, <songmuchun@bytedance.com>,
-        <liuyuntao10@huawei.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <wangkefeng.wang@huawei.com>,
-        <dave@stgolabs.net>, <liupeng256@huawei.com>,
-        <wangborong@cdjrlc.com>, <linux-ia64@vger.kernel.org>,
-        <adobriyan@gmail.com>
-Subject: [PATCH v4] mm: Using for_each_online_node and node_online instead of open coding
-Date:   Fri, 29 Apr 2022 03:02:18 +0000
-Message-ID: <20220429030218.644635-1-liupeng256@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220413032915.251254-4-liupeng256@huawei.com>
-References: <20220413032915.251254-4-liupeng256@huawei.com>
+        Thu, 28 Apr 2022 22:50:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BE73334B90
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 19:46:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651200414;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=L2gx7h6NbYu8uuTSJ9N8wCp852RvTqnX9mX9jiXJyBc=;
+        b=e6TN7QFmlfQ6b81tLKKQIDoYw2a/kYs6y7Cr1q96xBj4PbaXIJR2SeXKyqmBJ68u1DAnci
+        xnnhyXSe2suPMk+mGPH6lZXbTGSVc51Gfab7VO6a1aohjyKsbVqfSosy4O23YgHgUKcTog
+        AfPRybVfDJZuPOK4omVQ6KgMSZXR3k4=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-279-9BEY--ZsMmyM5UC_jbMpJw-1; Thu, 28 Apr 2022 22:46:52 -0400
+X-MC-Unique: 9BEY--ZsMmyM5UC_jbMpJw-1
+Received: by mail-lf1-f69.google.com with SMTP id br31-20020a056512401f00b00471c57013ceso2747555lfb.3
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 19:46:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=L2gx7h6NbYu8uuTSJ9N8wCp852RvTqnX9mX9jiXJyBc=;
+        b=o4tje8emSKKFwYAog2RUUMXCPiTCv+i2UqKWT4lM3fLTh0gYueQIw4YErOVkxTbn7/
+         IzY6aX8qIMsx0SMEggxBDs9tfM7yTdqMQZ87N0YrMWhKlt0OOHfMNbff7BgvXP6zHc45
+         O3nLDVUnwaNeTCMW+m8rquodS5x/5at2B0q+YJZX3An2rEZnBTowZdaDeZRAkieV46+g
+         uRePDDEhYX3Q5g1rpMeJkXyW2l+mHnvuAcfRvK7IrX7v/16kt04LtQqS0hm2hSA0NGFC
+         iw3CL8bJhkajvQMFQBW9cu0yjx9O/yRt5fnz+nhxWQ7kfBLGUcLnexeKDN4SK/8/Q5rA
+         +Fqw==
+X-Gm-Message-State: AOAM533Z5BZsMrW6GaqOYFqlY7AeTNbrRbdZdpjFikixa+MPYfJyDO8E
+        jQ9dNdVMxNFQlnNF9/J5fLpIzirTi01jIB7sFbuCbOyIX7gO+O4YC+VVnZSGfE6S+2OqSUXmQYO
+        XpBhtq5tCnlHOrgqRX5d/qrkoZbwU9Qfjvi+++nar
+X-Received: by 2002:a19:ca50:0:b0:471:f556:92b with SMTP id h16-20020a19ca50000000b00471f556092bmr22046663lfj.587.1651200411380;
+        Thu, 28 Apr 2022 19:46:51 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx6iPLLBUifBPvjONr1Ab9ze/wQ5cB0TwkyM+p9qr7gp7ho++cFBXhVIBCz1e5TwUXO7O0QeVLJ2MLAvlTw4Ac=
+X-Received: by 2002:a19:ca50:0:b0:471:f556:92b with SMTP id
+ h16-20020a19ca50000000b00471f556092bmr22046647lfj.587.1651200411210; Thu, 28
+ Apr 2022 19:46:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+References: <20220428151242.213824-1-sgarzare@redhat.com>
+In-Reply-To: <20220428151242.213824-1-sgarzare@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 29 Apr 2022 10:46:40 +0800
+Message-ID: <CACGkMEv=0VWh_NxhvM+6_TRHEx0f2RGRWbR1n5RhKfq0a7xJUw@mail.gmail.com>
+Subject: Re: [PATCH] vdpa_sim_blk: add support for VIRTIO_BLK_T_FLUSH
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use more generic functions to deal with issues related to online
-nodes. The changes will make the code simplified.
+On Thu, Apr 28, 2022 at 11:13 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+>
+> The simulator behaves like a ramdisk, so we don't have to do
+> anything when a VIRTIO_BLK_T_FLUSH request is received, but it
+> could be useful to test driver behavior.
+>
+> Let's expose the VIRTIO_BLK_F_FLUSH feature to inform the driver
+> that we support the flush command.
+>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>  drivers/vdpa/vdpa_sim/vdpa_sim_blk.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+>
+> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
+> index 42d401d43911..a6dd1233797c 100644
+> --- a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
+> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
+> @@ -25,6 +25,7 @@
+>  #define DRV_LICENSE  "GPL v2"
+>
+>  #define VDPASIM_BLK_FEATURES   (VDPASIM_FEATURES | \
+> +                                (1ULL << VIRTIO_BLK_F_FLUSH)    | \
+>                                  (1ULL << VIRTIO_BLK_F_SIZE_MAX) | \
+>                                  (1ULL << VIRTIO_BLK_F_SEG_MAX)  | \
+>                                  (1ULL << VIRTIO_BLK_F_BLK_SIZE) | \
+> @@ -166,6 +167,17 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
+>                 pushed += bytes;
+>                 break;
+>
+> +       case VIRTIO_BLK_T_FLUSH:
+> +               if (sector != 0) {
+> +                       dev_err(&vdpasim->vdpa.dev,
+> +                               "A driver MUST set sector to 0 for a VIRTIO_BLK_T_FLUSH request - sector: 0x%llx\n",
+> +                               sector);
 
-Signed-off-by: Peng Liu <liupeng256@huawei.com>
-Suggested-by: Davidlohr Bueso <dave@stgolabs.net>
-Suggested-by: Andrew Morton <akpm@linux-foundation.org>
----
-v4:
- Clean up all the related issues in one patch as suggested by Andrew.
+If this is something that could be triggered by userspace/guest, then
+we should avoid this.
 
- arch/ia64/kernel/uncached.c | 2 +-
- mm/hugetlb.c                | 4 ++--
- mm/page_ext.c               | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+Thanks
 
-diff --git a/arch/ia64/kernel/uncached.c b/arch/ia64/kernel/uncached.c
-index 816803636a75..a0fec82c56b8 100644
---- a/arch/ia64/kernel/uncached.c
-+++ b/arch/ia64/kernel/uncached.c
-@@ -261,7 +261,7 @@ static int __init uncached_init(void)
- {
- 	int nid;
- 
--	for_each_node_state(nid, N_ONLINE) {
-+	for_each_online_node(nid) {
- 		uncached_pools[nid].pool = gen_pool_create(PAGE_SHIFT, nid);
- 		mutex_init(&uncached_pools[nid].add_chunk_mutex);
- 	}
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 30e1099fd99a..0e5a7764efaa 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -6951,7 +6951,7 @@ void __init hugetlb_cma_reserve(int order)
- 		if (hugetlb_cma_size_in_node[nid] == 0)
- 			continue;
- 
--		if (!node_state(nid, N_ONLINE)) {
-+		if (!node_online(nid)) {
- 			pr_warn("hugetlb_cma: invalid node %d specified\n", nid);
- 			hugetlb_cma_size -= hugetlb_cma_size_in_node[nid];
- 			hugetlb_cma_size_in_node[nid] = 0;
-@@ -6990,7 +6990,7 @@ void __init hugetlb_cma_reserve(int order)
- 	}
- 
- 	reserved = 0;
--	for_each_node_state(nid, N_ONLINE) {
-+	for_each_online_node(nid) {
- 		int res;
- 		char name[CMA_MAX_NAME];
- 
-diff --git a/mm/page_ext.c b/mm/page_ext.c
-index 2e66d934d63f..3dc715d7ac29 100644
---- a/mm/page_ext.c
-+++ b/mm/page_ext.c
-@@ -320,7 +320,7 @@ static int __meminit online_page_ext(unsigned long start_pfn,
- 		 * online__pages(), and start_pfn should exist.
- 		 */
- 		nid = pfn_to_nid(start_pfn);
--		VM_BUG_ON(!node_state(nid, N_ONLINE));
-+		VM_BUG_ON(!node_online(nid));
- 	}
- 
- 	for (pfn = start; !fail && pfn < end; pfn += PAGES_PER_SECTION)
--- 
-2.25.1
+> +                       status = VIRTIO_BLK_S_IOERR;
+> +                       break;
+> +               }
+> +
+> +               break;
+> +
+>         default:
+>                 dev_warn(&vdpasim->vdpa.dev,
+>                          "Unsupported request type %d\n", type);
+> --
+> 2.35.1
+>
 
