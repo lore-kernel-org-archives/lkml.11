@@ -2,83 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C3A7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 07:03:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2943EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 07:09:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354918AbiD2HG0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 03:06:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43926 "EHLO
+        id S245230AbiD2HMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 03:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236404AbiD2HGY (ORCPT
+        with ESMTP id S232023AbiD2HM3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 03:06:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE34B822F;
-        Fri, 29 Apr 2022 00:03:07 -0700 (PDT)
+        Fri, 29 Apr 2022 03:12:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54098BF958;
+        Fri, 29 Apr 2022 00:09:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F4FEB832FA;
-        Fri, 29 Apr 2022 07:03:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 420D1C385B2;
-        Fri, 29 Apr 2022 07:03:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E452861FAC;
+        Fri, 29 Apr 2022 07:09:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE2F5C385A7;
+        Fri, 29 Apr 2022 07:09:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651215785;
-        bh=YUw9DM7maXM+o6uWOkN5EuzAhffbboxatFY6O6BcD0o=;
+        s=korg; t=1651216151;
+        bh=pPnNA7l+RPM/P9eQGjg00BuTyqTQsPsqQezFfVprvwo=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vlYY8/5Pkh1SmvFF0bj6hu1AXEiof4+7RywXfpihw3yR1UjFhi3rlkjdpLtdbQ2OO
-         Yhm1ZRFJGqDdWJCHRcD5bvrTa5pK4gE+wK8VBEmIRz1uV7+mUMD0Gv5Zk0+mxmZa87
-         DXdG8VAfhSWTolssUQu9l7w4g4tnvEn+/KfKhUzo=
-Date:   Fri, 29 Apr 2022 09:03:01 +0200
+        b=zV/Ee37rg7nWJC6Gzw0dbhxcCqPFx7CIi0FPv8U8J/QH5RIlLqvhRitsSrxPPxkAt
+         H+xZ8whaRKX/4IaX7ua4ADZQkmlPWxyWMK3cC1JGZZs2wpapFl+TSC+etpK4hapghA
+         HkRQMn42GSiZwHQAWGBqNnhQgZZYCgk7S8gEov4M=
+Date:   Fri, 29 Apr 2022 09:09:08 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org,
-        krzysztof.kozlowski@linaro.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, alexander.deucher@amd.com,
-        akpm@linux-foundation.org, broonie@kernel.org,
-        netdev@vger.kernel.org, linma@zju.edu.cn
-Subject: Re: [PATCH net v5 1/2] nfc: replace improper check
- device_is_registered() in netlink related functions
-Message-ID: <YmuNpbnXoOJbh07G@kroah.com>
-References: <cover.1651194245.git.duoming@zju.edu.cn>
- <33a282a82c18f942f1f5f9ee0ffcb16c2c7b0ece.1651194245.git.duoming@zju.edu.cn>
+To:     David Gow <davidgow@google.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        "Guilherme G . Piccoli" <gpiccoli@igalia.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Joe Fradley <joefradley@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] kunit: Taint kernel if any tests run
+Message-ID: <YmuPFGrkzQYACgK0@kroah.com>
+References: <20220429043913.626647-1-davidgow@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <33a282a82c18f942f1f5f9ee0ffcb16c2c7b0ece.1651194245.git.duoming@zju.edu.cn>
+In-Reply-To: <20220429043913.626647-1-davidgow@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 09:14:32AM +0800, Duoming Zhou wrote:
-> The device_is_registered() in nfc core is used to check whether
-> nfc device is registered in netlink related functions such as
-> nfc_fw_download(), nfc_dev_up() and so on. Although device_is_registered()
-> is protected by device_lock, there is still a race condition between
-> device_del() and device_is_registered(). The root cause is that
-> kobject_del() in device_del() is not protected by device_lock.
+On Fri, Apr 29, 2022 at 12:39:14PM +0800, David Gow wrote:
+> KUnit tests are not supposed to run on production systems: they may do
+> deliberately illegal things to trigger errors, and have security
+> implications (assertions will often deliberately leak kernel addresses).
 > 
->    (cleanup task)         |     (netlink task)
->                           |
-> nfc_unregister_device     | nfc_fw_download
->  device_del               |  device_lock
->   ...                     |   if (!device_is_registered)//(1)
->   kobject_del//(2)        |   ...
->  ...                      |  device_unlock
+> Add a new taint type, TAINT_KUNIT to signal that a KUnit test has been
+> run. This will be printed as 'N' (for kuNit, as K, U and T were already
+> taken).
 > 
-> The device_is_registered() returns the value of state_in_sysfs and
-> the state_in_sysfs is set to zero in kobject_del(). If we pass check in
-> position (1), then set zero in position (2). As a result, the check
-> in position (1) is useless.
+> This should discourage people from running KUnit tests on production
+> systems, and to make it easier to tell if tests have been run
+> accidentally (by loading the wrong configuration, etc.)
 > 
-> This patch uses bool variable instead of device_is_registered() to judge
-> whether the nfc device is registered, which is well synchronized.
-> 
-> Fixes: 3e256b8f8dfa ("NFC: add nfc subsystem core")
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> Signed-off-by: David Gow <davidgow@google.com>
 > ---
-> Changes in v5:
->   - Replace device_is_registered() to bool variable.
+> 
+> This is something I'd been thinking about for a while, and it came up
+> again, so I'm finally giving it a go.
+> 
+> Two notes:
+> - I decided to add a new type of taint, as none of the existing ones
+>   really seemed to fit. We could live with considering KUnit tests as
+>   TAINT_WARN or TAINT_CRAP or something otherwise, but neither are quite
+>   right.
+> - The taint_flags table gives a couple of checkpatch.pl errors around
+>   bracket placement. I've kept the new entry consistent with what's
+>   there rather than reformatting the whole table, but be prepared for
+>   complaints about spaces.
+> 
+> Thoughts?
+> -- David
+> 
+> ---
+>  Documentation/admin-guide/tainted-kernels.rst | 1 +
+>  include/linux/panic.h                         | 3 ++-
+>  kernel/panic.c                                | 1 +
+>  lib/kunit/test.c                              | 4 ++++
+>  4 files changed, 8 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/admin-guide/tainted-kernels.rst b/Documentation/admin-guide/tainted-kernels.rst
+> index ceeed7b0798d..8f18fc4659d4 100644
+> --- a/Documentation/admin-guide/tainted-kernels.rst
+> +++ b/Documentation/admin-guide/tainted-kernels.rst
+> @@ -100,6 +100,7 @@ Bit  Log  Number  Reason that got the kernel tainted
+>   15  _/K   32768  kernel has been live patched
+>   16  _/X   65536  auxiliary taint, defined for and used by distros
+>   17  _/T  131072  kernel was built with the struct randomization plugin
+> + 18  _/N  262144  a KUnit test has been run
+>  ===  ===  ======  ========================================================
+>  
+>  Note: The character ``_`` is representing a blank in this table to make reading
+> diff --git a/include/linux/panic.h b/include/linux/panic.h
+> index f5844908a089..1d316c26bf27 100644
+> --- a/include/linux/panic.h
+> +++ b/include/linux/panic.h
+> @@ -74,7 +74,8 @@ static inline void set_arch_panic_timeout(int timeout, int arch_default_timeout)
+>  #define TAINT_LIVEPATCH			15
+>  #define TAINT_AUX			16
+>  #define TAINT_RANDSTRUCT		17
+> -#define TAINT_FLAGS_COUNT		18
+> +#define TAINT_KUNIT			18
+> +#define TAINT_FLAGS_COUNT		19
+>  #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
+>  
+>  struct taint_flag {
+> diff --git a/kernel/panic.c b/kernel/panic.c
+> index eb4dfb932c85..b24ca63ed738 100644
+> --- a/kernel/panic.c
+> +++ b/kernel/panic.c
+> @@ -404,6 +404,7 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+>  	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
+>  	[ TAINT_AUX ]			= { 'X', ' ', true },
+>  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
+> +	[ TAINT_KUNIT ]			= { 'N', ' ', false },
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+As kunit tests can be in modules, shouldn't this be "true" here?
+
+Overall, I like it, makes sense to me.  The "N" will take some getting
+used to, and I have no idea why "T" was for "struct randomization", that
+would have allowed you to use "T" instead.  Oh well.
+
+thanks,
+
+greg k-h
