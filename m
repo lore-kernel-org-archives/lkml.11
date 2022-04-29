@@ -2,127 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4320C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C70E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:59:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378702AbiD2QC4 (ORCPT
+        id S1378707AbiD2QC7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51612 "EHLO
+        Fri, 29 Apr 2022 12:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231614AbiD2QCw (ORCPT
+        with ESMTP id S1378709AbiD2QCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:02:52 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E7FED4CAA;
-        Fri, 29 Apr 2022 08:59:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651247968; x=1682783968;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LunjCm+37B3707gwlaCjwsukup9zTufYxEeYOdMcWLQ=;
-  b=HCYzI6rAQfxHC5IwWlIkn6zhf9f3mNwWTZ3CRA79DVR76k1+gm9uMC8+
-   x9ACwikcMG1kiK6LBpnLQTeYYSRZcRWqo0yI7l0p2A9JX+XsR7/KLVq0h
-   oI9Ogkp47s0gn3AcQ9dG1vP2SL9jNF6QHTFn0/8rUzK3QDMvtxtla81qz
-   77f+J/hSrmfpqaCy/VdlTmEQ0zPEsMeE5Nlh8YkwtIN+SPJKzCAiLzhLp
-   oIdzpXS1NJ2RAi4K94vDyBSDt7pw0V/NOZx/qtQ8OEKTRcXshL73Mg5bn
-   l39rqhPj5UBWpqyDGlpq1CqX9I9EmUXY//Y2mKqiCEfrqBA/cZ4Xd0W0m
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="291854502"
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="291854502"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 08:59:27 -0700
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="582206894"
-Received: from nadelgad-mobl.amr.corp.intel.com (HELO localhost) ([10.212.108.243])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 08:59:27 -0700
-Date:   Fri, 29 Apr 2022 08:59:26 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        outreachy@lists.linux.dev,
-        "Acked-by : Mike Rapoport" <rppt@linux.ibm.com>
-Subject: Re: [PATCH v2 1/4] mm/highmem: Fix kernel-doc warnings in highmem*.h
-Message-ID: <YmwLXvtSgl2BA2mC@iweiny-desk3>
-References: <20220425162400.11334-1-fmdefrancesco@gmail.com>
- <20220425162400.11334-2-fmdefrancesco@gmail.com>
- <YmeYzKT8Ikq5SfdE@linutronix.de>
+        Fri, 29 Apr 2022 12:02:53 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CFF08A9F2;
+        Fri, 29 Apr 2022 08:59:34 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id r13so16288027ejd.5;
+        Fri, 29 Apr 2022 08:59:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CFofsZTrxzYW8g6YUhhQeEdV8aFgV5toOyemA0wEyeo=;
+        b=C1T5dB6hi7U6pTSrjv6swEvw3cKJfbF/qLcR3RQWeut5cPamNKokJimmmheEgPlWme
+         YhLG1gvP8efrP/7tMPVKf+xVQs2czDC5zN4ZYJnxWoO1gHLoxBc8QWMR3lFI90LYQ8yH
+         fQCj28jDmiK1VuQCoK5EoOCANhe/WCHl9j8GHQV/A4Xl8Q1opeoAIcJbiaOVwynM3S4S
+         3HTFpaTxyYWvEWNW/3yr5295gY4zN2rUI3gy3tGCfV8Hbdsz77I4GBBpaCCvcwP51De0
+         3k7zBeevh1t01OZgNmiTI+2opiStvubt/3Fiq7sqdh/jChNPfSbUX90AXjuRQUNAbYax
+         edhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CFofsZTrxzYW8g6YUhhQeEdV8aFgV5toOyemA0wEyeo=;
+        b=dEUXNf17EgTIBi1aB8MhZzAGTPe5ZhaUIbHb/dvp2qIwFgahE+TckXDJminsjU/AzI
+         Xp+xicplSYy3vEjfo09tRZwNj9bDtqluxWhKDPvytaRdPLVl4ZSB1p5iENUXuBVCcdkb
+         Y+5DnpZ7Gt1QR4DmU9iPN1xPvcY/rIRqiMjKYFliv6F5QqHojgr7vtpcngHfWpMd4AFl
+         bx12kqSvBHEcqfE8mAkuvxG9NcGG/QpqOIyX9dn1VEIPGD4IrAPeBu+llu8kN4oubq34
+         FUcn32oMsCW1pIZhTZjwMJGcpppOMdCTguH+823xZHTIUseVS7+EY5ddjL1ePeOkS+x6
+         jHmQ==
+X-Gm-Message-State: AOAM530APwPK8XfxZuAxLp/bb9xh+nfe+cG3MyBAzvM8yVPRgJRMXHPb
+        1KfvwaLOFDMmTvB32/ORh0w=
+X-Google-Smtp-Source: ABdhPJxUyrv8UAISq1M4lIXdSzVcLopFibiDLcBRyirwaUmJsMXKf5WYWap0qDwxSikXnmaJhmpYpA==
+X-Received: by 2002:a17:906:7307:b0:6da:92db:c78f with SMTP id di7-20020a170906730700b006da92dbc78fmr36910751ejc.35.1651247972842;
+        Fri, 29 Apr 2022 08:59:32 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id ia5-20020a170907a06500b006f3ef214dffsm756699ejc.101.2022.04.29.08.59.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 08:59:32 -0700 (PDT)
+Message-ID: <626c0b64.1c69fb81.1b1e9.4fe6@mx.google.com>
+X-Google-Original-Message-ID: <YmwK0aa8u7lU6lct@Ansuel-xps.>
+Date:   Fri, 29 Apr 2022 17:57:05 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-clk@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 3/3] dt-bindings: arm: msm: Convert kpss-gcc driver
+ Documentation to yaml
+References: <20220429121739.28584-1-ansuelsmth@gmail.com>
+ <20220429121739.28584-4-ansuelsmth@gmail.com>
+ <1651247596.124069.2344494.nullmailer@robh.at.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YmeYzKT8Ikq5SfdE@linutronix.de>
+In-Reply-To: <1651247596.124069.2344494.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 09:01:32AM +0200, Sebastian Andrzej Siewior wrote:
-> On 2022-04-25 18:23:57 [+0200], Fabio M. De Francesco wrote:
-> > index a77be5630209..aa22daeed617 100644
-> > --- a/include/linux/highmem-internal.h
-> > +++ b/include/linux/highmem-internal.h
-> > @@ -236,9 +236,17 @@ static inline unsigned long totalhigh_pages(void) { return 0UL; }
-> >  
-> >  #endif /* CONFIG_HIGHMEM */
-> >  
-> > -/*
-> > - * Prevent people trying to call kunmap_atomic() as if it were kunmap()
-> > - * kunmap_atomic() should get the return value of kmap_atomic, not the page.
-> > +/**
-> > + * kunmap_atomic - Unmap the virtual address mapped by kmap_atomic()
-> > + * @__addr:       Virtual address to be unmapped
-> > + *
-> > + * Unmaps an address previously mapped by kmap_atomic() and re-enables
-> > + * pagefaults and preemption. Mappings should be unmapped in the reverse
+On Fri, Apr 29, 2022 at 10:53:16AM -0500, Rob Herring wrote:
+> On Fri, 29 Apr 2022 14:17:39 +0200, Ansuel Smith wrote:
+> > Convert kpss-gcc driver Documentation to yaml.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > ---
+> >  .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 -------------
+> >  .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 63 +++++++++++++++++++
+> >  2 files changed, 63 insertions(+), 44 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
+> >  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+> > 
 > 
-> You mind adding "Deprecated!" like kmap_atomic() has? The part about
-> disabling/ enabling preemption is true for !PREEMPT_RT. The part that
-> worries me is that people use it and rely on disabled preemption like
-> some did in the past. 
-> I've been told this API is about to be removed (or so I have been told)
-> so I hope that it will be gone soon ;)
-
-I think some discussion needs to happen around this API.
-
-Highmem has little use.  I don't think anyone disagrees with Linus there.
-(Although I think there are still a few users out there.)
-
-kmap may be a poor name for an API without the highmem functionality.  But
-perhaps not.  One could interpret it to mean simply getting the kernel mapping
-of the page rather than creating one.  After all that is what 64bit has done
-all along.
-
-This interpretation helps when you consider features which attempt to layer the
-direct map with additional protections like PKS.[1]  Those protections mean
-that a simple page_address() is insufficient to access the direct map.
-
-As far as calling kmap() and kmap_atomic() deprecated I'm ok with that if the
-community is.
-
-The current kmap() call sites need work and Fabio's work on auditing them is
-extremely helpful.  That said, if we officially deprecate kmap_atomic() then
-those sites could be added to the list for rework.
-
-Ira
-
-[1] https://lore.kernel.org/lkml/20220419170649.1022246-1-ira.weiny@intel.com/
-
+> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> on your patch (DT_CHECKER_FLAGS is new in v5.13):
 > 
-> > + * order that they were mapped. See kmap_local_page() for details.
-> > + * @__addr can be any address within the mapped page, so there is no need
-> > + * to subtract any offset that has been added. In contrast to kunmap(),
-> > + * this function takes the address returned from kmap_atomic(), not the
-> > + * page passed to it. The compiler will warn you if you pass the page.
-> >   */
-> >  #define kunmap_atomic(__addr)					\
-> >  do {								\
+> yamllint warnings/errors:
 > 
-> Sebastian
+> dtschema/dtc warnings/errors:
+> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml: properties: '#clock-cells' is a dependency of 'clock-output-names'
+
+Erm how to fix this? I can't do a 1:1 conversion if the source was
+wrong and also have no bot warning.
+Or I should just push an additional patch to fix this error after the
+conversion?
+
+> 	from schema $id: http://devicetree.org/meta-schemas/clocks.yaml#
+> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml: ignoring, error in schema: properties
+> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.example.dtb: clock-controller@2011000: '#clock-cells' is a dependency of 'clock-output-names'
+> 	From schema: /usr/local/lib/python3.10/dist-packages/dtschema/schemas/clock/clock.yaml
+> Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.example.dtb:0:0: /example-0/clock-controller@2011000: failed to match any schema with compatible: ['qcom,kpss-gcc-ipq8064', 'qcom,kpss-gcc']
+> Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.example.dtb:0:0: /example-0/clock-controller@2011000: failed to match any schema with compatible: ['qcom,kpss-gcc-ipq8064', 'qcom,kpss-gcc']
+> 
+> doc reference errors (make refcheckdocs):
+> 
+> See https://patchwork.ozlabs.org/patch/
+> 
+> This check can fail if there are any dependencies. The base for a patch
+> series is generally the most recent rc1.
+> 
+> If you already ran 'make dt_binding_check' and didn't see the above
+> error(s), then make sure 'yamllint' is installed and dt-schema is up to
+> date:
+> 
+> pip3 install dtschema --upgrade
+> 
+> Please check and re-submit.
+> 
+
+-- 
+	Ansuel
