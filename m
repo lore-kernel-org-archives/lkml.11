@@ -2,168 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C734EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 00:46:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE14EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 00:46:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353562AbiD2AtQ (ORCPT
+        id S1353572AbiD2Atg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 20:49:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
+        Thu, 28 Apr 2022 20:49:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353180AbiD2AtD (ORCPT
+        with ESMTP id S1353571AbiD2At3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 20:49:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC1DD887B0
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 17:45:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651193146;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=efsbKnVljbpA44VkEsgc/rqvDihguP3Jfk2xwnWIRjI=;
-        b=ZST/yzPbtg8lP1Qvbk91NQHiAseKX6bsm5q4Xu9ijrAg6Z2g9tH4gPon2xDijx49SJNj5o
-        h6lPxsP2xvU+deoKfNBhUPpITkW/u3QUm0iqEV3JZucuiCiuzVB2qDNWTPUJOW8ZVA7Q5q
-        lw7kP84WyQsP0AHqGeKSbZVTtPZ8dC4=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-661-iIghL1NFMjKc8yG4gehxoA-1; Thu, 28 Apr 2022 20:45:42 -0400
-X-MC-Unique: iIghL1NFMjKc8yG4gehxoA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 34C3D281180C;
-        Fri, 29 Apr 2022 00:45:42 +0000 (UTC)
-Received: from madcap2.tricolour.com (ovpn-0-8.rdu2.redhat.com [10.22.0.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 17CF1815A;
-        Fri, 29 Apr 2022 00:45:39 +0000 (UTC)
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Linux-Audit Mailing List <linux-audit@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Steve Grubb <sgrubb@redhat.com>,
-        Richard Guy Briggs <rgb@redhat.com>, Jan Kara <jack@suse.cz>
-Subject: [PATCH v2 3/3] fanotify: Allow audit to use the full permission event response
-Date:   Thu, 28 Apr 2022 20:44:36 -0400
-Message-Id: <23c7f206a465d88cc646a944515fcc6a365f5eb2.1651174324.git.rgb@redhat.com>
-In-Reply-To: <cover.1651174324.git.rgb@redhat.com>
-References: <cover.1651174324.git.rgb@redhat.com>
+        Thu, 28 Apr 2022 20:49:29 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6612EBB90B
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 17:46:12 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id d15so5804335plh.2
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 17:46:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EagzqCWHhn+9dJ9MscFTqU/lwiWeVVOzta6evzEb65E=;
+        b=O2Tw5b/hhSM7sUPjKZfilkafwE0fUd90Qg+9mXCE0z95XVG7P9ldKCaRrJuE48TNa6
+         uiYD2bucdUQ9ixgkz3GWzV+OOptKqGg1oxo4ez3bDMzBJw879qwDr5IevJ9fmgsSkMnR
+         X1O85tFU8VXMcEvzUwLWI6XC/HRHSP8K73rwHxfkLHGffb+HFPfXZe20smWbdgI3e4s9
+         3oUT5JvXNpO8e4IMGrhzYq+DycpRNqos3zrBxQvA6i8hL9Y9fyukUCJ1TzaynpFD51/7
+         4tgJUwxrKOY9HfsFSraMuECV8rUNDmie4DCd5gLwZqkNUHVNRrQ5WZW/6HsTnp2J95L8
+         cQrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EagzqCWHhn+9dJ9MscFTqU/lwiWeVVOzta6evzEb65E=;
+        b=4oyK3EuGPUilAVFbPDllJXTCafun5d/gZVZHZ6LtzOziuq9G2XMXz+4IkY3RllhMlj
+         fzulByAYyMlozR02kTA8pH2Td93y9Vur64QOZZlwXoXuqSVFkXM9Xaz4c7G09l08JUQ/
+         gpPlmFeoK3y8mudUWayVrNfQgcAJATjbkRi65Dj9Wm4m+c/E2WPa/Bte0KKi4TsjdDiU
+         8jWr3k9zVuPXhtpOMY3J4JtaapzzKnQtYAC3aq7Ix+Poud8hMYpJYQ0A8LH7hHL4qFDE
+         QxPGC1Ia/1ctmYQPrGg3ml5FjdRmSe2oKhCnnzd12e5yhLn+hi9QTxJSDnXOE6g6r9y0
+         +zZg==
+X-Gm-Message-State: AOAM532jguHfjjN7b1jmd8jCOtV8ZjRna8gmAcoWqFPFOYBuSdmLQ33H
+        WceqVIx0W43iGEokqXfpp4EsRQ==
+X-Google-Smtp-Source: ABdhPJyWe5FGjQ9v+/trRLwUkRBNkzA5jk+4leC8OEvgYgH3lqH/mqVluuuAs5ELoXD898wWwvv9qw==
+X-Received: by 2002:a17:902:e808:b0:15c:ed0d:f11c with SMTP id u8-20020a170902e80800b0015ced0df11cmr29016694plg.1.1651193172304;
+        Thu, 28 Apr 2022 17:46:12 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id 35-20020a631063000000b003c14af50602sm3974267pgq.26.2022.04.28.17.46.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 17:46:11 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 00:46:08 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Sagi Shahar <sagis@google.com>
+Cc:     "Yamahata, Isaku" <isaku.yamahata@intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Erdem Aktas <erdemaktas@google.com>,
+        Connor Kuehl <ckuehl@redhat.com>
+Subject: Re: [RFC PATCH v5 048/104] KVM: x86/tdp_mmu: Support TDX private
+ mapping for TDP MMU
+Message-ID: <Yms1UPapk9jVGHrf@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <7a5246c54427952728bd702bd7f2c6963eefa712.1646422845.git.isaku.yamahata@intel.com>
+ <CAAhR5DE4-Z6JYLHbWyEyraqqWCx5bD+gZADAnisDmSJ4bkgV8g@mail.gmail.com>
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAhR5DE4-Z6JYLHbWyEyraqqWCx5bD+gZADAnisDmSJ4bkgV8g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch passes the full value so that the audit function can use all
-of it. The audit function was updated to log the additional information in
-the AUDIT_FANOTIFY record. The following is an example of the new record
-format:
+On Thu, Apr 28, 2022, Sagi Shahar wrote:
+> > @@ -468,23 +503,49 @@ static void __handle_changed_spte(struct kvm *kvm, int as_id, gfn_t gfn,
+> >
+> >         if (was_leaf && is_dirty_spte(old_spte) &&
+> >             (!is_present || !is_dirty_spte(new_spte) || pfn_changed))
+> > -               kvm_set_pfn_dirty(spte_to_pfn(old_spte));
+> > +               kvm_set_pfn_dirty(old_pfn);
+> > +
+> > +       /*
+> > +        * Special handling for the private mapping.  We are either
+> > +        * setting up new mapping at middle level page table, or leaf,
+> > +        * or tearing down existing mapping.
+> > +        */
+> > +       if (private_spte) {
+> > +               void *sept_page = NULL;
+> > +
+> > +               if (is_present && !is_leaf) {
+> > +                       struct kvm_mmu_page *sp = to_shadow_page(pfn_to_hpa(new_pfn));
+> > +
+> > +                       sept_page = kvm_mmu_private_sp(sp);
+> > +                       WARN_ON(!sept_page);
+> > +                       WARN_ON(sp->role.level + 1 != level);
+> > +                       WARN_ON(sp->gfn != gfn);
+> > +               }
+> > +
+> > +               static_call(kvm_x86_handle_changed_private_spte)(
+> > +                       kvm, gfn, level,
+> > +                       old_pfn, was_present, was_leaf,
+> > +                       new_pfn, is_present, is_leaf, sept_page);
+> > +       }
+> >
+> >         /*
+> >          * Recursively handle child PTs if the change removed a subtree from
+> >          * the paging structure.
+> >          */
+> > -       if (was_present && !was_leaf && (pfn_changed || !is_present))
+> > +       if (was_present && !was_leaf && (pfn_changed || !is_present)) {
+> > +               WARN_ON(private_spte !=
+> > +                       is_private_spte(spte_to_child_pt(old_spte, level)));
 
-type=FANOTIFY msg=audit(1600385147.372:590): resp=2 fan_type=1 fan_ctx=17
+This sanity check is pointless.  The private flag comes from the parent shadow
+page role, and that's not changing.
 
-Suggested-by: Steve Grubb <sgrubb@redhat.com>
-Link: https://lore.kernel.org/r/3075502.aeNJFYEL58@x2
-Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-Link: https://lore.kernel.org/r/23c7f206a465d88cc646a944515fcc6a365f5eb2.1651174324.git.rgb@redhat.com
----
- fs/notify/fanotify/fanotify.c |  4 +++-
- include/linux/audit.h         |  8 ++++----
- kernel/auditsc.c              | 18 +++++++++++++++---
- 3 files changed, 22 insertions(+), 8 deletions(-)
+> > @@ -1015,6 +1137,12 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+> >                     is_large_pte(iter.old_spte)) {
+> >                         if (!tdp_mmu_zap_spte_atomic(vcpu->kvm, &iter))
+> >                                 break;
+> > +                       /*
+> > +                        * TODO: large page support.
+> > +                        * Doesn't support large page for TDX now
+> > +                        */
+> > +                       WARN_ON(is_private_spte(&iter.old_spte));
+> 
+> The above line is causing a null ptr dereferencing when running the
+> KVM unit tests.
+> It should be is_private_spte(iter.sptep) instead of
+> is_private_spte(&iter.old_spte)
+> While old_spte holds a snapshot of the value pointed to by sptep,
+> &old_spte is not equivalent to sptep.
 
-diff --git a/fs/notify/fanotify/fanotify.c b/fs/notify/fanotify/fanotify.c
-index 00aff6e29bf8..bb16d9e0f31b 100644
---- a/fs/notify/fanotify/fanotify.c
-+++ b/fs/notify/fanotify/fanotify.c
-@@ -272,7 +272,9 @@ static int fanotify_get_response(struct fsnotify_group *group,
- 
- 	/* Check if the response should be audited */
- 	if (event->response & FAN_AUDIT)
--		audit_fanotify(event->response & ~FAN_AUDIT);
-+		audit_fanotify(event->response & ~FAN_AUDIT,
-+			       event->extra_info_type,
-+			       (char *)&event->extra_info_buf);
- 
- 	pr_debug("%s: group=%p event=%p about to return ret=%d\n", __func__,
- 		 group, event, ret);
-diff --git a/include/linux/audit.h b/include/linux/audit.h
-index d06134ac6245..0897128ee43b 100644
---- a/include/linux/audit.h
-+++ b/include/linux/audit.h
-@@ -419,7 +419,7 @@ extern void __audit_log_capset(const struct cred *new, const struct cred *old);
- extern void __audit_mmap_fd(int fd, int flags);
- extern void __audit_openat2_how(struct open_how *how);
- extern void __audit_log_kern_module(char *name);
--extern void __audit_fanotify(unsigned int response);
-+extern void __audit_fanotify(__u16 response, __u16 type, char *buf);
- extern void __audit_tk_injoffset(struct timespec64 offset);
- extern void __audit_ntp_log(const struct audit_ntp_data *ad);
- extern void __audit_log_nfcfg(const char *name, u8 af, unsigned int nentries,
-@@ -526,10 +526,10 @@ static inline void audit_log_kern_module(char *name)
- 		__audit_log_kern_module(name);
- }
- 
--static inline void audit_fanotify(unsigned int response)
-+static inline void audit_fanotify(__u16 response, __u16 type, char *buf)
- {
- 	if (!audit_dummy_context())
--		__audit_fanotify(response);
-+		__audit_fanotify(response, type, buf);
- }
- 
- static inline void audit_tk_injoffset(struct timespec64 offset)
-@@ -686,7 +686,7 @@ static inline void audit_log_kern_module(char *name)
- {
- }
- 
--static inline void audit_fanotify(unsigned int response)
-+static inline void audit_fanotify(__u16 response, __u16 type, char *buf)
- { }
- 
- static inline void audit_tk_injoffset(struct timespec64 offset)
-diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-index ea2ee1181921..afdbc416069a 100644
---- a/kernel/auditsc.c
-+++ b/kernel/auditsc.c
-@@ -64,6 +64,7 @@
- #include <uapi/linux/limits.h>
- #include <uapi/linux/netfilter/nf_tables.h>
- #include <uapi/linux/openat2.h> // struct open_how
-+#include <uapi/linux/fanotify.h>
- 
- #include "audit.h"
- 
-@@ -2893,10 +2894,21 @@ void __audit_log_kern_module(char *name)
- 	context->type = AUDIT_KERN_MODULE;
- }
- 
--void __audit_fanotify(unsigned int response)
-+void __audit_fanotify(__u16 response, __u16 type, char *buf)
- {
--	audit_log(audit_context(), GFP_KERNEL,
--		AUDIT_FANOTIFY,	"resp=%u", response);
-+	switch (type) {
-+	case FAN_RESPONSE_INFO_AUDIT_RULE:
-+		audit_log(audit_context(), GFP_KERNEL, AUDIT_FANOTIFY,
-+			  "resp=%u fan_type=%u fan_ctx=%u",
-+			  response, type, (__u32)*buf);
-+		break;
-+	case FAN_RESPONSE_INFO_AUDIT_NONE:
-+	default:
-+		audit_log(audit_context(), GFP_KERNEL, AUDIT_FANOTIFY,
-+			  "resp=%u fan_type=%u fan_ctx=?",
-+			  response, type);
-+		break;
-+	}
- }
- 
- void __audit_tk_injoffset(struct timespec64 offset)
--- 
-2.27.0
+Bug aside, the name is really, really bad.  All of the existing helpers with an
+"is_blah_spte()" name take an SPTE value, not a pointer to an SPTE.
 
+is_private_sptep() is the obvious choice.  That makes me a bit nervous too, and
+I don't love having to go back to the parent to query private vs shared.
+
+That said, I think it's worth waiting to see the next version of this series before
+going behind the bikeshed, I suspect many/most of the calls will go away, i.e. we
+might find a better option presents itself.
