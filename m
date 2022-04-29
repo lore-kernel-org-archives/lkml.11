@@ -2,101 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3429CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 20:00:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 20:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379345AbiD2UEF (ORCPT
+        id S1380505AbiD2UGn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 16:04:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37266 "EHLO
+        Fri, 29 Apr 2022 16:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380506AbiD2UD6 (ORCPT
+        with ESMTP id S1359680AbiD2UGl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 16:03:58 -0400
-Received: from twin.jikos.cz (twin.jikos.cz [91.219.245.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6DC9F654C
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 13:00:36 -0700 (PDT)
-Received: from twin.jikos.cz (dave@localhost [127.0.0.1])
-        by twin.jikos.cz (8.13.6/8.13.6) with ESMTP id 23TJxqce021173
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
-        Fri, 29 Apr 2022 21:59:53 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=jikos.cz; s=twin;
-        t=1651262393; bh=VzLGIghLtW44gaV6piRFTko5CkCVGLje8VzOmGvSv9I=;
-        h=Received:Date:From:To:Cc:Subject:Message-ID:Reply-To:
-         Mail-Followup-To:References:MIME-Version:Content-Type:
-         Content-Disposition:In-Reply-To:User-Agent; b=Of48yY/gsil0Fi9ss77I
-        BasrlP3ehM2uPO8+pQXXT9JQhWG4aaeDR1RhhKXSEZ1MPOk+ZIiCEP/KNfYc7hgJIDX
-        0laaGG0aFQvyLJTpWPZF2J7AoBXPoA1T6eN/kt7dEGlt7KXMqTFReuO1utYmBVdWvGi
-        EQdGFyi16QxwOP7hU=
-Received: (from dave@localhost)
-        by twin.jikos.cz (8.13.6/8.13.6/Submit) id 23TJxonk021168;
-        Fri, 29 Apr 2022 21:59:50 +0200
-Date:   Fri, 29 Apr 2022 21:59:50 +0200
-From:   David Sterba <dave@jikos.cz>
-To:     Kari Argillander <kari.argillander@stargateuniverse.net>
-Cc:     Namjae Jeon <linkinjeon@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
-        ntfs3@lists.linux.dev, "Theodore Ts'o" <tytso@mit.edu>,
-        Christoph Hellwig <hch@lst.de>,
-        Matthew Wilcox <willy@infradead.org>,
-        Eric Biggers <ebiggers@kernel.org>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: NTFS3 driver is orphan already. What we do?
-Message-ID: <20220429195950.GQ3658@twin.jikos.cz>
-Reply-To: dave@jikos.cz
-Mail-Followup-To: Kari Argillander <kari.argillander@stargateuniverse.net>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
-        ntfs3@lists.linux.dev, Theodore Ts'o <tytso@mit.edu>,
-        Christoph Hellwig <hch@lst.de>,
-        Matthew Wilcox <willy@infradead.org>,
-        Eric Biggers <ebiggers@kernel.org>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <da20d32b-5185-f40b-48b8-2986922d8b25@stargateuniverse.net>
- <CAHk-=wihuvzVTozzNLZT=uFzJH6uM7ZNKN7fYVpm0v2KkY6Jxg@mail.gmail.com>
- <CAKYAXd89Ypc09ZkuZT+w3TDscpB8_=wHY=JpZJb7LY1LDg+7Uw@mail.gmail.com>
- <0bf74850-fa56-9dbe-7b08-f66a9fcd39e2@stargateuniverse.net>
+        Fri, 29 Apr 2022 16:06:41 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246BA5E15A
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 13:03:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651262603; x=1682798603;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=0ymsGuVGiQkzKv0D0VHC2+g9zkH/MqaGyM3EvyGSejs=;
+  b=nClMmWJua2TSBDs08TihtWi+DcjnqluHdOuZsntOp5BbIFDPQ2L+mUxw
+   YyqFh9ttNK8nzf02VLAZYHEAZuqLfGKZj+aYmyeJPpC+hOx6Moi2l/X4i
+   8Ow/CurUYOqAKd/9kbOQhyXNiBGeCRyIEGPvh+ZF0dpD8w7e9ekfi1F37
+   K1MGoSyL+NWol55xgwdsqL098a57Q+ZeX3vmMJcBcDWE9WLHX8JSlcfTr
+   FPy9IFuiAktWIINEYM3KRZOMpaWsIc9xY5IvJxjOUhmQD47E5MKBQPHhB
+   y27fJ9TvQ/QvfwvN8924XXr/c/P2vI6734KBAC5GywqKTvEzGkGfNEIj7
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="266919560"
+X-IronPort-AV: E=Sophos;i="5.91,186,1647327600"; 
+   d="scan'208";a="266919560"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 13:03:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,186,1647327600"; 
+   d="scan'208";a="534666456"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 29 Apr 2022 13:03:21 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nkWpk-0006al-UP;
+        Fri, 29 Apr 2022 20:03:20 +0000
+Date:   Sat, 30 Apr 2022 04:02:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mark:arm64/ftrace/per-callsite-ops 4/6] kernel/exit.c:1815:
+ multiple definition of `abort';
+ arch/arc/kernel/traps.o:arch/arc/kernel/traps.c:158: first defined here
+Message-ID: <202204300335.TrNu3DnY-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0bf74850-fa56-9dbe-7b08-f66a9fcd39e2@stargateuniverse.net>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 07:45:42PM +0300, Kari Argillander wrote:
-> On 28.4.2022 3.47, Namjae Jeon wrote:
-> > 2022-04-28 2:47 GMT+09:00, Linus Torvalds <torvalds@linux-foundation.org>:
-> >> [ Sad state of affairs mostly edited out ]
-> >>
-> >> On Tue, Apr 26, 2022 at 2:22 AM Kari Argillander
-> >> <kari.argillander@stargateuniverse.net> wrote:
-> >>>
-> >>> I also did suggest that I could co maintain this driver to take burden
-> >>> from
-> >>> Konstantin, but haven't got any replay.
-> >>
-> >> If you are willing to maintain it (and maybe find other like-minded
-> >> people to help you), I think that would certainly be a thing to try.
-> > I can help him.
-> 
-> We have now discuss with Namjae and we will start this and let's see
-> where it goes. I will get my PGP signed soon. I really want code to be
-> in kernel.org so that maintainership is easily transfer if necessary,
-> but let's hope long and steady route now on.
-> 
-> Hopefully we are ready to start by next merge window.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git arm64/ftrace/per-callsite-ops
+head:   2aaba224d039a36f7eca5ad68c77686d3546e4fa
+commit: be98798b102a3e28fa0832c9c0473f42e14abe8b [4/6] HACK: arm64: ftrace: align pre-function literal pool
+config: arc-randconfig-r043-20220428 (https://download.01.org/0day-ci/archive/20220430/202204300335.TrNu3DnY-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/commit/?id=be98798b102a3e28fa0832c9c0473f42e14abe8b
+        git remote add mark https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git
+        git fetch --no-tags mark arm64/ftrace/per-callsite-ops
+        git checkout be98798b102a3e28fa0832c9c0473f42e14abe8b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
 
-Feel free to ping me if you have questions regarding the pull requests
-or would like to have it checked before sending. It would be
-disappointing to see the NTFS3 module removed, thanks for taking up the
-torch.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   arceb-elf-ld: kernel/exit.o: in function `abort':
+>> kernel/exit.c:1815: multiple definition of `abort'; arch/arc/kernel/traps.o:arch/arc/kernel/traps.c:158: first defined here
+
+
+vim +1815 kernel/exit.c
+
+38fd525a4c61e7e Eric W. Biederman 2020-07-01  1813  
+be98798b102a3e2 Mark Rutland      2022-04-29  1814  void __aligned(8) abort(void)
+7c2c11b208be09c Sudip Mukherjee   2017-12-14 @1815  {
+
+:::::: The code at line 1815 was first introduced by commit
+:::::: 7c2c11b208be09c156573fc0076b7b3646e05219 arch: define weak abort()
+
+:::::: TO: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
