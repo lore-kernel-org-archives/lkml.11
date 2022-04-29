@@ -2,69 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B71FC4321E
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1444DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:48:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379787AbiD2Ruw (ORCPT
+        id S1379796AbiD2Rvj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 13:50:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33300 "EHLO
+        Fri, 29 Apr 2022 13:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379785AbiD2Rut (ORCPT
+        with ESMTP id S1376940AbiD2Rvg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 13:50:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D475D22B32
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:47:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7089A62420
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 17:47:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D7B44C385A7;
-        Fri, 29 Apr 2022 17:47:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651254449;
-        bh=pq+Z/q3v6nAybjJ3InPv498b4ZSVuSQkyKfQZb9feW4=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=DQK8DSdUK0O5+6l7q+jupD/kirGLXyqY6/dcZGrLs07QsV8WROX5tNoBSKbPLsnj5
-         BrVWNucLSKT4Uk9I3cNwZjQhX7cONMSXzA++PvsNPNqKLK3l9M+ZSN/9DcIo8/Pyn3
-         PHNlnvAaMaSi3fi5WGFIOr+CzhTW2PhJCE3P5yhjDIjk2fVOJfj6NTAxTjDv63jhRQ
-         SbNFdgqzA5IshnM1XPF3GOrK0QKIZXn0kDbJs6kl7c4hWekOMPJhqfVGAPXOAo8M34
-         pRCK8dHie9TuHi0lYfCqNBNQPgljhkcxffkkJUZ9kkWQSrZCNoPArh18QYPGNZ/kAn
-         /XmgyYPRJjbTQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C395FE5D087;
-        Fri, 29 Apr 2022 17:47:29 +0000 (UTC)
-Subject: Re: [GIT PULL] RISC-V Fixes for 5.18-rc6
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <mhng-23ee08e3-f500-4297-bd05-a1902598d9b3@palmer-ri-x1c9>
-References: <mhng-23ee08e3-f500-4297-bd05-a1902598d9b3@palmer-ri-x1c9>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <mhng-23ee08e3-f500-4297-bd05-a1902598d9b3@palmer-ri-x1c9>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.18-rc5
-X-PR-Tracked-Commit-Id: ac0280a9ca106c5501257e79d165f968712b5899
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 2d0de93ca2515958e717138e5ee07ec3b6bf0226
-Message-Id: <165125444979.17620.11204985121141756042.pr-tracker-bot@kernel.org>
-Date:   Fri, 29 Apr 2022 17:47:29 +0000
-To:     Palmer Dabbelt <palmer@rivosinc.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+        Fri, 29 Apr 2022 13:51:36 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16AD99398A
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:48:18 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id iq10so7753722pjb.0
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:48:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=37m6AzyYfkWStvf9aJw8Jy6UEa2JtWYvi+mVWOmJgUs=;
+        b=CY7TQ3+aM1g21qm98sbu+VQVCl+OjwURQv8jUnuInDt0Z9NAiPnAI0hrukouhWApU0
+         MbPZidJeo8qd5VXc6GFDYxYegOTPyhMCEPL+rH0Ft9Pesb4Vz46Sv1LogiN+wfuj+IUN
+         w/5cjOPiPfoOk2GL+4YQvbBvvwtU+C52KJh/NdofO1bTC/H+F+Pomhfs8Nwv0nwGTPAs
+         n0UWga4gSGPBbV0N+zG7g4gY1mdqJgYxyy2MCI+IlYCpASJFGE9/tWhhiu27VInerF5Y
+         xYpzxCnZgsxP8PXGiozY6STFSZjXbdszLDjlHHSV2r47RTXjtZA19PHwTJ6i3pyTWmwi
+         Hu9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=37m6AzyYfkWStvf9aJw8Jy6UEa2JtWYvi+mVWOmJgUs=;
+        b=tUCfnYLRBeBkjsG+z8xhoeY4Bv07UxYudf7BoZaWZxw1nBdtV2VzSszL8DCGcWh0+q
+         I4NNDCiLD6biAOBfTkgE4BgGm1TR5bqEZbxJz6g16uERiRiqrz/g1U7hrjFOIWL8MyjX
+         Zn+Lx/76zw1qPD4l/DBzx1OJJ+drBVfkMnW9MqkDAp9bGNsrZ75kwo/7CDM+HiKy18KI
+         lNBNt4Wkqpo0K0Fj4ybzfGXNglHmDyxRj4lw8rpo+2sqTD/MMfNtNSEMY2KlNtNblz6x
+         b+Vi/HAxgGKo9sJu9VJWdX8ZM65gfBhJQhnBRtv7dDM9tXI2Cx91BT72gnhIbYUz1AoV
+         UOiw==
+X-Gm-Message-State: AOAM533bdExlH6GQybC5gbnT0/fqt4C0byCScu7pHjIUFJDUvKlF2rpt
+        HnIjeaHpfGNv8lok98twd0UZl9d8O8Ml179fAAYLiw==
+X-Google-Smtp-Source: ABdhPJzTBafb0KnPGjixKxzRN6So46mwnVHpVEuktSyjE2C0ju5wNupcx+O2sCAkCUTE8W8bCvfXLn4L1THnTHmDKi0=
+X-Received: by 2002:a17:90b:1e0f:b0:1d9:dba5:482c with SMTP id
+ pg15-20020a17090b1e0f00b001d9dba5482cmr286745pjb.220.1651254497576; Fri, 29
+ Apr 2022 10:48:17 -0700 (PDT)
+MIME-Version: 1.0
+References: <cover.1649219184.git.kai.huang@intel.com> <522e37eb-68fc-35db-44d5-479d0088e43f@intel.com>
+ <CAPcyv4g5E_TOow=3pFJXyFr=KLV9pTSnDthgz6TuXvru4xDzaQ@mail.gmail.com>
+ <de9b8f4cef5da03226158492988956099199aa60.camel@intel.com>
+ <CAPcyv4iGsXkHAVgf+JZ4Pah_fkCZ=VvUmj7s3C6Rkejtdw_sgQ@mail.gmail.com>
+ <92af7b22-fa8a-5d42-ae15-8526abfd2622@intel.com> <CAPcyv4iG977DErCfYTqhVzuZqjtqFHK3smnaOpO3p+EbxfvXcQ@mail.gmail.com>
+ <4a5143cc-3102-5e30-08b4-c07e44f1a2fc@intel.com>
+In-Reply-To: <4a5143cc-3102-5e30-08b4-c07e44f1a2fc@intel.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Fri, 29 Apr 2022 10:48:06 -0700
+Message-ID: <CAPcyv4i6X6ODNbOnT7+NEzpicLS4m9bNDybZLvN3gqXFTTf=mg@mail.gmail.com>
+Subject: Re: [PATCH v3 00/21] TDX host kernel support
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Kai Huang <kai.huang@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "Brown, Len" <len.brown@intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        Rafael J Wysocki <rafael.j.wysocki@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Isaku Yamahata <isaku.yamahata@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 29 Apr 2022 09:38:55 -0700 (PDT):
+On Fri, Apr 29, 2022 at 10:18 AM Dave Hansen <dave.hansen@intel.com> wrote:
+>
+> On 4/29/22 08:18, Dan Williams wrote:
+> > Yes, I want to challenge the idea that all core-mm memory must be TDX
+> > capable. Instead, this feels more like something that wants a
+> > hugetlbfs / dax-device like capability to ask the kernel to gather /
+> > set-aside the enumerated TDX memory out of all the general purpose
+> > memory it knows about and then VMs use that ABI to get access to
+> > convertible memory. Trying to ensure that all page allocator memory is
+> > TDX capable feels too restrictive with all the different ways pfns can
+> > get into the allocator.
+>
+> The KVM users are the problem here.  They use a variety of ABIs to get
+> memory and then hand it to KVM.  KVM basically just consumes the
+> physical addresses from the page tables.
+>
+> Also, there's no _practical_ problem here today.  I can't actually think
+> of a case where any memory that ends up in the allocator on today's TDX
+> systems is not TDX capable.
+>
+> Tomorrow's systems are going to be the problem.  They'll (presumably)
+> have a mix of CXL devices that will have varying capabilities.  Some
+> will surely lack the metadata storage for checksums and TD-owner bits.
+> TDX use will be *safe* on those systems: if you take this code and run
+> it on one tomorrow's systems, it will notice the TDX-incompatible memory
+> and will disable TDX.
+>
+> The only way around this that I can see is to introduce ABI today that
+> anticipates the needs of the future systems.  We could require that all
+> the KVM memory be "validated" before handing it to TDX.  Maybe a new
+> syscall that says: "make sure this mapping works for TDX".  It could be
+> new sysfs ABI which specifies which NUMA nodes contain TDX-capable memory.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.18-rc5
+Yes, node-id seems the only reasonable handle that can be used, and it
+does not seem too onerous for a KVM user to have to set a node policy
+preferring all the TDX / confidential-computing capable nodes.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/2d0de93ca2515958e717138e5ee07ec3b6bf0226
+> But, neither of those really help with, say, a device-DAX mapping of
+> TDX-*IN*capable memory handed to KVM.  The "new syscall" would just
+> throw up its hands and leave users with the same result: TDX can't be
+> used.  The new sysfs ABI for NUMA nodes wouldn't clearly apply to
+> device-DAX because they don't respect the NUMA policy ABI.
 
-Thank you!
+They do have "target_node" attributes to associate node specific
+metadata, and could certainly express target_node capabilities in its
+own ABI. Then it's just a matter of making pfn_to_nid() do the right
+thing so KVM kernel side can validate the capabilities of all inbound
+pfns.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+> I'm open to ideas here.  If there's a viable ABI we can introduce to
+> train TDX users today that will work tomorrow too, I'm all for it.
+
+In general, expressing NUMA node perf and node capabilities is
+something Linux needs to get better at. HMAT data for example still
+exists as sideband information ignored by numactl, but it feels
+inevitable that perf and capability details become more of a first
+class citizen for applications that have these mem-allocation-policy
+constraints in the presence of disparate memory types.
