@@ -2,94 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EC72C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:23:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90615C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:25:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379039AbiD2Q1M (ORCPT
+        id S1379045AbiD2Q3G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39648 "EHLO
+        Fri, 29 Apr 2022 12:29:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379024AbiD2Q1K (ORCPT
+        with ESMTP id S1379069AbiD2Q3C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:27:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2843CD76E4;
-        Fri, 29 Apr 2022 09:23:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8B73622C4;
-        Fri, 29 Apr 2022 16:23:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7746AC385A4;
-        Fri, 29 Apr 2022 16:23:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651249431;
-        bh=HNDKC/6YMghVFhviIdPCkVqganM1MigQRJ602aM7nC0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=P0NOe88aD8txfErJY2XSSP1oNljZ0MZXJuep4mNfSienwctVkerL+GiZhURI7g3kL
-         bbkZDakTCuQn5Rj4v4H4dYj9NCvedKbSlJMIth5huB4bLufKlppXk4PxtcL6OrOCiU
-         3Lv/DvNypKUI/3qxgeLmqnHIQX4/WpXmTvHK38UxQfyLU+qv9dWE7rYBtuekQYzmlg
-         D7x1iRxNzoXTr+qVqtrCj07LhcwE1wLGDylpYYlUtxSW70Q6LuLcUFFBLqjeAiCH7t
-         PS5opvVPMT9UBOz1PHeszAVW3J1DLALfmnfvihckNUr+A0RTk9OnniYg8YzNfMie5+
-         BqmF5MtRngkIQ==
-Date:   Fri, 29 Apr 2022 19:23:46 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Olga Kornievskaia <aglo@umich.edu>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Mark Zhang <markzhang@nvidia.com>,
-        Patrisious Haddad <phaddad@nvidia.com>
-Subject: Re: [PATCH rdma-next 0/2] Add gratuitous ARP support to RDMA-CM
-Message-ID: <YmwREnArWbBr5sdG@unreal>
-References: <cover.1649075034.git.leonro@nvidia.com>
- <CAN-5tyGeGya5dW9h1uvBd6uKW-AgY1q8-UkR1kpi9Z2k6PY7jw@mail.gmail.com>
+        Fri, 29 Apr 2022 12:29:02 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F67E2F3B4;
+        Fri, 29 Apr 2022 09:25:44 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id j6so16378568ejc.13;
+        Fri, 29 Apr 2022 09:25:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=34ayCITa8dYXGWWB8WPXJjeaFblJYmeptb2kr7f4iU0=;
+        b=TVUvbwegaQnGqR701zJMdkgQYCmrWcgThTVJv525MgEI7D8In96qWO3QbDarjNy2pc
+         ff+RskPVhDbyoZqNw8Max195h9GW3cih/zFhlP+mV792xxgMGDa2a2pBTbCU7A1vHsY5
+         L0KQKWBdn/Ta9cG1qicPqtWiF4T5i/iIEnMPdnUBLO7hznutdRBS3NYPE+rVYRNmWeYk
+         OWIKm5v+Jk4DmrLxu/vDI7WdjcJcNJs1+NX/lnOId/bBFY8zKApua1hFwxqX/AaBClq+
+         oIJMhU7qn6cQ3kYuRfyGNRRpPCl+W+7PQf6hfHcau3mTPEm7ZtEdzO54uzqqcpTjrmC8
+         BQig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=34ayCITa8dYXGWWB8WPXJjeaFblJYmeptb2kr7f4iU0=;
+        b=rhTfUtR44mWTzoHGWNw6GVwYUbXWlHgvjzv9cvyPfRM3jU4Ae8HKkF2EjhNDoSvq06
+         wXmGIcEhdd07ceb6v1xJgSMvOj4fMcd+l4zRIwRzMWtNnEJKpbFOJE8C3o5ZVsgMZe1v
+         ogfz5DxzTDYsyd+m+XQfbAfbrZIDb6brDNLcgg+HRiF7T9DfG4kYHyWBTP8t/xkVHB0q
+         up3aXs24Cn6zIMnKm0wW/IEeDqFTpC+KbmUfE3ZHMIjSTfqgwuc0shp/av51feT36R++
+         AWnfVi5//u8BuLpAf1E7KDbiy4pCXPgUSS8wI5lxdEaX6Nz2exBoBRm7ozLcBIy7VXes
+         cUMw==
+X-Gm-Message-State: AOAM531zISht4DUkDzsiMyXygqAgDJVxMGlYqKdgUSkutF4VeqPrQB3C
+        JD847npuxS/njl0Dzz0A2Lufxf4E4z8=
+X-Google-Smtp-Source: ABdhPJygZpqG8r2RdCHY31zc347HxwMs8a69/wpgogUHXVsdaCEvTah0m2+kRKpqMoR5eYoHCbInaQ==
+X-Received: by 2002:a17:906:9c82:b0:6df:c5f0:d456 with SMTP id fj2-20020a1709069c8200b006dfc5f0d456mr91511ejc.287.1651249542790;
+        Fri, 29 Apr 2022 09:25:42 -0700 (PDT)
+Received: from kwango.local (ip-89-102-68-162.net.upcbroadband.cz. [89.102.68.162])
+        by smtp.gmail.com with ESMTPSA id hf27-20020a1709072c5b00b006f3ef214e33sm779584ejc.153.2022.04.29.09.25.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 09:25:42 -0700 (PDT)
+From:   Ilya Dryomov <idryomov@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Ceph fixes for 5.18-rc5
+Date:   Fri, 29 Apr 2022 18:26:32 +0200
+Message-Id: <20220429162632.29934-1-idryomov@gmail.com>
+X-Mailer: git-send-email 2.19.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAN-5tyGeGya5dW9h1uvBd6uKW-AgY1q8-UkR1kpi9Z2k6PY7jw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 12:07:09PM -0400, Olga Kornievskaia wrote:
-> Hi Leon,
-> 
-> Are these the 2 patches that are supposed to fix: [Bug 214523] New:
-> RDMA Mellanox RoCE drivers are unresponsive to ARP updates during a
-> reconnect?
+Hi Linus,
 
-Yes, you are right.
+The following changes since commit af2d861d4cd2a4da5137f795ee3509e6f944a25b:
 
-> 
-> I could be wrong but I don't think they made it into the 5.18 pull, correct?
+  Linux 5.18-rc4 (2022-04-24 14:51:22 -0700)
 
-This is correct too.
+are available in the Git repository at:
 
-Thanks
+  https://github.com/ceph/ceph-client.git tags/ceph-for-5.18-rc5
 
-> 
-> Thank you.
-> 
-> On Mon, Apr 4, 2022 at 8:36 AM Leon Romanovsky <leon@kernel.org> wrote:
-> >
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> >
-> > In this series, Patrisious adds gratuitous ARP support to RDMA-CM, in
-> > order to speed up migration failover from one node to another.
-> >
-> > Thanks
-> >
-> > Patrisious Haddad (2):
-> >   RDMA/core: Add an rb_tree that stores cm_ids sorted by ifindex and
-> >     remote IP
-> >   RDMA/core: Add a netevent notifier to cma
-> >
-> >  drivers/infiniband/core/cma.c      | 260 +++++++++++++++++++++++++++--
-> >  drivers/infiniband/core/cma_priv.h |   1 +
-> >  2 files changed, 249 insertions(+), 12 deletions(-)
-> >
-> > --
-> > 2.35.1
-> >
+for you to fetch changes up to 7acae6183cf37c48b8da48bbbdb78820fb3913f3:
+
+  ceph: fix possible NULL pointer dereference for req->r_session (2022-04-25 10:45:50 +0200)
+
+----------------------------------------------------------------
+A fix for a NULL dereference that turns out to be easily triggerable
+by fsync (marked for stable) and a false positive WARN and snap_rwsem
+locking fixups.
+
+----------------------------------------------------------------
+Ilya Dryomov (1):
+      libceph: disambiguate cluster/pool full log message
+
+Niels Dossche (1):
+      ceph: get snap_rwsem read lock in handle_cap_export for ceph_add_cap
+
+Xiubo Li (2):
+      ceph: remove incorrect session state check
+      ceph: fix possible NULL pointer dereference for req->r_session
+
+ fs/ceph/caps.c        | 7 +++++++
+ fs/ceph/mds_client.c  | 6 ------
+ net/ceph/osd_client.c | 6 +++++-
+ 3 files changed, 12 insertions(+), 7 deletions(-)
