@@ -2,139 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08330C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95FA7C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377315AbiD2Obq (ORCPT
+        id S1377319AbiD2OcC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:31:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58530 "EHLO
+        Fri, 29 Apr 2022 10:32:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377303AbiD2Obl (ORCPT
+        with ESMTP id S1346129AbiD2OcA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:31:41 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CCCA146B;
-        Fri, 29 Apr 2022 07:28:23 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id e3so6178563ios.6;
-        Fri, 29 Apr 2022 07:28:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gWFctTI+mXIW9rm2Z4IJhom0SL/RWdmtfrY+iQvt6FA=;
-        b=jHKhliWrqbQoVow7fGCTJdPFqzggfhuWVKTRIWSPuWhXKVYJ80krZWklu04o9V6Fd8
-         hhMCQw2L7yT0oPHMhQhZGJDTcaYrTC2DlX+AVI95wE2hlgexONqHGa36puC0yxFPGgYG
-         3XsLK7W4um51+z3cc8onQkPOYbNJnyJVWe4HH4wV8lDs2iQIPoo5XXbtavGiGs48lqtE
-         u3gXFJG7HiktowaHujwN1V6hNye2rTR2ahOQfj7VTwJiJZ7BLTmdbxEuR6qVGGIOBnyN
-         vxou52POOf7DvdjaagR9BjD9nMgbNBP7zQtWwokfmrbdGAOTP3im69zSNzdhlOg5EynW
-         ZE+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gWFctTI+mXIW9rm2Z4IJhom0SL/RWdmtfrY+iQvt6FA=;
-        b=oklFnoFKIfymBuwM50GJWj25vqzPJS2QVbvsmZQpOs9fYf4NRM058GmzExPFXyHBza
-         Xmj9q13oy51J70GxYsZH6MFoPp6ztlbC0WHWBFLLogkZ9U7yf8kkY2D2w4wa15OkMb2V
-         Rf+V/AHtz4hJ+Meigl+NakNkhjC4FvRWDcV+vo7sfGdz0LX0aVnctKhZ3qOaz8eDocKk
-         wbtNa5X0x0r03265gwRt3g633H+8Jm3mfsaFfmdXhmwPZxk/7FS0ncYqDuasHgs3YZeP
-         knX+ajHVTJEXWMmYtULetaROi+TXQamhU1bbZnrWxoYXulh9xx3q9hNnjPUx8L/7FTNI
-         nX/w==
-X-Gm-Message-State: AOAM533Y7p7YQ9vstAyjS1nImK/8qBFba+khR8xlwSAKxhvueaQBWGtM
-        QrLu5u7aXZBpaMYgdY2aZPRCgka0Cr28vWkiZmPhSc7JcEI=
-X-Google-Smtp-Source: ABdhPJyyCIOvdRCtqPahekmTcRuVSJ2yQfDwIjwiwzZSYsa5H8jfW5J6Y97ndORmFNp37BD6XiDRj58+gRkvavDe6EY=
-X-Received: by 2002:a5e:8e42:0:b0:657:bc82:64e5 with SMTP id
- r2-20020a5e8e42000000b00657bc8264e5mr4118248ioo.112.1651242502506; Fri, 29
- Apr 2022 07:28:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220428201207.954552-1-jolsa@kernel.org>
-In-Reply-To: <20220428201207.954552-1-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 29 Apr 2022 07:28:11 -0700
-Message-ID: <CAEf4BzYtXWvBWzmadhLGqwf8_e2sruK6999th6c=b=O0WLkHOA@mail.gmail.com>
-Subject: Re: [PATCHv4 bpf-next 0/5] bpf: Speed up symbol resolving in kprobe
- multi link
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
+        Fri, 29 Apr 2022 10:32:00 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A74A1477;
+        Fri, 29 Apr 2022 07:28:42 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TE0WdZ007537;
+        Fri, 29 Apr 2022 14:28:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=1bwCV0P4NEgiU9lqhvv7XKx9m7QS9xrWqdquzSvyCK8=;
+ b=gRwiQoDZpefNjWvVoqvinobgUwKYazfI59yFkz46ZaDdDup0wMAxLUSyOuQ0AeujnTu3
+ Vw3F7OTYokhvmYy6RoZfLuNx+xZxdzsEpSWHPxFXxKJOlvU6tnb+KZJS9kyO7rCs9Hkx
+ hub6X7kMYLR0FEHmJ0IdQLqW3OzfQKD3/UCz5oLolfLt8ceOct5na0UcM+gvzjhJDms5
+ Iw+O/6yNJDrlvVkJ5kWGfKbA64n3iL4iHgsT7CE4Hb27h3GJrtPSTG49cMnjU0ndtyUs
+ ttjbMJx8b1qkLUMH4VhYpMyhwV1mS0QxeCPu/BRTrOpv0h7DSmLYvoqi77/6gPams1UH fg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqt9ecn5a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 14:28:37 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23TE1XhP010844;
+        Fri, 29 Apr 2022 14:28:36 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqt9ecn4m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 14:28:36 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TEKlxI000907;
+        Fri, 29 Apr 2022 14:28:34 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma02fra.de.ibm.com with ESMTP id 3fpuygba9k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 14:28:34 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TESel726542378
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 29 Apr 2022 14:28:40 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C3ABBA4054;
+        Fri, 29 Apr 2022 14:28:31 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4C762A405B;
+        Fri, 29 Apr 2022 14:28:31 +0000 (GMT)
+Received: from sig-9-145-61-57.uk.ibm.com (unknown [9.145.61.57])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 29 Apr 2022 14:28:31 +0000 (GMT)
+Message-ID: <82ddb91ac17356637ea15cd763abedf775b14cb1.camel@linux.ibm.com>
+Subject: Re: [PATCH 04/37] parport: PC style parport depends on HAS_IOPORT
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Date:   Fri, 29 Apr 2022 16:28:30 +0200
+In-Reply-To: <20220429135108.2781579-8-schnelle@linux.ibm.com>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+         <20220429135108.2781579-8-schnelle@linux.ibm.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: o7gh2ChcBsa0h6G2c3GHeKEG6wPstYj4
+X-Proofpoint-ORIG-GUID: U5siVhKDVVey7RUBiUOGU7Ycpgg_845g
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-29_07,2022-04-28_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
+ mlxscore=0 suspectscore=0 priorityscore=1501 spamscore=0 mlxlogscore=235
+ adultscore=0 lowpriorityscore=0 impostorscore=0 clxscore=1015 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204290079
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 1:12 PM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> hi,
-> sending additional fix for symbol resolving in kprobe multi link
-> requested by Alexei and Andrii [1].
->
-> This speeds up bpftrace kprobe attachment, when using pure symbols
-> (3344 symbols) to attach:
->
-> Before:
->
->   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
->   ...
->   6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
->
-> After:
->
->   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
->   ...
->   0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
->
-> v4 changes:
->   - fix compile issue [kernel test robot]
->   - added acks [Andrii]
->
-> v3 changes:
->   - renamed kallsyms_lookup_names to ftrace_lookup_symbols
->     and moved it to ftrace.c [Masami]
->   - added ack [Andrii]
->   - couple small test fixes [Andrii]
->
-> v2 changes (first version [2]):
->   - removed the 2 seconds check [Alexei]
->   - moving/forcing symbols sorting out of kallsyms_lookup_names function [Alexei]
->   - skipping one array allocation and copy_from_user [Andrii]
->   - several small fixes [Masami,Andrii]
->   - build fix [kernel test robot]
->
-> thanks,
-> jirka
->
->
-> [1] https://lore.kernel.org/bpf/CAEf4BzZtQaiUxQ-sm_hH2qKPRaqGHyOfEsW96DxtBHRaKLoL3Q@mail.gmail.com/
-> [2] https://lore.kernel.org/bpf/20220407125224.310255-1-jolsa@kernel.org/
+On Fri, 2022-04-29 at 15:50 +0200, Niklas Schnelle wrote:
+> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
+> not being declared. As PC style parport uses these functions we need to
+> handle this dependency.
+> 
+> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 > ---
-> Jiri Olsa (5):
->       kallsyms: Fully export kallsyms_on_each_symbol function
->       ftrace: Add ftrace_lookup_symbols function
->       fprobe: Resolve symbols with ftrace_lookup_symbols
->       bpf: Resolve symbols with ftrace_lookup_symbols for kprobe multi link
->       selftests/bpf: Add attach bench test
->
 
-Please check [0], it reports rcu_read_unlock() misuse
+Sorry everyone. I sent this as PATCH in error while preparing to sent
+the same series as RFC. Since e-mail has no remote delete and I lack a
+time machine let's just all pretend you only got the RFC.
 
-  [0] https://github.com/kernel-patches/bpf/runs/6223167405?check_suite_focus=true
-
->  include/linux/ftrace.h                                     |   6 ++++++
->  include/linux/kallsyms.h                                   |   7 ++++++-
->  kernel/kallsyms.c                                          |   3 +--
->  kernel/trace/bpf_trace.c                                   | 112 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----------------------------------------------
->  kernel/trace/fprobe.c                                      |  32 ++++++++++++--------------------
->  kernel/trace/ftrace.c                                      |  62 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
->  tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c | 133 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
->  tools/testing/selftests/bpf/progs/kprobe_multi_empty.c     |  12 ++++++++++++
->  8 files changed, 298 insertions(+), 69 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
