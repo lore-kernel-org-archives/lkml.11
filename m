@@ -2,512 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7147BC4167D
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 19:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57500C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 19:19:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380258AbiD2TWo (ORCPT
+        id S1380270AbiD2TWs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 15:22:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40582 "EHLO
+        Fri, 29 Apr 2022 15:22:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231805AbiD2TWm (ORCPT
+        with ESMTP id S1380261AbiD2TWp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 15:22:42 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3315BC87D;
-        Fri, 29 Apr 2022 12:19:22 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id x33so15754496lfu.1;
-        Fri, 29 Apr 2022 12:19:22 -0700 (PDT)
+        Fri, 29 Apr 2022 15:22:45 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4112CC50F
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 12:19:25 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id p6so7933986plf.9
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 12:19:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=GewZaD4ShNldD9kVxTldC8R8+ax3szTCsyjndG0dRHc=;
-        b=N9dj8vM26++XU4q2OakNWAe+5xmjeyCbaGMoZqOwboAgVvBYbJlulrH5X27jQuhhe1
-         ieDiZ/H2VimJOfN3PETcE/9Vyf/aB10sSs1kCaR2hCg7ww8AJ453Lxh3Ue2Jq7RCcWPC
-         p8YRd9rhICID4KiYVZEpobcpQQO7hDmrhhf8QN03z4sJbGi3o8uUOrv5D62uJavwgdDc
-         nNugFvgWEeXynam7aaPpCboM4v6qYxyj2wL70Kr4gWRj73LoA6e6P0Rx69Cf/6S0i+nY
-         Y/z1Jua+ZqaqkMkVP/eGdK8+N2BGNyMjUovqH+Vid5e+Nm51ePSpef4FGO7qzB3v+kMp
-         grBA==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Nbl1l94NSe3Fek2fXmDdi1dWs+tZMPUUMy0P2EiLPLg=;
+        b=e+923uX3L34JoxH8inI2ZslZuVikT2P6I5OcFSRPPg8PWVOj34lfOUIuKdw5y2eIN+
+         vGUUvNtdpS7vGCww/uqb2kGFOd9R/L99ldLU+nWZITJlCqJONw41uN3MQZD3uQ2//N+M
+         crhXv+T8QnJFSY/NAUSKR1o4ahHUVk7dBVY18=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=GewZaD4ShNldD9kVxTldC8R8+ax3szTCsyjndG0dRHc=;
-        b=5Ie1y68KB3M7ZmgTcsEj/UM/fNDRrBGstzztyIgRbbkKC9pkE+8KyvyKV80If9EZn3
-         iVdef56ad4M+CUL9CvBRRlU33/EC9fiRw87CSfFjWNkK89yl3U3TFM3GVv06R5h3lbCX
-         w8uU64oA4zkrmUFS8BVMhyOQsG7Xks9UVkmrArCEdSnWH8Rp0EGUttZ2Q6ErrLlte++X
-         721kk5CqSTxIWk4XdEqdtjzxo1MIn7suBeulQWL7u4VAgT7vodoh+l2rqHY7B0UNre+l
-         epZ8PrK83Ei3XX9n1jic0qCb/RMvBWmA5KlAsW82xuegRiE7RVkSmd3H5sQn+wbaehgM
-         j7kg==
-X-Gm-Message-State: AOAM532eyVKJLxAZlxUCOn1KqphQ1gOu6iMNEf3Dpr74shO5hEP3W/iR
-        B/1zu4QgrxSd760x65ofjLM=
-X-Google-Smtp-Source: ABdhPJzAWbzjAeNyOkcDPXNnS3q8J0aQzarCCZYnhhzzpmtYQTeo5ige0nogmL+UFHzeq9iCLWrEdA==
-X-Received: by 2002:ac2:5f4d:0:b0:448:7d37:5838 with SMTP id 13-20020ac25f4d000000b004487d375838mr496420lfz.419.1651259961018;
-        Fri, 29 Apr 2022 12:19:21 -0700 (PDT)
-Received: from [10.0.0.42] (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
-        by smtp.gmail.com with ESMTPSA id t23-20020ac25497000000b0047255d211d5sm3560lfk.260.2022.04.29.12.19.19
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Nbl1l94NSe3Fek2fXmDdi1dWs+tZMPUUMy0P2EiLPLg=;
+        b=xWvKCwO1+pCi5ZEo+I3tiHFNpv9WTjbGC4r78pggDQiBL/Wd6NFMgV6344KemHhOJ0
+         0XH90xfHT7KCr8Ep9B2+zC8So500eK5FLJvEpUgxwHnshPW2HfyJydgqcFOUJz9woh0/
+         vw3TKG4uihtyT9LblSkOSNmUygQ4sMU4SSEA6IFpYsO/0+WRYd+a/L6fTW4jZchQfyC7
+         s1fvmcl7jOQRwRzGzn6mFpjWsZDDLeBV1VzFAJAMCDSOjHsunHX15ToVmrOFAS8/iMqY
+         ITlMG2WmUWKeYYDh8tKGnWYzEiFx7d6etQHYGCjLbsr+r+H3zrVQiK8+IXOLHh5m4AXP
+         kYPQ==
+X-Gm-Message-State: AOAM532R7FePASovg08ibGKDkNmoeQJoiZBWtdBUtO6xk5rcRtWrzoab
+        ZoDAyezAGV09Bi9Z5t5UAjr6xA==
+X-Google-Smtp-Source: ABdhPJx5izOWf80ef6ldgjmrgWzIUTHlyiEV4R/ZZm5TorJpza0hZq8zsUWD1pcGPG5bzvzzP3PbRg==
+X-Received: by 2002:a17:90b:4a09:b0:1d2:de49:9be8 with SMTP id kk9-20020a17090b4a0900b001d2de499be8mr5668726pjb.68.1651259965279;
+        Fri, 29 Apr 2022 12:19:25 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:7d14:5f45:9377:9b6a])
+        by smtp.gmail.com with UTF8SMTPSA id m8-20020a17090a414800b001d81a30c437sm11380455pjg.50.2022.04.29.12.19.23
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 12:19:20 -0700 (PDT)
-Message-ID: <ee637af8-ea26-78d7-8bd6-e4709c1293f0@gmail.com>
-Date:   Fri, 29 Apr 2022 22:26:02 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 21/41] ARM: omap1: dma: remove omap2 specific bits
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@kernel.org>, linux-omap@vger.kernel.org,
-        tony@atomide.com, aaro.koskinen@iki.fi, jmkrzyszt@gmail.com
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Paul Walmsley <paul@pwsan.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Mark Brown <broonie@kernel.org>,
+        Fri, 29 Apr 2022 12:19:24 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 12:19:22 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Pavan Kondeti <quic_pkondeti@quicinc.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Felipe Balbi <balbi@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
-References: <20220419133723.1394715-1-arnd@kernel.org>
- <20220419133723.1394715-22-arnd@kernel.org>
-From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
-In-Reply-To: <20220419133723.1394715-22-arnd@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "open list:ULTRA-WIDEBAND (UWB) SUBSYSTEM:" 
+        <linux-usb@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        quic_ppratap@quicinc.com, quic_kriskura@quicinc.com,
+        quic_vpulyala@quicinc.com
+Subject: Re: [PATCH v14 2/7] PM / wakeup: Add device_children_wakeup_capable()
+Message-ID: <Ymw6Og/qhg3D0mx+@google.com>
+References: <1650395470-31333-1-git-send-email-quic_c_sanm@quicinc.com>
+ <1650395470-31333-3-git-send-email-quic_c_sanm@quicinc.com>
+ <CAJZ5v0h2ZKPN6SERPnASPywZfeOWXWncJgNZ1WZa80+=M4DCiQ@mail.gmail.com>
+ <YmL3lMaR79wPMEfY@google.com>
+ <20220425130303.GA16319@hu-pkondeti-hyd.qualcomm.com>
+ <20220429125956.GD16319@hu-pkondeti-hyd.qualcomm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220429125956.GD16319@hu-pkondeti-hyd.qualcomm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Pavan,
 
-
-On 4/19/22 16:37, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Fri, Apr 29, 2022 at 06:29:56PM +0530, Pavan Kondeti wrote:
+> Hi Matthias,
 > 
-> No part of plat-omap/dma.c is called on omap2 any more, so
-> anything omap2 specific in here can simply be removed.
-
-Reviewed-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
-
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  arch/arm/plat-omap/dma.c | 217 ++++++++++-----------------------------
->  1 file changed, 55 insertions(+), 162 deletions(-)
+> On Mon, Apr 25, 2022 at 06:33:03PM +0530, Pavan Kondeti wrote:
+> > Hi Matthias,
+> > 
+> > On Fri, Apr 22, 2022 at 11:44:36AM -0700, Matthias Kaehlcke wrote:
+> > > On Fri, Apr 22, 2022 at 01:57:17PM +0200, Rafael J. Wysocki wrote:
+> > > > On Tue, Apr 19, 2022 at 9:11 PM Sandeep Maheswaram
+> > > > <quic_c_sanm@quicinc.com> wrote:
+> > > > >
+> > > > > From: Matthias Kaehlcke <mka@chromium.org>
+> > > > >
+> > > > > Add device_children_wakeup_capable() which checks whether the device itself
+> > > > > or one if its descendants is wakeup capable.
+> > > > 
+> > > > device_wakeup_path() exists for a very similar purpose.
+> > > > 
+> > > > Is it not usable for whatever you need the new function introduced here?
+> > > 
+> > > I wasn't aware of it's function, there are no doc comments and the
+> > > name isn't really self explanatory.
+> > > 
+> > > In a quick test device_wakeup_path() returned inconsistent values for the
+> > > root hub, sometimes true, others false when a wakeup capable USB device was
+> > > connected.
+> > 
+> > We will also test the same to double confirm the behavior of
+> > device_wakeup_path(). I am assuming that you checked device_wakeup_path()
+> > only during system suspend path.
+> > 
+> > Here is what I understood by looking at __device_suspend(). Please share
+> > your thoughts on this.
+> > 
+> > power.wakeup_path is set to true for the parent *after* a wakeup capable
+> > device is suspended. This means when the root hub(s) is suspended, it is
+> > propagated to xhci-plat and when xhci-plat is suspended, it is propagated
+> > to dwc3. bottom up propgation during system suspend.
+> > 
+> > I believe we can directly check something like this in the dwc3 driver
+> > instead of having another wrapper like device_children_wakeup_capable().
+> > 
+> > diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+> > index 1170b80..a783257 100644
+> > --- a/drivers/usb/dwc3/core.c
+> > +++ b/drivers/usb/dwc3/core.c
+> > @@ -1878,8 +1878,14 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+> >  		break;
+> >  	case DWC3_GCTL_PRTCAP_HOST:
+> >  		if (!PMSG_IS_AUTO(msg)) {
+> > +			/*
+> > +			 * Don't kill the host when dwc3 is wakeup capable and
+> > +			 * its children needs wakeup.
+> > +			 */
+> > +			if (device_may_wakeup(dwc->dev) && device_wakeup_path(dwc->dev))
+> > +				handle_it();
+> > +		} else {
+> >  			dwc3_core_exit(dwc);
+> > -			break;
+> >  		}
+> >  
+> >  		/* Let controller to suspend HSPHY before PHY driver suspends */
+> > 
 > 
-> diff --git a/arch/arm/plat-omap/dma.c b/arch/arm/plat-omap/dma.c
-> index b7757864d0aa..eb14528f133c 100644
-> --- a/arch/arm/plat-omap/dma.c
-> +++ b/arch/arm/plat-omap/dma.c
-> @@ -34,11 +34,9 @@
->  
->  #include <linux/omap-dma.h>
->  
-> -#ifdef CONFIG_ARCH_OMAP1
->  #include <mach/hardware.h>
->  #include <linux/soc/ti/omap1-io.h>
->  #include <linux/soc/ti/omap1-soc.h>
-> -#endif
->  
->  /*
->   * MAX_LOGICAL_DMA_CH_COUNT: the maximum number of logical DMA
-> @@ -51,16 +49,7 @@
->  
->  #undef DEBUG
->  
-> -#ifndef CONFIG_ARCH_OMAP1
-> -enum { DMA_CH_ALLOC_DONE, DMA_CH_PARAMS_SET_DONE, DMA_CH_STARTED,
-> -	DMA_CH_QUEUED, DMA_CH_NOTSTARTED, DMA_CH_PAUSED, DMA_CH_LINK_ENABLED
-> -};
-> -
-> -enum { DMA_CHAIN_STARTED, DMA_CHAIN_NOTSTARTED };
-> -#endif
-> -
->  #define OMAP_DMA_ACTIVE			0x01
-> -#define OMAP2_DMA_CSR_CLEAR_MASK	0xffffffff
->  
->  #define OMAP_FUNC_MUX_ARM_BASE		(0xfffe1000 + 0xec)
->  
-> @@ -94,13 +83,9 @@ static inline void omap_disable_channel_irq(int lch)
->  	/* disable channel interrupts */
->  	p->dma_write(0, CICR, lch);
->  	/* Clear CSR */
-> -	if (dma_omap1())
-> -		p->dma_read(CSR, lch);
-> -	else
-> -		p->dma_write(OMAP2_DMA_CSR_CLEAR_MASK, CSR, lch);
-> +	p->dma_read(CSR, lch);
->  }
->  
-> -#ifdef CONFIG_ARCH_OMAP1
->  static inline void set_gdma_dev(int req, int dev)
->  {
->  	u32 reg = OMAP_FUNC_MUX_ARM_BASE + ((req - 1) / 5) * 4;
-> @@ -112,11 +97,6 @@ static inline void set_gdma_dev(int req, int dev)
->  	l |= (dev - 1) << shift;
->  	omap_writel(l, reg);
->  }
-> -#else
-> -#define set_gdma_dev(req, dev)	do {} while (0)
-> -#define omap_readl(reg)		0
-> -#define omap_writel(val, reg)	do {} while (0)
-> -#endif
->  
->  #ifdef CONFIG_ARCH_OMAP1
->  void omap_set_dma_priority(int lch, int dst_port, int priority)
-> @@ -181,59 +161,24 @@ void omap_set_dma_transfer_params(int lch, int data_type, int elem_count,
->  				  int dma_trigger, int src_or_dst_synch)
->  {
->  	u32 l;
-> +	u16 ccr;
->  
->  	l = p->dma_read(CSDP, lch);
->  	l &= ~0x03;
->  	l |= data_type;
->  	p->dma_write(l, CSDP, lch);
->  
-> -	if (dma_omap1()) {
-> -		u16 ccr;
-> -
-> -		ccr = p->dma_read(CCR, lch);
-> -		ccr &= ~(1 << 5);
-> -		if (sync_mode == OMAP_DMA_SYNC_FRAME)
-> -			ccr |= 1 << 5;
-> -		p->dma_write(ccr, CCR, lch);
-> -
-> -		ccr = p->dma_read(CCR2, lch);
-> -		ccr &= ~(1 << 2);
-> -		if (sync_mode == OMAP_DMA_SYNC_BLOCK)
-> -			ccr |= 1 << 2;
-> -		p->dma_write(ccr, CCR2, lch);
-> -	}
-> -
-> -	if (dma_omap2plus() && dma_trigger) {
-> -		u32 val;
-> -
-> -		val = p->dma_read(CCR, lch);
-> -
-> -		/* DMA_SYNCHRO_CONTROL_UPPER depends on the channel number */
-> -		val &= ~((1 << 23) | (3 << 19) | 0x1f);
-> -		val |= (dma_trigger & ~0x1f) << 14;
-> -		val |= dma_trigger & 0x1f;
-> -
-> -		if (sync_mode & OMAP_DMA_SYNC_FRAME)
-> -			val |= 1 << 5;
-> -		else
-> -			val &= ~(1 << 5);
-> -
-> -		if (sync_mode & OMAP_DMA_SYNC_BLOCK)
-> -			val |= 1 << 18;
-> -		else
-> -			val &= ~(1 << 18);
-> -
-> -		if (src_or_dst_synch == OMAP_DMA_DST_SYNC_PREFETCH) {
-> -			val &= ~(1 << 24);	/* dest synch */
-> -			val |= (1 << 23);	/* Prefetch */
-> -		} else if (src_or_dst_synch) {
-> -			val |= 1 << 24;		/* source synch */
-> -		} else {
-> -			val &= ~(1 << 24);	/* dest synch */
-> -		}
-> -		p->dma_write(val, CCR, lch);
-> -	}
-> +	ccr = p->dma_read(CCR, lch);
-> +	ccr &= ~(1 << 5);
-> +	if (sync_mode == OMAP_DMA_SYNC_FRAME)
-> +		ccr |= 1 << 5;
-> +	p->dma_write(ccr, CCR, lch);
->  
-> +	ccr = p->dma_read(CCR2, lch);
-> +	ccr &= ~(1 << 2);
-> +	if (sync_mode == OMAP_DMA_SYNC_BLOCK)
-> +		ccr |= 1 << 2;
-> +	p->dma_write(ccr, CCR2, lch);
->  	p->dma_write(elem_count, CEN, lch);
->  	p->dma_write(frame_count, CFN, lch);
->  }
-> @@ -241,7 +186,7 @@ EXPORT_SYMBOL(omap_set_dma_transfer_params);
->  
->  void omap_set_dma_channel_mode(int lch, enum omap_dma_channel_mode mode)
->  {
-> -	if (dma_omap1() && !dma_omap15xx()) {
-> +	if (!dma_omap15xx()) {
->  		u32 l;
->  
->  		l = p->dma_read(LCH_CTRL, lch);
-> @@ -258,15 +203,12 @@ void omap_set_dma_src_params(int lch, int src_port, int src_amode,
->  			     int src_ei, int src_fi)
->  {
->  	u32 l;
-> +	u16 w;
->  
-> -	if (dma_omap1()) {
-> -		u16 w;
-> -
-> -		w = p->dma_read(CSDP, lch);
-> -		w &= ~(0x1f << 2);
-> -		w |= src_port << 2;
-> -		p->dma_write(w, CSDP, lch);
-> -	}
-> +	w = p->dma_read(CSDP, lch);
-> +	w &= ~(0x1f << 2);
-> +	w |= src_port << 2;
-> +	p->dma_write(w, CSDP, lch);
->  
->  	l = p->dma_read(CCR, lch);
->  	l &= ~(0x03 << 12);
-> @@ -304,26 +246,15 @@ void omap_set_dma_src_burst_mode(int lch, enum omap_dma_burst_mode burst_mode)
->  	case OMAP_DMA_DATA_BURST_DIS:
->  		break;
->  	case OMAP_DMA_DATA_BURST_4:
-> -		if (dma_omap2plus())
-> -			burst = 0x1;
-> -		else
-> -			burst = 0x2;
-> +		burst = 0x2;
->  		break;
->  	case OMAP_DMA_DATA_BURST_8:
-> -		if (dma_omap2plus()) {
-> -			burst = 0x2;
-> -			break;
-> -		}
->  		/*
->  		 * not supported by current hardware on OMAP1
->  		 * w |= (0x03 << 7);
->  		 */
->  		fallthrough;
->  	case OMAP_DMA_DATA_BURST_16:
-> -		if (dma_omap2plus()) {
-> -			burst = 0x3;
-> -			break;
-> -		}
->  		/* OMAP1 don't support burst 16 */
->  		fallthrough;
->  	default:
-> @@ -342,12 +273,10 @@ void omap_set_dma_dest_params(int lch, int dest_port, int dest_amode,
->  {
->  	u32 l;
->  
-> -	if (dma_omap1()) {
-> -		l = p->dma_read(CSDP, lch);
-> -		l &= ~(0x1f << 9);
-> -		l |= dest_port << 9;
-> -		p->dma_write(l, CSDP, lch);
-> -	}
-> +	l = p->dma_read(CSDP, lch);
-> +	l &= ~(0x1f << 9);
-> +	l |= dest_port << 9;
-> +	p->dma_write(l, CSDP, lch);
->  
->  	l = p->dma_read(CCR, lch);
->  	l &= ~(0x03 << 14);
-> @@ -385,22 +314,12 @@ void omap_set_dma_dest_burst_mode(int lch, enum omap_dma_burst_mode burst_mode)
->  	case OMAP_DMA_DATA_BURST_DIS:
->  		break;
->  	case OMAP_DMA_DATA_BURST_4:
-> -		if (dma_omap2plus())
-> -			burst = 0x1;
-> -		else
-> -			burst = 0x2;
-> +		burst = 0x2;
->  		break;
->  	case OMAP_DMA_DATA_BURST_8:
-> -		if (dma_omap2plus())
-> -			burst = 0x2;
-> -		else
-> -			burst = 0x3;
-> +		burst = 0x3;
->  		break;
->  	case OMAP_DMA_DATA_BURST_16:
-> -		if (dma_omap2plus()) {
-> -			burst = 0x3;
-> -			break;
-> -		}
->  		/* OMAP1 don't support burst 16 */
->  		fallthrough;
->  	default:
-> @@ -416,10 +335,7 @@ EXPORT_SYMBOL(omap_set_dma_dest_burst_mode);
->  static inline void omap_enable_channel_irq(int lch)
->  {
->  	/* Clear CSR */
-> -	if (dma_omap1())
-> -		p->dma_read(CSR, lch);
-> -	else
-> -		p->dma_write(OMAP2_DMA_CSR_CLEAR_MASK, CSR, lch);
-> +	p->dma_read(CSR, lch);
->  
->  	/* Enable some nice interrupts. */
->  	p->dma_write(dma_chan[lch].enabled_irqs, CICR, lch);
-> @@ -437,8 +353,7 @@ static inline void enable_lnk(int lch)
->  
->  	l = p->dma_read(CLNK_CTRL, lch);
->  
-> -	if (dma_omap1())
-> -		l &= ~(1 << 14);
-> +	l &= ~(1 << 14);
->  
->  	/* Set the ENABLE_LNK bits */
->  	if (dma_chan[lch].next_lch != -1)
-> @@ -456,15 +371,8 @@ static inline void disable_lnk(int lch)
->  	/* Disable interrupts */
->  	omap_disable_channel_irq(lch);
->  
-> -	if (dma_omap1()) {
-> -		/* Set the STOP_LNK bit */
-> -		l |= 1 << 14;
-> -	}
-> -
-> -	if (dma_omap2plus()) {
-> -		/* Clear the ENABLE_LNK bit */
-> -		l &= ~(1 << 15);
-> -	}
-> +	/* Set the STOP_LNK bit */
-> +	l |= 1 << 14;
->  
->  	p->dma_write(l, CLNK_CTRL, lch);
->  	dma_chan[lch].flags &= ~OMAP_DMA_ACTIVE;
-> @@ -508,8 +416,7 @@ int omap_request_dma(int dev_id, const char *dev_name,
->  
->  	chan->enabled_irqs = OMAP_DMA_DROP_IRQ | OMAP_DMA_BLOCK_IRQ;
->  
-> -	if (dma_omap1())
-> -		chan->enabled_irqs |= OMAP1_DMA_TOUT_IRQ;
-> +	chan->enabled_irqs |= OMAP1_DMA_TOUT_IRQ;
->  
->  	if (dma_omap16xx()) {
->  		/* If the sync device is set, configure it dynamically. */
-> @@ -522,7 +429,7 @@ int omap_request_dma(int dev_id, const char *dev_name,
->  		 * id.
->  		 */
->  		p->dma_write(dev_id | (1 << 10), CCR, free_ch);
-> -	} else if (dma_omap1()) {
-> +	} else {
->  		p->dma_write(dev_id, CCR, free_ch);
->  	}
->  
-> @@ -739,8 +646,7 @@ dma_addr_t omap_get_dma_src_pos(int lch)
->  			offset = p->dma_read(CSSA, lch);
->  	}
->  
-> -	if (dma_omap1())
-> -		offset |= (p->dma_read(CSSA, lch) & 0xFFFF0000);
-> +	offset |= (p->dma_read(CSSA, lch) & 0xFFFF0000);
->  
->  	return offset;
->  }
-> @@ -778,8 +684,7 @@ dma_addr_t omap_get_dma_dst_pos(int lch)
->  			offset = p->dma_read(CDSA, lch);
->  	}
->  
-> -	if (dma_omap1())
-> -		offset |= (p->dma_read(CDSA, lch) & 0xFFFF0000);
-> +	offset |= (p->dma_read(CDSA, lch) & 0xFFFF0000);
->  
->  	return offset;
->  }
-> @@ -796,9 +701,8 @@ int omap_dma_running(void)
->  {
->  	int lch;
->  
-> -	if (dma_omap1())
-> -		if (omap_lcd_dma_running())
-> -			return 1;
-> +	if (omap_lcd_dma_running())
-> +		return 1;
->  
->  	for (lch = 0; lch < dma_chan_count; lch++)
->  		if (p->dma_read(CCR, lch) & OMAP_DMA_CCR_EN)
-> @@ -809,8 +713,6 @@ int omap_dma_running(void)
->  
->  /*----------------------------------------------------------------------------*/
->  
-> -#ifdef CONFIG_ARCH_OMAP1
-> -
->  static int omap1_dma_handle_ch(int ch)
->  {
->  	u32 csr;
-> @@ -863,10 +765,6 @@ static irqreturn_t omap1_dma_irq_handler(int irq, void *dev_id)
->  	return handled ? IRQ_HANDLED : IRQ_NONE;
->  }
->  
-> -#else
-> -#define omap1_dma_irq_handler	NULL
-> -#endif
-> -
->  struct omap_system_dma_plat_info *omap_get_plat_info(void)
->  {
->  	return p;
-> @@ -912,29 +810,27 @@ static int omap_system_dma_probe(struct platform_device *pdev)
->  		if (ch >= 6 && enable_1510_mode)
->  			continue;
->  
-> -		if (dma_omap1()) {
-> -			/*
-> -			 * request_irq() doesn't like dev_id (ie. ch) being
-> -			 * zero, so we have to kludge around this.
-> -			 */
-> -			sprintf(&irq_name[0], "%d", ch);
-> -			dma_irq = platform_get_irq_byname(pdev, irq_name);
-> -
-> -			if (dma_irq < 0) {
-> -				ret = dma_irq;
-> -				goto exit_dma_irq_fail;
-> -			}
-> -
-> -			/* INT_DMA_LCD is handled in lcd_dma.c */
-> -			if (dma_irq == INT_DMA_LCD)
-> -				continue;
-> -
-> -			ret = request_irq(dma_irq,
-> -					omap1_dma_irq_handler, 0, "DMA",
-> -					(void *) (ch + 1));
-> -			if (ret != 0)
-> -				goto exit_dma_irq_fail;
-> +		/*
-> +		 * request_irq() doesn't like dev_id (ie. ch) being
-> +		 * zero, so we have to kludge around this.
-> +		 */
-> +		sprintf(&irq_name[0], "%d", ch);
-> +		dma_irq = platform_get_irq_byname(pdev, irq_name);
-> +
-> +		if (dma_irq < 0) {
-> +			ret = dma_irq;
-> +			goto exit_dma_irq_fail;
->  		}
-> +
-> +		/* INT_DMA_LCD is handled in lcd_dma.c */
-> +		if (dma_irq == INT_DMA_LCD)
-> +			continue;
-> +
-> +		ret = request_irq(dma_irq,
-> +				omap1_dma_irq_handler, 0, "DMA",
-> +				(void *) (ch + 1));
-> +		if (ret != 0)
-> +			goto exit_dma_irq_fail;
->  	}
->  
->  	/* reserve dma channels 0 and 1 in high security devices on 34xx */
-> @@ -954,9 +850,6 @@ static int omap_system_dma_remove(struct platform_device *pdev)
->  {
->  	int dma_irq, irq_rel = 0;
->  
-> -	if (dma_omap2plus())
-> -		return 0;
-> -
->  	for ( ; irq_rel < dma_chan_count; irq_rel++) {
->  		dma_irq = platform_get_irq(pdev, irq_rel);
->  		free_irq(dma_irq, (void *)(irq_rel + 1));
+> device_wakeup_path(dwc->dev) is returning true all the time irrespective of
+> the wakeup capability (and enabled status) of the connected USB devices. That
+> is because xhci-plat device is configured to wakeup all the time. Since the
+> child is wakeup capable, its parent i.e dwc3 has device_wakeup_path() set.
+> device_children_wakeup_capable() will also suffer the problem. However,
+> 
+> device_children_wakeup_capable(&hcd->self.root_hub->dev) is what Sandeep's
+> patch is using. That is not correct. we have two root hubs (HS and SS) associated
+> with a USB3 controller and calling it on one root hub is incorrect. 
+> device_children_wakeup_capable() must be called on xhci-plat so that it covers
+> both HS and SS root hubs
 
--- 
-Péter
+Thanks for pointing that out!
+
+> I am thinking of dynamically enabling/disabling xhci-plat wakeup capability so
+> that the wakeup path is correctly propagated to dwc3. something like below.
+> Does it make sense to you?
+> 
+> diff --git a/drivers/usb/host/xhci-plat.c b/drivers/usb/host/xhci-plat.c
+> index 649ffd8..be0c55b 100644
+> --- a/drivers/usb/host/xhci-plat.c
+> +++ b/drivers/usb/host/xhci-plat.c
+> @@ -412,6 +412,9 @@ static int __maybe_unused xhci_plat_suspend(struct device *dev)
+>  	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
+>  	int ret;
+>  
+> +	if (!device_wakeup_path(dev))
+> +		device_wakeup_disable(dev);
+> +
+>  	if (pm_runtime_suspended(dev))
+>  		pm_runtime_resume(dev);
+>  
+> @@ -443,6 +446,8 @@ static int __maybe_unused xhci_plat_resume(struct device *dev)
+>  	pm_runtime_set_active(dev);
+>  	pm_runtime_enable(dev);
+>  
+> +	device_wakeup_enable(dev);
+
+I think this also needs to be done conditionally, otherwise it would
+create a new wake source on every resume when wakeup is already
+enabled.
+
+Other than that this seems to do the trick and keeps the USB layer out of
+the dwc3 code.
