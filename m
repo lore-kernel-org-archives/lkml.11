@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38E7FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 00:45:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C734EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 00:46:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353531AbiD2AtK (ORCPT
+        id S1353562AbiD2AtQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 20:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40338 "EHLO
+        Thu, 28 Apr 2022 20:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353278AbiD2As7 (ORCPT
+        with ESMTP id S1353180AbiD2AtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 20:48:59 -0400
+        Thu, 28 Apr 2022 20:49:03 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18E848879D
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 17:45:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC1DD887B0
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 17:45:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651193142;
+        s=mimecast20190719; t=1651193146;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=H1EG7Tl68Vc+ax3ACuq6YiZmO+LnkvQsjhcXaYRFIKk=;
-        b=QQ02No2gjD2kwh7wWs6FUMIGMvVU4hrZy+r7mz521tgPcGxIvJtXaRTrs4+24vXNl0ysbk
-        VXH7YIs0RJOuyyxZT5dxqgpNP8FckvSE1guCvwRZGmPANhs9RtQ2sRoe3KqWv/2P1dvn1j
-        RaQbPEbgpIJ5TGy/EQ/R3LV5GemHq7U=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=efsbKnVljbpA44VkEsgc/rqvDihguP3Jfk2xwnWIRjI=;
+        b=ZST/yzPbtg8lP1Qvbk91NQHiAseKX6bsm5q4Xu9ijrAg6Z2g9tH4gPon2xDijx49SJNj5o
+        h6lPxsP2xvU+deoKfNBhUPpITkW/u3QUm0iqEV3JZucuiCiuzVB2qDNWTPUJOW8ZVA7Q5q
+        lw7kP84WyQsP0AHqGeKSbZVTtPZ8dC4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-577-m-PhhJMdN_Wi3oNDr8AYxA-1; Thu, 28 Apr 2022 20:45:38 -0400
-X-MC-Unique: m-PhhJMdN_Wi3oNDr8AYxA-1
+ us-mta-661-iIghL1NFMjKc8yG4gehxoA-1; Thu, 28 Apr 2022 20:45:42 -0400
+X-MC-Unique: iIghL1NFMjKc8yG4gehxoA-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 26ABB185A79C;
-        Fri, 29 Apr 2022 00:45:38 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 34C3D281180C;
+        Fri, 29 Apr 2022 00:45:42 +0000 (UTC)
 Received: from madcap2.tricolour.com (ovpn-0-8.rdu2.redhat.com [10.22.0.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3E5519E95;
-        Fri, 29 Apr 2022 00:45:21 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 17CF1815A;
+        Fri, 29 Apr 2022 00:45:39 +0000 (UTC)
 From:   Richard Guy Briggs <rgb@redhat.com>
 To:     Linux-Audit Mailing List <linux-audit@redhat.com>,
         LKML <linux-kernel@vger.kernel.org>,
@@ -47,9 +47,9 @@ Cc:     Paul Moore <paul@paul-moore.com>,
         Eric Paris <eparis@parisplace.org>,
         Steve Grubb <sgrubb@redhat.com>,
         Richard Guy Briggs <rgb@redhat.com>, Jan Kara <jack@suse.cz>
-Subject: [PATCH v2 1/3] fanotify: Ensure consistent variable type for response
-Date:   Thu, 28 Apr 2022 20:44:34 -0400
-Message-Id: <aa98a3ad00666a6fc0ce411755de4a1a60f5c0cd.1651174324.git.rgb@redhat.com>
+Subject: [PATCH v2 3/3] fanotify: Allow audit to use the full permission event response
+Date:   Thu, 28 Apr 2022 20:44:36 -0400
+Message-Id: <23c7f206a465d88cc646a944515fcc6a365f5eb2.1651174324.git.rgb@redhat.com>
 In-Reply-To: <cover.1651174324.git.rgb@redhat.com>
 References: <cover.1651174324.git.rgb@redhat.com>
 MIME-Version: 1.0
@@ -60,57 +60,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The user space API for the response variable is __u32. This patch makes
-sure that the whole path through the kernel uses __u32 so that there is
-no sign extension or truncation of the user space response.
+This patch passes the full value so that the audit function can use all
+of it. The audit function was updated to log the additional information in
+the AUDIT_FANOTIFY record. The following is an example of the new record
+format:
+
+type=FANOTIFY msg=audit(1600385147.372:590): resp=2 fan_type=1 fan_ctx=17
 
 Suggested-by: Steve Grubb <sgrubb@redhat.com>
-Link: https://lore.kernel.org/r/12617626.uLZWGnKmhe@x2
+Link: https://lore.kernel.org/r/3075502.aeNJFYEL58@x2
 Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-Link: https://lore.kernel.org/r/aa98a3ad00666a6fc0ce411755de4a1a60f5c0cd.1651174324.git.rgb@redhat.com
+Link: https://lore.kernel.org/r/23c7f206a465d88cc646a944515fcc6a365f5eb2.1651174324.git.rgb@redhat.com
 ---
- fs/notify/fanotify/fanotify.h      | 2 +-
- fs/notify/fanotify/fanotify_user.c | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ fs/notify/fanotify/fanotify.c |  4 +++-
+ include/linux/audit.h         |  8 ++++----
+ kernel/auditsc.c              | 18 +++++++++++++++---
+ 3 files changed, 22 insertions(+), 8 deletions(-)
 
-diff --git a/fs/notify/fanotify/fanotify.h b/fs/notify/fanotify/fanotify.h
-index a3d5b751cac5..70acfd497771 100644
---- a/fs/notify/fanotify/fanotify.h
-+++ b/fs/notify/fanotify/fanotify.h
-@@ -425,7 +425,7 @@ FANOTIFY_PE(struct fanotify_event *event)
- struct fanotify_perm_event {
- 	struct fanotify_event fae;
- 	struct path path;
--	unsigned short response;	/* userspace answer to the event */
-+	__u32 response;			/* userspace answer to the event */
- 	unsigned short state;		/* state of the event */
- 	int fd;		/* fd we passed to userspace for this event */
- };
-diff --git a/fs/notify/fanotify/fanotify_user.c b/fs/notify/fanotify/fanotify_user.c
-index 9b32b76a9c30..694516470660 100644
---- a/fs/notify/fanotify/fanotify_user.c
-+++ b/fs/notify/fanotify/fanotify_user.c
-@@ -289,7 +289,7 @@ static int create_fd(struct fsnotify_group *group, struct path *path,
-  */
- static void finish_permission_event(struct fsnotify_group *group,
- 				    struct fanotify_perm_event *event,
--				    unsigned int response)
-+				    __u32 response)
- 				    __releases(&group->notification_lock)
- {
- 	bool destroy = false;
-@@ -310,9 +310,9 @@ static int process_access_response(struct fsnotify_group *group,
- {
- 	struct fanotify_perm_event *event;
- 	int fd = response_struct->fd;
--	int response = response_struct->response;
-+	__u32 response = response_struct->response;
+diff --git a/fs/notify/fanotify/fanotify.c b/fs/notify/fanotify/fanotify.c
+index 00aff6e29bf8..bb16d9e0f31b 100644
+--- a/fs/notify/fanotify/fanotify.c
++++ b/fs/notify/fanotify/fanotify.c
+@@ -272,7 +272,9 @@ static int fanotify_get_response(struct fsnotify_group *group,
  
--	pr_debug("%s: group=%p fd=%d response=%d\n", __func__, group,
-+	pr_debug("%s: group=%p fd=%d response=%u\n", __func__, group,
- 		 fd, response);
- 	/*
- 	 * make sure the response is valid, if invalid we do nothing and either
+ 	/* Check if the response should be audited */
+ 	if (event->response & FAN_AUDIT)
+-		audit_fanotify(event->response & ~FAN_AUDIT);
++		audit_fanotify(event->response & ~FAN_AUDIT,
++			       event->extra_info_type,
++			       (char *)&event->extra_info_buf);
+ 
+ 	pr_debug("%s: group=%p event=%p about to return ret=%d\n", __func__,
+ 		 group, event, ret);
+diff --git a/include/linux/audit.h b/include/linux/audit.h
+index d06134ac6245..0897128ee43b 100644
+--- a/include/linux/audit.h
++++ b/include/linux/audit.h
+@@ -419,7 +419,7 @@ extern void __audit_log_capset(const struct cred *new, const struct cred *old);
+ extern void __audit_mmap_fd(int fd, int flags);
+ extern void __audit_openat2_how(struct open_how *how);
+ extern void __audit_log_kern_module(char *name);
+-extern void __audit_fanotify(unsigned int response);
++extern void __audit_fanotify(__u16 response, __u16 type, char *buf);
+ extern void __audit_tk_injoffset(struct timespec64 offset);
+ extern void __audit_ntp_log(const struct audit_ntp_data *ad);
+ extern void __audit_log_nfcfg(const char *name, u8 af, unsigned int nentries,
+@@ -526,10 +526,10 @@ static inline void audit_log_kern_module(char *name)
+ 		__audit_log_kern_module(name);
+ }
+ 
+-static inline void audit_fanotify(unsigned int response)
++static inline void audit_fanotify(__u16 response, __u16 type, char *buf)
+ {
+ 	if (!audit_dummy_context())
+-		__audit_fanotify(response);
++		__audit_fanotify(response, type, buf);
+ }
+ 
+ static inline void audit_tk_injoffset(struct timespec64 offset)
+@@ -686,7 +686,7 @@ static inline void audit_log_kern_module(char *name)
+ {
+ }
+ 
+-static inline void audit_fanotify(unsigned int response)
++static inline void audit_fanotify(__u16 response, __u16 type, char *buf)
+ { }
+ 
+ static inline void audit_tk_injoffset(struct timespec64 offset)
+diff --git a/kernel/auditsc.c b/kernel/auditsc.c
+index ea2ee1181921..afdbc416069a 100644
+--- a/kernel/auditsc.c
++++ b/kernel/auditsc.c
+@@ -64,6 +64,7 @@
+ #include <uapi/linux/limits.h>
+ #include <uapi/linux/netfilter/nf_tables.h>
+ #include <uapi/linux/openat2.h> // struct open_how
++#include <uapi/linux/fanotify.h>
+ 
+ #include "audit.h"
+ 
+@@ -2893,10 +2894,21 @@ void __audit_log_kern_module(char *name)
+ 	context->type = AUDIT_KERN_MODULE;
+ }
+ 
+-void __audit_fanotify(unsigned int response)
++void __audit_fanotify(__u16 response, __u16 type, char *buf)
+ {
+-	audit_log(audit_context(), GFP_KERNEL,
+-		AUDIT_FANOTIFY,	"resp=%u", response);
++	switch (type) {
++	case FAN_RESPONSE_INFO_AUDIT_RULE:
++		audit_log(audit_context(), GFP_KERNEL, AUDIT_FANOTIFY,
++			  "resp=%u fan_type=%u fan_ctx=%u",
++			  response, type, (__u32)*buf);
++		break;
++	case FAN_RESPONSE_INFO_AUDIT_NONE:
++	default:
++		audit_log(audit_context(), GFP_KERNEL, AUDIT_FANOTIFY,
++			  "resp=%u fan_type=%u fan_ctx=?",
++			  response, type);
++		break;
++	}
+ }
+ 
+ void __audit_tk_injoffset(struct timespec64 offset)
 -- 
 2.27.0
 
