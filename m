@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9FF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 07:22:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E797C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 07:22:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355100AbiD2HZu (ORCPT
+        id S1355109AbiD2HZw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 03:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57092 "EHLO
+        Fri, 29 Apr 2022 03:25:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238464AbiD2HZr (ORCPT
+        with ESMTP id S1344662AbiD2HZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Apr 2022 03:25:47 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34EAEBF53F
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F59BF949
         for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 00:22:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=axis.com; q=dns/txt; s=axis-central1; t=1651216950;
   x=1682752950;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=BDFaFgbVHHjpgsWI9EIGW4e5nqVRQr43ShctVkUJkmo=;
-  b=ap4ndWtZD6sdVabptXAjY7ZJmPn0ElxjbtZ8flyJrSaJPAb0UsgMGESz
-   UymfdJQQIle+6wkoS9cPlo123YwAcObmKmyQrJMitgwTLeWHaJdUnM+tY
-   NFrLWSV1SsRiJvMsGwGXPltoM71ExKVxPJm9759awYAp0MkFI4BZu0xcK
-   wfFbiu5ROYQE/kdGCrC8gEITgEsKLheONYJguagk3mIaxcTdi+iqdo2cr
-   OF3TXwzG90KEG+mXqLGX2k75JfxuXJ9ByTD+n05qulTEu7XprY47xbUST
-   pfxbLnClrd5jGJYutnYUnBm7MQMTWm2M6OqkKFo5BLqoVX/6weSLz5g73
-   g==;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Eoadti+FXbHTDxNJiKrNmCrJcfdQH+IgsCTuKB5C8z0=;
+  b=mQatHb6kX6aOcAfAyYAageftOYAF/Uhv27rrHdJuOTZ1OYA/V5fnbT0e
+   7jrOxuMXitKptpbe69XnUV+pGCpIDDhZsgPn0qkpwxfvm2QycftsSL1Ql
+   UMCAJsM8nA3u/DQxJm5KRMcMszRcKHs1MDAOhKNceW5tfnEJzPEOBsL6O
+   +DBAZisrYDzpZpyIA19tSuOSdcO7BKyay7n1aKiuHsnbLVyIv1dS/M/5C
+   VMcu1cw7jBI2b89S5G5YxGOX7xaFJiAhs/uUNk/oEbmw18vZXwdKR/Jbj
+   PiIM3Iqb5F2rWCGeTbc2RIzIe2cU2XE3EEB+yJ6pj2TUMoHF5Ib3RnMj0
+   A==;
 From:   Rickard Andersson <rickaran@axis.com>
 To:     <lgirdwood@gmail.com>, <broonie@kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC:     <rickaran@axis.com>, <rickard314.andersson@gmail.com>,
         <perdo@axis.com>
-Subject: [PATCH v2 1/5] dt-bindings: regulator: Add property for I2C level shifter
-Date:   Fri, 29 Apr 2022 09:22:07 +0200
-Message-ID: <20220429072211.24957-1-rickaran@axis.com>
+Subject: [PATCH v2 3/5] dt-bindings: regulator: Add property for WDOG_B warm reset
+Date:   Fri, 29 Apr 2022 09:22:09 +0200
+Message-ID: <20220429072211.24957-3-rickaran@axis.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220429072211.24957-1-rickaran@axis.com>
+References: <20220429072211.24957-1-rickaran@axis.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -48,29 +50,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Per-Daniel Olsson <perdo@axis.com>
+From: Rickard x Andersson <rickaran@axis.com>
 
-By setting nxp,i2c-lt-enable the I2C level translator is
-enabled.
+Make it possible to do warm reset on WDOG_B assertion.
 
-Signed-off-by: Per-Daniel Olsson <perdo@axis.com>
 Signed-off-by: Rickard x Andersson <rickaran@axis.com>
 ---
- .../devicetree/bindings/regulator/nxp,pca9450-regulator.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../bindings/regulator/nxp,pca9450-regulator.yaml           | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml b/Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml
-index f70f2e758a00..e723f8cf6d74 100644
+index e723f8cf6d74..b539781e39aa 100644
 --- a/Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml
 +++ b/Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml
-@@ -92,6 +92,11 @@ properties:
-       LDO5CTRL_L or LDO5CTRL_H register. Use this if the SD_VSEL signal is
-       connected to a host GPIO.
+@@ -97,6 +97,12 @@ properties:
+     description:
+       Indicates that the I2C Level Translator is used.
  
-+  nxp,i2c-lt-enable:
++  nxp,wdog_b-warm-reset:
 +    type: boolean
 +    description:
-+      Indicates that the I2C Level Translator is used.
++      When WDOG_B signal is asserted a warm reset will be done instead of cold
++      reset.
 +
  required:
    - compatible
