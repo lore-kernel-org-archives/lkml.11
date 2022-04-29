@@ -2,62 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9622C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:28:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E9F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379232AbiD2QcE (ORCPT
+        id S1379195AbiD2QcK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49920 "EHLO
+        Fri, 29 Apr 2022 12:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379143AbiD2Qb2 (ORCPT
+        with ESMTP id S1379142AbiD2Qb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:31:28 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2042ED95F5
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:10 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id t6so11478949wra.4
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:10 -0700 (PDT)
+        Fri, 29 Apr 2022 12:31:27 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB2FD95DE
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:09 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id q23so11476583wra.1
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:28:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CqYXAEE5hciWC62isgzvygxsJPM9qOYnGSv8u0xpx1w=;
-        b=Y6cwe+piOZJTEGcF9JxJ/32QGYiHzEmVm/tYUrHsHFt9YD2RCzXemvwgHhz7LRZ72A
-         8geGPzzh5wA/PkPSSoGGGYEkZTa5O2QOTAvLtY7BmTngxKuLa/zgYNqic+nBJgfB3wcY
-         EvsBM3M/oUAG6KVKqueiVP43NsFOnlG1CR+LDgvczoknEkYNDJB5MxOEtlFAcGiJT3/9
-         75ct5scBdKp8ho22dsq3OT3BvJ9E12C7q9Vh4K5Mat3dP1InYZjch9x6djtHEE9Ry24L
-         Ww/m8fpl0PdzaSSA7267H1RMqfMUpwwJNtKDUyLetb/ITmE/czILUnz+V8Ht8sFcWIWl
-         TX8Q==
+        bh=WNtxLER3UVWbKTs2IgzwZg6nrHSr8NtqUXr1n9ePXw8=;
+        b=s7rQUh/w5RkSpjcatPLSojUT/2hjuEQZL0MasfHqFzAWCePpd2h4fittlMHL9mTBbS
+         3xZZwGsDhfAKveqt9HFigF9m2uI99+EXmEYqCsFw/jOv4zaxtHxgqyGBLuFKYD1jexym
+         lZ8nTfir8/T2BYnOJUrSci9+abmcCNPzUkAK41LJ0b8lDg11VXatonyoa05Chvi/h/LP
+         sRZn+h98UXn77M8cQjGJ/SR2e7aYRZpWR5+NHFVmi0uOouF7VA7BO116SCOHOzuQ50Jk
+         6y53L0oXKEhRQo4ffiIiGcCaDBm4tRYKd8EPCNXq0mSAj/E5G0seEuAsr66/asdPcUtp
+         JgyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CqYXAEE5hciWC62isgzvygxsJPM9qOYnGSv8u0xpx1w=;
-        b=JTXZmUCdDj9GoxilOPJw8gUheEX27Dc8aJIqBQwYrY+dyKTVvmw5gZL+3+P8ietJTM
-         oPtnQknxXBwfnKJaTeo8PHFtvRNBpgfVJ3ZhXZfPTLF4+BHeJ8EUJlnNVBbeh7mtuyGx
-         CuzzKC03lhOxCSGQHzO2U+3BHABeb1atR6LYeh0nkEgiIaEh+L/ejGiUiTcoYaVgncVD
-         K0glcCjNVF98AV+vhic+rQsYH9y1M01Tp/hqIgw7OdVm0jjKsrulksBh/q+1qQTtX8os
-         +SMJiJ64AYOxu6HT5V2jJZs/EXwljgORpqYtIYPhdc8eUp23mHD4fGfZoxhCPRMzrdka
-         M8ZA==
-X-Gm-Message-State: AOAM532AaQrJwcy2f5gmp9aivqXKir7feJ6QU2dBNjO8zxbSY2twK9fi
-        0qqS2HJ7MJs7SkFv3aVRlgWy1A==
-X-Google-Smtp-Source: ABdhPJx/FdjPsAC9fThal/9IUXJnCdi3dQmA7tuwKC7Ie5x894ukc46mDl7j/heKfjAafdYI/pyh0Q==
-X-Received: by 2002:adf:c805:0:b0:209:e1aa:87a5 with SMTP id d5-20020adfc805000000b00209e1aa87a5mr30853195wrh.701.1651249688729;
-        Fri, 29 Apr 2022 09:28:08 -0700 (PDT)
+        bh=WNtxLER3UVWbKTs2IgzwZg6nrHSr8NtqUXr1n9ePXw8=;
+        b=a79uP137u9fjw44+vXQdbtQBKQYVaBzLyqdLtz1CUgVPgBHeDG6aKU/aW6htdLMwVv
+         gAWshyWJ0jjbGB/MlNc9runW8uhJzn8ivPS1mrN5lhLZ7d6/EJh7T5ifFsi4VDgj1/YU
+         AKnqzQy9vX5IVbIMDoIJO7NzSKwFEUXZUqcpfixyl6SDDihtC9irbKsrFimstJWU8abn
+         GYGzTxdQlCabnvW49Roju2+v3TdYI9uFpDDnEgWSnhmWxv6wji0PtlkvmkjuBHsumGNX
+         dMe7D4QgLOT0eYDlrFZYXuiiPpKjuauyUBjTiEQ2yyAP2jW7pYTCnVJRPoIZntbFRJu9
+         JbtQ==
+X-Gm-Message-State: AOAM531E0fA/Rv1L9CGs0cpQ3M2SMOJB4MEVtIv4zzCW2/184+0Kt3a3
+        vxq2BPox2/gwX7r+G8IwVvCcdQ==
+X-Google-Smtp-Source: ABdhPJxf5SAKbjdmACBi5377Y5D8zZLGHXVja+JnWNnOzQukIX5F2u5caBNXLI72s+Xg3cf4HeBipQ==
+X-Received: by 2002:adf:fc52:0:b0:20a:e296:6e8a with SMTP id e18-20020adffc52000000b0020ae2966e8amr16456414wrs.432.1651249687687;
+        Fri, 29 Apr 2022 09:28:07 -0700 (PDT)
 Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id b5-20020adff905000000b0020a8781be70sm2781801wrr.12.2022.04.29.09.28.07
+        by smtp.gmail.com with ESMTPSA id b5-20020adff905000000b0020a8781be70sm2781801wrr.12.2022.04.29.09.28.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 09:28:08 -0700 (PDT)
+        Fri, 29 Apr 2022 09:28:07 -0700 (PDT)
 From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-kernel@vger.kernel.org,
         Sean Anderson <sean.anderson@seco.com>,
-        Andrew Lunn <andrew@lunn.ch>,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 13/16] dt-bindings: nvmem: sfp: Add TA_PROG_SFP supply
-Date:   Fri, 29 Apr 2022 17:26:58 +0100
-Message-Id: <20220429162701.2222-14-srinivas.kandagatla@linaro.org>
+Subject: [PATCH 12/16] dt-bindings: nvmem: sfp: Add clock properties
+Date:   Fri, 29 Apr 2022 17:26:57 +0100
+Message-Id: <20220429162701.2222-13-srinivas.kandagatla@linaro.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220429162701.2222-1-srinivas.kandagatla@linaro.org>
 References: <20220429162701.2222-1-srinivas.kandagatla@linaro.org>
@@ -69,37 +68,55 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Anderson <sean.anderson@seco.com>
 
-The TA_PROG_SFP supply must be enabled to program the fuses, and
-disabled to read the fuses (such as at power-on-reset). On many boards,
-this supply is controlled by a jumper. The user must manually insert or
-remove it at the appropriate time in the programming process. However,
-on other boards this supply is controlled by an FPGA or a GPIO. In
-these cases, the driver can automatically enable and disable it as
-necessary.
+To program fuses, it is necessary to set the fuse programming time. This
+is determined based on the value of the platform clock. Add a clock
+property.
+
+Because this property is necessary for programming, it is made
+mandatory. Since these bindings have not yet been present in a stable
+release (though they are on track for 5.18), it is not an ABI break to
+change them in this manner.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 ---
- .../devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml        | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../bindings/nvmem/fsl,layerscape-sfp.yaml         | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-index 54086f50157d..c5d7375b840a 100644
+index b7798e903191..54086f50157d 100644
 --- a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
 +++ b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-@@ -32,6 +32,11 @@ properties:
-   clock-names:
-     const: sfp
+@@ -24,15 +24,29 @@ properties:
+   reg:
+     maxItems: 1
  
-+  ta-prog-sfp-supply:
++  clocks:
++    maxItems: 1
 +    description:
-+      The regulator for the TA_PROG_SFP pin. It will be enabled for programming
-+      and disabled for reading.
++      The SFP clock. Typically, this is the platform clock divided by 4.
++
++  clock-names:
++    const: sfp
 +
  required:
    - compatible
    - reg
++  - clock-names
++  - clocks
+ 
+ unevaluatedProperties: false
+ 
+ examples:
+   - |
++    #include <dt-bindings/clock/fsl,qoriq-clockgen.h>
+     efuse@1e80000 {
+         compatible = "fsl,ls1028a-sfp";
+         reg = <0x1e80000 0x8000>;
++        clocks = <&clockgen QORIQ_CLK_PLATFORM_PLL
++                            QORIQ_CLK_PLL_DIV(4)>;
++        clock-names = "sfp";
+     };
 -- 
 2.21.0
 
