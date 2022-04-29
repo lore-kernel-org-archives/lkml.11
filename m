@@ -2,114 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0E08C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B03D9C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:43:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356677AbiD2JqM (ORCPT
+        id S1356688AbiD2Jq6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 05:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59542 "EHLO
+        Fri, 29 Apr 2022 05:46:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238887AbiD2JqK (ORCPT
+        with ESMTP id S244541AbiD2Jq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 05:46:10 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4877ABF303
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 02:42:53 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id p10so13005976lfa.12
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 02:42:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jkxpW3EdVAmqaoDM04pa7Fls99UHVBaNQniA0KfeFwg=;
-        b=LlNxkv2Et2hjxXNddYh87SBmC5hYSOujjgg24Uo8lcr4G+sb7/dJtUOoles0kZrGtr
-         nb+1We3zvwO7gmwGN0D5xrq8VJVqtBIC8L6/JYzNUU++KuCuJzvLinR9X2QRsmFy9Cpo
-         4gSeXZnpNTK4JqphnpzYG1u0wxJSprbIH/ouE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jkxpW3EdVAmqaoDM04pa7Fls99UHVBaNQniA0KfeFwg=;
-        b=EchGxGmfZcWabLTJYHUsDxLvqOqvRzgAGID/tBTFuoqT3hc0jc843/XKOc+Jz0KCy8
-         q3pNjI+ynEjudkPl0EgoFs/6jXdJPuiwMub55XoSnIFs4AW1WIIDld54Gwwf2krxVU54
-         XMuta0K7QkK4bLiMeWR7hdhwoLUKCJL4osxjtVLViC08FRBpftTwmXr02fTEQMDorjtV
-         C/VpuWZeNw/KZvROd5+Oa//ewC4sN6Ectq+xXYmwc8bB1a1iS1lr6Pt/q7C9Zp2BNnR3
-         7VWDrC7bdv6hiag2Tqx1g2CC7xeISdgCC/CIMipBQAz6YGQPn37aVcmseFoLLfjh8Pqu
-         I1Pw==
-X-Gm-Message-State: AOAM531Pk4G/ZtXL5GrHcgkwx1JfiJL/lKzpVqW9px8jedA+KYhypyAo
-        pIX9RmR9cFTcEDKxqUlo4YN/362YKbfh4wODZei2r3d1TTF1W37a
-X-Google-Smtp-Source: ABdhPJxQ4ryA2tYTRZ94S76YdZelWYjf5tfAgH5HawCXSSq8+UOoE+WbPV/mgCuTZO9vIPqIll75OctNYwK0C3lvnvQ=
-X-Received: by 2002:a05:6512:108e:b0:472:2f9:ecae with SMTP id
- j14-20020a056512108e00b0047202f9ecaemr18910638lfg.618.1651225371669; Fri, 29
- Apr 2022 02:42:51 -0700 (PDT)
+        Fri, 29 Apr 2022 05:46:57 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B532EBE9F1;
+        Fri, 29 Apr 2022 02:43:39 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 81E111063;
+        Fri, 29 Apr 2022 02:43:39 -0700 (PDT)
+Received: from lpieralisi (unknown [10.57.46.17])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7BE913F73B;
+        Fri, 29 Apr 2022 02:43:35 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 10:43:20 +0100
+From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     Jake Oshins <jakeo@microsoft.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Subject: Re: [EXTERNAL] Re: [PATCH] PCI: hv: Do not set PCI_COMMAND_MEMORY to
+ reduce VM boot time
+Message-ID: <YmuzOJy/6F5wSjY7@lpieralisi>
+References: <SN4PR2101MB0878E466880C047D3A0D0C92ABFB9@SN4PR2101MB0878.namprd21.prod.outlook.com>
+ <20220428191213.GA36573@bhelgaas>
+ <SN4PR2101MB08786192CE6DFC3450BEC571ABFD9@SN4PR2101MB0878.namprd21.prod.outlook.com>
+ <BYAPR21MB12709F42ED7C2496D366792EBFFC9@BYAPR21MB1270.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-References: <20220429023113.74993-1-sargun@sargun.me> <20220429023113.74993-2-sargun@sargun.me>
-In-Reply-To: <20220429023113.74993-2-sargun@sargun.me>
-From:   Rodrigo Campos <rodrigo@kinvolk.io>
-Date:   Fri, 29 Apr 2022 11:42:15 +0200
-Message-ID: <CACaBj2bW8XkENHoLNXEprQ_d8=_aLT_XQdjCZtSOiPJis8G_pQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] seccomp: Add wait_killable semantic to seccomp
- user notifier
-To:     Sargun Dhillon <sargun@sargun.me>
-Cc:     Kees Cook <keescook@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Containers <containers@lists.linux-foundation.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Giuseppe Scrivano <gscrivan@redhat.com>,
-        Will Drewry <wad@chromium.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Alban Crequy <alban@kinvolk.io>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BYAPR21MB12709F42ED7C2496D366792EBFFC9@BYAPR21MB1270.namprd21.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 4:32 AM Sargun Dhillon <sargun@sargun.me> wrote:
-> the concept is searchable. If the notifying process is signaled prior
-> to the notification being received by the userspace agent, it will
-> be handled as normal.
+On Fri, Apr 29, 2022 at 01:11:29AM +0000, Dexuan Cui wrote:
+> > From: Jake Oshins <jakeo@microsoft.com>
+> > Sent: Thursday, April 28, 2022 12:21 PM
+> > ... 
+> > Thanks everybody for responding to my questions.
+> > 
+> > Bjorn, from your response, it sounds like this change is safe until some possible
+> > future which new functionality is introduced for rebalancing resources.
+> > 
+> > Dexuan, I don't have any further objection to the patch.
+> > 
+> > -- Jake Oshins
+> 
+> Thank all for the informative discussion!!
+> 
+> @Bjorn, Lorenzo: can this patch go through the hyperv tree?
+> I see some recent pci-hyperv commits in the hyperv tree:
+> https://git.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git
 
-Why is that? Why not always handle in the same way (if wait killable
-is set, wait like that)
+For this patch it should be fine as long as it does not become a rule,
+we still want to be in the review loop for PCI hyper-V changes.
 
-> diff --git a/kernel/seccomp.c b/kernel/seccomp.c
-> index db10e73d06e0..9291b0843cb2 100644
-> --- a/kernel/seccomp.c
-> +++ b/kernel/seccomp.c
-> @@ -1081,6 +1088,12 @@ static void seccomp_handle_addfd(struct seccomp_kaddfd *addfd, struct seccomp_kn
->         complete(&addfd->completion);
->  }
->
-> +static bool should_sleep_killable(struct seccomp_filter *match,
-> +                                 struct seccomp_knotif *n)
-> +{
-> +       return match->wait_killable_recv && n->state == SECCOMP_NOTIFY_SENT;
+I will comment and ACK shortly.
 
-Here for some reason we check the notification state to be SENT.
-
-> +}
-> +
->  static int seccomp_do_user_notification(int this_syscall,
->                                         struct seccomp_filter *match,
->                                         const struct seccomp_data *sd)
-> @@ -1111,11 +1124,25 @@ static int seccomp_do_user_notification(int this_syscall,
->          * This is where we wait for a reply from userspace.
->          */
->         do {
-> +               bool wait_killable = should_sleep_killable(match, &n);
-> +
-
-So here, the first time this runs this will be false even if the
-wait_killable flag was used in the filter (because that function
-checks the notification state to be sent, that is not true the first
-time)
-
-Why not just do wait_for_completion_killable if match->wait_killable
-and wait_for_completion_interruptible otherwise? Am I missing
-something?
-
-
-
-Best,
-Rodrigo
+Lorenzo
