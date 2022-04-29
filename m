@@ -2,135 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74EEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:36:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF18AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 17:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236052AbiD2Rjr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 13:39:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36598 "EHLO
+        id S1379725AbiD2RnD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 13:43:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379727AbiD2Riw (ORCPT
+        with ESMTP id S1379210AbiD2RnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 13:38:52 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDFD0A94E5
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:35:32 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id p8so7487731pfh.8
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:35:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=A2o+Ws1INtn1MzI5In4+SjIaL3aTcpeQBl4+z8iQMc4=;
-        b=NYOSSTKbRD04TVB73Y0G8dVDDfWwHH/CPTSC7daECEsRY/h46kd7k6dLGhMDlrO1s0
-         JvVKQn0GcojLy5mGg40A8qxM6FQZIPQi4E3s2mKqKKJv1jzvkw7Se89NURix2hwEHt+H
-         MtTv2gISdz6cnht5Tg5kg6rrV6Fx/cSjRSn7pGTnc+7EPv9mPozYNWHGWwqgp2tXR2J9
-         AGd9rij6dqLuXxB/ysKy16JHfzxL4TVnj0tTvZO4vvsqiepcOV1fqKW5w7XrakLIZ828
-         TsckfsDGxa6bcewapYWOT2P0Nj7VjF3Hf6IbOd47FClYM0iOw0IF590tdnx7A93nrUyb
-         RxZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=A2o+Ws1INtn1MzI5In4+SjIaL3aTcpeQBl4+z8iQMc4=;
-        b=ihakYvgNO63i386gifoU8lfV9PSewixrdtvEbzd7a/9PF2fR6Mu8mJDGk7dTCLYU89
-         q0uUgWysy/gTJmTRTVnnFBzuZyvlmjWZF5P6xpjkCAaeK/jt/cVGP7mzJ3uRep1bmtS0
-         FFgBule2S5p+3WUImUoRR1Ly+v4qnM3rAECXiUJpPZ4Q4vok8N505obo0S3w1FCVkl1Q
-         yFDf7sQ7ty4p8PLi+RjGDrV9ytbmZsqZvTQO8yplUMZ53UIH/3pZ6BGSDASmfuRXablR
-         9gBH7h8YYi0QxFq9RRfj2acFjlY4cuM38T8xbX2KpTfzpOGsIJLzYTmHvv5RWiijkNhE
-         npdg==
-X-Gm-Message-State: AOAM530kR5hQMR41OmtXO8Hz2ZVTxMpPOlSus2StFjnT842KHXY6jxUE
-        XZFSujE3Of+GcYPXYP5f2RzdcQ==
-X-Google-Smtp-Source: ABdhPJySHzOFet3agObDF17Dhwfya9aBtbqQNVx7EZSgv30DDlpfHWNXSSP+dep1o8EZziq4Eyq0uA==
-X-Received: by 2002:a63:1c1d:0:b0:39d:9a7c:593b with SMTP id c29-20020a631c1d000000b0039d9a7c593bmr367462pgc.157.1651253732177;
-        Fri, 29 Apr 2022 10:35:32 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id y38-20020a056a001ca600b0050dafe16d7bsm2804025pfw.26.2022.04.29.10.35.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 10:35:31 -0700 (PDT)
-Date:   Fri, 29 Apr 2022 17:35:28 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        mlevitsk@redhat.com, stable@vger.kernel.org
-Subject: Re: [PATCH 1/3] KVM: x86: make vendor code check for all nested
- events
-Message-ID: <Ymwh4PEZHDvWyR1f@google.com>
-References: <20220427173758.517087-1-pbonzini@redhat.com>
- <20220427173758.517087-2-pbonzini@redhat.com>
- <YmwaVY5vERO43CRI@google.com>
- <0b554e22-6766-8299-287c-c40240c08536@redhat.com>
+        Fri, 29 Apr 2022 13:43:01 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B55728997
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 10:39:42 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TGw0cJ011947;
+        Fri, 29 Apr 2022 17:39:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
+ to : cc : references : in-reply-to : mime-version : message-id :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=YoHa0fLQEkgm+3Igrqs1u82fd0eKrL3cNPKS8q/AGcs=;
+ b=bh6pzVLD+JALzZUxG9/IYtCYv8tb0e7wZUDHzxVGH637nt81PrchE5i2K3rY6nqvuNE3
+ vxfMkDFLMqdtShueEkai+pgunIfMy+c6T3QBRJB3hjmQ/xC0kzYtXu7NiHU3Rrk+ObKb
+ Z1CoxBLs0LxC/mVa4dQVos5kCs3S8WAI4+fVBIjWLMvomjbtHWvUnVC1cEmd/Vhjllxk
+ 50Tv3C/tVS5ayUgm2iTM+DiKYpmMftBTCrbkDKbVdokiYn7MfxsvnELk+DF9CyWGbFhI
+ cvAy5SE/Evzpd15aVS0eNLFjqhqEpYPrtHxKlTdphWUYgryupNAkhtElIMm/3nvYCLXi iw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqt9efudn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 17:39:26 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23THVGSR002413;
+        Fri, 29 Apr 2022 17:39:26 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqt9efucs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 17:39:26 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23THbqX0031260;
+        Fri, 29 Apr 2022 17:39:23 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma05fra.de.ibm.com with ESMTP id 3fm938ygfe-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Apr 2022 17:39:23 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23THdLdl48365836
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 29 Apr 2022 17:39:21 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4078511C04C;
+        Fri, 29 Apr 2022 17:39:21 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C675B11C04A;
+        Fri, 29 Apr 2022 17:39:20 +0000 (GMT)
+Received: from localhost (unknown [9.43.18.217])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 29 Apr 2022 17:39:20 +0000 (GMT)
+Date:   Fri, 29 Apr 2022 23:09:19 +0530
+From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Subject: Re: [PATCH v2 2/2] ftrace: recordmcount: Handle sections with no
+ non-weak symbols
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        llvm@lists.linux.dev, Michael Ellerman <mpe@ellerman.id.au>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+References: <cover.1651166001.git.naveen.n.rao@linux.vnet.ibm.com>
+        <126aca34935cf1c7168e17970c706e36577094e7.1651166001.git.naveen.n.rao@linux.vnet.ibm.com>
+        <20220428184212.18fbf438@gandalf.local.home>
+In-Reply-To: <20220428184212.18fbf438@gandalf.local.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0b554e22-6766-8299-287c-c40240c08536@redhat.com>
+User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
+Message-Id: <1651252324.js9790ngjg.naveen@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: XjwigIEeW3HSn-VRBEuRqpTuXxv62pyz
+X-Proofpoint-ORIG-GUID: ed5zTfg3vACJAC1QySK7bIsb5o0AfjqR
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-29_08,2022-04-28_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
+ mlxscore=0 suspectscore=0 priorityscore=1501 spamscore=0 mlxlogscore=783
+ adultscore=0 lowpriorityscore=0 impostorscore=0 clxscore=1015 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204290088
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022, Paolo Bonzini wrote:
-> On 4/29/22 19:03, Sean Christopherson wrote:
-> > This doesn't even compile...
-> > 
-> > arch/x86/kvm/vmx/nested.c: In function ‘vmx_has_nested_events’:
-> > arch/x86/kvm/vmx/nested.c:3862:61: error: ‘vmx’ undeclared (first use in this function)
-> >   3862 |         return nested_vmx_preemption_timer_pending(vcpu) || vmx->nested.mtf_pending;
-> >        |                                                             ^~~
-> > arch/x86/kvm/vmx/nested.c:3862:61: note: each undeclared identifier is reported only once for each function it appears in
-> >    CC [M]  arch/x86/kvm/svm/svm_onhyperv.o
-> > arch/x86/kvm/vmx/nested.c:3863:1: error: control reaches end of non-void function [-Werror=return-type]
-> >   3863 | }
-> >        | ^
-> > cc1: all warnings being treated as errors
-> >    LD [M]  arch/x86/kvm/kvm.o
-> 
-> Yeah, it doesn't.  Of course this will need a v2, also because there are
-> failures in the vmx tests.
+Steven Rostedt wrote:
+> On Thu, 28 Apr 2022 22:49:52 +0530
+> "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> wrote:
+>=20
+>> But, with ppc64 elf abi v1 which only supports the old -pg flag, mcount
+>> location can differ between the weak and non-weak variants of a
+>> function. In such scenarios, one of the two mcount entries will be
+>> invalid. Such architectures need to validate mcount locations by
+>> ensuring that the instruction(s) at those locations are as expected. On
+>> powerpc, this can be a simple check to ensure that the instruction is a
+>> 'bl'. This check can be further tightened as necessary.
+>=20
+> I was thinking about this more, and I was thinking that we could create
+> another section; Perhaps __mcount_loc_weak. And place these in that
+> section. That way, we could check if these symbols to see if there's
+> already a symbol for it, and if there is, then drop it.
 
-Heh, I suspected there would be failures, I was about to type up a response to
-patch 3.  MTF is subtly relying on the call from kvm_vcpu_running() to inject
-the event.
+If I'm understanding your suggestion right:
+- we now create a new section in each object file: __mcount_loc_weak,=20
+  and capture such relocations using weak symbols there.
+- we then ask the linker to put these separately between, say,=20
+  __start_mcount_loc_weak and __stop_mcount_loc_weak
+- on ftrace init, we go through entries in this range, but discard those=20
+  that belong to functions that also have an entry between=20
+  __start_mcount_loc and __stop_mcount loc.
 
-From: Sean Christopherson <seanjc@google.com>
-Date: Fri, 29 Apr 2022 17:30:54 +0000
-Subject: [PATCH] KVM: nVMX: Make an event request when pending an MTF nested
- VM-Exit
+The primary issue I see here is that the mcount locations within the new=20
+weak section will end up being offsets from a different function in=20
+vmlinux, since the linker does not create a symbol for the weak=20
+functions that were over-ridden.
 
-Set KVM_REQ_EVENT when MTF becomes pending to ensure that KVM will run
-through inject_pending_event() and thus vmx_check_nested_events() prior
-to re-entering the guest.  MTF currently works by virtue of KVM's hack
-that calls kvm_check_nested_events() from kvm_vcpu_running(), but that
-hack will be removed in the near future.
+As an example, in the issue described in this patch set, if powerpc=20
+starts over-riding kexec_arch_apply_relocations(), then the current weak=20
+implementation in kexec_file.o gets carried over to the final vmlinux,=20
+but the instructions will instead appear under the previous function in=20
+kexec_file.o: crash_prepare_elf64_headers(). This function may or may=20
+not be traced to begin with, so we won't be able to figure out if this=20
+is valid or not.
 
-Fixes: 5ef8acbdd687 ("KVM: nVMX: Emulate MTF when performing instruction emulation")
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/vmx/vmx.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index d58b763df855..4c635bc08105 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -1577,10 +1577,12 @@ static void vmx_update_emulated_instruction(struct kvm_vcpu *vcpu)
- 	 */
- 	if (nested_cpu_has_mtf(vmcs12) &&
- 	    (!vcpu->arch.exception.pending ||
--	     vcpu->arch.exception.nr == DB_VECTOR))
-+	     vcpu->arch.exception.nr == DB_VECTOR)) {
- 		vmx->nested.mtf_pending = true;
--	else
-+		kvm_make_request(KVM_REQ_EVENT, vcpu);
-+	} else {
- 		vmx->nested.mtf_pending = false;
-+	}
- }
-
- static int vmx_skip_emulated_instruction(struct kvm_vcpu *vcpu)
-
-base-commit: 39aa5903e8c407e5128c15aeabb0717b275b007e
---
-
+- Naveen
