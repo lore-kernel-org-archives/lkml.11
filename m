@@ -2,171 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05AF3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:08:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA3CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:09:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352837AbiD2QLt (ORCPT
+        id S1359820AbiD2QMR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55412 "EHLO
+        Fri, 29 Apr 2022 12:12:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230171AbiD2QLq (ORCPT
+        with ESMTP id S1344906AbiD2QMQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:11:46 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2053.outbound.protection.outlook.com [40.107.93.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2BE0A6E28
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:08:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UNZrO6bqFCiucpL0E5c78U6op1Tzfg9e1bxAzptlbY6DzVroGg6Of+wNblmoKcUz65kZJq/3zYrEEpUpbVO29P1Ng8fbyAvyUdmBWxxoqLLmbRQqv+PaKcY4krmoT3SRkcvS88OCR2Sc2Az6qydTh/XVKUnF2zqFkY4a4LPpR5J2BL3eeoipTpX88UrSJNK+aaqkoVMRiku1bGae52pIQC6R6OkRuVQMbeFM8yWPYGRL4miL1Eyg/M8pvF4jcAc7w9py068uSnZ5E4XVvEVjHkAq8glqWcZGgDemCyv0RbOoECJRK+IACmaNpWVP89HqpeIYeAkw9upGPvUQvrSwxA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=d4ygTPRmci2v/w1AtB0mhV/taxLH80A6nMjjug/S914=;
- b=jElCPRhEQT4DW93P9a+yXaOf03+iVb7f5C50geYu8Ocmf3AjoEMhvGKwEl3azdVWh6t0qGFDjBxv8Mbi374TQ/bAf5KFj7+jQFKZAGS0OqqttVDkMuWBi1xbD8e2TK42fikb27uKbLMnpCSaSbtIDzEjHdmKg3oFjS+yGAxkiq4dmKrWyMKmEWJ5pM3d0XEw40ZWNuUA0BP+3zfHh5ywYglvBUXdpLHu7yJfHvDjhN8gpVFitYyfAK9gIQGrUzWQ0XLPpu9xso+dXJe2AlXPt21jKevhG+Z33gfWAp4nHQFvIAlHAr2I7DdTbDO+/1DQ0X2DVSwaTdKDdADFVJGmgg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linux.ie smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d4ygTPRmci2v/w1AtB0mhV/taxLH80A6nMjjug/S914=;
- b=LpYid9OtRs6RfalW6UOTGPYVkG2u3hlILSk2jNixgRCY6YBcktoSFVUbLdgc3J4cw/YfiqZbenkOT04PX0KOMrKe5DygWDtmavbx3whkYajjSoBKKtG/G17mEU92i6yPnGWCHdQFHUoM6ELcZ7RPnMjWmPuGEC1nN4XW3OPlcG8=
-Received: from DM6PR02CA0163.namprd02.prod.outlook.com (2603:10b6:5:332::30)
- by MN2PR12MB3167.namprd12.prod.outlook.com (2603:10b6:208:a9::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Fri, 29 Apr
- 2022 16:08:24 +0000
-Received: from DM6NAM11FT051.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:332:cafe::75) by DM6PR02CA0163.outlook.office365.com
- (2603:10b6:5:332::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.12 via Frontend
- Transport; Fri, 29 Apr 2022 16:08:24 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT051.mail.protection.outlook.com (10.13.172.243) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5206.12 via Frontend Transport; Fri, 29 Apr 2022 16:08:24 +0000
-Received: from doryam3r2rack03-34.amd.com (10.180.168.240) by
- SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 11:08:23 -0500
-From:   Richard Gong <richard.gong@amd.com>
-To:     <alexander.deucher@amd.com>, <christian.koenig@amd.com>,
-        <xinhui.pan@amd.com>, <airlied@linux.ie>, <daniel@ffwll.ch>
-CC:     <amd-gfx@lists.freedesktop.org>, <dri-devel@lists.freedesktop.org>,
-        <linux-kernel@vger.kernel.org>, <mario.limonciello@amd.com>,
-        <richard.gong@amd.com>, kernel test robot <lkp@intel.com>
-Subject: [PATCHv5] drm/amdgpu: vi: disable ASPM on Intel Alder Lake based systems
-Date:   Fri, 29 Apr 2022 11:06:04 -0500
-Message-ID: <20220429160604.2608782-1-richard.gong@amd.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 637091c2-d76d-4f28-542d-08da29fa7d0d
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3167:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB316778B8BE830E93774BFE5C95FC9@MN2PR12MB3167.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: y6pvU9Vv9NB9FRwGcLbxKxCoGcYnGLJ8qPhEvVLoTzmtBUBPMTNhmG/9ZuYPWZTiSlLR0KOv8OscSzTZrGf5lASOYqR0ycEW83I8VbrUq1uSGGs5FalI9IaTRo2/HxvErjdHKuEshfUzNmo76o4oE3SHyxRq2stuOqNK71lRO+WopIu5CmhqbOzyLGDzJfAb8C9tKDIGYYCXr6Wf3yfx5NxTYifJ0osTReD4jnBLJptIJCt3gHCvS+qvxWaNwx9+eb6llWUUbLgGUtY4m2nItBNt62IA2pp/LmSeDylHeFuUyYRgA4EKkL7h07U9WSwAgSThm63BSYoLc1O3XUbjeL19mGKOrKo7iHyRhD4oTe0DGdPxU6rNXzTYNdHYkWeEIeW/HZY2aWn3MAgJLY/4b1yTt7nsXX49Ywx6cprhVP89SLLOUQX1UslgrmAK9yKBpMCqionr87S6F9AocvCvIu98bNHoSzOshBQoryIQOXbXKJn7uCBUXkRfv6roxYV4yD18t1NVF6UhOQiB+DmisBQD5kzlD58pYP80wjhHy6gdpYDo4adLUQjKuWLQJvVlu8Gqq4MAwLcc6qWcdqy0qbBu1ztD26Ta3PdgNJSzWcoc1ORP6hqXZ8wRDpmPdS9W92Nya9kjN3N+y531dvbkl44gXN6HtzuswfVGcLBZ+jY8Q8exp6VIO2Ql8i5h9AD5U3LWMxpognnt2OhuBYd4wg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(86362001)(47076005)(966005)(82310400005)(508600001)(40460700003)(2616005)(336012)(426003)(26005)(1076003)(356005)(81166007)(6666004)(36860700001)(70206006)(7696005)(44832011)(316002)(2906002)(16526019)(186003)(36756003)(5660300002)(8936002)(70586007)(110136005)(54906003)(83380400001)(4326008)(8676002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2022 16:08:24.1841
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 637091c2-d76d-4f28-542d-08da29fa7d0d
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT051.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3167
+        Fri, 29 Apr 2022 12:12:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27B24A6E28;
+        Fri, 29 Apr 2022 09:08:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D95ABB83645;
+        Fri, 29 Apr 2022 16:08:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 905C0C385A4;
+        Fri, 29 Apr 2022 16:08:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651248534;
+        bh=EzjHOli1jhhHNwga1qc/k/xK7Y/AYNU28aEQDIa5QaA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WD6LVZDS+PChJZPpxZt4lxvZKHt46bpDDdU3f5ImADZTPlKAU67CHJ28g47jR+6YG
+         UVOnsXDTcVhyvW6wGDGDPYnXXM/ocYV4YFttgeWdvedJW8NP2O7pGohtZuPL1B3Csk
+         2az11Wn/XzNn/4W/90ReA1YD+6xi7iT7UILw/iG5KB6e7lPLwECOlBLzG5+YtdR+LD
+         xdy2CKoTRWuIzjvV/FPNBANzS2Jvzq1bfPOiRbXypFKAc5dHznHTexbZ5jbXM9Lzwk
+         4HCi4GOYBwgIAjltYZ8VY1139Q1nKO+HeWYheDLNG9tCssBS3iS98ec2falSGw033n
+         BMKYoKrqmYXJw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nkTAq-007z4M-3P; Fri, 29 Apr 2022 17:08:52 +0100
+Date:   Fri, 29 Apr 2022 17:08:51 +0100
+Message-ID: <87sfpv98j0.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Thomas Pfaff <tpfaff@pcs.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        <linux-kernel@vger.kernel.org>, <linux-rt-users@vger.kernel.org>,
+        Hillf Danton <hdanton@sina.com>
+Subject: Re: [PATCH v2] irq/core: synchronize irq_thread startup
+In-Reply-To: <1e3f96b7-9294-1534-e83b-efe3602f876f@pcs.com>
+References: <1e3f96b7-9294-1534-e83b-efe3602f876f@pcs.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: tpfaff@pcs.com, tglx@linutronix.de, linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org, hdanton@sina.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Active State Power Management (ASPM) feature is enabled since kernel 5.14.
-There are some AMD Volcanic Islands (VI) GFX cards, such as the WX3200 and
-RX640, that do not work with ASPM-enabled Intel Alder Lake based systems.
-Using these GFX cards as video/display output, Intel Alder Lake based
-systems will freeze after suspend/resume.
+Hi Thomas,
 
-The issue was originally reported on one system (Dell Precision 3660 with
-BIOS version 0.14.81), but was later confirmed to affect at least 4
-pre-production Alder Lake based systems.
+Thanks for this, a few comments below.
 
-Add an extra check to disable ASPM on Intel Alder Lake based systems with
-the problematic AMD Volcanic Islands GFX cards.
+On Fri, 29 Apr 2022 12:52:48 +0100,
+Thomas Pfaff <tpfaff@pcs.com> wrote:
+> 
+> From: Thomas Pfaff <tpfaff@pcs.com>
+> 
+> While running
+> "while /bin/true; do setserial /dev/ttyS0 uart none;
+> setserial /dev/ttyS0 uart 16550A; done"
+> on a kernel with threaded irqs, setserial is hung after some calls.
+> 
+> setserial opens the device, this will install an irq handler if the uart is
+> not none, followed by TIOCGSERIAL and TIOCSSERIAL ioctls.
+> Then the device is closed. On close, synchronize_irq() is called by
+> serial_core.
+> 
+> If the close comes too fast, the irq_thread does not really start,
+> it is terminated immediately without going into irq_thread().
+> But an interrupt might already been handled by
+> irq_default_primary_handler(), going to __irq_wake_thread() and
+> incrementing threads_active.
+> If this happens, synchronize_irq() will hang forever, because the
+> irq_thread is already dead, and threads_active will never be decremented.
+> 
+> The fix is to make sure that the irq_thread is really started
+> during __setup_irq().
+> 
+> Signed-off-by: Thomas Pfaff <tpfaff@pcs.com>
+> ---
+> v1-v2:
+>   - use already existing resources
+> diff --git a/kernel/irq/internals.h b/kernel/irq/internals.h
+> index 99cbdf55a8bd..dca57bed0d96 100644
+> --- a/kernel/irq/internals.h
+> +++ b/kernel/irq/internals.h
+> @@ -29,12 +29,14 @@ extern struct irqaction chained_action;
+>   * IRQTF_WARNED    - warning "IRQ_WAKE_THREAD w/o thread_fn" has been printed
+>   * IRQTF_AFFINITY  - irq thread is requested to adjust affinity
+>   * IRQTF_FORCED_THREAD  - irq action is force threaded
+> + * IRQTF_UP        - signals that irq thread is ready
 
-Fixes: 0064b0ce85bb ("drm/amd/pm: enable ASPM by default")
-Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1885
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Richard Gong <richard.gong@amd.com>
----
-v5: added vi to commit header and updated commit message
-    rolled back guard with the preprocessor as did in v2 to correct build
-    error on non-x86 systems
-v4: s/CONFIG_X86_64/CONFIG_X86
-    enhanced check logic
-v3: s/intel_core_aspm_chk/aspm_support_quirk_check
-    correct build error with W=1 option
-v2: correct commit description
-    move the check from chip family to problematic platform
----
- drivers/gpu/drm/amd/amdgpu/vi.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+nit: Why not call the flag IRQTF_READY then? I find it slightly more
+readable than 'UP'.
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/vi.c b/drivers/gpu/drm/amd/amdgpu/vi.c
-index 039b90cdc3bc..45f0188c4273 100644
---- a/drivers/gpu/drm/amd/amdgpu/vi.c
-+++ b/drivers/gpu/drm/amd/amdgpu/vi.c
-@@ -81,6 +81,10 @@
- #include "mxgpu_vi.h"
- #include "amdgpu_dm.h"
- 
-+#if IS_ENABLED(CONFIG_X86)
-+#include <asm/intel-family.h>
-+#endif
-+
- #define ixPCIE_LC_L1_PM_SUBSTATE	0x100100C6
- #define PCIE_LC_L1_PM_SUBSTATE__LC_L1_SUBSTATES_OVERRIDE_EN_MASK	0x00000001L
- #define PCIE_LC_L1_PM_SUBSTATE__LC_PCI_PM_L1_2_OVERRIDE_MASK	0x00000002L
-@@ -1134,13 +1138,24 @@ static void vi_enable_aspm(struct amdgpu_device *adev)
- 		WREG32_PCIE(ixPCIE_LC_CNTL, data);
- }
- 
-+static bool aspm_support_quirk_check(void)
-+{
-+#if IS_ENABLED(CONFIG_X86)
-+	struct cpuinfo_x86 *c = &cpu_data(0);
-+
-+	return !(c->x86 == 6 && c->x86_model == INTEL_FAM6_ALDERLAKE);
-+#else
-+	return true;
-+#endif
-+}
-+
- static void vi_program_aspm(struct amdgpu_device *adev)
- {
- 	u32 data, data1, orig;
- 	bool bL1SS = false;
- 	bool bClkReqSupport = true;
- 
--	if (!amdgpu_device_should_use_aspm(adev))
-+	if (!amdgpu_device_should_use_aspm(adev) || !aspm_support_quirk_check())
- 		return;
- 
- 	if (adev->flags & AMD_IS_APU ||
+>   */
+>  enum {
+>  	IRQTF_RUNTHREAD,
+>  	IRQTF_WARNED,
+>  	IRQTF_AFFINITY,
+>  	IRQTF_FORCED_THREAD,
+> +	IRQTF_UP,
+>  };
+>  
+>  /*
+> diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+> index f1d5a94c6c9f..7efa24629694 100644
+> --- a/kernel/irq/manage.c
+> +++ b/kernel/irq/manage.c
+> @@ -1263,6 +1263,30 @@ static void irq_wake_secondary(struct irq_desc *desc, struct irqaction *action)
+>  	raw_spin_unlock_irq(&desc->lock);
+>  }
+>  
+> +/*
+> + * Internal function to notify that irq_thread is ready
+> + */
+> +static void irq_thread_is_up(struct irq_desc *desc,
+> +		struct irqaction *action)
+
+nit again: the name of this function makes it look like a predicate.
+The rest of the IRQ core uses the 'set' word to... set a bit.
+Something like irq_thread_set_ready() would have my preference.
+
+> +{
+> +	set_bit(IRQTF_UP, &action->thread_flags);
+> +	wake_up(&desc->wait_for_threads);
+> +}
+> +
+> +/*
+> + * Internal function to wake up irq_thread
+> + * and wait until it is really up
+> + */
+> +static void wait_for_irq_thread_startup(struct irq_desc *desc,
+> +		struct irqaction *action)
+
+and this would be wait_for_irq_thread_ready().
+
+> +{
+> +	if (action && action->thread) {
+> +		wake_up_process(action->thread);
+> +		wait_event(desc->wait_for_threads,
+> +			test_bit(IRQTF_UP, &action->thread_flags));
+> +	}
+> +}
+> +
+>  /*
+>   * Interrupt handler thread
+>   */
+> @@ -1287,6 +1311,8 @@ static int irq_thread(void *data)
+>  
+>  	irq_thread_check_affinity(desc, action);
+>  
+> +	irq_thread_is_up (desc, action);
+
+nit: extra space after the function.
+
+> +
+>  	while (!irq_wait_for_interrupt(action)) {
+>  		irqreturn_t action_ret;
+>  
+> @@ -1522,6 +1548,8 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
+>  		}
+>  	}
+>  
+> +	init_waitqueue_head(&desc->wait_for_threads);
+> +
+
+I'm trying to convince myself that this one is safe.
+
+It was so far only done when registering the first handler of a
+threaded interrupt, while it is now done on every call to
+__setup_irq().  However, this is now done outside of the protection of
+any of the locks, meaning that a concurrent __setup_irq() for a shared
+interrupt can now barge in and corrupt the wait queue.
+
+So I don't think this is right. You may be able to hoist the
+request_lock up, but I haven't checked what could break, if anything.
+
+>  	/*
+>  	 * Create a handler thread when a thread function is supplied
+>  	 * and the interrupt does not nest into another interrupt
+> @@ -1698,8 +1726,6 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
+>  	}
+>  
+>  	if (!shared) {
+> -		init_waitqueue_head(&desc->wait_for_threads);
+> -
+>  		/* Setup the type (level, edge polarity) if configured: */
+>  		if (new->flags & IRQF_TRIGGER_MASK) {
+>  			ret = __irq_set_trigger(desc,
+> @@ -1795,14 +1821,8 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
+>  
+>  	irq_setup_timings(desc, new);
+>  
+> -	/*
+> -	 * Strictly no need to wake it up, but hung_task complains
+> -	 * when no hard interrupt wakes the thread up.
+> -	 */
+> -	if (new->thread)
+> -		wake_up_process(new->thread);
+> -	if (new->secondary)
+> -		wake_up_process(new->secondary->thread);
+> +	wait_for_irq_thread_startup(desc, new);
+> +	wait_for_irq_thread_startup(desc, new->secondary);
+>  
+>  	register_irq_proc(irq, desc);
+>  	new->dir = NULL;
+
+Thanks,
+
+	M.
+
 -- 
-2.25.1
-
+Without deviation from the norm, progress is not possible.
