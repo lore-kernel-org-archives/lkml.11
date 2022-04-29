@@ -2,167 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30CA3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:11:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C41C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:13:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378115AbiD2PPM (ORCPT
+        id S1377672AbiD2PQg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 11:15:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34860 "EHLO
+        Fri, 29 Apr 2022 11:16:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378132AbiD2PPJ (ORCPT
+        with ESMTP id S231968AbiD2PQ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 11:15:09 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9FCD4462;
-        Fri, 29 Apr 2022 08:11:50 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id l7so16066738ejn.2;
-        Fri, 29 Apr 2022 08:11:50 -0700 (PDT)
+        Fri, 29 Apr 2022 11:16:29 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40DB3D4C49
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 08:13:11 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id g20so9424298edw.6
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 08:13:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SAsWIU2W3p7Q0ZXwzZUArSy317phcc7hhmyzyg+rjOE=;
-        b=LmHXoutrrKYA3NkvsF48dfb6fC6YhTRK1ftbNp4Gzpzi14cOaEzW3e9qqS1aYaPg6x
-         seWl5AUFEMU133I7Bo7NfL3WDL7fHEgWifWGj9kUEOdNJBkZsrydw9KmcwPC8sJjfPDi
-         3blnJu3dmZQvjRAwKsupb5f3lKmeSRR2VsMyKQ70aVa5uEC084uOLB7hSSVbCovLldr1
-         Uu5gwB08c70O5Z96MvTQayLOYGOf2AAgHdQ2O4LPoT49Bw3RC6Ul9B6uiR1IQrfrlhAG
-         6FlG0yRd8MVlzkuC90iI6kk3pXf0kp/A+Ok7WKhnrMtEAjCrimqxv1V2bO7CIUQyx+9b
-         PZIA==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7bnc7xO3az7rccsOJO8obe46CTWWIlyZBBYGgk6otdQ=;
+        b=A8J6mu0UHsKQyge26bU/j8tsK4sQ4qhNOGGgwNNeg3b/b8m++6m1tLlgJHDKHicALb
+         p4nJZXY1d4v8f8AuUlfyGcZxjRymhNtIuoyC+4MpWPMCeyK4H8UD5UatT/Q4SgmPrUsi
+         6kYTeGSgdbvEDo06m2qTqZHCt9eeOrJpSlHfV3NC8qsgJZqbxxbmv/eJpW86odZ3yA6O
+         zJITUUwmsUV25gT7CW4PExxRMG9glIShIp35heNe4ZM3BygT3v49RskkaPDLJLYgzRYI
+         96idROj+aMaW+VZ0QS1yB0lt0iEfB4lxrJYUOdePrY03LvdkKLTLcoKE0yPiiNCFTuey
+         t+5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SAsWIU2W3p7Q0ZXwzZUArSy317phcc7hhmyzyg+rjOE=;
-        b=O4jGzsc6TMreRcNHx6W1Sdy5G3SmvYBmEbtgxHlWOX5XSR1A8EB/ap1j44BaWgVGIu
-         TLlRQpsq+3JVQOUErQP1wN+SogEW6NB+pN6VbVwSXuJxT2ZdMJAD6K7mu/BXP0lK+t2T
-         sb7cTwH/RwiPLmO9jgt/S+F6JnaTIydbKNbrFCQ0aeVzMcpFDkm2eJmto2v2uHD5Z4KU
-         C1sMNb/SFkbqrH/6zFvHpdM6Y83JzCnLCXlIDQn0pJ5zwIU5Lrwu5d1djq7bPhk4srX6
-         swa+8zuDsRELPoR0g23GehoRi/pNk5TYV3BLroW3AAu11mGcQWeBjl0iokuMYeOhlZHe
-         7GHg==
-X-Gm-Message-State: AOAM532RTg4WkYUFs1fVS+NuKFZytMMgWUQIZD0vBbYLjuwyFOm2m9Ga
-        qzTWTGZ3IATWlETNHUhVnMk=
-X-Google-Smtp-Source: ABdhPJwTJtflClacx/dV6nHIRCHf6sS/C3krPJR9QkVUVkmk10jnwAYw/sT7Gv6/SRP0OpjpC18FyQ==
-X-Received: by 2002:a17:907:3e8c:b0:6f4:7bb:d548 with SMTP id hs12-20020a1709073e8c00b006f407bbd548mr1254390ejc.695.1651245108994;
-        Fri, 29 Apr 2022 08:11:48 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id zd21-20020a17090698d500b006f3ef214e4csm720411ejb.178.2022.04.29.08.11.47
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7bnc7xO3az7rccsOJO8obe46CTWWIlyZBBYGgk6otdQ=;
+        b=kQ8AcJgAMMcLfTbNacgvaPvCt8KhWG0+P10YHOvsjTu9EExl9H/l7AVGASEtth9xWF
+         Hu2S1WyPRnDb6ZNMxE9aENzpNMFoeU3uis6m//ir+V1/e+gdTyKiJJIi7L3NchfsZDTu
+         ZWlslgIIpvZu0mu2PWowY3tUlMXWY0lDc7HbUimY/1yqnRg4j/QJ5wWYS234TYrE861E
+         SRJYdMwoR2IklHSlloRmllGFr9aaIrh52dJjhnF8WP1KnxC16xiRFxDqKu+BFX6HCx7q
+         dbhfyOtUqBuJ8ERamosHuq1BXKCKO/JjwyInpNhHQCA9UJThGvPo77LsH0VGPg2vqQvt
+         sAWg==
+X-Gm-Message-State: AOAM533gU+XGviB2277QpMpkv2B1Po6p4AJiy8KoE6651ZgCny4oCgvw
+        hKTHwIETxHEWc3e4cpqHi3hSTw==
+X-Google-Smtp-Source: ABdhPJxpoO0jVgbjIYzu0YiPS8lmBQC+2VUElZk/qV9jT9SDbwXvH0t1Tfb+3k/tEr45cGvg7pSY4w==
+X-Received: by 2002:a05:6402:155a:b0:425:c0b1:ab07 with SMTP id p26-20020a056402155a00b00425c0b1ab07mr39234921edx.258.1651245189765;
+        Fri, 29 Apr 2022 08:13:09 -0700 (PDT)
+Received: from prec5560.. (freifunk-gw.bsa1-cpe1.syseleven.net. [176.74.57.43])
+        by smtp.gmail.com with ESMTPSA id zp15-20020a17090684ef00b006f3ef214e4esm712677ejb.180.2022.04.29.08.13.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 08:11:48 -0700 (PDT)
-Message-ID: <626c0034.1c69fb81.d55d4.4f09@mx.google.com>
-X-Google-Original-Message-ID: <Ymv/oshQ1tmxwSDR@Ansuel-xps.>
-Date:   Fri, 29 Apr 2022 17:09:22 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sricharan R <sricharan@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        Fri, 29 Apr 2022 08:13:09 -0700 (PDT)
+From:   Robert Foss <robert.foss@linaro.org>
+To:     bjorn.andersson@linaro.org, agross@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzk+dt@kernel.org, jonathan@marek.ca, tdas@codeaurora.org,
+        anischal@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/4] clk: qcom: clk-krait: add apq/ipq8064 errata
- workaround
-References: <20220429120108.9396-1-ansuelsmth@gmail.com>
- <20220429120108.9396-5-ansuelsmth@gmail.com>
- <1f013429-8a5b-47c8-a146-41bb66af3f03@linaro.org>
+Cc:     Vinod Koul <vkoul@kernel.org>, Steev Klimaszewski <steev@kali.org>
+Subject: [PATCH v1 1/9] clk: qcom: rcg2: Cache rate changes for parked RCGs
+Date:   Fri, 29 Apr 2022 17:12:39 +0200
+Message-Id: <20220429151247.388837-1-robert.foss@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1f013429-8a5b-47c8-a146-41bb66af3f03@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 06:00:45PM +0300, Dmitry Baryshkov wrote:
-> On 29/04/2022 15:01, Ansuel Smith wrote:
-> > Add apq/ipq8064 errata workaround where the sec_src clock gating needs to
-> > be disabled during switching. To enable this set disable_sec_src_gating
-> > in the mux struct.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > ---
-> >   drivers/clk/qcom/clk-krait.c | 16 ++++++++++++++++
-> >   drivers/clk/qcom/clk-krait.h |  1 +
-> >   drivers/clk/qcom/krait-cc.c  |  1 +
-> >   3 files changed, 18 insertions(+)
-> > 
-> > diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
-> > index 6c367ad6506a..4a9b3296c45b 100644
-> > --- a/drivers/clk/qcom/clk-krait.c
-> > +++ b/drivers/clk/qcom/clk-krait.c
-> > @@ -18,13 +18,23 @@
-> >   static DEFINE_SPINLOCK(krait_clock_reg_lock);
-> >   #define LPL_SHIFT	8
-> > +#define SECCLKAGD	BIT(4)
-> > +
-> >   static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
-> >   {
-> >   	unsigned long flags;
-> >   	u32 regval;
-> >   	spin_lock_irqsave(&krait_clock_reg_lock, flags);
-> > +
-> >   	regval = krait_get_l2_indirect_reg(mux->offset);
-> > +
-> > +	/* apq/ipq8064 Errata: disable sec_src clock gating during switch. */
-> > +	if (mux->disable_sec_src_gating) {
-> > +		regval |= SECCLKAGD;
-> > +		krait_set_l2_indirect_reg(mux->offset, regval);
-> > +	}
-> > +
-> >   	regval &= ~(mux->mask << mux->shift);
-> >   	regval |= (sel & mux->mask) << mux->shift;
-> >   	if (mux->lpl) {
-> > @@ -33,6 +43,12 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
-> >   	}
-> >   	krait_set_l2_indirect_reg(mux->offset, regval);
-> > +	/* apq/ipq8064 Errata: re-enabled sec_src clock gating. */
-> > +	if (mux->disable_sec_src_gating) {
-> > +		regval &= ~SECCLKAGD;
-> > +		krait_set_l2_indirect_reg(mux->offset, regval);
-> > +	}
-> > +
-> >   	/* Wait for switch to complete. */
-> >   	mb();
-> >   	udelay(1);
-> > diff --git a/drivers/clk/qcom/clk-krait.h b/drivers/clk/qcom/clk-krait.h
-> > index 9120bd2f5297..f930538c539e 100644
-> > --- a/drivers/clk/qcom/clk-krait.h
-> > +++ b/drivers/clk/qcom/clk-krait.h
-> > @@ -15,6 +15,7 @@ struct krait_mux_clk {
-> >   	u8		safe_sel;
-> >   	u8		old_index;
-> >   	bool		reparent;
-> > +	bool		disable_sec_src_gating;
-> >   	struct clk_hw	hw;
-> >   	struct notifier_block   clk_nb;
-> > diff --git a/drivers/clk/qcom/krait-cc.c b/drivers/clk/qcom/krait-cc.c
-> > index 4d4b657d33c3..0f88bf41ec6e 100644
-> > --- a/drivers/clk/qcom/krait-cc.c
-> > +++ b/drivers/clk/qcom/krait-cc.c
-> > @@ -138,6 +138,7 @@ krait_add_sec_mux(struct device *dev, int id, const char *s,
-> >   	mux->parent_map = sec_mux_map;
-> >   	mux->hw.init = &init;
-> >   	mux->safe_sel = 0;
-> > +	mux->disable_sec_src_gating = true;
-> 
-> This has to be guarded with the of_compatible checks. Otherwise you'd apply
-> this errata to all Krait CPUs, not only apq/ipq8064.
-> 
-> At least this should be limited to krait-cc-v1 with the note that there is
-> no way to distinguish between platforms.
->
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-Mhh can't i check the machine compatible directly to limit this to
-apq/ipq8064?
+As GDSCs are turned on and off some associated clocks are momentarily
+enabled for house keeping purposes. Failure to enable these clocks seems
+to have been silently ignored in the past, but starting in SM8350 this
+failure will prevent the GDSC to turn on.
 
-> >   	init.name = kasprintf(GFP_KERNEL, "krait%s_sec_mux", s);
-> >   	if (!init.name)
-> 
-> 
-> -- 
-> With best wishes
-> Dmitry
+At least on SM8350 this operation will enable the RCG per the
+configuration in CFG_REG. This means that the current model where the
+current configuration is written back to CF_REG immediately after
+parking the RCG doesn't work.
 
+Instead, keep track of the currently requested rate of the clock and
+upon enabling the clock reapply the configuration per the saved rate.
+
+Fixes: 7ef6f11887bd ("clk: qcom: Configure the RCGs to a safe source as needed")
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Vinod Koul <vkoul@kernel.org>
+Tested-by: Steev Klimaszewski <steev@kali.org>
+---
+ drivers/clk/qcom/clk-rcg.h  |  2 ++
+ drivers/clk/qcom/clk-rcg2.c | 32 +++++++++++++++++---------------
+ 2 files changed, 19 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/clk/qcom/clk-rcg.h b/drivers/clk/qcom/clk-rcg.h
+index 00cea508d49e..8b41244b8dbf 100644
+--- a/drivers/clk/qcom/clk-rcg.h
++++ b/drivers/clk/qcom/clk-rcg.h
+@@ -140,6 +140,7 @@ extern const struct clk_ops clk_dyn_rcg_ops;
+  * @freq_tbl: frequency table
+  * @clkr: regmap clock handle
+  * @cfg_off: defines the cfg register offset from the CMD_RCGR + CFG_REG
++ * @current_rate: cached rate for parked RCGs
+  */
+ struct clk_rcg2 {
+ 	u32			cmd_rcgr;
+@@ -150,6 +151,7 @@ struct clk_rcg2 {
+ 	const struct freq_tbl	*freq_tbl;
+ 	struct clk_regmap	clkr;
+ 	u8			cfg_off;
++	unsigned long		current_rate;
+ };
+ 
+ #define to_clk_rcg2(_hw) container_of(to_clk_regmap(_hw), struct clk_rcg2, clkr)
+diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+index f675fd969c4d..81fd3a2db709 100644
+--- a/drivers/clk/qcom/clk-rcg2.c
++++ b/drivers/clk/qcom/clk-rcg2.c
+@@ -167,6 +167,7 @@ clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
+ {
+ 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
+ 	u32 cfg, hid_div, m = 0, n = 0, mode = 0, mask;
++	unsigned long rate;
+ 
+ 	regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
+ 
+@@ -186,7 +187,11 @@ clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
+ 	hid_div = cfg >> CFG_SRC_DIV_SHIFT;
+ 	hid_div &= mask;
+ 
+-	return calc_rate(parent_rate, m, n, mode, hid_div);
++	rate = calc_rate(parent_rate, m, n, mode, hid_div);
++	if (!rcg->current_rate)
++		rcg->current_rate = rate;
++
++	return rate;
+ }
+ 
+ static int _freq_tbl_determine_rate(struct clk_hw *hw, const struct freq_tbl *f,
+@@ -978,12 +983,14 @@ static int clk_rcg2_shared_set_rate(struct clk_hw *hw, unsigned long rate,
+ 	if (!f)
+ 		return -EINVAL;
+ 
++	rcg->current_rate = rate;
++
+ 	/*
+-	 * In case clock is disabled, update the CFG, M, N and D registers
+-	 * and don't hit the update bit of CMD register.
++	 * In the case that the shared RCG is parked, current_rate will be
++	 * applied as the clock is unparked again, so just return here.
+ 	 */
+ 	if (!__clk_is_enabled(hw->clk))
+-		return __clk_rcg2_configure(rcg, f);
++		return 0;
+ 
+ 	return clk_rcg2_shared_force_enable_clear(hw, f);
+ }
+@@ -997,8 +1004,13 @@ static int clk_rcg2_shared_set_rate_and_parent(struct clk_hw *hw,
+ static int clk_rcg2_shared_enable(struct clk_hw *hw)
+ {
+ 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
++	const struct freq_tbl *f = NULL;
+ 	int ret;
+ 
++	f = qcom_find_freq(rcg->freq_tbl, rcg->current_rate);
++	if (!f)
++		return -EINVAL;
++
+ 	/*
+ 	 * Set the update bit because required configuration has already
+ 	 * been written in clk_rcg2_shared_set_rate()
+@@ -1007,7 +1019,7 @@ static int clk_rcg2_shared_enable(struct clk_hw *hw)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = update_config(rcg);
++	ret = clk_rcg2_configure(rcg, f);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1017,13 +1029,6 @@ static int clk_rcg2_shared_enable(struct clk_hw *hw)
+ static void clk_rcg2_shared_disable(struct clk_hw *hw)
+ {
+ 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
+-	u32 cfg;
+-
+-	/*
+-	 * Store current configuration as switching to safe source would clear
+-	 * the SRC and DIV of CFG register
+-	 */
+-	regmap_read(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, &cfg);
+ 
+ 	/*
+ 	 * Park the RCG at a safe configuration - sourced off of safe source.
+@@ -1041,9 +1046,6 @@ static void clk_rcg2_shared_disable(struct clk_hw *hw)
+ 	update_config(rcg);
+ 
+ 	clk_rcg2_clear_force_enable(hw);
+-
+-	/* Write back the stored configuration corresponding to current rate */
+-	regmap_write(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, cfg);
+ }
+ 
+ const struct clk_ops clk_rcg2_shared_ops = {
 -- 
-	Ansuel
+2.32.0
+
