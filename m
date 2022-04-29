@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82A00C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 22:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0BB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 22:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381415AbiD2WOx (ORCPT
+        id S1381425AbiD2WO6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 18:14:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58662 "EHLO
+        Fri, 29 Apr 2022 18:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378776AbiD2WOZ (ORCPT
+        with ESMTP id S1381390AbiD2WO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 18:14:25 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81EFADCAAE
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:11:04 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id x18so12471670wrc.0
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:11:04 -0700 (PDT)
+        Fri, 29 Apr 2022 18:14:27 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271C4DCA97
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:11:07 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id x18so12471822wrc.0
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:11:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZsVi2vdwtOwGHEsduLeBsYH1a8quXWrNoG55MUiyKvU=;
-        b=tXCGQNeZg2fybcmPrV9S+7vmvJ1Mh7kbdzhKPArdbp145NjkFB+0L+s48K95apj0fQ
-         ja/5h34eyQhcsdC/DmBzovrWaxz85kA2QiWjcDVJkrny2oB+Bp9bdyQm+8ZCA3OOmK6a
-         E6uZy/U2Z+YkOgiFTCNzYEOw/isG63QvvEkLf9ry4/0nUDiki7Ith7yJxSD+CVYkje2a
-         1lOXw6JaWPUS5PpEPHLb3Q1oI5Dyo3dq82r4hLUcWOrVPw9zB6OLJS5HaK/MUIG5bg84
-         La0OoNPf70MKIdpVlM7xssvMJE2i/DYWV+P5ca0b9Cpb/bGMPPtD52+erQTVlXDsZvs+
-         iTVA==
+        bh=A9tCTKF5+kXpD3KU1TizjXB5qBDuu3jOgxCWOB2yXXk=;
+        b=KkrSwDChfgM04Mnzz7vJkkecpJiTPHpf1QqkE0Mj9miWts4vhiRQugah7tFTYsgl6w
+         d6p1uI7W3+KAuxhvEmPgw5C5zEapmdklUm43WOP5uZt/JT64DKCV3V/ME/T7/1kVu0xq
+         tfkd+gj5NYYGCQYZHfzf3iaOLxLWjzQWJLkpIoJB+9b0+HFNtVzBpg6e2cTPfZU4Id6n
+         4ko4wzdOGkrn09RjiNsareu8JF0rqpGgIyH2lSkMSYs006IAHlxfM+wdbNvM7bfDL2cu
+         0aV7Eb6jF39sOEMc0bU/tW9J53y3gREVx5mo/i54pTIyjm3dQ5QfsK6/vzIGW5BLXStT
+         0Vag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZsVi2vdwtOwGHEsduLeBsYH1a8quXWrNoG55MUiyKvU=;
-        b=dpqKaNPb4GSQhBNVfyZGHizS3H8EBEXs4wDiSq1B09Chy2fv65doDDdgHNZMwZju1g
-         CZ32rLmg352uQfLGhiEcGvhogT/LwGYE79yRrXGRdNVK6oEPx+EjdZRWQCuZSA4HqkdQ
-         sNRgSK3MOWeCRNB8DurOirttsymDcoc0Vrbnb6Nov+khQRXHdWKczibL2I+GDei2SaQI
-         GKDZU2JLC+wYjHf3jXzK7X/NXeJq9dEHyc0FEr70Nx7U0s/7A2irZvBcb+8twOqCeKgg
-         Jzo/P+EdosiHSefH1xeFZonXYAdXQ7yMJklVFDd0476NiceTYWLJ5YUaT8qJioYQu9QL
-         lYKA==
-X-Gm-Message-State: AOAM530pY0UHMS1CSaLPG3E+mj2tB4oaH+vC8YTtce4Et3cj4V8N6Shs
-        Uy1Vu97r+B6aLnDdgaS5Z4ARBA==
-X-Google-Smtp-Source: ABdhPJxHgZhAsngRwx8HBT2XVVHfhVYRR0+YIUabOWzqOJo3+lk66DkR3a1w/hVQjgiLod2H9fnZng==
-X-Received: by 2002:a5d:6088:0:b0:20a:e81e:c76a with SMTP id w8-20020a5d6088000000b0020ae81ec76amr840209wrt.182.1651270263144;
-        Fri, 29 Apr 2022 15:11:03 -0700 (PDT)
+        bh=A9tCTKF5+kXpD3KU1TizjXB5qBDuu3jOgxCWOB2yXXk=;
+        b=tB4NucP3Eqm4NwT9JfORIrhbukxDKAShF8eOHatyRGf+y2pdRZa6apWX948wfzgVj6
+         zqLLG6NHisFARoDdo/DHe4VtKVAzH8dSnvKN/IcD7HBc14kdC6v+NrFkoFQEkEZKyIM9
+         yzo1MfrCQIh9qaFrQcDpGcgM8qG6u58SunQMgpqBAAaf5VJ5V0wEPVhgWqzBEeq+pGpm
+         OnYKpSF96QhTylLu08iccF2DOfa1s1M5x93vB1FM06vncIzKmsiPJLa7uMwarSYHqqdE
+         2UeKRYvQ9v5MRkVkTwmGJEF79jAzrbbyf+GDzq3JbwQSpPVxY5j4ggMA9oViIB767kyw
+         DBLA==
+X-Gm-Message-State: AOAM533XcW4ApxBl1bLmfUGi52ZjNNTeewohb+N6UZmOYYMoUKlCBSH1
+        AMI1BHjAepTswnNVsKRfM2plhQ==
+X-Google-Smtp-Source: ABdhPJwbYCYtWuSJRc4/Cm77+eXxkqueU+3CnDeUF3GwcvXsoEBv6m3gOIDW0GgmHp45US6/tzzk+g==
+X-Received: by 2002:a5d:448e:0:b0:20a:de9a:a7f3 with SMTP id j14-20020a5d448e000000b0020ade9aa7f3mr837603wrq.129.1651270265715;
+        Fri, 29 Apr 2022 15:11:05 -0700 (PDT)
 Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
-        by smtp.gmail.com with ESMTPSA id q7-20020a1cf307000000b003942a244ebfsm291985wmq.4.2022.04.29.15.11.01
+        by smtp.gmail.com with ESMTPSA id q7-20020a1cf307000000b003942a244ebfsm291985wmq.4.2022.04.29.15.11.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 15:11:02 -0700 (PDT)
+        Fri, 29 Apr 2022 15:11:05 -0700 (PDT)
 From:   Caleb Connolly <caleb.connolly@linaro.org>
 To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -62,9 +62,9 @@ To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
         linux-arm-msm@vger.kernel.org
 Cc:     Jami Kettunen <jami.kettunen@somainline.org>,
         Sumit Semwal <sumit.semwal@linaro.org>
-Subject: [PATCH v14 07/10] arm64: dts: qcom: sdm845-oneplus: enable rradc
-Date:   Fri, 29 Apr 2022 23:09:02 +0100
-Message-Id: <20220429220904.137297-8-caleb.connolly@linaro.org>
+Subject: [PATCH v14 09/10] arm64: dts: qcom: sdm845-xiaomi-beryllium: enable rradc
+Date:   Fri, 29 Apr 2022 23:09:04 +0100
+Message-Id: <20220429220904.137297-10-caleb.connolly@linaro.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220429220904.137297-1-caleb.connolly@linaro.org>
 References: <20220429220904.137297-1-caleb.connolly@linaro.org>
@@ -74,18 +74,18 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable the RRADC for the OnePlus 6.
+Enable the PMI8998 RRADC.
 
 Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi | 4 ++++
+ arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi b/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi
-index 07b729f9fec5..9c91ddc766af 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi
-@@ -461,6 +461,10 @@ pinconf {
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
+index 367389526b41..b3b6aa4e0fa3 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
+@@ -312,6 +312,10 @@ resin {
  	};
  };
  
@@ -93,9 +93,9 @@ index 07b729f9fec5..9c91ddc766af 100644
 +	status = "okay";
 +};
 +
- &qupv3_id_1 {
- 	status = "okay";
- };
+ /* QUAT I2S Uses 1 I2S SD Line for audio on TAS2559/60 amplifiers */
+ &q6afedai {
+ 	qi2s@22 {
 -- 
 2.36.0
 
