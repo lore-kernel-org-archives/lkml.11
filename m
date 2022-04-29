@@ -2,230 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 22:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0721DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 22:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381292AbiD2WLK (ORCPT
+        id S1381294AbiD2WMM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 18:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47528 "EHLO
+        Fri, 29 Apr 2022 18:12:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381167AbiD2WK7 (ORCPT
+        with ESMTP id S1359048AbiD2WMI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 18:10:59 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA23DC9A2;
-        Fri, 29 Apr 2022 15:07:29 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:54790)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nkYUG-00AIJQ-Lr; Fri, 29 Apr 2022 15:49:16 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:36464 helo=localhost.localdomain)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nkYUF-007RIp-GC; Fri, 29 Apr 2022 15:49:16 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     rjw@rjwysocki.net, Oleg Nesterov <oleg@redhat.com>,
-        mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
-        tj@kernel.org, linux-pm@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Date:   Fri, 29 Apr 2022 16:48:32 -0500
-Message-Id: <20220429214837.386518-7-ebiederm@xmission.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
-References: <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
+        Fri, 29 Apr 2022 18:12:08 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C94B0DBD3A
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:08:47 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id cx11-20020a17090afd8b00b001d9fe5965b3so9728309pjb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:08:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D54R3v8qrC79ryl/mhxkEgeY06O/JiHOgAyPmualCaw=;
+        b=eEFNo4YjRj1yxsE6ddjKrurDLQUQWzfvaBRiV+FKS0XAHv1dHnzd6VgWUO3DxFENIn
+         ecot4bJzHoc87F5MyD2wn1W7rBOmLRYJ4rs8dKMLzHoW+ofuNmuSjmeE5Ea6oXudQeWJ
+         h3d33+9Rj8SH0Y/3a7HK2ZkPHJfwyDsUsHdju+SLgwxvO2tqZp0fA5MOT13IhEZrRhkF
+         KR8uUFULbq5HirjjKiAiZD86ns3nJwjJFYmi9L9J6KOkSZxyRNHzLs8bUhzqQENpgSHY
+         bJxI3ilUxtiRMRbmlwQ+k2dUGISAlvD1o/gkWitVHlBf42fzMx8yExdr/4dTYUlLSlu2
+         Sveg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D54R3v8qrC79ryl/mhxkEgeY06O/JiHOgAyPmualCaw=;
+        b=nwuQVmCBXhofOyCBOSmzsL3KmHR8bWGsYMFafihBrlFSNpMzBxNtTEUSGIAyXQkJDF
+         q1IGXgniNgQ9Tv6gsuHyB30t37rMrLJJCzEFS9xCr0dQ9gCKSb4Atu9ySA5dAmXap6Wj
+         haEhJq80eiESJ1dw8ux9+BChxkKRhuxS046x4MwJkkjTwDw6CqI9y3lnX2iWlQAWOJOB
+         KsqyykD5/VaoNjF6pyQLtzCqyQ366guY5W6n6FIcrMFnWxJ6ilYYKOW7hrAXMihwK0bE
+         IM17sLyCmvcl09wFw3FkTOqSTnajLv4mlrgohWWRFMDXWPGP9hRV48IXyPn5KmdxWfYU
+         Xm3A==
+X-Gm-Message-State: AOAM532tGx/qX6gaNQpc7DQXK0qUYuBmFEmqv/JaiHQydUgQfmKgJEmU
+        ngFuWIp2QgMwc2acfKiu9I/zMA==
+X-Google-Smtp-Source: ABdhPJyBs4Fl1lrLv4rmB0L8SjqTRG5Dp5kXtgSplWDdGL3d2LOejNweZTiyOnlEK34kOyXaLAKF8g==
+X-Received: by 2002:a17:90a:e7c7:b0:1d9:6a37:9f5e with SMTP id kb7-20020a17090ae7c700b001d96a379f5emr1227113pjb.156.1651270127280;
+        Fri, 29 Apr 2022 15:08:47 -0700 (PDT)
+Received: from localhost.localdomain ([223.233.64.97])
+        by smtp.gmail.com with ESMTPSA id n21-20020aa78a55000000b0050dc76281c2sm170020pfa.156.2022.04.29.15.08.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 15:08:47 -0700 (PDT)
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+To:     linux-mmc@vger.kernel.org
+Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
+        agross@kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        robh+dt@kernel.org, bjorn.andersson@linaro.org,
+        ulf.hansson@linaro.org, robh@kernel.org
+Subject: [PATCH 0/4] mmc: sdhci-msm: Convert dt-binding to yaml & add support for sm8150
+Date:   Sat, 30 Apr 2022 03:38:29 +0530
+Message-Id: <20220429220833.873672-1-bhupesh.sharma@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-XM-SPF: eid=1nkYUF-007RIp-GC;;;mid=<20220429214837.386518-7-ebiederm@xmission.com>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+Z8HlV3UkGfoy7F/rNg/M1zhIgnTw75z0=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH v2 07/12] ptrace: Don't change __state
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Stop playing with tsk->__state to remove TASK_WAKEKILL while a ptrace
-command is executing.
+This patchset converts the Qualcomm 'sdhci-msm' device-tree binding
+to yaml format and also adds support for sm8150 Qualcomm Soc.
 
-Instead TASK_WAKEKILL from the definition of TASK_TRACED, and
-implemention a new jobctl flag TASK_PTRACE_FROZEN.  This new This new
-flag is set in jobctl_freeze_task and cleared when ptrace_stop is
-awoken or in jobctl_unfreeze_task (when ptrace_stop remains asleep).
+This patchset is dependent on the qcom dts fixes sent via a separate
+patchset (see [1]), to make sure that the 'make dtbs_check' and
+'make dt_binding_check' work well and Rob's bot is happy as well.
 
-In singal_wake_up add __TASK_TRACED to state along with TASK_WAKEKILL
-when it is indicated a fatal signal is pending.  Skip adding
-__TASK_TRACED when TASK_PTRACE_FROZEN is not set.  This has the same
-effect as changing TASK_TRACED to __TASK_TRACED as all of the wake_ups
-that use TASK_KILLABLE go through signal_wake_up.
+[1]. https://lore.kernel.org/linux-arm-msm/20220429214420.854335-1-bhupesh.sharma@linaro.org/
 
-Don't set TASK_TRACED if fatal_signal_pending so that the code
-continues not to sleep if there was a pending fatal signal before
-ptrace_stop is called.  With TASK_WAKEKILL no longer present in
-TASK_TRACED signal_pending_state will no longer prevent ptrace_stop
-from sleeping if there is a pending fatal signal.
+Cc: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-Previously the __state value of __TASK_TRACED was changed to
-TASK_RUNNING when woken up or back to TASK_TRACED when the code was
-left in ptrace_stop.  Now when woken up ptrace_stop now clears
-JOBCTL_PTRACE_FROZEN and when left sleeping ptrace_unfreezed_traced
-clears JOBCTL_PTRACE_FROZEN.
+Bhupesh Sharma (4):
+  dt-bindings: mmc/sdhci-msm: Convert bindings to yaml
+  mmc: host/sdhci-msm: Add SoC specific compatibles
+  dt-bindings: mmc: sdhci-msm: Add compatible string for sm8150
+  mmc: host/sdhci-msm: Add compatible string check for sm8150
 
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
----
- include/linux/sched.h        |  2 +-
- include/linux/sched/jobctl.h |  2 ++
- include/linux/sched/signal.h |  8 +++++++-
- kernel/ptrace.c              | 21 ++++++++-------------
- kernel/signal.c              |  9 +++------
- 5 files changed, 21 insertions(+), 21 deletions(-)
+ .../devicetree/bindings/mmc/sdhci-msm.txt     | 123 -----------
+ .../devicetree/bindings/mmc/sdhci-msm.yaml    | 193 ++++++++++++++++++
+ drivers/mmc/host/sdhci-msm.c                  |  24 +++
+ 3 files changed, 217 insertions(+), 123 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/mmc/sdhci-msm.txt
+ create mode 100644 Documentation/devicetree/bindings/mmc/sdhci-msm.yaml
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index d5e3c00b74e1..610f2fdb1e2c 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -103,7 +103,7 @@ struct task_group;
- /* Convenience macros for the sake of set_current_state: */
- #define TASK_KILLABLE			(TASK_WAKEKILL | TASK_UNINTERRUPTIBLE)
- #define TASK_STOPPED			(TASK_WAKEKILL | __TASK_STOPPED)
--#define TASK_TRACED			(TASK_WAKEKILL | __TASK_TRACED)
-+#define TASK_TRACED			__TASK_TRACED
- 
- #define TASK_IDLE			(TASK_UNINTERRUPTIBLE | TASK_NOLOAD)
- 
-diff --git a/include/linux/sched/jobctl.h b/include/linux/sched/jobctl.h
-index fa067de9f1a9..d556c3425963 100644
---- a/include/linux/sched/jobctl.h
-+++ b/include/linux/sched/jobctl.h
-@@ -19,6 +19,7 @@ struct task_struct;
- #define JOBCTL_TRAPPING_BIT	21	/* switching to TRACED */
- #define JOBCTL_LISTENING_BIT	22	/* ptracer is listening for events */
- #define JOBCTL_TRAP_FREEZE_BIT	23	/* trap for cgroup freezer */
-+#define JOBCTL_PTRACE_FROZEN_BIT	24	/* frozen for ptrace */
- 
- #define JOBCTL_STOP_DEQUEUED	(1UL << JOBCTL_STOP_DEQUEUED_BIT)
- #define JOBCTL_STOP_PENDING	(1UL << JOBCTL_STOP_PENDING_BIT)
-@@ -28,6 +29,7 @@ struct task_struct;
- #define JOBCTL_TRAPPING		(1UL << JOBCTL_TRAPPING_BIT)
- #define JOBCTL_LISTENING	(1UL << JOBCTL_LISTENING_BIT)
- #define JOBCTL_TRAP_FREEZE	(1UL << JOBCTL_TRAP_FREEZE_BIT)
-+#define JOBCTL_PTRACE_FROZEN	(1UL << JOBCTL_PTRACE_FROZEN_BIT)
- 
- #define JOBCTL_TRAP_MASK	(JOBCTL_TRAP_STOP | JOBCTL_TRAP_NOTIFY)
- #define JOBCTL_PENDING_MASK	(JOBCTL_STOP_PENDING | JOBCTL_TRAP_MASK)
-diff --git a/include/linux/sched/signal.h b/include/linux/sched/signal.h
-index 3c8b34876744..35af34eeee9e 100644
---- a/include/linux/sched/signal.h
-+++ b/include/linux/sched/signal.h
-@@ -437,7 +437,13 @@ extern void signal_wake_up_state(struct task_struct *t, unsigned int state);
- 
- static inline void signal_wake_up(struct task_struct *t, bool resume)
- {
--	signal_wake_up_state(t, resume ? TASK_WAKEKILL : 0);
-+	unsigned int state = 0;
-+	if (resume) {
-+		state = TASK_WAKEKILL;
-+		if (!(t->jobctl & JOBCTL_PTRACE_FROZEN))
-+			state |= __TASK_TRACED;
-+	}
-+	signal_wake_up_state(t, state);
- }
- static inline void ptrace_signal_wake_up(struct task_struct *t, bool resume)
- {
-diff --git a/kernel/ptrace.c b/kernel/ptrace.c
-index 43da5764b6f3..644eb7439d01 100644
---- a/kernel/ptrace.c
-+++ b/kernel/ptrace.c
-@@ -197,7 +197,7 @@ static bool ptrace_freeze_traced(struct task_struct *task)
- 	spin_lock_irq(&task->sighand->siglock);
- 	if (task_is_traced(task) && !looks_like_a_spurious_pid(task) &&
- 	    !__fatal_signal_pending(task)) {
--		WRITE_ONCE(task->__state, __TASK_TRACED);
-+		task->jobctl |= JOBCTL_PTRACE_FROZEN;
- 		ret = true;
- 	}
- 	spin_unlock_irq(&task->sighand->siglock);
-@@ -207,23 +207,19 @@ static bool ptrace_freeze_traced(struct task_struct *task)
- 
- static void ptrace_unfreeze_traced(struct task_struct *task)
- {
--	if (READ_ONCE(task->__state) != __TASK_TRACED)
--		return;
--
--	WARN_ON(!task->ptrace || task->parent != current);
-+	unsigned long flags;
- 
- 	/*
--	 * PTRACE_LISTEN can allow ptrace_trap_notify to wake us up remotely.
--	 * Recheck state under the lock to close this race.
-+	 * The child may be awake and may have cleared
-+	 * JOBCTL_PTRACE_FROZEN (see ptrace_resume).  The child will
-+	 * not set JOBCTL_PTRACE_FROZEN or enter __TASK_TRACED anew.
- 	 */
--	spin_lock_irq(&task->sighand->siglock);
--	if (READ_ONCE(task->__state) == __TASK_TRACED) {
-+	if (lock_task_sighand(task, &flags)) {
-+		task->jobctl &= ~JOBCTL_PTRACE_FROZEN;
- 		if (__fatal_signal_pending(task))
- 			wake_up_state(task, __TASK_TRACED);
--		else
--			WRITE_ONCE(task->__state, TASK_TRACED);
-+		unlock_task_sighand(task, &flags);
- 	}
--	spin_unlock_irq(&task->sighand->siglock);
- }
- 
- /**
-@@ -256,7 +252,6 @@ static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
- 	 */
- 	read_lock(&tasklist_lock);
- 	if (child->ptrace && child->parent == current) {
--		WARN_ON(READ_ONCE(child->__state) == __TASK_TRACED);
- 		/*
- 		 * child->sighand can't be NULL, release_task()
- 		 * does ptrace_unlink() before __exit_signal().
-diff --git a/kernel/signal.c b/kernel/signal.c
-index 3fd2ce133387..5cf268982a7e 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -2209,11 +2209,8 @@ static int ptrace_stop(int exit_code, int why, int clear_code,
- 		spin_lock_irq(&current->sighand->siglock);
- 	}
- 
--	/*
--	 * schedule() will not sleep if there is a pending signal that
--	 * can awaken the task.
--	 */
--	set_special_state(TASK_TRACED);
-+	if (!__fatal_signal_pending(current))
-+		set_special_state(TASK_TRACED);
- 
- 	/*
- 	 * We're committing to trapping.  TRACED should be visible before
-@@ -2321,7 +2318,7 @@ static int ptrace_stop(int exit_code, int why, int clear_code,
- 	current->exit_code = 0;
- 
- 	/* LISTENING can be set only during STOP traps, clear it */
--	current->jobctl &= ~JOBCTL_LISTENING;
-+	current->jobctl &= ~(JOBCTL_LISTENING | JOBCTL_PTRACE_FROZEN);
- 
- 	/*
- 	 * Queued signals ignored us while we were stopped for tracing.
 -- 
-2.35.3
+2.35.1
 
