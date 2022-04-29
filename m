@@ -2,79 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82A44C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 05:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F083C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 05:41:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238283AbiD2FoP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 01:44:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33368 "EHLO
+        id S1354172AbiD2Fow (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 01:44:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351285AbiD2Fnz (ORCPT
+        with ESMTP id S1354163AbiD2Fop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 01:43:55 -0400
-Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B202443C5;
-        Thu, 28 Apr 2022 22:40:35 -0700 (PDT)
-X-UUID: c3c02fb9c0414ba5a3ce218f4eeae102-20220429
-X-UUID: c3c02fb9c0414ba5a3ce218f4eeae102-20220429
-Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
-        (envelope-from <jianghaoran@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 1245802876; Fri, 29 Apr 2022 13:38:55 +0800
-X-ns-mid: postfix-626B7A4A-1199754140
-Received: from localhost.localdomain (unknown [172.30.60.211])
-        by cs2c.com.cn (NSMail) with ESMTPSA id 13F013844000;
-        Fri, 29 Apr 2022 05:40:26 +0000 (UTC)
-From:   jianghaoran <jianghaoran@kylinos.cn>
-To:     davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ipv6: Don't send rs packets to the interface of ARPHRD_TUNNEL
-Date:   Fri, 29 Apr 2022 13:38:02 +0800
-Message-Id: <20220429053802.246681-1-jianghaoran@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 29 Apr 2022 01:44:45 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 782F754BEE
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 22:41:28 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id x1-20020a056e020f0100b002c98fce9c13so3040956ilj.3
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 22:41:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=x3MTACHKJZ3L2DlqgxVgqLiRoxwCwaVIdsT6U6RxAqw=;
+        b=hWaXmT0U6KV037CzJZ1nWIrLvTxxazKfP4WEWHaGF7ofJkRZelp5LYuvLI+DCBM+Xr
+         /nvRXsW9LbeCTDhKTpSAIjVPXwGRZ/+Hod7yc+MgUQPY/7IGKVFvFWFSMm2ltjn3e0hp
+         j1Q4RvBDKONACgfPUAqCmqRg06pQTA1cx72CkcRY6wNXeowgf0nA/LI/S+RgEerR24a9
+         U7iDVPwMZwZuYU5s2fPHPODCM/nynU/fK2u3oN/2fHEyHmwMAD7YlL3yL9cI45Tiq2a1
+         a1Eh3Nv9Z5jqsyGuIe0QBq5/SKXyP1JkwBBNf1KzGipYPV0WdaMDC/urFraQrirdJBE0
+         KjLA==
+X-Gm-Message-State: AOAM533UojVpD0hwtI3PcTIJTzDLb6RpZdd4Gyp8qa+PNhv29rLzhC0S
+        tPMUVohoiJH2pp7rqY81X6cffDPB+3K5DgokbRMEiaeGngJo
+X-Google-Smtp-Source: ABdhPJxoqfI1Tq8QAcjTxAeDa4Kz8N2fm4VNksuraSBI4GnBO4AQcsyK8aYn4jGnceWg0lesom9HGtbbwxSINfmi9aRaBWdWpxju
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a6b:4416:0:b0:657:b740:a016 with SMTP id
+ r22-20020a6b4416000000b00657b740a016mr4039618ioa.190.1651210887858; Thu, 28
+ Apr 2022 22:41:27 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 22:41:27 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006b8dad05ddc47e92@google.com>
+Subject: [syzbot] WARNING: suspicious RCU usage in mas_walk
+From:   syzbot <syzbot+2ee18845e89ae76342c5@syzkaller.appspotmail.com>
+To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ARPHRD_TUNNEL interface can't process rs packets
-and will generate TX errors
+Hello,
 
-ex:
-ip tunnel add ethn mode ipip local 192.168.1.1 remote 192.168.1.2
-ifconfig ethn x.x.x.x
+syzbot found the following issue on:
 
-ethn: flags=209<UP,POINTOPOINT,RUNNING,NOARP>  mtu 1480
-	inet x.x.x.x  netmask 255.255.255.255  destination x.x.x.x
-	inet6 fe80::5efe:ac1e:3cdb  prefixlen 64  scopeid 0x20<link>
-	tunnel   txqueuelen 1000  (IPIP Tunnel)
-	RX packets 0  bytes 0 (0.0 B)
-	RX errors 0  dropped 0  overruns 0  frame 0
-	TX packets 0  bytes 0 (0.0 B)
-	TX errors 3  dropped 0 overruns 0  carrier 0  collisions 0
+HEAD commit:    bdc61aad77fa Add linux-next specific files for 20220428
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=15bb3dc2f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=87767e89da13a759
+dashboard link: https://syzkaller.appspot.com/bug?extid=2ee18845e89ae76342c5
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1118a5f6f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=125bd212f00000
 
-Signed-off-by: jianghaoran <jianghaoran@kylinos.cn>
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+2ee18845e89ae76342c5@syzkaller.appspotmail.com
+
+=============================
+WARNING: suspicious RCU usage
+5.18.0-rc4-next-20220428-syzkaller #0 Not tainted
+-----------------------------
+lib/maple_tree.c:844 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+5 locks held by syz-executor842/4211:
+ #0: ffff88807f0ae460 (sb_writers#8){.+.+}-{0:0}, at: ksys_write+0x127/0x250 fs/read_write.c:644
+ #1: ffff88801df04488 (&of->mutex){+.+.}-{3:3}, at: kernfs_fop_write_iter+0x28c/0x610 fs/kernfs/file.c:282
+ #2: ffff8881453b9a00 (kn->active#106){.+.+}-{0:0}, at: kernfs_fop_write_iter+0x2b0/0x610 fs/kernfs/file.c:283
+ #3: ffffffff8bedc528 (ksm_thread_mutex){+.+.}-{3:3}, at: run_store+0xd1/0xa60 mm/ksm.c:2917
+ #4: ffff88801e5e8fd8 (&mm->mmap_lock#2){++++}-{3:3}, at: mmap_read_lock include/linux/mmap_lock.h:117 [inline]
+ #4: ffff88801e5e8fd8 (&mm->mmap_lock#2){++++}-{3:3}, at: unmerge_and_remove_all_rmap_items mm/ksm.c:989 [inline]
+ #4: ffff88801e5e8fd8 (&mm->mmap_lock#2){++++}-{3:3}, at: run_store+0x2a5/0xa60 mm/ksm.c:2923
+
+stack backtrace:
+CPU: 0 PID: 4211 Comm: syz-executor842 Not tainted 5.18.0-rc4-next-20220428-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ mas_root lib/maple_tree.c:844 [inline]
+ mas_start lib/maple_tree.c:1331 [inline]
+ mas_state_walk lib/maple_tree.c:3745 [inline]
+ mas_walk+0x45e/0x670 lib/maple_tree.c:4923
+ mas_find+0x442/0xc90 lib/maple_tree.c:5861
+ vma_find include/linux/mm.h:664 [inline]
+ vma_next include/linux/mm.h:673 [inline]
+ unmerge_and_remove_all_rmap_items mm/ksm.c:990 [inline]
+ run_store+0x2ed/0xa60 mm/ksm.c:2923
+ kobj_attr_store+0x50/0x80 lib/kobject.c:824
+ sysfs_kf_write+0x110/0x160 fs/sysfs/file.c:136
+ kernfs_fop_write_iter+0x3f8/0x610 fs/kernfs/file.c:291
+ call_write_iter include/linux/fs.h:2059 [inline]
+ new_sync_write+0x38a/0x560 fs/read_write.c:504
+ vfs_write+0x7c0/0xac0 fs/read_write.c:591
+ ksys_write+0x127/0x250 fs/read_write.c:644
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f6a91306e79
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffddeb8cde8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 00000000000f4240 RCX: 00007f6a91306e79
+RDX: 0000000000000002 RSI: 0000000020000000 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+R10: 0000000020117000 R11: 0000000000000246 R12: 000000000000cf84
+R13: 00007ffddeb8cdfc R14: 00007ffddeb8ce10 R15: 00007ffddeb8ce00
+ </TASK>
+
+
 ---
- net/ipv6/addrconf.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index b22504176588..c1039346a5de 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -4201,7 +4201,8 @@ static void addrconf_dad_completed(struct inet6_ifaddr *ifp, bool bump_id,
- 	send_rs = send_mld &&
- 		  ipv6_accept_ra(ifp->idev) &&
- 		  ifp->idev->cnf.rtr_solicits != 0 &&
--		  (dev->flags&IFF_LOOPBACK) == 0;
-+		  (dev->flags & IFF_LOOPBACK) == 0 &&
-+		  (dev->type != ARPHRD_TUNNEL);
- 	read_unlock_bh(&ifp->idev->lock);
- 
- 	/* While dad is in progress mld report's source address is in6_addrany.
--- 
-2.25.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
