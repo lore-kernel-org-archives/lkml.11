@@ -2,154 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB48C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:22:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE170C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356471AbiD2JZQ (ORCPT
+        id S1356474AbiD2JZp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 05:25:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45730 "EHLO
+        Fri, 29 Apr 2022 05:25:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238781AbiD2JZO (ORCPT
+        with ESMTP id S238781AbiD2JZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 05:25:14 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8241AC44E5;
-        Fri, 29 Apr 2022 02:21:55 -0700 (PDT)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23T8g2ou016650;
-        Fri, 29 Apr 2022 09:21:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to; s=pp1;
- bh=XGz74g6r7bfay3TJtUAylO5tzHA8LxeOJ7nK0ZubZ+I=;
- b=orCpsqrRDRP49eNUArYYxr2MXzRF6K/BWxOsYpnLw+0Mk3n7ytaxHKcU2kx0SabfOMNy
- bbnaNafaNQZUHIErkrUBz8pTqCUEx4LUGA9ShfkbSNK0rAzo7Bd9FuFT7Gm8F7i5GWkP
- 1rv+BlI5+7OHzoNDH/BV0XxOyC9EPTYYep+dZIyojkOeQ3D7uoFBpS+0hnYB7JFv7hIJ
- gMbRevdO7z0TvXi4sia4rh6qGLtfNOCOJ8uUuyyVRPEN1lcgBQ1aDpRgfg0Gfb9lbjIq
- l2Et3WSXur7e8IwhZWnmPJsQEW97J1CD2yIp5XNPoHmm48xwo4IQpvRhDPtk0CSpasRi Gw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fr27gunju-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 09:21:40 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23T9CW4Z012831;
-        Fri, 29 Apr 2022 09:21:39 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fr27gunjc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 09:21:39 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23T9DWw2023982;
-        Fri, 29 Apr 2022 09:21:37 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3fm8qj8vm8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 09:21:37 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23T9LZsn38600970
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 29 Apr 2022 09:21:35 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 358684C040;
-        Fri, 29 Apr 2022 09:21:35 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C811A4C046;
-        Fri, 29 Apr 2022 09:21:29 +0000 (GMT)
-Received: from smtpclient.apple (unknown [9.211.66.49])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Fri, 29 Apr 2022 09:21:29 +0000 (GMT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: [PATCH 1/2] perf bench: Fix two numa NDEBUG warnings
-From:   Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-In-Reply-To: <20220428202912.1056444-1-irogers@google.com>
-Date:   Fri, 29 Apr 2022 14:51:25 +0530
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <FDBE8FEC-CC4B-43C2-B2AA-3ECCFF95A98E@linux.vnet.ibm.com>
-References: <20220428202912.1056444-1-irogers@google.com>
-To:     Ian Rogers <irogers@google.com>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 76Ze89AhoPN_sVKInyOkuaQ5lRaLzxjG
-X-Proofpoint-GUID: vlndh-ewUzu4tkp6VCirMT1Pf2DSTL1z
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-29_05,2022-04-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- clxscore=1011 adultscore=0 priorityscore=1501 mlxlogscore=999
- suspectscore=0 malwarescore=0 spamscore=0 phishscore=0 bulkscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204290052
+        Fri, 29 Apr 2022 05:25:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA01B6E6C;
+        Fri, 29 Apr 2022 02:22:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57159B833A3;
+        Fri, 29 Apr 2022 09:22:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C917C385A4;
+        Fri, 29 Apr 2022 09:22:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651224144;
+        bh=DWY3tcFSxZ1I9wg1umYsP1PNmy2rL31Mt0gramjBMfU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PUWyyh4N+TkgN5eLLeLHPh1Jo5pt+8Ae9Vp221wrO4SA8QJGgvQ1Sm9jOTzDJMmAt
+         ozKtDroXLk4T/iV4pekBzKOBRO/yjVbWbMwdnUB/aOw0ZEGXUwaG5niS7SGb1SnWcl
+         qavvgEX82BZwOjEGNQe7SPhal6JYMYjVrvfBpdbs=
+Date:   Fri, 29 Apr 2022 11:22:21 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Pavel Machek <pavel@denx.de>
+Cc:     iwamatsu@nigauri.org, dinguyen@kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 4.19 00/53] 4.19.240-rc1 review [net: ethernet: stmmac:
+ fix altr_tse_pcs function when using a]
+Message-ID: <YmuuTb7Cv/JExahQ@kroah.com>
+References: <20220426081735.651926456@linuxfoundation.org>
+ <20220426200000.GB9427@duo.ucw.cz>
+ <YmkrZ5t2cb1JSHR8@kroah.com>
+ <20220429074341.GB1423@amd>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220429074341.GB1423@amd>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Apr 29, 2022 at 09:43:41AM +0200, Pavel Machek wrote:
+> Hi!
+> 
+> > > > This is the start of the stable review cycle for the 4.19.240 release.
+> > > > There are 53 patches in this series, all will be posted as a response
+> > > > to this one.  If anyone has any issues with these being applied, please
+> > > > let me know.
+> ...
+> > > I still see problems on socfpga:
+> > > 
+> > > [    1.227759]  mmcblk0: p1 p2 p3
+> > > [    1.269825] Micrel KSZ9031 Gigabit PHY stmmac-0:01: attached PHY driver [Micrel KSZ9031 Gigabit PHY] (mii_bus:phy_addr=stmmac-0:01, irq=POLL)
+> > > [    1.284600] socfpga-dwmac ff702000.ethernet eth0: No Safety Features support found
+> > > [    1.292374] socfpga-dwmac ff702000.ethernet eth0: registered PTP clock
+> > > [    1.299247] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+> > > [    5.444552] Unable to handle kernel NULL pointer dereference at virtual address 00000000
+> ...
+> > > [    5.478679] Workqueue: events_power_efficient phy_state_machine
+> > > [    5.484579] PC is at socfpga_dwmac_fix_mac_speed+0x3c/0xbc
+> > > [    5.490044] LR is at arm_heavy_mb+0x2c/0x48
+> 
+> > > https://lava.ciplatform.org/scheduler/job/669257
+> > > https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/jobs/2377419824
+> > 
+> > Can you run git bisect?
+> 
+> Not a bisect, but we guessed e2423aa174e6 was responsible, and tested
+> it boots with that patch reverted.
+> 
+> Best regards,
+> 								Pavel
+> 
+> commit e2423aa174e6c3e9805e96db778245ba73cdd88c
+> 
+>     net: ethernet: stmmac: fix altr_tse_pcs function when using a
+>     fixed-link
+> 
+>     [ Upstream commit a6aaa00324240967272b451bfa772547bd576ee6 ]
+>     
 
+Thanks, now reverted from 4.19.y, 4.14.y, and 4.9.y
 
-> On 29-Apr-2022, at 1:59 AM, Ian Rogers <irogers@google.com> wrote:
->=20
-> BUG_ON is a no-op if NDEBUG is defined, otherwise it is an assert.
-> Compiling with NDEBUG yields:
->=20
-> bench/numa.c: In function =E2=80=98bind_to_cpu=E2=80=99:
-> bench/numa.c:314:1: error: control reaches end of non-void function =
-[-Werror=3Dreturn-type]
->  314 | }
->      | ^
-> bench/numa.c: In function =E2=80=98bind_to_node=E2=80=99:
-> bench/numa.c:367:1: error: control reaches end of non-void function =
-[-Werror=3Dreturn-type]
->  367 | }
->      | ^
->=20
-> Add return statements to cover this case.
-
-Looks fine to me
-
-Reviewed-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-
-Thanks
-Athira
->=20
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
-> tools/perf/bench/numa.c | 2 ++
-> 1 file changed, 2 insertions(+)
->=20
-> diff --git a/tools/perf/bench/numa.c b/tools/perf/bench/numa.c
-> index 44e1f8a44087..d5289fa58a4f 100644
-> --- a/tools/perf/bench/numa.c
-> +++ b/tools/perf/bench/numa.c
-> @@ -311,6 +311,7 @@ static cpu_set_t *bind_to_cpu(int target_cpu)
->=20
-> 	/* BUG_ON due to failure in allocation of orig_mask/mask */
-> 	BUG_ON(-1);
-> +	return NULL;
-> }
->=20
-> static cpu_set_t *bind_to_node(int target_node)
-> @@ -364,6 +365,7 @@ static cpu_set_t *bind_to_node(int target_node)
->=20
-> 	/* BUG_ON due to failure in allocation of orig_mask/mask */
-> 	BUG_ON(-1);
-> +	return NULL;
-> }
->=20
-> static void bind_to_cpumask(cpu_set_t *mask)
-> --=20
-> 2.36.0.464.gb9c8b46e94-goog
->=20
-
+greg k-h
