@@ -2,135 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66FD9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1279C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:42:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357619AbiD2KpT (ORCPT
+        id S1357709AbiD2Kp3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:45:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57356 "EHLO
+        Fri, 29 Apr 2022 06:45:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357586AbiD2KpF (ORCPT
+        with ESMTP id S1357662AbiD2KpF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Apr 2022 06:45:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06C4C6ED7;
-        Fri, 29 Apr 2022 03:41:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D2D8B8344F;
-        Fri, 29 Apr 2022 10:41:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D888C385A4;
-        Fri, 29 Apr 2022 10:41:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651228901;
-        bh=bpq7XH8KqcoY0LbK7M7v1M575hE7glHNC4hi5Cns6o4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lkAJD3OaZHLrkFi4wpenvDt0ZNWQ9m/EqhEZrnlVxAQFV2g6506G7IgSLntMlcgRV
-         Ag4njXunGd5Bcao4VZKHnt/HyhMxfdWSBolp2T4h19MvOUz2w1RMBEZSoYQU/vZ+Ux
-         8PH94khyINOYTPzSCAZ/v18TcG63uN1IOyVm1jSY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>, X86 ML <x86@kernel.org>,
-        Daniel Xu <dxu@dxuuu.xyz>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Abhishek Sagar <sagar.abhishek@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Paul McKenney <paulmck@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>
-Subject: [PATCH 4.19 10/12] ia64: kprobes: Fix to pass correct trampoline address to the handler
-Date:   Fri, 29 Apr 2022 12:41:27 +0200
-Message-Id: <20220429104048.762619339@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220429104048.459089941@linuxfoundation.org>
-References: <20220429104048.459089941@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E227C6EEE;
+        Fri, 29 Apr 2022 03:41:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1651228904; x=1682764904;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=yQ9QYB2JjFXnMYslA5NperKokygkNZy0pzOs2BM201E=;
+  b=X02XlPlA5FCJoKGNVJOhCr58uNih96SMTDhXir9hi+0guSpq4MEh5eiJ
+   bYisYvETpO2vfAZvd8AxwTw2JDzwnk1pYxGB72Y5ZmyNdhSqelVy7+L/T
+   uVqX5njEATuW7052xR433RKcGTnn5FirOPe1dNFmaAhyYRbvfQV6rHVjn
+   +QGgSJ/1LtIJPS5N7IvDcJCa6+ubytJCskr4ISEniYuXVEZEP5ytx0ggy
+   RsosKxIDkA2c8BlcXssjOxpebr0h+KLgJx0il5/d7H7uJCKPoA1xHxq4Z
+   OKM6vk1BAvTGNi70ZH9O4ozlh5cmT4TXK+CUnshsCSUpTFQNEr0CJ2AlR
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
+   d="scan'208";a="171406907"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Apr 2022 03:41:43 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 29 Apr 2022 03:41:43 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 29 Apr 2022 03:41:41 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>
+CC:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Cyril Jean <Cyril.Jean@microchip.com>,
+        <devicetree@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, "Arnd Bergmann" <arnd@arndb.de>
+Subject: [PATCH v1 6/8] dt-bindings: vendor-prefixes: add Sundance DSP
+Date:   Fri, 29 Apr 2022 11:40:39 +0100
+Message-ID: <20220429104040.197161-7-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220429104040.197161-1-conor.dooley@microchip.com>
+References: <20220429104040.197161-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masami Hiramatsu <mhiramat@kernel.org>
+Sundance DSP Inc. (https://www.sundancedsp.com/) is a supplier of
+high-performance DSP and FPGA processor boards and I/O modules.
 
-commit a7fe2378454cf46cd5e2776d05e72bbe8f0a468c upstream.
-
-The following commit:
-
-   Commit e792ff804f49 ("ia64: kprobes: Use generic kretprobe trampoline handler")
-
-Passed the wrong trampoline address to __kretprobe_trampoline_handler(): it
-passes the descriptor address instead of function entry address.
-
-Pass the right parameter.
-
-Also use correct symbol dereference function to get the function address
-from 'kretprobe_trampoline' - an IA64 special.
-
-Link: https://lkml.kernel.org/r/163163042696.489837.12551102356265354730.stgit@devnote2
-
-Fixes: e792ff804f49 ("ia64: kprobes: Use generic kretprobe trampoline handler")
-Cc: Josh Poimboeuf <jpoimboe@redhat.com>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: X86 ML <x86@kernel.org>
-Cc: Daniel Xu <dxu@dxuuu.xyz>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Abhishek Sagar <sagar.abhishek@gmail.com>
-Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc: Paul McKenney <paulmck@kernel.org>
-Cc: stable@vger.kernel.org
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- arch/ia64/kernel/kprobes.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/ia64/kernel/kprobes.c
-+++ b/arch/ia64/kernel/kprobes.c
-@@ -424,7 +424,7 @@ int __kprobes trampoline_probe_handler(s
- 	struct hlist_node *tmp;
- 	unsigned long flags, orig_ret_address = 0;
- 	unsigned long trampoline_address =
--		((struct fnptr *)kretprobe_trampoline)->ip;
-+		(unsigned long)dereference_function_descriptor(kretprobe_trampoline);
- 
- 	INIT_HLIST_HEAD(&empty_rp);
- 	kretprobe_hash_lock(current, &head, &flags);
-@@ -500,7 +500,7 @@ void __kprobes arch_prepare_kretprobe(st
- 	ri->ret_addr = (kprobe_opcode_t *)regs->b0;
- 
- 	/* Replace the return addr with trampoline addr */
--	regs->b0 = ((struct fnptr *)kretprobe_trampoline)->ip;
-+	regs->b0 = (unsigned long)dereference_function_descriptor(kretprobe_trampoline);
- }
- 
- /* Check the instruction in the slot is break */
-@@ -1030,14 +1030,14 @@ static struct kprobe trampoline_p = {
- int __init arch_init_kprobes(void)
- {
- 	trampoline_p.addr =
--		(kprobe_opcode_t *)((struct fnptr *)kretprobe_trampoline)->ip;
-+		dereference_function_descriptor(kretprobe_trampoline);
- 	return register_kprobe(&trampoline_p);
- }
- 
- int __kprobes arch_trampoline_kprobe(struct kprobe *p)
- {
- 	if (p->addr ==
--		(kprobe_opcode_t *)((struct fnptr *)kretprobe_trampoline)->ip)
-+		dereference_function_descriptor(kretprobe_trampoline))
- 		return 1;
- 
- 	return 0;
-
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 01430973ecec..1d47a38c2a2e 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -1197,6 +1197,8 @@ patternProperties:
+     description: Summit microelectronics
+   "^sunchip,.*":
+     description: Shenzhen Sunchip Technology Co., Ltd
++  "^sundance,.*":
++    description: Sundance DSP Inc.
+   "^sunplus,.*":
+     description: Sunplus Technology Co., Ltd.
+   "^SUNW,.*":
+-- 
+2.35.2
 
