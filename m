@@ -2,124 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 993C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4320C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 15:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378691AbiD2QCY (ORCPT
+        id S1378702AbiD2QC4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:02:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48996 "EHLO
+        Fri, 29 Apr 2022 12:02:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235747AbiD2QCV (ORCPT
+        with ESMTP id S231614AbiD2QCw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:02:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F1F8684EE3
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 08:59:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651247942;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LxsX4QTfntQs6C7Yv2fWXMkZHy++Bj4rZ1fvoMUwGU8=;
-        b=GDZXAObdXzzohceVMgnAXlScmFX4wCwhieYUxYpRvNkpGhWnwRBbBYYCR1G79fKZbbfGl9
-        ScI3XpnTAoB4RVn2gsHkDPDuMve1ytoiDt857Si1mR9Ihl0DZICQKMUXEZi8vWS99HpLkC
-        X/+vhk/xMkcGIP1FB0gQwikkTZWVqzw=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-552-GptI5G-AMRmVMSStt-rFKw-1; Fri, 29 Apr 2022 11:59:00 -0400
-X-MC-Unique: GptI5G-AMRmVMSStt-rFKw-1
-Received: by mail-ed1-f69.google.com with SMTP id b24-20020a50e798000000b0041631767675so4760095edn.23
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 08:59:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LxsX4QTfntQs6C7Yv2fWXMkZHy++Bj4rZ1fvoMUwGU8=;
-        b=KWRSGkw78J1eXVhG9ARy8SLOnQXH1dVtnIRjVG7UeIWS+1vBiMQd9cLqXakqBT2fdJ
-         /ncXWF1C6WIm6PnSQf5WLg1gVNFIh+p3oQ9+UgSsAazxt7fM0JQS+qTNNRua9kBl21H0
-         yBtqCUWofrgyN8mgYyVWmcokf5cbeOie6hYH6ftr1b1GfE8NsMTrDYNRVXUKCLTMy3Q+
-         Lgwk3Kpf1vDg4YvK8SWOhVS9MyaoET0z6Buh1ktsWFxHakPyKkCYzqHDDdArBJxogRYm
-         NtPAFm+X3OKH2mSO8QVmevadt8xCtykDazDDx8bH/FyoSdUY7JcXWQGPZgAN96FFfyIZ
-         mmPw==
-X-Gm-Message-State: AOAM531BKw3mBckXurI5iBwZ3PJYQJgivijrtDFqLjjYa9i6sqy0qSsf
-        6XVMF+t3fZkN+SeJ3SGnmEAIgRrevfxlQRWFTRXFadFeYq9Fc/72FsN292tTHIptgt5OBLBITTa
-        BywCtBXENzqMwSswCVNwQSwpg
-X-Received: by 2002:a05:6402:5207:b0:426:1f0:b22 with SMTP id s7-20020a056402520700b0042601f00b22mr17790313edd.186.1651247939302;
-        Fri, 29 Apr 2022 08:58:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz9rfe2BvOZTLBxZyXAtLi09aJqjNbWyrLDxfj+FFkLsfpQGzZb0LJod/amJ9dE9xKbjLvuoQ==
-X-Received: by 2002:a05:6402:5207:b0:426:1f0:b22 with SMTP id s7-20020a056402520700b0042601f00b22mr17790296edd.186.1651247939050;
-        Fri, 29 Apr 2022 08:58:59 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
-        by smtp.googlemail.com with ESMTPSA id l21-20020a056402345500b0042617ba6393sm3053394edc.29.2022.04.29.08.58.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 08:58:58 -0700 (PDT)
-Message-ID: <4afce434-ab25-66d6-76f4-3a987f64e88e@redhat.com>
-Date:   Fri, 29 Apr 2022 17:58:57 +0200
+        Fri, 29 Apr 2022 12:02:52 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E7FED4CAA;
+        Fri, 29 Apr 2022 08:59:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651247968; x=1682783968;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LunjCm+37B3707gwlaCjwsukup9zTufYxEeYOdMcWLQ=;
+  b=HCYzI6rAQfxHC5IwWlIkn6zhf9f3mNwWTZ3CRA79DVR76k1+gm9uMC8+
+   x9ACwikcMG1kiK6LBpnLQTeYYSRZcRWqo0yI7l0p2A9JX+XsR7/KLVq0h
+   oI9Ogkp47s0gn3AcQ9dG1vP2SL9jNF6QHTFn0/8rUzK3QDMvtxtla81qz
+   77f+J/hSrmfpqaCy/VdlTmEQ0zPEsMeE5Nlh8YkwtIN+SPJKzCAiLzhLp
+   oIdzpXS1NJ2RAi4K94vDyBSDt7pw0V/NOZx/qtQ8OEKTRcXshL73Mg5bn
+   l39rqhPj5UBWpqyDGlpq1CqX9I9EmUXY//Y2mKqiCEfrqBA/cZ4Xd0W0m
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="291854502"
+X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
+   d="scan'208";a="291854502"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 08:59:27 -0700
+X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
+   d="scan'208";a="582206894"
+Received: from nadelgad-mobl.amr.corp.intel.com (HELO localhost) ([10.212.108.243])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 08:59:27 -0700
+Date:   Fri, 29 Apr 2022 08:59:26 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        outreachy@lists.linux.dev,
+        "Acked-by : Mike Rapoport" <rppt@linux.ibm.com>
+Subject: Re: [PATCH v2 1/4] mm/highmem: Fix kernel-doc warnings in highmem*.h
+Message-ID: <YmwLXvtSgl2BA2mC@iweiny-desk3>
+References: <20220425162400.11334-1-fmdefrancesco@gmail.com>
+ <20220425162400.11334-2-fmdefrancesco@gmail.com>
+ <YmeYzKT8Ikq5SfdE@linutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3] KVM: SEV: Mark nested locking of vcpu->lock
-Content-Language: en-US
-To:     Peter Gonda <pgonda@google.com>
-Cc:     John Sperbeck <jsperbeck@google.com>,
-        kvm list <kvm@vger.kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220407195908.633003-1-pgonda@google.com>
- <CAFNjLiXC0AdOw5f8Ovu47D==ex7F0=WN_Ocirymz4xL=mWvC5A@mail.gmail.com>
- <CAMkAt6r-Mc_YN-gVHuCpTj4E1EmcvyYpP9jhtHo5HRHnoNJAdA@mail.gmail.com>
- <CAMkAt6r+OMPWCbV_svUyGWa0qMzjj2UEG29G6P7jb6uH6yko2w@mail.gmail.com>
- <62e9ece1-5d71-f803-3f65-2755160cf1d1@redhat.com>
- <CAMkAt6q6YLBfo2RceduSXTafckEehawhD4K4hUEuB4ZNqe2kKg@mail.gmail.com>
- <4c0edc90-36a1-4f4c-1923-4b20e7bdbb4c@redhat.com>
- <CAMkAt6oL5qi7z-eh4z7z8WBhpc=Ow6WtcJA5bDi6-aGMnz135A@mail.gmail.com>
- <CAMkAt6rmDrZfN5DbNOTsKFV57PwEnK2zxgBTCbEPeE206+5v5w@mail.gmail.com>
- <0d282be4-d612-374d-84ba-067994321bab@redhat.com>
- <CAMkAt6ragq4OmnX+n628Yd5pn51qFv4qV20upGR6tTvyYw3U5A@mail.gmail.com>
- <8a2c5f8c-503c-b4f0-75e7-039533c9852d@redhat.com>
- <CAMkAt6qAW5zFyTAqX_Az2DT2J3KROPo4u-Ak1sC0J+UTUeFfXA@mail.gmail.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <CAMkAt6qAW5zFyTAqX_Az2DT2J3KROPo4u-Ak1sC0J+UTUeFfXA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmeYzKT8Ikq5SfdE@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/29/22 17:51, Peter Gonda wrote:
->> No, you don't need any of this.  You can rely on there being only one
->> depmap, otherwise you wouldn't need the mock releases and acquires at
->> all.  Also the unlocking order does not matter for deadlocks, only the
->> locking order does.  You're overdoing it. :)
+On Tue, Apr 26, 2022 at 09:01:32AM +0200, Sebastian Andrzej Siewior wrote:
+> On 2022-04-25 18:23:57 [+0200], Fabio M. De Francesco wrote:
+> > index a77be5630209..aa22daeed617 100644
+> > --- a/include/linux/highmem-internal.h
+> > +++ b/include/linux/highmem-internal.h
+> > @@ -236,9 +236,17 @@ static inline unsigned long totalhigh_pages(void) { return 0UL; }
+> >  
+> >  #endif /* CONFIG_HIGHMEM */
+> >  
+> > -/*
+> > - * Prevent people trying to call kunmap_atomic() as if it were kunmap()
+> > - * kunmap_atomic() should get the return value of kmap_atomic, not the page.
+> > +/**
+> > + * kunmap_atomic - Unmap the virtual address mapped by kmap_atomic()
+> > + * @__addr:       Virtual address to be unmapped
+> > + *
+> > + * Unmaps an address previously mapped by kmap_atomic() and re-enables
+> > + * pagefaults and preemption. Mappings should be unmapped in the reverse
 > 
-> Hmm I'm slightly confused here then. If I take your original suggestion of:
+> You mind adding "Deprecated!" like kmap_atomic() has? The part about
+> disabling/ enabling preemption is true for !PREEMPT_RT. The part that
+> worries me is that people use it and rely on disabled preemption like
+> some did in the past. 
+> I've been told this API is about to be removed (or so I have been told)
+> so I hope that it will be gone soon ;)
+
+I think some discussion needs to happen around this API.
+
+Highmem has little use.  I don't think anyone disagrees with Linus there.
+(Although I think there are still a few users out there.)
+
+kmap may be a poor name for an API without the highmem functionality.  But
+perhaps not.  One could interpret it to mean simply getting the kernel mapping
+of the page rather than creating one.  After all that is what 64bit has done
+all along.
+
+This interpretation helps when you consider features which attempt to layer the
+direct map with additional protections like PKS.[1]  Those protections mean
+that a simple page_address() is insufficient to access the direct map.
+
+As far as calling kmap() and kmap_atomic() deprecated I'm ok with that if the
+community is.
+
+The current kmap() call sites need work and Fabio's work on auditing them is
+extremely helpful.  That said, if we officially deprecate kmap_atomic() then
+those sites could be added to the list for rework.
+
+Ira
+
+[1] https://lore.kernel.org/lkml/20220419170649.1022246-1-ira.weiny@intel.com/
+
 > 
->          bool acquired = false;
->          kvm_for_each_vcpu(...) {
->                  if (acquired)
->                          mutex_release(&vcpu->mutex.dep_map,
-> _THIS_IP_);  <-- Warning here
->                  if (mutex_lock_killable_nested(&vcpu->mutex, role)
->                          goto out_unlock;
->                  acquired = true;
+> > + * order that they were mapped. See kmap_local_page() for details.
+> > + * @__addr can be any address within the mapped page, so there is no need
+> > + * to subtract any offset that has been added. In contrast to kunmap(),
+> > + * this function takes the address returned from kmap_atomic(), not the
+> > + * page passed to it. The compiler will warn you if you pass the page.
+> >   */
+> >  #define kunmap_atomic(__addr)					\
+> >  do {								\
 > 
-> """
-> [ 2810.088982] =====================================
-> [ 2810.093687] WARNING: bad unlock balance detected!
-> [ 2810.098388] 5.17.0-dbg-DEV #5 Tainted: G           O
-> [ 2810.103788] -------------------------------------
-
-Ah even if the contents of the dep_map are the same for all locks, it 
-also uses the *pointer* to the dep_map to track (class, subclass) -> 
-pointer and checks for a match.
-
-So yeah, prev_cpu is needed.  The unlock ordering OTOH is irrelevant so 
-you don't need to visit the xarray backwards.
-
-Paolo
-
+> Sebastian
