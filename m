@@ -2,103 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D161C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:49:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EDECC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:50:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377955AbiD2OxC (ORCPT
+        id S1377959AbiD2Ox3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:53:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53954 "EHLO
+        Fri, 29 Apr 2022 10:53:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377956AbiD2Ow7 (ORCPT
+        with ESMTP id S1359846AbiD2OxZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:52:59 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC06BE9C2;
-        Fri, 29 Apr 2022 07:49:40 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TDsVeG030881;
-        Fri, 29 Apr 2022 14:49:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=5tJHOGwPAMt/ATr3Y92BHa7AV3I5WIGCuyqnYiNT6Qk=;
- b=Etb1CRZzLWe3zU63/ol6VKSzENwsvHX3p5ywcqxUqt/GA1zgx6h5idqjeKaRKF+hKXzQ
- ATDo5cu8/DG0e4kkUm9dNYnB/u17lOpeMoo6eQMhL1nU3Rgece0ng9w1yDCIpBN+h5di
- Aj3eo4UopvJXqAMUy7yhPpIvjSqoy/Ipg/JCHXxcK92LBjolRpLdqdgdd3q3Gep0wZNg
- bwslY/fUg4LQR0GegNjLCGGBWqrspti1t8agkKxqCkOeijVhnb/b4Bmog2NJZC3MglmO
- ld9Itviy+TEOmGTZM+4wZlH/wpGIhE3vKMeSmXDU9VYtjsb8C2WnsuFDYqzKxMLmqeb+ EQ== 
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqtqvy0er-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 14:49:36 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TEhou4017888;
-        Fri, 29 Apr 2022 14:49:34 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03fra.de.ibm.com with ESMTP id 3fm938yckk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 14:49:34 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TEnevp26214894
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 29 Apr 2022 14:49:40 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D47C2A4060;
-        Fri, 29 Apr 2022 14:49:31 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 610AFA4054;
-        Fri, 29 Apr 2022 14:49:31 +0000 (GMT)
-Received: from sig-9-145-61-57.uk.ibm.com (unknown [9.145.61.57])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 29 Apr 2022 14:49:31 +0000 (GMT)
-Message-ID: <e4e025f07718f1dfe1aecbfe5f210490369b2469.camel@linux.ibm.com>
-Subject: Re: [PATCH 37/37] asm-generic/io.h: drop inb() etc for HAS_IOPORT=n
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>
-Date:   Fri, 29 Apr 2022 16:49:30 +0200
-In-Reply-To: <20220429135108.2781579-68-schnelle@linux.ibm.com>
-References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
-         <20220429135108.2781579-68-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 27q2XQcWw4TRQpBZ0jiDl_jzvcZn5unp
-X-Proofpoint-ORIG-GUID: 27q2XQcWw4TRQpBZ0jiDl_jzvcZn5unp
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Fri, 29 Apr 2022 10:53:25 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B968A6E34;
+        Fri, 29 Apr 2022 07:50:07 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id bv19so15916373ejb.6;
+        Fri, 29 Apr 2022 07:50:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=kxG9R+Mj6hQ/bgRaikLvuXkk5Cew5MDIyTZHQmokcDI=;
+        b=XIuFoea3IeF9X34o7Yg3zdHgCtAAk+fm6rFmlBkDvKIsuVbKd6BjegPYM5Ff6ITCsV
+         tVQNEJdDWkyu6P6GWaDvCaaNnJ1+zZwEtBsbHYJ2ucobJqMh0c3LP6gN/vlBa414vLpQ
+         4evPmnlzC7/caRAa7gvnKX3ZINny5bmrIOzUnfLAplVm+8DXVwGv2BSjjBTCLpejHL74
+         ipnx6YhPQbwBXfplA5O/pH9MtM1hTY3yBzMeXTJCPe+QT6kMPV/AGMSJ79miJkeyIzyY
+         H9eCsUHdRmurrohDAZkpO0sWyZL0ppQHR2lxmV8Y+Y/K6SQO90FnwFnm3/F+MpqND12v
+         4tiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=kxG9R+Mj6hQ/bgRaikLvuXkk5Cew5MDIyTZHQmokcDI=;
+        b=1ng3CYo3djcN7tA5MJsHDAp5YC3TX0NYZLhbsnm6creC0vsrqZzqs6Z7ldhDwhQcpF
+         SjrN4S1QjqbHJthnwusC5MRDuXFd5LVojF8R6QlctiBzNquHuqHj/XjyINgzeA1kOlIR
+         C9a0ZB0hsa4ae/H0TSYKu0BJgJeTFWZ4ybeNkYjhNLIjMQlupfWUxSpz97uH8U/tQbFW
+         6S5CEZcb0M4oae0pc34hU5v9iVUG2n7B1h+zHG0fGLU6yazDQhXBusq+sVAn8YvrddWq
+         Iqp1M9yDzemz+9mg4Zg93VDVnydhW06F9xTYi2ZvR6qDTOajvoHMZTpf5uinNXojk4L0
+         rmQw==
+X-Gm-Message-State: AOAM530cfWFM2SXDJtba7e2v/c0PD9WYEOpS8EedVUWZTq7VFJCq1BqQ
+        iReOhLpIm52cbvKLRheNbJqOK/W21g==
+X-Google-Smtp-Source: ABdhPJwkJBEZqlVOka7oGLAdvL6EGro5bKsusSCCIAJaQIEjq1gd0ncIyzjdpEWH5kuhg9t/q5w97w==
+X-Received: by 2002:a17:907:2cc6:b0:6f0:2de3:9446 with SMTP id hg6-20020a1709072cc600b006f02de39446mr35955279ejc.690.1651243805956;
+        Fri, 29 Apr 2022 07:50:05 -0700 (PDT)
+Received: from localhost.localdomain ([46.53.253.143])
+        by smtp.gmail.com with ESMTPSA id qr48-20020a1709068cb000b006f3ef214e0bsm719709ejc.113.2022.04.29.07.50.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 07:50:05 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 17:50:03 +0300
+From:   Alexey Dobriyan <adobriyan@gmail.com>
+To:     akpm@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, linux-api@vger.kernel.org
+Subject: [PATCH] ELF, uapi: fixup ELF_ST_TYPE definition
+Message-ID: <Ymv7G1BeX4kt3obz@localhost.localdomain>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-29_07,2022-04-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- bulkscore=0 spamscore=0 clxscore=1015 mlxscore=0 suspectscore=0
- mlxlogscore=625 phishscore=0 malwarescore=0 adultscore=0 impostorscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204290080
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-04-29 at 15:51 +0200, Niklas Schnelle wrote:
-> With all subsystems and drivers either declaring their dependence on
-> HAS_IOPORT or ifdeffing I/O port specific code sections we can finally
-> make inb()/outb() and friends compile-time dependent on HAS_IOPORT as
-> suggested by Linus in the linked mail. The main benefit of this is that
-> on platforms such as s390 which have no meaningful way of implementing
-> inb()/outb() their use without the proper HAS_IOPORT dependency will
-> result in easy to catch and fix compile-time errors instead of compiling
-> code that can never work.
-> 
-> Link: https://lore.kernel.org/lkml/CAHk-=wg80je=K7madF4e7WrRNp37e3qh6y10Svhdc7O8SZ_-8g@mail.gmail.com/
-> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
+This is very theoretical compile failure:
 
-Sorry everyone. I sent this as PATCH in error while preparing to sent
-the same series as RFC. Since e-mail has no remote delete and I lack a
-time machine let's just all pretend you only got the RFC.
+	ELF_ST_TYPE(st_info = A)
 
+Cast will bind first and st_info will stop being lvalue:
+
+	error: lvalue required as left operand of assignment
+
+Given that the only use of this macro is
+
+	ELF_ST_TYPE(sym->st_info)
+
+where st_info is "unsigned char" I've decided to remove cast especially
+given that companion macro ELF_ST_BIND doesn't use cast.
+
+Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+---
+
+ include/uapi/linux/elf.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/include/uapi/linux/elf.h
++++ b/include/uapi/linux/elf.h
+@@ -134,7 +134,7 @@ typedef __s64	Elf64_Sxword;
+ #define STT_TLS     6
+ 
+ #define ELF_ST_BIND(x)		((x) >> 4)
+-#define ELF_ST_TYPE(x)		(((unsigned int) x) & 0xf)
++#define ELF_ST_TYPE(x)		((x) & 0xf)
+ #define ELF32_ST_BIND(x)	ELF_ST_BIND(x)
+ #define ELF32_ST_TYPE(x)	ELF_ST_TYPE(x)
+ #define ELF64_ST_BIND(x)	ELF_ST_BIND(x)
