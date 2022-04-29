@@ -2,110 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 989DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A30C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:32:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353938AbiD2Ban (ORCPT
+        id S1353942AbiD2Bfo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 21:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46344 "EHLO
+        Thu, 28 Apr 2022 21:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353917AbiD2Bak (ORCPT
+        with ESMTP id S1351487AbiD2Bfm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 21:30:40 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBB2B6D3C;
-        Thu, 28 Apr 2022 18:27:24 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id i19so12711126eja.11;
-        Thu, 28 Apr 2022 18:27:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=GOfJpquDKCHF/cE6gKPA+s9U1dQQokb4+5iNEQ4VHsw=;
-        b=fQmITz1vqIAa1Rig/p7a7JCI8scGdQTjwS3t/5s/fiUYZxzTFp8CPzigahpq5CLQha
-         5wNaGyspzLYpgcva9iGmd/vm4NrvH4cPv4euoQ97ld56anQCQ3u757t77ltcVeY+pyTo
-         D+Y2M1G9NK0jlzIZlJSB98xFK+tLJ6AH9iUr5Gp2ITtUJJptX4AOr6ahVFRUK1RB8BuC
-         UmRU5cAwSeHYQrtDetqnjgYB/96wCo/nhtCPqIsK/Sgt500WNJwLsL6NAHWdKsjWStfK
-         aIS03jV5jtVFhsoYgVtz0nJ/tr4zlwd8jNb2x0sktqJ4oMl/YoFxc66qMUS/kEoHBDGl
-         khEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GOfJpquDKCHF/cE6gKPA+s9U1dQQokb4+5iNEQ4VHsw=;
-        b=OdL0dhgova5RfIL7RWVExyEOd65MlwirkoIbva/NX8bjdkqMbkkUYON0uxBBibtCTZ
-         N+dzxUCftRqCiJwIDnI3Mm3ivLnNW5Wi9UBgvQMOLNQUh6uaD9hIa8PEQzuPz3PNfae0
-         bHsZTlQGyo+fvqIHKN7MF6xQxrUG/czpZPjuwWfJ6M4Tpyjt8Q88ImnOg42Gimze7Xwc
-         hocH1kpdXNIDFv4EFqqdCtYOcY+zJMlcIrO90rtjyf+sd3NQ/w94ffMRTyybumeLU1d8
-         W5SqTk/oTh+GaH/VSq89rO4UHuE8to9EbPqQ/FYgtFM6FvEpA87EOMfN5PSxlmFn1pHm
-         1HFQ==
-X-Gm-Message-State: AOAM531P08HSmKLGt23e3aLs5wXuHCWCLzLiebbz2F7lSgx02N1OxcTC
-        XR7kYajj1poNG1Sed3ka61xr07FBQw4K0d+98fA=
-X-Google-Smtp-Source: ABdhPJyU45BbP8G8PcxViFCG5+QXv7LH1zxaXs6jadYOqLNivGKbSLRIXlWl/FzT/ApjVi2MhrMoCSX1Aup8nlgGSEY=
-X-Received: by 2002:a17:906:58c9:b0:6f3:9668:b290 with SMTP id
- e9-20020a17090658c900b006f39668b290mr21898249ejs.439.1651195642968; Thu, 28
- Apr 2022 18:27:22 -0700 (PDT)
+        Thu, 28 Apr 2022 21:35:42 -0400
+Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73602BABB5;
+        Thu, 28 Apr 2022 18:32:25 -0700 (PDT)
+Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178]) (authenticated)
+        by conssluserg-06.nifty.com with ESMTP id 23T1W9ZG016045;
+        Fri, 29 Apr 2022 10:32:09 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 23T1W9ZG016045
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1651195930;
+        bh=Ujughm6WBYcOCP3I53TOnar0oX2NKjlKDBd45MpNh04=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=10c3SuQy/Ub2pRoZYFp43HKwkLXn1CLCpuzFvYYJ1j21ADWYhTYXQkrfPsBwSNpTF
+         iJiiapVdwOc7otybUAdqjpn0CKzLMWIrwxS18RqLFv7QXS5stgswcY88C95nD0BmQa
+         VPQZ4O7rQR4GGVWilVhI1eKt4Uc6IWOd00+ahKrrd0K0WvU7NLZlpyiKG23a3PQKrL
+         ejefKEEQIn5ZnvoAc+dJEXTvcRsjq5C+jKDLPLu0imnu1G5OZ/3myTfIEmIFrUUkb5
+         PcS3vudQpz41uhOdpTplX4gJK7VlbhtDJgw0PthkHbcoEy6Uejb5/X5AvTAl/U1+R3
+         Zm93CE04u5RYA==
+X-Nifty-SrcIP: [209.85.215.178]
+Received: by mail-pg1-f178.google.com with SMTP id k14so5419206pga.0;
+        Thu, 28 Apr 2022 18:32:09 -0700 (PDT)
+X-Gm-Message-State: AOAM531qsBCn7fhbMfLoiFNGFxcVDlW+iR18IIa1zHIgTtSNmeg69ahH
+        zB3yLEftM2F6OB12AoMipE256BGvQxqV3j+GRWg=
+X-Google-Smtp-Source: ABdhPJyWSxXsaQZA47SLxRqiIrVQj/xNc4xbL+oG7kW7OztbN7o+0qZy8I9k7qzl3YqxE++UsE3TiMzb9rdJGGEU13g=
+X-Received: by 2002:a05:6a02:182:b0:374:5a57:cbf9 with SMTP id
+ bj2-20020a056a02018200b003745a57cbf9mr29679060pgb.616.1651195929017; Thu, 28
+ Apr 2022 18:32:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220428073340.224391-1-imagedong@tencent.com>
- <20220428073340.224391-3-imagedong@tencent.com> <87fslxgx6r.fsf@toke.dk>
-In-Reply-To: <87fslxgx6r.fsf@toke.dk>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Fri, 29 Apr 2022 09:27:11 +0800
-Message-ID: <CADxym3Z0bktRmOACS1eayh3batVBuGefKZEoYgRE2Cn6DJfr_A@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 2/2] net: tcp: add skb drop reasons to route_req()
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Biao Jiang <benbjiang@tencent.com>,
-        Hao Peng <flyingpeng@tencent.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Martin Lau <kafai@fb.com>, Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mengen Sun <mengensun@tencent.com>,
-        Dongli Zhang <dongli.zhang@oracle.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
+References: <20220424190811.1678416-1-masahiroy@kernel.org>
+ <20220424190811.1678416-25-masahiroy@kernel.org> <CAKwvOdkJJnJt_jj_1n6QP31UoTqcS5aVUYAExdR8wY61EmRDFQ@mail.gmail.com>
+In-Reply-To: <CAKwvOdkJJnJt_jj_1n6QP31UoTqcS5aVUYAExdR8wY61EmRDFQ@mail.gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Fri, 29 Apr 2022 10:31:05 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASKctw8a7_OYuBnP16CrMKg=3PD4=GL4zJCYi6WZP1mpA@mail.gmail.com>
+Message-ID: <CAK7LNASKctw8a7_OYuBnP16CrMKg=3PD4=GL4zJCYi6WZP1mpA@mail.gmail.com>
+Subject: Re: [PATCH 24/27] modpost: generate linker script to collect symbol versions
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 9:22 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
+On Fri, Apr 29, 2022 at 6:49 AM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
 >
-> menglong8.dong@gmail.com writes:
->
-> > From: Menglong Dong <imagedong@tencent.com>
+> On Sun, Apr 24, 2022 at 12:10 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
 > >
-> > Add skb drop reasons to the route_req() in struct tcp_request_sock_ops.
-> > Following functions are involved:
+> > Merge version CRCs per vmlinux or per module.
 > >
-> >   tcp_v4_route_req()
-> >   tcp_v6_route_req()
-> >   subflow_v4_route_req()
-> >   subflow_v6_route_req()
+> > These linker scripts will be fed to the final link stage.
 > >
-> > And the new reason SKB_DROP_REASON_SECURITY is added, which is used whe=
-n
-> > skb is dropped by LSM.
+> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> > ---
+> >
+> >  .gitignore            |  1 +
+> >  Makefile              |  1 +
+> >  scripts/mod/modpost.c | 27 +++++++++++++++++++++++++++
+> >  3 files changed, 29 insertions(+)
+> >
+> > diff --git a/.gitignore b/.gitignore
+> > index 265959544978..f9dad6b917e6 100644
+> > --- a/.gitignore
+> > +++ b/.gitignore
+> > @@ -42,6 +42,7 @@
+> >  *.so.dbg
+> >  *.su
+> >  *.symtypes
+> > +*.symver.lds
+> >  *.symversions
+> >  *.tab.[ch]
+> >  *.tar
+> > diff --git a/Makefile b/Makefile
+> > index 235d68fa1470..0779db3d1c0c 100644
+> > --- a/Makefile
+> > +++ b/Makefile
+> > @@ -1859,6 +1859,7 @@ clean: $(clean-dirs)
+> >                 -o -name '*.c.[012]*.*' \
+> >                 -o -name '*.ll' \
+> >                 -o -name '*.gcno' \
+> > +               -o -name '*.symver.lds' \
+> >                 -o -name '*.*.symversions' \) -type f -print | xargs rm -f
+> >
+> >  # Generate tags for editors
+> > diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+> > index 43ab4f000ae3..ef779ada04c6 100644
+> > --- a/scripts/mod/modpost.c
+> > +++ b/scripts/mod/modpost.c
+> > @@ -2577,6 +2577,30 @@ static void write_dump(const char *fname)
+> >         free(buf.p);
+> >  }
+> >
+> > +static void write_symversions_lds(struct module *mod)
+> > +{
+> > +       struct buffer buf = { };
+> > +       struct symbol *sym;
+> > +       char lds_file[PATH_MAX];
+> > +       int ret;
+> > +
+> > +       ret = snprintf(lds_file, sizeof(lds_file), "%s.symver.lds", mod->name);
+> > +       if (ret >= sizeof(lds_file)) {
+> > +               error("%s: too long path was truncated\n", lds_file);
+> > +               return;
 >
-> Could we maybe pick a slightly less generic name? If I saw
-> "SKB_DROP_REASON_SECURITY" my first thought would be something related
-> to *network* security, like a firewall. Maybe just SKB_DROP_REASON_LSM?
+> If this exceptional case occurs, we should probably halt or return an
+> error code to main?
+
+
+
+Could you see the comments at the bottom of
+scripts/mod/modpost.h  ?
+
+
+error() functions sets 'error_occurred' variable,
+so main() function will exist with 1 at the end.
+
+
+If we bail out at the very first error, users would
+compile the kernel again and again
+to fix errors one by one.
+
+modpost continues running as far as possible
+to display as many errors as possible.
+
+Compilers usually do similar things.
+
+
+
+
+
+
+
+
+> > +       }
+> > +
+> > +       list_for_each_entry(sym, &mod->exported_symbols, list) {
+> > +               if (!sym->crc_valid)
+> > +                       continue;
+> > +
+> > +               buf_printf(&buf, "__crc_%s = 0x%08x;\n", sym->name, sym->crc);
+> > +       }
+> > +
+> > +       write_if_changed(&buf, lds_file);
+> > +       free(buf.p);
+> > +}
+> > +
+> >  static void write_namespace_deps_files(const char *fname)
+> >  {
+> >         struct module *mod;
+> > @@ -2673,6 +2697,9 @@ int main(int argc, char **argv)
+> >                 char fname[PATH_MAX];
+> >                 int ret;
+> >
+> > +               if (modversions && !mod->from_dump)
+> > +                       write_symversions_lds(mod);
+> > +
+> >                 if (mod->is_vmlinux || mod->from_dump)
+> >                         continue;
+> >
+> > --
+> > 2.32.0
+> >
 >
-
-Thanks for your suggestion, and I think SKB_DROP_REASON_LSM is fine.
-I'll change it in the next version.
-
-Menglong Dong
-
-> -Toke
 >
+> --
+> Thanks,
+> ~Nick Desaulniers
+
+
+
+-- 
+Best Regards
+Masahiro Yamada
