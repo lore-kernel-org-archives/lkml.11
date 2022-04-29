@@ -2,213 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD18AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:20:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36C21C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:21:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357427AbiD2KYK (ORCPT
+        id S1357398AbiD2KYw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44008 "EHLO
+        Fri, 29 Apr 2022 06:24:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239081AbiD2KYG (ORCPT
+        with ESMTP id S244876AbiD2KYu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:24:06 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C28108B;
-        Fri, 29 Apr 2022 03:20:47 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id E962045F;
-        Fri, 29 Apr 2022 12:20:45 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1651227646;
-        bh=YGQZ9FdIXcFg1Ief9zdOSawPpmwRJCKGsGEdTnBu7wI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=koBR8rQvFYiirFZva0Q0lYzKn3RvenTeCjbVh1dZ1Or2mc03pz8s6K9Nu6V1YGMWj
-         WG83G80i4+S5KevOh2BkDKBCH/MxQ3dHIWWKDMn/wwtilN3Rpq8EGvzphFQgjPJ9jw
-         lO3rJou9VDJIKpHIBvG0Fw0ttp73Bw1ZuZcWLFHY=
-Date:   Fri, 29 Apr 2022 13:20:45 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Hans Verkuil <hverkuil@xs4all.nl>
-Cc:     Jacopo Mondi <jacopo@jmondi.org>, Eugen.Hristev@microchip.com,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Claudiu.Beznea@microchip.com, robh+dt@kernel.org,
-        Nicolas.Ferre@microchip.com
-Subject: Re: [PATCH v9 08/13] media: atmel: atmel-isc: change format
- propagation to subdev into only verification
-Message-ID: <Ymu7/VWrvT0bZfeP@pendragon.ideasonboard.com>
-References: <20220310095202.2701399-1-eugen.hristev@microchip.com>
- <20220310095202.2701399-9-eugen.hristev@microchip.com>
- <39f541ec-313f-fe15-b93f-dd78469b2366@xs4all.nl>
- <b6630c65-0720-3633-d5ed-aadf4716f206@microchip.com>
- <dabbff36-a10c-0a8a-94e8-ce7c2d896403@xs4all.nl>
- <20220429095848.ec4xnul6tin6n7sf@uno.localdomain>
- <Ymu4ywjEvX5HbE/W@pendragon.ideasonboard.com>
- <a10a255c-e3b7-4c5f-2a7e-9474e0526a61@xs4all.nl>
+        Fri, 29 Apr 2022 06:24:50 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D2AD60A91
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 03:21:32 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KqT6M1sDszhYp8;
+        Fri, 29 Apr 2022 18:21:15 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 29 Apr 2022 18:21:30 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 29 Apr 2022 18:21:30 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     <catalin.marinas@arm.com>, <will@kernel.org>,
+        <akpm@linux-foundation.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <linux-mm@kvack.org>, <hch@infradead.org>, <arnd@arndb.de>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH v2 0/5] arm64: Cleanup ioremap() and support ioremap_prot()
+Date:   Fri, 29 Apr 2022 18:32:20 +0800
+Message-ID: <20220429103225.75121-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <a10a255c-e3b7-4c5f-2a7e-9474e0526a61@xs4all.nl>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 12:13:46PM +0200, Hans Verkuil wrote:
-> On 29/04/2022 12:07, Laurent Pinchart wrote:
-> > On Fri, Apr 29, 2022 at 11:58:48AM +0200, Jacopo Mondi wrote:
-> >> On Fri, Apr 29, 2022 at 10:43:09AM +0200, Hans Verkuil wrote:
-> >>> On 29/04/2022 10:28, Eugen.Hristev@microchip.com wrote:
-> >>>> On 4/29/22 11:17 AM, Hans Verkuil wrote:
-> >>>>> On 10/03/2022 10:51, Eugen Hristev wrote:
-> >>>>>> As a top MC video driver, the atmel-isc should not propagate the format to the
-> >>>>>> subdevice, it should rather check at start_streaming() time if the subdev is properly
-> >>>>>> configured with a compatible format.
-> >>>>>> Removed the whole format finding logic, and reworked the format verification
-> >>>>>> at start_streaming time, such that the ISC will return an error if the subdevice
-> >>>>>> is not properly configured. To achieve this, media_pipeline_start
-> >>>>>> is called and a link_validate callback is created to check the formats.
-> >>>>>> With this being done, the module parameter 'sensor_preferred' makes no sense
-> >>>>>> anymore. The ISC should not decide which format the sensor is using. The
-> >>>>>> ISC should only cope with the situation and inform userspace if the streaming
-> >>>>>> is possible in the current configuration.
-> >>>>>> The redesign of the format propagation has also risen the question of the
-> >>>>>> enumfmt callback. If enumfmt is called with an mbus_code, the enumfmt handler
-> >>>>>> should only return the formats that are supported for this mbus_code.
-> >>>>>> Otherwise, the enumfmt will report all the formats that the ISC could output.
-> >>>>>> With this rework, the dynamic list of user formats is removed. It makes no
-> >>>>>> more sense to identify at complete time which formats the sensor could emit,
-> >>>>>> and add those into a separate dynamic list.
-> >>>>>> The ISC will start with a simple preconfigured default format, and at
-> >>>>>> link validate time, decide whether it can use the format that is configured
-> >>>>>> on the sink or not.
-> >>>>>>
-> >>>>>> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-> >>>>>> Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
-> >>>>>> ---
-> >>>>>> Changes in v9:
-> >>>>>> - isc_link_validate now static
-> >>>>>>
-> >>>>>> Changes in v7:
-> >>>>>> - minor typos as suggested by Jacopo
-> >>>>>> - small changes, reduce some indentation, modified an index, as suggested by
-> >>>>>> Jacopo
-> >>>>>>
-> >>>>>> Changes in v6:
-> >>>>>> - reworked a bit enum_fmt as suggested by Jacopo
-> >>>>>>
-> >>>>>> Changes in v5:
-> >>>>>> - removed user_formats dynamic list as it is now pointless
-> >>>>>> - greatly simplified the enum_fmt function
-> >>>>>> - removed some init code that was useless now
-> >>>>>>
-> >>>>>> Changes in v4:
-> >>>>>> - moved validation code into link_validate and used media_pipeline_start
-> >>>>>> - merged this patch with the enum_fmt patch which was previously in v3 of
-> >>>>>> the series
-> >>>>>>
-> >>>>>> Changes in v3:
-> >>>>>> - clamp to maximum resolution once the frame size from the subdev is found
-> >>>>>>   drivers/media/platform/atmel/atmel-isc-base.c | 412 ++++++++----------
-> >>>>>>   .../media/platform/atmel/atmel-isc-scaler.c   |   5 +
-> >>>>>>   drivers/media/platform/atmel/atmel-isc.h      |  13 +-
-> >>>>>>   .../media/platform/atmel/atmel-sama5d2-isc.c  |  20 +
-> >>>>>>   .../media/platform/atmel/atmel-sama7g5-isc.c  |  20 +
-> >>>>>>   5 files changed, 236 insertions(+), 234 deletions(-)
-> >>>>>>
-> >>>>>> diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
-> >>>>>> index ee1dda6707a0..fe2c0af58060 100644
-> >>>>>> --- a/drivers/media/platform/atmel/atmel-isc-base.c
-> >>>>>> +++ b/drivers/media/platform/atmel/atmel-isc-base.c
-> >>>>>> @@ -36,11 +36,6 @@ static unsigned int debug;
-> >>>>>>   module_param(debug, int, 0644);
-> >>>>>>   MODULE_PARM_DESC(debug, "debug level (0-2)");
-> >>>>>>
-> >>>>>> -static unsigned int sensor_preferred = 1;
-> >>>>>> -module_param(sensor_preferred, uint, 0644);
-> >>>>>> -MODULE_PARM_DESC(sensor_preferred,
-> >>>>>> -              "Sensor is preferred to output the specified format (1-on 0-off), default 1");
-> >>>>>> -
-> >>>>>>   #define ISC_IS_FORMAT_RAW(mbus_code) \
-> >>>>>>        (((mbus_code) & 0xf000) == 0x3000)
-> >>>>>>
-> >>>>>> @@ -337,6 +332,10 @@ static int isc_start_streaming(struct vb2_queue *vq, unsigned int count)
-> >>>>>>        unsigned long flags;
-> >>>>>>        int ret;
-> >>>>>>
-> >>>>>> +     ret = media_pipeline_start(&isc->video_dev.entity, &isc->mpipe);
-> >>>>>
-> >>>>> The pipeline validation is done in start_streaming, but I don't think that
-> >>>>> is the best place: if STREAMON is called before buffers are queued, then
-> >>>>> an invalid pipeline isn't discovered until enough buffers are queued to
-> >>>>> kick off start_streaming.
-> >>>>>
-> >>>>> Drivers like vsp1, omap3isp and the samsung drivers all do this in streamon().
-> >>>>>
-> >>>>> I think that is the correct time to do this.
-> >>>>
-> >>>> Hello Hans,
-> >>>>
-> >>>> Initially (v2, v3) I had this in streamon(). The problem that I faced at
-> >>>> that time was that streamoff was never called, so I could not call
-> >>>> media_pipeline_stop(). Then Jacopo told me to move it to start_streaming
-> >>>> (see change log for v4) , and I did not face any more problems.
-> >>
-> >> Yes indeed, seems I suggested to use media_pipeline_handler in a
-> >> comment on your v3
-> >>
-> >> "at s_stream time your top driver calls media_pipeline_start()"
-> >>
-> >> sorry about that, I should have looked around a bit more carefully and
-> >> notice most drivers do so at vb2 streamon
-> >>
-> >> However I don't see media_pipeline_start being called at all in v3 of
-> >> the patch
-> >>
-> >>> It's a mess. Looking at some drivers I see that omap3isp calls media_pipeline_stop
-> >>> in streamoff (so will have the same problem as you described if VIDIOC_STREAMOFF
-> >>> isn't called), exynos4-is does the same, but it also checks the streaming state in
-> >>> the release() fop callback, so that would fix this problem. And vimc does this
-> >>> in stop_streaming.
-> >>>
-> >>> I'm in favor of fixing this in vb2, that framework knows exactly when this needs
-> >>> to be called.
-> >>
-> >> Are you suggesting to have vb2 to call media_pipeline_start() or is it
-> >> more complex than this ?
-> > 
-> > I think Hans meant adding a .validate() operation to vb2.
-> > 
-> > vb2 is already quite complex, I don't think adding more features is a
-> > good idea. I'd rather have vb2 focus on buffer management only
-> > (.start_streaming() and .stop_streaming() shouldn't have been in there
-> > in my opinion), and handle validation in the .streamon() handler. I'd
-> > expect most drivers that deal with media pipelines to do more work in
-> > .streamon() anyway.
-> 
-> I disagree with that :-)
-> 
-> It's vb2 that keeps track of the streaming state and when what actions
-> need to be taken. Drivers really shouldn't need to care about the ioctls
-> themselves, and just implement the relevant vb2 callbacks. Relying on
-> drivers to handle any of the streaming ioctls is asking for problems,
-> as this shows: most drivers implement this wrong today.
-> 
-> The vb2 framework knows when e.g. the pipeline needs to be started or
-> stopped, and can do this at the best time, without drivers needing to
-> keep track of when streamon/off/release is called. Keep that logic in
-> vb2.
+1. Enhance generic ioremap to make it more useful.
+2. Let's arm64 use GENERIC_IOREMAP to cleanup code.
+3. Support HAVE_IOREMAP_PROT on arm64, which enable generic_access_phys(),
+   it is useful when debug(eg, gdb) via access_process_vm device memory
+   infrastructure.
 
-Pipeline management and buffer management are two different issues.
-Don't forget about devices that have multiple video nodes, part of the
-same pipeline (possibly a combination of output and capture nodes, or
-all of the same type). Forcing drivers to go through vb2 operations to
-handle the pipeline will be messy, will result in more bloat in vb2, and
-make the result more bug-prone and harder to maintain.
+v2:
+- s/addr/phys_addr in ioremap_prot, suggested by Andrew Morton 
+- rename arch_ioremap/iounmap_check to arch_ioremap/iounmad
+  and change return value, per Christoph Hellwig and Andrew Morton
+- and use 'ifndef arch_ioremap' instead of weak function, per Arnd Bergmann
+- collect ack/review
 
-If pipeline management is too complex, let's simplify it, new helpers
-can make sense, but not through vb2.
+Kefeng Wang (5):
+  mm: ioremap: Use more sensibly name in ioremap_prot()
+  mm: ioremap: Setup phys_addr of struct vm_struct
+  mm: ioremap: Add arch_ioremap/iounmap()
+  arm64: mm: Convert to GENERIC_IOREMAP
+  arm64: Add HAVE_IOREMAP_PROT support
+
+ .../features/vm/ioremap_prot/arch-support.txt |  2 +-
+ arch/arm64/Kconfig                            |  2 +
+ arch/arm64/include/asm/io.h                   | 20 +++--
+ arch/arm64/include/asm/pgtable.h              | 10 +++
+ arch/arm64/kernel/acpi.c                      |  2 +-
+ arch/arm64/mm/hugetlbpage.c                   | 10 ---
+ arch/arm64/mm/ioremap.c                       | 85 +++----------------
+ include/asm-generic/io.h                      | 16 +++-
+ mm/ioremap.c                                  | 27 ++++--
+ 9 files changed, 74 insertions(+), 100 deletions(-)
 
 -- 
-Regards,
+2.35.3
 
-Laurent Pinchart
