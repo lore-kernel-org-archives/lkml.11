@@ -2,64 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F6B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:02:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 01:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353635AbiD2BGE (ORCPT
+        id S1353646AbiD2BG4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 21:06:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60026 "EHLO
+        Thu, 28 Apr 2022 21:06:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244954AbiD2BGD (ORCPT
+        with ESMTP id S232925AbiD2BGy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 21:06:03 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810B6B9F38;
-        Thu, 28 Apr 2022 18:02:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=7Kgksz1U+mpR5yolnT7/amlugtDRmACOMUcwglvKJUc=; b=qKdUTEd5nyy93U0dp1Dz1gWDVZ
-        gF+ddv0L6PzIaNwv4iRlOuv9idXs1gNYlZzsEYCl3Azlk9WGiwxoUDeysOdMcKgGw85BfX3YdAYcC
-        taV00TYA8wNY0fupmJwcH8YGrUiH1W+Zh6rK0oKVhKo6mpA8ar5Mx8zbPEBOZZ5RUheo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nkF1j-000Oz9-FZ; Fri, 29 Apr 2022 03:02:31 +0200
-Date:   Fri, 29 Apr 2022 03:02:31 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joel Stanley <joel@jms.id.au>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Dylan Hung <dylan_hung@aspeedtech.com>,
-        David Wilder <dwilder@us.ibm.com>, openbmc@lists.ozlabs.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Wilder <wilder@us.ibm.com>
-Subject: Re: [PATCH net] net: ftgmac100: Disable hardware checksum on AST2600
-Message-ID: <Yms5JzcVMKDYpR5H@lunn.ch>
-References: <20220428082858.545176-1-joel@jms.id.au>
+        Thu, 28 Apr 2022 21:06:54 -0400
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4303ABC865;
+        Thu, 28 Apr 2022 18:03:38 -0700 (PDT)
+Received: by mail-qv1-f41.google.com with SMTP id kd11so4428454qvb.2;
+        Thu, 28 Apr 2022 18:03:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=5W/PHVbvpSagVt8G3Hj3eW0IY7pmUgdHHakH22/epB8=;
+        b=uIDzWEM6Nnw4tRtYVaj7+heGUYGsMg00iKD2Z3GOBWEh+0lHPjGFWED/wohlT/2kPb
+         nWqdhj6Xjg8ikvXsIZny51dcPBj46OQuid2jqC5BQopaTSHMcnFckRLSoXwIvODs7gmU
+         375YQicFz8s0Rodu72rtnZmCow+JAuSvpA668IIXiA6VuH4okicEMQ7HeTaerZJwxE+n
+         WQHw7EPrwuN8XSYEH2tc9zx2xuOiXQqWUBtcssM8o3bt+McYgM10vMEtciN83DbdyKt5
+         zflEalNBeueIlnVuBBVByHB1T/7+iTJNY9sRYih1yGexU1Ygl9e7jzE3WFRuuB4I4Fq1
+         Ld/Q==
+X-Gm-Message-State: AOAM5312Py8KpCr3ZjpzPV1KfGbvh+SBbnfYvpAgszbY0hVWoIScRtsW
+        JTHujaQcMZQKhQVo5RyMG+4=
+X-Google-Smtp-Source: ABdhPJycaAU4Fqd8i5oSVNbuNnJ/LKsV/SNu6Bwc8rsaXssptvFPXU9aCZhBc7ty0EIfRzyIKyvx3g==
+X-Received: by 2002:a05:6214:f6d:b0:446:4c8b:b57d with SMTP id iy13-20020a0562140f6d00b004464c8bb57dmr26267591qvb.104.1651194217338;
+        Thu, 28 Apr 2022 18:03:37 -0700 (PDT)
+Received: from dev0025.ash9.facebook.com (fwdproxy-ash-016.fbsv.net. [2a03:2880:20ff:10::face:b00c])
+        by smtp.gmail.com with ESMTPSA id i19-20020a05620a249300b0069f805534d3sm814533qkn.89.2022.04.28.18.03.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 18:03:37 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 18:03:33 -0700
+From:   David Vernet <void@manifault.com>
+To:     Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>
+Cc:     akpm@linux-foundation.org, tj@kernel.org, roman.gushchin@linux.dev,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, hannes@cmpxchg.org, mhocko@kernel.org,
+        shakeelb@google.com, kernel-team@fb.com,
+        Richard Palethorpe <rpalethorpe@suse.com>
+Subject: Re: [PATCH v2 2/5] cgroup: Account for memory_recursiveprot in
+ test_memcg_low()
+Message-ID: <20220429010333.5rt2jwpiumnbuapf@dev0025.ash9.facebook.com>
+References: <20220423155619.3669555-1-void@manifault.com>
+ <20220423155619.3669555-3-void@manifault.com>
+ <20220427140928.GD9823@blackbody.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220428082858.545176-1-joel@jms.id.au>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220427140928.GD9823@blackbody.suse.cz>
+User-Agent: NeoMutt/20211029
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Fixes: 39bfab8844a0 ("net: ftgmac100: Add support for DT phy-handle property")
-> Reported-by: David Wilder <wilder@us.ibm.com>
-> Signed-off-by: Joel Stanley <joel@jms.id.au>
-> ---
-> Net maintainers, if no one has a counter proposal I would like this
-> merged as a fix. Please give Dylan from Aspeed a chance to reply before
-> applying the patch.
+Hi Michal,
 
-What has phy-handle got to do with this? You might want to add an
-explanation why you picked that as a Fixes: commit, if it is in fact
-correct.
+On Wed, Apr 27, 2022 at 04:09:28PM +0200, Michal Koutný wrote:
+> Hello David.
+> 
+> On Sat, Apr 23, 2022 at 08:56:19AM -0700, David Vernet <void@manifault.com> wrote:
+> > This unfortunately broke the memcg tests, which asserts that a sibling
+> > that experienced reclaim but had a memory.low value of 0, would not
+> > observe any memory.low events. This patch updates test_memcg_low() to
+> > account for the new behavior introduced by memory_recursiveprot.
+> 
+> I think the test is correct, there should be no (not even recursive)
+> protection in this particular case (when the remaining siblings consume
+> all of parental protection).
+> 
+> This should be fixed in the kernel (see also [1], no updates from me yet
+> :-/)
+> 
+> Michal
+> 
+> [1] https://lore.kernel.org/lkml/20220322182248.29121-1-mkoutny@suse.com/
+> 
 
+I see, thanks for sharing that context. I think I see your point about the
+implementation of the reclaim mechanism potentially overcounting, but my
+interpretation of the rest of that discussion with Roman is that we haven't
+yet decided whether we don't want to propagate memory.low events from
+children cgroups with memory.low == 0. Or at the very least, some more
+justification was requested on why not counting such events was prudent.
 
-     Andrew
+Would you be ok with merging this patch so that the cgroup selftests can
+pass again based on the current behavior of the kernel, and we can then
+revert the changes to test_memcg_low() later on if and when we decide that
+we don't want to propagate memory.low events for memory.low == 0 children?
+
+Thanks,
+David
