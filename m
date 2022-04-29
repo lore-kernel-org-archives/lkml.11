@@ -2,150 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F011C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:13:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 998EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:14:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378922AbiD2QRK (ORCPT
+        id S1378937AbiD2QRQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46244 "EHLO
+        Fri, 29 Apr 2022 12:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240669AbiD2QRI (ORCPT
+        with ESMTP id S1378924AbiD2QRM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:17:08 -0400
-Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6149CD662
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:13:49 -0700 (PDT)
-Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-e93ff05b23so8585373fac.9
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:13:49 -0700 (PDT)
+        Fri, 29 Apr 2022 12:17:12 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8974FD76E4;
+        Fri, 29 Apr 2022 09:13:53 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id j4so14886347lfh.8;
+        Fri, 29 Apr 2022 09:13:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Un+8uBdSonMBArNllHw60eJ9+stkGa05/rjOsT5H7mQ=;
-        b=CcsvnPcyaByh/nvf5QgMaDK4KDq+1ywC2wyRQgS4Z5PIcHl5NrA1xwhpD70O4uFRMj
-         tR9E0NJzMirunOscfIp2SGOnQC9aQf02NR7/CYUFnAs0ToijQawWAhKZRTqfUyRcyyMT
-         ZMMZvCLOqxPLWM+uRhg201zcAlgjQPdiXnmYx3MX7/S2+D4Wd+ci2wMTk/kZ9TI8hyxZ
-         I/jagVFQQb2Rg3XnXZS2BANG+rqq0zT9YRRfiqeNEu1niItjVsmAIFGia9DoklrES8mU
-         Psvu0isGTybgzYHeh/pslkmrhbzskYlNW47ViTWVY9Wx3JNxGP05H39qOCX0Bf5TutYa
-         j4QQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=MUtQYlZoDY/R7p7PZwkNl6WiYboCc/+BzRALrXjVnvc=;
+        b=gvDIjfQM9cYBysUlSu+rJ70grv4sEIjWCqJrnoAf2j9t4E2irKEhaNhwBI7b1SExGh
+         mpJPRwAn/M1hHBN9fPn3QNX4ElAZpOSXjqPTrYfo1NWbeMPZiQv4Ua4z5cURnJNT+NuK
+         lylCSVvEO5IPpnSCm3SSGm0uoJilwXkjsPNWl6mwio9T6Z7/lj7WYRw1EuQ6rxzj6kIX
+         9hKimeilwQDiW84CjPGjnadDFVfsRLJ2gTTjvQ4w9nhoeBMv13kJTNA+z5XrjGLrjuIn
+         VI4hrh96Hzw+43jnakjcDrWX/mlWXaVFNhQtjN4sEix+k2gjWDyzKA7NrRZQHqjPIupy
+         jhSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Un+8uBdSonMBArNllHw60eJ9+stkGa05/rjOsT5H7mQ=;
-        b=2rDKEjbDY1o1XW4VAupkkUWu7+iA9QUKLDv1ru3smOKe6+Wpsg/41/8sLECt7DUhP0
-         Dbvxt7kev7x4jY00mckQlD7QNzt5/aEKZXWUiYcf6HxVzb66JQYXiCXQpPdjZp5Pl+85
-         ZQFYNJxANJWeAvEsu5UF8UqCrENxC+C5b8uNOk8pDpHovnP+OSepYoGX4HpiushzD+DB
-         9plgCtUQTZrE+xmP00T3iVir9fyr0PXT4ULV192NfQyk01DYme01YNpW5hB/zzFh2+4X
-         1xPoQnumEjsQn/AoX3lCFd63GeuQ++CmSwbhDRwvsm77ovKnlV0H47AhFqMlvpUVLu+A
-         b4Zw==
-X-Gm-Message-State: AOAM532Z4ZlBW6WsbWcYoiiWctGkBYXzIB5Q1T2rqF7uTMMIVAWn05k5
-        e2w1DJbc2D/g1RlalMOseweycwITrJdjDMVdZ5Y=
-X-Google-Smtp-Source: ABdhPJxOiBo4M/pvZvo6hhugzdJ2Op2OmRYRd++GDtCarikTTq3eyAiFl/sdq1eGPRIPu01vIKYQK69XBKFGhqKtPjc=
-X-Received: by 2002:a05:6870:d683:b0:de:eaa2:3550 with SMTP id
- z3-20020a056870d68300b000deeaa23550mr24878oap.253.1651248829146; Fri, 29 Apr
- 2022 09:13:49 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MUtQYlZoDY/R7p7PZwkNl6WiYboCc/+BzRALrXjVnvc=;
+        b=ngNrDQBckmunfoyu4d0ZBH/PWpoJMW9ozKgnt3q69CusbWLqdBz3h+rRX1v2O/SCeh
+         eTq937PjwC5cJPEJNeBP3CZdsAq0Js6s0b7yH3KnXjjOl+2nxYWCoFy62PMaqXpDLBQW
+         k+4qCgkF5keTtyqcp7VSabaG00a4/skZd9r3IsERYguy8U9AjWGAVLm8Zs1UdIP21QK1
+         xag1VUpCP+MrP7ubhe+vB9Tuhhe9IDyqujE9qR796RQlYgFTAqRBD7Kgc6T3+CP9W+QY
+         r530d0JQNbphr2bLsbB2hAH75/PZdt5XGKMpDPbRxclLnyHQ0+t3gUyVh/k+41doA244
+         11hQ==
+X-Gm-Message-State: AOAM532zkeCKN6jW5vcyyLkS8UFcBpWDk+TtM3AzGC8QyvINJXNvdxwR
+        IUzl28q+ghfxWvqS5nFSnII=
+X-Google-Smtp-Source: ABdhPJzED2GrN8k3q0hFKOMMX7D6RIvKelthpmj6cYjNYcDivSsOqIrLY/Ug2RdRLhY6Qho3x5OLJA==
+X-Received: by 2002:a05:6512:3d0e:b0:472:f72:a0a9 with SMTP id d14-20020a0565123d0e00b004720f72a0a9mr16681308lfv.484.1651248831732;
+        Fri, 29 Apr 2022 09:13:51 -0700 (PDT)
+Received: from mobilestation.baikal.int (mail.baikalelectronics.com. [87.245.175.226])
+        by smtp.gmail.com with ESMTPSA id p16-20020a056512329000b00472067068f7sm269746lfe.246.2022.04.29.09.13.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 09:13:50 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 19:13:48 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 25/25] PCI: dwc: Add DW eDMA engine support
+Message-ID: <20220429161348.zfjogvb3uxs3fxzp@mobilestation.baikal.int>
+References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
+ <20220324014836.19149-26-Sergey.Semin@baikalelectronics.ru>
+ <20220328141521.GA17663@thinkpad>
+ <20220419205403.hdtp67mwoyrl6b6q@mobilestation>
+ <20220423144055.GR374560@thinkpad>
+ <20220428140501.6geybgwvkevqaz7e@mobilestation.baikal.int>
+ <20220428170929.GC81644@thinkpad>
 MIME-Version: 1.0
-References: <20220429160604.2608782-1-richard.gong@amd.com>
-In-Reply-To: <20220429160604.2608782-1-richard.gong@amd.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Fri, 29 Apr 2022 12:13:38 -0400
-Message-ID: <CADnq5_OoyRmM+tWZ_nipfnNyxFVnyUH+R8Pc4-u2akeffXgssg@mail.gmail.com>
-Subject: Re: [PATCHv5] drm/amdgpu: vi: disable ASPM on Intel Alder Lake based systems
-To:     Richard Gong <richard.gong@amd.com>
-Cc:     "Deucher, Alexander" <alexander.deucher@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>,
-        xinhui pan <xinhui.pan@amd.com>,
-        Dave Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        kernel test robot <lkp@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        "Limonciello, Mario" <mario.limonciello@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220428170929.GC81644@thinkpad>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+On Thu, Apr 28, 2022 at 10:39:29PM +0530, Manivannan Sadhasivam wrote:
+> On Thu, Apr 28, 2022 at 05:05:23PM +0300, Serge Semin wrote:
+> 
+> [...]
+> 
+> > > If iATU has unroll enabled then I think we can assume that edma will also be
+> > > the same. So I was wondering if we could just depend on iatu_unroll_enabled
+> > > here.
+> > 
+> > I thought about that, but then I decided it was easier to just define
+> > a new flag. Anyway according to the hw manuals indeed the unroll
+> > mapping is enabled either for both iATU and eDMA modules or for none
+> > of them just because they are mapped over a single space. It's
+> > determined by the internal VHL parameter CC_UNROLL_ENABLE.
+> > On the second thought I agree with you then. I'll convert the
+> > iatu_unroll_enabled flag into a more generic 'reg_unroll' and make
+> > sure it's used for both modules.
+> > 
+> 
+> Sounds good!
+> 
+> > > 
+> > > > > 
+> > > > > > +	if (pci->edma_unroll_enabled && pci->iatu_unroll_enabled) {
+> > > > > > +		pci->edma.mf = EDMA_MF_EDMA_UNROLL;
+> > > > > > +		if (pci->atu_base != pci->dbi_base + DEFAULT_DBI_ATU_OFFSET)
+> > > > > > +			pci->edma.reg_base = pci->atu_base + PCIE_DMA_UNROLL_BASE;
+> > > > > > +		else
+> > > > > > +			pci->edma.reg_base = pci->dbi_base + DEFAULT_DBI_DMA_OFFSET;
+> > > > > 
+> > > > 
+> > > > > This assumption won't work on all platforms. Atleast on our platform, the
+> > > > > offsets vary. So I'd suggest to try getting the reg_base from DT first and use
+> > > > > these offsets as a fallback as we do for iATU.
+> > > > 
+> > > > I don't know how the eDMA offset can vary at least concerning the
+> > > > normal DW PCIe setup. In any case the DW eDMA controller CSRs are
+> > > > mapped in the same way as the iATU space: CS2=1 CDM=1. They are either
+> > > > created as an unrolled region mapped into the particular MMIO space
+> > > > (as a separate MMIO space or as a part of the DBI space), or
+> > > > accessible over the PL viewports (as a part of the Port Logic CSRs).
+> > > > Nothing else is described in the hardware manuals. Based on that I
+> > > > don't see a reason to add one more reg space binding.
+> > > > 
+> > > 
+> > 
+> > > This is not true. Vendors can customize the iATU location inside DBI region
+> > > for unroll too. That's one of the reason why dw_pcie_iatu_detect() works on
+> > > qcom platforms as it tries to get iatu address from DT first and then falls
+> > > back to the default offset if not found.
+> > > 
+> > > So please define an additional DT region for edma.
+> > 
+> > It's obvious that iATU location can vary. I never said it didn't. We
+> > are talking about eDMA here. In accordance with what the DW PCIe hw
+> > manuals say eDMA always resides the same space as the iATU. The space
+> > is enabled by setting the CS2=1 and CDM=1 wires in case of the Native
+> > Controller DBI access. In this case eDMA is defined with the 0x80000
+> > offset over the iATU base address while the iATU base can be placed at
+> > whatever region platform engineer needs.
+> > 
+> > Alternatively the AXI Bridge-based DBI access can be enabled thus
+> > having the DBI+iATU+eDMA mapped over the same MMIO space with
+> > respective offsets 0x0;0x300000;0x380000. This case is handled in the
+> > branch of the conditional statement above if it's found that iATU base
+> > is having the default offset with respect to the DBI base address
+> > (pci->atu_base == pci->dbi_base + DEFAULT_DBI_ATU_OFFSET).
+> > 
+> > To sum up seeing I couldn't find the eDMA region defined in the qcom
+> > bindings and judging by what you say doesn't really contradict to what
+> > is done in my code, I guess there must be some misunderstanding either in
+> > what you see in the code above or what I understand from what you say.
+> > So please be more specific what offsets and whether they are really
+> > different from what I use in the code above.
+> > 
+> 
+> You won't see any edma register offset because no one bothered to define it
+> since it was not used until now. But the memory region should've been
+> documented...
+> 
 
-On Fri, Apr 29, 2022 at 12:08 PM Richard Gong <richard.gong@amd.com> wrote:
->
-> Active State Power Management (ASPM) feature is enabled since kernel 5.14.
-> There are some AMD Volcanic Islands (VI) GFX cards, such as the WX3200 and
-> RX640, that do not work with ASPM-enabled Intel Alder Lake based systems.
-> Using these GFX cards as video/display output, Intel Alder Lake based
-> systems will freeze after suspend/resume.
->
-> The issue was originally reported on one system (Dell Precision 3660 with
-> BIOS version 0.14.81), but was later confirmed to affect at least 4
-> pre-production Alder Lake based systems.
->
-> Add an extra check to disable ASPM on Intel Alder Lake based systems with
-> the problematic AMD Volcanic Islands GFX cards.
->
-> Fixes: 0064b0ce85bb ("drm/amd/pm: enable ASPM by default")
-> Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1885
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Richard Gong <richard.gong@amd.com>
-> ---
-> v5: added vi to commit header and updated commit message
->     rolled back guard with the preprocessor as did in v2 to correct build
->     error on non-x86 systems
-> v4: s/CONFIG_X86_64/CONFIG_X86
->     enhanced check logic
-> v3: s/intel_core_aspm_chk/aspm_support_quirk_check
->     correct build error with W=1 option
-> v2: correct commit description
->     move the check from chip family to problematic platform
-> ---
->  drivers/gpu/drm/amd/amdgpu/vi.c | 17 ++++++++++++++++-
->  1 file changed, 16 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/amd/amdgpu/vi.c b/drivers/gpu/drm/amd/amdgpu/vi.c
-> index 039b90cdc3bc..45f0188c4273 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/vi.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/vi.c
-> @@ -81,6 +81,10 @@
->  #include "mxgpu_vi.h"
->  #include "amdgpu_dm.h"
->
-> +#if IS_ENABLED(CONFIG_X86)
-> +#include <asm/intel-family.h>
-> +#endif
-> +
->  #define ixPCIE_LC_L1_PM_SUBSTATE       0x100100C6
->  #define PCIE_LC_L1_PM_SUBSTATE__LC_L1_SUBSTATES_OVERRIDE_EN_MASK       0x00000001L
->  #define PCIE_LC_L1_PM_SUBSTATE__LC_PCI_PM_L1_2_OVERRIDE_MASK   0x00000002L
-> @@ -1134,13 +1138,24 @@ static void vi_enable_aspm(struct amdgpu_device *adev)
->                 WREG32_PCIE(ixPCIE_LC_CNTL, data);
->  }
->
-> +static bool aspm_support_quirk_check(void)
-> +{
-> +#if IS_ENABLED(CONFIG_X86)
-> +       struct cpuinfo_x86 *c = &cpu_data(0);
-> +
-> +       return !(c->x86 == 6 && c->x86_model == INTEL_FAM6_ALDERLAKE);
-> +#else
-> +       return true;
-> +#endif
-> +}
-> +
->  static void vi_program_aspm(struct amdgpu_device *adev)
->  {
->         u32 data, data1, orig;
->         bool bL1SS = false;
->         bool bClkReqSupport = true;
->
-> -       if (!amdgpu_device_should_use_aspm(adev))
-> +       if (!amdgpu_device_should_use_aspm(adev) || !aspm_support_quirk_check())
->                 return;
->
->         if (adev->flags & AMD_IS_APU ||
-> --
-> 2.25.1
->
+> Anyway, here is the offset for the Qcom SoC I'm currently working on:
+> 
+> DBI  - 0x0
+> iATU - 0x1000
+> eDMA - 0x2000
+
+Finally we've got to something. Earlier you said:
+
+> > > This is not true. Vendors can customize the iATU location inside DBI region
+> > > for unroll too.
+
+Actually it is if we are talking about the standard Syopsys DW PCIe
+IP-CoreConsultant methods, which don't imply any eDMA base address
+customization parameter. Thus there must be some address translation
+performed at some layer before the address reaches the DW PCIe DBI
+interface. So it's platform-specific. That happens in your case too.
+
+> > > That's one of the reason why dw_pcie_iatu_detect() works on
+> > > qcom platforms as it tries to get iatu address from DT first and then falls
+> > > back to the default offset if not found.
+> 
+> As you can see, these offsets doesn't really fit in both the cases you shared
+> above.
+
+Seeing the iATU address bits layout can be changed the next
+reg-space calculation code shall work for all the discussed cases:
+
+if (!unroll) {
+	pci->edma.reg_base = pci->dbi_base + PCIE_DMA_VIEWPORT_BASE;
+} else if (!pci->edma.reg_base) {
+	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "dma");
+	if (res) {
+		pci->edma.reg_base = devm_ioremap_resource(dev, res);
+		if (IS_ERR(pci->edma.reg_base))
+			return PTR_ERR(pci->edma.reg_base);
+	} else (pci->atu_size >= 2 * 0x80000) {
+		pci->edma.reg_base = pci->atu_base + 0x80000;
+	} else {
+		/* No standard eDMA CSRs mapping found. Just skip */
+		return 0;
+	}
+} else {
+	/* pci->edma.reg_base can be specified by the platform code. This shall
+	 * be useful for the tegra194 or intel gw SoCs. The former
+	 * platform has the "atu_dma" resource declared which implies
+	 * having the joint iATU+eDMA CSR space, while the later has
+	 * specific iATU offset with respect to the DBI base address
+	 * (address is two bits shorter).
+	 */
+}
+
+-Sergey
+
+> 
+> I don't have the knowledge about the internal representation of the IP or what
+> customization Qcom did apart from some high level information.
+> 
+> Hope this clarifies!
+> 
+> Thanks,
+> Mani
