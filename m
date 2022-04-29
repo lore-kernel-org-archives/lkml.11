@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A66CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F60BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 10:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357921AbiD2KrJ (ORCPT
+        id S1357965AbiD2KrN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 06:47:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60030 "EHLO
+        Fri, 29 Apr 2022 06:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357890AbiD2Kp6 (ORCPT
+        with ESMTP id S1358002AbiD2Kqm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 06:45:58 -0400
+        Fri, 29 Apr 2022 06:46:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA67C74A2;
-        Fri, 29 Apr 2022 03:42:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7804C8A9F;
+        Fri, 29 Apr 2022 03:42:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D1D462356;
-        Fri, 29 Apr 2022 10:42:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A21C6C385A4;
-        Fri, 29 Apr 2022 10:42:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8462A6236D;
+        Fri, 29 Apr 2022 10:42:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8401DC385BD;
+        Fri, 29 Apr 2022 10:42:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651228952;
-        bh=9SJEWbZg+I1bE+nYZD11RlSuif+eP9MLYe6W5R62kgk=;
+        s=korg; t=1651228967;
+        bh=v4nnWmacNa7G1jbL4vaabU9ZIa8ZfbxFYoUs1cv4oy4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LUGzBJqNiN9e52PLASmvd+3+E+rI/diVA8v7FGOqdYyqK2bePktgTM8FavzgdO3E3
-         lLzjcSiyW0fw7XbTU9P5d7PLN5uj0O0UxB4AJPcP91Bz6wtGGkFWMc7rXJdGjJAYy2
-         41gVCddUMs7IsSGPNhkipRXyn+8Q55ZqaoMTGTSM=
+        b=bMBGZp8O6WjdwzQLPEDfo+keTA3o89X1Ru1hzl9SJbquJmukeH23V2e6R4Xaz/MmW
+         0igjdnxaXKx0xJLd+57Fm79/jc8FCWxEARNT2LmFHYiT6Tc0TWLC+mID2YpSMU1xr4
+         DaALfNov3rpNISxIQQAv8gxI9+o6y9c6VxTfpxS4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.15 02/33] bpf: Introduce composable reg, ret and arg types.
-Date:   Fri, 29 Apr 2022 12:41:49 +0200
-Message-Id: <20220429104052.416312840@linuxfoundation.org>
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Anand Jain <anand.jain@oracle.com>
+Subject: [PATCH 5.15 15/33] gup: Turn fault_in_pages_{readable,writeable} into fault_in_{readable,writeable}
+Date:   Fri, 29 Apr 2022 12:42:02 +0200
+Message-Id: <20220429104052.784871097@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220429104052.345760505@linuxfoundation.org>
 References: <20220429104052.345760505@linuxfoundation.org>
@@ -49,142 +49,337 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Luo <haoluo@google.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-commit d639b9d13a39cf15639cbe6e8b2c43eb60148a73 upstream.
+commit bb523b406c849eef8f265a07cd7f320f1f177743 upstream
 
-There are some common properties shared between bpf reg, ret and arg
-values. For instance, a value may be a NULL pointer, or a pointer to
-a read-only memory. Previously, to express these properties, enumeration
-was used. For example, in order to test whether a reg value can be NULL,
-reg_type_may_be_null() simply enumerates all types that are possibly
-NULL. The problem of this approach is that it's not scalable and causes
-a lot of duplication. These properties can be combined, for example, a
-type could be either MAYBE_NULL or RDONLY, or both.
+Turn fault_in_pages_{readable,writeable} into versions that return the
+number of bytes not faulted in, similar to copy_to_user, instead of
+returning a non-zero value when any of the requested pages couldn't be
+faulted in.  This supports the existing users that require all pages to
+be faulted in as well as new users that are happy if any pages can be
+faulted in.
 
-This patch series rewrites the layout of reg_type, arg_type and
-ret_type, so that common properties can be extracted and represented as
-composable flag. For example, one can write
+Rename the functions to fault_in_{readable,writeable} to make sure
+this change doesn't silently break things.
 
- ARG_PTR_TO_MEM | PTR_MAYBE_NULL
+Neither of these functions is entirely trivial and it doesn't seem
+useful to inline them, so move them to mm/gup.c.
 
-which is equivalent to the previous
-
- ARG_PTR_TO_MEM_OR_NULL
-
-The type ARG_PTR_TO_MEM are called "base type" in this patch. Base
-types can be extended with flags. A flag occupies the higher bits while
-base types sits in the lower bits.
-
-This patch in particular sets up a set of macro for this purpose. The
-following patches will rewrite arg_types, ret_types and reg_types
-respectively.
-
-Signed-off-by: Hao Luo <haoluo@google.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20211217003152.48334-2-haoluo@google.com
-Cc: stable@vger.kernel.org # 5.15.x
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Anand Jain <anand.jain@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/bpf.h          |   42 ++++++++++++++++++++++++++++++++++++++++++
- include/linux/bpf_verifier.h |   14 ++++++++++++++
- 2 files changed, 56 insertions(+)
+ arch/powerpc/kernel/kvm.c           |    3 +
+ arch/powerpc/kernel/signal_32.c     |    4 +-
+ arch/powerpc/kernel/signal_64.c     |    2 -
+ arch/x86/kernel/fpu/signal.c        |    7 +--
+ drivers/gpu/drm/armada/armada_gem.c |    7 +--
+ fs/btrfs/ioctl.c                    |    5 +-
+ include/linux/pagemap.h             |   57 +---------------------------
+ lib/iov_iter.c                      |   10 ++---
+ mm/filemap.c                        |    2 -
+ mm/gup.c                            |   72 ++++++++++++++++++++++++++++++++++++
+ 10 files changed, 93 insertions(+), 76 deletions(-)
 
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -293,6 +293,29 @@ bool bpf_map_meta_equal(const struct bpf
+--- a/arch/powerpc/kernel/kvm.c
++++ b/arch/powerpc/kernel/kvm.c
+@@ -669,7 +669,8 @@ static void __init kvm_use_magic_page(vo
+ 	on_each_cpu(kvm_map_magic_page, &features, 1);
  
- extern const struct bpf_map_ops bpf_map_offload_ops;
+ 	/* Quick self-test to see if the mapping works */
+-	if (fault_in_pages_readable((const char *)KVM_MAGIC_PAGE, sizeof(u32))) {
++	if (fault_in_readable((const char __user *)KVM_MAGIC_PAGE,
++			      sizeof(u32))) {
+ 		kvm_patching_worked = false;
+ 		return;
+ 	}
+--- a/arch/powerpc/kernel/signal_32.c
++++ b/arch/powerpc/kernel/signal_32.c
+@@ -1048,7 +1048,7 @@ SYSCALL_DEFINE3(swapcontext, struct ucon
+ 	if (new_ctx == NULL)
+ 		return 0;
+ 	if (!access_ok(new_ctx, ctx_size) ||
+-	    fault_in_pages_readable((u8 __user *)new_ctx, ctx_size))
++	    fault_in_readable((char __user *)new_ctx, ctx_size))
+ 		return -EFAULT;
  
-+/* bpf_type_flag contains a set of flags that are applicable to the values of
-+ * arg_type, ret_type and reg_type. For example, a pointer value may be null,
-+ * or a memory is read-only. We classify types into two categories: base types
-+ * and extended types. Extended types are base types combined with a type flag.
+ 	/*
+@@ -1239,7 +1239,7 @@ SYSCALL_DEFINE3(debug_setcontext, struct
+ #endif
+ 
+ 	if (!access_ok(ctx, sizeof(*ctx)) ||
+-	    fault_in_pages_readable((u8 __user *)ctx, sizeof(*ctx)))
++	    fault_in_readable((char __user *)ctx, sizeof(*ctx)))
+ 		return -EFAULT;
+ 
+ 	/*
+--- a/arch/powerpc/kernel/signal_64.c
++++ b/arch/powerpc/kernel/signal_64.c
+@@ -688,7 +688,7 @@ SYSCALL_DEFINE3(swapcontext, struct ucon
+ 	if (new_ctx == NULL)
+ 		return 0;
+ 	if (!access_ok(new_ctx, ctx_size) ||
+-	    fault_in_pages_readable((u8 __user *)new_ctx, ctx_size))
++	    fault_in_readable((char __user *)new_ctx, ctx_size))
+ 		return -EFAULT;
+ 
+ 	/*
+--- a/arch/x86/kernel/fpu/signal.c
++++ b/arch/x86/kernel/fpu/signal.c
+@@ -205,7 +205,7 @@ retry:
+ 	fpregs_unlock();
+ 
+ 	if (ret) {
+-		if (!fault_in_pages_writeable(buf_fx, fpu_user_xstate_size))
++		if (!fault_in_writeable(buf_fx, fpu_user_xstate_size))
+ 			goto retry;
+ 		return -EFAULT;
+ 	}
+@@ -278,10 +278,9 @@ retry:
+ 		if (ret != -EFAULT)
+ 			return -EINVAL;
+ 
+-		ret = fault_in_pages_readable(buf, size);
+-		if (!ret)
++		if (!fault_in_readable(buf, size))
+ 			goto retry;
+-		return ret;
++		return -EFAULT;
+ 	}
+ 
+ 	/*
+--- a/drivers/gpu/drm/armada/armada_gem.c
++++ b/drivers/gpu/drm/armada/armada_gem.c
+@@ -336,7 +336,7 @@ int armada_gem_pwrite_ioctl(struct drm_d
+ 	struct drm_armada_gem_pwrite *args = data;
+ 	struct armada_gem_object *dobj;
+ 	char __user *ptr;
+-	int ret;
++	int ret = 0;
+ 
+ 	DRM_DEBUG_DRIVER("handle %u off %u size %u ptr 0x%llx\n",
+ 		args->handle, args->offset, args->size, args->ptr);
+@@ -349,9 +349,8 @@ int armada_gem_pwrite_ioctl(struct drm_d
+ 	if (!access_ok(ptr, args->size))
+ 		return -EFAULT;
+ 
+-	ret = fault_in_pages_readable(ptr, args->size);
+-	if (ret)
+-		return ret;
++	if (fault_in_readable(ptr, args->size))
++		return -EFAULT;
+ 
+ 	dobj = armada_gem_object_lookup(file, args->handle);
+ 	if (dobj == NULL)
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -2258,9 +2258,8 @@ static noinline int search_ioctl(struct
+ 	key.offset = sk->min_offset;
+ 
+ 	while (1) {
+-		ret = fault_in_pages_writeable(ubuf + sk_offset,
+-					       *buf_size - sk_offset);
+-		if (ret)
++		ret = -EFAULT;
++		if (fault_in_writeable(ubuf + sk_offset, *buf_size - sk_offset))
+ 			break;
+ 
+ 		ret = btrfs_search_forward(root, &key, path, sk->min_transid);
+--- a/include/linux/pagemap.h
++++ b/include/linux/pagemap.h
+@@ -733,61 +733,10 @@ int wait_on_page_private_2_killable(stru
+ extern void add_page_wait_queue(struct page *page, wait_queue_entry_t *waiter);
+ 
+ /*
+- * Fault everything in given userspace address range in.
++ * Fault in userspace address range.
+  */
+-static inline int fault_in_pages_writeable(char __user *uaddr, size_t size)
+-{
+-	char __user *end = uaddr + size - 1;
+-
+-	if (unlikely(size == 0))
+-		return 0;
+-
+-	if (unlikely(uaddr > end))
+-		return -EFAULT;
+-	/*
+-	 * Writing zeroes into userspace here is OK, because we know that if
+-	 * the zero gets there, we'll be overwriting it.
+-	 */
+-	do {
+-		if (unlikely(__put_user(0, uaddr) != 0))
+-			return -EFAULT;
+-		uaddr += PAGE_SIZE;
+-	} while (uaddr <= end);
+-
+-	/* Check whether the range spilled into the next page. */
+-	if (((unsigned long)uaddr & PAGE_MASK) ==
+-			((unsigned long)end & PAGE_MASK))
+-		return __put_user(0, end);
+-
+-	return 0;
+-}
+-
+-static inline int fault_in_pages_readable(const char __user *uaddr, size_t size)
+-{
+-	volatile char c;
+-	const char __user *end = uaddr + size - 1;
+-
+-	if (unlikely(size == 0))
+-		return 0;
+-
+-	if (unlikely(uaddr > end))
+-		return -EFAULT;
+-
+-	do {
+-		if (unlikely(__get_user(c, uaddr) != 0))
+-			return -EFAULT;
+-		uaddr += PAGE_SIZE;
+-	} while (uaddr <= end);
+-
+-	/* Check whether the range spilled into the next page. */
+-	if (((unsigned long)uaddr & PAGE_MASK) ==
+-			((unsigned long)end & PAGE_MASK)) {
+-		return __get_user(c, end);
+-	}
+-
+-	(void)c;
+-	return 0;
+-}
++size_t fault_in_writeable(char __user *uaddr, size_t size);
++size_t fault_in_readable(const char __user *uaddr, size_t size);
+ 
+ int add_to_page_cache_locked(struct page *page, struct address_space *mapping,
+ 				pgoff_t index, gfp_t gfp_mask);
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -191,7 +191,7 @@ static size_t copy_page_to_iter_iovec(st
+ 	buf = iov->iov_base + skip;
+ 	copy = min(bytes, iov->iov_len - skip);
+ 
+-	if (IS_ENABLED(CONFIG_HIGHMEM) && !fault_in_pages_writeable(buf, copy)) {
++	if (IS_ENABLED(CONFIG_HIGHMEM) && !fault_in_writeable(buf, copy)) {
+ 		kaddr = kmap_atomic(page);
+ 		from = kaddr + offset;
+ 
+@@ -275,7 +275,7 @@ static size_t copy_page_from_iter_iovec(
+ 	buf = iov->iov_base + skip;
+ 	copy = min(bytes, iov->iov_len - skip);
+ 
+-	if (IS_ENABLED(CONFIG_HIGHMEM) && !fault_in_pages_readable(buf, copy)) {
++	if (IS_ENABLED(CONFIG_HIGHMEM) && !fault_in_readable(buf, copy)) {
+ 		kaddr = kmap_atomic(page);
+ 		to = kaddr + offset;
+ 
+@@ -447,13 +447,11 @@ int iov_iter_fault_in_readable(const str
+ 			bytes = i->count;
+ 		for (p = i->iov, skip = i->iov_offset; bytes; p++, skip = 0) {
+ 			size_t len = min(bytes, p->iov_len - skip);
+-			int err;
+ 
+ 			if (unlikely(!len))
+ 				continue;
+-			err = fault_in_pages_readable(p->iov_base + skip, len);
+-			if (unlikely(err))
+-				return err;
++			if (fault_in_readable(p->iov_base + skip, len))
++				return -EFAULT;
+ 			bytes -= len;
+ 		}
+ 	}
+--- a/mm/filemap.c
++++ b/mm/filemap.c
+@@ -90,7 +90,7 @@
+  *      ->lock_page		(filemap_fault, access_process_vm)
+  *
+  *  ->i_rwsem			(generic_perform_write)
+- *    ->mmap_lock		(fault_in_pages_readable->do_page_fault)
++ *    ->mmap_lock		(fault_in_readable->do_page_fault)
+  *
+  *  bdi->wb.list_lock
+  *    sb_lock			(fs/fs-writeback.c)
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -1682,6 +1682,78 @@ finish_or_fault:
+ #endif /* !CONFIG_MMU */
+ 
+ /**
++ * fault_in_writeable - fault in userspace address range for writing
++ * @uaddr: start of address range
++ * @size: size of address range
 + *
-+ * Currently there are no more than 32 base types in arg_type, ret_type and
-+ * reg_types.
++ * Returns the number of bytes not faulted in (like copy_to_user() and
++ * copy_from_user()).
 + */
-+#define BPF_BASE_TYPE_BITS	8
-+
-+enum bpf_type_flag {
-+	/* PTR may be NULL. */
-+	PTR_MAYBE_NULL		= BIT(0 + BPF_BASE_TYPE_BITS),
-+
-+	__BPF_TYPE_LAST_FLAG	= PTR_MAYBE_NULL,
-+};
-+
-+/* Max number of base types. */
-+#define BPF_BASE_TYPE_LIMIT	(1UL << BPF_BASE_TYPE_BITS)
-+
-+/* Max number of all types. */
-+#define BPF_TYPE_LIMIT		(__BPF_TYPE_LAST_FLAG | (__BPF_TYPE_LAST_FLAG - 1))
-+
- /* function argument constraints */
- enum bpf_arg_type {
- 	ARG_DONTCARE = 0,	/* unused argument in helper function */
-@@ -339,7 +362,13 @@ enum bpf_arg_type {
- 	ARG_PTR_TO_CONST_STR,	/* pointer to a null terminated read-only string */
- 	ARG_PTR_TO_TIMER,	/* pointer to bpf_timer */
- 	__BPF_ARG_TYPE_MAX,
-+
-+	/* This must be the last entry. Its purpose is to ensure the enum is
-+	 * wide enough to hold the higher bits reserved for bpf_type_flag.
-+	 */
-+	__BPF_ARG_TYPE_LIMIT	= BPF_TYPE_LIMIT,
- };
-+static_assert(__BPF_ARG_TYPE_MAX <= BPF_BASE_TYPE_LIMIT);
- 
- /* type of values returned from helper functions */
- enum bpf_return_type {
-@@ -355,7 +384,14 @@ enum bpf_return_type {
- 	RET_PTR_TO_MEM_OR_BTF_ID_OR_NULL, /* returns a pointer to a valid memory or a btf_id or NULL */
- 	RET_PTR_TO_MEM_OR_BTF_ID,	/* returns a pointer to a valid memory or a btf_id */
- 	RET_PTR_TO_BTF_ID,		/* returns a pointer to a btf_id */
-+	__BPF_RET_TYPE_MAX,
-+
-+	/* This must be the last entry. Its purpose is to ensure the enum is
-+	 * wide enough to hold the higher bits reserved for bpf_type_flag.
-+	 */
-+	__BPF_RET_TYPE_LIMIT	= BPF_TYPE_LIMIT,
- };
-+static_assert(__BPF_RET_TYPE_MAX <= BPF_BASE_TYPE_LIMIT);
- 
- /* eBPF function prototype used by verifier to allow BPF_CALLs from eBPF programs
-  * to in-kernel helper functions and for adjusting imm32 field in BPF_CALL
-@@ -457,7 +493,13 @@ enum bpf_reg_type {
- 	PTR_TO_FUNC,		 /* reg points to a bpf program function */
- 	PTR_TO_MAP_KEY,		 /* reg points to a map element key */
- 	__BPF_REG_TYPE_MAX,
-+
-+	/* This must be the last entry. Its purpose is to ensure the enum is
-+	 * wide enough to hold the higher bits reserved for bpf_type_flag.
-+	 */
-+	__BPF_REG_TYPE_LIMIT	= BPF_TYPE_LIMIT,
- };
-+static_assert(__BPF_REG_TYPE_MAX <= BPF_BASE_TYPE_LIMIT);
- 
- /* The information passed from prog-specific *_is_valid_access
-  * back to the verifier.
---- a/include/linux/bpf_verifier.h
-+++ b/include/linux/bpf_verifier.h
-@@ -535,4 +535,18 @@ int bpf_check_attach_target(struct bpf_v
- 			    u32 btf_id,
- 			    struct bpf_attach_target_info *tgt_info);
- 
-+#define BPF_BASE_TYPE_MASK	GENMASK(BPF_BASE_TYPE_BITS - 1, 0)
-+
-+/* extract base type from bpf_{arg, return, reg}_type. */
-+static inline u32 base_type(u32 type)
++size_t fault_in_writeable(char __user *uaddr, size_t size)
 +{
-+	return type & BPF_BASE_TYPE_MASK;
-+}
++	char __user *start = uaddr, *end;
 +
-+/* extract flags from an extended type. See bpf_type_flag in bpf.h. */
-+static inline u32 type_flag(u32 type)
++	if (unlikely(size == 0))
++		return 0;
++	if (!PAGE_ALIGNED(uaddr)) {
++		if (unlikely(__put_user(0, uaddr) != 0))
++			return size;
++		uaddr = (char __user *)PAGE_ALIGN((unsigned long)uaddr);
++	}
++	end = (char __user *)PAGE_ALIGN((unsigned long)start + size);
++	if (unlikely(end < start))
++		end = NULL;
++	while (uaddr != end) {
++		if (unlikely(__put_user(0, uaddr) != 0))
++			goto out;
++		uaddr += PAGE_SIZE;
++	}
++
++out:
++	if (size > uaddr - start)
++		return size - (uaddr - start);
++	return 0;
++}
++EXPORT_SYMBOL(fault_in_writeable);
++
++/**
++ * fault_in_readable - fault in userspace address range for reading
++ * @uaddr: start of user address range
++ * @size: size of user address range
++ *
++ * Returns the number of bytes not faulted in (like copy_to_user() and
++ * copy_from_user()).
++ */
++size_t fault_in_readable(const char __user *uaddr, size_t size)
 +{
-+	return type & ~BPF_BASE_TYPE_MASK;
-+}
++	const char __user *start = uaddr, *end;
++	volatile char c;
 +
- #endif /* _LINUX_BPF_VERIFIER_H */
++	if (unlikely(size == 0))
++		return 0;
++	if (!PAGE_ALIGNED(uaddr)) {
++		if (unlikely(__get_user(c, uaddr) != 0))
++			return size;
++		uaddr = (const char __user *)PAGE_ALIGN((unsigned long)uaddr);
++	}
++	end = (const char __user *)PAGE_ALIGN((unsigned long)start + size);
++	if (unlikely(end < start))
++		end = NULL;
++	while (uaddr != end) {
++		if (unlikely(__get_user(c, uaddr) != 0))
++			goto out;
++		uaddr += PAGE_SIZE;
++	}
++
++out:
++	(void)c;
++	if (size > uaddr - start)
++		return size - (uaddr - start);
++	return 0;
++}
++EXPORT_SYMBOL(fault_in_readable);
++
++/**
+  * get_dump_page() - pin user page in memory while writing it to core dump
+  * @addr: user address
+  *
 
 
