@@ -2,124 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B844BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 19:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49252C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 19:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380390AbiD2ToD (ORCPT
+        id S1380385AbiD2Tuw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 15:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46322 "EHLO
+        Fri, 29 Apr 2022 15:50:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380409AbiD2Tn4 (ORCPT
+        with ESMTP id S238988AbiD2Tut (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 15:43:56 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD3625EBB;
-        Fri, 29 Apr 2022 12:40:35 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651261233;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=G90v80vwxgYebC2KpfsavbID4TjF7nvhmIxKehMfUYQ=;
-        b=pZPNUNH38ZyrulW1gVyK7RQHeNmUxDGxyKgocGuGA19UkVDw77lNYg5EFi5BwOeT7yETco
-        NHonRRs0NIfW1kh5aDjhpTxWrIMx4AY1us7hehofLPLMe8YzWT/vm+qXNP1frMm0vKEf9J
-        HJqztNhv0R65XwUzK5gzW2SZBFkErw6J/T+pX4SFSHswSIIkaw58lDe2Gv84rDnJDbfgJs
-        av7E0MHU9UfZa44TGzDjD1gXQKExFbwGQgW/oYUWT3LmPHgt5iHkKmiRZqBS7mozdSPbyD
-        aSGHodTcutREinGB0y8eVSGWQwUBrvf+x60WIPHXr5P6e7B+AO2y9tEsUFYRMg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651261233;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=G90v80vwxgYebC2KpfsavbID4TjF7nvhmIxKehMfUYQ=;
-        b=Dco0825afeNJzSw4/gXGisLWZg8ApVZ3M34zsr6XMae0tshtLBu71pGg4BXyHcfj75GOAZ
-        KTZTrUdUTEoRe1CQ==
-To:     Marc Zyngier <maz@kernel.org>, Thomas Pfaff <tpfaff@pcs.com>
-Cc:     linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org,
-        Hillf Danton <hdanton@sina.com>
-Subject: Re: [PATCH v2] irq/core: synchronize irq_thread startup
-In-Reply-To: <87sfpv98j0.wl-maz@kernel.org>
-References: <1e3f96b7-9294-1534-e83b-efe3602f876f@pcs.com>
- <87sfpv98j0.wl-maz@kernel.org>
-Date:   Fri, 29 Apr 2022 21:40:32 +0200
-Message-ID: <87fslvoez3.ffs@tglx>
+        Fri, 29 Apr 2022 15:50:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 659F1D4CAA
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 12:47:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD981612FD
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 19:47:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51AE2C385A4;
+        Fri, 29 Apr 2022 19:47:28 +0000 (UTC)
+Date:   Fri, 29 Apr 2022 15:47:26 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        llvm@lists.linux.dev, Michael Ellerman <mpe@ellerman.id.au>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: Re: [PATCH v2 2/2] ftrace: recordmcount: Handle sections with no
+ non-weak symbols
+Message-ID: <20220429154726.19f72a1a@gandalf.local.home>
+In-Reply-To: <1651257788.xtscezsfky.naveen@linux.ibm.com>
+References: <cover.1651166001.git.naveen.n.rao@linux.vnet.ibm.com>
+        <126aca34935cf1c7168e17970c706e36577094e7.1651166001.git.naveen.n.rao@linux.vnet.ibm.com>
+        <20220428184212.18fbf438@gandalf.local.home>
+        <1651252324.js9790ngjg.naveen@linux.ibm.com>
+        <20220429135916.47c3e623@gandalf.local.home>
+        <1651257788.xtscezsfky.naveen@linux.ibm.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29 2022 at 17:08, Marc Zyngier wrote:
-> On Fri, 29 Apr 2022 12:52:48 +0100,
-> Thomas Pfaff <tpfaff@pcs.com> wrote:
+On Sat, 30 Apr 2022 01:03:01 +0530
+"Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> wrote:
 
- > +static void wait_for_irq_thread_startup(struct irq_desc *desc,
- > +		struct irqaction *action)
+> > The point of this section is to know which functions in __mcount_loc may
+> > have been overridden, as they would be found in the __mcount_loc_weak
+> > section. And then we can do something "special" to them.  
+> 
+> I'm not sure I follow that. How are you intending to figure out which 
+> functions were overridden by looking at entries in the __mcount_loc_weak 
+> section?
 
- and this would be wait_for_irq_thread_ready().
+If there's duplicates (or something strange with the offset) then we could
+delete the one that has the match in the weak section.
 
-which is sill a misnomer as this actually wakes and waits.
+> 
+> In the final vmlinux image, we only get offsets into .text for all 
+> mcount locations, but no symbol information. The only hint is the fact 
+> that a single kallsym symbol has multiple mcount locations within it. 
+> Even then, the symbol with duplicate mcount entries won't be the 
+> function that was overridden.
+> 
+> We could do a kallsyms_lookup() on each entry and consult the 
+> __mcount_loc_weak section to identify duplicates, but that looks to be 
+> very expensive.
+> 
+> Did you have a different approach in mind?
 
->> @@ -1522,6 +1548,8 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
->>  		}
->>  	}
->>  
->> +	init_waitqueue_head(&desc->wait_for_threads);
->> +
->
-> I'm trying to convince myself that this one is safe.
->
-> It was so far only done when registering the first handler of a
-> threaded interrupt, while it is now done on every call to
-> __setup_irq().  However, this is now done outside of the protection of
-> any of the locks, meaning that a concurrent __setup_irq() for a shared
-> interrupt can now barge in and corrupt the wait queue.
->
-> So I don't think this is right. You may be able to hoist the
-> request_lock up, but I haven't checked what could break, if anything.
+We only need to look at the ones in the weak section. How many that is may
+determine if that's feasible or not.
 
-It can't be moved here, but I can see why Thomas wants to move it. With
-a spurious wakeup of the irq thread (should not happen), the thread
-would try to invoke wake_up() on a non initialize wait queue head.
+> 
+> >   
+> >> 
+> >> As an example, in the issue described in this patch set, if powerpc 
+> >> starts over-riding kexec_arch_apply_relocations(), then the current weak 
+> >> implementation in kexec_file.o gets carried over to the final vmlinux, 
+> >> but the instructions will instead appear under the previous function in 
+> >> kexec_file.o: crash_prepare_elf64_headers(). This function may or may 
+> >> not be traced to begin with, so we won't be able to figure out if this 
+> >> is valid or not.  
+> > 
+> > If it was overridden, then there would be two entries for function that
+> > overrides the weak function in the __mcount_loc section, right? One for the
+> > new function, and one that was overridden.  
+> 
+> In the final vmlinux, we will have two entries: one pointing at the 
+> correct function, while the other will point to some other function 
+> name. So, at least from kallsym perspective, duplicate mcount entries 
+> won't be for the function that was overridden, but some arbitrary 
+> function that came before the weak function in the object file.
 
-Something like this should do the trick.
+Right, and we should be able to find them.
 
-diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
-index 939d21cd55c3..0099b87dd853 100644
---- a/kernel/irq/irqdesc.c
-+++ b/kernel/irq/irqdesc.c
-@@ -407,6 +407,7 @@ static struct irq_desc *alloc_desc(int irq, int node, unsigned int flags,
- 	lockdep_set_class(&desc->lock, &irq_desc_lock_class);
- 	mutex_init(&desc->request_mutex);
- 	init_rcu_head(&desc->rcu);
-+	init_waitqueue_head(&desc->wait_for_threads);
- 
- 	desc_set_defaults(irq, desc, node, affinity, owner);
- 	irqd_set(&desc->irq_data, flags);
-@@ -575,6 +576,7 @@ int __init early_irq_init(void)
- 		raw_spin_lock_init(&desc[i].lock);
- 		lockdep_set_class(&desc[i].lock, &irq_desc_lock_class);
- 		mutex_init(&desc[i].request_mutex);
-+		init_waitqueue_head(&desc[i].wait_for_threads);
- 		desc_set_defaults(i, &desc[i], node, NULL, NULL);
- 	}
- 	return arch_early_irq_init();
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index c03f71d5ec10..6a0942f4d068 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -1683,8 +1683,6 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
- 	}
- 
- 	if (!shared) {
--		init_waitqueue_head(&desc->wait_for_threads);
--
- 		/* Setup the type (level, edge polarity) if configured: */
- 		if (new->flags & IRQF_TRIGGER_MASK) {
- 			ret = __irq_set_trigger(desc,
+> 
+> > Of course this could be more
+> > complex if the new function had been marked notrace.
+> > 
+> > I was thinking of doing this just so that we know what functions are weak
+> > and perhaps need extra processing.
+> > 
+> > Another issue with weak functions and ftrace just came up here:
+> > 
+> >   https://lore.kernel.org/all/20220428095803.66c17c32@gandalf.local.home/  
+> 
+> I noticed this just yesterday:
+> 
+>   # cat available_filter_functions | sort | uniq -d | wc -l
+>   430
+> 
+> I'm fairly certain that some of those are due to weak functions -- I 
+> just wasn't sure if all of those were.
 
-Thanks,
+Probably :-/
 
-        tglx
+> 
+> I suppose this will now also be a problem with ftrace_location(), given 
+> that it was recently changed to look at an entire function for mcount 
+> locations?
+> 
+
+Maybe. I have to focus on other things at the moment, but I'll try to find
+some time to look at this deeper.
+
+-- Steve
