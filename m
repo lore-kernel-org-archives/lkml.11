@@ -2,103 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CE28C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 08:48:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE0EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 08:48:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355952AbiD2Ivf (ORCPT
+        id S1356130AbiD2Ivx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 04:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37866 "EHLO
+        Fri, 29 Apr 2022 04:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234027AbiD2Ivd (ORCPT
+        with ESMTP id S234027AbiD2Ivw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 04:51:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6E466227;
-        Fri, 29 Apr 2022 01:48:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EBA17B83394;
-        Fri, 29 Apr 2022 08:48:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BA73C385A4;
-        Fri, 29 Apr 2022 08:48:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651222093;
-        bh=87vkewPttramOVIcEGiZZilW3jikdo1ermvWTGQSA6M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=1vEEyHcCS+swJ3HoxwS3PVJUumwAb+J5cjF6PWRPqDacMvpJ0YvQD3R9XzzK9qE+M
-         PO9owsPO+QUbjZ8s34lXo+FAnvFSVGpeXaqNQRKoiOLfXFo76UG9bhNFJWyZQ2uO9a
-         Tn0y08l6TJ4/F+P/8BcZuIJZs1We5x/iX7JTOljM=
-Date:   Fri, 29 Apr 2022 10:48:10 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Sebastian Ene <sebastianene@google.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        maz@kernel.org, will@kernel.org, qperret@google.com,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v4 2/2] misc: Add a mechanism to detect stalls on guest
- vCPUs
-Message-ID: <YmumSgiTrQUWoXsb@kroah.com>
-References: <20220429083030.3241640-1-sebastianene@google.com>
- <20220429083030.3241640-3-sebastianene@google.com>
+        Fri, 29 Apr 2022 04:51:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 17492C4010
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 01:48:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651222112;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=j44ABfQoLltxcMt0c2HfidhVNagQghr3QdYc0SH5ZHg=;
+        b=aaU2yu1y2wAOknin+zcreQdH4ZbJX3FaLm1LjuS+1eYmelMnKQbY7q1ZJ4z9gQtZXxvpxl
+        CFspRdqrf5GEQ8N3zQ4AlYKW8SOfNKEgB06Nl2Gk3yGk3EN0fbMxnmO0PwH9CD3/SRaGvo
+        sa/GnivYup51zhdQpl7yFXJzIRVjXek=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-158-2rGHZFm4NjWyuoppjk-Wnw-1; Fri, 29 Apr 2022 04:48:30 -0400
+X-MC-Unique: 2rGHZFm4NjWyuoppjk-Wnw-1
+Received: by mail-ej1-f70.google.com with SMTP id o8-20020a170906974800b006f3a8be7502so4212847ejy.8
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 01:48:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=j44ABfQoLltxcMt0c2HfidhVNagQghr3QdYc0SH5ZHg=;
+        b=Iq9/NcZDQgv0ZyU1TjpC2SWSR70SNxHz1POQkQN/imgCv6BOaTLxBs5PWhM+tTZ699
+         l5nYVaP8iZMbDA2ugooOAMkR0oyVBXuVk67w35CA9i/vW6KCzhrsIlPCgeOA816m0CJx
+         DqoHn36eWnZvpzZ4B3xNFYiYcYPotqqrBOI+tbabclU0fRqI2ipl1IoUnthMA9HZwf5/
+         zxNxWyDT0+OBung1fm0i0UvTrPqTSph8aJ38PQS7qXNpXfW5rfH153nx6hg9KCUQwiUm
+         7HqCZRydlPqTfUuK/6NjpcLhuk4ARRIYQqObvv9k94hK3pnenm/n3HirZsfyncdx1oDk
+         I/Pg==
+X-Gm-Message-State: AOAM53261gYLPjNKJiLrpcLgs9D2+7Ve0YDp271ex3Yua6RW7RcSfZ1o
+        Ceq8vYvzeaSbOwjWqd7VD458+spT/vSrs17+tMgTa7eQvXDD9JYPdG69BF3iaokwe66swmqZTOn
+        OsdV6DexFLrN/DqGxUVv8LX6i
+X-Received: by 2002:a17:907:868c:b0:6f2:d939:630c with SMTP id qa12-20020a170907868c00b006f2d939630cmr32630761ejc.211.1651222109337;
+        Fri, 29 Apr 2022 01:48:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxzDSm/Wy3LhlYxAfl4v2YEjSte/OeUbnyjP+Ps5nFd2tf+MquRI+eye5FQEOO4r4SeTrFP7A==
+X-Received: by 2002:a17:907:868c:b0:6f2:d939:630c with SMTP id qa12-20020a170907868c00b006f2d939630cmr32630744ejc.211.1651222109148;
+        Fri, 29 Apr 2022 01:48:29 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
+        by smtp.googlemail.com with ESMTPSA id e13-20020a170906844d00b006f3ef214dc3sm434320ejy.41.2022.04.29.01.48.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 01:48:28 -0700 (PDT)
+Message-ID: <0cfb1f41-381f-6621-0fe7-14a54059a90d@redhat.com>
+Date:   Fri, 29 Apr 2022 10:48:26 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220429083030.3241640-3-sebastianene@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3] KVM: SEV: Mark nested locking of vcpu->lock
+Content-Language: en-US
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Peter Gonda <pgonda@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220407195908.633003-1-pgonda@google.com>
+ <CAFNjLiXC0AdOw5f8Ovu47D==ex7F0=WN_Ocirymz4xL=mWvC5A@mail.gmail.com>
+ <CAMkAt6r-Mc_YN-gVHuCpTj4E1EmcvyYpP9jhtHo5HRHnoNJAdA@mail.gmail.com>
+ <CAMkAt6r+OMPWCbV_svUyGWa0qMzjj2UEG29G6P7jb6uH6yko2w@mail.gmail.com>
+ <62e9ece1-5d71-f803-3f65-2755160cf1d1@redhat.com>
+ <CAMkAt6q6YLBfo2RceduSXTafckEehawhD4K4hUEuB4ZNqe2kKg@mail.gmail.com>
+ <4c0edc90-36a1-4f4c-1923-4b20e7bdbb4c@redhat.com>
+ <CAMkAt6oL5qi7z-eh4z7z8WBhpc=Ow6WtcJA5bDi6-aGMnz135A@mail.gmail.com>
+ <CAMkAt6rmDrZfN5DbNOTsKFV57PwEnK2zxgBTCbEPeE206+5v5w@mail.gmail.com>
+ <20220429010312.4013-1-hdanton@sina.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220429010312.4013-1-hdanton@sina.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 08:30:33AM +0000, Sebastian Ene wrote:
-> This driver creates per-cpu hrtimers which are required to do the
-> periodic 'pet' operation. On a conventional watchdog-core driver, the
-> userspace is responsible for delivering the 'pet' events by writing to
-> the particular /dev/watchdogN node. In this case we require a strong
-> thread affinity to be able to account for lost time on a per vCPU.
+On 4/29/22 03:03, Hillf Danton wrote:
+> Wonder if local lock classes [1] help.
 > 
-> This part of the driver is the 'frontend' which is reponsible for
-> delivering the periodic 'pet' events, configuring the virtual peripheral
-> and listening for cpu hotplug events. The other part of the driver
-> handles the peripheral emulation and this part accounts for lost time by
-> looking at the /proc/{}/task/{}/stat entries and is located here:
-> https://chromium-review.googlesource.com/c/chromiumos/platform/crosvm/+/3548817
-> 
-> Signed-off-by: Sebastian Ene <sebastianene@google.com>
-> ---
->  drivers/misc/Kconfig       |  12 +++
->  drivers/misc/Makefile      |   1 +
->  drivers/misc/vm-watchdog.c | 206 +++++++++++++++++++++++++++++++++++++
->  3 files changed, 219 insertions(+)
->  create mode 100644 drivers/misc/vm-watchdog.c
-> 
-> diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-> index 2b9572a6d114..26c3a99e269c 100644
-> --- a/drivers/misc/Kconfig
-> +++ b/drivers/misc/Kconfig
-> @@ -493,6 +493,18 @@ config OPEN_DICE
->  
->  	  If unsure, say N.
->  
-> +config VM_WATCHDOG
-> +	tristate "Virtual Machine Watchdog"
-> +	select LOCKUP_DETECTOR
-> +	help
-> +	  Detect CPU locks on the virtual machine. This driver relies on the
-> +	  hrtimers which are CPU-binded to do the 'pet' operation. When a vCPU
-> +	  has to do a 'pet', it exits the guest through MMIO write and the
-> +	  backend driver takes into account the lost ticks for this particular
-> +	  CPU.
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called vm-wdt.
+> [1]https://lore.kernel.org/lkml/165055518776.3745911.9346998911322224736.stgit@dwillia2-desk3.amr.corp.intel.com/
 
-You forgot to name the module properly here based on the Makefile change
-you made.
+No, they wouldn't.  Local lock classes are more of a per-subsystem lock, 
+while here the issue is that we are taking an arbitrary amount of locks 
+at the same time.
 
-And again, as this is called a "watchdog", it seems crazy that it is not
-in drivers/watchdog/
+Technically it would be possible to put a struct lock_class_key in 
+struct kvm_vcpu, but that wouldn't scale and would actually _reduce_ the 
+likelihood of lockdep reporting bad things.
 
-{sigh}
+The effectiveness of lockdep comes exactly from using the same map for 
+all locks in the class, so that AB/BA scenarios are caught throughout 
+the whole life of the system.  If each lock has a separate they would be 
+caught only if the "B" is exactly the same mutex in both AB and BA cases.
 
-greg k-h
+Paolo
+
