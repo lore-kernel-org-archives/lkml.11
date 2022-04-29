@@ -2,168 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F62C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 20:03:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D096C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 20:05:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380526AbiD2UHD (ORCPT
+        id S1380549AbiD2UI4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 16:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43580 "EHLO
+        Fri, 29 Apr 2022 16:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380515AbiD2UG7 (ORCPT
+        with ESMTP id S1379474AbiD2UIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 16:06:59 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00930CA0F3;
-        Fri, 29 Apr 2022 13:03:39 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23THsqDN037937;
-        Fri, 29 Apr 2022 20:02:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=14eJcFY+2G1yPd/GPynKoYcbLehqc8WKf4Xd1nmgPxU=;
- b=i8go9k8/O3TYt6fhXSbXc27xMdIzhzvaC0NWFMMWqXENVJ7AxYr46+Er8PWlkeAJLDyO
- ZO2ercMXLNiCXhSbdix64mLCtXG1ATrcK3C7cPoWv+57fROkaLPV/Wsg6AZ6CUqZ38Rt
- 2X4Oe/j8mipmxDsexu+lrmePaxDow2VjXDJ4JutZxUtoDtx/JZlyZgpXO+2+NPgMPu2n
- gD45clSxRToDqp/c4IyEP5tDz9T+ttRU0kderKIh4qqOMRksSt4l1UE1DxhZQWWWyaWj
- q931e9Hw0/OtZe02quNLpOSyFRLVIGLVL1Y/Hc6Jlg1XeztQiZL5G5n4MsIfLFRcRLeb 1A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqvaq9hfk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 20:02:25 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23TJj4ja031851;
-        Fri, 29 Apr 2022 20:02:24 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqvaq9hen-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 20:02:24 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TJwbLB009239;
-        Fri, 29 Apr 2022 20:02:21 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma01fra.de.ibm.com with ESMTP id 3fm938yk3v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 20:02:21 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TK2INw16646532
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 29 Apr 2022 20:02:18 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F0AD411C052;
-        Fri, 29 Apr 2022 20:02:17 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B0C3D11C04A;
-        Fri, 29 Apr 2022 20:02:16 +0000 (GMT)
-Received: from thinkpad (unknown [9.171.14.38])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Fri, 29 Apr 2022 20:02:16 +0000 (GMT)
-Date:   Fri, 29 Apr 2022 22:02:14 +0200
-From:   Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc:     akpm@linux-foundation.org, mike.kravetz@oracle.com,
-        catalin.marinas@arm.com, will@kernel.org,
-        tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com,
-        deller@gmx.de, mpe@ellerman.id.au, benh@kernel.crashing.org,
-        paulus@samba.org, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org,
-        davem@davemloft.net, arnd@arndb.de,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH 3/3] mm: rmap: Fix CONT-PTE/PMD size hugetlb issue when
- unmapping
-Message-ID: <20220429220214.4cfc5539@thinkpad>
-In-Reply-To: <c91e04ebb792ef7b72966edea8bd6fa2dfa5bfa7.1651216964.git.baolin.wang@linux.alibaba.com>
-References: <cover.1651216964.git.baolin.wang@linux.alibaba.com>
-        <c91e04ebb792ef7b72966edea8bd6fa2dfa5bfa7.1651216964.git.baolin.wang@linux.alibaba.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+        Fri, 29 Apr 2022 16:08:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 639226A034
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 13:05:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651262728;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Xh8dSPuYVd16pGU1eOSrw4RK/14MRTLIpBGTzg2s4yA=;
+        b=Fg3AElSdPM/VIiWvP9qm46LTdqU06KEAtSxlY1D3NR4nmlXzsix0Xj8F1/Ryxzi4gdAFZc
+        YtCZkLLFxWoVYyQdpsaQa8G92HJP8a4PL6G8ed5sfJmL/yE5U4IlCaXwbfLoDIxoPp045e
+        riIAd1dcALiuRskqbn/DsQD1DAas/SA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-463-esZLPebUMWGXCyP_e6a1-g-1; Fri, 29 Apr 2022 16:05:24 -0400
+X-MC-Unique: esZLPebUMWGXCyP_e6a1-g-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 032C7281182B;
+        Fri, 29 Apr 2022 20:05:24 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.213])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BB3BCC28100;
+        Fri, 29 Apr 2022 20:05:22 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Enable IPv6 checksums on transport socket
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Marc Dionne <marc.dionne@auristor.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Vadim Fedorenko <vfedorenko@novek.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-afs@lists.infradead.org, dhowells@redhat.com,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 29 Apr 2022 21:05:16 +0100
+Message-ID: <165126271697.1384698.4579591150130001289.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: n2vn77eQpm8aX1Cpvjq3u5xP5rzhtMFB
-X-Proofpoint-GUID: EUMNoVhafVgUobVSsm-XN0dmOW2Sxm3c
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-29_09,2022-04-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- lowpriorityscore=0 phishscore=0 spamscore=0 mlxlogscore=999 clxscore=1011
- impostorscore=0 priorityscore=1501 suspectscore=0 mlxscore=0 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204290107
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Apr 2022 16:14:43 +0800
-Baolin Wang <baolin.wang@linux.alibaba.com> wrote:
+AF_RXRPC doesn't currently enable IPv6 UDP Tx checksums on the transport
+socket it opens and the checksums in the packets it generates end up 0.
 
-> On some architectures (like ARM64), it can support CONT-PTE/PMD size
-> hugetlb, which means it can support not only PMD/PUD size hugetlb:
-> 2M and 1G, but also CONT-PTE/PMD size: 64K and 32M if a 4K page
-> size specified.
-> 
-> When unmapping a hugetlb page, we will get the relevant page table
-> entry by huge_pte_offset() only once to nuke it. This is correct
-> for PMD or PUD size hugetlb, since they always contain only one
-> pmd entry or pud entry in the page table.
-> 
-> However this is incorrect for CONT-PTE and CONT-PMD size hugetlb,
-> since they can contain several continuous pte or pmd entry with
-> same page table attributes, so we will nuke only one pte or pmd
-> entry for this CONT-PTE/PMD size hugetlb page.
-> 
-> And now we only use try_to_unmap() to unmap a poisoned hugetlb page,
-> which means now we will unmap only one pte entry for a CONT-PTE or
-> CONT-PMD size poisoned hugetlb page, and we can still access other
-> subpages of a CONT-PTE or CONT-PMD size poisoned hugetlb page,
-> which will cause serious issues possibly.
-> 
-> So we should change to use huge_ptep_clear_flush() to nuke the
-> hugetlb page table to fix this issue, which already considered
-> CONT-PTE and CONT-PMD size hugetlb.
-> 
-> Note we've already used set_huge_swap_pte_at() to set a poisoned
-> swap entry for a poisoned hugetlb page.
-> 
-> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-> ---
->  mm/rmap.c | 34 +++++++++++++++++-----------------
->  1 file changed, 17 insertions(+), 17 deletions(-)
-> 
-> diff --git a/mm/rmap.c b/mm/rmap.c
-> index 7cf2408..1e168d7 100644
-> --- a/mm/rmap.c
-> +++ b/mm/rmap.c
-> @@ -1564,28 +1564,28 @@ static bool try_to_unmap_one(struct folio *folio, struct vm_area_struct *vma,
->  					break;
->  				}
->  			}
-> +			pteval = huge_ptep_clear_flush(vma, address, pvmw.pte);
+It probably should also enable IPv6 UDP Rx checksums and IPv4 UDP
+checksums.  The latter only seem to be applied if the socket family is
+AF_INET and don't seem to apply if it's AF_INET6.  IPv4 packets from an
+IPv6 socket seem to have checksums anyway.
 
-Unlike in your patch 2/3, I do not see that this (huge) pteval would later
-be used again with set_huge_pte_at() instead of set_pte_at(). Not sure if
-this (huge) pteval could end up at a set_pte_at() later, but if yes, then
-this would be broken on s390, and you'd need to use set_huge_pte_at()
-instead of set_pte_at() like in your patch 2/3.
+What seems to have happened is that the inet_inv_convert_csum() call didn't
+get converted to the appropriate udp_port_cfg parameters - and
+udp_sock_create() disables checksums unless explicitly told not too.
 
-Please note that huge_ptep_get functions do not return valid PTEs on s390,
-and such PTEs must never be set directly with set_pte_at(), but only with
-set_huge_pte_at().
+Fix this by enabling the three udp_port_cfg checksum options.
 
-Background is that, for hugetlb pages, we are of course not really dealing
-with PTEs at this level, but rather PMDs or PUDs, depending on hugetlb size.
-On s390, the layout is quite different for PTEs and PMDs / PUDs, and
-unfortunately the hugetlb code is not properly reflecting this by using
-PMD or PUD types, like the THP code does.
+Fixes: 1a9b86c9fd95 ("rxrpc: use udp tunnel APIs instead of open code in rxrpc_open_socket")
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Xin Long <lucien.xin@gmail.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+cc: Vadim Fedorenko <vfedorenko@novek.ru>
+cc: David S. Miller <davem@davemloft.net>
+cc: linux-afs@lists.infradead.org
+---
 
-So, as work-around, on s390, the huge_ptep_xxx functions will return
-only fake PTEs, which must be converted again to a proper PMD or PUD,
-before writing them to the page table, which is what happens in
-set_huge_pte_at(), but not in set_pte_at().
+ net/rxrpc/local_object.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
+index a4111408ffd0..6a1611b0e303 100644
+--- a/net/rxrpc/local_object.c
++++ b/net/rxrpc/local_object.c
+@@ -117,6 +117,7 @@ static int rxrpc_open_socket(struct rxrpc_local *local, struct net *net)
+ 	       local, srx->transport_type, srx->transport.family);
+ 
+ 	udp_conf.family = srx->transport.family;
++	udp_conf.use_udp_checksums = true;
+ 	if (udp_conf.family == AF_INET) {
+ 		udp_conf.local_ip = srx->transport.sin.sin_addr;
+ 		udp_conf.local_udp_port = srx->transport.sin.sin_port;
+@@ -124,6 +125,8 @@ static int rxrpc_open_socket(struct rxrpc_local *local, struct net *net)
+ 	} else {
+ 		udp_conf.local_ip6 = srx->transport.sin6.sin6_addr;
+ 		udp_conf.local_udp_port = srx->transport.sin6.sin6_port;
++		udp_conf.use_udp6_tx_checksums = true;
++		udp_conf.use_udp6_rx_checksums = true;
+ #endif
+ 	}
+ 	ret = udp_sock_create(net, &udp_conf, &local->socket);
+
+
