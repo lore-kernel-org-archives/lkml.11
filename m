@@ -2,94 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC88AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9051C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:30:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235221AbiD2Qcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50292 "EHLO
+        id S233151AbiD2Qdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 12:33:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379206AbiD2Qbv (ORCPT
+        with ESMTP id S1379558AbiD2QdM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:31:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E90EDAA05;
-        Fri, 29 Apr 2022 09:28:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05E0362338;
-        Fri, 29 Apr 2022 16:28:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C48C385AF;
-        Fri, 29 Apr 2022 16:28:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651249703;
-        bh=i2s8MXletVaqxsQHutApX0kGzV6e20Tl+T1LrZsiZdQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XFJez6aLSagPmG2NVQ5jtfNBfUi4S0LFeqMFKDv31dtv+nkVDvCVCcGdgAiDf0WZk
-         /B+k0/QsWPxQGcVyHXjYMuP1keP1r+z8gz7acwVc/vDGoBAzqI5AKdiXUmfjyFmgRg
-         ffLaJylc1o83tF5p0Cx9cOmDONbI0bT6djg6/rI0uNIY0umJ0knA5fAnhLtfB0DQqX
-         YeWf/WRBcGWSYoYHoGZGGV7oA+hqUmIMqWwrvKNL+9+CBs+XpaK5u43XSvVSKGmfRV
-         TISokVBNQSXe0ozvzfPrUgMxLEJ2qFiYMycPkr2I4DQM2Wwy44tPANJt+mIi1/+1XS
-         tyyXLqCjxXQGg==
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        John Kacur <jkacur@redhat.com>,
-        Daniel Bristot de Oliveria <bristot@redhat.com>
-Subject: [PATCH 2/4] rtla: Don't overwrite existing directory mode
-Date:   Fri, 29 Apr 2022 18:28:11 +0200
-Message-Id: <8c294a6961080a1970fd8b73f7bcf1e3984579e2.1651247710.git.bristot@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <cover.1651247710.git.bristot@kernel.org>
-References: <cover.1651247710.git.bristot@kernel.org>
+        Fri, 29 Apr 2022 12:33:12 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8094D95FB
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:29:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651249783; x=1682785783;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=9JJLmBDdDaVDkWtdj2AlikPdhwkYMqvNxao/Uvuy9zc=;
+  b=faSX+2gqZKNvjLaFl7gO4aws/SQ0PmHcyBFuoEznuyaQbpri350GV34h
+   XMty35ZGQZdsOgN4O6398loTXecglKo5YK5ghglB2q7YFqP3iva9K881n
+   OyWSY2+Wi7ubMqK+PFAGQ05eurAEb1Aj7tdGujZSDBEJ5RBV96/QLvbn+
+   7Nn4KaSPUfRFuroFhZ1myOFx9Bxa56Fp3Pygh2uEBT84j/jC+nELmBFG+
+   yexeRySJUdATOVMN59NSatAruEd/AmjC94BH8J8Qjztat5CQOsdyWSgEa
+   +lRbVJRk3eguCV2AlM82vPSIBk7G35uonepFilzSRIxNO6PRuFo3wuZ3w
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="353120955"
+X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
+   d="scan'208";a="353120955"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 09:29:43 -0700
+X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
+   d="scan'208";a="685089587"
+Received: from aleeshax-mobl.amr.corp.intel.com (HELO [10.212.139.246]) ([10.212.139.246])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 09:29:42 -0700
+Message-ID: <e9f4001d-a9f4-fae7-521a-76f8880ba82b@linux.intel.com>
+Date:   Fri, 29 Apr 2022 11:19:40 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH] soundwire: qcom: adjust autoenumeration timeout
+Content-Language: en-US
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        vkoul@kernel.org
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        bard.liao@intel.com,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+References: <20220429160928.24614-1-srinivas.kandagatla@linaro.org>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <20220429160928.24614-1-srinivas.kandagatla@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Kacur <jkacur@redhat.com>
 
-The mode on /usr/bin is often 555 these days,
-but make install on rtla overwrites this with 755
 
-Fix this by preserving the current directory if it exists.
+On 4/29/22 11:09, Srinivas Kandagatla wrote:
+> Currently timeout for autoenumeration during probe and bus reset is set to
+> 2 secs which is really a big value. This can have an adverse effect on
+> boot time if the slave device is not ready/reset.
+> This was the case with wcd938x which was not reset yet but we spent 2
+> secs waiting in the soundwire controller probe. Reduce this time to
+> 1/10 of Hz which should be good enough time to finish autoenumeration
+> if any slaves are available on the bus.
 
-Link: https://lore.kernel.org/r/20220402043939.6962-1-jkacur@redhat.com
+Can I ask why this is dependent on a software configuration you have no control on?
 
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Daniel Bristot de Oliveria <bristot@redhat.com>
-Fixes: 79ce8f43ac5a ("rtla: Real-Time Linux Analysis tool")
-Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: John Kacur <jkacur@redhat.com>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
----
- tools/tracing/rtla/Makefile | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Why not simply:
 
-diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
-index 11fb417abb42..5a3226e436ef 100644
---- a/tools/tracing/rtla/Makefile
-+++ b/tools/tracing/rtla/Makefile
-@@ -23,6 +23,7 @@ $(call allow-override,LD_SO_CONF_PATH,/etc/ld.so.conf.d/)
- $(call allow-override,LDCONFIG,ldconfig)
- 
- INSTALL	=	install
-+MKDIR	=	mkdir
- FOPTS	:=	-flto=auto -ffat-lto-objects -fexceptions -fstack-protector-strong \
- 		-fasynchronous-unwind-tables -fstack-clash-protection
- WOPTS	:= 	-Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -Wno-maybe-uninitialized
-@@ -68,7 +69,7 @@ static: $(OBJ)
- 
- .PHONY: install
- install: doc_install
--	$(INSTALL) -d -m 755 $(DESTDIR)$(BINDIR)
-+	$(MKDIR) -p $(DESTDIR)$(BINDIR)
- 	$(INSTALL) rtla -m 755 $(DESTDIR)$(BINDIR)
- 	$(STRIP) $(DESTDIR)$(BINDIR)/rtla
- 	@test ! -f $(DESTDIR)$(BINDIR)/osnoise || rm $(DESTDIR)$(BINDIR)/osnoise
--- 
-2.32.0
+#define TIMEOUT_MS		100
 
+?
+
+> 
+> Reported-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> ---
+>  drivers/soundwire/qcom.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+> index da1ad7ebb1aa..432e5cb9a4d2 100644
+> --- a/drivers/soundwire/qcom.c
+> +++ b/drivers/soundwire/qcom.c
+> @@ -105,7 +105,7 @@
+>  
+>  #define SWRM_SPECIAL_CMD_ID	0xF
+>  #define MAX_FREQ_NUM		1
+> -#define TIMEOUT_MS		(2 * HZ)
+> +#define TIMEOUT_MS		(HZ/10)
+>  #define QCOM_SWRM_MAX_RD_LEN	0x1
+>  #define QCOM_SDW_MAX_PORTS	14
+>  #define DEFAULT_CLK_FREQ	9600000
