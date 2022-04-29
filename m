@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01B3EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:06:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83FA1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 16:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378861AbiD2QJw (ORCPT
+        id S1378859AbiD2QJz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 12:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44774 "EHLO
+        Fri, 29 Apr 2022 12:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378819AbiD2QJi (ORCPT
+        with ESMTP id S1378826AbiD2QJj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 12:09:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8787A27D9
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:06:19 -0700 (PDT)
+        Fri, 29 Apr 2022 12:09:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8180CA6E24
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 09:06:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A6D1B83646
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 16:06:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83742C385B1;
-        Fri, 29 Apr 2022 16:06:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A26A620D8
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 16:06:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AB0DC385AE;
+        Fri, 29 Apr 2022 16:06:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651248377;
-        bh=hkH1/D7DIhccs3phYKPyf0rRvOlpVSoyczyAzJPRUHk=;
+        s=k20201202; t=1651248379;
+        bh=rAJFo4AjkW8JUKTUipbjPgtkusxOnV1JhWTxgwk0hVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X2oQ5YlJWhwYr5aDiYSpJvGwNWzQclH7BzdPO1RpDEF1pIUVslcZhTkfcV78fYy4p
-         g+Qmw3mkhkUZvNLugyv4BxahKNzJzvbNPjh/cZUet2skkNpgbmB5QoHZD6Kc9yIgsw
-         NjP9TGxk56CY5BpjwjBvuwmq1RcHrkYmuFxbH9tdKZMOzjldzX9fLet5pPv2PmYLAX
-         rfBgt6xMaqODabEVibdgmgFZdZy5A9/ZceavcBx5pWiaPyDKL7pBt/DqyTR4wrlgx9
-         rOsSiOzYwiw//bbtab9DtbcEKLTHMgHMnOj5JpAV58pIBKxbG6xl4ujVdCNiW2ltX3
-         mDfOmWD8XOBDQ==
+        b=ZWCcY7gjW5kSeyS4THWs03LOnctZNxnQvXDMTxoSnrcazYhHkcu0sOxrCp8xCnmYy
+         OOAzLhZ2bqE1tW7NeiM1KqxENbWGfSOM+wut3ERMm03w9ev51THCCvMQUbkPKyQhR9
+         vlPML/uWh/HfM6vrl4+FuiLEQ1P440n4qD1nuf8Ww+C/PToaAVk0w0YAiIwmOYINcS
+         a1xZGmcXg1lY7LdPFUZl/mwcmXrWUXS9PEatHqLsd2WwNwtZ/7ovRdnSQ82dhWZTdY
+         PSl0IYmksN/WSH46PE8qoQDCMZVyEFpJ128uRtjsWmM1FvPdDMNU6/DvCGr/XyhGLJ
+         T7usRn80m+WoA==
 From:   sj@kernel.org
 To:     akpm@linux-foundation.org
 Cc:     linux-damon@amazon.com, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org, SeongJae Park <sj@kernel.org>
-Subject: [PATCH 03/14] mm/damon/vaddr: generalize damon_va_apply_three_regions()
-Date:   Fri, 29 Apr 2022 16:05:55 +0000
-Message-Id: <20220429160606.127307-4-sj@kernel.org>
+Subject: [PATCH 07/14] mm/damon/sysfs: move targets setup code to a separated function
+Date:   Fri, 29 Apr 2022 16:05:59 +0000
+Message-Id: <20220429160606.127307-8-sj@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220429160606.127307-1-sj@kernel.org>
 References: <20220429160606.127307-1-sj@kernel.org>
@@ -51,124 +51,82 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: SeongJae Park <sj@kernel.org>
 
-'damon_va_apply_three_regions()' is for adjusting address ranges to fit
-in three discontiguous ranges.  The function can be generalized for
-arbitrary number of discontiguous ranges and reused for future usage,
-such as arbitrary online regions update.  For such future usage, this
-commit introduces a generalized version of the function called
-'damon_set_regions()'.
+This commit separates DAMON sysfs interface's monitoring context targets
+setup code to a new function for better readability.
 
 Signed-off-by: SeongJae Park <sj@kernel.org>
 ---
- mm/damon/vaddr.c | 66 ++++++++++++++++++++++++++++++------------------
- 1 file changed, 42 insertions(+), 24 deletions(-)
+ mm/damon/sysfs.c | 49 +++++++++++++++++++++++++++---------------------
+ 1 file changed, 28 insertions(+), 21 deletions(-)
 
-diff --git a/mm/damon/vaddr.c b/mm/damon/vaddr.c
-index d6abf76c1771..6879dd7a6ca5 100644
---- a/mm/damon/vaddr.c
-+++ b/mm/damon/vaddr.c
-@@ -298,59 +298,77 @@ static bool damon_intersect(struct damon_region *r,
+diff --git a/mm/damon/sysfs.c b/mm/damon/sysfs.c
+index 988247d35862..331647ab6396 100644
+--- a/mm/damon/sysfs.c
++++ b/mm/damon/sysfs.c
+@@ -2119,6 +2119,31 @@ static int damon_sysfs_set_regions(struct damon_target *t,
+ 	return 0;
  }
  
- /*
-- * Update damon regions for the three big regions of the given target
-+ * damon_set_regions() - Set regions of a target for given address ranges.
-+ * @t:		the given target.
-+ * @ranges:	array of new monitoring target ranges.
-+ * @nr_ranges:	length of @ranges.
-  *
-- * t		the given target
-- * bregions	the three big regions of the target
-+ * This function adds new regions to, or modify existing regions of a
-+ * monitoring target to fit in specific ranges.
-+ *
-+ * Return: 0 if success, or negative error code otherwise.
-  */
--static void damon_va_apply_three_regions(struct damon_target *t,
--		struct damon_addr_range bregions[3])
-+static int damon_set_regions(struct damon_target *t,
-+		struct damon_addr_range *ranges, unsigned int nr_ranges)
- {
- 	struct damon_region *r, *next;
- 	unsigned int i;
- 
--	/* Remove regions which are not in the three big regions now */
-+	/* Remove regions which are not in the new ranges */
- 	damon_for_each_region_safe(r, next, t) {
--		for (i = 0; i < 3; i++) {
--			if (damon_intersect(r, &bregions[i]))
-+		for (i = 0; i < nr_ranges; i++) {
-+			if (damon_intersect(r, &ranges[i]))
- 				break;
- 		}
--		if (i == 3)
-+		if (i == nr_ranges)
- 			damon_destroy_region(r, t);
- 	}
- 
--	/* Adjust intersecting regions to fit with the three big regions */
--	for (i = 0; i < 3; i++) {
--		struct damon_region *first = NULL, *last;
--		struct damon_region *newr;
--		struct damon_addr_range *br;
-+	/* Add new regions or resize existing regions to fit in the ranges */
-+	for (i = 0; i < nr_ranges; i++) {
-+		struct damon_region *first = NULL, *last, *newr;
-+		struct damon_addr_range *range;
- 
--		br = &bregions[i];
--		/* Get the first and last regions which intersects with br */
-+		range = &ranges[i];
-+		/* Get the first/last regions intersecting with the range */
- 		damon_for_each_region(r, t) {
--			if (damon_intersect(r, br)) {
-+			if (damon_intersect(r, range)) {
- 				if (!first)
- 					first = r;
- 				last = r;
- 			}
--			if (r->ar.start >= br->end)
-+			if (r->ar.start >= range->end)
- 				break;
- 		}
- 		if (!first) {
--			/* no damon_region intersects with this big region */
-+			/* no region intersects with this range */
- 			newr = damon_new_region(
--					ALIGN_DOWN(br->start,
-+					ALIGN_DOWN(range->start,
- 						DAMON_MIN_REGION),
--					ALIGN(br->end, DAMON_MIN_REGION));
-+					ALIGN(range->end, DAMON_MIN_REGION));
- 			if (!newr)
--				continue;
-+				return -ENOMEM;
- 			damon_insert_region(newr, damon_prev_region(r), r, t);
- 		} else {
--			first->ar.start = ALIGN_DOWN(br->start,
-+			/* resize intersecting regions to fit in this range */
-+			first->ar.start = ALIGN_DOWN(range->start,
- 					DAMON_MIN_REGION);
--			last->ar.end = ALIGN(br->end, DAMON_MIN_REGION);
-+			last->ar.end = ALIGN(range->end, DAMON_MIN_REGION);
- 		}
- 	}
++static int damon_sysfs_add_target(struct damon_sysfs_target *sys_target,
++		struct damon_ctx *ctx)
++{
++	struct damon_target *t = damon_new_target();
++	int err = -EINVAL;
++
++	if (!t)
++		return -ENOMEM;
++	if (ctx->ops.id == DAMON_OPS_VADDR ||
++			ctx->ops.id == DAMON_OPS_FVADDR) {
++		t->pid = find_get_pid(sys_target->pid);
++		if (!t->pid)
++			goto destroy_targets_out;
++	}
++	damon_add_target(ctx, t);
++	err = damon_sysfs_set_regions(t, sys_target->regions);
++	if (err)
++		goto destroy_targets_out;
 +	return 0;
++
++destroy_targets_out:
++	damon_sysfs_destroy_targets(ctx);
++	return err;
 +}
 +
-+/*
-+ * Update damon regions for the three big regions of the given target
-+ *
-+ * t		the given target
-+ * bregions	the three big regions of the target
-+ */
-+static void damon_va_apply_three_regions(struct damon_target *t,
-+		struct damon_addr_range bregions[3])
-+{
-+	damon_set_regions(t, bregions, 3);
- }
+ static int damon_sysfs_set_targets(struct damon_ctx *ctx,
+ 		struct damon_sysfs_targets *sysfs_targets)
+ {
+@@ -2129,28 +2154,10 @@ static int damon_sysfs_set_targets(struct damon_ctx *ctx,
+ 		return -EINVAL;
  
- /*
+ 	for (i = 0; i < sysfs_targets->nr; i++) {
+-		struct damon_sysfs_target *sys_target =
+-			sysfs_targets->targets_arr[i];
+-		struct damon_target *t = damon_new_target();
+-
+-		if (!t) {
+-			damon_sysfs_destroy_targets(ctx);
+-			return -ENOMEM;
+-		}
+-		if (ctx->ops.id == DAMON_OPS_VADDR ||
+-				ctx->ops.id == DAMON_OPS_FVADDR) {
+-			t->pid = find_get_pid(sys_target->pid);
+-			if (!t->pid) {
+-				damon_sysfs_destroy_targets(ctx);
+-				return -EINVAL;
+-			}
+-		}
+-		damon_add_target(ctx, t);
+-		err = damon_sysfs_set_regions(t, sys_target->regions);
+-		if (err) {
+-			damon_sysfs_destroy_targets(ctx);
++		err = damon_sysfs_add_target(
++				sysfs_targets->targets_arr[i], ctx);
++		if (err)
+ 			return err;
+-		}
+ 	}
+ 	return 0;
+ }
 -- 
 2.25.1
 
