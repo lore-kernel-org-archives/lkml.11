@@ -2,137 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0943BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:46:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFBEDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377836AbiD2Ots (ORCPT
+        id S1377861AbiD2Otv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
+        Fri, 29 Apr 2022 10:49:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377888AbiD2OtS (ORCPT
+        with ESMTP id S1377925AbiD2OtY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:49:18 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15FC482304
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:45:59 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id r189so14870608ybr.6
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:45:59 -0700 (PDT)
+        Fri, 29 Apr 2022 10:49:24 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA998302E
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:46:04 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id hf18so5938167qtb.0
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 07:46:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=f0pLuqeZXYz1sWaSkPXGqX7Ka9Gz3+f93gXtOcRk6zE=;
-        b=sg76t27J/gyCTdgIN57AbjYzistMTapWVkGILL67jpyduU/WbdWJXIc4VGLnSttIYn
-         hNGApEWtHCSwnxDURtP54N2ZLF60H9UgJq02rR82FSv1GK177WNDXPhjQGkfWKZsALnL
-         BmTKKyP0ssXeCKBfT55o9dekWFj17VSC7Z+fZvkO4rUIi/TQIE37u157A4RlwbL9o8BJ
-         8RPwQ9k21QlkIiL3BQAC/2XeJfKe5extkSGRU8EvUGSWXP+Mmq/r3ovudUR5WaUoUrnG
-         ulovb0ucLpqI44pMZrrDg9fhHVxXVA0NjBgZVUFZKNHAcZS/GzYvSiogD0SPCrTy2dLM
-         TkYQ==
+        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=9gYARbcsROoRQuSPoSpdSfdzjCUBFI/hupA+J6RCICM=;
+        b=MPIYQZwB0Uh/nZRz3paU+fYelB3PvD9iOyiFKynpzfDgpHL2BlgVCuZYT8qQnGHUyy
+         qhc7Z/odasMpp5DlUG3P/9+W1Mn0t7pvFFqcXOcLPcFp9T1WhUWgO2qxUw0apTR3C62j
+         m2hHEDL4JnVNDAlcPUKx5TovyU60q7sUlhGM6quVBjRgXDQxi3a6iTd2q3jjL0xVWuxb
+         j0cczeIKTJJGIvchVfn879alN1Lv8NzMNI1sV+I/23AH/dnhIzI8UIjiSUAuAYTeIFfi
+         QcgkZ8e0rsLiA7itATS1IDrQaO47fvOLTwINVwWxaIAvHhPt5GKqQtV2KdzC+BQEqQf2
+         s5UQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=f0pLuqeZXYz1sWaSkPXGqX7Ka9Gz3+f93gXtOcRk6zE=;
-        b=jhbqcQV1RQsrMOEXg7rr0DpUY9jgLtjEuPc10zLyjkwYm+lDfBYoCGjJTzbQm9ijO+
-         /6hoDLNKd9DmJlKiLaPZbU7ThTIBcPruW+BVNi4G5QmRB+aYpdSab6c701iiVKBm0FWn
-         w02N3JCXRcAA/rYuhip8VhDbiyWYjFigzDeP5lys764bctYicDWhZyCzeQ5J3TyIgHoj
-         TRcGQd25yWfzar3FfCZjKqmrsq999WSggBzFdi3y7j+msgFpdN9yuAYxrd91VpuKWpzN
-         qR50Sfk0v+qWxerTzLrbBpDRkP5tTSLdImdtriVp8FwT+yuJ4gnb99EyLOzE6ge8J8yr
-         d1tg==
-X-Gm-Message-State: AOAM532Ikci9+fOKzq3342bjfBjs8TxvLkon6DEGHfDudKN2yvmXjfUV
-        ii5/eONhnZQmZUijczgIcRGbCZyGBYxIK7JURTLk43G6nHUvKw==
-X-Google-Smtp-Source: ABdhPJwebZPW8eNXr7R6EmFQmtAGmoO8i+DbeZ/yF9SoTg6ttJi1GAZwMgxz8AT0N8FkWFM0f6Rztj4uwwWpuIStN6k=
-X-Received: by 2002:a25:20d4:0:b0:645:d55b:f0df with SMTP id
- g203-20020a2520d4000000b00645d55bf0dfmr32821553ybg.537.1651243558063; Fri, 29
- Apr 2022 07:45:58 -0700 (PDT)
-MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Fri, 29 Apr 2022 20:15:47 +0530
-Message-ID: <CA+G9fYvSqtsOMEiL7_kffPKnnO-Snhe2cup6g3qRngiwRO+RfA@mail.gmail.com>
-Subject: [next] powerpc: multiple definition of `____cacheline_aligned';
- sound/core/oss/pcm_oss.o:(.bss+0x40): first defined here
-To:     Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        lkft-triage@lists.linaro.org
-Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        aul Mackerras <paulus@samba.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Baoquan He <bhe@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=9gYARbcsROoRQuSPoSpdSfdzjCUBFI/hupA+J6RCICM=;
+        b=eZQLleZy7mi2IlfJeArcQg8RRbvBP5wS4hhB9MTgxKDrUJ9Et/x4qXO5xBs1P0F15B
+         2dyw4QMk179ls8m+J87iw6cyW3X6c9pywI+Yo69yg+rKZuhI83NnugluOQ3JDkZiRAh4
+         MqBR5hDdVNPf4DFsJxyREbB9Uz9m3f/OtGwv7b5t7qsLFHM9FHHPX6/iUqBQOylfsJyn
+         FvW+BbMlebDJ8lpC6Z8ZcGDP6jfapi2MssofkuEK4wBAFspWdbT9iIonDTIapHIQemYP
+         TWQYKRnHfpRXQJCLkDwUcVEQlr+VTwynF0agCM8+q8/qJI4gFC4ESEmkrbxl2C/nLyk5
+         9o8g==
+X-Gm-Message-State: AOAM532Bn/2TA7mxcNM2LEBHXI12upgoOyRd7Fz9rs2smIQ9N1693bDF
+        rB4rxqN+fchQba+/ssJSZZsPIQ==
+X-Google-Smtp-Source: ABdhPJyQlCnjwbzppNjeoRa4lp/DB/LMiYCu/zkxnyLyc/FgC/Ihsp/mns5E09890GNRLtvRLppcCA==
+X-Received: by 2002:a05:622a:1714:b0:2f3:5758:c789 with SMTP id h20-20020a05622a171400b002f35758c789mr26722108qtk.299.1651243563653;
+        Fri, 29 Apr 2022 07:46:03 -0700 (PDT)
+Received: from nicolas-tpx395.localdomain (173-246-12-168.qc.cable.ebox.net. [173.246.12.168])
+        by smtp.gmail.com with ESMTPSA id i14-20020ac85e4e000000b002f364a81d79sm1900279qtx.4.2022.04.29.07.46.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 07:46:03 -0700 (PDT)
+Message-ID: <198ce3981ad15844627581f9519cab67ed2a81c1.camel@ndufresne.ca>
+Subject: Re: [PATCH 0/3] Enable JPEG Encoder on RK3566/RK3568
+From:   Nicolas Dufresne <nicolas@ndufresne.ca>
+To:     Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Liang Chen <cl@rock-chips.com>
+Cc:     linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+Date:   Fri, 29 Apr 2022 10:46:01 -0400
+In-Reply-To: <20220427224438.335327-1-frattaroli.nicolas@gmail.com>
+References: <20220427224438.335327-1-frattaroli.nicolas@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.0 (3.44.0-1.fc36) 
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Following powerpc builds failed on Linux next-20220428 and next-20220429.
+Le jeudi 28 avril 2022 =C3=A0 00:44 +0200, Nicolas Frattaroli a =C3=A9crit=
+=C2=A0:
+> Hello,
+>=20
+> the following series adds support for and enables the hardware JPEG
+> encoder on the RK3566 and RK3568 line of SoCs by Rockchip.
+>=20
+> The JPEG encoder is its own little Hantro instance with seemingly just
+> the encode functionality.
 
-Regressions found on powerpc:
-   - gcc-11-ppc64e_defconfig
-   - gcc-10-ppc64e_defconfig
-   - gcc-9-ppc64e_defconfig
-   - gcc-8-ppc64e_defconfig
-   - clang-14-ppc64e_defconfig
-   - clang-nightly-ppc64e_defconfig
-   - clang-13-ppc64e_defconfig
+I'm a little suspicious about this statement. I believe the Hantro combo is
+identical to RK3399 and that you are confusing with Rockchip JPEG encoder h=
+ere.
+Here's the source of my suspicion:
 
+https://github.com/JeffyCN/rockchip_mirrors/blob/mpp/osal/mpp_soc.cpp#L637
 
-Build error:
--------------
-Error: Section .bss not empty in prom_init.c
-make[3]: *** [arch/powerpc/kernel/Makefile:191:
-arch/powerpc/kernel/prom_init_check] Error 1
-make[3]: Target '__build' not remade because of errors.
-make[2]: *** [scripts/Makefile.build:595: arch/powerpc/kernel] Error 2
-make[2]: Target '__build' not remade because of errors.
-make[1]: *** [Makefile:1996: arch/powerpc] Error 2
-powerpc64le-linux-gnu-ld: sound/core/oss/pcm_plugin.o:(.bss+0x0):
-multiple definition of `____cacheline_aligned';
-sound/core/oss/pcm_oss.o:(.bss+0x40): first defined here
-make[4]: *** [scripts/Makefile.build:530: sound/core/oss/snd-pcm-oss.o] Error 1
-make[4]: Target '__build' not remade because of errors.
-make[3]: *** [scripts/Makefile.build:595: sound/core/oss] Error 2
-powerpc64le-linux-gnu-ld: sound/core/seq/seq_clientmgr.o:(.bss+0x900):
-multiple definition of `____cacheline_aligned';
-sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
-powerpc64le-linux-gnu-ld: sound/core/seq/seq_memory.o:(.bss+0x0):
-multiple definition of `____cacheline_aligned';
-sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
-powerpc64le-linux-gnu-ld: sound/core/seq/seq_queue.o:(.bss+0x140):
-multiple definition of `____cacheline_aligned';
-sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
-powerpc64le-linux-gnu-ld: sound/core/seq/seq_fifo.o:(.bss+0x0):
-multiple definition of `____cacheline_aligned';
-sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
-powerpc64le-linux-gnu-ld: sound/core/seq/seq_timer.o:(.bss+0x0):
-multiple definition of `____cacheline_aligned';
-sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
-powerpc64le-linux-gnu-ld: sound/core/seq/seq_system.o:(.bss+0x0):
-multiple definition of `____cacheline_aligned';
-sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
-powerpc64le-linux-gnu-ld: sound/core/seq/seq_ports.o:(.bss+0x0):
-multiple definition of `____cacheline_aligned';
-sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
-powerpc64le-linux-gnu-ld: sound/core/seq/seq_info.o:(.bss+0x40):
-multiple definition of `____cacheline_aligned';
-sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
-make[4]: *** [scripts/Makefile.build:530: sound/core/seq/snd-seq.o] Error 1
-make[4]: Target '__build' not remade because of errors.
+As this get burnt into DT, we really need to get this right. Perhaps we nee=
+d to
+run the reference software to verify ? Ping me if you need help with that.
 
+>=20
+> The first patch modifies the bindings with a new compatible, and adds
+> the ability to just have a vepu interrupt without a vdpu interrupt.
+>=20
+> The second patch makes the actual driver changes to support this variant.
+>=20
+> The third and final patch makes the necessary device tree changes for
+> the rk356x device tree file to add both the node for the encoder and
+> its MMU.
+>=20
+> The series has been tested on a PINE64 Quartz64 Model A with an RK3566
+> SoC using GStreamer.
+>=20
+> Regards,
+> Nicolas Frattaroli
+>=20
+> Nicolas Frattaroli (3):
+>   dt-bindings: media: rockchip-vpu: Add RK3568 JPEG compatible
+>   media: hantro: Add support for RK356x JPEG encoder
+>   arm64: dts: rockchip: Add JPEG encoder node to rk356x
+>=20
+>  .../bindings/media/rockchip-vpu.yaml          |  2 +
+>  arch/arm64/boot/dts/rockchip/rk356x.dtsi      | 21 +++++++
+>  drivers/staging/media/hantro/hantro_drv.c     |  1 +
+>  drivers/staging/media/hantro/hantro_hw.h      |  1 +
+>  .../staging/media/hantro/rockchip_vpu_hw.c    | 62 +++++++++++++++++++
+>  5 files changed, 87 insertions(+)
+>=20
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-
-steps to reproduce:
--------------------
-# To install tuxmake on your system globally:
-# sudo pip3 install -U tuxmake
-
-tuxmake --runtime podman --target-arch powerpc --toolchain gcc-11
---kconfig ppc64e_defconfig
-
---
-Linaro LKFT
-https://lkft.linaro.org
-
-[1] https://builds.tuxbuild.com/28Sn15hB2la1PweieGMLrUdbFMQ/
