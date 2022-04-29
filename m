@@ -2,100 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CA40C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 21:01:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C878C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 21:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381225AbiD2VEZ (ORCPT
+        id S1381234AbiD2VE2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 17:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
+        Fri, 29 Apr 2022 17:04:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381174AbiD2VD6 (ORCPT
+        with ESMTP id S1381171AbiD2VD6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Apr 2022 17:03:58 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09811D3AF1
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8105DD3AE8
         for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 14:00:38 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id b11-20020a5b008b000000b00624ea481d55so8408972ybp.19
+Received: by mail-ej1-x634.google.com with SMTP id n10so178610ejk.5
         for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 14:00:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=HXnih4STfuZSP9gQw8KiDoHwzhD9DuieHszM+gFMr1Y=;
-        b=XUor+V+kBp1C1oo8PgjLYIomhABX7qX1FK3OvrrssZKV2LGa1wVtR2fX7FmiO3Dj8q
-         s/C6rxtHIM+f10wkgkdP1GT95Jx6oEXtwNbEPDq90hBtuX4SjnwDtDUBv5QH48ULnFZ/
-         tAj74mheXTeuehfK7ONkYLCNjDfKmNqLgYorwHVPUbnlnkqf3jBceecFM+AIVDnuCFvQ
-         bRIriuLOLIpVBILX99cAWhHrv4CAxzrIqm65Mc7d6UV19o9FOHFQCJauzyU8Z3H/tu14
-         4zePI93u2GtS4RjN3HvQfKy2lRMr4+TiXkXtyTtCRZATNPODREUDJ7t9fZ4wuOidIQOx
-         gLDg==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=k+FLEaNOSlEZQgu+29CSWk5IjfdF4HGnJSzB2OIKnM8=;
+        b=x7oX3LjaOjtefLkFeO1lfDimV4wlwSgqTHvXxjvzfFsgSznI/BNVeHchG5Vp1ycoGn
+         6k+Q1ObllNBs2MPJ6e2M5I2HXhi7+XdSznQxo0xTkWwm2IyxxExE3QmAIGm5D8iWvYhl
+         qSs+w87c/MjCdApC5C7chhvDTDjQd7Xsi+xrKtGNasicVrgymiuiqjgKAHaX3/qH3xcw
+         i4SRReozeEenNuZ0+wfNtXl4BwpW4aZDH8y2YY6paDFXouFiVn7a228C2W8swy0QfVi7
+         pxWXrAqcDJvZmTzsJ05GSBLb6sr32+RVq73JDprpkzwMzDdXpJoUzPcLKochMS+ZalvE
+         Lihg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=HXnih4STfuZSP9gQw8KiDoHwzhD9DuieHszM+gFMr1Y=;
-        b=nTDSdol2gW51WoCbQWaoZ4dZ/fXRRAufqWFsuI6UBP1KNPo0GczzgatIQOdkkqVc2g
-         Ekez6yv29ZbcwyaoxJrlzx/qT7byPsocNgMtwrsq7/I92oTuzs8nxq0fcbucCdAFqT45
-         IcoXt0diguGyA9oaeNpq/QTqpVsGYoks58huD2H5eNmHzeIy78MYjdIB7duMzJNkBZaD
-         +osFkjP8dKF+Xhuk80grSdMBhisyoVZOa8vfDbAHxUPm8vUEw2EwbIVKvzda0Tkb0FHT
-         F27LnJfcL6EXRCXSxXXd1IhcLDrpUetF+KI6STjChuJ3WokhuiMRQx7p8FkIczgUvf+A
-         9w/A==
-X-Gm-Message-State: AOAM530G3Kp+kuAtQMcJ50tK+J4dAdOxi6bJme7b0frQK0x7gEhPmVDM
-        txyrYBRAjS12gPri7XAHEgcM69toZ6M=
-X-Google-Smtp-Source: ABdhPJyOiW1bBv1iaSrEwJmsjNe+xWJVUni+JWC9RdV/XBpoocyR86zZqSRIhmMyOrk1oDuZ1D/TpXRitQ0=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a25:31c2:0:b0:641:660f:230f with SMTP id
- x185-20020a2531c2000000b00641660f230fmr1364455ybx.472.1651266037988; Fri, 29
- Apr 2022 14:00:37 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 29 Apr 2022 21:00:22 +0000
-In-Reply-To: <20220429210025.3293691-1-seanjc@google.com>
-Message-Id: <20220429210025.3293691-6-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220429210025.3293691-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v3 5/8] KVM: Do not incorporate page offset into gfn=>pfn
- cache user address
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sean Christopherson <seanjc@google.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        David Woodhouse <dwmw@amazon.co.uk>,
-        Mingwei Zhang <mizhang@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=k+FLEaNOSlEZQgu+29CSWk5IjfdF4HGnJSzB2OIKnM8=;
+        b=XgZaLCbbiGpQUqTRjGKMAZI7wSQ1iZxM2neJt24B9nQvthWjB6XHTH3DZkSkIEaCfn
+         r+6Xtm3ArwreyXdWoBMhghHjmdDDbtl0IeF04Z40QUEgdid1AhK0mnE48moTvoeD4dsb
+         DWNkjkIICfQXqCjDwf6VtBk5S+rnOCleh9nL5Xde1i9mvlGKUeUU73wIEppcC+1dl4Bh
+         wMypzhdUFmQ0PdYmKOYbWZ5OOPjKGOLCMl3mW6LisCaHaMZ3l/RGPpcrZPUGDWGbMhIz
+         LSYoSUbwT17qZ8faZVkUrAFvEbl7xC3dMankwkMuinG54STElIEj1uGAJSJ0ZfUOVFEa
+         Ua1w==
+X-Gm-Message-State: AOAM533kkNK9bh0zq2wD6bzCjxF2jclZxUmmU7R7Tv4jgC6g0hJ6invD
+        i5Ywbam9Y0q8UJG/J8u4liCx+g==
+X-Google-Smtp-Source: ABdhPJw53pKMx9sI0aKBMCgGj/gUj/W0YSBOVUjOj6Oco83loSg4sAKu3bV6ZFbp/vCWQZx1JXQPVw==
+X-Received: by 2002:a17:907:1c06:b0:6df:b257:cbb3 with SMTP id nc6-20020a1709071c0600b006dfb257cbb3mr1042874ejc.631.1651266037074;
+        Fri, 29 Apr 2022 14:00:37 -0700 (PDT)
+Received: from [192.168.0.176] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id qz24-20020a170907681800b006f3ef214de0sm973786ejc.70.2022.04.29.14.00.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 14:00:36 -0700 (PDT)
+Message-ID: <32712c76-df62-9a02-fbb0-14f97417feae@linaro.org>
+Date:   Fri, 29 Apr 2022 23:00:35 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] dt-bindings: soc: mediatek: devapc: Add bindings for
+ MT8186
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com
+Cc:     neal.liu@mediatek.com, runyang.chen@mediatek.com,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220429065429.7957-1-rex-bc.chen@mediatek.com>
+ <20220429065429.7957-2-rex-bc.chen@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220429065429.7957-2-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Don't adjust the userspace address in the gfn=>pfn cache by the page
-offset from the gpa.  KVM should never use the user address directly, and
-all KVM operations that translate a user address to something else
-require the user address to be page aligned.  Ignoring the offset will
-allow the cache to reuse a gfn=>hva translation in the unlikely event
-that the page offset of the gpa changes, but the gfn does not.  And more
-importantly, not having to (un)adjust the user address will simplify a
-future bug fix.
+On 29/04/2022 08:54, Rex-BC Chen wrote:
+> Add the dt-binding to support MT8186 devapc.
+> 
+> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- virt/kvm/pfncache.c | 2 --
- 1 file changed, 2 deletions(-)
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-diff --git a/virt/kvm/pfncache.c b/virt/kvm/pfncache.c
-index 40cbe90d52e0..05cb0bcbf662 100644
---- a/virt/kvm/pfncache.c
-+++ b/virt/kvm/pfncache.c
-@@ -179,8 +179,6 @@ int kvm_gfn_to_pfn_cache_refresh(struct kvm *kvm, struct gfn_to_pfn_cache *gpc,
- 			ret = -EFAULT;
- 			goto out;
- 		}
--
--		gpc->uhva += page_offset;
- 	}
- 
- 	/*
--- 
-2.36.0.464.gb9c8b46e94-goog
-
+Best regards,
+Krzysztof
