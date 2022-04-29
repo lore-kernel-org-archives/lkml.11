@@ -2,149 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD26EC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 22:00:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AD94C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 22:05:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381103AbiD2WDz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 18:03:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51096 "EHLO
+        id S239687AbiD2WJA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 18:09:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379096AbiD2WDu (ORCPT
+        with ESMTP id S1358343AbiD2WI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 18:03:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74B013FBA;
-        Fri, 29 Apr 2022 15:00:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AED0962275;
-        Fri, 29 Apr 2022 22:00:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDC10C385A7;
-        Fri, 29 Apr 2022 22:00:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651269624;
-        bh=yNgvZ1w6j0wn0gJjn3Jaaz8UA8LJOCaxNlCblYsp6Fs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ey/m78Y6tu0GBqTH6NyWHzaC7vgRNJhEY6Vw+hMPcj4Fiq4wF8lLbYXSJID6UbS61
-         3qfdckpr3iC4r/Day5Vxaq6phJAcWANrxyoTmiYG1UpeUOvuCECA8JWjDSUmjQNVeX
-         //qNOhJwNmYbbQLZRcm0DHusz0JaLv/dWrmLzW2Wgv1yO4UhSlC4XbHTgdaXFO+dOB
-         K8/k23uG5cTkWPZKYDhSGFzjNLXWZHlHJLxc5WmfxL+dYPfyClhuAsqZafdYrm47Su
-         hkvrUQWMqSJRPNSqY6gnHqelGJDkuHvsu0DZZC5HFsjW59Ot7eIOwvaowmb9LaKSuE
-         kes/J6RG3f/Hw==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nkYez-0082vp-Lb; Fri, 29 Apr 2022 23:00:21 +0100
-Date:   Fri, 29 Apr 2022 23:00:21 +0100
-Message-ID: <87ilqr8s96.wl-maz@kernel.org>
-From:   Marc Zyngier <maz@kernel.org>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        hidehiro.kawai.ez@hitachi.com, jgross@suse.com,
-        john.ogness@linutronix.de, keescook@chromium.org, luto@kernel.org,
-        mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org,
-        peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org
-Subject: Re: [PATCH 02/30] ARM: kexec: Disable IRQs/FIQs also on crash CPUs shutdown path
-In-Reply-To: <Ymxcaqy6DwhoQrZT@shell.armlinux.org.uk>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
-        <20220427224924.592546-3-gpiccoli@igalia.com>
-        <87mtg392fm.wl-maz@kernel.org>
-        <71d829c4-b280-7d6e-647d-79a1baf9408b@igalia.com>
-        <Ymxcaqy6DwhoQrZT@shell.armlinux.org.uk>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux@armlinux.org.uk, gpiccoli@igalia.com, mikelley@microsoft.com, akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com, arnd@arndb.de, 
- bp@alien8.de, corbet@lwn.net, d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com, dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org, hidehiro.kawai.ez@hitachi.com, jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org, luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org, senozhatsky@chromium.org, stern@rowland.harvard.edu, tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com, will@kernel.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+        Fri, 29 Apr 2022 18:08:56 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF35B82D1E
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:05:35 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id w187so16791270ybe.2
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 15:05:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GAXmCRc3lSOVYcNpy8O/6UhikW8W0LY8j/c9X7o57N8=;
+        b=RwIlF7TtzMr9ei1gzjHEl+WsjKakPNiUJPxtsgL+xc/vfErFq25Bw2KBkF47qccKq1
+         lTGAgrmK2WASE4V8K9ZeW/mmDa90vzKIVXGTrrGjOiis10w/zGKjH3NSMttZkGR0DsEY
+         CiKQHhKqMX4fa+FHrgvbC+YJrAjiULjAlydSoQnaRqvq/2dKRcMyRygxrJ1OyjYmYCHF
+         A7ZclJQtIUf/xjn3Gkfhm/bO6HtHRCRfLc4IfG3yNwQiz4606aJ37B+r2E9kOKin+s0u
+         vtBW+RTfulW6LmArTh5URV7MeTjhjT4XpfAugIZwf0c6S1xO7ZrgqUuI2+DH1Z5Pijb1
+         guIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GAXmCRc3lSOVYcNpy8O/6UhikW8W0LY8j/c9X7o57N8=;
+        b=j/pW6yPW35yUO9ZIcjSa5DHDdVWqKVaQO3wrRTrRzgONeGph5LPd0nyEZuivu5y1+5
+         +DoO0apEPgF30YKIshkGGFnIxYm+ysjxpeaWqPL9MsV/MSnshbojWKBtC9zj0IdwZWN6
+         R/dljkFwPjxzeHN4K78D3dRd5D9n6je6P+JFBtne63OEHOc5slBC84MAnn+vNJEu2BKe
+         hLrN7CRGnGbdPsoclqvWAvVt1XjFGTqLLKRk6c7hGzt/vRF3o+PVmx1MyJzncch17eVT
+         SkBTlIsB/eNAe9B4pdsbj3ArLEp3WLywNSgIgmhw6hO3tr6npRLs6GoYvjw7XXK+7LXh
+         6l9g==
+X-Gm-Message-State: AOAM530nbD8DdD/K5vlyYFptmEskNg2G2TzCo91pjMiXfX8UYon8Jihp
+        wDNFs0wnl/xg0wpfjwaBAp7O2IJ3CV1RcdUJRWBLyg==
+X-Google-Smtp-Source: ABdhPJx8W/f0rIOxwSLCAUKHFdwYsYsmP6YReafF6bxvy28/9zbpMt+wREZ2Hk6CzroVnhUZa8a5ZIZGRCePs7y/hVc=
+X-Received: by 2002:a25:ea48:0:b0:644:e2e5:309 with SMTP id
+ o8-20020a25ea48000000b00644e2e50309mr1559161ybe.407.1651269934754; Fri, 29
+ Apr 2022 15:05:34 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAHmME9r_DbZWe4FsfebHSSf_iPctSe5S-w9bU3o8BN43raeURg@mail.gmail.com>
+ <20151116203709.GA27178@oracle.com> <CAHmME9pNCqbcoqbOnx6p8poehAntyyy1jQhy=0_HjkJ8nvMQdw@mail.gmail.com>
+ <1447712932.22599.77.camel@edumazet-glaptop2.roam.corp.google.com>
+ <CAHmME9oTU7HwP5=qo=aFWe0YXv5EPGoREpF2k-QY7qTmkDeXEA@mail.gmail.com>
+ <YmszSXueTxYOC41G@zx2c4.com> <04f72c85-557f-d67c-c751-85be65cb015a@gmail.com>
+ <YmxTo2hVwcwhdvjO@zx2c4.com> <d9854c74-c209-9ea5-6c76-8390e867521b@gmail.com> <CAHmME9qXC-4OPc5xRbC6CQJcpzb96EXzNWAist5A8momYxvVUA@mail.gmail.com>
+In-Reply-To: <CAHmME9qXC-4OPc5xRbC6CQJcpzb96EXzNWAist5A8momYxvVUA@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 29 Apr 2022 15:05:23 -0700
+Message-ID: <CANn89iLyNoCRrp6YYdy6kGhM7X2JQ9J4-LfEJCBvhYAv4N+FPA@mail.gmail.com>
+Subject: Re: Routing loops & TTL tracking with tunnel devices
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Apr 2022 22:45:14 +0100,
-"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
-> 
-> On Fri, Apr 29, 2022 at 06:38:19PM -0300, Guilherme G. Piccoli wrote:
-> > Thanks Marc and Michael for the review/discussion.
-> > 
-> > On 29/04/2022 15:20, Marc Zyngier wrote:
-> > > [...]
-> > 
-> > > My expectations would be that, since we're getting here using an IPI,
-> > > interrupts are already masked. So what reenabled them the first place?
-> > > 
-> > > Thanks,
-> > > 
-> > > 	M.
-> > > 
-> > 
-> > Marc, I did some investigation in the code (and tried/failed in the ARM
-> > documentation as well heh), but this is still not 100% clear for me.
-> > 
-> > You're saying IPI calls disable IRQs/FIQs by default in the the target
-> > CPUs? Where does it happen? I'm a bit confused if this a processor
-> > mechanism, or it's in code.
-> 
-> When we taken an IRQ, IRQs will be masked, FIQs will not. IPIs are
-> themselves interrupts, so IRQs will be masked while the IPI is being
-> processed. Therefore, there should be no need to re-disable the
-> already disabled interrupts.
-> 
-> > But crash_smp_send_stop() is different, it seems to IPI the other CPUs
-> > with the flag IPI_CALL_FUNC, which leads to calling
-> > generic_smp_call_function_interrupt() - does it disable interrupts/FIQs
-> > as well? I couldn't find it.
-> 
-> It's buried in the architecture behaviour. When the CPU takes an
-> interrupt and jumps to the interrupt vector in the vectors page, it is
-> architecturally defined that interrupts will be disabled. If they
-> weren't architecturally disabled at this point, then as soon as the
-> first instruction is processed (at the interrupt vector, likely a
-> branch) the CPU would immediately take another jump to the interrupt
-> vector, and this process would continue indefinitely, making interrupt
-> handling utterly useless.
-> 
-> So, you won't find an explicit instruction in the code path from the
-> vectors to the IPI handler that disables interrupts - because it's
-> written into the architecture that this is what must happen.
-> 
-> IRQs are a lower priority than FIQs, so FIQs remain unmasked.
+On Fri, Apr 29, 2022 at 2:54 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> Hi Eric,
+>
+> On Fri, Apr 29, 2022 at 11:14 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >
+> >
+> > On 4/29/22 14:07, Jason A. Donenfeld wrote:
+> >
+> > Hi Eric,
+> >
+> > On Fri, Apr 29, 2022 at 01:54:27PM -0700, Eric Dumazet wrote:
+> >
+> > Anyway, it'd be nice if there were a free u8 somewhere in sk_buff that I
+> > could use for tracking times through the stack. Other kernels have this
+> > but afaict Linux still does not. I looked into trying to overload some
+> > existing fields -- tstamp/skb_mstamp_ns or queue_mapping -- which I was
+> > thinking might be totally unused on TX?
+> >
+> > if skbs are stored in some internal wireguard queue, can not you use
+> > skb->cb[],
+> >
+> > like many other layers do ?
+> >
+> > This isn't for some internal wireguard queue. The packets get sent out
+> > of udp_tunnel_xmit_skb(), so they leave wireguard's queues.
+> >
+> >
+> > OK, where is the queue then ?
+> >
+> > dev_xmit_recursion() is supposed to catch long chains of virtual devices.
+>
+> This is the long-chain-of-virtual-devices case indeed. But
+> dev_xmit_recursion() does not help here, since that's just a per-cpu
+> increment, assuming that the packet actually gets xmit'd in its
+> ndo_start_xmit function. But in reality, wireguard queues up the
+> packet, encrypts it in some worker later, and eventually transmits it
+> with udp_tunnel_xmit_skb(). All the while ndo_start_xmit() has long
+> returned. So no help from dev_xmit_recursion().
+>
 
-Ah, you're of course right. That's one of the huge differences between
-AArch32 and AArch64, where the former has per target mode masking
-rules, and the later masks everything on entry...
+I assume you add encap headers to the skb ?
 
-	M.
+You could check if the wireguard header is there already, or if the
+amount of headers is crazy.
 
--- 
-Without deviation from the norm, progress is not possible.
+net/core/flow_dissector.c might help.
+
+You also can take a look at CONFIG_SKB_EXTENSIONS infrastructure.
