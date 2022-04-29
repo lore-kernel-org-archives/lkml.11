@@ -2,70 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E36B9C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71CA1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 12:46:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359405AbiD2Mtd (ORCPT
+        id S1359423AbiD2Mtj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 08:49:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
+        Fri, 29 Apr 2022 08:49:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiD2Mta (ORCPT
+        with ESMTP id S1359416AbiD2Mth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 08:49:30 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256E59233F;
-        Fri, 29 Apr 2022 05:46:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=aRHhn40DzoM9Zivc1Yu4592Ged4ObaQxjXEhmGCOPfQ=; b=NCJkw2QvDPbR3jyHG3NIsEEFBy
-        6SVKaRx2o/cAk0cMzQRz+GjdWJOC6Uq9kukTcRIVSakfXOuu08y6Pn+yFwtPpc0ZUPE0l+aVJMlcQ
-        5OPOrOV9lFedeTtH3L/+J2C3PJdKiUIaH7gAtu6PcVKvwoaUtWTRKQPjs5pbs19M5wKc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nkQ0U-000TrR-4D; Fri, 29 Apr 2022 14:45:58 +0200
-Date:   Fri, 29 Apr 2022 14:45:58 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Philipp Zabel <p.zabel@pengutronix.de>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 0/2] net: lan966x: remove PHY reset support
-Message-ID: <YmveBgHG9KCwvySO@lunn.ch>
-References: <20220428114049.1456382-1-michael@walle.cc>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220428114049.1456382-1-michael@walle.cc>
+        Fri, 29 Apr 2022 08:49:37 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D005895481;
+        Fri, 29 Apr 2022 05:46:17 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app3 (Coremail) with SMTP id cC_KCgCnb3kJ3mtiQdNCAw--.63343S2;
+        Fri, 29 Apr 2022 20:46:06 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     krzysztof.kozlowski@linaro.org, kuba@kernel.org,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org, alexander.deucher@amd.com,
+        broonie@kernel.org, linma@zju.edu.cn,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net v6 0/2] Replace improper checks and fix bugs in nfc subsystem
+Date:   Fri, 29 Apr 2022 20:45:49 +0800
+Message-Id: <cover.1651235400.git.duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgCnb3kJ3mtiQdNCAw--.63343S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYT7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+        n2kIc2xKxwCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26r4fKr1UJr1l4I8I3I
+        0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWU
+        GVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI
+        0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0
+        rVWUJVWUCwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r
+        4UJbIYCTnIWIevJa73UjIFyTuYvjfUoOJ5UUUUU
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgAPAVZdtZdzvwAEst
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 01:40:47PM +0200, Michael Walle wrote:
-> Remove the unneeded PHY reset node as well as the driver support for it.
-> 
-> This was already discussed [1] and I expect Microchip to Ack on this
-> removal. Since there is no user, no breakage is expected.
-> 
-> I'm not sure it this should go through net or net-next and if the patches
-> should have a Fixes: tag or not. In upstream linux there was never any user
-> of it, so there is no bug to be fixed. But OTOH if the schema fix isn't
-> backported, then there might be an older schema version still containing
-> the reset node. Thoughts?
+The first patch is used to replace improper checks in netlink related
+functions of nfc core, the second patch is used to fix bugs in
+nfcmrvl driver.
 
-Is the switch driver usable in the last LTS kernel? Somebody could
-build a product around 5.15, and i assume they will have issues?
+Duoming Zhou (2):
+  nfc: replace improper check device_is_registered() in netlink related
+    functions
+  nfc: nfcmrvl: main: reorder destructive operations in
+    nfcmrvl_nci_unregister_dev to avoid bugs
 
-That could be an argument for backporting.
+ drivers/nfc/nfcmrvl/main.c |  2 +-
+ net/nfc/core.c             | 29 ++++++++++++++---------------
+ 2 files changed, 15 insertions(+), 16 deletions(-)
 
-      Andrew
+-- 
+2.17.1
+
