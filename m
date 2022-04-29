@@ -2,273 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B16B8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 03:27:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC876C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 03:28:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236163AbiD2DbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Apr 2022 23:31:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56346 "EHLO
+        id S236302AbiD2DcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Apr 2022 23:32:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234800AbiD2DbB (ORCPT
+        with ESMTP id S236224AbiD2Db5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Apr 2022 23:31:01 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4656ABF53C
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Apr 2022 20:27:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651202864; x=1682738864;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2s0bcdxl8npYMEdQiD1JEBWKmRRDkQy2NC2r7fVLY9k=;
-  b=b44zIZrrvJtyWLyF2yjQAt0rxq0fIvrbrOI/Qhq7cdZSVt0rq+HLfSap
-   jUg7Ol6irEcQ1cz/zPoeW3HY9nKGEvZ4ubbhSvxberr4ltyXCs/rEpfVf
-   K80f0HAvh3OJr5nQQED1Y27qtOYU58K218IZ+jilknNR5uxh/i3b9DsIu
-   H9/XNXRzRRp5PGGIIrOBQn3rH2UsmRYnxEkg5B18p/iBMvyVXW58QP2aT
-   VcGFAYzYHUSW9BScW+qp6x7lwDl22daKMPYqxUXsTU/nN3rWDAC25gw9K
-   DEOGlGkD0DqJh3VW+EGIkH4rKYORhm58RJsP3C2H3bY6PO/yiQ4mnZ7vq
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="266670552"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="266670552"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 20:27:44 -0700
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="560068895"
-Received: from wangyuf1-mobl.ccr.corp.intel.com ([10.254.215.143])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 20:27:39 -0700
-Message-ID: <cd496b0854d963064e0ae4e2d219d1ed63c13b68.camel@intel.com>
-Subject: Re: [PATCH v2 0/5] mm: demotion: Introduce new node state
- N_DEMOTION_TARGETS
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     Wei Xu <weixugc@google.com>
-Cc:     Alistair Popple <apopple@nvidia.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Greg Thelen <gthelen@google.com>,
-        MichalHocko <mhocko@kernel.org>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Feng Tang <feng.tang@intel.com>
-Date:   Fri, 29 Apr 2022 11:27:36 +0800
-In-Reply-To: <CAAPL-u8cdpi6r3wM6UN9qT22-xyd6J0-a_8Kgmdc7mT1smAq-A@mail.gmail.com>
-References: <CAAPL-u_pSWD6U0yQ8Ws+_Yfb_3ZEmNXJsYcRJjAFBkyDk=nq8g@mail.gmail.com>
-         <CAAPL-u-sSg=p1n_Trm9TyrgdCCO1zZ-LbKM=tkp3M827gLv=CA@mail.gmail.com>
-         <CAHbLzkr=izetwUdMnXn+s=52TYK7rG7QwxiRLz8dfu3i-4sZ7A@mail.gmail.com>
-         <7535568.9lEE7krE1S@nvdebian>
-         <f6282d421ee66b56ae889d408ca5bbe843bd9494.camel@intel.com>
-         <CAAPL-u8cdpi6r3wM6UN9qT22-xyd6J0-a_8Kgmdc7mT1smAq-A@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Thu, 28 Apr 2022 23:31:57 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5437C0D02;
+        Thu, 28 Apr 2022 20:28:39 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 11:28:10 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1651202916;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WR7AidTezt3FhuHMgE1GKtelbFYIEUudur94Uc7U6sQ=;
+        b=xKr3p3iG1CdWcIoCvh74pr/16V95IjrnfEpjJjpakdxDjhj16raMvB01Ffq7Koo5qKH+dQ
+        yM+kdMncSOk+cVivhE/eOa/R9nWd7Fvv0pgsLZfkHgzlReSwhUOxVsM/b02FL6OTQVYSTc
+        MkFgS+z/ruizZd+tD7wnD00g243IeXg=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     Mikko Perttunen <cyndis@kapsi.fi>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        linaro-mm-sig@lists.linaro.org, dri-devel@lists.freedesktop.org,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        linux-media@vger.kernel.org, linux-tegra@vger.kernel.org,
+        Jon Hunter <jonathanh@nvidia.com>
+Subject: Re: [PATCH v2 0/4] drm/nvdla: Add driver support for NVDLA
+Message-ID: <20220429032810.GA10104@chq-T47>
+References: <20220426060808.78225-1-cai.huoqing@linux.dev>
+ <YmqgailZKIuY7zTZ@orome>
+ <beacfd71-ebd0-7fde-187f-34b7a42a47de@kapsi.fi>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <beacfd71-ebd0-7fde-187f-34b7a42a47de@kapsi.fi>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-04-28 at 19:58 -0700, Wei Xu wrote:
-> On Thu, Apr 28, 2022 at 7:21 PM ying.huang@intel.com
-> <ying.huang@intel.com> wrote:
+On 28 4月 22 18:56:07, Mikko Perttunen wrote:
+> On 4/28/22 17:10, Thierry Reding wrote:
+> > On Tue, Apr 26, 2022 at 02:07:57PM +0800, Cai Huoqing wrote:
+> > > The NVIDIA Deep Learning Accelerator (NVDLA) is an open source IP
+> > > which is integrated into NVIDIA Jetson AGX Xavier,
+> > > so add driver support for this accelerator."
 > > 
-> > On Fri, 2022-04-29 at 11:27 +1000, Alistair Popple wrote:
-> > > On Friday, 29 April 2022 3:14:29 AM AEST Yang Shi wrote:
-> > > > On Wed, Apr 27, 2022 at 9:11 PM Wei Xu <weixugc@google.com> wrote:
-> > > > > 
-> > > > > On Wed, Apr 27, 2022 at 5:56 PM ying.huang@intel.com
-> > > > > <ying.huang@intel.com> wrote:
-> > > > > > 
-> > > > > > On Wed, 2022-04-27 at 11:27 -0700, Wei Xu wrote:
-> > > > > > > On Tue, Apr 26, 2022 at 10:06 PM Aneesh Kumar K V
-> > > > > > > <aneesh.kumar@linux.ibm.com> wrote:
-> > > > > > > > 
-> > > > > > > > On 4/25/22 10:26 PM, Wei Xu wrote:
-> > > > > > > > > On Sat, Apr 23, 2022 at 8:02 PM ying.huang@intel.com
-> > > > > > > > > <ying.huang@intel.com> wrote:
-> > > > > > > > > > 
-> > > > > > > > 
-> > > > > > > > ....
-> > > > > > > > 
-> > > > > > > > > > 2. For machines with PMEM installed in only 1 of 2 sockets, for example,
-> > > > > > > > > > 
-> > > > > > > > > > Node 0 & 2 are cpu + dram nodes and node 1 are slow
-> > > > > > > > > > memory node near node 0,
-> > > > > > > > > > 
-> > > > > > > > > > available: 3 nodes (0-2)
-> > > > > > > > > > node 0 cpus: 0 1
-> > > > > > > > > > node 0 size: n MB
-> > > > > > > > > > node 0 free: n MB
-> > > > > > > > > > node 1 cpus:
-> > > > > > > > > > node 1 size: n MB
-> > > > > > > > > > node 1 free: n MB
-> > > > > > > > > > node 2 cpus: 2 3
-> > > > > > > > > > node 2 size: n MB
-> > > > > > > > > > node 2 free: n MB
-> > > > > > > > > > node distances:
-> > > > > > > > > > node   0   1   2
-> > > > > > > > > >    0:  10  40  20
-> > > > > > > > > >    1:  40  10  80
-> > > > > > > > > >    2:  20  80  10
-> > > > > > > > > > 
-> > > > > > > > > > We have 2 choices,
-> > > > > > > > > > 
-> > > > > > > > > > a)
-> > > > > > > > > > node    demotion targets
-> > > > > > > > > > 0       1
-> > > > > > > > > > 2       1
-> > > > > > > > > > 
-> > > > > > > > > > b)
-> > > > > > > > > > node    demotion targets
-> > > > > > > > > > 0       1
-> > > > > > > > > > 2       X
-> > > > > > > > > > 
-> > > > > > > > > > a) is good to take advantage of PMEM.  b) is good to reduce cross-socket
-> > > > > > > > > > traffic.  Both are OK as defualt configuration.  But some users may
-> > > > > > > > > > prefer the other one.  So we need a user space ABI to override the
-> > > > > > > > > > default configuration.
-> > > > > > > > > 
-> > > > > > > > > I think 2(a) should be the system-wide configuration and 2(b) can be
-> > > > > > > > > achieved with NUMA mempolicy (which needs to be added to demotion).
-> > > > > > > > > 
-> > > > > > > > > In general, we can view the demotion order in a way similar to
-> > > > > > > > > allocation fallback order (after all, if we don't demote or demotion
-> > > > > > > > > lags behind, the allocations will go to these demotion target nodes
-> > > > > > > > > according to the allocation fallback order anyway).  If we initialize
-> > > > > > > > > the demotion order in that way (i.e. every node can demote to any node
-> > > > > > > > > in the next tier, and the priority of the target nodes is sorted for
-> > > > > > > > > each source node), we don't need per-node demotion order override from
-> > > > > > > > > the userspace.  What we need is to specify what nodes should be in
-> > > > > > > > > each tier and support NUMA mempolicy in demotion.
-> > > > > > > > > 
-> > > > > > > > 
-> > > > > > > > I have been wondering how we would handle this. For ex: If an
-> > > > > > > > application has specified an MPOL_BIND policy and restricted the
-> > > > > > > > allocation to be from Node0 and Node1, should we demote pages allocated
-> > > > > > > > by that application
-> > > > > > > > to Node10? The other alternative for that demotion is swapping. So from
-> > > > > > > > the page point of view, we either demote to a slow memory or pageout to
-> > > > > > > > swap. But then if we demote we are also breaking the MPOL_BIND rule.
-> > > > > > > 
-> > > > > > > IMHO, the MPOL_BIND policy should be respected and demotion should be
-> > > > > > > skipped in such cases.  Such MPOL_BIND policies can be an important
-> > > > > > > tool for applications to override and control their memory placement
-> > > > > > > when transparent memory tiering is enabled.  If the application
-> > > > > > > doesn't want swapping, there are other ways to achieve that (e.g.
-> > > > > > > mlock, disabling swap globally, setting memcg parameters, etc).
-> > > > > > > 
-> > > > > > > 
-> > > > > > > > The above says we would need some kind of mem policy interaction, but
-> > > > > > > > what I am not sure about is how to find the memory policy in the
-> > > > > > > > demotion path.
-> > > > > > > 
-> > > > > > > This is indeed an important and challenging problem.  One possible
-> > > > > > > approach is to retrieve the allowed demotion nodemask from
-> > > > > > > page_referenced() similar to vm_flags.
-> > > > > > 
-> > > > > > This works for mempolicy in struct vm_area_struct, but not for that in
-> > > > > > struct task_struct.  Mutiple threads in a process may have different
-> > > > > > mempolicy.
-> > > > > 
-> > > > > From vm_area_struct, we can get to mm_struct and then to the owner
-> > > > > task_struct, which has the process mempolicy.
-> > > > > 
-> > > > > It is indeed a problem when a page is shared by different threads or
-> > > > > different processes that have different thread default mempolicy
-> > > > > values.
-> > > > 
-> > > > Sorry for chiming in late, this is a known issue when we were working
-> > > > on demotion. Yes, it is hard to handle the shared pages and multi
-> > > > threads since mempolicy is applied to each thread so each thread may
-> > > > have different mempolicy. And I don't think this case is rare. And not
-> > > > only mempolicy but also may cpuset settings cause the similar problem,
-> > > > different threads may have different cpuset settings for cgroupv1.
-> > > > 
-> > > > If this is really a problem for real life workloads, we may consider
-> > > > tackling it for exclusively owned pages first. Thanks to David's
-> > > > patches, now we have dedicated flags to tell exclusively owned pages.
-> > > 
-> > > One of the problems with demotion when I last looked is it does almost exactly
-> > > the opposite of what we want on systems like POWER9 where GPU memory is a
-> > > CPU-less memory node.
-> > > 
-> > > On those systems users tend to use MPOL_BIND or MPOL_PREFERRED to allocate
-> > > memory on the GPU node. Under memory pressure demotion should migrate GPU
-> > > allocations to the CPU node and finally other slow memory nodes or swap.
-> > > 
-> > > Currently though demotion considers the GPU node slow memory (because it is
-> > > CPU-less) so will demote CPU memory to GPU memory which is a limited resource.
-> > > And when trying to allocate GPU memory with MPOL_BIND/PREFERRED it will swap
-> > > everything to disk rather than demote to CPU memory (which would be preferred).
-> > > 
-> > > I'm still looking at this series but as I understand it it will help somewhat
-> > > because we could make GPU memory the top-tier so nothing gets demoted to it.
+> > Hi,
 > > 
-> > Yes.  If we have a way to put GPU memory in top-tier (tier 0) and
-> > CPU+DRAM in tier 1.  Your requirement can be satisfied.  One way is to
-> > override the auto-generated demotion order via some user space tool.
-> > Another way is to change the GPU driver (I guess where the GPU memory is
-> > enumerated and onlined?) to change the tier of GPU memory node.
+> > nice to see this work going on. For subsequent revisions, can you please
+> > also Cc the Tegra mailing list (linux-tegra@vger.kernel.org) as well as
+> > the Tegra platform maintainers (that's Jon Hunter and myself). This will
+> > make sure that more people with an interest in this will see your work.
+> > Not everyone follows dri-devel, linaro-mm-sig or linux-media.
 > > 
-> > > However I wouldn't want to see demotion skipped entirely when a memory policy
-> > > such as MPOL_BIND is specified. For example most memory on a GPU node will have
-> > > some kind of policy specified and IMHO it would be better to demote to another
-> > > node in the mempolicy nodemask rather than going straight to swap, particularly
-> > > as GPU memory capacity tends to be limited in comparison to CPU memory
-> > > capacity.
-> > > > 
-> > 
-> > Can you use MPOL_PREFERRED?  Even if we enforce MPOL_BIND as much as
-> > possible, we will not stop demoting from GPU to DRAM with
-> > MPOL_PREFERRED.  And in addition to demotion, allocation fallbacking can
-> > be used too to avoid allocation latency caused by demotion.
+> > Thanks,
+> > Thierry
 > 
-> I expect that MPOL_BIND can be used to either prevent demotion or
-> select a particular demotion node/nodemask. It all depends on the
-> mempolicy nodemask specified by MPOL_BIND.
+> From a quick glance it looks like this driver pokes DLA hardware directly
+> which is not the intended programming model on Tegra hardware (there are
+> Falcon microcontrollers that offload task scheduling and synchronization
+> from the CPU). The hardware is also behind the Host1x bus so a simple
+> platform device is not sufficient.
+> 
+> Was this driver developed against some platform with OpenDLA hardware (i.e.
+> not Tegra)?
+> 
+> If so, we'd need to verify if the hardware matches the hardware in Tegra194.
+> Also, this driver may not be ideal for Tegra platforms since we would lack
+> the hardware scheduling and synchronization facilities. It is likely
+> necessary to have separate drivers for OpenDLA and Tegra's DLA integration.
+> 
+> Thanks,
+> Mikko
+> 
+Tegra DLA seems to work with a slave coprocessor, the host driver just
+impelement message queue, share buffer, notification... The hardware
+detail of DLA maybe in the slave driver(not linux OS?).
 
-Yes.  I think so too.
+Sure, This driver just support for the SOCs or FPGAs that OPENDLA
+inside. I will change this kind of description "integrated into NVIDIA Jetson AGX Xavier"
+this driver dont support for Tegra directly.
 
-Best Regards,
-Huang, Ying
-
-> > This is another example of a system with 3 tiers if PMEM is installed in
-> > this machine too.
+Thanks,
+Cai
 > > 
-> > Best Regards,
-> > Huang, Ying
-> > 
-> > > > > On the other hand, it can already support most interesting use cases
-> > > > > for demotion (e.g. selecting the demotion node, mbind to prevent
-> > > > > demotion) by respecting cpuset and vma mempolicies.
-> > > > > 
-> > > > > > Best Regards,
-> > > > > > Huang, Ying
-> > > > > > 
-> > > > > > > > 
-> > > > > > > > > Cross-socket demotion should not be too big a problem in practice
-> > > > > > > > > because we can optimize the code to do the demotion from the local CPU
-> > > > > > > > > node (i.e. local writes to the target node and remote read from the
-> > > > > > > > > source node).  The bigger issue is cross-socket memory access onto the
-> > > > > > > > > demoted pages from the applications, which is why NUMA mempolicy is
-> > > > > > > > > important here.
-> > > > > > > > > 
-> > > > > > > > > 
-> > > > > > > > -aneesh
-> > > > > > 
-> > > > > > 
-> > > > 
-> > > > 
 > > > 
+> > > v1->v2:
+> > > *Rename nvdla_drm.[ch] to nvdla_drv.[ch] and rename nvdla_ioctl.h to nvdla_drm.h,
+> > >   move it to uapi.
+> > >   comments link: https://lore.kernel.org/lkml/20bac605-97e6-e5cd-c4e4-83a8121645d8@amd.com/
+> > > *Remove the  onexistent filename  in Makefile
+> > >   comments link: https://lore.kernel.org/lkml/202204201512.pp20MXT5-lkp@intel.com/
+> > > *Sort file names alphabetically in Makefile.
+> > > *Rearrange the error messages, and use drm_err/_dbg() instead of pr_err/_dbg().
+> > > *Replace  "dla_" prefix with "nvdla_"
+> > > *Check the iosys_map by iosys_map_is_null(), and check "ret" directly.
+> > > *Using iosys_map_memcpy_to/_from() for iosys_map instead of memcpy()
+> > > *Fix parameter error "dma_buf_vunmap(buf, ptr)", use "&map" instead of "ptr"
+> > > *Use iosys_map instead of kvaddr and use "iosys_map_set_vaddr()" to initialize iosys_map
+> > > *Using "vma->vm_pgoff -= drm_vma_node_start(&obj->vma_node)" to update vm_pgoff is cleaner
+> > > *Remove the unused nvdla_drm_gem_mmap, register drm_gem_mmap to file_operations directly.
+> > > *Use DEFINE_DRM_GEM_FOPS() to define nvdla_drm_fops.
+> > > *Remove the unused nvdla_drm_gem_mmap_buf, register drm_gem_prime_mmap to drm_driver directly.
+> > >   comments link: https://lore.kernel.org/lkml/7fa19996-5830-af3d-ab24-08c76e1d5604@suse.de/
+> > > *Fix typo and some code style
+> > > *Remove unused function nvdla_get_time_us()
+> > >   comments link: https://lore.kernel.org/lkml/0fa9ab41-c18e-a569-e6fe-a0e9d965905e@stargateuniverse.net/
 > > > 
+> > > Cai Huoqing (4):
+> > >    MAINTAINERS: Add the driver info of the NVDLA
+> > >    drm/nvdla: Add driver support for NVDLA
+> > >    drm/nvdla: Add register head file of NVDLA
+> > >    drm/nvdla/uapi: Add UAPI of NVDLA driver
 > > > 
+> > >   MAINTAINERS                             |    7 +
+> > >   drivers/gpu/drm/Kconfig                 |    2 +
+> > >   drivers/gpu/drm/Makefile                |    1 +
+> > >   drivers/gpu/drm/nvdla/Kconfig           |    8 +
+> > >   drivers/gpu/drm/nvdla/Makefile          |   17 +
+> > >   drivers/gpu/drm/nvdla/nvdla_bdma.c      |  198 +
+> > >   drivers/gpu/drm/nvdla/nvdla_cache.c     |  202 +
+> > >   drivers/gpu/drm/nvdla/nvdla_cdp.c       |  299 ++
+> > >   drivers/gpu/drm/nvdla/nvdla_common.c    |  293 ++
+> > >   drivers/gpu/drm/nvdla/nvdla_common.h    |  835 +++
+> > >   drivers/gpu/drm/nvdla/nvdla_conv.c      |  684 +++
+> > >   drivers/gpu/drm/nvdla/nvdla_drv.c       |  694 +++
+> > >   drivers/gpu/drm/nvdla/nvdla_drv.h       |  129 +
+> > >   drivers/gpu/drm/nvdla/nvdla_engine.c    |  233 +
+> > >   drivers/gpu/drm/nvdla/nvdla_engine.h    |  272 +
+> > >   drivers/gpu/drm/nvdla/nvdla_gem.c       |  358 ++
+> > >   drivers/gpu/drm/nvdla/nvdla_pdp.c       |  448 ++
+> > >   drivers/gpu/drm/nvdla/nvdla_reg.h       | 6411 +++++++++++++++++++++++
+> > >   drivers/gpu/drm/nvdla/nvdla_rubik.c     |  214 +
+> > >   drivers/gpu/drm/nvdla/nvdla_sched.h     |   37 +
+> > >   drivers/gpu/drm/nvdla/nvdla_scheduler.c | 1012 ++++
+> > >   drivers/gpu/drm/nvdla/nvdla_sdp.c       |  723 +++
+> > >   include/uapi/drm/nvdla_drm.h            |   99 +
+> > >   23 files changed, 13176 insertions(+)
+> > >   create mode 100644 drivers/gpu/drm/nvdla/Kconfig
+> > >   create mode 100644 drivers/gpu/drm/nvdla/Makefile
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_bdma.c
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_cache.c
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_cdp.c
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_common.c
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_common.h
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_conv.c
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_drv.c
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_drv.h
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_engine.c
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_engine.h
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_gem.c
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_pdp.c
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_reg.h
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_rubik.c
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_sched.h
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_scheduler.c
+> > >   create mode 100644 drivers/gpu/drm/nvdla/nvdla_sdp.c
+> > >   create mode 100644 include/uapi/drm/nvdla_drm.h
 > > > 
-> > 
-> > 
-
-
+> > > -- 
+> > > 2.25.1
+> > > 
+> 
