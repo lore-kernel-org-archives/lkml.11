@@ -2,123 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB26C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 18:56:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00975C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 18:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380175AbiD2S7b (ORCPT
+        id S1380182AbiD2TAF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 14:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40414 "EHLO
+        Fri, 29 Apr 2022 15:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380172AbiD2S71 (ORCPT
+        with ESMTP id S1380172AbiD2TAD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 14:59:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE41F89CEE
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:56:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651258567;
+        Fri, 29 Apr 2022 15:00:03 -0400
+Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6728D6A2
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:56:42 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id BF93A6A127F;
+        Fri, 29 Apr 2022 18:56:41 +0000 (UTC)
+Received: from pdx1-sub0-mail-a237.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id E2A826A15D0;
+        Fri, 29 Apr 2022 18:56:40 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1651258601; a=rsa-sha256;
+        cv=none;
+        b=h+YKgCBIErxGxLCOh3DExzO8Dm6owK6OgpFT8p4jh3D92Rl7IfWyLLPSuBcb3XkpL//OEn
+        JSYLZFFXja2tZBHX5+GArXnjA/5btbavzLEcxwuxRtr92DEXIIbR4NhY9fpWPWQC7S+Z2a
+        bIguA/H1wiRTI7wp3/jYwDE7QON92hm8VMKEvAnP4DMPk20mEex12KdMBXoxw3KA0U2gRo
+        IenUnmE3gLM2316ML3Fm6PA1KqRCIc3TSf+mrOM2+/nWd3WFVVQpl7klB7ce35wuYwvQBj
+        FJjSchlby9VhTbqFGMaXisw8hs2SfyJTG/0LcL+Jgmn50SrjIe1Wy1j4I/uqQw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1651258601;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oXEYOVGiEIaS8rjqVK/VtY7+96OZNTU9qHtWYBB2mls=;
-        b=Ymn1tw2dF9rNZDIS0zpMkGk/AmYoqpZqduOOlIwpIzCS1BJfc0uVUXJg3+8hF/SIivxCz5
-        XUm/JSVB/gpW2q3sz+Yk73VbpTKa6NVg/xaOI7rmNg6zGsgds0IicoXWZhroQQhYCdCqun
-        acIiF+As6YsvS02mGYL8BqNusECP+Oo=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-378-xt5N50nfOlWH07DiGnX_OA-1; Fri, 29 Apr 2022 14:56:06 -0400
-X-MC-Unique: xt5N50nfOlWH07DiGnX_OA-1
-Received: by mail-wm1-f70.google.com with SMTP id c62-20020a1c3541000000b0038ec265155fso6232798wma.6
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:56:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=oXEYOVGiEIaS8rjqVK/VtY7+96OZNTU9qHtWYBB2mls=;
-        b=ZQQxBdv5d+LJZYIuYUQFsaPF++kKhBMmiZsJeNZxoQBx2D5j/w/mn8ekFsuaWBulzZ
-         L1LJ3gz2UDjYCs6HsvRUTZIUupmK/2zp/HGWTj365CoavQAK0K8hBoVZ7uqCTV3hHMsR
-         JKbJBEMOb0v/GCxoTxNJq6+f8ZkMTc8dpKJu037nLpA04hu0isiavh2aDfIQ3WDNDD4+
-         8MwHU7GI5CFeOLj6gEea7KoLylCIGM9woBStWn5ymWq4bGcPmX7G70yz7Lf1PAQU5JID
-         56dWURTLdo08JRIQlA69gzcnosZtyMeHBiD2QiIVPSbAP+lss9ywMEjRBm8us3sIi6Vp
-         kM2w==
-X-Gm-Message-State: AOAM530RpGQbUI6XwC0cjZ+mKjo7tiNYXcyYwFpWjniTlmgiSIxM4dw/
-        DTiaMcWYLfi/i97NKwNI1ezbpMNrICY83qLWbJ9AEvIouED0g4opRGiG7lJRT+G42KgRGF2Pz7F
-        8YUqa9qv96RxdmcH3B3Mbn1zQ
-X-Received: by 2002:a5d:47af:0:b0:20a:c95e:b236 with SMTP id 15-20020a5d47af000000b0020ac95eb236mr394589wrb.53.1651258565160;
-        Fri, 29 Apr 2022 11:56:05 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw6ZE3RROaOfJj+XJfJxSRg2A5j0PJ86gl1VDYbLGFPHLsd+sT4VA321qoca53c0lbL8rwW4A==
-X-Received: by 2002:a5d:47af:0:b0:20a:c95e:b236 with SMTP id 15-20020a5d47af000000b0020ac95eb236mr394561wrb.53.1651258564917;
-        Fri, 29 Apr 2022 11:56:04 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c707:fe00:bbeb:98e6:617a:dea1? (p200300cbc707fe00bbeb98e6617adea1.dip0.t-ipconnect.de. [2003:cb:c707:fe00:bbeb:98e6:617a:dea1])
-        by smtp.gmail.com with ESMTPSA id p125-20020a1c2983000000b0038e6c62f527sm3892909wmp.14.2022.04.29.11.56.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 11:56:04 -0700 (PDT)
-Message-ID: <9781c7e7-d84e-4911-396b-718514f76b1f@redhat.com>
-Date:   Fri, 29 Apr 2022 20:56:02 +0200
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=q7GK4tNtUdPsCkIB6AGnkYHFR71fuWyelk2LtXFBMMU=;
+        b=nVhx4YrZUrzK/XZ1NJaMjR7/AXqmJZS4+oIaQEKHUSS/aRye545dyQCLcwPAGz6CWUjv2x
+        +wLU4AsVhRA8gzjCIJFKgIFvvmRL7AfWsZCwx+xqb/jz+lDY+N+Pvwl8KS0rqMoK5pPQgb
+        ZNQl0lE2ccHtuGmT0tnZvTxJ3Zxq3lOqCC7oH5T1RKMs+oAdkgw1sZUAvGUizd1yB5/RU6
+        QZ97CwPS/PzC3fB0o7j0wNKiKlBWxLyNXu7YpuGuqvRvTw4N+WOsNRcCUlwDs1Yp0DxFCm
+        dQV740EDhIruL5IlVuqvK3k4kDS/YnaQjAn2I9yGBqviOJ+osI1nZ+yPkaIXcQ==
+ARC-Authentication-Results: i=1;
+        rspamd-847dd8955c-c7snv;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Descriptive-Quick: 6eb74fb32a06ba3c_1651258601427_2688605735
+X-MC-Loop-Signature: 1651258601427:646155923
+X-MC-Ingress-Time: 1651258601427
+Received: from pdx1-sub0-mail-a237.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.125.123.55 (trex/6.7.1);
+        Fri, 29 Apr 2022 18:56:41 +0000
+Received: from offworld (unknown [104.36.31.105])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a237.dreamhost.com (Postfix) with ESMTPSA id 4KqhY373Lgz1NJ;
+        Fri, 29 Apr 2022 11:56:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1651258600;
+        bh=q7GK4tNtUdPsCkIB6AGnkYHFR71fuWyelk2LtXFBMMU=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=p8msJRphPZ9QAdkC+ArXhVohZPhu8xlkp2RMslXXvlyN2bgm2DX+ESggcBI++TQAJ
+         45IDIvAFmoiXtRgrEQSZjhrI334yq2npKbNfc2ozWDUWQlH5T2rAADbMe/QilT4QsU
+         wCsMgtTnkFiVWmk1JN158r9U6g6vOwkju6wZD5z8gC70/zO1aZKMVlny0dMihUGSMK
+         iVvbfeKJwp5sLaE2N85IOI5JQFrUlcUF6fklOTNTqG7ukB9M0T2gvwblBP/Loy1cAk
+         JkrbyfCOoMEOB8pdCb08B6ELcLZYjXjmAC8m7myKJDeqVNgcTVZ0lQJxu/WwzTgLUF
+         lX8dXeJS9yqOA==
+Date:   Fri, 29 Apr 2022 11:45:13 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Waiman Long <longman@redhat.com>,
+        Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] locking/rwsem: Teach contention tracing about optimistic
+ spinning
+Message-ID: <20220429184513.vftv4pj72fxzrpm2@offworld>
+References: <20220427155241.26410-1-dave@stgolabs.net>
+ <CAM9d7ciQnUcefR-hLBHSDhu6zZovxXvGYW-CdSBiub_GAOfAiA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v4 12/17] mm: remember exclusively mapped anonymous pages
- with PG_anon_exclusive
-Content-Language: en-US
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
-References: <20220428083441.37290-1-david@redhat.com>
- <20220428083441.37290-13-david@redhat.com>
- <20220429112655.6b44dae1a93a9aa93adb0bcf@linux-foundation.org>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220429112655.6b44dae1a93a9aa93adb0bcf@linux-foundation.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CAM9d7ciQnUcefR-hLBHSDhu6zZovxXvGYW-CdSBiub_GAOfAiA@mail.gmail.com>
+User-Agent: NeoMutt/20220408
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29.04.22 20:26, Andrew Morton wrote:
-> On Thu, 28 Apr 2022 10:34:36 +0200 David Hildenbrand <david@redhat.com> wrote:
-> 
->> Let's mark exclusively mapped anonymous pages with PG_anon_exclusive as
->> exclusive, and use that information to make GUP pins reliable and stay
->> consistent with the page mapped into the page table even if the
->> page table entry gets write-protected.
-> 
-> No reviewers on this one?
-> 
-> 
+Sorry for the late reply.
 
-Looks like I missed Vlastimils ACK on this one in his second reply:
+On Wed, 27 Apr 2022, Namhyung Kim wrote:
 
-https://lkml.kernel.org/r/abc33620-b0dc-67e3-d3a9-2094475bf16e@suse.cz
+>Hi Davidlohr,
+>
+>On Wed, Apr 27, 2022 at 9:04 AM Davidlohr Bueso <dave@stgolabs.net> wrote:
+>>
+>> Similar to the mutex counterpart, we can further distinguish the
+>> types of contention. Similarly this patch also introduces potentially
+>> various _begin() tracepoints with a single respective _end().
+>
+>Thanks for doing this.  I was thinking about it as well.
 
--- 
+I really like your work on this. I've always wanted a low overhead
+equivalent-ish of lock_stat, which could be used in production and
+look forward to see these tracepoints put to good use.
+
+>> @@ -115,7 +116,8 @@ TRACE_EVENT(contention_begin,
+>>                                 { LCB_F_WRITE,          "WRITE" },
+>>                                 { LCB_F_RT,             "RT" },
+>>                                 { LCB_F_PERCPU,         "PERCPU" },
+>> -                               { LCB_F_MUTEX,          "MUTEX" }
+>> +                               { LCB_F_MUTEX,          "MUTEX" },
+>> +                               { LCB_F_RWSEM,          "RWSEM" }
+>>                           ))
+>>  );
+>
+>Well I'm ok with this but it'd be better if we can do this
+>without adding a new flag.  Originally a mutex can be
+>identified with 0, and a rwsem with either of READ or WRITE.
+>
+>The MUTEX flag was added to note optimistic spins
+>on mutex and now we need something similar for
+>rwsem.  Then can we change the MUTEX to OPTIMISTIC
+>if it's not too late?
+
+Ok. Perhaps name it OSQ? I had thought of that but at the
+time was also thinking about potentially the rtmutex and
+rt spinlock spinning too - which don't use osq so the name
+would fit in that sense.
+
+While not in Linus' tree, I wouldn't think it's too late.
+
+>>         for (;;) {
+>>                 if (rwsem_try_write_lock(sem, &waiter)) {
+>> @@ -1161,18 +1167,25 @@ rwsem_down_write_slowpath(struct rw_semaphore *sem, int state)
+>>                 if (waiter.handoff_set) {
+>>                         enum owner_state owner_state;
+>>
+>> +                       trace_contention_begin(sem, LCB_F_RWSEM |
+>> +                                              LCB_F_WRITE | LCB_F_SPIN);
+>>                         preempt_disable();
+>>                         owner_state = rwsem_spin_on_owner(sem);
+>>                         preempt_enable();
+>>
+>> -                       if (owner_state == OWNER_NULL)
+>> -                               goto trylock_again;
+>> +                       if (owner_state == OWNER_NULL) {
+>> +                               raw_spin_lock_irq(&sem->wait_lock);
+>> +                               if (rwsem_try_write_lock(sem, &waiter))
+>> +                                       break;
+>> +                               raw_spin_unlock_irq(&sem->wait_lock);
+>> +                       }
+>> +
+>> +                       trace_contention_begin(sem, LCB_F_RWSEM | LCB_F_WRITE);
+>
+>I'm afraid that it'd generate many contention_begin
+>trace events for a single lock acquisition.
+
+You are right, lets just trace the "normal" optimistic spinning
+at the start of the write slowpath.
+
 Thanks,
-
-David / dhildenb
-
+Davidlohr
