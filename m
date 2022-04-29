@@ -2,111 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B96C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 18:19:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C799C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 18:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379937AbiD2SXH (ORCPT
+        id S1379774AbiD2SYK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 14:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
+        Fri, 29 Apr 2022 14:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230109AbiD2SXC (ORCPT
+        with ESMTP id S236973AbiD2SXt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 14:23:02 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4E3D0A96
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:19:43 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id m14-20020a17090a34ce00b001d5fe250e23so7975367pjf.3
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:19:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wBht/QJpKirnQLRjfU3qpuPFg9KVLlBJOHxobySJY84=;
-        b=r7pzjeEkU56Xb/PrhsyeDT3rj09eyhkVOOf0c9svwGplQYdNJteW3ugc9U+C8hivVT
-         3Mrr0tnEK/GrhuqlPEIeeQs3+x1u8NuGrbxafMRv4MHcs6KPq8HlXZAedK+JwJ1cvL5S
-         V1mtlsbCRaz1aGXyrKHvizHqdvZTw4DHpcXI2A5x+PftjUVXFrczZzXU/MGYemogzsk3
-         vz37LiqE8poSl+Wp+M/APmNHWeRuSE/tTYhpsjnq2P9cUumI3ezmDpne8lCw77Yc1Au0
-         mxgaVRaoMfyIZHLISRiDb2E0MIAP43ZmJy/rD9V7X2XmW9swkIWlKd67VwVeY+9GwgK7
-         lNXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wBht/QJpKirnQLRjfU3qpuPFg9KVLlBJOHxobySJY84=;
-        b=CLAo/1QjLqf2ziWM/fKH4vCEpj/zW5SPJXLeh8jdF5V6eDLf3atTBsJzkU5lfDCp+M
-         SSZd+DQNRHddvvHtX8xuCBNOjxnvht5DEUajj/UhUWUvV+yVqTpwj/E2OgDvd7y4OLp6
-         AQhNrXCR+Kw5Zo189gHL6NTgVLrsggDBhaE7+5HUURuCI6iIoh+NRFNM9sZrAFDmoXgS
-         UmJ30dsgupKf8BKr6rF3M2H63uCDRQerrFsVm6wlnS4s3+crwj2i9lg7dFQJAYxkhg9/
-         /7y0PTdScuMU0IN03dS4QQirtvSFsklFGkEr4Rh2aLWfwdf9/5ekyHhpWP0lK2G6OfWD
-         x9lg==
-X-Gm-Message-State: AOAM530qTJ5YhTj2kzORVudMuqyJrhPYD5PAx8wJGKmZY30Cc9wtWWeE
-        Aomp5Kgi20yzOESdK+YHO/Jwz6Fn2zKYjQ==
-X-Google-Smtp-Source: ABdhPJzIbOlJ2QDNab19z2WyabpDVNPH1SwLU2cRelG7TFhZ87ku6YiqDSuoNAqPH7kzRGC4ljGIlw==
-X-Received: by 2002:a17:903:1109:b0:15e:7c4b:5045 with SMTP id n9-20020a170903110900b0015e7c4b5045mr641211plh.3.1651256382703;
-        Fri, 29 Apr 2022 11:19:42 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id u19-20020a63b553000000b003c14af50616sm6518855pgo.46.2022.04.29.11.19.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 11:19:41 -0700 (PDT)
-Date:   Fri, 29 Apr 2022 18:19:38 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, pbonzini@redhat.com, len.brown@intel.com,
-        tony.luck@intel.com, rafael.j.wysocki@intel.com,
-        reinette.chatre@intel.com, dan.j.williams@intel.com,
-        peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com
-Subject: Re: [PATCH v3 13/21] x86/virt/tdx: Allocate and set up PAMTs for
- TDMRs
-Message-ID: <YmwsOo4TCq1/5hgd@google.com>
-References: <cover.1649219184.git.kai.huang@intel.com>
- <ffc2eefdd212a31278978e8bfccd571355db69b0.1649219184.git.kai.huang@intel.com>
- <c9b17e50-e665-3fc6-be8c-5bb16afa784e@intel.com>
- <3664ab2a8e0b0fcbb4b048b5c3aa5a6e85f9618a.camel@intel.com>
- <5984b61f-6a4a-c12a-944d-f4a78bdefc3d@intel.com>
- <Ymv2h1GYCMQ9ZQvJ@google.com>
- <c875fc4a-c3c0-dab1-c7cb-525b0bff5ae3@intel.com>
+        Fri, 29 Apr 2022 14:23:49 -0400
+Received: from smtpbg152.qq.com (smtpbg152.qq.com [13.245.186.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7572BBCAA
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 11:20:25 -0700 (PDT)
+X-QQ-mid: bizesmtp75t1651256417t3pqy8m5
+Received: from localhost.localdomain ( [218.17.40.143])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sat, 30 Apr 2022 02:20:04 +0800 (CST)
+X-QQ-SSF: 01400000002000B0D000000A0000000
+X-QQ-FEAT: 0VgNaGdhy9jE04pHOl41aWOCkkXpoW1RGwsj334NJGltLwKEyscE54hJ1uadd
+        zva35/4EUP37SZNbdfBrJdLzzNQi+sut1lyd0iriTsCciDOKUljbx55r96+Ecx65dr7BdLA
+        1wMg472tpLtIQj0tYismmZ99wUq2UrhIg5jGpo2RFfhJi3pE3nIZEVyjucdGO9IFnqZKA00
+        zrXtgzSlfdB99y3rWLP4wiahTaLUSIPrLTFCeIFqUx8DmK3C27T8lKAzLhijJ4bpOVP6x/I
+        BgvbY8XOdrIChCinjC5KXqEf8QAfKMptg9B0hEV/+JwC2huyFebd5InYriuwOhZINCEK+Hq
+        OdkAnVz5sP8BkrM6Uw=
+X-QQ-GoodBg: 2
+From:   Shenghong Han <hanshenghong2019@email.szu.edu.cn>
+To:     corbet@lwn.net
+Cc:     akpm@linux-foundation.org, akiyks@gmail.com, baihaowen@meizu.com,
+        seakeel@gmail.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, caoyixuan2019@email.szu.edu.cn,
+        yejiajian2018@email.szu.edu.cn, yuhongf@szu.edu.cn,
+        Shenghong Han <hanshenghong2019@email.szu.edu.cn>
+Subject: [PATCH] Documentation/vm/page_owner.rst: Fix syntax error and Describe details using table
+Date:   Sat, 30 Apr 2022 02:19:26 +0800
+Message-Id: <20220429181926.10658-1-hanshenghong2019@email.szu.edu.cn>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c875fc4a-c3c0-dab1-c7cb-525b0bff5ae3@intel.com>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:email.szu.edu.cn:qybgforeign:qybgforeign8
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022, Dave Hansen wrote:
-> On 4/29/22 07:30, Sean Christopherson wrote:
-> > On Fri, Apr 29, 2022, Dave Hansen wrote:
-> ...
-> >> A *good* way (although not foolproof) is to launch a TDX VM early
-> >> in boot before memory gets fragmented or consumed.  You might even
-> >> want to recommend this in the documentation.
-> > 
-> > What about providing a kernel param to tell the kernel to do the
-> > allocation during boot?
-> 
-> I think that's where we'll end up eventually.  But, I also want to defer
-> that discussion until after we have something merged.
-> 
-> Right now, allocating the PAMTs precisely requires running the TDX
-> module.  Running the TDX module requires VMXON.  VMXON is only done by
-> KVM.  KVM isn't necessarily there during boot.  So, it's hard to do
-> precisely today without a bunch of mucking with VMX.
+Some syntax errors exist in "page_owner.rst". Thanks to Akira Yokosawa and
+Haowen Bai for tips to help improve the documentation.
 
-Meh, it's hard only if we ignore the fact that the PAMT entry size isn't going
-to change for a given TDX module, and is extremely unlikely to change in general.
+We try to fix them. Hope that the Documentation is showed as we expect.
 
-Odds are good the kernel can hardcode a sane default and Just Work.  Or provide
-the assumed size of a PAMT entry via module param.  If the size ends up being
-wrong, log an error, free the reserved memory, and move on with TDX setup with
-the correct size.
+Signed-off-by: Shenghong Han <hanshenghong2019@email.szu.edu.cn>
+Fixes: edc93abbcc6d ("tools/vm/page_owner_sort.c: support sorting blocks by multiple keys")
 
-> You can arm-wrestle the distro folks who hate adding command-line tweaks
-> when the time comes. ;)
+---
+Thanks Jonathan's suggestion.
 
-Sure, you just find me the person that's going to run TDX guests with an
-off-the-shelf distro kernel :-D
+This fix is a simpler than before.
+And yes, It has built in my machine.
+
+Best,
+
+	Shenghong Han
+---
+---
+ Documentation/vm/page_owner.rst | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/Documentation/vm/page_owner.rst b/Documentation/vm/page_owner.rst
+index 25622c715..0ecb4a739 100644
+--- a/Documentation/vm/page_owner.rst
++++ b/Documentation/vm/page_owner.rst
+@@ -171,11 +171,12 @@ Usage
+ 
+ STANDARD FORMAT SPECIFIERS
+ ==========================
+-::
+ 
+-For --sort option:
++1) For --sort option.
+ 
++	====		==========	===========
+ 	KEY		LONG		DESCRIPTION
++	====		==========	===========
+ 	p		pid		process ID
+ 	tg		tgid		thread group ID
+ 	n		name		task command name
+@@ -183,14 +184,18 @@ For --sort option:
+ 	T		txt		full text of block
+ 	ft		free_ts		timestamp of the page when it was released
+ 	at		alloc_ts	timestamp of the page when it was allocated
+-        ator            allocator       memory allocator for pages
++	ator		allocator	memory allocator for pages
++	====		==========	===========
+ 
+-For --curl option:
++2) For --curl option.
+ 
++	====		==========	===========
+ 	KEY		LONG		DESCRIPTION
++	====		==========	===========
+ 	p		pid		process ID
+ 	tg		tgid		thread group ID
+ 	n		name		task command name
+ 	f		free		whether the page has been released or not
+ 	st		stacktrace	stack trace of the page allocation
+-        ator            allocator       memory allocator for pages
++	ator		allocator	memory allocator for pages
++	====		==========	===========
+-- 
+2.30.1
+
+
+
