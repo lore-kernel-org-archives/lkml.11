@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86016C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:47:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 516B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 09:47:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357017AbiD2Jud (ORCPT
+        id S1357038AbiD2Juf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 05:50:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34460 "EHLO
+        Fri, 29 Apr 2022 05:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356847AbiD2Js4 (ORCPT
+        with ESMTP id S1356844AbiD2Js4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Apr 2022 05:48:56 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 687F3A1444;
-        Fri, 29 Apr 2022 02:45:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53D89F38E;
+        Fri, 29 Apr 2022 02:45:32 -0700 (PDT)
 Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KqSG46YNNzGpVt;
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KqSG44f5TzGpWc;
         Fri, 29 Apr 2022 17:42:52 +0800 (CST)
 Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
  dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 17:45:11 +0800
+ 15.1.2375.24; Fri, 29 Apr 2022 17:45:10 +0800
 Received: from ubuntu1804.huawei.com (10.67.175.36) by
  dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 17:45:11 +0800
+ 15.1.2375.24; Fri, 29 Apr 2022 17:45:10 +0800
 From:   Chen Zhongjin <chenzhongjin@huawei.com>
 To:     <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
@@ -38,9 +38,9 @@ CC:     <jthierry@redhat.com>, <catalin.marinas@arm.com>,
         <davem@davemloft.net>, <ardb@kernel.org>, <maz@kernel.org>,
         <tglx@linutronix.de>, <luc.vanoostenryck@gmail.com>,
         <chenzhongjin@huawei.com>
-Subject: [RFC PATCH v4 12/37] objtool: arm64: Ignore replacement section for alternative callback
-Date:   Fri, 29 Apr 2022 17:43:30 +0800
-Message-ID: <20220429094355.122389-13-chenzhongjin@huawei.com>
+Subject: [RFC PATCH v4 07/37] objtool: arm64: Decode other system instructions
+Date:   Fri, 29 Apr 2022 17:43:25 +0800
+Message-ID: <20220429094355.122389-8-chenzhongjin@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220429094355.122389-1-chenzhongjin@huawei.com>
 References: <20220429094355.122389-1-chenzhongjin@huawei.com>
@@ -56,51 +56,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Julien Thierry <jthierry@redhat.com>
 
-ARM64_CB_PATCH doesn't have static replacement instructions. Skip
-trying to validate the alternative section.
+Decode ERET, BRK and NOPs
 
 Signed-off-by: Julien Thierry <jthierry@redhat.com>
 ---
- tools/objtool/arch/arm64/special.c | 11 +++++++++++
- tools/objtool/check.c              |  3 +++
- 2 files changed, 14 insertions(+)
+ tools/objtool/arch/arm64/decode.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/tools/objtool/arch/arm64/special.c b/tools/objtool/arch/arm64/special.c
-index a70b91e8bd7d..8bb1ebd2132a 100644
---- a/tools/objtool/arch/arm64/special.c
-+++ b/tools/objtool/arch/arm64/special.c
-@@ -4,6 +4,17 @@
- 
- void arch_handle_alternative(unsigned short feature, struct special_alt *alt)
- {
-+	/*
-+	 * ARM64_CB_PATCH has no alternative instruction.
-+	 * a callback is called at alternative replacement time
-+	 * to dynamically change the original instructions.
-+	 *
-+	 * ARM64_CB_PATCH is the last ARM64 feature, it's value changes
-+	 * every time a new feature is added. So the orig/alt region
-+	 * length are used to detect those alternatives
-+	 */
-+	if (alt->orig_len && !alt->new_len)
-+		alt->skip_alt = true;
- }
- 
- bool arch_support_alt_relocation(struct special_alt *special_alt,
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index e71c2ab7327a..ae75e88c4885 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -1667,6 +1667,9 @@ static int add_special_section_alts(struct objtool_file *file)
- 				continue;
- 			}
- 
-+			if (special_alt->skip_alt && !special_alt->new_len)
-+				continue;
-+
- 			ret = handle_group_alt(file, special_alt, orig_insn,
- 					       &new_insn);
- 			if (ret)
+diff --git a/tools/objtool/arch/arm64/decode.c b/tools/objtool/arch/arm64/decode.c
+index 351f8b1bbd6d..b07e0f51637e 100644
+--- a/tools/objtool/arch/arm64/decode.c
++++ b/tools/objtool/arch/arm64/decode.c
+@@ -238,6 +238,13 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
+ 			/* Remaining branch opcodes are conditional */
+ 			*type = INSN_JUMP_CONDITIONAL;
+ 			*immediate = aarch64_get_branch_offset(insn);
++		} else if (aarch64_insn_is_eret(insn)) {
++			*type = INSN_CONTEXT_SWITCH;
++		} else if (aarch64_insn_is_steppable_hint(insn)) {
++			*type = INSN_NOP;
++		} else if (aarch64_insn_is_brk(insn)) {
++			*type = INSN_BUG;
++			*immediate = aarch64_insn_decode_immediate(AARCH64_INSN_IMM_16, insn);
+ 		}
+ 		break;
+ 	default:
 -- 
 2.17.1
 
