@@ -2,98 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A268CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE0FBC4167B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Apr 2022 14:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377548AbiD2Ojx (ORCPT
+        id S1377727AbiD2Ok3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:39:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56994 "EHLO
+        Fri, 29 Apr 2022 10:40:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377682AbiD2Oj3 (ORCPT
+        with ESMTP id S1377552AbiD2OkX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:39:29 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 118DE2A72B;
-        Fri, 29 Apr 2022 07:36:11 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TEZw2B037918;
-        Fri, 29 Apr 2022 14:36:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=+Pd3boeYYOqUdToIy6lpJJ2YBcwWkKSMUxL2UvbDusM=;
- b=mswFWSl9RiMmpmRjc6Duz573+HDwDq7gll150LZbTOAL25P413JVD+PT649ZYZujiGWs
- Spxv/ggD1PjLzSYTluzrRZv8e3J2Ih9AczIcQBcdAAS2ZgJ9mj5/a/jDKlIhs55mWEBV
- V/ZBN0SL9J+XwxKVD3GJuGXm5z+jypX7tSmbIVVL3J+WolwdtJ0PmLLuA6Shx1GIsXEV
- Cfuaks1Xy68qLUYreTqlyXxrzproFO7RQt6VHn12VnN5+b5MpIYCVHbah4xWIkcJL4Ee
- Ke1eCrGse5bnuN5TJRLl6Bgz2ruootHZ5omjd2TrHB/fJF71WtkZS5tWVIAHpseJYnOE PA== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqvaq35da-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 14:36:02 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TEJxv1021330;
-        Fri, 29 Apr 2022 14:31:28 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06ams.nl.ibm.com with ESMTP id 3fm8qj99rq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 14:31:28 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TEVQqO42336720
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 29 Apr 2022 14:31:26 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 45999AE05A;
-        Fri, 29 Apr 2022 14:31:26 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B16A3AE045;
-        Fri, 29 Apr 2022 14:31:25 +0000 (GMT)
-Received: from sig-9-145-61-57.uk.ibm.com (unknown [9.145.61.57])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 29 Apr 2022 14:31:25 +0000 (GMT)
-Message-ID: <914632add2f499207e97d1bff686f2a375ccaf3f.camel@linux.ibm.com>
-Subject: Re: [PATCH 14/37] iio: adc: Kconfig: add HAS_IOPORT dependencies
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>
-Date:   Fri, 29 Apr 2022 16:31:25 +0200
-In-Reply-To: <20220429135108.2781579-25-schnelle@linux.ibm.com>
-References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
-         <20220429135108.2781579-25-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: l2FATndimXido5-7lFrl5lh5okSTtgP7
-X-Proofpoint-GUID: l2FATndimXido5-7lFrl5lh5okSTtgP7
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-29_07,2022-04-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- lowpriorityscore=0 phishscore=0 spamscore=0 mlxlogscore=441 clxscore=1011
- impostorscore=0 priorityscore=1501 suspectscore=0 mlxscore=0 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204290080
+        Fri, 29 Apr 2022 10:40:23 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04672E6A3;
+        Fri, 29 Apr 2022 07:36:32 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 340BB40014;
+        Fri, 29 Apr 2022 14:36:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651242991;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qd07jAlJK0X44yitg7a8fD9rpKx9BwtFEFGsfhVdf/w=;
+        b=K2tXe5QuZHzf+LlNCxY+MZ68z3KVoZbzp1sZCGtSj36Bi0xSdaO7WFxX1ukqhO3JGqN15M
+        gtoiifiONnlqT9qOCwg2iyCVTepnSE9OehefJ2aMyYLgYlidS2Nl3gj7NG52ZqyF1ZCuKM
+        +Z4Ir10BrC+aPNWOZlNqFd6Nw6fllxOwIz42wan8Ej4T0U437lgbWykx4Cz8tUr++lKgZP
+        9ejRj/DfO1jRwgEfpa0a/ImBOtwSGoUoRADXtE/TjdfuBumlOFkXFTt8J8j6loH3j/BS0Q
+        M5KAefoq6h7LCVRr0RCvXGm1v1wtZTNM+/vgF2BmLwL3EUtx8W1OwLMwJs3Qfw==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: [net-next v2 01/12] net: dsa: add support for ethtool get_rmon_stats()
+Date:   Fri, 29 Apr 2022 16:34:54 +0200
+Message-Id: <20220429143505.88208-2-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220429143505.88208-1-clement.leger@bootlin.com>
+References: <20220429143505.88208-1-clement.leger@bootlin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-04-29 at 15:50 +0200, Niklas Schnelle wrote:
-> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-> not being declared. We thus need to add HAS_IOPORT as dependency for
-> those drivers using them.
-> 
-> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
+Add support to allow dsa drivers to specify the .get_rmon_stats()
+operation.
 
-Sorry everyone. I sent this as PATCH in error while preparing to sent
-the same series as RFC. Since e-mail has no remote delete and I lack a
-time machine let's just all pretend you only got the RFC.
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+---
+ include/net/dsa.h |  3 +++
+ net/dsa/slave.c   | 13 +++++++++++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 934958fda962..d9da32aacbf1 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -873,6 +873,9 @@ struct dsa_switch_ops {
+ 				     struct ethtool_eth_mac_stats *mac_stats);
+ 	void	(*get_eth_ctrl_stats)(struct dsa_switch *ds, int port,
+ 				      struct ethtool_eth_ctrl_stats *ctrl_stats);
++	void	(*get_rmon_stats)(struct dsa_switch *ds, int port,
++				  struct ethtool_rmon_stats *rmon_stats,
++				  const struct ethtool_rmon_hist_range **ranges);
+ 	void	(*get_stats64)(struct dsa_switch *ds, int port,
+ 				   struct rtnl_link_stats64 *s);
+ 	void	(*self_test)(struct dsa_switch *ds, int port,
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 5ee0aced9410..27c8d28fd9d8 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1026,6 +1026,18 @@ dsa_slave_get_eth_ctrl_stats(struct net_device *dev,
+ 		ds->ops->get_eth_ctrl_stats(ds, dp->index, ctrl_stats);
+ }
+ 
++static void
++dsa_slave_get_rmon_stats(struct net_device *dev,
++			 struct ethtool_rmon_stats *rmon_stats,
++			 const struct ethtool_rmon_hist_range **ranges)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct dsa_switch *ds = dp->ds;
++
++	if (ds->ops->get_rmon_stats)
++		ds->ops->get_rmon_stats(ds, dp->index, rmon_stats, ranges);
++}
++
+ static void dsa_slave_net_selftest(struct net_device *ndev,
+ 				   struct ethtool_test *etest, u64 *buf)
+ {
+@@ -2105,6 +2117,7 @@ static const struct ethtool_ops dsa_slave_ethtool_ops = {
+ 	.get_eth_phy_stats	= dsa_slave_get_eth_phy_stats,
+ 	.get_eth_mac_stats	= dsa_slave_get_eth_mac_stats,
+ 	.get_eth_ctrl_stats	= dsa_slave_get_eth_ctrl_stats,
++	.get_rmon_stats		= dsa_slave_get_rmon_stats,
+ 	.set_wol		= dsa_slave_set_wol,
+ 	.get_wol		= dsa_slave_get_wol,
+ 	.set_eee		= dsa_slave_set_eee,
+-- 
+2.34.1
 
