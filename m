@@ -2,132 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D17A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 10:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42149C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 10:36:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382594AbiD3Kem (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 06:34:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37764 "EHLO
+        id S238885AbiD3KkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Apr 2022 06:40:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382577AbiD3Kef (ORCPT
+        with ESMTP id S230459AbiD3KkP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 06:34:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7696A44A12;
-        Sat, 30 Apr 2022 03:31:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46E8060F74;
-        Sat, 30 Apr 2022 10:31:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98D37C385AF;
-        Sat, 30 Apr 2022 10:31:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651314668;
-        bh=6mrXqkGtPpcgemTiiATDVZ7XE8ok/9wW2Vk/4+SypUc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=p9m2Rbz/wxewOHRcZURI01kopZP08YV0c/d/09+uMir1kdo2NQlLMHJLQToHFbJVw
-         wQBe6xXi3E3fWWxujyrx05cGG1K4BFWIIn3br0xrw/iwy1ozkP8jKjiUd8SZdn6HEm
-         CGE/IVxSjWOGhzAJ28YK4YP8AP7Yb3XLEDS94Vk3cJcZYiXfoEPFqIm+RXrecqVhS1
-         r3IBmmVN8oawA4C6KaFPKZSFCFZCK7OQ9Dkvp5IaVNQwZ4qTILjd6ErKbDiOxtUoB5
-         t8RIicrGR9E0TTkNq+q1y3Iik0kkx+sBCVQvd0aLSRl69Hf0KFAWuP4DrX17wcI36S
-         yRN/hoQXLypeQ==
-Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
-        (envelope-from <mchehab@kernel.org>)
-        id 1nkkNQ-001lBL-FK; Sat, 30 Apr 2022 11:31:00 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        mauro.chehab@linux.intel.com, Greg KH <gregkh@linuxfoundation.org>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Kai Vehmanen <kai.vehmanen@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>
-Subject: [PATCH v2 0/2] Let userspace know when snd-hda-intel needs i915
-Date:   Sat, 30 Apr 2022 11:30:57 +0100
-Message-Id: <cover.1651314499.git.mchehab@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Sat, 30 Apr 2022 06:40:15 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E720969707
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 03:36:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651315012; x=1682851012;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=d0ODFG+qWVJosjwuPYNcs5jsoE5HGe3GK5TcLmuvo+A=;
+  b=HQ2FSGsq01eM4XGPrsD0j0auO3YhLxf4E303Babk4pPxm1PHtdbXATqL
+   VSZJF06bF/3USPJtobYPStKOPKW7RuzEGAGckb/ryavxC11FbUVIF3w0f
+   5ejfnqacZf48UlfxmgX7MHqBYhQUWOKIK2Pu/hPgUhF86ULV6sNjs0ZMb
+   BU1QFQZ8+IgniQuflABZ6NcX2fAHoEar3AXK3VrK7R2QUJ1MFk9t2Fx1p
+   b3884UlB7J4gZ8TZ83gCykEHFsP3a68NVDN1clCapMB5q4w0eJCCCdlTI
+   OmtpUYIUy7dThJuY2S4NBashNGP7XEESrrvq8prC2C6YnqbXYJfReU/7a
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="265715070"
+X-IronPort-AV: E=Sophos;i="5.91,187,1647327600"; 
+   d="scan'208";a="265715070"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2022 03:36:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,187,1647327600"; 
+   d="scan'208";a="619087370"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 30 Apr 2022 03:36:51 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nkkSz-00078h-C3;
+        Sat, 30 Apr 2022 10:36:45 +0000
+Date:   Sat, 30 Apr 2022 18:36:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Stephen Boyd <swboyd@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>
+Subject: [drm-msm:msm-next-staging 7/32]
+ drivers/gpu/drm/msm/msm_drv.c:236:17: error: implicit declaration of
+ function 'drm_bridge_remove'; did you mean 'drm_bridge_detach'?
+Message-ID: <202204301804.hJxOQfse-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, kernel/module annotates module dependencies when
-request_symbol is used, but it doesn't cover more complex inter-driver
-dependencies that are subsystem and/or driver-specific.
+tree:   https://gitlab.freedesktop.org/drm/msm.git msm-next-staging
+head:   d2dc68276133362f021bc8d429433b5818826c81
+commit: d28ea556267c4f2ec7264ab49f1b1296834321ec [7/32] drm/msm: properly add and remove internal bridges
+config: parisc-randconfig-r023-20220428 (https://download.01.org/0day-ci/archive/20220430/202204301804.hJxOQfse-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        git remote add drm-msm https://gitlab.freedesktop.org/drm/msm.git
+        git fetch --no-tags drm-msm msm-next-staging
+        git checkout d28ea556267c4f2ec7264ab49f1b1296834321ec
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash drivers/gpu/drm/msm/
 
-In the case of hdmi sound, depending on the CPU/GPU, sometimes the
-snd_hda_driver can talk directly with the hardware, but sometimes, it
-uses the i915 driver. When the snd_hda_driver uses i915, it should
-first be unbind/rmmod, as otherwise trying to unbind/rmmod the i915
-driver cause driver issues, as as reported by CI tools with different
-GPU models:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-	https://intel-gfx-ci.01.org/tree/drm-tip/IGT_6415/fi-tgl-1115g4/igt@core_hotunplug@unbind-rebind.html
-	https://intel-gfx-ci.01.org/tree/drm-tip/CI_DRM_11495/bat-adlm-1/igt@i915_module_load@reload.html
+All errors (new ones prefixed by >>):
 
-In the past, just a few CPUs were doing such bindings, but this issue now
-applies to all "modern" Intel CPUs  that have onboard graphics, as well as
-to the  newer discrete GPUs.
-
-With the discrete GPU case, the HDA controller is physically separate and
-requires i915 to power on the hardware for all hardware  access. In this
-case, the issue is hit basicly 100% of the time.
-
-With on-board graphics, i915 driver is needed only when the display
-codec is accessed. If i915 is unbind during runtime suspend, while
-snd-hda-intel is still bound, nothing bad happens, but unbinding i915
-on other situations may also cause issues.
-
-So, add support at kernel/modules to allow snd-hda drivers to properly
-annotate when a dependency on a DRM driver dependencies exists,
-and add a call to such new function at the snd-hda driver when it
-successfully binds into the DRM driver.
-
-This would allow userspace tools to check and properly remove the
-audio driver before trying to remove or unbind the GPU driver.
-
-It should be noticed that this series conveys the hidden module
-dependencies. Other changes are needed in order to allow
-removing or unbinding the i915 driver while keeping the snd-hda-intel
-driver loaded/bound. With that regards, there are some discussions on
-how to improve this at alsa-devel a while  back:
-
-https://mailman.alsa-project.org/pipermail/alsa-devel/2021-September/190099.html
-
-So, future improvements on both in i915 and the audio drivers could be made.
-E.g. with  discrete GPUs, it's the only codec of the card, so it seems feasible
-to detach the ALSA card if i915 is bound (using infra made for VGA
-switcheroo), but,  until these improvements are done and land in
-upstream, audio drivers needs to be unbound if i915 driver goes unbind.
-
-Yet, even if such fixes got merged, this series is still needed, as it makes
-such dependencies more explicit and easier to debug.
-
-PS.: This series was generated against next-20220428.
-
----
-
-v2: the dependencies are now handled directly at try_module_get().
+   drivers/gpu/drm/msm/msm_drv.c: In function 'msm_drm_uninit':
+>> drivers/gpu/drm/msm/msm_drv.c:236:17: error: implicit declaration of function 'drm_bridge_remove'; did you mean 'drm_bridge_detach'? [-Werror=implicit-function-declaration]
+     236 |                 drm_bridge_remove(priv->bridges[i]);
+         |                 ^~~~~~~~~~~~~~~~~
+         |                 drm_bridge_detach
+   cc1: some warnings being treated as errors
 
 
-Mauro Carvalho Chehab (2):
-  module: update dependencies at try_module_get()
-  ALSA: hda - identify when audio is provided by a video driver
+vim +236 drivers/gpu/drm/msm/msm_drv.c
 
- include/linux/module.h     |  4 +++-
- kernel/module/main.c       | 35 +++++++++++++++++++++++++++++++++--
- sound/hda/hdac_component.c |  2 +-
- 3 files changed, 37 insertions(+), 4 deletions(-)
+   230	
+   231		msm_disp_snapshot_destroy(ddev);
+   232	
+   233		drm_mode_config_cleanup(ddev);
+   234	
+   235		for (i = 0; i < priv->num_bridges; i++)
+ > 236			drm_bridge_remove(priv->bridges[i]);
+   237	
+   238		pm_runtime_get_sync(dev);
+   239		msm_irq_uninstall(ddev);
+   240		pm_runtime_put_sync(dev);
+   241	
+   242		if (kms && kms->funcs)
+   243			kms->funcs->destroy(kms);
+   244	
+   245		if (priv->vram.paddr) {
+   246			unsigned long attrs = DMA_ATTR_NO_KERNEL_MAPPING;
+   247			drm_mm_takedown(&priv->vram.mm);
+   248			dma_free_attrs(dev, priv->vram.size, NULL,
+   249				       priv->vram.paddr, attrs);
+   250		}
+   251	
+   252		component_unbind_all(dev, ddev);
+   253	
+   254		ddev->dev_private = NULL;
+   255		drm_dev_put(ddev);
+   256	
+   257		destroy_workqueue(priv->wq);
+   258	
+   259		return 0;
+   260	}
+   261	
 
 -- 
-2.35.1
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
