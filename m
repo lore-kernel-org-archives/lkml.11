@@ -2,141 +2,638 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46440C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 08:13:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8BC9C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 08:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234679AbiD3IRH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 04:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51858 "EHLO
+        id S240876AbiD3IWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Apr 2022 04:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231488AbiD3IRF (ORCPT
+        with ESMTP id S241524AbiD3IWP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 04:17:05 -0400
-Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671F862BDF
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 01:13:39 -0700 (PDT)
-X-QQ-GoodBg: 2
-X-QQ-SSF: 00400000000000F0
-X-QQ-FEAT: YHTLUubWl24Q37pL9zyMyetOwVg0bciU1lNjE8xH1EJaAUgnWhItRY26azBDM
-        q+5G8y5H5aasD1JxZIgt2ED/fz1YQA/4QSWnsxh4tHgUtew2uN2DtZjr1YujxQHRskB9Ovh
-        5E7dIlYES88wwMgtYH1HZp7ZVkxBbqPK6Csw3nD+Q+u7plNzAckeUwGjhaUrB0Z5D+rmV+d
-        W+vQV6fZWA73tOz6q6SVRyOZT1JEFHq+oVMMMEpDbCBw3eGWkAGA2NzLQZ1ONjyediUiDh4
-        lEciRpR9KR1BLSiE1do1bose8wAAXbKIx1unJLAmlLSRNbwO7+wKMMbDMYTshsmmCu0G/bg
-        mn2TGCXTFluZue8QUM9GZzkH624HP8plE56ttygzVJaEqGe2OlEdA/d8OZ8OAVNWdom9bCl
-        x1bi6wBvg1U=
-X-QQ-BUSINESS-ORIGIN: 2
-X-Originating-IP: 218.17.66.222
-X-QQ-STYLE: 
-X-QQ-mid: llogic72t1651306404t281577
-From:   "=?utf-8?B?U2hlbmdob25nIEhhbg==?=" 
-        <hanshenghong2019@email.szu.edu.cn>
-To:     "=?utf-8?B?QWtpcmEgWW9rb3Nhd2E=?=" <akiyks@gmail.com>,
-        "=?utf-8?B?Sm9uYXRoYW4gQ29yYmV0?=" <corbet@lwn.net>
-Cc:     "=?utf-8?B?YWtwbQ==?=" <akpm@linux-foundation.org>,
-        "=?utf-8?B?YmFpaGFvd2Vu?=" <baihaowen@meizu.com>,
-        "=?utf-8?B?c2Vha2VlbA==?=" <seakeel@gmail.com>,
-        "=?utf-8?B?bGludXgtZG9j?=" <linux-doc@vger.kernel.org>,
-        "=?utf-8?B?bGludXgta2VybmVs?=" <linux-kernel@vger.kernel.org>,
-        "=?utf-8?B?Y2FveWl4dWFuMjAxOQ==?=" <caoyixuan2019@email.szu.edu.cn>,
-        "=?utf-8?B?eWVqaWFqaWFuMjAxOA==?=" <yejiajian2018@email.szu.edu.cn>,
-        "=?utf-8?B?5Yav6ICB5biI?=" <yuhongf@szu.edu.cn>
-Subject: Re: [PATCH] Documentation/vm/page_owner.rst: Fix syntax error and Describe details using table
-Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: base64
-Date:   Sat, 30 Apr 2022 16:13:24 +0800
-X-Priority: 3
-Message-ID: <tencent_088763F35CE233FB6C9CEB80@qq.com>
-X-QQ-MIME: TCMime 1.0 by Tencent
-X-Mailer: QQMail 2.x
-X-QQ-Mailer: QQMail 2.x
-References: <20220429181926.10658-1-hanshenghong2019@email.szu.edu.cn>
-        <ea37d4f9-26e2-272a-01d6-fa7e8c62687e@gmail.com>
-In-Reply-To: <ea37d4f9-26e2-272a-01d6-fa7e8c62687e@gmail.com>
-X-QQ-ReplyHash: 897282373
-X-QQ-SENDSIZE: 520
-Received: from qq.com (unknown [127.0.0.1])
-        by smtp.qq.com (ESMTP) with SMTP
-        id ; Sat, 30 Apr 2022 16:13:26 +0800 (CST)
-Feedback-ID: llogic:email.szu.edu.cn:qybgforeign:qybgforeign3
-X-QQ-Bgrelay: 1
+        Sat, 30 Apr 2022 04:22:15 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E78B780235
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 01:18:53 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id n18so8959799plg.5
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 01:18:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=l3CwWyZBEbtGOAPPtNcMiP/0ZawCfC96Az10nkl8Ddo=;
+        b=GX5Arfo/0Nf0ogVMnHAUu0VkSFtv7Ty9+w+0Xqc8Q+m9fJJFLVwzEMX7lqzW71YX6i
+         sALHTUqJ4qX7YQARo0uF1jYHRje+JEpuvRODKRM8BDHrk0Cth39PbhurEf7uoA9B8VAE
+         Lj4NrFaruOKqbLKkH4Pew30k71+wpGVGwGgfU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=l3CwWyZBEbtGOAPPtNcMiP/0ZawCfC96Az10nkl8Ddo=;
+        b=SXY8zczuwORDPV/PTJaOlNVguQKXpbArFvt27EDOYl97A1Rov7W6upeQWW5dt0YySj
+         KbeiEKzeUj2alhAfZIvTqeow0ScZR+bTQHFguZoO33JouM+1OTsQSVgupd38yZAMdeyE
+         kulck+n/IKnQ6Q1n+YODPEpI5yJMTX6zvzaRlr9B7MLLkIzm/F9ZuQd7SnW3hLOr8MoJ
+         HLNoe8ZutbWKWl3exG5Eu9LiXMpVl8cL7jWGDq64e/7rwu11TdjHUdoVqU1qKKEHkjb9
+         2TbGBAqUZgftMyRlgNEq0mb1FrG3prTG1Hh5uiMOOqiHsdgakFeLpr3RbA3LeFnxXoQC
+         DkRQ==
+X-Gm-Message-State: AOAM532rbDpCO0Qq49R6RdbJVgubMWvMIw3rOznMtoW1GykuP7xomBRx
+        RaP4YDwV9DH8C/pNUgGESyyUDIJbkgOZJg==
+X-Google-Smtp-Source: ABdhPJyTLmBSqo5/53w0p9xD9dVEIl9hNfXvpMp+/mL/LSdlxggDbc1NWk5UlErScIO4jQkM+Z0PnA==
+X-Received: by 2002:a17:902:e88c:b0:15e:6797:eae7 with SMTP id w12-20020a170902e88c00b0015e6797eae7mr2787641plg.71.1651306733012;
+        Sat, 30 Apr 2022 01:18:53 -0700 (PDT)
+Received: from joebar-glaptop.lan (c-71-202-34-56.hsd1.ca.comcast.net. [71.202.34.56])
+        by smtp.gmail.com with ESMTPSA id az12-20020a170902a58c00b0015e8d4eb27esm876387plb.200.2022.04.30.01.18.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 Apr 2022 01:18:52 -0700 (PDT)
+From:   "Joseph S. Barrera III" <joebar@chromium.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        "Joseph S. Barrera III" <joebar@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH 2/5] arm64: dts: qcom: sc7180: Add mrbland dts files
+Date:   Sat, 30 Apr 2022 01:15:17 -0700
+Message-Id: <20220430011402.2.Iac7ac752b18224ab1458a7681301d9b48cab25c4@changeid>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220430011402.1.If7c3471db53bea55213f7bcf17e9043084d3ac0c@changeid>
+References: <20220430011402.1.If7c3471db53bea55213f7bcf17e9043084d3ac0c@changeid>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-MCkgSWYgeW91IGhhdmUgcmVjZWl2ZWQgYSBzaW1pbGFyIHJlcGx5LCBwbGVhc2UgcmVmZXIg
-dG8gdGhlIGxhdGVzdCByZXBseS4xKSBBY2NpZGVudGFsbHkgdXNlZCBDaGluZXNlIElucHV0
-IE1ldGhvZCBFZGl0b3IsIGxlYXZpbmcgZnVsbC13aWR0aCBzeW1ib2xzIGR1cmluZyB0aGUg
-dGVzdCwgY2F1c2luZyB0aGUgZG91YmxlIGRhc2hlcyBvZiAiLS0iIGNoYW5nZWQgaW50byAi
-bG9uZyBzaW5nbGUgZGFzaCIgd2hpY2ggc2hvdWxkIG5vdCBoYXZlIG9jY3VycmVkLjIpIElu
-IHRoZSBjdXJyZW50IGRvY3VtZW50LCB0aGUgIlNUQU5EQVJEIEZPUk1BVCBTUEVDSUZJRVJT
-IiB0YWJsZSBkb2VzIG5vdCBjb3JyZWN0bHkgdXNlIHRoZSBmb3JtYXQgb2YgdGhlIHJzdCBk
-b2N1bWVudCwgc28gaW4gdGhlIHdlYnNpdGUgaHR0cHM6Ly93d3cua2VybmVsLm9yZy9kb2Mv
-aHRtbC9sYXRlc3Qvdm0vcGFnZV9vd25lci5odG1sLCBpdCBkb2VzIG5vdCBsb29rIGdvb2Qu
-IFRoZXJlZm9yZSwgdGhlICJTVEFOREFSRCBGT1JNQVQgU1BFQ0lGSUVSUyIgaGFzIGJlZW4g
-YWRqdXN0ZWQgdXNpbmcgdGhlIGZvcm1hdCBvZiB0aGUgcnN0IHRhYmxlLiAqVGhpcyogaXMg
-dGhlIG1haW4gcHVycG9zZS4zKSBJbiB2ZXJzaW9uIDEgYmVmb3JlLCB0aGUgc2VudGVuY2Ug
-bG9vayBsaWtlOiJUYWJsZSAxIHh4eChzb21lIGV4cGxhaW5hdGlvbikuIiBhbmQgIlRhYmxl
-IDIgeHh4KHNvbWUgZXhwbGFpbmF0aW9uKS4iLCBpbiB0aGVzZSAyICJsb25nIiBzZW50ZW5j
-ZXMsIHVzaW5nICIuIiBpbnN0ZWFkIG9mICI6Ii5Ib25lc3RseSwgY29tcGxleCBzZW50ZW5j
-ZSBpcyB1bm5lY2Vzc2FyeS4gV2hlbiBJIHRyaWVkIHRvIG1vZGlmeSB0aGUgc2VudGVuY2Us
-IEkgaWdub3JlIHRoZSBzdHJpY3QgZGlzdGluY3Rpb24gYmV0d2VlbiAiLiIgYW5kICI6Ii5J
-biBzaG9ydCwgVGhpcyBtb2RpZmljYXRpb24gaXMgdW5uZWNlc3NhcnkuSSdtIHRlcnJpYmx5
-IHNvcnJ5IGFib3V0IHRoYXQuNCkgVGhhbmtzLCBTaGVuZ2hvbmcgSGFuLS0tLS0tLS0tLS0t
-LS0tLS0tIE9yaWdpbmFsIC0tLS0tLS0tLS0tLS0tLS0tLUZyb206ICAiQWtpcmEgWW9rb3Nh
-d2EiO0RhdGU6ICBTYXQsIEFwciAzMCwgMjAyMiAwMjo0MCBQTVRvOiAgIlNoZW5naG9uZyBI
-YW4iOyAiSm9uYXRoYW4gQ29yYmV0IjsgQ2M6ICAiYWtwbSI7ICJiYWloYW93ZW4iOyAic2Vh
-a2VlbCI7ICJsaW51eC1kb2MiOyAibGludXgta2VybmVsIjsgImNhb3lpeHVhbjIwMTkiOyAi
-eWVqaWFqaWFuMjAxOCI7ICLlhq/ogIHluIgiOyBTdWJqZWN0OiAgUmU6IFtQQVRDSF0gRG9j
-dW1lbnRhdGlvbi92bS9wYWdlX293bmVyLnJzdDogRml4IHN5bnRheCBlcnJvciBhbmQgRGVz
-Y3JpYmUgZGV0YWlscyB1c2luZyB0YWJsZSBPbiAyMDIyLzA0LzMwIDM6MTksU2hlbmdob25n
-IEhhbiB3cm90ZTo+IFNvbWUgc3ludGF4IGVycm9ycyBleGlzdCBpbiAicGFnZV9vd25lci5y
-c3QiLiBUaGFua3MgdG8gQWtpcmEgWW9rb3Nhd2EgYW5kPiBIYW93ZW4gQmFpIGZvciB0aXBz
-IHRvIGhlbHAgaW1wcm92ZSB0aGUgZG9jdW1lbnRhdGlvbi4+ID4gV2UgdHJ5IHRvIGZpeCB0
-aGVtLiBIb3BlIHRoYXQgdGhlIERvY3VtZW50YXRpb24gaXMgc2hvd2VkIGFzIHdlIGV4cGVj
-dC4+ID4gU2lnbmVkLW9mZi1ieTogU2hlbmdob25nIEhhbiA+IEZpeGVzOiBlZGM5M2FiYmNj
-NmQgKCJ0b29scy92bS9wYWdlX293bmVyX3NvcnQuYzogc3VwcG9ydCBzb3J0aW5nIGJsb2Nr
-cyBieSBtdWx0aXBsZSBrZXlzIik+ID4gLS0tPiBUaGFua3MgSm9uYXRoYW4ncyBzdWdnZXN0
-aW9uLj4gPiBUaGlzIGZpeCBpcyBhIHNpbXBsZXIgdGhhbiBiZWZvcmUuPiBBbmQgeWVzLCBJ
-dCBoYXMgYnVpbHQgaW4gbXkgbWFjaGluZS4+ID4gQmVzdCw+ID4gCVNoZW5naG9uZyBIYW4+
-IC0tLT4gLS0tPiAgRG9jdW1lbnRhdGlvbi92bS9wYWdlX293bmVyLnJzdCB8IDE1ICsrKysr
-KysrKystLS0tLT4gIDEgZmlsZSBjaGFuZ2VkLCAxMCBpbnNlcnRpb25zKCspLCA1IGRlbGV0
-aW9ucygtKT4gPiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi92bS9wYWdlX293bmVyLnJz
-dCBiL0RvY3VtZW50YXRpb24vdm0vcGFnZV9vd25lci5yc3Q+IGluZGV4IDI1NjIyYzcxNS4u
-MGVjYjRhNzM5IDEwMDY0ND4gLS0tIGEvRG9jdW1lbnRhdGlvbi92bS9wYWdlX293bmVyLnJz
-dD4gKysrIGIvRG9jdW1lbnRhdGlvbi92bS9wYWdlX293bmVyLnJzdD4gQEAgLTE3MSwxMSAr
-MTcxLDEyIEBAIFVzYWdlPiAgPiAgU1RBTkRBUkQgRk9STUFUIFNQRUNJRklFUlM+ICA9PT09
-PT09PT09PT09PT09PT09PT09PT09PT4gLTo6PiAgPiAtRm9yIC0tc29ydCBvcHRpb246PiAr
-MSkgRm9yIC0tc29ydCBvcHRpb24uPiAgPiArCT09PT0JCT09PT09PT09PT0JPT09PT09PT09
-PT0+ICAJS0VZCQlMT05HCQlERVNDUklQVElPTj4gKwk9PT09CQk9PT09PT09PT09CT09PT09
-PT09PT09PiAgCXAJCXBpZAkJcHJvY2VzcyBJRD4gIAl0ZwkJdGdpZAkJdGhyZWFkIGdyb3Vw
-IElEPiAgCW4JCW5hbWUJCXRhc2sgY29tbWFuZCBuYW1lPiBAQCAtMTgzLDE0ICsxODQsMTgg
-QEAgRm9yIC0tc29ydCBvcHRpb246PiAgCVQJCXR4dAkJZnVsbCB0ZXh0IG9mIGJsb2NrPiAg
-CWZ0CQlmcmVlX3RzCQl0aW1lc3RhbXAgb2YgdGhlIHBhZ2Ugd2hlbiBpdCB3YXMgcmVsZWFz
-ZWQ+ICAJYXQJCWFsbG9jX3RzCXRpbWVzdGFtcCBvZiB0aGUgcGFnZSB3aGVuIGl0IHdhcyBh
-bGxvY2F0ZWQ+IC0gICAgICAgIGF0b3IgICAgICAgICAgICBhbGxvY2F0b3IgICAgICAgbWVt
-b3J5IGFsbG9jYXRvciBmb3IgcGFnZXM+ICsJYXRvcgkJYWxsb2NhdG9yCW1lbW9yeSBhbGxv
-Y2F0b3IgZm9yIHBhZ2VzPiArCT09PT0JCT09PT09PT09PT0JPT09PT09PT09PT0+ICA+IC1G
-b3IgLS1jdXJsIG9wdGlvbjo+ICsyKSBGb3IgLS1jdXJsIG9wdGlvbi4+ICA+ICsJPT09PQkJ
-PT09PT09PT09PQk9PT09PT09PT09PT4gIAlLRVkJCUxPTkcJCURFU0NSSVBUSU9OPiArCT09
-PT0JCT09PT09PT09PT0JPT09PT09PT09PT0+ICAJcAkJcGlkCQlwcm9jZXNzIElEPiAgCXRn
-CQl0Z2lkCQl0aHJlYWQgZ3JvdXAgSUQ+ICAJbgkJbmFtZQkJdGFzayBjb21tYW5kIG5hbWU+
-ICAJZgkJZnJlZQkJd2hldGhlciB0aGUgcGFnZSBoYXMgYmVlbiByZWxlYXNlZCBvciBub3Q+
-ICAJc3QJCXN0YWNrdHJhY2UJc3RhY2sgdHJhY2Ugb2YgdGhlIHBhZ2UgYWxsb2NhdGlvbj4g
-LSAgICAgICAgYXRvciAgICAgICAgICAgIGFsbG9jYXRvciAgICAgICBtZW1vcnkgYWxsb2Nh
-dG9yIGZvciBwYWdlcz4gKwlhdG9yCQlhbGxvY2F0b3IJbWVtb3J5IGFsbG9jYXRvciBmb3Ig
-cGFnZXM+ICsJPT09PQkJPT09PT09PT09PQk9PT09PT09PT09PVNvLCBJIGhhdmUgYWN0dWFs
-bHkgdGVzdGVkIHRoaXMuQXJlIHlvdSBPSyB3aXRoIHRoZSBsb29rIG9mICAxKSBGb3IgLS1z
-b3J0IG9wdGlvbi5hbmQgIDIpIEZvciAtLWN1cmwgb3B0aW9uLmluIGdlbmVyYXRlZCBIVE1M
-IG9yIFBERiBkb2NzP0luIGxpdGVyYWwgYmxvY2tzLCB5b3Ugd291bGQgc2VlIGRvdWJsZSBk
-YXNoZXMgb2YgIi0tIi5Ob3cgdGhleSBhcmUgY29udmVydGVkIHRvIHNvLWNhbGxlZCBlbmRh
-c2gsIHdoaWNoIGlzIGEgc2luZ2xlIGRhc2hzbGlnaHRseSBsb25nZXIgdGhhbiBhIG5vcm1h
-bCBoeXBoZW4uICBJdCBsb29rcyBjb25mdXNpbmcgdG8gbWUuVG8gcmVtZWR5IHRoaXMsIHlv
-dSBuZWVkIGlubGluZSBsaXRlcmFsIG1hcmtlcnMgb2YgIDEpIEZvciBgYC0tc29ydGBgIG9w
-dGlvbi5hbmQgIDIpIEZvciBgYC0tY3VybGBgIG9wdGlvbi5CeSB0aGUgd2F5LCB0aGlzIHBh
-dGNoIGNoYW5nZXMgIjoiIHRvICIuIiBhdCB0aGUgZW5kIG9mIHRoZW0uQXJlIHRoZXkgaW50
-ZW50aW9uYWwgY2hhbmdlcz8gIElmIHNvLCB3aHk/ICAgICAgICBUaGFua3MsIEFraXJh
+Mrbland is a trogdor-based board. These dts files are copies from
+the downstream Chrome OS 5.4 kernel, but with downstream bits removed.
 
+Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
+---
 
+ arch/arm64/boot/dts/qcom/Makefile             |   4 +
+ .../qcom/sc7180-trogdor-mrbland-rev0-auo.dts  |  22 ++
+ .../qcom/sc7180-trogdor-mrbland-rev0-boe.dts  |  22 ++
+ .../dts/qcom/sc7180-trogdor-mrbland-rev0.dtsi |  53 +++
+ .../qcom/sc7180-trogdor-mrbland-rev1-auo.dts  |  22 ++
+ .../qcom/sc7180-trogdor-mrbland-rev1-boe.dts  |  24 ++
+ .../boot/dts/qcom/sc7180-trogdor-mrbland.dtsi | 352 ++++++++++++++++++
+ 7 files changed, 499 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-auo.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-boe.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-auo.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-boe.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland.dtsi
+
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index e4114e22548a..2330b5ea13bf 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -75,6 +75,10 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-lazor-limozeen-r9.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-lazor-limozeen-nots-r4.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-lazor-limozeen-nots-r5.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-lazor-limozeen-nots-r9.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-mrbland-rev0-auo.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-mrbland-rev0-boe.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-mrbland-rev1-auo.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-mrbland-rev1-boe.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r1.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r1-lte.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r2.dtb
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-auo.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-auo.dts
+new file mode 100644
+index 000000000000..2767817fb053
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-auo.dts
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Mrbland board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x0 => 0
++ *  - bits 7..4: Panel ID: 0x0 (AUO)
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-mrbland-rev0.dtsi"
++
++/ {
++	model = "Google Mrbland rev0 AUO panel board";
++	compatible = "google,mrbland-rev0-sku0", "qcom,sc7180";
++};
++
++&panel {
++	compatible = "auo,b101uan08.3";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-boe.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-boe.dts
+new file mode 100644
+index 000000000000..711485574a03
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-boe.dts
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Mrbland board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x10 => 16
++ *  - bits 7..4: Panel ID: 0x1 (BOE)
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-mrbland-rev0.dtsi"
++
++/ {
++	model = "Google Mrbland rev0 BOE panel board";
++	compatible = "google,mrbland-rev0-sku16", "qcom,sc7180";
++};
++
++&panel {
++	compatible = "boe,tv101wum-n53";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0.dtsi
+new file mode 100644
+index 000000000000..7bc8402c018e
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0.dtsi
+@@ -0,0 +1,53 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Mrbland board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-mrbland.dtsi"
++
++&avdd_lcd {
++	gpio = <&tlmm 80 GPIO_ACTIVE_HIGH>;
++};
++
++&panel {
++	enable-gpios = <&tlmm 76 GPIO_ACTIVE_HIGH>;
++};
++
++&v1p8_mipi {
++	gpio = <&tlmm 81 GPIO_ACTIVE_HIGH>;
++};
++
++/* PINCTRL - modifications to sc7180-trogdor-mrbland.dtsi */
++&avdd_lcd_en {
++	pinmux {
++		pins = "gpio80";
++	};
++
++	pinconf {
++		pins = "gpio80";
++	};
++};
++
++&mipi_1800_en {
++	pinmux {
++		pins = "gpio81";
++	};
++
++	pinconf {
++		pins = "gpio81";
++	};
++};
++&vdd_reset_1800 {
++	pinmux {
++		pins = "gpio76";
++	};
++
++	pinconf {
++		pins = "gpio76";
++	};
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-auo.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-auo.dts
+new file mode 100644
+index 000000000000..275313ef7554
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-auo.dts
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Mrbland board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x600 => 1536
++ *  - bits 11..8: Panel ID: 0x6 (AUO)
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-mrbland.dtsi"
++
++/ {
++	model = "Google Mrbland rev1+ AUO panel board";
++	compatible = "google,mrbland-sku1536", "qcom,sc7180";
++};
++
++&panel {
++	compatible = "auo,b101uan08.3";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-boe.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-boe.dts
+new file mode 100644
+index 000000000000..87c6b6c30b5e
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-boe.dts
+@@ -0,0 +1,24 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Mrbland board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x300 => 768
++ *  - bits 11..8: Panel ID: 0x3 (BOE)
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-mrbland.dtsi"
++
++/ {
++	model = "Google Mrbland (rev1 - 2) BOE panel board";
++	/* Uses ID 768 on rev1 and 1024 on rev2+ */
++	compatible = "google,mrbland-sku1024", "google,mrbland-sku768",
++		"qcom,sc7180";
++};
++
++&panel {
++	compatible = "boe,tv101wum-n53";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland.dtsi
+new file mode 100644
+index 000000000000..e1c1ea09b690
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland.dtsi
+@@ -0,0 +1,352 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Mrbland board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ */
++
++/dts-v1/;
++
++#include "sc7180.dtsi"
++
++ap_ec_spi: &spi6 {};
++ap_h1_spi: &spi0 {};
++
++#include "sc7180-trogdor.dtsi"
++
++/* This board only has 1 USB Type-C port. */
++/delete-node/ &usb_c1;
++
++/ {
++	avdd_lcd: avdd-lcd {
++		compatible = "regulator-fixed";
++		regulator-name = "avdd_lcd";
++
++		gpio = <&tlmm 88 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		pinctrl-names = "default";
++		pinctrl-0 = <&avdd_lcd_en>;
++
++		vin-supply = <&pp5000_a>;
++	};
++
++	avee_lcd: avee-lcd {
++		compatible = "regulator-fixed";
++		regulator-name = "avee_lcd";
++
++		gpio = <&tlmm 21 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		pinctrl-names = "default";
++		pinctrl-0 = <&avee_lcd_en>;
++
++		vin-supply = <&pp5000_a>;
++	};
++
++	v1p8_mipi: v1p8-mipi {
++		compatible = "regulator-fixed";
++		regulator-name = "v1p8_mipi";
++
++		gpio = <&tlmm 86 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		pinctrl-names = "default";
++		pinctrl-0 = <&mipi_1800_en>;
++
++		vin-supply = <&pp3300_a>;
++	};
++};
++
++&ap_tp_i2c {
++	status = "disabled";
++};
++
++&backlight {
++	pwms = <&cros_ec_pwm 0>;
++};
++
++&camcc {
++	status = "okay";
++};
++
++&dsi0 {
++
++	panel: panel@0 {
++		reg = <0>;
++		enable-gpios = <&tlmm 87 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vdd_reset_1800>;
++		avdd-supply = <&avdd_lcd>;
++		avee-supply = <&avee_lcd>;
++		pp1800-supply = <&v1p8_mipi>;
++		pp3300-supply = <&pp3300_dx_edp>;
++		backlight = <&backlight>;
++		rotation = <270>;
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			port@0 {
++				reg = <0>;
++				panel_in: endpoint {
++					remote-endpoint = <&dsi0_out>;
++				};
++			};
++		};
++	};
++
++	ports {
++		port@1 {
++			endpoint {
++				remote-endpoint = <&panel_in>;
++				data-lanes = <0 1 2 3>;
++			};
++		};
++	};
++};
++
++&gpio_keys {
++	status = "okay";
++};
++
++&i2c4 {
++	status = "okay";
++	clock-frequency = <400000>;
++
++	ap_ts: touchscreen@5d {
++		compatible = "goodix,gt7375p";
++		reg = <0x5d>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&ts_int_l>, <&ts_reset_l>;
++
++		interrupt-parent = <&tlmm>;
++		interrupts = <9 IRQ_TYPE_LEVEL_LOW>;
++
++		reset-gpios = <&tlmm 8 GPIO_ACTIVE_LOW>;
++
++		vdd-supply = <&pp3300_ts>;
++	};
++};
++
++&pp1800_uf_cam {
++	status = "okay";
++};
++
++&pp1800_wf_cam {
++	status = "okay";
++};
++
++&pp2800_uf_cam {
++	status = "okay";
++};
++
++&pp2800_wf_cam {
++	status = "okay";
++};
++
++&wifi {
++	qcom,ath10k-calibration-variant = "GO_MRBLAND";
++};
++
++/*
++ * No eDP on this board but it's logically the same signal so just give it
++ * a new name and assign the proper GPIO.
++ */
++pp3300_disp_on: &pp3300_dx_edp {
++	gpio = <&tlmm 85 GPIO_ACTIVE_HIGH>;
++};
++
++/* PINCTRL - modifications to sc7180-trogdor.dtsi */
++
++/*
++ * No eDP on this board but it's logically the same signal so just give it
++ * a new name and assign the proper GPIO.
++ */
++
++tp_en: &en_pp3300_dx_edp {
++	pinmux {
++		pins = "gpio85";
++	};
++
++	pinconf {
++		pins = "gpio85";
++	};
++};
++
++/* PINCTRL - board-specific pinctrl */
++
++&tlmm {
++	gpio-line-names = "HUB_RST_L",
++			  "AP_RAM_ID0",
++			  "AP_SKU_ID2",
++			  "AP_RAM_ID1",
++			  "",
++			  "AP_RAM_ID2",
++			  "UF_CAM_EN",
++			  "WF_CAM_EN",
++			  "TS_RESET_L",
++			  "TS_INT_L",
++			  "",
++			  "",
++			  "AP_EDP_BKLTEN",
++			  "UF_CAM_MCLK",
++			  "WF_CAM_CLK",
++			  "",
++			  "",
++			  "UF_CAM_SDA",
++			  "UF_CAM_SCL",
++			  "WF_CAM_SDA",
++			  "WF_CAM_SCL",
++			  "AVEE_LCD_EN",
++			  "",
++			  "AMP_EN",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "HP_IRQ",
++			  "WF_CAM_RST_L",
++			  "UF_CAM_RST_L",
++			  "AP_BRD_ID2",
++			  "",
++			  "AP_BRD_ID0",
++			  "AP_H1_SPI_MISO",
++			  "AP_H1_SPI_MOSI",
++			  "AP_H1_SPI_CLK",
++			  "AP_H1_SPI_CS_L",
++			  "BT_UART_CTS",
++			  "BT_UART_RTS",
++			  "BT_UART_TXD",
++			  "BT_UART_RXD",
++			  "H1_AP_INT_ODL",
++			  "",
++			  "UART_AP_TX_DBG_RX",
++			  "UART_DBG_TX_AP_RX",
++			  "HP_I2C_SDA",
++			  "HP_I2C_SCL",
++			  "FORCED_USB_BOOT",
++			  "AMP_BCLK",
++			  "AMP_LRCLK",
++			  "AMP_DIN",
++			  "PEN_DET_ODL",
++			  "HP_BCLK",
++			  "HP_LRCLK",
++			  "HP_DOUT",
++			  "HP_DIN",
++			  "HP_MCLK",
++			  "AP_SKU_ID0",
++			  "AP_EC_SPI_MISO",
++			  "AP_EC_SPI_MOSI",
++			  "AP_EC_SPI_CLK",
++			  "AP_EC_SPI_CS_L",
++			  "AP_SPI_CLK",
++			  "AP_SPI_MOSI",
++			  "AP_SPI_MISO",
++			  /*
++			   * AP_FLASH_WP_L is crossystem ABI. Schematics
++			   * call it BIOS_FLASH_WP_L.
++			   */
++			  "AP_FLASH_WP_L",
++			  "",
++			  "AP_SPI_CS0_L",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "WLAN_SW_CTRL",
++			  "",
++			  "REPORT_E",
++			  "",
++			  "ID0",
++			  "",
++			  "ID1",
++			  "",
++			  "",
++			  "",
++			  "CODEC_PWR_EN",
++			  "HUB_EN",
++			  "TP_EN",
++			  "MIPI_1.8V_EN",
++			  "VDD_RESET_1.8V",
++			  "AVDD_LCD_EN",
++			  "",
++			  "AP_SKU_ID1",
++			  "AP_RST_REQ",
++			  "",
++			  "AP_BRD_ID1",
++			  "AP_EC_INT_L",
++			  "SDM_GRFC_3",
++			  "",
++			  "",
++			  "BOOT_CONFIG_4",
++			  "BOOT_CONFIG_2",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "BOOT_CONFIG_3",
++			  "WCI2_LTE_COEX_TXD",
++			  "WCI2_LTE_COEX_RXD",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "FORCED_USB_BOOT_POL",
++			  "AP_TS_PEN_I2C_SDA",
++			  "AP_TS_PEN_I2C_SCL",
++			  "DP_HOT_PLUG_DET",
++			  "EC_IN_RW_ODL";
++
++	vdd_reset_1800: vdd-reset-1800 {
++		pinmux {
++			pins = "gpio87";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio87";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
++
++	avdd_lcd_en: avdd-lcd-en {
++		pinmux {
++			pins = "gpio88";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio88";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
++
++	avee_lcd_en: avee-lcd_en {
++		pinmux {
++			pins = "gpio21";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio21";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
++
++	mipi_1800_en: mipi-1800-en {
++		pinmux {
++			pins = "gpio86";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio86";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
++};
+-- 
+2.31.0
 
