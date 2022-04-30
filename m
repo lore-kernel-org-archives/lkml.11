@@ -2,154 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 03:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D9AC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 03:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382149AbiD3Dd5 (ORCPT
+        id S1382104AbiD3DhN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 23:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48702 "EHLO
+        Fri, 29 Apr 2022 23:37:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232757AbiD3Ddy (ORCPT
+        with ESMTP id S232757AbiD3DhL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 23:33:54 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8E418E11
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 20:30:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651289433; x=1682825433;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=puGyqWDS+EPwdusoSES6Hr1WDpzg/Gjhm6GMobKQAqg=;
-  b=GOigZ5tLKL/E1A13IN+UaKtjOxpAthwaBAKZzuPJrRwiUvOA8i9ZK/54
-   XH1tu8g7eJEhReSyOJcUOQXkBxnBv2jfYdvEp7iLw/QCw1sMqFWUafjxq
-   u/PCnQbp5onfj8RJxnt7ukJBAbBYtbA46onLuBhIdJmaRQaCEW33H8cgm
-   JR7N6PyvH8DEnbPV9QUl5MF5uezmLkKBcJx1zgd6040fQm0WhVqgsaifp
-   JZRv61Rlri9x2uj8f8vfsgf+DA9eIDeUixJvu7jsiVQk6tX11GRpnyWcW
-   xMgvDmAcfcROme4rQH0hGbtqe71yLfiWXt5D4VzYN6xq1eXF0YDSlh8Bl
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="247383311"
-X-IronPort-AV: E=Sophos;i="5.91,187,1647327600"; 
-   d="scan'208";a="247383311"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 20:30:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,187,1647327600"; 
-   d="scan'208";a="566408444"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 29 Apr 2022 20:30:32 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nkdoV-0006pn-Nn;
-        Sat, 30 Apr 2022 03:30:31 +0000
-Date:   Sat, 30 Apr 2022 11:29:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [drm-msm:msm-next-staging 29/32]
- drivers/gpu/drm/msm/dsi/dsi_host.c:918:23: warning: variable 'reg_ctrl' set
- but not used
-Message-ID: <202204301130.wdmJpCAP-lkp@intel.com>
+        Fri, 29 Apr 2022 23:37:11 -0400
+Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CB7A76D4;
+        Fri, 29 Apr 2022 20:33:51 -0700 (PDT)
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47]) (authenticated)
+        by conssluserg-01.nifty.com with ESMTP id 23U3XaJ2029668;
+        Sat, 30 Apr 2022 12:33:37 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 23U3XaJ2029668
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1651289617;
+        bh=TIGdeb7xdEs/9JV0A7VVLKMrZAPeq/6T37UNVZaHg3A=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=lhUWW5QN/Ne1yWqXx1I52pvBhj3CHTCAlLDnmKDwUo+cSdC4LMDZSpByuTqtoa5zE
+         uPZE79G5UvSYRfhV+x3EdslLYWr3kTWMPAfqCjxhTMtG3wZ/crFVfSwMdM3JFzllr5
+         XDXrpbjQUNAuVCDpfUqmV16CG80fXjhcH/9U2eRM+SzSKNQZz0PW4I6pbGPH/UNT9p
+         P8F3k+c9mkITW9PqFx/duH+MN9UYVo0B8r3lZzb8PMVWMMnhLQrIqyjGw4QxWqV/IJ
+         8aRaZRyuHyqffnrBYUAEiYosrczmEMt6z960wi5hbO9YkSeXYtVBiT2GBOdezyNSo0
+         /3XV6rPebGmrg==
+X-Nifty-SrcIP: [209.85.216.47]
+Received: by mail-pj1-f47.google.com with SMTP id p6so8601359pjm.1;
+        Fri, 29 Apr 2022 20:33:37 -0700 (PDT)
+X-Gm-Message-State: AOAM530VAjprWwTSyaY5dw72Pho6bGH881O/5m2EC0+w7CGGhjGMLGq4
+        NT5vzBpVgb1C+gJjZjmSu14mzHAZCJt2Di27Dys=
+X-Google-Smtp-Source: ABdhPJyA7Kh8t38Tgnc7vWeywS0wR/hs6+Uy9mFeW8PUhdl6yVt/CqvOS2lmy8s86o/fRQJQo7INLG5ZVa4ItHZCUPw=
+X-Received: by 2002:a17:90a:e517:b0:1d7:5bbd:f9f0 with SMTP id
+ t23-20020a17090ae51700b001d75bbdf9f0mr2302881pjy.77.1651289616490; Fri, 29
+ Apr 2022 20:33:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220426035318.3932-1-rdunlap@infradead.org>
+In-Reply-To: <20220426035318.3932-1-rdunlap@infradead.org>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Sat, 30 Apr 2022 12:32:33 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAR86Z2R+CsPZSk-cwi950HGMDptEkdXUD1ZmDz9byfwgg@mail.gmail.com>
+Message-ID: <CAK7LNAR86Z2R+CsPZSk-cwi950HGMDptEkdXUD1ZmDz9byfwgg@mail.gmail.com>
+Subject: Re: [PATCH v2] Makefile: fix 2 typos
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://gitlab.freedesktop.org/drm/msm.git msm-next-staging
-head:   d2dc68276133362f021bc8d429433b5818826c81
-commit: 08802f515c3cfea80b48e198de52b4fcbbef27d3 [29/32] drm/msm/dsi: Add support for DSC configuration
-config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220430/202204301130.wdmJpCAP-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 400775649969b9baf3bc2a510266e7912bb16ae9)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        git remote add drm-msm https://gitlab.freedesktop.org/drm/msm.git
-        git fetch --no-tags drm-msm msm-next-staging
-        git checkout 08802f515c3cfea80b48e198de52b4fcbbef27d3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/gpu/drm/msm/ drivers/iio/adc/
+On Tue, Apr 26, 2022 at 12:53 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+>
+> Fix typos in comments so that they make sense.
+>
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Masahiro Yamada <masahiroy@kernel.org>
+> Cc: linux-kbuild@vger.kernel.org
+> ---
+> v2: drop an extra adjective (Masahiro)
+>
+>  Makefile |    4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -1386,8 +1386,8 @@ scripts_unifdef: scripts_basic
+>  # Install
+>
+>  # Many distributions have the custom install script, /sbin/installkernel.
+> -# If DKMS is installed, 'make install' will eventually recuses back
+> -# to the this Makefile to build and install external modules.
+> +# If DKMS is installed, 'make install' will eventually recurse back
+> +# to this Makefile to build and install external modules.
+>  # Cancel sub_make_done so that options such as M=, V=, etc. are parsed.
+>
+>  install: sub_make_done :=
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Applied to linux-kbuild. Thanks.
 
-All warnings (new ones prefixed by >>):
-
->> drivers/gpu/drm/msm/dsi/dsi_host.c:918:23: warning: variable 'reg_ctrl' set but not used [-Wunused-but-set-variable]
-           u32 reg, intf_width, reg_ctrl, reg_ctrl2;
-                                ^
-   1 warning generated.
-
-
-vim +/reg_ctrl +918 drivers/gpu/drm/msm/dsi/dsi_host.c
-
-   914	
-   915	static void dsi_update_dsc_timing(struct msm_dsi_host *msm_host, bool is_cmd_mode, u32 hdisplay)
-   916	{
-   917		struct msm_display_dsc_config *dsc = msm_host->dsc;
- > 918		u32 reg, intf_width, reg_ctrl, reg_ctrl2;
-   919		u32 slice_per_intf, total_bytes_per_intf;
-   920		u32 pkt_per_line;
-   921		u32 bytes_in_slice;
-   922		u32 eol_byte_num;
-   923	
-   924		/* first calculate dsc parameters and then program
-   925		 * compress mode registers
-   926		 */
-   927		intf_width = hdisplay;
-   928		slice_per_intf = DIV_ROUND_UP(intf_width, dsc->drm->slice_width);
-   929	
-   930		/* If slice_per_pkt is greater than slice_per_intf
-   931		 * then default to 1. This can happen during partial
-   932		 * update.
-   933		 */
-   934		if (slice_per_intf > dsc->drm->slice_count)
-   935			dsc->drm->slice_count = 1;
-   936	
-   937		slice_per_intf = DIV_ROUND_UP(hdisplay, dsc->drm->slice_width);
-   938		bytes_in_slice = DIV_ROUND_UP(dsc->drm->slice_width * dsc->drm->bits_per_pixel, 8);
-   939	
-   940		dsc->drm->slice_chunk_size = bytes_in_slice;
-   941	
-   942		total_bytes_per_intf = bytes_in_slice * slice_per_intf;
-   943	
-   944		eol_byte_num = total_bytes_per_intf % 3;
-   945		pkt_per_line = slice_per_intf / dsc->drm->slice_count;
-   946	
-   947		if (is_cmd_mode) /* packet data type */
-   948			reg = DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE(MIPI_DSI_DCS_LONG_WRITE);
-   949		else
-   950			reg = DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE(MIPI_DSI_COMPRESSED_PIXEL_STREAM);
-   951	
-   952		/* DSI_VIDEO_COMPRESSION_MODE & DSI_COMMAND_COMPRESSION_MODE
-   953		 * registers have similar offsets, so for below common code use
-   954		 * DSI_VIDEO_COMPRESSION_MODE_XXXX for setting bits
-   955		 */
-   956		reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE(pkt_per_line >> 1);
-   957		reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM(eol_byte_num);
-   958		reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EN;
-   959	
-   960		if (is_cmd_mode) {
-   961			reg_ctrl = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL);
-   962			reg_ctrl2 = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2);
-   963	
-   964			reg_ctrl |= reg;
-   965			reg_ctrl2 |= DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH(bytes_in_slice);
-   966	
-   967			dsi_write(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL, reg);
-   968			dsi_write(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2, reg_ctrl2);
-   969		} else {
-   970			dsi_write(msm_host, REG_DSI_VIDEO_COMPRESSION_MODE_CTRL, reg);
-   971		}
-   972	}
-   973	
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best Regards
+Masahiro Yamada
