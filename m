@@ -2,138 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD7ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 16:16:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 16:21:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243218AbiD3QTn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 12:19:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43216 "EHLO
+        id S243138AbiD3QY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Apr 2022 12:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243050AbiD3QTm (ORCPT
+        with ESMTP id S237163AbiD3QYY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 12:19:42 -0400
-X-Greylist: delayed 495 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 30 Apr 2022 09:16:19 PDT
-Received: from komekko.fuwafuwatime.moe (unknown [IPv6:2a01:4f9:6a:1712::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7DFC34BB6;
-        Sat, 30 Apr 2022 09:16:19 -0700 (PDT)
-Received: from megumin.fuwafuwatime.moe (c-174-50-122-55.hsd1.ga.comcast.net [174.50.122.55])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by komekko.fuwafuwatime.moe (Postfix) with ESMTPSA id 87E981A7B66;
-        Sat, 30 Apr 2022 19:07:59 +0300 (EEST)
-Received: from localhost (bubbles.localdomain [192.168.1.101])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by megumin.fuwafuwatime.moe (Postfix) with ESMTPSA id 64665BB6B5B;
-        Sat, 30 Apr 2022 12:07:54 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=concord.sh; s=dkim;
-        t=1651334876;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=skqVWzMwophoEkJSS/d4zaggvs9O9ypBAst/OCvrWUI=;
-        b=lDrp0a+eCJopgMZ+28H/ix2OqjLXZk3TXlRvSA7ljsSXD9/gu8sFJHdKcyoEs7xdTFfwSH
-        nSiyknf+iWj6UuyRGNtR+0ew8GuX9EAkqwCgDy/F5kQqmzI852WHf6b4AF2ddtArV9e+YD
-        LRaj+Zf9lFzFU6hhEeYY9yRwhqfNPywMsiSKHhJCI1hA9Zbi5HjoUWvu/Em92UwVXKsFyn
-        9KU73ucJiekuZPlsqcnb60Q7EajBR6Jm9MFbCs/ZxRjmZ00kBr19mJB/ZMsuOSomuZSfva
-        OsNe0ws9BpRW+WjCoYG8sLxdQut407naJI4iSJV/XAJTf15VxvmU5c8FwumpPw==
-Date:   Sat, 30 Apr 2022 12:07:50 -0400
-From:   Kenton Groombridge <me@concord.sh>
-To:     Sami Tolvanen <samitolvanen@google.com>
-Cc:     linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
-Subject: Re: [RFC PATCH 00/21] KCFI support
-Message-ID: <20220430160750.ov7ddsq2vzibwrju@bubbles>
-Mail-Followup-To: Sami Tolvanen <samitolvanen@google.com>,
-        linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
-References: <20220429203644.2868448-1-samitolvanen@google.com>
+        Sat, 30 Apr 2022 12:24:24 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E479737BDA
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 09:21:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651335661; x=1682871661;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=rX2bI62ad3aLZ3scDHwLF6e59TPJNcoGTHYAURtpSe4=;
+  b=ZDo7wmhMDMYVYkx1dFrxYNWJcCDCVIptNMIruQDFbQnCP2RfOygaBllN
+   9OYLBe/e6zlAKUKlJMjZJgZUEAFZCR408yH8+tEG6wPccOzb/15swMHDJ
+   j38h/Oqx3JiTcd66/VKxEyaD3cC7BqkHo7OljV1V8yFPnmDH+pJXQ1Ows
+   YD8ViHzYAqAJBwrnLrzewdMECqK/OLiRkFsKyaMLwT8LNV6p+r/jlpazG
+   H8/6pro+LDDAC1rx5BU7ak8l+TjToogjM3yMGUfIg4X6ABNQpGcoym3xW
+   w9sUxKv///R/K5p96ArtSfI5Xco3B87fLl+Mp9vATW0bCzfZiens6a9w/
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10333"; a="265747555"
+X-IronPort-AV: E=Sophos;i="5.91,188,1647327600"; 
+   d="scan'208";a="265747555"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2022 09:21:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,188,1647327600"; 
+   d="scan'208";a="706996887"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 30 Apr 2022 09:21:00 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nkpq7-0007Ot-RO;
+        Sat, 30 Apr 2022 16:20:59 +0000
+Date:   Sun, 1 May 2022 00:20:23 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: {standard input}:26: Error: unrecognized opcode: `iccci'
+Message-ID: <202205010034.zgGUNYAE-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zpbpn5imnhuprfsc"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220429203644.2868448-1-samitolvanen@google.com>
-Authentication-Results: ORIGINATING;
-        auth=pass smtp.auth=me@concord.sh smtp.mailfrom=me@concord.sh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   8013d1d3d2e33236dee13a133fba49ad55045e79
+commit: de39b19452e784de5f90ae899851ab29a29bb42c powerpc: Rewrite 4xx flush_cache_instruction() in C
+date:   1 year, 8 months ago
+config: powerpc-randconfig-r011-20220429 (https://download.01.org/0day-ci/archive/20220501/202205010034.zgGUNYAE-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=de39b19452e784de5f90ae899851ab29a29bb42c
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout de39b19452e784de5f90ae899851ab29a29bb42c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
 
---zpbpn5imnhuprfsc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-On 22/04/29 01:36PM, Sami Tolvanen wrote:
-> KCFI is a proposed forward-edge control-flow integrity scheme for
-> Clang, which is more suitable for kernel use than the existing CFI
-> scheme used by CONFIG_CFI_CLANG. KCFI doesn't require LTO, doesn't
-> alter function references to point to a jump table, and won't break
-> function address equality. The latest LLVM patches are here:
->=20
->   https://reviews.llvm.org/D119296
->   https://reviews.llvm.org/D124211
+All errors (new ones prefixed by >>):
 
-Many thanks for continuing to work on this! As a user who has been
-following the evolution of this patch series for a while now, I have a
-couple of burning questions:
+   {standard input}: Assembler messages:
+>> {standard input}:26: Error: unrecognized opcode: `iccci'
 
-1) The LLVM patch says that kCFI is not compatible with execute-only
-memory. Is there a plan ahead for kCFI if and when execute-only memory
-is implemented?
-
-2) kCFI only checks indirect calls while Clang's traditional CFI has
-more schemes like bad cast checking and so on. Are there any major
-security tradeoffs as a result of this?
-
-V/R
-
-Kenton Groombridge
-
---zpbpn5imnhuprfsc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQKTBAABCgB9FiEEP+u3AkfbrORB/inCFt7v5V9Ft54FAmJtXtFfFIAAAAAALgAo
-aXNzdWVyLWZwckBub3RhdGlvbnMub3BlbnBncC5maWZ0aGhvcnNlbWFuLm5ldDNG
-RUJCNzAyNDdEQkFDRTQ0MUZFMjlDMjE2REVFRkU1NUY0NUI3OUUACgkQFt7v5V9F
-t544Dg//ZWfCVPSPbS6jIItV88Z+1j0B2V2ovBXyACDNw9+gb0nK3wdofNteeb+v
-4/U/TIG66RKItrpzntuNJH6aaNvwXFnZX4Zoen+l9z/Y2bppPWk3j/FELtnPTopQ
-Sze0C34gdGZnnHyzQwTl8QVmRJsON+FN0PmZfCQp4+5NRjWJRF3aI3fGBBYPS9sd
-JkiG1k8/pQBRI5IcjYogXNshK/LPV/HpwUhkKdrG+f+Qbs+ItENMS3nO5c80yvd+
-dVSzRf+5pCQHAu6JmcUWTejYG13oI5VasRTruh4US3ITaHB1uIPX1Qkhkejl9RMJ
-hKhEbpKkEqZDBEU9eA5Zvjz2miSEnYBIBKdP8HloN4dhBAznKoiC9Q0hVMmR+kPD
-oXnGs6YqgIP2n6tp8nq50nL/sieaBetzjnVb7qwnUHcmEsfFBa7enprmuwVgi/5g
-sxgO7wup05JlE85rF5JOAXVcWC3zb8au+yMQknDx1p/hGvlMFWK+w0OqecK2dbos
-crliqCbiL+2iL98O1ocYt40HT0AV3uuw8kSbMwjcJJepNvpTzrjf2q90ydCvCoDa
-crAjD2xs16YHG7On/4P19fhh6Pirn/FlMYquKuOqInAU7qSDiu5vnqsXFn2UiuUc
-wDqcwxC0qupYuI+Gm8PAb/QIcEY177T5OHOcu+qMppIasNsnCcI=
-=jtla
------END PGP SIGNATURE-----
-
---zpbpn5imnhuprfsc--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
