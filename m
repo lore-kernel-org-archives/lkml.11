@@ -2,127 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B16C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 12:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD61C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 12:53:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241981AbiD3MwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 08:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49828 "EHLO
+        id S238490AbiD3M4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Apr 2022 08:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232320AbiD3MwT (ORCPT
+        with ESMTP id S229831AbiD3M4i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 08:52:19 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41ECB2A71A;
-        Sat, 30 Apr 2022 05:48:58 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id w4so13971978wrg.12;
-        Sat, 30 Apr 2022 05:48:58 -0700 (PDT)
+        Sat, 30 Apr 2022 08:56:38 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652DE60AA6;
+        Sat, 30 Apr 2022 05:53:17 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id dk23so20055662ejb.8;
+        Sat, 30 Apr 2022 05:53:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=O/FsveIK5tQmhrYWr1untBSs0r3sGQT4hudw1u1onus=;
-        b=Ykrp+gWbIAq9sg9ItQWonAtSkkoJHjwOhZ4C5E5259X59O769Kdld6QrRelzl5zITG
-         HjredN5f5Tp7IyAvWJvVJIFG1ToQK5u2x+cnCcgwP9ebepXkCOCmzq5Y7YXopHDyE4gH
-         GpBy8GzKWzPxogUpF4l/UhEXbHfSt0jnC3SuoBqWuD+eUIu5dSaD2fPtxRdFyjTa9Gd1
-         a6eFa+MGC12uDd/kmQF1272foUb0K6xyWt4E8lmMUpqpkhWyR7a+eLooa6Oz8+qvsSIk
-         XdJG2ea/RfvhqRcIWs2LBg/Xkfa9R3xdjXfiBqfMndF3UQomB4QyYPNwBTegWG/Zl+j1
-         Irng==
+        bh=mAQMceYOTyepNyy81qetN6xjIgF24kvDcmdMEakHKdA=;
+        b=VDQiZ9gle0DYIu1HeD8kYTH7Q0GdjrSCveevSvIMnCmpzxrj5oYVykEkKFcUS5qJuw
+         v4dpV7ydmobrQXwA6g1NvIhZXri40c7gherhrlOO2p3adabtYe575xvIoNeiBXwShelk
+         40XgCUm4vsIv3qLrfAbg9u/6xvGTVm6hqLIOsFkhpcFpFLuz3ul1IjYxwz4npthkwe+G
+         /dw1Nf5Z1rbY2MKl2CDfcWjw4QMVaYbl86AmKNPO/jG0NoCjxUhFwA0ULIYqUq/TCYQe
+         fj0D3OnXRwKjgfQ7C0BAs9tQm7S0H5eF2r87Vjiuhc0bVyxmL9LUf9DqqLPfZcyCBDgO
+         I70Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=O/FsveIK5tQmhrYWr1untBSs0r3sGQT4hudw1u1onus=;
-        b=Bj5BbTZOU0wR1cLcW45rJG+bPlrQSpSmeR7B05NZ5JmEJ+Z+I9qe8YvrgqP4uhIvFG
-         QDJZzbZSKVCd/VpNxPhcBEvEem4sEK9kBfvFNhU6/5yxrCu82CaacKUyG3FtibiseBWt
-         RNHWfBBDUKeB+BjdfpOHSLTEn7SxuiYC358x4srX8NCePnksOCX85yRt6Ww6I4TWuCsl
-         Cf+vLkl85y6feFcL0fr00DTBCb2XxgcuUU4kRRGdwAKpig0eBCnzRFDXrAizWUshey3p
-         75/NtBQKweDneS6huW9s/KvjUU0cAbUUhsDEfZET1CmTqHHh8y/M0GlRS4B1XNOL57pW
-         IQ3g==
-X-Gm-Message-State: AOAM533Es991OaMKSrjZ5gdJvUFKucnITsfC4v0YjfUoJdJ3zMVeP4XS
-        NZrT7cKpjPZc6C0b+veev3k=
-X-Google-Smtp-Source: ABdhPJzQl6K4s0HPG395D8G2wx59Rjqyd6RKFNrzwkVH2Thj3ceGCo2cXKgVyBVws2KzTS0BC8JBqg==
-X-Received: by 2002:a05:6000:1e05:b0:20a:ecc7:41cf with SMTP id bj5-20020a0560001e0500b0020aecc741cfmr2999825wrb.102.1651322936716;
-        Sat, 30 Apr 2022 05:48:56 -0700 (PDT)
-Received: from localhost.localdomain ([2603:c020:c001:7eff:ffff:ffff:ffff:ff00])
-        by smtp.googlemail.com with ESMTPSA id f25-20020a7bc8d9000000b003942a244f49sm1717403wml.34.2022.04.30.05.48.55
+        bh=mAQMceYOTyepNyy81qetN6xjIgF24kvDcmdMEakHKdA=;
+        b=BJylXI/2gCxam/yFGnVpD8Oi2Sob7k2L5g10ddSC7yMcK2h7vkVEv9RTH4dgksmCeW
+         xdfj+aR8G3sQIRWp+5DVKmeTstlHpCHtcU6mlJmw9+y9YScKsJ/NEV9c+els6HpDW9IZ
+         pmykwaqGSCpTN0pn2GwS9DSgNeYlJz76PmDk/WNGbUOqxM+Yr2Ap+yUM9Rm3h/Xs4i5c
+         Om5PePaMAsD6orq4EPa1OB0rwnv9wmi7BORyES8yVQw8CZHz1KVE60lDNV2EeeMOxAvs
+         Q0wdkWs3dJPXPlI53vEMkPVTPr3PYbR5u9xE1iC7VzCz0Z0Cn1DIjubJqu5oAk1642ea
+         n0LQ==
+X-Gm-Message-State: AOAM533UOcnhi+Jqa7ZQB9jQw7bA7Jd21Stm2TcIrZP8BFiysUFoVx94
+        CMZ+C6COFU41JsJpua0SGtJ9QJK0dE4=
+X-Google-Smtp-Source: ABdhPJwApadsEjI+8tlebGbQqspwcBB/aD15404MIyeQLr5Rc9ZTI73JUP9ssVlMGbeiJGf/5b1ViA==
+X-Received: by 2002:a17:907:7f08:b0:6f3:8c69:1779 with SMTP id qf8-20020a1709077f0800b006f38c691779mr3660647ejc.414.1651323195618;
+        Sat, 30 Apr 2022 05:53:15 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id jl25-20020a17090775d900b006f3ef214dc5sm1597209ejc.43.2022.04.30.05.53.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Apr 2022 05:48:56 -0700 (PDT)
-From:   Matthew Hagan <mnhagan88@gmail.com>
-Cc:     Matthew Hagan <mnhagan88@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Sat, 30 Apr 2022 05:53:15 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sricharan R <sricharan@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] net: sfp: Add tx-fault quirk for Huawei MA5671A SFP ONT
-Date:   Sat, 30 Apr 2022 13:48:02 +0100
-Message-Id: <20220430124803.1165005-1-mnhagan88@gmail.com>
-X-Mailer: git-send-email 2.27.0
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [PATCH v2 0/3] Small fixes/improvement for hfpll and krait
+Date:   Sat, 30 Apr 2022 07:44:55 +0200
+Message-Id: <20220430054458.31321-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As noted elsewhere [1], various GPON SFP modules exhibit non-standard
-TX-fault behaviour. In the tested case, the Huawei MA5671A, when used in
-combination with a Marvell 88E6393X switch, was found to persistently
-assert TX-fault, resulting in the module being disabled.
+This series has small fixes/improvement to the hfpll and krait clk
+driver.
 
-This patch adds a quirk to ignore changes to the the SFP_F_TX_FAULT
-state, thus allowing the module to function.
+This comes from another series that got split to better facilitate the
+merge since it was grown to 21 patches and was getting hard to review.
 
-[1] https://lore.kernel.org/all/20200110114433.GZ25745@shell.armlinux.org.uk/
+For hfpll, a conversion to read_poll macro and introduction
+of a timeout to prevent a stall.
+For krait, a fix for the mux sel logic and an introduction for
+8064 errata.
 
-Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
----
- drivers/net/phy/sfp.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+v2:
+- Drop patch add hw_parent check for div2_round_rate
+- Add extra comments for errata patch
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 4dfb79807823..11a20687b273 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -250,6 +250,7 @@ struct sfp {
- 	struct sfp_eeprom_id id;
- 	unsigned int module_power_mW;
- 	unsigned int module_t_start_up;
-+	bool tx_fault_ignore;
- 
- #if IS_ENABLED(CONFIG_HWMON)
- 	struct sfp_diag diag;
-@@ -1956,6 +1957,14 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 	else
- 		sfp->module_t_start_up = T_START_UP;
- 
-+	if (!memcmp(id.base.vendor_name, "HUAWEI          ", 16) &&
-+	    !memcmp(id.base.vendor_pn, "MA5671A         ", 16))
-+		sfp->tx_fault_ignore = true;
-+	else
-+		sfp->tx_fault_ignore = false;
-+
-+	return 0;
-+
- 	return 0;
- }
- 
-@@ -2409,7 +2418,10 @@ static void sfp_check_state(struct sfp *sfp)
- 	mutex_lock(&sfp->st_mutex);
- 	state = sfp_get_state(sfp);
- 	changed = state ^ sfp->state;
--	changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
-+	if (sfp->tx_fault_ignore)
-+		changed &= SFP_F_PRESENT | SFP_F_LOS;
-+	else
-+		changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
- 
- 	for (i = 0; i < GPIO_MAX; i++)
- 		if (changed & BIT(i))
+Ansuel Smith (3):
+  clk: qcom: clk-hfpll: use poll_timeout macro
+  clk: qcom: clk-krait: unlock spin after mux completion
+  clk: qcom: clk-krait: add apq/ipq8064 errata workaround
+
+ drivers/clk/qcom/clk-hfpll.c | 15 +++++++++------
+ drivers/clk/qcom/clk-krait.c | 23 ++++++++++++++++++++++-
+ drivers/clk/qcom/clk-krait.h |  1 +
+ drivers/clk/qcom/krait-cc.c  |  8 ++++++++
+ 4 files changed, 40 insertions(+), 7 deletions(-)
+
 -- 
-2.27.0
+2.34.1
 
