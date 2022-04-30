@@ -2,211 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA35C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 13:10:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F343C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 13:10:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382675AbiD3NNY (ORCPT
+        id S1382700AbiD3NNm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 09:13:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49798 "EHLO
+        Sat, 30 Apr 2022 09:13:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382659AbiD3NNN (ORCPT
+        with ESMTP id S1380509AbiD3NNh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 09:13:13 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F31482D02;
-        Sat, 30 Apr 2022 06:09:51 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id p18so11896552edr.7;
-        Sat, 30 Apr 2022 06:09:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=3P6gFLiLHpQOXPwOnJdtu8LsXK946l+L0SXzplHXgp8=;
-        b=A2zQVsk6TsPWFFnKRLzrD/HI3vGHQL6AVekVCNp500SknGG8SJwz7kyiJrvA19EShI
-         BNLPMmTKIeNYoM41oByYLvde4UGaWMc2tYI4swETHVbaT+110s4N2rW4HtT0AkQqwgcg
-         6g4P2bCl4tWQf3CHllg+3VcNxxdsEKJuUGSWm/3lrydS56ig/rf1Z/h7qjdfsfu68zv3
-         wwNUX8OSrEuZa5pgRoqW9YsfimCitya3OdMFujgs9WeaPLqRgpWQRsOYk8qrH/WzaxbH
-         eWZ2WTaKxAFrS4PQquJe2V2vvHteqNqF7y1hJGibl08BKdS0sADiZicXmAclcH2bgZnu
-         qQDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3P6gFLiLHpQOXPwOnJdtu8LsXK946l+L0SXzplHXgp8=;
-        b=bm1LRLhmXFWousbf4UyBf/BrjS4mPuFx+42eo0+sglVyXUQCC685O5eYYaXvHPhF4a
-         iLRbhl/+Mt0cHueRYoEVjytCUdMPSFForGZp9t0mr7xSYZonHD+ldRjXE5aGPc1X7gYc
-         Y3lbOzRWkJdbjogSzooMWlszoeYQTv3XT1AsH19OLvc7ruuXMBKIoJu8wB8LljTovJW5
-         0R28F6fR1sXd6gwFMmV1ZnYk3HIWKhpEoQBkYKBm9wo+xgBoNntxqWLjMI1cOGQQjhcv
-         9Yz/cwQL4X2DPFtj9djyKifDMmUZwf6TBz/fhiddDBY91S6ODWnDNB8RiDxvuY3BseWO
-         iarA==
-X-Gm-Message-State: AOAM531JN4hG6jZ6QRHVM+hIT5SsCPssh+qpSTBoksRUWAzBdnhIQd1m
-        fG4rvvUr8Zp2DkFrE+jqh6A=
-X-Google-Smtp-Source: ABdhPJx2qDGExsPDlSuKlEw7Cpu8Sx2qH4tTWnvkjIQ9BFGSbprqbq1Qr0JkUcxBM7IZ2RjZDFTROg==
-X-Received: by 2002:aa7:c49a:0:b0:425:d526:98ad with SMTP id m26-20020aa7c49a000000b00425d52698admr4312411edq.352.1651324189976;
-        Sat, 30 Apr 2022 06:09:49 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id u5-20020a056402064500b0042617ba63a0sm4142404edx.42.2022.04.30.06.09.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Apr 2022 06:09:49 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH v2 3/3] dt-bindings: arm: msm: Convert kpss-gcc driver Documentation to yaml
-Date:   Sat, 30 Apr 2022 08:01:25 +0200
-Message-Id: <20220430060125.9124-4-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220430060125.9124-1-ansuelsmth@gmail.com>
-References: <20220430060125.9124-1-ansuelsmth@gmail.com>
+        Sat, 30 Apr 2022 09:13:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3360E12086;
+        Sat, 30 Apr 2022 06:10:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28E7DB82B70;
+        Sat, 30 Apr 2022 13:10:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D0B25C385A7;
+        Sat, 30 Apr 2022 13:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651324210;
+        bh=Xx2UgnFkR/QPeDIHJlOOc/xs0nNUqnZFf9vqF2zUImY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Ufj/vsENd6XGNJdBFvFELoJhEVczhFPnjZGcSTbT0SnAzw1PIUTRFy7LkDT1Wx5LW
+         V6ELV0LN1E3rNut5+WOlHJeR+WZR6dE/fY89iw9XxlDXm67WXggtDfZwYbMnvka486
+         TYTPw/n09hDqLfRCrLRDAHM2g6Koxdjd6/1msbGG03v7obiHOjkRBd/kRiowAEFWnc
+         kVouwKvQwQOIFLfG3DH5CBugRzvZYRvyTBwKdjW5D98wYJF/tgEXYgZL9tHehAlmKG
+         8KUvAcEHHVC473oHwyevSnIdkHHlDyxbTRYRjVvPYUMZHJqO89/U8K9RmUQJVCX2uV
+         KbPkmaB0eSXgg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AD9A1F03841;
+        Sat, 30 Apr 2022 13:10:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] rxrpc: Enable IPv6 checksums on transport socket
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165132421070.7001.755926570910238927.git-patchwork-notify@kernel.org>
+Date:   Sat, 30 Apr 2022 13:10:10 +0000
+References: <165126271697.1384698.4579591150130001289.stgit@warthog.procyon.org.uk>
+In-Reply-To: <165126271697.1384698.4579591150130001289.stgit@warthog.procyon.org.uk>
+To:     David Howells <dhowells@redhat.com>
+Cc:     netdev@vger.kernel.org, marc.dionne@auristor.com,
+        lucien.xin@gmail.com, vfedorenko@novek.ru, davem@davemloft.net,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert kpss-gcc driver Documentation to yaml.
-Add #clock-cells additional binding to required bindings and example
-as it's a required binding for clock-output-names.
+Hello:
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ------------
- .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 68 +++++++++++++++++++
- 2 files changed, 68 insertions(+), 44 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
- create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-deleted file mode 100644
-index e628758950e1..000000000000
---- a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-+++ /dev/null
-@@ -1,44 +0,0 @@
--Krait Processor Sub-system (KPSS) Global Clock Controller (GCC)
--
--PROPERTIES
--
--- compatible:
--	Usage: required
--	Value type: <string>
--	Definition: should be one of the following. The generic compatible
--			"qcom,kpss-gcc" should also be included.
--			"qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc"
--			"qcom,kpss-gcc-apq8064", "qcom,kpss-gcc"
--			"qcom,kpss-gcc-msm8974", "qcom,kpss-gcc"
--			"qcom,kpss-gcc-msm8960", "qcom,kpss-gcc"
--
--- reg:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: base address and size of the register region
--
--- clocks:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: reference to the pll parents.
--
--- clock-names:
--	Usage: required
--	Value type: <stringlist>
--	Definition: must be "pll8_vote", "pxo".
--
--- clock-output-names:
--	Usage: required
--	Value type: <string>
--	Definition: Name of the output clock. Typically acpu_l2_aux indicating
--		    an L2 cache auxiliary clock.
--
--Example:
--
--	l2cc: clock-controller@2011000 {
--		compatible = "qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc";
--		reg = <0x2011000 0x1000>;
--		clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
--		clock-names = "pll8_vote", "pxo";
--		clock-output-names = "acpu_l2_aux";
--	};
-diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-new file mode 100644
-index 000000000000..20ee182eb16f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-@@ -0,0 +1,68 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/msm/qcom,kpss-gcc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Krait Processor Sub-system (KPSS) Global Clock Controller (GCC)
-+
-+maintainers:
-+  - Ansuel Smith <ansuelsmth@gmail.com>
-+
-+description: |
-+  Krait Processor Sub-system (KPSS) Global Clock Controller (GCC). Used
-+  to control L2 mux (in the current implementation).
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - qcom,kpss-gcc-ipq8064
-+          - qcom,kpss-gcc-apq8064
-+          - qcom,kpss-gcc-msm8974
-+          - qcom,kpss-gcc-msm8960
-+      - const: qcom,kpss-gcc
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: phandle to pll8_vote
-+      - description: phandle to pxo_board
-+
-+  clock-names:
-+    items:
-+      - const: pll8_vote
-+      - const: pxo
-+
-+  clock-output-names:
-+    const: acpu_l2_aux
-+
-+  '#clock-cells':
-+    const: 0
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - clock-output-names
-+  - '#clock-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/qcom,gcc-ipq806x.h>
-+
-+    clock-controller@2011000 {
-+      compatible = "qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc";
-+      reg = <0x2011000 0x1000>;
-+      clocks = <&gcc PLL8_VOTE>, <&pxo_board>;
-+      clock-names = "pll8_vote", "pxo";
-+      clock-output-names = "acpu_l2_aux";
-+      #clock-cells = <0>;
-+    };
-+...
-+
+On Fri, 29 Apr 2022 21:05:16 +0100 you wrote:
+> AF_RXRPC doesn't currently enable IPv6 UDP Tx checksums on the transport
+> socket it opens and the checksums in the packets it generates end up 0.
+> 
+> It probably should also enable IPv6 UDP Rx checksums and IPv4 UDP
+> checksums.  The latter only seem to be applied if the socket family is
+> AF_INET and don't seem to apply if it's AF_INET6.  IPv4 packets from an
+> IPv6 socket seem to have checksums anyway.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] rxrpc: Enable IPv6 checksums on transport socket
+    https://git.kernel.org/netdev/net/c/39cb9faa5d46
+
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
