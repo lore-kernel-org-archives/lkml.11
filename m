@@ -2,146 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4327BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 03:27:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F25C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 03:29:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382139AbiD3Dab (ORCPT
+        id S1382144AbiD3DdQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 23:30:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40472 "EHLO
+        Fri, 29 Apr 2022 23:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232757AbiD3DaV (ORCPT
+        with ESMTP id S232757AbiD3DdO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 23:30:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 753913D48C;
-        Fri, 29 Apr 2022 20:27:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC99A624D4;
-        Sat, 30 Apr 2022 03:26:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BF49C385AD;
-        Sat, 30 Apr 2022 03:26:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651289219;
-        bh=d3ZW5fNPK57eX66J9ylKtIPChK1LOQBQAo/4SDkWPvk=;
-        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
-        b=RBq81V1B0zC1wsouKSpwHcYn/RAVKgyizDbYM3/yVAZUOp35whj2HgfAFJgUfrRA9
-         KcmTRSIvFGUMxmSSHn5dZn1Lh0QP007kCZMsrNrkwdrHFWeBXLNWy0F/kxSi+BY+7H
-         JXPxxOgtE03yzUinsNtfAI2wc2Srm4MgxKbRUGvuuMnZgTzyLLZaW1rY8vR152J6AB
-         oUzNcKul34iJI0xwW5mZaFonY4WO02G1vRI+WBpsOZH3nbr/HADkYgy+YFVQwedsRv
-         MPxItXG2YhmYjIefDA943fD4PdKLLxtHUdn4brKm5TuHufjUVBbO9eGhcp/OenTLZs
-         rMBDcenRcxfyw==
-Received: by mail-wm1-f47.google.com with SMTP id p189so5541698wmp.3;
-        Fri, 29 Apr 2022 20:26:59 -0700 (PDT)
-X-Gm-Message-State: AOAM531fJLJegFSxB1thi9tfS83Yr3hxGnNF9l1Ovb2p97dEHKeOpRnt
-        A+j5oR12HHJO3l/hNlRW6GnTVa3B2myBYMqBB64=
-X-Google-Smtp-Source: ABdhPJzEDelgZYI9HaASTigWNgH5drnhUAvbr85xTlM+Xv8ERFusnHEgo96dz4tPdMyNM7ga0jrYWBKiJe3/P395BX8=
-X-Received: by 2002:a05:600c:384f:b0:393:e79f:a146 with SMTP id
- s15-20020a05600c384f00b00393e79fa146mr5823746wmr.102.1651289217537; Fri, 29
- Apr 2022 20:26:57 -0700 (PDT)
+        Fri, 29 Apr 2022 23:33:14 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D7EC0E68;
+        Fri, 29 Apr 2022 20:29:54 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id d15so8661276plh.2;
+        Fri, 29 Apr 2022 20:29:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LUmNcNsDoCzcF14FceqgfCt2WsRT+h9Jn//RzzgixQg=;
+        b=ovNwRnZQhd3q2zYaM7FygEnhotz760Al/ruwyRTkj52QSuCz45g4xJzsiHX7WCOdBz
+         edjiZI0mJ+3T8W6iH4tcnj4dAwhggeIAqTYfh3HXvEU6onBiLHKNBh1aFJqzP9mtHBdO
+         tvh1emm+tRTF5drn6eweQ350RW7u/WX70iiuqLKnbpUD6Lq589GzIkI2cDCgzy+FXckK
+         hv2wi+Pcf2G+DS0DL3pthyNkpfRst6pPJmQ7GPHNAHcQeW0KDc7+mQoh6p6vZCRmweZA
+         N60KGOpaTaE1rLbBGzAgZJPY8ZVY7ausZDaYULNdjpMO6XRywNlmJjzZNeqaHzDfgudV
+         7pQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LUmNcNsDoCzcF14FceqgfCt2WsRT+h9Jn//RzzgixQg=;
+        b=7JXVqmk2ddByvwCDCpJLLB7btsaZgQavin7QOYs3Hiu2akA+o/X6R20D0ah9nvA0zJ
+         iNxVmhmX8ez3Mjxv+3MaVB+qSaLpjZNHYlMEmtRpUvT+WpD3wlGITerdbrklJaOvn5fz
+         DgRK4Avoz8JFnbamA5d9BwnkoNxWnpRtyp4froJhwYguRk/5bRr5Zx1wEgUlxMG5fIBL
+         R8lGi4a24icXG7BQBgFpyBBl8Em066Rvu7MNGNV30cL6rd3kdp2pRp94L6czwIxy/cKL
+         Hyr3oN+mp8YUAXdiUpG8IMZUYq3T1IxHZnb6nK0gDLVzcUnaiua1ZpRvUXwTOyDLvhc0
+         QNTw==
+X-Gm-Message-State: AOAM5327uVMQh3vq7bq/a02DAPS8C8Nc3bdlVogph59Y1BbKuj5USN/+
+        y3KiFivx2ABj5HRsYj0ptMkhT5OioR8XedhYjCQ=
+X-Google-Smtp-Source: ABdhPJwERSAY3QNsvQUlhC83me5byVTRuvYW57IaU9RoZHoVGKIjwvtOX4pzakqd1CFQAvCFraQapEsEarG0+Q1kknU=
+X-Received: by 2002:a17:90b:33c8:b0:1d9:9023:1103 with SMTP id
+ lk8-20020a17090b33c800b001d990231103mr2344557pjb.26.1651289394183; Fri, 29
+ Apr 2022 20:29:54 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a5d:64e7:0:0:0:0:0 with HTTP; Fri, 29 Apr 2022 20:26:56
- -0700 (PDT)
-In-Reply-To: <CAKYAXd_9BT7je6-UHgDYCY-WD2maxYtam0_En8pgS_FiwRJP9Q@mail.gmail.com>
-References: <20220418173923.193173-1-tadeusz.struk@linaro.org> <CAKYAXd_9BT7je6-UHgDYCY-WD2maxYtam0_En8pgS_FiwRJP9Q@mail.gmail.com>
-From:   Namjae Jeon <linkinjeon@kernel.org>
-Date:   Sat, 30 Apr 2022 12:26:56 +0900
-X-Gmail-Original-Message-ID: <CAKYAXd8sQDJyftZ_N8bgCMcMCMraQ=6_8x+QZ5XprMN3P4x9gQ@mail.gmail.com>
-Message-ID: <CAKYAXd8sQDJyftZ_N8bgCMcMCMraQ=6_8x+QZ5XprMN3P4x9gQ@mail.gmail.com>
-Subject: Re: [PATCH] exfat: check if cluster num is valid
-To:     Tadeusz Struk <tadeusz.struk@linaro.org>
-Cc:     Sungjong Seo <sj1557.seo@samsung.com>,
-        linux-fsdevel@vger.kernel.org, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com
+References: <20220421140740.459558-1-benjamin.tissoires@redhat.com>
+ <20220421140740.459558-4-benjamin.tissoires@redhat.com> <20220426041147.gwnxhcjftl2kaz6g@MBP-98dd607d3435.dhcp.thefacebook.com>
+ <CAO-hwJLWxtZcs-ynzAaF4hGf6zPF5wAni3Etzb1_XrvQpx2Jxw@mail.gmail.com>
+In-Reply-To: <CAO-hwJLWxtZcs-ynzAaF4hGf6zPF5wAni3Etzb1_XrvQpx2Jxw@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 29 Apr 2022 20:29:43 -0700
+Message-ID: <CAADnVQL3U5Gz_spmdTsC6zOuR=XLEMppwn+=bkyOsSt0=7pP7Q@mail.gmail.com>
+Subject: Re: [RFC bpf-next v4 3/7] error-inject: add new type that carries if
+ the function is non sleepable
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-2022-04-22 14:54 GMT+09:00, Namjae Jeon <linkinjeon@kernel.org>:
-> 2022-04-19 2:39 GMT+09:00, Tadeusz Struk <tadeusz.struk@linaro.org>:
-> Hi Tadeusz,
+On Tue, Apr 26, 2022 at 12:52 AM Benjamin Tissoires
+<benjamin.tissoires@redhat.com> wrote:
 >
->> Syzbot reported slab-out-of-bounds read in exfat_clear_bitmap.
->> This was triggered by reproducer calling truncate with size 0,
->> which causes the following trace:
->>
->> BUG: KASAN: slab-out-of-bounds in exfat_clear_bitmap+0x147/0x490
->> fs/exfat/balloc.c:174
->> Read of size 8 at addr ffff888115aa9508 by task syz-executor251/365
->>
->> Call Trace:
->>  __dump_stack lib/dump_stack.c:77 [inline]
->>  dump_stack_lvl+0x1e2/0x24b lib/dump_stack.c:118
->>  print_address_description+0x81/0x3c0 mm/kasan/report.c:233
->>  __kasan_report mm/kasan/report.c:419 [inline]
->>  kasan_report+0x1a4/0x1f0 mm/kasan/report.c:436
->>  __asan_report_load8_noabort+0x14/0x20 mm/kasan/report_generic.c:309
->>  exfat_clear_bitmap+0x147/0x490 fs/exfat/balloc.c:174
->>  exfat_free_cluster+0x25a/0x4a0 fs/exfat/fatent.c:181
->>  __exfat_truncate+0x99e/0xe00 fs/exfat/file.c:217
->>  exfat_truncate+0x11b/0x4f0 fs/exfat/file.c:243
->>  exfat_setattr+0xa03/0xd40 fs/exfat/file.c:339
->>  notify_change+0xb76/0xe10 fs/attr.c:336
->>  do_truncate+0x1ea/0x2d0 fs/open.c:65
-> Could you please share how to reproduce this ?
-Ping, If you apply this patch to your source, there is a problem. You
-need to add +1 to EXFAT_DATA_CLUSTER_COUNT(sbi).
-and please use is_valid_cluster() to check if cluster is valid instead of it.
+> On Tue, Apr 26, 2022 at 6:11 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Thu, Apr 21, 2022 at 04:07:36PM +0200, Benjamin Tissoires wrote:
+> > > When using error-injection function through bpf to change the return
+> > > code, we need to know if the function is sleepable or not.
+> > >
+> > > Currently the code assumes that all error-inject functions are sleepable,
+> > > except for a few selected of them, hardcoded in kernel/bpf/verifier.c
+> > >
+> > > Add a new flag to error-inject so we can code that information where the
+> > > function is declared.
+> > >
+> > > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> > >
+> > > ---
+> > >
+> > > new in v4:
+> > > - another approach would be to define a new kfunc_set, and register
+> > >   it with btf. But in that case, what program type would we use?
+> > >   BPF_PROG_TYPE_UNSPEC?
+> > > - also note that maybe we should consider all of the functions
+> > >   non-sleepable and only mark some as sleepable. IMO it makes more
+> > >   sense to be more restrictive by default.
+> >
+> > I think the approach in this patch is fine.
+> > We didn't have issues with check_non_sleepable_error_inject() so far,
+> > so I wouldn't start refactoring it.
+>
+> OK... though I can't help but thinking that adding a new
+> error-inject.h enum value is going to be bad, because it's an API
+> change, and users might not expect NS_ERRNO.
 
->
-> Thanks.
->>
->> Add checks to validate if cluster number is within valid range in
->> exfat_clear_bitmap() and exfat_set_bitmap()
->>
->> Cc: Namjae Jeon <linkinjeon@kernel.org>
->> Cc: Sungjong Seo <sj1557.seo@samsung.com>
->> Cc: linux-fsdevel@vger.kernel.org
->> Cc: stable@vger.kernel.org
->> Cc: linux-kernel@vger.kernel.org
->>
->> Link:
->> https://syzkaller.appspot.com/bug?id=50381fc73821ecae743b8cf24b4c9a04776f767c
->> Reported-by: syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com
->> Fixes: 1e49a94cf707 ("exfat: add bitmap operations")
->> Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
->> ---
->>  fs/exfat/balloc.c | 6 ++++++
->>  1 file changed, 6 insertions(+)
->>
->> diff --git a/fs/exfat/balloc.c b/fs/exfat/balloc.c
->> index 03f142307174..4ed81f86f993 100644
->> --- a/fs/exfat/balloc.c
->> +++ b/fs/exfat/balloc.c
->> @@ -149,6 +149,9 @@ int exfat_set_bitmap(struct inode *inode, unsigned
->> int
->> clu, bool sync)
->>  	struct exfat_sb_info *sbi = EXFAT_SB(sb);
->>
->>  	WARN_ON(clu < EXFAT_FIRST_CLUSTER);
->> +	if (clu > EXFAT_DATA_CLUSTER_COUNT(sbi))
->> +		return -EINVAL;
->> +
->>  	ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
->>  	i = BITMAP_OFFSET_SECTOR_INDEX(sb, ent_idx);
->>  	b = BITMAP_OFFSET_BIT_IN_SECTOR(sb, ent_idx);
->> @@ -167,6 +170,9 @@ void exfat_clear_bitmap(struct inode *inode, unsigned
->> int clu, bool sync)
->>  	struct exfat_mount_options *opts = &sbi->options;
->>
->>  	WARN_ON(clu < EXFAT_FIRST_CLUSTER);
->> +	if (clu > EXFAT_DATA_CLUSTER_COUNT(sbi))
->> +		return;
->> +
->>  	ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
->>  	i = BITMAP_OFFSET_SECTOR_INDEX(sb, ent_idx);
->>  	b = BITMAP_OFFSET_BIT_IN_SECTOR(sb, ent_idx);
->> --
->> 2.35.1
->>
->>
->
+Not sure about api concern. This is the kernel internal tag.
+bpf progs are not aware of them. The functions can change
+from sleepable to non-sleepable too.
+allow_error_inject can be removed. And so on.
+
+> OTOH, if we had a new kfunc_set, we keep the existing error-inject API
+> in place with all the variants and we just teach the verifier that the
+> function is non sleepable.
+...
+> IIUC, the kfunc_set approach would solve that, no?
+
+Makes sense. Let's figure out an extensible kfunc_set approach
+that is not centralized in verifier.c
