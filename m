@@ -2,164 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28BC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 22:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBBEDC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 22:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245702AbiD3WPG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 18:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
+        id S245741AbiD3We7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Apr 2022 18:34:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245553AbiD3WPE (ORCPT
+        with ESMTP id S229489AbiD3We5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 18:15:04 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCF554690;
-        Sat, 30 Apr 2022 15:11:40 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id n18so9885196plg.5;
-        Sat, 30 Apr 2022 15:11:40 -0700 (PDT)
+        Sat, 30 Apr 2022 18:34:57 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2127.outbound.protection.outlook.com [40.107.243.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C5585B3D0;
+        Sat, 30 Apr 2022 15:31:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YtPtY7oBua/D9+fFKnB+8qNnMY3M3FyZ+a/To+uhdAyY+iRQ53dvsXYE/V/C40UtB/y1UpVhqYGDNYxGNqbtff3zedugGQ5P/114ivlkDPvPUZcKtZqrbyL3Z7LIg5GsQAhPhaMWUBrTpxLzrV5CSmJ7chSE8kYVNTN1qr26FyyUgGHcNl4Fv0CnOXLzQ1Bs3IcE/9OLfYtx9f5ltYIbNiIYJYy1sOPQQOyxBSTgom23q/eJhm8dCTu9K59jOaZhl6B6PuzazZ8ArJYxWEmswn7KR0lon/ARznHLzZ+rgIkXYwK33Fsny6NWWXNSRGBNfOwo+e8aEuMTax7MQjnQmw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=i0JjhRq7Qs/rUbNoCdMbiZwERQugK3ZCgkMzUP+1fPY=;
+ b=FH4w4Gnlpx0w6qAwZDysTLAT7ooYIxci8T8N6YROJWgToIYiloc3LFpQbnWsWt6QQyuZrATqF/4fsp6hjbFxjlPMax2TvV4HSnj5U5QYo4B4DIj7F4Wo6FmMweeiRkqZZoyEI5rONBq/kTGOAhJA7sdXflS+1uZf5ajUgawOWXKXGunSrMOHxfRaQ4c61RCvm4vW2Rrkr8X6mL6hA5uv6ILif2jacKTmjNaVIcKNpJ0gVBpgjyuoWSGv5oZaLoyzEJSQnVfgvvTLy3LalLCl6l6n1ENCi0EMac32qHBNzSGwpg93mvXw4N23PtYrRdVfQn5xTyhuTaD+0iQ+KeALkg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dCo8CMo2v5RYO1RPZD0+ykli4XQwArDVOl1Oec/L0lw=;
-        b=lvjESYcogcQfm73Bw1m+yl6xdhB48HDzK6/euhagLHL5CAPe5BCQHL6k03Ovghtlq3
-         TehYemoidty+ECmFIlp/Y2nnmzblHJIW3FYrlP9lAvBys1X46eE08xDIgrbUeyLkH+7x
-         hyjssu6pH0KuHrj6ZmICJ2fct6J99C0Lrk8u/tYU3A3IxQy7/11PVf+4mlq4TAA2u0vz
-         3/fyopDt26Rw4WPDS0g2Ufw29R2dGL8g4RAHwL4OLMDkY7S3hAqX0fAelrsc7Wzita+b
-         eOXOYDcfvTHllFVziHBgEhMph1yrG71N3gpSlTIj1L2usfsTpYmwxeNlyoyAUglnmFjx
-         TK+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dCo8CMo2v5RYO1RPZD0+ykli4XQwArDVOl1Oec/L0lw=;
-        b=z9T+yJbkU8CKcOd9z1+6gvhgGZnqD8LKPbd9O1j2Q6rA3wK3BpcPztz3bVCnuVLByW
-         fYzvXlRDnI3HSjpXqrC1d8OuJgZxjHVeY9QgenWm+eA1V58/Z0NC7DnW/l52kyqVl17K
-         fWV0i/woAW5V+l4ZmyXQMSLmg+ky2ClmSrKI8VODu36S8OEbNOLQHbqkn4kpKGPCUd8M
-         RRGRiFcbjut0WanuRCEmhMMOejI4nvRFgTvS5rB4Pj37ZsCE32gd1V5JNW464w1s/miA
-         viphsgz3763USUDpLWkx+K3HaNgIHJIT9iX7XSoVyR3q+RqlO+PlLP6tYR4YkFZNhPFZ
-         LaNA==
-X-Gm-Message-State: AOAM531s6RusBKV/lQBr+9CUkzpePpc9GEGc84uRPW5SwJjZID8e95+F
-        UOzbSng9Z7/bVSzSqo0Op2KZIUF+Ju2C8w==
-X-Google-Smtp-Source: ABdhPJwA6YIuYHvQqzAFsZ99QOoThAwY/FlKLpIPxldD7qju7HwbZFDeZ84wvjsTVch9b1t1AkpifQ==
-X-Received: by 2002:a17:902:8b8a:b0:158:fbd0:45ab with SMTP id ay10-20020a1709028b8a00b00158fbd045abmr5325110plb.110.1651356700152;
-        Sat, 30 Apr 2022 15:11:40 -0700 (PDT)
-Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id y10-20020a170902864a00b0015e8d4eb254sm1918584plt.158.2022.04.30.15.11.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Apr 2022 15:11:39 -0700 (PDT)
-Date:   Sun, 1 May 2022 07:11:37 +0900
-From:   Stafford Horne <shorne@gmail.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: Re: [PATCH v7 11/17] openrisc: account for 0 starting value in
- random_get_entropy()
-Message-ID: <Ym20Ga3VsJRzXppd@antec>
-References: <20220423212623.1957011-12-Jason@zx2c4.com>
- <20220429001648.1671472-1-Jason@zx2c4.com>
- <YmyOh/YbgGJ3DK79@antec>
- <YmyRATzJBQX+wnIP@zx2c4.com>
-MIME-Version: 1.0
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=i0JjhRq7Qs/rUbNoCdMbiZwERQugK3ZCgkMzUP+1fPY=;
+ b=iawVUuprmhsruIyiADOS4pj1wZL9ZGEHbZm9Itp/AC+EIuuCq57YFFlBvkOwainXQ01ZKtjMsybY++2cO1hmkhN9zVARLwsYVF3qmHdwRtcBlt5VWw04pY0ihU7AdJ7A3tvX1zqYcM6Mq4Non2sD9IIGi+g9FdyJX92dISoXEVE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by CY4PR1001MB2407.namprd10.prod.outlook.com
+ (2603:10b6:910:47::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.20; Sat, 30 Apr
+ 2022 22:31:32 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::4581:787c:1a7a:873e]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::4581:787c:1a7a:873e%3]) with mapi id 15.20.5186.028; Sat, 30 Apr 2022
+ 22:31:31 +0000
+Date:   Sat, 30 Apr 2022 15:31:28 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        aolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>
+Subject: Re: [PATCH v1 net-next 1/1] net: ethernet: ocelot: remove the need
+ for num_stats initializer
+Message-ID: <20220430223128.GB3871052@euler>
+References: <20220429213036.3482333-1-colin.foster@in-advantage.com>
+ <20220429213036.3482333-2-colin.foster@in-advantage.com>
+ <20220430151530.zaf7hyagln5jqjyi@skbuf>
+ <20220430174735.GD3846867@euler>
+ <20220430213344.ifiw2wjtxqd2dqbj@skbuf>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YmyRATzJBQX+wnIP@zx2c4.com>
+In-Reply-To: <20220430213344.ifiw2wjtxqd2dqbj@skbuf>
+X-ClientProxiedBy: BYAPR06CA0046.namprd06.prod.outlook.com
+ (2603:10b6:a03:14b::23) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2582e727-2c08-4227-7513-08da2af92d0f
+X-MS-TrafficTypeDiagnostic: CY4PR1001MB2407:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR1001MB2407226026499AF6E2E289CEA4FF9@CY4PR1001MB2407.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pOeARJ9126AAXrgbd+r/HwHxzNuYJ8iVIlNnrJZSWWC2cpI9TTg0FQ69L0V+umKgMkv8Ljwk8Ik8i653ZjOgYNITnKlpJ8OQk7tZPZbSQUQIL53+/d234yyEWZhCecoUmj5Ef7H1jZluf96Drkex0qPKQ0KBlU25wvZkFy89B+tUyWaQnNN+J2lcKYvyMDHWWQWJ5H67b7lNHd0zRxw7ODCz1z0V8QS3kY8xHZWukQXc4ZcDWMeO+WbK0KBUGHXK7GdsflC2rHhKUksCy8MWgfJRxW+DiZApN1RjUMWpcNqRcNLGEPvuW9K9/SaxZS3pGtIIjZOwbR8G/mZ6rsc9YFI7leabWEU9J35+8RlKUuS/iKpLRSVvr8x5/xjX1nm7RIBHcjMNODnyT86Wu7lslOdZke/RV7+NhdXg+iP/f6OTmmkpwOEf1kLfWsKzk95yMOk9mvfL/eu0NLErzPbLiKSBVYTRgaRdjnrh+l22NhGLu6ELj/Y/7T6zmKXykqsK07mp94jE8K4JjhJa/YoYvfq6yghLO5kY0pVgl6PH0a3fmegk3tcaAHpnxJrIpe0j23X0vtCWcQ03FmucC8Rf57FqQdiTpfBHarU9TYqD2A+8y3Mwazgm4q3tXDZrgPN3EeNEr11qAZTh8WDQke0gnvX/cFYgp+h88UTyM8z86dnw/itu2BkSdYp62WMPCw9++QptwdCeUse+d0yTk/kRjw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(376002)(136003)(396003)(366004)(346002)(39830400003)(38100700002)(38350700002)(7416002)(33716001)(4326008)(66556008)(66476007)(8676002)(66946007)(2906002)(6506007)(5660300002)(44832011)(8936002)(6666004)(83380400001)(26005)(1076003)(9686003)(6512007)(86362001)(52116002)(186003)(6916009)(316002)(54906003)(6486002)(508600001)(33656002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iTO1rS2u95aHIHWiRilHW89Plh9Egf55j51KSpj/jJMDPL6rke/Z+7XBauii?=
+ =?us-ascii?Q?YLT/JzzH/4AcW/q2zCECSbc3hVU36RkYpKDIsBa3TX7Vbcilz1K3QOqRed11?=
+ =?us-ascii?Q?6Op/J9sMKypD11VIehVxLswvV9jXDKnIvslYsv8QiG1jbGo+Uebn9p4OwEFI?=
+ =?us-ascii?Q?n6B7rGXVhdbVlr3ULFjNt0QjEySc67GlnixiR5+6cSSrWPwMs02Sxd8hhVNO?=
+ =?us-ascii?Q?y2g98RDXcazNIahJWyyAqG1GcD92aeQ/yobEcoVnXkYvTK5splbtgnuMzl0j?=
+ =?us-ascii?Q?iZmXS63ogLZ/XQ1eodhEz8vXS54Z27zB2zav7U2+mfe9PH2+Wwow/HGWlZDy?=
+ =?us-ascii?Q?jK+NWU14rbRTRt2zMXKk8a0IK6wl/LpGqgKzp/JfvZMWXsHjNvT+jLqZkgFs?=
+ =?us-ascii?Q?M75bV1V6mJ2ynahdbjhdAnQqr8UUA/5SKCRwzfpgk9QfV67RMrr4IE6CXdum?=
+ =?us-ascii?Q?zPs/ib0PRW/gLP8+U389lU5iQltHBxAQMNHd0KTBXPYvsnXKNB5RTi2ZpUSH?=
+ =?us-ascii?Q?6hKZ36QP9Hq1KCX8u3A9eO+8h8Fht7WYTdQ/2VNMQEKcv7qcBRCVei/5qJ88?=
+ =?us-ascii?Q?ZoeMRhNy98U+g9QZKzzt4jF3R4PtMNmSlbFCbzfNtbt2wxYHOWwU9GzK1Kgy?=
+ =?us-ascii?Q?ZwEo/fMw+MTYZfBVoeeA1IidJMSi6aB8duBdEfUuzhTz5kXYzi1tf8lYdbkL?=
+ =?us-ascii?Q?ZwkMlBwc2oth5afOa3FNbfSAbpPDEPamD2zBPfmmW/oPBNO6Xp9p0qmHXAei?=
+ =?us-ascii?Q?x4b1CNQN0xAv9fyh8CT4+z4ypgcJEc/26oBxxnLsJscKc89DyEqAxk0aSpUl?=
+ =?us-ascii?Q?mGhBlGmDcMJheOcfKH1Jwqs/sfxy2L6i+GxGudfCoQZFWuabbFFSgqucUpAp?=
+ =?us-ascii?Q?6gKJZnBTYCYWGmVtGf8H9fWN2kb4HUtfNivf0x99nmwTG41IKaWHn/jazPJ9?=
+ =?us-ascii?Q?OJutT4rWDj1ifQNg8/zcCYHkoUa4hoGcLTHoZgX8P4oZxrTu5/uLAv9nvvXg?=
+ =?us-ascii?Q?2eap3ZZrrinFicDrRDKU7/OdRcX5+22AxOkJN9ha1gcMCUbY1cjnKMdxIXB2?=
+ =?us-ascii?Q?PVUFJu0qZobpcTxhj9D6/G55hxdV6ahWEsQ31rNFlyJtiREg6+lgLlp8W3xM?=
+ =?us-ascii?Q?oYHYOwLbSrCVqV++hQZAY1CbDCnG7ahncrpyT2uzcpyJnOxFxttZq9GJvNi/?=
+ =?us-ascii?Q?nA7IuqZL6sP9uRDPoWF3h/QUTEsq5Fi/M638NuLljfItg1Bz7w6J/w0s1Abd?=
+ =?us-ascii?Q?lY28ZVx6ro9lPyiJfrKmqkOYDjYN+1UNIrtA15WxENXJrN6s5+dOHEQcFiFa?=
+ =?us-ascii?Q?YPmPvdYGChlK0qd/dbcRi6F43AN1NvcyG+ux8x5Yq754fEWAZfFfceNkiqZv?=
+ =?us-ascii?Q?JoPATOe2EV3bPaqNeAXhZW4ObFqrPp7EOhs8rCPkjFvOIeXdB0eL+U/cd7iW?=
+ =?us-ascii?Q?CQvsbwjBUV3DWSvoemmLA1LSAnFC7lArPMXMLHc0ER7qpKfDB0XJXuaYoIul?=
+ =?us-ascii?Q?95sMS1eb9iq9NT36leJgAaPrh15kOXJZWkCgYY+MqPw+BhaDGAs1P/Fb1aqX?=
+ =?us-ascii?Q?w9lp/cJKoPT0GFELZpGRThZYZOoPZtJWyZxlfS/jjzuKwvps1s0fFj7+bCsb?=
+ =?us-ascii?Q?z7sogBGncRwEyyg1Kv19S0NxhrJy2ZNH0hqn6tdQBnAXlSLpqxwzDGosbcxM?=
+ =?us-ascii?Q?v7fmnZcb8GrJJd7ms4+ojCN3/GcnOhReQ+hwKttRWcSBZ/IrIGWUW3vhGjuk?=
+ =?us-ascii?Q?nXZu4lQBAZRVI0zCblqC6rDjDAWqSdvkIHz3pmOVoTYzk33BUd53?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2582e727-2c08-4227-7513-08da2af92d0f
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2022 22:31:31.8963
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VDtAx3bpoe82+DKZHHHO+89FHftn6Og4OjDGmC795auzqcznpajVYbeHaHNRTdZK9zOOfR1cZLa5LPgO9/mmeS0zw2pxJDsm255HevYqUeE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1001MB2407
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 30, 2022 at 03:29:37AM +0200, Jason A. Donenfeld wrote:
-> Hi Stafford,
-> 
-> On Sat, Apr 30, 2022 at 10:19:03AM +0900, Stafford Horne wrote:
-> > Hi Jason,
+On Sat, Apr 30, 2022 at 09:33:45PM +0000, Vladimir Oltean wrote:
+> On Sat, Apr 30, 2022 at 10:47:35AM -0700, Colin Foster wrote:
+> > > >  struct ocelot_stat_layout {
+> > > >  	u32 offset;
+> > > > +	u32 flags;
+> > > 
+> > > Was it really necessary to add an extra u32 to struct ocelot_stat_layout?
+> > > Couldn't you check for the end of stats by looking at stat->name[0] and
+> > > comparing against the null terminator, for an empty string?
 > > 
-> > On Fri, Apr 29, 2022 at 02:16:48AM +0200, Jason A. Donenfeld wrote:
-> > > As a sanity check, this series makes sure that during early boot, the
-> > > cycle counter isn't returning all zeros. However, OpenRISC's TTCR timer
-> > > can be rather slow and starts out as zero during stages of early boot.
-> > > We know it works, however. So just always add 1 to random_get_entropy()
-> > > so that it doesn't trigger these checks.
-> > 
-> > Just one nit, you might want to qualify that this is related to simulators/qemu:
-> >  * "However, in simulators OpenRISC's TTCR timer can be rather slow..."
+> > I considered this as well. I could either have explicitly added the
+> > flags field, as I did, or implicitly looked for .name == NULL (or
+> > name[0] == '\0' as you suggest).
 > 
-> Nice catch, will do.
+> No, you cannot check for .name == NULL. The "name" member of struct
+> ocelot_stat_layout is most definitely not NULL, but has the value of the
+> memory address of the first char from that array. Contrast this with
+> "char *name", where a NULL comparison can indeed be made.
 
-I was thinking about this, the reason the tick timer is returing 0 is because
-the timer is not started.  It's getting initialized right after the random
-number generator.
+My apologies - I had the structure wrong in my head and thought it was a
+const char *. Checking for NULL is clearly not an option.
 
-A patch like this helps to startup the timer during intial startup, but I am not
-sure its the best thing:
+> 
+> > I figured it might be better to make this an explicit relationship by
+> > way of flags - but I'm happy to change OCELOT_STAT_END and for_each_stat
+> > to rely on .name if you prefer.
+> 
+> I would have understood introducing a flag to mark the last element of
+> an array as special (as opposed to introducing a dummy extra element).
+> But even that calculation would have been wrong.
+> 
+> Before:
+> 
+> pahole -C ocelot_stat_layout drivers/net/ethernet/mscc/ocelot.o
+> struct ocelot_stat_layout {
+>         u32                        offset;               /*     0     4 */
+>         char                       name[32];             /*     4    32 */
+> 
+>         /* size: 36, cachelines: 1, members: 2 */
+>         /* last cacheline: 36 bytes */
+> };
+> 
+> After:
+> 
+> pahole -C ocelot_stat_layout drivers/net/ethernet/mscc/ocelot.o
+> struct ocelot_stat_layout {
+>         u32                        offset;               /*     0     4 */
+>         u32                        flags;                /*     4     4 */
+>         char                       name[32];             /*     8    32 */
+> 
+>         /* size: 40, cachelines: 1, members: 3 */
+>         /* last cacheline: 40 bytes */
+> };
+> 
+> For example, vsc9959_stats_layout has 92 elements (93 with the dummy one
+> you've added now). The overhead of 4 bytes per element amounts to 368
+> extra bytes. Whereas a single dummy element at the end would have
+> amounted to just 36 extra bytes.
+> 
+> With your approach, what we get is 372 extra bytes, so worst of both worlds.
 
-diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
-index 15f1b38dfe03..a9b3b5614e13 100644
---- a/arch/openrisc/kernel/head.S
-+++ b/arch/openrisc/kernel/head.S
-@@ -521,6 +521,9 @@ _start:
-        l.ori   r3,r0,0x1
-        l.mtspr r0,r3,SPR_SR
- 
-+       l.movhi r3,hi(SPR_TTMR_CR)
-+       l.mtspr r0,r3,SPR_TTMR
-+
-        CLEAR_GPR(r1)
-        CLEAR_GPR(r2)
-        CLEAR_GPR(r3)
+Understood. I'll send an update momentarily. I also didn't know about
+'pahole' which looks to be a useful tool!  Thanks again for the
+feedback.
 
-I was testing this by removing the get_cycles() + 1 patch and I get the
-following warning. Starting the tick timer early on in kernel boot helps fix
-this issue as well.
-
-But I wonder:
- - Why don't any other architectures have similar issues.
- - Is there any more correct place to do an early timer kick off.
-
-    exec: /home/shorne/work/openrisc/qemu/build/or1k-softmmu/qemu-system-or1k -cpu or1200 -M or1k-sim -kernel /home/shorne/work/linux/vmlinux -initrd /home/shorne/work/linux/initramfs.cpio.gz -serial mon:stdi
-    o -nographic -gdb tcp::10001 -m 64
-
-    [    0.000000] OpenRISC Linux -- http://openrisc.io
-    [    0.000000] percpu: Embedded 5 pages/cpu s11584 r8192 d21184 u40960
-    [    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 8160
-    [    0.000000] Kernel command line:
-    [    0.000000] Dentry cache hash table entries: 8192 (order: 2, 32768 bytes, linear)
-    [    0.000000] Inode-cache hash table entries: 4096 (order: 1, 16384 bytes, linear)
-    [    0.000000] Sorting __ex_table...
-    [    0.000000] mem auto-init: stack:all(zero), heap alloc:off, heap free:off
-    [    0.000000] mem_init_done ...........................................
-    [    0.000000] Memory: 57424K/65536K available (4595K kernel code, 157K rwdata, 976K rodata, 195K init, 89K bss, 8112K reserved, 0K cma-reserved)
-    [    0.000000] rcu: Hierarchical RCU implementation.
-    [    0.000000] rcu:     RCU restricting CPUs from NR_CPUS=2 to nr_cpu_ids=1.
-    [    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 10 jiffies.
-    [    0.000000] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=1
-    [    0.000000] NR_IRQS: 32, nr_irqs: 32, preallocated irqs: 0
-
-(Warning for get_cycles returning 0)
-
-    [    0.000000] ------------[ cut here ]------------
-    [    0.000000] WARNING: CPU: 0 PID: 0 at drivers/char/random.c:1016 rand_initialize+0x15c/0x18c
-    [    0.000000] Missing cycle counter and fallback timer; RNG entropy collection will consequently suffer.
-    [    0.000000] Modules linked in:
-    [    0.000000] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.18.0-rc4-17398-gc576c8ccdc30-dirty #724
-    [    0.000000] Call trace:
-    [    0.000000] [<(ptrval)>] dump_stack_lvl+0x78/0xa0
-    [    0.000000] [<(ptrval)>] dump_stack+0x1c/0x2c
-    [    0.000000] [<(ptrval)>] __warn+0x100/0x13c
-    [    0.000000] [<(ptrval)>] ? rand_initialize+0x15c/0x18c
-    [    0.000000] [<(ptrval)>] warn_slowpath_fmt+0x84/0x9c
-    [    0.000000] [<(ptrval)>] rand_initialize+0x15c/0x18c
-    [    0.000000] [<(ptrval)>] ? start_kernel+0x5dc/0x7c4
-    [    0.000000] [<(ptrval)>] ? start_kernel+0x0/0x7c4
-    [    0.000000] ---[ end trace 0000000000000000 ]---
-
-(Start of OpenRISC tick timer)
-
-    [    0.000000] clocksource: openrisc_timer: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 95563022313 ns
-    [    0.000000] 40.00 BogoMIPS (lpj=200000)
-    [    0.000000] pid_max: default: 32768 minimum: 301
-    [    0.000000] random: get_random_bytes called from net_ns_init+0x94/0x3f8 with crng_init=0
-    [    0.000000] Mount-cache hash table entries: 2048 (order: 0, 8192 bytes, linear)
-    [    0.000000] Mountpoint-cache hash table entries: 2048 (order: 0, 8192 bytes, linear)
-    [    0.010000] rcu: Hierarchical SRCU implementation.
-
-
+> 
+> > > >  	char name[ETH_GSTRING_LEN];
+> > > >  };
+> > > >  
+> > > > +#define OCELOT_STAT_END { .flags = OCELOT_STAT_FLAG_END }
