@@ -2,119 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 16:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54336C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 16:35:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383132AbiD3QfP (ORCPT
+        id S1383120AbiD3Qia (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 12:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55828 "EHLO
+        Sat, 30 Apr 2022 12:38:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383104AbiD3QfC (ORCPT
+        with ESMTP id S237942AbiD3QiZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 12:35:02 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A3218355;
-        Sat, 30 Apr 2022 09:31:39 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id i38so19433068ybj.13;
-        Sat, 30 Apr 2022 09:31:39 -0700 (PDT)
+        Sat, 30 Apr 2022 12:38:25 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9C36FF72;
+        Sat, 30 Apr 2022 09:35:03 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id n8so9528063plh.1;
+        Sat, 30 Apr 2022 09:35:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VQBIwY6gYucmpK0m5q+UiClACSjy1lrKIL+7r3g96NE=;
-        b=mJewPIEQt6k7No6Cs9mgMKMZpiDMbHOCzpdmu9Hd2D9DK1XXla4qkJeEslHt343F64
-         +fFfV++PExhSKg+0Bf478eXbqavUUHVfys017SvsqXZcWG2hLN4jjpGLjNpYDXC2w/3/
-         RYIrLgVeRrda0EfPcWSmPMG+OhHTXlfLUsm1FMufxwwgFOsE7TbNXbwWUl8yhWVPzj4A
-         sLqiOyLTwLyKxW0lgcKEWr5HEmhub0795GKjfrt1IrP4laVRkDo/fjxdPquNAbyww+8h
-         xEos337yRLnzvj3kvKVdIS7id0MeXg2kUaebuvXcryseCVuCyfXBP/FLxWFXyTTQwR7/
-         2Nhg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EyGOhUWTiu5u131oTuoKOtQFl2U6BDUbmbvuOTx3toc=;
+        b=Zuuwy2M6G2TwFQUNnapePqiqchEQ9b1DK7KVD30MpVWCQCOjgd2YOrl9FAD9LiaJnY
+         IDl4V5NC0EGSiZWubq9qnjmrDkhVcX6TVMFGInVD68debHAM8Ku4TJTNb8YoWqwzPlpb
+         24XNGR3crfXm/eytqO6nEM89AVC9XuOaJtvN2sHdIUsk0ZI1E2kBDIYy6VU31pemikrT
+         EsJac+JYKxGk//S71HMS+Cm9v+NAocdh5qutNBLoUfGyl8X6XOjPoRg0Kfbe7W8QeNzg
+         T3J3ndqs16qdEAkvTJz96ayfh+cTPgCxj7r3nb9xg5sklbySy2goTWsVL/vSj7eaR9/9
+         nVXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VQBIwY6gYucmpK0m5q+UiClACSjy1lrKIL+7r3g96NE=;
-        b=Rrh/OE/j9WDMceOUjrlT6lHKB5gSJgc6bLA/oW5Ci8n2aw9upEUORWAG16ICMLp6v8
-         gCtIdp6Sm7A5t1RoyH2J+maQfqcIQHjK8OLUO+t3PnQ7IwQ+OFKRXIeLvCMrXp3P+Xh0
-         iqYa1XMAprj+ZrnEKeQKBMyXtUEfz2AgAUe9UZJUOyIEm8nAHc16JcftH/XXn56NaODL
-         4mKTnrHoYz5HyMTuIFF9QRLE2zAfps7xFrm6nN/fjD7VVXBnI57si+hmYdJiMGfjMIqf
-         sS59zsbRMI4z+SPmxJ2nPkyhzQcXnehp+TGKf0ATTkJTOkKkLFe9Ilc6IKnvA3mvMZdm
-         A9yw==
-X-Gm-Message-State: AOAM533zg3aNKSHXCx1/ZoyuRKcCWu4/+Nuf/0p3xrsG220/JoEbcJ6f
-        xHZiecYfjwykmdgZrH3YPug3k/JocJpAuSlA6UA79ubZG6Y=
-X-Google-Smtp-Source: ABdhPJyP1o+RQhfe6Taz8kwGwJR4bz9ro27WjlM3uAynYTPZWAZ04EdNCK1TxHTsM4b3MKj7CIqpMywzaDRHxrbbo2M=
-X-Received: by 2002:a5b:dc8:0:b0:624:a898:dea6 with SMTP id
- t8-20020a5b0dc8000000b00624a898dea6mr4168113ybr.600.1651336298505; Sat, 30
- Apr 2022 09:31:38 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EyGOhUWTiu5u131oTuoKOtQFl2U6BDUbmbvuOTx3toc=;
+        b=gj8j4vKs151M4MWqi6LGmifEo4sw+pBxz54yYitlW8XsFHFtBaRM7gyLjBRT/qHu5g
+         EOiR3iPhF9ck7LgqEVH/cdjHQZgHS1c2VjMDs4a+SFnY0D0Bf4JhGv+i0RGJEA+uj0iK
+         DdHg1dvWT6FYcP6+P7DbS+H8qfw+oex6PaRWc99o2CUZphfw0KgYx3DVfoTpUJJPLdWH
+         xtmOllGgn3BNCSSchNDlPCCXVotNibUydPj7Upx/l/IUqODeLwHzhFgCT5HcftrdkuMX
+         y7Z1mQAuBa7yf5o//p2Vb5nb9C0x7BfLJKp9F/K365XNaKA0rWTkZzv8D52nqDqcFftx
+         Zyhg==
+X-Gm-Message-State: AOAM533yt1Cfw+e/qUcju8Qsd8iBo9SsuQglqbvMGo+WId74+TMZiniZ
+        sQyIGHt/+dL9FYGeJPj72Hc=
+X-Google-Smtp-Source: ABdhPJzpINsjuBEKWL2ROktmfsUJ53AY3PCTX+D41hWSE2ffksbSXCdPFcmTn6RkP6Uz/RB1YfHK7A==
+X-Received: by 2002:a17:90b:4a49:b0:1d2:adce:8a89 with SMTP id lb9-20020a17090b4a4900b001d2adce8a89mr9816215pjb.43.1651336503290;
+        Sat, 30 Apr 2022 09:35:03 -0700 (PDT)
+Received: from guoguo-omen.lan ([2001:250:3000:7000:c0f1:53a1:ea79:5d2f])
+        by smtp.gmail.com with ESMTPSA id t13-20020a65608d000000b003c14af50606sm8401152pgu.30.2022.04.30.09.34.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 Apr 2022 09:35:02 -0700 (PDT)
+From:   Chuanhong Guo <gch981213@gmail.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Chuanhong Guo <gch981213@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        linux-mediatek@lists.infradead.org (moderated list:ARM/Mediatek SoC
+        support), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] arm: dts: mediatek: add mtk-snfi for mt7629
+Date:   Sun,  1 May 2022 00:34:52 +0800
+Message-Id: <20220430163453.537061-1-gch981213@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220228233057.1140817-1-pgwipeout@gmail.com> <Yh1lboz7VDiuYuZV@shell.armlinux.org.uk>
- <CAMdYzYrNvUUMom4W4uD9yf9LtFK1h5Xw+9GYc54hB5+iqVmJtw@mail.gmail.com>
- <CAMdYzYrFuMw4aj_9L698ZhL7Xqy8=NeXhy9HDz4ug-v3=f4fpw@mail.gmail.com> <Ym1bWHNj0p6L9lY8@lunn.ch>
-In-Reply-To: <Ym1bWHNj0p6L9lY8@lunn.ch>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Sat, 30 Apr 2022 12:31:27 -0400
-Message-ID: <CAMdYzYq41TndbJK-=ah31=vECisgRbPmtFYwOLQQ7yn4L=JVYw@mail.gmail.com>
-Subject: Re: [PATCH v1] net: phy: fix motorcomm module automatic loading
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 30, 2022 at 11:52 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > Good Morning,
-> >
-> > After testing various configurations I found what is actually
-> > happening here. When libphy is built in but the phy drivers are
-> > modules and not available in the initrd, the generic phy driver binds
-> > here. This allows the phy to come up but it is not functional.
->
-> What MAC are you using?
+This patch adds device-tree nodes for the MTK SPI-NAND Flash Interface
+to mt7629 device tree.
 
-Specifically Motorcomm, but I've discovered it can happen with any of
-the phy drivers with the right kconfig.
+Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+---
+ arch/arm/boot/dts/mt7629.dtsi | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
->
-> Why is you interface being brought up by the initramfs? Are you using
-> NFS root from within the initramfs?
+diff --git a/arch/arm/boot/dts/mt7629.dtsi b/arch/arm/boot/dts/mt7629.dtsi
+index 46fc236e1b89..6f231e2ed68f 100644
+--- a/arch/arm/boot/dts/mt7629.dtsi
++++ b/arch/arm/boot/dts/mt7629.dtsi
+@@ -286,6 +286,27 @@ spi: spi@1100a000 {
+ 			status = "disabled";
+ 		};
+ 
++		snfi: spi@1100d000 {
++			compatible = "mediatek,mt7629-snand";
++			reg = <0x1100d000 0x1000>;
++			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_LOW>;
++			clocks = <&pericfg CLK_PERI_NFI_PD>, <&pericfg CLK_PERI_SNFI_PD>;
++			clock-names = "nfi_clk", "pad_clk";
++			nand-ecc-engine = <&bch>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		bch: ecc@1100e000 {
++			compatible = "mediatek,mt7622-ecc";
++			reg = <0x1100e000 0x1000>;
++			interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_LOW>;
++			clocks = <&pericfg CLK_PERI_NFIECC_PD>;
++			clock-names = "nfiecc_clk";
++			status = "disabled";
++		};
++
+ 		qspi: spi@11014000 {
+ 			compatible = "mediatek,mt7629-nor",
+ 				     "mediatek,mt8173-nor";
+-- 
+2.35.1
 
-This was discovered with embedded programming. It's common to have a
-small initramfs, or forgo an initramfs altogether. Another cause is a
-mismatch in kernel config where phylib is built in because of a
-dependency, but the rest of the phy drivers are modular.
-The key is:
-- phylib is built in
-- ethernet driver is built in
-- the phy driver is a module
-- modules aren't available at probe time (for any reason).
-
-In this case phylib assumes there is no driver, when the vast majority
-of phys now have device specific drivers.It seems this is an unsafe
-assumption as this means there is now an implicit dependency of the
-device specific phy drivers and phylib. It just so happens to work
-simply because both broadcom and realtek, some of the more common
-phys, have explicit dependencies elsewhere that cause them to be built
-in as well.
-
->
-> What normally happens is that the kernel loads, maybe with the MAC
-> driver and phylib loading, as part of the initramfs. The other modules
-> in the initramfs allow the root filesystem to be found, mounted, and
-> pivoted into it. The MAC driver is then brought up by the initscripts,
-> which causes phylib to request the needed PHY driver modules, it loads
-> and all is good.
->
-> If you are using NFS root, then the load of the PHY driver happens
-> earlier, inside the initramfs. If this is you situation, maybe the
-> correct fix is to teach the initramfs tools to include the PHY drivers
-> when NFS root is being used?
->
->      Andrew
