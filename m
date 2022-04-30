@@ -2,88 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32CBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 12:10:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC2DDC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 12:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237570AbiD3MNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 08:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49036 "EHLO
+        id S241632AbiD3MQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Apr 2022 08:16:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232383AbiD3MNj (ORCPT
+        with ESMTP id S239527AbiD3MQ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 08:13:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C577659;
-        Sat, 30 Apr 2022 05:10:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sat, 30 Apr 2022 08:16:56 -0400
+Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [IPv6:2001:4b7a:2000:18::168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75FCA66CAD;
+        Sat, 30 Apr 2022 05:13:32 -0700 (PDT)
+Received: from SoMainline.org (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 97B90CE02C7;
-        Sat, 30 Apr 2022 12:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9E2A6C385AE;
-        Sat, 30 Apr 2022 12:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651320612;
-        bh=lh6YsWWNzTF+K97GRW8ZIrWk45vWopwIEJRFY+ww1RE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Ll8X7x8Km5uESLL4dQBsbreGwaDFmcPQGz/eqWe6gStjgYt1jwA5HI8ssi6/h4SUx
-         1AsdOhgj6UHlqFDhyAnpMUb23Xu56rMqoACG6fD2zKKPZGMwCN0RjbvEa5kFwwzqWh
-         a/nASF7luILFeaY6cbbPE8O/CnXs/NvExPa3skHiViyX8Mv1HpiT0qq74jV8az8xP4
-         01+O7Jv3XH2jHLaBB6Rf5OMpWkQJJ3OcfFm/rV7RV46ZVkR2D7dbNE3yQ8ANrcEHmX
-         kenFGoPgk+zwjV+W+hNjl+naixZjWe1+v2jM+iNx17BXP4ssoU/Lx+6TbXSpBBvPzy
-         st+AIxiUkjX9A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7E9DBF03841;
-        Sat, 30 Apr 2022 12:10:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id DC5AD3F7B7;
+        Sat, 30 Apr 2022 14:13:29 +0200 (CEST)
+Date:   Sat, 30 Apr 2022 14:13:28 +0200
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Pavel Machek <pavel@ucw.cz>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v14 1/2] dt-bindings: leds: Add Qualcomm Light Pulse
+ Generator binding
+Message-ID: <20220430121328.35cycpztigw3v7q3@SoMainline.org>
+References: <20220303214300.59468-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] generic net and ipv6 minor optimisations
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165132061250.13332.11733885633402337969.git-patchwork-notify@kernel.org>
-Date:   Sat, 30 Apr 2022 12:10:12 +0000
-References: <cover.1651141755.git.asml.silence@gmail.com>
-In-Reply-To: <cover.1651141755.git.asml.silence@gmail.com>
-To:     Pavel Begunkov <asml.silence@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        dsahern@kernel.org, edumazet@google.com,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220303214300.59468-1-bjorn.andersson@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Thu, 28 Apr 2022 11:58:43 +0100 you wrote:
-> 1-3 inline simple functions that only reshuffle arguments possibly adding
-> extra zero args, and call another function. It was benchmarked before with
-> a bunch of extra patches, see for details
+On 2022-03-03 13:42:59, Bjorn Andersson wrote:
+> This adds the binding document describing the three hardware blocks
+> related to the Light Pulse Generator found in a wide range of Qualcomm
+> PMICs.
 > 
-> https://lore.kernel.org/netdev/cover.1648981570.git.asml.silence@gmail.com/
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
 > 
-> It may increase the binary size, but it's the right thing to do and at least
-> without modules it actually sheds some bytes for some standard-ish config.
+> Changes since v13:
+> - None
 > 
-> [...]
+> Changes since v12:
+> - None
+> 
+>  .../bindings/leds/leds-qcom-lpg.yaml          | 173 ++++++++++++++++++
+>  1 file changed, 173 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+> new file mode 100644
+> index 000000000000..336bd8e10efd
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+> @@ -0,0 +1,173 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/leds/leds-qcom-lpg.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm Light Pulse Generator
+> +
+> +maintainers:
+> +  - Bjorn Andersson <bjorn.andersson@linaro.org>
+> +
+> +description: >
+> +  The Qualcomm Light Pulse Generator consists of three different hardware blocks;
+> +  a ramp generator with lookup table, the light pulse generator and a three
+> +  channel current sink. These blocks are found in a wide range of Qualcomm PMICs.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - qcom,pm8150b-lpg
+> +      - qcom,pm8150l-lpg
+> +      - qcom,pm8916-pwm
+> +      - qcom,pm8941-lpg
+> +      - qcom,pm8994-lpg
+> +      - qcom,pmc8180c-lpg
+> +      - qcom,pmi8994-lpg
+> +      - qcom,pmi8998-lpg
+> +
+> +  "#pwm-cells":
+> +    const: 2
+> +
+> +  "#address-cells":
+> +    const: 1
+> +
+> +  "#size-cells":
+> +    const: 0
+> +
+> +  qcom,power-source:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description:
+> +      power-source used to drive the output, as defined in the datasheet.
+> +      Should be specified if the TRILED block is present
 
-Here is the summary with links:
-  - [net-next,1/5] net: inline sock_alloc_send_skb
-    https://git.kernel.org/netdev/net-next/c/de32bc6aad09
-  - [net-next,2/5] net: inline skb_zerocopy_iter_dgram
-    https://git.kernel.org/netdev/net-next/c/657dd5f97b2e
-  - [net-next,3/5] net: inline dev_queue_xmit()
-    https://git.kernel.org/netdev/net-next/c/c526fd8f9f4f
-  - [net-next,4/5] ipv6: help __ip6_finish_output() inlining
-    https://git.kernel.org/netdev/net-next/c/4b143ed7dde5
-  - [net-next,5/5] ipv6: refactor ip6_finish_output2()
-    https://git.kernel.org/netdev/net-next/c/58f71be58b87
+Upon closer inspection this is only true if the TRILED block also has a
+SRC register which appears to be optional.  Is it worth mentioning that
+here too?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+- Marijn
 
-
+> +    enum: [0, 1, 3]
+> +
+> +  qcom,dtest:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-matrix
+> +    description: >
+> +      A list of integer pairs, where each pair represent the dtest line the
+> +      particular channel should be connected to and the flags denoting how the
+> +      value should be outputed, as defined in the datasheet. The number of
+> +      pairs should be the same as the number of channels.
+> +    items:
+> +      items:
+> +        - description: dtest line to attach
+> +        - description: flags for the attachment
+> +
+> +  multi-led:
+> +    type: object
+> +    $ref: leds-class-multicolor.yaml#
+> +    properties:
+> +      "#address-cells":
+> +        const: 1
+> +
+> +      "#size-cells":
+> +        const: 0
+> +
+> +    patternProperties:
+> +      "^led@[0-9a-f]$":
+> +        type: object
+> +        $ref: common.yaml#
+> +
+> +patternProperties:
+> +  "^led@[0-9a-f]$":
+> +    type: object
+> +    $ref: common.yaml#
+> +
+> +    properties:
+> +      reg: true
+> +
+> +    required:
+> +      - reg
+> +
+> +required:
+> +  - compatible
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/leds/common.h>
+> +
+> +    led-controller {
+> +      compatible = "qcom,pmi8994-lpg";
+> +
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      qcom,power-source = <1>;
+> +
+> +      qcom,dtest = <0 0>,
+> +                   <0 0>,
+> +                   <0 0>,
+> +                   <4 1>;
+> +
+> +      led@1 {
+> +        reg = <1>;
+> +        color = <LED_COLOR_ID_GREEN>;
+> +        function = LED_FUNCTION_INDICATOR;
+> +        function-enumerator = <1>;
+> +      };
+> +
+> +      led@2 {
+> +        reg = <2>;
+> +        color = <LED_COLOR_ID_GREEN>;
+> +        function = LED_FUNCTION_INDICATOR;
+> +        function-enumerator = <0>;
+> +        default-state = "on";
+> +      };
+> +
+> +      led@3 {
+> +        reg = <3>;
+> +        color = <LED_COLOR_ID_GREEN>;
+> +        function = LED_FUNCTION_INDICATOR;
+> +        function-enumerator = <2>;
+> +      };
+> +
+> +      led@4 {
+> +        reg = <4>;
+> +        color = <LED_COLOR_ID_GREEN>;
+> +        function = LED_FUNCTION_INDICATOR;
+> +        function-enumerator = <3>;
+> +      };
+> +    };
+> +  - |
+> +    #include <dt-bindings/leds/common.h>
+> +
+> +    led-controller {
+> +      compatible = "qcom,pmi8994-lpg";
+> +
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      qcom,power-source = <1>;
+> +
+> +      multi-led {
+> +        color = <LED_COLOR_ID_RGB>;
+> +        function = LED_FUNCTION_STATUS;
+> +
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        led@1 {
+> +          reg = <1>;
+> +          color = <LED_COLOR_ID_RED>;
+> +        };
+> +
+> +        led@2 {
+> +          reg = <2>;
+> +          color = <LED_COLOR_ID_GREEN>;
+> +        };
+> +
+> +        led@3 {
+> +          reg = <3>;
+> +          color = <LED_COLOR_ID_BLUE>;
+> +        };
+> +      };
+> +    };
+> +  - |
+> +    pwm-controller {
+> +      compatible = "qcom,pm8916-pwm";
+> +      #pwm-cells = <2>;
+> +    };
+> +...
+> -- 
+> 2.33.1
+> 
