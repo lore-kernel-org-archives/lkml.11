@@ -2,95 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31FA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 13:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C41C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 14:05:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242131AbiD3ODD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 10:03:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53728 "EHLO
+        id S242137AbiD3OJD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Apr 2022 10:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237401AbiD3OC7 (ORCPT
+        with ESMTP id S242337AbiD3OIw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 10:02:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A57734131B
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 06:59:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651327175;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=AYgeIia3HvIu7L71WHNoppZ1JjXVMeC0Eo6Cyw1F8QU=;
-        b=dth36p/AoLbPyZLwqQfkrFXWdq2zj020M90MSNFWINsrtf1TlJRiADhnqTRkQf5Wzf26wB
-        9n4CwvM5usxdCbRsNGxlDs0WQcSRkj05y49et79xGvvtaSnbkn39PYxkvRIStlr8DH8L3P
-        46gJnuXBSIa6rNkllBiahi1mPyIJwjM=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-643-HLeA0g9iNZmG1H7l9XNU9w-1; Sat, 30 Apr 2022 09:59:34 -0400
-X-MC-Unique: HLeA0g9iNZmG1H7l9XNU9w-1
-Received: by mail-qt1-f198.google.com with SMTP id x5-20020a05622a000500b002f37cb8b803so7565514qtw.9
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 06:59:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AYgeIia3HvIu7L71WHNoppZ1JjXVMeC0Eo6Cyw1F8QU=;
-        b=dpTT99QsUQbwVFzfTnu45NvEvfu0JUVpR7N8NHAUOYY1ZfwnCNeoeIsWPcNbqUS4c5
-         cZ0Bn6rAWA8ZQRyMuNGleQSu1SidCR/9k5v7wTNjXAJWpoJYLoLYrw27uT7b2+HrzsV6
-         RNWWSzZvub7LiAz35IrnKqSELZOEG/+IwfIrK+oFV1cZG11r0I0kGrVXfAyuLofGdJ2l
-         MH2q8NzTgu6v/d+Yd8Y2+J84c39v7sB8JvkdpRQs2Gb/RcxHvlgf3TceEuDEwAjvqU1w
-         W7QJb/I9OikdB6comW07WadegVZGNqn6Ci9fxxjgT4HT3TPZhbcceRBXaVn39kA3O0aw
-         sS9g==
-X-Gm-Message-State: AOAM532tz7XINGpnPQqo6LVzwIvusY51Yfrj9mfL0GvG7U14k3OzTiPF
-        RHRbgt3xP0uUChhRzELUpKeCiwctJT2KNRoUqlGQRPD0OVP00auCJ81xlV7b/G1ehrHvxlbm+/V
-        XFmMpc7GCk8UqZNakCZB52CpH
-X-Received: by 2002:a05:620a:4310:b0:67e:8460:5a10 with SMTP id u16-20020a05620a431000b0067e84605a10mr2711796qko.636.1651327173703;
-        Sat, 30 Apr 2022 06:59:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwel1nbYUpx75kvKYqPktcEIXOiZkT9zBcIFtMqASkqbyos8K4Eg31Wn+Eenxuxq7PU31u5AQ==
-X-Received: by 2002:a05:620a:4310:b0:67e:8460:5a10 with SMTP id u16-20020a05620a431000b0067e84605a10mr2711793qko.636.1651327173485;
-        Sat, 30 Apr 2022 06:59:33 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id 133-20020a37088b000000b0069fc20ad38bsm1231516qki.127.2022.04.30.06.59.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Apr 2022 06:59:32 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     len.brown@intel.com
-Cc:     linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] tools/power x86_energy_perf_policy: close opened file
-Date:   Sat, 30 Apr 2022 09:59:25 -0400
-Message-Id: <20220430135925.1657374-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        Sat, 30 Apr 2022 10:08:52 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16DE5338B8;
+        Sat, 30 Apr 2022 07:05:27 -0700 (PDT)
+Received: from wf0416.dip.tu-dresden.de ([141.76.181.160] helo=phil.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1nknid-0001W7-8u; Sat, 30 Apr 2022 16:05:07 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     linux-mediatek@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        Frank Wunderlich <linux@fw-web.de>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [RFC v2 4/4] arm64: dts: rockchip: Add mt7531 dsa node to BPI-R2-Pro board
+Date:   Sat, 30 Apr 2022 16:05:06 +0200
+Message-ID: <3557249.iIbC2pHGDl@phil>
+In-Reply-To: <20220430130347.15190-5-linux@fw-web.de>
+References: <20220430130347.15190-1-linux@fw-web.de> <20220430130347.15190-5-linux@fw-web.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The cppcheck reports this issue
-x86_energy_perf_policy.c:1244]: (error) Resource leak: fp
+Am Samstag, 30. April 2022, 15:03:47 CEST schrieb Frank Wunderlich:
+> From: Frank Wunderlich <frank-w@public-files.de>
+> 
+> Add Device Tree node for mt7531 switch connected to gmac0.
+> 
+> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+> ---
+> v2:
+> - drop status=disabled
+> ---
+>  .../boot/dts/rockchip/rk3568-bpi-r2-pro.dts   | 48 +++++++++++++++++++
+>  1 file changed, 48 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
+> index ed2f2bd9a016..f0ffbe818170 100644
+> --- a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
+> +++ b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
+> @@ -437,6 +437,54 @@ &i2c5 {
+>  	status = "disabled";
+>  };
+>  
+> +&mdio0 {
+> +	#address-cells = <1>;
+> +	#size-cells = <0>;
+> +
+> +	switch@0 {
+> +		compatible = "mediatek,mt7531";
+> +		reg = <0>;
+> +
+> +		ports {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			port@1 {
+> +				reg = <1>;
+> +				label = "lan0";
+> +			};
+> +
+> +			port@2 {
+> +				reg = <2>;
+> +				label = "lan1";
+> +			};
+> +
+> +			port@3 {
+> +				reg = <3>;
+> +				label = "lan2";
+> +			};
+> +
+> +			port@4 {
+> +				reg = <4>;
+> +				label = "lan3";
+> +			};
+> +
+> +			port@5 {
+> +				reg = <5>;
+> +				label = "cpu";
+> +				ethernet = <&gmac0>;
+> +				phy-mode = "rgmii";
+- phy-mode: String, the following values are acceptable for port labeled
+	"cpu":
+	If compatible mediatek,mt7530 or mediatek,mt7621 is set,
+	must be either "trgmii" or "rgmii"
+	If compatible mediatek,mt7531 is set,
+	must be either "sgmii", "1000base-x" or "2500base-x"
 
-When a file is opened with fopen it should be closed with fclose.
-So close it.
+So I guess the phy-mode needs to change?
 
-Fixes: 4beec1d75196 ("tools/power x86_energy_perf_policy: support HWP.EPP")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- tools/power/x86/x86_energy_perf_policy/x86_energy_perf_policy.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/tools/power/x86/x86_energy_perf_policy/x86_energy_perf_policy.c b/tools/power/x86/x86_energy_perf_policy/x86_energy_perf_policy.c
-index 5fd9e594079c..0ed9ae66236d 100644
---- a/tools/power/x86/x86_energy_perf_policy/x86_energy_perf_policy.c
-+++ b/tools/power/x86/x86_energy_perf_policy/x86_energy_perf_policy.c
-@@ -1239,6 +1239,7 @@ unsigned int get_pkg_num(int cpu)
- 
- 	fp = fopen_or_die(pathname, "r");
- 	retval = fscanf(fp, "%d\n", &pkg);
-+	fclose(fp);
- 	if (retval != 1)
- 		errx(1, "%s: failed to parse", pathname);
- 	return pkg;
--- 
-2.27.0
+Heiko
+
+> +
+> +				fixed-link {
+> +					speed = <1000>;
+> +					full-duplex;
+> +					pause;
+> +				};
+> +			};
+> +		};
+> +	};
+> +};
+> +
+>  &mdio1 {
+>  	rgmii_phy1: ethernet-phy@0 {
+>  		compatible = "ethernet-phy-ieee802.3-c22";
+> 
+
+
+
 
