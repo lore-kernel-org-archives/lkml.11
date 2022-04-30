@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 411B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 16:24:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C82CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 16:24:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377122AbiD3Q1a (ORCPT
+        id S1383052AbiD3Q1f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 12:27:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33334 "EHLO
+        Sat, 30 Apr 2022 12:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243253AbiD3Q1W (ORCPT
+        with ESMTP id S1379413AbiD3Q1Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 12:27:22 -0400
+        Sat, 30 Apr 2022 12:27:24 -0400
 Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [5.144.164.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55D75F8D3;
-        Sat, 30 Apr 2022 09:23:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5245F8DB
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 09:24:02 -0700 (PDT)
 Received: from localhost.localdomain (abxh26.neoplus.adsl.tpnet.pl [83.9.1.26])
-        by m-r2.th.seeweb.it (Postfix) with ESMTPA id 79A5E3F728;
-        Sat, 30 Apr 2022 18:23:57 +0200 (CEST)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPA id 072013F729;
+        Sat, 30 Apr 2022 18:23:59 +0200 (CEST)
 From:   Konrad Dybcio <konrad.dybcio@somainline.org>
 To:     ~postmarketos/upstreaming@lists.sr.ht
 Cc:     martin.botka@somainline.org,
@@ -31,221 +31,106 @@ Cc:     martin.botka@somainline.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 01/14] arm64: dts: qcom: msm8998*: Fix TLMM and pin nodes
-Date:   Sat, 30 Apr 2022 18:23:39 +0200
-Message-Id: <20220430162353.607709-1-konrad.dybcio@somainline.org>
+Subject: [PATCH 03/14] arm64: dts: qcom: msm8998-laptops: Clean up DTs
+Date:   Sat, 30 Apr 2022 18:23:41 +0200
+Message-Id: <20220430162353.607709-3-konrad.dybcio@somainline.org>
 X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220430162353.607709-1-konrad.dybcio@somainline.org>
+References: <20220430162353.607709-1-konrad.dybcio@somainline.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the unnecessary level of indentation, commonize SDC2 pins and notice
-that SDCC2_CD_ON and _OFF is identical, deduplicate it!
-
-Also, remove some unnecessary overrides and use decimal values in #-cells
+Reorder properties to match new laptop DTs, change hex to dec.
 
 Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 ---
- .../dts/qcom/msm8998-asus-novago-tp370ql.dts  |  9 ---
- .../boot/dts/qcom/msm8998-clamshell.dtsi      | 12 ++-
- arch/arm64/boot/dts/qcom/msm8998-mtp.dtsi     |  4 +-
- .../dts/qcom/msm8998-sony-xperia-yoshino.dtsi |  4 +-
- arch/arm64/boot/dts/qcom/msm8998.dtsi         | 75 ++++++-------------
- 5 files changed, 33 insertions(+), 71 deletions(-)
+ .../boot/dts/qcom/msm8998-asus-novago-tp370ql.dts  | 14 ++++++++------
+ arch/arm64/boot/dts/qcom/msm8998-hp-envy-x2.dts    |  9 +++++----
+ .../boot/dts/qcom/msm8998-lenovo-miix-630.dts      |  9 +++++----
+ 3 files changed, 18 insertions(+), 14 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/qcom/msm8998-asus-novago-tp370ql.dts b/arch/arm64/boot/dts/qcom/msm8998-asus-novago-tp370ql.dts
-index e204b7050441..37f994351565 100644
+index 37f994351565..102f3e9a79a1 100644
 --- a/arch/arm64/boot/dts/qcom/msm8998-asus-novago-tp370ql.dts
 +++ b/arch/arm64/boot/dts/qcom/msm8998-asus-novago-tp370ql.dts
-@@ -37,12 +37,3 @@ keyboard@3a {
- &sdhc2 {
- 	cd-gpios = <&tlmm 95 GPIO_ACTIVE_HIGH>;
- };
--
--&tlmm {
--	touchpad: touchpad {
--		config {
--			pins = "gpio123";
--			bias-pull-up;
--		};
--	};
--};
-diff --git a/arch/arm64/boot/dts/qcom/msm8998-clamshell.dtsi b/arch/arm64/boot/dts/qcom/msm8998-clamshell.dtsi
-index b3b352530d76..6e70c1ead5e1 100644
---- a/arch/arm64/boot/dts/qcom/msm8998-clamshell.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8998-clamshell.dtsi
-@@ -289,11 +289,9 @@ &remoteproc_mss {
- &tlmm {
- 	gpio-reserved-ranges = <0 4>, <81 4>;
+@@ -16,20 +16,22 @@ &blsp1_i2c6 {
  
--	touchpad: touchpad {
--		config {
--			pins = "gpio123";
--			bias-pull-up;           /* pull up */
--		};
-+	touchpad: touchpad-pin {
-+		pins = "gpio123";
-+		bias-pull-up;
+ 	touchpad@15 {
+ 		compatible = "hid-over-i2c";
+-		interrupt-parent = <&tlmm>;
+-		interrupts = <0x7b IRQ_TYPE_LEVEL_LOW>;
+ 		reg = <0x15>;
+-		hid-descr-addr = <0x0001>;
+-
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&touchpad>;
++
++		interrupt-parent = <&tlmm>;
++		interrupts = <123 IRQ_TYPE_LEVEL_LOW>;
++
++		hid-descr-addr = <0x0001>;
+ 	};
+ 
+ 	keyboard@3a {
+ 		compatible = "hid-over-i2c";
+-		interrupt-parent = <&tlmm>;
+-		interrupts = <0x25 IRQ_TYPE_LEVEL_LOW>;
+ 		reg = <0x3a>;
++		interrupt-parent = <&tlmm>;
++		interrupts = <37 IRQ_TYPE_LEVEL_LOW>;
++
+ 		hid-descr-addr = <0x0001>;
+ 	};
+ };
+diff --git a/arch/arm64/boot/dts/qcom/msm8998-hp-envy-x2.dts b/arch/arm64/boot/dts/qcom/msm8998-hp-envy-x2.dts
+index 1eb406b43fd7..38389c6a3f68 100644
+--- a/arch/arm64/boot/dts/qcom/msm8998-hp-envy-x2.dts
++++ b/arch/arm64/boot/dts/qcom/msm8998-hp-envy-x2.dts
+@@ -16,13 +16,14 @@ &blsp1_i2c6 {
+ 
+ 	keyboard@3a {
+ 		compatible = "hid-over-i2c";
+-		interrupt-parent = <&tlmm>;
+-		interrupts = <0x79 IRQ_TYPE_LEVEL_LOW>;
+ 		reg = <0x3a>;
+-		hid-descr-addr = <0x0001>;
+-
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&touchpad>;
++
++		interrupt-parent = <&tlmm>;
++		interrupts = <121 IRQ_TYPE_LEVEL_LOW>;
++
++		hid-descr-addr = <0x0001>;
  	};
  };
  
-@@ -304,8 +302,8 @@ &sdhc2 {
- 	vqmmc-supply = <&vreg_l13a_2p95>;
+diff --git a/arch/arm64/boot/dts/qcom/msm8998-lenovo-miix-630.dts b/arch/arm64/boot/dts/qcom/msm8998-lenovo-miix-630.dts
+index f55f6f3e3e5d..cf81c33a9d7e 100644
+--- a/arch/arm64/boot/dts/qcom/msm8998-lenovo-miix-630.dts
++++ b/arch/arm64/boot/dts/qcom/msm8998-lenovo-miix-630.dts
+@@ -16,13 +16,14 @@ &blsp1_i2c6 {
  
- 	pinctrl-names = "default", "sleep";
--	pinctrl-0 = <&sdc2_clk_on  &sdc2_cmd_on  &sdc2_data_on  &sdc2_cd_on>;
--	pinctrl-1 = <&sdc2_clk_off &sdc2_cmd_off &sdc2_data_off &sdc2_cd_off>;
-+	pinctrl-0 = <&sdc2_on &sdc2_cd>;
-+	pinctrl-1 = <&sdc2_off &sdc2_cd>;
+ 	keyboard@3a {
+ 		compatible = "hid-over-i2c";
+-		interrupt-parent = <&tlmm>;
+-		interrupts = <0x79 IRQ_TYPE_LEVEL_LOW>;
+ 		reg = <0x3a>;
+-		hid-descr-addr = <0x0001>;
+-
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&touchpad>;
++
++		interrupt-parent = <&tlmm>;
++		interrupts = <121 IRQ_TYPE_LEVEL_LOW>;
++
++		hid-descr-addr = <0x0001>;
+ 	};
  };
  
- &ufshc {
-diff --git a/arch/arm64/boot/dts/qcom/msm8998-mtp.dtsi b/arch/arm64/boot/dts/qcom/msm8998-mtp.dtsi
-index af67c641df4e..8368af2d78e1 100644
---- a/arch/arm64/boot/dts/qcom/msm8998-mtp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8998-mtp.dtsi
-@@ -348,8 +348,8 @@ &sdhc2 {
- 	vqmmc-supply = <&vreg_l13a_2p95>;
- 
- 	pinctrl-names = "default", "sleep";
--	pinctrl-0 = <&sdc2_clk_on  &sdc2_cmd_on  &sdc2_data_on  &sdc2_cd_on>;
--	pinctrl-1 = <&sdc2_clk_off &sdc2_cmd_off &sdc2_data_off &sdc2_cd_off>;
-+	pinctrl-0 = <&sdc2_on &sdc2_cd>;
-+	pinctrl-1 = <&sdc2_off &sdc2_cd>;
- };
- 
- &stm {
-diff --git a/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi b/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi
-index 03fa66646d47..fd65dee55626 100644
---- a/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi
-@@ -580,8 +580,8 @@ &sdhc2 {
- 	vqmmc-supply = <&vreg_l13a_2p95>;
- 
- 	pinctrl-names = "default", "sleep";
--	pinctrl-0 = <&sdc2_clk_on  &sdc2_cmd_on  &sdc2_data_on  &sdc2_cd_on>;
--	pinctrl-1 = <&sdc2_clk_off &sdc2_cmd_off &sdc2_data_off &sdc2_cd_off>;
-+	pinctrl-0 = <&sdc2_on &sdc2_cd>;
-+	pinctrl-1 = <&sdc2_off &sdc2_cd>;
- };
- 
- &tlmm {
-diff --git a/arch/arm64/boot/dts/qcom/msm8998.dtsi b/arch/arm64/boot/dts/qcom/msm8998.dtsi
-index 2fda21e810c9..69cdbb104e4c 100644
---- a/arch/arm64/boot/dts/qcom/msm8998.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8998.dtsi
-@@ -1042,85 +1042,58 @@ tlmm: pinctrl@3400000 {
- 			reg = <0x03400000 0xc00000>;
- 			interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>;
- 			gpio-controller;
--			#gpio-cells = <0x2>;
-+			#gpio-cells = <2>;
- 			interrupt-controller;
--			#interrupt-cells = <0x2>;
-+			#interrupt-cells = <2>;
- 
--			sdc2_clk_on: sdc2_clk_on {
--				config {
-+			sdc2_on: sdc2-on {
-+				clk {
- 					pins = "sdc2_clk";
--					bias-disable;
- 					drive-strength = <16>;
--				};
--			};
--
--			sdc2_clk_off: sdc2_clk_off {
--				config {
--					pins = "sdc2_clk";
- 					bias-disable;
--					drive-strength = <2>;
- 				};
--			};
- 
--			sdc2_cmd_on: sdc2_cmd_on {
--				config {
-+				cmd {
- 					pins = "sdc2_cmd";
--					bias-pull-up;
- 					drive-strength = <10>;
--				};
--			};
--
--			sdc2_cmd_off: sdc2_cmd_off {
--				config {
--					pins = "sdc2_cmd";
- 					bias-pull-up;
--					drive-strength = <2>;
- 				};
--			};
- 
--			sdc2_data_on: sdc2_data_on {
--				config {
-+				data {
- 					pins = "sdc2_data";
--					bias-pull-up;
- 					drive-strength = <10>;
-+					bias-pull-up;
- 				};
- 			};
- 
--			sdc2_data_off: sdc2_data_off {
--				config {
--					pins = "sdc2_data";
--					bias-pull-up;
-+			sdc2_off: sdc2-off {
-+				clk {
-+					pins = "sdc2_clk";
- 					drive-strength = <2>;
-+					bias-disable;
- 				};
--			};
- 
--			sdc2_cd_on: sdc2_cd_on {
--				mux {
--					pins = "gpio95";
--					function = "gpio";
-+				cmd {
-+					pins = "sdc2_cmd";
-+					drive-strength = <2>;
-+					bias-pull-up;
- 				};
- 
--				config {
--					pins = "gpio95";
--					bias-pull-up;
-+				data {
-+					pins = "sdc2_data";
- 					drive-strength = <2>;
-+					bias-pull-up;
- 				};
- 			};
- 
--			sdc2_cd_off: sdc2_cd_off {
--				mux {
--					pins = "gpio95";
--					function = "gpio";
--				};
--
--				config {
--					pins = "gpio95";
--					bias-pull-up;
--					drive-strength = <2>;
--				};
-+			sdc2_cd: sdc2-cd {
-+				pins = "gpio95";
-+				function = "gpio";
-+				bias-pull-up;
-+				drive-strength = <2>;
- 			};
- 
--			blsp1_uart3_on: blsp1_uart3_on {
-+			blsp1_uart3_on: blsp1-uart3-on {
- 				tx {
- 					pins = "gpio45";
- 					function = "blsp_uart3_a";
 -- 
 2.35.2
 
