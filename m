@@ -2,105 +2,323 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68BD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 09:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAD8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 09:03:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382387AbiD3JF4 (ORCPT
+        id S1382391AbiD3JHL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 05:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58580 "EHLO
+        Sat, 30 Apr 2022 05:07:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382390AbiD3JFz (ORCPT
+        with ESMTP id S236358AbiD3JHJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 05:05:55 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D91527D0;
-        Sat, 30 Apr 2022 02:02:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=iBnV4BkP5XE7j8/bHDZPth3sjqyHE93A1brAIaxH/rg=; b=IJMwzSNyCZKTtgb4cyzEMxr84M
-        Ez+oQK7GJyHGk54jRGjCYc9u4Im5XGW4yGMPK3Wm8/tfZAhgaPfCTavOwcYii4HLBT9yxL3FR/43i
-        ywIhOGB+CgjGWVrYNyfFaXhBemdXk1N2tRo8uVFOcPGPDfSe1en29+zVYKg7L15K6Y7Oly/U5u7Nk
-        IE4G+PTDiBzdA2HVooWo3uQNflAh6yo0xzY0pHYrCy9H6M7C2fWycu9kIwbzLC3gJkm3X0FyuYZMD
-        UnpMzct8F/rmtGmgO8l/9J/bISQlIDTEGkb+Hf+6ZlwZCowCmgaa31gINJ6X5a/GOhF+thgIJQtYg
-        b1vltvWQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nkizQ-009sJC-9L; Sat, 30 Apr 2022 09:02:08 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id CC8F8300473;
-        Sat, 30 Apr 2022 11:02:05 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 96E142028EFE6; Sat, 30 Apr 2022 11:02:05 +0200 (CEST)
-Date:   Sat, 30 Apr 2022 11:02:05 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
-Subject: Re: [RFC PATCH 00/21] KCFI support
-Message-ID: <Ymz7DWkRJy3PMaHm@hirez.programming.kicks-ass.net>
-References: <20220429203644.2868448-1-samitolvanen@google.com>
- <202204291545.47C6A97EA2@keescook>
+        Sat, 30 Apr 2022 05:07:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3A76339D
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 02:03:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9C9660DE0
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 09:03:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0A71C385A7;
+        Sat, 30 Apr 2022 09:03:44 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH V11 10/10] irqchip: Add Loongson PCH LPC controller support
+Date:   Sat, 30 Apr 2022 16:53:44 +0800
+Message-Id: <20220430085344.3127346-11-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220430085344.3127346-1-chenhuacai@loongson.cn>
+References: <20220430085344.3127346-1-chenhuacai@loongson.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <202204291545.47C6A97EA2@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 03:53:12PM -0700, Kees Cook wrote:
-> On Fri, Apr 29, 2022 at 01:36:23PM -0700, Sami Tolvanen wrote:
-> > KCFI is a proposed forward-edge control-flow integrity scheme for
-> > Clang, which is more suitable for kernel use than the existing CFI
-> > scheme used by CONFIG_CFI_CLANG. KCFI doesn't require LTO, doesn't
-> > alter function references to point to a jump table, and won't break
-> > function address equality.
-> 
-> 🎉 :)
-> 
-> > The latest LLVM patches are here:
-> > 
-> >   https://reviews.llvm.org/D119296
-> >   https://reviews.llvm.org/D124211
-> > 
-> > [...]
-> > To test this series, you'll need to compile your own Clang toolchain
-> > with the patches linked above. You can also find the complete source
-> > tree here:
-> > 
-> >   https://github.com/samitolvanen/llvm-project/commits/kcfi-rfc
-> 
-> And note that this RFC is seeking to break a bit of a circular dependency
-> with regard to the design of __builtin_kcfi_call_unchecked (D124211
-> above), as the implementation has gone around a few times in review within
-> LLVM, and we want to make sure that kernel folks are okay with what was
-> settled on. If there are no objections on the kernel side, then we can
-> land the KCFI patches, as this is basically the only remaining blocker.
+We are preparing to add new Loongson (based on LoongArch, not compatible
+with old MIPS-based Loongson) support. This patch add Loongson PCH LPC
+interrupt controller support.
 
-So aside from the static_call usage, was there any other?
+PCH-LPC stands for "LPC Interrupts" that described in Section 24.3 of
+"Loongson 7A1000 Bridge User Manual". For more information please refer
+Documentation/loongarch/irq-chip-model.rst.
 
-Anyway, I think I hate that __builtin, I'd *much* rather see a variable
-attribute or qualifier for this, such that one can mark a function
-pointer as not doing CFI.
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ drivers/irqchip/Kconfig                |   8 +
+ drivers/irqchip/Makefile               |   1 +
+ drivers/irqchip/irq-loongson-pch-lpc.c | 225 +++++++++++++++++++++++++
+ 3 files changed, 234 insertions(+)
+ create mode 100644 drivers/irqchip/irq-loongson-pch-lpc.c
 
-I simply doesn't make sense to have a builtin that operates on an
-expression. The whole thing is about indirect calls, IOW function
-pointers.
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index eea0c15562cf..c56a8dbb51cc 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -610,6 +610,14 @@ config LOONGSON_PCH_MSI
+ 	help
+ 	  Support for the Loongson PCH MSI Controller.
+ 
++config LOONGSON_PCH_LPC
++	bool "Loongson PCH LPC Controller"
++	depends on MACH_LOONGSON64
++	default (MACH_LOONGSON64 && LOONGARCH)
++	select IRQ_DOMAIN_HIERARCHY
++	help
++	  Support for the Loongson PCH LPC Controller.
++
+ config MST_IRQ
+ 	bool "MStar Interrupt Controller"
+ 	depends on ARCH_MEDIATEK || ARCH_MSTARV7 || COMPILE_TEST
+diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
+index e5e546a8195c..71d9bc551d5b 100644
+--- a/drivers/irqchip/Makefile
++++ b/drivers/irqchip/Makefile
+@@ -112,6 +112,7 @@ obj-$(CONFIG_LOONGSON_HTPIC)		+= irq-loongson-htpic.o
+ obj-$(CONFIG_LOONGSON_HTVEC)		+= irq-loongson-htvec.o
+ obj-$(CONFIG_LOONGSON_PCH_PIC)		+= irq-loongson-pch-pic.o
+ obj-$(CONFIG_LOONGSON_PCH_MSI)		+= irq-loongson-pch-msi.o
++obj-$(CONFIG_LOONGSON_PCH_LPC)		+= irq-loongson-pch-lpc.o
+ obj-$(CONFIG_MST_IRQ)			+= irq-mst-intc.o
+ obj-$(CONFIG_SL28CPLD_INTC)		+= irq-sl28cpld.o
+ obj-$(CONFIG_MACH_REALTEK_RTL)		+= irq-realtek-rtl.o
+diff --git a/drivers/irqchip/irq-loongson-pch-lpc.c b/drivers/irqchip/irq-loongson-pch-lpc.c
+new file mode 100644
+index 000000000000..55ef72bfdfea
+--- /dev/null
++++ b/drivers/irqchip/irq-loongson-pch-lpc.c
+@@ -0,0 +1,225 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Loongson LPC Interrupt Controller support
++ *
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++
++#define pr_fmt(fmt) "lpc: " fmt
++
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/irqchip.h>
++#include <linux/irqchip/chained_irq.h>
++#include <linux/irqdomain.h>
++#include <linux/kernel.h>
++#include <linux/syscore_ops.h>
++
++/* Registers */
++#define LPC_INT_CTL		0x00
++#define LPC_INT_ENA		0x04
++#define LPC_INT_STS		0x08
++#define LPC_INT_CLR		0x0c
++#define LPC_INT_POL		0x10
++#define LPC_COUNT		16
++
++struct pch_lpc {
++	void __iomem		*base;
++	struct irq_domain	*lpc_domain;
++	struct fwnode_handle	*domain_handle;
++	raw_spinlock_t		lpc_lock;
++	u32			saved_reg_ctl;
++	u32			saved_reg_ena;
++	u32			saved_reg_pol;
++};
++
++static struct pch_lpc *pch_lpc_priv;
++
++static void ack_lpc_irq(struct irq_data *d)
++{
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&pch_lpc_priv->lpc_lock, flags);
++	writel(0x1 << d->irq, pch_lpc_priv->base + LPC_INT_CLR);
++	raw_spin_unlock_irqrestore(&pch_lpc_priv->lpc_lock, flags);
++}
++static void mask_lpc_irq(struct irq_data *d)
++{
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&pch_lpc_priv->lpc_lock, flags);
++	writel(readl(pch_lpc_priv->base + LPC_INT_ENA) & (~(0x1 << (d->irq))),
++			pch_lpc_priv->base + LPC_INT_ENA);
++	raw_spin_unlock_irqrestore(&pch_lpc_priv->lpc_lock, flags);
++}
++
++static void mask_ack_lpc_irq(struct irq_data *d)
++{
++}
++
++static void unmask_lpc_irq(struct irq_data *d)
++{
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&pch_lpc_priv->lpc_lock, flags);
++	writel(readl(pch_lpc_priv->base + LPC_INT_ENA) | (0x1 << (d->irq)),
++			pch_lpc_priv->base + LPC_INT_ENA);
++	raw_spin_unlock_irqrestore(&pch_lpc_priv->lpc_lock, flags);
++}
++
++static int lpc_set_type(struct irq_data *d, unsigned int type)
++{
++	u32 val;
++	u32 mask = 0x1 << (d->hwirq);
++
++	if (!(type & IRQ_TYPE_LEVEL_MASK))
++		return 0;
++
++	val = readl(pch_lpc_priv->base + LPC_INT_POL);
++
++	if (type == IRQ_TYPE_LEVEL_HIGH)
++		val |= mask;
++	else
++		val &= ~mask;
++
++	writel(val, pch_lpc_priv->base + LPC_INT_POL);
++
++	return 0;
++}
++
++static struct irq_chip pch_lpc_irq_chip = {
++	.name			= "PCH LPC",
++	.irq_mask		= mask_lpc_irq,
++	.irq_unmask		= unmask_lpc_irq,
++	.irq_ack		= ack_lpc_irq,
++	.irq_mask_ack		= mask_ack_lpc_irq,
++	.irq_eoi		= unmask_lpc_irq,
++	.irq_set_type		= lpc_set_type,
++	.flags			= IRQCHIP_SKIP_SET_WAKE,
++};
++
++static void lpc_irq_dispatch(struct irq_desc *desc)
++{
++	struct irq_chip *chip = irq_desc_get_chip(desc);
++	u32 pending;
++
++	chained_irq_enter(chip, desc);
++
++	pending = readl(pch_lpc_priv->base + LPC_INT_ENA);
++	pending &= readl(pch_lpc_priv->base + LPC_INT_STS);
++	if (!pending)
++		spurious_interrupt();
++
++	while (pending) {
++		int bit = __ffs(pending);
++
++		generic_handle_irq(bit);
++		pending &= ~BIT(bit);
++	}
++	chained_irq_exit(chip, desc);
++}
++
++static int pch_lpc_map(struct irq_domain *d, unsigned int irq,
++			irq_hw_number_t hw)
++{
++	irq_set_chip_and_handler(irq, &pch_lpc_irq_chip, handle_level_irq);
++	return 0;
++}
++
++static const struct irq_domain_ops pch_lpc_domain_ops = {
++	.map 		= pch_lpc_map,
++	.translate	= irq_domain_translate_twocell,
++};
++
++static void pch_lpc_reset(struct pch_lpc *priv)
++{
++	/* Enable the LPC interrupt, bit31: en  bit30: edge */
++	writel(0x80000000, priv->base + LPC_INT_CTL);
++	writel(0, priv->base + LPC_INT_ENA);
++	/* Clear all 18-bit interrpt bit */
++	writel(0x3ffff, priv->base + LPC_INT_CLR);
++}
++
++static int pch_lpc_disabled(struct pch_lpc *priv)
++{
++	return (readl(priv->base + LPC_INT_ENA) == 0xffffffff) &&
++			(readl(priv->base + LPC_INT_STS) == 0xffffffff);
++}
++
++static int pch_lpc_suspend(void)
++{
++	pch_lpc_priv->saved_reg_ctl = readl(pch_lpc_priv->base + LPC_INT_CTL);
++	pch_lpc_priv->saved_reg_ena = readl(pch_lpc_priv->base + LPC_INT_ENA);
++	pch_lpc_priv->saved_reg_pol = readl(pch_lpc_priv->base + LPC_INT_POL);
++	return 0;
++}
++
++static void pch_lpc_resume(void)
++{
++	writel(pch_lpc_priv->saved_reg_ctl, pch_lpc_priv->base + LPC_INT_CTL);
++	writel(pch_lpc_priv->saved_reg_ena, pch_lpc_priv->base + LPC_INT_ENA);
++	writel(pch_lpc_priv->saved_reg_pol, pch_lpc_priv->base + LPC_INT_POL);
++}
++
++static struct syscore_ops pch_lpc_syscore_ops = {
++	.suspend = pch_lpc_suspend,
++	.resume = pch_lpc_resume,
++};
++
++struct irq_domain *pch_lpc_acpi_init(struct irq_domain *parent,
++					struct acpi_madt_lpc_pic *acpi_pchlpc)
++{
++	int parent_irq;
++	struct pch_lpc *priv;
++	struct irq_fwspec fwspec;
++
++	if (!acpi_pchlpc)
++		return NULL;
++
++	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return NULL;
++
++	raw_spin_lock_init(&priv->lpc_lock);
++
++	priv->base = ioremap(acpi_pchlpc->address, acpi_pchlpc->size);
++	if (!priv->base)
++		goto free_priv;
++
++	if (pch_lpc_disabled(priv)) {
++		pr_err("Failed to get LPC status\n");
++		goto iounmap_base;
++	}
++
++	priv->domain_handle = irq_domain_alloc_fwnode((phys_addr_t *)acpi_pchlpc);
++	if (!priv->domain_handle) {
++		pr_err("Unable to allocate domain handle\n");
++		goto iounmap_base;
++	}
++	priv->lpc_domain = irq_domain_add_legacy(NULL, LPC_COUNT, 0, 0,
++						&pch_lpc_domain_ops, priv);
++	if (!priv->lpc_domain) {
++		pr_err("Failed to create IRQ domain\n");
++		goto iounmap_base;
++	}
++	pch_lpc_reset(priv);
++
++	fwspec.fwnode = parent->fwnode;
++	fwspec.param[0] = acpi_pchlpc->cascade;
++	fwspec.param[1] = IRQ_TYPE_LEVEL_HIGH;
++	fwspec.param_count = 2;
++	parent_irq = irq_create_fwspec_mapping(&fwspec);
++	irq_set_chained_handler_and_data(parent_irq, lpc_irq_dispatch, priv);
++	pch_lpc_priv = priv;
++
++	register_syscore_ops(&pch_lpc_syscore_ops);
++
++	return irq_find_matching_fwnode(priv->domain_handle, DOMAIN_BUS_ANY);
++
++iounmap_base:
++	iounmap(priv->base);
++free_priv:
++	kfree(priv);
++
++	return NULL;
++}
+-- 
+2.27.0
+
