@@ -2,114 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00BC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 06:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5EBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 06:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241357AbiD3GVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 02:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45354 "EHLO
+        id S235819AbiD3G0z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Apr 2022 02:26:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229770AbiD3GVq (ORCPT
+        with ESMTP id S229770AbiD3G0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 02:21:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B970ACFB8C;
-        Fri, 29 Apr 2022 23:18:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F12E460A28;
-        Sat, 30 Apr 2022 06:18:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AD55C385AA;
-        Sat, 30 Apr 2022 06:18:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651299503;
-        bh=uYF2s/xQF4T6AlR6mb0JRgmAFtb0jfMpWbE35bo1HwU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=2BQcS/4NH+9ysls92X0SSlMU05RTtCM3xnAEHjDjzcWSOmFuV9GpH39yV9EC6WDyn
-         rYjTAhmhtnXik1cjo64wcxr4gxnmY32CXfbLqPHcxoEwfikfFZutcJacNREFh2olqH
-         giURfq009PrksK7aWDe/vXUbWBgFCAsvr8YuvCM0=
-Date:   Sat, 30 Apr 2022 08:18:14 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Sebastian Ene <sebastianene@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        maz@kernel.org, will@kernel.org, qperret@google.com
-Subject: Re: [PATCH v4 2/2] misc: Add a mechanism to detect stalls on guest
- vCPUs
-Message-ID: <YmzUpr0e+eq0NUYc@kroah.com>
-References: <20220429083030.3241640-1-sebastianene@google.com>
- <20220429083030.3241640-3-sebastianene@google.com>
- <YmumSgiTrQUWoXsb@kroah.com>
- <e94fdd89-7b8e-eec3-4b2f-dcea55c7f0bc@roeck-us.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e94fdd89-7b8e-eec3-4b2f-dcea55c7f0bc@roeck-us.net>
+        Sat, 30 Apr 2022 02:26:53 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17ADCCFBBF
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 23:23:32 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id d22-20020a25add6000000b00645d796034fso9173833ybe.2
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 23:23:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=ilFEwIrkZL4LC9Sgb4TefT5GSI3sDjL/JSRtfwvlYk8=;
+        b=XKxfKiZWKR26TghXaE9JP/9B5Y+sDfK8pIqWwQVnmRr6tCybeUfbhZjxRpo0ucJoo/
+         HTpIgSk64JCRj/FOflHY/fZXfzW6VC7cvQ2zlrJLdJlWGheLb9PgBsTqCzpB6JL1UG9j
+         vGRXPlYkNgQO84nOlc6SdulmwuBBYiL1lGrgt6Y0K4GvsTvEIMF6bUwMy1DSQ1VjSZrV
+         q6dc0BEbETWghfoSGWwNDCXUZCr+fC0Mswr9CRsnJZNJ8ENNnMsRGY/KifCHphJHTfJY
+         VfY1dZQOk620wlICkjZiha3wuTpC/d5dD+5+YUFXQmFc/0smlYICvBuJmuYb7X18BmCy
+         vCNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=ilFEwIrkZL4LC9Sgb4TefT5GSI3sDjL/JSRtfwvlYk8=;
+        b=lVkECVIrXc6kpQQrjNa5GTr5uOJYnlQQefASuf0niDnLIuu/I1Ftm5YjR1qzP0sbeW
+         Wt6u3lunTvez2U4JpUtWOzFhhQTBU+8RA5po1Ow3LI/QVUjUbPfHdyky62prrNVPhwNG
+         HYxfm/X0xqxcQZ4DLJD2rNw0gxfnnu3H1PnrPxU34gOJTimLU16irpD004o43WD4Y/rS
+         s46Dr90nThcT1w2TXd1n6zulNKYF/JNsSUyFL6vvuXpCkr1//2C8va1Sfkec3CMFLbSA
+         y5uGhzz6nRmdeHvB2X6J3z5whv2HqNKKJP/NEGY7jonLbG/wcYM53buWzzs01MzcpUnR
+         fHLw==
+X-Gm-Message-State: AOAM530cbwRN28/dQ1ZKnFChUL0hxpF+dqSqjh+q1HvlCvblQpErBiN8
+        gRHHMS6uqLp2/qT+kZY1dHByBnIEcW6p
+X-Google-Smtp-Source: ABdhPJxVabPnLRHKvnLALt55nPTm67ZCtR+e4Nldv4elgYdhSGX2Db3giMv00gcSHR4wcL9mKDMfLYiP6UHF
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:2481:caab:4fd5:232b])
+ (user=irogers job=sendgmr) by 2002:a25:6a05:0:b0:648:f6c0:2c19 with SMTP id
+ f5-20020a256a05000000b00648f6c02c19mr2504236ybc.55.1651299811215; Fri, 29 Apr
+ 2022 23:23:31 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 23:23:18 -0700
+Message-Id: <20220430062324.1565215-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+Subject: [PATCH v4 0/6] Make evlist CPUs more accurate
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 09:51:51AM -0700, Guenter Roeck wrote:
-> On 4/29/22 01:48, Greg Kroah-Hartman wrote:
-> > On Fri, Apr 29, 2022 at 08:30:33AM +0000, Sebastian Ene wrote:
-> > > This driver creates per-cpu hrtimers which are required to do the
-> > > periodic 'pet' operation. On a conventional watchdog-core driver, the
-> > > userspace is responsible for delivering the 'pet' events by writing to
-> > > the particular /dev/watchdogN node. In this case we require a strong
-> > > thread affinity to be able to account for lost time on a per vCPU.
-> > > 
-> > > This part of the driver is the 'frontend' which is reponsible for
-> > > delivering the periodic 'pet' events, configuring the virtual peripheral
-> > > and listening for cpu hotplug events. The other part of the driver
-> > > handles the peripheral emulation and this part accounts for lost time by
-> > > looking at the /proc/{}/task/{}/stat entries and is located here:
-> > > https://chromium-review.googlesource.com/c/chromiumos/platform/crosvm/+/3548817
-> > > 
-> > > Signed-off-by: Sebastian Ene <sebastianene@google.com>
-> > > ---
-> > >   drivers/misc/Kconfig       |  12 +++
-> > >   drivers/misc/Makefile      |   1 +
-> > >   drivers/misc/vm-watchdog.c | 206 +++++++++++++++++++++++++++++++++++++
-> > >   3 files changed, 219 insertions(+)
-> > >   create mode 100644 drivers/misc/vm-watchdog.c
-> > > 
-> > > diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-> > > index 2b9572a6d114..26c3a99e269c 100644
-> > > --- a/drivers/misc/Kconfig
-> > > +++ b/drivers/misc/Kconfig
-> > > @@ -493,6 +493,18 @@ config OPEN_DICE
-> > >   	  If unsure, say N.
-> > > +config VM_WATCHDOG
-> > > +	tristate "Virtual Machine Watchdog"
-> > > +	select LOCKUP_DETECTOR
-> > > +	help
-> > > +	  Detect CPU locks on the virtual machine. This driver relies on the
-> > > +	  hrtimers which are CPU-binded to do the 'pet' operation. When a vCPU
-> > > +	  has to do a 'pet', it exits the guest through MMIO write and the
-> > > +	  backend driver takes into account the lost ticks for this particular
-> > > +	  CPU.
-> > > +	  To compile this driver as a module, choose M here: the
-> > > +	  module will be called vm-wdt.
-> > 
-> > You forgot to name the module properly here based on the Makefile change
-> > you made.
-> > 
-> > And again, as this is called a "watchdog", it seems crazy that it is not
-> > in drivers/watchdog/
-> > 
-> 
-> I disagree. It is not a watchdog driver in the traditional sense (it does
-> not use, want to use, or need to use the watchdog driver API or ABI).
-> Its functionality is similar to the functionality of kernel/watchdog.c,
-> which doesn't belong into drivers/watchdog either.
+Based on the thread:
+https://lore.kernel.org/linux-perf-users/CAP-5=fVMHzTfKdpWMXtbtx7t14u2f4WzNak+F0Q93cQ7CZfhbg@mail.gmail.com/
 
-Ah, ok, that makes more sense, the user/kernel api is not the same.
-Someone should put that in the changelog next time :)
+First patch is a cherry-pick to avoid a conflict of:
+https://lore.kernel.org/linux-perf-users/20220414014642.3308206-2-irogers@google.com/
+Second patch makes all_cpus more accurate when there are command line CPUs.
+The third patch fixes perf stat metric-only output for uncore metrics.
+The fourth patch makes cleans up merging of dummy CPU maps.
+The fifth and sixth patch try to make user_requested_cpus and all_cpus
+clearer with documentation and by renaming all_cpus.
 
-thanks,
+The code no longer needs to add an intersect function and so the API
+is removed and the merged API left unchangaged.
 
-greg k-h
+Ian Rogers (6):
+  perf cpumap: Switch to using perf_cpu_map API
+  perf evlist: Clear all_cpus before propagating
+  perf stat: Avoid printing cpus with no counters
+  perf cpumap: Handle dummy maps as empty in subset
+  perf evlist: Add to user_requested_cpus documentation
+  perf evlist: Rename all_cpus
+
+ tools/lib/perf/cpumap.c                  |  4 +--
+ tools/lib/perf/evlist.c                  | 14 ++++++----
+ tools/lib/perf/include/internal/evlist.h |  5 ++--
+ tools/perf/builtin-record.c              | 13 +++++----
+ tools/perf/tests/cpumap.c                | 10 ++++++-
+ tools/perf/util/bpf_counter_cgroup.c     | 35 ++++++++++++------------
+ tools/perf/util/evlist.c                 |  6 ++--
+ tools/perf/util/evlist.h                 |  4 +--
+ tools/perf/util/stat-display.c           |  7 +++--
+ 9 files changed, 56 insertions(+), 42 deletions(-)
+
+-- 
+2.36.0.464.gb9c8b46e94-goog
+
