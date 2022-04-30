@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C589BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 12:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7BCDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 12:20:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382600AbiD3MXO (ORCPT
+        id S1382616AbiD3MXX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 08:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44098 "EHLO
+        Sat, 30 Apr 2022 08:23:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356725AbiD3MWk (ORCPT
+        with ESMTP id S1359711AbiD3MWu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 08:22:40 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ACDDAAB7B
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 05:19:17 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id i19so19915472eja.11
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 05:19:17 -0700 (PDT)
+        Sat, 30 Apr 2022 08:22:50 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE180ABF4E
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 05:19:19 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id g6so19996675ejw.1
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 05:19:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=AVU+HyGPvDq4Ad26182u3753XqKolh2zdBKACINyN/M=;
-        b=z2Ju8wcf62pztJwxKYamzJ6kihOLF7cgd6EI9ikBHkSqLOF4Qn80OpkSZkv+ZLcDDO
-         mZZPCgxvPWcTKuXrpdAwaeMCeivsCjx+PWNf76JYN9+VX/KF94PH0erTmNV7niydcIKv
-         3KSB87Ni0AlSR79I9r7YKXX9HboDCpJjnNGtIpAO1Y/YXQiIY339gNxJzqvAzpVyxt4K
-         /vDRXE5RRlXRgW4tJ6K+sfzXefixElebre6mZii/xvoc0L8SFsahIRSFhekwhtEeBV4B
-         gBg55PQ/zZB1zqTPgmBZ9F5dcchIQyIAedS3HHECjLNYUhb0+amMD7p2KKlONCU2wGo3
-         KNyg==
+        bh=FEUaNNHzE9ZBEpoPb2H49jbs7ls4zLcKTGKpF7Ef5aY=;
+        b=IG7VNJKG2LAtdHPPgRFQSQBY+AsOe4DgJMH3eoxpjSs9SKgWg1Prw8WF1Av50a/+DA
+         BgJdBBonToETYCWyeDrtNhB5v5poDYSojZQawZ979AtF6VrVbRZF/otK4EJWce997VNI
+         v1Tm3rA+kjMw+paviRQ730WnWHxoo9JMUPg95uCNITGm0QsHjK5881OZ5Dxja+XQivgZ
+         z/SEJ1oNOgVPxY8h7X/eqVsvHVf1sdwP9LxO553jH2E7GMc8AtXoVgYKtkteAwbpJu3t
+         KOSy/bFziYuRKx5DYHNHz11k3RcnGxL9+Aa93eUnn9zODVPjzO+cgQg0aA1F1R8GDbVe
+         Xznw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=AVU+HyGPvDq4Ad26182u3753XqKolh2zdBKACINyN/M=;
-        b=wyXiN+9+gNIk40tvpIuo/o5ml7rgHLmHlsEEihR88HQ9pmUKNWwdzWmCzqlSN7wTIC
-         Hx9Ahcd8Q6E5TYIV+GKnFQ0DF45eDm8Mr9+vpU6FtuYrX8FTO2NNP6Z8wErLuY5kfg9z
-         zP29+0Cll7QuK6fqsoRHXolkDOSr7vFHrd/L3TBFAyVYRC64edTk30E8RCk7g7onY5XV
-         a0Bdpz34dzfsDY/B5uttkdzPu2Qh76BCraFvJPc81kkiz2TkF9QCSFpUyeQu1fSaCusp
-         WDbky2bBtGKQH7bo5ruppMXEHPOAIa+nB9QFYm//Vye63LPGc8XG+XEvuE6W2qkEyZ8g
-         jx/g==
-X-Gm-Message-State: AOAM533FdxYpJTVFtQiCcvEpMFBnXXcjN90Ce/1rkdM6w3Evx0UWBICN
-        T2bMyOrGtxis51GqiVVXVDk0Fw==
-X-Google-Smtp-Source: ABdhPJyx0rP9PLsYenZ7A3IngtRJNpNScCw5DbUxYcmFPPRYw+VKw3/DCQKDCSdbeWXRQetyuhoEXQ==
-X-Received: by 2002:a17:906:9b8a:b0:6f3:fcc9:f863 with SMTP id dd10-20020a1709069b8a00b006f3fcc9f863mr3632098ejc.672.1651321156115;
-        Sat, 30 Apr 2022 05:19:16 -0700 (PDT)
+        bh=FEUaNNHzE9ZBEpoPb2H49jbs7ls4zLcKTGKpF7Ef5aY=;
+        b=fmhJP/YPFqI7T7N2ZXljGy3AA/BvsQVjMDSUw0kVQe0V9UXr4986SIvUjZFxSzsuy0
+         9VxxqjLxzNJv9piu+WgS3hohJnoGPe2LohN6r05yoIvo7k6v1S4F/koIBDko0Ey/yPaa
+         WQ96s5FkwuSI+GCBc6fFmtoUlHyetEO0TKT47zLENgAYBrVPImUUeqXEqbkbAYSSV8tU
+         ZDMcm3wM1fOfPNSm5lbCiBrMzP2uwyWfAarI4lc06oa3ccfgM5APB1E9Fpk1tcIwqYPv
+         0vi9FGQQIeAwX0RUogexbB+/0ZuFJ3YS/ipe4ctLGKejFuH9B76d0LLwh8enAh1Yliy2
+         sr1Q==
+X-Gm-Message-State: AOAM530NAV2oItPmPcDO24PCEln04BUtYZwVaHn+OXAFcgiX0ZMDC4zc
+        mk9IrsVokPa6eEp2ZisKnqyEug==
+X-Google-Smtp-Source: ABdhPJxItSAcw2+jyJJZYG3zIcYy0nrnl111gz9oeVOAm11XmeU4okKLgbMy+7RUHY07C+OnYfrwyA==
+X-Received: by 2002:a17:906:6097:b0:6f3:ee8d:b924 with SMTP id t23-20020a170906609700b006f3ee8db924mr3704773ejj.536.1651321158446;
+        Sat, 30 Apr 2022 05:19:18 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id c26-20020a056402159a00b0042617ba63d1sm4059091edv.91.2022.04.30.05.19.14
+        by smtp.gmail.com with ESMTPSA id c26-20020a056402159a00b0042617ba63d1sm4059091edv.91.2022.04.30.05.19.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Apr 2022 05:19:15 -0700 (PDT)
+        Sat, 30 Apr 2022 05:19:18 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -65,9 +65,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 6/9] ARM: dts: s5pv210: drop useless 'dma-channels/requests' properties
-Date:   Sat, 30 Apr 2022 14:18:59 +0200
-Message-Id: <20220430121902.59895-7-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 8/9] arm64: dts: exynos: drop useless 'dma-channels/requests' properties
+Date:   Sat, 30 Apr 2022 14:19:01 +0200
+Message-Id: <20220430121902.59895-9-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220430121902.59895-1-krzysztof.kozlowski@linaro.org>
 References: <20220430121902.59895-1-krzysztof.kozlowski@linaro.org>
@@ -87,40 +87,63 @@ hash sign.
 Reported-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm/boot/dts/s5pv210.dtsi | 6 ------
- 1 file changed, 6 deletions(-)
+ arch/arm64/boot/dts/exynos/exynos5433.dtsi | 6 ------
+ arch/arm64/boot/dts/exynos/exynos7.dtsi    | 4 ----
+ 2 files changed, 10 deletions(-)
 
-diff --git a/arch/arm/boot/dts/s5pv210.dtsi b/arch/arm/boot/dts/s5pv210.dtsi
-index ac281f42e8f5..f1b85aae8842 100644
---- a/arch/arm/boot/dts/s5pv210.dtsi
-+++ b/arch/arm/boot/dts/s5pv210.dtsi
-@@ -125,8 +125,6 @@ pdma0: dma-controller@e0900000 {
- 			clocks = <&clocks CLK_PDMA0>;
+diff --git a/arch/arm64/boot/dts/exynos/exynos5433.dtsi b/arch/arm64/boot/dts/exynos/exynos5433.dtsi
+index 017ccc2f4650..75b548e495a0 100644
+--- a/arch/arm64/boot/dts/exynos/exynos5433.dtsi
++++ b/arch/arm64/boot/dts/exynos/exynos5433.dtsi
+@@ -1866,8 +1866,6 @@ pdma0: dma-controller@15610000 {
+ 			clocks = <&cmu_fsys CLK_PDMA0>;
  			clock-names = "apb_pclk";
  			#dma-cells = <1>;
 -			#dma-channels = <8>;
 -			#dma-requests = <32>;
  		};
  
- 		pdma1: dma-controller@e0a00000 {
-@@ -137,8 +135,6 @@ pdma1: dma-controller@e0a00000 {
- 			clocks = <&clocks CLK_PDMA1>;
+ 		pdma1: dma-controller@15600000 {
+@@ -1877,8 +1875,6 @@ pdma1: dma-controller@15600000 {
+ 			clocks = <&cmu_fsys CLK_PDMA1>;
  			clock-names = "apb_pclk";
  			#dma-cells = <1>;
 -			#dma-channels = <8>;
 -			#dma-requests = <32>;
  		};
  
- 		adc: adc@e1700000 {
-@@ -526,8 +522,6 @@ mdma1: dma-controller@fa200000 {
- 			clocks = <&clocks CLK_MDMA>;
+ 		audio-subsystem@11400000 {
+@@ -1898,8 +1894,6 @@ adma: dma-controller@11420000 {
+ 				clocks = <&cmu_aud CLK_ACLK_DMAC>;
+ 				clock-names = "apb_pclk";
+ 				#dma-cells = <1>;
+-				#dma-channels = <8>;
+-				#dma-requests = <32>;
+ 				power-domains = <&pd_aud>;
+ 			};
+ 
+diff --git a/arch/arm64/boot/dts/exynos/exynos7.dtsi b/arch/arm64/boot/dts/exynos/exynos7.dtsi
+index e38bb02a2152..1cd771c90b47 100644
+--- a/arch/arm64/boot/dts/exynos/exynos7.dtsi
++++ b/arch/arm64/boot/dts/exynos/exynos7.dtsi
+@@ -149,8 +149,6 @@ pdma0: dma-controller@10e10000 {
+ 			clocks = <&clock_fsys0 ACLK_PDMA0>;
  			clock-names = "apb_pclk";
  			#dma-cells = <1>;
 -			#dma-channels = <8>;
--			#dma-requests = <1>;
+-			#dma-requests = <32>;
  		};
  
- 		rotator: rotator@fa300000 {
+ 		pdma1: dma-controller@10eb0000 {
+@@ -160,8 +158,6 @@ pdma1: dma-controller@10eb0000 {
+ 			clocks = <&clock_fsys0 ACLK_PDMA1>;
+ 			clock-names = "apb_pclk";
+ 			#dma-cells = <1>;
+-			#dma-channels = <8>;
+-			#dma-requests = <32>;
+ 		};
+ 
+ 		clock_topc: clock-controller@10570000 {
 -- 
 2.32.0
 
