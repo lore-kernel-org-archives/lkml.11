@@ -2,88 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0007BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 06:23:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A97CAC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 06:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382224AbiD3G1K (ORCPT
+        id S1382197AbiD3G1X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 02:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58814 "EHLO
+        Sat, 30 Apr 2022 02:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239244AbiD3G1A (ORCPT
+        with ESMTP id S1351560AbiD3G1A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 30 Apr 2022 02:27:00 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 243D4CFE4D
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 23:23:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651299820; x=1682835820;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=7uashMg9ZzX8VmjSNIB7rQRnoiyqTWQEXZbjTb2v5Oo=;
-  b=a9G+HmtAf69i7HUn/yN9cVPsJ5/5ivpIzaCZsLqdntd6GfEuA2SSpNoS
-   LBEk/VjMpR3X8MVBxek2I1+xSOL/fGEwM9vwPFNswnh6D1fFVwOYCejjK
-   mcLMu2WqE+jJKy+562tMLBrbn+XGRIRd9aCc+Agq/f9+mYsbFivpEERQ1
-   IKq/JdEmtt6/fb+BUdK+Ht1rA1L3irvXrTR/mnwWbsLx8nbLJhk76dhmF
-   U0gEjjWXYhl0ppYNjhGb8KpOEID9JU66mMcQxBNQvbxaY90TIHIav1LUS
-   sFiuLB9Oj3NEnCAvYFgpe2QXvIBuZsq1LQxaQFz5TeHfIzVM0Ah4YWdvi
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="327347277"
-X-IronPort-AV: E=Sophos;i="5.91,187,1647327600"; 
-   d="scan'208";a="327347277"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 23:23:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,187,1647327600"; 
-   d="scan'208";a="882526339"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 29 Apr 2022 23:23:37 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nkgW1-0006wz-Ao;
-        Sat, 30 Apr 2022 06:23:37 +0000
-Date:   Sat, 30 Apr 2022 14:22:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Guo Ren <guoren@linux.alibaba.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [ammarfaizi2-block:palmer/linux/riscv-compat 20/20]
- arch/riscv/kernel/compat_syscall_table.o:undefined reference to
- `compat_sys_fadvise64_64'
-Message-ID: <202204301415.3MDixdty-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00B8DCFE41
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 23:23:38 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id 7-20020a250c07000000b0064137917a4eso9166365ybm.12
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 23:23:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=QbAjsSCqSFDRCvHRrmziRST5Dc++EK/823h/RlAIK5g=;
+        b=Rpq1AfeufiJjUWDBocUZh5TWrWdBIcyIGdUOys38n1LCXddAZUD8/lMYA2uJRYehiv
+         DJdYXSKB0Hjp0LHw9ULlY+OmkhssK/42gfA+pTnH6aD1X9Ut0J6A1CpwvqsLNiZUKztC
+         NhPKS9v4ShPG2UBHIp8gp35xL9Nxz1PyCzOIOViTHGblDrrLt7QcExXLDPH4rV61CgiG
+         CjmKNPwrEg+ZXczN6euaoH4tweUxuwjVdDFqbjruJo1ciq9x1Hd9kK2ZAMoWKoqI933l
+         8jWtvxs93NlAFlzrxmz3QO4j2WyXZHhVH+2Rt7II1m6DbaIchOfRMjYbqaQwN3aKQ+Ye
+         GpdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=QbAjsSCqSFDRCvHRrmziRST5Dc++EK/823h/RlAIK5g=;
+        b=4lBkN6JKhL4Raq2S+wsP7H+apiZOjgwnLm6wqhMS8qGtqCxaaILjnqNV1TywWnRsoI
+         IwP/oI7WM4b0pdjGfsgUtEmDs7B2Up7/mZD2+2QglZj4rNFTqCAbrV8GTya9+eUwYobg
+         Kq5wiVdC0rugj8cfrJ03ztkhhVVTh/iKkWbVsZn2018Xia0lldKFFHO4orpnP+rMm9a5
+         4t+MY1dhHq2PVDaY2dgWF/RHfgiL0kWnEcDIfb/x1Hmtc3ZIBVue8oWsZNoAk6a9u36D
+         GUmkBkCd6X8rT0SAxq4cNO/a+sLINkr0R7mZd6P+qgqy5x1fzcieg1iWDhfSSLhP8JJG
+         6eMg==
+X-Gm-Message-State: AOAM532GeFryKyamm4w2Hhe1/U2bjaJyYmkcesDD0aMR00YORkplm62U
+        OuGRXyCLdaGcZZnB4p+uhxCvU6UgAsz4
+X-Google-Smtp-Source: ABdhPJwWdCK9HhHKXU+Zq1v3vI46L5oK3Vj6FtMCyKhUPVl+Q23X1BMEt6F/666jhslBJLRWT0lcaV/p492J
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:2481:caab:4fd5:232b])
+ (user=irogers job=sendgmr) by 2002:a25:6788:0:b0:648:d8c0:2ed4 with SMTP id
+ b130-20020a256788000000b00648d8c02ed4mr2483910ybc.577.1651299818209; Fri, 29
+ Apr 2022 23:23:38 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 23:23:21 -0700
+In-Reply-To: <20220430062324.1565215-1-irogers@google.com>
+Message-Id: <20220430062324.1565215-4-irogers@google.com>
+Mime-Version: 1.0
+References: <20220430062324.1565215-1-irogers@google.com>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+Subject: [PATCH v4 3/6] perf stat: Avoid printing cpus with no counters
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block palmer/linux/riscv-compat
-head:   e2009fdf858d6fe01f0b24e35d8347fc8da3210f
-commit: e2009fdf858d6fe01f0b24e35d8347fc8da3210f [20/20] riscv: compat: Add COMPAT Kbuild skeletal support
-config: riscv-randconfig-r001-20220428 (https://download.01.org/0day-ci/archive/20220430/202204301415.3MDixdty-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/e2009fdf858d6fe01f0b24e35d8347fc8da3210f
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block palmer/linux/riscv-compat
-        git checkout e2009fdf858d6fe01f0b24e35d8347fc8da3210f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+perf_evlist's user_requested_cpus can contain CPUs not present in any
+evsel's cpus, for example uncore counters. Avoid printing the prefix and
+trailing \n until the first valid counter is encountered.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/perf/util/stat-display.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-All errors (new ones prefixed by >>):
-
-   riscv64-linux-ld: riscv64-linux-ld: DWARF error: could not find abbrev number 714588
->> arch/riscv/kernel/compat_syscall_table.o:(.rodata+0x6f8): undefined reference to `compat_sys_fadvise64_64'
-
+diff --git a/tools/perf/util/stat-display.c b/tools/perf/util/stat-display.c
+index d9629a83aa78..13f705737367 100644
+--- a/tools/perf/util/stat-display.c
++++ b/tools/perf/util/stat-display.c
+@@ -948,8 +948,6 @@ static void print_no_aggr_metric(struct perf_stat_config *config,
+ 		struct evsel *counter;
+ 		bool first = true;
+ 
+-		if (prefix)
+-			fputs(prefix, config->output);
+ 		evlist__for_each_entry(evlist, counter) {
+ 			u64 ena, run, val;
+ 			double uval;
+@@ -961,6 +959,8 @@ static void print_no_aggr_metric(struct perf_stat_config *config,
+ 
+ 			id = aggr_cpu_id__cpu(cpu, /*data=*/NULL);
+ 			if (first) {
++				if (prefix)
++					fputs(prefix, config->output);
+ 				aggr_printout(config, counter, id, 0);
+ 				first = false;
+ 			}
+@@ -972,7 +972,8 @@ static void print_no_aggr_metric(struct perf_stat_config *config,
+ 			printout(config, id, 0, counter, uval, prefix,
+ 				 run, ena, 1.0, &rt_stat);
+ 		}
+-		fputc('\n', config->output);
++		if (!first)
++			fputc('\n', config->output);
+ 	}
+ }
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.36.0.464.gb9c8b46e94-goog
+
