@@ -2,213 +2,418 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAB59C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 09:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D7BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 09:25:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382505AbiD3J2I (ORCPT
+        id S1382525AbiD3J27 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 05:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51822 "EHLO
+        Sat, 30 Apr 2022 05:28:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235658AbiD3J2F (ORCPT
+        with ESMTP id S1382509AbiD3J2x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 05:28:05 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 772B362BD5;
-        Sat, 30 Apr 2022 02:24:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=f7uipT1rxINXEEkDub0QoWVvJ2yKFuDILl1sxKUMthA=; b=o65ng6t9hVrv4G5R8uT1BmQbza
-        OEVdEctaniRc7CYwLHJJ21J8qSz0f78GOX2bJVsS9yQ9VKEzog6lRi7xp6Nyf6Og7tqlhjggbVRDt
-        G8RWrWE2uvgLaLhC067Mv/LG+meqiyIc/k3KQ7683CjYZHl9c6IrTX12bvr+QR0OrHNdhfIestin+
-        6vCpJgNWys0ccAmJ671ed2wQHBWfhsJNNOLg+0jJN0Tfc7qErwEDgtNqU771QJA4nN/EF7HvZQOWW
-        6a3KLq6dCyTjM9Bew2t9jAW0QoOzJ48qol38CwKAUBI2bybOAPiSQ2wUM2gjX47s2QIDlylseCO1y
-        O1i1kHXw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nkjL2-009sWc-MC; Sat, 30 Apr 2022 09:24:29 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id CFE21300473;
-        Sat, 30 Apr 2022 11:24:27 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id B393F2028EFE6; Sat, 30 Apr 2022 11:24:27 +0200 (CEST)
-Date:   Sat, 30 Apr 2022 11:24:27 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Sami Tolvanen <samitolvanen@google.com>
-Cc:     linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
-Subject: Re: [RFC PATCH 21/21] x86: Add support for CONFIG_CFI_CLANG
-Message-ID: <Ym0ASy87mE3r3EVE@hirez.programming.kicks-ass.net>
-References: <20220429203644.2868448-1-samitolvanen@google.com>
- <20220429203644.2868448-22-samitolvanen@google.com>
+        Sat, 30 Apr 2022 05:28:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448B52E081;
+        Sat, 30 Apr 2022 02:25:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CAA3960F33;
+        Sat, 30 Apr 2022 09:25:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7B21C385AC;
+        Sat, 30 Apr 2022 09:25:23 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        Jianmin Lv <lvjianmin@loongson.cn>
+Subject: [PATCH V9 18/24] LoongArch: Add PCI controller support
+Date:   Sat, 30 Apr 2022 17:05:12 +0800
+Message-Id: <20220430090518.3127980-19-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220430090518.3127980-1-chenhuacai@loongson.cn>
+References: <20220430090518.3127980-1-chenhuacai@loongson.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220429203644.2868448-22-samitolvanen@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 01:36:44PM -0700, Sami Tolvanen wrote:
-> Add CONFIG_CFI_CLANG error handling and allow the config to be selected
-> on x86_64.
+Loongson64 based systems are PC-like systems which use PCI/PCIe as its
+I/O bus, This patch adds the PCI host controller support for LoongArch.
 
-Might be useful to have an example output of all ths somewhere, because
-unless I go build my own clang again, I can't tell from these patches
-what actual codegen looks like.
+Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ arch/loongarch/include/asm/dma.h |  13 +++
+ arch/loongarch/include/asm/pci.h |  40 +++++++
+ arch/loongarch/pci/acpi.c        | 172 +++++++++++++++++++++++++++++++
+ arch/loongarch/pci/pci.c         |  98 ++++++++++++++++++
+ 4 files changed, 323 insertions(+)
+ create mode 100644 arch/loongarch/include/asm/dma.h
+ create mode 100644 arch/loongarch/include/asm/pci.h
+ create mode 100644 arch/loongarch/pci/acpi.c
+ create mode 100644 arch/loongarch/pci/pci.c
 
-Going from the below, I seem to be able to reverse engineer some of it:
+diff --git a/arch/loongarch/include/asm/dma.h b/arch/loongarch/include/asm/dma.h
+new file mode 100644
+index 000000000000..c61fc72483ff
+--- /dev/null
++++ b/arch/loongarch/include/asm/dma.h
+@@ -0,0 +1,13 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++#ifndef __ASM_DMA_H
++#define __ASM_DMA_H
++
++#define MAX_DMA_ADDRESS	PAGE_OFFSET
++#define MAX_DMA32_PFN	(1UL << (32 - PAGE_SHIFT))
++
++extern int isa_dma_bridge_buggy;
++
++#endif
+diff --git a/arch/loongarch/include/asm/pci.h b/arch/loongarch/include/asm/pci.h
+new file mode 100644
+index 000000000000..5616ad2678ba
+--- /dev/null
++++ b/arch/loongarch/include/asm/pci.h
+@@ -0,0 +1,40 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++#ifndef _ASM_PCI_H
++#define _ASM_PCI_H
++
++#include <linux/ioport.h>
++#include <linux/list.h>
++#include <linux/types.h>
++#include <asm/io.h>
++
++#define PCIBIOS_MIN_IO		0x4000
++#define PCIBIOS_MIN_MEM		0x20000000
++#define PCIBIOS_MIN_CARDBUS_IO	0x4000
++
++#define HAVE_PCI_MMAP
++#define ARCH_GENERIC_PCI_MMAP_RESOURCE
++
++extern phys_addr_t mcfg_addr_init(int node);
++
++static inline int pci_proc_domain(struct pci_bus *bus)
++{
++	return 1; /* always show the domain in /proc */
++}
++
++/*
++ * Can be used to override the logic in pci_scan_bus for skipping
++ * already-configured bus numbers - to be used for buggy BIOSes
++ * or architectures with incomplete PCI setup by the loader
++ */
++static inline unsigned int pcibios_assign_all_busses(void)
++{
++	return 0;
++}
++
++/* generic pci stuff */
++#include <asm-generic/pci.h>
++
++#endif /* _ASM_PCI_H */
+diff --git a/arch/loongarch/pci/acpi.c b/arch/loongarch/pci/acpi.c
+new file mode 100644
+index 000000000000..7cabb8f37218
+--- /dev/null
++++ b/arch/loongarch/pci/acpi.c
+@@ -0,0 +1,172 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++#include <linux/pci.h>
++#include <linux/acpi.h>
++#include <linux/init.h>
++#include <linux/irq.h>
++#include <linux/slab.h>
++#include <linux/pci-acpi.h>
++#include <linux/pci-ecam.h>
++
++#include <asm/pci.h>
++#include <asm/loongson.h>
++
++struct pci_root_info {
++	struct acpi_pci_root_info common;
++	struct pci_config_window *cfg;
++};
++
++void pcibios_add_bus(struct pci_bus *bus)
++{
++	acpi_pci_add_bus(bus);
++}
++
++int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
++{
++	struct pci_config_window *cfg = bridge->bus->sysdata;
++	struct acpi_device *adev = to_acpi_device(cfg->parent);
++
++	ACPI_COMPANION_SET(&bridge->dev, adev);
++
++	return 0;
++}
++
++int acpi_pci_bus_find_domain_nr(struct pci_bus *bus)
++{
++	struct pci_config_window *cfg = bus->sysdata;
++	struct acpi_device *adev = to_acpi_device(cfg->parent);
++	struct acpi_pci_root *root = acpi_driver_data(adev);
++
++	return root->segment;
++}
++
++static void acpi_release_root_info(struct acpi_pci_root_info *ci)
++{
++	struct pci_root_info *info;
++
++	info = container_of(ci, struct pci_root_info, common);
++	pci_ecam_free(info->cfg);
++	kfree(ci->ops);
++	kfree(info);
++}
++
++static int acpi_prepare_root_resources(struct acpi_pci_root_info *ci)
++{
++	int status;
++	struct resource_entry *entry, *tmp;
++	struct acpi_device *device = ci->bridge;
++
++	status = acpi_pci_probe_root_resources(ci);
++	if (status > 0) {
++		resource_list_for_each_entry_safe(entry, tmp, &ci->resources) {
++			if (entry->res->flags & IORESOURCE_MEM) {
++				entry->offset = ci->root->mcfg_addr & GENMASK_ULL(63, 40);
++				entry->res->start |= entry->offset;
++				entry->res->end   |= entry->offset;
++			}
++		}
++		return status;
++	}
++
++	resource_list_for_each_entry_safe(entry, tmp, &ci->resources) {
++		dev_dbg(&device->dev,
++			   "host bridge window %pR (ignored)\n", entry->res);
++		resource_list_destroy_entry(entry);
++	}
++
++	return 0;
++}
++
++/*
++ * Lookup the bus range for the domain in MCFG, and set up config space
++ * mapping.
++ */
++static struct pci_config_window *
++pci_acpi_setup_ecam_mapping(struct acpi_pci_root *root)
++{
++	int ret, bus_shift;
++	u16 seg = root->segment;
++	struct device *dev = &root->device->dev;
++	struct resource cfgres;
++	struct resource *bus_res = &root->secondary;
++	struct pci_config_window *cfg;
++	const struct pci_ecam_ops *ecam_ops;
++
++	ret = pci_mcfg_lookup(root, &cfgres, &ecam_ops);
++	if (ret < 0) {
++		dev_err(dev, "%04x:%pR ECAM region not found, use default value\n", seg, bus_res);
++		ecam_ops = &loongson_pci_ecam_ops;
++		root->mcfg_addr = mcfg_addr_init(0);
++	}
++
++	bus_shift = ecam_ops->bus_shift ? : 20;
++
++	cfgres.start = root->mcfg_addr + (bus_res->start << bus_shift);
++	cfgres.end = cfgres.start + (resource_size(bus_res) << bus_shift) - 1;
++	cfgres.flags = IORESOURCE_MEM;
++
++	cfg = pci_ecam_create(dev, &cfgres, bus_res, ecam_ops);
++	if (IS_ERR(cfg)) {
++		dev_err(dev, "%04x:%pR error %ld mapping ECAM\n", seg, bus_res, PTR_ERR(cfg));
++		return NULL;
++	}
++
++	return cfg;
++}
++
++struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
++{
++	struct pci_bus *bus;
++	struct pci_root_info *info;
++	struct acpi_pci_root_ops *root_ops;
++	int domain = root->segment;
++	int busnum = root->secondary.start;
++
++	info = kzalloc(sizeof(*info), GFP_KERNEL);
++	if (!info) {
++		pr_warn("pci_bus %04x:%02x: ignored (out of memory)\n", domain, busnum);
++		return NULL;
++	}
++
++	root_ops = kzalloc(sizeof(*root_ops), GFP_KERNEL);
++	if (!root_ops) {
++		kfree(info);
++		return NULL;
++	}
++
++	info->cfg = pci_acpi_setup_ecam_mapping(root);
++	if (!info->cfg) {
++		kfree(info);
++		kfree(root_ops);
++		return NULL;
++	}
++
++	root_ops->release_info = acpi_release_root_info;
++	root_ops->prepare_resources = acpi_prepare_root_resources;
++	root_ops->pci_ops = (struct pci_ops *)&info->cfg->ops->pci_ops;
++
++	bus = pci_find_bus(domain, busnum);
++	if (bus) {
++		memcpy(bus->sysdata, info->cfg, sizeof(struct pci_config_window));
++		kfree(info);
++	} else {
++		struct pci_bus *child;
++
++		bus = acpi_pci_root_create(root, root_ops,
++					   &info->common, info->cfg);
++		if (!bus) {
++			kfree(info);
++			kfree(root_ops);
++			return NULL;
++		}
++
++		pci_bus_size_bridges(bus);
++		pci_bus_assign_resources(bus);
++		list_for_each_entry(child, &bus->children, node)
++			pcie_bus_configure_settings(child);
++	}
++
++	return bus;
++}
+diff --git a/arch/loongarch/pci/pci.c b/arch/loongarch/pci/pci.c
+new file mode 100644
+index 000000000000..56dd7d982abf
+--- /dev/null
++++ b/arch/loongarch/pci/pci.c
+@@ -0,0 +1,98 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++#include <linux/kernel.h>
++#include <linux/export.h>
++#include <linux/init.h>
++#include <linux/acpi.h>
++#include <linux/types.h>
++#include <linux/pci.h>
++#include <linux/vgaarb.h>
++#include <asm/loongson.h>
++
++#define PCI_DEVICE_ID_LOONGSON_HOST     0x7a00
++#define PCI_DEVICE_ID_LOONGSON_DC1      0x7a06
++#define PCI_DEVICE_ID_LOONGSON_DC2      0x7a36
++
++int raw_pci_read(unsigned int domain, unsigned int bus, unsigned int devfn,
++						int reg, int len, u32 *val)
++{
++	struct pci_bus *bus_tmp = pci_find_bus(domain, bus);
++
++	if (bus_tmp)
++		return bus_tmp->ops->read(bus_tmp, devfn, reg, len, val);
++	return -EINVAL;
++}
++
++int raw_pci_write(unsigned int domain, unsigned int bus, unsigned int devfn,
++						int reg, int len, u32 val)
++{
++	struct pci_bus *bus_tmp = pci_find_bus(domain, bus);
++
++	if (bus_tmp)
++		return bus_tmp->ops->write(bus_tmp, devfn, reg, len, val);
++	return -EINVAL;
++}
++
++phys_addr_t mcfg_addr_init(int node)
++{
++	return (((u64)node << 44) | MCFG_EXT_PCICFG_BASE);
++}
++
++static int __init pcibios_init(void)
++{
++	unsigned int lsize;
++
++	/*
++	 * Set PCI cacheline size to that of the highest level in the
++	 * cache hierarchy.
++	 */
++	lsize = cpu_dcache_line_size();
++	lsize = cpu_vcache_line_size() ? : lsize;
++	lsize = cpu_scache_line_size() ? : lsize;
++
++	BUG_ON(!lsize);
++
++	pci_dfl_cache_line_size = lsize >> 2;
++
++	pr_debug("PCI: pci_cache_line_size set to %d bytes\n", lsize);
++
++	return 0;
++}
++
++subsys_initcall(pcibios_init);
++
++int pcibios_device_add(struct pci_dev *dev)
++{
++	int id = pci_domain_nr(dev->bus);
++
++	dev_set_msi_domain(&dev->dev, pch_msi_domain[id]);
++
++	return 0;
++}
++
++int pcibios_alloc_irq(struct pci_dev *dev)
++{
++	if (acpi_disabled)
++		return 0;
++	if (pci_dev_msi_enabled(dev))
++		return 0;
++	return acpi_pci_irq_enable(dev);
++}
++
++static void pci_fixup_vgadev(struct pci_dev *pdev)
++{
++	struct pci_dev *devp = NULL;
++
++	while ((devp = pci_get_class(PCI_CLASS_DISPLAY_VGA << 8, devp))) {
++		if (devp->vendor != PCI_VENDOR_ID_LOONGSON) {
++			vga_set_default_device(devp);
++			dev_info(&pdev->dev,
++				"Overriding boot device as %X:%X\n",
++				devp->vendor, devp->device);
++		}
++	}
++}
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_LOONGSON, PCI_DEVICE_ID_LOONGSON_DC1, pci_fixup_vgadev);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_LOONGSON, PCI_DEVICE_ID_LOONGSON_DC2, pci_fixup_vgadev);
+-- 
+2.27.0
 
-  .long \signature
-  int3
-  int3
-my_func:
-  ENDBR
-  ...
-  ret
-
-And then the callsites look like (clang *always* uses r11, right?):
-
-
-  cmpl	\signature, -6(%r11)
-  je	1f
-  ud2
-1:
-  call __x86_indirect_thunk_r11
-
-
-
-> Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
-> ---
->  arch/x86/Kconfig               |  1 +
->  arch/x86/include/asm/linkage.h |  7 ++++++
->  arch/x86/kernel/traps.c        | 39 +++++++++++++++++++++++++++++++++-
->  3 files changed, 46 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index b0142e01002e..01db5c5c4dde 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -108,6 +108,7 @@ config X86
->  	select ARCH_SUPPORTS_PAGE_TABLE_CHECK	if X86_64
->  	select ARCH_SUPPORTS_NUMA_BALANCING	if X86_64
->  	select ARCH_SUPPORTS_KMAP_LOCAL_FORCE_MAP	if NR_CPUS <= 4096
-> +	select ARCH_SUPPORTS_CFI_CLANG		if X86_64
->  	select ARCH_SUPPORTS_LTO_CLANG
->  	select ARCH_SUPPORTS_LTO_CLANG_THIN
->  	select ARCH_USE_BUILTIN_BSWAP
-> diff --git a/arch/x86/include/asm/linkage.h b/arch/x86/include/asm/linkage.h
-> index 85865f1645bd..d20acf5ebae3 100644
-> --- a/arch/x86/include/asm/linkage.h
-> +++ b/arch/x86/include/asm/linkage.h
-> @@ -25,6 +25,13 @@
->  #define RET	ret
->  #endif
->  
-> +#ifdef CONFIG_CFI_CLANG
-> +#define __CFI_TYPE(name)			\
-> +	.fill 10, 1, 0x90 ASM_NL		\
-> +	.4byte __kcfi_typeid_##name ASM_NL	\
-> +	.fill 2, 1, 0xcc
-> +#endif
-> +
->  #else /* __ASSEMBLY__ */
->  
->  #ifdef CONFIG_SLS
-> diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-> index 1563fb995005..b9e46e6ed83b 100644
-> --- a/arch/x86/kernel/traps.c
-> +++ b/arch/x86/kernel/traps.c
-> @@ -40,6 +40,7 @@
->  #include <linux/hardirq.h>
->  #include <linux/atomic.h>
->  #include <linux/ioasid.h>
-> +#include <linux/cfi.h>
->  
->  #include <asm/stacktrace.h>
->  #include <asm/processor.h>
-> @@ -295,6 +296,41 @@ static inline void handle_invalid_op(struct pt_regs *regs)
->  		      ILL_ILLOPN, error_get_trap_addr(regs));
->  }
->  
-> +#ifdef CONFIG_CFI_CLANG
-> +void *arch_get_cfi_target(unsigned long addr, struct pt_regs *regs)
-> +{
-> +	char buffer[MAX_INSN_SIZE];
-> +	int offset;
-> +	struct insn insn;
-> +	unsigned long *target;
-
-Reverse xmas please..
-
-> +
-> +	/*
-> +	 * The expected CFI check instruction sequence:
-> +	 *   cmpl    <id>, -6(%reg)	; 7 bytes
-> +	 *   je      .Ltmp1		; 2 bytes
-> +	 *   ud2			; <- addr
-> +	 *   .Ltmp1:
-> +	 *
-> +	 * Therefore, the target address is in a register that we can
-> +	 * decode from the cmpl instruction.
-> +	 */
-> +	if (copy_from_kernel_nofault(buffer, (void *)addr - 9, MAX_INSN_SIZE))
-> +		return NULL;
-> +	if (insn_decode(&insn, buffer, MAX_INSN_SIZE, INSN_MODE_64))
-> +		return NULL;
-
-insn_decode_kernel()
-
-> +	if (insn.opcode.value != 0x81)
-> +		return NULL;
-
-That's not sufficient to uniquely identify cmp, you also need to look at
-the modrm to find r==7 I think.
-
-> +
-> +	offset = insn_get_modrm_rm_off(&insn, regs);
-> +	if (offset < 0)
-> +		return NULL;
-> +
-> +	target = (void *)regs + offset;
-> +
-> +	return (void *)*target;
-> +}
-> +#endif
-> +
->  static noinstr bool handle_bug(struct pt_regs *regs)
->  {
->  	bool handled = false;
-> @@ -312,7 +348,8 @@ static noinstr bool handle_bug(struct pt_regs *regs)
->  	 */
->  	if (regs->flags & X86_EFLAGS_IF)
->  		raw_local_irq_enable();
-> -	if (report_bug(regs->ip, regs) == BUG_TRAP_TYPE_WARN) {
-> +	if (report_bug(regs->ip, regs) == BUG_TRAP_TYPE_WARN ||
-> +	    report_cfi(regs->ip, regs) == BUG_TRAP_TYPE_WARN) {
-
-This way you'll first get a BUG splat and then tack on the CFI thing.
-Seems a bit daft to have two splats.
-
->  		regs->ip += LEN_UD2;
->  		handled = true;
->  	}
-> -- 
-> 2.36.0.464.gb9c8b46e94-goog
-> 
