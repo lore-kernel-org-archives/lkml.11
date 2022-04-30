@@ -2,109 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14548C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 12:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 510B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 13:00:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382574AbiD3NDI (ORCPT
+        id S1382598AbiD3NDo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 09:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48484 "EHLO
+        Sat, 30 Apr 2022 09:03:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379480AbiD3NDE (ORCPT
+        with ESMTP id S1343716AbiD3NDg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 09:03:04 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3BF874DD6;
-        Sat, 30 Apr 2022 05:59:42 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id i27so20064042ejd.9;
-        Sat, 30 Apr 2022 05:59:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zCHO3F9UUQUUhnGse2puZfAbidpQJJI1trqWLrmHldA=;
-        b=ElvUvrvHg+z/qMdkgJIkhY6+KwDX1JkH7s02dWPJaH1GSJD9o9eLxFaYcEMbZ+5bPR
-         5bBD26zyftE3HJ1SrjL7Hf0azBqWd9YSVWCcYJPnImw9bD45Nd2Vji1tCTWxrH6IJCjr
-         zVsOQ+moOWJ1+HD0vglv1TDhJvECJ1qKtwo5svFWxpdULb0RTKwtGjmgtHoaDMYok9h/
-         HSzmyhIAZwyS7iWEnqO5ACKu1q4gQGtzqLcS6BretCuyPSynEm2B09mjM+tmE3yGiN3M
-         K8+Eqjj+jL+OKs40cOU+90XbpFoD7tHR2jg6fKadihUC6rZsLfeLzra25+ncaRicjA/a
-         7VsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zCHO3F9UUQUUhnGse2puZfAbidpQJJI1trqWLrmHldA=;
-        b=uDy3HciRvk/uD2xl4PdvjGF+qwsqOOY9mBfFDEOeU3hcM6yBe8ltTGBgc3zXZmbp7b
-         KLdPuvWFWFhw+YtwCwthCzW5/7g1ZbPMzx3j3Ood0qDV85P59Y909iQ/GjuDivl3Bjbe
-         loRDCE1I1dY3fl9hqhHIrHU5SQVp79grjYm+irOuW4zOCyXv9WnwhPiU9uQG0Wd/uCzE
-         5NbJ10rCIj4LTPZzE8QsXMofnVFZv1MqkRMv2m2tAnUy+TRXqyBeErcaca5FdyN1LzQk
-         RD2cjyPGPFcto3ZYM+RGxcydFTAttMk2Yfh2rF2hiOaFfn2r07L1Vwg6iXkK6fcWS4tr
-         xwpg==
-X-Gm-Message-State: AOAM5301ke+qoVnvvNydFH1krJcXHwUgnYTQpEjt2xQ4V6iWHDgy2LnG
-        I0sYiQ+sFSoZzz0Km90R5CE=
-X-Google-Smtp-Source: ABdhPJxBsKEu1mvUeIwlkp8br54hpHeAiFIy4YQ8I0RTtQ94BCROdSpnDd18Duw+0825xi3jbb8uhQ==
-X-Received: by 2002:a17:907:6286:b0:6da:6e24:5e43 with SMTP id nd6-20020a170907628600b006da6e245e43mr3684637ejc.449.1651323581354;
-        Sat, 30 Apr 2022 05:59:41 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id a25-20020a056402169900b0042617ba63c8sm4125077edv.82.2022.04.30.05.59.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Apr 2022 05:59:40 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Subject: [PATCH v2 2/2] ARM: dts: qcom: add syscon and cxo/pxo clock to gcc node for ipq8064
-Date:   Sat, 30 Apr 2022 07:51:18 +0200
-Message-Id: <20220430055118.1947-3-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220430055118.1947-1-ansuelsmth@gmail.com>
-References: <20220430055118.1947-1-ansuelsmth@gmail.com>
+        Sat, 30 Apr 2022 09:03:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8866DFD9;
+        Sat, 30 Apr 2022 06:00:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8493F60C11;
+        Sat, 30 Apr 2022 13:00:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CDE34C385AE;
+        Sat, 30 Apr 2022 13:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651323611;
+        bh=Wx7soVe2GwQIKmpkckBFOuN9MRuARvTlfUmWFxAYLO8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=tjndL9h3TDMlAZeDo0bRnqteICKLnT/uBshK5w46ZidyyIyh2ME5PzdygYsWLn3HK
+         XZI+eFhMbuh0xF+YImbicnDW+2P4Wmzsc/lbvstkhRvoge6T72ha+9eWGJR+y8X+5f
+         wCZhrtygS7/afvoci+jz1oBdnIc9IlPd8cZTJ/w7BV2d9JyQhXXJiFASJlY+EKsVVa
+         LGfxzp5T/AdosXbN5mMJIEtFpWN7EadU9J+j8/u6yjiCYvaMMByt9Gatb6ZqNhmY1I
+         ApAWTwM+ZfV64RDlxEdUXPELzonT/dcOGLKvfbUO1dOS0BCdJZYRPIvJPbbT5P/XPQ
+         EeEZj2useH2wg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B46C9F03841;
+        Sat, 30 Apr 2022 13:00:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net/funeth: simplify the return expression of
+ fun_dl_info_get()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165132361173.2405.13440569285124454839.git-patchwork-notify@kernel.org>
+Date:   Sat, 30 Apr 2022 13:00:11 +0000
+References: <20220429090104.3852749-1-chi.minghao@zte.com.cn>
+In-Reply-To: <20220429090104.3852749-1-chi.minghao@zte.com.cn>
+To:     CGEL <cgel.zte@gmail.com>
+Cc:     dmichail@fungible.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        chi.minghao@zte.com.cn, zealci@zte.com.cn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add syscon compatible required for tsens driver to correctly probe driver
-and access the reg. Also add cxo and pxo tag and declare them as gcc clock
-now requires them for the ipq8064 gcc driver that has now been modernized.
+Hello:
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
----
- arch/arm/boot/dts/qcom-ipq8064.dtsi | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-index e6ca8d1d1c5f..ad30f7c8a5a7 100644
---- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-@@ -298,7 +298,7 @@ smem: smem@41000000 {
- 	};
- 
- 	clocks {
--		cxo_board {
-+		cxo_board: cxo_board {
- 			compatible = "fixed-clock";
- 			#clock-cells = <0>;
- 			clock-frequency = <25000000>;
-@@ -736,7 +736,9 @@ tsens_calib_backup: calib_backup@410 {
- 		};
- 
- 		gcc: clock-controller@900000 {
--			compatible = "qcom,gcc-ipq8064";
-+			compatible = "qcom,gcc-ipq8064", "syscon";
-+			clocks = <&pxo_board>, <&cxo_board>;
-+			clock-names = "pxo", "cxo";
- 			reg = <0x00900000 0x4000>;
- 			#clock-cells = <1>;
- 			#reset-cells = <1>;
+On Fri, 29 Apr 2022 09:01:04 +0000 you wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
+> 
+> Simplify the return expression.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+> 
+> [...]
+
+Here is the summary with links:
+  - net/funeth: simplify the return expression of fun_dl_info_get()
+    https://git.kernel.org/netdev/net-next/c/ce7deda0d5cd
+
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
