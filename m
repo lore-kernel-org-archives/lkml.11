@@ -2,158 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36E93C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 12:53:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95FADC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 12:56:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355071AbiD3M4z (ORCPT
+        id S1377214AbiD3NAI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 08:56:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
+        Sat, 30 Apr 2022 09:00:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241936AbiD3M4m (ORCPT
+        with ESMTP id S242211AbiD3NAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 08:56:42 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9A860AA6;
-        Sat, 30 Apr 2022 05:53:20 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id g20so11863029edw.6;
-        Sat, 30 Apr 2022 05:53:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aIciRzMYkPzkWig+LRqnWt0TUAKSu0ybKrdfIEn8ELs=;
-        b=hKFZj3/poS2k6vehXqzJjUZj7lYJotX+HhSK81+6TdiszUC6ARUqOyjqCdoTV+2771
-         hoLw+dWMsU10TEXeHOH7eLnx24FM2HxeOB8ksqhEPVIj8lbFrfD9ePQB7lqHmjBk0V+i
-         ebVtT0ed8mo3E8TqZt79vl5xsQSdDFOYx74PS4poXbjqw8aMfnpDKoeB6NBZ9EmpJkn2
-         brQMbUeCcGoqY6vrfTtBzxJaNqeSfhGdyDL21moqaloosq8189F7MvciEyCTtSiZeEFt
-         AJl770S7qW8aMDGYxUcveM/ZvFJZcHGOnXwAouBXLu5VTST2Sa6xgZacj6jZCvVUSZNa
-         x44g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=aIciRzMYkPzkWig+LRqnWt0TUAKSu0ybKrdfIEn8ELs=;
-        b=qgjVlslTdLWjBaED17fcIDZJPkmIE1pTqrqzTOqpYEVp5V7Naj1++leWMv67FI8Klf
-         mW6TBH9DEAuGQ3hMWRYEtPb0jgcsThuxHKmWuPyabq9nYH8qvMdtMLbuVP2FYFQfbkbu
-         9ZtbeopAZ3RPPiCZ5GQzLmMJTp3+x4jBvu/EWdffOszzq5Bhvx2iFUTu3mlSnT0oLNTt
-         AuzrwpRw1JKLZMqwOV41++lo2NE08YbDGWg8xY/pAh9e6KTrz2+gYIbJP7QYc1J9M3F7
-         QXOBhe/PreqprCyXEUMrhsqijALMJNhjCM/IM1z0+dqgHS14nZ3bCpKIp4muOv1K/cNf
-         e74A==
-X-Gm-Message-State: AOAM533Z4ge9+UGH+XtDQsIQJS1YUrRvN5dGEpUwdjqM4zfsUFQo5tBi
-        XStYJeyCLHU2pTOgqno7/7f0m19z1/Q=
-X-Google-Smtp-Source: ABdhPJy2h6rIHiYMLoby/9pT0hFxIKZSyn6LwkfW77ktbhv0M96NEht68ivMa/+J8v57jqkEN3gXZg==
-X-Received: by 2002:aa7:da08:0:b0:425:af3c:196a with SMTP id r8-20020aa7da08000000b00425af3c196amr4325510eds.69.1651323198687;
-        Sat, 30 Apr 2022 05:53:18 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id jl25-20020a17090775d900b006f3ef214dc5sm1597209ejc.43.2022.04.30.05.53.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Apr 2022 05:53:18 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sricharan R <sricharan@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [PATCH v2 3/3] clk: qcom: clk-krait: add apq/ipq8064 errata workaround
-Date:   Sat, 30 Apr 2022 07:44:58 +0200
-Message-Id: <20220430054458.31321-4-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220430054458.31321-1-ansuelsmth@gmail.com>
-References: <20220430054458.31321-1-ansuelsmth@gmail.com>
+        Sat, 30 Apr 2022 09:00:01 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 1D0CB674F0
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 05:56:38 -0700 (PDT)
+Received: (qmail 986304 invoked by uid 1000); 30 Apr 2022 08:56:38 -0400
+Date:   Sat, 30 Apr 2022 08:56:38 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>
+Subject: Re: [RFC v2 35/39] usb: handle HAS_IOPORT dependencies
+Message-ID: <Ym0yBti0J5w2S59W@rowland.harvard.edu>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+ <20220429135108.2781579-65-schnelle@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220429135108.2781579-65-schnelle@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add apq/ipq8064 errata workaround where the sec_src clock gating needs to
-be disabled during switching. krait-cc compatible is not enough to
-handle this and limit this workaround to apq/ipq8064. We check machine
-compatible to handle this.
+On Fri, Apr 29, 2022 at 03:51:02PM +0200, Niklas Schnelle wrote:
+> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
+> not being declared. We thus need to guard sections of code calling them
+> as alternative access methods with CONFIG_HAS_IOPORT checks. Similarly
+> drivers requiring these functions need to depend on HAS_IOPORT.
+> 
+> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- drivers/clk/qcom/clk-krait.c | 16 ++++++++++++++++
- drivers/clk/qcom/clk-krait.h |  1 +
- drivers/clk/qcom/krait-cc.c  |  8 ++++++++
- 3 files changed, 25 insertions(+)
+...
 
-diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
-index 90046428693c..45da736bd5f4 100644
---- a/drivers/clk/qcom/clk-krait.c
-+++ b/drivers/clk/qcom/clk-krait.c
-@@ -18,13 +18,23 @@
- static DEFINE_SPINLOCK(krait_clock_reg_lock);
- 
- #define LPL_SHIFT	8
-+#define SECCLKAGD	BIT(4)
-+
- static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
- {
- 	unsigned long flags;
- 	u32 regval;
- 
- 	spin_lock_irqsave(&krait_clock_reg_lock, flags);
-+
- 	regval = krait_get_l2_indirect_reg(mux->offset);
-+
-+	/* apq/ipq8064 Errata: disable sec_src clock gating during switch. */
-+	if (mux->disable_sec_src_gating) {
-+		regval |= SECCLKAGD;
-+		krait_set_l2_indirect_reg(mux->offset, regval);
-+	}
-+
- 	regval &= ~(mux->mask << mux->shift);
- 	regval |= (sel & mux->mask) << mux->shift;
- 	if (mux->lpl) {
-@@ -33,6 +43,12 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
- 	}
- 	krait_set_l2_indirect_reg(mux->offset, regval);
- 
-+	/* apq/ipq8064 Errata: re-enabled sec_src clock gating. */
-+	if (mux->disable_sec_src_gating) {
-+		regval &= ~SECCLKAGD;
-+		krait_set_l2_indirect_reg(mux->offset, regval);
-+	}
-+
- 	/* Wait for switch to complete. */
- 	mb();
- 	udelay(1);
-diff --git a/drivers/clk/qcom/clk-krait.h b/drivers/clk/qcom/clk-krait.h
-index 9120bd2f5297..f930538c539e 100644
---- a/drivers/clk/qcom/clk-krait.h
-+++ b/drivers/clk/qcom/clk-krait.h
-@@ -15,6 +15,7 @@ struct krait_mux_clk {
- 	u8		safe_sel;
- 	u8		old_index;
- 	bool		reparent;
-+	bool		disable_sec_src_gating;
- 
- 	struct clk_hw	hw;
- 	struct notifier_block   clk_nb;
-diff --git a/drivers/clk/qcom/krait-cc.c b/drivers/clk/qcom/krait-cc.c
-index 4d4b657d33c3..cfd961d5cc45 100644
---- a/drivers/clk/qcom/krait-cc.c
-+++ b/drivers/clk/qcom/krait-cc.c
-@@ -139,6 +139,14 @@ krait_add_sec_mux(struct device *dev, int id, const char *s,
- 	mux->hw.init = &init;
- 	mux->safe_sel = 0;
- 
-+	/* Checking for qcom,krait-cc-v1 or qcom,krait-cc-v2 is not
-+	 * enough to limit this to apq/ipq8064. Directly check machine
-+	 * compatible to correctly handle this errata.
-+	 */
-+	if (of_machine_is_compatible("qcom,ipq8064") ||
-+	    of_machine_is_compatible("qcom,apq8064"))
-+		mux->disable_sec_src_gating = true;
-+
- 	init.name = kasprintf(GFP_KERNEL, "krait%s_sec_mux", s);
- 	if (!init.name)
- 		return -ENOMEM;
--- 
-2.34.1
+> diff --git a/drivers/usb/host/pci-quirks.c b/drivers/usb/host/pci-quirks.c
+> index ef08d68b9714..4fd06b48149d 100644
+> --- a/drivers/usb/host/pci-quirks.c
+> +++ b/drivers/usb/host/pci-quirks.c
 
+> @@ -632,7 +590,53 @@ bool usb_amd_pt_check_port(struct device *device, int port)
+>  	return !(value & BIT(port_shift));
+>  }
+>  EXPORT_SYMBOL_GPL(usb_amd_pt_check_port);
+> +#endif
+> @@ -1273,7 +1280,8 @@ static void quirk_usb_early_handoff(struct pci_dev *pdev)
+>  			 "Can't enable PCI device, BIOS handoff failed.\n");
+>  		return;
+>  	}
+> -	if (pdev->class == PCI_CLASS_SERIAL_USB_UHCI)
+> +	if (IS_ENABLED(CONFIG_USB_UHCI_HCD) &&
+> +	    pdev->class == PCI_CLASS_SERIAL_USB_UHCI)
+>  		quirk_usb_handoff_uhci(pdev);
+
+We discussed this already.  quirk_usb_handoff_uhci() is supposed to be 
+called even when CONFIG_USB_UHCI_HCD isn't enabled.
+
+...
+
+> diff --git a/drivers/usb/host/uhci-hcd.h b/drivers/usb/host/uhci-hcd.h
+> index 8ae5ccd26753..be4aee1f0ca5 100644
+> --- a/drivers/usb/host/uhci-hcd.h
+> +++ b/drivers/usb/host/uhci-hcd.h
+> @@ -505,36 +505,43 @@ static inline bool uhci_is_aspeed(const struct uhci_hcd *uhci)
+>   * we use memory mapped registers.
+>   */
+>  
+> +#ifdef CONFIG_HAS_IOPORT
+> +#define UHCI_IN(x)	x
+> +#define UHCI_OUT(x)	x
+> +#else
+> +#define UHCI_IN(x)	0
+> +#define UHCI_OUT(x)
+> +#endif
+
+Should have a blank line here.
+
+>  #ifndef CONFIG_USB_UHCI_SUPPORT_NON_PCI_HC
+>  /* Support PCI only */
+>  static inline u32 uhci_readl(const struct uhci_hcd *uhci, int reg)
+>  {
+> -	return inl(uhci->io_addr + reg);
+> +	return UHCI_IN(inl(uhci->io_addr + reg));
+>  }
+>  
+>  static inline void uhci_writel(const struct uhci_hcd *uhci, u32 val, int reg)
+>  {
+> -	outl(val, uhci->io_addr + reg);
+> +	UHCI_OUT(outl(val, uhci->io_addr + reg));
+>  }
+>  
+>  static inline u16 uhci_readw(const struct uhci_hcd *uhci, int reg)
+>  {
+> -	return inw(uhci->io_addr + reg);
+> +	return UHCI_IN(inw(uhci->io_addr + reg));
+>  }
+>  
+>  static inline void uhci_writew(const struct uhci_hcd *uhci, u16 val, int reg)
+>  {
+> -	outw(val, uhci->io_addr + reg);
+> +	UHCI_OUT(outw(val, uhci->io_addr + reg));
+>  }
+>  
+>  static inline u8 uhci_readb(const struct uhci_hcd *uhci, int reg)
+>  {
+> -	return inb(uhci->io_addr + reg);
+> +	return UHCI_IN(inb(uhci->io_addr + reg));
+>  }
+>  
+>  static inline void uhci_writeb(const struct uhci_hcd *uhci, u8 val, int reg)
+>  {
+> -	outb(val, uhci->io_addr + reg);
+> +	UHCI_OUT(outb(val, uhci->io_addr + reg));
+>  }
+>  
+>  #else
+
+I thought you were going to update the definition of 
+uhci_has_pci_registers().  It shouldn't do a test at runtime if 
+CONFIG_HAS_IOPORT is disabled.
+
+Alan Stern
