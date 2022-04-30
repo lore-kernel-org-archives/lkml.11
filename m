@@ -2,219 +2,304 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD128C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 13:13:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F6F0C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 13:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379430AbiD3NQr (ORCPT
+        id S1345395AbiD3NUM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 09:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
+        Sat, 30 Apr 2022 09:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382716AbiD3NQZ (ORCPT
+        with ESMTP id S229947AbiD3NUJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 09:16:25 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFEF382D23
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 06:13:03 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id e2so14045328wrh.7
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 06:13:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod-ie.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5BDpWQnhgIgr6un23nDrSpiOtZvz8Bid/I/OR7bUXBg=;
-        b=SlG01VQDuxSxdPy8VMdSmhznbCqvszukWiPbnb3FyMJXyipQCen4pPNN94SZggFHBR
-         Khv8/STbGnjHar2BvWcMavvK+nWHNx4/vLDyhSmKF1w724sCgNYYjRtvGQEwbJnjRTnI
-         SsCBr2A7+YyYPewKZbXskdXlem0Tx0wsiuw0sTypY8DTgT8EJBv4p9x1e8jA5Gfnv02n
-         YJkDQH5oaeAP9EjFiV4q4h3/aZgXkSeR+WJ8b1+dsG8AI3hq2n081ke8V2vUU6UX3Evk
-         bcIsgmakIN3lF27zSgQVwm4S1yL2dE9uKV+ImcWStQjPfAsY4OfloiF484vCfyGRcmmN
-         27hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5BDpWQnhgIgr6un23nDrSpiOtZvz8Bid/I/OR7bUXBg=;
-        b=4q0UfRoVVSZj6VkYtLdZQukK/3Tw6r2lFZ5nVm60+3UG+GNmHXwC+EmyeIbPmtoKZd
-         vkExvs1Bq51urtOI8D14V/2r1bZn2yrYP3/j+2p3ZSSIuvLRaaau1nyhoaWwYWEHYn4D
-         a+Iof0HsHT3mB1CVPoEf+CgNsbxQArVr7ROG2yg+4GY2ZkTbgTBvMIpUF8MEzENIzUfn
-         AYNuOgecA7lglGNDHuws6Bp/u1q+MswoYbekytBf5+EocoPGStVlE7sZqQzb2wo2J+OR
-         Jia97sXDdys3+jsLa9hwsHB0NXVCVZ0Fq/ZmM83kDPvNDjfKD1VznhIuWuaplAM72s3g
-         EQzQ==
-X-Gm-Message-State: AOAM531dVDk2k3SIo9nSv79I6OwkBur/W6RBhCtAquIovh01eRPKV3zS
-        twiDAHU/c/0k4oObonPq6kGHQQ==
-X-Google-Smtp-Source: ABdhPJzGWomTAcKYy8TjYtr6rv50Fq2fu7zj7OZUjLU0Hb9oHeoK5Z30y35gwYrn24hopjf/OilbsA==
-X-Received: by 2002:a05:6000:1689:b0:20c:4fa1:ffb7 with SMTP id y9-20020a056000168900b0020c4fa1ffb7mr3111374wrd.48.1651324382219;
-        Sat, 30 Apr 2022 06:13:02 -0700 (PDT)
-Received: from henark71.. ([109.77.36.132])
-        by smtp.gmail.com with ESMTPSA id p9-20020adfa209000000b0020c5253d8ebsm2004439wra.55.2022.04.30.06.13.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Apr 2022 06:13:01 -0700 (PDT)
-From:   Conor Dooley <mail@conchuod.ie>
-To:     krzk+dt@kernel.org, palmer@dabbelt.com, robh+dt@kernel.org
-Cc:     conor.dooley@microchip.com, Cyril.Jean@microchip.com,
-        daire.mcnamara@microchip.com, paul.walmsley@sifive.com,
-        aou@eecs.berkeley.edu, palmer@rivosinc.com, arnd@arndb.de,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, Conor Dooley <mail@conchuod.ie>
-Subject: [PATCH v2 8/8] riscv: dts: microchip: add the sundance polarberry
-Date:   Sat, 30 Apr 2022 14:09:23 +0100
-Message-Id: <20220430130922.3504268-9-mail@conchuod.ie>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220430130922.3504268-1-mail@conchuod.ie>
-References: <20220430130922.3504268-1-mail@conchuod.ie>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sat, 30 Apr 2022 09:20:09 -0400
+Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [81.169.146.219])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5191195A26;
+        Sat, 30 Apr 2022 06:16:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1651324568;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=3zGwMI7wb1IdcDUlZW1T5Z66DDsPImI+iGd0yDi8/Tg=;
+    b=ri2xQlzzHPGNH1PrFvXjrkfFCJEgl71AtycxVxLUNYkG9/T04xQBHSr6+NblmQao9Z
+    pZ/WbrsQoa9sRaF+vRS5+iMM+79iNTYBnMnqGeiXHyRvDwKPDgn0pxH/j9BX23xpC/lR
+    wxuR0CCjI5Z6BY1ycsOuXix9RWPjYwUlyAIJo3TsDk3UGM4LKdCnTdZx+TLf3YkAICqf
+    vEWIWIDKL+lKnN2/mtfPwRxHc4KppLCTBSiJH+R5l+EEmyL6pP2MEf/R26Yy2FVrcnIK
+    w/QFDi5RD7UohKTlSmaArp9jW4MHi1PHekqRYtUgfis+yJwNZhMN/vKbX4LpeoCcy+sS
+    4tcQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7wpz8NIGH/jrwDOsdZY="
+X-RZG-CLASS-ID: mo00
+Received: from imac.fritz.box
+    by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
+    with ESMTPSA id k708cfy3UDG8MGN
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Sat, 30 Apr 2022 15:16:08 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
+Subject: Re: kernel panic with v5.18-rc1 on OpenPandora (only)
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <CAK8P3a3N9WBWC_ECB0pSRHUCT4iz=tdT+Dt9Cyd5Wh3qEaVqqA@mail.gmail.com>
+Date:   Sat, 30 Apr 2022 15:16:07 +0200
+Cc:     Discussions about the Letux Kernel <letux-kernel@openphoenux.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-OMAP <linux-omap@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Ard Biesheuvel <ardb@kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <4CE23DC3-B3E5-45C1-91F3-B88E5444AE7C@goldelico.com>
+References: <FA654A0D-29B7-4B6B-B613-73598A92ADA8@goldelico.com>
+ <YmkBAsa+fKlp/GcV@atomide.com>
+ <CAK8P3a3N9WBWC_ECB0pSRHUCT4iz=tdT+Dt9Cyd5Wh3qEaVqqA@mail.gmail.com>
+To:     Arnd Bergmann <arnd@arndb.de>, Tony Lindgren <tony@atomide.com>
+X-Mailer: Apple Mail (2.3445.104.21)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+Hi,
 
-Add a minimal device tree for the PolarFire SoC based Sundance
-PolarBerry.
+> Am 27.04.2022 um 11:37 schrieb Arnd Bergmann <arnd@arndb.de>:
+>=20
+> On Wed, Apr 27, 2022 at 10:38 AM Tony Lindgren <tony@atomide.com> =
+wrote:
+>> * H. Nikolaus Schaller <hns@goldelico.com> [220426 20:16]:
+>>> [   28.245727] [<c0100b60>] (__irq_svc) from [<c0905de0>] =
+(_raw_spin_unlock_irq+0x20/0x4c)
+>>> [   28.254150] [<c0905de0>] (_raw_spin_unlock_irq) from [<c0902e94>] =
+(do_wait_for_common+0xa8/0x138)
+>>> [   28.263488] [<c0902e94>] (do_wait_for_common) from [<c0902f54>] =
+(wait_for_common+0x30/0x48)
+>>> [   28.272277] [<c0902f54>] (wait_for_common) from [<c074edf8>] =
+(mmc_wait_for_req_done+0x1c/0x90)
+>>> [   28.281341] [<c074edf8>] (mmc_wait_for_req_done) from =
+[<c075a72c>] (mmc_io_rw_extended+0x1c0/0x2f4)
+>>> [   28.290893] [<c075a72c>] (mmc_io_rw_extended) from [<c075bd00>] =
+(sdio_io_rw_ext_helper+0x118/0x140)
+>>> [   28.300415] [<c075bd00>] (sdio_io_rw_ext_helper) from =
+[<c075bdd0>] (sdio_memcpy_toio+0x18/0x20)
+>>> [   28.309570] [<c075bdd0>] (sdio_memcpy_toio) from [<bf3de1ec>] =
+(wl1251_sdio_write+0x34/0x54 [wl1251_sdio])
+>>> [   28.319702] [<bf3de1ec>] (wl1251_sdio_write [wl1251_sdio]) from =
+[<bf40fc8c>] (wl1251_set_partition+0x90/0x404 [wl1251])
+>>> [   28.331207] [<bf40fc8c>] (wl1251_set_partition [wl1251]) from =
+[<bf4074ec>] (wl1251_init_ieee80211+0x1c0/0x3dc [wl1251])
+>=20
+> I think the problem is here: wl1251_set_partition() passes a local
+> stack variable into
+> an SDIO API function that is given to the hardware. This was never
+> safe and could
+> cause a corrupted stack because of the cache management, but with vmap =
+stacks
+> it turns into a reliable DMA error, which I guess is what the l3
+> interrupt is about.
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-Signed-off-by: Conor Dooley <mail@conchuod.ie>
----
- arch/riscv/boot/dts/microchip/Makefile        |  1 +
- .../dts/microchip/mpfs-polarberry-fabric.dtsi | 16 ++++
- .../boot/dts/microchip/mpfs-polarberry.dts    | 95 +++++++++++++++++++
- 3 files changed, 112 insertions(+)
- create mode 100644 arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi
- create mode 100644 arch/riscv/boot/dts/microchip/mpfs-polarberry.dts
+This seems to me to be a fitting explanation. Thanks!
 
-diff --git a/arch/riscv/boot/dts/microchip/Makefile b/arch/riscv/boot/dts/microchip/Makefile
-index af3a5059b350..39aae7b04f1c 100644
---- a/arch/riscv/boot/dts/microchip/Makefile
-+++ b/arch/riscv/boot/dts/microchip/Makefile
-@@ -1,3 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0
- dtb-$(CONFIG_SOC_MICROCHIP_POLARFIRE) += mpfs-icicle-kit.dtb
-+dtb-$(CONFIG_SOC_MICROCHIP_POLARFIRE) += mpfs-polarberry.dtb
- obj-$(CONFIG_BUILTIN_DTB) += $(addsuffix .o, $(dtb-y))
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi b/arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi
-new file mode 100644
-index 000000000000..49380c428ec9
---- /dev/null
-+++ b/arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi
-@@ -0,0 +1,16 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* Copyright (c) 2020-2022 Microchip Technology Inc */
+>=20
+> Can you change wl1251_set_partition() to use kmalloc()/kfree() to =
+allocate the
+> partitions[] array?
+
+Yes, I have tried and made it use struct wl1251_partition_set. Diff is =
+attached.
+
+> You said that it still crashes without the wl1251
+> driver, so I assume
+> there is at least one more related bug. If you get a different call
+> chain without the
+> driver, or with the kmalloc() call, can you post that as well?
+
+For some time it did disappear but reported  e.g.
+
+[   29.457946] omap_hsmmc 480ad000.mmc: found wl1251
+[   29.516174] wl1251: ERROR unsupported chip id: 0xdb0aea56
+
+(value did change a little randomly), but just before sending out this =
+mail I tried
+again (now with v5.18-rc4) and got this log (with wl1251 driver fixed as =
+below):
+
+[   29.813232] omap_hsmmc 480ad000.mmc: found wl1251
+[   30.131164] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
+CCP2 was not initialized!
+[   30.432006] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
+CSI2a was not initialized!
+[   30.660888] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
+CCDC was not initialized!
+[   30.791229] wl1251: 151 tx blocks at 0x3b788, 35 rx blocks at 0x3a780
+[   30.811218] wl1251: firmware booted (Rev 4.0.4.3.7)
+[   30.817047] ------------[ cut here ]------------
+[   30.821899] kernel BUG at drivers/bus/omap_l3_smx.c:177!
+[   30.827484] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
+[   30.833618] Modules linked in: snd_soc_omap_mcbsp snd_soc_ti_sdma =
+omap3_isp(+) wl1251_sdio videobuf2_dma_contig videobuf2_memops wl1251 =
+videobuf2_v4l2 usb_f_ecm videobuf2_common v4l2_fwnode g_ether v4l2_async =
+usb_f_rndis u_ether libcomposite configfs mac80211 bq27xxx_battery_hdq =
+videodev omap_sham libarc4 mc omap_aes_driver crypto_engine omap_hdq =
+panel_tpo_td043mtea1 ads7846 omap_crypto omap2430 phy_twl4030_usb =
+musb_hdrc twl4030_pwrbutton twl4030_charger twl4030_madc snd_soc_twl4030 =
+industrialio twl4030_keypad ehci_omap bq27xxx_battery_i2c pandora_nub =
+bq27xxx_battery omapdrm drm_kms_helper syscopyarea sysfillrect sysimgblt =
+fb_sys_fops cfg80211 drm drm_panel_orientation_quirks cec ip_tables =
+x_tables ipv6 autofs4
+[   30.900390] CPU: 0 PID: 2143 Comm: depmod Not tainted =
+5.18.0-rc4-letux+ #9499
+[   30.907867] Hardware name: Generic OMAP3 (Flattened Device Tree)
+[   30.914184] PC is at omap3_l3_app_irq+0x3c/0x120
+[   30.919067] LR is at __handle_irq_event_percpu+0xb0/0x1dc
+[   30.924743] pc : [<c04e6e9c>]    lr : [<c017d654>]    psr: 200f0193
+[   30.931304] sp : e0001eb8  ip : c0c7d850  fp : c0def3e0
+[   30.936828] r10: c0d04014  r9 : c1032200  r8 : c0c77370
+[   30.942291] r7 : 00000000  r6 : 0000001a  r5 : 00000000  r4 : =
+f8000000
+[   30.949157] r3 : 00000000  r2 : 00400000  r1 : 00400000  r0 : =
+00400000
+[   30.956024] Flags: nzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  =
+Segment none
+[   30.963623] Control: 10c5387d  Table: 83618019  DAC: 00000051
+[   30.969665] Register r0 information: non-paged memory
+[   30.974975] Register r1 information: non-paged memory
+[   30.980285] Register r2 information: non-paged memory
+[   30.985626] Register r3 information: NULL pointer
+[   30.990570] Register r4 information: 0-page vmalloc region starting =
+at 0xf8000000 allocated at iotable_init+0x0/0xf4
+[   31.001647] Register r5 information: NULL pointer
+[   31.006591] Register r6 information: non-paged memory
+[   31.011901] Register r7 information: NULL pointer
+[   31.016845] Register r8 information: non-slab/vmalloc memory
+[   31.022827] Register r9 information: slab kmalloc-256 start c1032200 =
+pointer offset 0 size 256
+[   31.031921] Register r10 information: non-slab/vmalloc memory
+[   31.037994] Register r11 information: non-slab/vmalloc memory
+[   31.044036] Register r12 information: non-slab/vmalloc memory
+[   31.050079] Process depmod (pid: 2143, stack limit =3D 0x2035257a)
+[   31.056396] Stack: (0xe0001eb8 to 0xe0002000)
+[   31.060974] 1ea0:                                                     =
+  0000001a c1119940
+[   31.069580] 1ec0: 00000000 c11198c0 c103226c 0000001a 00000000 =
+c017d654 c1032200 c37c0a40
+[   31.078155] 1ee0: 00000000 c1032200 c103226c c1032218 e0001f84 =
+c0c77370 c37c0a40 c0def3c0
+[   31.086761] 1f00: c0d02080 c017d78c c1032200 c103226c c1032218 =
+c017d7f0 c1032200 c103226c
+[   31.095336] 1f20: c1032218 c0181ee0 e0001f50 00000000 ffffffff =
+c017cf6c e0001f50 c08b4d7c
+[   31.103942] 1f40: c01013c4 600f0113 ffffffff c0100bec c37c0a40 =
+c0c7e6c0 00000000 1ed15000
+[   31.112548] 1f60: c0c7e6c0 c0c7e6c0 00000040 c0d02d00 c0c77370 =
+c37c0a40 c0def3c0 c0d02080
+[   31.121154] 1f80: c0c7d850 e0001fa0 c0101390 c01013c4 600f0113 =
+ffffffff 00000051 c0101390
+[   31.129730] 1fa0: e01b9e94 c37c0a40 c37c0a40 00400000 0000000a =
+ffff96d9 c1037850 c0c7e6c0
+[   31.138336] 1fc0: c0d02d00 c0c7e6c0 c37c0a40 c37c0a40 600f0113 =
+ffffffff e01b9e94 c37c0a40
+[   31.146911] 1fe0: c37c0a40 e01b9f60 e01b9e58 c0137314 c0158434 =
+c013740c c0158434 c04c9c6c
+[   31.155517]  omap3_l3_app_irq from =
+__handle_irq_event_percpu+0xb0/0x1dc
+[   31.162475]  __handle_irq_event_percpu from =
+handle_irq_event_percpu+0xc/0x38
+[   31.169891]  handle_irq_event_percpu from handle_irq_event+0x38/0x5c
+[   31.176605]  handle_irq_event from handle_level_irq+0x7c/0xb4
+[   31.182647]  handle_level_irq from handle_irq_desc+0x1c/0x2c
+[   31.188629]  handle_irq_desc from generic_handle_arch_irq+0x28/0x3c
+[   31.195220]  generic_handle_arch_irq from __irq_svc+0x8c/0xcc
+[   31.201263] Exception stack(0xe0001f50 to 0xe0001f98)
+[   31.206604] 1f40:                                     c37c0a40 =
+c0c7e6c0 00000000 1ed15000
+[   31.215179] 1f60: c0c7e6c0 c0c7e6c0 00000040 c0d02d00 c0c77370 =
+c37c0a40 c0def3c0 c0d02080
+[   31.223785] 1f80: c0c7d850 e0001fa0 c0101390 c01013c4 600f0113 =
+ffffffff
+[   31.230743]  __irq_svc from __do_softirq+0x84/0x304
+[   31.235870]  __do_softirq from __irq_exit_rcu+0x8c/0xd4
+[   31.241363]  __irq_exit_rcu from irq_exit+0x8/0x10
+[   31.246429]  irq_exit from call_with_stack+0x18/0x20
+[   31.251647]  call_with_stack from __irq_svc+0x98/0xcc
+[   31.256988] Exception stack(0xe01b9e60 to 0xe01b9ea8)
+[   31.262298] 9e60: df993a40 c37c0a40 00000000 00000001 df993a40 =
+c3245000 c133c2c0 00000002
+[   31.270904] 9e80: c37c0a40 00000000 e01b9f60 e01b9edc e01b9ee0 =
+e01b9eb0 c08ba55c c0158434
+[   31.279479] 9ea0: 600f0113 ffffffff
+[   31.283172]  __irq_svc from finish_task_switch+0x12c/0x1ec
+[   31.288940]  finish_task_switch from __schedule+0x3cc/0x558
+[   31.294799]  __schedule from schedule+0x70/0xc0
+[   31.299591]  schedule from do_work_pending+0x30/0x3dc
+[   31.304901]  do_work_pending from slow_work_pending+0xc/0x20
+[   31.310852] Exception stack(0xe01b9fb0 to 0xe01b9ff8)
+[   31.316192] 9fa0:                                     00002cf8 =
+00000000 50000000 b6f99000
+[   31.324768] 9fc0: b6f9bcfc b6f9bcf8 00000000 00000000 00000010 =
+00000000 00001e94 00000000
+[   31.333374] 9fe0: b6f9bcf8 bea66f80 b6f9bcfc 004bfc6a 40070030 =
+ffffffff
+[   31.340332] Code: e0000002 e0011003 e1901001 0a000002 (e7f001f2)=20
+[   31.346740] ---[ end trace 0000000000000000 ]---
+[   31.351593] Kernel panic - not syncing: Fatal exception in interrupt
+[   31.358276] ---[ end Kernel panic - not syncing: Fatal exception in =
+interrupt ]---
+
+>=20
+>       Arnd
+
+rm -rf =
+lib/modules/5.18.0-rc4-letux+/kernel/drivers/net/wireless/ti/wl1251
+
+done on the SD card makes the problems go away.
+
+BR and thanks,
+Nikolaus
+
+
+diff --git a/drivers/net/wireless/ti/wl1251/io.c =
+b/drivers/net/wireless/ti/wl1251/io.c
+index 5ebe7958ed5c7..76aceecc281fb 100644
+--- a/drivers/net/wireless/ti/wl1251/io.c
++++ b/drivers/net/wireless/ti/wl1251/io.c
+@@ -121,7 +121,13 @@ void wl1251_set_partition(struct wl1251 *wl,
+                          u32 mem_start, u32 mem_size,
+                          u32 reg_start, u32 reg_size)
+ {
+-       struct wl1251_partition partition[2];
++       struct wl1251_partition_set *partition;
 +
-+/ {
-+	fabric_clk3: fabric-clk3 {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <62500000>;
-+	};
++       partition =3D kmalloc(sizeof(*partition), GFP_KERNEL);
++       if (!partition) {
++               wl1251_error("can not set partition");
++               return;
++       }
+=20
+        wl1251_debug(DEBUG_SPI, "mem_start %08X mem_size %08X",
+                     mem_start, mem_size);
+@@ -164,10 +170,10 @@ void wl1251_set_partition(struct wl1251 *wl,
+                             reg_start, reg_size);
+        }
+=20
+-       partition[0].start =3D mem_start;
+-       partition[0].size  =3D mem_size;
+-       partition[1].start =3D reg_start;
+-       partition[1].size  =3D reg_size;
++       partition->mem.start =3D mem_start;
++       partition->mem.size  =3D mem_size;
++       partition->reg.start =3D reg_start;
++       partition->reg.size  =3D reg_size;
+=20
+        wl->physical_mem_addr =3D mem_start;
+        wl->physical_reg_addr =3D reg_start;
+@@ -176,5 +182,7 @@ void wl1251_set_partition(struct wl1251 *wl,
+        wl->virtual_reg_addr =3D mem_size;
+=20
+        wl->if_ops->write(wl, HW_ACCESS_PART0_SIZE_ADDR, partition,
+-               sizeof(partition));
++               sizeof(*partition));
 +
-+	fabric_clk1: fabric-clk1 {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <125000000>;
-+	};
-+};
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-polarberry.dts b/arch/riscv/boot/dts/microchip/mpfs-polarberry.dts
-new file mode 100644
-index 000000000000..96ec589d1571
---- /dev/null
-+++ b/arch/riscv/boot/dts/microchip/mpfs-polarberry.dts
-@@ -0,0 +1,95 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* Copyright (c) 2020-2022 Microchip Technology Inc */
-+
-+/dts-v1/;
-+
-+#include "mpfs.dtsi"
-+#include "mpfs-polarberry-fabric.dtsi"
-+
-+/* Clock frequency (in Hz) of the rtcclk */
-+#define MTIMER_FREQ	1000000
-+
-+/ {
-+	model = "Sundance PolarBerry";
-+	compatible = "sundance,polarberry", "microchip,mpfs";
-+
-+	aliases {
-+		serial0 = &mmuart0;
-+		ethernet0 = &mac1;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	cpus {
-+		timebase-frequency = <MTIMER_FREQ>;
-+	};
-+
-+	ddrc_cache_lo: memory@80000000 {
-+		device_type = "memory";
-+		reg = <0x0 0x80000000 0x0 0x2e000000>;
-+		status = "okay";
-+	};
-+
-+	ddrc_cache_hi: memory@1000000000 {
-+		device_type = "memory";
-+		reg = <0x10 0x00000000 0x0 0xC0000000>;
-+		status = "okay";
-+	};
-+};
-+
-+&refclk {
-+	clock-frequency = <125000000>;
-+};
-+
-+&mmuart0 {
-+	status = "okay";
-+};
-+
-+&mmc {
-+	status = "okay";
-+	bus-width = <4>;
-+	disable-wp;
-+	cap-sd-highspeed;
-+	cap-mmc-highspeed;
-+	card-detect-delay = <200>;
-+	mmc-ddr-1_8v;
-+	mmc-hs200-1_8v;
-+	sd-uhs-sdr12;
-+	sd-uhs-sdr25;
-+	sd-uhs-sdr50;
-+	sd-uhs-sdr104;
-+};
-+
-+&mac1 {
-+	status = "okay";
-+	phy-mode = "sgmii";
-+	phy-handle = <&phy1>;
-+	phy1: ethernet-phy@5 {
-+		reg = <5>;
-+		ti,fifo-depth = <0x01>;
-+	};
-+	phy0: ethernet-phy@4 {
-+		reg = <4>;
-+		ti,fifo-depth = <0x01>;
-+	};
-+};
-+
-+&mac0 {
-+	status = "disabled";
-+	phy-mode = "sgmii";
-+	phy-handle = <&phy0>;
-+};
-+
-+&rtc {
-+	status = "okay";
-+};
-+
-+&mbox {
-+	status = "okay";
-+};
-+
-+&syscontroller {
-+	status = "okay";
-+};
--- 
-2.36.0
++       kfree(partition);
+ }
+
 
