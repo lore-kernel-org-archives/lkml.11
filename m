@@ -2,82 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E967C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 10:51:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2667FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 11:06:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382596AbiD3Kxi (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 06:53:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59050 "EHLO
+        id S238682AbiD3LIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Apr 2022 07:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380278AbiD3Kxd (ORCPT
+        with ESMTP id S235451AbiD3LIk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 06:53:33 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F126308
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 03:50:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=EdwU7zphlaqSH4Kaj3FCs5OTnA493vLfU5D6iYHz2BU=; b=KY0tl3qYFGMbWI8thn7qu5kgmw
-        6plHoqFMPaMwppYzTVopOCK8lK2tC6bYZlIfzcIcRxUaZLHkBgtcudLRaRnjvP7tLHiBOHdSjMCVH
-        /vVl6G0iwciXCsfouRIbBLzoDa57aSk/bzzUznB05fqrNTgcH5o9UGX/4H32L1RomKxAdzjQGAmAE
-        F9fh8adPOEJwZi4LQhAUbKTCOtsmCe5/vGPWNKsg8FADGKQtI6ROlDc/eoGqjz6DGOdAPWCnsaUh4
-        utsyIFfHIZKyeSaA3/o333+7e2UnfCGBXyMAe/pFVV/pSyZYuL6lEtIyzBzKN5WzwE7SMeHONLibZ
-        k/+85sBA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nkkfs-009tdQ-Bk; Sat, 30 Apr 2022 10:50:04 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 76B57300473;
-        Sat, 30 Apr 2022 12:50:02 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 481752028EFE6; Sat, 30 Apr 2022 12:50:02 +0200 (CEST)
-Date:   Sat, 30 Apr 2022 12:50:02 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] objtool: Fix SLS checks
-Message-ID: <Ym0UWja2L40QbgEc@hirez.programming.kicks-ass.net>
+        Sat, 30 Apr 2022 07:08:40 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 862152183C
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 04:05:11 -0700 (PDT)
+Received: from mail-yb1-f175.google.com ([209.85.219.175]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1Ma1HG-1nNjqD27l6-00W23Y; Sat, 30 Apr 2022 13:05:09 +0200
+Received: by mail-yb1-f175.google.com with SMTP id w187so18600390ybe.2;
+        Sat, 30 Apr 2022 04:05:09 -0700 (PDT)
+X-Gm-Message-State: AOAM531o/3BAN8nqceJV/xsr+E4yVz2GNdptZvfqIMN9bInkV6Fq3mxS
+        XF/+7H5zHjU7aXJJnZT4XERP7tJBoQdkJtbSIAs=
+X-Google-Smtp-Source: ABdhPJwibsCnhqRh57jVjG10phM0BrUgvfZ/Cu+XnlvIN8vHkz0VXxSV0emX0Uq3MS9OyJQ4u/HSolRYBlWtD82GrJc=
+X-Received: by 2002:a25:cdc7:0:b0:648:f57d:c0ed with SMTP id
+ d190-20020a25cdc7000000b00648f57dc0edmr3093454ybf.480.1651314908194; Sat, 30
+ Apr 2022 03:35:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220430090518.3127980-1-chenhuacai@loongson.cn>
+ <20220430090518.3127980-14-chenhuacai@loongson.cn> <CAK8P3a0A9dW4mwJ6JHDiJxizL7vWfr4r4c5KhbjtAY0sWbZJVA@mail.gmail.com>
+ <CAAhV-H4te_+AS69viO4eBz=abBUm5oQ6AfoY1Cb+nOCZyyeMdA@mail.gmail.com>
+In-Reply-To: <CAAhV-H4te_+AS69viO4eBz=abBUm5oQ6AfoY1Cb+nOCZyyeMdA@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Sat, 30 Apr 2022 12:34:52 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0DqQcApv8aa2dgBS5At=tEkN7cnaskoUeXDi2-Bu9Rnw@mail.gmail.com>
+Message-ID: <CAK8P3a0DqQcApv8aa2dgBS5At=tEkN7cnaskoUeXDi2-Bu9Rnw@mail.gmail.com>
+Subject: Re: [PATCH V9 13/24] LoongArch: Add system call support
+To:     Huacai Chen <chenhuacai@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Linux API <linux-api@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:5Q9ONKpvezK/gY6sK2MPxh0TEU0BEAAMPsvROxQ36cnlmFEuzsX
+ HJsG/sjFOKpipVSpnXpq9/Ku4sBDl72eHjTZI/jSDmrqMQ8IIFStXLMVQjFdfwzt3St4jP7
+ E07FbeDW1UzkQp6jGVh7QHV6fYvi4I2RH664Dtr/txCTm7/GLBVUuHn6rRjXvAUTb4m+3ZQ
+ bP4jZMRxNSRZ3WHWQ1MAQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:eulq2tmNm+M=:VWpAPGIqyAGE8XZZ/597/q
+ 607IIA8lc0UkUcwtoSUWiqCDiv8NkDTjZf5CfBWHkyYWI5v6ugJBx1Sep2d2fKTf9s0CcHV+6
+ AC38+yBaNitt5RSzHOgXZuTrZmc4ItLRupVyAkJ4tio57vcY6BdgebYO6WRZNYdMhYGAQC1Qg
+ 4R1mA/zuN3nLbNArfF04xmD5HwT1GIGKvGxa0IHcazrEThfL7T80cxAsgB1saMOA9GKwz9OFu
+ Qm/nhJIhjdXrLNzmGYDbU7wN794V4uAAFevqSJ5zZfWZFm21pUCI1Yph3EH6SrRBdeq0QKOD1
+ UgBLtiXPwRImYhyQf25phvFNGnitD+4UT1VGY1mJf8m/Nh9DehgXVOwRG1N22h7h3VLuN3wJV
+ 7QdiEKnBs+IE7+InKpGuKvZzJGeOzoNNimUPHf7f8MOI/KC8d5IBTTbLW2Ogj/NSqloietbNR
+ a15a4J80YGoQh4iO+hmZtJd4JYFy3RAfsXmX1k/3JcJfrBPUU0x/xFIL0vfI5P/oXW4Uv8dOe
+ KU3tB5VkK49Q3JPO3spAK/SX9qtD6KjhicJspuTXEi4MzBMtXin7xYVFMqCYC4NWoMqL6UlAC
+ wmh2K38Cac6xYB8ctKQ6zDCnJTSVI3yfygTJWisblgZYfKjc6+XiJ9KuLrTP8QEfmXoeuWFY2
+ XFIgsjyIGJ1/sLF4fJux9e1rW1r5tEhy0/Z3zbRoDoYHiznnc69tgmUHkeO6VcNtoijrVXV3w
+ ZnjocAxXp3e/Lrwbn22lKkzUmskpbwYQvJ3096awfpKnrfwS6OWs4AC6pvVp0Z6tDfFze+o6b
+ FsBpaMjQIFzmgpcf9e6egimZxIfpmtmobma8O7cfTq18vbEI8U=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sat, Apr 30, 2022 at 12:05 PM Huacai Chen <chenhuacai@gmail.com> wrote:
+> On Sat, Apr 30, 2022 at 5:45 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> > On Sat, Apr 30, 2022 at 11:05 AM Huacai Chen <chenhuacai@loongson.cn> wrote:
+> > >
+> > > This patch adds system call support and related uaccess.h for LoongArch.
+> > >
+> > > Q: Why keep __ARCH_WANT_NEW_STAT definition while there is statx:
+> > > A: Until the latest glibc release (2.34), statx is only used for 32-bit
+> > >    platforms, or 64-bit platforms with 32-bit timestamp. I.e., Most 64-
+> > >    bit platforms still use newstat now.
+> > >
+> > > Q: Why keep _ARCH_WANT_SYS_CLONE definition while there is clone3:
+> > > A: The latest glibc release (2.34) has some basic support for clone3 but
+> > >    it isn't complete. E.g., pthread_create() and spawni() have converted
+> > >    to use clone3 but fork() will still use clone. Moreover, some seccomp
+> > >    related applications can still not work perfectly with clone3. E.g.,
+> > >    Chromium sandbox cannot work at all and there is no solution for it,
+> > >    which is more terrible than the fork() story [1].
+> > >
+> > > [1] https://chromium-review.googlesource.com/c/chromium/src/+/2936184
+> >
+> > I still think these have to be removed. There is no mainline glibc or musl
+> > port yet, and neither of them should actually be required. Please remove
+> > them here, and modify your libc patches accordingly when you send those
+> > upstream.
+>
+> If this is just a problem that can be resolved by upgrading
+> glibc/musl, I will remove them. But the Chromium problem (or sandbox
+> problem in general) seems to have no solution now.
 
-Fix the SLS validation; not having a next instruction is also a fail
-when the next instruction should be INSN_TRAP.
+I added Christian Brauner to Cc now, maybe he has come across the
+sandbox problem before and has an idea for a solution.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- tools/objtool/check.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 3f6785415894..3354101ffe34 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -3380,7 +3380,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
- 
- 		case INSN_RETURN:
- 			if (sls && !insn->retpoline_safe &&
--			    next_insn && next_insn->type != INSN_TRAP) {
-+			    (!next_insn || (next_insn && next_insn->type != INSN_TRAP))) {
- 				WARN_FUNC("missing int3 after ret",
- 					  insn->sec, insn->offset);
- 			}
-@@ -3428,7 +3428,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
- 
- 		case INSN_JUMP_DYNAMIC:
- 			if (sls && !insn->retpoline_safe &&
--			    next_insn && next_insn->type != INSN_TRAP) {
-+			    (!next_insn || (next_insn && next_insn->type != INSN_TRAP))) {
- 				WARN_FUNC("missing int3 after indirect jump",
- 					  insn->sec, insn->offset);
- 			}
+        Arnd
