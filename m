@@ -2,107 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1954C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 01:29:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B43FDC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 01:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381975AbiD3BdH (ORCPT
+        id S1381991AbiD3BrY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 21:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57284 "EHLO
+        Fri, 29 Apr 2022 21:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238172AbiD3BdG (ORCPT
+        with ESMTP id S238172AbiD3BrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 21:33:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D3247F20D;
-        Fri, 29 Apr 2022 18:29:45 -0700 (PDT)
+        Fri, 29 Apr 2022 21:47:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5511BF32B;
+        Fri, 29 Apr 2022 18:44:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C82CB83843;
-        Sat, 30 Apr 2022 01:29:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7506CC385A7;
-        Sat, 30 Apr 2022 01:29:42 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="SHh4hRgR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651282179;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=19JFfsHR6Tp7LcmMWZO8uINflblFf+OX3ZdrXJdqqB8=;
-        b=SHh4hRgRP6EmLV+d8Xh1tNidnOnYrtcCnOmHoYFbdpuSemy3C8S1fPMV/ldzuGyhATS2wt
-        QX3TUz29I6uiMgr043x0w9kboiVIsCRg4ugDiT1Se1IbNG39pJskGd7b8tMTbSsIetB1ML
-        LgG5Mvoy+gMISDKnoQMhrH+LLo88UhI=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8034c9c3 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sat, 30 Apr 2022 01:29:39 +0000 (UTC)
-Date:   Sat, 30 Apr 2022 03:29:37 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Stafford Horne <shorne@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: Re: [PATCH v7 11/17] openrisc: account for 0 starting value in
- random_get_entropy()
-Message-ID: <YmyRATzJBQX+wnIP@zx2c4.com>
-References: <20220423212623.1957011-12-Jason@zx2c4.com>
- <20220429001648.1671472-1-Jason@zx2c4.com>
- <YmyOh/YbgGJ3DK79@antec>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9183BB83877;
+        Sat, 30 Apr 2022 01:44:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1FCAC385AC;
+        Sat, 30 Apr 2022 01:44:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651283041;
+        bh=xw0l58DOPIz+7PGn4jskQGQVzd1XPiy9sknmCETqAkU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HuzA6gtwLB2wcO71hqE/+3j9RqD1c2tOJiO4U0pQv17/Ee2cZvrw3G4RHVD9ptfXT
+         8lVkAZD4He6HZcm0/GTa7nFYPPBcsOwe3y/TN1CESaporAWdr8LJFqecupqQvHRm9j
+         ESUDSZURNiS5vyyF3qxr0dQ0F4RmqiZNsldWGgfwfeL35TW452+P6FySGU3firD6cN
+         dMQ837K0gwctilhzFLWDH4eXMygHdTy9c2OqJEgRxXMWZvZSrMeUQ+SAHgpHe2gLZr
+         K5+bjjRl0EUc85goyQVRZAbQltnLtnK/0qoszJ8xKtUQbXOkr1HIDJAnCq5ywZptu3
+         fAe4XW/sm3s/Q==
+Date:   Fri, 29 Apr 2022 18:43:59 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     cgel.zte@gmail.com
+Cc:     olteanv@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, davem@davemloft.net, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] net: dsa: sja1105: simplify the return expression of
+ sja1105_cls_flower_stats()
+Message-ID: <20220429184359.72b225e1@kernel.org>
+In-Reply-To: <20220429055226.3852334-1-chi.minghao@zte.com.cn>
+References: <20220429055226.3852334-1-chi.minghao@zte.com.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YmyOh/YbgGJ3DK79@antec>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stafford,
+On Fri, 29 Apr 2022 05:52:26 +0000 cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
+> 
+> Simplify the return expression.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+> ---
+>  drivers/net/dsa/sja1105/sja1105_flower.c | 7 +------
+>  1 file changed, 1 insertion(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/sja1105/sja1105_flower.c b/drivers/net/dsa/sja1105/sja1105_flower.c
+> index fad5afe3819c..16c93159e475 100644
+> --- a/drivers/net/dsa/sja1105/sja1105_flower.c
+> +++ b/drivers/net/dsa/sja1105/sja1105_flower.c
+> @@ -501,7 +501,6 @@ int sja1105_cls_flower_stats(struct dsa_switch *ds, int port,
+>  {
+>  	struct sja1105_private *priv = ds->priv;
+>  	struct sja1105_rule *rule = sja1105_rule_find(priv, cls->cookie);
+> -	int rc;
+>  
+>  	if (!rule)
+>  		return 0;
+> @@ -509,12 +508,8 @@ int sja1105_cls_flower_stats(struct dsa_switch *ds, int port,
+>  	if (rule->type != SJA1105_RULE_VL)
+>  		return 0;
+>  
+> -	rc = sja1105_vl_stats(priv, port, rule, &cls->stats,
+> +	return sja1105_vl_stats(priv, port, rule, &cls->stats,
+>  			      cls->common.extack);
 
-On Sat, Apr 30, 2022 at 10:19:03AM +0900, Stafford Horne wrote:
-> Hi Jason,
-> 
-> On Fri, Apr 29, 2022 at 02:16:48AM +0200, Jason A. Donenfeld wrote:
-> > As a sanity check, this series makes sure that during early boot, the
-> > cycle counter isn't returning all zeros. However, OpenRISC's TTCR timer
-> > can be rather slow and starts out as zero during stages of early boot.
-> > We know it works, however. So just always add 1 to random_get_entropy()
-> > so that it doesn't trigger these checks.
-> 
-> Just one nit, you might want to qualify that this is related to simulators/qemu:
->  * "However, in simulators OpenRISC's TTCR timer can be rather slow..."
+align continuation line
 
-Nice catch, will do.
+> -	if (rc)
+> -		return rc;
+> -
+> -	return 0;
+>  }
+>  
+>  void sja1105_flower_setup(struct dsa_switch *ds)
 
-Jason
-
-> 
-> > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > Cc: Arnd Bergmann <arnd@arndb.de>
-> > Cc: Jonas Bonn <jonas@southpole.se>
-> > Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
-> > Acked-by: Stafford Horne <shorne@gmail.com>
-> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> > ---
-> > Changes v6->v7:
-> > - Add 1 to cycle counter to account for functional but slow-to-begin
-> >   counter on QEMU.
-> > 
-> >  arch/openrisc/include/asm/timex.h | 3 +++
-> >  1 file changed, 3 insertions(+)
-> > 
-> > diff --git a/arch/openrisc/include/asm/timex.h b/arch/openrisc/include/asm/timex.h
-> > index d52b4e536e3f..a78a5807c927 100644
-> > --- a/arch/openrisc/include/asm/timex.h
-> > +++ b/arch/openrisc/include/asm/timex.h
-> > @@ -23,6 +23,9 @@ static inline cycles_t get_cycles(void)
-> >  {
-> >  	return mfspr(SPR_TTCR);
-> >  }
-> > +#define get_cycles get_cycles
-> > +
-> > +#define random_get_entropy() ((unsigned long)get_cycles() + 1)
-> >  
-> >  /* This isn't really used any more */
-> >  #define CLOCK_TICK_RATE 1000
-> 
-> Thanks,
-> 
-> -Stafford
