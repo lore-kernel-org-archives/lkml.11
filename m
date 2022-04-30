@@ -2,130 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A89C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 11:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 12:05:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237171AbiD3LyS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 07:54:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
+        id S241593AbiD3MIb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Apr 2022 08:08:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241665AbiD3Lx4 (ORCPT
+        with ESMTP id S238806AbiD3MI3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 07:53:56 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA81183B6
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 04:50:34 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id e24so9169406pjt.2
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 04:50:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Lt3kuWafWjkHObNCFDZ+lBWwcdfVn/Z+mxQOXhxUeu4=;
-        b=HbL5cUVwwiqUAl9N5LPUP5WdnwClowGeLSRI7zzPqMzBFMcLs3GwOVufjwlQDwzApN
-         RRmdMPmBNr92Qxn7BcmZrNAU46ogXz3lTtFOPKEng1n4jhbfqxd3m5nzDu87RzIcTmC4
-         hp11otctlfZ1Q0LYyLe6pIg962H7Nl7FixeS7lKc/ydB0epPrmiyRk/aVANLjBxTlw7M
-         /szdmk7ks9TOakYMblDX4MMfJaMiB7PWLkECzanHZfEZakU8UarE9nGfULWgUi18m8W/
-         KVRsNxFz3JroMgXmuxiD3XLGDrWNm7OUuaDw75ZKjWwQXO0s9f/J4j4oa+WEkfWzGyR8
-         xc6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Lt3kuWafWjkHObNCFDZ+lBWwcdfVn/Z+mxQOXhxUeu4=;
-        b=o7Bc9PYX7RRNBWYHZAJFFYd/VXGs6yeZpD0xc0sATWc3SYfdVY5FbpGwraCd+wKWFN
-         Q136kS44bNtTK8tlcwLH2FeAVwob14rg3ZqG67K4nriO5vaofPcmrmLijP98p9pIYenO
-         hWJYK7UWctyL1/MMdoVZ5QdE4jvXwFW4eXRYVRcUQWZQW9mwsbrERfJD8JBi6J0kwHg3
-         iOPbyflw7RFEfzR3fN/TPC/tXhoERHqzaW5qCExwc8nmay0bQR8IHLCzPljuhwejpkru
-         KreyEx5yyGJHoJilXLRa31gJFx74lJkRQBeOdJS5heXKS+05G+iQB/3lSVROmvm2MS2g
-         fIDA==
-X-Gm-Message-State: AOAM5309/ODlmTL/SWqPfYoVgXKPbnPHNHmJFPn7emQ+Q3u5CAwdYGzM
-        gjJxSWVUQSA9cPWnT6OSXro=
-X-Google-Smtp-Source: ABdhPJwUDChBL6ttxA7eM5VtrLee1rKvGG5pkPwJq5j/3gHZU/EKsOWzGxmenXKel4CWLBWw1pKBAg==
-X-Received: by 2002:a17:90b:4b4b:b0:1ca:bfdb:edce with SMTP id mi11-20020a17090b4b4b00b001cabfdbedcemr8791309pjb.85.1651319434180;
-        Sat, 30 Apr 2022 04:50:34 -0700 (PDT)
-Received: from ip-172-31-27-201.ap-northeast-1.compute.internal (ec2-18-183-95-104.ap-northeast-1.compute.amazonaws.com. [18.183.95.104])
-        by smtp.gmail.com with ESMTPSA id b6-20020a17090a6ac600b001dbf2aac185sm5956570pjm.1.2022.04.30.04.50.31
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 30 Apr 2022 04:50:33 -0700 (PDT)
-Date:   Sat, 30 Apr 2022 11:50:28 +0000
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Marco Elver <elver@google.com>,
-        Matthew WilCox <willy@infradead.org>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 13/23] mm/slab: kmalloc: pass requests larger than
- order-1 page to page allocator
-Message-ID: <20220430115027.GC24925@ip-172-31-27-201.ap-northeast-1.compute.internal>
-References: <20220414085727.643099-1-42.hyeyoo@gmail.com>
- <20220414085727.643099-14-42.hyeyoo@gmail.com>
- <5f47bb6b-d7f4-13fc-8d09-e80c9a5185ba@suse.cz>
+        Sat, 30 Apr 2022 08:08:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6925C663;
+        Sat, 30 Apr 2022 05:05:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BB9D60AF8;
+        Sat, 30 Apr 2022 12:05:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF9E4C385AA;
+        Sat, 30 Apr 2022 12:05:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651320303;
+        bh=tWlItz5i5kXdXuKnvQvNpU5f7HV/eMhhZ4OfG79KfB4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EWPWQ/+A8KiWNeEnnCkAKXMPSezGdtzp5Pu/mRwQ/MU866OQbmFsojF7i409gTuJu
+         COUJKad1RdoM48RcXRCz1/y234ep+r8F5hVv3U8qnSyXd89g/SqzfONVpSS2CCu9eN
+         CMKtf9Kko8TmVqrBl0bJ24rI3PoZ2XY2ikw7YirU=
+Date:   Sat, 30 Apr 2022 14:04:59 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Luis Chamberlain <mcgrof@kernel.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Kai Vehmanen <kai.vehmanen@intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@intel.com>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        mauro.chehab@linux.intel.com,
+        Dan Williams <dan.j.williams@intel.com>
+Subject: Re: [PATCH v2 1/2] module: update dependencies at try_module_get()
+Message-ID: <Ym0l6yeTWCCAeww8@kroah.com>
+References: <cover.1651314499.git.mchehab@kernel.org>
+ <3c7547d551558c9da02038dda45992f91b1f5141.1651314499.git.mchehab@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5f47bb6b-d7f4-13fc-8d09-e80c9a5185ba@suse.cz>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <3c7547d551558c9da02038dda45992f91b1f5141.1651314499.git.mchehab@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 10:10:00AM +0200, Vlastimil Babka wrote:
-> On 4/14/22 10:57, Hyeonggon Yoo wrote:
-> > There is not much benefit for serving large objects in kmalloc().
-> > Let's pass large requests to page allocator like SLUB for better
-> > maintenance of common code.
-> > 
-> > Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+On Sat, Apr 30, 2022 at 11:30:58AM +0100, Mauro Carvalho Chehab wrote:
+> Sometimes, device drivers are bound into each other via try_module_get(),
+> making such references invisible when looking at /proc/modules or lsmod.
 > 
-> Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+> Add a function to allow setting up module references for such
+> cases, and call it when try_module_get() is used.
 > 
-> Some nits:
+> Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> ---
 > 
-> > @@ -3607,15 +3607,25 @@ void kmem_cache_free_bulk(struct kmem_cache *orig_s, size_t size, void **p)
-> >  {
-> >  	struct kmem_cache *s;
-> >  	size_t i;
-> > +	struct folio *folio;
-> >  
-> >  	local_irq_disable();
-> >  	for (i = 0; i < size; i++) {
-> >  		void *objp = p[i];
+> See [PATCH v2 0/2] at: https://lore.kernel.org/all/cover.1651314499.git.mchehab@kernel.org/
 > 
-> folio can be declared here
-> could probably move 's' too, and 'i' to the for () thanks to gnu11
->
+>  include/linux/module.h |  4 +++-
+>  kernel/module/main.c   | 35 +++++++++++++++++++++++++++++++++--
+>  2 files changed, 36 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/module.h b/include/linux/module.h
+> index 46d4d5f2516e..836851baaad4 100644
+> --- a/include/linux/module.h
+> +++ b/include/linux/module.h
+> @@ -620,7 +620,9 @@ extern void __module_get(struct module *module);
+>  
+>  /* This is the Right Way to get a module: if it fails, it's being removed,
+>   * so pretend it's not there. */
+> -extern bool try_module_get(struct module *module);
+> +extern bool __try_module_get(struct module *module, struct module *this);
+> +
+> +#define try_module_get(mod) __try_module_get(mod, THIS_MODULE)
+>  
+>  extern void module_put(struct module *module);
+>  
+> diff --git a/kernel/module/main.c b/kernel/module/main.c
+> index 05a42d8fcd7a..9f4416381e65 100644
+> --- a/kernel/module/main.c
+> +++ b/kernel/module/main.c
+> @@ -631,6 +631,35 @@ static int ref_module(struct module *a, struct module *b)
+>  	return 0;
+>  }
+>  
+> +static int ref_module_dependency(struct module *mod,
+> +				       struct module *this)
 
-Right!
+This can be on one line, right?
 
-> >  
-> > -		if (!orig_s) /* called via kfree_bulk */
-> > -			s = virt_to_cache(objp);
-> > -		else
-> > +		if (!orig_s) {
-> > +			folio = virt_to_folio(objp);
-> > +			/* called via kfree_bulk */
-> > +			if (!folio_test_slab(folio)) {
-> > +				local_irq_enable();
-> > +				free_large_kmalloc(folio, objp);
-> > +				local_irq_disable();
-> > +				continue;
-> > +			}
-> > +			s = folio_slab(folio)->slab_cache;
-> > +		} else
-> >  			s = cache_from_obj(orig_s, objp);
-> 
-> This should now use { } brackets per kernel style.
-> 
+> +{
+> +	int ret;
+> +
+> +	if (!this || !this->name) {
+> +		return -EINVAL;
+> +	}
 
-Yes. will do both in v3.
+Did you run checkpatch on this?  Please do :)
 
-> > +
-> >  		if (!s)
-> >  			continue;
-> >  
+> +
+> +	if (mod == this)
+> +		return 0;
+
+How can this happen?
+
+When people mistakenly call try_module_get(THIS_MODULE)?  We should
+throw up a big warning when that happens anyway as that's always wrong.
+
+But that's a different issue from this change, sorry for the noise.
+
+> +
+> +	mutex_lock(&module_mutex);
+> +
+> +	ret = ref_module(this, mod);
+> +
+> +#ifdef CONFIG_MODULE_UNLOAD
+> +	if (ret)
+> +		goto ret;
+> +
+> +	ret = sysfs_create_link(mod->holders_dir,
+> +				&this->mkobj.kobj, this->name);
+
+Meta comment, why do we only create links if we can unload things?
+
+thanks,
+
+greg k-h
