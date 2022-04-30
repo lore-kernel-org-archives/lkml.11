@@ -2,138 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95FADC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 12:56:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ABFCC4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 12:59:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377214AbiD3NAI (ORCPT
+        id S1379427AbiD3NDD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 09:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41166 "EHLO
+        Sat, 30 Apr 2022 09:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242211AbiD3NAB (ORCPT
+        with ESMTP id S231486AbiD3NDC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 09:00:01 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 1D0CB674F0
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 05:56:38 -0700 (PDT)
-Received: (qmail 986304 invoked by uid 1000); 30 Apr 2022 08:56:38 -0400
-Date:   Sat, 30 Apr 2022 08:56:38 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Niklas Schnelle <schnelle@linux.ibm.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>
-Subject: Re: [RFC v2 35/39] usb: handle HAS_IOPORT dependencies
-Message-ID: <Ym0yBti0J5w2S59W@rowland.harvard.edu>
-References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
- <20220429135108.2781579-65-schnelle@linux.ibm.com>
+        Sat, 30 Apr 2022 09:03:02 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D71D274DD6;
+        Sat, 30 Apr 2022 05:59:40 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id m20so20042449ejj.10;
+        Sat, 30 Apr 2022 05:59:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Pqlb2CDncvPYE+UHM6oqSap1YjcS5KMGTqi0o7URon8=;
+        b=olL/+zlZsep6oWP7Rrh8tA53O191n7Fe7a+sy3NbCbBls981RcbeFUhIjm4G78KYRc
+         xENR1aBGj4DESg3PcnOn46jXrGORyw4auy6Vtd9Z9D6mfGNlWjTQ3c42rSK6X1oabCnj
+         PPnka71x0eQcJZvrrS7PnEhkgsrpmq67Yp4jpEGVThC6WM68r/W+12yfSN0Rvj/7t6tM
+         LRX6xirXGX9bqwwlSWZL85L+l9BrZobfcU9Uv0hYXMWgmQGgkFyrUkuHLPhgb7XDdEIa
+         Fw/L06PPhDVArJyDhp1564tSQQDQnUoPcOm8f5qTxxTNZm+oeSIoIKPSZPm6SX5EdRJC
+         d5Tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Pqlb2CDncvPYE+UHM6oqSap1YjcS5KMGTqi0o7URon8=;
+        b=3jcUZ4kIy9aJXZOYUpRhtS5rM3P5gXzu0oIvSL3QqHLPwWwe1Coj3KAMcnJ3Gcutwa
+         ySQPMbUcv7RiH9uq5Hg2cFcsqZpqfXE5f0qVIojwALdzQxvnoRnh4vrGDzAKbOcr50VH
+         lLCFTx8BUJlLgZPhJX83kQ67z3H+VkgK2xJWMy9Mge/2lSGKaKbSHekCf90YL8HTy10W
+         12VTuAZ8eUwRXVt5qGJAxBkh83421PiCH7th1FXzACmHUGrGxfjXrEGYOV2dgPQqV5RJ
+         dlrHmnDFYR8k4YJngYNcvvChCBx4dwj/PhZhBUhTqG5gZPcnabOEzEjWcvGtoelNONXf
+         mxlw==
+X-Gm-Message-State: AOAM533/JuW7AI6NBmnyfLqNsCosKba+SYc1CxlRO2WOIUE7++8KWS0O
+        ZT+kLtYMZsRPIm2VqZO/aDo=
+X-Google-Smtp-Source: ABdhPJw3diLUBhg2UjGkqI8k7gOZCaSdV6fEJieDUrrer27ThuJpUlQiDdgeG76sWHkUsnKPvlakuA==
+X-Received: by 2002:a17:907:7f8e:b0:6f4:2d7c:1b75 with SMTP id qk14-20020a1709077f8e00b006f42d7c1b75mr351324ejc.726.1651323579297;
+        Sat, 30 Apr 2022 05:59:39 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id a25-20020a056402169900b0042617ba63c8sm4125077edv.82.2022.04.30.05.59.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 Apr 2022 05:59:38 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [PATCH v2 0/2] PXO fixes for ipq8064 dtsi
+Date:   Sat, 30 Apr 2022 07:51:16 +0200
+Message-Id: <20220430055118.1947-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220429135108.2781579-65-schnelle@linux.ibm.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 03:51:02PM +0200, Niklas Schnelle wrote:
-> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-> not being declared. We thus need to guard sections of code calling them
-> as alternative access methods with CONFIG_HAS_IOPORT checks. Similarly
-> drivers requiring these functions need to depend on HAS_IOPORT.
-> 
-> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
+This small series is a fix for a long lasting error present in ipq8064
+dtsi. At times the kpss-gcc driver was defined in the dts with
+<&gcc PXO_SRC> a pxo clock. While PXO_SRC exist in the includes, the gcc
+driver never expose it and if a driver try to actually use it the result
+is a kernel panic even before any log is init.
 
-...
+To prepare for correct conversion of the different krait drivers to
+parent data and to reflect what is defined in the Documentation with
+actual driver and dts implementation, fix this error by using the now
+defined pxo_board fixed clock.
 
-> diff --git a/drivers/usb/host/pci-quirks.c b/drivers/usb/host/pci-quirks.c
-> index ef08d68b9714..4fd06b48149d 100644
-> --- a/drivers/usb/host/pci-quirks.c
-> +++ b/drivers/usb/host/pci-quirks.c
+v2:
+- Swap patch 1 with patch 2 (fixes first changes second)
+- Add fixes tag
 
-> @@ -632,7 +590,53 @@ bool usb_amd_pt_check_port(struct device *device, int port)
->  	return !(value & BIT(port_shift));
->  }
->  EXPORT_SYMBOL_GPL(usb_amd_pt_check_port);
-> +#endif
-> @@ -1273,7 +1280,8 @@ static void quirk_usb_early_handoff(struct pci_dev *pdev)
->  			 "Can't enable PCI device, BIOS handoff failed.\n");
->  		return;
->  	}
-> -	if (pdev->class == PCI_CLASS_SERIAL_USB_UHCI)
-> +	if (IS_ENABLED(CONFIG_USB_UHCI_HCD) &&
-> +	    pdev->class == PCI_CLASS_SERIAL_USB_UHCI)
->  		quirk_usb_handoff_uhci(pdev);
+Ansuel Smith (2):
+  ARM: dts: qcom: replace gcc PXO with pxo_board fixed clock
+  ARM: dts: qcom: add syscon and cxo/pxo clock to gcc node for ipq8064
 
-We discussed this already.  quirk_usb_handoff_uhci() is supposed to be 
-called even when CONFIG_USB_UHCI_HCD isn't enabled.
+ arch/arm/boot/dts/qcom-ipq8064.dtsi | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-...
+-- 
+2.34.1
 
-> diff --git a/drivers/usb/host/uhci-hcd.h b/drivers/usb/host/uhci-hcd.h
-> index 8ae5ccd26753..be4aee1f0ca5 100644
-> --- a/drivers/usb/host/uhci-hcd.h
-> +++ b/drivers/usb/host/uhci-hcd.h
-> @@ -505,36 +505,43 @@ static inline bool uhci_is_aspeed(const struct uhci_hcd *uhci)
->   * we use memory mapped registers.
->   */
->  
-> +#ifdef CONFIG_HAS_IOPORT
-> +#define UHCI_IN(x)	x
-> +#define UHCI_OUT(x)	x
-> +#else
-> +#define UHCI_IN(x)	0
-> +#define UHCI_OUT(x)
-> +#endif
-
-Should have a blank line here.
-
->  #ifndef CONFIG_USB_UHCI_SUPPORT_NON_PCI_HC
->  /* Support PCI only */
->  static inline u32 uhci_readl(const struct uhci_hcd *uhci, int reg)
->  {
-> -	return inl(uhci->io_addr + reg);
-> +	return UHCI_IN(inl(uhci->io_addr + reg));
->  }
->  
->  static inline void uhci_writel(const struct uhci_hcd *uhci, u32 val, int reg)
->  {
-> -	outl(val, uhci->io_addr + reg);
-> +	UHCI_OUT(outl(val, uhci->io_addr + reg));
->  }
->  
->  static inline u16 uhci_readw(const struct uhci_hcd *uhci, int reg)
->  {
-> -	return inw(uhci->io_addr + reg);
-> +	return UHCI_IN(inw(uhci->io_addr + reg));
->  }
->  
->  static inline void uhci_writew(const struct uhci_hcd *uhci, u16 val, int reg)
->  {
-> -	outw(val, uhci->io_addr + reg);
-> +	UHCI_OUT(outw(val, uhci->io_addr + reg));
->  }
->  
->  static inline u8 uhci_readb(const struct uhci_hcd *uhci, int reg)
->  {
-> -	return inb(uhci->io_addr + reg);
-> +	return UHCI_IN(inb(uhci->io_addr + reg));
->  }
->  
->  static inline void uhci_writeb(const struct uhci_hcd *uhci, u8 val, int reg)
->  {
-> -	outb(val, uhci->io_addr + reg);
-> +	UHCI_OUT(outb(val, uhci->io_addr + reg));
->  }
->  
->  #else
-
-I thought you were going to update the definition of 
-uhci_has_pci_registers().  It shouldn't do a test at runtime if 
-CONFIG_HAS_IOPORT is disabled.
-
-Alan Stern
