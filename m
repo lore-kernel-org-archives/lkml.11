@@ -2,304 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F6F0C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 13:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF525C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 13:19:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345395AbiD3NUM (ORCPT
+        id S1355323AbiD3NXE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 09:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43926 "EHLO
+        Sat, 30 Apr 2022 09:23:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229947AbiD3NUJ (ORCPT
+        with ESMTP id S229947AbiD3NXC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 09:20:09 -0400
-Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [81.169.146.219])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5191195A26;
-        Sat, 30 Apr 2022 06:16:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1651324568;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=3zGwMI7wb1IdcDUlZW1T5Z66DDsPImI+iGd0yDi8/Tg=;
-    b=ri2xQlzzHPGNH1PrFvXjrkfFCJEgl71AtycxVxLUNYkG9/T04xQBHSr6+NblmQao9Z
-    pZ/WbrsQoa9sRaF+vRS5+iMM+79iNTYBnMnqGeiXHyRvDwKPDgn0pxH/j9BX23xpC/lR
-    wxuR0CCjI5Z6BY1ycsOuXix9RWPjYwUlyAIJo3TsDk3UGM4LKdCnTdZx+TLf3YkAICqf
-    vEWIWIDKL+lKnN2/mtfPwRxHc4KppLCTBSiJH+R5l+EEmyL6pP2MEf/R26Yy2FVrcnIK
-    w/QFDi5RD7UohKTlSmaArp9jW4MHi1PHekqRYtUgfis+yJwNZhMN/vKbX4LpeoCcy+sS
-    4tcQ==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7wpz8NIGH/jrwDOsdZY="
-X-RZG-CLASS-ID: mo00
-Received: from imac.fritz.box
-    by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
-    with ESMTPSA id k708cfy3UDG8MGN
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-    Sat, 30 Apr 2022 15:16:08 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: Re: kernel panic with v5.18-rc1 on OpenPandora (only)
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <CAK8P3a3N9WBWC_ECB0pSRHUCT4iz=tdT+Dt9Cyd5Wh3qEaVqqA@mail.gmail.com>
-Date:   Sat, 30 Apr 2022 15:16:07 +0200
-Cc:     Discussions about the Letux Kernel <letux-kernel@openphoenux.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-OMAP <linux-omap@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Ard Biesheuvel <ardb@kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <4CE23DC3-B3E5-45C1-91F3-B88E5444AE7C@goldelico.com>
-References: <FA654A0D-29B7-4B6B-B613-73598A92ADA8@goldelico.com>
- <YmkBAsa+fKlp/GcV@atomide.com>
- <CAK8P3a3N9WBWC_ECB0pSRHUCT4iz=tdT+Dt9Cyd5Wh3qEaVqqA@mail.gmail.com>
-To:     Arnd Bergmann <arnd@arndb.de>, Tony Lindgren <tony@atomide.com>
-X-Mailer: Apple Mail (2.3445.104.21)
+        Sat, 30 Apr 2022 09:23:02 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5257A76FC;
+        Sat, 30 Apr 2022 06:19:40 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id k1so692690pll.4;
+        Sat, 30 Apr 2022 06:19:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0SuQrAfcBYJGPjhTb8t3lZ1fTklP5mGBmOFSXiuMhmc=;
+        b=guX6UFeGOXdCf7G4DGwuOBPyxqnjJ9tCzBu0mRaiqkNC3BSKW2ZIqgtjeZfOvgEbD9
+         ZeQCYrikPLnMv/JMSNhbPiODTxSl6/modpzf+XACc4XWsMMEktlfhSHq2c6Q6gjaelcq
+         6xEVzn4UECF6HlJJpYguuboiGQJlNUYNnSFcyr4bdgPnG+0n1F6LqZmikCbgocVqEOVd
+         cWwE4snElvpQCSM8UaAxDBkn1mcfkf7bCtxUoNlZwrOotjC0JiK10oRSI5WTtxSd7YU1
+         1qWAXjCn5U4/tMdnTZCw3Lp0m0EaJQ2JBbw12sUUjgQxv4ecVZTF472NuGrgPG5MNtrN
+         8mZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0SuQrAfcBYJGPjhTb8t3lZ1fTklP5mGBmOFSXiuMhmc=;
+        b=Yw1lvnKRbie3DWZnr9pQu0lSztb3pwdcuo3BzjeKAq9QQPi3McIc1Vh8DXc06mdGNL
+         deOld4/TstJt2pZpxHDfK+vd/BdOAapYtf6kqpAdavPPkHWf0i+iA8w32jMbOio72a1N
+         uFYyBN9RAk/75LGDJCmt+SdQE7T3Mt+20FXXVZapYg1xUbAtqwM+09/o382BHh1q2j1d
+         q0KI+4EkAglTwkF6o6Yjvuuyh0SUDc1u6hsQ+MwEwSSiA4YJFMQk9ae3dj/uAGRfqVX7
+         bjSHHZUHsFf8svmbVEfX5vtAkWt5fq8/WOK1MmiJrrySZ9Gpef7qrtGu6cCiij4WIq/K
+         BFfA==
+X-Gm-Message-State: AOAM531qjm0ZMXUkSpoFegemUEBkw0XzZfXYirn1SZqbIe99nEbU3eJZ
+        s0opCfEoJiTBlL6TsAhfREo=
+X-Google-Smtp-Source: ABdhPJwluFKZsRBqSdXxOv0+QMmM1ka3+CCPGlykURC3WPLkLxCSRzwTEHIoaPzaxD531XvUGDN88g==
+X-Received: by 2002:a17:902:e74e:b0:15e:92bc:c27c with SMTP id p14-20020a170902e74e00b0015e92bcc27cmr1258558plf.8.1651324780169;
+        Sat, 30 Apr 2022 06:19:40 -0700 (PDT)
+Received: from localhost (subs32-116-206-28-15.three.co.id. [116.206.28.15])
+        by smtp.gmail.com with ESMTPSA id j24-20020aa78d18000000b0050dc76281bbsm1552018pfe.149.2022.04.30.06.19.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 Apr 2022 06:19:39 -0700 (PDT)
+Date:   Sat, 30 Apr 2022 20:19:35 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Qi Zheng <zhengqi.arch@bytedance.com>
+Cc:     akpm@linux-foundation.org, tglx@linutronix.de,
+        kirill.shutemov@linux.intel.com, mika.penttila@nextfour.com,
+        david@redhat.com, jgg@nvidia.com, tj@kernel.org, dennis@kernel.org,
+        ming.lei@redhat.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        songmuchun@bytedance.com, zhouchengming@bytedance.com
+Subject: Re: [RFC PATCH 18/18] Documentation: add document for pte_ref
+Message-ID: <Ym03Z7FlgcCpwXCi@debian.me>
+References: <20220429133552.33768-1-zhengqi.arch@bytedance.com>
+ <20220429133552.33768-19-zhengqi.arch@bytedance.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220429133552.33768-19-zhengqi.arch@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi Qi,
 
-> Am 27.04.2022 um 11:37 schrieb Arnd Bergmann <arnd@arndb.de>:
->=20
-> On Wed, Apr 27, 2022 at 10:38 AM Tony Lindgren <tony@atomide.com> =
-wrote:
->> * H. Nikolaus Schaller <hns@goldelico.com> [220426 20:16]:
->>> [   28.245727] [<c0100b60>] (__irq_svc) from [<c0905de0>] =
-(_raw_spin_unlock_irq+0x20/0x4c)
->>> [   28.254150] [<c0905de0>] (_raw_spin_unlock_irq) from [<c0902e94>] =
-(do_wait_for_common+0xa8/0x138)
->>> [   28.263488] [<c0902e94>] (do_wait_for_common) from [<c0902f54>] =
-(wait_for_common+0x30/0x48)
->>> [   28.272277] [<c0902f54>] (wait_for_common) from [<c074edf8>] =
-(mmc_wait_for_req_done+0x1c/0x90)
->>> [   28.281341] [<c074edf8>] (mmc_wait_for_req_done) from =
-[<c075a72c>] (mmc_io_rw_extended+0x1c0/0x2f4)
->>> [   28.290893] [<c075a72c>] (mmc_io_rw_extended) from [<c075bd00>] =
-(sdio_io_rw_ext_helper+0x118/0x140)
->>> [   28.300415] [<c075bd00>] (sdio_io_rw_ext_helper) from =
-[<c075bdd0>] (sdio_memcpy_toio+0x18/0x20)
->>> [   28.309570] [<c075bdd0>] (sdio_memcpy_toio) from [<bf3de1ec>] =
-(wl1251_sdio_write+0x34/0x54 [wl1251_sdio])
->>> [   28.319702] [<bf3de1ec>] (wl1251_sdio_write [wl1251_sdio]) from =
-[<bf40fc8c>] (wl1251_set_partition+0x90/0x404 [wl1251])
->>> [   28.331207] [<bf40fc8c>] (wl1251_set_partition [wl1251]) from =
-[<bf4074ec>] (wl1251_init_ieee80211+0x1c0/0x3dc [wl1251])
->=20
-> I think the problem is here: wl1251_set_partition() passes a local
-> stack variable into
-> an SDIO API function that is given to the hardware. This was never
-> safe and could
-> cause a corrupted stack because of the cache management, but with vmap =
-stacks
-> it turns into a reliable DMA error, which I guess is what the l3
-> interrupt is about.
+On Fri, Apr 29, 2022 at 09:35:52PM +0800, Qi Zheng wrote:
+> +Now in order to pursue high performance, applications mostly use some
+> +high-performance user-mode memory allocators, such as jemalloc or tcmalloc.
+> +These memory allocators use madvise(MADV_DONTNEED or MADV_FREE) to release
+> +physical memory for the following reasons::
+> +
+> + First of all, we should hold as few write locks of mmap_lock as possible,
+> + since the mmap_lock semaphore has long been a contention point in the
+> + memory management subsystem. The mmap()/munmap() hold the write lock, and
+> + the madvise(MADV_DONTNEED or MADV_FREE) hold the read lock, so using
+> + madvise() instead of munmap() to released physical memory can reduce the
+> + competition of the mmap_lock.
+> +
+> + Secondly, after using madvise() to release physical memory, there is no
+> + need to build vma and allocate page tables again when accessing the same
+> + virtual address again, which can also save some time.
+> +
 
-This seems to me to be a fitting explanation. Thanks!
+I think we can use enumerated list, like below:
 
->=20
-> Can you change wl1251_set_partition() to use kmalloc()/kfree() to =
-allocate the
-> partitions[] array?
+-- >8 --
 
-Yes, I have tried and made it use struct wl1251_partition_set. Diff is =
-attached.
-
-> You said that it still crashes without the wl1251
-> driver, so I assume
-> there is at least one more related bug. If you get a different call
-> chain without the
-> driver, or with the kmalloc() call, can you post that as well?
-
-For some time it did disappear but reported  e.g.
-
-[   29.457946] omap_hsmmc 480ad000.mmc: found wl1251
-[   29.516174] wl1251: ERROR unsupported chip id: 0xdb0aea56
-
-(value did change a little randomly), but just before sending out this =
-mail I tried
-again (now with v5.18-rc4) and got this log (with wl1251 driver fixed as =
-below):
-
-[   29.813232] omap_hsmmc 480ad000.mmc: found wl1251
-[   30.131164] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-CCP2 was not initialized!
-[   30.432006] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-CSI2a was not initialized!
-[   30.660888] omap3isp 480bc000.isp: Entity type for entity OMAP3 ISP =
-CCDC was not initialized!
-[   30.791229] wl1251: 151 tx blocks at 0x3b788, 35 rx blocks at 0x3a780
-[   30.811218] wl1251: firmware booted (Rev 4.0.4.3.7)
-[   30.817047] ------------[ cut here ]------------
-[   30.821899] kernel BUG at drivers/bus/omap_l3_smx.c:177!
-[   30.827484] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
-[   30.833618] Modules linked in: snd_soc_omap_mcbsp snd_soc_ti_sdma =
-omap3_isp(+) wl1251_sdio videobuf2_dma_contig videobuf2_memops wl1251 =
-videobuf2_v4l2 usb_f_ecm videobuf2_common v4l2_fwnode g_ether v4l2_async =
-usb_f_rndis u_ether libcomposite configfs mac80211 bq27xxx_battery_hdq =
-videodev omap_sham libarc4 mc omap_aes_driver crypto_engine omap_hdq =
-panel_tpo_td043mtea1 ads7846 omap_crypto omap2430 phy_twl4030_usb =
-musb_hdrc twl4030_pwrbutton twl4030_charger twl4030_madc snd_soc_twl4030 =
-industrialio twl4030_keypad ehci_omap bq27xxx_battery_i2c pandora_nub =
-bq27xxx_battery omapdrm drm_kms_helper syscopyarea sysfillrect sysimgblt =
-fb_sys_fops cfg80211 drm drm_panel_orientation_quirks cec ip_tables =
-x_tables ipv6 autofs4
-[   30.900390] CPU: 0 PID: 2143 Comm: depmod Not tainted =
-5.18.0-rc4-letux+ #9499
-[   30.907867] Hardware name: Generic OMAP3 (Flattened Device Tree)
-[   30.914184] PC is at omap3_l3_app_irq+0x3c/0x120
-[   30.919067] LR is at __handle_irq_event_percpu+0xb0/0x1dc
-[   30.924743] pc : [<c04e6e9c>]    lr : [<c017d654>]    psr: 200f0193
-[   30.931304] sp : e0001eb8  ip : c0c7d850  fp : c0def3e0
-[   30.936828] r10: c0d04014  r9 : c1032200  r8 : c0c77370
-[   30.942291] r7 : 00000000  r6 : 0000001a  r5 : 00000000  r4 : =
-f8000000
-[   30.949157] r3 : 00000000  r2 : 00400000  r1 : 00400000  r0 : =
-00400000
-[   30.956024] Flags: nzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  =
-Segment none
-[   30.963623] Control: 10c5387d  Table: 83618019  DAC: 00000051
-[   30.969665] Register r0 information: non-paged memory
-[   30.974975] Register r1 information: non-paged memory
-[   30.980285] Register r2 information: non-paged memory
-[   30.985626] Register r3 information: NULL pointer
-[   30.990570] Register r4 information: 0-page vmalloc region starting =
-at 0xf8000000 allocated at iotable_init+0x0/0xf4
-[   31.001647] Register r5 information: NULL pointer
-[   31.006591] Register r6 information: non-paged memory
-[   31.011901] Register r7 information: NULL pointer
-[   31.016845] Register r8 information: non-slab/vmalloc memory
-[   31.022827] Register r9 information: slab kmalloc-256 start c1032200 =
-pointer offset 0 size 256
-[   31.031921] Register r10 information: non-slab/vmalloc memory
-[   31.037994] Register r11 information: non-slab/vmalloc memory
-[   31.044036] Register r12 information: non-slab/vmalloc memory
-[   31.050079] Process depmod (pid: 2143, stack limit =3D 0x2035257a)
-[   31.056396] Stack: (0xe0001eb8 to 0xe0002000)
-[   31.060974] 1ea0:                                                     =
-  0000001a c1119940
-[   31.069580] 1ec0: 00000000 c11198c0 c103226c 0000001a 00000000 =
-c017d654 c1032200 c37c0a40
-[   31.078155] 1ee0: 00000000 c1032200 c103226c c1032218 e0001f84 =
-c0c77370 c37c0a40 c0def3c0
-[   31.086761] 1f00: c0d02080 c017d78c c1032200 c103226c c1032218 =
-c017d7f0 c1032200 c103226c
-[   31.095336] 1f20: c1032218 c0181ee0 e0001f50 00000000 ffffffff =
-c017cf6c e0001f50 c08b4d7c
-[   31.103942] 1f40: c01013c4 600f0113 ffffffff c0100bec c37c0a40 =
-c0c7e6c0 00000000 1ed15000
-[   31.112548] 1f60: c0c7e6c0 c0c7e6c0 00000040 c0d02d00 c0c77370 =
-c37c0a40 c0def3c0 c0d02080
-[   31.121154] 1f80: c0c7d850 e0001fa0 c0101390 c01013c4 600f0113 =
-ffffffff 00000051 c0101390
-[   31.129730] 1fa0: e01b9e94 c37c0a40 c37c0a40 00400000 0000000a =
-ffff96d9 c1037850 c0c7e6c0
-[   31.138336] 1fc0: c0d02d00 c0c7e6c0 c37c0a40 c37c0a40 600f0113 =
-ffffffff e01b9e94 c37c0a40
-[   31.146911] 1fe0: c37c0a40 e01b9f60 e01b9e58 c0137314 c0158434 =
-c013740c c0158434 c04c9c6c
-[   31.155517]  omap3_l3_app_irq from =
-__handle_irq_event_percpu+0xb0/0x1dc
-[   31.162475]  __handle_irq_event_percpu from =
-handle_irq_event_percpu+0xc/0x38
-[   31.169891]  handle_irq_event_percpu from handle_irq_event+0x38/0x5c
-[   31.176605]  handle_irq_event from handle_level_irq+0x7c/0xb4
-[   31.182647]  handle_level_irq from handle_irq_desc+0x1c/0x2c
-[   31.188629]  handle_irq_desc from generic_handle_arch_irq+0x28/0x3c
-[   31.195220]  generic_handle_arch_irq from __irq_svc+0x8c/0xcc
-[   31.201263] Exception stack(0xe0001f50 to 0xe0001f98)
-[   31.206604] 1f40:                                     c37c0a40 =
-c0c7e6c0 00000000 1ed15000
-[   31.215179] 1f60: c0c7e6c0 c0c7e6c0 00000040 c0d02d00 c0c77370 =
-c37c0a40 c0def3c0 c0d02080
-[   31.223785] 1f80: c0c7d850 e0001fa0 c0101390 c01013c4 600f0113 =
-ffffffff
-[   31.230743]  __irq_svc from __do_softirq+0x84/0x304
-[   31.235870]  __do_softirq from __irq_exit_rcu+0x8c/0xd4
-[   31.241363]  __irq_exit_rcu from irq_exit+0x8/0x10
-[   31.246429]  irq_exit from call_with_stack+0x18/0x20
-[   31.251647]  call_with_stack from __irq_svc+0x98/0xcc
-[   31.256988] Exception stack(0xe01b9e60 to 0xe01b9ea8)
-[   31.262298] 9e60: df993a40 c37c0a40 00000000 00000001 df993a40 =
-c3245000 c133c2c0 00000002
-[   31.270904] 9e80: c37c0a40 00000000 e01b9f60 e01b9edc e01b9ee0 =
-e01b9eb0 c08ba55c c0158434
-[   31.279479] 9ea0: 600f0113 ffffffff
-[   31.283172]  __irq_svc from finish_task_switch+0x12c/0x1ec
-[   31.288940]  finish_task_switch from __schedule+0x3cc/0x558
-[   31.294799]  __schedule from schedule+0x70/0xc0
-[   31.299591]  schedule from do_work_pending+0x30/0x3dc
-[   31.304901]  do_work_pending from slow_work_pending+0xc/0x20
-[   31.310852] Exception stack(0xe01b9fb0 to 0xe01b9ff8)
-[   31.316192] 9fa0:                                     00002cf8 =
-00000000 50000000 b6f99000
-[   31.324768] 9fc0: b6f9bcfc b6f9bcf8 00000000 00000000 00000010 =
-00000000 00001e94 00000000
-[   31.333374] 9fe0: b6f9bcf8 bea66f80 b6f9bcfc 004bfc6a 40070030 =
-ffffffff
-[   31.340332] Code: e0000002 e0011003 e1901001 0a000002 (e7f001f2)=20
-[   31.346740] ---[ end trace 0000000000000000 ]---
-[   31.351593] Kernel panic - not syncing: Fatal exception in interrupt
-[   31.358276] ---[ end Kernel panic - not syncing: Fatal exception in =
-interrupt ]---
-
->=20
->       Arnd
-
-rm -rf =
-lib/modules/5.18.0-rc4-letux+/kernel/drivers/net/wireless/ti/wl1251
-
-done on the SD card makes the problems go away.
-
-BR and thanks,
-Nikolaus
-
-
-diff --git a/drivers/net/wireless/ti/wl1251/io.c =
-b/drivers/net/wireless/ti/wl1251/io.c
-index 5ebe7958ed5c7..76aceecc281fb 100644
---- a/drivers/net/wireless/ti/wl1251/io.c
-+++ b/drivers/net/wireless/ti/wl1251/io.c
-@@ -121,7 +121,13 @@ void wl1251_set_partition(struct wl1251 *wl,
-                          u32 mem_start, u32 mem_size,
-                          u32 reg_start, u32 reg_size)
- {
--       struct wl1251_partition partition[2];
-+       struct wl1251_partition_set *partition;
+diff --git a/Documentation/vm/pte_ref.rst b/Documentation/vm/pte_ref.rst
+index 0ac1e5a408d7c6..67b18e74fcb367 100644
+--- a/Documentation/vm/pte_ref.rst
++++ b/Documentation/vm/pte_ref.rst
+@@ -10,18 +10,18 @@ Preface
+ Now in order to pursue high performance, applications mostly use some
+ high-performance user-mode memory allocators, such as jemalloc or tcmalloc.
+ These memory allocators use madvise(MADV_DONTNEED or MADV_FREE) to release
+-physical memory for the following reasons::
+-
+- First of all, we should hold as few write locks of mmap_lock as possible,
+- since the mmap_lock semaphore has long been a contention point in the
+- memory management subsystem. The mmap()/munmap() hold the write lock, and
+- the madvise(MADV_DONTNEED or MADV_FREE) hold the read lock, so using
+- madvise() instead of munmap() to released physical memory can reduce the
+- competition of the mmap_lock.
+-
+- Secondly, after using madvise() to release physical memory, there is no
+- need to build vma and allocate page tables again when accessing the same
+- virtual address again, which can also save some time.
++physical memory for the following reasons:
 +
-+       partition =3D kmalloc(sizeof(*partition), GFP_KERNEL);
-+       if (!partition) {
-+               wl1251_error("can not set partition");
-+               return;
-+       }
-=20
-        wl1251_debug(DEBUG_SPI, "mem_start %08X mem_size %08X",
-                     mem_start, mem_size);
-@@ -164,10 +170,10 @@ void wl1251_set_partition(struct wl1251 *wl,
-                             reg_start, reg_size);
-        }
-=20
--       partition[0].start =3D mem_start;
--       partition[0].size  =3D mem_size;
--       partition[1].start =3D reg_start;
--       partition[1].size  =3D reg_size;
-+       partition->mem.start =3D mem_start;
-+       partition->mem.size  =3D mem_size;
-+       partition->reg.start =3D reg_start;
-+       partition->reg.size  =3D reg_size;
-=20
-        wl->physical_mem_addr =3D mem_start;
-        wl->physical_reg_addr =3D reg_start;
-@@ -176,5 +182,7 @@ void wl1251_set_partition(struct wl1251 *wl,
-        wl->virtual_reg_addr =3D mem_size;
-=20
-        wl->if_ops->write(wl, HW_ACCESS_PART0_SIZE_ADDR, partition,
--               sizeof(partition));
-+               sizeof(*partition));
++1. We should hold as few write locks of mmap_lock as possible,
++   since the mmap_lock semaphore has long been a contention point in the
++   memory management subsystem. The mmap()/munmap() hold the write lock, and
++   the madvise(MADV_DONTNEED or MADV_FREE) hold the read lock, so using
++   madvise() instead of munmap() to released physical memory can reduce the
++   competition of the mmap_lock.
 +
-+       kfree(partition);
- }
++2. After using madvise() to release physical memory, there is no
++   need to build vma and allocate page tables again when accessing the same
++   virtual address again, which can also save some time.
+ 
+ The following is the largest user PTE page table memory that can be
+ allocated by a single user process in a 32-bit and a 64-bit system.
 
+> +The following is the largest user PTE page table memory that can be
+> +allocated by a single user process in a 32-bit and a 64-bit system.
+> +
 
+We can say "assuming 4K page size" here,
+
+> ++---------------------------+--------+---------+
+> +|                           | 32-bit | 64-bit  |
+> ++===========================+========+=========+
+> +| user PTE page table pages | 3 MiB  | 512 GiB |
+> ++---------------------------+--------+---------+
+> +| user PMD page table pages | 3 KiB  | 1 GiB   |
+> ++---------------------------+--------+---------+
+> +
+> +(for 32-bit, take 3G user address space, 4K page size as an example;
+> + for 64-bit, take 48-bit address width, 4K page size as an example.)
+> +
+
+... instead of here.
+
+> +There is also a lock-less scenario(such as fast GUP). Fortunately, we don't need
+> +to do any additional operations to ensure that the system is in order. Take fast
+> +GUP as an example::
+> +
+> +	thread A		thread B
+> +	fast GUP		madvise(MADV_DONTNEED)
+> +	========		======================
+> +
+> +	get_user_pages_fast_only()
+> +	--> local_irq_save();
+> +				call_rcu(pte_free_rcu)
+> +	    gup_pgd_range();
+> +	    local_irq_restore();
+> +	    			/* do pte_free_rcu() */
+> +
+
+I see whitespace warning circa do pte_free_rcu() line above when
+applying this series.
+
+Thanks.
+
+-- 
+An old man doll... just what I always wanted! - Clara
