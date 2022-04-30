@@ -2,76 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A434C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 13:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 13:09:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382613AbiD3NMn (ORCPT
+        id S1382661AbiD3NNO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 09:12:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49420 "EHLO
+        Sat, 30 Apr 2022 09:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235730AbiD3NMm (ORCPT
+        with ESMTP id S235730AbiD3NNK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 09:12:42 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF868233A
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 06:09:18 -0700 (PDT)
-Received: from wf0416.dip.tu-dresden.de ([141.76.181.160] helo=phil.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nkmqV-000129-2m; Sat, 30 Apr 2022 15:09:11 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     kishon@ti.com, Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     vkoul@kernel.org, linux-phy@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH] phy: rockchip-inno-usb2: Clean up some inconsistent indenting
-Date:   Sat, 30 Apr 2022 15:09:08 +0200
-Message-ID: <2309786.iZASKD2KPV@phil>
-In-Reply-To: <20220421203038.4550-1-jiapeng.chong@linux.alibaba.com>
-References: <20220421203038.4550-1-jiapeng.chong@linux.alibaba.com>
+        Sat, 30 Apr 2022 09:13:10 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6ED8233A;
+        Sat, 30 Apr 2022 06:09:48 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id j6so20071930ejc.13;
+        Sat, 30 Apr 2022 06:09:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VClD0JjqJ1dznREBaWcLhhbC2kgnGB54hOnuclDNuXE=;
+        b=dHMEMmRpPmDTZ+NUoESXs/J0Az6QpNHY07JLGg+z55w3pfmyq7vq3TJ7HabuouYYTx
+         CFxOlUhGB1NwL1dfnpwNOdbKZSa5IEXmus29LAiXBZ829bMl8qPFD69tvPwtTHENQCUN
+         0fa6+KRGx4wpssjqDSu4lLKTm/6AcU5y9f5cVR8yEG3d942GnUcYx8VbmTci0tWuoGdS
+         iKtthtjsm4nnMDSrSd63Ben0HAmCcViKYDiG5s/vvLRR1Koy0Rv7NLUY9L5SdGbG69bw
+         ZdTqu/dKv2lxGjavZdEBxCKFuZ14qnWBLZ8CqoFyGeziVJsXLjiIS18/Dk1v0XPvnY2N
+         HZIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VClD0JjqJ1dznREBaWcLhhbC2kgnGB54hOnuclDNuXE=;
+        b=dN5zexcG/gGL7rLapWx4g0wWmWg9Y0moECMNHKhwyJ9FC5ZM9n1yZWzoz4nGKhU1eT
+         6jUpWpsqo7lfuCSsxNXoAxLKK+YYmueNuQnQ5Xp+37h1MH8nQjtctrwi7OWG1gwy+6NJ
+         dzMZrKsO/imjfyTf8olTLzk8fPzUnkruH/EWXPsgQpZ+paDbd6tJ683z1qfUYao9pehM
+         gFPhR0yOwlQuG2MKVEn+LpZm5cF9j4pc08czecYpakCChkSN4OhVqz0iGbnF8pmYKZ93
+         NOEcnq2vg2iVlESBA1c63nYTZSLiWtj+FIwMsjqtK7MlmFG6tFIq3O7pdioGAgxUUdI8
+         58wg==
+X-Gm-Message-State: AOAM530HYrtPib4fdq5LOobI25UdMhRKA4XkjZDgPvOwOI4EgB1HrHDz
+        bWSCrVXtpK10KJ4SkQ/aEcI=
+X-Google-Smtp-Source: ABdhPJzBH5FHq2LwEjZGYkMaRJgWhWTcjz2zF5r9KGv55Vx5SLKmIBlOtmikrJLX/krVt9D0cCR6qA==
+X-Received: by 2002:a17:907:3e0d:b0:6f4:1e55:da55 with SMTP id hp13-20020a1709073e0d00b006f41e55da55mr2095690ejc.219.1651324186962;
+        Sat, 30 Apr 2022 06:09:46 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id u5-20020a056402064500b0042617ba63a0sm4142404edx.42.2022.04.30.06.09.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 Apr 2022 06:09:46 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
+Subject: [PATCH v2 0/3] Krait Documentation conversion
+Date:   Sat, 30 Apr 2022 08:01:22 +0200
+Message-Id: <20220430060125.9124-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Donnerstag, 21. April 2022, 22:30:38 CEST schrieb Jiapeng Chong:
-> Eliminate the follow smatch warning:
-> 
-> drivers/phy/rockchip/phy-rockchip-inno-usb2.c:1203
-> rockchip_usb2phy_probe() warn: inconsistent indenting.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+This series convert the krait-cc and the kpps-acc/gcc Documentation to
+yaml.
 
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+This series comes form a split of a bigger series that got too big and
+now hard to review.
 
-> ---
->  drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-> index e377b958d9b6..6711659f727c 100644
-> --- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-> +++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-> @@ -1200,8 +1200,8 @@ static int rockchip_usb2phy_probe(struct platform_device *pdev)
->  
->  	else {
->  		rphy->grf = syscon_node_to_regmap(dev->parent->of_node);
-> -			if (IS_ERR(rphy->grf))
-> -				return PTR_ERR(rphy->grf);
-> +		if (IS_ERR(rphy->grf))
-> +			return PTR_ERR(rphy->grf);
->  	}
->  
->  	if (of_device_is_compatible(np, "rockchip,rv1108-usb2phy")) {
-> 
+While they are still more or less wrong and doesn't really reflect real
+driver implementation, they are converted to prepare for a fixup later
+when dts and driver are finally fixed. For now make a 1:1 conversion.
+The only change is an additional binding for the kpss-gcc Documentation
+that require the #clock-cells when clock-output-names is used.
 
+v2:
+- Fix bot error by adding missing #clock-cells
 
+Changelog for previous series "Modernize rest of the krait drivers"
+that was split to smaller series (only Documentation changes):
+v7:
+- Rework kpss-gcc Documentation (split patch for pure conversion and
+  tweaks)
+v6:
+- Address comments from Rob
+- Fix warning from make dtbs_check
+v5:
+- Address comments from Krzysztof
+v4:
+- Fix more dt-bindings bug errors
+v3:
+- Split Documentation files for kpss and krait-cc
+v2:
+- fix missing new line on patch 16 (krait-cc patch)
 
+Ansuel Smith (3):
+  dt-bindings: clock: Convert qcom,krait-cc to yaml
+  dt-bindings: arm: msm: Convert kpss-acc driver Documentation to yaml
+  dt-bindings: arm: msm: Convert kpss-gcc driver Documentation to yaml
+
+ .../bindings/arm/msm/qcom,kpss-acc.txt        | 49 ----------
+ .../bindings/arm/msm/qcom,kpss-acc.yaml       | 94 +++++++++++++++++++
+ .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ---------
+ .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 68 ++++++++++++++
+ .../bindings/clock/qcom,krait-cc.txt          | 34 -------
+ .../bindings/clock/qcom,krait-cc.yaml         | 59 ++++++++++++
+ 6 files changed, 221 insertions(+), 127 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.txt
+ create mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
+
+-- 
+2.34.1
 
