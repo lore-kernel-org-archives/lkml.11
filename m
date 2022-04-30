@@ -2,103 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75572C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 15:38:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C15DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 15:38:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383041AbiD3PmL (ORCPT
+        id S1382984AbiD3PmR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 11:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45642 "EHLO
+        Sat, 30 Apr 2022 11:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382994AbiD3Plh (ORCPT
+        with ESMTP id S1382964AbiD3Plh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 30 Apr 2022 11:41:37 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DBDFA2049;
-        Sat, 30 Apr 2022 08:38:09 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 2B1B89200BF; Sat, 30 Apr 2022 17:38:08 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 24B0A9200B3;
-        Sat, 30 Apr 2022 16:38:08 +0100 (BST)
-Date:   Sat, 30 Apr 2022 16:38:08 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Stephen Zhang <starzhangzsd@gmail.com>
-cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        liam.howlett@oracle.com, ebiederm@xmission.com, alobakin@pm.me,
-        f.fainelli@gmail.com, paul@crapouillou.net, linux@roeck-us.net,
-        anemo@mba.ocn.ne.jp, zhangshida <zhangshida@kylinos.cn>,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
-Subject: Re: [PATCH v2] MIPS: undefine and redefine cpu_has_fpu when it is
- overrided
-In-Reply-To: <CANubcdWykz0j5BaGNhYMW16wX9UbfgsLdEs-ebNWCWP+p1OKWw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.2204301609310.9383@angie.orcam.me.uk>
-References: <20220429032621.674865-1-starzhangzsd@gmail.com> <20220429095104.GA11365@alpha.franken.de> <alpine.DEB.2.21.2204291559490.9383@angie.orcam.me.uk> <CANubcdWykz0j5BaGNhYMW16wX9UbfgsLdEs-ebNWCWP+p1OKWw@mail.gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E428A144C
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 08:38:00 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id o69so8082224pjo.3
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 08:38:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding:cc:from:to;
+        bh=PhfY9SC+wYhs3i/pCnS1F0qe7XGea8rOjY/kEhC+LrE=;
+        b=sCDHVOiLVN32Y8ICH+ZkCKw/InoCrY43xa27irUukeSvGPghb/JBYOw6oTCkeIBkNa
+         +H/XBYvBx7CV0nBuiGA7CSeqpBzMXbIkhHwzR01gcHQLnmqthIK6PG5GbP5QbH/LT2af
+         9Em8Bhs6r45/fJ462zBxoDeJfmyc3zQOXCJQOLKUa7NZyWoNpE+p5rq+evLX48Wxqz7Z
+         8QuGzNeewDVFwR94Xv+ACR39i3XWraOwk4MmDN7l7tVP+OXZvX8sxAPK4yys2j11psjV
+         Aa1jdjYTmV+9Er+vvhIB/vTozu0gkGHHg2IByGGcQHC5KnFPIj4uZM2dHaqz/yWVmr+t
+         6dBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding:cc:from:to;
+        bh=PhfY9SC+wYhs3i/pCnS1F0qe7XGea8rOjY/kEhC+LrE=;
+        b=tWamvwph9pbHaBdnmWZK1Iwwmtl9B4H7VvW8Al5rv1sMB6+wJqHH6hssQ8xGFGOxl+
+         pvnZZGCrt8JOPy0dWcOk/oisFDX70sWWGXOfb/wKOWIcD7Q6D8yTm6YU1C66XlUAC5m5
+         yBbb88lezh4rgBHXczvnouCRlHJ45tT6bktnYY6i2+WzeHUOJPdNei4SR9F2wIlY3pzR
+         DRgaUOW60e3IgxjxQtu3p6IeYpEs0p5bZ5j7t8UuhpSlL+Gdj8l1aNjd6VcX4cGO0CFK
+         /kOFmZVhBXpqZNJbFR4jOknx+5VHM3P3J98JJknPtBK9iCwr8S7pnvXeMM/+U7LZOMb3
+         dAyg==
+X-Gm-Message-State: AOAM530Rdsjsgu/6S90w9KTQ+k7BsDx36tlfb4rZgr/HKnRIRlSM/Ooj
+        BKrfqg/ucVGAG+yqMvWWOLaqsw==
+X-Google-Smtp-Source: ABdhPJyQzZr23BkCwG1+xSArqcEmCk72rbg9rU3h9fy701WXzCXMfDWtm+qk2uXLdC5yg4y6n4z3Nw==
+X-Received: by 2002:a17:902:b789:b0:15b:5d52:7542 with SMTP id e9-20020a170902b78900b0015b5d527542mr4396814pls.26.1651333079791;
+        Sat, 30 Apr 2022 08:37:59 -0700 (PDT)
+Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
+        by smtp.gmail.com with ESMTPSA id x5-20020aa793a5000000b0050dc7628201sm1677478pff.219.2022.04.30.08.37.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 Apr 2022 08:37:59 -0700 (PDT)
+Subject: [PATCH v4 6/7] RISC-V: Move to queued RW locks
+Date:   Sat, 30 Apr 2022 08:36:25 -0700
+Message-Id: <20220430153626.30660-7-palmer@rivosinc.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220430153626.30660-1-palmer@rivosinc.com>
+References: <20220430153626.30660-1-palmer@rivosinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+Cc:     guoren@kernel.org, peterz@infradead.org, mingo@redhat.com,
+        Will Deacon <will@kernel.org>, longman@redhat.com,
+        boqun.feng@gmail.com, jonas@southpole.se,
+        stefan.kristiansson@saunalahti.fi, shorne@gmail.com,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        sudipm.mukherjee@gmail.com, macro@orcam.me.uk, jszhang@kernel.org,
+        linux-csky@vger.kernel.org, linux-kernel@vger.kernel.org,
+        openrisc@lists.librecores.org, linux-riscv@lists.infradead.org,
+        linux-arch@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     Arnd Bergmann <arnd@arndb.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 30 Apr 2022, Stephen Zhang wrote:
+From: Palmer Dabbelt <palmer@rivosinc.com>
 
-> >  Additionally I've thought of adding something like:
-> >
-> > #if cpu_has_fpu
-> > # undef cpu_has_fpu
-> > #endif
-> >
-> > or maybe even:
-> >
-> > #if cpu_has_fpu
-> > # error "Forcing `cpu_has_fpu' to non-zero is not supported"
-> > #endif
-> >
-> > to arch/mips/include/asm/cpu-features.h, but maybe that's an overkill.
-> 
-> Yeah, but why do you think that's an overkill? There is a great chance
-> people will ignore the note of 'cpu_has_fpu', and it did happen. When
-> that happens, there should exist a way to point out  or fix that.
+Now that we have fair spinlocks we can use the generic queued rwlocks,
+so we might as well do so.
 
- Maybe it's the language, but my intent has been to express my uncertainty 
-here rather than asserting that indeed it is an overkill.
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+---
+ arch/riscv/Kconfig                      |  1 +
+ arch/riscv/include/asm/Kbuild           |  2 +
+ arch/riscv/include/asm/spinlock.h       | 99 -------------------------
+ arch/riscv/include/asm/spinlock_types.h | 24 ------
+ 4 files changed, 3 insertions(+), 123 deletions(-)
+ delete mode 100644 arch/riscv/include/asm/spinlock.h
+ delete mode 100644 arch/riscv/include/asm/spinlock_types.h
 
- People do make mistakes from time to time, both code writers and 
-reviewers do.  It's not clear to me where to draw the line for safety 
-checks though.
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index 00fd9c548f26..f8a55d94016d 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -39,6 +39,7 @@ config RISCV
+ 	select ARCH_SUPPORTS_DEBUG_PAGEALLOC if MMU
+ 	select ARCH_SUPPORTS_HUGETLBFS if MMU
+ 	select ARCH_USE_MEMTEST
++	select ARCH_USE_QUEUED_RWLOCKS
+ 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT if MMU
+ 	select ARCH_WANT_FRAME_POINTERS
+ 	select ARCH_WANT_GENERAL_HUGETLB
+diff --git a/arch/riscv/include/asm/Kbuild b/arch/riscv/include/asm/Kbuild
+index c3f229ae8033..504f8b7e72d4 100644
+--- a/arch/riscv/include/asm/Kbuild
++++ b/arch/riscv/include/asm/Kbuild
+@@ -3,6 +3,8 @@ generic-y += early_ioremap.h
+ generic-y += flat.h
+ generic-y += kvm_para.h
+ generic-y += parport.h
++generic-y += spinlock.h
++generic-y += spinlock_types.h
+ generic-y += qrwlock.h
+ generic-y += qrwlock_types.h
+ generic-y += user.h
+diff --git a/arch/riscv/include/asm/spinlock.h b/arch/riscv/include/asm/spinlock.h
+deleted file mode 100644
+index 88a4d5d0d98a..000000000000
+--- a/arch/riscv/include/asm/spinlock.h
++++ /dev/null
+@@ -1,99 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-only */
+-/*
+- * Copyright (C) 2015 Regents of the University of California
+- * Copyright (C) 2017 SiFive
+- */
+-
+-#ifndef _ASM_RISCV_SPINLOCK_H
+-#define _ASM_RISCV_SPINLOCK_H
+-
+-/* This is horible, but the whole file is going away in the next commit. */
+-#define __ASM_GENERIC_QRWLOCK_H
+-
+-#include <linux/kernel.h>
+-#include <asm/current.h>
+-#include <asm/fence.h>
+-#include <asm-generic/spinlock.h>
+-
+-static inline void arch_read_lock(arch_rwlock_t *lock)
+-{
+-	int tmp;
+-
+-	__asm__ __volatile__(
+-		"1:	lr.w	%1, %0\n"
+-		"	bltz	%1, 1b\n"
+-		"	addi	%1, %1, 1\n"
+-		"	sc.w	%1, %1, %0\n"
+-		"	bnez	%1, 1b\n"
+-		RISCV_ACQUIRE_BARRIER
+-		: "+A" (lock->lock), "=&r" (tmp)
+-		:: "memory");
+-}
+-
+-static inline void arch_write_lock(arch_rwlock_t *lock)
+-{
+-	int tmp;
+-
+-	__asm__ __volatile__(
+-		"1:	lr.w	%1, %0\n"
+-		"	bnez	%1, 1b\n"
+-		"	li	%1, -1\n"
+-		"	sc.w	%1, %1, %0\n"
+-		"	bnez	%1, 1b\n"
+-		RISCV_ACQUIRE_BARRIER
+-		: "+A" (lock->lock), "=&r" (tmp)
+-		:: "memory");
+-}
+-
+-static inline int arch_read_trylock(arch_rwlock_t *lock)
+-{
+-	int busy;
+-
+-	__asm__ __volatile__(
+-		"1:	lr.w	%1, %0\n"
+-		"	bltz	%1, 1f\n"
+-		"	addi	%1, %1, 1\n"
+-		"	sc.w	%1, %1, %0\n"
+-		"	bnez	%1, 1b\n"
+-		RISCV_ACQUIRE_BARRIER
+-		"1:\n"
+-		: "+A" (lock->lock), "=&r" (busy)
+-		:: "memory");
+-
+-	return !busy;
+-}
+-
+-static inline int arch_write_trylock(arch_rwlock_t *lock)
+-{
+-	int busy;
+-
+-	__asm__ __volatile__(
+-		"1:	lr.w	%1, %0\n"
+-		"	bnez	%1, 1f\n"
+-		"	li	%1, -1\n"
+-		"	sc.w	%1, %1, %0\n"
+-		"	bnez	%1, 1b\n"
+-		RISCV_ACQUIRE_BARRIER
+-		"1:\n"
+-		: "+A" (lock->lock), "=&r" (busy)
+-		:: "memory");
+-
+-	return !busy;
+-}
+-
+-static inline void arch_read_unlock(arch_rwlock_t *lock)
+-{
+-	__asm__ __volatile__(
+-		RISCV_RELEASE_BARRIER
+-		"	amoadd.w x0, %1, %0\n"
+-		: "+A" (lock->lock)
+-		: "r" (-1)
+-		: "memory");
+-}
+-
+-static inline void arch_write_unlock(arch_rwlock_t *lock)
+-{
+-	smp_store_release(&lock->lock, 0);
+-}
+-
+-#endif /* _ASM_RISCV_SPINLOCK_H */
+diff --git a/arch/riscv/include/asm/spinlock_types.h b/arch/riscv/include/asm/spinlock_types.h
+deleted file mode 100644
+index f2f9b5d7120d..000000000000
+--- a/arch/riscv/include/asm/spinlock_types.h
++++ /dev/null
+@@ -1,24 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-only */
+-/*
+- * Copyright (C) 2015 Regents of the University of California
+- */
+-
+-#ifndef _ASM_RISCV_SPINLOCK_TYPES_H
+-#define _ASM_RISCV_SPINLOCK_TYPES_H
+-
+-/* This is horible, but the whole file is going away in the next commit. */
+-#define __ASM_GENERIC_QRWLOCK_TYPES_H
+-
+-#ifndef __LINUX_SPINLOCK_TYPES_RAW_H
+-# error "please don't include this file directly"
+-#endif
+-
+-#include <asm-generic/spinlock_types.h>
+-
+-typedef struct {
+-	volatile unsigned int lock;
+-} arch_rwlock_t;
+-
+-#define __ARCH_RW_LOCK_UNLOCKED		{ 0 }
+-
+-#endif /* _ASM_RISCV_SPINLOCK_TYPES_H */
+-- 
+2.34.1
 
- Here `cpu_has_fpu' is a bit unusual in that unlike with the other feature 
-override macros we don't want it to expand to a non-zero constant.  The 
-comment didn't work twice, though I suspect both cpu-feature-overrides.h 
-files may have been written before the comment went in (I'm fairly sure 
-the IP30 port lived outside the tree for a while).  But I have only added 
-the comment in the first place when I tripped over the `nofpu' option not 
-working for the machine I needed to run FPU emulator verification with, 
-and several platforms were fixed alongside.
-
- Given these circumstances it probably makes sense to have such a safety 
-check after all.
-
-> > I prefer just removing the #defines from ip27/ip30 cpu-feasture-overrides.h.
-> > Or isn't that enough for fixing the problem ?
-> >
-> > Thomas.
-> 
-> So maybe that's  why I don't think just removing the #defines from
-> ip27/ip30 cpu-feasture-overrides.h. is enough for fixing the problem.
-
- Well, that *is* the fix for the problem at hand, as this macro is not 
-supposed to be defined such as to expand to a non-zero constant.
-
- Adding a safety check would be a separate improvement.  Please feel free 
-to submit one.
-
- We need to keep fixes and improvements as separate changes.  For one 
-fixes can be candidates for backporting while improvements are never 
-backported; cf. Documentation/process/stable-kernel-rules.rst.
-
- I hope this clears your concerns.  Let me know if you have further 
-questions.
-
-  Maciej
