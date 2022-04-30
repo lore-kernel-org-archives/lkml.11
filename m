@@ -2,139 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E58CC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 17:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D561AC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 17:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243872AbiD3Rbf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 13:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48518 "EHLO
+        id S1359492AbiD3RgV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Apr 2022 13:36:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383244AbiD3RbO (ORCPT
+        with ESMTP id S243826AbiD3RgR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 13:31:14 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2114.outbound.protection.outlook.com [40.107.93.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41592ED5B;
-        Sat, 30 Apr 2022 10:27:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iyDmmM87L3Ee6dUpw58Od0TkMU8tOUoP34Uo8Oe4nWRpIAp73U4vFTamVYaQ3DEWrYAIyMrBvqTKbg87hXs0hlUNTlNWLYluArLbQ4IId03QtSfqWwInsSQH/K/HrfeWvbHvZ7MO9La5jNhOyxgCIICA+RQsw4e8FkECT53RjU1esIdT7jT3n+SAF4158pp1IijiUB/Y+QQoycg46eTWn+K+yXucMpulqz2sS3HXsCZwh6N81Ac2VAj19Z6PyU7Eyhqbh6GB4RBmGMmYR/Aw3JY8LDQvxlx3nsNhPYt6aa6OGgDDfiBqEP00pxLwLi3kutxwGMBS865jsb6Av/wyEA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vqjnqW0yxWwcGCwWBltyCuEOaT3su1prkf86YQI6EIY=;
- b=ZoBQIwWiu2mTA7ZlDishPWnfCTKEuei/mUrM5+qTz4xG7Nr24pdlRgDj3hJ+m+bIoCJWGXqXUADVlFB8Dl/07cWEKRuBVowYbV6pX9PzE16yxNo9BGjOa/OmS1+gZDurFkPG5z+q/1YEWzMYApPgPUxjJ8Daw4TYdZdJpKK54jc13FtEwpNeLt6pvm78PMu6fGZASs1fIbrh2JpDTr/oLk6knaFLGovPxsFB1aIclTrVK5dFFw0+ITO5WAxkQTy6GCdD29Weeq7N9CDcVhXg0WFnB4qwOU/xvMGuV9SSWXLJyiVidzsUbSsW4B+9wjt/mcQcOodaQbyvkJtq+9dV2Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vqjnqW0yxWwcGCwWBltyCuEOaT3su1prkf86YQI6EIY=;
- b=Fs/ISJiuDwGH94EyIQGPuiEeJ7KerBgELrLvlLh6hvkWdclfITIaCFyxL5nQ8ar6Ylu/L5roplD5bKkqEQ25NyQ7zcJ+ZEoTek/1Of3U192lDOqwQtYloHXudXZLdwlEFoqpUn1K2AqKqOl6tO33BSvlEa4qtKIJZLVMF4L/v3U=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by DS7PR10MB5199.namprd10.prod.outlook.com
- (2603:10b6:5:3aa::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Sat, 30 Apr
- 2022 17:27:50 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::4581:787c:1a7a:873e]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::4581:787c:1a7a:873e%3]) with mapi id 15.20.5186.028; Sat, 30 Apr 2022
- 17:27:50 +0000
-Date:   Sat, 30 Apr 2022 10:27:47 -0700
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH v1 net 2/2] net: mscc: ocelot: fix possible memory
- conflict for vcap_props
-Message-ID: <20220430172747.GB3846867@euler>
-References: <20220429233049.3726791-1-colin.foster@in-advantage.com>
- <20220429233049.3726791-3-colin.foster@in-advantage.com>
- <20220429190622.6f5279b8@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220429190622.6f5279b8@kernel.org>
-X-ClientProxiedBy: MW2PR16CA0014.namprd16.prod.outlook.com (2603:10b6:907::27)
- To MWHPR1001MB2351.namprd10.prod.outlook.com (2603:10b6:301:35::37)
+        Sat, 30 Apr 2022 13:36:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 592303FD80
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 10:32:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651339974;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=zBSkksDiD0TDmy/DS9njRj20qkfr7G9H5zq25pKi4QM=;
+        b=cQREgzcIzyDKUV2V4bA2afZ5TjB569BvMtCF96YfgxXY+H4CnVgPOKmittK2v0G/m0DlyG
+        cH2xxlKgpD7D4tRZ3KuDlXtdceDYp/aP96ydoo6pAcEasAcaUX0DL0oaiO3XHrNBy8Nrfl
+        oLeW+pyrGkWIoyzbvwqOhghmo89C41U=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-600-XSqKNEChPcSO7sVPkpZ8Qw-1; Sat, 30 Apr 2022 13:32:53 -0400
+X-MC-Unique: XSqKNEChPcSO7sVPkpZ8Qw-1
+Received: by mail-qt1-f198.google.com with SMTP id a24-20020ac81098000000b002e1e06a72aeso7822020qtj.6
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 10:32:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zBSkksDiD0TDmy/DS9njRj20qkfr7G9H5zq25pKi4QM=;
+        b=M/CJMPl71GQOSEw02yk/hxv0iPJtR1aMEAqdQiLgFkLGQSrcnEdfK0ntOilnaRvs+V
+         FFyHMmnxPaX2G9+O4RxezH0nzLAJKPeU6WHdXxdJUtZ3+rYMoaQ9DLJVSknAQm8HN4gg
+         7TnQlqhhVl6/tdCm2PwonOa2U3HBzEfM2sKLLs5Et/GYgJrkQp69DwRSmZ3UlYBh+fM2
+         yLhRYatHZ2jaR7yFp6d+UnPyCX7vOcfKRJOyomt81pWyJ2rvDWRmQYqzammgUhP91leF
+         qF5QproufnFlQ+f/zgQfVwzOJ9XdfCgmTsxdhyTRjW1yocSFXX8XvLOFtt4VIhMhtS9+
+         afGw==
+X-Gm-Message-State: AOAM53059n6aQQwC91o1YVOs07IrR9CAiKC2ABSRDbcUPja5emH4hLsU
+        BnAxBy11oXIrXkstlrELmwjM6WIG0EVYIq/+7wEWPBhFx3gUMbPsY7rnTBYgAONdGexjl9lYOU2
+        v4+Gej7i65ld/egAcTeFic/N0
+X-Received: by 2002:a05:622a:610a:b0:2f1:d998:319b with SMTP id hg10-20020a05622a610a00b002f1d998319bmr4256722qtb.478.1651339972329;
+        Sat, 30 Apr 2022 10:32:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy8ji7TIms/6lWItU8JkcGNfAWJFnSva0czFszOmvNFr8UkdmXZzxPp+O2FdkFTLXzGXfC6Vg==
+X-Received: by 2002:a05:622a:610a:b0:2f1:d998:319b with SMTP id hg10-20020a05622a610a00b002f1d998319bmr4256707qtb.478.1651339972104;
+        Sat, 30 Apr 2022 10:32:52 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id q73-20020a37a74c000000b0069f879fd52esm1477912qke.0.2022.04.30.10.32.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 Apr 2022 10:32:51 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     jpoimboe@redhat.com, peterz@infradead.org, mingo@kernel.org,
+        bp@suse.de
+Cc:     linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] objtool: rework error handling in objtool_create_backup
+Date:   Sat, 30 Apr 2022 13:32:40 -0400
+Message-Id: <20220430173240.3346735-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d4b69c1c-514a-4d8e-8e6a-08da2acec046
-X-MS-TrafficTypeDiagnostic: DS7PR10MB5199:EE_
-X-Microsoft-Antispam-PRVS: <DS7PR10MB5199470FC9771EDEE29B5E93A4FF9@DS7PR10MB5199.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TEQNRpsDcu6uiY8ChjLoglLJCRKLURzhROWk9H1u7qf3b4IMfD+jwzpHqq0JfAFPP1+xJ9BCobfGqsXUiqds5qoh2wuARueOxlEdubtGSNe2DTUEzwnG2vw95Ml1qL99P8JKNqe6K2br4GJ5BijUFdvIXNmZNBLjiR8aXqeozlT/Hq6pp2Cd+REvWMUNOH6ACfisSS97DIRKsu9S9rHrj2ttTr/0OZyxjFcuWmSejydUmfd72txDDbF45gPZMzC/xVLjHaQf0+ptahIgL4ld1/18FWqYHZcdiKzrOVABeVr3cRt3b5xuPORKpjS35X8hZlUE26qRgEBBTtwJ5z6fnf4EmjuHNQGIpPDNvX8dqfkaJLtNNTXcJqDcI1RekI479wZXadhNk/mSXfm9StZ3UNLRrrGvlISxpHvRRVkBHhdXAx4YMCGBoMCNhrcMbv9KlyHdBhN4tO35sJHxfBj0po6SfTx0wXEI0tWzSaB1RcvEhfiTxF8sEHmpYb3iPmcuXZtYVIOCwZjp9f2z1wOXIJ/9DuOFTSf1Nirw9JtQGV51xYto5vtTYzq4IwwtZPKLcg2W9+69po/wt9glexE71/UsN3rnXY4SjYDbi7kbbZEyUSIOJY/vFgT1hvEgRS8x6yMRb1pWDVjdDPGv+/dofqQqncJM6sNW662Qziro8aBSVEUnQCwkjLeWTEV81R5EpBTJcn+cWfMHye6r6skDwg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(136003)(396003)(346002)(39830400003)(376002)(6512007)(26005)(33716001)(8936002)(508600001)(9686003)(6486002)(83380400001)(6916009)(316002)(54906003)(4326008)(8676002)(33656002)(66946007)(186003)(1076003)(66556008)(66476007)(5660300002)(86362001)(38350700002)(38100700002)(6506007)(52116002)(4744005)(6666004)(7416002)(44832011)(2906002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?H6znFS2+yHC1wgZwdGLo/60C5wnCrnqUso7KRgGrRhK/In3TYtAsQPT262hW?=
- =?us-ascii?Q?t0hmScFS8UpPszsO5OWcHXI3G3Wc0YsvhN+lsddJ2FYw6yDtSH2f4uKnmkKG?=
- =?us-ascii?Q?IiXLG6qwLpYP0r18zWCacoWC17oKD5L4EXIsHrZ5ZPmc8lAuBt+M4JCotxH0?=
- =?us-ascii?Q?6j5uzw9w1a628+jZ4AYBZcYSGm9ZrR3K8QZOvVwgg+SYZzJ54kjHjBqWs5up?=
- =?us-ascii?Q?RJijTP3dIayCB82LjRdEZ0kBE7vZif6N48CTwRmRuaD9HCRXomie+N2Xzt9D?=
- =?us-ascii?Q?DQyJh8pS4nau+UpdCCz8Bmu3AfgHrV9VpDbVT2n0lRNeQiqL4gztVmomPUSV?=
- =?us-ascii?Q?djbvsceyMwPlfXBrMtS71u4Mkm5Kd2I2OPAzHcbx4nB/FcufQaaW893jITMz?=
- =?us-ascii?Q?Er/YiK1Lngsl6u9MUqcDg3/a21ih1PcH0O/5Ujocnh++Ziplxq61/qSjmeIF?=
- =?us-ascii?Q?7QWLiVc+b+Lg5iFugJl5lQ3iDhjeVh521FS+HjhRfEdgQnY/ltUUHie2JTsI?=
- =?us-ascii?Q?UhyZUw5zCGt4SJ1xWC6m5j6uHdHnm60w1iaTIbgg9HcpcpFJCS01jdayqnmg?=
- =?us-ascii?Q?FUnDvtpad4CIKOk/CZh8jFo9+B+pqpilTl+J+hdsnsrTIPHwc7xAfgrayFfh?=
- =?us-ascii?Q?wZQvMPggkftrGoc/rTIhWw9GzkPXrk942oB9IOIhLGtzSXg377UlQc9ehLoL?=
- =?us-ascii?Q?0+S57UosZjFI08l1k/vY9yFMouvboRGguay+ZZx3PX70W1jhqID1V3cdfYkc?=
- =?us-ascii?Q?gq0K4DmVOr8peXAhd66R4mcRdaqqeYivVQjwfRpilxnc9+Mg3r6r6xJuMNi4?=
- =?us-ascii?Q?fbZBEHQScKh09oV1OmfgE7zV3SeB2p3N0xhVlucMlD/vw3vVfvbZ+TFrjh++?=
- =?us-ascii?Q?07ZqigvBLJZ+8oypzSoPKnwozyj4nbspchA5ezvpF2YYQHHCNc9V7JtDCbmN?=
- =?us-ascii?Q?/JuZe6q81c3s3eISgfIuIp9/7ayh2sRvg+aZgVFVguMIMA+kqaATMthUQ1Yv?=
- =?us-ascii?Q?9/pgHtyjsyu0i6UB0FXr79pQyk7P2RGNqk/MJQ5/Tb2rz5tSHDEqiXjLf7n5?=
- =?us-ascii?Q?gaweoZeeJ4axiai6lBQSkg2D9XkVpFiWgppryyC6dl1gHxCVOBsb4Lta5kru?=
- =?us-ascii?Q?T6VMnCFNGXt1PtAQr0FYzGBXq3/ykH3hNI7jxIfyj9ap11XomY3sRO7Vn7ax?=
- =?us-ascii?Q?oAXQg32IMjNAJnG/aVP7GpN/4OT3mjw/A6GzHTwrTP4/dCmdAiJqRgxjIKG8?=
- =?us-ascii?Q?D8YscJV6Hw+ilwKhivUFTUkM9dAHQMLwQ5GcrRPhGx7N+g3w9dwuzDmDXI22?=
- =?us-ascii?Q?Ckuj7ZgOHG4sB78qbqtNe8gcFtVb6MG0i5VK6mP8ivGBEGUD8fxWSvs3bpf1?=
- =?us-ascii?Q?G+r3SI0flz04BJvUJcZQz3qrbvfni9Dtk/IK5lo1B892+s7rPgiIU8Am/mA6?=
- =?us-ascii?Q?a6TmNNNv+BN9g8bX/+3FlquOeumFzbF6ygnWpLsNg7KMSlvwLUER3/FpNuTE?=
- =?us-ascii?Q?Hwn0ThdFsiZThFtd7+rlXF9wlruOflvt4HOWzIlwawCPQv2+eboIn3M5dQP3?=
- =?us-ascii?Q?mlAw+YyuLxgsFi6A6Sf4TFhDcrgmNn9VqZS6DoC9+KCgE8Elp8RgRFtblnCo?=
- =?us-ascii?Q?NedE8PKe7apVka61LrNpbWgqprcerwgfvoekbsQ2eS1H/cshcOtbbJVh+cY1?=
- =?us-ascii?Q?iXHnkrTOth4tLwMmehizSNoM2rC91/2KOuzhyEWia5rjmvxQobWCaUI4CmnL?=
- =?us-ascii?Q?BmUyIQJ1m3HPy64iXHeYM9zPlRlhKUSXHWmOPNef/EZtXplLsh6y?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4b69c1c-514a-4d8e-8e6a-08da2acec046
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2022 17:27:50.6012
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wzAXE4zbvEa3pVBXfqnXP126n+UG/BfDmqgolp0uh9zs7is7Mp3MitoeFYd8mUJt4KEVUMOgIaIKGB1eiGEjMr/eRXDIpci+AxAbtpLcmb4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR10MB5199
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jakub,
+The cppcheck reports this issue
+[tools/objtool/objtool.c:65]: (error) Memory leak: name
 
-On Fri, Apr 29, 2022 at 07:06:22PM -0700, Jakub Kicinski wrote:
-> On Fri, 29 Apr 2022 16:30:49 -0700 Colin Foster wrote:
-> > Fixes: 2096805497e2b ("net: mscc: ocelot: automatically detect VCAP
-> > constants")
-> > 
-> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> 
-> Please don't line-wrap tags and please don't add empty lines between
-> them. Let's give Vladimir a day or two to comment on the merits and
-> please repost with the tags fixed, thanks!
+This is a general problem.  When ojbtool_create_backup() fails anywhere it
+returns an error without freeing any of the buffers it allocates.  So
+rework the error handler to goto the appropriate free level when an error
+occurs.
 
-Yep. I saw that on patchwork. Oops. I'll fix it up in whatever future
-patch comes.
+Fixes: 8ad15c690084 ("objtool: Add --backup")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ tools/objtool/objtool.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
-Thanks!
+diff --git a/tools/objtool/objtool.c b/tools/objtool/objtool.c
+index 512669ce064c..2fd10804e7a7 100644
+--- a/tools/objtool/objtool.c
++++ b/tools/objtool/objtool.c
+@@ -25,6 +25,7 @@ static bool objtool_create_backup(const char *_objname)
+ {
+ 	int len = strlen(_objname);
+ 	char *buf, *base, *name = malloc(len+6);
++	bool ret = false;
+ 	int s, d, l, t;
+ 
+ 	if (!name) {
+@@ -38,19 +39,19 @@ static bool objtool_create_backup(const char *_objname)
+ 	d = open(name, O_CREAT|O_WRONLY|O_TRUNC, 0644);
+ 	if (d < 0) {
+ 		perror("failed to create backup file");
+-		return false;
++		goto err1;
+ 	}
+ 
+ 	s = open(_objname, O_RDONLY);
+ 	if (s < 0) {
+ 		perror("failed to open orig file");
+-		return false;
++		goto err2;
+ 	}
+ 
+ 	buf = malloc(4096);
+ 	if (!buf) {
+ 		perror("failed backup data malloc");
+-		return false;
++		goto err3;
+ 	}
+ 
+ 	while ((l = read(s, buf, 4096)) > 0) {
+@@ -59,7 +60,7 @@ static bool objtool_create_backup(const char *_objname)
+ 			t = write(d, base, l);
+ 			if (t < 0) {
+ 				perror("failed backup write");
+-				return false;
++				goto err4;
+ 			}
+ 			base += t;
+ 			l -= t;
+@@ -68,15 +69,21 @@ static bool objtool_create_backup(const char *_objname)
+ 
+ 	if (l < 0) {
+ 		perror("failed backup read");
+-		return false;
++		goto err4;
+ 	}
+ 
+-	free(name);
++	ret = true;
++
++err4:
+ 	free(buf);
+-	close(d);
++err3:
+ 	close(s);
++err2:
++	close(d);
++err1:
++	free(name);
+ 
+-	return true;
++	return ret;
+ }
+ 
+ struct objtool_file *objtool_open_read(const char *_objname)
+-- 
+2.27.0
+
