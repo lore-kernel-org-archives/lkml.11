@@ -2,126 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC17C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 00:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CDCCC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 01:00:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381954AbiD3BAs (ORCPT
+        id S1345133AbiD3BEC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 21:00:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58788 "EHLO
+        Fri, 29 Apr 2022 21:04:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240051AbiD3BAn (ORCPT
+        with ESMTP id S1381955AbiD3BEA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 21:00:43 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3819AE55;
-        Fri, 29 Apr 2022 17:57:23 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id qe3-20020a17090b4f8300b001dc24e4da73so400409pjb.1;
-        Fri, 29 Apr 2022 17:57:23 -0700 (PDT)
+        Fri, 29 Apr 2022 21:04:00 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 223B865A7
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 18:00:40 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id v59so17181504ybi.12
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 18:00:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=mNyLvH43MfPDniIsq9lMkWz/KLzGO/YPNGTp4lBSC4c=;
-        b=Ikn2m/zUdMTBUneTvHpZGEvTEvEkBSKkAf7tfUvGabeK/E23MOq6UhUFbeQ3k9G2U7
-         UoA3O3+BGw2v7X/jbMz3hjxTrHYm7YBNQeels+KnyC35p0Qs1rjyVX7xSJrgfUAfgdJi
-         RW6tKIsKNbIVLx6j7+5qvyyr3zm99GWWoIiUIpeTclTXMxl/WxCVRCD72QCv1v1w9/IO
-         zNV2+tyQWMmPlVkRV0CgpfkmO3+umUR+DmkRyZwdXJC/cRF18wQ6OZl8GNJ7gz6LoqMr
-         abiSSbxYqVfIxshW6SMxw/iaZHq6j7zLP5JOhsAs+O2W5ySd18cCy6Q60dhzw1OcpLZ/
-         dC5A==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v+/lXmWN9a4yBqHcUhGldW2cPmJygtUYS178VCmvTIc=;
+        b=sae9+FjGo9T5Lw9oasK5TSXV+WiJ9kOd1rZxgJTdRsikk6ZkRbafNdUGY5LNRGAq7z
+         KLeLF9me10KOS2tdhq3QqUpedIvCKSr1k5DC/BpSJXrYAbYGX36I/OHi5sPl2+ZQlekd
+         66J+Wwfye+d+OmHrkDF8heOen1RhSJWCYyaI2bN5JBrcN16V9XbLRRbXVKl4swa18OO5
+         tjzIGXovtKoxHb2BPhqhs7CQ8j16lH/BUJJAJBpzv9rkOq3Qi4oG9OwF3Ppi6ZYwQt7t
+         c0tGVoQRbXL9RFIYG+2HjirHMKUjpclTwnxrV6ci7lqAUdDwRL4xfTYawAje7RdrXeb3
+         Ouqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=mNyLvH43MfPDniIsq9lMkWz/KLzGO/YPNGTp4lBSC4c=;
-        b=ehQjd8pFdGh0JavSOMEECI9TJRY8H32yvgdBqJkjjGAycrelFcR1l/4610v7W5K+zy
-         9G+mNwBKm1yMsjed9sRZF3C5ftohm8U3rke/QSWk9sDntnnt86AuJ6KJ4CDgmKBs1xfl
-         qevjkJKPgf216EUq//hYpdEeA/GAmJ5VwjNvJnKwAc9c7SuYx9Tz6fCS4YYD3eWKyF1T
-         Py4gIRHLGcrk+f2UnpFcJQEWiy9pv2u07gTAdd+MiAWFdUpCqM+O4UVloBVHySkub1p9
-         gIGzXpZap7ywbW5svaTc28W7ejYyg0n9ylsURyLomRhQAeHJ8h6W94YCarZCXADBXZ6V
-         he0g==
-X-Gm-Message-State: AOAM530l1yJjtr4a+Om6jGfBX3K3RbtlwYZeEn5+iAQCMhVZUuOn6fY4
-        enF1HEhOKIkv8R8GfbHFBLg=
-X-Google-Smtp-Source: ABdhPJwE/7f5AnlFfXfh4dUCYmbF+dvvij3jKffdGgValII8eU6AVuSoxIGBoluNUioKER8t6HMOFg==
-X-Received: by 2002:a17:90a:9418:b0:1d8:91d1:4d74 with SMTP id r24-20020a17090a941800b001d891d14d74mr6779237pjo.62.1651280243475;
-        Fri, 29 Apr 2022 17:57:23 -0700 (PDT)
-Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id o18-20020a170903301200b0015e8d4eb2ddsm204019pla.295.2022.04.29.17.57.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 17:57:22 -0700 (PDT)
-Message-ID: <83176583-f392-ed9c-a4a2-9d8f67c0fd19@gmail.com>
-Date:   Sat, 30 Apr 2022 09:57:19 +0900
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=v+/lXmWN9a4yBqHcUhGldW2cPmJygtUYS178VCmvTIc=;
+        b=HHnOUN3Qg9qyk7hE7AJCDN4XG6Krw0YoFkq8A4yADrE+v5rcP0Fn3fpb/Q3VirN5a1
+         2QKIE6QdQMUc7a3RcHrIo4gFKidPfbQMWOiXFyhpqA5jGT8l5/Vnzcl+KB+CjZbMRTY5
+         1+cMburo2rFXE6mp8LLrCFW8zsPjoRFsoEmECYQ2cf3MoFBkSE5ZjkneQDv4L4PA04je
+         RBgqzMyVZIVdaJHstgoushhdbM+pz0xRB7UywaWTSvu7gSDrhCWs9AB81PfYpGNmfNyd
+         VRg1ABqwSKbSJ34aE24qQywjNcOeiLE3CzFU/LDGdr9s9efZFW+aHk1vTf+1NUZAw7D6
+         KIrg==
+X-Gm-Message-State: AOAM532aK/NWE9LsIdQCJMxyJUQk87VXcVy0D6xeSPytrIJfnV5/yLg4
+        7qRJD2NFOlYbY4cFCxdw1GNTPgfYnSBEvB11eWmllA==
+X-Google-Smtp-Source: ABdhPJyhcCyxowcmxR+EC+1LVLQSQWfwL5P0ozbbvft+6vNS3yhM7DK8vGFq8LI/3sHN0lOaYWVuT+28wwYR2ixEuLk=
+X-Received: by 2002:a5b:2c9:0:b0:644:b7c9:3766 with SMTP id
+ h9-20020a5b02c9000000b00644b7c93766mr1986227ybp.428.1651280439211; Fri, 29
+ Apr 2022 18:00:39 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] Documentation/vm/page_owner.rst: Fix syntax error and
- Describe details using table
-Content-Language: en-US
-To:     Shenghong Han <hanshenghong2019@email.szu.edu.cn>, corbet@lwn.net
-Cc:     akpm@linux-foundation.org, baihaowen@meizu.com, seakeel@gmail.com,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        caoyixuan2019@email.szu.edu.cn, yejiajian2018@email.szu.edu.cn,
-        yuhongf@szu.edu.cn
-References: <20220429181926.10658-1-hanshenghong2019@email.szu.edu.cn>
-From:   Akira Yokosawa <akiyks@gmail.com>
-In-Reply-To: <20220429181926.10658-1-hanshenghong2019@email.szu.edu.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220429203644.2868448-1-samitolvanen@google.com>
+ <20220429203644.2868448-17-samitolvanen@google.com> <Ymx1JcO36h7YqLa0@hirez.programming.kicks-ass.net>
+In-Reply-To: <Ymx1JcO36h7YqLa0@hirez.programming.kicks-ass.net>
+From:   Sami Tolvanen <samitolvanen@google.com>
+Date:   Fri, 29 Apr 2022 18:00:03 -0700
+Message-ID: <CABCJKufNUoJJPcraG-o2AvTBSWmFEQAzg0z-Z=xLohBqsMA3KQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 16/21] objtool: Add support for CONFIG_CFI_CLANG
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, X86 ML <x86@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-hardening@vger.kernel.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri, Apr 29, 2022 at 4:30 PM Peter Zijlstra <peterz@infradead.org> wrote:
+> Urgh, what does this do for decode speed? This is a hash-lookup for
+> every single instruction.
 
-On Sat, 30 Apr 2022 02:19:26 +0800,
-Shenghong Han wrote:
-> Subject: [PATCH] Documentation/vm/page_owner.rst: ...
-This is v2 of the patch, isn't it?  If so, it should be indicated
-in the prefix as "[PATCH v2]".
+Two actually, since .kcfi_traps only contains compiler-emitted
+locations and we also have to check for manual type annotations. I
+haven't measured performance yet, but I also didn't notice a
+significant impact here.
 
-> Some syntax errors exist in "page_owner.rst". Thanks to Akira Yokosawa and
-> Haowen Bai for tips to help improve the documentation.> 
-> We try to fix them. Hope that the Documentation is showed as we expect.
-In changelog, describe technical facts.  Not what you think or hope.
-You need to do a respin with a better explanation at least.
+> Is that kcfi location array sorted by the compiler? Because then you can
+> keep a running iterator and replace the whole lookup with a simple
+> equality comparison.
 
-Hint: A fix without using tables would be the simplest.  Please look
-at the changes in the preceding section I made in commit 5603f9bdea68
-("docs: vm/page_owner: use literal blocks for param description").
-You are seeing the build error because a literal block ends at a next
-line which starts from column 1.
+The compiler generates a separate .kcfi_types section for each text
+section and the entries are emitted in order, so this should be
+doable.
 
-I don't think Jon would dislike the simplest approach. :-)
-
-Of course, if you guys love tables so much, I don't mind.
-
-> 
-> Signed-off-by: Shenghong Han <hanshenghong2019@email.szu.edu.cn>
-> Fixes: edc93abbcc6d ("tools/vm/page_owner_sort.c: support sorting blocks by multiple keys")
-SHA-1 ID of a not-yet-merged commit will likely break later in
-the merge window.
-
-Good luck!
-
-        Thanks, Akira
-> 
-> ---
-> Thanks Jonathan's suggestion.
-> 
-> This fix is a simpler than before.
-> And yes, It has built in my machine.
-> 
-> Best,
-> 
-> 	Shenghong Han
-> ---
-> ---
->  Documentation/vm/page_owner.rst | 15 ++++++++++-----
->  1 file changed, 10 insertions(+), 5 deletions(-)
-> 
-> diff --git a/Documentation/vm/page_owner.rst b/Documentation/vm/page_owner.rst
-> index 25622c715..0ecb4a739 100644
-> --- a/Documentation/vm/page_owner.rst
-> +++ b/Documentation/vm/page_owner.rst
-[...]
+Sami
