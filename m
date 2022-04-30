@@ -2,180 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F1CDC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 17:11:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF75C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 17:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243552AbiD3ROZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 13:14:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35278 "EHLO
+        id S243488AbiD3RQU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Apr 2022 13:16:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243340AbiD3ROR (ORCPT
+        with ESMTP id S237240AbiD3RQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 13:14:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6AAEFD1E;
-        Sat, 30 Apr 2022 10:10:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60DF5B8077F;
-        Sat, 30 Apr 2022 17:10:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4B57C385AA;
-        Sat, 30 Apr 2022 17:10:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651338651;
-        bh=+7jXUBzEVdqXeKK0kRGylvrQWUjmQVZ+Zn0af0572r8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qVpIF9zgxN+mEB1kPhL20QKtJOhUYkRQXxspTz+YCJo/Visor8+j9kSGZBHe5n5lC
-         SFb3ov6YLrToFcPP6+5ehM6JsPZlDeeNuMreJUsbQhysuuOeH6Q2E2ZR/onoOID7Dd
-         NpCvM9cJvqH8tcUF7v7CFccdyelfl4XXSugyuZ7u7FUfCZlT5Lq0dtvoL5PIfC9Prx
-         0pEy6P9aujZUU3Sp7Zu8YvliLi5Pa8cfQKWGbKE4h4toHtw/Xu5J/RSSdeSo4mX0Z6
-         +67KNMfJzrTEhb95OH3MuM0dxwiIkg9Zi+I+qlucsbWBwkcpzfJ3+MDCFkAuDG2hb1
-         oGjdwBvvwf/TA==
-Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
-        (envelope-from <mchehab@kernel.org>)
-        id 1nkqcJ-001tIJ-CM; Sat, 30 Apr 2022 18:10:47 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "Daniel Vetter" <daniel@ffwll.ch>,
-        "David Airlie" <airlied@linux.ie>,
-        "Greg KH" <gregkh@linuxfoundation.org>,
-        "Jaroslav Kysela" <perex@perex.cz>,
-        "Kai Vehmanen" <kai.vehmanen@intel.com>,
-        "Lucas De Marchi" <lucas.demarchi@intel.com>,
-        "Pierre-Louis Bossart" <pierre-louis.bossart@intel.com>,
-        "Takashi Iwai" <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        mauro.chehab@linux.intel.com,
-        Dan Williams <dan.j.williams@intel.com>
-Subject: [PATCH v4 1/2] module: update dependencies at try_module_get()
-Date:   Sat, 30 Apr 2022 18:10:45 +0100
-Message-Id: <6121371a6f701e1c03a5363bf4738bd446324c05.1651338466.git.mchehab@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1651338466.git.mchehab@kernel.org>
-References: <cover.1651338466.git.mchehab@kernel.org>
+        Sat, 30 Apr 2022 13:16:19 -0400
+Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [221.12.31.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCA84EDEC
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 10:12:55 -0700 (PDT)
+Received: from mail.maildlp.com ([172.25.15.154])
+        by h3cspam02-ex.h3c.com with ESMTP id 23UHCKSx084346;
+        Sun, 1 May 2022 01:12:20 +0800 (GMT-8)
+        (envelope-from zushuzhi@h3c.com)
+Received: from DAG2EX04-BASE.srv.huawei-3com.com (unknown [10.8.0.67])
+        by mail.maildlp.com (Postfix) with ESMTP id 215DA2221BC4;
+        Sun,  1 May 2022 01:14:32 +0800 (CST)
+Received: from localhost.localdomain (10.99.222.162) by
+ DAG2EX04-BASE.srv.huawei-3com.com (10.8.0.67) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Sun, 1 May 2022 01:12:24 +0800
+From:   Shuzhi Zu <zushuzhi@h3c.com>
+To:     <brauner@kernel.org>, <oleg@redhat.com>
+CC:     <linux-kernel@vger.kernel.org>, Shuzhi Zu <zushuzhi@h3c.com>
+Subject: [PATCH] signal/ptrace: Fix the bug of ptrace attach and signal handling concurrency
+Date:   Sun, 1 May 2022 00:55:56 +0800
+Message-ID: <20220430165556.29739-1-zushuzhi@h3c.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.99.222.162]
+X-ClientProxiedBy: BJSMTP01-EX.srv.huawei-3com.com (10.63.20.132) To
+ DAG2EX04-BASE.srv.huawei-3com.com (10.8.0.67)
+X-DNSRBL: 
+X-MAIL: h3cspam02-ex.h3c.com 23UHCKSx084346
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sometimes, device drivers are bound into each other via try_module_get(),
-making such references invisible when looking at /proc/modules or lsmod.
+When ptrace attach and signal handling are concurrent, it will cause the
+state of all threads of the traced process to become stopped and trace
+pid is 0.
 
-Add a function to allow setting up module references for such
-cases, and call it when try_module_get() is used.
+The thread dequeues the signal from the queue and another thread traces
+the thread while the signal has not been handled or when non-real-time
+signals less than SIGSTOP and a SIGSTOP signal are in the signal pending
+queue at the same time, these two cases will cause all threads of the
+process to be stopped. Therefore, when ptrace_attach modifying the task
+ptrace value of the thread, it is necessary to lock. Except for synchronous
+signals, SIGSTOP signal should be handled before non-real-time signals.
 
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Example: Thread A is the traced thread. Thread B is the tracer.
+1.Thread A dequeues the SIGCHLD signal, before it is handled, thread B
+executes ptrace attach A, and A's ptrace is assigned PT_PTRACED. Then the
+SIGCHLD signal processing will go to the ptrace_signal function。Thread A
+becomes traced. Thread B continues to execute ptrace_detach after the
+execution of waitpid returns. A thread ptrace value is set to 0 and
+it is woken up. Thread A continues to process the SIGSTOP signal, causing
+all threads of the process to be stopped.
+2. Thread A ptrace is assigned PT_PTRACED by ptrace attach, and both
+SIGPIPE and SIGSTOP signals exist in the pending queue of thread A.
+Because the value of SIGPIPE is less than SIGSTOP, SIGSPIPE is handled
+first, which will result in a timing similar to Example 1。
+
+Example 1：
+    A                             B
+    get_signal
+    dequeue_signal (SIGCHLD）
+                                  ptrace_attach ( A->ptrace |= PT_PTRACED)
+
+    ptrace_signal
+    ->ptrace_stop(TASK_TRACED)
+                                  ptrace_attach ( Send SIGSTOP to A)
+                                  ptrace_waitpid( return 0)
+                                  ptrace_detach (A->ptrace=0, wakeup A)
+    dequeue_signal(SIGSTOP)
+    sig_kernel_stop(SIGSTOP)
+    do_signal_stop (TASK_STOPPED)
+
+then：
+A (other threads of the process received signal)
+get_signal-> do_signal_stop(0))->TASK_STOPPED
+
+Example 2：
+    A                             B
+    send_sig(SIGPIPE, current, 0)
+                                  ptrace_attach ( A->ptrace |= PT_PTRACED)
+                                  ptrace_attach ( Send SIGSTOP to A)
+    get_signal
+    dequeue_signal (SIGPIPE)
+    ptrace_signal
+    ->ptrace_stop(TASK_TRACED)
+
+                                  ptrace_waitpid( return 0)
+                                  ptrace_detach (A->ptrace=0, wakeup A)
+    dequeue_signal(SIGSTOP)
+    sig_kernel_stop(SIGSTOP)
+    do_signal_stop (TASK_STOPPED)
+
+then：
+A (other threads of the process received signal)
+get_signal-> do_signal_stop(0))->TASK_STOPPED
+
+Signed-off-by: Shuzhi Zu <zushuzhi@h3c.com>
 ---
+ kernel/ptrace.c | 2 ++
+ kernel/signal.c | 2 ++
+ 2 files changed, 4 insertions(+)
 
-See [PATCH v4 0/2] at: https://lore.kernel.org/all/cover.1651338466.git.mchehab@kernel.org/
-
- include/linux/module.h |  8 +++++---
- kernel/module/main.c   | 33 +++++++++++++++++++++++++++++++--
- 2 files changed, 36 insertions(+), 5 deletions(-)
-
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 46d4d5f2516e..3b67720faf3b 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -620,12 +620,12 @@ extern void __module_get(struct module *module);
+diff --git a/kernel/ptrace.c b/kernel/ptrace.c
+index ccc4b46..ab1dc8f 100644
+--- a/kernel/ptrace.c
++++ b/kernel/ptrace.c
+@@ -447,7 +447,9 @@ static int ptrace_attach(struct task_struct *task, long request,
+ 	if (task->ptrace)
+ 		goto unlock_tasklist;
  
- /* This is the Right Way to get a module: if it fails, it's being removed,
-  * so pretend it's not there. */
--extern bool try_module_get(struct module *module);
-+extern bool __try_module_get(struct module *module, struct module *this);
++	spin_lock(&task->sighand->siglock);
+ 	task->ptrace = flags;
++	spin_unlock(&task->sighand->siglock);
  
- extern void module_put(struct module *module);
+ 	ptrace_link(task, current);
  
- #else /*!CONFIG_MODULE_UNLOAD*/
--static inline bool try_module_get(struct module *module)
-+static inline bool __try_module_get(struct module *module, struct module *this)
- {
- 	return !module || module_is_live(module);
- }
-@@ -740,7 +740,7 @@ static inline void __module_get(struct module *module)
- {
- }
- 
--static inline bool try_module_get(struct module *module)
-+static inline bool __try_module_get(struct module *module, struct module *this)
- {
- 	return true;
- }
-@@ -875,6 +875,8 @@ static inline bool module_sig_ok(struct module *module)
- }
- #endif	/* CONFIG_MODULE_SIG */
- 
-+#define try_module_get(mod) __try_module_get(mod, THIS_MODULE)
-+
- int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
- 					     struct module *, unsigned long),
- 				   void *data);
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 05a42d8fcd7a..d63ebf52392b 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -631,6 +631,33 @@ static int ref_module(struct module *a, struct module *b)
- 	return 0;
- }
- 
-+static int ref_module_dependency(struct module *mod, struct module *this)
-+{
-+	int ret;
-+
-+	if (!this || !this->name)
-+		return -EINVAL;
-+
-+	if (mod == this)
-+		return 0;
-+
-+	mutex_lock(&module_mutex);
-+
-+	ret = ref_module(this, mod);
-+
-+#ifdef CONFIG_MODULE_UNLOAD
-+	if (ret)
-+		goto ret;
-+
-+	ret = sysfs_create_link(mod->holders_dir,
-+				&this->mkobj.kobj, this->name);
-+#endif
-+
-+ret:
-+	mutex_unlock(&module_mutex);
-+	return ret;
-+}
-+
- /* Clear the unload stuff of the module. */
- static void module_unload_free(struct module *mod)
- {
-@@ -841,7 +868,7 @@ void __module_get(struct module *module)
- }
- EXPORT_SYMBOL(__module_get);
- 
--bool try_module_get(struct module *module)
-+bool __try_module_get(struct module *module, struct module *this)
- {
- 	bool ret = true;
- 
-@@ -856,9 +883,11 @@ bool try_module_get(struct module *module)
- 
- 		preempt_enable();
+diff --git a/kernel/signal.c b/kernel/signal.c
+index 30cd1ca..522bc6e 100644
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -220,6 +220,8 @@ int next_signal(struct sigpending *pending, sigset_t *mask)
+ 	if (x) {
+ 		if (x & SYNCHRONOUS_MASK)
+ 			x &= SYNCHRONOUS_MASK;
++		else if (x & sigmask(SIGSTOP))
++			x &= sigmask(SIGSTOP);
+ 		sig = ffz(~x) + 1;
+ 		return sig;
  	}
-+	if (ret)
-+		ref_module_dependency(module, this);
- 	return ret;
- }
--EXPORT_SYMBOL(try_module_get);
-+EXPORT_SYMBOL(__try_module_get);
- 
- void module_put(struct module *module)
- {
 -- 
-2.35.1
+1.8.3.1
 
