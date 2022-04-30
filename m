@@ -2,134 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57607C43217
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 00:30:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 863B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 00:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359771AbiD3A31 (ORCPT
+        id S1381889AbiD3Ado (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 20:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50772 "EHLO
+        Fri, 29 Apr 2022 20:33:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235155AbiD3A3Y (ORCPT
+        with ESMTP id S235155AbiD3Adm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 20:29:24 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 259D99681A
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 17:26:04 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id o69so7017505pjo.3
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 17:26:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wj0GCAwyvudPRmGRRgsX12+MeUaxxTPPMDMQ7+QSvNg=;
-        b=l+jK1iji/9TzBj7wkgUFu/NItPRwk6FZVFT2XJAwgjLa7CgwjRFyTekvMZlCecijWr
-         Rt+D6gKOqH/P69hDamtFwIfI6eu1sOM319CwQF0hbH+l5aYNTatIGAsZJXxJ+xT0DdHr
-         eHvzW17qMHRMQSmyfKli/H+Wh/zCToKvFPDZNiHmG6FkZH6gE7Rp+JIY/zAAFsrRJvdq
-         5OKUiZDl62LVYIEs3Z0zCu+f/XqJ77zb1EWE6jj2Z5/Iz+yFG0O9EhK72C8Dbe8uln+B
-         L/XaS/44KYb+2TvpdnAvY3wrU9/4t/BoYR9bYSKw5yz2JnLTIVPmuVnEnGfqd5BrqZ1E
-         S4Ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wj0GCAwyvudPRmGRRgsX12+MeUaxxTPPMDMQ7+QSvNg=;
-        b=OGx3TXZKsyK7bd01P9BBzwnqNgVKVsmLHgwlbdKY1STZ+VC55GTQ99EdTtSVCX0aoV
-         Yo6LpUj3J4xb5u/ocVmdClulWjy2Apx1u+sg/Ljr48bQxjA+Il6mZVPcD+C7PSVcsVLv
-         iwrSux4dWaGij2D6Ksq47524LBiA7OCCBjQhzKqj/bSmLjFKXByR8dzRpf8c8MyRE3hh
-         pijzBJwZZBb8RHi5a+inUA497iiz6/uW6zq2BD8yrBKkOxX4pCT9F5fqX4E9qguNdBJw
-         Zijv5Q+c0TDnKG4JQQhhhTVCjvFQtqZmaT+QNAMYOigVMYdyQNDLM3pdpDfULbgI+Ms1
-         HG2w==
-X-Gm-Message-State: AOAM531EcojkkpSvURBj8fffCzkSzILPpJ731wXUYBsNQ9gNk1dQ/f2k
-        XGXejT5FOhW5RbPEnFQjX/4=
-X-Google-Smtp-Source: ABdhPJwbC29ym+34xajMXMcVDFqWB0hl6bj7vlrp2zq9ZwucXZYdNW6X1oLcnNgIex9U5/T1FF2XEw==
-X-Received: by 2002:a17:902:82c9:b0:15d:3a76:936f with SMTP id u9-20020a17090282c900b0015d3a76936fmr1733796plz.139.1651278363471;
-        Fri, 29 Apr 2022 17:26:03 -0700 (PDT)
-Received: from localhost.localdomain ([125.131.156.123])
-        by smtp.gmail.com with ESMTPSA id u12-20020a170902e80c00b0015e8d4eb25fsm181271plg.169.2022.04.29.17.26.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 17:26:02 -0700 (PDT)
-From:   Wonhyuk Yang <vvghjk1234@gmail.com>
-To:     Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Wonhyuk Yang <vvghjk1234@gmail.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [Patch v3] mm/slub: Remove repeated action in calculate_order()
-Date:   Sat, 30 Apr 2022 09:25:55 +0900
-Message-Id: <20220430002555.3881-1-vvghjk1234@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Fri, 29 Apr 2022 20:33:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 415BC10CF;
+        Fri, 29 Apr 2022 17:30:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF7216243B;
+        Sat, 30 Apr 2022 00:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 55C82C385A7;
+        Sat, 30 Apr 2022 00:30:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651278612;
+        bh=w0Kb+JlJ3YxNGv5ZHU4i/iB27lhjEWCRLy/t4cz2zkw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GKqgCMX1B7PWxKbYl2J15HZssGuOcACluqIz9H7FoeAjvL9ea8Uph0T4l5ROiXVNE
+         v5uVaEVKU4xBWNYjJHO9raXtbvNJZv83YW/ZxYvsuzvvEP/TH+hHCKrTKDErU9i/a7
+         hBSssnWHpJcguyBF5R3DqeboUQqr5wAmz/ydv4R5Hoj522N6DWp6Q2ERe4jy5dMKiH
+         fR6wLTHNmUmiCgPGz7w09oBUZQj1z945bkecoSp+hzFJLfSVLlhD+jcTPhMOptDFhN
+         BKu1VZJX0Ze4eLqGK7p7vPnYzIRjVJrTi8HhM/fa+RP8Ywq5c9fBqqRZJ3/EwRpXwg
+         0Ug/ent6FiILQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3270DF0383D;
+        Sat, 30 Apr 2022 00:30:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v1 0/3] net: phy: micrel: add coma mode support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165127861220.13084.9227966291421298377.git-patchwork-notify@kernel.org>
+Date:   Sat, 30 Apr 2022 00:30:12 +0000
+References: <20220427214406.1348872-1-michael@walle.cc>
+In-Reply-To: <20220427214406.1348872-1-michael@walle.cc>
+To:     Michael Walle <michael@walle.cc>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To calculate order, calc_slab_order() is called repeatly changing the
-fract_leftover. Thus, the branch which is not dependent on
-fract_leftover is executed repeatly. So make it run only once.
+Hello:
 
-Plus, when min_object reached to 1, we set fract_leftover to 1. In
-this case, we can calculate order by max(slub_min_order,
-get_order(size)) instead of calling calc_slab_order().
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-No functional impact expected.
+On Wed, 27 Apr 2022 23:44:03 +0200 you wrote:
+> Add support to disable coma mode by a GPIO line.
+> 
+> Michael Walle (3):
+>   dt-bindings: net: micrel: add coma-mode-gpios property
+>   net: phy: micrel: move the PHY timestamping check
+>   net: phy: micrel: add coma mode GPIO
+> 
+> [...]
 
-Signed-off-by: Wonhyuk Yang <vvghjk1234@gmail.com>
-Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
----
+Here is the summary with links:
+  - [net-next,v1,1/3] dt-bindings: net: micrel: add coma-mode-gpios property
+    https://git.kernel.org/netdev/net-next/c/749c61e5b30a
+  - [net-next,v1,2/3] net: phy: micrel: move the PHY timestamping check
+    https://git.kernel.org/netdev/net-next/c/31d00ca4ce0e
+  - [net-next,v1,3/3] net: phy: micrel: add coma mode GPIO
+    https://git.kernel.org/netdev/net-next/c/738871b09250
 
- mm/slub.c | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
-
-diff --git a/mm/slub.c b/mm/slub.c
-index ed5c2c03a47a..1fe4d62b72b8 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -3795,9 +3795,6 @@ static inline unsigned int calc_slab_order(unsigned int size,
- 	unsigned int min_order = slub_min_order;
- 	unsigned int order;
- 
--	if (order_objects(min_order, size) > MAX_OBJS_PER_PAGE)
--		return get_order(size * MAX_OBJS_PER_PAGE) - 1;
--
- 	for (order = max(min_order, (unsigned int)get_order(min_objects * size));
- 			order <= max_order; order++) {
- 
-@@ -3820,6 +3817,11 @@ static inline int calculate_order(unsigned int size)
- 	unsigned int max_objects;
- 	unsigned int nr_cpus;
- 
-+	if (unlikely(order_objects(slub_min_order, size) > MAX_OBJS_PER_PAGE)) {
-+		order = get_order(size * MAX_OBJS_PER_PAGE) - 1;
-+		goto out;
-+	}
-+
- 	/*
- 	 * Attempt to find best configuration for a slab. This
- 	 * works by first attempting to generate a layout with
-@@ -3865,14 +3867,8 @@ static inline int calculate_order(unsigned int size)
- 	 * We were unable to place multiple objects in a slab. Now
- 	 * lets see if we can place a single object there.
- 	 */
--	order = calc_slab_order(size, 1, slub_max_order, 1);
--	if (order <= slub_max_order)
--		return order;
--
--	/*
--	 * Doh this slab cannot be placed using slub_max_order.
--	 */
--	order = calc_slab_order(size, 1, MAX_ORDER, 1);
-+	order = max_t(unsigned int, slub_min_order, get_order(size));
-+out:
- 	if (order < MAX_ORDER)
- 		return order;
- 	return -ENOSYS;
+You are awesome, thank you!
 -- 
-2.30.2
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
