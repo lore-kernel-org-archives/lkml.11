@@ -2,134 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B74F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 12:20:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1BB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 12:22:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379251AbiD3MX0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Apr 2022 08:23:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44096 "EHLO
+        id S239419AbiD3MZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Apr 2022 08:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376280AbiD3MWu (ORCPT
+        with ESMTP id S232836AbiD3MZm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Apr 2022 08:22:50 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F353141637
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 05:19:20 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id k23so19985113ejd.3
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 05:19:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9PrzlAjGmNeSX2t/TXGPbZCFJ6ftTzqZDscsydnon9s=;
-        b=i/irFdjzBJgh54tgZ4//X6S0mWafLpwsgehVEM7BwkPqnDg9OvKTJ6dgosnzJF+rXF
-         luGhopmRV6H54GMguL3OvUGPWeQTKbAK+DO4Z+qBCXof1beTo2VDFKZn/jsJ7UfxJOdB
-         MWlcE+FxSFpcKb5Ldpf+JoelJ44BrUzi2wZGKp2Pv/A9SBs69PfOOTvfnN8/iYg2u3kh
-         4z6gkHL3A4KbssQgMsuY/4Co6VJhZ4CFlNIKIP72e5bw6SjKo5qeBH1l1ICzcADaLj2F
-         F+KS1sMCAruli5SPTjxgagHILCjRLsoosC7mFKYEAFq7AofXdHiLDJa2gtX/iTLPH+Js
-         RMxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9PrzlAjGmNeSX2t/TXGPbZCFJ6ftTzqZDscsydnon9s=;
-        b=qOjri53IqXjtEFqbiMsFgEozzoH7XyKK9YGQ3nO1EcCMMkaZRdowb1xFmEWX3KNaQ/
-         En6wfgz48n41vSJ3CCngLl3y4H58omEoG9N6Vd6fuiXMufTtuAuZZ5Ga6IV29FLHuOns
-         WF9qlVS5dyyuMdMFxlRoKI/sWNJoyGUf2+zkARkUZ9zJRq1jbL8GN1nYJ+oxZgAVjiU8
-         u7B37Y7jXFSO41/lz3ApTe530nCiU8yatmeWyddHM4JPmydl88BW3nuThEtDxtvenOwR
-         i391aXsOGDx8c9yWDXV9a1dJub6Fp1efDTxG2ync3DAs17gbZCNAB+V3Hs7wLJqRz+Ev
-         I5pw==
-X-Gm-Message-State: AOAM530GHmhSnR11hFbFr9qp+SlmA7FQF7fYyQ1fDq3ajkOUJvsGU9YC
-        4TSNHwwGZUe6edxCB3Rtvkr7Gg==
-X-Google-Smtp-Source: ABdhPJy1iVrG4EYBeYhtmduhXaSa9bjJ6gFExbQgPOoPqYmL7ybmkMBOA4DSedXZgdWFWOvpViLMUQ==
-X-Received: by 2002:a17:907:3e0e:b0:6f3:845a:8d2d with SMTP id hp14-20020a1709073e0e00b006f3845a8d2dmr3770364ejc.78.1651321159572;
-        Sat, 30 Apr 2022 05:19:19 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id c26-20020a056402159a00b0042617ba63d1sm4059091edv.91.2022.04.30.05.19.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Apr 2022 05:19:19 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 9/9] arm64: dts: fsd: drop useless 'dma-channels/requests' properties
-Date:   Sat, 30 Apr 2022 14:19:02 +0200
-Message-Id: <20220430121902.59895-10-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220430121902.59895-1-krzysztof.kozlowski@linaro.org>
-References: <20220430121902.59895-1-krzysztof.kozlowski@linaro.org>
+        Sat, 30 Apr 2022 08:25:42 -0400
+X-Greylist: delayed 527 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 30 Apr 2022 05:22:20 PDT
+Received: from todd.t-8ch.de (todd.t-8ch.de [159.69.126.157])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8527B12E;
+        Sat, 30 Apr 2022 05:22:20 -0700 (PDT)
+Date:   Sat, 30 Apr 2022 14:13:27 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=t-8ch.de; s=mail;
+        t=1651320808; bh=DT5/86canTZHX2ROrTMFnYpWQTQ8t6bIymKCu+253LY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=L9Y6GqstX49RWzFh+5HGKKco8NsZfj3SN4p+EcvonpQAphgOVz6FfS8Wt7CuGu/Hw
+         ilTs6ccH990Ei+1wC/g9xyowAMV7dRKAtDidxpQY0NnkTm/BMQVP5dLMnyogdx/rlt
+         4eCN3Ih0FvKWM7Luybm7G/GUbgFBYos2inKltwM8=
+From:   Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <thomas@t-8ch.de>
+To:     Mark Pearson <markpearson@lenovo.com>
+Cc:     Lyude Paul <lyude@redhat.com>,
+        ibm-acpi-devel@lists.sourceforge.net,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
+        Mark Gross <markgross@kernel.org>
+Subject: Re: [External] [PATCH 1/2] platform/x86: thinkpad_acpi: Restore X1
+ Carbon 9th Gen dual fan quirk
+Message-ID: <9270b2da-0cca-422f-8bf8-4b1fb9aa363c@t-8ch.de>
+References: <20220429211418.4546-1-lyude@redhat.com>
+ <20220429211418.4546-2-lyude@redhat.com>
+ <d3461670-a905-4956-4f4d-d847adf4289b@lenovo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <d3461670-a905-4956-4f4d-d847adf4289b@lenovo.com>
+Jabber-ID: thomas@t-8ch.de
+X-Accept: text/plain, text/html;q=0.2, text/*;q=0.1
+X-Accept-Language: en-us, en;q=0.8, de-de;q=0.7, de;q=0.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pl330 DMA controller provides number of DMA channels and requests
-through its registers, so duplicating this information (with a chance of
-mistakes) in DTS is pointless.  Additionally the DTS used always wrong
-property names which causes DT schema check failures - the bindings
-documented 'dma-channels' and 'dma-requests' properties without leading
-hash sign.
+Hi Mark,
 
-Reported-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm64/boot/dts/tesla/fsd.dtsi | 8 --------
- 1 file changed, 8 deletions(-)
+On 2022-04-29 21:25-0400, Mark Pearson wrote:
+> Hi Lyude
+> 
+> On 4/29/22 17:14, Lyude Paul wrote:
+> > The new method of probing dual fan support introduced in:
+> > 
+> > bf779aaf56ea ("platform/x86: thinkpad_acpi: Add dual fan probe")
+> > 
+> > While this commit says this works on the X1 Carbon 9th Gen, it actually
+> > just results in hiding the second fan on my local machine. Additionally,
+> > I'm fairly sure this machine powers on quite often without either of the
+> > two fans spinning.
+> > 
+> > So let's fix this by adding back the dual fan quirk for the X1 Carbon 9th
+> > Gen.
+> > 
+> [..]
+>
+> I just double checked this on my X1C9 - and it's working correctly. 2nd
+> fan is detected correctly.
+> 
+> I'd rather understand why it's not working on your setup then just
+> re-introduce the quirk.
+> 
+> What happens on your system when the
+>   res = fan2_get_speed(&speed);
+> is called? If that is failing it means your 2nd fan isn't responding and
+> that's not supposed to happen. Could you let me know if you get an error
+> code, if it happens every boot, etc
+> I assume when the function is called later it works successfully?
 
-diff --git a/arch/arm64/boot/dts/tesla/fsd.dtsi b/arch/arm64/boot/dts/tesla/fsd.dtsi
-index 10c217a57a7d..af39655331de 100644
---- a/arch/arm64/boot/dts/tesla/fsd.dtsi
-+++ b/arch/arm64/boot/dts/tesla/fsd.dtsi
-@@ -432,8 +432,6 @@ mdma0: dma-controller@10100000 {
- 			reg = <0x0 0x10100000 0x0 0x1000>;
- 			interrupts = <GIC_SPI 424 IRQ_TYPE_LEVEL_HIGH>;
- 			#dma-cells = <1>;
--			#dma-channels = <8>;
--			#dma-requests = <32>;
- 			clocks = <&clock_imem IMEM_DMA0_IPCLKPORT_ACLK>;
- 			clock-names = "apb_pclk";
- 			iommus = <&smmu_imem 0x800 0x0>;
-@@ -444,8 +442,6 @@ mdma1: dma-controller@10110000 {
- 			reg = <0x0 0x10110000 0x0 0x1000>;
- 			interrupts = <GIC_SPI 425 IRQ_TYPE_LEVEL_HIGH>;
- 			#dma-cells = <1>;
--			#dma-channels = <8>;
--			#dma-requests = <32>;
- 			clocks = <&clock_imem IMEM_DMA1_IPCLKPORT_ACLK>;
- 			clock-names = "apb_pclk";
- 			iommus = <&smmu_imem 0x801 0x0>;
-@@ -456,8 +452,6 @@ pdma0: dma-controller@14280000 {
- 			reg = <0x0 0x14280000 0x0 0x1000>;
- 			interrupts = <GIC_SPI 190 IRQ_TYPE_LEVEL_HIGH>;
- 			#dma-cells = <1>;
--			#dma-channels = <8>;
--			#dma-requests = <32>;
- 			clocks = <&clock_peric PERIC_DMA0_IPCLKPORT_ACLK>;
- 			clock-names = "apb_pclk";
- 			iommus = <&smmu_peric 0x2 0x0>;
-@@ -468,8 +462,6 @@ pdma1: dma-controller@14290000 {
- 			reg = <0x0 0x14290000 0x0 0x1000>;
- 			interrupts = <GIC_SPI 191 IRQ_TYPE_LEVEL_HIGH>;
- 			#dma-cells = <1>;
--			#dma-channels = <8>;
--			#dma-requests = <32>;
- 			clocks = <&clock_peric PERIC_DMA1_IPCLKPORT_ACLK>;
- 			clock-names = "apb_pclk";
- 			iommus = <&smmu_peric 0x1 0x0>;
--- 
-2.32.0
+I have the same issue.
 
+To me it looks like this:
+
+Probing for the second fan calls fan2_get_speed(), this calls
+fan_select_fan2() which in turn checks that tp_features.second_fan is set.
+But at this point in the tp_features.second_fan can not yet be set because it
+is either set from quirks or *after* the probing.
+
+Maybe some of the matches for the quirk TPACPI_FAN_2FAN should also have
+matched this device?
+It doesn't do so on my device.
+
+> Also please confirm which BIOS and EC version you have.
+
+Linux: 5.17.5
+BIOS Revision: 1.51
+Firmware Revision: 1.32
+
+Thomas
