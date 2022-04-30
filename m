@@ -2,110 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C9A2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E1EFC43217
 	for <linux-kernel@archiver.kernel.org>; Sat, 30 Apr 2022 01:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382008AbiD3Bre (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Apr 2022 21:47:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36966 "EHLO
+        id S240151AbiD3Blw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Apr 2022 21:41:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382005AbiD3Br2 (ORCPT
+        with ESMTP id S238172AbiD3Blu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Apr 2022 21:47:28 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26479D0A89;
-        Fri, 29 Apr 2022 18:44:08 -0700 (PDT)
-Subject: Re: [PATCH v2 00/12] Improve Raid5 Lock Contention
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1651283046;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7cEuqwKIaSP2kvNUTwixjyAdVoYgUrWdJBLxS94+imU=;
-        b=TvNQtUvD81fbf0fqqgSr7oSIEarpOMlvCT4L3vuEwsCK8CsdlTMU6FgEBl/JgVx2Jzd5rQ
-        SHtKE3bXEQRzdJ39Y5wSVmHR1ThuuYAm8sHPPkbT42/N3msCpD3cFhc0bBcAaErLRyexga
-        ds9KKWF/BceFkEm2qNqLEeAnccIhmpA=
-To:     Logan Gunthorpe <logang@deltatee.com>, Xiao Ni <xni@redhat.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        linux-raid <linux-raid@vger.kernel.org>,
-        Song Liu <song@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Stephen Bates <sbates@raithlin.com>,
-        Martin Oliveira <Martin.Oliveira@eideticom.com>,
-        David Sloan <David.Sloan@eideticom.com>
-References: <20220420195425.34911-1-logang@deltatee.com>
- <CALTww28fwNpm0O_jc7-2Xr0JSX9i6F1kgoUQ8m_k6ZgPa1XxXw@mail.gmail.com>
- <c14c0103-9cbd-7d0f-486b-344dd33725ab@deltatee.com>
- <4094aed9-d22d-d14f-07a7-5abe599beeab@linux.dev>
- <8d8fbf24-51b5-a076-b7ad-fcbb7d5c275e@deltatee.com>
- <CALTww28SuvhzCL6p4L9y9ZH5Mmgss-tTm_QzbEo60hZOXAUS0A@mail.gmail.com>
- <4f0b44aa-77a4-9896-b780-eb52241954ae@deltatee.com>
- <cba5f13e-0481-9dc9-36a4-ed29bf34220f@linux.dev>
- <bc98075a-034c-d1fe-485f-2b7af85df91b@deltatee.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Guoqing Jiang <guoqing.jiang@linux.dev>
-Message-ID: <e720b318-6bd7-ed7e-973b-38ca80ab04ee@linux.dev>
-Date:   Sat, 30 Apr 2022 09:44:01 +0800
+        Fri, 29 Apr 2022 21:41:50 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DAED082F
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Apr 2022 18:38:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651282710; x=1682818710;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=gVnaUfg7muXpaET/aapCq/LqD4g6nuBIMtOotXAIVMQ=;
+  b=BcL6ktJTq0ZrkaRxqs7/MvWSKKxOH1yIR/P2mk2xR8VtqCHiEEj8tZ7h
+   8+nNO1owj4jo60iEskJ6obcqqKzTdTObJzfsxyrIGBxffvvcKOV+g7L7l
+   FZceWLfDTtzXm23OYu1iub8jENbqfH0yyRcnntSLMCBWn/VfwOrYCHv0V
+   mRAH+IuMDRd8VRsavWkbON8rKBFLoBVVTalUc1lN46eCUh5a4gPYZPhhE
+   AJvjOzMhOOkcZvD1civ55uX9Xln7WqoHMcAjewW9uerff5qezcJZijTcY
+   dL1gD+CxBZUz5BASrJUnWBFj46mOvydU4VPaWRT7BByccF4DOSfCsgMQw
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="266978307"
+X-IronPort-AV: E=Sophos;i="5.91,187,1647327600"; 
+   d="scan'208";a="266978307"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 18:38:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,187,1647327600"; 
+   d="scan'208";a="618963220"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 29 Apr 2022 18:38:29 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nkc44-0006lT-Pr;
+        Sat, 30 Apr 2022 01:38:28 +0000
+Date:   Sat, 30 Apr 2022 09:38:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Hans Verkuil <hverkuil@xs4all.nl>
+Subject: [hverkuil-media-tree:for-v5.19g 20/20]
+ drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_multi_if.c:684:76:
+ warning: cast from pointer to integer of different size
+Message-ID: <202204300913.PwSevnFI-lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <bc98075a-034c-d1fe-485f-2b7af85df91b@deltatee.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   git://linuxtv.org/hverkuil/media_tree.git for-v5.19g
+head:   f82120aec4e7ee9f06251d36931ab36bd9ef3c42
+commit: f82120aec4e7ee9f06251d36931ab36bd9ef3c42 [20/20] media: mediatek: vcodec: add h264 decoder driver for mt8186
+config: mips-allmodconfig (https://download.01.org/0day-ci/archive/20220430/202204300913.PwSevnFI-lkp@intel.com/config)
+compiler: mips-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        git remote add hverkuil-media-tree git://linuxtv.org/hverkuil/media_tree.git
+        git fetch --no-tags hverkuil-media-tree for-v5.19g
+        git checkout f82120aec4e7ee9f06251d36931ab36bd9ef3c42
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/media/platform/mediatek/vcodec/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from include/linux/printk.h:555,
+                    from include/linux/kernel.h:29,
+                    from include/linux/cpumask.h:10,
+                    from include/linux/smp.h:13,
+                    from arch/mips/include/asm/cpu-type.h:12,
+                    from arch/mips/include/asm/timex.h:19,
+                    from include/linux/timex.h:65,
+                    from include/linux/time32.h:13,
+                    from include/linux/time.h:60,
+                    from include/linux/stat.h:19,
+                    from include/linux/module.h:13,
+                    from drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_multi_if.c:7:
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_multi_if.c: In function 'vdec_h264_slice_single_decode':
+>> drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_multi_if.c:684:76: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+     684 |                          inst->ctx->decoded_frame_cnt, y_fb_dma, c_fb_dma, (u64)fb);
+         |                                                                            ^
+   include/linux/dynamic_debug.h:134:29: note: in definition of macro '__dynamic_func_call'
+     134 |                 func(&id, ##__VA_ARGS__);               \
+         |                             ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:162:9: note: in expansion of macro '_dynamic_func_call'
+     162 |         _dynamic_func_call(fmt, __dynamic_pr_debug,             \
+         |         ^~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:570:9: note: in expansion of macro 'dynamic_pr_debug'
+     570 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/../mtk_vcodec_util.h:45:9: note: in expansion of macro 'pr_debug'
+      45 |         pr_debug("[MTK_VCODEC][%d]: " fmt "\n",                 \
+         |         ^~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_multi_if.c:683:9: note: in expansion of macro 'mtk_vcodec_debug'
+     683 |         mtk_vcodec_debug(inst, "+ [%d] FB y_dma=%llx c_dma=%llx va=0x%llx",
+         |         ^~~~~~~~~~~~~~~~
 
 
-On 4/30/22 12:01 AM, Logan Gunthorpe wrote:
->
-> On 2022-04-28 18:49, Guoqing Jiang wrote:
->> I can't agree with you anymore. I would say some patches were submitted
->> without run enough tests, then after one by one kernel release, the thing
->> becomes worse.
-> I'm not sure where we disagree here. I certainly don't want to introduce
-> regressions myself. I haven't submitted v3 yet because I've become less
-> certain that there are no regressions in it. The point of my last email
-> was try to explain that I am taking testing seriously.
+vim +684 drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_multi_if.c
 
-That is my intention too, no more new regression.
+   659	
+   660	static int vdec_h264_slice_single_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
+   661						 struct vdec_fb *unused, bool *res_chg)
+   662	{
+   663		struct vdec_h264_slice_inst *inst = h_vdec;
+   664		struct vdec_vpu_inst *vpu = &inst->vpu;
+   665		struct mtk_video_dec_buf *src_buf_info, *dst_buf_info;
+   666		struct vdec_fb *fb;
+   667		unsigned char *buf;
+   668		unsigned int nal_start_idx, data[2], i;
+   669		u64 y_fb_dma, c_fb_dma;
+   670		struct mtk_vcodec_mem *mem;
+   671		int err;
+   672	
+   673		/* bs NULL means flush decoder */
+   674		if (!bs)
+   675			return vpu_dec_reset(vpu);
+   676	
+   677		fb = inst->ctx->dev->vdec_pdata->get_cap_buffer(inst->ctx);
+   678		src_buf_info = container_of(bs, struct mtk_video_dec_buf, bs_buffer);
+   679		dst_buf_info = container_of(fb, struct mtk_video_dec_buf, frame_buffer);
+   680	
+   681		y_fb_dma = fb ? (u64)fb->base_y.dma_addr : 0;
+   682		c_fb_dma = fb ? (u64)fb->base_c.dma_addr : 0;
+   683		mtk_vcodec_debug(inst, "+ [%d] FB y_dma=%llx c_dma=%llx va=0x%llx",
+ > 684				 inst->ctx->decoded_frame_cnt, y_fb_dma, c_fb_dma, (u64)fb);
+   685	
+   686		inst->vsi_ctx.dec.bs_buf_addr = (u64)bs->dma_addr;
+   687		inst->vsi_ctx.dec.bs_buf_size = bs->size;
+   688		inst->vsi_ctx.dec.y_fb_dma = y_fb_dma;
+   689		inst->vsi_ctx.dec.c_fb_dma = c_fb_dma;
+   690		inst->vsi_ctx.dec.vdec_fb_va = (u64)(uintptr_t)fb;
+   691	
+   692		v4l2_m2m_buf_copy_metadata(&src_buf_info->m2m_buf.vb,
+   693					   &dst_buf_info->m2m_buf.vb, true);
+   694		err = get_vdec_sig_decode_parameters(inst);
+   695		if (err)
+   696			goto err_free_fb_out;
+   697	
+   698		buf = (unsigned char *)bs->va;
+   699		nal_start_idx = mtk_vdec_h264_find_start_code(buf, bs->size);
+   700		if (nal_start_idx < 0) {
+   701			err = -EINVAL;
+   702			goto err_free_fb_out;
+   703		}
+   704		inst->vsi_ctx.dec.nal_info = buf[nal_start_idx];
+   705	
+   706		*res_chg = inst->resolution_changed;
+   707		if (inst->resolution_changed) {
+   708			mtk_vcodec_debug(inst, "- resolution changed -");
+   709			if (inst->realloc_mv_buf) {
+   710				err = vdec_h264_slice_alloc_mv_buf(inst, &inst->ctx->picinfo);
+   711				inst->realloc_mv_buf = false;
+   712				if (err)
+   713					goto err_free_fb_out;
+   714			}
+   715			inst->resolution_changed = false;
+   716	
+   717			for (i = 0; i < H264_MAX_MV_NUM; i++) {
+   718				mem = &inst->mv_buf[i];
+   719				inst->vsi_ctx.mv_buf_dma[i] = mem->dma_addr;
+   720			}
+   721		}
+   722	
+   723		memcpy_toio(inst->vpu.vsi, &inst->vsi_ctx, sizeof(inst->vsi_ctx));
+   724		err = vpu_dec_start(vpu, data, 2);
+   725		if (err)
+   726			goto err_free_fb_out;
+   727	
+   728		/* wait decoder done interrupt */
+   729		err = mtk_vcodec_wait_for_done_ctx(inst->ctx, MTK_INST_IRQ_RECEIVED,
+   730						   WAIT_INTR_TIMEOUT_MS, MTK_VDEC_CORE);
+   731		if (err)
+   732			mtk_vcodec_err(inst, "decode timeout: pic_%d",
+   733				       inst->ctx->decoded_frame_cnt);
+   734	
+   735		inst->vsi->dec.timeout = !!err;
+   736		err = vpu_dec_end(vpu);
+   737		if (err)
+   738			goto err_free_fb_out;
+   739	
+   740		memcpy_fromio(&inst->vsi_ctx, inst->vpu.vsi, sizeof(inst->vsi_ctx));
+   741		mtk_vcodec_debug(inst, "pic[%d] crc: 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x",
+   742				 inst->ctx->decoded_frame_cnt,
+   743				 inst->vsi_ctx.dec.crc[0], inst->vsi_ctx.dec.crc[1],
+   744				 inst->vsi_ctx.dec.crc[2], inst->vsi_ctx.dec.crc[3],
+   745				 inst->vsi_ctx.dec.crc[4], inst->vsi_ctx.dec.crc[5],
+   746				 inst->vsi_ctx.dec.crc[6], inst->vsi_ctx.dec.crc[7]);
+   747	
+   748		inst->ctx->decoded_frame_cnt++;
+   749		return 0;
+   750	
+   751	err_free_fb_out:
+   752		mtk_vcodec_err(inst, "dec frame number: %d err: %d",
+   753			       inst->ctx->decoded_frame_cnt, err);
+   754		return err;
+   755	}
+   756	
 
->> This is also the reason that I recommend run mdadm tests since md raid
->> is a complex subsystem, perhaps a simple change could cause regression.
->> And considering there are really limited developers and reviewers in the
->> community, the chance to cause regression get bigger.
-> While I'd certainly like to run mdadm tests, they appear to be very
-> broken to me. Too broken for me to fix all of it -- I don't have time
-> for fixing that many issues.
-
-I do agree it is not reasonable to ask you to fix them,  just compare 
-the test result
-with and without your set, at least there is no more new failure as said.
-
-> Seems I'm not the only one to run into this problem recently:
->
-> https://lore.kernel.org/linux-raid/20220111130635.00001478@linux.intel.com/T/#t
->
-> And it's a shame nobody could even bother to remove the unsupported 0.9
-> metadata tests from the repo as a result of this conversation.
->
->> If I may, is it possible to submit your tests to mdadm as well? So we can
->> have one common place to contain enough tests.
-> I'd certainly consider that if I could run the test suite. Though one
-> hitch is that I've found I need to run my tests repeatedly, for hours,
-> before hitting some rare bugs. Running the tests only once is much
-> easier to pass. It's hard to fully test things like this with so many
-> rare retry paths in a simple regression test.
-
-Let's focus on raid456 test given the code only touches raid5, you can 
-pass argument
-like this, FYI.
-
-mdadm> ./test --raidtype=raid456 --dev=loop
-
-Thanks,
-Guoqing
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
