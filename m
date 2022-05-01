@@ -2,95 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 264C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04017C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352926AbiEAR3k (ORCPT
+        id S1353092AbiEARbh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 13:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34498 "EHLO
+        Sun, 1 May 2022 13:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231484AbiEAR3g (ORCPT
+        with ESMTP id S231484AbiEARbf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 13:29:36 -0400
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B82BE12
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 10:26:10 -0700 (PDT)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-ed9ac77cbbso1996862fac.1
-        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 10:26:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:from:subject:to:cc
-         :content-language:content-transfer-encoding;
-        bh=pI+qY9/hirlSNjBDN43HbEPTPB6DnELjIcqxHY4iYSM=;
-        b=lEmg2o4Jcwec6tRJGHz/2fgZaeertWvBPVzXVQ70FoParo6dqwW7L3sMzmqIrisHG9
-         45JSmVzOLJhGM/2braFZ0LvfTaq8p00M7V4jQ2YxtvKo9RtScTieJCvaJE3jvGmQKnq+
-         kowSRNHp4D9VAVj6ieVbif0N2SvCvAGyzV/Rl8q9DAJoKC80W37L22mRra1/iZn5bWiV
-         +EYjstV1UEoZuJNHQ8z6Ww07ohOHT5YA9FIky0znIWk2t99sN41dmQAzXiIR/wZ9/u0q
-         OIrNL9CbOe4ih9n3MQ/gx5YL0uLoy2O3QgILH8gMsMdjedLm6Tym4nPXagf7qbhr0tAK
-         KNWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :from:subject:to:cc:content-language:content-transfer-encoding;
-        bh=pI+qY9/hirlSNjBDN43HbEPTPB6DnELjIcqxHY4iYSM=;
-        b=eGdO0ZsQRiO+EsMoZBu2yVTPqJ27S5YYav3Poo10Ad37i4ecHrXbLTiACFnaZBEZj/
-         lhXENO8I7tOTcS1OER61vaI38kQeY2K4WAKSLZOdlNuWgfH8WApA/yxXH6XvajNku3hZ
-         seef8dkYq/IOzMrTR+/hUkoG4TjbpEWrkWG3wcbGesFrg1VOR54c3YvpUZmVy1gCCfDV
-         2+M4YLmmnJ4UxPe3wn/xsNp86YQ7sLtpgiG4dVDzy+jgJrnEahtVIrzfzdak4MVOAQL4
-         eWhLjTCiKtVtg7NArfWzhywGRoc44jvj0e7X4S2Ogog8iXNC3eAMQLi4Tf+fO2vJk3r5
-         Vesg==
-X-Gm-Message-State: AOAM532ntkS28R+iJ+wS12edM4U3AS+vnxgoDJbIHAyFBIyu1mCq9+Wj
-        KT8KLCiF7TVug5Kx7ixrOtmElux0rEsiEg==
-X-Google-Smtp-Source: ABdhPJzs7W3+fcYn/a9QX4d78CRazvy9tcpwS72hZ2BRJr7wqLCWwclb2QsAIF2KVakLF6IXvNZGFQ==
-X-Received: by 2002:a05:6871:112:b0:ec:f449:5af8 with SMTP id y18-20020a056871011200b000ecf4495af8mr2991414oab.76.1651425969776;
-        Sun, 01 May 2022 10:26:09 -0700 (PDT)
-Received: from ?IPV6:2603:8090:2005:39b3::100e? (2603-8090-2005-39b3-0000-0000-0000-100e.res6.spectrum.com. [2603:8090:2005:39b3::100e])
-        by smtp.gmail.com with ESMTPSA id l2-20020a4ad9c2000000b0035eb4e5a6b7sm3066960oou.13.2022.05.01.10.26.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 May 2022 10:26:09 -0700 (PDT)
-Sender: Larry Finger <larry.finger@gmail.com>
-Message-ID: <7f01221d-f693-adf8-f5a5-d71944b44162@lwfinger.net>
-Date:   Sun, 1 May 2022 12:26:07 -0500
+        Sun, 1 May 2022 13:31:35 -0400
+Received: from 10.mo584.mail-out.ovh.net (10.mo584.mail-out.ovh.net [188.165.33.109])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302C8BE12
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 10:28:09 -0700 (PDT)
+Received: from player774.ha.ovh.net (unknown [10.109.138.76])
+        by mo584.mail-out.ovh.net (Postfix) with ESMTP id 3503E229E0
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 17:10:40 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player774.ha.ovh.net (Postfix) with ESMTPSA id 851C529E9FA78;
+        Sun,  1 May 2022 17:10:35 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-95G0012a755f93-ac22-4b2f-9ace-e5b21267d47b,
+                    5040CBFF384BEDF7422707969F5457AB1E143173) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH v3] ASoC: tpa6130: use i2c_match_id and simple i2c probe
+Date:   Sun,  1 May 2022 19:10:09 +0200
+Message-Id: <20220501171009.45060-1-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-Subject: Changes in kernel 5.18-rc1 leads to crashes in VirtualBox Virtual
- Machines
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 13767504061568288390
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdefgdduuddtucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepleegteeujeffjeefjeevhfdtudefjefgteelgedtudekleeiledvvdetudevjedtnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejgedrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jason,
+As part of the ongoing i2c transition to the simple probe
+("probe_new"), this patch uses i2c_match_id to retrieve the
+driver_data for the probed device. The id parameter is thus no longer
+necessary and the simple probe can be used instead.
 
-I maintain VirtualBox for openSUSE. When kernel 5.18-rc1 was released, I fixed 
-the usual set of API changes needed to compile the external kernel modules for 
-VB. Despite a clean compile, I am still getting random crashes in the VMs. For 
-Linux instances, the desktop disappears, but for Windows guests, the VM crashes 
-with unhandled kernel exceptions. As I have no experience tracing such crashes, 
-I decided to bisect the kernel to find the commit that started these problems.
+The i2c id table is moved up before the probe function, as suggested
+by Wolfram Sang.
 
-Surprisingly, the bisection pointed to commit 6e8ec2552c7d ("random: use 
-computational hash for entropy extraction"). I am very sure of the bisection as 
-the kernel built from the commit that immediately precedes this one, 
-cfb92440ee71 - a tag commit by Linus, runs correctly.
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+---
+Changes since v2: added missing probe_new change.
 
-Note that I do not believe there is anything wrong with your changes to the 
-random number generators. It seems to be a problem with the way the emulator is 
-accessing them. The VirtualBox code is quite complicated, and I am no expert 
-with C++.
+Changes since v1: two missing files were added (in the overall patch
+series).
+---
+ sound/soc/codecs/tpa6130a2.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-Are there changes that would be required to the X86_64 emulator's access to the 
-random number code as a result of your changes? I have found places where the 
-emulator accesses /dev/urandom or /dev/random. There are also places that use 
-the rdrand and reseed instructions.
+diff --git a/sound/soc/codecs/tpa6130a2.c b/sound/soc/codecs/tpa6130a2.c
+index e2d7ae615c52..8c00db32996b 100644
+--- a/sound/soc/codecs/tpa6130a2.c
++++ b/sound/soc/codecs/tpa6130a2.c
+@@ -209,13 +209,20 @@ static const struct regmap_config tpa6130a2_regmap_config = {
+ 	.cache_type = REGCACHE_RBTREE,
+ };
+ 
+-static int tpa6130a2_probe(struct i2c_client *client,
+-			   const struct i2c_device_id *id)
++static const struct i2c_device_id tpa6130a2_id[] = {
++	{ "tpa6130a2", TPA6130A2 },
++	{ "tpa6140a2", TPA6140A2 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, tpa6130a2_id);
++
++static int tpa6130a2_probe(struct i2c_client *client)
+ {
+ 	struct device *dev;
+ 	struct tpa6130a2_data *data;
+ 	struct tpa6130a2_platform_data *pdata = client->dev.platform_data;
+ 	struct device_node *np = client->dev.of_node;
++	const struct i2c_device_id *id;
+ 	const char *regulator;
+ 	unsigned int version;
+ 	int ret;
+@@ -244,6 +251,7 @@ static int tpa6130a2_probe(struct i2c_client *client,
+ 
+ 	i2c_set_clientdata(client, data);
+ 
++	id = i2c_match_id(tpa6130a2_id, client);
+ 	data->id = id->driver_data;
+ 
+ 	if (data->power_gpio >= 0) {
+@@ -297,13 +305,6 @@ static int tpa6130a2_probe(struct i2c_client *client,
+ 			&tpa6130a2_component_driver, NULL, 0);
+ }
+ 
+-static const struct i2c_device_id tpa6130a2_id[] = {
+-	{ "tpa6130a2", TPA6130A2 },
+-	{ "tpa6140a2", TPA6140A2 },
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(i2c, tpa6130a2_id);
+-
+ #if IS_ENABLED(CONFIG_OF)
+ static const struct of_device_id tpa6130a2_of_match[] = {
+ 	{ .compatible = "ti,tpa6130a2", },
+@@ -318,7 +319,7 @@ static struct i2c_driver tpa6130a2_i2c_driver = {
+ 		.name = "tpa6130a2",
+ 		.of_match_table = of_match_ptr(tpa6130a2_of_match),
+ 	},
+-	.probe = tpa6130a2_probe,
++	.probe_new = tpa6130a2_probe,
+ 	.id_table = tpa6130a2_id,
+ };
+ 
 
-Thanks for reading this,
+base-commit: 180e66c028cbce98f297962db188965efc7546d7
+-- 
+2.30.2
 
-Larry
