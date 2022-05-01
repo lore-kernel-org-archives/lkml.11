@@ -2,146 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C53C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 08:39:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 255DCC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 08:42:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245530AbiEAInU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 04:43:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32940 "EHLO
+        id S1343537AbiEAIpx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 1 May 2022 04:45:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244504AbiEAInS (ORCPT
+        with ESMTP id S244504AbiEAIps (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 04:43:18 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8DFF48325
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 01:39:53 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id j6so22777798ejc.13
-        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 01:39:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=9WVzij1T8iCMekan0Ad5/KsKpQIIUWQ6B5EMe3d2lrs=;
-        b=mROR3otRplC07o1VILVg/gxS1mFRixD2TxOi5OqbbxVM8XZNnOv0hIHidqUUQIbpSI
-         xbIyoUrjYdvXKlAVk8j8F7eowgb7y3rZNC3lVTcgsBfxxWMEEqZTr6GUzJAu0CQI+LDF
-         FzoPuSFw5yU6Kw8NYH4Oy9oEgvf1nV8vbjsonJYwytOtaGjhY/lWmINanDMK8664ea3I
-         UOO7ZdRQYyB0Wi/NdV2SgrFSvWbiMcRV2yoVk4zaqk2BJozbzhniZZLURoAJFmsKPzwQ
-         VPvpptkjPqULmqY7ZamztTW4t6t7+LkfI/giQJIuqbQN2Ar/gifMbZmUW3rHskp2k1wY
-         XgUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9WVzij1T8iCMekan0Ad5/KsKpQIIUWQ6B5EMe3d2lrs=;
-        b=aQ9z1/s0doX4MqqjE1JllzqMFUkbz+UR/A9DdCc5Dk5PSH4v3/CwvjwxXQlAolF+cS
-         Jl8++2lyUGO7ffUy85qG4QqgX/kCE7lhxJmn36/IDEpnesP17iKOFkd/+4Aj7gwD3zLM
-         BoHuDREYeSuLYYfRIDY64rylrxP53P0Bah6Dwb60sQcHqjhzq9ar4X6e7JIteC3MVPKv
-         TVKU1XCE1KRtu5xz8MJlVmfCpkGr0bjz+li84CvWuLc48kpOOtRRZH1qTtDjWjt15gtc
-         /EjvmbCc6kh85/X0ed3gS7Z6Q6jpOEXpwsU3HUcPiREW+Jcn3R29egVG4ZpAzpHRW+RX
-         PxcQ==
-X-Gm-Message-State: AOAM530W+QSJbWsBUThhNSg34dVzPfVYEFUsRCzzxaDk6SO53x2vjwn1
-        Vl4Clj48GfGSKlyMlwXIyH5ecA==
-X-Google-Smtp-Source: ABdhPJxSZX/QiQu3+AxPRtWO5Bwf8OHfZj8Hk0L0xj2XTUlRIcS57LBeqeX+kbSIvh5SbCQrJkPHBw==
-X-Received: by 2002:a17:906:5d0c:b0:6f3:dce6:a69a with SMTP id g12-20020a1709065d0c00b006f3dce6a69amr6963489ejt.23.1651394392331;
-        Sun, 01 May 2022 01:39:52 -0700 (PDT)
-Received: from [192.168.0.182] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id hy25-20020a1709068a7900b006f3ef214db5sm2380978ejc.27.2022.05.01.01.39.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 May 2022 01:39:51 -0700 (PDT)
-Message-ID: <ec18c8f7-d25f-895f-c8c7-1a33e59cc973@linaro.org>
-Date:   Sun, 1 May 2022 10:39:50 +0200
+        Sun, 1 May 2022 04:45:48 -0400
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC524C434;
+        Sun,  1 May 2022 01:42:23 -0700 (PDT)
+Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 2418f2Rr008518;
+        Sun, 1 May 2022 17:41:06 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 2418f2Rr008518
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1651394466;
+        bh=YzFh8n36dC/Y57W+XPof+oSXPIE4BbH7mX21y8+hRrc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Z8IPszMBmbSN5tKnHK2LszQEx5Hs7qYx0NBUphyHUMZBKg91PIZd7FVWgOxwZz20j
+         aGwHoukGiYA4rzbDZv8z/WQLfvLGP3OGdsOaC7BMN+lXgvUd9VYaKTg22SgGdmm5yn
+         GsOdElr7i2Zh6N5fXSEU1eTde8FUTeUDwQC43YNXR501WUJ7CFq922ltY+walukeO4
+         50VtcOqUwtMtzOaIUS8tkbVuX5rzhrF16rf1IcCT1AweozvONRcNdvhsOW5DoWBnXE
+         VrgQbw4xq+96EKJqCkY6MM4gmIOTph0hcYQQsxVQBCbpS1MpzKsGkOvNLIfodgJBHD
+         11WxMw7qM5gMA==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH v2 06/26] modpost: traverse unresolved symbols in order
+Date:   Sun,  1 May 2022 17:40:12 +0900
+Message-Id: <20220501084032.1025918-7-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220501084032.1025918-1-masahiroy@kernel.org>
+References: <20220501084032.1025918-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2] dt-bindings: arm: mediatek: mmsys: refine power and
- gce properties
-Content-Language: en-US
-To:     Jason-JH Lin <jason-jh.lin@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Fabien Parent <fparent@baylibre.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, CK Hu <ck.hu@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Nancy Lin <nancy.lin@mediatek.com>,
-        Singo Chang <singo.chang@mediatek.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Cellopoint <cellopoint.kai@gmail.com>
-References: <20220429083051.11260-1-jason-jh.lin@mediatek.com>
- <c9239316-40af-724b-cace-7da5bf7e8e21@linaro.org>
- <cf3062c9ebc69642bdc16ce32ed3260486969b04.camel@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <cf3062c9ebc69642bdc16ce32ed3260486969b04.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/05/2022 10:26, Jason-JH Lin wrote:
-> Hi Krzysztof,
-> 
-> Thanks for the reviews.
-> 
-> On Fri, 2022-04-29 at 22:58 +0200, Krzysztof Kozlowski wrote:
->> On 29/04/2022 10:30, Jason-JH.Lin wrote:
->>> Power:
->>>   Refine description and add item number for power-domains
->>> property.
->>>
->>> GCE:
->>>   Refine description and add item number for mboxes property and
->>>   mediatek,gce-client-reg property.
->>>
->>> Fixes: 1da90b8a7bae ("dt-bindings: arm: mediatek: mmsys: add power
->>> and gce properties")
->>> Signed-off-by: Jason-JH.Lin <jason-jh.lin@mediatek.com>
-> 
-> [snip]
->  
->>>    mboxes:
->>> +    minItems: 1
->>> +    maxItems: 24
->>
->> Wait, no, I wrote it should be 16 for one device and 24 for other,
->> not
->> 24 for all...
->>
-> 
-> Ok, I thought maxItems: 24 contained 16, but it's not clear enough.
-> 
-> 
-> I'm not sure how to describe different maxItems for different
-> platforms. Does it come like this?
-> 
-> 1. Remove the maxItems in mboxes property.
+Currently, modpost manages unresolved in a singly linked list; it adds
+a new node to the head, and traverses the list from new to old.
 
-mboxes:
-  maxItems: 24
+Use a doubly linked list to keep the order in the symbol table in the
+ELF file.
 
-> 2. Add the allOf condition before the line "additionalProperties:
-> false". E.g.
-> 
-> allOf:
->   - if:
->       properties:
->         compatible:
->           contains:
->             const: mediatek,mt8173-mmsys
->     then:
->       properties:
->         mboxes:
->           maxItems: 16
->     else:
->       properties:
->         mboxes:
->           maxItems: 24
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
 
-and you can skip the "else". In general looks fine.
+(no changes since v1)
 
-Best regards,
-Krzysztof
+ scripts/mod/modpost.c | 20 ++++++++++++++------
+ scripts/mod/modpost.h |  2 +-
+ 2 files changed, 15 insertions(+), 7 deletions(-)
+
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index abcdb0677775..c7dda4cfa497 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -185,6 +185,8 @@ static struct module *new_module(const char *modname)
+ 	mod = NOFAIL(malloc(sizeof(*mod) + strlen(modname) + 1));
+ 	memset(mod, 0, sizeof(*mod));
+ 
++	INIT_LIST_HEAD(&mod->unresolved_symbols);
++
+ 	strcpy(mod->name, modname);
+ 	mod->is_vmlinux = (strcmp(modname, "vmlinux") == 0);
+ 
+@@ -207,6 +209,7 @@ static struct module *new_module(const char *modname)
+ 
+ struct symbol {
+ 	struct symbol *next;
++	struct list_head list;	/* link to module::unresolved_symbols */
+ 	struct module *module;
+ 	char *namespace;
+ 	unsigned int crc;
+@@ -261,8 +264,12 @@ static struct symbol *new_symbol(const char *name, struct module *module,
+ 
+ static void sym_add_unresolved(const char *name, struct module *mod, bool weak)
+ {
+-	mod->unres = alloc_symbol(name, mod->unres);
+-	mod->unres->weak = weak;
++	struct symbol *sym;
++
++	sym = alloc_symbol(name, NULL);
++	sym->weak = weak;
++
++	list_add_tail(&sym->list, &mod->unresolved_symbols);
+ }
+ 
+ static struct symbol *find_symbol(const char *name)
+@@ -2156,7 +2163,7 @@ static void check_exports(struct module *mod)
+ {
+ 	struct symbol *s, *exp;
+ 
+-	for (s = mod->unres; s; s = s->next) {
++	list_for_each_entry(s, &mod->unresolved_symbols, list) {
+ 		const char *basename;
+ 		exp = find_symbol(s->name);
+ 		if (!exp) {
+@@ -2277,7 +2284,7 @@ static void add_versions(struct buffer *b, struct module *mod)
+ 	buf_printf(b, "static const struct modversion_info ____versions[]\n");
+ 	buf_printf(b, "__used __section(\"__versions\") = {\n");
+ 
+-	for (s = mod->unres; s; s = s->next) {
++	list_for_each_entry(s, &mod->unresolved_symbols, list) {
+ 		if (!s->module)
+ 			continue;
+ 		if (!s->crc_valid) {
+@@ -2303,13 +2310,14 @@ static void add_depends(struct buffer *b, struct module *mod)
+ 	int first = 1;
+ 
+ 	/* Clear ->seen flag of modules that own symbols needed by this. */
+-	for (s = mod->unres; s; s = s->next)
++	list_for_each_entry(s, &mod->unresolved_symbols, list) {
+ 		if (s->module)
+ 			s->module->seen = s->module->is_vmlinux;
++	}
+ 
+ 	buf_printf(b, "\n");
+ 	buf_printf(b, "MODULE_INFO(depends, \"");
+-	for (s = mod->unres; s; s = s->next) {
++	list_for_each_entry(s, &mod->unresolved_symbols, list) {
+ 		const char *p;
+ 		if (!s->module)
+ 			continue;
+diff --git a/scripts/mod/modpost.h b/scripts/mod/modpost.h
+index d0a8ab60f413..65296eca20a1 100644
+--- a/scripts/mod/modpost.h
++++ b/scripts/mod/modpost.h
+@@ -111,8 +111,8 @@ buf_write(struct buffer *buf, const char *s, int len);
+ 
+ struct module {
+ 	struct list_head list;
++	struct list_head unresolved_symbols;
+ 	bool is_gpl_compatible;
+-	struct symbol *unres;
+ 	bool from_dump;		/* true if module was loaded from *.symvers */
+ 	bool is_vmlinux;
+ 	bool seen;
+-- 
+2.32.0
+
