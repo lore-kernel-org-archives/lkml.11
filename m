@@ -2,95 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9429EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 09:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A31DC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 09:34:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235627AbiEAJZq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 05:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58566 "EHLO
+        id S239384AbiEAJiQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 1 May 2022 05:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbiEAJZm (ORCPT
+        with ESMTP id S238883AbiEAJiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 05:25:42 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0BF2BDC;
-        Sun,  1 May 2022 02:22:17 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id z5-20020a17090a468500b001d2bc2743c4so10676082pjf.0;
-        Sun, 01 May 2022 02:22:17 -0700 (PDT)
+        Sun, 1 May 2022 05:38:14 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82DE538796
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 02:34:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=HCQ44eZH+/9QUa02232FBEw4EN7psbkVPSA396nRkSc=;
-        b=a0Kh8u+k7rPN2i1vNYvbBTWNyGNGoQdHsmgHyCb7LtDPlzbguUPbB8p2x+xRGktba2
-         EmoFMREwWj4bplyVm5uMdt+m2Ckihl2H9zh8wyHYBWta+/j4EjNO/QAZfjMmOHn+V+dv
-         IcDpAs/fdxDYUcLzzAMQli9w/pu+qcwWs4CCzKsHUJHHRs+2OHwj68eWbO8wA9+XXRg6
-         q5hgqYrEthUemxjndp+ogSSdBMJ2v8znmDswI4oDZAB5hEcC370L+xlXzp6SRZoEXFJE
-         yqZZ8Bq1zqc5sXQfZIhUKZNguPt++iutgYRmj61DNq9Uf8jeS28ipQabKDTaDtO1AIRq
-         MXBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=HCQ44eZH+/9QUa02232FBEw4EN7psbkVPSA396nRkSc=;
-        b=5ak3rwrRi86b7Tr1EpQaxArRbiAJcBEeMbD97U6gPSLOelL8e4YQdFN8Phgs55nHz7
-         vee551e2uBZFUR3DP95CyjpeY1tN935akcrzUwXx/Cgw7cSfuMqe1k4hi+MgZNKGdhxr
-         LGp7L4yu1dMv2yVckmZo/4hOuRUyxUboCd05HvbKWOBKSG5PI4Qm6tFjiX7ySahcaUuS
-         pYxtfHC17fYHjIST+BimBsTPqGSFwvqUGG5wNZfvQVk2HJs3ddAOS4NqMMMaTOc4zB2Y
-         kSGkpSaWgQwwH9lIy3iqXs3nFz9Mqv2bqcfCtv0Zxs/wvoYsz128XKs9dsNiBtX8t/2H
-         jMOQ==
-X-Gm-Message-State: AOAM532Y9C4WbmupjduhjhdYO5ndgKatjNWUbMVO5ZCjoBlkt9k8Fxu6
-        RyclnqraslIfEwBSvK8y96k=
-X-Google-Smtp-Source: ABdhPJxA8rCdQ6saLansGk+2Yyyjk4o4/2JYvbyO7Asa7rmssc7nJIGrlyazBr77ea2QgSSG1w2OlQ==
-X-Received: by 2002:a17:90a:bc8a:b0:1db:382d:6fb5 with SMTP id x10-20020a17090abc8a00b001db382d6fb5mr12550754pjr.100.1651396937432;
-        Sun, 01 May 2022 02:22:17 -0700 (PDT)
-Received: from localhost.localdomain ([183.14.29.224])
-        by smtp.gmail.com with ESMTPSA id 16-20020aa79110000000b0050dc762817asm2575279pfh.84.2022.05.01.02.22.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 May 2022 02:22:16 -0700 (PDT)
-From:   Puyou Lu <puyou.lu@gmail.com>
-Cc:     puyou.lu@gmail.com, Puyou Lu <lupuyou@aifrutech.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] gpio: pca953x: update irq_stat even when irq is not enabled (irq_mask not set).
-Date:   Sun,  1 May 2022 17:22:01 +0800
-Message-Id: <20220501092201.16411-1-puyou.lu@gmail.com>
-X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651397689; x=1682933689;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=vQnqRVgN+GEzG3Xd+sEQOnTd2bIKfmhRxNvprPbW8G4=;
+  b=Vxeloz/D1mbNfKj+YdBqSTGjBw2T7E2BmwAkspBhNsipVjcdC0uuSW/9
+   gko1A4ttUbbDf+d7SFN1l7geq+CliWL0ISXqNKO8ViqMR+9No4GxwOby8
+   y+CLVVNTHW9KCXa2fPCKqS4YBJKoQSVOIJ0B4lqR5wT4V6ebPudmjXJKe
+   4=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 01 May 2022 02:34:49 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2022 02:34:49 -0700
+Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Sun, 1 May 2022 02:34:28 -0700
+Received: from linyyuan-gv.qualcomm.com (10.80.80.8) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Sun, 1 May 2022 02:34:27 -0700
+From:   Linyu Yuan <quic_linyyuan@quicinc.com>
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+CC:     <linux-kernel@vger.kernel.org>,
+        Linyu Yuan <quic_linyyuan@quicinc.com>
+Subject: [PATCH 2/2] tracing/probes: make match function safe
+Date:   Sun, 1 May 2022 17:34:11 +0800
+Message-ID: <1651397651-30454-3-git-send-email-quic_linyyuan@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1651397651-30454-1-git-send-email-quic_linyyuan@quicinc.com>
+References: <1651397651-30454-1-git-send-email-quic_linyyuan@quicinc.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Puyou Lu <lupuyou@aifrutech.com>
+When delete one kprobe/uprobe/eprobe event entry
+using /sys/kernel/debug/tracing/dynamic_events file,
+it will loop all dynamic envent entries,
+as user will not input dyn_event_operations type,
+when call the match function of kprobe/uprobe/eprobe,
+the dynamic event may have different dyn_event_operations type,
+but currently match function may return a match.
 
-When one port's input state get inverted (eg. from low to hight) after
-pca953x_irq_setup but before setting irq_mask (by some other driver such as
-"gpio-keys"), the next inversion of this port (eg. from hight to low) will not
-triggered any more (because irq_stat is not updated at the first time). Issue
-should be fixed after this commit.
+Fix by check dyn_event_operations type first.
 
-Signed-off-by: Puyou Lu <puyou.lu@gmail.com>
+Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
 ---
- drivers/gpio/gpio-pca953x.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/trace/trace_eprobe.c | 31 +++++++++++++++++++++++--------
+ kernel/trace/trace_kprobe.c |  3 +++
+ kernel/trace/trace_uprobe.c |  3 +++
+ 3 files changed, 29 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpio/gpio-pca953x.c b/drivers/gpio/gpio-pca953x.c
-index d2fe76f3f34f..8726921a1129 100644
---- a/drivers/gpio/gpio-pca953x.c
-+++ b/drivers/gpio/gpio-pca953x.c
-@@ -762,11 +762,11 @@ static bool pca953x_irq_pending(struct pca953x_chip *chip, unsigned long *pendin
- 	bitmap_xor(cur_stat, new_stat, old_stat, gc->ngpio);
- 	bitmap_and(trigger, cur_stat, chip->irq_mask, gc->ngpio);
+diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
+index b16e067..0029840 100644
+--- a/kernel/trace/trace_eprobe.c
++++ b/kernel/trace/trace_eprobe.c
+@@ -19,6 +19,21 @@
  
-+	bitmap_copy(chip->irq_stat, new_stat, gc->ngpio);
+ #define EPROBE_EVENT_SYSTEM "eprobes"
+ 
++static int eprobe_dyn_event_create(const char *raw_command);
++static int eprobe_dyn_event_show(struct seq_file *m, struct dyn_event *ev);
++static bool eprobe_dyn_event_is_busy(struct dyn_event *ev);
++static int eprobe_dyn_event_release(struct dyn_event *ev);
++static bool eprobe_dyn_event_match(const char *system, const char *event,
++			int argc, const char **argv, struct dyn_event *ev);
 +
- 	if (bitmap_empty(trigger, gc->ngpio))
- 		return false;
++static struct dyn_event_operations eprobe_dyn_event_ops = {
++	.create = eprobe_dyn_event_create,
++	.show = eprobe_dyn_event_show,
++	.is_busy = eprobe_dyn_event_is_busy,
++	.free = eprobe_dyn_event_release,
++	.match = eprobe_dyn_event_match,
++};
++
+ struct trace_eprobe {
+ 	/* tracepoint system */
+ 	const char *event_system;
+@@ -39,6 +54,11 @@ struct eprobe_data {
  
--	bitmap_copy(chip->irq_stat, new_stat, gc->ngpio);
+ static int __trace_eprobe_create(int argc, const char *argv[]);
+ 
++static bool is_trace_eprobe(struct dyn_event *ev)
++{
++	return ev->ops == &eprobe_dyn_event_ops;
++}
++
+ static void trace_event_probe_cleanup(struct trace_eprobe *ep)
+ {
+ 	if (!ep)
+@@ -121,6 +141,9 @@ static bool eprobe_dyn_event_match(const char *system, const char *event,
+ 	struct trace_eprobe *ep = to_trace_eprobe(ev);
+ 	const char *slash;
+ 
++	if (!is_trace_eprobe(ev))
++		return false;
++
+ 	/*
+ 	 * We match the following:
+ 	 *  event only			- match all eprobes with event name
+@@ -174,14 +197,6 @@ static bool eprobe_dyn_event_match(const char *system, const char *event,
+ 	return trace_probe_match_command_args(&ep->tp, argc, argv);
+ }
+ 
+-static struct dyn_event_operations eprobe_dyn_event_ops = {
+-	.create = eprobe_dyn_event_create,
+-	.show = eprobe_dyn_event_show,
+-	.is_busy = eprobe_dyn_event_is_busy,
+-	.free = eprobe_dyn_event_release,
+-	.match = eprobe_dyn_event_match,
+-};
 -
- 	bitmap_and(cur_stat, chip->irq_trig_fall, old_stat, gc->ngpio);
- 	bitmap_and(old_stat, chip->irq_trig_raise, new_stat, gc->ngpio);
- 	bitmap_or(new_stat, old_stat, cur_stat, gc->ngpio);
+ static struct trace_eprobe *alloc_event_probe(const char *group,
+ 					      const char *this_event,
+ 					      struct trace_event_call *event,
+diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
+index 2cd8ef9..f63abfa 100644
+--- a/kernel/trace/trace_kprobe.c
++++ b/kernel/trace/trace_kprobe.c
+@@ -163,6 +163,9 @@ static bool trace_kprobe_match(const char *system, const char *event,
+ {
+ 	struct trace_kprobe *tk = to_trace_kprobe(ev);
+ 
++	if (!is_trace_kprobe(ev))
++		return false;
++
+ 	return (event[0] == '\0' ||
+ 		strcmp(trace_probe_name(&tk->tp), event) == 0) &&
+ 	    (!system || strcmp(trace_probe_group_name(&tk->tp), system) == 0) &&
+diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
+index a935c08..ee55ed0 100644
+--- a/kernel/trace/trace_uprobe.c
++++ b/kernel/trace/trace_uprobe.c
+@@ -312,6 +312,9 @@ static bool trace_uprobe_match(const char *system, const char *event,
+ {
+ 	struct trace_uprobe *tu = to_trace_uprobe(ev);
+ 
++	if (!is_trace_uprobe(ev))
++		return false;
++
+ 	return (event[0] == '\0' ||
+ 		strcmp(trace_probe_name(&tu->tp), event) == 0) &&
+ 	   (!system || strcmp(trace_probe_group_name(&tu->tp), system) == 0) &&
 -- 
-2.17.1
+2.7.4
 
