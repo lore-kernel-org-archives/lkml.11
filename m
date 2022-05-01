@@ -2,85 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D134C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 12:22:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE0FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 12:25:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347118AbiEAMYA (ORCPT
+        id S1346974AbiEAM27 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 08:24:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46650 "EHLO
+        Sun, 1 May 2022 08:28:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346912AbiEAMXk (ORCPT
+        with ESMTP id S234166AbiEAM24 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 08:23:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1055CF28;
-        Sun,  1 May 2022 05:20:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC0EAB80D30;
-        Sun,  1 May 2022 12:20:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3FB8DC385AF;
-        Sun,  1 May 2022 12:20:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651407612;
-        bh=9KU8d1fcPKUAh6U47Hcgbxe7EAYzVBg/xG4xE2hash8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rfnB6iZAQ0DenBuR2lVcmvsXcAIcJjHvXriyn5iwJXVViBXzageFTNr256yZYtjz6
-         56w9X5XYJ1cPBHPj+FLeqV58E3xNuuOIO3mSR5uV0KOBllTabIZgP6gw9o4FjnKK4w
-         4oCmAfwJIqRkfscEwkRB372LojjuHuliwYtbuCbP59JJByM/CqYkGi7+I8SFpe75nF
-         xgjO8AhVKjqdpQws0zPdPOKMCNml+2L8FZ+Iz5yRiN2s1l1N6dFyENwTGwyq+bFRB5
-         j4JMv4FKu+64B178SNUVXC5CVFWIJtIE1jcaXYYsr7qZ5M2sn+BOIYWL4j5Goa93Uq
-         j3qBhP6go42Hw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 246EEE8DBDA;
-        Sun,  1 May 2022 12:20:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Sun, 1 May 2022 08:28:56 -0400
+Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C298EE017;
+        Sun,  1 May 2022 05:25:27 -0700 (PDT)
+Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179]) (authenticated)
+        by conssluserg-06.nifty.com with ESMTP id 241COxAn017333;
+        Sun, 1 May 2022 21:25:00 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 241COxAn017333
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1651407900;
+        bh=s9WJsNSqpPu5bcg8syEMbH4y6ywS2B+iJi17yrfL59w=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ZwU0SrYVAmuqx7ZPBWALLSvJ72XApDjVU/+M8tiMYdoaqL9sEVG/VtUU40ufqmHi8
+         XskoLhhYh+2LRs43jkgv0YVcQOHUuhgZpaAFUzYUBvvTDiPWt/pQvknK21V9xOvX0R
+         DnokeReLawxxnt9Ki9WL90W8Iu2NR3BCO0XCbHWXOPQ3wgrfHNDZbPE+1QZYPREIiS
+         liBuVeUSTyMQXz7/8xDoHfABVegTw7FWscZ7kl0wrkANh82Co7tO9kxNAq2+4aJa/f
+         vJJnrGmUOl/2XZdYADC/w51+LrTbPLPpS02d8A8Fpq9zWcjpfyLKl/gvjbFnurl3eW
+         C9c4eKUdZLDAQ==
+X-Nifty-SrcIP: [209.85.215.179]
+Received: by mail-pg1-f179.google.com with SMTP id bg9so9845821pgb.9;
+        Sun, 01 May 2022 05:25:00 -0700 (PDT)
+X-Gm-Message-State: AOAM5303c3JgWrB+bjObd2EfsYwyucbyozqUnAo4jAviLnxhUaj+HWYe
+        bY+IiuVT4BusS/bLp9IZvPGVL7QBcdJ6tZnzERE=
+X-Google-Smtp-Source: ABdhPJweSJ5bmDryx8QPRvubCmslr51jm3f8PW+XSTdkqy/t55C0Hk6kBtzuRE4UIvahL2188zio4+mAtCSuUoYGj7k=
+X-Received: by 2002:a05:6a00:a02:b0:4fd:f9dd:5494 with SMTP id
+ p2-20020a056a000a0200b004fdf9dd5494mr7285242pfh.68.1651407899203; Sun, 01 May
+ 2022 05:24:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] UDP sock_wfree optimisations
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165140761214.13523.8144885912180320727.git-patchwork-notify@kernel.org>
-Date:   Sun, 01 May 2022 12:20:12 +0000
-References: <cover.1650891417.git.asml.silence@gmail.com>
-In-Reply-To: <cover.1650891417.git.asml.silence@gmail.com>
-To:     Pavel Begunkov <asml.silence@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        dsahern@kernel.org, edumazet@google.com,
-        linux-kernel@vger.kernel.org
+References: <20220501084032.1025918-1-masahiroy@kernel.org>
+In-Reply-To: <20220501084032.1025918-1-masahiroy@kernel.org>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Sun, 1 May 2022 21:23:54 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASYKttAZMnirt-aVSJqbgY1Cagj3URstv-9zs+-RKDi8g@mail.gmail.com>
+Message-ID: <CAK7LNASYKttAZMnirt-aVSJqbgY1Cagj3URstv-9zs+-RKDi8g@mail.gmail.com>
+Subject: Re: [PATCH v2 00/26] kbuild: yet another series of cleanups (modpost
+ and LTO)
+To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        clang-built-linux <llvm@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Sun, May 1, 2022 at 5:42 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+>
+> This is the third batch of cleanups in this development cycle.
+>
+> Major changes in v2:
+>
+>  - V1 did not work with CONFIG_MODULE_REL_CRCS.
+>    I fixed this for v2.
+>
+>  - Reflect some review comments in v1
+>
+>  - Refactor the code more
+>
+>  - Avoid too long argument error
+>
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
 
-On Thu, 28 Apr 2022 11:58:16 +0100 you wrote:
-> The series is not UDP specific but that the main beneficiary. 2/3 saves one
-> atomic in sock_wfree() and on top 3/3 removes an extra barrier.
-> Tested with UDP over dummy netdev, 2038491 -> 2099071 req/s (or around +3%).
-> 
-> note: in regards to 1/3, there is a "Should agree with poll..." comment
-> that I don't completely get, and there is no git history to explain it.
-> Though I can't see how it could rely on having the second check without
-> racing with tasks woken by wake_up*().
-> 
-> [...]
+This series is available at:
 
-Here is the summary with links:
-  - [net-next,1/3] sock: dedup sock_def_write_space wmem_alloc checks
-    https://git.kernel.org/netdev/net-next/c/14bfee9b6270
-  - [net-next,2/3] sock: optimise UDP sock_wfree() refcounting
-    https://git.kernel.org/netdev/net-next/c/052ada096842
-  - [net-next,3/3] sock: optimise sock_def_write_space barriers
-    https://git.kernel.org/netdev/net-next/c/0a8afd9f026a
+git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git
+lto-cleanup-v2
 
-You are awesome, thank you!
+
+
+
+
+
+
+>
+> Masahiro Yamada (26):
+>   modpost: use bool type where appropriate
+>   modpost: change mod->gpl_compatible to bool type
+>   modpost: import include/linux/list.h
+>   modpost: traverse modules in order
+>   modpost: add sym_add_unresolved() helper
+>   modpost: traverse unresolved symbols in order
+>   modpost: use doubly linked list for dump_lists
+>   modpost: traverse the namespace_list in order
+>   modpost: dump Module.symvers in the same order of modules.order
+>   modpost: move static EXPORT_SYMBOL check to check_exports()
+>   modpost: make multiple export error
+>   modpost: make sym_add_exported() always allocate a new symbol
+>   modpost: split new_symbol() to symbol allocation and hash table
+>     addition
+>   modpost: mitigate false-negatives for static EXPORT_SYMBOL checks
+>   kbuild: record symbol versions in *.cmd files
+>   kbuild: generate a list of objects in vmlinux
+>   modpost: extract symbol versions from *.cmd files
+>   modpost: generate linker script to collect symbol versions
+>   kbuild: embed symbol versions at final link of vmlinux or modules
+>   kbuild: stop merging *.symversions
+>   genksyms: adjust the output format for .cmd files
+>   kbuild: do not create *.prelink.o for Clang LTO or IBT
+>   kbuild: make built-in.a rule robust against too long argument error
+>   kbuild: make *.mod rule robust against too long argument error
+>   modpost: simplify the ->is_static initialization
+>   modpost: use hlist for hash table implementation
+>
+>  .gitignore                  |   1 +
+>  Makefile                    |   1 +
+>  scripts/Kbuild.include      |   4 +
+>  scripts/Makefile.build      | 118 +++------
+>  scripts/Makefile.lib        |   7 -
+>  scripts/Makefile.modfinal   |   6 +-
+>  scripts/Makefile.modpost    |  10 +-
+>  scripts/genksyms/genksyms.c |  17 +-
+>  scripts/link-vmlinux.sh     |  34 +--
+>  scripts/mod/file2alias.c    |   2 -
+>  scripts/mod/list.h          | 265 +++++++++++++++++++
+>  scripts/mod/modpost.c       | 501 ++++++++++++++++++++++--------------
+>  scripts/mod/modpost.h       |  24 +-
+>  scripts/mod/sumversion.c    |   8 +-
+>  14 files changed, 650 insertions(+), 348 deletions(-)
+>  create mode 100644 scripts/mod/list.h
+>
+> --
+> 2.32.0
+>
+
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Best Regards
+Masahiro Yamada
