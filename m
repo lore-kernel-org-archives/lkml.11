@@ -2,120 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 962DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 08:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ADC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 08:46:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344736AbiEAIsS (ORCPT
+        id S1344934AbiEAItb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 04:48:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
+        Sun, 1 May 2022 04:49:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344187AbiEAIqS (ORCPT
+        with ESMTP id S1382082AbiEAItN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 04:46:18 -0400
-Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4F54E3A6;
-        Sun,  1 May 2022 01:42:49 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 2418f2S2008518;
-        Sun, 1 May 2022 17:41:12 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 2418f2S2008518
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1651394472;
-        bh=GPcoq5UmVXCtNYinWnkOBgyynm/22Xa0IYnJlhllxx8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e59m/v0iJt1xlzsi/cefKqY8/FDkHpd9nO83IG7HXKSBzM1mjRoJYuyISzsGr134w
-         VvjNH7mQ+ffcwJLy1KEPKJYJjHHp8F/QiJwHcY4T4Ejibpbv6701vvAXUewLJ3zJud
-         fF+5fWI3t0Oanxi0a74Q4QMfZB5hFfGM4cks4yRetUFL8xwH0bfs0ADFaXbmGdIxsj
-         NJ7rlJS/W5kx6pvzqdLyFGaoZAC2XUIFRuCNIxnraOf7nryWLnWujicvocvA3x5d9d
-         sRvSLzp0YZ41N00nmtyfXX0xSqy4esyXh3lGDgn8OeufnrBLYUe3n0k/W++Potu7Y0
-         fAjpQpqIpYj0Q==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        llvm@lists.linux.dev
-Subject: [PATCH v2 15/26] kbuild: record symbol versions in *.cmd files
-Date:   Sun,  1 May 2022 17:40:21 +0900
-Message-Id: <20220501084032.1025918-16-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220501084032.1025918-1-masahiroy@kernel.org>
-References: <20220501084032.1025918-1-masahiroy@kernel.org>
+        Sun, 1 May 2022 04:49:13 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E32332C
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 01:45:10 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id t5so2913343edw.11
+        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 01:45:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=EfLbZnKHGkYEiRqrqELv1JHaDPFDY5n+c9cXTFfSJ0E=;
+        b=mG0NFqWIJLRl7mAjencG13lKoZDFfhX82IymWESPkrsKtgsIkRSuyPeGZHuG4Cigaj
+         nItkEHsguH+4QU8UmwYSM51iw5jlzCW3oAM5hBOnttJVtr3AFRbv3Uj/4YD3u20mcUey
+         A+325JQ25uXgJ4u68ZO64bO1Xzy9HE21+hjWrMeLPitp/EYtgTFPoWYWd30xQXtfCsul
+         hObDlFPceqLZcbt/f+VAbr7RrQu8tKGkDQ7XmmnbSNg6JSOCfTD5UWg1DCjSTRaIoQVK
+         5MiFJEl5/qVJ7zBd4rPyA+AYdG1lwi/0bG2uHzNIIdOTSxgAH9qBrXIuBIW8fK1uo6Wl
+         iuyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EfLbZnKHGkYEiRqrqELv1JHaDPFDY5n+c9cXTFfSJ0E=;
+        b=oyLhtkPHm344pPcpzEu66OD07hT451Klybb5O9sLUthgBPjgTwGIBJrzuTPakouo6R
+         1xMhQI9hIVgnWq1xk2wqO6XB16qiNqpjj3FO8zgZ+oPECVTGFArPf+YfhtQ+5dFgRZhx
+         hos2cRT6+ac2Z/2JMeHlBQekly62JDcbPLDwe9GhkyCVKlOnEOGA9EGXPTbwbWIKnctJ
+         0FiQGsvF5uAvf8C//6N/PqiZqQKtQ0KzAlgM3k5D5SrqcsBdfB5vVz3Tw1Y/7H35Q30t
+         JTLeuzSV+UspOaDmkUsL2oqIsFJtgpg9Jdo8k7vjQsDU9dDV+itVpcVxG0Zn/oa99I3+
+         DBmA==
+X-Gm-Message-State: AOAM531d0b/tuYEMvBKQqh77NuOHBF1Kb9KXSR1oaF3/Y0MWUS5lY59n
+        5pBdcZKOz7+BKd0l1LzLjoc3dA==
+X-Google-Smtp-Source: ABdhPJw9CCShcC37kfCL+gl0bgsIs8A53CVSZFH89+Fb2GuexiRCeerbLJzlc8FhUIUEEYZBjj++4Q==
+X-Received: by 2002:a05:6402:524e:b0:423:e919:8eb4 with SMTP id t14-20020a056402524e00b00423e9198eb4mr7958434edd.153.1651394708439;
+        Sun, 01 May 2022 01:45:08 -0700 (PDT)
+Received: from [192.168.0.182] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id gz26-20020a170907a05a00b006f3ef214dd7sm2366054ejc.61.2022.05.01.01.45.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 01 May 2022 01:45:08 -0700 (PDT)
+Message-ID: <1179dd78-b2c0-4c2d-edef-b4903586950a@linaro.org>
+Date:   Sun, 1 May 2022 10:45:06 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4 2/6] dt-bindings: PCI: renesas,pci-rcar-gen2: Add
+ device tree support for r9a06g032
+Content-Language: en-US
+To:     Herve Codina <herve.codina@bootlin.com>,
+        Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>
+Cc:     Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+References: <20220428151630.586009-1-herve.codina@bootlin.com>
+ <20220428151630.586009-3-herve.codina@bootlin.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220428151630.586009-3-herve.codina@bootlin.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_MODVERSIONS=y, the output from genksyms is saved in
-separate *.symversions files, and will be used much later when
-CONFIG_LTO_CLANG=y because it is impossible to update LLVM bit code
-here.
+On 28/04/2022 17:16, Herve Codina wrote:
+> Add internal PCI bridge support for the r9a06g032 SOC. The Renesas
+> RZ/N1D (R9A06G032) internal PCI bridge is compatible with the one
+> present in the R-Car Gen2 family.
+> Compared to the R-Car Gen2 family, it needs three clocks instead of
+> one.
+> 
+> The 'resets' property for the RZ/N1 family is not required since
+> there is no reset-controller support yet for the RZ/N1 family.
+> 
+> Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+> ---
+>  .../bindings/pci/renesas,pci-rcar-gen2.yaml   | 46 ++++++++++++++++---
+>  1 file changed, 39 insertions(+), 7 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/pci/renesas,pci-rcar-gen2.yaml b/Documentation/devicetree/bindings/pci/renesas,pci-rcar-gen2.yaml
+> index 494eb975c146..90b42d44c582 100644
+> --- a/Documentation/devicetree/bindings/pci/renesas,pci-rcar-gen2.yaml
+> +++ b/Documentation/devicetree/bindings/pci/renesas,pci-rcar-gen2.yaml
+> @@ -32,6 +32,10 @@ properties:
+>                - renesas,pci-r8a7793      # R-Car M2-N
+>                - renesas,pci-r8a7794      # R-Car E2
+>            - const: renesas,pci-rcar-gen2 # R-Car Gen2 and RZ/G1
+> +      - items:
+> +          - enum:
+> +              - renesas,pci-r9a06g032     # RZ/N1D
+> +          - const: renesas,pci-rzn1       # RZ/N1
+>  
+>    reg:
+>      items:
+> @@ -41,13 +45,9 @@ properties:
+>    interrupts:
+>      maxItems: 1
+>  
+> -  clocks:
+> -    items:
+> -      - description: Device clock
+> +  clocks: true
+>  
+> -  clock-names:
+> -    items:
+> -      - const: pclk
+> +  clock-names: true
+>  
+>    resets:
+>      maxItems: 1
+> @@ -106,13 +106,45 @@ required:
+>    - interrupt-map
+>    - interrupt-map-mask
+>    - clocks
+> -  - resets
+>    - power-domains
+>    - bus-range
+>    - "#address-cells"
+>    - "#size-cells"
+>    - "#interrupt-cells"
+>  
+> +if:
 
-This approach is not robust because:
+This should be better within allOf block. It's likely that it will be
+extended later.
 
- - *.symversions may or may not exist. If *.symversions does not
-   exist, we never know if it is missing for legitimate reason
-   (i.e. no EXPORT_SYMBOL) or something bad has happened (for
-   example, the user accidentally deleted it). Once it occurs,
-   it is not self-healing because *.symversions is generated
-   as a side effect.
-
- - stale (i.e. invalid) *.symversions might be picked up if an
-   object is generated in a non-ordinary way, and corresponding
-   *.symversions (, which was generated by old builds) just happen
-   to exist.
-
-A more robust approach is to save symbol versions in *.cmd files
-because:
-
- - *.cmd always exists (if the object is generated by if_changed
-   rule or friends). Even if the user accidentally deletes it,
-   it will be regenerated in the next build.
-
- - *.cmd is always re-generated when the object is updated. This
-   avoid stale version information being picked up.
-
-I will remove *.symversions later.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Tested-by: Nicolas Schier <nicolas@fjasle.eu>
-Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
----
-
-Changes in v2:
-  - Fix CONFIG_MODULE_REL_CRCS=y case
-
- scripts/Makefile.build | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index f6a506318795..a1023868775f 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -171,10 +171,17 @@ ifdef CONFIG_MODVERSIONS
- 
- # Generate .o.symversions files for each .o with exported symbols, and link these
- # to the kernel and/or modules at the end.
-+
-+genksyms_format_rel_crc := [^_]*__crc_\([^ ]*\) = \.; LONG(\([^)]*\)).*
-+genksyms_format_normal := __crc_\(.*\) = \(.*\);
-+genksyms_format := $(if $(CONFIG_MODULE_REL_CRCS),$(genksyms_format_rel_crc),$(genksyms_format_normal))
-+
- gen_symversions =								\
- 	if $(NM) $@ 2>/dev/null | grep -q __ksymtab; then			\
- 		$(call cmd_gensymtypes_$(1),$(KBUILD_SYMTYPES),$(@:.o=.symtypes)) \
- 		    > $@.symversions;						\
-+		sed -n 's/$(genksyms_format)/$(pound)SYMVER \1 \2/p' $@.symversions \
-+			>> $(dot-target).cmd;					\
- 	else									\
- 		rm -f $@.symversions;						\
- 	fi
--- 
-2.32.0
-
+Best regards,
+Krzysztof
