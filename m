@@ -2,92 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7CACC4167B
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 16:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C3FC38161
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 16:53:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351791AbiEAQzT (ORCPT
+        id S1351304AbiEAQ4c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 12:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53940 "EHLO
+        Sun, 1 May 2022 12:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352637AbiEAQyf (ORCPT
+        with ESMTP id S1352126AbiEAQyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 12:54:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33D3389A
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 09:50:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F75760F66
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 16:50:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1297C385B8;
-        Sun,  1 May 2022 16:50:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651423856;
-        bh=UuPQPRcvBuddGzSocSImJOFLMKh6Eo2G60SPZFrwkNA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=w89X2i2TMjGSP1sxQHqZXDqXHB+K/P5Ujffts5b0+GogSQzuVGYa4GpAPV+MhRa8R
-         bV5igw3FSqRSuQPQQNswJ7bqQ7Iu3B6IzY+XFJyEoH6fw5ujIBsS4IFsKb7uhHXJ/b
-         2nsld1fYKst9MoTQfnoSr+yB6K00gfCBp3jUa+aQ=
-Date:   Sun, 1 May 2022 18:50:15 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Philipp Hortmann <philipp.g.hortmann@gmail.com>
-Cc:     Forest Bond <forest@alittletooquiet.net>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] staging: vt6655: Rename function CARDbGetCurrentTSF
-Message-ID: <Ym66R9hpFgRikNx7@kroah.com>
-References: <cover.1651422181.git.philipp.g.hortmann@gmail.com>
- <1f38006d7eb18426a2336b7666d385021bf81faf.1651422181.git.philipp.g.hortmann@gmail.com>
+        Sun, 1 May 2022 12:54:32 -0400
+Received: from relay3.hostedemail.com (relay3.hostedemail.com [64.99.140.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A2F23146;
+        Sun,  1 May 2022 09:50:48 -0700 (PDT)
+Received: from omf07.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay09.hostedemail.com (Postfix) with ESMTP id 7F1372963C;
+        Sun,  1 May 2022 16:50:47 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf07.hostedemail.com (Postfix) with ESMTPA id 6AA5820027;
+        Sun,  1 May 2022 16:50:46 +0000 (UTC)
+Message-ID: <8cf3b100a4dc0eaac9214e1a9ea2b6dace7c85bb.camel@perches.com>
+Subject: Re: [PATCH] USB / dwc3: remove a possible unnecessary 'out of
+ memory' message
+From:   Joe Perches <joe@perches.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Kushagra Verma <kushagra765@outlook.com>
+Cc:     balbi@kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Sun, 01 May 2022 09:50:45 -0700
+In-Reply-To: <Ym6pp/O1fpneA5ZW@kroah.com>
+References: <SI2PR01MB3929F20DA02363BD6A88657DF8FE9@SI2PR01MB3929.apcprd01.prod.exchangelabs.com>
+         <Ym6pp/O1fpneA5ZW@kroah.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1f38006d7eb18426a2336b7666d385021bf81faf.1651422181.git.philipp.g.hortmann@gmail.com>
+Content-Transfer-Encoding: 7bit
+X-Stat-Signature: ocn1kks8g9de1t4exx157enah9yc3p9u
+X-Rspamd-Server: rspamout03
+X-Rspamd-Queue-Id: 6AA5820027
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19RJa68z0JhzR0knFOtfVGBO3/AWAtbFCU=
+X-HE-Tag: 1651423846-659880
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 01, 2022 at 06:37:05PM +0200, Philipp Hortmann wrote:
-> The name of the function uses CamelCase which
-> is not accepted by checkpatch.pl
+On Sun, 2022-05-01 at 17:39 +0200, Greg KH wrote:
+> On Sun, May 01, 2022 at 09:01:36PM +0530, Kushagra Verma wrote:
+> > This patch removes a possible unnecessary out of memory message from
+> > core.c
+> > as reported by checkpatch.pl:
+> >    WARNING: Possible unnecessary 'out of memory' message
+
+
+> This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+> a patch that has triggered this response.  He used to manually respond
+> to these common problems, but in order to save his sanity (he kept
+> writing the same thing over and over, yet to different people), I was
+> created.  Hopefully you will not take offence and will fix the problem
+> in your patch and resubmit it so that it can be accepted into the Linux
+> kernel tree.
 > 
-> Signed-off-by: Philipp Hortmann <philipp.g.hortmann@gmail.com>
-> ---
->  drivers/staging/vt6655/card.c        | 10 +++++-----
->  drivers/staging/vt6655/card.h        |  2 +-
->  drivers/staging/vt6655/device_main.c |  2 +-
->  3 files changed, 7 insertions(+), 7 deletions(-)
+> You are receiving this message because of the following common error(s)
+> as indicated below:
 > 
-> diff --git a/drivers/staging/vt6655/card.c b/drivers/staging/vt6655/card.c
-> index ec6fd185d3fd..d1dfd96e13b7 100644
-> --- a/drivers/staging/vt6655/card.c
-> +++ b/drivers/staging/vt6655/card.c
-> @@ -11,7 +11,7 @@
->   *      CARDbAddBasicRate - Add to BasicRateSet
->   *      CARDbIsOFDMinBasicRate - Check if any OFDM rate is in BasicRateSet
->   *      CARDqGetTSFOffset - Calculate TSFOffset
-> - *      CARDbGetCurrentTSF - Read Current NIC TSF counter
-> + *      card_get_current_tsf - Read Current NIC TSF counter
->   *      CARDqGetNextTBTT - Calculate Next Beacon TSF counter
->   *      CARDvSetFirstNextTBTT - Set NIC Beacon time
->   *      CARDvUpdateNextTBTT - Sync. NIC Beacon time
-> @@ -288,7 +288,7 @@ bool CARDbUpdateTSF(struct vnt_private *priv, unsigned char byRxRate,
->  	u64 local_tsf;
->  	u64 qwTSFOffset = 0;
->  
-> -	CARDbGetCurrentTSF(priv, &local_tsf);
-> +	card_get_current_tsf(priv, &local_tsf);
+> - Your patch is malformed (tabs converted to spaces, linewrapped, etc.)
+>   and can not be applied.  Please read the file,
+>   Documentation/email-clients.txt in order to fix this.
 
-Why is the value being passed as a reference and the error value (if
-any), is not checked at all?
+Seems like a patch-bot false positive patch-bot to me.
 
-Shouldn't this just return the value as it obviously must always work?
-(retorical question, something is wrong here...)
-
-And this is a horrible global function name, can you prefix it with the
-driver name to give us a chance to keep the global namespace sane?
-vt6655_get_current_tsf() would be better.
-
-thanks,
-
-greg k-h
