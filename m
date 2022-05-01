@@ -2,82 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE54FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF428C4332F
 	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 07:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243365AbiEAHFg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 03:05:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37572 "EHLO
+        id S243019AbiEAHFD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 1 May 2022 03:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243029AbiEAHF2 (ORCPT
+        with ESMTP id S236606AbiEAHE5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 03:05:28 -0400
-Received: from out203-205-221-231.mail.qq.com (out203-205-221-231.mail.qq.com [203.205.221.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BF41A051
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 00:02:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1651388520;
-        bh=a8p/beQuYoG6HbG5O776YKIv8httHP96RkhZpN8ssbs=;
-        h=From:To:Cc:References:In-Reply-To:Subject:Date;
-        b=EzcQcbZmRYTgkly6SzjQblY+JGnfh+Sdzll99PyzivzAfjh4Xp2GCOp4DIaKQrxJR
-         /YYFcDhbNNQR4DHrUbWGdYhx7oSQ0M7MwyiVXVPuBmdTwNg1UW5Lk525apyL+yn744
-         GPPw3+OMKaOCiNUwGsfggvHSR6N+CIAZ5mltkCTs=
-Received: from helloworld ([59.172.176.225])
-        by newxmesmtplogicsvrsza8.qq.com (NewEsmtp) with SMTP
-        id 7A390BB; Sun, 01 May 2022 15:01:58 +0800
-X-QQ-mid: xmsmtpt1651388518tiivffook
-Message-ID: <tencent_3A32A3E4AA726450348797294DFCCB81600A@qq.com>
-X-QQ-XMAILINFO: NgK2g0LaajGfVebqiSpxy+6pe9sjWuLEBbidSk5qMly00XJlVme3IpgkzT+C6y
-         v2q1liDu/DX4rg4/t0Uw9XMPpPWUJoS63PiVqxeXl0zsW9VACCyT/NPu01zwwCOjkIDhQMsP3O0s
-         FCWyxgaZsepivcSXi4cuNgBkHKI5UhRKB8CQJrYxLuyJ8bUHgdBcZEdEscTsP7PbCEAUGVDgu6BE
-         ey6Tiwj0KMOCvkaYNT/JH++sQpvOt3yHXl8UaJxmzbaZc9S/kkqmfRgUiZg6YdzPNxMRtaP2dp+X
-         69w1d/6sCtMVKRnWuniBG2HqQUQxdn745LL1iCGKcRpsh4neAG3j8zg4NM7RriMOOkVjveKd83yX
-         3QpqAzPQPEkDlqZmIfyVBJr02+XkJh/lK1UeBPpiCk7l2xUBGf4aPvFWhn/WIqJCOyP9WkTv5H8M
-         XaWDehsewEUEVATwjPZwRqsyghw/gNAYoTR+WJIHZffZuubTq1J1jkZqjvwFoLc8l1tRMmpkEYQl
-         91tia9+poX7xqM92hG4r7V3cqQ3Lg1Hl2nW1/HjGQFpsT5y/wm/2qq7IO9Cjd/WNZsQe1FUeI0Qz
-         guSg5S2Up2tF9vEzC4QPmmY5ASsUJNjYGOmtSlBxu9eqwhDUhTC5NiGclnp/HeGRkNvyD24N/KoT
-         jIcPdW45I29kRQ8O1xmPFoFATly4O4rpUJ8WX1TTH7Z3PIWbq1/gb33swhVFRHqGBE6rHJRFT+9X
-         G54MGexMoSVo+baAnzkt56mrNS6tXac9MfNzHkW2bpvtW9G90HwvSeeWUCn9iiD1F4Wt1Pz5Dc/5
-         g7bOGDy5AgkgDt/1vPYISqKbKKAeNxMQ3yZkF0Tl/LOnl0uA+muWKSldLbIsiWJ3nnDX4eNd/2sV
-         BqYfhH+BycDG7RV18up9FKRKRhiF8h0+6GrK7kVMeBBtxCNw4mpAuhCfQCVFEoYp0dn/yKu+wH6v
-         cWpSCe+DUpblHLOouUgK48mMoBIqzicb6fV5ATBT0=
-From:   <xkernel.wang@foxmail.com>
-To:     <linux@armlinux.org.uk>
-Cc:     <andrew@lunn.ch>, <gregory.clement@bootlin.com>,
-        <sebastian.hesselbarth@gmail.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <tencent_1D9E7394538085872BE9FD6780483137E70A@qq.com> <YmwB83u68uPKuU0a@shell.armlinux.org.uk>
-In-Reply-To: <YmwB83u68uPKuU0a@shell.armlinux.org.uk>
-Subject: Re: [PATCH] ARM: mvebu: check the validation of memory allocation
-Date:   Sun, 1 May 2022 15:01:58 +0800
-X-OQ-MSGID: <009b01d85d29$5a1fdeb0$0e5f9c10$@foxmail.com>
+        Sun, 1 May 2022 03:04:57 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49AB192B1;
+        Sun,  1 May 2022 00:01:32 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id o69so9038297pjo.3;
+        Sun, 01 May 2022 00:01:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=XJuXYg02F7GZrqi1LIe5DG6ak9PjoEuh2MqhUV/o+CI=;
+        b=Y0/jZvPdTwxd5qNAoFtAQjICBif7TP4/uvNGHZ7mCVBNTf5UQZuBLBr192yhB2uGEx
+         QDxEeVMT0F6NrYrr+3q/6enzJft2dUL1ybHYpJkquIl2jGDkU1E16YxjlIYESfMePOS5
+         AvdLSpWsGU14DMZKwKtUpG28ZbRJ6d8HOsN9+B4h8pmgXfQlTaygGoumWj8cSZdLHBuQ
+         j189Wr+YGPwMxr/LZHsw7p5GG0cVQVUq4Zi6Ptbk9wPoIGav4zbZgO9DNG3k4N0sPmhK
+         jqMCHNaoESkbaHMdYS/QTUPjd1jZcDSW6IA8wEg5/rrTvUsut5omo0OVMBje4tY/yHD3
+         H/8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=XJuXYg02F7GZrqi1LIe5DG6ak9PjoEuh2MqhUV/o+CI=;
+        b=JTkc2wnUSsWluesO/3JWCqwt5GhzUbJinGUto1dlVPTXG5+3Pw1bVcXf2JDtLGXz1b
+         oA21Uu+AmmWZ88xZ8LA6JdhEHwGiRu0I/JMg7zxsx170c8q4pvlS+oWj++oAgsKCwf7R
+         r6qb4pis4spfWy8QYvonJlI/njme88D0cvr7qh7SUranqIfWm5apGaD7NAHPIgJ3BmrL
+         h2K6+K+8TV37iHE1l7A0oOwN9U4C3vCyjPmluO0e/t+ecrD6DsZ4L0hQsxgcIuDXsv2j
+         a/FUW6wQfS4rAyihcheBlQVOydeV/UMBHid5g8SDt4ndwCmkxe3Y/2ws/2LNqaccUpQG
+         QNdg==
+X-Gm-Message-State: AOAM531gMwh4AhqL5P8KrYR0MLPOpBjAbGFemEFA2UNcugfeufEDtYJj
+        KHWfDDDZT8x/MIe4tvgmEl0=
+X-Google-Smtp-Source: ABdhPJxjGACwujXvOQg6H2YQlGoquVq0GFnswroW1iywGoHNo2RXHSHhZT985A1E4HRMufbQD0M0/A==
+X-Received: by 2002:a17:902:8644:b0:15a:3b4a:538a with SMTP id y4-20020a170902864400b0015a3b4a538amr6513889plt.146.1651388492197;
+        Sun, 01 May 2022 00:01:32 -0700 (PDT)
+Received: from [127.0.0.1] ([103.121.210.106])
+        by smtp.gmail.com with ESMTPSA id e3-20020a170903240300b0015e8d4eb28fsm2398872plo.217.2022.05.01.00.01.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 01 May 2022 00:01:31 -0700 (PDT)
+Message-ID: <b90f96e9-3209-2285-fd1d-9a7660cf5e1a@gmail.com>
+Date:   Sun, 1 May 2022 15:00:04 +0800
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQKWC/NpS5yVGNKjZwJUNiP5WlVJ6gGNT8eoq4HKkAA=
-Content-Language: zh-cn
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 7/9] io-wq: implement fixed worker logic
+Content-Language: en-US
+To:     Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org
+Cc:     Pavel Begunkov <asml.silence@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220429101858.90282-1-haoxu.linux@gmail.com>
+ <20220429101858.90282-8-haoxu.linux@gmail.com>
+ <015f58ed-09c1-cd27-064a-b6c0cc5580d2@kernel.dk>
+From:   Hao Xu <haoxu.linux@gmail.com>
+In-Reply-To: <015f58ed-09c1-cd27-064a-b6c0cc5580d2@kernel.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Friday, April 29, 2022 11:19 PM +0800, linux@armlinux.org.uk wrote:
-> Are these failures silent, or will they be reported in the kernel log =
-to
-> make their failure obvious to those who debug the kernel?
+On 4/30/22 21:27, Jens Axboe wrote:
+> On 4/29/22 4:18 AM, Hao Xu wrote:
+>> @@ -1030,6 +1101,7 @@ static bool io_wq_work_match_item(struct io_wq_work *work, void *data)
+>>   static void io_wqe_enqueue(struct io_wqe *wqe, struct io_wq_work *work)
+>>   {
+>>   	struct io_wqe_acct *acct = io_work_get_acct(wqe, work);
+>> +	struct io_wqe_acct *fixed_acct;
+>>   	struct io_cb_cancel_data match;
+>>   	unsigned work_flags = work->flags;
+>>   	bool do_create;
+>> @@ -1044,8 +1116,14 @@ static void io_wqe_enqueue(struct io_wqe *wqe, struct io_wq_work *work)
+>>   		return;
+>>   	}
+>>   
+>> +	fixed_acct = io_get_acct(wqe, !acct->index, true);
+>> +	if (fixed_acct->fixed_worker_registered && !io_wq_is_hashed(work)) {
+>> +		if (io_wqe_insert_private_work(wqe, work, fixed_acct))
+>> +			return;
+>> +	}
+>> +
+> 
+> As per previous email, I was going to comment back saying "why don't we
+> just always do hashed work on the non-fixed workers?" - but that's
+> already what you are doing. Isn't this fine, does anything else need to
+> get done here in terms of hashed work and fixed workers? If you need
+> per-iowq serialization, then you don't get a fixed worker.
 
-According to chapter 14 of the coding style document:
-"These generic allocation functions all emit a stack dump on failure =
-when used
-without __GFP_NOWARN so there is no use in emitting an additional =
-failure
-message when NULL is returned."
-
-I think that these failures are not silent since __GFP_NOWARN is not
-enabled.
-
-Regards,
-Xiaoke Wang
+Hmm, seems we cannot accelerate serialized works with fixed worker. So
+Let's make it as it is.
+> 
 
