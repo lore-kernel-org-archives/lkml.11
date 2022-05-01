@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D5A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 22:09:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A33BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 22:09:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359857AbiEAWMw (ORCPT
+        id S1377609AbiEAWM7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 18:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46728 "EHLO
+        Sun, 1 May 2022 18:12:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377791AbiEAWMX (ORCPT
+        with ESMTP id S1377835AbiEAWMj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 18:12:23 -0400
+        Sun, 1 May 2022 18:12:39 -0400
 Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A1E5E76F;
-        Sun,  1 May 2022 15:08:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD625EBED;
+        Sun,  1 May 2022 15:08:53 -0700 (PDT)
 Received: from MUA
         by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <mail@maciej.szmigiero.name>)
-        id 1nlHk3-0008PB-8f; Mon, 02 May 2022 00:08:35 +0200
+        id 1nlHkE-0008Pw-09; Mon, 02 May 2022 00:08:46 +0200
 From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
 To:     Paolo Bonzini <pbonzini@redhat.com>,
         Sean Christopherson <seanjc@google.com>
@@ -30,9 +30,9 @@ Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
         Joerg Roedel <joro@8bytes.org>,
         Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 10/12] KVM: nSVM: Transparently handle L1 -> L2 NMI re-injection
-Date:   Mon,  2 May 2022 00:07:34 +0200
-Message-Id: <f894d13501cd48157b3069a4b4c7369575ddb60e.1651440202.git.maciej.szmigiero@oracle.com>
+Subject: [PATCH v3 12/12] KVM: nSVM: Drop support for CPUs without NRIPS (NextRIP Save) support
+Date:   Mon,  2 May 2022 00:07:36 +0200
+Message-Id: <f0302382cf45d7a9527b4aebbfe694bbcfa7aff5.1651440202.git.maciej.szmigiero@oracle.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1651440202.git.maciej.szmigiero@oracle.com>
 References: <cover.1651440202.git.maciej.szmigiero@oracle.com>
@@ -42,101 +42,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>
+From: Sean Christopherson <seanjc@google.com>
 
-A NMI that L1 wants to inject into its L2 should be directly re-injected,
-without causing L0 side effects like engaging NMI blocking for L1.
+Drop nested support for CPUs without NRIPS, as requiring NRIPS
+simplifies a handful of paths in KVM.
 
-It's also worth noting that in this case it is L1 responsibility
-to track the NMI window status for its L2 guest.
+NRIPS was introduced in 2009, i.e. every AMD-based CPU released in the
+last decade should support NRIPS.
 
+Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
+Not-signed-off-by: Sean Christopherson <seanjc@google.com>
+[MSS: Just drop nested support for these CPUs instead of SVM support in general]
 Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
 ---
- arch/x86/kvm/svm/nested.c | 12 ++++++++++++
- arch/x86/kvm/svm/svm.c    |  7 +++++++
- arch/x86/kvm/svm/svm.h    |  1 +
- 3 files changed, 20 insertions(+)
+ arch/x86/kvm/svm/nested.c | 14 +++++---------
+ arch/x86/kvm/svm/svm.c    | 19 +++++++++++--------
+ 2 files changed, 16 insertions(+), 17 deletions(-)
 
 diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index a83e367ade54..2cf92c12706a 100644
+index 2cf92c12706a..e5c05e3427ae 100644
 --- a/arch/x86/kvm/svm/nested.c
 +++ b/arch/x86/kvm/svm/nested.c
-@@ -623,6 +623,16 @@ static inline bool is_evtinj_soft(u32 evtinj)
- 	return type == SVM_EVTINJ_TYPE_EXEPT && kvm_exception_is_soft(vector);
- }
- 
-+static bool is_evtinj_nmi(u32 evtinj)
-+{
-+	u32 type = evtinj & SVM_EVTINJ_TYPE_MASK;
-+
-+	if (!(evtinj & SVM_EVTINJ_VALID))
-+		return false;
-+
-+	return type == SVM_EVTINJ_TYPE_NMI;
-+}
-+
- static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
- 					  unsigned long vmcb12_rip)
- {
-@@ -691,6 +701,7 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
- 	else if (boot_cpu_has(X86_FEATURE_NRIPS))
+@@ -691,14 +691,13 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
+ 	/*
+ 	 * next_rip is consumed on VMRUN as the return address pushed on the
+ 	 * stack for injected soft exceptions/interrupts.  If nrips is exposed
+-	 * to L1, take it verbatim from vmcb12.  If nrips is supported in
+-	 * hardware but not exposed to L1, stuff the actual L2 RIP to emulate
+-	 * what a nrips=0 CPU would do (L1 is responsible for advancing RIP
+-	 * prior to injecting the event).
++	 * to L1, take it verbatim from vmcb12.  If nrips is not exposed to L1,
++	 * stuff the actual L2 RIP to emulate what an nrips=0 CPU would do (L1
++	 * is responsible for advancing RIP prior to injecting the event).
+ 	 */
+ 	if (svm->nrips_enabled)
+ 		vmcb02->control.next_rip    = svm->nested.ctl.next_rip;
+-	else if (boot_cpu_has(X86_FEATURE_NRIPS))
++	else
  		vmcb02->control.next_rip    = vmcb12_rip;
  
-+	svm->nmi_l1_to_l2 = is_evtinj_nmi(vmcb02->control.event_inj);
- 	if (is_evtinj_soft(vmcb02->control.event_inj)) {
+ 	svm->nmi_l1_to_l2 = is_evtinj_nmi(vmcb02->control.event_inj);
+@@ -706,10 +705,7 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
  		svm->soft_int_injected = true;
  		svm->soft_int_csbase = svm->vmcb->save.cs.base;
-@@ -873,6 +884,7 @@ int nested_svm_vmrun(struct kvm_vcpu *vcpu)
+ 		svm->soft_int_old_rip = vmcb12_rip;
+-		if (svm->nrips_enabled)
+-			svm->soft_int_next_rip = svm->nested.ctl.next_rip;
+-		else
+-			svm->soft_int_next_rip = vmcb12_rip;
++		svm->soft_int_next_rip = vmcb02->control.next_rip;
+ 	}
  
- out_exit_err:
- 	svm->nested.nested_run_pending = 0;
-+	svm->nmi_l1_to_l2 = false;
- 	svm->soft_int_injected = false;
- 
- 	svm->vmcb->control.exit_code    = SVM_EXIT_ERR;
+ 	vmcb02->control.virt_ext            = vmcb01->control.virt_ext &
 diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index f946161520f6..88eacbbe9348 100644
+index 88eacbbe9348..dc980fa0daa8 100644
 --- a/arch/x86/kvm/svm/svm.c
 +++ b/arch/x86/kvm/svm/svm.c
-@@ -3421,6 +3421,10 @@ static void svm_inject_nmi(struct kvm_vcpu *vcpu)
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 
- 	svm->vmcb->control.event_inj = SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_NMI;
-+
-+	if (svm->nmi_l1_to_l2)
-+		return;
-+
- 	vcpu->arch.hflags |= HF_NMI_MASK;
- 	if (!sev_es_guest(vcpu->kvm))
- 		svm_set_intercept(svm, INTERCEPT_IRET);
-@@ -3761,8 +3765,10 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
- 	u8 vector;
- 	int type;
- 	u32 exitintinfo = svm->vmcb->control.exit_int_info;
-+	bool nmi_l1_to_l2 = svm->nmi_l1_to_l2;
- 	bool soft_int_injected = svm->soft_int_injected;
- 
-+	svm->nmi_l1_to_l2 = false;
- 	svm->soft_int_injected = false;
- 
- 	/*
-@@ -3794,6 +3800,7 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
- 	switch (type) {
- 	case SVM_EXITINTINFO_TYPE_NMI:
- 		vcpu->arch.nmi_injected = true;
-+		svm->nmi_l1_to_l2 = nmi_l1_to_l2;
+@@ -4330,9 +4330,7 @@ static int svm_check_intercept(struct kvm_vcpu *vcpu,
  		break;
- 	case SVM_EXITINTINFO_TYPE_EXEPT:
- 		/*
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 6acb494e3598..e1117d92789d 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -229,6 +229,7 @@ struct vcpu_svm {
+ 	}
  
- 	bool nmi_singlestep;
- 	u64 nmi_singlestep_guest_rflags;
-+	bool nmi_l1_to_l2;
+-	/* TODO: Advertise NRIPS to guest hypervisor unconditionally */
+-	if (static_cpu_has(X86_FEATURE_NRIPS))
+-		vmcb->control.next_rip  = info->next_rip;
++	vmcb->control.next_rip  = info->next_rip;
+ 	vmcb->control.exit_code = icpt_info.exit_code;
+ 	vmexit = nested_svm_exit_handled(svm);
  
- 	unsigned long soft_int_csbase;
- 	unsigned long soft_int_old_rip;
+@@ -4961,6 +4959,16 @@ static __init int svm_hardware_setup(void)
+ 		pause_filter_thresh = 0;
+ 	}
+ 
++	if (nrips) {
++		if (!boot_cpu_has(X86_FEATURE_NRIPS))
++			nrips = false;
++	}
++
++	if (!nrips && nested) {
++		pr_notice("kvm: Nested Virtualization requires NRIPS (NextRIP Save)\n");
++		nested = false;
++	}
++
+ 	if (nested) {
+ 		printk(KERN_INFO "kvm: Nested Virtualization enabled\n");
+ 		kvm_enable_efer_bits(EFER_SVME | EFER_LMSLE);
+@@ -4995,11 +5003,6 @@ static __init int svm_hardware_setup(void)
+ 			goto err;
+ 	}
+ 
+-	if (nrips) {
+-		if (!boot_cpu_has(X86_FEATURE_NRIPS))
+-			nrips = false;
+-	}
+-
+ 	enable_apicv = avic = avic && npt_enabled && (boot_cpu_has(X86_FEATURE_AVIC) || force_avic);
+ 
+ 	if (enable_apicv) {
