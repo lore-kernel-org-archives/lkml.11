@@ -2,111 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62DF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 07:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 08:05:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239540AbiEAHyT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 03:54:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58720 "EHLO
+        id S239452AbiEAIJP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 1 May 2022 04:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237134AbiEAHxq (ORCPT
+        with ESMTP id S244147AbiEAII6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 03:53:46 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B0B6576;
-        Sun,  1 May 2022 00:50:20 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id d6so13472645ede.8;
-        Sun, 01 May 2022 00:50:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=th+XkMr+xSq8zrqmODzL0k9Rhzhmi8pbbPFc0AQCHUo=;
-        b=bawiRp3YGAQinPjoP6bTDEYBal5Pfxcis4zes1ZbsiieKJMwsPsKr3xvinsksBaQz/
-         BqFV2/N4edlQoy3GwMr7h5eeKuyHLRj7Xk4XFYs/125f6yDIO/af41NddM7SygyLzUl4
-         B2MN1qVswNbRKXAA9gGA4UW4efgce0WNsKn3ap8r1X3Hxo3hm9N/V5w4hoUXci6RQYY/
-         R0cOh9j0PcTnR1u4DpUZjOlk68Y2ZffKDbQv4dBaJs5bi5YHqNOGz3V+eP1k8j0tMClK
-         9cbFTf3JdMSg6IxPvszZ81Vl7Kj5VqhkzPWPedmqxqiz+ufNhBCAbp+UpDujOw4+60wy
-         z+GQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=th+XkMr+xSq8zrqmODzL0k9Rhzhmi8pbbPFc0AQCHUo=;
-        b=wiSxFCmr8I7zb6piimZkh1BeaTM/YAgqsq2U3Scdg5O44ekVYQ43a0LGXxrwWEb3fb
-         FS9xhQBJrExEFdXXktZ7S/CJKuT8KF4vfqD4J5l5gPK9aUG2j++B2tHe72KaIOb071Rr
-         L0wT2OhOWgoRF2Y04OSrp6AuVv9wcgs7VljDz0KC9LUq3hJ8wRzdnbv5tEf77s2GW7XC
-         8172+aKFC+1d0rby7DQiqJjiz+tUFu6O3lITyTrCHh0ZGD2o+OfhBTFWzF99hSLtXpqt
-         hL0g3mfTGO2cXU231mpzweXOjVr2iZ9x/ZIqUIGzHJSY3WYghx22QYsCwnoU2M5p/ohd
-         WE+A==
-X-Gm-Message-State: AOAM530Fv8Z2RZtGyl5MukFhF5EKuHbdTpQ0z+kMMBZ/n6Gotxg9khQ9
-        P6+X3DYPNXgb6ZpaVxekn4Rq7zvlpgGRPAtLwgw=
-X-Google-Smtp-Source: ABdhPJxOLm/7ex3DQLIs0sNDFrYrb7qlhaif/VnBiv4BwNq/I3biHG+3SHYb0Q/8kA81V4ogDaPF0Q7TWs7fbA5+4ts=
-X-Received: by 2002:a05:6402:d51:b0:425:d5e1:e9f0 with SMTP id
- ec17-20020a0564020d5100b00425d5e1e9f0mr7754800edb.125.1651391418629; Sun, 01
- May 2022 00:50:18 -0700 (PDT)
+        Sun, 1 May 2022 04:08:58 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409601B7AD;
+        Sun,  1 May 2022 01:05:30 -0700 (PDT)
+Date:   Sun, 01 May 2022 08:05:28 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651392329;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FMMsyxDebCqcfMfUt3x2z0M4LYkBUArkvhpibzV5ukg=;
+        b=q39xNY4UoNiNb5L5kmlYYrjtrTDDUAtYn3yZw9csr1V2iXmUFXZqg/DnKwbZkVqqzVK1eR
+        faqcqt+V4wG80BEK4H8UDPKBfHJ2BU5t/XlrjsVXijmV7btM78X3K7Meh7PP2OHjTa9sov
+        KvYVWVGInBkbEhNHkxWUDFQmeCnZb+S5Ddds6mjmEbkjk0N/oCmSYahZdBuF18tEp95zRm
+        lo9BoLMC/88uP+yxGRW9J3y0PpsKceglQNoeoEQQhD8ypGdhWzzdFLAZkhGNNDX98jJ+Xl
+        SVWjL3CZMzlYQ+CwQevId1uTOXhMoL4g4RqnHg9HVT2z3AE1ZGUClf+D2KQ1Rw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651392329;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FMMsyxDebCqcfMfUt3x2z0M4LYkBUArkvhpibzV5ukg=;
+        b=C0CWj8nNW4zUsozU9GuKL2bMJAuQfAmLhQPQheoVX/LsG/5lg+H5zi7/S/z/EPaPZk+2/i
+        danOB9iw/uV1SJCA==
+From:   "tip-bot2 for Thomas Gleixner" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: sched/core] smp: Rename flush_smp_call_function_from_idle()
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220413133024.305001096@linutronix.de>
+References: <20220413133024.305001096@linutronix.de>
 MIME-Version: 1.0
-References: <20220429164325.1.I2a3b980ea051e59140227999f0f0ca16f1125768@changeid>
-In-Reply-To: <20220429164325.1.I2a3b980ea051e59140227999f0f0ca16f1125768@changeid>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 1 May 2022 09:49:41 +0200
-Message-ID: <CAHp75VdqbXCYoEwxMt7xG55QDu2mXHbnpwdnHb6ktm8NdVPJnQ@mail.gmail.com>
-Subject: Re: [PATCH] device property: Fix recent breakage of fwnode_get_next_parent_dev()
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        freedreno@lists.freedesktop.org,
-        Saravana Kannan <saravanak@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        linux-arm-msm@vger.kernel.org, Daniel Scally <djrscally@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <165139232833.4207.2835999584883686606.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 30, 2022 at 3:00 PM Douglas Anderson <dianders@chromium.org> wrote:
->
-> Due to a subtle typo, instead of commit 87ffea09470d ("device
-> property: Introduce fwnode_for_each_parent_node()") being a no-op
-> change, it ended up causing the display on my sc7180-trogdor-lazor
-> device from coming up unless I added "fw_devlink=off" to my kernel
-> command line. Fix the typo.
+The following commit has been merged into the sched/core branch of tip:
 
-Sorry and merci pour la fix!
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Commit-ID:     16bf5a5e1ec56474ed2a19d72f272ed09a5d3ea1
+Gitweb:        https://git.kernel.org/tip/16bf5a5e1ec56474ed2a19d72f272ed09a5d3ea1
+Author:        Thomas Gleixner <tglx@linutronix.de>
+AuthorDate:    Wed, 13 Apr 2022 15:31:03 +02:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Sun, 01 May 2022 10:03:43 +02:00
 
-> Fixes: 87ffea09470d ("device property: Introduce fwnode_for_each_parent_node()")
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
->
->  drivers/base/property.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/base/property.c b/drivers/base/property.c
-> index 36401cfe432c..52e85dcb20b5 100644
-> --- a/drivers/base/property.c
-> +++ b/drivers/base/property.c
-> @@ -600,7 +600,7 @@ struct device *fwnode_get_next_parent_dev(struct fwnode_handle *fwnode)
->         struct device *dev;
->
->         fwnode_for_each_parent_node(fwnode, parent) {
-> -               dev = get_dev_from_fwnode(fwnode);
-> +               dev = get_dev_from_fwnode(parent);
->                 if (dev) {
->                         fwnode_handle_put(parent);
->                         return dev;
-> --
-> 2.36.0.464.gb9c8b46e94-goog
->
+smp: Rename flush_smp_call_function_from_idle()
 
+This is invoked from the stopper thread too, which is definitely not idle.
+Rename it to flush_smp_call_function_queue() and fixup the callers.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220413133024.305001096@linutronix.de
+
+---
+ kernel/sched/core.c |  2 +-
+ kernel/sched/idle.c |  2 +-
+ kernel/sched/smp.h  |  4 ++--
+ kernel/smp.c        | 27 ++++++++++++++++++++-------
+ 4 files changed, 24 insertions(+), 11 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index e644578..07bacb0 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -2411,7 +2411,7 @@ static int migration_cpu_stop(void *data)
+ 	 * __migrate_task() such that we will not miss enforcing cpus_ptr
+ 	 * during wakeups, see set_cpus_allowed_ptr()'s TASK_WAKING test.
+ 	 */
+-	flush_smp_call_function_from_idle();
++	flush_smp_call_function_queue();
+ 
+ 	raw_spin_lock(&p->pi_lock);
+ 	rq_lock(rq, &rf);
+diff --git a/kernel/sched/idle.c b/kernel/sched/idle.c
+index 8f8b502..60295db 100644
+--- a/kernel/sched/idle.c
++++ b/kernel/sched/idle.c
+@@ -327,7 +327,7 @@ static void do_idle(void)
+ 	 * RCU relies on this call to be done outside of an RCU read-side
+ 	 * critical section.
+ 	 */
+-	flush_smp_call_function_from_idle();
++	flush_smp_call_function_queue();
+ 	schedule_idle();
+ 
+ 	if (unlikely(klp_patch_pending(current)))
+diff --git a/kernel/sched/smp.h b/kernel/sched/smp.h
+index 5719bf9..2eb23dd 100644
+--- a/kernel/sched/smp.h
++++ b/kernel/sched/smp.h
+@@ -9,7 +9,7 @@ extern void sched_ttwu_pending(void *arg);
+ extern void send_call_function_single_ipi(int cpu);
+ 
+ #ifdef CONFIG_SMP
+-extern void flush_smp_call_function_from_idle(void);
++extern void flush_smp_call_function_queue(void);
+ #else
+-static inline void flush_smp_call_function_from_idle(void) { }
++static inline void flush_smp_call_function_queue(void) { }
+ #endif
+diff --git a/kernel/smp.c b/kernel/smp.c
+index 01a7c17..8e85f22 100644
+--- a/kernel/smp.c
++++ b/kernel/smp.c
+@@ -96,7 +96,7 @@ static DEFINE_PER_CPU_ALIGNED(struct call_function_data, cfd_data);
+ 
+ static DEFINE_PER_CPU_SHARED_ALIGNED(struct llist_head, call_single_queue);
+ 
+-static void flush_smp_call_function_queue(bool warn_cpu_offline);
++static void __flush_smp_call_function_queue(bool warn_cpu_offline);
+ 
+ int smpcfd_prepare_cpu(unsigned int cpu)
+ {
+@@ -141,7 +141,7 @@ int smpcfd_dying_cpu(unsigned int cpu)
+ 	 * ensure that the outgoing CPU doesn't go offline with work
+ 	 * still pending.
+ 	 */
+-	flush_smp_call_function_queue(false);
++	__flush_smp_call_function_queue(false);
+ 	irq_work_run();
+ 	return 0;
+ }
+@@ -541,11 +541,11 @@ void generic_smp_call_function_single_interrupt(void)
+ {
+ 	cfd_seq_store(this_cpu_ptr(&cfd_seq_local)->gotipi, CFD_SEQ_NOCPU,
+ 		      smp_processor_id(), CFD_SEQ_GOTIPI);
+-	flush_smp_call_function_queue(true);
++	__flush_smp_call_function_queue(true);
+ }
+ 
+ /**
+- * flush_smp_call_function_queue - Flush pending smp-call-function callbacks
++ * __flush_smp_call_function_queue - Flush pending smp-call-function callbacks
+  *
+  * @warn_cpu_offline: If set to 'true', warn if callbacks were queued on an
+  *		      offline CPU. Skip this check if set to 'false'.
+@@ -558,7 +558,7 @@ void generic_smp_call_function_single_interrupt(void)
+  * Loop through the call_single_queue and run all the queued callbacks.
+  * Must be called with interrupts disabled.
+  */
+-static void flush_smp_call_function_queue(bool warn_cpu_offline)
++static void __flush_smp_call_function_queue(bool warn_cpu_offline)
+ {
+ 	call_single_data_t *csd, *csd_next;
+ 	struct llist_node *entry, *prev;
+@@ -681,7 +681,20 @@ static void flush_smp_call_function_queue(bool warn_cpu_offline)
+ 		      smp_processor_id(), CFD_SEQ_HDLEND);
+ }
+ 
+-void flush_smp_call_function_from_idle(void)
++
++/**
++ * flush_smp_call_function_queue - Flush pending smp-call-function callbacks
++ *				   from task context (idle, migration thread)
++ *
++ * When TIF_POLLING_NRFLAG is supported and a CPU is in idle and has it
++ * set, then remote CPUs can avoid sending IPIs and wake the idle CPU by
++ * setting TIF_NEED_RESCHED. The idle task on the woken up CPU has to
++ * handle queued SMP function calls before scheduling.
++ *
++ * The migration thread has to ensure that an eventually pending wakeup has
++ * been handled before it migrates a task.
++ */
++void flush_smp_call_function_queue(void)
+ {
+ 	unsigned long flags;
+ 
+@@ -691,7 +704,7 @@ void flush_smp_call_function_from_idle(void)
+ 	cfd_seq_store(this_cpu_ptr(&cfd_seq_local)->idle, CFD_SEQ_NOCPU,
+ 		      smp_processor_id(), CFD_SEQ_IDLE);
+ 	local_irq_save(flags);
+-	flush_smp_call_function_queue(true);
++	__flush_smp_call_function_queue(true);
+ 	if (local_softirq_pending())
+ 		do_softirq();
+ 
