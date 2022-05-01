@@ -2,68 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75321C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:48:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFFF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353550AbiEARvY (ORCPT
+        id S1353088AbiEARz3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 13:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
+        Sun, 1 May 2022 13:55:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241488AbiEARvU (ORCPT
+        with ESMTP id S236149AbiEARz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 13:51:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6EE1344EE
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 10:47:52 -0700 (PDT)
+        Sun, 1 May 2022 13:55:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D703465B;
+        Sun,  1 May 2022 10:52:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 71B5360F9C
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 17:47:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E59BC385AA;
-        Sun,  1 May 2022 17:47:51 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="mijpUuTM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651427269;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=roYIDwenPH7TXgFhpcFK4JNS0ImRSBrMkdPkCk4GtAM=;
-        b=mijpUuTM3Gkc1YujdAxFJFvSVY7pxblaOmCz2uI26ihfteBT67l/zO9hWh6JGwR5ay1uOY
-        aVhJTFnaYTzlwFRMyP6VbCTVcxvxx6ApytOhYEO+bZ7d7qraBlisVghedMp3dTxuIrmWrA
-        Oy6/FQ8rB8QhhXwk0fteCBwX+vHHZv0=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 7e9db5a3 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sun, 1 May 2022 17:47:49 +0000 (UTC)
-Date:   Sun, 1 May 2022 19:47:47 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Subject: Re: Changes in kernel 5.18-rc1 leads to crashes in VirtualBox
- Virtual Machines
-Message-ID: <Ym7Hw9GDPP838JoH@zx2c4.com>
-References: <7f01221d-f693-adf8-f5a5-d71944b44162@lwfinger.net>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7433D60FA1;
+        Sun,  1 May 2022 17:52:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B847C385AA;
+        Sun,  1 May 2022 17:51:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651427519;
+        bh=A+KWCBjbPxzqgaB4YkY3/72H1oSKZcmYsDZciBLSzKw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=C1fI2IjZFKqbaxS+9Ng29j5164LESe2VsiXsMJtpgpmqsGHvbL/TwqU7hUyj7boNs
+         KqP+JpTcRWaAeeYfv5bwrQj0m4VXr00HUUJKS5Ovsn1XvuvzxPTUlpZybjRdq0lglh
+         wQyFcTtUrJPBTAgKF2NG1QZC6dKhCxpsxSbre27F/J6+E/5P+727CW8whXgSAqivUx
+         mb2LvW6ZArpK+6YsYHVxE+hkJzdbOpuf023ZkDKzJ7BTdz25gQdT7glvITGB0UlWjx
+         GR9h5lrV5OHtknDsUDcG83NRRQPjXPw48rd6Uyk+BXmaTkHnNmI45OIwUC3G6o7rO4
+         5cIpvxS6oYHiA==
+Date:   Sun, 1 May 2022 19:00:15 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: stmpe-adc: use of_device_id for OF matching
+Message-ID: <20220501190015.48d6acd3@jic23-huawei>
+In-Reply-To: <20220501103447.111392-1-krzysztof.kozlowski@linaro.org>
+References: <20220501103447.111392-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <7f01221d-f693-adf8-f5a5-d71944b44162@lwfinger.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Larry,
+On Sun,  1 May 2022 12:34:46 +0200
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 
-Thanks for the report. Several questions:
-
-1) Can you reproduce with 5.18-rc4?
-
-2) Can you send me a stacktrace from the crash or any relevant console
-   output?
-
-3) Does the crash happen in the guest or the host?
-
-Question two is very important.
+> The of_device_id was added to allow module autoloading, but it should be
+> also used to allow driver matching via Devicetree.
+>=20
+> This also fixes W=3D1 warning:
+>   drivers/iio/adc/stmpe-adc.c:357:34: error: =E2=80=98stmpe_adc_ids=E2=80=
+=99 defined but not used [-Werror=3Dunused-const-variable=3D]
+>=20
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Series applied to the togreg branch of iio.git and pushed out as testing fo=
+r 0-day
+to poke at it.
 
 Thanks,
-Jason
+
+Jonathan
+
+> ---
+>  drivers/iio/adc/stmpe-adc.c | 13 +++++++------
+>  1 file changed, 7 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
+> index d2d405388499..0208789fc0f5 100644
+> --- a/drivers/iio/adc/stmpe-adc.c
+> +++ b/drivers/iio/adc/stmpe-adc.c
+> @@ -345,21 +345,22 @@ static int __maybe_unused stmpe_adc_resume(struct d=
+evice *dev)
+> =20
+>  static SIMPLE_DEV_PM_OPS(stmpe_adc_pm_ops, NULL, stmpe_adc_resume);
+> =20
+> +static const struct of_device_id stmpe_adc_ids[] =3D {
+> +	{ .compatible =3D "st,stmpe-adc", },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(of, stmpe_adc_ids);
+> +
+>  static struct platform_driver stmpe_adc_driver =3D {
+>  	.probe		=3D stmpe_adc_probe,
+>  	.driver		=3D {
+>  		.name	=3D "stmpe-adc",
+>  		.pm	=3D &stmpe_adc_pm_ops,
+> +		.of_match_table =3D stmpe_adc_ids,
+>  	},
+>  };
+>  module_platform_driver(stmpe_adc_driver);
+> =20
+> -static const struct of_device_id stmpe_adc_ids[] =3D {
+> -	{ .compatible =3D "st,stmpe-adc", },
+> -	{ },
+> -};
+> -MODULE_DEVICE_TABLE(of, stmpe_adc_ids);
+> -
+>  MODULE_AUTHOR("Stefan Agner <stefan.agner@toradex.com>");
+>  MODULE_DESCRIPTION("STMPEXXX ADC driver");
+>  MODULE_LICENSE("GPL v2");
+
