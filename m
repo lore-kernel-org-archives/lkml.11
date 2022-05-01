@@ -2,83 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F54DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 16:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 16:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349664AbiEAQnd (ORCPT
+        id S1349878AbiEAQqd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 12:43:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56148 "EHLO
+        Sun, 1 May 2022 12:46:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349589AbiEAQnb (ORCPT
+        with ESMTP id S1349805AbiEAQq3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 12:43:31 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D9F2FFEE
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 09:40:04 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Sun, 1 May 2022 12:46:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670D51DA54;
+        Sun,  1 May 2022 09:43:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 980CD1F385;
-        Sun,  1 May 2022 16:40:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1651423203; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XKGbRsinZKCYeLI+oG1j5JDW3QLOhJqB2Wu2s/wLY1Q=;
-        b=MGEfRKnFDHnJknaXyw5dsjEJ6WLCSHHdwbDlmYXt/WTGIysJgALh4KN4vH7Y8VqNcNJ5Br
-        VKAjyDB0hT9tWfUFC2KOHjQQD14PapfB6Q3znOIrFA4SDgfOX+lZxVjvqjP3Rl0A8bx0Ky
-        8lIVyGJA9t73ARKPzyuDyvyTTwxVilY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1651423203;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XKGbRsinZKCYeLI+oG1j5JDW3QLOhJqB2Wu2s/wLY1Q=;
-        b=xaC4b5oRyl1vEtw1umsqPVlmAeSuJdKWll5ESKa/+4Ny/lP3NiwKYL0OkC5kL/fVK0CqM2
-        AfwfoSpm097R77AA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8C9EF13AE0;
-        Sun,  1 May 2022 16:40:03 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 6BRNIuO3bmLcfQAAMHmgww
-        (envelope-from <bp@suse.de>); Sun, 01 May 2022 16:40:03 +0000
-Date:   Sun, 1 May 2022 18:40:00 +0200
-From:   Borislav Petkov <bp@suse.de>
-To:     Ozgur Karatas <ozgurk@ieee.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
-Subject: Re: [GIT PULL] irq/urgent for 5.18
-Message-ID: <Ym634CkF2JKoFu6T@zn.tnic>
-References: <Ym5vDU6KFdzYaTAo@zn.tnic>
- <CAADfD8ypPRzja3RU8QGwBNc=MiN1H3OLHjHVgnJ6h1fFPO2dhw@mail.gmail.com>
- <Ym528eZ5kb2geWwx@zn.tnic>
- <CAADfD8yk0-soyYt+qQ8t=unAoQ4ytL3b2Xv=h66ojYheYMa=Nw@mail.gmail.com>
- <Ym6BgmOY4zxlbiIx@zn.tnic>
- <CAADfD8zJEkx-P1jGtDu1Nb9vyQYDeVZryMSL+H7qZDT4ifbm-g@mail.gmail.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1663FB80E31;
+        Sun,  1 May 2022 16:43:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D715C385A9;
+        Sun,  1 May 2022 16:42:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651423380;
+        bh=5iiuM2YB632xp1B0gLh45BZ+N3/79eXgk2RK6BlzzpA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=n0xTwkLoSb0AzWyaHXJeEggDmse8eeQyuVoUUEoaMLokua+cGHyXPZVHr8tx1i2lS
+         FzOtbckl1b7cHziE/jUc6dPSKOG0SdfaPU1De3W2JFZoqhID6DaeTr668IUy285MAx
+         jpDSZjUAb6qco7qdSUfDVv4Qj/sQptdSKSKF4Jj4jJeyFzYaYVLHrF9vUtRbMaD8Cn
+         lfGtKKjJr7IlXp3iokWRv1lnx0nsjYZfElfYOlX0OzmkmRoG9OFDnBQgyJIAVxEnX4
+         ELTkZUzTW79i53uBjGSQcsOX5tuQDYaJ54nf6Yu8ZPllkWMgzCzltDekLsDWKgwL3g
+         FuMq/yjxFIjnA==
+Date:   Sun, 1 May 2022 17:51:15 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS)
+Subject: Re: [RFC v2 13/39] iio: adc: Kconfig: add HAS_IOPORT dependencies
+Message-ID: <20220501175115.2520a946@jic23-huawei>
+In-Reply-To: <20220429135108.2781579-23-schnelle@linux.ibm.com>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+        <20220429135108.2781579-23-schnelle@linux.ibm.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAADfD8zJEkx-P1jGtDu1Nb9vyQYDeVZryMSL+H7qZDT4ifbm-g@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 01, 2022 at 08:25:44PM +0400, Ozgur Karatas wrote:
-> ops, now i realize that i thought wrong. thank you for your kind time,
+On Fri, 29 Apr 2022 15:50:20 +0200
+Niklas Schnelle <schnelle@linux.ibm.com> wrote:
 
-No problems, keep at it. :-)
+> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
+> not being declared. We thus need to add HAS_IOPORT as dependency for
+> those drivers using them.
+> 
+> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 
--- 
-Regards/Gruss,
-    Boris.
+Hi.
 
-SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
+Please call out specific driver as that'll increase chance
+of relevant people noticing (there are quite a lot of ADC drivers!)
+
+e.g.
+iio: adc: ad7606: ....
+
+Anyhow, looks fine to me
+
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
+Thanks,
+
+
+> ---
+>  drivers/iio/adc/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 71ab0a06aa82..c99843307e4f 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -130,7 +130,7 @@ config AD7606
+>  
+>  config AD7606_IFACE_PARALLEL
+>  	tristate "Analog Devices AD7606 ADC driver with parallel interface support"
+> -	depends on HAS_IOMEM
+> +	depends on HAS_IOPORT
+>  	select AD7606
+>  	help
+>  	  Say yes here to build parallel interface support for Analog Devices:
+
