@@ -2,95 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E380DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF09C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:09:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352241AbiEARMP (ORCPT
+        id S1352567AbiEARNH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 13:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
+        Sun, 1 May 2022 13:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240473AbiEARMN (ORCPT
+        with ESMTP id S1352330AbiEARNF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 13:12:13 -0400
-Received: from mengyan1223.wang (mengyan1223.wang [89.208.246.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2A1F4D9FC;
-        Sun,  1 May 2022 10:08:47 -0700 (PDT)
-Received: from localhost.localdomain (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@mengyan1223.wang)
-        by mengyan1223.wang (Postfix) with ESMTPSA id DA17C66572;
-        Sun,  1 May 2022 13:08:43 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mengyan1223.wang;
-        s=mail; t=1651424927;
-        bh=XYISo4h8KCnyxTuDi0BN/dzHxVCfbkmceDgjCj19MXU=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=2OmCnLlIrXPnbgEiKmC7P7cHlUkobbFyTBLHl+wu/u+DEWBBfiV3w0gRMZM2/jF7s
-         0ojeh6h642czjkUxRRFDgLSEPbxTENJTwAluOfhO+fKY6Zfy94K7AtC8LGMhQ+eBK6
-         r82alvKa8iTgV5e9bWWyvCUhvEIXIP74fzTgNDL9t/aaABP4GnfzIMTHsIkZUQW+rO
-         CGWFBFYBpGmiSYPJ6re0kYZhl/I8V5Wb/UTSFimi9nf9GznCjdr5+JibvWHel+ZHLi
-         yvcopxHXTMtghfJgPKaHZ+AXx3w2hZQzQgqHBXdEM4wyEdVkKlivmnlI9c2v0sK8Cp
-         GIHAYm+9NZ46A==
-Message-ID: <2a534c89b3c905a34f947fb2739d58c9373bb915.camel@mengyan1223.wang>
-Subject: Re: [PATCH V9 10/24] LoongArch: Add exception/interrupt handling
-From:   Xi Ruoyao <xry111@mengyan1223.wang>
-To:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>
-Date:   Mon, 02 May 2022 01:08:41 +0800
-In-Reply-To: <4dd26d88b807c967dbbc81a7b2e5f4084d9603d7.camel@mengyan1223.wang>
-References: <20220430090518.3127980-1-chenhuacai@loongson.cn>
-         <20220430090518.3127980-11-chenhuacai@loongson.cn>
-         <4dd26d88b807c967dbbc81a7b2e5f4084d9603d7.camel@mengyan1223.wang>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.44.1 
-MIME-Version: 1.0
+        Sun, 1 May 2022 13:13:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13AE94D9FC
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 10:09:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3EA360F70
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 17:09:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 14D68C385AA;
+        Sun,  1 May 2022 17:09:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651424979;
+        bh=HxVMVa9aTyjIg3XB0bKCeN8vFJtSEvZsRFiVK6VCAMw=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=nhreG2Au7ha7aFm0mznke7X4yC5gGNcp/ZAWp3UrezyK2BbTVBShFQEG4ci4dGH6Z
+         rKyBdHHfQlKsO4Sp6xdsjIs6uz5z9cp0N4Jz9PbaM3zrcOMqkkvX+WtSis64C0hLM2
+         hVQGwi0uUih6G+5Cg+evVA3C2PY5mAGrRodt082LJGWlaliNrGe1m7W2rk3NjX6RaN
+         wxCa+Z0fTFAIqS+LwnB53BDR3zWXze5UiXPuUxZowBfOvQKECc4bdQMoeTE8Hn4OV8
+         VAz7sDSPevAOFv7py/gtKYcrglvgGmFHeafqSdngRCGZySKzJzCk3UCLm5PB+mhdUp
+         rCN0kSBH7j+fA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 01DA1E85D90;
+        Sun,  1 May 2022 17:09:39 +0000 (UTC)
+Subject: Re: [GIT PULL] irq/urgent for 5.18
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <Ym5vDU6KFdzYaTAo@zn.tnic>
+References: <Ym5vDU6KFdzYaTAo@zn.tnic>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Ym5vDU6KFdzYaTAo@zn.tnic>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/irq_urgent_for_v5.18_rc5
+X-PR-Tracked-Commit-Id: c7d2f89fea26c84d5accc55d9976dd7e5305e63a
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: d4af0c17235fbf992f5023bbfb84303e082e45a6
+Message-Id: <165142497900.30448.4836161885725858269.pr-tracker-bot@kernel.org>
+Date:   Sun, 01 May 2022 17:09:39 +0000
+To:     Borislav Petkov <bp@suse.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gTW9uLCAyMDIyLTA1LTAyIGF0IDAwOjI3ICswODAwLCBYaSBSdW95YW8gd3JvdGU6Cj4gT24g
-U2F0LCAyMDIyLTA0LTMwIGF0IDE3OjA1ICswODAwLCBIdWFjYWkgQ2hlbiB3cm90ZToKPiA+ICtz
-dHJ1Y3QgYWNwaV9tYWR0X2xpb19waWM7Cj4gPiArc3RydWN0IGFjcGlfbWFkdF9laW9fcGljOwo+
-ID4gK3N0cnVjdCBhY3BpX21hZHRfaHRfcGljOwo+ID4gK3N0cnVjdCBhY3BpX21hZHRfYmlvX3Bp
-YzsKPiA+ICtzdHJ1Y3QgYWNwaV9tYWR0X21zaV9waWM7Cj4gPiArc3RydWN0IGFjcGlfbWFkdF9s
-cGNfcGljOwo+IAo+IFdoZXJlIGFyZSB0aG9zZSBkZWZpbmVkP8KgIEkgY2FuJ3QgZmluZCB0aGVt
-IGFuZCB0aGUgY29tcGlsYXRpb24gZmFpbHMKPiB3aXRoOgo+IAo+IGFyY2gvbG9vbmdhcmNoL2tl
-cm5lbC9pcnEuYzogSW4gZnVuY3Rpb24g4oCYZmluZF9wY2hfcGlj4oCZOgo+IGFyY2gvbG9vbmdh
-cmNoL2tlcm5lbC9pcnEuYzo0ODozMjogZXJyb3I6IGludmFsaWQgdXNlIG9mIHVuZGVmaW5lZAo+
-IHR5cGUg4oCYc3RydWN0IGFjcGlfbWFkdF9iaW9fcGlj4oCZCj4gwqDCoCA0OCB8wqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RhcnQgPSBpcnFfY2ZnLT5nc2lfYmFzZTsKPiDCoMKg
-wqDCoMKgIHzCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCBefgo+IGFyY2gvbG9vbmdhcmNoL2tlcm5lbC9pcnEuYzo0OTozMjogZXJy
-b3I6IGludmFsaWQgdXNlIG9mIHVuZGVmaW5lZAo+IHR5cGUg4oCYc3RydWN0IGFjcGlfbWFkdF9i
-aW9fcGlj4oCZCj4gwqDCoCA0OSB8wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZW5k
-wqDCoCA9IGlycV9jZmctPmdzaV9iYXNlICsgaXJxX2NmZy0+c2l6ZTsKPiDCoMKgwqDCoMKgIHzC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoCBefgo+IGFyY2gvbG9vbmdhcmNoL2tlcm5lbC9pcnEuYzo0OTo1MjogZXJyb3I6IGludmFs
-aWQgdXNlIG9mIHVuZGVmaW5lZAo+IHR5cGUg4oCYc3RydWN0IGFjcGlfbWFkdF9iaW9fcGlj4oCZ
-Cj4gwqDCoCA0OSB8wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZW5kwqDCoCA9IGly
-cV9jZmctPmdzaV9iYXNlICsgaXJxX2NmZy0+c2l6ZTsKPiDCoMKgwqDCoMKgIHzCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgXn4KCkFscmlnaHQsIG15IGJhZC4u
-LiBJIGRpZG4ndCByZWFsaXplIHRoZSBMb29uZ0FyY2ggcGF0Y2hlcyBhcmUgc3BsaXR0ZWQKaW50
-byBtdWx0aXBsZSBzZXJpZXMgZm9yIG11bHRpcGxlIGxpc3RzLiAgQnV0IGlzIHRoaXMgdGhlIFNP
-UCBvZiBrZXJuZWwKcGF0Y2ggcmV2aWV3aW5nPyAgV291bGQgaXQgYmUgZWFzaWVyIHRvIGp1c3Qg
-c2VuZCBvbmUgc2VyaWVzIGFuZCBDQyBhbGwKcmVsZXZlbnQgbGlzdHM/CgotLSAKWGkgUnVveWFv
-IDx4cnkxMTFAbWVuZ3lhbjEyMjMud2FuZz4KU2Nob29sIG9mIEFlcm9zcGFjZSBTY2llbmNlIGFu
-ZCBUZWNobm9sb2d5LCBYaWRpYW4gVW5pdmVyc2l0eQo=
+The pull request you sent on Sun, 1 May 2022 13:29:17 +0200:
 
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/irq_urgent_for_v5.18_rc5
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/d4af0c17235fbf992f5023bbfb84303e082e45a6
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
