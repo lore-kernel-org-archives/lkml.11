@@ -2,112 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CB90C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 06:51:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 146C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 06:55:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242449AbiEAGxe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 02:53:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35000 "EHLO
+        id S242661AbiEAG6l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 1 May 2022 02:58:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242235AbiEAGxb (ORCPT
+        with ESMTP id S236606AbiEAG6i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 02:53:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4D6A7E585
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 23:50:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651387806;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=q3u3MlJs34Y3mqoufs+636rYeTTf6eHsg/a1Eoy23vg=;
-        b=QzZGxAU/4z9ehAnJDw250F3Ft2FuOVUimus99mftgeDzVoV6z7Wu43LUxBPg8VIVwdY7uj
-        lA9oRkdi+ZjOTWHLX5YKma8XxczBQmbnuXj6aHbfwb7UrZXDl12843gSamXP21PlbDh/ij
-        DznZEbd7MZEWG/zIG7Ou5dlOFaDtGu4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-612-Q1LTSDhBP5a7f4e66Oa3zA-1; Sun, 01 May 2022 02:50:01 -0400
-X-MC-Unique: Q1LTSDhBP5a7f4e66Oa3zA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 78A3A8002BF;
-        Sun,  1 May 2022 06:50:00 +0000 (UTC)
-Received: from starship (unknown [10.40.192.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 463DA14152E6;
-        Sun,  1 May 2022 06:49:58 +0000 (UTC)
-Message-ID: <3f0a9c9782b90e882da1229c00241da8cef89b21.camel@redhat.com>
-Subject: Re: [PATCH v2 11/12] KVM: SVM: Do not inhibit APICv when x2APIC is
- present
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        pbonzini@redhat.com, joro@8bytes.org, jon.grimm@amd.com,
-        wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Sun, 01 May 2022 09:49:57 +0300
-In-Reply-To: <YmwZxAWJ8KqHodbf@google.com>
-References: <20220412115822.14351-1-suravee.suthikulpanit@amd.com>
-         <20220412115822.14351-12-suravee.suthikulpanit@amd.com>
-         <3fd0aabb6288a5703760da854fd6b09a485a2d69.camel@redhat.com>
-         <01460b72-1189-fef1-9718-816f2f658d42@amd.com>
-         <b9ee5f62e904a690d7e2d8837ade8ece7e24a359.camel@redhat.com>
-         <41b1e63ad6e45be019bbedc93bd18cfcb9475b06.camel@redhat.com>
-         <YmwZxAWJ8KqHodbf@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Sun, 1 May 2022 02:58:38 -0400
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABD23B9
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 23:55:10 -0700 (PDT)
+Received: by mail-il1-x130.google.com with SMTP id s14so149829ild.6
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 23:55:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=66d7SyRrONsXl8W4lFBX0N0VrTFcPFH9NXUMscq4ECs=;
+        b=gpPu6skWQ2IhiBwq3C3Wc2ylJ363rdzpeVUcCH8kt9q7dHvFWOJnbcsgRbrOQFYKcv
+         xrJApxsgnQjhM+ch1GfLHZVpgsTsxgUrisEHTgxjKRMkpBQquVQ+/xBVCpfdJ93hA3K/
+         SgsLTwxHUi4HHmRW9L/hPBCR2UvYVZowMynW9UKHqqyPyLrpYzubdqiO/QUGqdSViE7m
+         z6tL918AfC6MwJ+iX0V19yA3+jIRdVzwhXFkj/UtPLcXe23XsUGoFMHkcSQTHPTEDl1q
+         qTv/u+du++0uQwQVqkWvjlmDbakho2tAf7ecAylV/KuDI4v+JsMZK13/y6YihPVVZ5z+
+         tgMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=66d7SyRrONsXl8W4lFBX0N0VrTFcPFH9NXUMscq4ECs=;
+        b=gKv2Nwp8/jAKSJ7mbotZiuZpB9C39TKmYggIkRuq4hnaAdVZgwnZDu7yKm4udMUXcT
+         RduyRAYY49CXzKJR0+prDBMG2P8zvoB9OS8HYg8rUoe9OzgT3FTiybcrW8LvGHRJCwkr
+         Y0kbZu/UWuYW8DqFMEGUQtevrp5quLdFZDp0cv91z7KCQElK/ut6Z7h44kOVPYzXsPFU
+         g1SoDLz97/agNVHDFr12YLAW6Pam09gIjrzsMRmeViRQ5s6JXKC3Xx4kLDgEO5Oc33FE
+         1D7Nv7WIfisvcowMzmHQIong4fNB2Uhmr13ovIYtlDGO1XlC0fWKdZ1r+83qAmvi6LyR
+         WiXA==
+X-Gm-Message-State: AOAM533hBhctLRR6+QUyrsA/c3m6IK79CZLBihPVWnvCY3A1H6bmcbCJ
+        G8ifPBWYhNiYRd8pp5e+o8tw3Q==
+X-Google-Smtp-Source: ABdhPJxyPVbw+8ZIaPFEomRXrig6kQMnEuxlIz0lgU1En0dO9EeQyCH8axYSrs0P1kc0Cz80nR0P1w==
+X-Received: by 2002:a05:6e02:160f:b0:2cd:5c76:817e with SMTP id t15-20020a056e02160f00b002cd5c76817emr2859671ilu.133.1651388109758;
+        Sat, 30 Apr 2022 23:55:09 -0700 (PDT)
+Received: from google.com (194.225.68.34.bc.googleusercontent.com. [34.68.225.194])
+        by smtp.gmail.com with ESMTPSA id t17-20020a6bdb11000000b0065a47e16f4csm1152530ioc.30.2022.04.30.23.55.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 Apr 2022 23:55:08 -0700 (PDT)
+Date:   Sun, 1 May 2022 06:55:05 +0000
+From:   Oliver Upton <oupton@google.com>
+To:     Gavin Shan <gshan@redhat.com>
+Cc:     kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
+        eauger@redhat.com, Jonathan.Cameron@huawei.com,
+        vkuznets@redhat.com, will@kernel.org, shannon.zhaosl@gmail.com,
+        james.morse@arm.com, mark.rutland@arm.com, maz@kernel.org,
+        pbonzini@redhat.com, shan.gavin@gmail.com
+Subject: Re: [PATCH v6 15/18] KVM: arm64: Support SDEI_FEATURES hypercall
+Message-ID: <Ym4uyaGGhPXlnkHQ@google.com>
+References: <20220403153911.12332-1-gshan@redhat.com>
+ <20220403153911.12332-16-gshan@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220403153911.12332-16-gshan@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-04-29 at 17:00 +0000, Sean Christopherson wrote:
-> On Tue, Apr 26, 2022, Maxim Levitsky wrote:
-> > On Tue, 2022-04-26 at 10:06 +0300, Maxim Levitsky wrote:
-> > BTW, can I ask you to check something on the AMD side of things of AVIC?
-> > 
-> > I noticed that AMD's manual states that:
-> > 
-> > "Multiprocessor VM requirements. When running a VM which has multiple virtual CPUs, and the
-> > VMM runs a virtual CPU on a core which had last run a different virtual CPU from the same VM,
-> > regardless of the respective ASID values, care must be taken to flush the TLB on the VMRUN using a
-> > TLB_CONTROL value of 3h. Failure to do so may result in stale mappings misdirecting virtual APIC
-> > accesses to the previous virtual CPU's APIC backing page."
-> > 
-> > It it relevant to KVM? I don't fully understand why it was mentioned that ASID doesn't matter,
-> > what makes it special about 'virtual CPU from the same VM' if ASID doesn't matter? 
+On Sun, Apr 03, 2022 at 11:39:08PM +0800, Gavin Shan wrote:
+> This supports SDEI_FEATURES hypercall. It's used by guest to
+> retrieve the supported features, which are number of slots for
+> the interrupt binding events and relative mode for the event
+> handler. Currently, none of them is supported.
 > 
-> I believe it's calling out that, because vCPUs from the same VM likely share an ASID,
-> the magic TLB entry for the APIC-access page, which redirects to the virtual APIC page,
-> will be preserved.  And so if the hypervisor doesn't flush the ASID/TLB, accelerated
-> xAPIC accesses for the new vCPU will go to the previous vCPU's virtual APIC page.
-
-This is what I want to think as well, but the manual says explicitly 
-"regardless of the respective ASID values"
-
-On the face value of it, the only logical way to read this IMHO,
-is that every time apic backing page is changed, we need to issue a TLB flush.
-
-Best regards,
-	Maxim Levitsky
-
+> Signed-off-by: Gavin Shan <gshan@redhat.com>
+> ---
+>  arch/arm64/kvm/sdei.c | 20 ++++++++++++++++++++
+>  1 file changed, 20 insertions(+)
 > 
-> Intel has the same requirement, though this specific scenario isn't as well documented.
-> E.g. even if using EPT and VPID, the EPT still needs to be invalidated because the
-> TLB can cache guest-physical mappings, which are not associated with a VPID.
-> 
-> Huh.  I was going to say that KVM does the necessary flushes in vmx_vcpu_load_vmcs()
-> and pre_svm_run(), but I don't think that's true.  KVM flushes if the _new_ VMCS/VMCB
-> is being migrated to a different pCPU, but neither VMX nor SVM flush when switching
-> between vCPUs that are both "loaded" on the current pCPU.
-> 
-> Switching between vmcs01 and vmcs02 is ok, because KVM always forces a different
-> EPTP, even if L1 is using shadow paging (the guest_mode bit in the role prevents
-> reusing a root).  nSVM is "ok" because it flushes on every transition anyways.
-> 
+> diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
+> index e1f6ab9800ee..ab0b7b5e3191 100644
+> --- a/arch/arm64/kvm/sdei.c
+> +++ b/arch/arm64/kvm/sdei.c
+> @@ -527,6 +527,23 @@ static unsigned long hypercall_reset(struct kvm_vcpu *vcpu, bool private)
+>  	return ret;
+>  }
+>  
+> +static unsigned long hypercall_features(struct kvm_vcpu *vcpu)
+> +{
+> +	unsigned long feature = smccc_get_arg(vcpu, 1);
+> +	unsigned long ret;
+> +
+> +	switch (feature) {
+> +	case 0: /* BIND_SLOTS */
+> +	case 1: /* RELATIVE_MODE */
 
+Can you create macros for these?
 
+--
+Thanks,
+Oliver
