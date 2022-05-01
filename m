@@ -2,102 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF428C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 07:02:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 303B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 07:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243019AbiEAHFD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 03:05:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35170 "EHLO
+        id S243449AbiEAHKI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 1 May 2022 03:10:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236606AbiEAHE5 (ORCPT
+        with ESMTP id S242262AbiEAHKC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 03:04:57 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49AB192B1;
-        Sun,  1 May 2022 00:01:32 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id o69so9038297pjo.3;
-        Sun, 01 May 2022 00:01:32 -0700 (PDT)
+        Sun, 1 May 2022 03:10:02 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDE51276C;
+        Sun,  1 May 2022 00:06:37 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id kq17so22623536ejb.4;
+        Sun, 01 May 2022 00:06:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=XJuXYg02F7GZrqi1LIe5DG6ak9PjoEuh2MqhUV/o+CI=;
-        b=Y0/jZvPdTwxd5qNAoFtAQjICBif7TP4/uvNGHZ7mCVBNTf5UQZuBLBr192yhB2uGEx
-         QDxEeVMT0F6NrYrr+3q/6enzJft2dUL1ybHYpJkquIl2jGDkU1E16YxjlIYESfMePOS5
-         AvdLSpWsGU14DMZKwKtUpG28ZbRJ6d8HOsN9+B4h8pmgXfQlTaygGoumWj8cSZdLHBuQ
-         j189Wr+YGPwMxr/LZHsw7p5GG0cVQVUq4Zi6Ptbk9wPoIGav4zbZgO9DNG3k4N0sPmhK
-         jqMCHNaoESkbaHMdYS/QTUPjd1jZcDSW6IA8wEg5/rrTvUsut5omo0OVMBje4tY/yHD3
-         H/8Q==
+        bh=x8T0l3ePxEo0tPa3nLCaVVv3kLYt0vca+nm1RdbXgmU=;
+        b=Yo5O3EgiMQ0ZlebWvAXvbrxwCC3Aa+BZtg6kyYXMeJ8vpyo1yfB95uK5ni+LptP+nl
+         gCdl9e5FaqaK7cwYvdbaKvTCl6EAZp8r1G/QDCuJT7S01ZPyJPRchQro1MDWZQ62zydE
+         48UIuJs9psLLaaSOeAzgJt8jX45iSesfBrj7jni3Qs+/2ffgtYc7qbSxuIlTV9v0h8Ia
+         B/3vjy5tsd0yNy4+rQacs34rkx4UJq/kTLpupA0nTbk3lBWmUl1VQJLeACn6woO9hqkp
+         w58IEe6BAcci+MO03p0OTbMFCt+nCh0B75t/CmxfQ/e5gWHNc7ekzL3ZDegn22l9uKw7
+         lOxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=XJuXYg02F7GZrqi1LIe5DG6ak9PjoEuh2MqhUV/o+CI=;
-        b=JTkc2wnUSsWluesO/3JWCqwt5GhzUbJinGUto1dlVPTXG5+3Pw1bVcXf2JDtLGXz1b
-         oA21Uu+AmmWZ88xZ8LA6JdhEHwGiRu0I/JMg7zxsx170c8q4pvlS+oWj++oAgsKCwf7R
-         r6qb4pis4spfWy8QYvonJlI/njme88D0cvr7qh7SUranqIfWm5apGaD7NAHPIgJ3BmrL
-         h2K6+K+8TV37iHE1l7A0oOwN9U4C3vCyjPmluO0e/t+ecrD6DsZ4L0hQsxgcIuDXsv2j
-         a/FUW6wQfS4rAyihcheBlQVOydeV/UMBHid5g8SDt4ndwCmkxe3Y/2ws/2LNqaccUpQG
-         QNdg==
-X-Gm-Message-State: AOAM531gMwh4AhqL5P8KrYR0MLPOpBjAbGFemEFA2UNcugfeufEDtYJj
-        KHWfDDDZT8x/MIe4tvgmEl0=
-X-Google-Smtp-Source: ABdhPJxjGACwujXvOQg6H2YQlGoquVq0GFnswroW1iywGoHNo2RXHSHhZT985A1E4HRMufbQD0M0/A==
-X-Received: by 2002:a17:902:8644:b0:15a:3b4a:538a with SMTP id y4-20020a170902864400b0015a3b4a538amr6513889plt.146.1651388492197;
-        Sun, 01 May 2022 00:01:32 -0700 (PDT)
-Received: from [127.0.0.1] ([103.121.210.106])
-        by smtp.gmail.com with ESMTPSA id e3-20020a170903240300b0015e8d4eb28fsm2398872plo.217.2022.05.01.00.01.27
+        bh=x8T0l3ePxEo0tPa3nLCaVVv3kLYt0vca+nm1RdbXgmU=;
+        b=3EzucTTa27h1nN+X2sUA7Bd9AQbjXQscsUc5hBKC8J3Zjwa4S63n2W0Dn3uvfA1m3n
+         rPtSO+kVlZ8XveeuPpmDZ+bj9P3sfqVg4fUO6wd2uh6qFcO2ZXgLyf7MSyXTVYX/MJss
+         yNmHLlIGLaI64jDRK7+USaom8pt1CyP2vcVkTUv4uc8ZsMmoio1PNemgmi2oxJrRVmve
+         Q3BpqnbG8nGWvfxWAHJpIpOoogIIqC2PtYsoYkbAPVYSy1kA1vQ0Wq3RIH9ZQyui5j/D
+         evKySKabYjC6tjf1BT/32+ThqaiXPccHXZuilRx6y0xKSCRJAchsegM2Xs8t+AsUQ19X
+         /ceA==
+X-Gm-Message-State: AOAM532+l93nIJTHjmIRZLL72n5vOj1T47Vr6LtR5NWxyYDlM87l3aWe
+        PET/wQMPLvnI6OeJAYTJlsM=
+X-Google-Smtp-Source: ABdhPJzTW1au6Hq8+LkxfQRJRfHQIxpwiLzl7XquNFMAD+nZQL7T6Uji+LhedVpwD1C0N9xh0HE4+w==
+X-Received: by 2002:a17:907:6da5:b0:6f3:c4b1:378b with SMTP id sb37-20020a1709076da500b006f3c4b1378bmr6515327ejc.307.1651388795791;
+        Sun, 01 May 2022 00:06:35 -0700 (PDT)
+Received: from [192.168.2.1] (81-204-249-205.fixed.kpn.net. [81.204.249.205])
+        by smtp.gmail.com with ESMTPSA id hw7-20020a170907a0c700b006f3ef214e18sm2336790ejc.126.2022.05.01.00.06.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 May 2022 00:01:31 -0700 (PDT)
-Message-ID: <b90f96e9-3209-2285-fd1d-9a7660cf5e1a@gmail.com>
-Date:   Sun, 1 May 2022 15:00:04 +0800
+        Sun, 01 May 2022 00:06:35 -0700 (PDT)
+Message-ID: <46548c93-4e6d-858c-8b79-03be9326c92a@gmail.com>
+Date:   Sun, 1 May 2022 09:06:33 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 7/9] io-wq: implement fixed worker logic
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2 5/7] arm64: dts: rockchip: add Pine64 Quartz64-B device
+ tree
 Content-Language: en-US
-To:     Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org
-Cc:     Pavel Begunkov <asml.silence@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220429101858.90282-1-haoxu.linux@gmail.com>
- <20220429101858.90282-8-haoxu.linux@gmail.com>
- <015f58ed-09c1-cd27-064a-b6c0cc5580d2@kernel.dk>
-From:   Hao Xu <haoxu.linux@gmail.com>
-In-Reply-To: <015f58ed-09c1-cd27-064a-b6c0cc5580d2@kernel.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Peter Geis <pgwipeout@gmail.com>,
+        linux-rockchip@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220429115252.2360496-1-pgwipeout@gmail.com>
+ <20220429115252.2360496-6-pgwipeout@gmail.com>
+From:   Johan Jonker <jbx6244@gmail.com>
+In-Reply-To: <20220429115252.2360496-6-pgwipeout@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/30/22 21:27, Jens Axboe wrote:
-> On 4/29/22 4:18 AM, Hao Xu wrote:
->> @@ -1030,6 +1101,7 @@ static bool io_wq_work_match_item(struct io_wq_work *work, void *data)
->>   static void io_wqe_enqueue(struct io_wqe *wqe, struct io_wq_work *work)
->>   {
->>   	struct io_wqe_acct *acct = io_work_get_acct(wqe, work);
->> +	struct io_wqe_acct *fixed_acct;
->>   	struct io_cb_cancel_data match;
->>   	unsigned work_flags = work->flags;
->>   	bool do_create;
->> @@ -1044,8 +1116,14 @@ static void io_wqe_enqueue(struct io_wqe *wqe, struct io_wq_work *work)
->>   		return;
->>   	}
->>   
->> +	fixed_acct = io_get_acct(wqe, !acct->index, true);
->> +	if (fixed_acct->fixed_worker_registered && !io_wq_is_hashed(work)) {
->> +		if (io_wqe_insert_private_work(wqe, work, fixed_acct))
->> +			return;
->> +	}
->> +
-> 
-> As per previous email, I was going to comment back saying "why don't we
-> just always do hashed work on the non-fixed workers?" - but that's
-> already what you are doing. Isn't this fine, does anything else need to
-> get done here in terms of hashed work and fixed workers? If you need
-> per-iowq serialization, then you don't get a fixed worker.
 
-Hmm, seems we cannot accelerate serialized works with fixed worker. So
-Let's make it as it is.
-> 
 
+On 4/29/22 13:52, Peter Geis wrote:
+> Add a device tree for the Pine64 Quartz64 Model B single board computer.
+> This board ouputs debug on uart2 and supports the following components:
+> Gigabit Ethernet
+> USB2 x2 (one port otg capable)
+> USB3
+> PCIe/SATA M2
+> HDMI
+> DSI (RPi compatible pinout)
+> CSI (RPi compatible pinout)
+> A/B/G/N WiFi
+> Bluetooth
+> SDMMC
+> eMMC
+> SPI Flash
+> PI-40 compatible pin header
+> 
+> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> ---
+>  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
+>  .../boot/dts/rockchip/rk3566-quartz64-b.dts   | 615 ++++++++++++++++++
+>  2 files changed, 616 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts
+> 
+> diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
+> index 4ae9f35434b8..252ee47b8a1d 100644
+> --- a/arch/arm64/boot/dts/rockchip/Makefile
+> +++ b/arch/arm64/boot/dts/rockchip/Makefile
+> @@ -59,5 +59,6 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-rock-pi-n10.dtb
+>  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-pinenote-v1.1.dtb
+>  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-pinenote-v1.2.dtb
+>  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-quartz64-a.dtb
+> +dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-quartz64-b.dtb
+>  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-evb1-v10.dtb
+>  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-bpi-r2-pro.dtb
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts
+> new file mode 100644
+> index 000000000000..184ab7e1d178
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts
+> @@ -0,0 +1,615 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + *
+> + */
+> +
+> +/dts-v1/;
+> +
+> +#include <dt-bindings/gpio/gpio.h>
+> +#include <dt-bindings/pinctrl/rockchip.h>
+> +#include "rk3566.dtsi"
+> +
+> +/ {
+> +	model = "Pine64 RK3566 Quartz64-B Board";
+> +	compatible = "pine64,quartz64-b", "rockchip,rk3566";
+> +
+
+[..]
+
+> +
+> +&mdio1 {
+
+> +	rgmii_phy1: ethernet-phy@0 {
+> +		compatible = "ethernet-phy-ieee802.3-c22";
+> +		reg = <0x1>;
+
+Hi,
+
+The reg value doesn't match the node name.
+Other 2 boards use "reg = <0>" with label "rgmii_phy1".
+Could you check?
+
+Johan
+
+> +	};
+> +};
+> +
