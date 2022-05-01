@@ -2,76 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1482EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 13:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E3A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 13:13:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345347AbiEANJ0 (ORCPT
+        id S1347327AbiEANQm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 09:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40748 "EHLO
+        Sun, 1 May 2022 09:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347329AbiEANJL (ORCPT
+        with ESMTP id S1345720AbiEANQg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 09:09:11 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D8533E32;
-        Sun,  1 May 2022 06:05:42 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nl9Ge-0006BV-1w; Sun, 01 May 2022 15:05:40 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     linux-rockchip@lists.infradead.org,
-        Peter Geis <pgwipeout@gmail.com>
-Cc:     Heiko Stuebner <heiko@sntech.de>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: Re: (subset) [PATCH v2 0/7] Add support for several new rk3566 SBCs
-Date:   Sun,  1 May 2022 15:05:38 +0200
-Message-Id: <165141025789.655760.7485683050420620213.b4-ty@sntech.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220429115252.2360496-1-pgwipeout@gmail.com>
-References: <20220429115252.2360496-1-pgwipeout@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        Sun, 1 May 2022 09:16:36 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC58121278;
+        Sun,  1 May 2022 06:13:08 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id w5-20020a17090aaf8500b001d74c754128so14209505pjq.0;
+        Sun, 01 May 2022 06:13:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=dJZi+/WPdcKxjEapwSjUsXGWCJvPbK+sm/8N0ec5JVY=;
+        b=Jskd7h6x/6zw2xzs8eqnb0NFuea/abFEwnRJTo/pxFCDlXX7fzm8k0E1uG+6zWlQnR
+         8IRq9pZyxa+ObcYF+gD/i8OryJpGhh3o7bf/ghJYSmxxEapNTEBuOh22JNAl4U9ROWb6
+         PY2st7shkaVyIwnLgYDTVD2S28x++/9ClFWdquJbJiMzHpsUkIw1WpprK/pj0NwC7fTX
+         5q+xnbpTkwIn6l0bOLFZ9ngY/mleoXvfvZshSEMo6VAGwnsW8IxIzYTY9AHa6ehX0CnN
+         jic7d/pQKTkVLLgB5BanvFMdcjfAziOoWKPQ9q8QO2XBEoYlrdI6+m6IY5gA9nhiogkK
+         JUEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=dJZi+/WPdcKxjEapwSjUsXGWCJvPbK+sm/8N0ec5JVY=;
+        b=JHK+l0s10LeYljtzKHbwF3FSgT87fW0xyJY50Ru2jEH+gsqEMv5VPOy0OzQWOkNwOY
+         xiOro3Gd5lNZK3IZpuuy2QZxQkjxa2rHCqEDwuzrEOjfO/kCkkXW1nXpittkGt63gBBJ
+         IKM6Rq9z4zXdCNrGyadz/duuNyWdxMmjTDhZeF6xp0Y4+oCo8nnXYhl6anyetz6vnjm+
+         fTKwSHuJ59Xvu2PsSVSlwz6aE0AZw9HbGTSc8MbSJqf/UeCmr00Mce0r4+sDoAoh8yW+
+         ZVWWY3d/qswADjYHe26YkO93qWNx86IkPpDNH1Qxl2ols/komj0CSLAjMG83JjIsnXYZ
+         weeA==
+X-Gm-Message-State: AOAM530v069sfYtk+j667eRUPYAiUbq0O+hHgNkO4eqpCJDuE9WBZ6wH
+        3jfxluYJbyJgyulmydM9OFU=
+X-Google-Smtp-Source: ABdhPJyqTwaVt+oGV9vys0cmrU4vLLMTpOIRjlB/xJbxkk1sPItJb9mAls593fhVzKrnghUOS9+W1w==
+X-Received: by 2002:a17:90b:4b81:b0:1dc:4dfe:9b01 with SMTP id lr1-20020a17090b4b8100b001dc4dfe9b01mr2896477pjb.110.1651410788431;
+        Sun, 01 May 2022 06:13:08 -0700 (PDT)
+Received: from localhost.localdomain ([122.233.238.54])
+        by smtp.gmail.com with ESMTPSA id 7-20020a631347000000b003c14af505fcsm9561252pgt.20.2022.05.01.06.13.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 May 2022 06:13:07 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org, joro@8bytes.org,
+        will@kernel.org, sricharan@codeaurora.org
+Cc:     linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>, stable@vger.kernel.org
+Subject: [PATCH v2] iommu: fix an incorrect NULL check on list iterator
+Date:   Sun,  1 May 2022 21:12:59 +0800
+Message-Id: <20220501131259.11529-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Apr 2022 07:52:45 -0400, Peter Geis wrote:
-> The following series adds support for the following single board
-> computers:
-> - Pine64 Quartz64 Model B
-> - Pine64 SoQuartz SoM with RPi CM4IO carrier board
-> - Firefly Station M2
-> 
-> Patches 1, 2, and 3 add the requisite dt-bindings.
-> Patch 4 adds support for the SFC to the rk356x device tree.
-> Patch 5 adds the Quartz64 Model B device tree.
-> Patch 6 adds the SoQuartz CM4IO device tree.
-> Patch 7 adds the Firefly Station M2 device tree.
-> 
-> [...]
+The bug is here:
+	if (!iommu || iommu->dev->of_node != spec->np) {
 
-Applied, thanks!
+The list iterator value 'iommu' will *always* be set and non-NULL by
+list_for_each_entry(), so it is incorrect to assume that the iterator
+value will be NULL if the list is empty or no element is found (in fact,
+it will point to a invalid structure object containing HEAD).
 
-[1/7] dt-bindings: arm: rockchip: Add Pine64 Quartz64 Model B
-      commit: c37415f55bdadffe5b4c0e7981e9fc7e8b96beea
-[2/7] dt-bindings: arm: rockchip: Add Pine64 SoQuartz SoM
-      commit: c466828fb3ba8cb7f5c3bf28766da9b70bf9745e
-[3/7] dt-bindings: arm: rockchip: Add Firefly Station M2
-      commit: e52ded5543708e0382f236ce35372a63f4568341
-[5/7] arm64: dts: rockchip: add Pine64 Quartz64-B device tree
-      commit: dcc8c66bef79befa6c9ebe7d7d62b0ce66983c20
-[6/7] arm64: dts: rockchip: add SoQuartz CM4IO dts
-      commit: 5859b5a9c3ac92d831bed164374cb837519524ad
-[7/7] arm64: dts: rockchip: add dts for Firefly Station M2 rk3566
-      commit: 30ac9b4e25d8cece00d32c7419f9d919f55421fe
+To fix the bug, use a new value 'iter' as the list iterator, while use
+the old value 'iommu' as a dedicated variable to point to the found one,
+and remove the unneeded check for 'iommu->dev->of_node != spec->np'
+outside the loop.
 
-I've adjusted the styling of comments a bit, also dropped one double
-newline as well as fixed the node name for the ethernet-phy for QuartzB.
+Cc: stable@vger.kernel.org
+Fixes: f78ebca8ff3d6 ("iommu/msm: Add support for generic master bindings")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+---
+changes since v1:
+ - add a new iter variable (suggested by Joerg Roedel)
 
-Best regards,
+v1: https://lore.kernel.org/all/20220327053558.2821-1-xiam0nd.tong@gmail.com/
+---
+ drivers/iommu/msm_iommu.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 3a38352b603f..41a3231a6d13 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -615,16 +615,17 @@ static void insert_iommu_master(struct device *dev,
+ static int qcom_iommu_of_xlate(struct device *dev,
+ 			       struct of_phandle_args *spec)
+ {
+-	struct msm_iommu_dev *iommu;
++	struct msm_iommu_dev *iommu = NULL, *iter;
+ 	unsigned long flags;
+-	int ret = 0;
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+-	list_for_each_entry(iommu, &qcom_iommu_devices, dev_node)
+-		if (iommu->dev->of_node == spec->np)
++	list_for_each_entry(iter, &qcom_iommu_devices, dev_node)
++		if (iter->dev->of_node == spec->np) {
++			iommu = iter;
+ 			break;
++		}
+ 
+-	if (!iommu || iommu->dev->of_node != spec->np) {
++	if (!iommu) {
+ 		ret = -ENODEV;
+ 		goto fail;
+ 	}
 -- 
-Heiko Stuebner <heiko@sntech.de>
+2.17.1
+
