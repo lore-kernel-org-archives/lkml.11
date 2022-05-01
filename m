@@ -2,127 +2,321 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04017C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:28:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4963FC43217
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:30:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353092AbiEARbh (ORCPT
+        id S1353122AbiEAReM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 13:31:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42398 "EHLO
+        Sun, 1 May 2022 13:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231484AbiEARbf (ORCPT
+        with ESMTP id S1353368AbiEAReH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 13:31:35 -0400
-Received: from 10.mo584.mail-out.ovh.net (10.mo584.mail-out.ovh.net [188.165.33.109])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302C8BE12
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 10:28:09 -0700 (PDT)
-Received: from player774.ha.ovh.net (unknown [10.109.138.76])
-        by mo584.mail-out.ovh.net (Postfix) with ESMTP id 3503E229E0
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 17:10:40 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player774.ha.ovh.net (Postfix) with ESMTPSA id 851C529E9FA78;
-        Sun,  1 May 2022 17:10:35 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-95G0012a755f93-ac22-4b2f-9ace-e5b21267d47b,
-                    5040CBFF384BEDF7422707969F5457AB1E143173) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH v3] ASoC: tpa6130: use i2c_match_id and simple i2c probe
-Date:   Sun,  1 May 2022 19:10:09 +0200
-Message-Id: <20220501171009.45060-1-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
+        Sun, 1 May 2022 13:34:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7221AF0E;
+        Sun,  1 May 2022 10:30:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 892E760DF5;
+        Sun,  1 May 2022 17:30:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5743C385A9;
+        Sun,  1 May 2022 17:30:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651426236;
+        bh=+Sj4+OOIwwCCplhIGKM8DJp+5SXEF8N0Ep0e41vKsSw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=CNqrpXquA0HooR+qbgrBcU4068tjQxMiBMUFXwcc7htTRyS8XeBMVml6p4tC2ohMf
+         QvaHzccSR5WebNzMha4E7WLZvk+CoOekcuk2f2d8pHeWpMPpGppgWKDS0I4a7id2So
+         0tNGRE2/YvPQ24FG4z2kL5mSGovFODFFGHvD4vu1LOGAMgzj12Ol9udpyDftjcB3xz
+         7s6BJvE0z5B6okFtGQacHQ7KAWBiISG6RohG9ABu6NAOXNAYjJF0F+UgyRAu5/fGLq
+         rMnMaayjLc2kAGW0QbElvu+V+URrXxZfDQiEBclfdeW8IsNKN+wsv6pKrUjvOgrn7o
+         aUY1gREYumvJA==
+Date:   Sun, 1 May 2022 18:38:50 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Caleb Connolly <caleb.connolly@linaro.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>
+Subject: Re: [PATCH v14 05/10] iio: adc: qcom-spmi-rradc: introduce round
+ robin adc
+Message-ID: <20220501183850.5bbbcbab@jic23-huawei>
+In-Reply-To: <20220429220904.137297-6-caleb.connolly@linaro.org>
+References: <20220429220904.137297-1-caleb.connolly@linaro.org>
+        <20220429220904.137297-6-caleb.connolly@linaro.org>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 13767504061568288390
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdefgdduuddtucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepleegteeujeffjeefjeevhfdtudefjefgteelgedtudekleeiledvvdetudevjedtnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejgedrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As part of the ongoing i2c transition to the simple probe
-("probe_new"), this patch uses i2c_match_id to retrieve the
-driver_data for the probed device. The id parameter is thus no longer
-necessary and the simple probe can be used instead.
+On Fri, 29 Apr 2022 23:09:00 +0100
+Caleb Connolly <caleb.connolly@linaro.org> wrote:
 
-The i2c id table is moved up before the probe function, as suggested
-by Wolfram Sang.
+> The Round Robin ADC is responsible for reading data about the rate of
+> charge from the USB or DC input ports, it can also read the battery
+> ID (resistence), skin temperature and the die temperature of the pmic.
+> It is found on the PMI8998 and PM660 Qualcomm PMICs.
+> 
+> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+Hi Caleb,
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
----
-Changes since v2: added missing probe_new change.
+I took another quick read through of this and noticed that the battery channel
+is providing on IIO_INFO_RAW but there is code for IIO_INFO_PROCESSED.
 
-Changes since v1: two missing files were added (in the overall patch
-series).
----
- sound/soc/codecs/tpa6130a2.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+Something gone wrong along the way?  If all we need is to change it to
+BIT(IIO_INFO_PROCESSED) I can do that whilst applying or you can do a v15 if
+you prefer.
 
-diff --git a/sound/soc/codecs/tpa6130a2.c b/sound/soc/codecs/tpa6130a2.c
-index e2d7ae615c52..8c00db32996b 100644
---- a/sound/soc/codecs/tpa6130a2.c
-+++ b/sound/soc/codecs/tpa6130a2.c
-@@ -209,13 +209,20 @@ static const struct regmap_config tpa6130a2_regmap_config = {
- 	.cache_type = REGCACHE_RBTREE,
- };
- 
--static int tpa6130a2_probe(struct i2c_client *client,
--			   const struct i2c_device_id *id)
-+static const struct i2c_device_id tpa6130a2_id[] = {
-+	{ "tpa6130a2", TPA6130A2 },
-+	{ "tpa6140a2", TPA6140A2 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, tpa6130a2_id);
-+
-+static int tpa6130a2_probe(struct i2c_client *client)
- {
- 	struct device *dev;
- 	struct tpa6130a2_data *data;
- 	struct tpa6130a2_platform_data *pdata = client->dev.platform_data;
- 	struct device_node *np = client->dev.of_node;
-+	const struct i2c_device_id *id;
- 	const char *regulator;
- 	unsigned int version;
- 	int ret;
-@@ -244,6 +251,7 @@ static int tpa6130a2_probe(struct i2c_client *client,
- 
- 	i2c_set_clientdata(client, data);
- 
-+	id = i2c_match_id(tpa6130a2_id, client);
- 	data->id = id->driver_data;
- 
- 	if (data->power_gpio >= 0) {
-@@ -297,13 +305,6 @@ static int tpa6130a2_probe(struct i2c_client *client,
- 			&tpa6130a2_component_driver, NULL, 0);
- }
- 
--static const struct i2c_device_id tpa6130a2_id[] = {
--	{ "tpa6130a2", TPA6130A2 },
--	{ "tpa6140a2", TPA6140A2 },
--	{ }
--};
--MODULE_DEVICE_TABLE(i2c, tpa6130a2_id);
--
- #if IS_ENABLED(CONFIG_OF)
- static const struct of_device_id tpa6130a2_of_match[] = {
- 	{ .compatible = "ti,tpa6130a2", },
-@@ -318,7 +319,7 @@ static struct i2c_driver tpa6130a2_i2c_driver = {
- 		.name = "tpa6130a2",
- 		.of_match_table = of_match_ptr(tpa6130a2_of_match),
- 	},
--	.probe = tpa6130a2_probe,
-+	.probe_new = tpa6130a2_probe,
- 	.id_table = tpa6130a2_id,
- };
- 
+Thanks,
 
-base-commit: 180e66c028cbce98f297962db188965efc7546d7
--- 
-2.30.2
+Jonathan
+
+> ---
+
+> diff --git a/drivers/iio/adc/qcom-spmi-rradc.c b/drivers/iio/adc/qcom-spmi-rradc.c
+> new file mode 100644
+> index 000000000000..c437546d8a4c
+> --- /dev/null
+> +++ b/drivers/iio/adc/qcom-spmi-rradc.c
+
+
+..
+
+> +
+> +/*
+> + * These functions explicitly cast int64_t to int.
+> + * They will never overflow, as the values are small enough.
+
+See below. I don't think this gets used...
+
+> + */
+> +static int rradc_post_process_batt_id(struct rradc_chip *chip, u16 adc_code,
+> +				      int *result_ohms)
+> +{
+> +	uint32_t current_value;
+> +	int64_t r_id;
+> +
+> +	current_value = chip->batt_id_data;
+> +	r_id = ((int64_t)adc_code * RR_ADC_FS_VOLTAGE_MV);
+> +	r_id = div64_s64(r_id, (RR_ADC_CHAN_MSB * current_value));
+> +	*result_ohms = (int)(r_id * MILLI);
+> +
+> +	return 0;
+> +}
+> +
+
+
+> +
+> +static int rradc_read_raw(struct iio_dev *indio_dev,
+> +			  struct iio_chan_spec const *chan_spec, int *val,
+> +			  int *val2, long mask)
+> +{
+> +	struct rradc_chip *chip = iio_priv(indio_dev);
+> +	const struct rradc_channel *chan;
+> +	int ret;
+> +	u16 adc_code;
+> +
+> +	if (chan_spec->address >= RR_ADC_CHAN_MAX) {
+> +		dev_err(chip->dev, "Invalid channel index:%lu\n",
+> +			chan_spec->address);
+> +		return -EINVAL;
+> +	}
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		return rradc_read_scale(chip, chan_spec->address, val, val2);
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		return rradc_read_offset(chip, chan_spec->address, val);
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = rradc_do_conversion(chip, chan_spec->address, &adc_code);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		*val = adc_code;
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_PROCESSED:
+
+This doesn't seem to apply to any channels....
+
+> +		chan = &rradc_chans[chan_spec->address];
+> +		if (!chan->scale_fn)
+> +			return -EINVAL;
+> +		ret = rradc_do_conversion(chip, chan_spec->address, &adc_code);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		*val = chan->scale_fn(chip, adc_code, val);
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int rradc_read_label(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan, char *label)
+> +{
+> +	return snprintf(label, PAGE_SIZE, "%s\n",
+> +			rradc_chans[chan->address].label);
+> +}
+> +
+> +static const struct iio_info rradc_info = {
+> +	.read_raw = rradc_read_raw,
+> +	.read_label = rradc_read_label,
+> +};
+> +
+> +static const struct rradc_channel rradc_chans[RR_ADC_CHAN_MAX] = {
+> +	{
+> +		.label = "batt_id",
+> +		.scale_fn = rradc_post_process_batt_id,
+> +		.lsb = RR_ADC_BATT_ID_5_LSB,
+> +		.status = RR_ADC_BATT_ID_STS,
+> +		.size = 6,
+> +		.trigger_addr = RR_ADC_BATT_ID_TRIGGER,
+> +		.trigger_mask = BIT(0),
+> +	}, {
+> +		.label = "batt",
+> +		.lsb = RR_ADC_BATT_THERM_LSB,
+> +		.status = RR_ADC_BATT_THERM_STS,
+> +		.size = 2,
+> +		.trigger_addr = RR_ADC_BATT_THERM_TRIGGER,
+> +	}, {
+> +		.label = "pmi8998_skin",
+> +		.lsb = RR_ADC_SKIN_TEMP_LSB,
+> +		.status = RR_ADC_AUX_THERM_STS,
+> +		.size = 2,
+> +		.trigger_addr = RR_ADC_AUX_THERM_TRIGGER,
+> +	}, {
+> +		.label = "usbin_i",
+> +		.lsb = RR_ADC_USB_IN_I_LSB,
+> +		.status = RR_ADC_USB_IN_I_STS,
+> +		.size = 2,
+> +		.trigger_addr = RR_ADC_USB_IN_I_TRIGGER,
+> +	}, {
+> +		.label = "usbin_v",
+> +		.lsb = RR_ADC_USB_IN_V_LSB,
+> +		.status = RR_ADC_USB_IN_V_STS,
+> +		.size = 2,
+> +		.trigger_addr = RR_ADC_USB_IN_V_TRIGGER,
+> +		.trigger_mask = BIT(7),
+> +	}, {
+> +		.label = "dcin_i",
+> +		.lsb = RR_ADC_DC_IN_I_LSB,
+> +		.status = RR_ADC_DC_IN_I_STS,
+> +		.size = 2,
+> +		.trigger_addr = RR_ADC_DC_IN_I_TRIGGER,
+> +	}, {
+> +		.label = "dcin_v",
+> +		.lsb = RR_ADC_DC_IN_V_LSB,
+> +		.status = RR_ADC_DC_IN_V_STS,
+> +		.size = 2,
+> +		.trigger_addr = RR_ADC_DC_IN_V_TRIGGER,
+> +	}, {
+> +		.label = "pmi8998_die",
+> +		.lsb = RR_ADC_PMI_DIE_TEMP_LSB,
+> +		.status = RR_ADC_PMI_DIE_TEMP_STS,
+> +		.size = 2,
+> +		.trigger_addr = RR_ADC_PMI_DIE_TEMP_TRIGGER,
+> +		.trigger_mask = RR_ADC_TRIGGER_EVERY_CYCLE,
+> +	}, {
+> +		.label = "chg",
+> +		.lsb = RR_ADC_CHARGER_TEMP_LSB,
+> +		.status = RR_ADC_CHARGER_TEMP_STS,
+> +		.size = 2,
+> +		.trigger_addr = RR_ADC_CHARGER_TEMP_TRIGGER,
+> +	}, {
+> +		.label = "gpio",
+> +		.lsb = RR_ADC_GPIO_LSB,
+> +		.status = RR_ADC_GPIO_STS,
+> +		.size = 2,
+> +		.trigger_addr = RR_ADC_GPIO_TRIGGER,
+> +	},
+> +};
+> +
+> +static const struct iio_chan_spec rradc_iio_chans[RR_ADC_CHAN_MAX] = {
+> +	{
+> +		.type = IIO_RESISTANCE,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.address = RR_ADC_BATT_ID,
+> +		.channel = 0,
+> +		.indexed = 1,
+> +	}, {
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.address = RR_ADC_BATT_THERM,
+> +		.channel = 0,
+> +		.indexed = 1,
+> +	}, {
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE) |
+> +				      BIT(IIO_CHAN_INFO_OFFSET),
+> +		.address = RR_ADC_SKIN_TEMP,
+> +		.channel = 1,
+> +		.indexed = 1,
+> +	}, {
+> +		.type = IIO_CURRENT,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +		.address = RR_ADC_USBIN_I,
+> +		.channel = 0,
+> +		.indexed = 1,
+> +	}, {
+> +		.type = IIO_VOLTAGE,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +		.address = RR_ADC_USBIN_V,
+> +		.channel = 0,
+> +		.indexed = 1,
+> +	}, {
+> +		.type = IIO_CURRENT,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +		.address = RR_ADC_DCIN_I,
+> +		.channel = 1,
+> +		.indexed = 1,
+> +	}, {
+> +		.type = IIO_VOLTAGE,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +		.address = RR_ADC_DCIN_V,
+> +		.channel = 1,
+> +		.indexed = 1,
+> +	}, {
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE) |
+> +				      BIT(IIO_CHAN_INFO_OFFSET),
+> +		.address = RR_ADC_DIE_TEMP,
+> +		.channel = 2,
+> +		.indexed = 1,
+> +	}, {
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_OFFSET) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +		.address = RR_ADC_CHG_TEMP,
+> +		.channel = 3,
+> +		.indexed = 1,
+> +	}, {
+> +		.type = IIO_VOLTAGE,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +		.address = RR_ADC_GPIO,
+> +		.channel = 2,
+> +		.indexed = 1,
+> +	},
+> +};
+> +
 
