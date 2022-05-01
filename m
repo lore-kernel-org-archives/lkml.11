@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74566C43219
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 08:42:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C56CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 08:42:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343775AbiEAIqF (ORCPT
+        id S1343918AbiEAIqJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 04:46:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42030 "EHLO
+        Sun, 1 May 2022 04:46:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245748AbiEAIpu (ORCPT
+        with ESMTP id S1343491AbiEAIpu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 1 May 2022 04:45:50 -0400
 Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDAB4C782;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C484C780;
         Sun,  1 May 2022 01:42:24 -0700 (PDT)
 Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 2418f2S7008518;
-        Sun, 1 May 2022 17:41:15 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 2418f2S7008518
+        by conuserg-12.nifty.com with ESMTP id 2418f2Rq008518;
+        Sun, 1 May 2022 17:41:06 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 2418f2Rq008518
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1651394475;
-        bh=JeO8Oi702PbETl1G33AZGaKd3Q8r5BgCfl45BC4qCrg=;
+        s=dec2015msa; t=1651394466;
+        bh=B+lNmWK0VYu6vQPAdnNXHiB6/Fl/C2exBpvfY8zKS7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ix8MPfJW1ctxLr6Ajk8s8+f9ZqZSSr3npyKjUP94xGoxK2MZ6etGPWJ8jk+mG35LF
-         CC9CRlcQ0Dqd8ib9PLh6WBGiGZsOYu9MZHcpFWwHD+P84RfJRmw2+ze3NsO5/jGutj
-         bJG/WMzAu7K1MoX3FlncNvAVnCFnUrU8VPADNo/5AGoAtZHRetPeq9tmd+l3rf5mfr
-         Eb4PQEsWWU6WkddVJd28ylCuym4Muiuu0eL0Wq6ZFGVoOTiISy2ffwBhvZ6t0e6fcR
-         eMu0ApbEcTYgK3Ltm6bX6YJN8Jn+ssgeLsonFEvqIuP72OUhaXEDrq+q9N2BcQMk3W
-         iEx4kJWIUT9+Q==
+        b=x0SrOHkYQN1gjPZisws3UrOM4hAA3OJqrs9PHgoQ9sQf6IFqZIsFJ3H3j/Qjzq3Kl
+         ggaYbhCBnpvRsrNTRGmLFOuKgzfnQpfEFyrqIIFGy3VvVdCXpcHEodXMqbeRcrdzSa
+         JJLJgXZx1yrAAS1DbkcII4bhtBgGPAbcPKb3qwBp9VzfxUb4scVp/FHy55GMGXUPrc
+         XFf5Z4Sid7WkwpaTMDY6UbDC4FuigP1z/ElwgR5Wd2FYenn7S2e2qSel+eE/RepEMz
+         zOfcciSkTxLUyCXzCdw6Zb7VtcS29lfL1/ufDyBf8fB32DjHelg6mzSrYQ01c6T+9K
+         S6D/WrQo5aWPQ==
 X-Nifty-SrcIP: [133.32.177.133]
 From:   Masahiro Yamada <masahiroy@kernel.org>
 To:     linux-kbuild@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH v2 20/26] kbuild: stop merging *.symversions
-Date:   Sun,  1 May 2022 17:40:26 +0900
-Message-Id: <20220501084032.1025918-21-masahiroy@kernel.org>
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Michal Marek <michal.lkml@markovi.net>
+Subject: [PATCH v2 05/26] modpost: add sym_add_unresolved() helper
+Date:   Sun,  1 May 2022 17:40:11 +0900
+Message-Id: <20220501084032.1025918-6-masahiroy@kernel.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220501084032.1025918-1-masahiroy@kernel.org>
 References: <20220501084032.1025918-1-masahiroy@kernel.org>
@@ -49,116 +49,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now modpost takes care of all of these.
+Add a small helper, sym_add_unresolved() to ease the further
+refactoring.
 
-Clean up the Makefile and script.
+Remove the 'weak' argument from alloc_symbol() because it is sensible
+only for unresolved symbols.
 
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 ---
 
 (no changes since v1)
 
- scripts/Makefile.build  | 21 ++-------------------
- scripts/link-vmlinux.sh | 19 -------------------
- 2 files changed, 2 insertions(+), 38 deletions(-)
+ scripts/mod/modpost.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index cec17b28de42..10092efb61ac 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -393,17 +393,6 @@ $(obj)/%.asn1.c $(obj)/%.asn1.h: $(src)/%.asn1 $(objtree)/scripts/asn1_compiler
- $(subdir-builtin): $(obj)/%/built-in.a: $(obj)/% ;
- $(subdir-modorder): $(obj)/%/modules.order: $(obj)/% ;
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index 553e5cf88fee..abcdb0677775 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -236,14 +236,12 @@ static inline unsigned int tdb_hash(const char *name)
+  * Allocate a new symbols for use in the hash of exported symbols or
+  * the list of unresolved symbols per module
+  **/
+-static struct symbol *alloc_symbol(const char *name, bool weak,
+-				   struct symbol *next)
++static struct symbol *alloc_symbol(const char *name, struct symbol *next)
+ {
+ 	struct symbol *s = NOFAIL(malloc(sizeof(*s) + strlen(name) + 1));
  
--# combine symversions for later processing
--ifeq ($(CONFIG_LTO_CLANG) $(CONFIG_MODVERSIONS),y y)
--      cmd_update_lto_symversions =					\
--	rm -f $@.symversions						\
--	$(foreach n, $(filter-out FORCE,$^),				\
--		$(if $(shell test -s $(n).symversions && echo y),	\
--			; cat $(n).symversions >> $@.symversions))
--else
--      cmd_update_lto_symversions = echo >/dev/null
--endif
--
- #
- # Rule to compile a set of .o files into one .a file (without symbol table)
- #
-@@ -411,11 +400,8 @@ endif
- quiet_cmd_ar_builtin = AR      $@
-       cmd_ar_builtin = rm -f $@; $(AR) cDPrST $@ $(real-prereqs)
+ 	memset(s, 0, sizeof(*s));
+ 	strcpy(s->name, name);
+-	s->weak = weak;
+ 	s->next = next;
+ 	s->is_static = true;
+ 	return s;
+@@ -256,11 +254,17 @@ static struct symbol *new_symbol(const char *name, struct module *module,
+ 	unsigned int hash;
  
--quiet_cmd_ar_and_symver = AR      $@
--      cmd_ar_and_symver = $(cmd_update_lto_symversions); $(cmd_ar_builtin)
--
- $(obj)/built-in.a: $(real-obj-y) FORCE
--	$(call if_changed,ar_and_symver)
-+	$(call if_changed,ar_builtin)
+ 	hash = tdb_hash(name) % SYMBOL_HASH_SIZE;
+-	symbolhash[hash] = alloc_symbol(name, false, symbolhash[hash]);
++	symbolhash[hash] = alloc_symbol(name, symbolhash[hash]);
  
- #
- # Rule to create modules.order file
-@@ -435,16 +421,13 @@ $(obj)/modules.order: $(obj-m) FORCE
- #
- # Rule to compile a set of .o files into one .a file (with symbol table)
- #
--quiet_cmd_ar_lib = AR      $@
--      cmd_ar_lib = $(cmd_update_lto_symversions); $(cmd_ar)
- 
- $(obj)/lib.a: $(lib-y) FORCE
--	$(call if_changed,ar_lib)
-+	$(call if_changed,ar)
- 
- ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
- quiet_cmd_link_multi-m = AR [M]  $@
- cmd_link_multi-m =						\
--	$(cmd_update_lto_symversions);				\
- 	rm -f $@; 						\
- 	$(AR) cDPrsT $@ @$(patsubst %.o,%.mod,$@)
- else
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 8da5c0182665..77e343835743 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -56,20 +56,6 @@ gen_initcalls()
- 		> .tmp_initcalls.lds
+ 	return symbolhash[hash];
  }
  
--# If CONFIG_LTO_CLANG is selected, collect generated symbol versions into
--# .tmp_symversions.lds
--gen_symversions()
--{
--	info GEN .tmp_symversions.lds
--	rm -f .tmp_symversions.lds
--
--	for o in ${KBUILD_VMLINUX_OBJS} ${KBUILD_VMLINUX_LIBS}; do
--		if [ -f ${o}.symversions ]; then
--			cat ${o}.symversions >> .tmp_symversions.lds
--		fi
--	done
--}
--
- # Link of vmlinux.o used for section mismatch analysis
- # ${1} output file
- modpost_link()
-@@ -88,10 +74,6 @@ modpost_link()
- 		gen_initcalls
- 		lds="-T .tmp_initcalls.lds"
++static void sym_add_unresolved(const char *name, struct module *mod, bool weak)
++{
++	mod->unres = alloc_symbol(name, mod->unres);
++	mod->unres->weak = weak;
++}
++
+ static struct symbol *find_symbol(const char *name)
+ {
+ 	struct symbol *s;
+@@ -712,9 +716,8 @@ static void handle_symbol(struct module *mod, struct elf_info *info,
+ 			}
+ 		}
  
--		if is_enabled CONFIG_MODVERSIONS; then
--			gen_symversions
--		fi
--
- 		# This might take a while, so indicate that we're doing
- 		# an LTO link
- 		info LTO ${1}
-@@ -306,7 +288,6 @@ cleanup()
- 	rm -f .btf.*
- 	rm -f .tmp_System.map
- 	rm -f .tmp_initcalls.lds
--	rm -f .tmp_symversions.lds
- 	rm -f .tmp_vmlinux*
- 	rm -f System.map
- 	rm -f vmlinux
+-		mod->unres = alloc_symbol(symname,
+-					  ELF_ST_BIND(sym->st_info) == STB_WEAK,
+-					  mod->unres);
++		sym_add_unresolved(symname, mod,
++				   ELF_ST_BIND(sym->st_info) == STB_WEAK);
+ 		break;
+ 	default:
+ 		/* All exported symbols */
+@@ -2082,7 +2085,7 @@ static void read_symbols(const char *modname)
+ 	 * the automatic versioning doesn't pick it up, but it's really
+ 	 * important anyhow */
+ 	if (modversions)
+-		mod->unres = alloc_symbol("module_layout", false, mod->unres);
++		sym_add_unresolved("module_layout", mod, false);
+ }
+ 
+ static void read_symbols_from_files(const char *filename)
 -- 
 2.32.0
 
