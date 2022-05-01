@@ -2,106 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE58C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:55:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D01B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353582AbiEAR7F (ORCPT
+        id S1350782AbiEASCD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 13:59:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45122 "EHLO
+        Sun, 1 May 2022 14:02:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353556AbiEAR7C (ORCPT
+        with ESMTP id S1353631AbiEASB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 13:59:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5571A39B;
-        Sun,  1 May 2022 10:55:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6306D60F75;
-        Sun,  1 May 2022 17:55:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E07C3C385A9;
-        Sun,  1 May 2022 17:55:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651427735;
-        bh=L5wYZWSFVoGzNdMX0h3jxQx9rzpHO69jZH46PS8EiH4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=m9BUdF0tMKH/aUr65QFJkuxnW7F51cBus71jRRaYcbXuH+/s7nHsdfX9qJWYTf7Fs
-         OEj6mT2U42TwAxekuSLozZwLBGMvLJP1hytVmynls3gqZxz4HaCAd4xu9X2FsyncOA
-         CNIDtUh/LUX/KaBdp9pxWzu8fbwnLBRDQFcTkUt7QoF1W+Xw07wSv3GTy0iBozSRy1
-         Epkg/vcxRtA5qKaZTzllPRLcx1rcNoYtJZRfBdL3vF3bbxf7PjoPrR6OszPrZbOw8T
-         Ju+OzcbU0Upskgesgmgqfqmtv3yyXNppY1lrYOx8ZUF2D5cT60r4gwEXsf+7XgpAC0
-         flRHn/nLw7mXA==
-Date:   Sun, 1 May 2022 19:03:49 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Peter Rosin <peda@axentia.se>
-Cc:     linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sean Nyekjaer <sean@geanix.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] Add support for texas dac121c081 to the dac5571
- driver
-Message-ID: <20220501190349.54aa48a3@jic23-huawei>
-In-Reply-To: <20220428204439.4ec2b4ae@jic23-huawei>
-References: <42db911c-5eba-0511-3e8c-8011a2a5b44a@axentia.se>
-        <20220428204439.4ec2b4ae@jic23-huawei>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 1 May 2022 14:01:56 -0400
+Received: from mxout04.lancloud.ru (mxout04.lancloud.ru [45.84.86.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0908B1BEB4;
+        Sun,  1 May 2022 10:58:26 -0700 (PDT)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 1EE4B20A47F3
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH v3] sh: avoid using IRQ0 on SH3/4
+To:     Rich Felker <dalias@libc.org>,
+        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+CC:     <linux-sh@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <2584ba18-9653-9310-efc1-8b3b3e221eea@omp.ru>
+ <11021433-66c0-3c56-42bd-207a5ae8d267@physik.fu-berlin.de>
+ <20220429171623.GQ7074@brightrain.aerifal.cx>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <525e7383-d26a-fe35-7005-e1dd9b57f76f@omp.ru>
+Date:   Sun, 1 May 2022 20:58:22 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20220429171623.GQ7074@brightrain.aerifal.cx>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 28 Apr 2022 20:44:39 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On 4/29/22 8:16 PM, Rich Felker wrote:
 
-> On Mon, 25 Apr 2022 22:46:30 +0200
-> Peter Rosin <peda@axentia.se> wrote:
+[...]
+>>> Using IRQ0 by the platform devices is going to be disallowed soon (see [1])
+>>> and even now, when IRQ0 is about to be returned by platfrom_get_irq(), you
+>>> see a big warning.  The code supporting SH3/4 SoCs maps the IRQ #s starting
+>>> at 0 -- modify that code to start the IRQ #s from 16 instead.
+>>>
+>>> The patch should mostly affect the AP-SH4A-3A/AP-SH4AD-0A boards as they
+>>> indeed use IRQ0 for the SMSC911x compatible Ethernet chip...
+>>
+>> Maybe try getting it landed through Andrew Morton's tree?
 > 
-> > Hi!
-> > 
-> > The new chip works much like the other chips supported by the driver, so
-> > this is just adding another compatible to the list.
-> > 
-> > Chenages since v1:
-> > - Guenter Roeck noticed elsewhere that my mail setup was botched and
-> >   that my patches were clobbered. Hopefully fixed. *blush*
-> > - added tags from Sean Nyekjaer and Rob Herring  
-> 
-> Applied.  Thanks
+> Hi. I'm alive and looking at it. If it needs to go in for this cycle I
+> will send a pull request for just this and anything else critical. Was
 
-Backed out temporarily because they have crossed with a fix (that I'd
-forgotten about) and were requiring a non trivial merge in linux-next.
+   Well, now using IRQ0 just causes a WARNing in platform_get_irq() -- I don't
+think fixing it is critical enough. Starting from 5.19-rc1 the SMSC91xx driver
+should stop working on the mentioned boards.
+   But let me look at the SMSC driver itself, I haven't done this yet...
 
-https://patchwork.kernel.org/project/linux-iio/patch/20220324234340.32402-1-laurent.pinchart@ideasonboard.com/
+> trying to get to it last night but had some unpleasant surprises come
+> up that took me away from the computer.
 
-Hopefully that will get resolved in my upstream fairly soon and I can
-fix this one up whilst applying it myself.
+   :-(
 
-Thanks,
+> Rich
 
-Jonathan
-
-
-
-> 
-> Jonathan
-> 
-> > 
-> > Cheers,
-> > Peter
-> > 
-> > Peter Rosin (2):
-> >   dt-bindings: iio: ti-dac5571: Add ti,dac121c081
-> >   iio: dac: ti-dac5571: add support for ti,dac121c081
-> > 
-> >  Documentation/devicetree/bindings/iio/dac/ti,dac5571.yaml | 1 +
-> >  drivers/iio/dac/Kconfig                                   | 2 +-
-> >  drivers/iio/dac/ti-dac5571.c                              | 3 +++
-> >  3 files changed, 5 insertions(+), 1 deletion(-)
-> >   
-> 
-
+MBR, Sergey
