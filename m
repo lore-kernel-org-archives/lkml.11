@@ -2,177 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48D9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 16:13:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77282C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 16:17:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348898AbiEAQPy (ORCPT
+        id S1348993AbiEAQU5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 12:15:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48530 "EHLO
+        Sun, 1 May 2022 12:20:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237946AbiEAQPt (ORCPT
+        with ESMTP id S1348942AbiEAQUy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 12:15:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B43DFEA;
-        Sun,  1 May 2022 09:12:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21E9BB80E5A;
-        Sun,  1 May 2022 16:12:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 758C0C385AA;
-        Sun,  1 May 2022 16:12:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651421540;
-        bh=+JCdHDwwPGGZ+rAC+3PkQyPI2jD46/M4umIy3xmT3B8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rSqMEvHkYyQwoShxYhQuXUuPAoEg0dhDviXIPkhPjOAG6JnHhdsjJrMsBmtcowfjn
-         MsBNzCE684Csvxjd9N5JNnVXkFJ+ILsslyv9KZn8JjVQjDuupYgQxDTRSiuJkNJfbK
-         aQB4EzM/Obw6ebxLKVH65iMCcJKcgAsDRVlgN50vb8WRY6oiMOJooT1K1S60rtCKyN
-         NzRLDOLRn/gQtpwrIELuFBAepdRN9MRoRkufY6iIIBQ/4EluuH2jlS7thUWv9I7su2
-         gYE/kLtX4khiV4RoUYDxA9wEQWoZtidj5eZesgo2TOvjOGg6ytJl3Lvu3vH4mz0vtg
-         o3BzemKWEexdA==
-Date:   Sun, 1 May 2022 17:20:37 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jagath Jog J <jagathjog1996@gmail.com>,
-        Dan Robertson <dan@dlrobertson.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 4/9] iio: accel: bma400: Add triggered buffer support
-Message-ID: <20220501172037.5f3d446f@jic23-huawei>
-In-Reply-To: <CAHp75Vf5pS_TGm5ptN7TyNmhZe_Oz8pVmETT27VeC=BZk9+ezg@mail.gmail.com>
-References: <20220420211105.14654-1-jagathjog1996@gmail.com>
-        <20220420211105.14654-5-jagathjog1996@gmail.com>
-        <CAHp75Vf5pS_TGm5ptN7TyNmhZe_Oz8pVmETT27VeC=BZk9+ezg@mail.gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 1 May 2022 12:20:54 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC431A837
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 09:17:28 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id k23so23933214ejd.3
+        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 09:17:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=x5ohyCygEHddhh2Mt5evi/snR/P1ql5wrtaula7bajY=;
+        b=mLJgk+VCGKhaJ/vJniRuSmtaGWsZLod8QFNDKz4LeIbaZePqtsu/Q+0Wv5qc0wvd+V
+         3TpORtiJdVx/D5P6u2kgc0nzUNCiGNb8k7XHyjNSjMcBggQKVza0v/iFCrsuSxXuPhEx
+         xpDRii2tg6xfNAUPKCAv86KQtDHSxnKNvZRik6q4XH2F/GqmkIBIjacBfPljmoGU/v6R
+         LQsR8Ql3WnVNpL5tcfvCe1PYOeeX3HFYQuX4fhdhY51SyX9nWQcXuEyUKFd2THxgO2hy
+         icOc5MC+OMYf9ryPQV0V20mIICXv9e1DoJtl0ym79E9kOw3Ysl6JU85N47XUx94qHRSo
+         DvWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=x5ohyCygEHddhh2Mt5evi/snR/P1ql5wrtaula7bajY=;
+        b=1RUuNl/ac6HLzwnxoyH+9cV3Cb3J9qtMolYN2GnPxC15NoGrgazb44qGu3DFLR6prW
+         7mSOnCEWAJ6vbLEfnHPF4daRpErX+1/LkpgKUsBLJq0kwzPYvUmZKVovKxWmGe7iP8Kg
+         rg9TYOGbJ30ueCZ+qirHt0XXxbO1QpYvXlJp6imtTk2RdY6mxRhH1McAinp1MXxyJZOK
+         3sYyq5wxl2MCxJKZ/ppWprxNxPwTmq/lddn1zWlodvqHX9FjUOMZlRHbrhsWGVytzKDf
+         XFbfXfbWsgBeLh/a633OtwVWkEo9I8hRsbxVvUcHLiv4d+1AMA6KyMN1NlpxZpxxs7gc
+         iIdA==
+X-Gm-Message-State: AOAM533gj/kICaMtX9FNxcgB7CnPDFYqlM5yLqhrR6Z1HHqZ3EkPhopQ
+        iJIZqE507KdQPMh7cPq7Je5t+Q==
+X-Google-Smtp-Source: ABdhPJyPNsLWguq1ZcYy8FBqygSRQv0qbEI3lwLesqKVjA3jDL6zXrdUI3kmcc08tDjI5hGx0A0D1A==
+X-Received: by 2002:a17:906:6a15:b0:6f4:4de5:de39 with SMTP id qw21-20020a1709066a1500b006f44de5de39mr1440718ejc.317.1651421846684;
+        Sun, 01 May 2022 09:17:26 -0700 (PDT)
+Received: from [192.168.0.184] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id jz26-20020a17090775fa00b006f3ef214e49sm2716602ejc.175.2022.05.01.09.17.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 01 May 2022 09:17:26 -0700 (PDT)
+Message-ID: <11fbbafd-e7ce-f921-2073-146e96f01f6b@linaro.org>
+Date:   Sun, 1 May 2022 18:17:24 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: mtd: partitions: Add binding for
+ Sercomm parser
+Content-Language: en-US
+To:     Mikhail Zhilkin <csharper2005@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     NOGUCHI Hiroshi <drvlabo@gmail.com>, Karim <Karimdplay@gmail.com>,
+        M <x1@disroot.org>, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220406195557.1956-1-csharper2005@gmail.com>
+ <20220406195946.2019-1-csharper2005@gmail.com>
+ <8d0d8b27-35ff-3693-cf80-897b80c26b4e@linaro.org>
+ <57bebf2f-af4c-b2d9-10e5-19e5104946fb@gmail.com>
+ <29cfa017-bbaf-3aba-fe1d-06771957dbaa@linaro.org>
+ <1b391399-984b-7a63-3265-62ef09caec39@gmail.com>
+ <bd533827-b575-caad-c230-af060851b231@gmail.com>
+ <db70e53b-7484-43bf-e9c8-b6a2dce1fbb5@linaro.org>
+ <25da3f43-c46e-8108-2da9-0e4f2b7cc1a4@gmail.com>
+ <b279040a-a782-a2ca-2acb-2d8f07709081@linaro.org>
+ <1c19faf9-fc1c-9adf-d038-97b673a8f0be@gmail.com>
+ <a84df850-149e-9656-43fa-1f040368a9f1@linaro.org>
+ <0450d781-c506-c28e-a0e5-435bee16721f@gmail.com>
+ <2e51842a-d2c9-8953-13aa-02ad3abb3f14@linaro.org>
+ <ee5f293a-e59a-03d8-d9e4-ef35d33b5383@gmail.com>
+ <6c3ba4a7-80b0-5fd1-eb08-1f9e256b02c4@linaro.org>
+ <909094fd-ded0-38f9-b374-dd5f7b63e298@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <909094fd-ded0-38f9-b374-dd5f7b63e298@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Apr 2022 14:34:57 +0200
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-
-> On Wed, Apr 20, 2022 at 11:11 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
-> >
-> > Added trigger buffer support to read continuous acceleration
-> > data from device with data ready interrupt which is mapped
-> > to INT1 pin.  
+On 01/05/2022 16:51, Mikhail Zhilkin wrote:
+> On 5/1/2022 11:17 AM, Krzysztof Kozlowski wrote:
 > 
-> LGTM,
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Agreed.  A couple of 'comments' inline but no actual need to change anything.
-One is contingent on a fix I've not sent out yet for the rest of IIO.
-The other is potentially a minor improvement for the future.
-
-Thanks,
-
-Jonathan
-
+>> On 30/04/2022 20:54, Mikhail Zhilkin wrote:
+>>>  patternProperties:
+>>>    "@[0-9a-f]+$":
+>>> -    $ref: "partition.yaml#"
+>>> +    allOf:
+>>> +      - $ref: "partition.yaml#"
+>>> +      - if:
+>>> +          properties:
+>>> +            compatible:
+>>> +              contains:
+>>> +                const: sercomm,sc-partitions
+>>> +        then:
+>>> +          properties:
+>>> +            sercomm,scpart-id:
+>>> +              description: Partition id in Sercomm partition map. Parser
+>>> +                uses this id to get partition offset and size values from
+>>> +                dynamic partition map.
+>> Partition offset and size values are not derived from scpart-id. I am
+>> sorry but after all these questions - it's the third time now - you
+>> never answer why do you need this property and what is it used for. From
+>> all the examples it could be simply removed and the partition map will
+>> be exactly the same.
+> scpart-id is necessary to get (using mtd parser) partition offset and
+> size from dynamic partition map (NOT from the reg property):
 > 
-> > Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
-> > ---
-> >  drivers/iio/accel/Kconfig       |   2 +
-> >  drivers/iio/accel/bma400.h      |  10 +-
-> >  drivers/iio/accel/bma400_core.c | 162 +++++++++++++++++++++++++++++++-
-> >  drivers/iio/accel/bma400_i2c.c  |   2 +-
-> >  drivers/iio/accel/bma400_spi.c  |   2 +-
-> >  5 files changed, 170 insertions(+), 8 deletions(-)
+> ❯ xxd -e -c 12 -s $((0x800)) -l $((0x78)) mtd1
+> 00000800: 00000000 00000000 00100000  ............
+> 0000080c: 00000001 00100000 00100000  ............
+> 00000818: 00000002 00200000 00100000  ...... .....
+> 00000824: 00000003 00300000 00100000  ......0.....
+> 00000830: 00000004 00400000 00600000  ......@...`.
+> 0000083c: 00000005 00a00000 00600000  ..........`.
+> 00000848: 00000006 01000000 02000000  ............
+> 00000854: 00000007 03000000 02000000  ............
+> 00000860: 00000008 05000000 01400000  ..........@.
+> 0000086c: 00000009 06400000 01b80000  ......@.....
+>           scpart-id  offset      size
+> 
+> With sercomm,sc-partitions the reg property will be ignored (offset =
+> 0x200000, size = 0x100000) and the values will be taken from partition map.
+> 
+> For example we have this is dts:
+> 
+> partition@200000 {
+>             label = "Factory";
+>             reg = <0x200000 0x100000>;
+>             sercomm,scpart-id = <2>;
+>             read-only;
+>         };
+> 
+> Dynamic partition map:
+> 
+> scpart-id = 2; offset = 0x00200000; size = 0x00100000
+> 
+> 00000002 00200000 00100000  ...... .....
+> 
+> In this example the offset and size are the same in reg and dynamic
+> partition map. If device have bad blocks on NAND the values will be a
+> little different. And we have to take partition offsets from partition
+> map to avoid boot loops, wrong eeprom location and other bad things.
+> 
+> Is there anything that needs to be explained in more detail?
 
-> >
-> >  #include "bma400.h"
-> >
-> > @@ -61,6 +66,14 @@ struct bma400_data {
-> >         struct bma400_sample_freq sample_freq;
-> >         int oversampling_ratio;
-> >         int scale;
-> > +       struct iio_trigger *trig;
-> > +       /* Correct time stamp alignment */
-> > +       struct {
-> > +               __le16 buff[3];
-> > +               u8 temperature;
-> > +               s64 ts __aligned(8);
-> > +       } buffer ____cacheline_aligned;
+Thanks a lot, this clarifies the topic. Looks good. Maybe you could put
+parts of this into the scpart-id field description?
 
-If you are rolling again, could you change this to
-__aligned(IIO_ALIGN);  See
-https://lore.kernel.org/linux-iio/20220419121241.00002e42@Huawei.com/
-for why.
-Note that I'll be sending a fix patch out for IIO_ALIGN to define
-it as ARCH_KMALLOC_ALIGN in next few days.
-
-If you'd pref not to get caught up in that, send it as it stands
-and I'll fix up once that fix is in place.  What's one more driver
-on top of the 80+ I have to do anyway :)
-
-
-
-> > +       __le16 status;
-> >  };
-> >
-
-> > +
-> > +static const unsigned long bma400_avail_scan_masks[] = {
-> > +       GENMASK(3, 0),
-> > +       0
-> > +};
-> > +
-> >  static const struct iio_info bma400_info = {
-> >         .read_raw          = bma400_read_raw,
-> >         .read_avail        = bma400_read_avail,
-> > @@ -814,7 +869,72 @@ static const struct iio_info bma400_info = {
-> >         .write_raw_get_fmt = bma400_write_raw_get_fmt,
-> >  };
-> >
-> > -int bma400_probe(struct device *dev, struct regmap *regmap, const char *name)
-> > +static const struct iio_trigger_ops bma400_trigger_ops = {
-> > +       .set_trigger_state = &bma400_data_rdy_trigger_set_state,
-> > +       .validate_device = &iio_trigger_validate_own_device,
-> > +};
-> > +
-> > +static irqreturn_t bma400_trigger_handler(int irq, void *p)
-> > +{
-> > +       struct iio_poll_func *pf = p;
-> > +       struct iio_dev *indio_dev = pf->indio_dev;
-> > +       struct bma400_data *data = iio_priv(indio_dev);
-> > +       int ret, temp;
-> > +
-> > +       /* Lock to protect the data->buffer */
-> > +       mutex_lock(&data->mutex);
-> > +
-> > +       /* bulk read six registers, with the base being the LSB register */
-> > +       ret = regmap_bulk_read(data->regmap, BMA400_X_AXIS_LSB_REG,
-> > +                              &data->buffer.buff, sizeof(data->buffer.buff));
-> > +       if (ret)
-> > +               goto unlock_err;
-> > +
-> > +       ret = regmap_read(data->regmap, BMA400_TEMP_DATA_REG, &temp);
-
-Given the temperature read is a separate action, it seems like you could sensible
-add another entry to bma400_avail_scan_masks() for just the accelerometer axis
-and then only perform this read if the temperature is requested.
-
-It would be a feature though, so no need to have it in this patch if you
-prefer not to.
-
-> > +       if (ret)
-> > +               goto unlock_err;
-> > +
-> > +       data->buffer.temperature = temp;
-> > +
-> > +       iio_push_to_buffers_with_timestamp(indio_dev, &data->buffer,
-> > +                                          iio_get_time_ns(indio_dev));
-> > +
-> > +       mutex_unlock(&data->mutex);
-> > +       iio_trigger_notify_done(indio_dev->trig);
-> > +       return IRQ_HANDLED;
-> > +
-> > +unlock_err:
-> > +       mutex_unlock(&data->mutex);
-> > +       return IRQ_NONE;
-> > +}
-
+Best regards,
+Krzysztof
