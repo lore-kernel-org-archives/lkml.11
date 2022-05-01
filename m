@@ -2,144 +2,296 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 789E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 18:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CC78C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 18:35:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356718AbiEASjB (ORCPT
+        id S1355049AbiEASjH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 14:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54778 "EHLO
+        Sun, 1 May 2022 14:39:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351554AbiEASik (ORCPT
+        with ESMTP id S1356393AbiEASi4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 14:38:40 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C52617A
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 11:35:13 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id fv2so11085894pjb.4
-        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 11:35:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gEKLzHDmrjf1i9KSUaOozCHBh8PDFjk1Tl8GhCKHgdo=;
-        b=GxjehPULVcq/fzKtlONcVsDXlSml+007HBNIVAwS5tLyal/+nGIbMJGqjftZQyrLM6
-         mew7Gtz7zhmlquBaV/NkgJdIGMHy5wyStoFxN7mP7wPcGWm0MtIlqYpFF0dfoX9Mu8KX
-         XravQI9uPa5r5MKHo8eRYgVrvYeB1d5TbQOvU/7G+UYwEBn8EW6qXUTjBqk43FOQeAY/
-         S38y1+uf4Wby0yDtmPgP5aulnqnGMJfT5cDnJQMqEJTRuPEtzw5i+2bHj+Kq2ANPcig5
-         2hfPFka0LVMcH5y5cE9zac5UYwHiA2HWn6OdAtYIrD6WeyzopQubvMyeVKa4iSncTY8R
-         1VQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gEKLzHDmrjf1i9KSUaOozCHBh8PDFjk1Tl8GhCKHgdo=;
-        b=dy3lym1tJerGJSyHjbIhSNHEvPuVr43SCC3TGogJHQBa9oSpuFlgTkD9anFw9xWUaL
-         16fi96xm31Hl4FTIuoI7U/HUGSFkU2uzCx2vHz8AYaq5GqyqYFK+wMSFHwWWfp4XaU1F
-         Q87LqojV18u9XmqdsMzi8SdVqugLgzHGTsqeWS1C8FnZQm0PFcXWDri6iMsyUmL2TwJj
-         6juNOoNbY5FIcCxPIdH2IXS2S2EUzvteB83jKG3DdT0Z1NaPAEbhyLcHIPr7kWyClmZC
-         Zh19E5CuI6t3xg+Tr4h3A21cpOuDLS8naixOSSQsXKXiob8+DOK/cRbrWl6xC6xBfSi7
-         O43g==
-X-Gm-Message-State: AOAM533ad8Swd516F8nFhlC2CJJQEYKmhogLqAPBB1ErwPopCoET/5ca
-        RBczqSItK3UIOZlfjNGL6NZ1qgYsaToi5r0I+DrgZg==
-X-Google-Smtp-Source: ABdhPJzvrBGis6Hl4oe4MkPWYo2Y5jmHdVB2zp8hDYW2UDFqwPAHi080eN8/7jY9cZKpmq6SOt/oJFoLclRRU05e/UE=
-X-Received: by 2002:a17:90b:4b01:b0:1d2:abf5:c83f with SMTP id
- lx1-20020a17090b4b0100b001d2abf5c83fmr9201434pjb.93.1651430112699; Sun, 01
- May 2022 11:35:12 -0700 (PDT)
+        Sun, 1 May 2022 14:38:56 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674CE1C100
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 11:35:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651430130; x=1682966130;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=eZOuqvJAJAatwWXkjiLrzrD9uxIGDis5Q5fH8KPhoSA=;
+  b=DUxAINnlg+EOC9THw0w+dTE9EqSG5GXrF9CEHevemcnRyn1UVaXJKWe/
+   xOq3eBIwDFUzcjJr8YnOdU9gUz6fpHv++HA3wrMLLSwPkYn/UXN2wmzSI
+   w44mNcNCF9/xiDRTCV8Uv+JRMJ4CvKlfuajLF081BkXgU/rKATmjUL45t
+   dpHU87vRO2U1qBQiF23/jVSRGCxnVmufZ/4bkI0uTIy1yVIKlJfbLJmdl
+   IysuLmWfInH+JNkdlN7amwcWEiqpkZnS3jTYw7WfU8makX6jWh7TrOEKS
+   bgOzrt/+HAE/+CQc+I3C7RHW1pBH6bwp/33OCm0s/nJFtQvoxqouwEwzX
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10334"; a="247598671"
+X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
+   d="scan'208";a="247598671"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2022 11:35:29 -0700
+X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
+   d="scan'208";a="515731275"
+Received: from pghaisax-mobl1.amr.corp.intel.com (HELO skuppusw-desk1.home) ([10.209.85.28])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2022 11:35:28 -0700
+From:   Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v5 2/3] x86/tdx: Add TDX Guest event notify interrupt support
+Date:   Sun,  1 May 2022 11:34:59 -0700
+Message-Id: <20220501183500.2242828-3-sathyanarayanan.kuppuswamy@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220501183500.2242828-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <20220501183500.2242828-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 MIME-Version: 1.0
-References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
- <CAHbLzkq1YXXLMiREpGnzhJjPssu4WpSsnkTmrLJ=hAEhZVUr9w@mail.gmail.com>
-In-Reply-To: <CAHbLzkq1YXXLMiREpGnzhJjPssu4WpSsnkTmrLJ=hAEhZVUr9w@mail.gmail.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Sun, 1 May 2022 11:35:01 -0700
-Message-ID: <CAPcyv4g7kyPsSKGT1rR4yy680VD6UJ8V7wzj0OUqN2y2-PjOpQ@mail.gmail.com>
-Subject: Re: RFC: Memory Tiering Kernel Interfaces
-To:     Yang Shi <shy828301@gmail.com>
-Cc:     Wei Xu <weixugc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Greg Thelen <gthelen@google.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Michal Hocko <mhocko@kernel.org>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 8:59 PM Yang Shi <shy828301@gmail.com> wrote:
->
-> Hi Wei,
->
-> Thanks for the nice writing. Please see the below inline comments.
->
-> On Fri, Apr 29, 2022 at 7:10 PM Wei Xu <weixugc@google.com> wrote:
-> >
-> > The current kernel has the basic memory tiering support: Inactive
-> > pages on a higher tier NUMA node can be migrated (demoted) to a lower
-> > tier NUMA node to make room for new allocations on the higher tier
-> > NUMA node.  Frequently accessed pages on a lower tier NUMA node can be
-> > migrated (promoted) to a higher tier NUMA node to improve the
-> > performance.
-> >
-> > A tiering relationship between NUMA nodes in the form of demotion path
-> > is created during the kernel initialization and updated when a NUMA
-> > node is hot-added or hot-removed.  The current implementation puts all
-> > nodes with CPU into the top tier, and then builds the tiering hierarchy
-> > tier-by-tier by establishing the per-node demotion targets based on
-> > the distances between nodes.
-> >
-> > The current memory tiering interface needs to be improved to address
-> > several important use cases:
-> >
-> > * The current tiering initialization code always initializes
-> >   each memory-only NUMA node into a lower tier.  But a memory-only
-> >   NUMA node may have a high performance memory device (e.g. a DRAM
-> >   device attached via CXL.mem or a DRAM-backed memory-only node on
-> >   a virtual machine) and should be put into the top tier.
-> >
-> > * The current tiering hierarchy always puts CPU nodes into the top
-> >   tier. But on a system with HBM (e.g. GPU memory) devices, these
-> >   memory-only HBM NUMA nodes should be in the top tier, and DRAM nodes
-> >   with CPUs are better to be placed into the next lower tier.
-> >
-> > * Also because the current tiering hierarchy always puts CPU nodes
-> >   into the top tier, when a CPU is hot-added (or hot-removed) and
-> >   triggers a memory node from CPU-less into a CPU node (or vice
-> >   versa), the memory tiering hierarchy gets changed, even though no
-> >   memory node is added or removed.  This can make the tiering
-> >   hierarchy much less stable.
->
-> I'd prefer the firmware builds up tiers topology then passes it to
-> kernel so that kernel knows what nodes are in what tiers. No matter
-> what nodes are hot-removed/hot-added they always stay in their tiers
-> defined by the firmware. I think this is important information like
-> numa distances. NUMA distance alone can't satisfy all the usecases
-> IMHO.
+Host-guest event notification via configured interrupt vector is useful
+in cases where a guest makes an asynchronous request and needs a
+callback from the host to indicate the completion or to let the host
+notify the guest about events like device removal. One usage example is,
+callback requirement of GetQuote asynchronous hypercall.
 
-Just want to note here that the platform firmware can only describe
-the tiers of static memory present at boot. CXL hotplug breaks this
-model and the kernel is left to dynamically determine the device's
-performance characteristics and the performance of the topology to
-reach that device. Now, the platform firmware does set expectations
-for the perfomance class of different memory ranges, but there is no
-way to know in advance the performance of devices that will be asked
-to be physically or logically added to the memory configuration. That
-said, it's probably still too early to define ABI for those
-exceptional cases where the kernel needs to make a policy decision
-about a device that does not fit into the firmware's performance
-expectations, but just note that there are limits to the description
-that platform firmware can provide.
+In TDX guest, SetupEventNotifyInterrupt hypercall can be used by the
+guest to specify which interrupt vector to use as an event-notify
+vector to the VMM. Details about the SetupEventNotifyInterrupt
+hypercall can be found in TDX Guest-Host Communication Interface
+(GHCI) Specification, sec 3.5 "VP.VMCALL<SetupEventNotifyInterrupt>".
+Add a tdx_hcall_set_notify_intr() helper function to implement the
+SetupEventNotifyInterrupt hypercall.
 
-I agree that NUMA distance alone is inadequate and the kernel needs to
-make better use of data like ACPI HMAT to determine the default
-tiering order.
+Reserve 0xec IRQ vector address for TDX guest to receive the event
+completion notification from VMM. Also add related IDT handler to
+process the notification event.
+
+Add support to track the notification event status via
+/proc/interrupts.
+
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+---
+ arch/x86/coco/tdx/tdx.c            | 73 ++++++++++++++++++++++++++++++
+ arch/x86/include/asm/hardirq.h     |  3 ++
+ arch/x86/include/asm/idtentry.h    |  4 ++
+ arch/x86/include/asm/irq_vectors.h |  7 ++-
+ arch/x86/include/asm/tdx.h         |  4 ++
+ arch/x86/kernel/irq.c              |  7 +++
+ 6 files changed, 97 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+index 03deb4d6920d..b49211994864 100644
+--- a/arch/x86/coco/tdx/tdx.c
++++ b/arch/x86/coco/tdx/tdx.c
+@@ -11,6 +11,10 @@
+ #include <asm/insn.h>
+ #include <asm/insn-eval.h>
+ #include <asm/pgtable.h>
++#include <asm/apic.h>
++#include <asm/idtentry.h>
++#include <asm/irq_regs.h>
++#include <asm/desc.h>
+ 
+ /* TDX module Call Leaf IDs */
+ #define TDX_GET_INFO			1
+@@ -19,6 +23,7 @@
+ 
+ /* TDX hypercall Leaf IDs */
+ #define TDVMCALL_MAP_GPA		0x10001
++#define TDVMCALL_SETUP_NOTIFY_INTR	0x10004
+ 
+ /* MMIO direction */
+ #define EPT_READ	0
+@@ -34,6 +39,28 @@
+ #define VE_GET_PORT_NUM(e)	((e) >> 16)
+ #define VE_IS_IO_STRING(e)	((e) & BIT(4))
+ 
++/*
++ * Handler used to report notifications about
++ * TDX_GUEST_EVENT_NOTIFY_VECTOR IRQ. Currently it will be
++ * used only by the attestation driver. So, race condition
++ * with read/write operation is not considered.
++ */
++static void (*tdx_event_notify_handler)(void);
++
++/* Helper function to register tdx_event_notify_handler */
++void tdx_setup_ev_notify_handler(void (*handler)(void))
++{
++	tdx_event_notify_handler = handler;
++}
++EXPORT_SYMBOL_GPL(tdx_setup_ev_notify_handler);
++
++/* Helper function to unregister tdx_event_notify_handler */
++void tdx_remove_ev_notify_handler(void)
++{
++	tdx_event_notify_handler = NULL;
++}
++EXPORT_SYMBOL_GPL(tdx_remove_ev_notify_handler);
++
+ /*
+  * Wrapper for standard use of __tdx_hypercall with no output aside from
+  * return code.
+@@ -98,6 +125,46 @@ static inline void tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
+ 		panic("TDCALL %lld failed (Buggy TDX module!)\n", fn);
+ }
+ 
++/* TDX guest event notification handler */
++DEFINE_IDTENTRY_SYSVEC(sysvec_tdx_event_notify)
++{
++	struct pt_regs *old_regs = set_irq_regs(regs);
++
++	inc_irq_stat(irq_tdx_event_notify_count);
++
++	if (tdx_event_notify_handler)
++		tdx_event_notify_handler();
++
++	ack_APIC_irq();
++
++	set_irq_regs(old_regs);
++}
++
++/*
++ * tdx_hcall_set_notify_intr() - Setup Event Notify Interrupt Vector.
++ *
++ * @vector: Vector address to be used for notification.
++ *
++ * return 0 on success or failure error number.
++ */
++static long tdx_hcall_set_notify_intr(u8 vector)
++{
++	/* Minimum vector value allowed is 32 */
++	if (vector < 32)
++		return -EINVAL;
++
++	/*
++	 * Register callback vector address with VMM. More details
++	 * about the ABI can be found in TDX Guest-Host-Communication
++	 * Interface (GHCI), sec titled
++	 * "TDG.VP.VMCALL<SetupEventNotifyInterrupt>".
++	 */
++	if (_tdx_hypercall(TDVMCALL_SETUP_NOTIFY_INTR, vector, 0, 0, 0))
++		return -EIO;
++
++	return 0;
++}
++
+ static u64 get_cc_mask(void)
+ {
+ 	struct tdx_module_output out;
+@@ -688,5 +755,11 @@ void __init tdx_early_init(void)
+ 	x86_platform.guest.enc_tlb_flush_required   = tdx_tlb_flush_required;
+ 	x86_platform.guest.enc_status_change_finish = tdx_enc_status_changed;
+ 
++	alloc_intr_gate(TDX_GUEST_EVENT_NOTIFY_VECTOR,
++			asm_sysvec_tdx_event_notify);
++
++	if (tdx_hcall_set_notify_intr(TDX_GUEST_EVENT_NOTIFY_VECTOR))
++		pr_warn("Setting event notification interrupt failed\n");
++
+ 	pr_info("Guest detected\n");
+ }
+diff --git a/arch/x86/include/asm/hardirq.h b/arch/x86/include/asm/hardirq.h
+index 275e7fd20310..582deff56210 100644
+--- a/arch/x86/include/asm/hardirq.h
++++ b/arch/x86/include/asm/hardirq.h
+@@ -44,6 +44,9 @@ typedef struct {
+ 	unsigned int irq_hv_reenlightenment_count;
+ 	unsigned int hyperv_stimer0_count;
+ #endif
++#if IS_ENABLED(CONFIG_INTEL_TDX_GUEST)
++	unsigned int irq_tdx_event_notify_count;
++#endif
+ } ____cacheline_aligned irq_cpustat_t;
+ 
+ DECLARE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat);
+diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm/idtentry.h
+index 72184b0b2219..655086dd940e 100644
+--- a/arch/x86/include/asm/idtentry.h
++++ b/arch/x86/include/asm/idtentry.h
+@@ -700,6 +700,10 @@ DECLARE_IDTENTRY_SYSVEC(HYPERVISOR_CALLBACK_VECTOR,	sysvec_xen_hvm_callback);
+ DECLARE_IDTENTRY_SYSVEC(HYPERVISOR_CALLBACK_VECTOR,	sysvec_kvm_asyncpf_interrupt);
+ #endif
+ 
++#if IS_ENABLED(CONFIG_INTEL_TDX_GUEST)
++DECLARE_IDTENTRY_SYSVEC(TDX_GUEST_EVENT_NOTIFY_VECTOR,	sysvec_tdx_event_notify);
++#endif
++
+ #undef X86_TRAP_OTHER
+ 
+ #endif
+diff --git a/arch/x86/include/asm/irq_vectors.h b/arch/x86/include/asm/irq_vectors.h
+index 43dcb9284208..82ac0c0a34b1 100644
+--- a/arch/x86/include/asm/irq_vectors.h
++++ b/arch/x86/include/asm/irq_vectors.h
+@@ -104,7 +104,12 @@
+ #define HYPERV_STIMER0_VECTOR		0xed
+ #endif
+ 
+-#define LOCAL_TIMER_VECTOR		0xec
++#if IS_ENABLED(CONFIG_INTEL_TDX_GUEST)
++/* Vector on which TDX Guest event notification is delivered */
++#define TDX_GUEST_EVENT_NOTIFY_VECTOR	0xec
++#endif
++
++#define LOCAL_TIMER_VECTOR		0xeb
+ 
+ #define NR_VECTORS			 256
+ 
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index 020c81a7c729..eb4db837cc44 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -67,6 +67,10 @@ void tdx_safe_halt(void);
+ 
+ bool tdx_early_handle_ve(struct pt_regs *regs);
+ 
++void tdx_setup_ev_notify_handler(void (*handler)(void));
++
++void tdx_remove_ev_notify_handler(void);
++
+ #else
+ 
+ static inline void tdx_early_init(void) { };
+diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
+index 766ffe3ba313..a96ecd866723 100644
+--- a/arch/x86/kernel/irq.c
++++ b/arch/x86/kernel/irq.c
+@@ -181,6 +181,13 @@ int arch_show_interrupts(struct seq_file *p, int prec)
+ 		seq_printf(p, "%10u ",
+ 			   irq_stats(j)->kvm_posted_intr_wakeup_ipis);
+ 	seq_puts(p, "  Posted-interrupt wakeup event\n");
++#endif
++#if IS_ENABLED(CONFIG_INTEL_TDX_GUEST)
++	seq_printf(p, "%*s: ", prec, "TGN");
++	for_each_online_cpu(j)
++		seq_printf(p, "%10u ",
++			   irq_stats(j)->irq_tdx_event_notify_count);
++	seq_puts(p, "  TDX Guest event notification\n");
+ #endif
+ 	return 0;
+ }
+-- 
+2.25.1
+
