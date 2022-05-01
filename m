@@ -2,98 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD70FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 10:35:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA75C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 10:36:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344694AbiEAKia (ORCPT
+        id S1345310AbiEAKjg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 06:38:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56478 "EHLO
+        Sun, 1 May 2022 06:39:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344576AbiEAKiW (ORCPT
+        with ESMTP id S1344605AbiEAKjC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 06:38:22 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65BEFD1F
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 03:34:52 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id kq17so23069764ejb.4
-        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 03:34:52 -0700 (PDT)
+        Sun, 1 May 2022 06:39:02 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F545CC4
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 03:35:34 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id g20so13683841edw.6
+        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 03:35:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=w2ns7ipBZOIfI9eYR5XNbFPvQdAnHfmlBHB+KUxSjlA=;
-        b=XKrhM7A9/fGhlDKnSBy713skq8Jb6hNY5w3j5RcEu+Kq6biOP3KN1blmkItGAqYLEn
-         GvmtgSP0m5j3IVPJE/gOLXtQPds0HXF1OLznJUy8rwuLaVc/dwZQZyUi0DPYzV9YVdr/
-         OoeOkquJP0RSTwFUvTCcNj+EZ7N8KhpiZvuWlhUm0Zm3ujPOj3pm7wgrQryJgr16cxV/
-         csIlDioGBoRPm7CP1sAiaWVMOybenEYO7YXUbHPbj0OwZzcSnld6dNF9btfO2zM/EU/R
-         dnyj1pbbN5T2WyL3xZ+RGUSZD7G8vXOi5PyEsjgdyA7+IZxvesXiyVg+FXHbw7egT7wz
-         xI1w==
+        bh=0LSWa1hQdoTzioWCbWfTtV4IOIT9RSgkMC0aJIZAhKE=;
+        b=sPkfVotvDIXhLsObMkJpjRsPJqzNemWS52CcpizWKGwTcuI2isWrGDfOYWzljPIwWV
+         HIye0z2DwsI6SMQP5nl1kFnmiawxdVbmPK/uwFSLTDRrsIfooTCMFJ4ihXjDfeZ2pZUC
+         jBpUim2GPIzNxEuh5/Z2CLUxXca3yMPVPZsss8Xu2jkTpaHnVe14Blhmuk0C6q6/zGEX
+         YhSEzRxFVZqTBF3maWG3kvfVsRgC3aHPfU51S3YHSv3NZ3195B1eeCb8k/hzXK/rfMuK
+         hqf10wRDjEm8foKAsbAbPnsZLBEs5+hm69TwdW66tVb4Vu0Cj2kqJ6Vm5DITnsYFqKhp
+         bCKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=w2ns7ipBZOIfI9eYR5XNbFPvQdAnHfmlBHB+KUxSjlA=;
-        b=fyZ3FJIR8y9/31wKYymoHuglmO3noFXiOOWGuv6P4vabp3eKJsRfebavR8DrU5OdO3
-         DDsAWkGxQP9+i7mUU70hRyQZ3OhNNkNLUhVQcOkUYUv29vVQn76AUwie+3ZO7G/b8tnS
-         WF7HPBE+hse2JsgRucOYvG64Q6ab9f0qYG6NgMWYkOTjQo5ZQeES0kQWVwv5kVdnvKui
-         ZNESyRZGgiSpzmaik9A3wv2UiT95DyaoLUrZ2wwsbGNaf30nPCoukLbb3dREL6aIRPLK
-         OetA1sxjKjN08vDOnl0w4OTdjqANlfhiqyrG6KOllkOGEGroblTGWwQK939HCH+EGwP6
-         Os3A==
-X-Gm-Message-State: AOAM532IZlTcXPkuoK2Vo2UZnegowVvHpGLy8TBrNxTLGh1tM52fMkZK
-        PqW0BVgrJIfSl0TfNknbXVPutQ==
-X-Google-Smtp-Source: ABdhPJwZhJl6e4trr4YOaYl/CYYLw9KiekLiz8lTQZvRTpDBo+Hw3P6ZJeQaLMTFJfS8pK/1BqiRiA==
-X-Received: by 2002:a17:907:a413:b0:6f3:a9e5:d076 with SMTP id sg19-20020a170907a41300b006f3a9e5d076mr6891556ejc.183.1651401291330;
-        Sun, 01 May 2022 03:34:51 -0700 (PDT)
+        bh=0LSWa1hQdoTzioWCbWfTtV4IOIT9RSgkMC0aJIZAhKE=;
+        b=5olUz+JthgreAax+In9dUEoBJShgby1Xr703o2fG8JaL6jpqKKkmyOsERwyhd82SWo
+         Je+GRxUz4P5aVhSKarrJ/Ef4gC70FKS0zV6dNG/s2Nki4mWzBic1ThrgP1Cyw7tzs+f0
+         LzMZ7kTcUwPWYO/raNOYP+hqx7IvPrwqJaue35KTxrGasHuZCHjBi9SCCd1QgfQrXccX
+         lo/3lewLmzCNjIS2WcF6ntkzToUAWmFym2wYW2YOhJxwpROU1NZtErexEu6VeuaDmVhj
+         6kwhdkr0DdsdHyzMM7gVts54z9tPh3N612d54f+BE2UzXAq+b5bccTZdlv8bPr6FOrlq
+         adZg==
+X-Gm-Message-State: AOAM532wJ7io/pK45fZ6cIuPlovEy0dL+Od33W3nuXKzgR9+khZCl7oC
+        gmpYStoByrpSNx4soeMhkWqLbA==
+X-Google-Smtp-Source: ABdhPJwLrbsl6NqHFpbmWGvgSLWCqc0KwZS8CYztYMsY51fM7uVTperdxPLK4DFj74a5ODizeCxaCA==
+X-Received: by 2002:a05:6402:298b:b0:41d:675f:8b44 with SMTP id eq11-20020a056402298b00b0041d675f8b44mr8131185edb.377.1651401332808;
+        Sun, 01 May 2022 03:35:32 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id rb48-20020a170907693000b006f3ef214e11sm2492945ejc.119.2022.05.01.03.34.50
+        by smtp.gmail.com with ESMTPSA id zp1-20020a17090684e100b006f3ef214df1sm2464438ejb.87.2022.05.01.03.35.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 May 2022 03:34:50 -0700 (PDT)
+        Sun, 01 May 2022 03:35:32 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-iio@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-remoteproc@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 2/2] iio: ti-ads8688: use of_device_id for OF matching
-Date:   Sun,  1 May 2022 12:34:47 +0200
-Message-Id: <20220501103447.111392-2-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 5/8] rpmsg: qcom: glink: remove unused name
+Date:   Sun,  1 May 2022 12:35:17 +0200
+Message-Id: <20220501103520.111561-5-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220501103447.111392-1-krzysztof.kozlowski@linaro.org>
-References: <20220501103447.111392-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220501103520.111561-1-krzysztof.kozlowski@linaro.org>
+References: <20220501103520.111561-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The of_device_id was added to allow module autoloading, but it should be
-also used to allow driver matching via Devicetree.
+The qcom_glink.name is read from DTS but never used further, never
+referenced, so drop it.  This also fixes kerneldoc warning:
 
-This also fixes W=1 warning:
-  drivers/iio/adc/ti-ads8688.c:501:34: error: ‘ads8688_of_match’ defined but not used [-Werror=unused-const-variable=]
+  drivers/rpmsg/qcom_glink_native.c:125:
+    warning: Function parameter or member 'name' not described in 'qcom_glink'
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/iio/adc/ti-ads8688.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/rpmsg/qcom_glink_native.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
-index 22c2583eedd0..708cca0a63be 100644
---- a/drivers/iio/adc/ti-ads8688.c
-+++ b/drivers/iio/adc/ti-ads8688.c
-@@ -508,6 +508,7 @@ MODULE_DEVICE_TABLE(of, ads8688_of_match);
- static struct spi_driver ads8688_driver = {
- 	.driver = {
- 		.name	= "ads8688",
-+		.of_match_table = ads8688_of_match,
- 	},
- 	.probe		= ads8688_probe,
- 	.remove		= ads8688_remove,
+diff --git a/drivers/rpmsg/qcom_glink_native.c b/drivers/rpmsg/qcom_glink_native.c
+index 5bc5a0a6a8a7..72a1c0fd091d 100644
+--- a/drivers/rpmsg/qcom_glink_native.c
++++ b/drivers/rpmsg/qcom_glink_native.c
+@@ -98,8 +98,6 @@ struct glink_core_rx_intent {
+ struct qcom_glink {
+ 	struct device *dev;
+ 
+-	const char *name;
+-
+ 	struct mbox_client mbox_client;
+ 	struct mbox_chan *mbox_chan;
+ 
+@@ -1755,10 +1753,6 @@ struct qcom_glink *qcom_glink_native_probe(struct device *dev,
+ 	if (ret)
+ 		dev_err(dev, "failed to add groups\n");
+ 
+-	ret = of_property_read_string(dev->of_node, "label", &glink->name);
+-	if (ret < 0)
+-		glink->name = dev->of_node->name;
+-
+ 	glink->mbox_client.dev = dev;
+ 	glink->mbox_client.knows_txdone = true;
+ 	glink->mbox_chan = mbox_request_channel(&glink->mbox_client, 0);
 -- 
 2.32.0
 
