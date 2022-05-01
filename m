@@ -2,73 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C3FC38161
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 16:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16CF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 16:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351304AbiEAQ4c (ORCPT
+        id S1352747AbiEAQ6E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 12:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52180 "EHLO
+        Sun, 1 May 2022 12:58:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352126AbiEAQyc (ORCPT
+        with ESMTP id S1352834AbiEAQ5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 12:54:32 -0400
-Received: from relay3.hostedemail.com (relay3.hostedemail.com [64.99.140.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A2F23146;
-        Sun,  1 May 2022 09:50:48 -0700 (PDT)
-Received: from omf07.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay09.hostedemail.com (Postfix) with ESMTP id 7F1372963C;
-        Sun,  1 May 2022 16:50:47 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf07.hostedemail.com (Postfix) with ESMTPA id 6AA5820027;
-        Sun,  1 May 2022 16:50:46 +0000 (UTC)
-Message-ID: <8cf3b100a4dc0eaac9214e1a9ea2b6dace7c85bb.camel@perches.com>
-Subject: Re: [PATCH] USB / dwc3: remove a possible unnecessary 'out of
- memory' message
-From:   Joe Perches <joe@perches.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Kushagra Verma <kushagra765@outlook.com>
-Cc:     balbi@kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Sun, 01 May 2022 09:50:45 -0700
-In-Reply-To: <Ym6pp/O1fpneA5ZW@kroah.com>
-References: <SI2PR01MB3929F20DA02363BD6A88657DF8FE9@SI2PR01MB3929.apcprd01.prod.exchangelabs.com>
-         <Ym6pp/O1fpneA5ZW@kroah.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Sun, 1 May 2022 12:57:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E35403F5
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 09:53:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D04A1B80E31
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 16:53:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96444C385A9;
+        Sun,  1 May 2022 16:53:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651423989;
+        bh=nkjHtAJ4XLlAFk1INlv36kPJqLeaDiFCFeY0oL7x8Vo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QJRCCCNcwfEFyUnEvQxuaGu3PICioUHQah5L43GkUUnMidPPm3E9+9Vtc4rVE3gRw
+         kgRaFov0/mgd1zze/UrFCQYvRl5ZTYmVatfetoAFnwtXm8cX/wWFm2Z/vmBgHBjLek
+         PMtdoXRsF1uzAd0BJA1ECjQMvazKGkPIkYX5o1dI=
+Date:   Sun, 1 May 2022 18:53:02 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Philipp Hortmann <philipp.g.hortmann@gmail.com>
+Cc:     Forest Bond <forest@alittletooquiet.net>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] staging: vt6655: Replace unused return value of
+ card_get_current_tsf
+Message-ID: <Ym667tWcJtK08lm5@kroah.com>
+References: <cover.1651422181.git.philipp.g.hortmann@gmail.com>
+ <2533d7e6b64660e0c23e495a56737fc35b2f916b.1651422181.git.philipp.g.hortmann@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: ocn1kks8g9de1t4exx157enah9yc3p9u
-X-Rspamd-Server: rspamout03
-X-Rspamd-Queue-Id: 6AA5820027
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19RJa68z0JhzR0knFOtfVGBO3/AWAtbFCU=
-X-HE-Tag: 1651423846-659880
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2533d7e6b64660e0c23e495a56737fc35b2f916b.1651422181.git.philipp.g.hortmann@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-05-01 at 17:39 +0200, Greg KH wrote:
-> On Sun, May 01, 2022 at 09:01:36PM +0530, Kushagra Verma wrote:
-> > This patch removes a possible unnecessary out of memory message from
-> > core.c
-> > as reported by checkpatch.pl:
-> >    WARNING: Possible unnecessary 'out of memory' message
-
-
-> This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-> a patch that has triggered this response.  He used to manually respond
-> to these common problems, but in order to save his sanity (he kept
-> writing the same thing over and over, yet to different people), I was
-> created.  Hopefully you will not take offence and will fix the problem
-> in your patch and resubmit it so that it can be accepted into the Linux
-> kernel tree.
+On Sun, May 01, 2022 at 06:37:11PM +0200, Philipp Hortmann wrote:
+> Replace unused return value with u64 to increase readability,
+> reduce address and dereference operators and omit pqwCurrTSF that
+> uses CamelCase which is not accepted by checkpatch.pl
 > 
-> You are receiving this message because of the following common error(s)
-> as indicated below:
+> Signed-off-by: Philipp Hortmann <philipp.g.hortmann@gmail.com>
+> ---
+> Diffs for testing:
+>         u64 qwNextTBTT;
 > 
-> - Your patch is malformed (tabs converted to spaces, linewrapped, etc.)
->   and can not be applied.  Please read the file,
->   Documentation/email-clients.txt in order to fix this.
+>         qwNextTBTT = card_get_current_tsf(priv); /* Get Local TSF counter */
+> +       dev_info(&priv->pcid->dev, "CARDbSetBeaconPeriod 0x%016llx", qwNextTBTT);
 
-Seems like a patch-bot false positive patch-bot to me.
+Don't put a diff in a diff please, git _should_ handle it, but I know
+other tools that will choke on it.
 
+>         qwNextTBTT = CARDqGetNextTBTT(qwNextTBTT, wBeaconInterval);
+> 
+>         /* set HW beacon interval */
+> @@ -810,7 +810,7 @@ void CARDvSetFirstNextTBTT(struct vnt_private *priv,
+>         u64 qwNextTBTT;
+> 
+>         qwNextTBTT = card_get_current_tsf(priv); /* Get Local TSF counter */
+> +       dev_info(&priv->pcid->dev, "CARDvSetFirstNextTBTT 0x%016llx", qwNextTBTT);
+>         qwNextTBTT = CARDqGetNextTBTT(qwNextTBTT, wBeaconInterval);
+>         /* Set NextTBTT */
+>         VNSvOutPortD(iobase + MAC_REG_NEXTTBTT, (u32)qwNextTBTT);
+> Log:
+> vt6655 0000:01:05.0: CARDbSetBeaconPeriod  0x00 00 00 01 4a 89 52 c4
+> vt6655 0000:01:05.0: CARDvSetFirstNextTBTT 0x00 00 00 01 4a 89 52 dc
+> ---
+>  drivers/staging/vt6655/card.c        | 20 +++++++++-----------
+>  drivers/staging/vt6655/card.h        |  2 +-
+>  drivers/staging/vt6655/device_main.c |  2 +-
+>  3 files changed, 11 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/staging/vt6655/card.c b/drivers/staging/vt6655/card.c
+> index d1dfd96e13b7..50d70ebff83a 100644
+> --- a/drivers/staging/vt6655/card.c
+> +++ b/drivers/staging/vt6655/card.c
+> @@ -288,7 +288,7 @@ bool CARDbUpdateTSF(struct vnt_private *priv, unsigned char byRxRate,
+>  	u64 local_tsf;
+>  	u64 qwTSFOffset = 0;
+>  
+> -	card_get_current_tsf(priv, &local_tsf);
+> +	local_tsf = card_get_current_tsf(priv);
+
+{sigh}  I should read all patches in the series before complaining about
+previous ones, sorry about that.
+
+Looks much better, except for the function name.
+
+
+
+>  
+>  	if (qwBSSTimestamp != local_tsf) {
+>  		qwTSFOffset = CARDqGetTSFOffset(byRxRate, qwBSSTimestamp,
+> @@ -320,9 +320,9 @@ bool CARDbUpdateTSF(struct vnt_private *priv, unsigned char byRxRate,
+>  bool CARDbSetBeaconPeriod(struct vnt_private *priv,
+>  			  unsigned short wBeaconInterval)
+>  {
+> -	u64 qwNextTBTT = 0;
+> +	u64 qwNextTBTT;
+>  
+> -	card_get_current_tsf(priv, &qwNextTBTT); /* Get Local TSF counter */
+> +	qwNextTBTT = card_get_current_tsf(priv); /* Get Local TSF counter */
+>  
+>  	qwNextTBTT = CARDqGetNextTBTT(qwNextTBTT, wBeaconInterval);
+>  
+> @@ -739,7 +739,7 @@ u64 CARDqGetTSFOffset(unsigned char byRxRate, u64 qwTSF1, u64 qwTSF2)
+>   *
+>   * Return Value: true if success; otherwise false
+>   */
+> -bool card_get_current_tsf(struct vnt_private *priv, u64 *pqwCurrTSF)
+> +u64 card_get_current_tsf(struct vnt_private *priv)
+>  {
+>  	void __iomem *iobase = priv->port_offset;
+>  	unsigned short ww;
+> @@ -753,16 +753,14 @@ bool card_get_current_tsf(struct vnt_private *priv, u64 *pqwCurrTSF)
+>  			break;
+>  	}
+>  	if (ww == W_MAX_TIMEOUT)
+> -		return false;
+> +		return 0;
+>  	low = ioread32(iobase + MAC_REG_TSFCNTR);
+>  	high = ioread32(iobase + MAC_REG_TSFCNTR + 4);
+>  #ifdef __BIG_ENDIAN
+
+Note, this #ifdef really should never be in kernel code if you are doing
+things properly.  There are functions to handle this correctly...
+
+Things get "fun" when you have devices in one endian running on busses
+of other endian.  Hopefully this driver never has to deal with that, but
+for many others we do, so please stick with the normal functions to
+handle this whenever possible.
+
+thanks,
+
+greg k-h
