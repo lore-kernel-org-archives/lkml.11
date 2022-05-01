@@ -2,321 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4963FC43217
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:30:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F3CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:31:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353122AbiEAReM (ORCPT
+        id S1353236AbiEARfU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 13:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45528 "EHLO
+        Sun, 1 May 2022 13:35:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353368AbiEAReH (ORCPT
+        with ESMTP id S238006AbiEARfR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 13:34:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7221AF0E;
-        Sun,  1 May 2022 10:30:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 892E760DF5;
-        Sun,  1 May 2022 17:30:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5743C385A9;
-        Sun,  1 May 2022 17:30:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651426236;
-        bh=+Sj4+OOIwwCCplhIGKM8DJp+5SXEF8N0Ep0e41vKsSw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CNqrpXquA0HooR+qbgrBcU4068tjQxMiBMUFXwcc7htTRyS8XeBMVml6p4tC2ohMf
-         QvaHzccSR5WebNzMha4E7WLZvk+CoOekcuk2f2d8pHeWpMPpGppgWKDS0I4a7id2So
-         0tNGRE2/YvPQ24FG4z2kL5mSGovFODFFGHvD4vu1LOGAMgzj12Ol9udpyDftjcB3xz
-         7s6BJvE0z5B6okFtGQacHQ7KAWBiISG6RohG9ABu6NAOXNAYjJF0F+UgyRAu5/fGLq
-         rMnMaayjLc2kAGW0QbElvu+V+URrXxZfDQiEBclfdeW8IsNKN+wsv6pKrUjvOgrn7o
-         aUY1gREYumvJA==
-Date:   Sun, 1 May 2022 18:38:50 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Caleb Connolly <caleb.connolly@linaro.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        Jami Kettunen <jami.kettunen@somainline.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>
-Subject: Re: [PATCH v14 05/10] iio: adc: qcom-spmi-rradc: introduce round
- robin adc
-Message-ID: <20220501183850.5bbbcbab@jic23-huawei>
-In-Reply-To: <20220429220904.137297-6-caleb.connolly@linaro.org>
-References: <20220429220904.137297-1-caleb.connolly@linaro.org>
-        <20220429220904.137297-6-caleb.connolly@linaro.org>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 1 May 2022 13:35:17 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CAB4A19A
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 10:31:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651426312; x=1682962312;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=94gJY802+7MmTS+7/i3dw7bQ/nPs2nvASExVe0txqaY=;
+  b=TPtIzoG9CzPQI83oYYILdom9f58dQm19+dbyyBpJthJE53+sE42oCilY
+   NpeAAeXQ7YeSTEu3O5CscH2FC6bE8uTnSYxrDnzex5aRduL/FbIRqLe1s
+   n8+dlKqOa2DA4HC0PxTBM9tqO5naYmQkROWLcO1jG/GKB4ecLrIQgrbJJ
+   hzT3QzRhS63fE9Fc0BdJykGeaEriWuR2dIvF+qBWEtEn5nUQTQsSgmhbf
+   iDZsKvQujGSDDudhdsrcl2f7cYMeS61MeW87O0AqoBAtwrEfSaqfkauBr
+   HfrGJru2ZQ1YPe8zXMr5qUq4Ujh8lUf/t7E3fNc8SucEvehfOBbRiOGPc
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10334"; a="292215849"
+X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
+   d="scan'208";a="292215849"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2022 10:31:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
+   d="scan'208";a="707284985"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 01 May 2022 10:31:50 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nlDQE-0008wS-4L;
+        Sun, 01 May 2022 17:31:50 +0000
+Date:   Mon, 2 May 2022 01:31:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [masahiroy:lto-cleanup-v2 48/55] s390-linux-ld:
+ .tmp_vmlinux.kallsyms1: warning: allocated section `.rodata' not in segment
+Message-ID: <202205020142.tuVjG3mE-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Apr 2022 23:09:00 +0100
-Caleb Connolly <caleb.connolly@linaro.org> wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git lto-cleanup-v2
+head:   0f0c2c6e09ad55e3c5ddb69915460ee54eb913e4
+commit: 58024b1713c48e2cc450f3301fc48077638298cc [48/55] kbuild: embed symbol versions at final link of vmlinux or modules
+config: s390-allmodconfig (https://download.01.org/0day-ci/archive/20220502/202205020142.tuVjG3mE-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git/commit/?id=58024b1713c48e2cc450f3301fc48077638298cc
+        git remote add masahiroy https://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git
+        git fetch --no-tags masahiroy lto-cleanup-v2
+        git checkout 58024b1713c48e2cc450f3301fc48077638298cc
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
 
-> The Round Robin ADC is responsible for reading data about the rate of
-> charge from the USB or DC input ports, it can also read the battery
-> ID (resistence), skin temperature and the die temperature of the pmic.
-> It is found on the PMI8998 and PM660 Qualcomm PMICs.
-> 
-> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
-Hi Caleb,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-I took another quick read through of this and noticed that the battery channel
-is providing on IIO_INFO_RAW but there is code for IIO_INFO_PROCESSED.
+All warnings (new ones prefixed by >>):
 
-Something gone wrong along the way?  If all we need is to change it to
-BIT(IIO_INFO_PROCESSED) I can do that whilst applying or you can do a v15 if
-you prefer.
+>> s390-linux-ld: .tmp_vmlinux.kallsyms1: warning: allocated section `.rodata' not in segment
+   s390-linux-ld: kernel/dma/coherent.o: in function `dma_init_coherent_memory':
+   coherent.c:(.text+0xea): undefined reference to `memremap'
+   s390-linux-ld: coherent.c:(.text+0x1f8): undefined reference to `memunmap'
+   s390-linux-ld: kernel/dma/coherent.o: in function `dma_declare_coherent_memory':
+   coherent.c:(.text+0x5e4): undefined reference to `memunmap'
+   s390-linux-ld: drivers/irqchip/irq-al-fic.o: in function `al_fic_init_dt':
+   irq-al-fic.c:(.init.text+0x7a): undefined reference to `of_iomap'
+   s390-linux-ld: irq-al-fic.c:(.init.text+0x4f4): undefined reference to `iounmap'
+   s390-linux-ld: drivers/clk/clk-fixed-mmio.o: in function `fixed_mmio_clk_setup':
+   clk-fixed-mmio.c:(.text+0x90): undefined reference to `of_iomap'
+   s390-linux-ld: clk-fixed-mmio.c:(.text+0xcc): undefined reference to `iounmap'
+   s390-linux-ld: drivers/clocksource/timer-of.o: in function `timer_of_init':
+   timer-of.c:(.init.text+0x144): undefined reference to `of_iomap'
+   s390-linux-ld: timer-of.c:(.init.text+0x76e): undefined reference to `iounmap'
+   s390-linux-ld: drivers/clocksource/timer-of.o: in function `timer_of_cleanup':
+   timer-of.c:(.init.text+0x968): undefined reference to `iounmap'
+   s390-linux-ld: drivers/clocksource/timer-microchip-pit64b.o: in function `mchp_pit64b_dt_init_timer':
+   timer-microchip-pit64b.c:(.init.text+0x684): undefined reference to `of_iomap'
+   s390-linux-ld: timer-microchip-pit64b.c:(.init.text+0xcda): undefined reference to `iounmap'
 
-Thanks,
-
-Jonathan
-
-> ---
-
-> diff --git a/drivers/iio/adc/qcom-spmi-rradc.c b/drivers/iio/adc/qcom-spmi-rradc.c
-> new file mode 100644
-> index 000000000000..c437546d8a4c
-> --- /dev/null
-> +++ b/drivers/iio/adc/qcom-spmi-rradc.c
-
-
-..
-
-> +
-> +/*
-> + * These functions explicitly cast int64_t to int.
-> + * They will never overflow, as the values are small enough.
-
-See below. I don't think this gets used...
-
-> + */
-> +static int rradc_post_process_batt_id(struct rradc_chip *chip, u16 adc_code,
-> +				      int *result_ohms)
-> +{
-> +	uint32_t current_value;
-> +	int64_t r_id;
-> +
-> +	current_value = chip->batt_id_data;
-> +	r_id = ((int64_t)adc_code * RR_ADC_FS_VOLTAGE_MV);
-> +	r_id = div64_s64(r_id, (RR_ADC_CHAN_MSB * current_value));
-> +	*result_ohms = (int)(r_id * MILLI);
-> +
-> +	return 0;
-> +}
-> +
-
-
-> +
-> +static int rradc_read_raw(struct iio_dev *indio_dev,
-> +			  struct iio_chan_spec const *chan_spec, int *val,
-> +			  int *val2, long mask)
-> +{
-> +	struct rradc_chip *chip = iio_priv(indio_dev);
-> +	const struct rradc_channel *chan;
-> +	int ret;
-> +	u16 adc_code;
-> +
-> +	if (chan_spec->address >= RR_ADC_CHAN_MAX) {
-> +		dev_err(chip->dev, "Invalid channel index:%lu\n",
-> +			chan_spec->address);
-> +		return -EINVAL;
-> +	}
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		return rradc_read_scale(chip, chan_spec->address, val, val2);
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		return rradc_read_offset(chip, chan_spec->address, val);
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = rradc_do_conversion(chip, chan_spec->address, &adc_code);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		*val = adc_code;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_PROCESSED:
-
-This doesn't seem to apply to any channels....
-
-> +		chan = &rradc_chans[chan_spec->address];
-> +		if (!chan->scale_fn)
-> +			return -EINVAL;
-> +		ret = rradc_do_conversion(chip, chan_spec->address, &adc_code);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		*val = chan->scale_fn(chip, adc_code, val);
-> +		return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int rradc_read_label(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan, char *label)
-> +{
-> +	return snprintf(label, PAGE_SIZE, "%s\n",
-> +			rradc_chans[chan->address].label);
-> +}
-> +
-> +static const struct iio_info rradc_info = {
-> +	.read_raw = rradc_read_raw,
-> +	.read_label = rradc_read_label,
-> +};
-> +
-> +static const struct rradc_channel rradc_chans[RR_ADC_CHAN_MAX] = {
-> +	{
-> +		.label = "batt_id",
-> +		.scale_fn = rradc_post_process_batt_id,
-> +		.lsb = RR_ADC_BATT_ID_5_LSB,
-> +		.status = RR_ADC_BATT_ID_STS,
-> +		.size = 6,
-> +		.trigger_addr = RR_ADC_BATT_ID_TRIGGER,
-> +		.trigger_mask = BIT(0),
-> +	}, {
-> +		.label = "batt",
-> +		.lsb = RR_ADC_BATT_THERM_LSB,
-> +		.status = RR_ADC_BATT_THERM_STS,
-> +		.size = 2,
-> +		.trigger_addr = RR_ADC_BATT_THERM_TRIGGER,
-> +	}, {
-> +		.label = "pmi8998_skin",
-> +		.lsb = RR_ADC_SKIN_TEMP_LSB,
-> +		.status = RR_ADC_AUX_THERM_STS,
-> +		.size = 2,
-> +		.trigger_addr = RR_ADC_AUX_THERM_TRIGGER,
-> +	}, {
-> +		.label = "usbin_i",
-> +		.lsb = RR_ADC_USB_IN_I_LSB,
-> +		.status = RR_ADC_USB_IN_I_STS,
-> +		.size = 2,
-> +		.trigger_addr = RR_ADC_USB_IN_I_TRIGGER,
-> +	}, {
-> +		.label = "usbin_v",
-> +		.lsb = RR_ADC_USB_IN_V_LSB,
-> +		.status = RR_ADC_USB_IN_V_STS,
-> +		.size = 2,
-> +		.trigger_addr = RR_ADC_USB_IN_V_TRIGGER,
-> +		.trigger_mask = BIT(7),
-> +	}, {
-> +		.label = "dcin_i",
-> +		.lsb = RR_ADC_DC_IN_I_LSB,
-> +		.status = RR_ADC_DC_IN_I_STS,
-> +		.size = 2,
-> +		.trigger_addr = RR_ADC_DC_IN_I_TRIGGER,
-> +	}, {
-> +		.label = "dcin_v",
-> +		.lsb = RR_ADC_DC_IN_V_LSB,
-> +		.status = RR_ADC_DC_IN_V_STS,
-> +		.size = 2,
-> +		.trigger_addr = RR_ADC_DC_IN_V_TRIGGER,
-> +	}, {
-> +		.label = "pmi8998_die",
-> +		.lsb = RR_ADC_PMI_DIE_TEMP_LSB,
-> +		.status = RR_ADC_PMI_DIE_TEMP_STS,
-> +		.size = 2,
-> +		.trigger_addr = RR_ADC_PMI_DIE_TEMP_TRIGGER,
-> +		.trigger_mask = RR_ADC_TRIGGER_EVERY_CYCLE,
-> +	}, {
-> +		.label = "chg",
-> +		.lsb = RR_ADC_CHARGER_TEMP_LSB,
-> +		.status = RR_ADC_CHARGER_TEMP_STS,
-> +		.size = 2,
-> +		.trigger_addr = RR_ADC_CHARGER_TEMP_TRIGGER,
-> +	}, {
-> +		.label = "gpio",
-> +		.lsb = RR_ADC_GPIO_LSB,
-> +		.status = RR_ADC_GPIO_STS,
-> +		.size = 2,
-> +		.trigger_addr = RR_ADC_GPIO_TRIGGER,
-> +	},
-> +};
-> +
-> +static const struct iio_chan_spec rradc_iio_chans[RR_ADC_CHAN_MAX] = {
-> +	{
-> +		.type = IIO_RESISTANCE,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.address = RR_ADC_BATT_ID,
-> +		.channel = 0,
-> +		.indexed = 1,
-> +	}, {
-> +		.type = IIO_TEMP,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.address = RR_ADC_BATT_THERM,
-> +		.channel = 0,
-> +		.indexed = 1,
-> +	}, {
-> +		.type = IIO_TEMP,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE) |
-> +				      BIT(IIO_CHAN_INFO_OFFSET),
-> +		.address = RR_ADC_SKIN_TEMP,
-> +		.channel = 1,
-> +		.indexed = 1,
-> +	}, {
-> +		.type = IIO_CURRENT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.address = RR_ADC_USBIN_I,
-> +		.channel = 0,
-> +		.indexed = 1,
-> +	}, {
-> +		.type = IIO_VOLTAGE,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.address = RR_ADC_USBIN_V,
-> +		.channel = 0,
-> +		.indexed = 1,
-> +	}, {
-> +		.type = IIO_CURRENT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.address = RR_ADC_DCIN_I,
-> +		.channel = 1,
-> +		.indexed = 1,
-> +	}, {
-> +		.type = IIO_VOLTAGE,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.address = RR_ADC_DCIN_V,
-> +		.channel = 1,
-> +		.indexed = 1,
-> +	}, {
-> +		.type = IIO_TEMP,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE) |
-> +				      BIT(IIO_CHAN_INFO_OFFSET),
-> +		.address = RR_ADC_DIE_TEMP,
-> +		.channel = 2,
-> +		.indexed = 1,
-> +	}, {
-> +		.type = IIO_TEMP,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_OFFSET) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.address = RR_ADC_CHG_TEMP,
-> +		.channel = 3,
-> +		.indexed = 1,
-> +	}, {
-> +		.type = IIO_VOLTAGE,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.address = RR_ADC_GPIO,
-> +		.channel = 2,
-> +		.indexed = 1,
-> +	},
-> +};
-> +
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
