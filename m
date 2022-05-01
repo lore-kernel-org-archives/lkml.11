@@ -2,182 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 122BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 10:23:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48850C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 10:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245559AbiEAK0b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 06:26:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57594 "EHLO
+        id S1344518AbiEAKiK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 1 May 2022 06:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239481AbiEAK03 (ORCPT
+        with ESMTP id S1343564AbiEAKh7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 06:26:29 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA441C920;
-        Sun,  1 May 2022 03:23:03 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id gj17-20020a17090b109100b001d8b390f77bso14013117pjb.1;
-        Sun, 01 May 2022 03:23:03 -0700 (PDT)
+        Sun, 1 May 2022 06:37:59 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B3CDEB0
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 03:34:34 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id l18so23034390ejc.7
+        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 03:34:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DIcjCIE+821m+IWtooO9mfLI7f6RDT26Z08POJoaqYU=;
-        b=WBrrUvpQr+8M2uys/q8rKRcOBjJ/BHWVt7WZMK2alpYC+3R0u9Nh0Cfr3SDjhc8uwZ
-         RXDxHNvWTtOmjbcFjeJcFAps4wYAhZ9NShQ+ZrQYZu0F5DfdQUj/NEjzHHVeKar8Bg7f
-         6ZSFlv8rXCd3+axM78i+BIZibLX2eNevQNEVoif01K7iiSWAgNrS8Lrfw+MzyqJcgSuL
-         KjGh8PWSNq2l2eHkquFQnU4bAsiM5jOMHxC+L4WGcngNcTK22F7F187ABrieKB0Of28t
-         3ZygR3NXScMN+hZG2xKnblt1qVolPALWgif3BXl1cmIfC4reMEbnYKN3bQhZw77fMMje
-         zg6Q==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=V+FMZjVIJ5w3qpzg5VfAXXy3DLGF32A6QmZgvHOgpUo=;
+        b=Axce0TYlrCwEH/OXf3Q+fPzTCVR1pkC55fzHRUNkfOa/5UKkS6l+gXGdDO7x/EKwu5
+         HIGmjEi/sz3/EcvRghaysm6hrH9v0MdU5YXPnxqw87y3ZVxkNoj8dmoOkv9JlYR7K7+/
+         2xkuFuiStcHciDx9pmq1f9MVxZkhWNkSbaGte1cnm4eVvZKJXrn2FhogieCNxF4oV6ty
+         e2C976bZfLYPyZuvrf5hyyjArlSI+xn7U+KpwyfYvZla4m5yncoKMKEewMrRRQReZdt7
+         voSOODD9ETfKVlD9cSqsIJvplBSQeNlCIGB0vcJ75pD4okj47Qh8USDiU+G1UL1lyqvN
+         kchQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DIcjCIE+821m+IWtooO9mfLI7f6RDT26Z08POJoaqYU=;
-        b=MgbAbhTpAJJprLQiFvtwrGVo6dOCLUXMEbSPPeC+vQGXpifDs8tv1OFsp+aB48PCwt
-         cP8iUNUZboLwUXk6CxbMOyQnZjAP1Y8Z/tKtOAFtaMXMQSR/ktFbdI0L/uSxbTqd6Tbe
-         Bysarvho/GaJlh66UjzSSeuplnNHibB/XZbEJw3w6M8NIURhI2XQLFkMiOg11Vx6doRt
-         BXWw2BfoyGfSBZeQme0WnkF1npljM5/JmEOyVMN631HIOMZgz7+o4vuWSE19dgDH3rUq
-         8o8UqK1UgstUmLYwJJ+fuvs1HbmuCrCCdJsYyxuvj5CMrn5T3jG7WCDbGDda0IwWd0Jz
-         rrPg==
-X-Gm-Message-State: AOAM533q0ewWk0VL43WAcdlkt3hDPulfXwarF11+u1IrXw4QJ/YXz59I
-        dIZXlLvfxnZJh7AIv8ucIVw=
-X-Google-Smtp-Source: ABdhPJx6vbu/y4WRqtx+l8hEQqtX3dIhG1q+B9OQhBo0sDUN5GZeqT/00FPhX85+RqXmm9j2EjRHRQ==
-X-Received: by 2002:a17:902:a714:b0:154:6dfe:bba9 with SMTP id w20-20020a170902a71400b001546dfebba9mr7060966plq.124.1651400582690;
-        Sun, 01 May 2022 03:23:02 -0700 (PDT)
-Received: from localhost.localdomain (164.174.128.101.dy.bbexcite.jp. [101.128.174.164])
-        by smtp.gmail.com with ESMTPSA id n15-20020a17090a928f00b001d903861194sm17606060pjo.30.2022.05.01.03.22.59
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=V+FMZjVIJ5w3qpzg5VfAXXy3DLGF32A6QmZgvHOgpUo=;
+        b=obxMa3iqaWmR7AjtHxyEHrjL/F2aDpjgCjiZqPx1y31ME5ot1uDifxCcAclFYEYaPZ
+         cZ0F8H97QU/raPYHRiwH3z/VxFFxLmQdfa5+79qUoYHWm71MQ1U2XySeMuInV+MpYdiq
+         NZ6iq1O0T6p1V/owQrD0tJhuSk1/Z3xV28DMPg0pjqDKh0Jt55/S8oXjfItDe6Re4maA
+         e7xpUV/uSybqVy/iMpQU0LxrPbSbyNloAcsJ+P7+NWGhRDYMMzVOv4XpU8L1B4z8avfP
+         OqC2ibDcC54sx1Nudp0IDOEoYtIN6AdQk/6ZaZICc2OyciJSsxRWrtyuHbC/LvuTAnKs
+         th9w==
+X-Gm-Message-State: AOAM532EEb3H3N3LdmfmpkmGDnPKk8V0q24eD0SjkpLhrMD6H07voU9L
+        n0y0FMS76auLEXIeAng2iDZb4A==
+X-Google-Smtp-Source: ABdhPJzUVs967ak8EbM5gnxWF8sDu1+zkwx/N8L+VXoBr1ZAa/Larvjb/c+OX2osNcUE6xtkNO598A==
+X-Received: by 2002:a17:907:8a14:b0:6f4:4365:dc07 with SMTP id sc20-20020a1709078a1400b006f44365dc07mr1243250ejc.693.1651401272951;
+        Sun, 01 May 2022 03:34:32 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id gv49-20020a1709072bf100b006f3ef214e35sm2443733ejc.155.2022.05.01.03.34.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 May 2022 03:23:01 -0700 (PDT)
-From:   Kosuke Fujimoto <fujimotokosuke0@gmail.com>
-To:     shibata@linuxfoundation.org
-Cc:     Kosuke Fujimoto <fujimotokosuke0@gmail.com>, corbet@lwn.net,
-        akiyks@gmail.com, skhan@linuxfoundation.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5]     docs/trans/ja_JP/howto: Don't mention specific kernel versions
-Date:   Sun,  1 May 2022 19:22:56 +0900
-Message-Id: <20220501102256.6379-1-fujimotokosuke0@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 01 May 2022 03:34:32 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Jassi Brar <jassisinghbrar@gmail.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Tushar Khandelwal <Tushar.Khandelwal@arm.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Peng Fan <peng.fan@nxp.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 2/2] mailbox: imx: fix duplicated initializer
+Date:   Sun,  1 May 2022 12:34:28 +0200
+Message-Id: <20220501103428.111286-2-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220501103428.111286-1-krzysztof.kozlowski@linaro.org>
+References: <20220501103428.111286-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-    This change is based on commit d2b008f134b7
-    ("Documentation/process/howto: Update for 4.x -> 5.x versioning").
+rxdb field is being initialized twice:
 
-    Replace "4.x kernel version" with generic term such as "mainline tree"
+  drivers/mailbox/imx-mailbox.c:889:19: error: initialized field overwritten [-Werror=override-init]
+    889 |         .rxdb   = imx_mu_generic_rxdb,
 
-    Signed-off-by: Kosuke Fujimoto <fujimotokosuke0@gmail.com>
-    Reviewed-by: Akira Yokosawa <akiyks@gmail.com>
-    ---
-    V2: Reformatted commit log message (Yokosawa-san)
-    V3: Updated some expressions (Shibata-san)
-    - added "version number" in mainline tree section
-    - updated from "stable kernel" to "stable tree"
-    V4: Added reviewed by tag and removed extra characters (Yokosawa-san)
-  　V5: Removed an extra character (Shibata-san)
+Fixes: 315d2e562418 ("mailbox: imx: introduce rxdb callback")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- Documentation/translations/ja_JP/howto.rst | 44 +++++++++++-----------
- 1 file changed, 21 insertions(+), 23 deletions(-)
+ drivers/mailbox/imx-mailbox.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/Documentation/translations/ja_JP/howto.rst b/Documentation/translations/ja_JP/howto.rst
-index d667f9d8a02a..38fed6fe62fe 100644
---- a/Documentation/translations/ja_JP/howto.rst
-+++ b/Documentation/translations/ja_JP/howto.rst
-@@ -262,21 +262,21 @@ Linux カーネルの開発プロセスは現在幾つかの異なるメイン
- チ」と多数のサブシステム毎のカーネルブランチから構成されます。これらの
- ブランチとは -
- 
--  - メインの 4.x カーネルツリー
--  - 4.x.y -stable カーネルツリー
--  - サブシステム毎のカーネルツリーとパッチ
--  - 統合テストのための 4.x -next カーネルツリー
-+  - Linus のメインラインツリー
-+  - メジャー番号をまたぐ数本の安定版ツリー
-+  - サブシステム毎のカーネルツリー
-+  - 統合テストのための linux-next カーネルツリー
- 
--4.x カーネルツリー
-+メインラインツリー
- ~~~~~~~~~~~~~~~~~~
- 
--4.x カーネルは Linus Torvalds によってメンテナンスされ、
--https://kernel.org の pub/linux/kernel/v4.x/ ディレクトリに存在します。
-+メインラインツリーは Linus Torvalds によってメンテナンスされ、
-+https://kernel.org のリポジトリに存在します。
- この開発プロセスは以下のとおり -
- 
-   - 新しいカーネルがリリースされた直後に、2週間の特別期間が設けられ、
-     この期間中に、メンテナ達は Linus に大きな差分を送ることができます。
--    このような差分は通常 -next カーネルに数週間含まれてきたパッチです。
-+    このような差分は通常 linux-next カーネルに数週間含まれてきたパッチです。
-     大きな変更は git(カーネルのソース管理ツール、詳細は
-     http://git-scm.com/ 参照) を使って送るのが好ましいやり方ですが、パッ
-     チファイルの形式のまま送るのでも十分です。
-@@ -303,20 +303,18 @@ Andrew Morton が Linux-kernel メーリングリストにカーネルリリー
-         前もって決められた計画によってリリースされるものではないから
-         です。」*
- 
--4.x.y -stable カーネルツリー
--~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+メジャー番号をまたぐ数本の安定版ツリー
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
- バージョン番号が3つの数字に分かれているカーネルは -stable カーネルです。
--これには、4.x カーネルで見つかったセキュリティ問題や重大な後戻りに対す
--る比較的小さい重要な修正が含まれます。
-+これには最初の2つのバージョン番号の数字に対応した、
-+メインラインリリースで見つかったセキュリティ問題や
-+重大な後戻りに対する比較的小さい重要な修正が含まれます。
- 
- これは、開発/実験的バージョンのテストに協力することに興味が無く、最新
- の安定したカーネルを使いたいユーザに推奨するブランチです。
- 
--もし、4.x.y カーネルが存在しない場合には、番号が一番大きい 4.x が最新
--の安定版カーネルです。
--
--4.x.y は "stable" チーム <stable@vger.kernel.org> でメンテされており、
-+安定版ツリーは"stable" チーム <stable@vger.kernel.org> でメンテされており、
- 必要に応じてリリースされます。通常のリリース期間は 2週間毎ですが、差
- し迫った問題がなければもう少し長くなることもあります。セキュリティ関
- 連の問題の場合はこれに対してだいたいの場合、すぐにリリースがされます。
-@@ -326,7 +324,7 @@ Documentation/process/stable-kernel-rules.rst ファイルにはどのような
- 類の変更が -stable ツリーに受け入れ可能か、またリリースプロセスがどう
- 動くかが記述されています。
- 
--サブシステム毎のカーネルツリーとパッチ
-+サブシステム毎のカーネルツリー
- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
- それぞれのカーネルサブシステムのメンテナ達は --- そして多くのカーネル
-@@ -351,19 +349,19 @@ quilt シリーズとして公開されているパッチキューも使われ
- けることができます。大部分のこれらの patchwork のサイトは
- https://patchwork.kernel.org/ でリストされています。
- 
--統合テストのための 4.x -next カーネルツリー
--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+統合テストのための linux-next カーネルツリー
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
--サブシステムツリーの更新内容がメインラインの 4.x ツリーにマージされる
-+サブシステムツリーの更新内容がメインラインツリーにマージされる
- 前に、それらは統合テストされる必要があります。この目的のため、実質的に
- 全サブシステムツリーからほぼ毎日プルされてできる特別なテスト用のリポジ
- トリが存在します-
- 
-        https://git.kernel.org/?p=linux/kernel/git/next/linux-next.git
- 
--このやり方によって、-next カーネルは次のマージ機会でどんなものがメイン
--ラインカーネルにマージされるか、おおまかなの展望を提供します。-next カー
--ネルの実行テストを行う冒険好きなテスターは大いに歓迎されます。
-+このやり方によって、linux-next は次のマージ機会でどんなものがメイン
-+ラインにマージされるか、おおまかな展望を提供します。
-+linux-next の実行テストを行う冒険好きなテスターは大いに歓迎されます。
- 
- バグレポート
- -------------
+diff --git a/drivers/mailbox/imx-mailbox.c b/drivers/mailbox/imx-mailbox.c
+index e88f544a1548..df8a785be324 100644
+--- a/drivers/mailbox/imx-mailbox.c
++++ b/drivers/mailbox/imx-mailbox.c
+@@ -886,7 +886,6 @@ static const struct imx_mu_dcfg imx_mu_cfg_imx8ulp = {
+ 	.rx	= imx_mu_generic_rx,
+ 	.rxdb	= imx_mu_generic_rxdb,
+ 	.init	= imx_mu_init_generic,
+-	.rxdb	= imx_mu_generic_rxdb,
+ 	.type	= IMX_MU_V2,
+ 	.xTR	= 0x200,
+ 	.xRR	= 0x280,
 -- 
-2.25.1
+2.32.0
 
