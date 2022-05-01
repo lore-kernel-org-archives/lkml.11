@@ -2,56 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50371C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 08:05:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B6A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 08:06:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243734AbiEAIJT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 04:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38484 "EHLO
+        id S244106AbiEAIJZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 1 May 2022 04:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244173AbiEAII6 (ORCPT
+        with ESMTP id S244156AbiEAII6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 1 May 2022 04:08:58 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40BAA22518;
-        Sun,  1 May 2022 01:05:31 -0700 (PDT)
-Date:   Sun, 01 May 2022 08:05:29 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EEC7BC9A;
+        Sun,  1 May 2022 01:05:30 -0700 (PDT)
+Date:   Sun, 01 May 2022 08:05:27 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651392330;
+        s=2020; t=1651392328;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=x+spWrcPrbTUUZGwE7e3adfKfCHYQ3Ba2eFYiYfXCJ0=;
-        b=eE8y6XRp0yiMmdl2cxhuAt8RVcYycgB0eo/6Y4ZK8eLCxQeVAJX5bn+oGasRFz4LyRYQ0t
-        9S87S06XFcp7jHtGjkDbAdL7MyoPscmPLyofWuktoLPFwUpjGuFwDlqWPOsuMdsomDsILH
-        jqlI1SkrwC+PMtc4Q5+sof1r0+MkFCdAx2NQOYpnQHbPPuCucz9Napp5U1D7gAfe4yL4/3
-        r2b1anIIGF5i5yEgIENh93PvBOLrZJCdH3pzkUP5dEkCOSbmE2/ToP/OraxmrWza89lLCq
-        GgC4Jqd1KcI6GUJjhx9EVEYz4i8153y21wHJD/WvBYty5vN+k0Hq5O3F/ujozQ==
+        bh=VO070gCuZJTgdUPpsLphHxZNRwVJ9QxlBcypKnh0Pk8=;
+        b=ajJ7IMD9RViTurNoBkm3MWui+gO5eDx5wDr2/kF+dmDapqkpuJfKCWv2Tu29ilhd3yB+B3
+        /0iDaVY+4nrinG5YoG+flDZpmEpEAhFJkzJtOaFnuG1kFGhXtjTqKuaZl8S83HUcBFtS4f
+        rygz90CRHICVk4EbzlmlvXNTAVkAzA4cRMYNzD7dJVa4pMtzHRO0qfroXkCyhCc8NVS0mh
+        GZD8FVC/+l8GKc4B2Bjmf3cC09qI0jXhWXe7fsafyxUWuXT1zgYrUsyxNyGPLyYA2I0fKV
+        5ODRvVC0PmVStI207nTss5T3zhJ7tQKDuyU5vSzRn2qjhWcwx4HBcKvnpmDXUg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651392330;
+        s=2020e; t=1651392328;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=x+spWrcPrbTUUZGwE7e3adfKfCHYQ3Ba2eFYiYfXCJ0=;
-        b=Qq/CLeBvJTCIQ2zOE19+HXxaKspxmSDeUCSosxFjIYEyigGEBwIKV2DUwPy5I3Bmyo7GpB
-        Wkzc5e/KEXIBCuBw==
-From:   "tip-bot2 for Thomas Gleixner" <tip-bot2@linutronix.de>
+        bh=VO070gCuZJTgdUPpsLphHxZNRwVJ9QxlBcypKnh0Pk8=;
+        b=UMd9eTYLrTLxkw4ZEbA5MIxTbCtOdg6GoqhHqBb4lbhPmGA6j8OEM+mF9gt65pjztHmR3h
+        WkkbyQCypfW6gABw==
+From:   "tip-bot2 for Sebastian Andrzej Siewior" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched: Fix missing prototype warnings
-Cc:     kernel test robot <lkp@intel.com>,
+Subject: [tip: sched/core] smp: Make softirq handling RT safe in
+ flush_smp_call_function_queue()
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Thomas Gleixner <tglx@linutronix.de>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220413133024.249118058@linutronix.de>
-References: <20220413133024.249118058@linutronix.de>
+In-Reply-To: <YgKgL6aPj8aBES6G@linutronix.de>
+References: <YgKgL6aPj8aBES6G@linutronix.de>
 MIME-Version: 1.0
-Message-ID: <165139232942.4207.4368657808943389619.tip-bot2@tip-bot2>
+Message-ID: <165139232730.4207.638214050053913440.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,167 +63,120 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the sched/core branch of tip:
 
-Commit-ID:     d664e399128bd78b905ff480917e2c2d4949e101
-Gitweb:        https://git.kernel.org/tip/d664e399128bd78b905ff480917e2c2d4949e101
-Author:        Thomas Gleixner <tglx@linutronix.de>
-AuthorDate:    Wed, 13 Apr 2022 15:31:02 +02:00
+Commit-ID:     1a90bfd220201fbe050dfc15deaac20ca5f15638
+Gitweb:        https://git.kernel.org/tip/1a90bfd220201fbe050dfc15deaac20ca5f15638
+Author:        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+AuthorDate:    Wed, 13 Apr 2022 15:31:05 +02:00
 Committer:     Thomas Gleixner <tglx@linutronix.de>
 CommitterDate: Sun, 01 May 2022 10:03:43 +02:00
 
-sched: Fix missing prototype warnings
+smp: Make softirq handling RT safe in flush_smp_call_function_queue()
 
-A W=1 build emits more than a dozen missing prototype warnings related to
-scheduler and scheduler specific includes.
+flush_smp_call_function_queue() invokes do_softirq() which is not available
+on PREEMPT_RT. flush_smp_call_function_queue() is invoked from the idle
+task and the migration task with preemption or interrupts disabled.
 
-Reported-by: kernel test robot <lkp@intel.com>
+So RT kernels cannot process soft interrupts in that context as that has to
+acquire 'sleeping spinlocks' which is not possible with preemption or
+interrupts disabled and forbidden from the idle task anyway.
+
+The currently known SMP function call which raises a soft interrupt is in
+the block layer, but this functionality is not enabled on RT kernels due to
+latency and performance reasons.
+
+RT could wake up ksoftirqd unconditionally, but this wants to be avoided if
+there were soft interrupts pending already when this is invoked in the
+context of the migration task. The migration task might have preempted a
+threaded interrupt handler which raised a soft interrupt, but did not reach
+the local_bh_enable() to process it. The "running" ksoftirqd might prevent
+the handling in the interrupt thread context which is causing latency
+issues.
+
+Add a new function which handles this case explicitely for RT and falls
+back to do_softirq() on !RT kernels. In the RT case this warns when one of
+the flushed SMP function calls raised a soft interrupt so this can be
+investigated.
+
+[ tglx: Moved the RT part out of SMP code ]
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220413133024.249118058@linutronix.de
----
- include/linux/sched.h        | 2 ++
- kernel/sched/build_policy.c  | 2 ++
- kernel/sched/build_utility.c | 1 +
- kernel/sched/core.c          | 3 +++
- kernel/sched/deadline.c      | 2 --
- kernel/sched/fair.c          | 1 +
- kernel/sched/sched.h         | 8 ++------
- kernel/sched/smp.h           | 6 ++++++
- kernel/stop_machine.c        | 2 --
- 9 files changed, 17 insertions(+), 10 deletions(-)
+Link: https://lore.kernel.org/r/YgKgL6aPj8aBES6G@linutronix.de
+Link: https://lore.kernel.org/r/20220413133024.356509586@linutronix.de
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index fc74ea2..a27316f 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -2388,4 +2388,6 @@ static inline void sched_core_free(struct task_struct *tsk) { }
- static inline void sched_core_fork(struct task_struct *p) { }
- #endif
+---
+ include/linux/interrupt.h |  9 +++++++++
+ kernel/smp.c              |  5 ++++-
+ kernel/softirq.c          | 13 +++++++++++++
+ 3 files changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
+index f40754c..a49fe8d 100644
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -607,6 +607,15 @@ struct softirq_action
+ asmlinkage void do_softirq(void);
+ asmlinkage void __do_softirq(void);
  
-+extern void sched_set_stop_task(int cpu, struct task_struct *stop);
-+
- #endif
-diff --git a/kernel/sched/build_policy.c b/kernel/sched/build_policy.c
-index e0104b4..d9dc9ab 100644
---- a/kernel/sched/build_policy.c
-+++ b/kernel/sched/build_policy.c
-@@ -15,6 +15,7 @@
- /* Headers: */
- #include <linux/sched/clock.h>
- #include <linux/sched/cputime.h>
-+#include <linux/sched/hotplug.h>
- #include <linux/sched/posix-timers.h>
- #include <linux/sched/rt.h>
- 
-@@ -31,6 +32,7 @@
- #include <uapi/linux/sched/types.h>
- 
- #include "sched.h"
-+#include "smp.h"
- 
- #include "autogroup.h"
- #include "stats.h"
-diff --git a/kernel/sched/build_utility.c b/kernel/sched/build_utility.c
-index eec0849..99bdd96 100644
---- a/kernel/sched/build_utility.c
-+++ b/kernel/sched/build_utility.c
-@@ -14,6 +14,7 @@
- #include <linux/sched/debug.h>
- #include <linux/sched/isolation.h>
- #include <linux/sched/loadavg.h>
-+#include <linux/sched/nohz.h>
- #include <linux/sched/mm.h>
- #include <linux/sched/rseq_api.h>
- #include <linux/sched/task_stack.h>
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 068c088..e644578 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -26,7 +26,10 @@
- #include <linux/topology.h>
- #include <linux/sched/clock.h>
- #include <linux/sched/cond_resched.h>
-+#include <linux/sched/cputime.h>
- #include <linux/sched/debug.h>
-+#include <linux/sched/hotplug.h>
-+#include <linux/sched/init.h>
- #include <linux/sched/isolation.h>
- #include <linux/sched/loadavg.h>
- #include <linux/sched/mm.h>
-diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index fb4255a..6ae4236 100644
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -1220,8 +1220,6 @@ int dl_runtime_exceeded(struct sched_dl_entity *dl_se)
- 	return (dl_se->runtime <= 0);
- }
- 
--extern bool sched_rt_bandwidth_account(struct rt_rq *rt_rq);
--
- /*
-  * This function implements the GRUB accounting rule:
-  * according to the GRUB reclaiming algorithm, the runtime is
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 6ca054b..bc9f6e9 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -36,6 +36,7 @@
- #include <linux/sched/cond_resched.h>
- #include <linux/sched/cputime.h>
- #include <linux/sched/isolation.h>
-+#include <linux/sched/nohz.h>
- 
- #include <linux/cpuidle.h>
- #include <linux/interrupt.h>
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 762be73..4784898 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -1833,12 +1833,7 @@ static inline void dirty_sched_domain_sysctl(int cpu)
- #endif
- 
- extern int sched_update_scaling(void);
--
--extern void flush_smp_call_function_from_idle(void);
--
--#else /* !CONFIG_SMP: */
--static inline void flush_smp_call_function_from_idle(void) { }
--#endif
-+#endif /* CONFIG_SMP */
- 
- #include "stats.h"
- 
-@@ -2315,6 +2310,7 @@ extern void resched_cpu(int cpu);
- 
- extern struct rt_bandwidth def_rt_bandwidth;
- extern void init_rt_bandwidth(struct rt_bandwidth *rt_b, u64 period, u64 runtime);
-+extern bool sched_rt_bandwidth_account(struct rt_rq *rt_rq);
- 
- extern void init_dl_bandwidth(struct dl_bandwidth *dl_b, u64 period, u64 runtime);
- extern void init_dl_task_timer(struct sched_dl_entity *dl_se);
-diff --git a/kernel/sched/smp.h b/kernel/sched/smp.h
-index 9620e32..5719bf9 100644
---- a/kernel/sched/smp.h
-+++ b/kernel/sched/smp.h
-@@ -7,3 +7,9 @@
- extern void sched_ttwu_pending(void *arg);
- 
- extern void send_call_function_single_ipi(int cpu);
-+
-+#ifdef CONFIG_SMP
-+extern void flush_smp_call_function_from_idle(void);
++#ifdef CONFIG_PREEMPT_RT
++extern void do_softirq_post_smp_call_flush(unsigned int was_pending);
 +#else
-+static inline void flush_smp_call_function_from_idle(void) { }
++static inline void do_softirq_post_smp_call_flush(unsigned int unused)
++{
++	do_softirq();
++}
 +#endif
-diff --git a/kernel/stop_machine.c b/kernel/stop_machine.c
-index cbc3027..6da7b91 100644
---- a/kernel/stop_machine.c
-+++ b/kernel/stop_machine.c
-@@ -535,8 +535,6 @@ void stop_machine_park(int cpu)
- 	kthread_park(stopper->thread);
++
+ extern void open_softirq(int nr, void (*action)(struct softirq_action *));
+ extern void softirq_init(void);
+ extern void __raise_softirq_irqoff(unsigned int nr);
+diff --git a/kernel/smp.c b/kernel/smp.c
+index 8e85f22..d54c2fe 100644
+--- a/kernel/smp.c
++++ b/kernel/smp.c
+@@ -696,6 +696,7 @@ static void __flush_smp_call_function_queue(bool warn_cpu_offline)
+  */
+ void flush_smp_call_function_queue(void)
+ {
++	unsigned int was_pending;
+ 	unsigned long flags;
+ 
+ 	if (llist_empty(this_cpu_ptr(&call_single_queue)))
+@@ -704,9 +705,11 @@ void flush_smp_call_function_queue(void)
+ 	cfd_seq_store(this_cpu_ptr(&cfd_seq_local)->idle, CFD_SEQ_NOCPU,
+ 		      smp_processor_id(), CFD_SEQ_IDLE);
+ 	local_irq_save(flags);
++	/* Get the already pending soft interrupts for RT enabled kernels */
++	was_pending = local_softirq_pending();
+ 	__flush_smp_call_function_queue(true);
+ 	if (local_softirq_pending())
+-		do_softirq();
++		do_softirq_post_smp_call_flush(was_pending);
+ 
+ 	local_irq_restore(flags);
+ }
+diff --git a/kernel/softirq.c b/kernel/softirq.c
+index fac8018..9f0aef8 100644
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -294,6 +294,19 @@ static inline void invoke_softirq(void)
+ 		wakeup_softirqd();
  }
  
--extern void sched_set_stop_task(int cpu, struct task_struct *stop);
--
- static void cpu_stop_create(unsigned int cpu)
- {
- 	sched_set_stop_task(cpu, per_cpu(cpu_stopper.thread, cpu));
++/*
++ * flush_smp_call_function_queue() can raise a soft interrupt in a function
++ * call. On RT kernels this is undesired and the only known functionality
++ * in the block layer which does this is disabled on RT. If soft interrupts
++ * get raised which haven't been raised before the flush, warn so it can be
++ * investigated.
++ */
++void do_softirq_post_smp_call_flush(unsigned int was_pending)
++{
++	if (WARN_ON_ONCE(was_pending != local_softirq_pending()))
++		invoke_softirq();
++}
++
+ #else /* CONFIG_PREEMPT_RT */
+ 
+ /*
