@@ -2,109 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F3D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 610C6C43217
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:20:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352035AbiEARVo (ORCPT
+        id S1353025AbiEARYB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 13:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45248 "EHLO
+        Sun, 1 May 2022 13:24:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231591AbiEARVm (ORCPT
+        with ESMTP id S1352805AbiEARXo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 13:21:42 -0400
-Received: from 14.mo581.mail-out.ovh.net (14.mo581.mail-out.ovh.net [178.33.251.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B68C862A23
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 10:18:15 -0700 (PDT)
-Received: from player696.ha.ovh.net (unknown [10.108.1.240])
-        by mo581.mail-out.ovh.net (Postfix) with ESMTP id 19BB9211BC
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 17:08:14 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player696.ha.ovh.net (Postfix) with ESMTPSA id 920801FD70409;
-        Sun,  1 May 2022 17:08:09 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-95G001f5844953-7db1-42db-9d2e-ace5f20121a5,
-                    5040CBFF384BEDF7422707969F5457AB1E143173) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-Date:   Sun, 1 May 2022 19:08:02 +0200
-From:   Stephen Kitt <steve@sk2.org>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, Wolfram Sang <wsa@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 7/7] ASoC: tpa6130: use i2c_match_id and simple i2c
- probe
-Message-ID: <20220501190802.6ae4797a@heffalump.sk2.org>
-In-Reply-To: <YmahmnPi4B2n29BE@sirena.org.uk>
-References: <20220415160613.148882-1-steve@sk2.org>
-        <20220415160613.148882-8-steve@sk2.org>
-        <YmahmnPi4B2n29BE@sirena.org.uk>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Sun, 1 May 2022 13:23:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE7E614E;
+        Sun,  1 May 2022 10:20:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5377A60F55;
+        Sun,  1 May 2022 17:20:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8364DC385B0;
+        Sun,  1 May 2022 17:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651425616;
+        bh=tHHxRDQDtWRjj5+yflIBb+axcnk5v0Qd22de8ghVlbc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mIQJGI+scSXSB7jbTDKA+XP5efWhavRxTmsYxijmpkMDUhQQNLlwMF/ZZuNl2dq2j
+         bFLkg+1hnJXjFvLRlL1UM5A/eljwuz7wKoYqi2TVde33gGC/SF0Leq13qLnpKbllQZ
+         /kuDeBnMFXcQuvhve+t/eP4pizEnB9Z9WFg+bGwTLwwWMQbSYs7SBHLTswVz+GUkqx
+         JG8jHHN6tsqiNDHk2g2KNbMEq8SuZqLefoBPpf99XZtPrAVDa2rvuaJUmwdnT+/2Ll
+         9XVeElLkssH0QKWLk6Mob0jj7gBh3DRB6Wp2nR6v2f4PdrVMbB8E5dq7/jkyzRxUm/
+         78tUH/1KLR3QQ==
+Date:   Sun, 1 May 2022 18:28:29 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Caleb Connolly <caleb.connolly@linaro.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: Re: [PATCH v14 02/10] mfd: qcom-spmi-pmic: expose the PMIC revid
+ information to clients
+Message-ID: <20220501182829.1edc181f@jic23-huawei>
+In-Reply-To: <20220429220904.137297-3-caleb.connolly@linaro.org>
+References: <20220429220904.137297-1-caleb.connolly@linaro.org>
+        <20220429220904.137297-3-caleb.connolly@linaro.org>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/XgdtRu8Xt=SJpMeSq_X_jXU";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Ovh-Tracer-Id: 13726127241353332358
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdefgddutdelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepfffhvfevuffkjghfofggtgesghdtreerredtjeenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepieehvedvueegjefffeetffevhfeigeejvefhkeejjedvlefgfeekhefhudffhfejnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrieeliedrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/XgdtRu8Xt=SJpMeSq_X_jXU
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On Fri, 29 Apr 2022 23:08:57 +0100
+Caleb Connolly <caleb.connolly@linaro.org> wrote:
 
-On Mon, 25 Apr 2022 14:26:50 +0100, Mark Brown <broonie@kernel.org> wrote:
-> On Fri, Apr 15, 2022 at 06:06:13PM +0200, Stephen Kitt wrote:
-> > As part of the ongoing i2c transition to the simple probe
-> > ("probe_new"), this patch uses i2c_match_id to retrieve the
-> > driver_data for the probed device. The id parameter is thus no longer
-> > necessary and the simple probe can be used instead. =20
->=20
-> This breaks the build for omap2plus defconfig on arm:
->=20
-> /build/stage/linux/sound/soc/codecs/tpa6130a2.c:322:11: error:
-> initialization of =E2=80=98int (*)(struct i2c_client *, const struct i2c_=
-device_id
-> *)=E2=80=99 from incompatible pointer type =E2=80=98int (*)(struct i2c_cl=
-ient *)=E2=80=99
-> [-Werror=3Dincompatible-pointer-types] 322 |  .probe =3D tpa6130a2_probe,=
- |
->       ^~~~~~~~~~~~~~~
-> /build/stage/linux/sound/soc/codecs/tpa6130a2.c:322:11: note: (near
-> initialization for =E2=80=98tpa6130a2_i2c_driver.probe=E2=80=99) cc1: som=
-e warnings being
-> treated as errors
->=20
-> You forgot to move probe() to probe_new() in the driver struct.
+> Some PMIC functions such as the RRADC need to be aware of the PMIC
+> chip revision information to implement errata or otherwise adjust
+> behaviour, export the PMIC information to enable this.
+> 
+> This is specifically required to enable the RRADC to adjust
+> coefficients based on which chip fab the PMIC was produced in,
+> this can vary per unique device and therefore has to be read at
+> runtime.
+> 
+> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Tested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-Sorry about that, I obviously missed that file in my build.
+...
 
-v3 will be on its way soon (only for that commit)...
+> +/**
+> + * qcom_pmic_get() - Get a pointer to the base PMIC device
+> + *
+> + * This function takes a struct device for a driver which is a child of a PMIC.
+> + * And locates the PMIC revision information for it.
+> + *
+> + * @dev: the pmic function device
+> + * @return: the struct qcom_spmi_pmic* pointer associated with the function device
+> + */
+> +inline const struct qcom_spmi_pmic *qcom_pmic_get(struct device *dev)
+> +{
+> +	struct spmi_device *sdev;
+> +	struct qcom_spmi_dev *spmi;
+> +
+> +	/*
+> +	 * Make sure the device is actually a child of a PMIC
+> +	 */
+> +	if (!of_match_device(pmic_spmi_id_table, dev->parent))
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	sdev = qcom_pmic_get_base_usid(dev->parent);
+>  
+> -	if (subtype == PM8110_SUBTYPE)
+> -		minor = rev2;
+> +	if (IS_ERR(sdev))
+> +		return ERR_CAST(sdev);
+>  
+> -	dev_dbg(dev, "%x: %s v%d.%d\n", subtype, name, major, minor);
+> +	spmi = (struct qcom_spmi_dev *)dev_get_drvdata(&sdev->dev);
 
-Regards,
+Shouldn't need the cast as dev_get_drvdata() returns void * and you can
+implicitly cast that to any other pointer type.
 
-Stephen
+If this is all that comes up in the series I can fixup whilst applying.
 
---Sig_/XgdtRu8Xt=SJpMeSq_X_jXU
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+Jonathan
 
------BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEnPVX/hPLkMoq7x0ggNMC9Yhtg5wFAmJuvnIACgkQgNMC9Yht
-g5wIYxAAkmzbwdQBuLGKNjsHvhI3+W82S1wSxg7d8l6PBjjxNK8IWn+kjyIR2dRE
-qj5CORvlanVZgejPH5JBLIGENU9Gm1iUXE3VTjM3DnjWtuWMrVQCbec5ojy4pXMe
-JICtv1a2zZQzOq+kA5njrcpfBjEPRHyaykUIBC5AzpxqWJOle8sJw2M7kkSySB5B
-YK2wkQUwnfjhhFdS+mvS70lprZZ63S/maDAfOlLFM5NHqCvQNqfKC/C3HgPrl98d
-8G464ZVvCbZ714VcDx8FKuYKjnzTktwlHzPR+K0dQbYMki0muaM3XxEXN698E1LC
-RH8CNzNq+R1t8a/UPqqG3+sTCyblyd83ipqZhGhCdMnDegiU8VnVxgfxi9fxaBdB
-OiIlfXmwpJ7YTcqTStDZvY62ZoqON4IpZs1xiA0OCDIG81nzm94fli4Wh3/9+1Dr
-RYH+/JaccW/imxxsetmzdYuna3PX6oXOiYSQ7Bf8tQXAzZjI2HQishvMPZOR1Os4
-kUIBJ5vQJILgX01qud4vHJZSamfQhoOIjjOKRVSxME9n2jhDzLXn+P9NcARbLAAk
-4achZZUrmf9FyboDmhtJOxz/F19md60Q+bz/5gFAAMsCozoRXUp5vR2lVnPtM0OM
-BoCioJZJz7YuZCs4Y7737awIeR1nfM7zuK7bi1YShgP6y/7Vmno=
-=icKx
------END PGP SIGNATURE-----
+> +
+> +	return &spmi->pmic;
+>  }
+> +EXPORT_SYMBOL(qcom_pmic_get);
+>  
 
---Sig_/XgdtRu8Xt=SJpMeSq_X_jXU--
