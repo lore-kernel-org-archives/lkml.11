@@ -2,221 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC40C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0AADC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:23:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349969AbiEARZS (ORCPT
+        id S1352873AbiEAR0x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 13:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52242 "EHLO
+        Sun, 1 May 2022 13:26:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230440AbiEARZR (ORCPT
+        with ESMTP id S231484AbiEAR0t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 13:25:17 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9446922529
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 10:21:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651425711; x=1682961711;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=90XDb9APUpsd/tVLgGGgKMBJ9e3qI+pRHTCZNvO/udg=;
-  b=NQkfPjfpd5YePhbRhP5+VcdRYQhl8S4JycFKbXV8CR1mc3gXOOrAdn3X
-   C7EdysZaqLaYu+2KJb8EVJUU987ua2DtZIlmWimCXA2dM38P0Z5UDOmgb
-   trMft/CVSI+R2Xj2Ft6QByFl2bxusFDLWESCegGTTpOL4bWMmeVcJtFHO
-   YUGD+eqDzrGNHVwKLCSRv7avkQpmtFDkBJbPMlKzGW4CuqiYLNMETdE2e
-   AFP4XJz1Q91O788YjgB9X8MmrEmffzCpOBRXLyxYk/izPO3fyZnTz86R9
-   ip39X+XYDfPUcBHMSMa0hHyE6Up0BFhwRichKcXT/e2V2VuWp4pIB75kS
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10334"; a="264625316"
-X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
-   d="scan'208";a="264625316"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2022 10:21:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
-   d="scan'208";a="619553167"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 01 May 2022 10:21:50 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nlDGX-0008vj-JB;
-        Sun, 01 May 2022 17:21:49 +0000
-Date:   Mon, 02 May 2022 01:21:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:dev.2022.04.20a] BUILD SUCCESS
- ef41303096e59a9ca8d2668f06358bba11ee02c1
-Message-ID: <626ec17c.C4C47FtqsrQZKnYP%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Sun, 1 May 2022 13:26:49 -0400
+X-Greylist: delayed 580 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 01 May 2022 10:23:21 PDT
+Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B5CC4614F
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 10:23:20 -0700 (PDT)
+Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
+        by relayaws-01.paragon-software.com (Postfix) with ESMTPS id 8BE5D23E8;
+        Sun,  1 May 2022 17:13:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paragon-software.com; s=mail; t=1651425213;
+        bh=+7dSocgdKOwnHjit7kSTGbHZMbMHppkIre6dLkmO8Cw=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To;
+        b=F2IdnanVZjeIFlluSGTpSZv3RvVD0PAiRPxCCpjcpFGQPpfB4a8BAwhDZkWINbnPx
+         DdBqQZSrzVhk53Xs2alY8n0w6HiI+SXLxjYRBnma+pLr80Z9y62s46SQxTPK6SYPbE
+         YcC7Ud3m6SlaKqkjYdqU2syu2WE6HBJSiek3jrsQ=
+Received: from vdlg-exch-02.paragon-software.com (172.30.1.105) by
+ vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Sun, 1 May 2022 20:13:39 +0300
+Received: from vdlg-exch-02.paragon-software.com ([fe80::586:6d72:3fe5:bd9b])
+ by vdlg-exch-02.paragon-software.com ([fe80::586:6d72:3fe5:bd9b%12]) with
+ mapi id 15.01.2375.007; Sun, 1 May 2022 20:13:39 +0300
+From:   Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Kari Argillander <kari.argillander@stargateuniverse.net>
+CC:     "ntfs3@lists.linux.dev" <ntfs3@lists.linux.dev>,
+        Theodore Ts'o <tytso@mit.edu>, Christoph Hellwig <hch@lst.de>,
+        Matthew Wilcox <willy@infradead.org>,
+        Eric Biggers <ebiggers@kernel.org>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        "Al Viro" <viro@zeniv.linux.org.uk>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: RE: NTFS3 driver is orphan already. What we do?
+Thread-Topic: NTFS3 driver is orphan already. What we do?
+Thread-Index: AQHYWU8d5UQareA1dE+mIW4HKVrLlK0D2MOAgAZo1WA=
+Date:   Sun, 1 May 2022 17:13:39 +0000
+Message-ID: <0f48e2eb2b0740b1b85e3b8d910c4bd8@paragon-software.com>
+References: <da20d32b-5185-f40b-48b8-2986922d8b25@stargateuniverse.net>
+ <CAHk-=wihuvzVTozzNLZT=uFzJH6uM7ZNKN7fYVpm0v2KkY6Jxg@mail.gmail.com>
+In-Reply-To: <CAHk-=wihuvzVTozzNLZT=uFzJH6uM7ZNKN7fYVpm0v2KkY6Jxg@mail.gmail.com>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.30.0.26]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.04.20a
-branch HEAD: ef41303096e59a9ca8d2668f06358bba11ee02c1  rcu: Avoid tracing a few functions executed in stop machine
-
-elapsed time: 7194m
-
-configs tested: 143
-configs skipped: 4
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                              allmodconfig
-arm                                 defconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm64                            allyesconfig
-i386                 randconfig-c001-20220425
-i386                          randconfig-c001
-sh                           se7750_defconfig
-powerpc                      pcm030_defconfig
-xtensa                          iss_defconfig
-arm                            zeus_defconfig
-sparc64                          alldefconfig
-arc                     haps_hs_smp_defconfig
-parisc                           alldefconfig
-sh                         microdev_defconfig
-sh                            shmin_defconfig
-microblaze                      mmu_defconfig
-arm                         lpc18xx_defconfig
-riscv             nommu_k210_sdcard_defconfig
-arm                            mps2_defconfig
-arc                                 defconfig
-arm                          pxa3xx_defconfig
-csky                             alldefconfig
-sh                          rsk7264_defconfig
-powerpc                     mpc83xx_defconfig
-sh                      rts7751r2d1_defconfig
-arm                             ezx_defconfig
-powerpc                      cm5200_defconfig
-sh                   rts7751r2dplus_defconfig
-sparc                               defconfig
-alpha                            allyesconfig
-arm                        mini2440_defconfig
-arm                      footbridge_defconfig
-ia64                             alldefconfig
-m68k                       m5208evb_defconfig
-sh                           se7751_defconfig
-powerpc                 linkstation_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220427
-arm                  randconfig-c002-20220425
-x86_64               randconfig-c001-20220425
-arm                  randconfig-c002-20220426
-ia64                                defconfig
-ia64                             allmodconfig
-ia64                             allyesconfig
-m68k                                defconfig
-m68k                             allmodconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-sh                               allmodconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
-x86_64               randconfig-a015-20220425
-x86_64               randconfig-a014-20220425
-x86_64               randconfig-a011-20220425
-x86_64               randconfig-a013-20220425
-x86_64               randconfig-a012-20220425
-x86_64               randconfig-a016-20220425
-i386                 randconfig-a014-20220425
-i386                 randconfig-a012-20220425
-i386                 randconfig-a011-20220425
-i386                 randconfig-a015-20220425
-i386                 randconfig-a013-20220425
-i386                 randconfig-a016-20220425
-s390                 randconfig-r044-20220425
-arc                  randconfig-r043-20220425
-riscv                randconfig-r042-20220425
-riscv                             allnoconfig
-riscv                            allyesconfig
-riscv                            allmodconfig
-riscv                    nommu_k210_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_virt_defconfig
-riscv                               defconfig
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                                  kexec
-x86_64                          rhel-8.3-func
-x86_64                               rhel-8.3
-x86_64                         rhel-8.3-kunit
-x86_64                           rhel-8.3-syz
-
-clang tested configs:
-riscv                randconfig-c006-20220428
-mips                 randconfig-c004-20220428
-x86_64                        randconfig-c007
-i386                          randconfig-c001
-arm                  randconfig-c002-20220428
-powerpc              randconfig-c003-20220428
-s390                 randconfig-c005-20220428
-mips                          malta_defconfig
-powerpc                     kmeter1_defconfig
-arm                          moxart_defconfig
-arm                          pxa168_defconfig
-arm                            dove_defconfig
-arm                     davinci_all_defconfig
-powerpc                    socrates_defconfig
-mips                malta_qemu_32r6_defconfig
-powerpc                       ebony_defconfig
-powerpc                  mpc885_ads_defconfig
-arm                        neponset_defconfig
-arm                         hackkit_defconfig
-mips                           mtx1_defconfig
-mips                         tb0287_defconfig
-powerpc                        fsp2_defconfig
-arm                      pxa255-idp_defconfig
-x86_64               randconfig-a002-20220425
-x86_64               randconfig-a004-20220425
-x86_64               randconfig-a003-20220425
-x86_64               randconfig-a001-20220425
-x86_64               randconfig-a005-20220425
-x86_64               randconfig-a006-20220425
-i386                          randconfig-a002
-i386                          randconfig-a004
-i386                          randconfig-a006
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-hexagon              randconfig-r045-20220425
-hexagon              randconfig-r041-20220425
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+PiBGcm9tOiBMaW51cyBUb3J2YWxkcyA8dG9ydmFsZHNAbGludXgtZm91bmRhdGlvbi5vcmc+DQo+
+IFNlbnQ6IFdlZG5lc2RheSwgQXByaWwgMjcsIDIwMjIgNzo0NyBQTQ0KPiBUbzogS2FyaSBBcmdp
+bGxhbmRlciA8a2FyaS5hcmdpbGxhbmRlckBzdGFyZ2F0ZXVuaXZlcnNlLm5ldD4NCj4gQ2M6IEtv
+bnN0YW50aW4gS29tYXJvdiA8YWxtYXouYWxleGFuZHJvdmljaEBwYXJhZ29uLXNvZnR3YXJlLmNv
+bT47IG50ZnMzQGxpc3RzLmxpbnV4LmRldjsgVGhlb2RvcmUgVHMnbyA8dHl0c29AbWl0LmVkdT47
+DQo+IENocmlzdG9waCBIZWxsd2lnIDxoY2hAbHN0LmRlPjsgTWF0dGhldyBXaWxjb3ggPHdpbGx5
+QGluZnJhZGVhZC5vcmc+OyBFcmljIEJpZ2dlcnMgPGViaWdnZXJzQGtlcm5lbC5vcmc+OyBEYXJy
+aWNrIEouIFdvbmcNCj4gPGRqd29uZ0BrZXJuZWwub3JnPjsgQ2hyaXN0aWFuIEJyYXVuZXIgPGNo
+cmlzdGlhbi5icmF1bmVyQHVidW50dS5jb20+OyBBbCBWaXJvIDx2aXJvQHplbml2LmxpbnV4Lm9y
+Zy51az47IExpbnV4IEtlcm5lbCBNYWlsaW5nDQo+IExpc3QgPGxpbnV4LWtlcm5lbEB2Z2VyLmtl
+cm5lbC5vcmc+DQo+IFN1YmplY3Q6IFJlOiBOVEZTMyBkcml2ZXIgaXMgb3JwaGFuIGFscmVhZHku
+IFdoYXQgd2UgZG8/DQo+IA0KPiBbIFNhZCBzdGF0ZSBvZiBhZmZhaXJzIG1vc3RseSBlZGl0ZWQg
+b3V0IF0NCj4gDQo+IE9uIFR1ZSwgQXByIDI2LCAyMDIyIGF0IDI6MjIgQU0gS2FyaSBBcmdpbGxh
+bmRlcg0KPiA8a2FyaS5hcmdpbGxhbmRlckBzdGFyZ2F0ZXVuaXZlcnNlLm5ldD4gd3JvdGU6DQo+
+ID4NCj4gPiBJIGFsc28gZGlkIHN1Z2dlc3QgdGhhdCBJIGNvdWxkIGNvIG1haW50YWluIHRoaXMg
+ZHJpdmVyIHRvIHRha2UgYnVyZGVuIGZyb20NCj4gPiBLb25zdGFudGluLCBidXQgaGF2ZW4ndCBn
+b3QgYW55IHJlcGxheS4NCj4gDQo+IElmIHlvdSBhcmUgd2lsbGluZyB0byBtYWludGFpbiBpdCAo
+YW5kIG1heWJlIGZpbmQgb3RoZXIgbGlrZS1taW5kZWQNCj4gcGVvcGxlIHRvIGhlbHAgeW91KSwg
+SSB0aGluayB0aGF0IHdvdWxkIGNlcnRhaW5seSBiZSBhIHRoaW5nIHRvIHRyeS4NCj4gDQo+IEFu
+ZCBpZiB3ZSBjYW4gZmluZCAqbm9ib2R5KiB0aGF0IGVuZHMgdXAgY2FyaW5nIGFuZCBtYWludGFp
+bmluZywgdGhlbg0KPiBJIGd1ZXNzIHdlIHNob3VsZCByZW1vdmUgaXQsIHJhdGhlciB0aGFuIGVu
+ZCB1cCB3aXRoICp0d28qIGVmZmVjdGl2ZWx5DQo+IHVubWFpbnRhaW5lZCBjb3BpZXMgb2YgTlRG
+UyBkcml2ZXJzLg0KPiANCj4gTm90IHRoYXQgdHdvIHVubWFpbnRhaW5lZCBmaWxlc3lzdGVtcyBh
+cmUgbXVjaCB3b3JzZSB0aGFuIG9uZSA6LXANCj4gDQo+ICAgICAgICAgICAgTGludXMNCg0KSGVs
+bG8gTGludXMsIEthcmkgYW5kIGFsbC4NCg0KRmlyc3QgYW5kIGZvcmVtb3N0IEkgbmVlZCB0byBz
+dGF0ZSB0aGF0IGFjdGl2ZSB3b3JrIG9uIE5URlMzIGRyaXZlciBoYXMgbmV2ZXIgc3RvcHBlZCwN
+CmFuZCBpdCB3YXMgbmV2ZXIgZGVjaWRlZCB0byAib3JwaGFuIiBOVEZTMy4gIEN1cnJlbnRseSB3
+ZSBhcmUgc3RpbGwgaW4gdGhlIG1pZGRsZSBvZiB0aGUgcHJvY2Vzcw0Kb2YgZ2V0dGluZyB0aGUg
+S2VybmVsLm9yZyBhY2NvdW50LiBXZSBuZWVkIHRvIHNpZ24gb3VyIFBHUCBrZXkgdG8gbW92ZSBm
+b3J3YXJkLCBidXQNCnRoZSBwcm9jZXNzIGlzIG5vdCBzbyBjbGVhciAod2lsbCBiZSBncmF0ZWZ1
+bCB0byBnZXQgc29tZSBwcm9jZXNzIGRlc2NpcHRpb24pLCBzbyBpdCBpcyBnb2luZyBxdWl0ZSBz
+bG93DQp0cnlpbmcgdG8gdW5yYXZlbCB0aGUgdG9waWMuDQoNCkFzIGZvciBub3csIHdlIGNhbiBw
+cmVwYXJlIHBhdGNoZXMvcHVsbCByZXF1ZXN0cyB0aHJvdWdoIHRoZSBnaXRodWIsIA0KYW5kIHN1
+Ym1pdCB0aGVtIHJpZ2h0IG5vdyAod2UgaGF2ZSBxdWl0ZSBhIGJ1bmNoIG9mIGZpeGVzDQpmb3Ig
+bmV3IEtlcm5lbHMgc3VwcG9ydCwgYnVnZml4ZXMgYW5kIGZzdGVzdHMgZml4ZXMpIC0tIGlmIExp
+bnVzIGFwcHJvdmVzIHRoaXMgYXBwcm9hY2gNCnVudGlsIHdlIHNldCB1cCB0aGUgcHJvcGVyIGdp
+dC5rZXJuZWwub3JnIHJlcG8uDQoNCkFsc28sIHRvIGNsYXJpZnkgdGhpcyBleHBsaWNpdGx5OiBp
+biBhZGRpdGlvbiB0byB0aGUgZHJpdmVyLCB3ZSdyZSB3b3JraW5nIG9mIG50ZnMzIHV0aWxpdGll
+cyBhcyB3ZWxsLg0KDQpPdmVyYWxsLCBuZXZlcnRoZWxlc3MgdGhlIE5URlMzIGRldmVsb3BtZW50
+IHBhY2UgaGFzIGJlZW4gc2xvd2VkIGRvd24gYSBiaXQgZm9yIHByZXZpb3VzIGNvdXBsZQ0Kb2Yg
+bW9udGhzLCBpdHMgc3RhdGUgaXMgc3RpbGwgdGhlIHNhbWUgYXMgYmVmb3JlOiBpdCBpcyBmdWxs
+eSBtYWludGFpbmVkIGFuZCBiZWluZyBkZXZlbG9wZWQuDQoNCkFuZCBmaW5hbGx5LCB3ZSBhcG9s
+b2dpemUgZm9yIGxhdGUgcmVwbHk7IEkgYWxsb3dlZCBtZSBzaG9ydCB2YWNhdGlvbiBhZnRlciBt
+b3N0IHJlc3RyaWN0aW9ucyBiZWNhdXNlDQpvZiBjb3ZpZCBlbmRlZCB1cCB0aGlzIG1vbnRoIGlu
+IEdlcm1hbnkuDQoNClRoYW5rcy4NCg==
