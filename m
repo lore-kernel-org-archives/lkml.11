@@ -2,101 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C276EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 19:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF93C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 20:13:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354233AbiEATsY (ORCPT
+        id S1354307AbiEAURP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 15:48:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
+        Sun, 1 May 2022 16:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230346AbiEATsV (ORCPT
+        with ESMTP id S231147AbiEAURM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 15:48:21 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B7B10FD9
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 12:44:55 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id kq17so24441923ejb.4
-        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 12:44:54 -0700 (PDT)
+        Sun, 1 May 2022 16:17:12 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CEA329BC
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 13:13:44 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id t25so22328544lfg.7
+        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 13:13:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=lSkWyJ22j/Gy1+rBPKEz6ICjIB7fl5dNRWyogOjMNiA=;
-        b=F9jEL0m5dCExabt9JtdIhocs1L9i3dnwB2TDZqj2ap6Lq+zXvHZ6rHaxGaMOzJDjvI
-         kMMdgwzfDyl3DBbW7dmg8TRcHv3hwSG1wTbl8jHJvHExvCr4azznQuC0sT5XTFE+mI/a
-         2NT2CkJpVfMdv2oyovIOLaojlIf7wM4Iw6WTvb/mHTgEd1k2QSHOoZzmgDr3uNwyo64y
-         aOlVwJEmJasp4nv1V46RVWkxbEwG79jS99v+Sq+5CALFlisDqdlWJy3n/CYcIVD2FWBh
-         YHEz0/GiK25AjEBGws1JygK+td5Kfq8pu98IqWQHVbzgCYKCXGAG6XrcLLqkYNFsylEF
-         3CEQ==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Af6YvJ/bQ4g0cZpEqaiRxER9UMLmWrxLeH8xi992H8w=;
+        b=Sn+yCF7EzbvgA/RjBCegCyU8kaRy8zPQSxaZwU2XAcJmTDp4VEbJ2sCYxrfSt1c1u5
+         IufXI1t12+Qu88WHdcO7wOZFTQlFHaYMCw6GX0CY8KCzM1jgKYpLSJMfEY0fARJy/ODr
+         x2RnI7DyeqZ3Y0Kg/iLNnjMl1mrfX/zKJ3c1c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=lSkWyJ22j/Gy1+rBPKEz6ICjIB7fl5dNRWyogOjMNiA=;
-        b=EDNQybNKW3isc6Z7yvJU4qXmEb7aWBjmqgcPGvwpZBbwm0o1z0csHwVQD0aHIw8L9X
-         UGpCKpcpMZYrYWe0Pox+/f4y2hV9pfVcI3W5tVxv1uGD0oq9gHT4rr5M1G1M5mH2mSr3
-         I3Ls+v6AXvEbi540u+F9ulEE4bnVO6LbgPBYlOTs64xbowGWFUaENvYdmVSBzXznWcm1
-         /XozYJhwX8p+V1+VwGHr/ZFhGtPeMisZ5yi/+lOU3tAnR6mWRdVH/jWPE457a48jmosD
-         VS9xw8ypJTxsgzxBmgHFmXAnuQvQ4u4YCEa5583trBApE4km55LQjZbxcOWybOXLMmlI
-         4xAg==
-X-Gm-Message-State: AOAM530OwxXBV/aFg+vsEOCh23Cx6StkFGr8rFTSLO/K91nc/9l1vQF+
-        DoGY6/e3uV01+JZmKktpQGk9C5lNH6qL8gqOIUU=
-X-Google-Smtp-Source: ABdhPJwzwsI+XJN31grZYG7NyEU0V0hcG4a1Fj6YmOYwOlEwwGACzdjSwvtwWqOAYxPX3hRzUK5vgehrAuAUhgD0cgY=
-X-Received: by 2002:a17:907:7815:b0:6ce:5242:1280 with SMTP id
- la21-20020a170907781500b006ce52421280mr8716226ejc.217.1651434293566; Sun, 01
- May 2022 12:44:53 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Af6YvJ/bQ4g0cZpEqaiRxER9UMLmWrxLeH8xi992H8w=;
+        b=ZitFtK78HO9Tohp7MWpisuSNQzJHqWF7f49MW2mhqTqcfB1lOENKKVIcA12bLzeJCY
+         m7I8ll0T3RuC3bJPZ7YieBIT5UNG2C/RPPvQeTbxGkaPEurB8v+b0cfe5zFd+Rd6YxO3
+         dLxvbioQWDhFjjL1YGx8faGEpA+9yPbsEulF0igGWptT2zJa0cIs2v7Mj25IA4/hofsI
+         FSmdZkIJcMGmIlAIaZjRsJ2mtDYOTnipuBqojAzxH34NZ90Y706htw9j3Ltfb9P9J3/U
+         etfXf/taq9KrOSg0hCTwnIfp++uKWext5MQyDxsWWlOwOIilFZQUVt++yTjgub248PDi
+         n/tg==
+X-Gm-Message-State: AOAM532WyGRCQgyYwGDVOFZuXYbu5EosbJNue4YVmBdaQ5gwOYPN+Jgp
+        ppOw/fyAfTeogex1ozxD/G+R/8Mm0L8GZQ==
+X-Google-Smtp-Source: ABdhPJw8YUtFVE+p6/o0pnqcRG5xv6+odD1NvLKmwkmhqHXOBq7/svtLvnXBgp0iNENlq/vPjBK+4g==
+X-Received: by 2002:ac2:5cdb:0:b0:471:fd36:fa56 with SMTP id f27-20020ac25cdb000000b00471fd36fa56mr7148766lfq.501.1651436022216;
+        Sun, 01 May 2022 13:13:42 -0700 (PDT)
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com. [209.85.167.49])
+        by smtp.gmail.com with ESMTPSA id m16-20020ac24ad0000000b0047255d21170sm520733lfp.159.2022.05.01.13.13.41
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 01 May 2022 13:13:41 -0700 (PDT)
+Received: by mail-lf1-f49.google.com with SMTP id x17so22317949lfa.10
+        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 13:13:41 -0700 (PDT)
+X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
+ y3-20020ac24203000000b004488053d402mr7168727lfh.687.1651436020874; Sun, 01
+ May 2022 13:13:40 -0700 (PDT)
 MIME-Version: 1.0
-From:   Ozgur Kara <zgrieee@gmail.com>
-Date:   Sun, 1 May 2022 23:44:42 +0400
-Message-ID: <CAOFRbG=mGdbR72moLtW87ZQW_T1HkhZtcpHRGzZy3NZ7afGVqQ@mail.gmail.com>
-Subject: [5.18.0-rc4+] report: kernel compile
-To:     linux-staging@lists.linux.dev, ozgurk@ieee.org
-Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        torvalds@linux-foundation.org
+References: <CAOFRbG=mGdbR72moLtW87ZQW_T1HkhZtcpHRGzZy3NZ7afGVqQ@mail.gmail.com>
+In-Reply-To: <CAOFRbG=mGdbR72moLtW87ZQW_T1HkhZtcpHRGzZy3NZ7afGVqQ@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 1 May 2022 13:13:24 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whXp7Ps9ML5ThsX1tvdRg6SKRH3r6MM1-EA_Y8-n+6v2A@mail.gmail.com>
+Message-ID: <CAHk-=whXp7Ps9ML5ThsX1tvdRg6SKRH3r6MM1-EA_Y8-n+6v2A@mail.gmail.com>
+Subject: Re: [5.18.0-rc4+] report: kernel compile
+To:     Ozgur Kara <zgrieee@gmail.com>
+Cc:     linux-staging@lists.linux.dev, ozgurk@ieee.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Sun, May 1, 2022 at 12:44 PM Ozgur Kara <zgrieee@gmail.com> wrote:
+>
+> Samsung RC530 (notebook) - FAIL (1)
+> Raspberry PI Model B - FAIL (2)
+>
+> Fail Log:
+>
+> + nvidia driver fail.
+> + scripts/Makefile.build:497: recipe for target 'arch/arm/kernel' failed
 
-The v5.18.0-rc4+ kernel was automatically tested.
+Is there full information available somewhere?
 
-Hardware:
-
-Asus TUF Gaming (notebook) - PASS
-Samsung RC530 (notebook) - FAIL (1)
-HP Compaq 8100 Elite (Workstation) - PASS
-
-Intel(R) Core(TM) i7-2630QM - PASS
-AMD Ryzen 5 3550H with Radeon Vega Mobile Gfx - PASS
-Intel(R) Core(TM) i3 CPU 550 - PASS
-
-NVIDIA:
-
-1650 - PASS
-1660 TI - PASS
-1080 - PASS
-1080 TI - PASS
-2060 - PASS
-2060 Super - PASS
-2070 Super - PASS
-2080 - PASS
-2080 TI - PASS
-3060 TI - PASS
-3070 - PASS
-
-Motherboard:
-
-MSI Z170A GAMING M7 (SSD, latest BIOS) - PASS
-ASUSTeK PRIME Z270-A (SSD latest BIOS) - PASS
-Gigabyte Z370 HD3-CF (SSD latest BIOS) - PASS
-ASUSTeK PRIME H270-PLUS (SSD latest BIOS) - PASS
-
-Architectures:
-
-Raspberry PI Model B - FAIL (2)
-
-Fail Log:
-
-+ nvidia driver fail.
-+ scripts/Makefile.build:497: recipe for target 'arch/arm/kernel' failed
+            Linus
