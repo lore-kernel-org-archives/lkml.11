@@ -2,69 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30EF8C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:09:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A3AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 17:10:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352411AbiEARNO (ORCPT
+        id S1352770AbiEARN1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 13:13:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49546 "EHLO
+        Sun, 1 May 2022 13:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352390AbiEARNH (ORCPT
+        with ESMTP id S1350764AbiEARNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 13:13:07 -0400
+        Sun, 1 May 2022 13:13:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DAB34D9FC
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 10:09:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830D64D9FC;
+        Sun,  1 May 2022 10:09:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 610B9B80E91
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 17:09:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2A22CC385A9;
-        Sun,  1 May 2022 17:09:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651424979;
-        bh=adMC0ncZGNZHQfDPU8ZPn4agz5kcRIOP3FVROqIAQ7E=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ggA91tkCdt/wHMdKUPvkYpbz+LEMuJqeHtl4Jjlyf5JJ0vzQ0v/M05RGkDs17+0FX
-         mg5cGdmR0KkH2lZTNZubPyaazDrVjiS6CWLy+Vef++4dyY/eq3pijAeIJJlDxndbK9
-         /1jd0pbEgtJ06PMXXzIoNur8jPhginS0SFRlyIfh2ic7cv50lq8+brLmm+aN/o2rMU
-         JnYoKP4acbp6SUQzESS5aOX1kuFDpADWsfxGyt3Kii9ojhHrFG4nPC+W8//DvZRAy2
-         sY5X5rcxtYe98+n/6IlIo5xEYbbsRiL4hccU2xeBLEL/H7CuWvoWvI+QRqqp5xPpu5
-         jnepf3Q4tRkcA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0D3CDE6D402;
-        Sun,  1 May 2022 17:09:39 +0000 (UTC)
-Subject: Re: [GIT PULL] objtool/urgent for 5.18
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Ym5ysk8Eo4p+0YnU@zn.tnic>
-References: <Ym5ysk8Eo4p+0YnU@zn.tnic>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Ym5ysk8Eo4p+0YnU@zn.tnic>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/objtool_urgent_for_v5.18_rc5
-X-PR-Tracked-Commit-Id: 4abff6d48dbcea8200c7ea35ba70c242d128ebf3
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: b70ed23c238af025153cb0f5b3c1d0ae5bc30f73
-Message-Id: <165142497905.30448.15024701702529230788.pr-tracker-bot@kernel.org>
-Date:   Sun, 01 May 2022 17:09:39 +0000
-To:     Borislav Petkov <bp@suse.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4619EB80E95;
+        Sun,  1 May 2022 17:09:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D022C385AA;
+        Sun,  1 May 2022 17:09:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651424992;
+        bh=J8DY6nNFpxxPxQOvri8uTghVtz0D6TMTfj79LTqEi3U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OYqdP/MmgE7SynSL4mN/X6rsBGAmwoKOeTEcLVbA1pVULPtCcVW6P+LMf2N1C12ld
+         /CAZD+H0x2n3AY5GKjXZsbIZUPODhPX6LJ0djnsWS3Z3fWpxjoLtwc+vNX4i7H850M
+         vfJpXhfso6nqhTduUtbw8GBL50Kmr0CnFZR++5jo=
+Date:   Sun, 1 May 2022 19:09:43 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Joe Perches <joe@perches.com>
+Cc:     Kushagra Verma <kushagra765@outlook.com>, balbi@kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] USB / dwc3: remove a possible unnecessary 'out of
+ memory' message
+Message-ID: <Ym6+1wPawNOUKKTr@kroah.com>
+References: <SI2PR01MB3929F20DA02363BD6A88657DF8FE9@SI2PR01MB3929.apcprd01.prod.exchangelabs.com>
+ <Ym6pp/O1fpneA5ZW@kroah.com>
+ <8cf3b100a4dc0eaac9214e1a9ea2b6dace7c85bb.camel@perches.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8cf3b100a4dc0eaac9214e1a9ea2b6dace7c85bb.camel@perches.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 1 May 2022 13:44:50 +0200:
+On Sun, May 01, 2022 at 09:50:45AM -0700, Joe Perches wrote:
+> On Sun, 2022-05-01 at 17:39 +0200, Greg KH wrote:
+> > On Sun, May 01, 2022 at 09:01:36PM +0530, Kushagra Verma wrote:
+> > > This patch removes a possible unnecessary out of memory message from
+> > > core.c
+> > > as reported by checkpatch.pl:
+> > >    WARNING: Possible unnecessary 'out of memory' message
+> 
+> 
+> > This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+> > a patch that has triggered this response.  He used to manually respond
+> > to these common problems, but in order to save his sanity (he kept
+> > writing the same thing over and over, yet to different people), I was
+> > created.  Hopefully you will not take offence and will fix the problem
+> > in your patch and resubmit it so that it can be accepted into the Linux
+> > kernel tree.
+> > 
+> > You are receiving this message because of the following common error(s)
+> > as indicated below:
+> > 
+> > - Your patch is malformed (tabs converted to spaces, linewrapped, etc.)
+> >   and can not be applied.  Please read the file,
+> >   Documentation/email-clients.txt in order to fix this.
+> 
+> Seems like a patch-bot false positive patch-bot to me.
+> 
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/objtool_urgent_for_v5.18_rc5
+Try to apply the patch, it is line-wrapped.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/b70ed23c238af025153cb0f5b3c1d0ae5bc30f73
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+It's a good bot :)
