@@ -2,81 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C182EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 05:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EB2C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 05:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239950AbiEAFFw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 01:05:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
+        id S240078AbiEAFPK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 1 May 2022 01:15:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238021AbiEAFFu (ORCPT
+        with ESMTP id S232817AbiEAFPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 01:05:50 -0400
-Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB4611C03
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 22:02:25 -0700 (PDT)
-Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-ed9a75c453so1247080fac.11
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 22:02:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0aKCZgVZHwh4Tv70zY74+bpoUv5Mj7mL2pJZ6Uamnh0=;
-        b=Ln32ZkW57DHk3aYeYYGzHho7w7JQd5orJTF5/OJ7Q3YlblYmhE67Hvg/CZnF1R54l6
-         fKTSg5LO2nFbIE/JhjzNWLZsGUQFiTU5IDe5snREQYmJiU0BRRjbEOtYmXggrLCwMBpn
-         cpQTPJPhseMBEFKoZjGFEsdw3sHBvYzmY1q6Vv2VT8aVXbvl9123tIoSXdGuZruI7KbK
-         H63Qbk9J3cfS/9s/wxU4Z06WY6FnZXQxx7RxDAVm5UwBib1jl8Yi11aBMfBmYJBqAqnL
-         L9zZO6om03JYIK4Rt9Sujy65oQzcn8b2U/O2aoqed94XIOwMusr2Gx/HIJUipGkHeYa4
-         xHJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0aKCZgVZHwh4Tv70zY74+bpoUv5Mj7mL2pJZ6Uamnh0=;
-        b=j+W45T+HGHGkwZo8nnMSmHBxVB0qAkA8kVSf/hNHzApAaO+dQ8tRmr0rf7RwANuQXx
-         t9oIit9ji5oI9nlUGhJ5lNUpaFEZ03n0sCYVkYB6Gq0ay0R4l2GsQOn0Sm50WsFzzlb8
-         JYBpcxDKrcvfFxfsDf/aJ1exGuDa8fymbSbJX9yljJVVkbqn9pcDIxrylzQdMnuuIarD
-         o2NLQceOdDj+TYMjsgzbC1iLUUmqt+Wp6PHhokM4OTe2IWxQB1XYxwksPBPNWg5Cms+4
-         IIq3pk31z6KEiEQzj7o3dk1IPa7yeJ8MFu1Q7uUaX5wiPCATA1AAB0Fz4bHaxV9HXNmK
-         q+Ig==
-X-Gm-Message-State: AOAM532OiKZ1m0jIP637EX3nI/mptkQubj3Y8Off/kkbfUu+/B2m4puI
-        GD8kEHg4GnmQ2jZ23SLWnetZrhCVRT3KUcU5auQ=
-X-Google-Smtp-Source: ABdhPJxkbSmv7zG4Q6GTSFIGixxeDClKJ/03SoB2VGTC4Uoq/VdDkmPjtpXE3JrrRup2rlDG2eEBsHH5wSkon090EyU=
-X-Received: by 2002:a05:6870:c141:b0:e2:9512:de42 with SMTP id
- g1-20020a056870c14100b000e29512de42mr2520243oad.288.1651381345179; Sat, 30
- Apr 2022 22:02:25 -0700 (PDT)
+        Sun, 1 May 2022 01:15:08 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62B814A906;
+        Sat, 30 Apr 2022 22:11:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651381904; x=1682917904;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JKmlc2N07ImkrRm9eM53sgRdX9aGwES/lKiUIH8s89E=;
+  b=Z+fh6qMqWJk7JPLVgtxSdnDWJSbZlgflc0oiH4iixon1wp5mUBzeQrdy
+   cw4sZ11dujimuPUmI7ICbU9qPxbF+yGpPUeDN01grEaS3arcQEDVMRA70
+   TYWR68CGojMJpqZlcoFETgDjxPeDMZOU5+ktHlDa4k0kuB83foOaqx8mP
+   k9AV3KQOVB6YJfejFF/KQVNKA9FQqSNfUwNL3Tuuz2IriL038VuZM/QxG
+   +zeP9H9GxK2isw2PDhzEYpz1Ty+1AnM8LWDPytXDpoIYWb9l8+RfV2Ksa
+   DO2PYvjslwZC5YtKOXujqUaf3/6mZW+4/XdKGjKSt2bNvGoufWmjYDU2L
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10333"; a="264552675"
+X-IronPort-AV: E=Sophos;i="5.91,189,1647327600"; 
+   d="scan'208";a="264552675"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2022 22:11:43 -0700
+X-IronPort-AV: E=Sophos;i="5.91,189,1647327600"; 
+   d="scan'208";a="732846343"
+Received: from iweiny-server.sc.intel.com (HELO localhost) ([172.25.222.75])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2022 22:11:43 -0700
+Date:   Sat, 30 Apr 2022 22:11:43 -0700
+From:   ira.weiny@intel.com
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: Re: [PATCH v4 0/4] Extend and reorganize Highmem's documentation
+Message-ID: <Ym4WSstEQI7yYU0n@iweiny-server>
+References: <20220428212455.892-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-References: <20220430164021.537668-1-gch981213@gmail.com>
-In-Reply-To: <20220430164021.537668-1-gch981213@gmail.com>
-From:   Chuanhong Guo <gch981213@gmail.com>
-Date:   Sun, 1 May 2022 13:02:13 +0800
-Message-ID: <CAJsYDVJ8VFELnWP-OrH9qzQjbrLZKA721+xj_ngjegPE=fAyrA@mail.gmail.com>
-Subject: Re: [PATCH] mtd: nand: ecc-mtk: add external ecc engine support
-To:     linux-mtd@lists.infradead.org
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220428212455.892-1-fmdefrancesco@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+On Thu, Apr 28, 2022 at 11:24:51PM +0200, Fabio M. De Francesco wrote:
+> This series has the purpose to extend and reorganize Highmem's
+> documentation.
+> 
+> This is a work in progress because some information should still be moved
+> from highmem.rst to highmem.h and highmem-internal.h. Specifically I'm
+> talking about moving the "how to" information to the relevant headers, as
+> it as been suggested by Ira Weiny (Intel).
+> 
+> Also, this is a work in progress because some kdocs in highmem.h and
+> highmem-internal.h should be improved.
+> 
+> However, I think (and hope that my thoughts are also shared by Maintainers
+> and Reviewers) that this series constitues a sensible step forward
+> improving Highmem's documentation, despite some important issues are not
+> yet addressed.
 
-On Sun, May 1, 2022 at 12:40 AM Chuanhong Guo <gch981213@gmail.com> wrote:
-> [...]
->
-> +static const u8 ecc_strength_mt7621[] = { 4 };
-> +
+For the series:
 
-Oops. This is a leftover line when I tried to split commits.
+Reviewed-by: Ira Weiny <ira.weiny@intel.com>
 
--- 
-Regards,
-Chuanhong Guo
+> 
+> Changes from v1 to v2:
+> 
+>         1/4 - Fix typos (Mike Rapoport); re-write the description of @page
+>               because the original was wrong (Ira Weiny); add Ira's and
+>               Mike's tags in the commit message.
+>         2/4 - Add Ira's and Mike's tags in the commit message.
+>         3/4 - Rework the subject to better summarize what this patch
+>               changes; merge the section which was removed from highmem.rst
+>               with the kdocs of highmem.h (suggested by Ira Weiny); add
+>               Ira's tag in the commit message.
+>         4/4 - Reformulate a sentence that was incomprehensible due to my
+>               own mistakes in copying and pasting the text of another
+>               paragraph (problem noted by Ira Weiny); refer to the kdocs
+>               of kmap_local_page () to show how nested mappings should be
+>               handled; fix grammar error; add Ira's tag in the commit
+>               message.
+> 
+> Changes from v2 to v3:
+> 
+>         1/4 - Add a deprecation notice to kunmap_atomic() for consistency
+>               with the same notice in kmap_atomic() (Sebastian Andrzej
+>               Siewior); shorten subject and extend commit message.
+>         2/4 - No changes.
+>         3/4 - No changes.
+>         4/4 - Correct a technical inaccuracy about preemption disabling /
+>               re-enabling in kmap_atomic() / kunmap_atomic() (Sebastian
+>               Andrzej Siewior).
+> 
+> Changes from v3 to v4:
+> 
+> 	1/4 - Correct some techinal inaccuracies about the side effects
+> 	      of calling kmap_atomic() and kmap_local_page() (Sebastian
+> 	      Andrzej Siewior); drop "Acked-by:" and "Reviewed-by:" tags
+> 	      because relevant parts of this patch have changed.
+> 	2/4 - No changes.
+> 	3/4 - No changes.
+> 	4/4 - Shorten a couple of paragraphs by removing redundant
+> 	      information (Sebastian Andrzej Siewior).
+> 
+> Fabio M. De Francesco (4):
+>   mm/highmem: Fix kernel-doc warnings in highmem*.h
+>   Documentation/vm: Include kdocs from highmem*.h into highmem.rst
+>   Documentation/vm: Move "Using kmap-atomic" from highmem.rst to
+>     highmem.h
+>   Documentation/vm: Rework "Temporary Virtual Mappings" section
+> 
+>  Documentation/vm/highmem.rst     | 100 ++++++++++++++++++-------------
+>  include/linux/highmem-internal.h |  18 +++++-
+>  include/linux/highmem.h          |  51 ++++++++++++----
+>  3 files changed, 113 insertions(+), 56 deletions(-)
+> 
+> -- 
+> 2.34.1
+> 
