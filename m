@@ -2,111 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52863C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 10:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80EF8C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 10:40:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345942AbiEAKk1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 06:40:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58356 "EHLO
+        id S238562AbiEAKn3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 1 May 2022 06:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345474AbiEAKjC (ORCPT
+        with ESMTP id S232503AbiEAKnY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 06:39:02 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C218EB6
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 03:35:35 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id k27so13693155edk.4
-        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 03:35:35 -0700 (PDT)
+        Sun, 1 May 2022 06:43:24 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7BC5F9E
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 03:39:59 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id bi24-20020a05600c3d9800b00393ff664705so7065486wmb.4
+        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 03:39:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=rC1RBfaaxLYiq5iDakFFR3OcWxeEK5RtgKrD6YK+e+w=;
-        b=KkTptCIVR37GTgVLSobIw/FK+uwlmuXtDgiLycnNG2JlYGOwLQPoDSnRhqBvzz+6SS
-         R9l/gbqlMYdym5zI9lGWG6p2FXtpGD5Qonk7lLky4Z4sNSQ3j9ySpMwUMJ6ydyxig2rD
-         hQdo1eoDH52wcHVDanEtNk/2nupfnX1tFlut9LIktJNRtzZqA4rKDuNIlCjJR1G2wrCw
-         m1pLFg4bM/+Nei6QG7BdMlCKbbXukaUgNeGxzdW4KmES5dVikXiQp0Ilv8H5VX5Jvd8h
-         Bdj8JBWCU9KmeyPNLea5DGGlhNvpyA4BayrrlJeDXr1aipkwQ92fCWOX2LokVFwsTW72
-         Pabw==
+        d=conchuod-ie.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=RTGIJr8n1HnWrIYz7FUX3oY+TZmLoliMXiiWkrwJcVc=;
+        b=oOIYfmAJY8had1t3RSEMLF2NflkyowPvGVXM/UsXmwKV3bceP2QAdefPgIizOfbf0R
+         aHcSEKfgtGV0oUrp2xyhXCkj6oqVkfrtBRlwVkNZ3S5ztDMTQ1+1E++LjxLTHYzbFIQU
+         VAVFbHu6thS9m73XJlYUF+YkHfcJDOfRyX6FCQWoWTCVe8i2EzXappopj835Qx6sB5Nf
+         DJb0Mdys2jzIVoJpC7INbiEgU+hNJPP2H+58DG16/N+0Lv4Ol88HpjuYQTBbD49huGBt
+         rEFN31ugFE+eTt52cH3Co8so7mpZPY95/AVkj/gWMnfsbB0xd+mX8LqrYGgKwMCVq1ai
+         5b+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rC1RBfaaxLYiq5iDakFFR3OcWxeEK5RtgKrD6YK+e+w=;
-        b=JCBaEueiD4UpigdOVCsSXGyAko0aUtsZSreFuu0NTsUN0UKVY2yWo9ldOeactFZu0r
-         V6O3IkOnwPkX+WlEbR1UHEuJ0M7ahV6skiPsViAXkc9xBLzxqbCQy5xzt4bIDhe2jLzN
-         jPM5y4maRlwGO7QlhFHEDnQ6YlhWk/ixKaVZ6/eeH12XYzl2OzNJcRePZFYaBcF9vfRT
-         BAahtzaddHGpyHJdhiY719VGZBLQRt9JS8OE7qboaxtKkMH1lLZ/nmAvMxjUN+zoHF2w
-         VmaRHAeq0KCdDMZwCV/c+okIcLjoN6TN1jMxTcDdeuNxeGUwdWLDblkWoQlf/duT4xJT
-         HQjg==
-X-Gm-Message-State: AOAM5332jr+Gd7uksrNFYg5dmHCPf0xw/SQFdOWwTYlDRd8wCJ2Ade8W
-        TTneJfw470gZpb7f6pJ7n3hMdA==
-X-Google-Smtp-Source: ABdhPJzPxoWEYsPQoFqVn0Mn6T9T5bfRt2FN5RA/30mw3XraPQgHBZwCu2LbyVfL7i1/k4t2uEGHEw==
-X-Received: by 2002:a05:6402:909:b0:416:6f3c:5c1d with SMTP id g9-20020a056402090900b004166f3c5c1dmr8069640edz.108.1651401333801;
-        Sun, 01 May 2022 03:35:33 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id zp1-20020a17090684e100b006f3ef214df1sm2464438ejb.87.2022.05.01.03.35.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 May 2022 03:35:33 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-remoteproc@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 6/8] rpmsg: qcom: correct kerneldoc
-Date:   Sun,  1 May 2022 12:35:18 +0200
-Message-Id: <20220501103520.111561-6-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220501103520.111561-1-krzysztof.kozlowski@linaro.org>
-References: <20220501103520.111561-1-krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RTGIJr8n1HnWrIYz7FUX3oY+TZmLoliMXiiWkrwJcVc=;
+        b=gB87HhhHVjvn5x25X4c8gDNgEIGSB86iq4VcVUmKpMyfKFObElstTuVqdwfjGHgGu1
+         B+whuRPCv0aLCYJDvpEIyfqFEb4umo1ZTnnlDUaPKWBNrL/b5GYWJoBFCW13aK3oSyyG
+         Gav92eh/DsJT/E0jVOMcbtKxD/379EO1yD9yqWG3fyOTGVoE7/cWgwwAFJ3umfsfKfvH
+         AvumWV+pvkSHHFy7HcK39atTXw/Tu2EcNIGTjy0kHLtmTJv1hkVsvrPJfGNhbvB2I6S8
+         gql1KkbqR6Jkxb3utdzzHn6lHjHdfKGqFftvGdC8E7Q54W4QpM8WgsJvoEuVu7neoJTk
+         axCw==
+X-Gm-Message-State: AOAM533fcqaivJesRmiF8tHIQsyAAgNclsIH+T8CS9+7kLDat24eZoNw
+        S1Mnj6DqVsJjNubwcVn5FYwMBg==
+X-Google-Smtp-Source: ABdhPJxqjmcGta0K+qX3qvW017jiTDcRJd5RI/21DEtcW/tWJ74Bm5KsRvxS39O4Z9lahd3YbKc5aw==
+X-Received: by 2002:a7b:cb84:0:b0:382:a9b9:2339 with SMTP id m4-20020a7bcb84000000b00382a9b92339mr11156660wmi.91.1651401597453;
+        Sun, 01 May 2022 03:39:57 -0700 (PDT)
+Received: from [192.168.2.222] ([109.77.36.132])
+        by smtp.gmail.com with ESMTPSA id y20-20020a7bc194000000b003942a244f48sm3660528wmi.33.2022.05.01.03.39.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 01 May 2022 03:39:57 -0700 (PDT)
+Message-ID: <f49b1d52-11e3-1c8b-bb1f-324318a7f669@conchuod.ie>
+Date:   Sun, 1 May 2022 11:39:55 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2 6/8] dt-bindings: vendor-prefixes: add Sundance DSP
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        krzk+dt@kernel.org, palmer@dabbelt.com, robh+dt@kernel.org
+Cc:     conor.dooley@microchip.com, Cyril.Jean@microchip.com,
+        daire.mcnamara@microchip.com, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu, palmer@rivosinc.com, arnd@arndb.de,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+References: <20220430130922.3504268-1-mail@conchuod.ie>
+ <20220430130922.3504268-7-mail@conchuod.ie>
+ <6fdc6da4-3a34-e67c-cab8-1c9570501a8a@linaro.org>
+From:   Conor Dooley <mail@conchuod.ie>
+In-Reply-To: <6fdc6da4-3a34-e67c-cab8-1c9570501a8a@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Correct kerneldoc warnings like:
+On 01/05/2022 09:59, Krzysztof Kozlowski wrote:
+> On 30/04/2022 15:09, Conor Dooley wrote:
+>> From: Conor Dooley <conor.dooley@microchip.com>
+>>
+>> Sundance DSP Inc. (https://www.sundancedsp.com/) is a supplier of
+>> high-performance DSP and FPGA processor boards and I/O modules.
+>>
+>> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+>> Signed-off-by: Conor Dooley <mail@conchuod.ie>
+> 
+> If your @microchip.com email still works, then there is no need to
+> double-sign it. At the end you are still the same person... unless
+> you're not. :)
+> 
+> This applies to your other patches as well.
 
-  drivers/rpmsg/qcom_glink_ssr.c:45:
-    warning: expecting prototype for G(). Prototype was for GLINK_SSR_DO_CLEANUP() instead
-
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- drivers/rpmsg/qcom_glink_ssr.c | 2 +-
- drivers/rpmsg/qcom_smd.c       | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/rpmsg/qcom_glink_ssr.c b/drivers/rpmsg/qcom_glink_ssr.c
-index dea929c6045d..776d64446879 100644
---- a/drivers/rpmsg/qcom_glink_ssr.c
-+++ b/drivers/rpmsg/qcom_glink_ssr.c
-@@ -39,7 +39,7 @@ struct cleanup_done_msg {
- 	__le32 seq_num;
- };
- 
--/**
-+/*
-  * G-Link SSR protocol commands
-  */
- #define GLINK_SSR_DO_CLEANUP	0
-diff --git a/drivers/rpmsg/qcom_smd.c b/drivers/rpmsg/qcom_smd.c
-index 7c8c29f6c91d..e7e49d972d36 100644
---- a/drivers/rpmsg/qcom_smd.c
-+++ b/drivers/rpmsg/qcom_smd.c
-@@ -729,7 +729,7 @@ static int qcom_smd_write_fifo(struct qcom_smd_channel *channel,
- }
- 
- /**
-- * qcom_smd_send - write data to smd channel
-+ * __qcom_smd_send - write data to smd channel
-  * @channel:	channel handle
-  * @data:	buffer of data to write
-  * @len:	number of bytes to write
--- 
-2.32.0
+I thought that the last SoB had to match the email it was sent from?
+If that's not the case, my bad. The @microchip email still works, but
+it would've meant waiting til Tuesday to resend.
 
