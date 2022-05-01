@@ -2,114 +2,486 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92410C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 15:53:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 872ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 15:58:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348385AbiEAPzn (ORCPT
+        id S1348539AbiEAQBf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 11:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50110 "EHLO
+        Sun, 1 May 2022 12:01:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348466AbiEAPxv (ORCPT
+        with ESMTP id S1343851AbiEAQBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 11:53:51 -0400
-X-Greylist: delayed 402 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 01 May 2022 08:50:24 PDT
-Received: from mengyan1223.wang (mengyan1223.wang [89.208.246.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4182CA19A;
-        Sun,  1 May 2022 08:50:22 -0700 (PDT)
-Received: from localhost.localdomain (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@mengyan1223.wang)
-        by mengyan1223.wang (Postfix) with ESMTPSA id 9C72666572;
-        Sun,  1 May 2022 11:43:35 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mengyan1223.wang;
-        s=mail; t=1651419819;
-        bh=zOPsBSx7MiUB+ZqOHghOHm8qfFVAtKp41vweKTfuR9Y=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=chiIDiWrfvBANVYZcx5ch8dWm3tUnKxIxSJBshjwu+lkytEbScppy8Ts5LkacqzHN
-         X6jKxFVvtcULpdAwTLUdf1xgdLVduqdKmC7D5hi0JejbNByhH+VWg9/FtPtrFnh0JF
-         mtTcTj+hfSvwOJjDkyzAsbe2HLsE7Ffg7862F5qOfrZ7LtUWK+lby+DTxd82t26+Nx
-         ScQXWJ6gAbBIS52lH1eZZFzwONlmAZzV01Cl0CsSX4znhCkcqs/SDLBp62vPD3XG9t
-         LVA6AXluwAhP5cbQPWxkreFRRUnecpSmlHjYhDfC42oV7YSInIfPLR737G9oL+KAyb
-         /ZQFXthlDLpGA==
-Message-ID: <0f42779799d54d2478a644391096c2d85e494c49.camel@mengyan1223.wang>
-Subject: Re: [PATCH V9 05/24] LoongArch: Add build infrastructure
-From:   Xi Ruoyao <xry111@mengyan1223.wang>
-To:     WANG Xuerui <kernel@xen0n.name>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>
-Date:   Sun, 01 May 2022 23:43:32 +0800
-In-Reply-To: <3f46aa25-ef45-fff8-dba5-5db1034b38d9@xen0n.name>
-References: <20220430090518.3127980-1-chenhuacai@loongson.cn>
-         <20220430090518.3127980-6-chenhuacai@loongson.cn>
-         <3f46aa25-ef45-fff8-dba5-5db1034b38d9@xen0n.name>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 
+        Sun, 1 May 2022 12:01:33 -0400
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBDB4AE31
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 08:58:05 -0700 (PDT)
+Date:   Sun, 1 May 2022 23:58:42 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1651420683;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Kly9jfrOqnpY66cRdksibw9X1SkXRSPTrT7a9TH0dRE=;
+        b=CIXjae9KMQBRtavRKQfb+cMFEPd9RkYe8WWbNa6y2SSeSQFtNBHwhyFimkPf2y+u/n7QYM
+        ytImp+s5LniDWT/o/HgXIOSpX1HuFHGICXJEf6U7/ncgoIV85xiGboaxRQymGLzRRI7xwm
+        7q4aGg4bTKRLAc9bEpo3gBLm2qR1/l0=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Tao Zhou <tao.zhou@linux.dev>
+To:     Vincent Guittot <vincent.guittot@linaro.org>,
+        Tao Zhou <tao.zhou@linux.dev>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, linux-kernel@vger.kernel.org, parth@linux.ibm.com,
+        qais.yousef@arm.com, chris.hyser@oracle.com,
+        pkondeti@codeaurora.org, vschneid@redhat.com,
+        patrick.bellasi@matbug.net, David.Laight@aculab.com,
+        pjt@google.com, pavel@ucw.cz, tj@kernel.org,
+        dhaval.giani@oracle.com, qperret@google.com,
+        tim.c.chen@linux.intel.com
+Subject: Re: [RFC 5/6] sched/fair: Take into account latency nice at wakeup
+Message-ID: <Ym6uMoHVkqr9zOpj@geo.homenetwork>
+References: <20220311161406.23497-1-vincent.guittot@linaro.org>
+ <20220311161406.23497-6-vincent.guittot@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220311161406.23497-6-vincent.guittot@linaro.org>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-05-01 at 18:09 +0800, WANG Xuerui wrote:
-> > +cflags-y +=3D $(call as-option,-Wa$(comma)-mno-fix-loongson3-llsc,)
-> Unfortunately we're still working around the LL/SC hardware issue even
-> after migrating to LoongArch... might be better to add a comment too.=20
-> (something along the line of "we work around the issue manually in the
-> handwritten assembly, so no automatic workarounds should kick in")
+Hi Vincent,
 
-There is no LoongArch assembler which is publicly available and has a -
-m(no)?fix-loongson3-llsc option.  The people writing assembly have to
-add the workarounds manually.
+Change to Valentin Schneider's now using mail address.
 
-This line should be removed for a upstream patch.  If you need to
-support "unpublic" toolchains with this option, keep it in a seperate
-git repo or branch.
+On Fri, Mar 11, 2022 at 05:14:05PM +0100, Vincent Guittot wrote:
 
-Regarding LL/SC workaround, GCC is using a different pattern:
+> Take into account the nice latency priority of a thread when deciding to
+> preempt the current running thread. We don't want to provide more CPU
+> bandwidth to a thread but reorder the scheduling to run latency sensitive
+> task first whenever possible.
+> 
+> As long as a thread didn't use its bandwidth, it will be able to preempt
+> the current thread.
+> 
+> At the opposite, a thread with a low latency priority will preempt current
+> thread at wakeup only to keep fair CPU bandwidth sharing. Otherwise it will
+> wait for the tick to get its sched slice.
+> 
+>                                    curr vruntime
+>                                        |
+>                       sysctl_sched_wakeup_granularity
+>                                    <-->
+> ----------------------------------|----|-----------------------|---------------
+>                                   |    |<--------------------->
+>                                   |    .  sysctl_sched_latency
+>                                   |    .
+> default/current latency entity    |    .
+>                                   |    .
+> 1111111111111111111111111111111111|0000|-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-
+> se preempts curr at wakeup ------>|<- se doesn't preempt curr -----------------
+>                                   |    .
+>                                   |    .
+>                                   |    .
+> low latency entity                |    .
+>                                    ---------------------->|
+>                                % of sysctl_sched_latency  |
+> 1111111111111111111111111111111111111111111111111111111111|0000|-1-1-1-1-1-1-1-
+> preempt ------------------------------------------------->|<- do not preempt --
+>                                   |    .
+>                                   |    .
+>                                   |    .
+> high latency entity               |    .
+>          |<-----------------------|    .
+>          | % of sysctl_sched_latency   .
+> 111111111|0000|-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1
+> preempt->|<- se doesn't preempt curr ------------------------------------------
+> 
+> Tests results of nice latency impact on heavy load like hackbench:
+> 
+> hackbench -l (2560 / group) -g group
+> group        latency 0             latency 19
+> 1            1.450(+/- 0.60%)      1.376(+/- 0.54%) + 5%
+> 4            1.537(+/- 1.75%)      1.335(+/- 1.81%) +13%
+> 8            1.414(+/- 1.91%)      1.348(+/- 1.88%) + 5%
+> 16           1.423(+/- 1.65%)      1.374(+/- 0.58%) + 3%
+> 
+> hackbench -p -l (2560 / group) -g group
+> group
+> 1            1.416(+/- 3.45%)      0.886(+/- 0.54%) +37%
+> 4            1.634(+/- 7.14%)      0.888(+/- 5.40%) +45%
+> 8            1.449(+/- 2.14%)      0.804(+/- 4.55%) +44%
+> 16           0.917(+/- 4.12%)      0.777(+/- 1.41%) +15%
+> 
+> By deacreasing the latency prio, we reduce the number of preemption at
 
-(https://gcc.gnu.org/git/?p=3Dgcc.git;a=3Dblob;f=3Dgcc/config/loongarch/syn=
-c.md;h=3D0c4f1983;hb=3DHEAD#l132)
+s/deacreasing/decreasing/
+s/reduce/increase/
 
- 132   return "%G5\\n\\t"
- 133          "1:\\n\\t"
- 134          "ll.<amo>\\t%0,%1\\n\\t"
- 135          "bne\\t%0,%z2,2f\\n\\t"
- 136          "or%i3\\t%6,$zero,%3\\n\\t"
- 137          "sc.<amo>\\t%6,%1\\n\\t"
- 138          "beq\\t$zero,%6,1b\\n\\t"
- 139          "b\\t3f\\n\\t"
- 140          "2:\\n\\t"
- 141          "dbar\\t0x700\\n\\t"
- 142          "3:\\n\\t";
+> wakeup and help hackbench making progress.
+> 
+> Test results of nice latency impact on short live load like cyclictest
+> while competing with heavy load like hackbench:
+> 
+> hackbench -l 10000 -g group &
+> cyclictest --policy other -D 5 -q -n
+>         latency 0           latency -20
+> group   min  avg    max     min  avg    max
+> 0       16    17     28      15   17     27
+> 1       61   382  10603      63   89   4628
+> 4       52   437  15455      54   98  16238
+> 8       56   728  38499      61  125  28983
+> 16      53  1215  52207      61  183  80751
+> 
+> group = 0 means that hackbench is not running.
+> 
+> The avg is significantly improved with nice latency -20 especially with
+> large number of groups but min and max remain quite similar. If we add the
+> histogram parameters to get details of latency, we have :
+> 
+> hackbench -l 10000 -g 16 &
+> cyclictest --policy other -D 5 -q -n  -H 20000 --histfile data.txt
+>               latency 0    latency -20
+> Min Latencies:    63           62
+> Avg Latencies:  1397          218
+> Max Latencies: 44926        42291
+> 50% latencies:   100           98
+> 75% latencies:   762          116
+> 85% latencies:  1118          126
+> 90% latencies:  1540          130
+> 95% latencies:  5610          138
+> 99% latencies: 13738          266
+> 
+> With percentile details, we see the benefit of nice latency -20 as
+> 1% of the latencies stays above 266us whereas the default latency has
+> got 25% are above 762us and 10% over the 1ms.
+> 
+> Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
+> ---
+>  include/linux/sched.h |  4 ++-
+>  init/init_task.c      |  2 +-
+>  kernel/sched/core.c   | 32 +++++++++++++++++++----
+>  kernel/sched/debug.c  |  2 +-
+>  kernel/sched/fair.c   | 60 +++++++++++++++++++++++++++++++++++++++++--
+>  kernel/sched/sched.h  | 12 +++++++++
+>  6 files changed, 102 insertions(+), 10 deletions(-)
+> 
+> diff --git a/include/linux/sched.h b/include/linux/sched.h
+> index 2aa889a59054..9aeb157e819b 100644
+> --- a/include/linux/sched.h
+> +++ b/include/linux/sched.h
+> @@ -560,6 +560,8 @@ struct sched_entity {
+>  	unsigned long			runnable_weight;
+>  #endif
+>  
+> +	int				latency_weight;
+> +
+>  #ifdef CONFIG_SMP
+>  	/*
+>  	 * Per entity load average tracking.
+> @@ -779,7 +781,7 @@ struct task_struct {
+>  	int				static_prio;
+>  	int				normal_prio;
+>  	unsigned int			rt_priority;
+> -	int				latency_nice;
+> +	int				latency_prio;
+>  
+>  	struct sched_entity		se;
+>  	struct sched_rt_entity		rt;
+> diff --git a/init/init_task.c b/init/init_task.c
+> index 2afa249c253b..e98c71f24981 100644
+> --- a/init/init_task.c
+> +++ b/init/init_task.c
+> @@ -78,7 +78,7 @@ struct task_struct init_task
+>  	.prio		= MAX_PRIO - 20,
+>  	.static_prio	= MAX_PRIO - 20,
+>  	.normal_prio	= MAX_PRIO - 20,
+> -	.latency_nice	= 0,
+> +	.latency_prio	= NICE_WIDTH - 20,
+>  	.policy		= SCHED_NORMAL,
+>  	.cpus_ptr	= &init_task.cpus_mask,
+>  	.user_cpus_ptr	= NULL,
+> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+> index 8f8b102a75c4..547b0da01efe 100644
+> --- a/kernel/sched/core.c
+> +++ b/kernel/sched/core.c
+> @@ -1241,6 +1241,11 @@ static void set_load_weight(struct task_struct *p, bool update_load)
+>  	}
+>  }
+>  
+> +static void set_latency_weight(struct task_struct *p)
+> +{
+> +	p->se.latency_weight = sched_latency_to_weight[p->latency_prio];
+> +}
+> +
+>  #ifdef CONFIG_UCLAMP_TASK
+>  /*
+>   * Serializes updates of utilization clamp values
+> @@ -4394,7 +4399,7 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
+>  	p->prio = current->normal_prio;
+>  
+>  	/* Propagate the parent's latency requirements to the child as well */
+> -	p->latency_nice = current->latency_nice;
+> +	p->latency_prio = current->latency_prio;
+>  
+>  	uclamp_fork(p);
+>  
+> @@ -4412,7 +4417,7 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
+>  		p->prio = p->normal_prio = p->static_prio;
+>  		set_load_weight(p, false);
+>  
+> -		p->latency_nice = DEFAULT_LATENCY_NICE;
+> +		p->latency_prio = NICE_TO_LATENCY(0);
+>  		/*
+>  		 * We don't need the reset flag anymore after the fork. It has
+>  		 * fulfilled its duty:
+> @@ -4420,6 +4425,9 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
+>  		p->sched_reset_on_fork = 0;
+>  	}
+>  
+> +	/* Once latency_prio is set, update the latency weight */
+> +	set_latency_weight(p);
+> +
+>  	if (dl_prio(p->prio))
+>  		return -EAGAIN;
+>  	else if (rt_prio(p->prio))
+> @@ -7361,7 +7369,7 @@ static int __sched_setscheduler(struct task_struct *p,
+>  		if (attr->sched_latency_nice < MIN_LATENCY_NICE)
+>  			return -EINVAL;
+>  		/* Use the same security checks as NICE */
+> -		if (attr->sched_latency_nice < p->latency_nice &&
+> +		if (attr->sched_latency_nice < LATENCY_TO_NICE(p->latency_prio) &&
+>  		    !capable(CAP_SYS_NICE))
+>  			return -EPERM;
+>  	}
+> @@ -7401,7 +7409,7 @@ static int __sched_setscheduler(struct task_struct *p,
+>  		if (attr->sched_flags & SCHED_FLAG_UTIL_CLAMP)
+>  			goto change;
+>  		if (attr->sched_flags & SCHED_FLAG_LATENCY_NICE &&
+> -		    attr->sched_latency_nice != p->latency_nice)
+> +		    attr->sched_latency_nice != LATENCY_TO_NICE(p->latency_prio))
+>  			goto change;
+>  
+>  		p->sched_reset_on_fork = reset_on_fork;
+> @@ -7942,7 +7950,7 @@ SYSCALL_DEFINE4(sched_getattr, pid_t, pid, struct sched_attr __user *, uattr,
+>  	get_params(p, &kattr);
+>  	kattr.sched_flags &= SCHED_FLAG_ALL;
+>  
+> -	kattr.sched_latency_nice = p->latency_nice;
+> +	kattr.sched_latency_nice = LATENCY_TO_NICE(p->latency_prio);
+>  
+>  #ifdef CONFIG_UCLAMP_TASK
+>  	/*
+> @@ -10954,6 +10962,20 @@ const u32 sched_prio_to_wmult[40] = {
+>   /*  15 */ 119304647, 148102320, 186737708, 238609294, 286331153,
+>  };
+>  
+> +/*
+> + * latency weight for wakeup preemption
+> + */
+> +const int sched_latency_to_weight[40] = {
+> + /* -20 */      1024,       973,       922,       870,       819,
+> + /* -15 */       768,       717,       666,       614,       563,
+> + /* -10 */       512,       461,       410,       358,       307,
+> + /*  -5 */       256,       205,       154,       102,       51,
+> + /*   0 */	   0,       -51,      -102,      -154,      -205,
+> + /*   5 */      -256,      -307,      -358,      -410,      -461,
+> + /*  10 */      -512,      -563,      -614,      -666,      -717,
+> + /*  15 */      -768,      -819,      -870,      -922,      -973,
+> +};
+> +
+>  void call_trace_sched_update_nr_running(struct rq *rq, int count)
+>  {
+>          trace_sched_update_nr_running_tp(rq, count);
+> diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
+> index 5d76a8927888..253e52ec73fb 100644
+> --- a/kernel/sched/debug.c
+> +++ b/kernel/sched/debug.c
+> @@ -1043,7 +1043,7 @@ void proc_sched_show_task(struct task_struct *p, struct pid_namespace *ns,
+>  #endif
+>  	P(policy);
+>  	P(prio);
+> -	P(latency_nice);
+> +	P(latency_prio);
+>  	if (task_has_dl_policy(p)) {
+>  		P(dl.runtime);
+>  		P(dl.deadline);
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index 5c4bfffe8c2c..506c482a0e48 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -5555,6 +5555,35 @@ static int sched_idle_cpu(int cpu)
+>  }
+>  #endif
+>  
+> +static void set_next_buddy(struct sched_entity *se);
+> +
+> +static void check_preempt_from_idle(struct cfs_rq *cfs, struct sched_entity *se)
+> +{
+> +	struct sched_entity *next;
+> +
+> +	if (se->latency_weight <= 0)
+> +		return;
+> +
+> +	if (cfs->nr_running <= 1)
+> +		return;
+> +	/*
+> +	 * When waking from idle, we don't need to check to preempt at wakeup
+> +	 * the idle thread and don't set next buddy as a candidate for being
+> +	 * picked in priority.
+> +	 * In case of simultaneous wakeup from idle, the latency sensitive tasks
+> +	 * lost opportunity to preempt non sensitive tasks which woke up
+> +	 * simultaneously.
+> +	 */
+> +
+> +	if (cfs->next)
+> +		next = cfs->next;
+> +	else
+> +		next = __pick_first_entity(cfs);
+> +
+> +	if (next && wakeup_preempt_entity(next, se) == 1)
+> +		set_next_buddy(se);
+> +}
+> +
+>  /*
+>   * The enqueue_task method is called before nr_running is
+>   * increased. Here we update the fair scheduling stats and
+> @@ -5648,6 +5677,9 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+>  	if (!task_new)
+>  		update_overutilized_status(rq);
+>  
+> +	if (rq->curr == rq->idle)
+> +		check_preempt_from_idle(cfs_rq_of(&p->se), &p->se);
+> +
+>  enqueue_throttle:
+>  	if (cfs_bandwidth_used()) {
+>  		/*
+> @@ -5669,8 +5701,6 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+>  	hrtick_update(rq);
+>  }
+>  
+> -static void set_next_buddy(struct sched_entity *se);
+> -
+>  /*
+>   * The dequeue_task method is called before nr_running is
+>   * decreased. We remove the task from the rbtree and
+> @@ -6970,6 +7000,27 @@ balance_fair(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
+>  }
+>  #endif /* CONFIG_SMP */
+>  
+> +static long wakeup_latency_gran(int latency_weight)
+> +{
+> +	long thresh = sysctl_sched_latency;
+> +
+> +	if (!latency_weight)
+> +		return 0;
+> +
+> +	if (sched_feat(GENTLE_FAIR_SLEEPERS))
+> +		thresh >>= 1;
+> +
+> +	/*
+> +	 * Clamp the delta to stay in the scheduler period range
+> +	 * [-sysctl_sched_latency:sysctl_sched_latency]
+> +	 */
+> +	latency_weight = clamp_t(long, latency_weight,
+> +				-1 * NICE_LATENCY_WEIGHT_MAX,
+> +				NICE_LATENCY_WEIGHT_MAX);
+> +
+> +	return (thresh * latency_weight) >> NICE_LATENCY_SHIFT;
+> +}
+> +
+>  static unsigned long wakeup_gran(struct sched_entity *se)
+>  {
+>  	unsigned long gran = sysctl_sched_wakeup_granularity;
+> @@ -7008,6 +7059,10 @@ static int
+>  wakeup_preempt_entity(struct sched_entity *curr, struct sched_entity *se)
+>  {
+>  	s64 gran, vdiff = curr->vruntime - se->vruntime;
+> +	int latency_weight = se->latency_weight - curr->latency_weight;
+> +
+> +	latency_weight = min(latency_weight, se->latency_weight);
 
-Note that the dbar instruction has "hint" 0x700 instead of 0 (using a
-special number was proposed by me, so an updated LoongArch
-implementation can recognize and ignore this instruction when the
-workaround is unneeded).  And the instruction is "skipped" by the
-previous "b" instruction.  I guess it's enough to "force" LA464 to
-behave correctly for the LL/SC loop w/o really inserting a barrier.
+Let lable A=se->latency_weight, B=curr->latency_weight, C=A-B.
 
-GCC LoongArch port maintainers have not publicly explained the rational
-of this pattern, but it works fine in userspace on a 3A5000 processor.=20
-Maybe the kernel could also benefit from this "new" pattern but I'm not
-sure.  I suggest to discuss this with your compiler team and hardware
-team.
---=20
-Xi Ruoyao <xry111@mengyan1223.wang>
-School of Aerospace Science and Technology, Xidian University
+1 A>0 B>0
+    ::C=A-B<0, min(C,A)=C, latency decrease, C is the real diff value no matter
+      what A is. That means it can be very 'long'(-sched_latency) and vdiff is
+      more possible to be in <= 0 case and return -1.
+    ::C=A-B>0, min(C,A)=A, latency increase, but it is conservative. Limit to
+      A/1024*sched_latency.
+    When latecy is decreased, the negtive value added to vdiff is larger than the
+    positive value added to vdiff when latency is increased.
+
+2 A>0 B<0
+    ::C=A-B>0 and C>A, min(C,A)=A, latency increase and it is conservative.
+
+3 A<0 B<0
+    ::C=A-B>0, min(C,A)=A, latency increase but min(C,A)<0, I think if latency
+    increase means the value added to vdiff will be a positive value to increase
+    the chance to return 1. I would say it is max(C,A)=C
+    ::C=A-B<0, min(C,A)=A, latency decrease and the real negtive value.
+
+4 A<0,B>0
+    ::C=A-B<0, min(C,A)=C, latency decrease and the real negtive value.
+
+Is there a reason that the value when latency increase and latency decrease
+be treated differently. Latency increase value is limited to se's latency_weight
+but latency decrease value can extend to -sched_latency or treat them the same.
+Penalty latency decrease and conserve latency increase.
+
+
+There is any value that this latency_weight can be considered to be a average.
+
+The delta value choose is ~%5 to 1024. %5*sched_latency=0.05*6ms=0.3ms.(no scale)
+I do not think over that vdiff equation  and others though.
+
+Thanks,
+Tao
+> +	vdiff += wakeup_latency_gran(latency_weight);
+>  
+>  	if (vdiff <= 0)
+>  		return -1;
+> @@ -7117,6 +7172,7 @@ static void check_preempt_wakeup(struct rq *rq, struct task_struct *p, int wake_
+>  		return;
+>  
+>  	update_curr(cfs_rq_of(se));
+> +
+>  	if (wakeup_preempt_entity(se, pse) == 1) {
+>  		/*
+>  		 * Bias pick_next to pick the sched entity that is
+> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+> index 456ad2159eb1..dd92aa9c36f9 100644
+> --- a/kernel/sched/sched.h
+> +++ b/kernel/sched/sched.h
+> @@ -122,6 +122,17 @@ extern void call_trace_sched_update_nr_running(struct rq *rq, int count);
+>   * Default tasks should be treated as a task with latency_nice = 0.
+>   */
+>  #define DEFAULT_LATENCY_NICE	0
+> +#define DEFAULT_LATENCY_PRIO	(DEFAULT_LATENCY_NICE + LATENCY_NICE_WIDTH/2)
+> +
+> +/*
+> + * Convert user-nice values [ -20 ... 0 ... 19 ]
+> + * to static latency [ 0..39 ],
+> + * and back.
+> + */
+> +#define NICE_TO_LATENCY(nice)	((nice) + DEFAULT_LATENCY_PRIO)
+> +#define LATENCY_TO_NICE(prio)	((prio) - DEFAULT_LATENCY_PRIO)
+> +#define NICE_LATENCY_SHIFT	(SCHED_FIXEDPOINT_SHIFT)
+> +#define NICE_LATENCY_WEIGHT_MAX	(1L << NICE_LATENCY_SHIFT)
+>  
+>  /*
+>   * Increase resolution of nice-level calculations for 64-bit architectures.
+> @@ -2098,6 +2109,7 @@ static_assert(WF_TTWU == SD_BALANCE_WAKE);
+>  
+>  extern const int		sched_prio_to_weight[40];
+>  extern const u32		sched_prio_to_wmult[40];
+> +extern const int		sched_latency_to_weight[40];
+>  
+>  /*
+>   * {de,en}queue flags:
+> -- 
+> 2.17.1
+> 
