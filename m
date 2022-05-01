@@ -2,107 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23665C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 16:25:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27BF1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 16:27:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349123AbiEAQ3Q (ORCPT
+        id S1349175AbiEAQar (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 12:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53122 "EHLO
+        Sun, 1 May 2022 12:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238590AbiEAQ3O (ORCPT
+        with ESMTP id S238590AbiEAQao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 12:29:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35399BCA6;
-        Sun,  1 May 2022 09:25:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB63CB80E78;
-        Sun,  1 May 2022 16:25:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D891FC385AA;
-        Sun,  1 May 2022 16:25:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651422345;
-        bh=HIW4EALSEwmwk0YmbIWhY/XgqaK3U5bYWUg7I08+sNc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tEyRMLtu1bY6XoqP1+9di/O5j/Y6eSqsuaz6qgiR0/nmPP2lg47WjiC2a1ZaajaLU
-         gh/hkA07L1Y1yh1Z1mfqcTm0/o+Ncgq522rvnFD8meyidHpF7O9/R2gp5cqrZRe4aM
-         ns0T0akoLH3rt0J2nDg9UYaTIsClHHFmRvefJOSuUyX4RiBhUkVFB/snqHEFGrFqjW
-         XyIYxBpyCvLUaFECjGxRTN/hrz58vX94tGTq1ui0S8HQgUzz89Lv+vOoAEVmP87ATb
-         YbHfy9MiTEP5HAJ2cbpgxFCzuuqhKT01MSa6JOlSKiZ7NbuVqvZgiGH/wI+NJyT5eF
-         qOhfMtmKG/bTw==
-Date:   Sun, 1 May 2022 17:34:01 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     dan@dlrobertson.com, andy.shevchenko@gmail.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 8/9] iio: accel: bma400: Add debugfs register access
- support
-Message-ID: <20220501173401.3ae7372d@jic23-huawei>
-In-Reply-To: <20220420211105.14654-9-jagathjog1996@gmail.com>
-References: <20220420211105.14654-1-jagathjog1996@gmail.com>
-        <20220420211105.14654-9-jagathjog1996@gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 1 May 2022 12:30:44 -0400
+Received: from mengyan1223.wang (mengyan1223.wang [89.208.246.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36F5B7FD;
+        Sun,  1 May 2022 09:27:18 -0700 (PDT)
+Received: from localhost.localdomain (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@mengyan1223.wang)
+        by mengyan1223.wang (Postfix) with ESMTPSA id 4F9BB66572;
+        Sun,  1 May 2022 12:27:14 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mengyan1223.wang;
+        s=mail; t=1651422438;
+        bh=ALSJSv8A+BX4KvgFoFkSkIrjhFtjXG2yRggtMxZ7sBw=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=JDW/VZQ4Xej666lypIysa7YDCKe5n59BDSNNZEC4o5y1nFR7nAUJtsf5vPSRD53dq
+         vR2K2VJf35Q2xn7OYzROVFze7wohQGSJVegAmqJDd/p7xV6+5An11IIjKwN0Rba23w
+         VkAd2ybE14g7ic9klBWX33LgGB5bqzFTMB1I0jtGGzdtKYJqjAx5Kg7qxPC3md/4JQ
+         iKxF4pKxY0Ny3YGgkcSe92dwvygVwh3TKVZYjXwbgaK8rw0sK3dmPzEZCLZPTbd4cK
+         Zo/LNuHu+wKJLIoKYoslSyFIkiY6QE+7mR1gEcqNvBZwTOuf/34YxOETPQIMOw4IsO
+         RVIT4kvdIeMKg==
+Message-ID: <4dd26d88b807c967dbbc81a7b2e5f4084d9603d7.camel@mengyan1223.wang>
+Subject: Re: [PATCH V9 10/24] LoongArch: Add exception/interrupt handling
+From:   Xi Ruoyao <xry111@mengyan1223.wang>
+To:     Huacai Chen <chenhuacai@loongson.cn>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>
+Date:   Mon, 02 May 2022 00:27:12 +0800
+In-Reply-To: <20220430090518.3127980-11-chenhuacai@loongson.cn>
+References: <20220430090518.3127980-1-chenhuacai@loongson.cn>
+         <20220430090518.3127980-11-chenhuacai@loongson.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Apr 2022 02:41:04 +0530
-Jagath Jog J <jagathjog1996@gmail.com> wrote:
+On Sat, 2022-04-30 at 17:05 +0800, Huacai Chen wrote:
+> +struct acpi_madt_lio_pic;
+> +struct acpi_madt_eio_pic;
+> +struct acpi_madt_ht_pic;
+> +struct acpi_madt_bio_pic;
+> +struct acpi_madt_msi_pic;
+> +struct acpi_madt_lpc_pic;
 
-> Add support to read/write byte from/to bma400 device from the userspace
-> using debugfs interface.
-> 
-> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
-> ---
->  drivers/iio/accel/bma400_core.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
-> 
-> diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
-> index 073fff7d64a3..5b1b28972ef9 100644
-> --- a/drivers/iio/accel/bma400_core.c
-> +++ b/drivers/iio/accel/bma400_core.c
-> @@ -1030,6 +1030,19 @@ static int bma400_write_event_config(struct iio_dev *indio_dev,
->  	}
->  }
->  
-> +static int bma400_debugfs_reg_access(struct iio_dev *indio_dev,
-> +				     unsigned int reg,
-> +				     unsigned int writeval,
-> +				     unsigned int *readval)
-> +{
-> +	struct bma400_data *data = iio_priv(indio_dev);
-> +
-> +	if (readval)
-> +		return regmap_read(data->regmap, reg, readval);
-> +	else
-> +		return regmap_write(data->regmap, reg, writeval);
+Where are those defined?  I can't find them and the compilation fails with:
 
-Hmm. So normally reads are safe, but not on this device because a read
-of the status register has side effects.  As such, I'd either block
-reading that register or simply not provide debugfs access at all.
+arch/loongarch/kernel/irq.c: In function =E2=80=98find_pch_pic=E2=80=99:
+arch/loongarch/kernel/irq.c:48:32: error: invalid use of undefined type =E2=
+=80=98struct acpi_madt_bio_pic=E2=80=99
+   48 |                 start =3D irq_cfg->gsi_base;
+      |                                ^~
+arch/loongarch/kernel/irq.c:49:32: error: invalid use of undefined type =E2=
+=80=98struct acpi_madt_bio_pic=E2=80=99
+   49 |                 end   =3D irq_cfg->gsi_base + irq_cfg->size;
+      |                                ^~
+arch/loongarch/kernel/irq.c:49:52: error: invalid use of undefined type =E2=
+=80=98struct acpi_madt_bio_pic=E2=80=99
+   49 |                 end   =3D irq_cfg->gsi_base + irq_cfg->size;
+      |                                                    ^~
 
-Writes are often likely to break things, so users tend to be aware
-of that...
-
-Jonathan
-
-> +}
-> +
->  static int bma400_data_rdy_trigger_set_state(struct iio_trigger *trig,
->  					     bool state)
->  {
-> @@ -1060,6 +1073,7 @@ static const struct iio_info bma400_info = {
->  	.write_raw_get_fmt = bma400_write_raw_get_fmt,
->  	.read_event_config = bma400_read_event_config,
->  	.write_event_config = bma400_write_event_config,
-> +	.debugfs_reg_access = bma400_debugfs_reg_access,
->  };
->  
->  static const struct iio_trigger_ops bma400_trigger_ops = {
-
+--=20
+Xi Ruoyao <xry111@mengyan1223.wang>
+School of Aerospace Science and Technology, Xidian University
