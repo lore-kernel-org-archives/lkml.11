@@ -2,102 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 146C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 06:55:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE54FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 07:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242661AbiEAG6l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 02:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48370 "EHLO
+        id S243365AbiEAHFg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 1 May 2022 03:05:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236606AbiEAG6i (ORCPT
+        with ESMTP id S243029AbiEAHF2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 02:58:38 -0400
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABD23B9
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 23:55:10 -0700 (PDT)
-Received: by mail-il1-x130.google.com with SMTP id s14so149829ild.6
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Apr 2022 23:55:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=66d7SyRrONsXl8W4lFBX0N0VrTFcPFH9NXUMscq4ECs=;
-        b=gpPu6skWQ2IhiBwq3C3Wc2ylJ363rdzpeVUcCH8kt9q7dHvFWOJnbcsgRbrOQFYKcv
-         xrJApxsgnQjhM+ch1GfLHZVpgsTsxgUrisEHTgxjKRMkpBQquVQ+/xBVCpfdJ93hA3K/
-         SgsLTwxHUi4HHmRW9L/hPBCR2UvYVZowMynW9UKHqqyPyLrpYzubdqiO/QUGqdSViE7m
-         z6tL918AfC6MwJ+iX0V19yA3+jIRdVzwhXFkj/UtPLcXe23XsUGoFMHkcSQTHPTEDl1q
-         qTv/u+du++0uQwQVqkWvjlmDbakho2tAf7ecAylV/KuDI4v+JsMZK13/y6YihPVVZ5z+
-         tgMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=66d7SyRrONsXl8W4lFBX0N0VrTFcPFH9NXUMscq4ECs=;
-        b=gKv2Nwp8/jAKSJ7mbotZiuZpB9C39TKmYggIkRuq4hnaAdVZgwnZDu7yKm4udMUXcT
-         RduyRAYY49CXzKJR0+prDBMG2P8zvoB9OS8HYg8rUoe9OzgT3FTiybcrW8LvGHRJCwkr
-         Y0kbZu/UWuYW8DqFMEGUQtevrp5quLdFZDp0cv91z7KCQElK/ut6Z7h44kOVPYzXsPFU
-         g1SoDLz97/agNVHDFr12YLAW6Pam09gIjrzsMRmeViRQ5s6JXKC3Xx4kLDgEO5Oc33FE
-         1D7Nv7WIfisvcowMzmHQIong4fNB2Uhmr13ovIYtlDGO1XlC0fWKdZ1r+83qAmvi6LyR
-         WiXA==
-X-Gm-Message-State: AOAM533hBhctLRR6+QUyrsA/c3m6IK79CZLBihPVWnvCY3A1H6bmcbCJ
-        G8ifPBWYhNiYRd8pp5e+o8tw3Q==
-X-Google-Smtp-Source: ABdhPJxyPVbw+8ZIaPFEomRXrig6kQMnEuxlIz0lgU1En0dO9EeQyCH8axYSrs0P1kc0Cz80nR0P1w==
-X-Received: by 2002:a05:6e02:160f:b0:2cd:5c76:817e with SMTP id t15-20020a056e02160f00b002cd5c76817emr2859671ilu.133.1651388109758;
-        Sat, 30 Apr 2022 23:55:09 -0700 (PDT)
-Received: from google.com (194.225.68.34.bc.googleusercontent.com. [34.68.225.194])
-        by smtp.gmail.com with ESMTPSA id t17-20020a6bdb11000000b0065a47e16f4csm1152530ioc.30.2022.04.30.23.55.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Apr 2022 23:55:08 -0700 (PDT)
-Date:   Sun, 1 May 2022 06:55:05 +0000
-From:   Oliver Upton <oupton@google.com>
-To:     Gavin Shan <gshan@redhat.com>
-Cc:     kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
-        eauger@redhat.com, Jonathan.Cameron@huawei.com,
-        vkuznets@redhat.com, will@kernel.org, shannon.zhaosl@gmail.com,
-        james.morse@arm.com, mark.rutland@arm.com, maz@kernel.org,
-        pbonzini@redhat.com, shan.gavin@gmail.com
-Subject: Re: [PATCH v6 15/18] KVM: arm64: Support SDEI_FEATURES hypercall
-Message-ID: <Ym4uyaGGhPXlnkHQ@google.com>
-References: <20220403153911.12332-1-gshan@redhat.com>
- <20220403153911.12332-16-gshan@redhat.com>
+        Sun, 1 May 2022 03:05:28 -0400
+Received: from out203-205-221-231.mail.qq.com (out203-205-221-231.mail.qq.com [203.205.221.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BF41A051
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 00:02:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1651388520;
+        bh=a8p/beQuYoG6HbG5O776YKIv8httHP96RkhZpN8ssbs=;
+        h=From:To:Cc:References:In-Reply-To:Subject:Date;
+        b=EzcQcbZmRYTgkly6SzjQblY+JGnfh+Sdzll99PyzivzAfjh4Xp2GCOp4DIaKQrxJR
+         /YYFcDhbNNQR4DHrUbWGdYhx7oSQ0M7MwyiVXVPuBmdTwNg1UW5Lk525apyL+yn744
+         GPPw3+OMKaOCiNUwGsfggvHSR6N+CIAZ5mltkCTs=
+Received: from helloworld ([59.172.176.225])
+        by newxmesmtplogicsvrsza8.qq.com (NewEsmtp) with SMTP
+        id 7A390BB; Sun, 01 May 2022 15:01:58 +0800
+X-QQ-mid: xmsmtpt1651388518tiivffook
+Message-ID: <tencent_3A32A3E4AA726450348797294DFCCB81600A@qq.com>
+X-QQ-XMAILINFO: NgK2g0LaajGfVebqiSpxy+6pe9sjWuLEBbidSk5qMly00XJlVme3IpgkzT+C6y
+         v2q1liDu/DX4rg4/t0Uw9XMPpPWUJoS63PiVqxeXl0zsW9VACCyT/NPu01zwwCOjkIDhQMsP3O0s
+         FCWyxgaZsepivcSXi4cuNgBkHKI5UhRKB8CQJrYxLuyJ8bUHgdBcZEdEscTsP7PbCEAUGVDgu6BE
+         ey6Tiwj0KMOCvkaYNT/JH++sQpvOt3yHXl8UaJxmzbaZc9S/kkqmfRgUiZg6YdzPNxMRtaP2dp+X
+         69w1d/6sCtMVKRnWuniBG2HqQUQxdn745LL1iCGKcRpsh4neAG3j8zg4NM7RriMOOkVjveKd83yX
+         3QpqAzPQPEkDlqZmIfyVBJr02+XkJh/lK1UeBPpiCk7l2xUBGf4aPvFWhn/WIqJCOyP9WkTv5H8M
+         XaWDehsewEUEVATwjPZwRqsyghw/gNAYoTR+WJIHZffZuubTq1J1jkZqjvwFoLc8l1tRMmpkEYQl
+         91tia9+poX7xqM92hG4r7V3cqQ3Lg1Hl2nW1/HjGQFpsT5y/wm/2qq7IO9Cjd/WNZsQe1FUeI0Qz
+         guSg5S2Up2tF9vEzC4QPmmY5ASsUJNjYGOmtSlBxu9eqwhDUhTC5NiGclnp/HeGRkNvyD24N/KoT
+         jIcPdW45I29kRQ8O1xmPFoFATly4O4rpUJ8WX1TTH7Z3PIWbq1/gb33swhVFRHqGBE6rHJRFT+9X
+         G54MGexMoSVo+baAnzkt56mrNS6tXac9MfNzHkW2bpvtW9G90HwvSeeWUCn9iiD1F4Wt1Pz5Dc/5
+         g7bOGDy5AgkgDt/1vPYISqKbKKAeNxMQ3yZkF0Tl/LOnl0uA+muWKSldLbIsiWJ3nnDX4eNd/2sV
+         BqYfhH+BycDG7RV18up9FKRKRhiF8h0+6GrK7kVMeBBtxCNw4mpAuhCfQCVFEoYp0dn/yKu+wH6v
+         cWpSCe+DUpblHLOouUgK48mMoBIqzicb6fV5ATBT0=
+From:   <xkernel.wang@foxmail.com>
+To:     <linux@armlinux.org.uk>
+Cc:     <andrew@lunn.ch>, <gregory.clement@bootlin.com>,
+        <sebastian.hesselbarth@gmail.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <tencent_1D9E7394538085872BE9FD6780483137E70A@qq.com> <YmwB83u68uPKuU0a@shell.armlinux.org.uk>
+In-Reply-To: <YmwB83u68uPKuU0a@shell.armlinux.org.uk>
+Subject: Re: [PATCH] ARM: mvebu: check the validation of memory allocation
+Date:   Sun, 1 May 2022 15:01:58 +0800
+X-OQ-MSGID: <009b01d85d29$5a1fdeb0$0e5f9c10$@foxmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220403153911.12332-16-gshan@redhat.com>
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQKWC/NpS5yVGNKjZwJUNiP5WlVJ6gGNT8eoq4HKkAA=
+Content-Language: zh-cn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 03, 2022 at 11:39:08PM +0800, Gavin Shan wrote:
-> This supports SDEI_FEATURES hypercall. It's used by guest to
-> retrieve the supported features, which are number of slots for
-> the interrupt binding events and relative mode for the event
-> handler. Currently, none of them is supported.
-> 
-> Signed-off-by: Gavin Shan <gshan@redhat.com>
-> ---
->  arch/arm64/kvm/sdei.c | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
-> 
-> diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
-> index e1f6ab9800ee..ab0b7b5e3191 100644
-> --- a/arch/arm64/kvm/sdei.c
-> +++ b/arch/arm64/kvm/sdei.c
-> @@ -527,6 +527,23 @@ static unsigned long hypercall_reset(struct kvm_vcpu *vcpu, bool private)
->  	return ret;
->  }
->  
-> +static unsigned long hypercall_features(struct kvm_vcpu *vcpu)
-> +{
-> +	unsigned long feature = smccc_get_arg(vcpu, 1);
-> +	unsigned long ret;
-> +
-> +	switch (feature) {
-> +	case 0: /* BIND_SLOTS */
-> +	case 1: /* RELATIVE_MODE */
+On Friday, April 29, 2022 11:19 PM +0800, linux@armlinux.org.uk wrote:
+> Are these failures silent, or will they be reported in the kernel log =
+to
+> make their failure obvious to those who debug the kernel?
 
-Can you create macros for these?
+According to chapter 14 of the coding style document:
+"These generic allocation functions all emit a stack dump on failure =
+when used
+without __GFP_NOWARN so there is no use in emitting an additional =
+failure
+message when NULL is returned."
 
---
-Thanks,
-Oliver
+I think that these failures are not silent since __GFP_NOWARN is not
+enabled.
+
+Regards,
+Xiaoke Wang
+
