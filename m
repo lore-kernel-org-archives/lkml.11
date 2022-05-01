@@ -2,145 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8057AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 20:41:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B00E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 20:46:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354705AbiEAUll (ORCPT
+        id S1354776AbiEAUt4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 16:41:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60444 "EHLO
+        Sun, 1 May 2022 16:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238355AbiEAUlj (ORCPT
+        with ESMTP id S238355AbiEAUty (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 16:41:39 -0400
-Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B63F49C9C
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 13:38:10 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id C15446C0A3E;
-        Sun,  1 May 2022 20:38:09 +0000 (UTC)
-Received: from pdx1-sub0-mail-a272.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 3D0D66C08A7;
-        Sun,  1 May 2022 20:38:09 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1651437489; a=rsa-sha256;
-        cv=none;
-        b=hULsUQVft86mznR4tDpZFynazbDM5OaSjsOXlnH8wQin8ftD4B4/ccKJCcFqx+GiN1Qw6n
-        brYHAIzrj2mUsXL8fbigy0H2Pf9ksvS2oflAbpHa1lk8LTKwvhaY1lKmlFu2uhOIYOyHVi
-        oxYp0RuIoviib/yhvuS2BZBV3J7OQQcPnQtc30L4hRnJskWg0pA02U34RcmbOOao8odmZU
-        Qf58BSZahTgmAyqCSAy9RoTKRwQzdBfMVKEMVXfiraiJhTNwtm+WQ28vWfq1BmLk+zLrtv
-        pO30ifPN7jhrOK6EpqnXagbAUBjdoeOSl/Wy0pXtJxBZAofqkJJPkEs6Yfp4Yg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1651437489;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=tCCVnocf3mgYD9VNhEdRpcvRc6dfJeJKHpburFD1alE=;
-        b=VVtjkx8TnTok11Tnw2x0VLh7sByH7sTOkKM3+/AZGkZ/0ZCp09N47UWNGXKHccKUgPYJ/L
-        GA4YTRZLSPG1KfomlolUfKDn1UCPV4KYzj6i1SyqgslFKfzGMB3R7Dm/cWbrIRhu5t0iD6
-        BsI8OYLSfzlsycuPdntrtTN+01EUdzdVakeJfXnJ3GZWTv4CbyNUHGvcNQAwp1YoL1n4eX
-        c9ecuRkY/YuAEfUPUYLbpiFhgtxbwduVseNO7k6O++aFlgJhj2pDfuwTKJxL5nPM4x+HSy
-        ZxvBhzET6kHSXOiQHAjWZFNe8wh8X0BrO2r2QqZiZjqjXymBhPTHKkEvm7T4YQ==
-ARC-Authentication-Results: i=1;
-        rspamd-847dd8955c-v74k9;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Average-Gusty: 3dc8d98f065d0d91_1651437489555_2285623474
-X-MC-Loop-Signature: 1651437489555:4050904530
-X-MC-Ingress-Time: 1651437489555
-Received: from pdx1-sub0-mail-a272.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.125.123.55 (trex/6.7.1);
-        Sun, 01 May 2022 20:38:09 +0000
-Received: from offworld (unknown [104.36.31.105])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a272.dreamhost.com (Postfix) with ESMTPSA id 4KryjD46VXz3N;
-        Sun,  1 May 2022 13:38:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1651437489;
-        bh=tCCVnocf3mgYD9VNhEdRpcvRc6dfJeJKHpburFD1alE=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=UPvpLYfbJ2bOSCBFt/X2+o0JSM2pH3gHgWHgBQvOg/Rj9JvpyqL23UFh4uX4SLx/t
-         QbPfYMKb6dmlZKoHpAmbrtfu3KUdlHWgTdHiaZoWWwJXS5Wj4ETxlthiPlqxfwAghj
-         oFT9Sk4WbEYhYSy2fg8Jd7algK7jOYKA0BNtlP0qmeYWOx2a81azHmRb3KC2alPzso
-         MjM70/+F/IHygPnXNBp4Dpf81weDDnvqRzQFlZ9s9aI32mg91UBQi5AEXe1EwAryyH
-         JG9P2Yjq4Vr9zAYronRvGK74pNwCcs5/SVIvLCY8GrTp//i2IJTuFsCQtQiVNtUoiF
-         Nmh/nsC8khXIw==
-Date:   Sun, 1 May 2022 13:26:34 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Yu Zhao <yuzhao@google.com>
-Subject: Re: [PATCH v8 00/70] Introducing the Maple Tree
-Message-ID: <20220501202532.y6zmznzshbe33nwx@offworld>
-Mail-Followup-To: Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Yu Zhao <yuzhao@google.com>
-References: <20220426150616.3937571-1-Liam.Howlett@oracle.com>
- <20220426130857.09f40743b42b5f0bf4f19a59@linux-foundation.org>
- <20220427140832.mpvnnkkhrbupk46i@revolver>
- <20220427103331.9876ad87626af0f50e9ced0d@linux-foundation.org>
- <YmmHqlR6lV84KDrO@casper.infradead.org>
+        Sun, 1 May 2022 16:49:54 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C8559B87;
+        Sun,  1 May 2022 13:46:27 -0700 (PDT)
+Date:   Sun, 01 May 2022 20:46:23 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651437985;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=557Zdz5NnkEbZAML/Rf00CcEcDkEAYNoO9M1iqJXXJg=;
+        b=BQCZ4I1GCX7u4Gxj7oF4nPU93AjM1MM4zWhkhZoP/SWkLz5imU30cuAeB0GZpE1GaokLSv
+        seALoXUqH07L8ri0N47rurJT8oq1zmSlHm3PFzP9Dj7kxIxlUvfAZr9Iz7OlrzrDZ8I/mF
+        fbOKkUfibi+jEM/IR0fd6sUntwwaBxeftVXOSvdtPaxjBjPKDjN3UFZvi3VvUVeM7KlUIv
+        wyx6yGFpFCum6VEUcY9ztmgDQZKku5R92IJw3KBDq0bdjoXhqJUcMa1NIYqs037AYgsn/0
+        PgQwhPswfQlDqXUvuYkAJPPYG/YYeG7uy/2+So2H6xG+F1td4MvXXcaVHfOk+Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651437985;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=557Zdz5NnkEbZAML/Rf00CcEcDkEAYNoO9M1iqJXXJg=;
+        b=ZTZMmiKF/orzzHWjUFrPDJ7Jqp5HGrLTJatvmpHVMf3G7gAnaebeD3JI9p5sx0JY1BQQIa
+        lawFwMF+/1sZyABA==
+From:   "tip-bot2 for Kuppuswamy Sathyanarayanan" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/apic] x86/apic: Do apic driver probe for "nosmp" use case
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tony Luck <tony.luck@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: =?utf-8?q?=3Ca64f864e1114bcd63593286aaf61142cfce384ea=2E16500?=
+ =?utf-8?q?76869=2Egit=2Esathyanarayanan=2Ekuppuswamy=40intel=2Ecom=3E?=
+References: =?utf-8?q?=3Ca64f864e1114bcd63593286aaf61142cfce384ea=2E165007?=
+ =?utf-8?q?6869=2Egit=2Esathyanarayanan=2Ekuppuswamy=40intel=2Ecom=3E?=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YmmHqlR6lV84KDrO@casper.infradead.org>
-User-Agent: NeoMutt/20220408
+Message-ID: <165143798346.4207.13836898834353689685.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Apr 2022, Matthew Wilcox wrote:
+The following commit has been merged into the x86/apic branch of tip:
 
->On Wed, Apr 27, 2022 at 10:33:31AM -0700, Andrew Morton wrote:
->> On Wed, 27 Apr 2022 14:08:39 +0000 Liam Howlett <liam.howlett@oracle.com> wrote:
->> > The benchmarks are around the same as they have always been.
->>
->> So it's presently a wash.
->>
->> That makes "the plan" (below) really critical, otherwise there seems
->> little point in merging this code at this time?
->>
->> Please send me many very soothing words about how confident we should
->> be that the plan will be implemented and that it shall be good?
->
->Yes, performance-wise it's a wash.  However, Davidlohr was very
->impressed that it was a wash because we're actually getting rid of three
->data structures here; the linked list, the rbtree and the vmacache.
->His opinion was that we should push the maple tree in now, in advance
->of the future RCU uses.
+Commit-ID:     7a116a2dd32d96869f0f93bac00b900859ba0434
+Gitweb:        https://git.kernel.org/tip/7a116a2dd32d96869f0f93bac00b900859ba0434
+Author:        Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+AuthorDate:    Sat, 16 Apr 2022 02:45:32 
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Sun, 01 May 2022 22:40:29 +02:00
 
-Yes I like the maple tree, and at this stage I don't think we can ask
-for more from this series wrt the MM - albeit there seems to still be
-some folks reporting breakage. Fundamentally I see Liam's work to (re)move
-complexity out of the MM (not to say that the actual maple tree is not
-complex) by consolidating the three complimentary data structures very
-much worth it considering performance does not take a hit. This was
-very much a turn off with the range locking approach, which worst case
-scenario incurred in prohibitive overhead. Also as Liam and Matthew
-have mentioned, RCU opens up a lot of nice performance opportunities,
-and in addition academia[1] has shown outstanding scalability of address
-spaces with the foundation of replacing the locked rbtree with RCU
-aware trees.
+x86/apic: Do apic driver probe for "nosmp" use case
 
-[1] https://pdos.csail.mit.edu/papers/rcuvm:asplos12.pdf
+For the "nosmp" use case, the APIC initialization code selects
+"APIC_SYMMETRIC_IO_NO_ROUTING" as the default interrupt mode and avoids
+probing APIC drivers.
 
-Thanks,
-Davidlohr
+This works well for the default APIC modes, but for the x2APIC case the
+probe function is required to allocate the cluster_hotplug mask. So in the
+APIC_SYMMETRIC_IO_NO_ROUTING case when the x2APIC is initialized it
+dereferences a NULL pointer and the kernel crashes.
+
+This was observed on a TDX platform where x2APIC is enabled and "nosmp"
+command line option is allowed.
+
+To fix this issue, probe APIC drivers via default_setup_apic_routing() for
+the APIC_SYMMETRIC_IO_NO_ROUTING interrupt mode too.
+
+Suggested-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Suggested-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Link: https://lore.kernel.org/r/a64f864e1114bcd63593286aaf61142cfce384ea.1650076869.git.sathyanarayanan.kuppuswamy@intel.com
+
+---
+ arch/x86/kernel/apic/apic.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
+index 13819bf..25e92d7 100644
+--- a/arch/x86/kernel/apic/apic.c
++++ b/arch/x86/kernel/apic/apic.c
+@@ -1428,22 +1428,21 @@ void __init apic_intr_mode_init(void)
+ 		return;
+ 	case APIC_VIRTUAL_WIRE:
+ 		pr_info("APIC: Switch to virtual wire mode setup\n");
+-		default_setup_apic_routing();
+ 		break;
+ 	case APIC_VIRTUAL_WIRE_NO_CONFIG:
+ 		pr_info("APIC: Switch to virtual wire mode setup with no configuration\n");
+ 		upmode = true;
+-		default_setup_apic_routing();
+ 		break;
+ 	case APIC_SYMMETRIC_IO:
+ 		pr_info("APIC: Switch to symmetric I/O mode setup\n");
+-		default_setup_apic_routing();
+ 		break;
+ 	case APIC_SYMMETRIC_IO_NO_ROUTING:
+ 		pr_info("APIC: Switch to symmetric I/O mode setup in no SMP routine\n");
+ 		break;
+ 	}
+ 
++	default_setup_apic_routing();
++
+ 	if (x86_platform.apic_post_init)
+ 		x86_platform.apic_post_init();
+ 
