@@ -2,135 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EB94C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 10:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0373AC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 10:35:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343916AbiEAKiF (ORCPT
+        id S1344240AbiEAKi0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 06:38:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56234 "EHLO
+        Sun, 1 May 2022 06:38:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237780AbiEAKh7 (ORCPT
+        with ESMTP id S1344493AbiEAKiR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 06:37:59 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A30ADEAA
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 03:34:33 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id i19so23011807eja.11
-        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 03:34:33 -0700 (PDT)
+        Sun, 1 May 2022 06:38:17 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A40DF12
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 03:34:51 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id l18so23034976ejc.7
+        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 03:34:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Cp7/o6x5IzdrJbmJy3xqPuHx+JaFO1sYCDgkJSh0CjQ=;
-        b=lRUnRnElduCIHzH2HCmBQKpbPMKJplrJTWLK3nlYHZEzMU1pMnrAqF9Lzz9+dKPIje
-         xkcB7rLy23kfMNWttlsYJGyPyQgR3FcMq6EyQqbFe+6WIjgCv28J21pA/NhfmcH9rpv9
-         fIMXYWW/f5omnPuLmdxanIRO0RBrA0rhFctJW16EWdCVC4geXUDy2l3eBJLJx4n7dqw8
-         X034WxW7aIUREWHWoeyYzIflzjYY5jNV2EWo61pW4IWW+gxQqPc4ruf50+NcmiWhB2By
-         0CuyOxshcyC4XY7nyqRjVDr1XaNzzuFnFD7Ntqk7pb+sLJ5zyZsU0Tp+pVsJRUmHKn76
-         9JFA==
+        bh=vHtGiwef2dz9fg142iHKNmyNB93LeSN0WJVlgXLSJeA=;
+        b=ZiBy8AAwXRIQDb4eipR3rYvyBUQLvxEuYJlQ7hJvlfa8QhkLB6cS+WDPIQRMJzgsia
+         XfyrPBhsKUSer6cIRoaRR7gtYu7EGBjFg4VAKya+pHVyjQQFu2UMkudHGiiXr2dcPZLc
+         YEK2Gg8Ry+GyiZBWV2GE1klM97vmQ5ltbCSUV8QBPXIun8vo8WTcgbQm2lANJUhc1guk
+         bLRH87kf0aBf36Jst+BcJK6B0BzOtwh03gYWwTG/hSpytged597v9R6zdiE4HVBps/mm
+         ECoF+MDYUTZeNJHq7faFFAfOp6GdCO14WIHX4Rdy0a+tDcRbidy/6gS+jbxDX3MptQ+a
+         37sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Cp7/o6x5IzdrJbmJy3xqPuHx+JaFO1sYCDgkJSh0CjQ=;
-        b=pVqYSi4sCFJbkVP0Gx7W28eOZFa37DslbaPbHaauR4pB9vf6HHnifJxAPSO7XtCqH1
-         UFSnILQOTU5ZILsShqTDhWdqKX1ltEHGoRbNaOxVuBeqd2wSDOzT8HDMpUTZDf8q94YH
-         ojdd99Ug7b2qTA0MS3/FdUygqae9nAbzqP9gWLizhIQDTgYRot05IQcqg9uBaBS8xTPL
-         l6lhYfAYylawWb9Hp9zJ16hvgqhOlP+DJFNyHjhGP3ODRYMdPszKDfy0R1sWli5ZXgKr
-         Mx1fmDLrvwRVr5mlFWiRCYBg2QMiaEFy6aZpOWKFXvXeEgiI0V2aRkCOXUSGGI7tQGiP
-         E2fw==
-X-Gm-Message-State: AOAM5335kaT0xDU1vyC+4xSjxwTZL9ISPXpElD/jCWc4FzlQUeh+ycfY
-        IScC6zC3mbvw5aV0CtSoixCG+Q==
-X-Google-Smtp-Source: ABdhPJwv+vVoRb9P/PghU+aWHDJQi4gjxoCN9SWVZ4Ok6tA0pak1jR6F73PxC22SovUKL1Q3a1g77w==
-X-Received: by 2002:a17:907:9710:b0:6f3:6e7e:d5bd with SMTP id jg16-20020a170907971000b006f36e7ed5bdmr6946306ejc.252.1651401271825;
-        Sun, 01 May 2022 03:34:31 -0700 (PDT)
+        bh=vHtGiwef2dz9fg142iHKNmyNB93LeSN0WJVlgXLSJeA=;
+        b=gzszfl6TJF/PY4cKK7lgE8rtEukZU/o/KWW2IBoq93nAuLfcwPz7Q2gCmzLo2b5qpU
+         H0WafKcekP4s5oaNgpPCcYwsYCM/N7dEZf2IZp8jvHt9wSdu/GKyA+Uy6cN2sRlviXT4
+         MnsN5QiHLgYrt4g7w2SWtXBGs2f3Pff+LO9SGQJqjMNMMVeelBKOg8xr3/27ie3dEFoV
+         6FzH2a4xn13VYW5EerU25XgUmGjiN1t5vEL0EP9EG3F1hGj0BJW73uVmSd4TzuQbuBQF
+         0Bl2sk932B5t+/5XpSKOFajjQUZ66HGDrAG+Q+Jn5Zy9orv7KlbiwVtvHDwqndec/3YT
+         P+SA==
+X-Gm-Message-State: AOAM530f6QSmVf2LKlw4yxJq5pwzZsX7O4OeSakGSzhON1N81KT7AbqN
+        2Z/xbIYsOdOhPE4n8utOc+HX2sfeyXRugg==
+X-Google-Smtp-Source: ABdhPJxq4DgO/P3uaMY15/vVwOPYXLDmQLY+kki3wiNdStibVXVMEcRIfzHdj+9FmES9/ahJpjZ9NA==
+X-Received: by 2002:a17:906:148a:b0:6f3:833d:5a0f with SMTP id x10-20020a170906148a00b006f3833d5a0fmr6933104ejc.49.1651401290366;
+        Sun, 01 May 2022 03:34:50 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id gv49-20020a1709072bf100b006f3ef214e35sm2443733ejc.155.2022.05.01.03.34.30
+        by smtp.gmail.com with ESMTPSA id rb48-20020a170907693000b006f3ef214e11sm2492945ejc.119.2022.05.01.03.34.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 May 2022 03:34:31 -0700 (PDT)
+        Sun, 01 May 2022 03:34:49 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Jassi Brar <jassisinghbrar@gmail.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Tushar Khandelwal <Tushar.Khandelwal@arm.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Peng Fan <peng.fan@nxp.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 1/2] mailbox: correct kerneldoc
-Date:   Sun,  1 May 2022 12:34:27 +0200
-Message-Id: <20220501103428.111286-1-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 1/2] iio: stmpe-adc: use of_device_id for OF matching
+Date:   Sun,  1 May 2022 12:34:46 +0200
+Message-Id: <20220501103447.111392-1-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Correct kerneldoc warnings like:
+The of_device_id was added to allow module autoloading, but it should be
+also used to allow driver matching via Devicetree.
 
-  drivers/mailbox/arm_mhu_db.c:47:
-    warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-  drivers/mailbox/qcom-ipcc.c:58:
-    warning: Function parameter or member 'num_chans' not described in 'qcom_ipcc'
+This also fixes W=1 warning:
+  drivers/iio/adc/stmpe-adc.c:357:34: error: ‘stmpe_adc_ids’ defined but not used [-Werror=unused-const-variable=]
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/mailbox/arm_mhu_db.c | 2 +-
- drivers/mailbox/arm_mhuv2.c  | 3 ++-
- drivers/mailbox/qcom-ipcc.c  | 3 ++-
- 3 files changed, 5 insertions(+), 3 deletions(-)
+ drivers/iio/adc/stmpe-adc.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/mailbox/arm_mhu_db.c b/drivers/mailbox/arm_mhu_db.c
-index 8674153cc893..aa0a4d83880f 100644
---- a/drivers/mailbox/arm_mhu_db.c
-+++ b/drivers/mailbox/arm_mhu_db.c
-@@ -44,7 +44,7 @@ struct arm_mhu {
- };
+diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
+index d2d405388499..0208789fc0f5 100644
+--- a/drivers/iio/adc/stmpe-adc.c
++++ b/drivers/iio/adc/stmpe-adc.c
+@@ -345,21 +345,22 @@ static int __maybe_unused stmpe_adc_resume(struct device *dev)
  
- /**
-- * ARM MHU Mailbox allocated channel information
-+ * struct mhu_db_channel - ARM MHU Mailbox allocated channel information
-  *
-  * @mhu: Pointer to parent mailbox device
-  * @pchan: Physical channel within which this doorbell resides in
-diff --git a/drivers/mailbox/arm_mhuv2.c b/drivers/mailbox/arm_mhuv2.c
-index d997f8ebfa98..a47aef8df52f 100644
---- a/drivers/mailbox/arm_mhuv2.c
-+++ b/drivers/mailbox/arm_mhuv2.c
-@@ -160,7 +160,8 @@ enum mhuv2_frame {
-  * struct mhuv2 - MHUv2 mailbox controller data
-  *
-  * @mbox:	Mailbox controller belonging to the MHU frame.
-- * @send/recv:	Base address of the register mapping region.
-+ * @send:	Base address of the register mapping region.
-+ * @recv:	Base address of the register mapping region.
-  * @frame:	Frame type: RECEIVER_FRAME or SENDER_FRAME.
-  * @irq:	Interrupt.
-  * @windows:	Channel windows implemented by the platform.
-diff --git a/drivers/mailbox/qcom-ipcc.c b/drivers/mailbox/qcom-ipcc.c
-index c5d963222014..881706da59c0 100644
---- a/drivers/mailbox/qcom-ipcc.c
-+++ b/drivers/mailbox/qcom-ipcc.c
-@@ -41,9 +41,10 @@ struct qcom_ipcc_chan_info {
-  * @dev:		Device associated with this instance
-  * @base:		Base address of the IPCC frame associated to APSS
-  * @irq_domain:		The irq_domain associated with this instance
-- * @chan:		The mailbox channels array
-+ * @chans:		The mailbox channels array
-  * @mchan:		The per-mailbox channel info array
-  * @mbox:		The mailbox controller
-+ * @num_chans:		Number of @chans elements
-  * @irq:		Summary irq
-  */
- struct qcom_ipcc {
+ static SIMPLE_DEV_PM_OPS(stmpe_adc_pm_ops, NULL, stmpe_adc_resume);
+ 
++static const struct of_device_id stmpe_adc_ids[] = {
++	{ .compatible = "st,stmpe-adc", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, stmpe_adc_ids);
++
+ static struct platform_driver stmpe_adc_driver = {
+ 	.probe		= stmpe_adc_probe,
+ 	.driver		= {
+ 		.name	= "stmpe-adc",
+ 		.pm	= &stmpe_adc_pm_ops,
++		.of_match_table = stmpe_adc_ids,
+ 	},
+ };
+ module_platform_driver(stmpe_adc_driver);
+ 
+-static const struct of_device_id stmpe_adc_ids[] = {
+-	{ .compatible = "st,stmpe-adc", },
+-	{ },
+-};
+-MODULE_DEVICE_TABLE(of, stmpe_adc_ids);
+-
+ MODULE_AUTHOR("Stefan Agner <stefan.agner@toradex.com>");
+ MODULE_DESCRIPTION("STMPEXXX ADC driver");
+ MODULE_LICENSE("GPL v2");
 -- 
 2.32.0
 
