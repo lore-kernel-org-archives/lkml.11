@@ -2,190 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF826C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 18:18:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F656C4167B
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 18:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349800AbiEASVh (ORCPT
+        id S1350929AbiEASZg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 14:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44482 "EHLO
+        Sun, 1 May 2022 14:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240872AbiEASVf (ORCPT
+        with ESMTP id S239773AbiEASZc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 14:21:35 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E611549CA2
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 11:18:08 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id CEF9A800C2C;
-        Sun,  1 May 2022 18:09:49 +0000 (UTC)
-Received: from pdx1-sub0-mail-a217.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id D131C8010C4;
-        Sun,  1 May 2022 18:09:48 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1651428589; a=rsa-sha256;
-        cv=none;
-        b=CJYhUxCbGB/eL1q914IdlKFsLyurizZVCg2oKzPPTxPO+ehQaY6Z/4YKE996xv0Q7coJ0B
-        4UcSLdPpH6DPMcys2kiZyrBMpPm85WYQBoSdQy670mJz9GkS+ZKMxD3m4srJwnl+/nfYgE
-        IsLmtYo6IKLEfF3oA8Q35QedAC7/VeKnb88VeXBhQrYgLhDMWFfPHY6jVvf1KIDUANFWd/
-        6r6sNYq9K2/ka/TB96T5+n/s2XUItT0TC9Ry9iJcZVyF7+fSV69RpCEho/gFLFNwqe+mNJ
-        fU4mJMzbxcJM/v4TTbUmdxo8/AtyFaKiRUzcv0cQduoRDEmj6sTTvl3hZ3ZgDg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1651428589;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=tstCgkKX0CTUBfcePQvf8fcvcQvBK91nJ9jys4mKMuc=;
-        b=pu91Nz2X+MMnfXTxRn+mFu77DIyciuyzxiH8xNMncQyyFTw2+R+H7CfvqTmbZm9yXvFRBK
-        fGMKgVj91Em1/FfTt88Wii7G3qn/EZc/nEiaVZ9ijuZ0hBrQtTEAt/QNCmKmpbL1zDIJkn
-        FXplFTz6sdO6yndo9EAnmmFW6sGbS/Go6dfDfdExhRwsP/5NaObrxGBErpv+QGN8qHAxDN
-        9J7xguDUv7YAImjg/5ulSO7oZGqaOwvw42xL6tFKXSy09FZ5Z7h7mD37XDnVM3rFwR4jFM
-        53TH5HL17Fjr7CwkE6di6A+BK5sSutA8o2dld/XFi2oY2f1nedB98qJeABGgVw==
-ARC-Authentication-Results: i=1;
-        rspamd-fdd564cbf-k8kdc;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Eyes-Power: 4c4c5cf05ea0d7a7_1651428589288_404621652
-X-MC-Loop-Signature: 1651428589288:957680797
-X-MC-Ingress-Time: 1651428589288
-Received: from pdx1-sub0-mail-a217.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.112.55.199 (trex/6.7.1);
-        Sun, 01 May 2022 18:09:49 +0000
-Received: from offworld (unknown [104.36.31.105])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a217.dreamhost.com (Postfix) with ESMTPSA id 4KrvQ32sCZz18s;
-        Sun,  1 May 2022 11:09:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1651428588;
-        bh=tstCgkKX0CTUBfcePQvf8fcvcQvBK91nJ9jys4mKMuc=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=gPwxjdHdjY14Q0BfsIHWp6ETDoo4sLxfdo/Hzxs9oMu47uat3+ITnLVayg+oOmDXY
-         8oit5X8JURtm366pyeG3aOzcTY0oPyubJonQHGlCu4y9wfvUL1sk41aVdpX/hVVSDk
-         rdyJd9ai0OZbZbvVwvSuV/pF+sVh4suohK0W0lbeR6MkB6j80UrNfZROxNe6Vnp1n5
-         3ey7TYXE6wI2RKgrvQpCVFIj+1vpvWR1VNNZBRBAPGOxrB1fb2wFdPXkauXlDduAp4
-         pp8NxDAWnXJpcW72q8ic+/pE3EJlaxgAHswRq8wUtThMcaH4jBXTSMZP2Hg4TfPAt3
-         RIV/OrJuYuGKw==
-Date:   Sun, 1 May 2022 10:58:13 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Wei Xu <weixugc@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Yang Shi <shy828301@gmail.com>, Linux MM <linux-mm@kvack.org>,
-        Greg Thelen <gthelen@google.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Feng Tang <feng.tang@intel.com>, Jonathan.Cameron@huawei.com
-Subject: Re: RFC: Memory Tiering Kernel Interfaces
-Message-ID: <20220501175813.tvytoosygtqlh3nn@offworld>
-Mail-Followup-To: Wei Xu <weixugc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Yang Shi <shy828301@gmail.com>, Linux MM <linux-mm@kvack.org>,
-        Greg Thelen <gthelen@google.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Feng Tang <feng.tang@intel.com>, Jonathan.Cameron@huawei.com
-References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
+        Sun, 1 May 2022 14:25:32 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27DE351E47;
+        Sun,  1 May 2022 11:22:05 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id be20so14434721edb.12;
+        Sun, 01 May 2022 11:22:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tHTFvMXpHoZFvzZdNmQTbEi+DbIq4dTNCJkhsSirED0=;
+        b=lA2yTdugPwgtl1Ca30TXw5qhfaC1gYzNrWc/7jT+tZ1vApMJjgusMCsPpC33BeymBe
+         r3wNs4bs00E04uJ0Hj9XDnSSkX5tb2gnuZQSZn/tXGsTFScE1kFlMwrGdElOvPa4whpJ
+         XLpdi839qF4LLMkDc8BT2FM9F+qLSKhbnZ2+6pYoACJRY48dT7qULs9YI0HNBupTJZ1a
+         GIa70TLBl8tXzqtJJgJq+y0VP1XMR0WwHL4ttuqemB0N757QgeH7FhHY5g4jVOjpsqPL
+         YjggHOjcxnBqLp5zpnapT2aB6MNEKBSJCNsBrBe+4HokcipUE14ATMn/EXUn0o4v6Ecl
+         HhUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tHTFvMXpHoZFvzZdNmQTbEi+DbIq4dTNCJkhsSirED0=;
+        b=WBBtXQtp1GazAqvFKLxQEJx/Cd9Ckh5H98+xI/cq4n7ZYJcovdG6wHQ5Wl06k0ymoq
+         VSX+iQ69GpaA+lXKyBPdVJJXW11kjzJDbnItLB2XmXIfan8OZfS2FW3br0W83eIFqS3c
+         5wnKMSq0FU0fP43uATmgcfDWc2832iGJ2AMCgMiKKjs9n9sqIy44mEd26Dz5pPW/mTel
+         op+Ei7U+x06drKX7VP4zVSGPg1wgvURkHyVSC87F5ZHjsn/iFvw4qSeP7HyHvSOh3JYk
+         KCuVkG8x5MAwFOFF+4TFwwLBnY2iI7t7v3Dn9rfWF4k59sb12B6bq0/UrUuaUJH/mTAH
+         gNnQ==
+X-Gm-Message-State: AOAM530NNDkwGANsT2IcxEl/fJKalJJ1pdHd5UIj5oCmuLg9uNQP8rge
+        a9nsg/+5tVS+osDy4CoYpFSe4M/bcQvZUA==
+X-Google-Smtp-Source: ABdhPJxGeY3g27Ogk6Vq4xMMjYuSK3Mu+xOwkZHK1vIWZwMOqDC5IJzKUnlNWYXpbTYCAFOXVWujIw==
+X-Received: by 2002:a05:6402:1a34:b0:425:ca01:58ec with SMTP id be20-20020a0564021a3400b00425ca0158ecmr9974952edb.373.1651429323566;
+        Sun, 01 May 2022 11:22:03 -0700 (PDT)
+Received: from fedora.robimarko.hr (cpezg-94-253-144-225-cbl.xnet.hr. [94.253.144.225])
+        by smtp.googlemail.com with ESMTPSA id gv49-20020a1709072bf100b006f3ef214e35sm2769811ejc.155.2022.05.01.11.22.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 May 2022 11:22:03 -0700 (PDT)
+From:   Robert Marko <robimarko@gmail.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org, amitk@kernel.org,
+        rafael@kernel.org, daniel.lezcano@linaro.org, rui.zhang@intel.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Robert Marko <robimarko@gmail.com>
+Subject: [PATCH v2 1/5] dt-bindings: thermal: tsens: Add ipq8074 compatible
+Date:   Sun,  1 May 2022 20:21:56 +0200
+Message-Id: <20220501182200.47328-1-robimarko@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
-User-Agent: NeoMutt/20220408
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Nice summary, thanks. I don't know who of the interested parties will be
-at lsfmm, but fyi we have a couple of sessions on memory tiering Tuesday
-at 14:00 and 15:00.
+Qualcomm IPQ8074 has tsens v2.3.0 block, though unlike existing v2 IP it
+only uses one IRQ, so tsens v2 compatible cannot be used as the fallback.
 
-On Fri, 29 Apr 2022, Wei Xu wrote:
+We also have to make sure that correct interrupts are set according to
+compatibles, so populate interrupt information per compatibles.
 
->The current kernel has the basic memory tiering support: Inactive
->pages on a higher tier NUMA node can be migrated (demoted) to a lower
->tier NUMA node to make room for new allocations on the higher tier
->NUMA node.  Frequently accessed pages on a lower tier NUMA node can be
->migrated (promoted) to a higher tier NUMA node to improve the
->performance.
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+Changes in v2:
+* No need for a list in compatible check
+* Specify minItems and maxItems for interrupt and interrupt-names
+---
+ .../bindings/thermal/qcom-tsens.yaml          | 74 +++++++++++++++++--
+ 1 file changed, 67 insertions(+), 7 deletions(-)
 
-Regardless of the promotion algorithm, at some point I see the NUMA hinting
-fault mechanism being in the way of performance. It would be nice if hardware
-began giving us page "heatmaps" instead of having to rely on faulting or
-sampling based ways to identify hot memory.
+diff --git a/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml b/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
+index b6406bcc683f..e9b85c99bb60 100644
+--- a/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
++++ b/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
+@@ -56,6 +56,10 @@ properties:
+               - qcom,sm8350-tsens
+           - const: qcom,tsens-v2
+ 
++      - description: v2 of TSENS with combined interrupt
++        enum:
++          - qcom,ipq8074-tsens
++
+   reg:
+     items:
+       - description: TM registers
+@@ -63,15 +67,11 @@ properties:
+ 
+   interrupts:
+     minItems: 1
+-    items:
+-      - description: Combined interrupt if upper or lower threshold crossed
+-      - description: Interrupt if critical threshold crossed
++    maxItems: 2
+ 
+   interrupt-names:
+     minItems: 1
+-    items:
+-      - const: uplow
+-      - const: critical
++    maxItems: 2
+ 
+   nvmem-cells:
+     minItems: 1
+@@ -125,21 +125,66 @@ allOf:
+       properties:
+         interrupts:
+           maxItems: 1
++          items:
++            - description: Combined interrupt if upper or lower threshold crossed
+         interrupt-names:
+           maxItems: 1
++          items:
++            - const: uplow
+ 
+-    else:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,msm8953-tsens
++              - qcom,msm8996-tsens
++              - qcom,msm8998-tsens
++              - qcom,sc7180-tsens
++              - qcom,sc7280-tsens
++              - qcom,sc8180x-tsens
++              - qcom,sdm630-tsens
++              - qcom,sdm845-tsens
++              - qcom,sm8150-tsens
++              - qcom,sm8250-tsens
++              - qcom,sm8350-tsens
++              - qcom,tsens-v2
++    then:
+       properties:
+         interrupts:
+           minItems: 2
++          items:
++            - description: Combined interrupt if upper or lower threshold crossed
++            - description: Interrupt if critical threshold crossed
+         interrupt-names:
+           minItems: 2
++          items:
++            - const: uplow
++            - const: critical
+ 
+   - if:
+       properties:
+         compatible:
+           contains:
+             enum:
++              - qcom,ipq8074-tsens
++    then:
++      properties:
++        interrupts:
++          maxItems: 1
++          items:
++            - description: Combined interrupt if upper, lower or critical thresholds crossed
++        interrupt-names:
++          maxItems: 1
++          items:
++            - const: combined
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,ipq8074-tsens
+               - qcom,tsens-v0_1
+               - qcom,tsens-v1
+               - qcom,tsens-v2
+@@ -222,4 +267,19 @@ examples:
+            #qcom,sensors = <13>;
+            #thermal-sensor-cells = <1>;
+     };
++
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    // Example 4 (for any IPQ8074 based SoC-s):
++    tsens4: thermal-sensor@4a9000 {
++           compatible = "qcom,ipq8074-tsens";
++           reg = <0x4a9000 0x1000>,
++                 <0x4a8000 0x1000>;
++
++           interrupts = <GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>;
++           interrupt-names = "combined";
++
++           #qcom,sensors = <16>;
++           #thermal-sensor-cells = <1>;
++    };
+ ...
+-- 
+2.35.1
 
->A tiering relationship between NUMA nodes in the form of demotion path
->is created during the kernel initialization and updated when a NUMA
->node is hot-added or hot-removed.  The current implementation puts all
->nodes with CPU into the top tier, and then builds the tiering hierarchy
->tier-by-tier by establishing the per-node demotion targets based on
->the distances between nodes.
->
->The current memory tiering interface needs to be improved to address
->several important use cases:
->
->* The current tiering initialization code always initializes
->  each memory-only NUMA node into a lower tier.  But a memory-only
->  NUMA node may have a high performance memory device (e.g. a DRAM
->  device attached via CXL.mem or a DRAM-backed memory-only node on
->  a virtual machine) and should be put into the top tier.
-
-At least the CXL memory (volatile or not) will still be slower than
-regular DRAM, so I think that we'd not want this to be top-tier. But
-in general, yes I agree that defining top tier as whether or not the
-node has a CPU a bit limiting, as you've detailed here.
-
->Tiering Hierarchy Initialization
->================================
->
->By default, all memory nodes are in the top tier (N_TOPTIER_MEMORY).
->
->A device driver can remove its memory nodes from the top tier, e.g.
->a dax driver can remove PMEM nodes from the top tier.
->
->The kernel builds the memory tiering hierarchy and per-node demotion
->order tier-by-tier starting from N_TOPTIER_MEMORY.  For a node N, the
->best distance nodes in the next lower tier are assigned to
->node_demotion[N].preferred and all the nodes in the next lower tier
->are assigned to node_demotion[N].allowed.
->
->node_demotion[N].preferred can be empty if no preferred demotion node
->is available for node N.
-
-Upon cases where there more than one possible demotion node (with equal
-cost), I'm wondering if we want to do something better than choosing
-randomly, like we do now - perhaps round robin? Of course anything
-like this will require actual performance data, something I have seen
-very little of.
-
->Memory tiering hierarchy is rebuilt upon hot-add or hot-remove of a
->memory node, but is NOT rebuilt upon hot-add or hot-remove of a CPU
->node.
-
-I think this makes sense.
-
-Thanks,
-Davidlohr
