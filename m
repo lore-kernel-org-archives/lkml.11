@@ -2,53 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9CD7C35295
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 10:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A444AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 10:36:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344817AbiEAKkD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 06:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58076 "EHLO
+        id S235270AbiEAKkL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 1 May 2022 06:40:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345388AbiEAKi6 (ORCPT
+        with ESMTP id S1345505AbiEAKjD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 06:38:58 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86442E45
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 03:35:32 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id z19so13674472edx.9
-        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 03:35:32 -0700 (PDT)
+        Sun, 1 May 2022 06:39:03 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B67CD93
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 03:35:36 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id y21so13715588edo.2
+        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 03:35:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0y5yzicLsas4EmHAcITZdZkPnQbuPjF+Rg+p5VrAikk=;
-        b=Rg0/nl3fR4LHEemjPjE6BNFsVJbpSfkKUgt9QbXYRHwHu51tUEcrTf8gA9nRzDeMnQ
-         kG4BVCJ/mJDO7XH0wtnbw/AGtNTJ23F3d2GhwmKQdYDAUvJ1Y/kWo97UtuC1jSld5VSQ
-         JuGaJTXwHb/Tk7sI4NgARxpEUZw9yEM6CLiA893wqR87pO9arJG5BtruiVIWLK+IlXe6
-         XpD2/2IQD+oc6akmpEcaqSLbnnxwRTiIdeJIAaPY0+DjJR1zKAg+KHxVsIwaAKz7F8uX
-         od9FyZa3KjpYmDmLPQg4UL87r5S+7BaYNMZuaLivlp9/yhcucbs3hEsb+usDFTmLScJW
-         8kBg==
+        bh=Ar0fHqjgo5tjZGGwiHuVSZF1o7mhrC7JpXZH7xiTZ8Q=;
+        b=HA0YlrQGOcEbrOnQFUL7HkbePL0gXgr9vn8ikLY9xEPfqEzVL9ncrNyXowBON7OUe7
+         3JW8Rp4bvOFAmwROWmqXBAWwOBnRy6kPj/+FJscHUoJOHOpAB7nfmfho0ejlRwxkqBZr
+         p7xWcDl1Btxo2RMjICrcOXCiV+yN6UyCxiZZtNuFglVx6S8U/zGXIswbATzBqyfGlzvC
+         07xujiu2XG00NA7gYasBWpCi/IR+F50X0Ggo7ke4XzkezV8hVDpwt2+twmLFKZfuS4dm
+         RvTTewxRULVZ1SsJsR6wt83PX/v3U0KrRI3hQ6LXWGEHAnmEDPAE1bbyGTZSoTZq5Xs2
+         Bh8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0y5yzicLsas4EmHAcITZdZkPnQbuPjF+Rg+p5VrAikk=;
-        b=43VwhuVdkYCpWMa0Iadi5+AtEMyO8E42zYAIuSdtKztciN6xEnhw++s4Mg3HUEvr5m
-         h6pYr9ULe2IILKh5TM+2pc++K2j98Qa2x1glVAl6Pgd2S0p5RKa9qG9Si2hFUM1HS6YW
-         9iFGElLgnWgNH3rk3xfkjCX8fcwvqQsHP8ohbhiQJvS5nUMlJKDcjQRg9lmhSc81dTRU
-         /6cxGedAgZ/VUedXIKGWKvlXZdKWB6Qm58fuV487GTg5GA9AVJ6lOZLe/biIJGT9PdRY
-         PqfdNc3BBdTGREP4Jolk9GAxfhNt1ngjKLO8o/yOqx0/J6b/W+ZrrtwmyInBCyPDqliU
-         zDJA==
-X-Gm-Message-State: AOAM532/iV+ZV0IpHiCPafyxYpPUciCAG7kVlBNJquwCiq+4/UXnLbpk
-        96KoZzMmqgQ+XNaQzOHuRFw3eQ==
-X-Google-Smtp-Source: ABdhPJxd9q5dD1HBp8ci0ndlYpDqxQEaNKu7CYNuW/hdf1Co5oOWllrk9R1fcJtEOmPDmN5nmFg9Dg==
-X-Received: by 2002:a50:d65c:0:b0:425:ea34:7dd7 with SMTP id c28-20020a50d65c000000b00425ea347dd7mr8290816edj.18.1651401331027;
-        Sun, 01 May 2022 03:35:31 -0700 (PDT)
+        bh=Ar0fHqjgo5tjZGGwiHuVSZF1o7mhrC7JpXZH7xiTZ8Q=;
+        b=Qrxur6CxCCvZ/IYE7Qfkv3ZpqN41j8EUp6BNCNaCNT+vX7h7AkEGKD21vWg6X88kWe
+         WKCh4bcet5bhqTytJqfoJyFx9KVmglccjtNJuUEA/nhd08iGHH4RTmvPvXP4ft8Qsn8D
+         tBYiqW6Uk3Q377uHW9GYvf4r2t+tBUwNC5Y24+BukSi5MCMpWJ49z7u6IOl9XfyBmYZ0
+         azWjAx8W88AaDTiLyG08omkn8+WbE2iQlE71yHLzSH4oKcsmBYr6/KwnYRv3iiG6phi9
+         yEgzoH4+Yci/K0YILIGxWNeYJllqM0voAa0ZvVYX7VqPO95CLGXVIz3g+BL4lBh2YMhV
+         PgvQ==
+X-Gm-Message-State: AOAM530Uwt5qbga/NEgW4VymuWmtuinAEdfOHVTrsYK+Tg5sOL61fXdp
+        0b+fXVJvi2AaQDqMRI8errIq0C3NiFFhEw==
+X-Google-Smtp-Source: ABdhPJy9iVvaPS8D87fk1AoL09KIG6ZEc5xrgHANt4r9I88xIeHGNAyPFrABB+8y+uGv76PyVuSb3g==
+X-Received: by 2002:a05:6402:34d4:b0:426:3517:ba77 with SMTP id w20-20020a05640234d400b004263517ba77mr8287511edc.260.1651401334751;
+        Sun, 01 May 2022 03:35:34 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id zp1-20020a17090684e100b006f3ef214df1sm2464438ejb.87.2022.05.01.03.35.30
+        by smtp.gmail.com with ESMTPSA id zp1-20020a17090684e100b006f3ef214df1sm2464438ejb.87.2022.05.01.03.35.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 May 2022 03:35:30 -0700 (PDT)
+        Sun, 01 May 2022 03:35:34 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -58,50 +57,47 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-remoteproc@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 3/8] remoteproc: qcom: correct kerneldoc
-Date:   Sun,  1 May 2022 12:35:15 +0200
-Message-Id: <20220501103520.111561-3-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 7/8] soc: qcom: cmd-db: replace strncpy() with strscpy_pad()
+Date:   Sun,  1 May 2022 12:35:19 +0200
+Message-Id: <20220501103520.111561-7-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220501103520.111561-1-krzysztof.kozlowski@linaro.org>
 References: <20220501103520.111561-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Correct kerneldoc warnings like:
+The use of strncpy() is considered deprecated for NUL-terminated
+strings[1].  Replace strncpy() with strscpy_pad(), to keep existing
+pad-behavior of strncpy.  This fixes W=1 warning:
 
-  drivers/remoteproc/qcom_common.c:68:
-    warning: expecting prototype for struct minidump_subsystem_toc. Prototype was for struct minidump_subsystem instead
+  drivers/soc/qcom/cmd-db.c: In function ‘cmd_db_get_header.part.0’:
+  drivers/soc/qcom/cmd-db.c:151:9: warning: ‘strncpy’ specified bound 8 equals destination size [-Wstringop-truncation]
+    151 |         strncpy(query, id, sizeof(query));
+
+[1] https://www.kernel.org/doc/html/latest/process/deprecated.html#strncpy-on-nul-terminated-strings
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/remoteproc/qcom_common.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/soc/qcom/cmd-db.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/remoteproc/qcom_common.c b/drivers/remoteproc/qcom_common.c
-index 4b91e3c9eafa..020349f8979d 100644
---- a/drivers/remoteproc/qcom_common.c
-+++ b/drivers/remoteproc/qcom_common.c
-@@ -50,7 +50,7 @@ struct minidump_region {
- };
+diff --git a/drivers/soc/qcom/cmd-db.c b/drivers/soc/qcom/cmd-db.c
+index dd872017f345..c5137c25d819 100644
+--- a/drivers/soc/qcom/cmd-db.c
++++ b/drivers/soc/qcom/cmd-db.c
+@@ -148,7 +148,7 @@ static int cmd_db_get_header(const char *id, const struct entry_header **eh,
+ 		return ret;
  
- /**
-- * struct minidump_subsystem_toc: Subsystem's SMEM Table of content
-+ * struct minidump_subsystem - Subsystem's SMEM Table of content
-  * @status : Subsystem toc init status
-  * @enabled : if set to 1, this region would be copied during coredump
-  * @encryption_status: Encryption status for this subsystem
-@@ -68,7 +68,7 @@ struct minidump_subsystem {
- };
+ 	/* Pad out query string to same length as in DB */
+-	strncpy(query, id, sizeof(query));
++	strscpy_pad(query, id, sizeof(query));
  
- /**
-- * struct minidump_global_toc: Global Table of Content
-+ * struct minidump_global_toc - Global Table of Content
-  * @status : Global Minidump init status
-  * @md_revision : Minidump revision
-  * @enabled : Minidump enable status
+ 	for (i = 0; i < MAX_SLV_ID; i++) {
+ 		rsc_hdr = &cmd_db_header->header[i];
 -- 
 2.32.0
 
