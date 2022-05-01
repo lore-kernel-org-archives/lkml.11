@@ -2,181 +2,410 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B6A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 08:06:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75844C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  1 May 2022 08:09:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244106AbiEAIJZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 04:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38480 "EHLO
+        id S241751AbiEAIMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 1 May 2022 04:12:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244156AbiEAII6 (ORCPT
+        with ESMTP id S229632AbiEAIMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 04:08:58 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EEC7BC9A;
-        Sun,  1 May 2022 01:05:30 -0700 (PDT)
-Date:   Sun, 01 May 2022 08:05:27 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651392328;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VO070gCuZJTgdUPpsLphHxZNRwVJ9QxlBcypKnh0Pk8=;
-        b=ajJ7IMD9RViTurNoBkm3MWui+gO5eDx5wDr2/kF+dmDapqkpuJfKCWv2Tu29ilhd3yB+B3
-        /0iDaVY+4nrinG5YoG+flDZpmEpEAhFJkzJtOaFnuG1kFGhXtjTqKuaZl8S83HUcBFtS4f
-        rygz90CRHICVk4EbzlmlvXNTAVkAzA4cRMYNzD7dJVa4pMtzHRO0qfroXkCyhCc8NVS0mh
-        GZD8FVC/+l8GKc4B2Bjmf3cC09qI0jXhWXe7fsafyxUWuXT1zgYrUsyxNyGPLyYA2I0fKV
-        5ODRvVC0PmVStI207nTss5T3zhJ7tQKDuyU5vSzRn2qjhWcwx4HBcKvnpmDXUg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651392328;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VO070gCuZJTgdUPpsLphHxZNRwVJ9QxlBcypKnh0Pk8=;
-        b=UMd9eTYLrTLxkw4ZEbA5MIxTbCtOdg6GoqhHqBb4lbhPmGA6j8OEM+mF9gt65pjztHmR3h
-        WkkbyQCypfW6gABw==
-From:   "tip-bot2 for Sebastian Andrzej Siewior" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] smp: Make softirq handling RT safe in
- flush_smp_call_function_queue()
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <YgKgL6aPj8aBES6G@linutronix.de>
-References: <YgKgL6aPj8aBES6G@linutronix.de>
+        Sun, 1 May 2022 04:12:51 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC0113D64
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 01:09:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651392566; x=1682928566;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=XJ8ivdgXfCkfi29KrUHdjElrRLrWDx9n7Agjr5EDbrs=;
+  b=U+Xx0vzymRNfFIfc8V6be9623I1RLXcjh03zSfVBdWMuxNqDAbW1swrm
+   IdM1SYWuWndzKInkbw2CQ6JDIK6uVCYeh02EbVSL+DZWI4/XYMUAbmYnt
+   /H4VEs6aaDz/OoCr72U9xDWf+ycG9xRRRuJpgAagG3+istqwtnFJkmAAn
+   mQCsUPZQ6XR1Lv40b4yAgCyxZ5MCxW8RH04QAzC5HwmQrlqckRTq0b+pF
+   s5M2YX+OfRQ9cqFVveXiiIVk0h0RYU92FxX/XMQEJu6qaj7qGuUQWUXbv
+   p2jVNkmIvKn1yG+B7fAUz/dIGZttxxXi0qSxu0t+SkLhN8B63SvrAlFgp
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10333"; a="248939218"
+X-IronPort-AV: E=Sophos;i="5.91,189,1647327600"; 
+   d="scan'208";a="248939218"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2022 01:09:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,189,1647327600"; 
+   d="scan'208";a="809742382"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 01 May 2022 01:09:24 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nl4dw-0008c2-0h;
+        Sun, 01 May 2022 08:09:24 +0000
+Date:   Sun, 01 May 2022 16:09:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/urgent] BUILD SUCCESS
+ 1fa568e26f001e951b634d62ef3accdc80a87c7b
+Message-ID: <626e4022.HXJiLOsG553mOsg9%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Message-ID: <165139232730.4207.638214050053913440.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/core branch of tip:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/urgent
+branch HEAD: 1fa568e26f001e951b634d62ef3accdc80a87c7b  bug: Have __warn() prototype defined unconditionally
 
-Commit-ID:     1a90bfd220201fbe050dfc15deaac20ca5f15638
-Gitweb:        https://git.kernel.org/tip/1a90bfd220201fbe050dfc15deaac20ca5f15638
-Author:        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-AuthorDate:    Wed, 13 Apr 2022 15:31:05 +02:00
-Committer:     Thomas Gleixner <tglx@linutronix.de>
-CommitterDate: Sun, 01 May 2022 10:03:43 +02:00
+elapsed time: 7019m
 
-smp: Make softirq handling RT safe in flush_smp_call_function_queue()
+configs tested: 323
+configs skipped: 7
 
-flush_smp_call_function_queue() invokes do_softirq() which is not available
-on PREEMPT_RT. flush_smp_call_function_queue() is invoked from the idle
-task and the migration task with preemption or interrupts disabled.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-So RT kernels cannot process soft interrupts in that context as that has to
-acquire 'sleeping spinlocks' which is not possible with preemption or
-interrupts disabled and forbidden from the idle task anyway.
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+mips                 randconfig-c004-20220425
+i386                 randconfig-c001-20220425
+i386                          randconfig-c001
+mips                     decstation_defconfig
+m68k                            q40_defconfig
+arm                           corgi_defconfig
+sh                           se7724_defconfig
+parisc                generic-32bit_defconfig
+m68k                         amcore_defconfig
+arc                        nsim_700_defconfig
+sh                           se7206_defconfig
+sh                               j2_defconfig
+arm                        cerfcube_defconfig
+sh                           se7751_defconfig
+arm                         assabet_defconfig
+mips                  decstation_64_defconfig
+arm                            zeus_defconfig
+s390                             allmodconfig
+sh                          rsk7264_defconfig
+mips                  maltasmvp_eva_defconfig
+mips                      maltasmvp_defconfig
+arm                         lubbock_defconfig
+m68k                                defconfig
+sh                          sdk7780_defconfig
+powerpc                     tqm8555_defconfig
+arm                          badge4_defconfig
+riscv             nommu_k210_sdcard_defconfig
+powerpc                   motionpro_defconfig
+arc                        nsimosci_defconfig
+powerpc                      arches_defconfig
+powerpc                 linkstation_defconfig
+sh                     sh7710voipgw_defconfig
+sh                        edosk7705_defconfig
+arm                         lpc18xx_defconfig
+mips                           ip32_defconfig
+arm                          pxa910_defconfig
+powerpc                     ep8248e_defconfig
+s390                                defconfig
+mips                         tb0226_defconfig
+arc                            hsdk_defconfig
+mips                          rb532_defconfig
+mips                        vocore2_defconfig
+powerpc                      ppc6xx_defconfig
+arm                       multi_v4t_defconfig
+arm                      jornada720_defconfig
+powerpc                    adder875_defconfig
+sh                           se7619_defconfig
+alpha                               defconfig
+h8300                               defconfig
+riscv                    nommu_k210_defconfig
+powerpc                     tqm8548_defconfig
+sh                   secureedge5410_defconfig
+sh                            shmin_defconfig
+sh                          r7780mp_defconfig
+sh                     magicpanelr2_defconfig
+nios2                               defconfig
+powerpc                     taishan_defconfig
+sparc                       sparc64_defconfig
+powerpc                        cell_defconfig
+parisc                generic-64bit_defconfig
+arm                         cm_x300_defconfig
+microblaze                      mmu_defconfig
+m68k                       m5208evb_defconfig
+arc                              alldefconfig
+powerpc                 mpc837x_mds_defconfig
+xtensa                       common_defconfig
+sh                             sh03_defconfig
+arm                       imx_v6_v7_defconfig
+ia64                      gensparse_defconfig
+m68k                            mac_defconfig
+i386                             alldefconfig
+arm                        clps711x_defconfig
+powerpc                     tqm8541_defconfig
+powerpc                       holly_defconfig
+mips                            gpr_defconfig
+xtensa                           allyesconfig
+arm                            lart_defconfig
+powerpc                         ps3_defconfig
+sh                          r7785rp_defconfig
+powerpc                 mpc8540_ads_defconfig
+arm                             pxa_defconfig
+arm                        keystone_defconfig
+arm                         vf610m4_defconfig
+powerpc                     mpc83xx_defconfig
+sh                      rts7751r2d1_defconfig
+sh                        sh7785lcr_defconfig
+sparc                               defconfig
+arm                        mini2440_defconfig
+sh                ecovec24-romimage_defconfig
+sh                         ap325rxa_defconfig
+mips                       bmips_be_defconfig
+m68k                        m5272c3_defconfig
+sh                             shx3_defconfig
+sh                           se7780_defconfig
+arc                     nsimosci_hs_defconfig
+sh                          kfr2r09_defconfig
+m68k                       bvme6000_defconfig
+sh                          landisk_defconfig
+arc                         haps_hs_defconfig
+xtensa                  cadence_csp_defconfig
+parisc                              defconfig
+sh                         ecovec24_defconfig
+arm                             ezx_defconfig
+powerpc                      cm5200_defconfig
+xtensa                         virt_defconfig
+powerpc                      mgcoge_defconfig
+m68k                       m5475evb_defconfig
+arm                            qcom_defconfig
+sh                   sh7724_generic_defconfig
+mips                     loongson1b_defconfig
+m68k                        m5307c3_defconfig
+mips                            ar7_defconfig
+arm                          lpd270_defconfig
+openrisc                  or1klitex_defconfig
+ia64                            zx1_defconfig
+arm                          simpad_defconfig
+m68k                          sun3x_defconfig
+nios2                            allyesconfig
+m68k                          multi_defconfig
+arm                        multi_v7_defconfig
+microblaze                          defconfig
+powerpc                     pq2fads_defconfig
+arm                           sunxi_defconfig
+ia64                             alldefconfig
+mips                         cobalt_defconfig
+sh                          lboxre2_defconfig
+arm                         nhk8815_defconfig
+mips                       capcella_defconfig
+powerpc                 mpc837x_rdb_defconfig
+sh                           sh2007_defconfig
+powerpc                     asp8347_defconfig
+sh                        edosk7760_defconfig
+arm                       aspeed_g5_defconfig
+m68k                             alldefconfig
+arm                           h3600_defconfig
+powerpc                    amigaone_defconfig
+sh                           se7721_defconfig
+powerpc                           allnoconfig
+powerpc                   currituck_defconfig
+arm                           tegra_defconfig
+sh                            hp6xx_defconfig
+openrisc                 simple_smp_defconfig
+arm                      integrator_defconfig
+i386                                defconfig
+mips                           jazz_defconfig
+powerpc                      chrp32_defconfig
+arm                      footbridge_defconfig
+powerpc                 mpc85xx_cds_defconfig
+sh                   rts7751r2dplus_defconfig
+parisc64                            defconfig
+arc                                 defconfig
+openrisc                    or1ksim_defconfig
+powerpc                    sam440ep_defconfig
+arm                  randconfig-c002-20220425
+x86_64               randconfig-c001-20220425
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220428
+arm                  randconfig-c002-20220427
+arm                  randconfig-c002-20220429
+ia64                                defconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+arc                              allyesconfig
+csky                                defconfig
+alpha                            allyesconfig
+h8300                            allyesconfig
+sh                               allmodconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allmodconfig
+powerpc                          allyesconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+x86_64               randconfig-a015-20220425
+x86_64               randconfig-a014-20220425
+x86_64               randconfig-a011-20220425
+x86_64               randconfig-a012-20220425
+x86_64               randconfig-a016-20220425
+x86_64               randconfig-a013-20220425
+i386                 randconfig-a014-20220425
+i386                 randconfig-a012-20220425
+i386                 randconfig-a011-20220425
+i386                 randconfig-a015-20220425
+i386                 randconfig-a013-20220425
+i386                 randconfig-a016-20220425
+i386                          randconfig-a012
+i386                          randconfig-a016
+i386                          randconfig-a014
+s390                 randconfig-r044-20220425
+arc                  randconfig-r043-20220425
+riscv                randconfig-r042-20220425
+arc                  randconfig-r043-20220428
+arc                  randconfig-r043-20220429
+s390                 randconfig-r044-20220429
+riscv                randconfig-r042-20220429
+riscv                             allnoconfig
+riscv                            allyesconfig
+riscv                            allmodconfig
+riscv                          rv32_defconfig
+riscv                    nommu_virt_defconfig
+riscv                               defconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
+x86_64                           rhel-8.3-syz
 
-The currently known SMP function call which raises a soft interrupt is in
-the block layer, but this functionality is not enabled on RT kernels due to
-latency and performance reasons.
+clang tested configs:
+riscv                randconfig-c006-20220425
+mips                 randconfig-c004-20220425
+x86_64               randconfig-c007-20220425
+arm                  randconfig-c002-20220425
+i386                 randconfig-c001-20220425
+powerpc              randconfig-c003-20220425
+riscv                randconfig-c006-20220427
+mips                 randconfig-c004-20220427
+x86_64                        randconfig-c007
+i386                          randconfig-c001
+arm                  randconfig-c002-20220427
+powerpc              randconfig-c003-20220427
+riscv                randconfig-c006-20220428
+mips                 randconfig-c004-20220428
+arm                  randconfig-c002-20220428
+powerpc              randconfig-c003-20220428
+powerpc              randconfig-c003-20220501
+riscv                randconfig-c006-20220501
+mips                 randconfig-c004-20220501
+arm                  randconfig-c002-20220501
+riscv                randconfig-c006-20220429
+mips                 randconfig-c004-20220429
+arm                  randconfig-c002-20220429
+powerpc              randconfig-c003-20220429
+mips                          ath79_defconfig
+arm                       spear13xx_defconfig
+arm                         shannon_defconfig
+mips                   sb1250_swarm_defconfig
+mips                     loongson2k_defconfig
+s390                             alldefconfig
+arm                        vexpress_defconfig
+arm                         palmz72_defconfig
+arm                       cns3420vb_defconfig
+arm                          pxa168_defconfig
+powerpc                    socrates_defconfig
+arm                            dove_defconfig
+powerpc                     tqm5200_defconfig
+powerpc                 mpc832x_rdb_defconfig
+mips                     cu1830-neo_defconfig
+powerpc                    mvme5100_defconfig
+powerpc                      ppc44x_defconfig
+arm                         s3c2410_defconfig
+arm                           omap1_defconfig
+arm                      pxa255-idp_defconfig
+powerpc                 mpc8315_rdb_defconfig
+arm                       aspeed_g4_defconfig
+powerpc                      walnut_defconfig
+arm                              alldefconfig
+mips                            e55_defconfig
+arm                       mainstone_defconfig
+arm                          moxart_defconfig
+mips                           mtx1_defconfig
+arm                         bcm2835_defconfig
+mips                malta_qemu_32r6_defconfig
+powerpc                       ebony_defconfig
+powerpc                  mpc885_ads_defconfig
+arm                       imx_v4_v5_defconfig
+powerpc                          allyesconfig
+powerpc                      katmai_defconfig
+powerpc                     pseries_defconfig
+mips                       lemote2f_defconfig
+powerpc                     kmeter1_defconfig
+x86_64                           allyesconfig
+powerpc                        fsp2_defconfig
+mips                      malta_kvm_defconfig
+mips                           ip27_defconfig
+mips                       rbtx49xx_defconfig
+powerpc                          allmodconfig
+powerpc                 mpc8560_ads_defconfig
+riscv                          rv32_defconfig
+mips                     cu1000-neo_defconfig
+arm                             mxs_defconfig
+powerpc                     skiroot_defconfig
+mips                      bmips_stb_defconfig
+arm                       versatile_defconfig
+arm                     davinci_all_defconfig
+x86_64               randconfig-a002-20220425
+x86_64               randconfig-a004-20220425
+x86_64               randconfig-a003-20220425
+x86_64               randconfig-a001-20220425
+x86_64               randconfig-a005-20220425
+x86_64               randconfig-a006-20220425
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+i386                 randconfig-a003-20220425
+i386                 randconfig-a002-20220425
+i386                 randconfig-a001-20220425
+i386                 randconfig-a005-20220425
+i386                 randconfig-a006-20220425
+i386                 randconfig-a004-20220425
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220425
+hexagon              randconfig-r041-20220425
+hexagon              randconfig-r041-20220428
+riscv                randconfig-r042-20220428
+hexagon              randconfig-r045-20220428
+s390                 randconfig-r044-20220428
 
-RT could wake up ksoftirqd unconditionally, but this wants to be avoided if
-there were soft interrupts pending already when this is invoked in the
-context of the migration task. The migration task might have preempted a
-threaded interrupt handler which raised a soft interrupt, but did not reach
-the local_bh_enable() to process it. The "running" ksoftirqd might prevent
-the handling in the interrupt thread context which is causing latency
-issues.
-
-Add a new function which handles this case explicitely for RT and falls
-back to do_softirq() on !RT kernels. In the RT case this warns when one of
-the flushed SMP function calls raised a soft interrupt so this can be
-investigated.
-
-[ tglx: Moved the RT part out of SMP code ]
-
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/YgKgL6aPj8aBES6G@linutronix.de
-Link: https://lore.kernel.org/r/20220413133024.356509586@linutronix.de
-
----
- include/linux/interrupt.h |  9 +++++++++
- kernel/smp.c              |  5 ++++-
- kernel/softirq.c          | 13 +++++++++++++
- 3 files changed, 26 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
-index f40754c..a49fe8d 100644
---- a/include/linux/interrupt.h
-+++ b/include/linux/interrupt.h
-@@ -607,6 +607,15 @@ struct softirq_action
- asmlinkage void do_softirq(void);
- asmlinkage void __do_softirq(void);
- 
-+#ifdef CONFIG_PREEMPT_RT
-+extern void do_softirq_post_smp_call_flush(unsigned int was_pending);
-+#else
-+static inline void do_softirq_post_smp_call_flush(unsigned int unused)
-+{
-+	do_softirq();
-+}
-+#endif
-+
- extern void open_softirq(int nr, void (*action)(struct softirq_action *));
- extern void softirq_init(void);
- extern void __raise_softirq_irqoff(unsigned int nr);
-diff --git a/kernel/smp.c b/kernel/smp.c
-index 8e85f22..d54c2fe 100644
---- a/kernel/smp.c
-+++ b/kernel/smp.c
-@@ -696,6 +696,7 @@ static void __flush_smp_call_function_queue(bool warn_cpu_offline)
-  */
- void flush_smp_call_function_queue(void)
- {
-+	unsigned int was_pending;
- 	unsigned long flags;
- 
- 	if (llist_empty(this_cpu_ptr(&call_single_queue)))
-@@ -704,9 +705,11 @@ void flush_smp_call_function_queue(void)
- 	cfd_seq_store(this_cpu_ptr(&cfd_seq_local)->idle, CFD_SEQ_NOCPU,
- 		      smp_processor_id(), CFD_SEQ_IDLE);
- 	local_irq_save(flags);
-+	/* Get the already pending soft interrupts for RT enabled kernels */
-+	was_pending = local_softirq_pending();
- 	__flush_smp_call_function_queue(true);
- 	if (local_softirq_pending())
--		do_softirq();
-+		do_softirq_post_smp_call_flush(was_pending);
- 
- 	local_irq_restore(flags);
- }
-diff --git a/kernel/softirq.c b/kernel/softirq.c
-index fac8018..9f0aef8 100644
---- a/kernel/softirq.c
-+++ b/kernel/softirq.c
-@@ -294,6 +294,19 @@ static inline void invoke_softirq(void)
- 		wakeup_softirqd();
- }
- 
-+/*
-+ * flush_smp_call_function_queue() can raise a soft interrupt in a function
-+ * call. On RT kernels this is undesired and the only known functionality
-+ * in the block layer which does this is disabled on RT. If soft interrupts
-+ * get raised which haven't been raised before the flush, warn so it can be
-+ * investigated.
-+ */
-+void do_softirq_post_smp_call_flush(unsigned int was_pending)
-+{
-+	if (WARN_ON_ONCE(was_pending != local_softirq_pending()))
-+		invoke_softirq();
-+}
-+
- #else /* CONFIG_PREEMPT_RT */
- 
- /*
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
