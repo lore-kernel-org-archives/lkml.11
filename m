@@ -2,150 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F9AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:18:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E437C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:18:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386654AbiEBRVd (ORCPT
+        id S1386643AbiEBRVl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 13:21:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59312 "EHLO
+        Mon, 2 May 2022 13:21:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386634AbiEBRVV (ORCPT
+        with ESMTP id S1386632AbiEBRVX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 13:21:21 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72596B7D4;
-        Mon,  2 May 2022 10:17:48 -0700 (PDT)
-Received: (Authenticated sender: joao@overdrivepizza.com)
-        by mail.gandi.net (Postfix) with ESMTPA id BA33C1BF205;
-        Mon,  2 May 2022 17:17:42 +0000 (UTC)
+        Mon, 2 May 2022 13:21:23 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE79EB1E0
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:17:50 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id l18so28940082ejc.7
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 10:17:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5e/P3oCGEzzkwU7JvpMT6jdvjjKGHwDIEd56ZHarYG8=;
+        b=LRJmQXlGVU2DXOpRaxkWINyGq8im14P66sIAc+s5stQ6gWHu3ieT0hyw9ypui62TL/
+         0HCNbJb78UhLPPcP7Ys6YMx+plMmvVyOV+dmgS4Xq9ldBPtLIhKx9EA+OME3u5GsimO6
+         VrZS8x+d3mWw1OZ1V0rFOEn2qc5IdDiE1Xsxk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5e/P3oCGEzzkwU7JvpMT6jdvjjKGHwDIEd56ZHarYG8=;
+        b=6CDsIQyH5/FiQVy4mmmY8QYUHw1meEy0ESWs1wjB/X+hekzUC0ypqEdgJah8xKln32
+         SKa8cUGQY1dfRpm9r2whUx2aKo2vXf3Fl2RSTg570fLZrbMFT5InbDAvgZqQwyakmNpz
+         hFksMlXpR+L1AYmxsm3P3jWAB1WNbCa5dMS3eCGgh8F8m3S+ujwT5TQKbC0eJ3g6aiPn
+         sJjinUW98ilYDvgnGikcrxgSl67Tw0Nza5JzZJH1DEPNuCQNh3+L7Hxej58pfCPeHVTO
+         N2bthfdTdqZZ/dJSrcQTwN6/W+5zu83mQLe3y4TXngPAqsT+W/UJ1X0iY/vjJq8BWcuV
+         Ds2g==
+X-Gm-Message-State: AOAM531xhZF/Zm6P7ZPt0Kputc/U/cBW5+u1c/i5vccPvgRfLS2uKCE5
+        r6Oek+zhlRHxcYSL8/NdFJQUE7DPl3H5BmQA
+X-Google-Smtp-Source: ABdhPJwHvVljYGr4++I72hxcI/jlBbqRKxd/024Wc9AtPqUEFTgmpHlES5dSPXdBNwt+pnBHCpUNgA==
+X-Received: by 2002:a17:906:8585:b0:6f3:99f0:d061 with SMTP id v5-20020a170906858500b006f399f0d061mr11902993ejx.436.1651511869102;
+        Mon, 02 May 2022 10:17:49 -0700 (PDT)
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com. [209.85.221.43])
+        by smtp.gmail.com with ESMTPSA id f23-20020aa7d857000000b0042617ba63b4sm6842326eds.62.2022.05.02.10.17.47
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 May 2022 10:17:48 -0700 (PDT)
+Received: by mail-wr1-f43.google.com with SMTP id t6so20394768wra.4
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 10:17:47 -0700 (PDT)
+X-Received: by 2002:adf:f50d:0:b0:20a:e096:ef with SMTP id q13-20020adff50d000000b0020ae09600efmr10002004wro.679.1651511867348;
+ Mon, 02 May 2022 10:17:47 -0700 (PDT)
 MIME-Version: 1.0
-Date:   Mon, 02 May 2022 10:17:42 -0700
-From:   Joao Moreira <joao@overdrivepizza.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        peterz@infradead.org, andrew.cooper3@citrix.com,
-        keescook@chromium.org, samitolvanen@google.com,
-        mark.rutland@arm.com, hjl.tools@gmail.com,
-        alyssa.milburn@linux.intel.com, ndesaulniers@google.com,
-        gabriel.gomes@linux.intel.com, rick.p.edgecombe@intel.com
-Subject: Re: [RFC PATCH 01/11] x86: kernel FineIBT
-In-Reply-To: <20220429013704.4n4lmadpstdioe7a@treble>
-References: <20220420004241.2093-1-joao@overdrivepizza.com>
- <20220420004241.2093-2-joao@overdrivepizza.com>
- <20220429013704.4n4lmadpstdioe7a@treble>
-Message-ID: <d82459b887bcaf9181ad836051e2d16b@overdrivepizza.com>
-X-Sender: joao@overdrivepizza.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220430011402.1.If7c3471db53bea55213f7bcf17e9043084d3ac0c@changeid>
+ <20220430011402.4.Ifba00241fe6e70b59dc3c07eb234da3146e11a03@changeid>
+In-Reply-To: <20220430011402.4.Ifba00241fe6e70b59dc3c07eb234da3146e11a03@changeid>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 2 May 2022 10:17:35 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XxPimB8uyboWtUcuCJW3NkVB-nKzaw=dE9xqCtpNj2rg@mail.gmail.com>
+Message-ID: <CAD=FV=XxPimB8uyboWtUcuCJW3NkVB-nKzaw=dE9xqCtpNj2rg@mail.gmail.com>
+Subject: Re: [PATCH 4/5] arm64: dts: qcom: sc7180: Add pazquel dts files
+To:     "Joseph S. Barrera III" <joebar@chromium.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-28 18:37, Josh Poimboeuf wrote:
-> On Tue, Apr 19, 2022 at 05:42:31PM -0700, joao@overdrivepizza.com 
-> wrote:
->> +void __noendbr __fineibt_handler(void){
->> +	unsigned i;
->> +	unsigned long flags;
->> +	bool skip;
->> +	void * ret;
->> +	void * caller;
->> +
->> +	DO_ALL_PUSHS;
-> 
-> So this function isn't C ABI compliant, right? e.g. the compiler just
-> calls the handler without regard for preserving registers?
-> 
-> If this function is going to be implemented in C, it should probably
-> have an asm thunk wrapper which can properly save/restore the registers
-> before calling into the C version.
-> 
-> Even better, if the compiler did an invalid op (UD2?), which I think 
-> you
-> mentioned elsewhere, instead of calling the handler directly, and there
-> were a way for the trap code to properly detect it as a FineIBT
-> violation, we could get rid of the pushes/pops, plus the uaccess 
-> objtool
-> warning from patch 7, plus I'm guessing a bunch of noinstr validation
-> warnings.
+Hi,
 
-Cool, I'll try to come up with something!
+On Sat, Apr 30, 2022 at 1:18 AM Joseph S. Barrera III
+<joebar@chromium.org> wrote:
+>
+> Pazquel is a trogdor-based board. These dts files are copies from
+> the downstream Chrome OS 5.4 kernel, but with downstream bits removed.
 
-> 
->> +
->> +	spin_lock_irqsave(&fineibt_lock, flags);
->> +	skip = false;
->> +
->> +	asm("\t movq 0x90(%%rsp),%0" : "=r"(ret));
->> +	asm("\t movq 0x98(%%rsp),%0" : "=r"(caller));
-> 
-> This is making some questionable assumptions about the stack layout.
-> 
-> I assume this function is still in the prototype stage ;-)
+Actually, in pazquel's case no downstream bits are removed.
 
-Yeah, this is just a messy instrumentation to get reports about 
-mismatching prototypes (as the ones reported further down the series).
 
-The issue with having the call is that it bloats the binary, so the ud2 
-is 3-bytes-per-function better. Yet, we may consider a FINEIBT_DEBUG 
-config, which can then enable a handler. This would be useful together 
-with a fuzzer or a stress tool to cover possible control-flow paths 
-within the kernel and map mismatching prototypes more properly I guess.
+> Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
+> ---
+>
+>  arch/arm64/boot/dts/qcom/Makefile             |   4 +
+>  .../sc7180-trogdor-pazquel-lte-parade.dts     |  22 ++
+>  .../qcom/sc7180-trogdor-pazquel-lte-ti.dts    |  22 ++
+>  .../qcom/sc7180-trogdor-pazquel-parade.dts    |  17 ++
+>  .../dts/qcom/sc7180-trogdor-pazquel-ti.dts    |  17 ++
+>  .../boot/dts/qcom/sc7180-trogdor-pazquel.dtsi | 221 ++++++++++++++++++
+>  6 files changed, 303 insertions(+)
 
-> 
->> +	if(!skip) {
->> +		printk("FineIBT violation: %px:%px:%u\n", ret, caller,
->> +				vlts_next);
->> +	}
->> +	DO_ALL_POPS;
->> +}
-> 
-> Right now this handler just does a printk if it hasn't already for this
-> caller/callee combo, and then resumes control.  Which is fine for
-> debugging, but it really needs to behave similarly to an IBT violation,
-> by panicking unless "ibt=warn" on the cmdline.
-> 
-> Not sure what would happen for "ibt=off"?  Maybe apply_ibt_endbr() 
-> could
-> NOP out all the FineIBT stuff.
-
-Either that, or...
-
-I'm thinking about a way to have FineIBT interchangeable with KCFI. 
-Currently KCFI adds a 4 byte hash + 2 byte nops before function entry, 
-to allow for proper prototype checking. After that, there should be an 
-ENDBR of 4 bytes. This gives us 10 bytes in total. Then, my yet to be 
-properly thought idea would be patch these 10 bytes with:
-
-endbr
-call fineibt_handler_<$HASH>
-nop
-
-and then, on the caller side, patch the "cmp <$HASH>, -0x6(%r11); je; 
-ud2; call" sequence with a "sub 0x6, r11; mov $HASH, %r10; call %r11, 
-add 0x6 %r11". This would then allow the kernel to verify if the CPU is 
-IBT capable on boot time and only then setting the proper scheme.
-
-The downsides of having something like this would be that this sub 
-r11/add r11 sequence is kinda meh. We can avoid that by having two 
-padding nops after the original ENDBR, which will be skipped when the 
-function is reached directly by the linker optimization I'm working on, 
-and that we can convert into a JMP -offset that makes control flow reach 
-the padding area before the prologue and from where we can call the 
-fineibt_handler function. The resulting instrumentation would be 
-something like:
-
-1:
-call fineibt_handler_<$HASH>
-jmp 2f
-<foo>
-endbr
-jmp 1b
-2:
-
-Also, it would prevent a paranoid user to have both schemes 
-simultaneously (there are reasons why people could want that).
-
-Any thoughts?
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
