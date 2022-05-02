@@ -2,121 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F576C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DF04C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 23:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232481AbiEBXZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 19:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51442 "EHLO
+        id S234483AbiEBXZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 19:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233153AbiEBXYA (ORCPT
+        with ESMTP id S233294AbiEBXYC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 19:24:00 -0400
-Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 733F42AF4
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 16:20:24 -0700 (PDT)
-Received: by mail-vs1-xe2e.google.com with SMTP id m62so14382623vsc.2
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 16:20:24 -0700 (PDT)
+        Mon, 2 May 2022 19:24:02 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A8238B2
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 16:20:29 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id b6-20020a253406000000b006484c081280so14372121yba.5
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 16:20:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=+kD4nACOSY/APvZl7Jejb8yTw6pDPiNpkZFLVJ6Ps/g=;
-        b=GF4YY7vMyrRNaiSybvsbVUdWRrNJepIDJvsWmHCuxDcKKt5zu8QA4on3F2K13BkJ2T
-         5OPYZdTN3ETUQr8xuTQZ/4r2cSkV+oY6zuie5fyXGr2UXQbsFPWLISM9RHx911nqqafE
-         y9lvXmvgQedVrgaYIfuxTAVif6KXBMMOuQTX/Nb3+N6vBbRkUOhsuRp7hztSOh23tfkt
-         kqhsCrGHdtakDNTAl6DS6uZb5gwfEMN5drBq5FNbSEwFlA9deKvbcqPi3tKbZqOa9Ayk
-         KApZedDjQx8Md8udYixi4HGJdh1Ns/9UnkltZ6KfIAgzhBcZqnmtVCV8d7dZ3givQQfe
-         TSqA==
+        bh=UH1XfZjmWNrGFAlQeXLr7/Tn9jAIkuGUATe4oOI798U=;
+        b=K8lxNnVJV2nNNR2bjZTLTTcJNcIHJUYlXV6GRGSPb8mpVwpTE0uDSNxLJ37x7XdIkA
+         7c4g/6g48Saj5gUCrRd/3Rj8gGG9lWI/O30Oaj8OQnaKge5pU6gilhErbJ/1s3dhWTTj
+         jVCB8aMopODYlzr7OoBjNgPRmFnZDh+5d8ajLa880AXO4pyzxsodEQd4NJ7drByormN6
+         YGPn3oYgwfJssilvhWGtvms7zgucKbDBq1EPnJIA8+eEhhqyOgwnB3l2jfuSuLSXkhN+
+         YSWLfr2xN4rx4KVNnu/lUGJt9jJlXjy9Hak6wJQVWFZyNM/nKUiEzyp1TZEQ4CnSowMe
+         231w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+kD4nACOSY/APvZl7Jejb8yTw6pDPiNpkZFLVJ6Ps/g=;
-        b=xZg92DghPtLnmn7kOUrQvWejqCXOSNkLLN4dBMBp5h6YLNKy5ScWg5b1aBTs+8xniY
-         WbbKBKk6Eraaiyk+mAHXDaSkWF1rL01m1bBI7cxelMGKPN7kErdr308hHyZnyk4j1AjK
-         YoCFXEDptc5w4ziel9soLLChtuiTNKLKeYYlBbR07HtMHZuJlp+27X4QekVOEisTQARR
-         jxHWvTZrkUt8mbEpqsJaoeI/M2Ief2pworA1SFdS5k1PrpCc+TisGNVjiObvlWrOaWzf
-         cmKHnvp1hgRyhp/TqAafldeOqohPfVCjlqqrNEF5XUfQemfxZWFQZecZ6343pPq+FWRh
-         97yA==
-X-Gm-Message-State: AOAM530gSGGkhz52W6QXvb/nk31BoNyMFuJouYXD6v5YAkEfvbDjTdXj
-        321mBjlvKdC6liCfdF87nmaQ5lcRFcZJg1P2lKH4Yw==
-X-Google-Smtp-Source: ABdhPJx9a8pxmcrbJi6unqcR9DdA9WsWAie/Wf5yqgZL/vnDIxlBXn4crPJBtIVUBpXpdInk9lvUolGPzzkrDPBw4p4=
-X-Received: by 2002:a67:c408:0:b0:32d:1319:2e38 with SMTP id
- c8-20020a67c408000000b0032d13192e38mr4300957vsk.72.1651533589636; Mon, 02 May
- 2022 16:19:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220429202207.3045-1-almasrymina@google.com> <20220429133345.d79af45fb107340c31655c8e@linux-foundation.org>
- <152cb376-3793-0dd3-7d2d-d6197b8e014f@oracle.com>
-In-Reply-To: <152cb376-3793-0dd3-7d2d-d6197b8e014f@oracle.com>
-From:   Mina Almasry <almasrymina@google.com>
-Date:   Mon, 2 May 2022 16:19:37 -0700
-Message-ID: <CAHS8izMnxs8Btyk2PGax88vtNqoRwi5cBb0Rmfp8RSEV-WePhA@mail.gmail.com>
-Subject: Re: [PATCH v1] hugetlbfs: fix hugetlbfs_statfs() locking
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Michal Hocko <mhocko@suse.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=UH1XfZjmWNrGFAlQeXLr7/Tn9jAIkuGUATe4oOI798U=;
+        b=Ld2++4hoC25UuXa8OFoGqtf2X03c9YpSqLGzhJhF36VVEzCitEhBjoCn+1C7GRzxtX
+         8bosKePwQHsEI+zCoQGk1bbdVQ4vGmS3z13RrILSrHD9F1HRKs8LRWvNkrWlA6pb3K5N
+         U4wN7YaysmtgDqoItwrcbnYrYOZUMwnYhW1B2xUKUpx77NSo6geQ84xEoZp6uYGMalcw
+         Sq4mFemrKP3sh0bldRTJ0NGDCFTxQvpTa/0qOZeEX7CL6CwkT0NjGKRVJyWBuYAHUlI0
+         gZ7oRWJq4M5n9aZUPX7HKH3HkJrE4k93WaKygpIxo48dCHmK8MnFyUWleGYd3UsoM7Bx
+         2pKA==
+X-Gm-Message-State: AOAM530vabIGvIg3Au5ujlKmCXab88JVHV05+z1Jx+JziR+GfXKEDdie
+        FSrex9Uwa1nAdEewJfPCM572Gcd9hXpa+5U=
+X-Google-Smtp-Source: ABdhPJybHUudCB9D+8ErBhY3Xz9dCSyX1SKKeoUKTX3ComoYu9JNHba5QRe5ZczB4ktdetpR7AyQAy9UB5XyOSM=
+X-Received: from tj.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:53a])
+ (user=tjmercier job=sendgmr) by 2002:a25:9d90:0:b0:648:75a5:2172 with SMTP id
+ v16-20020a259d90000000b0064875a52172mr11887702ybp.319.1651533609145; Mon, 02
+ May 2022 16:20:09 -0700 (PDT)
+Date:   Mon,  2 May 2022 23:19:35 +0000
+In-Reply-To: <20220502231944.3891435-1-tjmercier@google.com>
+Message-Id: <20220502231944.3891435-2-tjmercier@google.com>
+Mime-Version: 1.0
+References: <20220502231944.3891435-1-tjmercier@google.com>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+Subject: [PATCH v6 1/6] gpu: rfc: Proposal for a GPU cgroup controller
+From:   "T.J. Mercier" <tjmercier@google.com>
+To:     tjmercier@google.com, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     daniel@ffwll.ch, hridya@google.com, christian.koenig@amd.com,
+        jstultz@google.com, tkjos@android.com, cmllamas@google.com,
+        surenb@google.com, kaleshsingh@google.com, Kenny.Ho@amd.com,
+        mkoutny@suse.com, skhan@linuxfoundation.org,
+        kernel-team@android.com, cgroups@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 1:59 PM Mike Kravetz <mike.kravetz@oracle.com> wrote:
->
-> On 4/29/22 13:33, Andrew Morton wrote:
-> > On Fri, 29 Apr 2022 13:22:06 -0700 Mina Almasry <almasrymina@google.com> wrote:
-> >
-> >> After commit db71ef79b59b ("hugetlb: make free_huge_page irq safe"),
-> >> the subpool lock should be locked with spin_lock_irq() and all call
-> >> sites was modified as such, except for the ones in hugetlbfs_statfs().
-> >>
-> >> ...
-> >>
-> >> --- a/fs/hugetlbfs/inode.c
-> >> +++ b/fs/hugetlbfs/inode.c
-> >> @@ -1048,12 +1048,12 @@ static int hugetlbfs_statfs(struct dentry *dentry, struct kstatfs *buf)
-> >>              if (sbinfo->spool) {
-> >>                      long free_pages;
-> >>
-> >> -                    spin_lock(&sbinfo->spool->lock);
-> >> +                    spin_lock_irq(&sbinfo->spool->lock);
-> >>                      buf->f_blocks = sbinfo->spool->max_hpages;
-> >>                      free_pages = sbinfo->spool->max_hpages
-> >>                              - sbinfo->spool->used_hpages;
-> >>                      buf->f_bavail = buf->f_bfree = free_pages;
-> >> -                    spin_unlock(&sbinfo->spool->lock);
-> >> +                    spin_unlock_irq(&sbinfo->spool->lock);
-> >>                      buf->f_files = sbinfo->max_inodes;
-> >>                      buf->f_ffree = sbinfo->free_inodes;
-> >>              }
-> >
-> > Looks good.
->
-> Agree, thanks Mina!
-> Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
->
-> >
-> > This seems to be theoretically deadlockable and less theoretically
-> > lockdep splattable, so I'm inclined to cc:stable on this.
-> >
-> > I wonder why we didn't do that with db71ef79b59bb2e78dc4.
-> >
->
-> I do not think it was considered because the "less theoretically lockdep splattable" was so rare.
->
-> IIRC, the issue of possibly freeing hugetlb pages in IRQ context existed
-> from almost the beginning of hugetlb.  It was first discovered and 'addressed'
-> with c77c0a8ac4c5.  That was not cc:stable.  Then it was discovered that c77c0a8ac4c5 was not complete, so db71ef79b59b effectively replaced c77c0a8ac4c5.  That also was not cc:stable.  I guess we could cc:stable this.
->
-> Mina, did you find this with lockdep or just code inspection?
+From: Hridya Valsaraju <hridya@google.com>
 
-Greg Thelen found this by code inspection. He was reviewing a related
-fix and noticed this particular instance of locking wasn't _irq(), and
-based on previous changes it ought to be. Lockdep did not complain
-about this.
+This patch adds a proposal for a new GPU cgroup controller for
+accounting/limiting GPU and GPU-related memory allocations.
+The proposed controller is based on the DRM cgroup controller[1] and
+follows the design of the RDMA cgroup controller.
 
-> --
-> Mike Kravetz
+The new cgroup controller would:
+* Allow setting per-device limits on the total size of buffers
+  allocated by device within a cgroup.
+* Expose a per-device/allocator breakdown of the buffers charged to a
+  cgroup.
+
+The prototype in the following patches is only for memory accounting
+using the GPU cgroup controller and does not implement limit setting.
+
+[1]: https://lore.kernel.org/amd-gfx/20210126214626.16260-1-brian.welty@intel.com/
+
+Signed-off-by: Hridya Valsaraju <hridya@google.com>
+Signed-off-by: T.J. Mercier <tjmercier@google.com>
+
+---
+v6 changes
+Move documentation into cgroup-v2.rst per Tejun Heo.
+
+v5 changes
+Drop the global GPU cgroup "total" (sum of all device totals) portion
+of the design since there is no currently known use for this per
+Tejun Heo.
+
+Update for renamed functions/variables.
+
+v3 changes
+Remove Upstreaming Plan from gpu-cgroup.rst per John Stultz.
+
+Use more common dual author commit message format per John Stultz.
+---
+ Documentation/admin-guide/cgroup-v2.rst | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
+index 69d7a6983f78..baeec096f1d8 100644
+--- a/Documentation/admin-guide/cgroup-v2.rst
++++ b/Documentation/admin-guide/cgroup-v2.rst
+@@ -2352,6 +2352,30 @@ first, and stays charged to that cgroup until that resource is freed. Migrating
+ a process to a different cgroup does not move the charge to the destination
+ cgroup where the process has moved.
+ 
++
++GPU
++---
++
++The GPU controller accounts for device and system memory allocated by the GPU
++and related subsystems for graphics use. Resource limits are not currently
++supported.
++
++GPU Interface Files
++~~~~~~~~~~~~~~~~~~~~
++
++  gpu.memory.current
++	A read-only file containing memory allocations in flat-keyed format. The key
++	is a string representing the device name. The value is the size of the memory
++	charged to the device in bytes. The device names are globally unique.::
++
++	  $ cat /sys/kernel/fs/cgroup1/gpu.memory.current
++	  dev1 4194304
++	  dev2 104857600
++
++	The device name string is set by a device driver when it registers with the
++	GPU cgroup controller to participate in resource accounting. Non-unique names
++	will be rejected at the point of registration.
++
+ Others
+ ------
+ 
+-- 
+2.36.0.464.gb9c8b46e94-goog
+
