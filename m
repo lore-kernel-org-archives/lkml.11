@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6433AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 09:07:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B80E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 09:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384164AbiEBJK7 (ORCPT
+        id S1384097AbiEBJLO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 05:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46448 "EHLO
+        Mon, 2 May 2022 05:11:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349144AbiEBJKd (ORCPT
+        with ESMTP id S1352964AbiEBJKd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 2 May 2022 05:10:33 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 005939FDC;
-        Mon,  2 May 2022 02:07:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65EE7101EF;
+        Mon,  2 May 2022 02:07:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
   t=1651482425; x=1683018425;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=Z6gNoqhmJqY/KPhur4zfZOo/YinQ5sHtg1CcDq7XhqU=;
-  b=FAJFEKQSjo1oJnRkDX7/pJiq3iZNIy6M0j1E5NLd46Q0nhGMtU1uMXq8
-   iuFESH6pbnwMX/OGpT8zX851LYxklvYXiJB1y3IcV71MaXLhxuURAk0HK
-   +ZR6013vaJZTl9Zko08YxcudxOisrK+UKC7v2SAUB7HQq9lv93baIbCGZ
-   w=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 02 May 2022 02:07:05 -0700
+  h=from:to:cc:subject:date:message-id;
+  bh=HQG74NJRhQ+XyNcexY0rYhzhOkUH/q42PoZmlkKsxG0=;
+  b=wEqzgqJfVy/jj7h9IKTGCzPQjeduOUEHkGL16+PT9drMWHHudisZt2Fs
+   A/m/yaUUPIoUXwQRtHUbNApafwH2GofK790tnuuP15PAdcwuJENLXP86q
+   XEqg+Kk2X/+X9HpLVCHJlCWWjoJsJQRi0jMB0f4jOXlQ+EKXKinLy2j1P
+   E=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 02 May 2022 02:07:03 -0700
 X-QCInternal: smtphost
 Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 02 May 2022 02:07:03 -0700
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 02 May 2022 02:07:01 -0700
 X-QCInternal: smtphost
 Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 02 May 2022 14:36:45 +0530
+  by ironmsg02-blr.qualcomm.com with ESMTP; 02 May 2022 14:36:43 +0530
 Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
-        id 640073BE1; Mon,  2 May 2022 14:36:44 +0530 (+0530)
+        id 40B7E3BE1; Mon,  2 May 2022 14:36:42 +0530 (+0530)
 From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
 To:     agross@kernel.org, bjorn.andersson@linaro.org,
         gregkh@linuxfoundation.org, robh+dt@kernel.org,
@@ -44,86 +43,36 @@ Cc:     manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
         linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Rohit Agarwal <quic_rohiagar@quicinc.com>
-Subject: [PATCH v2 4/4] ARM: dts: qcom: sdx65-mtp: Enable USB3 and PHY support
-Date:   Mon,  2 May 2022 14:36:35 +0530
-Message-Id: <1651482395-29443-5-git-send-email-quic_rohiagar@quicinc.com>
+Subject: [PATCH v2 0/4] Devicetree updates for Interconnect, USB3 and PHY support
+Date:   Mon,  2 May 2022 14:36:31 +0530
+Message-Id: <1651482395-29443-1-git-send-email-quic_rohiagar@quicinc.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1651482395-29443-1-git-send-email-quic_rohiagar@quicinc.com>
-References: <1651482395-29443-1-git-send-email-quic_rohiagar@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable the support for USB3 controller, QMP PHY and HS PHY on SDX65 MTP.
+Hello,
 
-Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
----
- arch/arm/boot/dts/qcom-sdx65-mtp.dts | 29 +++++++++++++++++++++++++----
- 1 file changed, 25 insertions(+), 4 deletions(-)
+This series adds the devicetree nodes to support the interconnect, USB3 and PHY support.
 
-diff --git a/arch/arm/boot/dts/qcom-sdx65-mtp.dts b/arch/arm/boot/dts/qcom-sdx65-mtp.dts
-index 79dc31a..6920524 100644
---- a/arch/arm/boot/dts/qcom-sdx65-mtp.dts
-+++ b/arch/arm/boot/dts/qcom-sdx65-mtp.dts
-@@ -123,7 +123,7 @@
- 			regulator-max-microvolt = <1300000>;
- 		};
- 
--		ldo1 {
-+		vreg_l1b_1p2: ldo1 {
- 			regulator-min-microvolt = <1200000>;
- 			regulator-max-microvolt = <1200000>;
- 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-@@ -141,13 +141,13 @@
- 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
- 		};
- 
--		ldo4 {
-+		vreg_l4b_0p88: ldo4 {
- 			regulator-min-microvolt = <880000>;
- 			regulator-max-microvolt = <912000>;
- 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
- 		};
- 
--		ldo5 {
-+		vreg_l5b_1p8: ldo5 {
- 			regulator-min-microvolt = <1800000>;
- 			regulator-max-microvolt = <1800000>;
- 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-@@ -177,7 +177,7 @@
- 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
- 		};
- 
--		ldo10 {
-+		vreg_l10b_3p08: ldo10 {
- 			regulator-min-microvolt = <3088000>;
- 			regulator-max-microvolt = <3088000>;
- 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-@@ -244,3 +244,24 @@
- 		};
- 	};
- };
-+
-+&usb {
-+	status = "okay";
-+};
-+
-+&usb_dwc3 {
-+	dr_mode = "peripheral";
-+};
-+
-+&usb_hsphy {
-+	status = "okay";
-+	vdda-pll-supply = <&vreg_l4b_0p88>;
-+	vdda33-supply = <&vreg_l10b_3p08>;
-+	vdda18-supply = <&vreg_l5b_1p8>;
-+};
-+
-+&usb_qmpphy {
-+	status = "okay";
-+	vdda-phy-supply = <&vreg_l4b_0p88>;
-+	vdda-pll-supply = <&vreg_l1b_1p2>;
-+};
+Changes from v1:
+ - Addressed Krzysztof's comments.
+ - Rebased on top of 5.18-rc5.
+
+Thanks,
+Rohit.
+
+Rohit Agarwal (4):
+  ARM: dts: qcom: sdx65: Add interconnect nodes
+  dt-bindings: usb: qcom,dwc3: Add binding for SDX65
+  ARM: dts: qcom: sdx65: Add USB3 and PHY support
+  ARM: dts: qcom: sdx65-mtp: Enable USB3 and PHY support
+
+ .../devicetree/bindings/usb/qcom,dwc3.yaml         |   1 +
+ arch/arm/boot/dts/qcom-sdx65-mtp.dts               |  29 +++++-
+ arch/arm/boot/dts/qcom-sdx65.dtsi                  | 108 +++++++++++++++++++++
+ 3 files changed, 134 insertions(+), 4 deletions(-)
+
 -- 
 2.7.4
 
