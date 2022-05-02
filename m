@@ -2,154 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C73D1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 06:43:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6343EC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 06:46:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383506AbiEBGqy (ORCPT
+        id S1383517AbiEBGtk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 02:46:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55340 "EHLO
+        Mon, 2 May 2022 02:49:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343598AbiEBGqu (ORCPT
+        with ESMTP id S1383509AbiEBGtf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 02:46:50 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 843C62CE2E
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 23:43:21 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id k3-20020a6bba03000000b00657cc832f3aso5574298iof.11
-        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 23:43:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=xU21jNma3wnJAcTSyKuLDDf/RK7eubjOe9IzgIAdPS8=;
-        b=xtpRqYU3URT8iMTyQIEOWuO34gf69y3vgAymWQ1RoJE2K3P6Tz8i3lwV7EjEHKgPz4
-         9kVQhaLlCSPVZ2XxMU+vulsCoZfqRlY3IO+rfWtuXxFaR8jCDlPLOK7GnKWjTp6zZxTo
-         92GyhX2+6FPJckZuVrVi1acwk9oKSB098hJLpsPJZqA+gkzqxrZp+Gkzp37g/Ydgs0zn
-         oaRkxZmJoeScipJKseujgkAXt57kyl7bn0q8ah6NCGfzcgSbNfL2140QtCekxc/zYFZQ
-         WO4i6buPLQTUzpC96PhRuNharr/j9beINOmhhsCjc+asfRUnF4MKxybxMy8cE00cvibs
-         Mqcg==
-X-Gm-Message-State: AOAM533zuBG983XjYIjp+WabmI7K6jsyksXrH6Mv06z/G86ic/u7czuQ
-        pDSapXxW9lQQWAcgHmx22u8HJGInx35rJNOFALEC9xdwFoaU
-X-Google-Smtp-Source: ABdhPJwSgS0AR6/oHAUdRRiJ/BA2Td/W1bbexhImX0XzfhXS2ZX0MTKqC/IuU+lyUfUqmHOnpSB9BL3gtldvJyn3+pX5+Lyv2PbU
+        Mon, 2 May 2022 02:49:35 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A93322CE31;
+        Sun,  1 May 2022 23:46:04 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KsDBZ2hlsz4yST;
+        Mon,  2 May 2022 16:45:58 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1651473959;
+        bh=cv1v5tbo/xmzZTbekmVXWWQW6pw/SMOAYxx313R0thY=;
+        h=Date:From:To:Cc:Subject:From;
+        b=NWiHWOidjS3ATJyCuqUj3/timFPReo2a+ks8Wm+W9KM3lMQMow/kItQFqTpFCP93c
+         h6FkwK2dhchfSTPRS0BbrxLQbtOIkHh33St2w0y7O/+QfO6O5Zux0Cu9GAbUY3RMAB
+         thjI4rv8ubaNYWGxRUM6YLt1nASh43bN+N3mqyuIpYecvR1qtT3S1Q2mp9kWUY2/Gx
+         splwfvY019iVOEL7Re0cf72juxjJCY4tI5+AHj5Ui0REvzGyosW9Z8OSEsgovnNTwr
+         tZ8m00/3dm1tIV4D8MdqxBWS1+kWbsNiOrO8TcUga2gJ9UD7PZ8iI+bbV04Yc7Ix8e
+         qpCeVrVyXOWIA==
+Date:   Mon, 2 May 2022 16:45:57 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the pinctrl tree with the gpio-intel
+ tree
+Message-ID: <20220502164557.3cbb18ca@canb.auug.org.au>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:16d2:b0:323:7285:474b with SMTP id
- g18-20020a05663816d200b003237285474bmr4665475jat.61.1651473800884; Sun, 01
- May 2022 23:43:20 -0700 (PDT)
-Date:   Sun, 01 May 2022 23:43:20 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000041f67405de01b5cf@google.com>
-Subject: [syzbot] general protection fault in usb_gadget_udc_reset (3)
-From:   syzbot <syzbot+10d79fa6d4fbfacaed2e@syzkaller.appspotmail.com>
-To:     andriy.shevchenko@linux.intel.com, balbi@kernel.org,
-        gregkh@linuxfoundation.org, jakobkoschel@gmail.com,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        quic_wcheng@quicinc.com, stern@rowland.harvard.edu,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/C4XRv.Z1y/fAR2p2UX_RBh+";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+--Sig_/C4XRv.Z1y/fAR2p2UX_RBh+
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-syzbot found the following issue on:
+Hi all,
 
-HEAD commit:    d615b5416f8a Merge tag 'f2fs-fix-5.18' of git://git.kernel..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=157d7830f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b6ba81e30e2008b1
-dashboard link: https://syzkaller.appspot.com/bug?extid=10d79fa6d4fbfacaed2e
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Today's linux-next merge of the pinctrl tree got a conflict in:
 
-Unfortunately, I don't have any reproducer for this issue yet.
+  drivers/pinctrl/stm32/pinctrl-stm32.c
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+10d79fa6d4fbfacaed2e@syzkaller.appspotmail.com
+between commit:
 
-general protection fault, probably for non-canonical address 0xdffffc0000000008: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000040-0x0000000000000047]
-CPU: 1 PID: 24 Comm: kworker/1:0 Not tainted 5.18.0-rc4-syzkaller-00006-gd615b5416f8a #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Workqueue: events __usb_queue_reset_device
-RIP: 0010:usb_gadget_udc_reset+0x23/0xb0 drivers/usb/gadget/udc/core.c:1088
-Code: 00 00 00 0f 1f 40 00 41 54 49 89 fc 53 48 89 f3 e8 02 88 b0 fb 48 8d 7b 40 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 70 4c 89 e7 ff 53 40 49 8d bc 24 80 00 00 00 48 b8
-RSP: 0018:ffffc9000072f4e0 EFLAGS: 00010002
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000008 RSI: ffffffff85c7dcee RDI: 0000000000000040
-RBP: ffff888044e50bfc R08: 0000000000000000 R09: ffff888044e50003
-R10: ffffffff85c8e5e7 R11: 0000000000000001 R12: ffff888044e50c00
-R13: ffff888044e50c00 R14: 0000000000000019 R15: ffff88806c056408
-FS:  0000000000000000(0000) GS:ffff88802cb00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f4d9e2810f8 CR3: 000000006e13f000 CR4: 0000000000150ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- set_link_state+0xc83/0xf70 drivers/usb/gadget/udc/dummy_hcd.c:465
- dummy_hub_control+0x1192/0x1f80 drivers/usb/gadget/udc/dummy_hcd.c:2315
- rh_call_control drivers/usb/core/hcd.c:683 [inline]
- rh_urb_enqueue drivers/usb/core/hcd.c:848 [inline]
- usb_hcd_submit_urb+0xc83/0x2250 drivers/usb/core/hcd.c:1551
- usb_submit_urb+0x86d/0x18a0 drivers/usb/core/urb.c:594
- usb_start_wait_urb+0x101/0x4c0 drivers/usb/core/message.c:58
- usb_internal_control_msg drivers/usb/core/message.c:102 [inline]
- usb_control_msg+0x31c/0x4a0 drivers/usb/core/message.c:153
- set_port_feature drivers/usb/core/hub.c:439 [inline]
- hub_port_reset+0x26d/0x1ce0 drivers/usb/core/hub.c:2968
- hub_port_init+0x18a/0x2ed0 drivers/usb/core/hub.c:4714
- usb_reset_and_verify_device+0x3a0/0xe10 drivers/usb/core/hub.c:5946
- usb_reset_device+0x4bd/0x9a0 drivers/usb/core/hub.c:6122
- __usb_queue_reset_device+0x68/0x90 drivers/usb/core/message.c:1904
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:usb_gadget_udc_reset+0x23/0xb0 drivers/usb/gadget/udc/core.c:1088
-Code: 00 00 00 0f 1f 40 00 41 54 49 89 fc 53 48 89 f3 e8 02 88 b0 fb 48 8d 7b 40 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 70 4c 89 e7 ff 53 40 49 8d bc 24 80 00 00 00 48 b8
-RSP: 0018:ffffc9000072f4e0 EFLAGS: 00010002
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000008 RSI: ffffffff85c7dcee RDI: 0000000000000040
-RBP: ffff888044e50bfc R08: 0000000000000000 R09: ffff888044e50003
-R10: ffffffff85c8e5e7 R11: 0000000000000001 R12: ffff888044e50c00
-R13: ffff888044e50c00 R14: 0000000000000019 R15: ffff88806c056408
-FS:  0000000000000000(0000) GS:ffff88802cb00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f4d9e2810f8 CR3: 000000006e13f000 CR4: 0000000000150ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess), 1 bytes skipped:
-   0:	00 00                	add    %al,(%rax)
-   2:	0f 1f 40 00          	nopl   0x0(%rax)
-   6:	41 54                	push   %r12
-   8:	49 89 fc             	mov    %rdi,%r12
-   b:	53                   	push   %rbx
-   c:	48 89 f3             	mov    %rsi,%rbx
-   f:	e8 02 88 b0 fb       	callq  0xfbb08816
-  14:	48 8d 7b 40          	lea    0x40(%rbx),%rdi
-  18:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  1f:	fc ff df
-  22:	48 89 fa             	mov    %rdi,%rdx
-  25:	48 c1 ea 03          	shr    $0x3,%rdx
-* 29:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
-  2d:	75 70                	jne    0x9f
-  2f:	4c 89 e7             	mov    %r12,%rdi
-  32:	ff 53 40             	callq  *0x40(%rbx)
-  35:	49 8d bc 24 80 00 00 	lea    0x80(%r12),%rdi
-  3c:	00
-  3d:	48                   	rex.W
-  3e:	b8                   	.byte 0xb8
+  bb949ed9b16b ("pinctrl: stm32: Switch to use for_each_gpiochip_node() hel=
+per")
 
+from the gpio-intel tree and commit:
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+  c954531bc5d8 ("pinctrl: stm32: improve bank clocks management")
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+from the pinctrl tree.
+
+I fixed it up (I think, see below) and can carry the fix as
+necessary. This is now fixed as far as linux-next is concerned, but any
+non trivial conflicts should be mentioned to your upstream maintainer
+when your tree is submitted for merging.  You may also want to consider
+cooperating with the maintainer of the conflicting tree to minimise any
+particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/pinctrl/stm32/pinctrl-stm32.c
+index 7aecd0efde07,b308e7bb7487..000000000000
+--- a/drivers/pinctrl/stm32/pinctrl-stm32.c
++++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
+@@@ -1544,34 -1508,44 +1506,38 @@@ int stm32_pctl_probe(struct platform_de
+  		return -ENOMEM;
+ =20
+  	i =3D 0;
+ -	for_each_available_child_of_node(np, child) {
+ +	for_each_gpiochip_node(dev, child) {
+  		struct stm32_gpio_bank *bank =3D &pctl->banks[i];
+ +		struct device_node *np =3D to_of_node(child);
+ =20
+ -		if (of_property_read_bool(child, "gpio-controller")) {
+ -			bank->rstc =3D of_reset_control_get_exclusive(child,
+ -								    NULL);
+ -			if (PTR_ERR(bank->rstc) =3D=3D -EPROBE_DEFER) {
+ -				of_node_put(child);
+ -				return -EPROBE_DEFER;
+ -			}
+ -
+ -			bank->clk =3D of_clk_get_by_name(child, NULL);
+ -			if (IS_ERR(bank->clk)) {
+ -				if (PTR_ERR(bank->clk) !=3D -EPROBE_DEFER)
+ -					dev_err(dev,
+ -						"failed to get clk (%ld)\n",
+ -						PTR_ERR(bank->clk));
+ -				of_node_put(child);
+ -				return PTR_ERR(bank->clk);
+ -			}
+ -			i++;
+ +		bank->rstc =3D of_reset_control_get_exclusive(np, NULL);
+ +		if (PTR_ERR(bank->rstc) =3D=3D -EPROBE_DEFER) {
+ +			fwnode_handle_put(child);
+ +			return -EPROBE_DEFER;
+  		}
+ -	}
+ =20
+ -	for_each_available_child_of_node(np, child) {
+ -		if (of_property_read_bool(child, "gpio-controller")) {
+ -			ret =3D stm32_gpiolib_register_bank(pctl, child);
+ -			if (ret) {
+ -				of_node_put(child);
+ +		bank->clk =3D of_clk_get_by_name(np, NULL);
+ +		if (IS_ERR(bank->clk)) {
+ +			if (PTR_ERR(bank->clk) !=3D -EPROBE_DEFER)
+ +				dev_err(dev, "failed to get clk (%ld)\n", PTR_ERR(bank->clk));
+ +			fwnode_handle_put(child);
+ +			return PTR_ERR(bank->clk);
+ +		}
+ +		i++;
+ +	}
+ =20
+ -				for (i =3D 0; i < pctl->nbanks; i++)
+ -					clk_disable_unprepare(pctl->banks[i].clk);
+ +	for_each_gpiochip_node(dev, child) {
+ +		ret =3D stm32_gpiolib_register_bank(pctl, child);
+ +		if (ret) {
+ +			fwnode_handle_put(child);
++=20
+ -				return ret;
+ -			}
+++			for (i =3D 0; i < pctl->nbanks; i++)
+++				clk_disable_unprepare(pctl->banks[i].clk);
++=20
+ -			pctl->nbanks++;
+ +			return ret;
+  		}
+ +
+ +		pctl->nbanks++;
+  	}
+ =20
+  	dev_info(dev, "Pinctrl STM32 initialized\n");
+
+--Sig_/C4XRv.Z1y/fAR2p2UX_RBh+
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJvfiUACgkQAVBC80lX
+0GwXVwf9FFN5pt22fnKTt8bzG4sU1/RTSNEgQyvlEHNo9ZbrWn36CFX1EeoNTVnc
+82EMuetW4I2oo5Uq8JBt6D/kmnc2nwp2h8rp3qwY/cSu4X8MD9vonXkKhbPebB7C
+oum+K/hk9o1asdHD/KjlaxXgLXg+A/nUjOKYBobVBLvRsgglqpCDYZRXrcMPUqAJ
++BOvQ8EczPl4007zlp5Y10U507Z924qa/JhmgRqKJm0LtYy+5FhZSo2yF1yg0pBA
+kLE0ZsaLF3PU/8WhbIK0pEngcrPsKh+dTdqwnpwi7l+Mspawt4TrNDLPdinRApOA
+TH+CuhcAFvjOW1sakelp/5GymImpVQ==
+=6y8B
+-----END PGP SIGNATURE-----
+
+--Sig_/C4XRv.Z1y/fAR2p2UX_RBh+--
