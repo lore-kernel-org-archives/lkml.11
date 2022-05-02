@@ -2,249 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D08BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:32:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AB5CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385316AbiEBNfm (ORCPT
+        id S1385333AbiEBNfx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 09:35:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35270 "EHLO
+        Mon, 2 May 2022 09:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385306AbiEBNdw (ORCPT
+        with ESMTP id S1385321AbiEBNfm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 09:33:52 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67546F45
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 06:30:23 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 24828210EB;
-        Mon,  2 May 2022 13:30:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1651498222; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1IDdLsFoC69G84KoVxaoVdzGHm0f4vR0NdUOvV6FFQw=;
-        b=tvAbg8ZU0fNyytMYkqeLJYrS0If0KQzGlPf5TdOV5MrmiL/ssY5PWbHrEN4Q2PgmuHnvpY
-        fuSZvPKQIYszVZ3YaHgUWQIVvjZKfuqO6NuAayvRG5r4CFEcjjZvNe9XBH43Co3xiMrwpN
-        p2L7EzUb25GqXGtzfEYz/y4pniZ/teA=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E6E19133E5;
-        Mon,  2 May 2022 13:30:21 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 0M9wNu3cb2LzFwAAMHmgww
-        (envelope-from <jgross@suse.com>); Mon, 02 May 2022 13:30:21 +0000
-Message-ID: <b31f2358-625e-68ff-8182-8b91820ad25e@suse.com>
-Date:   Mon, 2 May 2022 15:30:21 +0200
+        Mon, 2 May 2022 09:35:42 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6680A1B3;
+        Mon,  2 May 2022 06:32:00 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id 31-20020a9d0822000000b00605f1807664so6648993oty.3;
+        Mon, 02 May 2022 06:32:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JBrd1Rj8pXekZRhf1iSXV3bf3S85pGZUSMP33kjZN68=;
+        b=FoKDFwoHhjBCICe1m9uEBjPrZ4P9ubEt0WV2a0Acx6ftW2lW+82rDH4+dUhPpfsJ5I
+         0DAnB0vKNTRzRTH1+uwc/f3Z5kOcSvlP2XRO1/W4/d9J1+3vEnjujczb+oh7mByYKj0U
+         eVengyXn41u3fBqkmTy6pevAeYD6F/0nzxOdoKoK6L6MZhSf0YOjrbGMdrOIxDJzyiOl
+         jX7LTekUN8tfH+DNnoOACbIp8HaCCPvr2Bcw6pKciD/sK+TU9/lyP64x7OVhYRp7aq/S
+         4ASQyGhkAhmLF1z+yn0Y9LwaSPzSfYnkOq5LYJ5NSxdhElBtPwhG9o6AkTptRwALh0cG
+         9+dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JBrd1Rj8pXekZRhf1iSXV3bf3S85pGZUSMP33kjZN68=;
+        b=NAKi3GhatLAdnw3iD261gtW4f78Pbkjon0HC4SYtB/s68ayLdEVg+/06iIgDeIBvY6
+         Wn8Cuj4XUiIbcN71UB8RSCgiECWFwe4tdamfq+aAV45LckUSiil2cqXLnjlGbBp8OI5D
+         oAbksYAg/YEzlJJwRaQxiwb1Ev3fJw++0lkkcA7vk2sNY8UceuLIcTBF++tztQGWwTN0
+         KIv9kz1NhWCW2Q4KHqH92jnx50Vb87p04d/avZeKFI+6gZe+z20CofACs7BP65+fK72s
+         mewFsF8ucBSA83g+T1h3wh55VeEq7XOT8RQH3z9sIc3eCTzULV0KYrD0Ij1DpiEx+eMo
+         3RUg==
+X-Gm-Message-State: AOAM53107FxIxDRkMS8ZoFabKBaQKazxLG8EEnL0deAuHS/VpjWCHj9k
+        PcvD7Vpo8eRBapF79VUuIXw=
+X-Google-Smtp-Source: ABdhPJwufWJNpmAQdVUJkxoWJlbp27/3rQmMvO+c4GsVgKlA1e+XjcWAY6jqPd3f+SpQoUz2CdRK1g==
+X-Received: by 2002:a9d:7f13:0:b0:605:f24e:f738 with SMTP id j19-20020a9d7f13000000b00605f24ef738mr4068097otq.323.1651498320034;
+        Mon, 02 May 2022 06:32:00 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id b11-20020a056808010b00b00325cda1ff87sm2322405oie.6.2022.05.02.06.31.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 May 2022 06:31:58 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <21a89ae0-7152-49eb-7500-7d46dfb259f6@roeck-us.net>
+Date:   Mon, 2 May 2022 06:31:56 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2 19/19] xen/xenbus: eliminate xenbus_grant_ring()
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2] hwmon: (sun4i-lradc) Add driver for LRADC found on
+ Allwinner A13/A20 SoC
 Content-Language: en-US
-To:     Oleksandr <olekstysh@gmail.com>, xen-devel@lists.xenproject.org,
-        linux-kernel@vger.kernel.org
-Cc:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>
-References: <20220428082743.16593-1-jgross@suse.com>
- <20220428082743.16593-20-jgross@suse.com>
- <bf14e3e1-fc4d-1eee-1dfb-1ba3423f0b6f@gmail.com>
-From:   Juergen Gross <jgross@suse.com>
-In-Reply-To: <bf14e3e1-fc4d-1eee-1dfb-1ba3423f0b6f@gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------Ddprj0nYjZO3j4Cw5iWPu6pn"
+To:     Maxime Ripard <maxime@cerno.tech>, Ruslan Zalata <rz@fabmicro.ru>
+Cc:     Jean Delvare <jdelvare@suse.com>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+References: <20220428210906.29527-1-rz@fabmicro.ru>
+ <20220502110010.q7vvdkdpaiz5acjl@houat>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220502110010.q7vvdkdpaiz5acjl@houat>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------Ddprj0nYjZO3j4Cw5iWPu6pn
-Content-Type: multipart/mixed; boundary="------------wKk70Jw8ZhozH8k1CfiTrShL";
- protected-headers="v1"
-From: Juergen Gross <jgross@suse.com>
-To: Oleksandr <olekstysh@gmail.com>, xen-devel@lists.xenproject.org,
- linux-kernel@vger.kernel.org
-Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Stefano Stabellini <sstabellini@kernel.org>
-Message-ID: <b31f2358-625e-68ff-8182-8b91820ad25e@suse.com>
-Subject: Re: [PATCH v2 19/19] xen/xenbus: eliminate xenbus_grant_ring()
-References: <20220428082743.16593-1-jgross@suse.com>
- <20220428082743.16593-20-jgross@suse.com>
- <bf14e3e1-fc4d-1eee-1dfb-1ba3423f0b6f@gmail.com>
-In-Reply-To: <bf14e3e1-fc4d-1eee-1dfb-1ba3423f0b6f@gmail.com>
+On 5/2/22 04:00, Maxime Ripard wrote:
+> Hi,
+> 
+> On Thu, Apr 28, 2022 at 09:09:03PM +0000, Ruslan Zalata wrote:
+>> Some Allwinner SoCs like A13, A20 or T2 are equipped with two-channel
+>> low rate (6 bit) ADC that is often used for extra keys. There's a driver
+>> for that already implementing standard input device, but it has these
+>> limitations: 1) it cannot be used for general ADC data equisition, and
+>> 2) it uses only one LRADC channel of two available.
+>>
+>> This driver provides basic hwmon interface to both channels of LRADC on
+>> such Allwinner SoCs.
+>>
+>> Signed-off-by: Ruslan Zalata <rz@fabmicro.ru>
+>> ---
+>>   MAINTAINERS                       |   6 +
+>>   drivers/hwmon/Kconfig             |  13 ++
+>>   drivers/hwmon/Makefile            |   1 +
+>>   drivers/hwmon/sun4i-lradc-hwmon.c | 280 ++++++++++++++++++++++++++++++
+>>   4 files changed, 300 insertions(+)
+>>   create mode 100644 drivers/hwmon/sun4i-lradc-hwmon.c
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index 5e8c2f61176..d9c71e94133 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -18861,6 +18861,12 @@ S:	Maintained
+>>   F:	Documentation/devicetree/bindings/input/allwinner,sun4i-a10-lradc-keys.yaml
+>>   F:	drivers/input/keyboard/sun4i-lradc-keys.c
+>>   
+>> +SUN4I LOW RES ADC HWMON DRIVER
+>> +M:	Ruslan Zalata <rz@fabmicro.ru>
+>> +L:	linux-hwmon@vger.kernel.org
+>> +S:	Maintained
+>> +F:	drivers/hwmon/sun4i-lradc-hwmon.c
+>> +
+>>   SUNDANCE NETWORK DRIVER
+>>   M:	Denis Kirjanov <kda@linux-powerpc.org>
+>>   L:	netdev@vger.kernel.org
+>> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+>> index 68a8a27ab3b..86776488a81 100644
+>> --- a/drivers/hwmon/Kconfig
+>> +++ b/drivers/hwmon/Kconfig
+>> @@ -1691,6 +1691,19 @@ config SENSORS_SIS5595
+>>   	  This driver can also be built as a module. If so, the module
+>>   	  will be called sis5595.
+>>   
+>> +config SENSORS_SUN4I_LRADC
+>> +	tristate "Allwinner A13/A20 LRADC hwmon"
+>> +	depends on ARCH_SUNXI && !KEYBOARD_SUN4I_LRADC
+>> +	help
+>> +	  Say y here to support the LRADC found in Allwinner A13/A20 SoCs.
+>> +	  Both channels are supported.
+>> +
+>> +	  This driver can also be built as module. If so, the module
+>> +	  will be called sun4i-lradc-hwmon.
+>> +
+>> +	  This option is not compatible with KEYBOARD_SUN4I_LRADC, one
+>> +	  of these must be used at a time.
+> 
+> How do you plan on enforcing that?
+> 
+	depends on ARCH_SUNXI && !KEYBOARD_SUN4I_LRADC
+                                  ^^^^^^^^^^^^^^^^^^^^^
 
---------------wKk70Jw8ZhozH8k1CfiTrShL
-Content-Type: multipart/mixed; boundary="------------WmMLJHd3H0XnUv8azdUmUq6G"
+> I guess a better path forward would be to either register an hwmon
+> device in the original driver, or convert that driver to iio and use
+> iio-hwmon.
+> 
+Both is fine with me.
 
---------------WmMLJHd3H0XnUv8azdUmUq6G
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Guenter
 
-T24gMjkuMDQuMjIgMTc6MTAsIE9sZWtzYW5kciB3cm90ZToNCj4gDQo+IE9uIDI4LjA0LjIy
-IDExOjI3LCBKdWVyZ2VuIEdyb3NzIHdyb3RlOg0KPiANCj4gDQo+IEhlbGxvIEp1ZXJnZW4N
-Cj4gDQo+IA0KPj4gVGhlcmUgaXMgbm8gZXh0ZXJuYWwgdXNlciBvZiB4ZW5idXNfZ3JhbnRf
-cmluZygpIGxlZnQsIHNvIG1lcmdlIGl0IGludG8NCj4+IHRoZSBvbmx5IGNhbGxlciB4ZW5i
-dXNfc2V0dXBfcmluZygpLg0KPj4NCj4+IFNpZ25lZC1vZmYtYnk6IEp1ZXJnZW4gR3Jvc3Mg
-PGpncm9zc0BzdXNlLmNvbT4NCj4+IC0tLQ0KPj4gVjI6DQo+PiAtIG1ha2UgZXJyb3IgbWVz
-c2FnZSBtb3JlIHByZWNpc2UgKEFuZHJldyBDb29wZXIpDQo+PiAtLS0NCj4+IMKgIGRyaXZl
-cnMveGVuL3hlbmJ1cy94ZW5idXNfY2xpZW50LmMgfCA2NSArKysrKysrKystLS0tLS0tLS0t
-LS0tLS0tLS0tLS0NCj4+IMKgIGluY2x1ZGUveGVuL3hlbmJ1cy5owqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCB8wqAgMiAtDQo+PiDCoCAyIGZpbGVzIGNoYW5nZWQsIDE5IGluc2Vy
-dGlvbnMoKyksIDQ4IGRlbGV0aW9ucygtKQ0KPj4NCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJz
-L3hlbi94ZW5idXMveGVuYnVzX2NsaWVudC5jIA0KPj4gYi9kcml2ZXJzL3hlbi94ZW5idXMv
-eGVuYnVzX2NsaWVudC5jDQo+PiBpbmRleCAxYTJlMGQ5NGNjZDEuLmQ2ZmRkMmQyMDlkMyAx
-MDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMveGVuL3hlbmJ1cy94ZW5idXNfY2xpZW50LmMNCj4+
-ICsrKyBiL2RyaXZlcnMveGVuL3hlbmJ1cy94ZW5idXNfY2xpZW50LmMNCj4+IEBAIC0zNjMs
-NTAgKzM2Myw2IEBAIHN0YXRpYyB2b2lkIHhlbmJ1c19zd2l0Y2hfZmF0YWwoc3RydWN0IHhl
-bmJ1c19kZXZpY2UgDQo+PiAqZGV2LCBpbnQgZGVwdGgsIGludCBlcnIsDQo+PiDCoMKgwqDC
-oMKgwqDCoMKgwqAgX194ZW5idXNfc3dpdGNoX3N0YXRlKGRldiwgWGVuYnVzU3RhdGVDbG9z
-aW5nLCAxKTsNCj4+IMKgIH0NCj4+IC0vKioNCj4+IC0gKiB4ZW5idXNfZ3JhbnRfcmluZw0K
-Pj4gLSAqIEBkZXY6IHhlbmJ1cyBkZXZpY2UNCj4+IC0gKiBAdmFkZHI6IHN0YXJ0aW5nIHZp
-cnR1YWwgYWRkcmVzcyBvZiB0aGUgcmluZw0KPj4gLSAqIEBucl9wYWdlczogbnVtYmVyIG9m
-IHBhZ2VzIHRvIGJlIGdyYW50ZWQNCj4+IC0gKiBAZ3JlZnM6IGdyYW50IHJlZmVyZW5jZSBh
-cnJheSB0byBiZSBmaWxsZWQgaW4NCj4+IC0gKg0KPj4gLSAqIEdyYW50IGFjY2VzcyB0byB0
-aGUgZ2l2ZW4gQHZhZGRyIHRvIHRoZSBwZWVyIG9mIHRoZSBnaXZlbiBkZXZpY2UuDQo+PiAt
-ICogVGhlbiBmaWxsIGluIEBncmVmcyB3aXRoIGdyYW50IHJlZmVyZW5jZXMuwqAgUmV0dXJu
-IDAgb24gc3VjY2Vzcywgb3INCj4+IC0gKiAtZXJybm8gb24gZXJyb3IuwqAgT24gZXJyb3Is
-IHRoZSBkZXZpY2Ugd2lsbCBzd2l0Y2ggdG8NCj4+IC0gKiBYZW5idXNTdGF0ZUNsb3Npbmcs
-IGFuZCB0aGUgZXJyb3Igd2lsbCBiZSBzYXZlZCBpbiB0aGUgc3RvcmUuDQo+PiAtICovDQo+
-PiAtaW50IHhlbmJ1c19ncmFudF9yaW5nKHN0cnVjdCB4ZW5idXNfZGV2aWNlICpkZXYsIHZv
-aWQgKnZhZGRyLA0KPj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHVuc2lnbmVkIGlu
-dCBucl9wYWdlcywgZ3JhbnRfcmVmX3QgKmdyZWZzKQ0KPj4gLXsNCj4+IC3CoMKgwqAgaW50
-IGVycjsNCj4+IC3CoMKgwqAgdW5zaWduZWQgaW50IGk7DQo+PiAtwqDCoMKgIGdyYW50X3Jl
-Zl90IGdyZWZfaGVhZDsNCj4+IC0NCj4+IC3CoMKgwqAgZXJyID0gZ250dGFiX2FsbG9jX2dy
-YW50X3JlZmVyZW5jZXMobnJfcGFnZXMsICZncmVmX2hlYWQpOw0KPj4gLcKgwqDCoCBpZiAo
-ZXJyKSB7DQo+PiAtwqDCoMKgwqDCoMKgwqAgeGVuYnVzX2Rldl9mYXRhbChkZXYsIGVyciwg
-ImdyYW50aW5nIGFjY2VzcyB0byByaW5nIHBhZ2UiKTsNCj4+IC3CoMKgwqDCoMKgwqDCoCBy
-ZXR1cm4gZXJyOw0KPj4gLcKgwqDCoCB9DQo+PiAtDQo+PiAtwqDCoMKgIGZvciAoaSA9IDA7
-IGkgPCBucl9wYWdlczsgaSsrKSB7DQo+PiAtwqDCoMKgwqDCoMKgwqAgdW5zaWduZWQgbG9u
-ZyBnZm47DQo+PiAtDQo+PiAtwqDCoMKgwqDCoMKgwqAgaWYgKGlzX3ZtYWxsb2NfYWRkcih2
-YWRkcikpDQo+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBnZm4gPSBwZm5fdG9fZ2ZuKHZt
-YWxsb2NfdG9fcGZuKHZhZGRyKSk7DQo+PiAtwqDCoMKgwqDCoMKgwqAgZWxzZQ0KPj4gLcKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqAgZ2ZuID0gdmlydF90b19nZm4odmFkZHIpOw0KPj4gLQ0K
-Pj4gLcKgwqDCoMKgwqDCoMKgIGdyZWZzW2ldID0gZ250dGFiX2NsYWltX2dyYW50X3JlZmVy
-ZW5jZSgmZ3JlZl9oZWFkKTsNCj4+IC3CoMKgwqDCoMKgwqDCoCBnbnR0YWJfZ3JhbnRfZm9y
-ZWlnbl9hY2Nlc3NfcmVmKGdyZWZzW2ldLCBkZXYtPm90aGVyZW5kX2lkLA0KPj4gLcKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZ2ZuLCAwKTsNCj4+
-IC0NCj4+IC3CoMKgwqDCoMKgwqDCoCB2YWRkciA9IHZhZGRyICsgWEVOX1BBR0VfU0laRTsN
-Cj4+IC3CoMKgwqAgfQ0KPj4gLQ0KPj4gLcKgwqDCoCByZXR1cm4gMDsNCj4+IC19DQo+PiAt
-RVhQT1JUX1NZTUJPTF9HUEwoeGVuYnVzX2dyYW50X3JpbmcpOw0KPj4gLQ0KPj4gwqAgLyoN
-Cj4+IMKgwqAgKiB4ZW5idXNfc2V0dXBfcmluZw0KPj4gwqDCoCAqIEBkZXY6IHhlbmJ1cyBk
-ZXZpY2UNCj4+IEBAIC00MjQsNiArMzgwLDcgQEAgaW50IHhlbmJ1c19zZXR1cF9yaW5nKHN0
-cnVjdCB4ZW5idXNfZGV2aWNlICpkZXYsIGdmcF90IA0KPj4gZ2ZwLCB2b2lkICoqdmFkZHIs
-DQo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdW5zaWduZWQgaW50IG5yX3Bh
-Z2VzLCBncmFudF9yZWZfdCAqZ3JlZnMpDQo+PiDCoCB7DQo+PiDCoMKgwqDCoMKgIHVuc2ln
-bmVkIGxvbmcgcmluZ19zaXplID0gbnJfcGFnZXMgKiBYRU5fUEFHRV9TSVpFOw0KPj4gK8Kg
-wqDCoCBncmFudF9yZWZfdCBncmVmX2hlYWQ7DQo+PiDCoMKgwqDCoMKgIHVuc2lnbmVkIGlu
-dCBpOw0KPj4gwqDCoMKgwqDCoCBpbnQgcmV0Ow0KPj4gQEAgLTQzMyw5ICszOTAsMjUgQEAg
-aW50IHhlbmJ1c19zZXR1cF9yaW5nKHN0cnVjdCB4ZW5idXNfZGV2aWNlICpkZXYsIGdmcF90
-IA0KPj4gZ2ZwLCB2b2lkICoqdmFkZHIsDQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBl
-cnI7DQo+PiDCoMKgwqDCoMKgIH0NCj4+IC3CoMKgwqAgcmV0ID0geGVuYnVzX2dyYW50X3Jp
-bmcoZGV2LCAqdmFkZHIsIG5yX3BhZ2VzLCBncmVmcyk7DQo+PiAtwqDCoMKgIGlmIChyZXQp
-DQo+PiArwqDCoMKgIHJldCA9IGdudHRhYl9hbGxvY19ncmFudF9yZWZlcmVuY2VzKG5yX3Bh
-Z2VzLCAmZ3JlZl9oZWFkKTsNCj4+ICvCoMKgwqAgaWYgKHJldCkgew0KPj4gK8KgwqDCoMKg
-wqDCoMKgIHhlbmJ1c19kZXZfZmF0YWwoZGV2LCByZXQsICJncmFudGluZyBhY2Nlc3MgdG8g
-JXUgcmluZyBwYWdlcyIsDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-bnJfcGFnZXMpOw0KPj4gwqDCoMKgwqDCoMKgwqDCoMKgIGdvdG8gZXJyOw0KPj4gK8KgwqDC
-oCB9DQo+PiArDQo+PiArwqDCoMKgIGZvciAoaSA9IDA7IGkgPCBucl9wYWdlczsgaSsrKSB7
-DQo+PiArwqDCoMKgwqDCoMKgwqAgdW5zaWduZWQgbG9uZyBnZm47DQo+PiArDQo+PiArwqDC
-oMKgwqDCoMKgwqAgaWYgKGlzX3ZtYWxsb2NfYWRkcigqdmFkZHIpKQ0KPj4gK8KgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgZ2ZuID0gcGZuX3RvX2dmbih2bWFsbG9jX3RvX3Bmbih2YWRkcltp
-XSkpOw0KPj4gK8KgwqDCoMKgwqDCoMKgIGVsc2UNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIGdmbiA9IHZpcnRfdG9fZ2ZuKHZhZGRyW2ldKTsNCj4+ICsNCj4+ICvCoMKgwqDCoMKg
-wqDCoCBncmVmc1tpXSA9IGdudHRhYl9jbGFpbV9ncmFudF9yZWZlcmVuY2UoJmdyZWZfaGVh
-ZCk7DQo+IA0KPiBnbnR0YWJfY2xhaW1fZ3JhbnRfcmVmZXJlbmNlKCkgY2FuIHJldHVybiBl
-cnJvciBpZiBubyBmcmVlIGdyYW50IHJlZmVyZW5jZSByZW1haW5zLg0KDQpUaGlzIGNhbiBo
-YXBwZW4gb25seSBpbiBjYXNlIGdudHRhYl9hbGxvY19ncmFudF9yZWZlcmVuY2VzKCkgZGlk
-bid0DQphbGxvY2F0ZSBlbm91Z2ggZ3JhbnRzIGJ1dCB0b2xkIHVzIGl0IHN1Y2NlZWRlZCBk
-b2luZyBzby4NCg0KPiBJIHVuZGVyc3RhbmQgdGhpcyBwYXRjaCBvbmx5IG1vdmVzIHRoZSBj
-b2RlLCBidXQgcHJvYmFibHkgaXQgd291bGQgYmUgYmV0dGVyIHRvIA0KPiBhZGQgYSBtaXNz
-aW5nIGNoZWNrIGhlcmUgKGFuZCBsaWtlbHkgcm9sbGJhY2sgYWxyZWFkeSBwcm9jZXNzZWQg
-Z3JhbnRzIGlmIGFueT8pLg0KDQpJIGRvbid0IHRoaW5rIHRoaXMgaXMgbmVlZGVkLCBhcyB0
-aGlzIHdvdWxkIGJlIGEgY2xlYXIgYnVnIGluIHRoZSBjb2RlLg0KDQoNCkp1ZXJnZW4NCg==
-
---------------WmMLJHd3H0XnUv8azdUmUq6G
-Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Description: OpenPGP public key
-Content-Transfer-Encoding: quoted-printable
-
------BEGIN PGP PUBLIC KEY BLOCK-----
-
-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
-jR/i1DG86lem3iBDXzXsZDn8R38=3D
-=3D2wuH
------END PGP PUBLIC KEY BLOCK-----
-
---------------WmMLJHd3H0XnUv8azdUmUq6G--
-
---------------wKk70Jw8ZhozH8k1CfiTrShL--
-
---------------Ddprj0nYjZO3j4Cw5iWPu6pn
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmJv3O0FAwAAAAAACgkQsN6d1ii/Ey/U
-qQf/Ze6dNlV+TT84RD8luEgVfVlIp5m6drcCPiPgLiXo70IdUtARMhSuOzxN4IvjETj23uhS8pBY
-ucb5IuPOF2jWFrOjrkawlJsB6vEkwHGuaDQ+jH5E1btAVz2kQLju8/+O/6QLSylUNT4nIfugkHtI
-UHzi8qlZyWW6huWIW1S/3R8UMzbu3JBTrypRJQVxUdEGIYusPKtFTr99ZuvkRqTBjRbn5aBDhl2m
-DbYvtIZuvsKlA1/1kDBQne4o9s8nQGmmm7BALtJL5NPFoMHPBJBFVIjcR6922EMpBXeHWlfVgayw
-oQFIJg0SSra4lwr6UL620WJYo6qQUbzzxNp9wgbonA==
-=/Kr3
------END PGP SIGNATURE-----
-
---------------Ddprj0nYjZO3j4Cw5iWPu6pn--
