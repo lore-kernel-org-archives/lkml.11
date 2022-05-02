@@ -2,191 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1466DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94231C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357356AbiEBRCM (ORCPT
+        id S1350851AbiEBRDg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 13:02:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41420 "EHLO
+        Mon, 2 May 2022 13:03:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350054AbiEBRCJ (ORCPT
+        with ESMTP id S238829AbiEBRDe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 13:02:09 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D8C38A7
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 09:58:40 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id r204-20020a632bd5000000b003c1720b306bso6099020pgr.8
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 09:58:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=bPx4uFSnc14yK8QTU/QEz0rdJyrogPiWttuTKlYBjBw=;
-        b=Qwbi3YniGcw+A+s7IOlUFx7dzRTqP2JZQYXQBah7k5tLMg/Mjq5gKYiLjvhOJJSqmn
-         +7UPgTqf/omglpT3nftLpmilF/NwSTftkx9l64Eh8XmCA4YR9WJVtrvxjrLnrrhKFzSm
-         NtmkEyQuiMcN/zzRyiSebm22aIsD1kV44OOG132zJ/Bnn4LCTNhAGyA2iZeledgKRKg2
-         C9p5VrvrjbNMQaefgRfQ1P6780BOJbB/K18QQeESeVPovL6eX/PSVcr+YyMtGOeg1BRd
-         Urv2vr9FHcTbhHZdr9wbZZ4P6GzQ1lDRILuojWGgHAxffEQ4uRDcQvxC6sll+5O8Qu1o
-         9n3w==
+        Mon, 2 May 2022 13:03:34 -0400
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F053D117C;
+        Mon,  2 May 2022 10:00:04 -0700 (PDT)
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-ed9ac77cbbso4251808fac.1;
+        Mon, 02 May 2022 10:00:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=bPx4uFSnc14yK8QTU/QEz0rdJyrogPiWttuTKlYBjBw=;
-        b=OGmOvRwfmsUqSUpNKWjaCeGbk3kajXyMr4ZKbEDcnCpPXFdnqcSWqK6Bti78TwRbGE
-         BoelipJ2ESMaVVa+SIp5FcDmmhtdp2S18XwoaIyLDoXwu12IWTwaedinSkbfYeXVr3GV
-         gLupzx3eIWyOSRC+4cnU5FYvf044OOztQcE4ozxzQULaV+5nQgzPji+DhuaWCkVmS44P
-         krfcHHtX03q5XPpg8lgp0PM8XZTSuiilvS80mgtb4tpO5DPNrEWkiW9E15PCr/tDJwEE
-         mzNvfu1DUJOVPuj9NQ21q2FdXhr7G5N50upzUmVQ2gg+mCijZ0UJ38rblJoN3BfakIKS
-         C+oA==
-X-Gm-Message-State: AOAM532RsFpBgNq79ZL+9+9u7mGlnx7Ktnr8+Nhnppw21HBimkv8c+l+
-        sT3Vv7cAuWUkEA/O04PnBJ75YoVPp60=
-X-Google-Smtp-Source: ABdhPJzjhh/6LjTaauro8zl2Yor4TiNpnia0tJxk7Gu6fIKG7L7M+LcVnTGo4t8ZQ8KWcpmRpBCQXVMkO30=
-X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:a504:c712:edfe:ed97])
- (user=pgonda job=sendgmr) by 2002:a05:6a00:1d8f:b0:50d:cbc5:ff90 with SMTP id
- z15-20020a056a001d8f00b0050dcbc5ff90mr11545687pfw.50.1651510719447; Mon, 02
- May 2022 09:58:39 -0700 (PDT)
-Date:   Mon,  2 May 2022 09:58:07 -0700
-Message-Id: <20220502165807.529624-1-pgonda@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v4] KVM: SEV: Mark nested locking of vcpu->lock
-From:   Peter Gonda <pgonda@google.com>
-To:     kvm@vger.kernel.org
-Cc:     Peter Gonda <pgonda@google.com>,
-        John Sperbeck <jsperbeck@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Hillf Danton <hdanton@sina.com>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jL/zMMM/g6RvJvTqfaL3AxSBlJb7ZiFgbTZ+tEyGEr4=;
+        b=Hit/lFohIUyiIJtfRb/ySKReRMPF1jI4j53sm32NbpEOSu7CmUOU3ppN29cpDZJhOC
+         g0JpiP3iNAmkKqfRR6meY6Li1BwlXgg975rS7yeL2wrZAi9Ipzgns6dT/Hpan/va+UxA
+         TUPCHS4owpt4tiWg99lKNfDnxKo6VA2ZDQ59Uin2eYYYFK71HQwD9GW/yt6cVrwUehGz
+         edgx5CwHNHrTq3FI8GMDUODk+WN61unrOUAam+UjJgrDA9FVZK7aWxH8XRem6dQn4ONX
+         prPnEnNB89vVFM0Dp57evgrO2atlgAe4oJpwzYOv0/RBXuXeO1UOEF63qHeyDxeERwKV
+         0DAw==
+X-Gm-Message-State: AOAM532WH64oFr2wULUEJSGs8xtGoemz6OzIPkY4atHDsQOx+jpAiJJU
+        NV5b9SgUWXX4M2iFZ9Y8ZA==
+X-Google-Smtp-Source: ABdhPJyY8oqsNJ1CkInSExC9VYH++2hzZpE32bzXuh8V61fPi/nB1xZYHIdlXv08Rw5VQKyDhNR4zA==
+X-Received: by 2002:a05:6870:4610:b0:e9:a4a0:84 with SMTP id z16-20020a056870461000b000e9a4a00084mr48677oao.76.1651510804141;
+        Mon, 02 May 2022 10:00:04 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id h23-20020a4adcd7000000b0035eb4e5a6bbsm4033884oou.17.2022.05.02.10.00.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 10:00:03 -0700 (PDT)
+Received: (nullmailer pid 1331045 invoked by uid 1000);
+        Mon, 02 May 2022 17:00:02 -0000
+Date:   Mon, 2 May 2022 12:00:02 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     frowand.list@gmail.com
+Cc:     pantelis.antoniou@konsulko.com,
+        Slawomir Stepien <slawomir.stepien@nokia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Slawomir Stepien <sst@poczta.fm>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH 1/3] of: overlay: add entry to of_overlay_action_name[]
+Message-ID: <YnAOEqO23BQk53vz@robh.at.kernel.org>
+References: <20220501000543.1368005-1-frowand.list@gmail.com>
+ <20220501000543.1368005-2-frowand.list@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220501000543.1368005-2-frowand.list@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-svm_vm_migrate_from() uses sev_lock_vcpus_for_migration() to lock all
-source and target vcpu->locks. Unfortunately there is an 8 subclass
-limit, so a new subclass cannot be used for each vCPU. Instead maintain
-ownership of the first vcpu's mutex.dep_map using a role specific
-subclass: source vs target. Release the other vcpu's mutex.dep_maps.
+On Sat, Apr 30, 2022 at 07:05:41PM -0500, frowand.list@gmail.com wrote:
+> From: Frank Rowand <frank.rowand@sony.com>
+> 
+> The values of enum of_overlay_notify_action are used to index into
+> array of_overlay_action_name.  Add an entry to of_overlay_action_name
+> for the value recently added to of_overlay_notify_action.
+> 
+> Array of_overlay_action_name[] is moved into include/linux/of.h
+> adjacent to enum of_overlay_notify_action to make the connection
+> between the two more obvious if either is modified in the future.
+> 
+> The only use of of_overlay_action_name is for error reporting in
+> overlay_notify().  All callers of overlay_notify() report the same
+> error, but with fewer details.  Remove the redundant error reports
+> in the callers.
+> 
+> Fixes: 067c098766c6 ("of: overlay: rework overlay apply and remove kfree()s")
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+> ---
+>  drivers/of/overlay.c | 27 +++++----------------------
+>  include/linux/of.h   | 13 +++++++++++++
+>  2 files changed, 18 insertions(+), 22 deletions(-)
 
-Fixes: b56639318bb2b ("KVM: SEV: Add support for SEV intra host migration")
-Reported-by: John Sperbeck<jsperbeck@google.com>
-Suggested-by: David Rientjes <rientjes@google.com>
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Hillf Danton <hdanton@sina.com>
-Cc: kvm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Peter Gonda <pgonda@google.com>
+This isn't applying for me.
 
----
-
-V4
- * Due to 8 subclass limit keep dep_map on only the first vcpu and
-   release the others.
-
-V3
- * Updated signature to enum to self-document argument.
- * Updated comment as Seanjc@ suggested.
-
-Tested by running sev_migrate_tests with lockdep enabled. Before we see
-a warning from sev_lock_vcpus_for_migration(). After we get no warnings.
-
----
- arch/x86/kvm/svm/sev.c | 46 ++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 42 insertions(+), 4 deletions(-)
-
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index 75fa6dd268f0..0239def64eaa 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -1591,24 +1591,55 @@ static void sev_unlock_two_vms(struct kvm *dst_kvm, struct kvm *src_kvm)
- 	atomic_set_release(&src_sev->migration_in_progress, 0);
- }
- 
-+/*
-+ * To suppress lockdep false positives, subclass all vCPU mutex locks by
-+ * assigning even numbers to the source vCPUs and odd numbers to destination
-+ * vCPUs based on the vCPU's index.
-+ */
-+enum sev_migration_role {
-+	SEV_MIGRATION_SOURCE = 0,
-+	SEV_MIGRATION_TARGET,
-+	SEV_NR_MIGRATION_ROLES,
-+};
- 
--static int sev_lock_vcpus_for_migration(struct kvm *kvm)
-+static int sev_lock_vcpus_for_migration(struct kvm *kvm,
-+					enum sev_migration_role role)
- {
- 	struct kvm_vcpu *vcpu;
- 	unsigned long i, j;
-+	bool first = true;
- 
- 	kvm_for_each_vcpu(i, vcpu, kvm) {
--		if (mutex_lock_killable(&vcpu->mutex))
-+		if (mutex_lock_killable_nested(&vcpu->mutex, role))
- 			goto out_unlock;
-+
-+		if (first) {
-+			/*
-+			 * Reset the role to one that avoids colliding with
-+			 * the role used for the first vcpu mutex.
-+			 */
-+			role = SEV_NR_MIGRATION_ROLES;
-+			first = false;
-+		} else {
-+			mutex_release(&vcpu->mutex.dep_map, _THIS_IP_);
-+		}
- 	}
- 
- 	return 0;
- 
- out_unlock:
-+
-+	first = true;
- 	kvm_for_each_vcpu(j, vcpu, kvm) {
- 		if (i == j)
- 			break;
- 
-+		if (first)
-+			first = false;
-+		else
-+			mutex_acquire(&vcpu->mutex.dep_map, role, 0, _THIS_IP_);
-+
-+
- 		mutex_unlock(&vcpu->mutex);
- 	}
- 	return -EINTR;
-@@ -1618,8 +1649,15 @@ static void sev_unlock_vcpus_for_migration(struct kvm *kvm)
- {
- 	struct kvm_vcpu *vcpu;
- 	unsigned long i;
-+	bool first = true;
- 
- 	kvm_for_each_vcpu(i, vcpu, kvm) {
-+		if (first)
-+			first = false;
-+		else
-+			mutex_acquire(&vcpu->mutex.dep_map,
-+				      SEV_NR_MIGRATION_ROLES, 0, _THIS_IP_);
-+
- 		mutex_unlock(&vcpu->mutex);
- 	}
- }
-@@ -1745,10 +1783,10 @@ int sev_vm_move_enc_context_from(struct kvm *kvm, unsigned int source_fd)
- 		charged = true;
- 	}
- 
--	ret = sev_lock_vcpus_for_migration(kvm);
-+	ret = sev_lock_vcpus_for_migration(kvm, SEV_MIGRATION_SOURCE);
- 	if (ret)
- 		goto out_dst_cgroup;
--	ret = sev_lock_vcpus_for_migration(source_kvm);
-+	ret = sev_lock_vcpus_for_migration(source_kvm, SEV_MIGRATION_TARGET);
- 	if (ret)
- 		goto out_dst_vcpu;
- 
--- 
-2.36.0.464.gb9c8b46e94-goog
-
+Rob
