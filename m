@@ -2,95 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09382C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 07:14:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A605C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 07:24:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350930AbiEBHR4 (ORCPT
+        id S1358512AbiEBH1S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 03:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40830 "EHLO
+        Mon, 2 May 2022 03:27:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349276AbiEBHRx (ORCPT
+        with ESMTP id S1344735AbiEBH1P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 03:17:53 -0400
-Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422324B846
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 00:14:21 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:194e:5782:c420:7f87])
-        by andre.telenet-ops.be with bizsmtp
-        id RjEK2700a28fWK501jEKBR; Mon, 02 May 2022 09:14:20 +0200
-Received: from geert (helo=localhost)
-        by ramsan.of.borg with local-esmtp (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nlQGB-002lJZ-99; Mon, 02 May 2022 09:14:19 +0200
-Date:   Mon, 2 May 2022 09:14:19 +0200 (CEST)
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-X-X-Sender: geert@ramsan.of.borg
-To:     linux-kernel@vger.kernel.org
-cc:     Arnd Bergmann <arnd@arndb.de>, linux-sh@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-rdma@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: Build regressions/improvements in v5.18-rc5
-In-Reply-To: <20220502065353.2658957-1-geert@linux-m68k.org>
-Message-ID: <alpine.DEB.2.22.394.2205020912140.658493@ramsan.of.borg>
-References: <CAHk-=wjUhfhaes6_hMYDQFTbGjkmA-j2ZSeXZ32H66ufRfYrmQ@mail.gmail.com> <20220502065353.2658957-1-geert@linux-m68k.org>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Mon, 2 May 2022 03:27:15 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D70D211C2A
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 00:23:47 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24278Rqk021447;
+        Mon, 2 May 2022 07:23:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : in-reply-to : references : date : message-id : mime-version :
+ content-type; s=pp1; bh=YQB6wDDMj5JcWys4Hc57er6zcN2qmD7KxLoOkNkGhBs=;
+ b=YFOeKuTfm/Eh1cKAZ6YEFFoYzDeCN54SQhxppqigoNtu3yvSRR/niI5WQ//QR7wfGiC/
+ X9YJcSCJZHI3BZ/uMxVbSH6bjzdK8DewtTbn0UvcBtP/0FI/s3vhr+2C1uKvDahmkYBP
+ pKtSsvXgI0cCRytsjVqcEGoDETEGxI0i1hlu80ML+U5twL3oCEQq8jYZu/qDB0nTlssy
+ ZbFMRX2q8mtCPLCbuPZUnumAY9QtJG1xeNwVyuyBQDsPLbPVWFBVn1bdYFutc1MrwEqu
+ VvyCdwNhMrQwBnvR/euUsx1sihDReD749M7HK8HBdM1CsULiyCIiHwygcocZnUYNrlAy rg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fsf66vn6f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 02 May 2022 07:23:23 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2427FpW4016249;
+        Mon, 2 May 2022 07:23:22 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fsf66vn6a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 02 May 2022 07:23:22 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2427BnhP016235;
+        Mon, 2 May 2022 07:23:21 GMT
+Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
+        by ppma03wdc.us.ibm.com with ESMTP id 3frvr93t3d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 02 May 2022 07:23:21 +0000
+Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
+        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2427NLp131064424
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 2 May 2022 07:23:21 GMT
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0AF866E05D;
+        Mon,  2 May 2022 07:23:21 +0000 (GMT)
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 158F66E053;
+        Mon,  2 May 2022 07:23:14 +0000 (GMT)
+Received: from skywalker.linux.ibm.com (unknown [9.43.74.71])
+        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Mon,  2 May 2022 07:23:13 +0000 (GMT)
+X-Mailer: emacs 29.0.50 (via feedmail 11-beta-1 I)
+From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+To:     Davidlohr Bueso <dave@stgolabs.net>, Wei Xu <weixugc@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Yang Shi <shy828301@gmail.com>, Linux MM <linux-mm@kvack.org>,
+        Greg Thelen <gthelen@google.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alistair Popple <apopple@nvidia.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Feng Tang <feng.tang@intel.com>, Jonathan.Cameron@huawei.com
+Subject: Re: RFC: Memory Tiering Kernel Interfaces
+In-Reply-To: <20220501175813.tvytoosygtqlh3nn@offworld>
+References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
+ <20220501175813.tvytoosygtqlh3nn@offworld>
+Date:   Mon, 02 May 2022 12:53:11 +0530
+Message-ID: <87ee1cv1nk.fsf@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Type: text/plain
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: t_CELR3ehHiO8Nup_quIkLgssZJ9pJ2_
+X-Proofpoint-ORIG-GUID: kbUDMArbM8dJzS2RSB7kA1dc_xzfQdaY
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-02_02,2022-04-28_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ bulkscore=0 clxscore=1015 impostorscore=0 spamscore=0 mlxlogscore=999
+ mlxscore=0 adultscore=0 lowpriorityscore=0 malwarescore=0 phishscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205020054
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2 May 2022, Geert Uytterhoeven wrote:
-> JFYI, when comparing v5.18-rc5[1] to v5.18-rc4[3], the summaries are:
->  - build errors: +6/-21
+Davidlohr Bueso <dave@stgolabs.net> writes:
 
-6 error regressions:
-   + /kisskb/src/arch/sh/kernel/machvec.c: error: array subscript 'struct sh_machine_vector[0]' is partly outside array bounds of 'long int[1]' [-Werror=array-bounds]:  => 105:33
+> Nice summary, thanks. I don't know who of the interested parties will be
+> at lsfmm, but fyi we have a couple of sessions on memory tiering Tuesday
+> at 14:00 and 15:00.
 
-sh4-gcc11/se7750_defconfig
-sh4-gcc11/sh-defconfig
-sh4-gcc11/se7619_defconfig
-sh4-gcc11/sh-allmodconfig
-sh4-gcc11/sh-allyesconfig
-sh4-gcc11/sh-allnoconfig
+Will there be an online option this time? If so, i would like to
+participate in this discussion. I have not closely followed LSF/MM
+details this year. So not sure how to get the online attend request out.
 
-gcc-11 fallout
+>
+> On Fri, 29 Apr 2022, Wei Xu wrote:
+>
+>>The current kernel has the basic memory tiering support: Inactive
+>>pages on a higher tier NUMA node can be migrated (demoted) to a lower
+>>tier NUMA node to make room for new allocations on the higher tier
+>>NUMA node.  Frequently accessed pages on a lower tier NUMA node can be
+>>migrated (promoted) to a higher tier NUMA node to improve the
+>>performance.
+>
+> Regardless of the promotion algorithm, at some point I see the NUMA hinting
+> fault mechanism being in the way of performance. It would be nice if hardware
+> began giving us page "heatmaps" instead of having to rely on faulting or
+> sampling based ways to identify hot memory.
 
-   + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: 'struct cpuinfo_um' has no member named 'x86_cache_size':  => 88:22
-   + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: control reaches end of non-void function [-Werror=return-type]:  => 89:1
-   + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: implicit declaration of function '__copy_user_nocache' [-Werror=implicit-function-declaration]:  => 100:2
 
-um-x86_64/um-all{yes,no}config
+Power10 hardware can do this. Right now we are looking at integrating
+this to MultiGen LRU. We haven't got it to work. One of the challenges is
+how to estimate the relative hotness of the page compared to the rest of the
+pages in the system. I am looking at the random sampling of the oldest
+generation pages (the page list in the shrink page list) and using the hot
+and cold page in that random sample to determine the hotness of a
+specific page and whether to reclaim it or not.
 
-   + /kisskb/src/include/linux/sh_intc.h: error: division 'sizeof (void *) / sizeof (void)' does not compute the number of array elements [-Werror=sizeof-pointer-div]:  => 100:63
-
-v5.18-rc5/sh4-gcc11/se7750_defconfig
-v5.18-rc5/sh4-gcc11/sh-defconfig
-v5.18-rc5/sh4-gcc11/se7619_defconfig
-v5.18-rc5/sh4-gcc11/sh-allmodconfig
-v5.18-rc5/sh4-gcc11/sh-allyesconfig
-v5.18-rc5/sh4-gcc11/sh-allnoconfig
-
-gcc-10/11 fallout, seen before for sh4-gcc10/se7750_defconfig and sh4-gcc10/se7619_defconfig
-
-   + {standard input}: Error: branch to a symbol in another ISA mode:  => 1295
-
-mips-gcc11/micro32r2_defconfig
-mips-gcc11/micro32r2el_defconfig
-
-gcc-11 fallout
-
-> [1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/672c0c5173427e6b3e2a9bbb7be51ceeec78093a/ (all 138 configs)
-> [3] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/af2d861d4cd2a4da5137f795ee3509e6f944a25b/ (96 out of 138 configs)
-
-Gr{oetje,eeting}s,
-
- 						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
- 							    -- Linus Torvalds
+-aneesh
