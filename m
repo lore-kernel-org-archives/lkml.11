@@ -2,140 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 980E2C43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8C3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:07:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235149AbiEBUKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 16:10:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40668 "EHLO
+        id S235549AbiEBUKi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 16:10:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231508AbiEBUK3 (ORCPT
+        with ESMTP id S235231AbiEBUKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 16:10:29 -0400
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1469A63E8;
-        Mon,  2 May 2022 13:07:00 -0700 (PDT)
-Received: by mail-qv1-xf2d.google.com with SMTP id jt15so1774207qvb.8;
-        Mon, 02 May 2022 13:07:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=v3wD5SALNmRJFLj9tUWRsXDgRKKhZDunmdZcipLQpV4=;
-        b=Uq36JCx5K0KFPY82rUyOkrL7gpRtRpV8qwV7pUpi7ZblohNY77FDprju+2thZr/DCz
-         IURVugcQ4/25LVRJWq2wza3H8mhAYjZccCf85fJulyduF3r1Hj9qKXuEAWrDIO0FSZU9
-         qdT1iBcAiRavaiLaO7zwRAx+RePYqKUbXADQASvw23Wbs5RYgyEouE0PT1PlS3XMekJD
-         mq959KdKlcnZNxUc0kLS+puVh9HfuTCZGeIB40KD946fqq2idzrHT/i0INSqoSwWgZ4r
-         sIxxSwzeu/FTCOK34gRXAKzTlfe5zuUbbsJ1gpXVKh1pLs+L6qRolofrTnUCT/KcWM8D
-         5c1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=v3wD5SALNmRJFLj9tUWRsXDgRKKhZDunmdZcipLQpV4=;
-        b=FiTKpLjSyYo287zEIjZ68hBEuYpwehF7nO5fpALuhJM2Q6k4ZRtChVtT8+eWrDXqJH
-         q68BlUwfGIEWDhB3N2mbd+lNlIhz4gER39jZ52DB4qPcGxfim6B7p3b7tS5zxc/MW6VY
-         5ai5LG+gMUIQB8eJv+WKo4N1GtSKEluw519ChYRUnxDr+4Fk+Woz6IUR7UTQ0lc+jl3f
-         4OhAhX9Lg/zDVU0AeXPT7NJKSbKBimWkYj+1kzpN0GYlUG8860yzKODGhtDhpbo2F9EH
-         3yA7J2knHphQCWr0rIGCI09+D1QSlsQW9xYFMGlM4XLNflIF3daqsoq0HJrMXSt6hPul
-         f7PQ==
-X-Gm-Message-State: AOAM533KgfShIurQry7Hp5lBUr+SI4grfY3negFKipC2LjgLQyNo39Zv
-        RSBKTP51INdLO6mxvIRqD2k=
-X-Google-Smtp-Source: ABdhPJyn1OXV0CXpTEdhtUwpy1u82XZ916qh1IHA1s6fQUtXW4a+i8V6Kt7lDT4N+V9R07MrAOeWMA==
-X-Received: by 2002:a05:6214:c8d:b0:44b:f11e:63d with SMTP id r13-20020a0562140c8d00b0044bf11e063dmr11038124qvr.7.1651522019148;
-        Mon, 02 May 2022 13:06:59 -0700 (PDT)
-Received: from localhost ([2601:c4:c432:9a9:ce8e:a55c:4848:4d10])
-        by smtp.gmail.com with ESMTPSA id u18-20020a05620a121200b0069fc13ce1e2sm4779593qkj.19.2022.05.02.13.06.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 13:06:58 -0700 (PDT)
-Date:   Mon, 2 May 2022 13:06:56 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: Re: [PATCH 2/5] lib: add bitmap_{from,to}_arr64
-Message-ID: <YnA54HzrdfOr2QYl@yury-laptop>
-References: <20220428205116.861003-1-yury.norov@gmail.com>
- <20220428205116.861003-3-yury.norov@gmail.com>
- <YmvhLbIoHDhEhJFq@smile.fi.intel.com>
- <YmwIHRhS2f1QTW3b@yury-laptop>
+        Mon, 2 May 2022 16:10:36 -0400
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16DF1BC9C
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 13:07:05 -0700 (PDT)
+Received: from ipservice-092-217-077-109.092.217.pools.vodafone-ip.de ([92.217.77.109] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1nlcJw-0007ch-IE; Mon, 02 May 2022 22:07:00 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 0/9] staging: r8188eu: clean up OnAction
+Date:   Mon,  2 May 2022 22:06:43 +0200
+Message-Id: <20220502200652.143665-1-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmwIHRhS2f1QTW3b@yury-laptop>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 08:45:35AM -0700, Yury Norov wrote:
-> On Fri, Apr 29, 2022 at 03:59:25PM +0300, Andy Shevchenko wrote:
-> > On Thu, Apr 28, 2022 at 01:51:13PM -0700, Yury Norov wrote:
-> > > Manipulating 64-bit arrays with bitmap functions is potentially dangerous
-> > > because on 32-bit BE machines the order of halfwords doesn't match.
-> > > Another issue is that compiler may throw a warning about out-of-boundary
-> > > access.
-> > > 
-> > > This patch adds bitmap_{from,to}_arr64 functions in addition to existing
-> > > bitmap_{from,to}_arr32.
-> > 
-> > ...
-> > 
-> > > +	bitmap_copy_clear_tail((unsigned long *) (bitmap),	\
-> > > +			(const unsigned long *) (buf), (nbits))
-> > 
-> > Drop spaces after castings. Besides that it might be placed on a single line.
-> > 
-> > ...
-> 
-> OK
->  
-> > 
-> > > +	bitmap_copy_clear_tail((unsigned long *) (buf),		\
-> > > +			(const unsigned long *) (bitmap), (nbits))
-> > 
-> > Ditto.
-> > 
-> > ...
-> > 
-> > > +void bitmap_to_arr64(u64 *buf, const unsigned long *bitmap, unsigned int nbits)
-> > > +{
-> > > +	const unsigned long *end = bitmap + BITS_TO_LONGS(nbits);
-> > > +
-> > > +	while (bitmap < end) {
-> > > +		*buf = *bitmap++;
-> > > +		if (bitmap < end)
-> > > +			*buf |= (u64)(*bitmap++) << 32;
-> > > +		buf++;
-> > > +	}
-> > >  
-> > > +	/* Clear tail bits in last element of array beyond nbits. */
-> > > +	if (nbits % 64)
-> > > +		buf[-1] &= GENMASK_ULL(nbits, 0);
-> > 
-> > Hmm... if nbits is > 0 and < 64, wouldn't be this problematic, since
-> > end == bitmap? Or did I miss something?
-> 
-> BITS_TO_LONGS(0) == 0
-> BITS_TO_LONGS(1..32) == 1
-> BITS_TO_LONGS(33..64) == 2
-> 
-> The only potential problem with buf[-1] is nbits == 0, but fortunately
-> (0 % 64) == 0, and it doesn't happen.
-> 
-> Thanks,
-> Yury
+Simplify the OnAction function. Remove unused action categories.
+Use a switch statement instead of a table for the three remaining
+categories.
 
-Are there any other concerns? If no, I'll fix formatting and append it to
-bitmap-for-next.
+Martin Kaiser (9):
+  staging: r8188eu: action category ht is not used
+  staging: r8188eu: action category wmm is not used
+  staging: r8188eu: remove unused action handler prototypes
+  staging: r8188eu: remove action_handler string
+  staging: r8188eu: remove an unused category define
+  staging: r8188eu: replace OnAction_tbl with switch-case
+  staging: r8188eu: use ieee80211_mgmt for action category
+  staging: r8188eu: use standard category defines
+  staging: r8188eu: remove unused IEEE_* defines
 
-Thanks,
-Yury
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c   | 62 +++++++------------
+ drivers/staging/r8188eu/core/rtw_p2p.c        |  4 +-
+ drivers/staging/r8188eu/include/ieee80211.h   | 10 ---
+ .../staging/r8188eu/include/rtw_mlme_ext.h    | 16 -----
+ 4 files changed, 23 insertions(+), 69 deletions(-)
+
+-- 
+2.30.2
+
