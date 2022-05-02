@@ -2,85 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 470BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 10:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DFFCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 10:01:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383050AbiEBKDi (ORCPT
+        id S1384393AbiEBKEa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 06:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48474 "EHLO
+        Mon, 2 May 2022 06:04:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384706AbiEBJ7R (ORCPT
+        with ESMTP id S1384346AbiEBKEU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 05:59:17 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 950B34A3DA
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 02:53:25 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id E57751F8AB;
-        Mon,  2 May 2022 09:53:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1651485203; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        Mon, 2 May 2022 06:04:20 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17BC2645
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 03:00:46 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 33C57210E5;
+        Mon,  2 May 2022 10:00:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1651485645; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=YtO7nfzlefXiRENj/ugjHQpqg0xyePTCQXyxKhRQBRU=;
-        b=i9QB+6VMM8y1aM5RRHjv8Yy4uhYwv/EAcLyuoBPoe1Ldvsxb3M74y1ffpr00MTa3Wy41fE
-        3jMo19xrDehbPvmVbRRc9pRmUVsmC0568Nvw9a0+4VNPbF/33qZltmtlTvJOIPuM+orLiF
-        6tl9ukzGTwv4dUxtJVsNuSBcjdXx22I=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1651485203;
+        bh=iTKK1xDtnmXAYeBi+dPbi8yteaHw0P2nDeN1SBWNaj0=;
+        b=MgkEFVOILNEsJGU7lV+W1Duv+D56s8qcIPD4uiurhbUaI/fFhxuJSLbeXuUPNPmp3T3LwB
+        R8LwQ+czdbKNkckdwJ54YxfupZX0dszqy2x2mwyobcMoRGhMdLOwgVeXLBw9NYfsakApZx
+        MF9gYw0I7LGB3sNLonS1iTGeVvrNLko=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1651485645;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=YtO7nfzlefXiRENj/ugjHQpqg0xyePTCQXyxKhRQBRU=;
-        b=9RYJ47aH3zDMBae3MhAZ7npe5RF5XxtRL2tDT1utv8sFQnvgpeTR02ZZhhgZnvzWKmV7Qd
-        7/Yef710mWpmbeDQ==
-Received: from suse.de (unknown [10.163.43.106])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        bh=iTKK1xDtnmXAYeBi+dPbi8yteaHw0P2nDeN1SBWNaj0=;
+        b=Nj3KJAWkFC19kauBWwlkVq6mk+bTmGIo7dy42UvYuLm4H1AizBwqdlXYcPuTlnjyD92aF5
+        MrexEt86CBj5ENCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 0B3312C141;
-        Mon,  2 May 2022 09:53:23 +0000 (UTC)
-Date:   Mon, 2 May 2022 10:53:21 +0100
-From:   Mel Gorman <mgorman@suse.de>
-To:     Wonhyuk Yang <vvghjk1234@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Ohhoon Kwon <ohkwon1043@gmail.com>,
-        JaeSang Yoo <jsyoo5b@gmail.com>,
-        Jiyoup Kim <lakroforce@gmail.com>,
-        Donghyeok Kim <dthex5d@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/page_alloc: cache the result of node_dirty_ok()
-Message-ID: <20220502095321.GA20579@suse.de>
-References: <20220430011032.64071-1-vvghjk1234@gmail.com>
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 10CF513491;
+        Mon,  2 May 2022 10:00:45 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id xXQUA82rb2J9NgAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 02 May 2022 10:00:45 +0000
+Message-ID: <49b0d611-e116-c78d-cf14-6d5f96ae500e@suse.cz>
+Date:   Mon, 2 May 2022 12:00:44 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <20220430011032.64071-1-vvghjk1234@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Content-Language: en-US
+To:     Wonhyuk Yang <vvghjk1234@gmail.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <20220430002555.3881-1-vvghjk1234@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [Patch v3] mm/slub: Remove repeated action in calculate_order()
+In-Reply-To: <20220430002555.3881-1-vvghjk1234@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 30, 2022 at 10:10:32AM +0900, Wonhyuk Yang wrote:
-> To spread dirty page, nodes are checked whether
-> it reached the dirty limit using the expensive
-> node_dirty_ok(). To reduce the number of calling
-> node_dirty_ok(), last node that hit the dirty
-> limit is cached.
+On 4/30/22 02:25, Wonhyuk Yang wrote:
+> To calculate order, calc_slab_order() is called repeatly changing the
+> fract_leftover. Thus, the branch which is not dependent on
+> fract_leftover is executed repeatly. So make it run only once.
 > 
-> Instead of caching the node, caching both node
-> and it's result of node_dirty_ok() can reduce
-> the number of calling node_dirty_ok() more than
-> before.
+> Plus, when min_object reached to 1, we set fract_leftover to 1. In
+> this case, we can calculate order by max(slub_min_order,
+> get_order(size)) instead of calling calc_slab_order().
+> 
+> No functional impact expected.
 > 
 > Signed-off-by: Wonhyuk Yang <vvghjk1234@gmail.com>
+> Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+> ---
+> 
+>  mm/slub.c | 18 +++++++-----------
+>  1 file changed, 7 insertions(+), 11 deletions(-)
+> 
+> diff --git a/mm/slub.c b/mm/slub.c
+> index ed5c2c03a47a..1fe4d62b72b8 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -3795,9 +3795,6 @@ static inline unsigned int calc_slab_order(unsigned int size,
+>  	unsigned int min_order = slub_min_order;
+>  	unsigned int order;
+>  
+> -	if (order_objects(min_order, size) > MAX_OBJS_PER_PAGE)
+> -		return get_order(size * MAX_OBJS_PER_PAGE) - 1;
+> -
+>  	for (order = max(min_order, (unsigned int)get_order(min_objects * size));
+>  			order <= max_order; order++) {
+>  
+> @@ -3820,6 +3817,11 @@ static inline int calculate_order(unsigned int size)
+>  	unsigned int max_objects;
+>  	unsigned int nr_cpus;
+>  
+> +	if (unlikely(order_objects(slub_min_order, size) > MAX_OBJS_PER_PAGE)) {
+> +		order = get_order(size * MAX_OBJS_PER_PAGE) - 1;
+> +		goto out;
+> +	}
 
-Acked-by: Mel Gorman <mgorman@suse.de>
+Hm interestingly, both before and after your patch, MAX_OBJS_PER_PAGE might
+be theoretically overflowed not by slub_min_order, but then with higher
+orders. Seems to be prevented only as a side-effect of fragmentation close
+to none, thus higher orders not attempted. Would be maybe less confusing to
+check that explicitly. Even if that's wasteful, but this is not really perf
+critical code.
 
-I agree with Andrew that last_pgdat_dirty_ok is a better name. The old
-name was also bad but seeing as the area is being changed, fixing the
-name is harmless.
+> +
+>  	/*
+>  	 * Attempt to find best configuration for a slab. This
+>  	 * works by first attempting to generate a layout with
+> @@ -3865,14 +3867,8 @@ static inline int calculate_order(unsigned int size)
+>  	 * We were unable to place multiple objects in a slab. Now
+>  	 * lets see if we can place a single object there.
+>  	 */
+> -	order = calc_slab_order(size, 1, slub_max_order, 1);
+> -	if (order <= slub_max_order)
+> -		return order;
+> -
+> -	/*
+> -	 * Doh this slab cannot be placed using slub_max_order.
+> -	 */
+> -	order = calc_slab_order(size, 1, MAX_ORDER, 1);
+> +	order = max_t(unsigned int, slub_min_order, get_order(size));
 
--- 
-Mel Gorman
-SUSE Labs
+If we failed to assign order above, then AFAICS it means even slub_min_order
+will not give us more than 1 object per slub. Thus it doesn't make sense to
+use it in a max() formula, and we can just se get_order(), no?
+
+> +out:
+>  	if (order < MAX_ORDER)
+>  		return order;
+>  	return -ENOSYS;
+
