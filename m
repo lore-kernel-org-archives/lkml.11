@@ -2,150 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AB5CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1664BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385333AbiEBNfx (ORCPT
+        id S1351077AbiEBNf5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 09:35:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39644 "EHLO
+        Mon, 2 May 2022 09:35:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385321AbiEBNfm (ORCPT
+        with ESMTP id S1385335AbiEBNfn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 09:35:42 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6680A1B3;
-        Mon,  2 May 2022 06:32:00 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id 31-20020a9d0822000000b00605f1807664so6648993oty.3;
-        Mon, 02 May 2022 06:32:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=JBrd1Rj8pXekZRhf1iSXV3bf3S85pGZUSMP33kjZN68=;
-        b=FoKDFwoHhjBCICe1m9uEBjPrZ4P9ubEt0WV2a0Acx6ftW2lW+82rDH4+dUhPpfsJ5I
-         0DAnB0vKNTRzRTH1+uwc/f3Z5kOcSvlP2XRO1/W4/d9J1+3vEnjujczb+oh7mByYKj0U
-         eVengyXn41u3fBqkmTy6pevAeYD6F/0nzxOdoKoK6L6MZhSf0YOjrbGMdrOIxDJzyiOl
-         jX7LTekUN8tfH+DNnoOACbIp8HaCCPvr2Bcw6pKciD/sK+TU9/lyP64x7OVhYRp7aq/S
-         4ASQyGhkAhmLF1z+yn0Y9LwaSPzSfYnkOq5LYJ5NSxdhElBtPwhG9o6AkTptRwALh0cG
-         9+dQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=JBrd1Rj8pXekZRhf1iSXV3bf3S85pGZUSMP33kjZN68=;
-        b=NAKi3GhatLAdnw3iD261gtW4f78Pbkjon0HC4SYtB/s68ayLdEVg+/06iIgDeIBvY6
-         Wn8Cuj4XUiIbcN71UB8RSCgiECWFwe4tdamfq+aAV45LckUSiil2cqXLnjlGbBp8OI5D
-         oAbksYAg/YEzlJJwRaQxiwb1Ev3fJw++0lkkcA7vk2sNY8UceuLIcTBF++tztQGWwTN0
-         KIv9kz1NhWCW2Q4KHqH92jnx50Vb87p04d/avZeKFI+6gZe+z20CofACs7BP65+fK72s
-         mewFsF8ucBSA83g+T1h3wh55VeEq7XOT8RQH3z9sIc3eCTzULV0KYrD0Ij1DpiEx+eMo
-         3RUg==
-X-Gm-Message-State: AOAM53107FxIxDRkMS8ZoFabKBaQKazxLG8EEnL0deAuHS/VpjWCHj9k
-        PcvD7Vpo8eRBapF79VUuIXw=
-X-Google-Smtp-Source: ABdhPJwufWJNpmAQdVUJkxoWJlbp27/3rQmMvO+c4GsVgKlA1e+XjcWAY6jqPd3f+SpQoUz2CdRK1g==
-X-Received: by 2002:a9d:7f13:0:b0:605:f24e:f738 with SMTP id j19-20020a9d7f13000000b00605f24ef738mr4068097otq.323.1651498320034;
-        Mon, 02 May 2022 06:32:00 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id b11-20020a056808010b00b00325cda1ff87sm2322405oie.6.2022.05.02.06.31.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 May 2022 06:31:58 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <21a89ae0-7152-49eb-7500-7d46dfb259f6@roeck-us.net>
-Date:   Mon, 2 May 2022 06:31:56 -0700
+        Mon, 2 May 2022 09:35:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCBCB84F;
+        Mon,  2 May 2022 06:32:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D88F61372;
+        Mon,  2 May 2022 13:32:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5431C385B1;
+        Mon,  2 May 2022 13:32:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651498328;
+        bh=cFALZTzlLK3Uat4m7PPK08qfJ5UbeCcorLAcosiDvzk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AnE784v5afnf9uOtB/69A5q8ndhlMjPJ36LvuFYYfbNUxKe13ZBHMTRIwGbKv4n7E
+         OOBuyZPUXaaKc3Zi+cbwAw93u2pNb4zLd2VHtdFVdhl6R9ySrmnFYtGQ6gt+b+vWlC
+         oN3g5E5JRo2P5z8gegCJPl3S1SWS6Hdd7g7+e19sLG0oroNx67jrTRHwqcUf7wTZ+5
+         5Hj14+z1Zu0CTiqunOexX+xhoN+2RpfsVnok5lgHeRDuZ7MyDVNXclScWtFBqbw9JT
+         Wq/MHKy1UqhY+/FeLu3oUjcxSwYLgH50ITF/NhMObKfF/kdtYZI65XxRrDw0oYe5XB
+         QiPomzTgMeDbw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan+linaro@kernel.org>)
+        id 1nlW9n-000151-JW; Mon, 02 May 2022 15:32:07 +0200
+From:   Johan Hovold <johan+linaro@kernel.org>
+To:     Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Evan Green <evgreen@chromium.org>
+Subject: [PATCH v2 1/2] phy: qcom-qmp: fix pipe-clock imbalance on power-on failure
+Date:   Mon,  2 May 2022 15:31:29 +0200
+Message-Id: <20220502133130.4125-2-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220502133130.4125-1-johan+linaro@kernel.org>
+References: <20220502133130.4125-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2] hwmon: (sun4i-lradc) Add driver for LRADC found on
- Allwinner A13/A20 SoC
-Content-Language: en-US
-To:     Maxime Ripard <maxime@cerno.tech>, Ruslan Zalata <rz@fabmicro.ru>
-Cc:     Jean Delvare <jdelvare@suse.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-References: <20220428210906.29527-1-rz@fabmicro.ru>
- <20220502110010.q7vvdkdpaiz5acjl@houat>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <20220502110010.q7vvdkdpaiz5acjl@houat>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/2/22 04:00, Maxime Ripard wrote:
-> Hi,
-> 
-> On Thu, Apr 28, 2022 at 09:09:03PM +0000, Ruslan Zalata wrote:
->> Some Allwinner SoCs like A13, A20 or T2 are equipped with two-channel
->> low rate (6 bit) ADC that is often used for extra keys. There's a driver
->> for that already implementing standard input device, but it has these
->> limitations: 1) it cannot be used for general ADC data equisition, and
->> 2) it uses only one LRADC channel of two available.
->>
->> This driver provides basic hwmon interface to both channels of LRADC on
->> such Allwinner SoCs.
->>
->> Signed-off-by: Ruslan Zalata <rz@fabmicro.ru>
->> ---
->>   MAINTAINERS                       |   6 +
->>   drivers/hwmon/Kconfig             |  13 ++
->>   drivers/hwmon/Makefile            |   1 +
->>   drivers/hwmon/sun4i-lradc-hwmon.c | 280 ++++++++++++++++++++++++++++++
->>   4 files changed, 300 insertions(+)
->>   create mode 100644 drivers/hwmon/sun4i-lradc-hwmon.c
->>
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index 5e8c2f61176..d9c71e94133 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -18861,6 +18861,12 @@ S:	Maintained
->>   F:	Documentation/devicetree/bindings/input/allwinner,sun4i-a10-lradc-keys.yaml
->>   F:	drivers/input/keyboard/sun4i-lradc-keys.c
->>   
->> +SUN4I LOW RES ADC HWMON DRIVER
->> +M:	Ruslan Zalata <rz@fabmicro.ru>
->> +L:	linux-hwmon@vger.kernel.org
->> +S:	Maintained
->> +F:	drivers/hwmon/sun4i-lradc-hwmon.c
->> +
->>   SUNDANCE NETWORK DRIVER
->>   M:	Denis Kirjanov <kda@linux-powerpc.org>
->>   L:	netdev@vger.kernel.org
->> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
->> index 68a8a27ab3b..86776488a81 100644
->> --- a/drivers/hwmon/Kconfig
->> +++ b/drivers/hwmon/Kconfig
->> @@ -1691,6 +1691,19 @@ config SENSORS_SIS5595
->>   	  This driver can also be built as a module. If so, the module
->>   	  will be called sis5595.
->>   
->> +config SENSORS_SUN4I_LRADC
->> +	tristate "Allwinner A13/A20 LRADC hwmon"
->> +	depends on ARCH_SUNXI && !KEYBOARD_SUN4I_LRADC
->> +	help
->> +	  Say y here to support the LRADC found in Allwinner A13/A20 SoCs.
->> +	  Both channels are supported.
->> +
->> +	  This driver can also be built as module. If so, the module
->> +	  will be called sun4i-lradc-hwmon.
->> +
->> +	  This option is not compatible with KEYBOARD_SUN4I_LRADC, one
->> +	  of these must be used at a time.
-> 
-> How do you plan on enforcing that?
-> 
-	depends on ARCH_SUNXI && !KEYBOARD_SUN4I_LRADC
-                                  ^^^^^^^^^^^^^^^^^^^^^
+Make sure to disable the pipe clock also if ufs-reset deassertion fails
+during power on.
 
-> I guess a better path forward would be to either register an hwmon
-> device in the original driver, or convert that driver to iio and use
-> iio-hwmon.
-> 
-Both is fine with me.
+Note that the ufs-reset is asserted in qcom_qmp_phy_com_exit().
 
-Guenter
+Fixes: c9b589791fc1 ("phy: qcom: Utilize UFS reset controller")
+Cc: Evan Green <evgreen@chromium.org>
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+---
+ drivers/phy/qualcomm/phy-qcom-qmp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
+index 8c2300bfe489..c37c0d8fea4e 100644
+--- a/drivers/phy/qualcomm/phy-qcom-qmp.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
+@@ -5433,7 +5433,7 @@ static int qcom_qmp_phy_power_on(struct phy *phy)
+ 
+ 	ret = reset_control_deassert(qmp->ufs_reset);
+ 	if (ret)
+-		goto err_lane_rst;
++		goto err_pcs_ready;
+ 
+ 	qcom_qmp_phy_configure(pcs_misc, cfg->regs, cfg->pcs_misc_tbl,
+ 			       cfg->pcs_misc_tbl_num);
+-- 
+2.35.1
 
