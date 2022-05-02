@@ -2,112 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE16EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 21:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82845C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 21:03:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387553AbiEBVEw (ORCPT
+        id S1387541AbiEBVGd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 17:04:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47226 "EHLO
+        Mon, 2 May 2022 17:06:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387532AbiEBVEo (ORCPT
+        with ESMTP id S1348432AbiEBVG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 17:04:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F33726FD;
-        Mon,  2 May 2022 14:01:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7864B819DE;
-        Mon,  2 May 2022 21:01:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 870B7C385AC;
-        Mon,  2 May 2022 21:01:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651525271;
-        bh=Lyb/THiP6nQ3Mo8jxRN/sSN4cFqT+f2qfN1gi8EaInQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=UgDF9QfxgCwmucPUKdWp6T3JzrWJrh7DEK/6p23+8Lk9YKDw7W5gWJOHDCu/7PiJz
-         eMEchDEaqya/pd5f/LF2LhVxtyt5SClI551Z4z6Cw/O9ZdC6wNgqENCQkiZwJc7sB6
-         88vbNGfTEAeeQTlsJN5IjcdqwYjGdUobCRI/IZqLmVUPjH5JBHprkvVS/hDkXenk+K
-         U7KvfrL95cqTOsgCmSDYmW1LWzW+qqvUQm4gFRIPC3hKIycONxi9Jo2zI01FcGsGCH
-         dOJ8i6y8MNrsBSJjFbaPbVvwEljbBzysOCcF6QVWefh6kCQQOM2byLdZ0eEGA2xiYy
-         ag4YeJvL+W2gQ==
-Message-ID: <3dee9e8f-45c5-49a0-a19e-d67917fd6bb3@kernel.org>
-Date:   Mon, 2 May 2022 16:01:05 -0500
+        Mon, 2 May 2022 17:06:29 -0400
+X-Greylist: delayed 384 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 02 May 2022 14:02:58 PDT
+Received: from mxout01.lancloud.ru (mxout01.lancloud.ru [45.84.86.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BA11BC84;
+        Mon,  2 May 2022 14:02:58 -0700 (PDT)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 29DA720D16F2
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH v3] sh: avoid using IRQ0 on SH3/4
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Rob Landley <rob@landley.net>
+CC:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+        Rich Felker <dalias@libc.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <2584ba18-9653-9310-efc1-8b3b3e221eea@omp.ru>
+ <11021433-66c0-3c56-42bd-207a5ae8d267@physik.fu-berlin.de>
+ <2ebef1ac-e5c5-980c-9413-22a6cccdfa1d@landley.net>
+ <CAMuHMdWN0vRYhK7O0MgOSCtisw3RDvp4vxSS2VF-9uGDdOEb7g@mail.gmail.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <59faed1d-3878-ce75-9f62-aaf4338d0ad1@omp.ru>
+Date:   Mon, 2 May 2022 23:56:31 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v5 06/11] nios2: use fallback for random_get_entropy()
- instead of zero
+In-Reply-To: <CAMuHMdWN0vRYhK7O0MgOSCtisw3RDvp4vxSS2VF-9uGDdOEb7g@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        tglx@linutronix.de, arnd@arndb.de
-Cc:     Theodore Ts'o <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
-        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, x86@kernel.org,
-        linux-xtensa@linux-xtensa.org
-References: <20220419111650.1582274-1-Jason@zx2c4.com>
- <20220419111650.1582274-7-Jason@zx2c4.com>
-From:   Dinh Nguyen <dinguyen@kernel.org>
-In-Reply-To: <20220419111650.1582274-7-Jason@zx2c4.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 5/2/22 11:37 AM, Geert Uytterhoeven wrote:
 
-
-On 4/19/22 06:16, Jason A. Donenfeld wrote:
-> In the event that random_get_entropy() can't access a cycle counter or
-> similar, falling back to returning 0 is really not the best we can do.
-> Instead, at least calling random_get_entropy_fallback() would be
-> preferable, because that always needs to return _something_, even
-> falling back to jiffies eventually. It's not as though
-> random_get_entropy_fallback() is super high precision or guaranteed to
-> be entropic, but basically anything that's not zero all the time is
-> better than returning zero all the time.
+[...]
+>>>> Using IRQ0 by the platform devices is going to be disallowed soon (see [1])
+>>>> and even now, when IRQ0 is about to be returned by platfrom_get_irq(), you
+>>>> see a big warning.  The code supporting SH3/4 SoCs maps the IRQ #s starting
+>>>> at 0 -- modify that code to start the IRQ #s from 16 instead.
+>>>>
+>>>> The patch should mostly affect the AP-SH4A-3A/AP-SH4AD-0A boards as they
+>>>> indeed use IRQ0 for the SMSC911x compatible Ethernet chip...
 > 
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Dinh Nguyen <dinguyen@kernel.org>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
->   arch/nios2/include/asm/timex.h | 2 ++
->   1 file changed, 2 insertions(+)
+>> As I told him in IRC, the problem is still that sh4 never gives me a shell
+>> prompt with this patch applied. I just reconfirmed it against current git:
+>>
+>> Freeing unused kernel image (initmem) memory: 124K
+>> This architecture does not have kernel memory protection.
+>> Run /init as init process
+>> mountpoint: dev/pts: No such file or directory
+>> 8139cp 0000:00:02.0 eth0: link up, 100Mbps, full-duplex, lpa 0x05E1
+>>
+>> It makes it partway through the init script, but it hangs with qemu-system-sh4
+>> stuck in a CPU-eating loop before finishing. Without the patch, I get a shell
+>> prompt.
 > 
-> diff --git a/arch/nios2/include/asm/timex.h b/arch/nios2/include/asm/timex.h
-> index a769f871b28d..d9a3f426cdda 100644
-> --- a/arch/nios2/include/asm/timex.h
-> +++ b/arch/nios2/include/asm/timex.h
-> @@ -9,4 +9,6 @@ typedef unsigned long cycles_t;
->   
->   extern cycles_t get_cycles(void);
->   
-> +#define random_get_entropy() (((unsigned long)get_cycles()) ?: random_get_entropy_fallback())
-> +
->   #endif
+> I regularly test on qemu rts7751r2d, but couldn't produce your
+> issue.  Until I tried "ifconfig eth0 up", which causes a lock-up.
+> Interestingly, the 8139 irq was 112 with and without Sergey's patch,
+> so there must be an irq remapping missing.
+> 
+> I also test regularly on landisk, where 8139 Ethernet works fine.
+> Turns out landisk uses arch/sh/drivers/pci/fixups-landisk.c to fixup
+> the irq...
+> 
+> arch/sh/include/mach-common/mach/r2d.h has:
+> #define R2D_FPGA_IRQ_BASE       100
+> Subtracting 16 here does not help.
 
-Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+   Why subtract when you contrariwise need to add? :-)
+
+> With this (gmail-whitespace-damaged) patch:
+> 
+> --- a/arch/sh/drivers/pci/fixups-rts7751r2d.c
+> +++ b/arch/sh/drivers/pci/fixups-rts7751r2d.c
+> @@ -31,9 +31,9 @@ static char lboxre2_irq_tab[] = {
+>  int pcibios_map_platform_irq(const struct pci_dev *pdev, u8 slot, u8 pin)
+>  {
+>         if (mach_is_lboxre2())
+> -               return lboxre2_irq_tab[slot];
+> +               return lboxre2_irq_tab[slot] - 16;
+
+   This table contains the values #define'd via evt2irq(), so
+shouldn't need to subtract anything...
+
+>         else
+> -               return rts7751r2d_irq_tab[slot];
+> +               return rts7751r2d_irq_tab[slot] - 16;
+
+   How about + 16?
+
+>  }
+> 
+>  int pci_fixup_pcic(struct pci_channel *chan)
+> 
+> it no longer crashes, but ifconfig still fails:
+> 
+> / # ifconfig eth0 up
+> ifconfig: ioctl 0x8914 failed: Invalid argument
+
+   I'm still not sure you used the correct IRQ #s...
+
+> Note that there are more implementations of pcibios_map_platform_irq()
+> that do not use evt2irq(), and thus are probably broken by this patch.
+
+   That doesn't sound encouraging... :-/
+
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+
+MBR, Sergey
