@@ -2,118 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F067C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:52:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386573AbiEBQ4K (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 12:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36040 "EHLO
+        id S242245AbiEBQ6c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 12:58:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386459AbiEBQ4F (ORCPT
+        with ESMTP id S236543AbiEBQ62 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 12:56:05 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AAEBE085
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 09:51:59 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id z5-20020a17090a468500b001d2bc2743c4so13214127pjf.0
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 09:51:59 -0700 (PDT)
+        Mon, 2 May 2022 12:58:28 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5B06273
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 09:54:59 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id 4so19034145ljw.11
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 09:54:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=FR217X+sFZL46Wxt9EvSsoLWknD7uWUFk7IHaZjgk18=;
-        b=djimFbijDCzrFhkQD10nuWI4luGThhVdo3NKqwTf1z0IanLgpqjTqe/DI6RZcEDejz
-         Qf1jiP21D8fkk0ZzrhzDOV5iH/DtZXFCbwcqKwx1Cx99AzkiloCknKreU2RtvlKPWn7h
-         oJBXCr+s2GpO/iH6g2BQAr7G40owz2zIa1mfHBaKmzTuNawocY8S12g3ukdBFVNZxB1c
-         R5K23bsvyrLH4Is4OewGMC/REV7wYO3GeZS69j/Mziy+q3wUcP425hltALfW4zYGrnBP
-         qd3VQqOhyK6ZNrLxqa+0LDbXyRkbXF+eltDSGPRlVWvjM1xfwcnff5zAGcGUBUFt0i4M
-         nqfA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tuwSXDS47usg98UbOCK/I9oPEzbY53h2cc8iNFbvNdQ=;
+        b=aMhh8jxi4MJNkWjHLMMsq21pu+OlopMpNWh/ZkcBXDP72LSQ4XoW3ys9Aid/fsiFyo
+         6f33+KLowYyiwr5MPmEx92h34cmNTRYgDAIVeUP2R88OpMo9h8QovxDHFK3K2MgcpUKz
+         ozK4fCy0XFBENiG1s2ch0aKV/O5ZaTi/x/rf3Gu3d/Ty0zraKgMEMbwQcDjlCH+O5H5M
+         jNvG/4k8zJtPPOkFF25ROWlzpr84s1xlORhrOMkw2L/V/mYnL6wRS4MiqeHULVlFyJ/P
+         5XgedszkbvcnOnkQ/YO2on9T3IYpk0esfVTWBj0ne3SrkozSH0e7Ug//kG0aP0qbR925
+         4x6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FR217X+sFZL46Wxt9EvSsoLWknD7uWUFk7IHaZjgk18=;
-        b=qwurRQiVBZq5sHkZXQ1ALojsg//PEnGwgPQYb8PwdmHZgHpwItIgu9VQVZFCvUDT5m
-         b351sAG9y7Zcutqkb5HCoU8wqMYaPin/zZeLrFvHiNH5pICWGtC7/CXslPlFcH7QtXSo
-         ECbYi7Jo7b6Vurb6xKI9pe+ERiHuIWwI06h4T8DF820Cxz9jPa90sMM+wOCrTnj1Jkyr
-         en0/fBno7mHbbuao+5hYvLV7DkmW9pthPhWmJF1aOU+V6wSgMjVyFlitu04oO1mGP7+A
-         I1Ct/fPiVm5RuQ1NquT9MbLCFtZLoGa3PDmxg/MaNzNTNOftYunUpc+hAAUYIF3R0Z1u
-         fnZA==
-X-Gm-Message-State: AOAM530ljYczR1rV4UYuXZsO8ltXWafan1V1K2a+WnrDfPISntanljE6
-        KeZgLMRwqK+oaE576IjdcpSLFg==
-X-Google-Smtp-Source: ABdhPJyfSMAkTbFQTeRCi6rt/IBnxILI+oALBStLdb+s/26rtdZP6M6Mk8zS2NlsKI8Ul6pW6MgH6w==
-X-Received: by 2002:a17:902:a705:b0:156:9cc5:1d6f with SMTP id w5-20020a170902a70500b001569cc51d6fmr12597635plq.66.1651510318553;
-        Mon, 02 May 2022 09:51:58 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id c21-20020aa78c15000000b0050dc7628179sm4928026pfd.83.2022.05.02.09.51.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 09:51:58 -0700 (PDT)
-Date:   Mon, 2 May 2022 16:51:54 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ben Gardon <bgardon@google.com>,
-        David Matlack <dmatlack@google.com>
-Subject: Re: [PATCH] KVM: x86/mmu: Do not create SPTEs for GFNs that exceed
- host.MAXPHYADDR
-Message-ID: <YnAMKtfAeoydHr3x@google.com>
-References: <337332ca-835c-087c-c99b-92c35ea8dcd3@redhat.com>
- <Ymv1I5ixX1+k8Nst@google.com>
- <20e1e7b1-ece7-e9e7-9085-999f7a916ac2@redhat.com>
- <Ymv5TR76RNvFBQhz@google.com>
- <e5864cb4-cce8-bd32-04b0-ecb60c058d0b@redhat.com>
- <YmwL87h6klEC4UKV@google.com>
- <ac2001e66957edc8a3af2413b78478c15898f86c.camel@redhat.com>
- <f3ffad3aa8476156f369ff1d4c33f3e127b47d0c.camel@redhat.com>
- <82d1a5364f1cc479da3762b046d22f136db167e3.camel@redhat.com>
- <af15fd31f73e8a956da50db6104e690f9d308dad.camel@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tuwSXDS47usg98UbOCK/I9oPEzbY53h2cc8iNFbvNdQ=;
+        b=E+ff8O4vgVkdCmGiCGu0eSpjv0w4JBH513jJH8o9kyh0P7LJWUfO/WlWEry8yvtkPD
+         rkpv6jITGLiAf+vh+ggdJTunx0ho9eJelZoJOVq9CFwYQ/xJdfAWqhzJplAdgDZ8CWYl
+         Tx25s/JVuZ8xOj6zaK+gpzL3HfmTxQFpR2mZHAahmA5cj0H15ert/Ah2G+4vl0z/5XXx
+         IUsHchAA8q3zyS9pVWrs3pQVM1Bl7ZRKqzmY66PghTOAGZ/4WiQzwyRzNly/XV2kPFlv
+         4HpeHe6mOdFTZ8ww64I9htAY3fx/R3A9L1AXpf1xEwIGs0azGsuDe9YDGPfH7/8Pv6//
+         7QEQ==
+X-Gm-Message-State: AOAM530U0F6WRZFuG/euz0MAGehNgC4ZJeCzAkHMo/3vsqgHfYG7ctQZ
+        1hx/GduDDi3DvkadXwaszSZ0PcHlSDxZ/j/b8+HZag==
+X-Google-Smtp-Source: ABdhPJxidiAuNREg4SBCMW3M8snJ5Qcx2YyO7ESaLOxRuKvXGNp4UO7ALmr+WQsQqrydLCtL70Bgahl47Xz4JvKAbVg=
+X-Received: by 2002:a05:651c:104f:b0:24f:3fc4:1892 with SMTP id
+ x15-20020a05651c104f00b0024f3fc41892mr8053610ljm.399.1651510497220; Mon, 02
+ May 2022 09:54:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <af15fd31f73e8a956da50db6104e690f9d308dad.camel@redhat.com>
+References: <20220420214317.3303360-1-kaleshsingh@google.com> <165117574186.3115452.6818682378273681624.b4-ty@kernel.org>
+In-Reply-To: <165117574186.3115452.6818682378273681624.b4-ty@kernel.org>
+From:   Kalesh Singh <kaleshsingh@google.com>
+Date:   Mon, 2 May 2022 09:54:45 -0700
+Message-ID: <CAC_TJve+n8gXbG_XY_rb+DC7399SSmP6BRc5x7X=cvht50XLYA@mail.gmail.com>
+Subject: Re: [PATCH v8 0/6] KVM: arm64: Hypervisor stack enhancements
+To:     Marc Zyngier <maz@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Fuad Tabba <tabba@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        kvmarm <kvmarm@lists.cs.columbia.edu>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        Quentin Perret <qperret@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        Changbin Du <changbin.du@intel.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        Nathan Chancellor <nathan@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022, Maxim Levitsky wrote:
-> On Mon, 2022-05-02 at 10:59 +0300, Maxim Levitsky wrote:
-> > > > Also I can reproduce it all the way to 5.14 kernel (last kernel I have installed in this VM).
-> > > > 
-> > > > I tested kvm/queue as of today, sadly I still see the warning.
-> > > 
-> > > Due to a race, the above statements are out of order ;-)
-> > 
-> > So futher investigation shows that the trigger for this *is* cpu_pm=on :(
-> > 
-> > So this is enough to trigger the warning when run in the guest:
-> > 
-> > qemu-system-x86_64  -nodefaults  -vnc none -serial stdio -machine accel=kvm
-> > -kernel x86/dummy.flat -machine kernel-irqchip=on -smp 8 -m 1g -cpu host
-> > -overcommit cpu-pm=on
-> > 
-> > 
-> > '-smp 8' is needed, and the more vCPUs the more often the warning appears.
-> > 
-> > 
-> > Due to non atomic memslot update bug, I use patched qemu version, with an
-> > attached hack, to pause/resume vcpus around the memslot update it does, but
-> > even without this hack, you can just ctrl+c the test after it gets the KVM
-> > internal error, and then tdp mmu memory leak warning shows up (not always
-> > but very often).
-> > 
-> > 
-> > Oh, and if I run the above command on the bare metal, it  never terminates.
-> > Must be due to preemption, qemu shows beeing stuck in kvm_vcpu_block. AVIC
-> > disabled, kvm/queue.  Bugs, bugs, and features :)
-> 
-> All right, at least that was because I removed the '-device isa-debug-exit,iobase=0xf4,iosize=0x4',
-> which is apparently used by KVM unit tests to signal exit from the VM.
+On Thu, Apr 28, 2022 at 12:55 PM Marc Zyngier <maz@kernel.org> wrote:
+>
+> On Wed, 20 Apr 2022 14:42:51 -0700, Kalesh Singh wrote:
+> > This is v8 of the nVHE hypervisor stack enhancements. This version is based
+> > on 5.18-rc3.
+> >
+> > Previous versions can be found at:
+> > v7: https://lore.kernel.org/r/20220408200349.1529080-1-kaleshsingh@google.com/
+> > v6: https://lore.kernel.org/r/20220314200148.2695206-1-kaleshsingh@google.com/
+> > v5: https://lore.kernel.org/r/20220307184935.1704614-1-kaleshsingh@google.com/
+> > v4: https://lore.kernel.org/r/20220225033548.1912117-1-kaleshsingh@google.com/
+> > v3: https://lore.kernel.org/r/20220224051439.640768-1-kaleshsingh@google.com/
+> > v2: https://lore.kernel.org/r/20220222165212.2005066-1-kaleshsingh@google.com/
+> > v1: https://lore.kernel.org/r/20220210224220.4076151-1-kaleshsingh@google.com/
+> >
+> > [...]
+>
+> Applied to next, thanks!
+>
+> [1/6] KVM: arm64: Introduce hyp_alloc_private_va_range()
+>       commit: 92abe0f81e1385afd8f1dc66206b5be9a514899b
+> [2/6] KVM: arm64: Introduce pkvm_alloc_private_va_range()
+>       commit: f922c13e778d6d5343d4576be785a8204c595113
+> [3/6] KVM: arm64: Add guard pages for KVM nVHE hypervisor stack
+>       commit: ce3354318a57875dc59f4bb841662e95bfba03db
+> [4/6] KVM: arm64: Add guard pages for pKVM (protected nVHE) hypervisor stack
+>       commit: 1a919b17ef012ca0572bae759c27e5ea02bfb47f
+> [5/6] KVM: arm64: Detect and handle hypervisor stack overflows
+>       commit: 66de19fad9ef47c5376a99bb2b00661f1c788a94
+> [6/6] KVM: arm64: Symbolize the nVHE HYP addresses
+>       commit: 6ccf9cb557bd32073b0d68baed97f1bd8a40ff1d
 
-Can you provide your QEMU command line for running your L1 VM?  And your L0 and L1
-Kconfigs too?  I've tried both the dummy and ipi_stress tests on a variety of hardware,
-kernels, QEMUs, etc..., with no luck.
+Thanks for applying these Marc.
+
+I was wondering if instead of taking these through kvm-arm64/next,
+could Catalin consolidated these in arm64 for-next/core with Mark
+Ruthland's and Madhavan's stacktrace patches[1]? This avoids conflict
+and would allow for the hypervisor unwinding changes[2] to apply
+cleanly.
+
+[1] https://lore.kernel.org/r/20220413145910.3060139-1-mark.rutland@arm.com/
+[2]  https://lore.kernel.org/r/20220427184716.1949239-1-kaleshsingh@google.com/
+
+Thanks,
+Kalesh
+>
+> Cheers,
+>
+>         M.
+> --
+> Without deviation from the norm, progress is not possible.
+>
+>
