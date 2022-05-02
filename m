@@ -2,684 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F95FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:11:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4328C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380865AbiEBQO6 (ORCPT
+        id S1378574AbiEBQPP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 12:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56762 "EHLO
+        Mon, 2 May 2022 12:15:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241872AbiEBQOt (ORCPT
+        with ESMTP id S1381745AbiEBQPN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 12:14:49 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854ECDF5B;
-        Mon,  2 May 2022 09:11:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651507877; x=1683043877;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=QrZEHBs2gOALGpud6vqIWdgg/FeNF8I6E9Kxk0NWdLc=;
-  b=y+OhynRQswR2sX8NObvlcMPVTs6FlHT6y6awOHJt2LIYz0McZRuB/CNd
-   gHjvfyZ/RrGzPbeXNBusr1jszZPXFBAm5Co76h5iWqzdYHfA/28AaxVVr
-   IbsPLBe8MFuBL8TmV3I31PsYeexM9EZlIXWwXxb7Sd8YDefdgQ3OtO9jW
-   xiZR7OG1JnaepTrdhnWNxLiIkydamB+9kzMzgapW6enzbrXp/IuzW7YCG
-   KAY0fAbxp0FVz67C54RfVvy8AZchh33S+EFchHuOAru3wqReFJIzH2IlR
-   TKXax1Wsxwf0EPhq8ureTTdm/OwIzGm4W97T4PZ95vpspSG6xPgawLTUT
-   A==;
+        Mon, 2 May 2022 12:15:13 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28EC4DF46
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 09:11:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651507904; x=1683043904;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=5RkFu7RGdekF8YRk+MaXd9FdONacRRdqciWJdrkldEc=;
+  b=CF55sLDE+LlTahWHJPHegIHpKJrtYgbqP9YbkVjOZ0ei5qgxflZpPKQ3
+   UtaxDNFA40xEuyJql58aWyY/Vi6P8EZzUlB2TXvlVL/utrPDgFlz7Oakx
+   uuYBDeuqiq6C1Gt3+cPlL+CCElL9CAZbOJlhDgi82Ez8Zg20W4QOh+8d6
+   tE4I9wOxvLjv3WJHP2U3At049rOdpnp6NMJxgt7eM/fEL/wRa8wCKv+dX
+   TIIyCsnBVrZPn4DdNIq416oM09vAtv9dY6pVXSB3Pu+O4w27WJo6xrhPS
+   taHpqKV1mkujYodFBmLCWM/aa1DpTWCB5blUDCYa3NS6gZyIytc0BIZGn
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="330241762"
 X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
-   d="scan'208";a="94281956"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 May 2022 09:11:12 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 2 May 2022 09:11:11 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 2 May 2022 09:10:51 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     KP Singh <kpsingh@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
-        "Martin KaFai Lau" <kafai@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Vladimir Oltean" <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Vivien Didelot" <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [Patch net-next v12 12/13] net: dsa: microchip: add support for fdb and mdb management
-Date:   Mon, 2 May 2022 21:40:46 +0530
-Message-ID: <20220502161046.7425-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
+   d="scan'208";a="330241762"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 09:11:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
+   d="scan'208";a="652880913"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 02 May 2022 09:11:40 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nlYeC-0009g3-4q;
+        Mon, 02 May 2022 16:11:40 +0000
+Date:   Tue, 3 May 2022 00:11:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     John Efstathiades <john.efstathiades@pebblebay.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: drivers/net/usb/lan78xx.c:4573:8: warning: Local variable 'ret'
+ shadows outer variable [shadowVariable]
+Message-ID: <202205030045.IFzrRoky-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   672c0c5173427e6b3e2a9bbb7be51ceeec78093a
+commit: 5f4cc6e25148cc141f97afb41b4dfe9eb1cce613 lan78xx: Fix race conditions in suspend/resume handling
+date:   8 months ago
+compiler: arc-elf-gcc (GCC) 11.3.0
+reproduce (cppcheck warning):
+        # apt-get install cppcheck
+        git checkout 5f4cc6e25148cc141f97afb41b4dfe9eb1cce613
+        cppcheck --quiet --enable=style,performance,portability --template=gcc FILE
 
-Support for fdb_add, mdb_add, fdb_del, mdb_del and
-fdb_dump operations. ALU1 and ALU2 are used for fdb operations.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-fdb_add: find any existing entries and update the port map.
-if ALU1 write is failed and attempt to write ALU2.
-If ALU2 is also failed then exit. Clear WRITE_FAIL for both ALU1
-& ALU2.
 
-fdb_del: find the matching entry and clear the respective port
-in the port map by writing the ALU tables
+cppcheck warnings: (new ones prefixed by >>)
+        ^
+   drivers/net/usb/lan78xx.c:1873:6: note: ret is overwritten
+    ret = lan78xx_write_reg(dev, MII_ACC, addr);
+        ^
+   drivers/net/usb/lan78xx.c:1131:7: warning: Local variable 'i' shadows outer variable [shadowVariable]
+     int i;
+         ^
+   drivers/net/usb/lan78xx.c:1100:6: note: Shadowed declaration
+    int i;
+        ^
+   drivers/net/usb/lan78xx.c:1131:7: note: Shadow variable
+     int i;
+         ^
+>> drivers/net/usb/lan78xx.c:4573:8: warning: Local variable 'ret' shadows outer variable [shadowVariable]
+      int ret = usb_submit_urb(dev->urb_intr, GFP_KERNEL);
+          ^
+   drivers/net/usb/lan78xx.c:4557:6: note: Shadowed declaration
+    int ret;
+        ^
+   drivers/net/usb/lan78xx.c:4573:8: note: Shadow variable
+      int ret = usb_submit_urb(dev->urb_intr, GFP_KERNEL);
+          ^
 
-fdb_dump: read and dump 2 ALUs up to last entry. ALU_START bit is
-used to find the last entry. If the read is timed out, then pass
-the error message.
+cppcheck possible warnings: (new ones prefixed by >>, may not real problems)
 
-mdb_add: Find the empty slot in ALU and update the port map &
-mac address by writing the ALU
+        ^
+   drivers/net/usb/lan78xx.c:1873:6: note: ret is overwritten
+    ret = lan78xx_write_reg(dev, MII_ACC, addr);
+        ^
+>> drivers/net/usb/lan78xx.c:1048:23: warning: Parameter 'addr' can be declared with const [constParameter]
+           int index, u8 addr[ETH_ALEN])
+                         ^
+>> drivers/net/usb/lan78xx.c:793:25: warning: Parameter 'data' can be declared with const [constParameter]
+           u32 length, u8 *data)
+                           ^
 
-mdb_del: find the matching entry and delete the respective port
-in port map by writing the ALU
+vim +/ret +4573 drivers/net/usb/lan78xx.c
 
-For MAC address, could not use upper_32_bits() & lower_32_bits()
-as per Vladimir proposal since it gets accessed in terms of 16bits.
-I tried to have common API to get 16bits based on index but shifting
-seems to be straight-forward.
+  4552	
+  4553	static int lan78xx_resume(struct usb_interface *intf)
+  4554	{
+  4555		struct lan78xx_net *dev = usb_get_intfdata(intf);
+  4556		bool dev_open;
+  4557		int ret;
+  4558	
+  4559		mutex_lock(&dev->dev_mutex);
+  4560	
+  4561		netif_dbg(dev, ifup, dev->net, "resuming device");
+  4562	
+  4563		dev_open = test_bit(EVENT_DEV_OPEN, &dev->flags);
+  4564	
+  4565		if (dev_open) {
+  4566			bool pipe_halted = false;
+  4567	
+  4568			ret = lan78xx_flush_tx_fifo(dev);
+  4569			if (ret < 0)
+  4570				goto out;
+  4571	
+  4572			if (dev->urb_intr) {
+> 4573				int ret = usb_submit_urb(dev->urb_intr, GFP_KERNEL);
+  4574	
+  4575				if (ret < 0) {
+  4576					if (ret == -ENODEV)
+  4577						netif_device_detach(dev->net);
+  4578	
+  4579				netdev_warn(dev->net, "Failed to submit intr URB");
+  4580				}
+  4581			}
+  4582	
+  4583			spin_lock_irq(&dev->txq.lock);
+  4584	
+  4585			if (netif_device_present(dev->net)) {
+  4586				pipe_halted = lan78xx_submit_deferred_urbs(dev);
+  4587	
+  4588				if (pipe_halted)
+  4589					lan78xx_defer_kevent(dev, EVENT_TX_HALT);
+  4590			}
+  4591	
+  4592			clear_bit(EVENT_DEV_ASLEEP, &dev->flags);
+  4593	
+  4594			spin_unlock_irq(&dev->txq.lock);
+  4595	
+  4596			if (!pipe_halted &&
+  4597			    netif_device_present(dev->net) &&
+  4598			    (skb_queue_len(&dev->txq) < dev->tx_qlen))
+  4599				netif_start_queue(dev->net);
+  4600	
+  4601			ret = lan78xx_start_tx_path(dev);
+  4602			if (ret < 0)
+  4603				goto out;
+  4604	
+  4605			tasklet_schedule(&dev->bh);
+  4606	
+  4607			if (!timer_pending(&dev->stat_monitor)) {
+  4608				dev->delta = 1;
+  4609				mod_timer(&dev->stat_monitor,
+  4610					  jiffies + STAT_UPDATE_TIMER);
+  4611			}
+  4612	
+  4613		} else {
+  4614			clear_bit(EVENT_DEV_ASLEEP, &dev->flags);
+  4615		}
+  4616	
+  4617		ret = lan78xx_write_reg(dev, WUCSR2, 0);
+  4618		if (ret < 0)
+  4619			goto out;
+  4620		ret = lan78xx_write_reg(dev, WUCSR, 0);
+  4621		if (ret < 0)
+  4622			goto out;
+  4623		ret = lan78xx_write_reg(dev, WK_SRC, 0xFFF1FF1FUL);
+  4624		if (ret < 0)
+  4625			goto out;
+  4626	
+  4627		ret = lan78xx_write_reg(dev, WUCSR2, WUCSR2_NS_RCD_ |
+  4628						     WUCSR2_ARP_RCD_ |
+  4629						     WUCSR2_IPV6_TCPSYN_RCD_ |
+  4630						     WUCSR2_IPV4_TCPSYN_RCD_);
+  4631		if (ret < 0)
+  4632			goto out;
+  4633	
+  4634		ret = lan78xx_write_reg(dev, WUCSR, WUCSR_EEE_TX_WAKE_ |
+  4635						    WUCSR_EEE_RX_WAKE_ |
+  4636						    WUCSR_PFDA_FR_ |
+  4637						    WUCSR_RFE_WAKE_FR_ |
+  4638						    WUCSR_WUFR_ |
+  4639						    WUCSR_MPR_ |
+  4640						    WUCSR_BCST_FR_);
+  4641		if (ret < 0)
+  4642			goto out;
+  4643	
+  4644		ret = 0;
+  4645	out:
+  4646		mutex_unlock(&dev->dev_mutex);
+  4647	
+  4648		return ret;
+  4649	}
+  4650	
 
-Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/dsa/microchip/lan937x_dev.h  |  19 +
- drivers/net/dsa/microchip/lan937x_main.c | 515 +++++++++++++++++++++++
- 2 files changed, 534 insertions(+)
-
-diff --git a/drivers/net/dsa/microchip/lan937x_dev.h b/drivers/net/dsa/microchip/lan937x_dev.h
-index 147800550162..da8c708a03ea 100644
---- a/drivers/net/dsa/microchip/lan937x_dev.h
-+++ b/drivers/net/dsa/microchip/lan937x_dev.h
-@@ -85,6 +85,25 @@ enum lan937x_mib_list {
- 	lan937x_mib_tx_discard,
- };
- 
-+struct lan_alu_struct {
-+	/* entry 1 */
-+	u32	is_static:1;
-+	u32	is_src_filter:1;
-+	u32	is_dst_filter:1;
-+	u32	prio_age:3;
-+	u32	_reserv_0_1:23;
-+	u32	mstp:3;
-+	/* entry 2 */
-+	u32	is_override:1;
-+	u32	is_use_fid:1;
-+	u32	_reserv_1_1:22;
-+	u32	port_forward:8;
-+	/* entry 3 & 4*/
-+	u32	_reserv_2_1:9;
-+	u32	fid:7;
-+	u8	mac[ETH_ALEN];
-+};
-+
- extern const struct dsa_switch_ops lan937x_switch_ops;
- extern const struct ksz_dev_ops lan937x_dev_ops;
- extern const struct mib_names lan937x_mib_names[];
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index 58ce2912215c..516ab563721d 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -17,6 +17,70 @@
- #include "ksz_common.h"
- #include "lan937x_dev.h"
- 
-+static u8 lan937x_get_fid(u16 vid)
-+{
-+	if (vid > ALU_FID_SIZE)
-+		return LAN937X_GET_FID(vid);
-+	else
-+		return vid;
-+}
-+
-+static int lan937x_read_table(struct ksz_device *dev, u32 *table)
-+{
-+	int ret;
-+
-+	/* read alu table */
-+	ret = ksz_read32(dev, REG_SW_ALU_VAL_A, &table[0]);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = ksz_read32(dev, REG_SW_ALU_VAL_B, &table[1]);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = ksz_read32(dev, REG_SW_ALU_VAL_C, &table[2]);
-+	if (ret < 0)
-+		return ret;
-+
-+	return ksz_read32(dev, REG_SW_ALU_VAL_D, &table[3]);
-+}
-+
-+static int lan937x_write_table(struct ksz_device *dev, u32 *table)
-+{
-+	int ret;
-+
-+	/* write alu table */
-+	ret = ksz_write32(dev, REG_SW_ALU_VAL_A, table[0]);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = ksz_write32(dev, REG_SW_ALU_VAL_B, table[1]);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = ksz_write32(dev, REG_SW_ALU_VAL_C, table[2]);
-+	if (ret < 0)
-+		return ret;
-+
-+	return ksz_write32(dev, REG_SW_ALU_VAL_D, table[3]);
-+}
-+
-+static int lan937x_wait_alu_ready(int alu, struct ksz_device *dev)
-+{
-+	unsigned int val;
-+
-+	return regmap_read_poll_timeout(dev->regmap[2], REG_SW_ALU_CTRL(alu),
-+					val, !(val & ALU_START), 10, 1000);
-+}
-+
-+static int lan937x_wait_alu_sta_ready(struct ksz_device *dev)
-+{
-+	unsigned int val;
-+
-+	return regmap_read_poll_timeout(dev->regmap[2], REG_SW_ALU_STAT_CTRL__4,
-+					val, !(val & ALU_STAT_START), 10, 1000);
-+}
-+
- static enum dsa_tag_protocol lan937x_get_tag_protocol(struct dsa_switch *ds,
- 						      int port,
- 						      enum dsa_tag_protocol mp)
-@@ -65,6 +129,452 @@ static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
- 	ksz_port_stp_state_set(ds, port, state, P_STP_CTRL);
- }
- 
-+static int lan937x_port_fdb_add(struct dsa_switch *ds, int port,
-+				const unsigned char *addr, u16 vid,
-+				struct dsa_db db)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	u8 fid = lan937x_get_fid(vid);
-+	u32 alu_table[4];
-+	int ret, i;
-+	u32 data;
-+	u8 val;
-+
-+	mutex_lock(&dev->alu_mutex);
-+
-+	/* Accessing two ALU tables through loop */
-+	for (i = 0; i < ALU_STA_DYN_CNT; i++) {
-+		/* find any entry with mac & fid */
-+		data = fid << ALU_FID_INDEX_S;
-+		data |= ((addr[0] << 8) | addr[1]);
-+
-+		ret = ksz_write32(dev, REG_SW_ALU_INDEX_0, data);
-+		if (ret < 0)
-+			break;
-+
-+		data = ((addr[2] << 24) | (addr[3] << 16));
-+		data |= ((addr[4] << 8) | addr[5]);
-+
-+		ret = ksz_write32(dev, REG_SW_ALU_INDEX_1, data);
-+		if (ret < 0)
-+			break;
-+
-+		/* start read operation */
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  ALU_READ | ALU_START);
-+		if (ret < 0)
-+			break;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_ready(i, dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU\n");
-+			break;
-+		}
-+
-+		/* read ALU entry */
-+		ret = lan937x_read_table(dev, alu_table);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU\n");
-+			break;
-+		}
-+
-+		/* update ALU entry */
-+		alu_table[0] = ALU_V_STATIC_VALID;
-+
-+		/* update port number */
-+		alu_table[1] |= BIT(port);
-+
-+		if (fid)
-+			alu_table[1] |= ALU_V_USE_FID;
-+
-+		alu_table[2] = (fid << ALU_V_FID_S);
-+		alu_table[2] |= ((addr[0] << 8) | addr[1]);
-+		alu_table[3] = ((addr[2] << 24) | (addr[3] << 16));
-+		alu_table[3] |= ((addr[4] << 8) | addr[5]);
-+
-+		ret = lan937x_write_table(dev, alu_table);
-+		if (ret < 0)
-+			break;
-+
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  (ALU_WRITE | ALU_START));
-+		if (ret < 0)
-+			break;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_ready(i, dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to write ALU\n");
-+			break;
-+		}
-+
-+		ret = ksz_read8(dev, REG_SW_LUE_INT_STATUS__1, &val);
-+		if (ret < 0)
-+			break;
-+
-+		/* ALU2 write failed */
-+		if (val & WRITE_FAIL_INT && i == 1)
-+			dev_err(dev->dev, "Failed to write ALU\n");
-+
-+		/* if ALU1 write is failed and attempt to write ALU2,
-+		 * otherwise exit. Clear Write fail for both ALU1 & ALU2
-+		 */
-+		if (val & WRITE_FAIL_INT) {
-+			/* Write to clear the Write Fail */
-+			ret = ksz_write8(dev, REG_SW_LUE_INT_STATUS__1,
-+					 WRITE_FAIL_INT);
-+			if (ret < 0)
-+				break;
-+		} else {
-+			break;
-+		}
-+	}
-+
-+	mutex_unlock(&dev->alu_mutex);
-+
-+	return ret;
-+}
-+
-+static int lan937x_port_fdb_del(struct dsa_switch *ds, int port,
-+				const unsigned char *addr, u16 vid,
-+				struct dsa_db db)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	u8 fid = lan937x_get_fid(vid);
-+	u32 alu_table[4];
-+	int ret, i;
-+	u32 data;
-+
-+	mutex_lock(&dev->alu_mutex);
-+
-+	/* Accessing two ALU tables through loop */
-+	for (i = 0; i < ALU_STA_DYN_CNT; i++) {
-+		/* read any entry with mac & fid */
-+		data = fid << ALU_FID_INDEX_S;
-+		data |= ((addr[0] << 8) | addr[1]);
-+		ret = ksz_write32(dev, REG_SW_ALU_INDEX_0, data);
-+		if (ret < 0)
-+			break;
-+
-+		data = ((addr[2] << 24) | (addr[3] << 16));
-+		data |= ((addr[4] << 8) | addr[5]);
-+		ret = ksz_write32(dev, REG_SW_ALU_INDEX_1, data);
-+		if (ret < 0)
-+			break;
-+
-+		/* start read operation */
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  (ALU_READ | ALU_START));
-+		if (ret < 0)
-+			break;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_ready(i, dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU\n");
-+			break;
-+		}
-+
-+		ret = ksz_read32(dev, REG_SW_ALU_VAL_A, &alu_table[0]);
-+		if (ret < 0)
-+			break;
-+
-+		if (alu_table[0] & ALU_V_STATIC_VALID) {
-+			/* read ALU entry */
-+			ret = lan937x_read_table(dev, alu_table);
-+			if (ret < 0) {
-+				dev_err(dev->dev, "Failed to read ALU table\n");
-+				break;
-+			}
-+
-+			/* clear forwarding port */
-+			alu_table[1] &= ~BIT(port);
-+
-+			/* if there is no port to forward, clear table */
-+			if ((alu_table[1] & ALU_V_PORT_MAP) == 0)
-+				memset(&alu_table, 0, sizeof(alu_table));
-+		} else {
-+			memset(&alu_table, 0, sizeof(alu_table));
-+		}
-+
-+		ret = lan937x_write_table(dev, alu_table);
-+		if (ret < 0)
-+			break;
-+
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  (ALU_WRITE | ALU_START));
-+		if (ret < 0)
-+			break;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_ready(i, dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to delete ALU Entries\n");
-+			break;
-+		}
-+	}
-+
-+	mutex_unlock(&dev->alu_mutex);
-+
-+	return ret;
-+}
-+
-+static void lan937x_convert_alu(struct lan_alu_struct *alu, u32 *alu_table)
-+{
-+	alu->is_static = !!(alu_table[0] & ALU_V_STATIC_VALID);
-+	alu->is_src_filter = !!(alu_table[0] & ALU_V_SRC_FILTER);
-+	alu->is_dst_filter = !!(alu_table[0] & ALU_V_DST_FILTER);
-+	alu->prio_age = (alu_table[0] >> ALU_V_PRIO_AGE_CNT_S) &
-+			 ALU_V_PRIO_AGE_CNT_M;
-+	alu->mstp = alu_table[0] & ALU_V_MSTP_M;
-+
-+	alu->is_override = !!(alu_table[1] & ALU_V_OVERRIDE);
-+	alu->is_use_fid = !!(alu_table[1] & ALU_V_USE_FID);
-+	alu->port_forward = alu_table[1] & ALU_V_PORT_MAP;
-+
-+	alu->fid = (alu_table[2] >> ALU_V_FID_S) & ALU_V_FID_M;
-+
-+	alu->mac[0] = (alu_table[2] >> 8) & 0xFF;
-+	alu->mac[1] = alu_table[2] & 0xFF;
-+	alu->mac[2] = (alu_table[3] >> 24) & 0xFF;
-+	alu->mac[3] = (alu_table[3] >> 16) & 0xFF;
-+	alu->mac[4] = (alu_table[3] >> 8) & 0xFF;
-+	alu->mac[5] = alu_table[3] & 0xFF;
-+}
-+
-+static int lan937x_port_fdb_dump(struct dsa_switch *ds, int port,
-+				 dsa_fdb_dump_cb_t *cb, void *data)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct lan_alu_struct alu;
-+	u32 lan937x_data;
-+	u32 alu_table[4];
-+	int timeout;
-+	int ret, i;
-+
-+	mutex_lock(&dev->alu_mutex);
-+
-+	/* Accessing two ALU tables through loop */
-+	for (i = 0; i < ALU_STA_DYN_CNT; i++) {
-+		/* start ALU search */
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  (ALU_START | ALU_SEARCH));
-+		if (ret < 0)
-+			goto exit;
-+
-+		do {
-+			timeout = 1000;
-+			do {
-+				ret = ksz_read32(dev, REG_SW_ALU_CTRL(i),
-+						 &lan937x_data);
-+				if (ret < 0)
-+					goto exit;
-+
-+				if ((lan937x_data & ALU_VALID) ||
-+				    !(lan937x_data & ALU_START))
-+					break;
-+				usleep_range(1, 10);
-+			} while (timeout-- > 0);
-+
-+			if (!timeout) {
-+				dev_err(dev->dev, "Failed to search ALU\n");
-+				ret = -ETIMEDOUT;
-+				goto exit;
-+			}
-+
-+			/* read ALU table */
-+			ret = lan937x_read_table(dev, alu_table);
-+			if (ret < 0)
-+				goto exit;
-+
-+			lan937x_convert_alu(&alu, alu_table);
-+
-+			if (alu.port_forward & BIT(port)) {
-+				ret = cb(alu.mac, alu.fid, alu.is_static, data);
-+				if (ret)
-+					goto exit;
-+			}
-+		} while (lan937x_data & ALU_START);
-+
-+exit:
-+		/* stop ALU search & continue to next ALU if available */
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i), 0);
-+	}
-+
-+	mutex_unlock(&dev->alu_mutex);
-+
-+	return ret;
-+}
-+
-+static int lan937x_port_mdb_add(struct dsa_switch *ds, int port,
-+				const struct switchdev_obj_port_mdb *mdb,
-+				struct dsa_db db)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	u8 fid = lan937x_get_fid(mdb->vid);
-+	u32 static_table[4];
-+	u32 mac_hi, mac_lo;
-+	int index, ret;
-+	u32 data;
-+
-+	mac_hi = ((mdb->addr[0] << 8) | mdb->addr[1]);
-+	mac_lo = ((mdb->addr[2] << 24) | (mdb->addr[3] << 16));
-+	mac_lo |= ((mdb->addr[4] << 8) | mdb->addr[5]);
-+
-+	mutex_lock(&dev->alu_mutex);
-+
-+	/* Access the entries in the table */
-+	for (index = 0; index < dev->num_statics; index++) {
-+		/* find empty slot first */
-+		data = (index << ALU_STAT_INDEX_S) |
-+			ALU_STAT_READ | ALU_STAT_START;
-+
-+		ret = ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
-+		if (ret < 0)
-+			goto exit;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_sta_ready(dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU STATIC\n");
-+			goto exit;
-+		}
-+
-+		/* read ALU static table */
-+		ret = lan937x_read_table(dev, static_table);
-+		if (ret < 0)
-+			goto exit;
-+
-+		if (static_table[0] & ALU_V_STATIC_VALID) {
-+			/* check this has same fid & mac address */
-+			if (((static_table[2] >> ALU_V_FID_S) == fid) &&
-+			    ((static_table[2] & ALU_V_MAC_ADDR_HI) == mac_hi) &&
-+			    static_table[3] == mac_lo) {
-+				/* found matching one */
-+				break;
-+			}
-+		} else {
-+			/* found empty one */
-+			break;
-+		}
-+	}
-+
-+	/* no available entry */
-+	if (index == dev->num_statics) {
-+		ret = -ENOSPC;
-+		goto exit;
-+	}
-+
-+	/* add entry */
-+	static_table[0] = ALU_V_STATIC_VALID;
-+
-+	static_table[1] |= BIT(port);
-+	if (fid)
-+		static_table[1] |= ALU_V_USE_FID;
-+	static_table[2] = (fid << ALU_V_FID_S);
-+	static_table[2] |= mac_hi;
-+	static_table[3] = mac_lo;
-+
-+	ret = lan937x_write_table(dev, static_table);
-+	if (ret < 0)
-+		goto exit;
-+
-+	data = (index << ALU_STAT_INDEX_S) | ALU_STAT_START;
-+	ret = ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
-+	if (ret < 0)
-+		goto exit;
-+
-+	/* wait to be finished */
-+	ret = lan937x_wait_alu_sta_ready(dev);
-+	if (ret < 0)
-+		dev_err(dev->dev, "Failed to read ALU STATIC\n");
-+
-+exit:
-+	mutex_unlock(&dev->alu_mutex);
-+	return ret;
-+}
-+
-+static int lan937x_port_mdb_del(struct dsa_switch *ds, int port,
-+				const struct switchdev_obj_port_mdb *mdb,
-+				struct dsa_db db)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	u8 fid = lan937x_get_fid(mdb->vid);
-+	u32 static_table[4];
-+	u32 mac_hi, mac_lo;
-+	int index, ret;
-+	u32 data;
-+
-+	mac_hi = ((mdb->addr[0] << 8) | mdb->addr[1]);
-+	mac_lo = ((mdb->addr[2] << 24) | (mdb->addr[3] << 16));
-+	mac_lo |= ((mdb->addr[4] << 8) | mdb->addr[5]);
-+
-+	mutex_lock(&dev->alu_mutex);
-+
-+	/* Access the entries in the table */
-+	for (index = 0; index < dev->num_statics; index++) {
-+		data = (index << ALU_STAT_INDEX_S) |
-+			ALU_STAT_READ | ALU_STAT_START;
-+		ret = ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
-+		if (ret < 0)
-+			goto exit;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_sta_ready(dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU STATIC\n");
-+			goto exit;
-+		}
-+
-+		/* read ALU static table */
-+		ret = lan937x_read_table(dev, static_table);
-+		if (ret < 0)
-+			goto exit;
-+
-+		if (static_table[0] & ALU_V_STATIC_VALID) {
-+			/* check this has same fid & mac address */
-+			if (((static_table[2] >> ALU_V_FID_S) == fid) &&
-+			    ((static_table[2] & ALU_V_MAC_ADDR_HI) == mac_hi) &&
-+			    static_table[3] == mac_lo) {
-+				/* found matching one */
-+				break;
-+			}
-+		}
-+	}
-+
-+	/* no available entry */
-+	if (index == dev->num_statics)
-+		goto exit;
-+
-+	/* clear port based on port arg */
-+	static_table[1] &= ~BIT(port);
-+
-+	if ((static_table[1] & ALU_V_PORT_MAP) == 0) {
-+		/* delete entry */
-+		memset(&static_table, 0, sizeof(static_table));
-+	}
-+
-+	ret = lan937x_write_table(dev, static_table);
-+	if (ret < 0)
-+		goto exit;
-+
-+	data = (index << ALU_STAT_INDEX_S) | ALU_STAT_START;
-+	ret = ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
-+	if (ret < 0)
-+		goto exit;
-+
-+	/* wait to be finished */
-+	ret = lan937x_wait_alu_sta_ready(dev);
-+	if (ret < 0)
-+		dev_err(dev->dev, "Failed to read ALU STATIC\n");
-+
-+exit:
-+	mutex_unlock(&dev->alu_mutex);
-+
-+	return ret;
-+}
-+
- static int lan937x_port_mirror_add(struct dsa_switch *ds, int port,
- 				   struct dsa_mall_mirror_tc_entry *mirror,
- 				   bool ingress, struct netlink_ext_ack *extack)
-@@ -520,6 +1030,11 @@ const struct dsa_switch_ops lan937x_switch_ops = {
- 	.port_bridge_leave = ksz_port_bridge_leave,
- 	.port_stp_state_set = lan937x_port_stp_state_set,
- 	.port_fast_age = ksz_port_fast_age,
-+	.port_fdb_dump = lan937x_port_fdb_dump,
-+	.port_fdb_add = lan937x_port_fdb_add,
-+	.port_fdb_del = lan937x_port_fdb_del,
-+	.port_mdb_add = lan937x_port_mdb_add,
-+	.port_mdb_del = lan937x_port_mdb_del,
- 	.port_mirror_add = lan937x_port_mirror_add,
- 	.port_mirror_del = lan937x_port_mirror_del,
- 	.port_max_mtu = lan937x_get_max_mtu,
 -- 
-2.33.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
