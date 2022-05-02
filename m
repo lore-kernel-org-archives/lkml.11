@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37149C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D409C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 23:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231421AbiEBXoc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 19:44:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49428 "EHLO
+        id S231875AbiEBXov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 19:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230111AbiEBXmm (ORCPT
+        with ESMTP id S229897AbiEBXme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 19:42:42 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED48D3055E
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 16:39:10 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id t70-20020a638149000000b0039daafb0a84so5050436pgd.7
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 16:39:10 -0700 (PDT)
+        Mon, 2 May 2022 19:42:34 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB0B330569
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 16:39:03 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id l5-20020a170902ec0500b0015cf1cfa4eeso7189434pld.17
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 16:39:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=FAxBmKy8mhrk3+kWcYZem7wJzjSmZEXFa/bTuE7QCco=;
-        b=SAhwsh9/Os5EDHGIo1Sr/pFRys6NYSp5x6iBk8nmnMD+BBrJsZ3HtvPpW0pdJWBFxS
-         yrmO+wP9+LHHuk/tnlw3LWG/5FXC9kkMUa0nf2vP8USZkBeELEpzEc6Nlk91hRTZC/DA
-         dJlptX3BIvXMgbAHzkhxCUMreO+dhSbzDjn/TMHPedernrnIkevXOXcG71p5CNG8XpyS
-         WPz4fHybmlg0D2xlTFZ2b24mxlYUTFJthL1amQwDWhWKOOUzzLgYF5Xzl9RxVyCCNID0
-         ruLKLePwFqBLFq5r8hvJt2uTEQa2ifCB9q+Ac82bHZW3Cur/GdHmFVqKXQd4sBWFFJeC
-         vsTg==
+        bh=2pS0hWgdcRkNq6G/AG55Sf0c4w4fc3fRzcRztfm+yWk=;
+        b=GtU4SgSxO0cJLd7SyfV+bBd/e/2VdhxQkOfz8942QZ6RHqtRSA2C2b170+KQG0Ce01
+         ++WxiMfFdvz6EkBCG3NDgk2DCqwI/4W7NLZHvkdZE2WIujWVHYM9hhCDrOGhkU/SPa+L
+         pfyoMyNCrMGHCND8hxqNCWACP4I9KguVW4dvn7eqLTEDHAdLaz4kBFh5oNv0Yy20Ybgm
+         7k7S6Wt/5C/6iF5iFGmWwx9HcwegPVEJ3kVf7UEx29aYPTciZQKrtSs1m/oLch5Ssz0m
+         Kw9QE2Utj4pgNfEy1ZQxjkWqKnA3Em+UPFoSAYxOOTZJ074loWot3CSxX+AVn0uf9Arj
+         8vvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=FAxBmKy8mhrk3+kWcYZem7wJzjSmZEXFa/bTuE7QCco=;
-        b=VUlaMjCjHobpDb6OdnKYWj65gKNx6bP7mvFQrM7F1HRXrx61YH4aHWYzh1qnaaS2iB
-         SPDdvBOrdN6uH57tJrcIs61nqV0ytAUc7nbu4QE2a1NSzt2Ebo0pIgrb3Xvp7zuuxWKk
-         NcrG/qQX40LJF9jgsy0k9RrrfepOJfW6IljJICa8EA2E5rE9CKy+uza+mBY/VgjoGx48
-         lcF6lhjKxyQlrZlLLudRh5mAhGmW/p3601OGw38G8rzcxTn0AbfcXvwrfPWgoPGw60/B
-         LbDhbBr4ii08xG/M0VnqxGCR7MHWEVSp4MsmfsNJONMA9HI3/Z9iiadft3qacRtQmLwn
-         etXw==
-X-Gm-Message-State: AOAM532+XIbFjGjhfu2AwS0uoEkDzY6eSUoetdOfyIH+SLVbcmbmUuU3
-        sYPw0xH+ZTaQuocYsyKkfzXZKnxWUtMi
-X-Google-Smtp-Source: ABdhPJww2LFJLH3/iEWFznRsS4y2EKmCwtBphqqzv9jB5VDwzgIRHFNz2C3WLsjkhL62zNxYmtQfNWDgR7fd
+        bh=2pS0hWgdcRkNq6G/AG55Sf0c4w4fc3fRzcRztfm+yWk=;
+        b=xhI5Ja+NPXcM8IBPOWB3n6hAaH8SM7ZtGQU+pA+ngtOHGOXJg8/9gv3LRzY8ktzu45
+         uLJVgxkGrnp3l4pRs8zOobKu7ombH1WKgA8kJjgf1WvY4aiag0cGN32cqOSKt7bK5p0a
+         p9wr8cxoFXFlevbdTWnNShvPgkFTDga8KGux3mfBPf+Um4aFPKPJdfOT/rzo8lfDXbI0
+         JTuIWZLf0DVf3dV3qpHeuRwfE5WWkTBjq6tyCa3aMlcdmfisOfCM0QSmFxBf+xhypJhM
+         SLr02nxYFnwW0wGDL07yLrdDFG0G0GISrOSs8moXl09YCStAJ8Eh+Ud5IzSpDRkETju/
+         BCaA==
+X-Gm-Message-State: AOAM533XjeeTD1r3ZwnGFm2Yas7HWmCrWWXmlyowRh0IJrAXVlm0gYFg
+        T/pVJKNvr6owz0v07H75mBSQhEpaVQRE
+X-Google-Smtp-Source: ABdhPJwFb/AtX13N7sj14zodiD0VRVFe7aLDUk+R4QqXEYoR67zFerFbvOaWwX6sfpxIZlYCwfi+92NDbCt/
 X-Received: from rananta-virt.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1bcc])
- (user=rananta job=sendgmr) by 2002:a63:fb0a:0:b0:3c1:cd4a:4f93 with SMTP id
- o10-20020a63fb0a000000b003c1cd4a4f93mr11249399pgh.78.1651534750101; Mon, 02
- May 2022 16:39:10 -0700 (PDT)
-Date:   Mon,  2 May 2022 23:38:51 +0000
+ (user=rananta job=sendgmr) by 2002:a05:6a00:1a4d:b0:50d:5921:1a8f with SMTP
+ id h13-20020a056a001a4d00b0050d59211a8fmr13347502pfv.64.1651534743200; Mon,
+ 02 May 2022 16:39:03 -0700 (PDT)
+Date:   Mon,  2 May 2022 23:38:47 +0000
 In-Reply-To: <20220502233853.1233742-1-rananta@google.com>
-Message-Id: <20220502233853.1233742-8-rananta@google.com>
+Message-Id: <20220502233853.1233742-4-rananta@google.com>
 Mime-Version: 1.0
 References: <20220502233853.1233742-1-rananta@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v7 7/9] tools: Import ARM SMCCC definitions
+Subject: [PATCH v7 3/9] KVM: arm64: Add standard hypervisor firmware register
 From:   Raghavendra Rao Ananta <rananta@google.com>
 To:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
         James Morse <james.morse@arm.com>,
@@ -74,214 +74,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Import the standard SMCCC definitions from include/linux/arm-smccc.h.
+Introduce the firmware register to hold the standard hypervisor
+service calls (owner value 5) as a bitmap. The bitmap represents
+the features that'll be enabled for the guest, as configured by
+the user-space. Currently, this includes support only for
+Paravirtualized time, represented by bit-0.
 
 Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
 Reviewed-by: Gavin Shan <gshan@redhat.com>
 ---
- tools/include/linux/arm-smccc.h | 193 ++++++++++++++++++++++++++++++++
- 1 file changed, 193 insertions(+)
- create mode 100644 tools/include/linux/arm-smccc.h
+ arch/arm64/include/asm/kvm_host.h |  2 ++
+ arch/arm64/include/uapi/asm/kvm.h |  3 +++
+ arch/arm64/kvm/hypercalls.c       | 21 ++++++++++++++++++---
+ include/kvm/arm_hypercalls.h      |  2 ++
+ 4 files changed, 25 insertions(+), 3 deletions(-)
 
-diff --git a/tools/include/linux/arm-smccc.h b/tools/include/linux/arm-smccc.h
-new file mode 100644
-index 000000000000..63ce9bebccd3
---- /dev/null
-+++ b/tools/include/linux/arm-smccc.h
-@@ -0,0 +1,193 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (c) 2015, Linaro Limited
-+ */
-+#ifndef __LINUX_ARM_SMCCC_H
-+#define __LINUX_ARM_SMCCC_H
+diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
+index fef597af0beb..281dfcfd0a4e 100644
+--- a/arch/arm64/include/asm/kvm_host.h
++++ b/arch/arm64/include/asm/kvm_host.h
+@@ -105,9 +105,11 @@ struct kvm_arch_memory_slot {
+  * struct kvm_smccc_features: Descriptor of the hypercall services exposed to the guests
+  *
+  * @std_bmap: Bitmap of standard secure service calls
++ * @std_hyp_bmap: Bitmap of standard hypervisor service calls
+  */
+ struct kvm_smccc_features {
+ 	unsigned long std_bmap;
++	unsigned long std_hyp_bmap;
+ };
+ 
+ struct kvm_arch {
+diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
+index 0b79d2dc6ffd..9eecc7ee8c14 100644
+--- a/arch/arm64/include/uapi/asm/kvm.h
++++ b/arch/arm64/include/uapi/asm/kvm.h
+@@ -341,6 +341,9 @@ struct kvm_arm_copy_mte_tags {
+ #define KVM_REG_ARM_STD_BMAP			KVM_REG_ARM_FW_FEAT_BMAP_REG(0)
+ #define KVM_REG_ARM_STD_BIT_TRNG_V1_0		0
+ 
++#define KVM_REG_ARM_STD_HYP_BMAP		KVM_REG_ARM_FW_FEAT_BMAP_REG(1)
++#define KVM_REG_ARM_STD_HYP_BIT_PV_TIME		0
 +
-+#include <linux/const.h>
-+
-+/*
-+ * This file provides common defines for ARM SMC Calling Convention as
-+ * specified in
-+ * https://developer.arm.com/docs/den0028/latest
-+ *
-+ * This code is up-to-date with version DEN 0028 C
-+ */
-+
-+#define ARM_SMCCC_STD_CALL	        _AC(0,U)
-+#define ARM_SMCCC_FAST_CALL	        _AC(1,U)
-+#define ARM_SMCCC_TYPE_SHIFT		31
-+
-+#define ARM_SMCCC_SMC_32		0
-+#define ARM_SMCCC_SMC_64		1
-+#define ARM_SMCCC_CALL_CONV_SHIFT	30
-+
-+#define ARM_SMCCC_OWNER_MASK		0x3F
-+#define ARM_SMCCC_OWNER_SHIFT		24
-+
-+#define ARM_SMCCC_FUNC_MASK		0xFFFF
-+
-+#define ARM_SMCCC_IS_FAST_CALL(smc_val)	\
-+	((smc_val) & (ARM_SMCCC_FAST_CALL << ARM_SMCCC_TYPE_SHIFT))
-+#define ARM_SMCCC_IS_64(smc_val) \
-+	((smc_val) & (ARM_SMCCC_SMC_64 << ARM_SMCCC_CALL_CONV_SHIFT))
-+#define ARM_SMCCC_FUNC_NUM(smc_val)	((smc_val) & ARM_SMCCC_FUNC_MASK)
-+#define ARM_SMCCC_OWNER_NUM(smc_val) \
-+	(((smc_val) >> ARM_SMCCC_OWNER_SHIFT) & ARM_SMCCC_OWNER_MASK)
-+
-+#define ARM_SMCCC_CALL_VAL(type, calling_convention, owner, func_num) \
-+	(((type) << ARM_SMCCC_TYPE_SHIFT) | \
-+	((calling_convention) << ARM_SMCCC_CALL_CONV_SHIFT) | \
-+	(((owner) & ARM_SMCCC_OWNER_MASK) << ARM_SMCCC_OWNER_SHIFT) | \
-+	((func_num) & ARM_SMCCC_FUNC_MASK))
-+
-+#define ARM_SMCCC_OWNER_ARCH		0
-+#define ARM_SMCCC_OWNER_CPU		1
-+#define ARM_SMCCC_OWNER_SIP		2
-+#define ARM_SMCCC_OWNER_OEM		3
-+#define ARM_SMCCC_OWNER_STANDARD	4
-+#define ARM_SMCCC_OWNER_STANDARD_HYP	5
-+#define ARM_SMCCC_OWNER_VENDOR_HYP	6
-+#define ARM_SMCCC_OWNER_TRUSTED_APP	48
-+#define ARM_SMCCC_OWNER_TRUSTED_APP_END	49
-+#define ARM_SMCCC_OWNER_TRUSTED_OS	50
-+#define ARM_SMCCC_OWNER_TRUSTED_OS_END	63
-+
-+#define ARM_SMCCC_FUNC_QUERY_CALL_UID  0xff01
-+
-+#define ARM_SMCCC_QUIRK_NONE		0
-+#define ARM_SMCCC_QUIRK_QCOM_A6		1 /* Save/restore register a6 */
-+
-+#define ARM_SMCCC_VERSION_1_0		0x10000
-+#define ARM_SMCCC_VERSION_1_1		0x10001
-+#define ARM_SMCCC_VERSION_1_2		0x10002
-+#define ARM_SMCCC_VERSION_1_3		0x10003
-+
-+#define ARM_SMCCC_1_3_SVE_HINT		0x10000
-+
-+#define ARM_SMCCC_VERSION_FUNC_ID					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-+			   ARM_SMCCC_SMC_32,				\
-+			   0, 0)
-+
-+#define ARM_SMCCC_ARCH_FEATURES_FUNC_ID					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-+			   ARM_SMCCC_SMC_32,				\
-+			   0, 1)
-+
-+#define ARM_SMCCC_ARCH_SOC_ID						\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-+			   ARM_SMCCC_SMC_32,				\
-+			   0, 2)
-+
-+#define ARM_SMCCC_ARCH_WORKAROUND_1					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-+			   ARM_SMCCC_SMC_32,				\
-+			   0, 0x8000)
-+
-+#define ARM_SMCCC_ARCH_WORKAROUND_2					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-+			   ARM_SMCCC_SMC_32,				\
-+			   0, 0x7fff)
-+
-+#define ARM_SMCCC_ARCH_WORKAROUND_3					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-+			   ARM_SMCCC_SMC_32,				\
-+			   0, 0x3fff)
-+
-+#define ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID				\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-+			   ARM_SMCCC_SMC_32,				\
-+			   ARM_SMCCC_OWNER_VENDOR_HYP,			\
-+			   ARM_SMCCC_FUNC_QUERY_CALL_UID)
-+
-+/* KVM UID value: 28b46fb6-2ec5-11e9-a9ca-4b564d003a74 */
-+#define ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_0	0xb66fb428U
-+#define ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_1	0xe911c52eU
-+#define ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_2	0x564bcaa9U
-+#define ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_3	0x743a004dU
-+
-+/* KVM "vendor specific" services */
-+#define ARM_SMCCC_KVM_FUNC_FEATURES		0
-+#define ARM_SMCCC_KVM_FUNC_PTP			1
-+#define ARM_SMCCC_KVM_FUNC_FEATURES_2		127
-+#define ARM_SMCCC_KVM_NUM_FUNCS			128
-+
-+#define ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID			\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-+			   ARM_SMCCC_SMC_32,				\
-+			   ARM_SMCCC_OWNER_VENDOR_HYP,			\
-+			   ARM_SMCCC_KVM_FUNC_FEATURES)
-+
-+#define SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED	1
-+
-+/*
-+ * ptp_kvm is a feature used for time sync between vm and host.
-+ * ptp_kvm module in guest kernel will get service from host using
-+ * this hypercall ID.
-+ */
-+#define ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID				\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-+			   ARM_SMCCC_SMC_32,				\
-+			   ARM_SMCCC_OWNER_VENDOR_HYP,			\
-+			   ARM_SMCCC_KVM_FUNC_PTP)
-+
-+/* ptp_kvm counter type ID */
-+#define KVM_PTP_VIRT_COUNTER			0
-+#define KVM_PTP_PHYS_COUNTER			1
-+
-+/* Paravirtualised time calls (defined by ARM DEN0057A) */
-+#define ARM_SMCCC_HV_PV_TIME_FEATURES				\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
-+			   ARM_SMCCC_SMC_64,			\
-+			   ARM_SMCCC_OWNER_STANDARD_HYP,	\
-+			   0x20)
-+
-+#define ARM_SMCCC_HV_PV_TIME_ST					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
-+			   ARM_SMCCC_SMC_64,			\
-+			   ARM_SMCCC_OWNER_STANDARD_HYP,	\
-+			   0x21)
-+
-+/* TRNG entropy source calls (defined by ARM DEN0098) */
-+#define ARM_SMCCC_TRNG_VERSION					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
-+			   ARM_SMCCC_SMC_32,			\
-+			   ARM_SMCCC_OWNER_STANDARD,		\
-+			   0x50)
-+
-+#define ARM_SMCCC_TRNG_FEATURES					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
-+			   ARM_SMCCC_SMC_32,			\
-+			   ARM_SMCCC_OWNER_STANDARD,		\
-+			   0x51)
-+
-+#define ARM_SMCCC_TRNG_GET_UUID					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
-+			   ARM_SMCCC_SMC_32,			\
-+			   ARM_SMCCC_OWNER_STANDARD,		\
-+			   0x52)
-+
-+#define ARM_SMCCC_TRNG_RND32					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
-+			   ARM_SMCCC_SMC_32,			\
-+			   ARM_SMCCC_OWNER_STANDARD,		\
-+			   0x53)
-+
-+#define ARM_SMCCC_TRNG_RND64					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
-+			   ARM_SMCCC_SMC_64,			\
-+			   ARM_SMCCC_OWNER_STANDARD,		\
-+			   0x53)
-+
-+/*
-+ * Return codes defined in ARM DEN 0070A
-+ * ARM DEN 0070A is now merged/consolidated into ARM DEN 0028 C
-+ */
-+#define SMCCC_RET_SUCCESS			0
-+#define SMCCC_RET_NOT_SUPPORTED			-1
-+#define SMCCC_RET_NOT_REQUIRED			-2
-+#define SMCCC_RET_INVALID_PARAMETER		-3
-+
-+#endif /*__LINUX_ARM_SMCCC_H*/
+ /* Device Control API: ARM VGIC */
+ #define KVM_DEV_ARM_VGIC_GRP_ADDR	0
+ #define KVM_DEV_ARM_VGIC_GRP_DIST_REGS	1
+diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
+index 5c53fd1f5690..38440e0bd4b4 100644
+--- a/arch/arm64/kvm/hypercalls.c
++++ b/arch/arm64/kvm/hypercalls.c
+@@ -72,8 +72,6 @@ static bool kvm_hvc_call_default_allowed(u32 func_id)
+ 	 */
+ 	case ARM_SMCCC_VERSION_FUNC_ID:
+ 	case ARM_SMCCC_ARCH_FEATURES_FUNC_ID:
+-	case ARM_SMCCC_HV_PV_TIME_FEATURES:
+-	case ARM_SMCCC_HV_PV_TIME_ST:
+ 	case ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID:
+ 	case ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID:
+ 	case ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID:
+@@ -95,6 +93,10 @@ static bool kvm_hvc_call_allowed(struct kvm_vcpu *vcpu, u32 func_id)
+ 	case ARM_SMCCC_TRNG_RND64:
+ 		return kvm_arm_fw_reg_feat_enabled(&smccc_feat->std_bmap,
+ 						KVM_REG_ARM_STD_BIT_TRNG_V1_0);
++	case ARM_SMCCC_HV_PV_TIME_FEATURES:
++	case ARM_SMCCC_HV_PV_TIME_ST:
++		return kvm_arm_fw_reg_feat_enabled(&smccc_feat->std_hyp_bmap,
++					KVM_REG_ARM_STD_HYP_BIT_PV_TIME);
+ 	default:
+ 		return kvm_hvc_call_default_allowed(func_id);
+ 	}
+@@ -102,6 +104,7 @@ static bool kvm_hvc_call_allowed(struct kvm_vcpu *vcpu, u32 func_id)
+ 
+ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+ {
++	struct kvm_smccc_features *smccc_feat = &vcpu->kvm->arch.smccc_feat;
+ 	u32 func_id = smccc_get_function(vcpu);
+ 	u64 val[4] = {SMCCC_RET_NOT_SUPPORTED};
+ 	u32 feature;
+@@ -165,7 +168,9 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+ 			}
+ 			break;
+ 		case ARM_SMCCC_HV_PV_TIME_FEATURES:
+-			val[0] = SMCCC_RET_SUCCESS;
++			if (kvm_arm_fw_reg_feat_enabled(&smccc_feat->std_hyp_bmap,
++					KVM_REG_ARM_STD_HYP_BIT_PV_TIME))
++				val[0] = SMCCC_RET_SUCCESS;
+ 			break;
+ 		}
+ 		break;
+@@ -211,6 +216,7 @@ static const u64 kvm_arm_fw_reg_ids[] = {
+ 	KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2,
+ 	KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3,
+ 	KVM_REG_ARM_STD_BMAP,
++	KVM_REG_ARM_STD_HYP_BMAP,
+ };
+ 
+ void kvm_arm_init_hypercalls(struct kvm *kvm)
+@@ -218,6 +224,7 @@ void kvm_arm_init_hypercalls(struct kvm *kvm)
+ 	struct kvm_smccc_features *smccc_feat = &kvm->arch.smccc_feat;
+ 
+ 	smccc_feat->std_bmap = KVM_ARM_SMCCC_STD_FEATURES;
++	smccc_feat->std_hyp_bmap = KVM_ARM_SMCCC_STD_HYP_FEATURES;
+ }
+ 
+ int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu)
+@@ -307,6 +314,9 @@ int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+ 	case KVM_REG_ARM_STD_BMAP:
+ 		val = READ_ONCE(smccc_feat->std_bmap);
+ 		break;
++	case KVM_REG_ARM_STD_HYP_BMAP:
++		val = READ_ONCE(smccc_feat->std_hyp_bmap);
++		break;
+ 	default:
+ 		return -ENOENT;
+ 	}
+@@ -329,6 +339,10 @@ static int kvm_arm_set_fw_reg_bmap(struct kvm_vcpu *vcpu, u64 reg_id, u64 val)
+ 		fw_reg_bmap = &smccc_feat->std_bmap;
+ 		fw_reg_features = KVM_ARM_SMCCC_STD_FEATURES;
+ 		break;
++	case KVM_REG_ARM_STD_HYP_BMAP:
++		fw_reg_bmap = &smccc_feat->std_hyp_bmap;
++		fw_reg_features = KVM_ARM_SMCCC_STD_HYP_FEATURES;
++		break;
+ 	default:
+ 		return -ENOENT;
+ 	}
+@@ -442,6 +456,7 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+ 
+ 		return 0;
+ 	case KVM_REG_ARM_STD_BMAP:
++	case KVM_REG_ARM_STD_HYP_BMAP:
+ 		return kvm_arm_set_fw_reg_bmap(vcpu, reg->id, val);
+ 	default:
+ 		return -ENOENT;
+diff --git a/include/kvm/arm_hypercalls.h b/include/kvm/arm_hypercalls.h
+index c832e8411609..00f9f1b1dc16 100644
+--- a/include/kvm/arm_hypercalls.h
++++ b/include/kvm/arm_hypercalls.h
+@@ -8,8 +8,10 @@
+ 
+ /* Last valid bit of the bitmapped firmware registers */
+ #define KVM_REG_ARM_STD_BMAP_BIT_MAX		0
++#define KVM_REG_ARM_STD_HYP_BMAP_BIT_MAX	0
+ 
+ #define KVM_ARM_SMCCC_STD_FEATURES		GENMASK(KVM_REG_ARM_STD_BMAP_BIT_MAX, 0)
++#define KVM_ARM_SMCCC_STD_HYP_FEATURES		GENMASK(KVM_REG_ARM_STD_HYP_BMAP_BIT_MAX, 0)
+ 
+ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu);
+ 
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
