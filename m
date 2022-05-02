@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC87DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:07:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFFD4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387207AbiEBULS (ORCPT
+        id S1387287AbiEBULV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 16:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41360 "EHLO
+        Mon, 2 May 2022 16:11:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387186AbiEBUKz (ORCPT
+        with ESMTP id S1387203AbiEBUKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 2 May 2022 16:10:55 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A559CBCA7
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5709DF20
         for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 13:07:21 -0700 (PDT)
 Received: from ipservice-092-217-077-109.092.217.pools.vodafone-ip.de ([92.217.77.109] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1nlcK9-0007ch-Na; Mon, 02 May 2022 22:07:13 +0200
+        id 1nlcKD-0007ch-O1; Mon, 02 May 2022 22:07:17 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,9 +28,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 4/9] staging: r8188eu: remove action_handler string
-Date:   Mon,  2 May 2022 22:06:47 +0200
-Message-Id: <20220502200652.143665-5-martin@kaiser.cx>
+Subject: [PATCH 9/9] staging: r8188eu: remove unused IEEE_* defines
+Date:   Mon,  2 May 2022 22:06:52 +0200
+Message-Id: <20220502200652.143665-10-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220502200652.143665-1-martin@kaiser.cx>
 References: <20220502200652.143665-1-martin@kaiser.cx>
@@ -40,44 +40,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the unused str component from struct action_handler and the
-corresponding entries in OnAction_tbl.
+The IEEE_* defines in the driver's ieee80211.h header file are not used.
+Remove them.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/core/rtw_mlme_ext.c    | 6 +++---
- drivers/staging/r8188eu/include/rtw_mlme_ext.h | 1 -
- 2 files changed, 3 insertions(+), 4 deletions(-)
+ drivers/staging/r8188eu/include/ieee80211.h | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-index a581930b05df..9c83a74f0795 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-@@ -33,9 +33,9 @@ static mlme_handler mlme_sta_tbl[] = {
- };
+diff --git a/drivers/staging/r8188eu/include/ieee80211.h b/drivers/staging/r8188eu/include/ieee80211.h
+index 4d3e89939114..15636a808f52 100644
+--- a/drivers/staging/r8188eu/include/ieee80211.h
++++ b/drivers/staging/r8188eu/include/ieee80211.h
+@@ -589,11 +589,6 @@ static inline int is_broadcast_mac_addr(const u8 *addr)
  
- static struct action_handler OnAction_tbl[] = {
--	{RTW_WLAN_CATEGORY_BACK, "ACTION_BACK", &OnAction_back},
--	{RTW_WLAN_CATEGORY_PUBLIC, "ACTION_PUBLIC", on_action_public},
--	{RTW_WLAN_CATEGORY_P2P, "ACTION_P2P", &OnAction_p2p},
-+	{RTW_WLAN_CATEGORY_BACK, &OnAction_back},
-+	{RTW_WLAN_CATEGORY_PUBLIC, on_action_public},
-+	{RTW_WLAN_CATEGORY_P2P, &OnAction_p2p},
- };
+ #define MAXTID	16
  
- static u8 null_addr[ETH_ALEN] = {0, 0, 0, 0, 0, 0};
-diff --git a/drivers/staging/r8188eu/include/rtw_mlme_ext.h b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-index 136879a0a0f9..63e4ee8e3dfb 100644
---- a/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-+++ b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-@@ -188,7 +188,6 @@ typedef unsigned int (*mlme_handler)(struct adapter *adapt, struct recv_frame *f
- 
- struct action_handler {
- 	unsigned int   num;
--	char* str;
- 	unsigned int (*func)(struct adapter *adapt, struct recv_frame *frame);
- };
- 
+-#define IEEE_A	    (1<<0)
+-#define IEEE_B	    (1<<1)
+-#define IEEE_G	    (1<<2)
+-#define IEEE_MODE_MASK    (IEEE_A|IEEE_B|IEEE_G)
+-
+ /* Action category code */
+ enum rtw_ieee80211_category {
+ 	RTW_WLAN_CATEGORY_P2P = 0x7f,/* P2P action frames */
 -- 
 2.30.2
 
