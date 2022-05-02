@@ -2,94 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8082C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:32:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385821AbiEBPfu (ORCPT
+        id S1384640AbiEBPgO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 11:35:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41068 "EHLO
+        Mon, 2 May 2022 11:36:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385801AbiEBPfi (ORCPT
+        with ESMTP id S1385871AbiEBPgH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 11:35:38 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C076340
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:32:08 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id g28so26617761ybj.10
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 08:32:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=hCGKNipS00tBX8rbB28dkiVg/BvdNz8E722on+AV5GE=;
-        b=iJhBELUzXOr15YhTf0wF+a681aftQovvW35I2W0xmmMp8MntU2wDtF3J/uFXVkHeUI
-         FFh10K8dP/kcvw5GV42gc2kKRsaEByU7ysTgBlBeGuBG8+jtAY9IAEIfWWsgn4nIJpbw
-         bsd6Y41l2YVABLJQ92bJl0KYYuPYfpyYZI9eYjsmq+GzxKmgW0yHxGKt2ihtN9vq3ExH
-         dBOuCATwLlUCWDwVviy4J4NRKpwr/ejONaiz5p0ymgLsXU8O6QPNTKF7w7usOFpdARND
-         A5001AxyjOwcV5fpVk7WWUtsEuvWLCeK6kDaDgzQI8xbzzBrq2zM5i8zSaUPu8vITIUg
-         4CLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=hCGKNipS00tBX8rbB28dkiVg/BvdNz8E722on+AV5GE=;
-        b=ESoLaH8f50ho0HJWC4IuTqDgAPb/YlDn4ndY5FUsm/kM5rl+C3g4BMaArcQZBRuNdl
-         LSFnkrd8OglgRUwpkGiz2csmmSm9myR8P0kwIoV6YkIbaxbCrzr8ndXN8KuoRnuHPWjB
-         jkMq8wCdJs8HU29zrWO8jooNDUR13V/zAB1NoqIoTskabC45WuhVkv0gxZrYCOF/wQaX
-         85UsZo3ubIjTJAZl3JVo80Kg8bhT7bxxqxmlebjEnSA45/y86lHV5UHq8ApFYLbh2c0p
-         Y61qT2yEJ/vNarrYDX6m7KKJpPVw5Gf7kGxcK/iHgyuU+lGE0n4eKKrW86C+xOnkBqcF
-         OQkg==
-X-Gm-Message-State: AOAM532/ZBZddYYy5e3OStz9GmONcoFw4pmX6/41MWdeeY9U8yDP5EFF
-        Fg/sdOnuPF/28yQBPjdvJVaA8hk4ua3of0q1t5JDgw==
-X-Google-Smtp-Source: ABdhPJwj3QrPFfxu2nyuN5kFPO+0frvF6GLCyRxUVFMu80sCrG1GMxBjBR97BxQia0hYHO5LXNrgaz0HEPZ7M14xL8o=
-X-Received: by 2002:a5b:2c9:0:b0:644:b7c9:3766 with SMTP id
- h9-20020a5b02c9000000b00644b7c93766mr10147935ybp.428.1651505527625; Mon, 02
- May 2022 08:32:07 -0700 (PDT)
+        Mon, 2 May 2022 11:36:07 -0400
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2D7BE0B;
+        Mon,  2 May 2022 08:32:26 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id DD83041E96;
+        Mon,  2 May 2022 15:32:21 +0000 (UTC)
+Message-ID: <0ccc44cd-21aa-3670-24b3-4ee051dd3c12@marcan.st>
+Date:   Tue, 3 May 2022 00:32:19 +0900
 MIME-Version: 1.0
-References: <20220429203644.2868448-1-samitolvanen@google.com> <20220430160750.ov7ddsq2vzibwrju@bubbles>
-In-Reply-To: <20220430160750.ov7ddsq2vzibwrju@bubbles>
-From:   Sami Tolvanen <samitolvanen@google.com>
-Date:   Mon, 2 May 2022 08:31:35 -0700
-Message-ID: <CABCJKufWFy0ShK49YAqk60mVApQ3qrfOj9R1nuLAWXiVtqbPJA@mail.gmail.com>
-Subject: Re: [RFC PATCH 00/21] KCFI support
-To:     Sami Tolvanen <samitolvanen@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: es-ES
+To:     Rob Herring <robh@kernel.org>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Sven Peter <sven@svenpeter.dev>,
+        PCI <linux-pci@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220502093832.32778-1-marcan@marcan.st>
+ <20220502093832.32778-4-marcan@marcan.st>
+ <CAL_Jsq+_cWZUXtJVXC_cwhmADj0NQc95v1sqgFioMsfEX6OqGg@mail.gmail.com>
+From:   Hector Martin <marcan@marcan.st>
+Subject: Re: [PATCH 3/3] PCI: apple: Add support for optional PWREN GPIO
+In-Reply-To: <CAL_Jsq+_cWZUXtJVXC_cwhmADj0NQc95v1sqgFioMsfEX6OqGg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 30, 2022 at 9:08 AM Kenton Groombridge <me@concord.sh> wrote:
-> Many thanks for continuing to work on this! As a user who has been
-> following the evolution of this patch series for a while now, I have a
-> couple of burning questions:
->
-> 1) The LLVM patch says that kCFI is not compatible with execute-only
-> memory. Is there a plan ahead for kCFI if and when execute-only memory
-> is implemented?
+On 03/05/2022 00.14, Rob Herring wrote:
+> On Mon, May 2, 2022 at 4:39 AM Hector Martin <marcan@marcan.st> wrote:
+>>
+>> WiFi and SD card devices on M1 Macs have a separate power enable GPIO.
+>> Add support for this to the PCIe controller. This is modeled after how
+>> pcie-fu740 does it.
+> 
+> It did, but it's not ideal really. The problem is the GPIO is really
+> associated with the device (WiFi/SD) rather than the PCI host and
+> therefore should be part of a WiFi or SD node. You probably don't have
+> one (yet), but I would suspect that SD will need one for all the
+> standard MMC/SD DT properties. The secondary issue is we'll end up
+> adding more power sequencing properties to control ordering and timing
+> for different devices. The exception here is standard PCI slot
+> properties like perst#, clkreq, and standard voltage rails can go in
+> the host bridge (and for new bindings, those should really be in the
+> root port node). For a complicated example, see Hikey960 or 970.
+> 
+> Of course with power control related properties there's a chicken or
+> egg issue that the PCI device is not discoverable until the device is
+> powered on. This issue comes up over and over with various hacky
+> solutions in the bindings. The PCI subsystem needs to solve this. My
+> suggestion is that if the firmware says there is a device on the bus
+> and it wasn't probed, then we should force probing (or add a pre-probe
+> hook for drivers). That is what MDIO bus does for example.
+> 
 
-There's no plan for executable-only memory right now, that would
-require type hashes to be moved somewhere else to read-only memory.
+I agree with the premise. Right now macOS does not actually power down
+these devices as far as I know (except maybe sleep mode? not sure what
+goes on then yet), but I think the hardware actually has an SD card
+detect GPIO hookup that would allow us to entirely power down the SD
+controller when no card is inserted. That would obviously be ideal.
 
-> 2) kCFI only checks indirect calls while Clang's traditional CFI has
-> more schemes like bad cast checking and so on. Are there any major
-> security tradeoffs as a result of this?
+FWIW, we do have the device nodes downstream [1]. I did in fact have to
+add the SD one for the CD/WP inversion flags (and had to add driver
+support for that too).
 
-No, cfi-icall is only scheme that's relevant for the kernel. The other
-schemes implemented in Clang are mostly useful for C++.
+That said, as for how to make this happen in the PCI subsystem
+properly... I think I'll defer to the maintainers' opinion there before
+trying to hack something up ;)
 
-Sami
+Meanwhile, I guess I better get PCIe hotplug working, since doing it in
+the driver isn't going to work without that first...
+
+[1]
+https://github.com/AsahiLinux/linux/blob/bits/000-devicetree/arch/arm64/boot/dts/apple/t600x-j314-j316.dtsi#L222
+
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
