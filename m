@@ -2,276 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CA55C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 03:40:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A8ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 03:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357129AbiEBDoJ (ORCPT
+        id S1357160AbiEBDpb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 23:44:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43108 "EHLO
+        Sun, 1 May 2022 23:45:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357126AbiEBDnv (ORCPT
+        with ESMTP id S229650AbiEBDp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 23:43:51 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9CF6326
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 20:40:24 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id e3so11235638ios.6
-        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 20:40:24 -0700 (PDT)
+        Sun, 1 May 2022 23:45:29 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3EDD45060
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 20:42:00 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id k1so2955998pll.4
+        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 20:42:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sElaWLOyKUxazQojYLrnvAx04p2BuOgFqaeUXWDNphc=;
-        b=PI89Bel9IH0osdgZv/f/nPPG/qArbrfgTx65sMPDWIMCQkBjP+VKfPxGMfPyYxVhXm
-         gNoKgT0fA3ABes0RAb/N/AAZiOXt2IviminS46gFw42qjRRVcDxTU8zb2iayO9hCAxgK
-         sTqSwt7KUIIi0Pa08YMoEXO56StqeKuwjPNB+unoRuSm8YAQFJRjsvNx92DfDaIe1lf2
-         LjCYLYNo05DOT8Kaqbz+KHvQwyGPo6SeEd3d8shJrhdOGejBHzfD8jhD2U9VRdlwP78z
-         lD9QwvrlLHez7CmK7oriwwDUHJlchVu3qNScv6x5EN//MOmGE11gbS6KuZuq/K+VlLkp
-         MLcg==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VhMy0JI7nNqcQppVA0JnYf0znLff5xYbmdVFPc+7KFQ=;
+        b=ChL4RwRqNvbXjaSPkV0XOY0AhGcyDG9VMONy6kHgvW0Up2Ct3NrlwsQ8JPPPgxhxzx
+         MyHet0Q8sDBWDLzfsKwdb8kC1fZQUjdhMTKmd6bqo5Bn98pct4S58/gI1ScGiCsjtyy0
+         HULbiWyczH59s7EOEMjnL4nOFAOWSn5JsqIdVpmOCR6flpN/Z/O/kMvAnuRbFNFjLuVW
+         SCzFmWTI4Q3K8EQE5jFn3mqh53rdRAMCtj8ZUKUbTKx/6U6ueg/QAc3OQ8CLl+GiRpgk
+         s9Gxm4imDmYRi0Qsc5um+i4MzvnuLQT0p9xlBpSC7Z9spKmy+dP96bvyOVsywCYkFJGi
+         GMyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sElaWLOyKUxazQojYLrnvAx04p2BuOgFqaeUXWDNphc=;
-        b=ol5pzqPoUJvXFnXpUc2NNCB8SV7qbm1UEMyn/YLJnzOYgnp+o0czkS0RxCRrTkKXzS
-         aZlNOGwZQPWy92QqtAgEBhYbA3enc3EVnvTR69Af6jo/3md38TQTF1Jh1QdoO+87gXQj
-         ivOjKKDZlW329O9gG8yYlqx/rpQq+fNVDyXCJiJPsmWJQxm+mvds1CYllLZzdt90Q5HN
-         O5sjaBLlGAUGdhb0lXgyv2TMidhchc/hnSIOOYdetXxrTgjPPfyiOeJhNlraq2OOlh6q
-         E+NDbePBtmWDyqk33XDQTZjMy0nDjUYxhsZ4oKyITYXlqXak3RkoMZdDHKB018irq29W
-         A5og==
-X-Gm-Message-State: AOAM531GP3fqgaqEZuOBnSX0LtTyV2Ny5t3Y5Z2NmK8+YqcQNzL2yCcw
-        OmCunwE51MSi+WJkM8CbtUzztw==
-X-Google-Smtp-Source: ABdhPJz2vFLn1waUdU8voiXOHX+s1j40CDQZd+pHOX4xK76LO8vr1iu7cwjasiU7vJCVgDE/ZZT0Pw==
-X-Received: by 2002:a05:6638:144b:b0:321:589b:a8ea with SMTP id l11-20020a056638144b00b00321589ba8eamr4352384jad.296.1651462823197;
-        Sun, 01 May 2022 20:40:23 -0700 (PDT)
-Received: from google.com (194.225.68.34.bc.googleusercontent.com. [34.68.225.194])
-        by smtp.gmail.com with ESMTPSA id h17-20020a02c731000000b0032b3a781746sm2761517jao.10.2022.05.01.20.40.22
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VhMy0JI7nNqcQppVA0JnYf0znLff5xYbmdVFPc+7KFQ=;
+        b=wbU64viq0l91X2U+wSaUuG8ZjxU9GYgQvW+NgdcdSJBrTz1NB5zniF6t0SPcdklajj
+         Bi67KI2MY92+ADVPCmKeRxckr5cnsfDLNC1NaY6JtC59Rk/Ogh7fWGAhvCJWQIRFnvwq
+         0kAd6YFQQXgSZFDNaYi9zupa5zPWFcBxrAniy5fxalJPbcBMC/9Aw2LGQTxjjb/ftN4I
+         nlkX+nFxknSbvt6BRXvfSDGUkUkJwsSlXlgLTqDKIAOpbyBBHQycj2LKU41beibbGWtO
+         P5R+0l4Wp6VqlFrE/lalFpRkWVOW3Z7rUztpL8KUVZcQjmfL8f/n56Q69BX7G9L6dxsn
+         Bscg==
+X-Gm-Message-State: AOAM530P7YqL8CAWq1pxW/ZD1fJl+tfx1SPiSRMJPZtKjX4T5jD0+yyg
+        teF0Fp+pc/m5lk21f6xHd0uUdg==
+X-Google-Smtp-Source: ABdhPJxQ9L5CeBdFW4cwMPIBeK3305HYCgwmo/7c5uyUgh63G1/L1nCkVvbO8lV2mxdW6FmybkuIGw==
+X-Received: by 2002:a17:902:b948:b0:153:9994:b587 with SMTP id h8-20020a170902b94800b001539994b587mr10048888pls.68.1651462920135;
+        Sun, 01 May 2022 20:42:00 -0700 (PDT)
+Received: from x1.hsd1.or.comcast.net ([2601:1c2:1001:7090:c18e:6070:88f2:a04d])
+        by smtp.gmail.com with ESMTPSA id h25-20020aa786d9000000b0050dc7628131sm3677842pfo.11.2022.05.01.20.41.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 May 2022 20:40:22 -0700 (PDT)
-Date:   Mon, 2 May 2022 03:40:19 +0000
-From:   Oliver Upton <oupton@google.com>
-To:     Gavin Shan <gshan@redhat.com>
-Cc:     kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
-        eauger@redhat.com, Jonathan.Cameron@huawei.com,
-        vkuznets@redhat.com, will@kernel.org, shannon.zhaosl@gmail.com,
-        james.morse@arm.com, mark.rutland@arm.com, maz@kernel.org,
-        pbonzini@redhat.com, shan.gavin@gmail.com
-Subject: Re: [PATCH v6 03/18] KVM: arm64: Add SDEI virtualization
- infrastructure
-Message-ID: <Ym9So9YariC0M7Zu@google.com>
-References: <20220403153911.12332-1-gshan@redhat.com>
- <20220403153911.12332-4-gshan@redhat.com>
- <YmMiyt/TDjJt0mdG@google.com>
- <36899ea9-e8bd-27b2-8dfb-75b76eab50d7@redhat.com>
- <YmRI7Bh7fWCYLUGT@google.com>
- <0e26da1a-00bb-3d63-a8bf-6cd3271b0a38@redhat.com>
- <Ymr45B+8xTlhi7vk@google.com>
- <96711526-c4f3-3b50-c015-beba8cc9fcc9@redhat.com>
- <Ym1EztjkJIHrg4Qz@google.com>
- <62f06a03-d6fc-3803-a2d2-7a85cf733459@redhat.com>
+        Sun, 01 May 2022 20:41:59 -0700 (PDT)
+From:   Drew Fustini <dfustini@baylibre.com>
+To:     Nishanth Menon <nm@ti.com>, Santosh Shilimkar <ssantosh@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Drew Fustini <dfustini@baylibre.com>,
+        Brad Griffis <bgriffis@ti.com>, Dave Gerlach <d-gerlach@ti.com>
+Subject: [PATCH] soc: ti: wkup_m3_ipc: Add debug option to halt m3 in suspend
+Date:   Sun,  1 May 2022 20:32:12 -0700
+Message-Id: <20220502033211.1383158-1-dfustini@baylibre.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62f06a03-d6fc-3803-a2d2-7a85cf733459@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Gavin,
+From: Dave Gerlach <d-gerlach@ti.com>
 
-On Mon, May 02, 2022 at 10:35:08AM +0800, Gavin Shan wrote:
-> Hi Oliver,
-> 
-> On 4/30/22 10:16 PM, Oliver Upton wrote:
-> > On Sat, Apr 30, 2022 at 07:38:29PM +0800, Gavin Shan wrote:
-> > > Thank you for the comments and details. It should work by using bitmaps
-> > > to represent event's states. I will adopt your proposed structs in next
-> > > respin. However, there are more states needed. So I would adjust
-> > > "struct kvm_sdei_vcpu" like below in next respin.
-> > > 
-> > >      struct kvm_sdei_vcpu {
-> > >          unsigned long registered;    /* the event is registered or not                 */
-> > >          unsigned long enabled;       /* the event is enabled or not                    */
-> > >          unsigned long unregistering; /* the event is pending for unregistration        */
-> > 
-> > I'm not following why we need to keep track of the 'pending unregister'
-> > state directly. Is it not possible to infer from (active && !registered)?
-> > 
-> 
-> The event can be unregistered and reseted through hypercalls when it's
-> being handled. In this case, the unregistration for the event can't
-> be done immediately and has to be delayed until the handling is finished.
-> The unregistration pending state is used in this case. Yes, it's
-> correct we also can use (active & !registered) to represent the state.
+Add a debugfs option to allow configurable halting of the wkup_m3
+during suspend at the last possible point before low power mode entry.
+This condition can only be resolved through JTAG and advancing beyond
+the while loop in a8_lp_ds0_handler [1]. Although this hangs the system
+it forces the system to remain active once it has been entirely
+configured for low power mode entry, allowing for register inspection
+through JTAG to help in debugging transition errors.
 
-I don't believe there is any delay in the unregistration of an event.
-The state is only meant to imply that the handler must complete before
-software can re-register for the event.
+Halt mode can be set using the enable_off_mode entry under wkup_m3_ipc
+in the debugfs.
 
-The event state machine from 6.1 can be encoded using 3 bits, which is
-exactly what we see in Table 13 of DEN0054C.
+[1] https://git.ti.com/cgit/processor-firmware/ti-amx3-cm3-pm-firmware/tree/src/pm_services/pm_handlers.c?h=08.02.00.006#n141
 
-I'm sorry for being pedantic, but avoiding duplication of state reduces
-the chance of bugs + makes things a bit easier to reason about.
+Suggested-by: Brad Griffis <bgriffis@ti.com>
+Signed-off-by: Dave Gerlach <d-gerlach@ti.com>
+[dfustini: add link for a8_lp_ds0_handler() in ti-amx3-cm3-pm-firmware]
+Signed-off-by: Drew Fustini <dfustini@baylibre.com>
+---
+ drivers/soc/ti/wkup_m3_ipc.c | 79 +++++++++++++++++++++++++++++++++++-
+ include/linux/wkup_m3_ipc.h  |  2 +
+ 2 files changed, 80 insertions(+), 1 deletion(-)
 
-> > >          unsigned long pending;       /* the event is pending for delivery and handling */
-> > >          unsigned long active;        /* the event is currently being handled           */
-> > > 
-> > >          :
-> > >          <this part is just like what you suggested>
-> > >      };
-> > > 
-> > > I rename @pending to @unregister. Besides, there are two states added:
-> > > 
-> > >     @pending: Indicate there has one event has been injected. The next step
-> > >               for the event is to deliver it for handling. For one particular
-> > >               event, we allow one pending event in the maximum.
-> > 
-> > Right, if an event retriggers when it is pending we still dispatch a
-> > single event to the guest. And since we're only doing normal priority
-> > events, it is entirely implementation defined which gets dispatched
-> > first.
-> > 
-> 
-> Yep, we will simply rely on find_first_bit() for the priority. It means
-> the software signaled event, whose number is zero, will have the highest
-> priority.
-> 
-> > >     @active:  Indicate the event is currently being handled. The information
-> > >               stored in 'struct kvm_sdei_event_context' instance can be
-> > >               correlated with the event.
-> > 
-> > Does this need to be a bitmap though? We can't ever have more than one
-> > SDEI event active at a time since this is private to a vCPU.
-> > 
-> 
-> Yes, one event is active at most on one particular vCPU. So tt don't
-> have to be a bitmap necessarily. The reason I proposed to use bitmap
-> for this state is to having all (event) states represented by bitmaps.
-> In this way, all states are managed in a unified fashion. The alternative
-> way is to have "unsigned long active_event", which traces the active
-> event number. It also consumes 8-bytes when live migration is concerned.
-> So I prefer a bitmap :)
->
+diff --git a/drivers/soc/ti/wkup_m3_ipc.c b/drivers/soc/ti/wkup_m3_ipc.c
+index c35eaecf4ab4..19bed465ad94 100644
+--- a/drivers/soc/ti/wkup_m3_ipc.c
++++ b/drivers/soc/ti/wkup_m3_ipc.c
+@@ -7,6 +7,7 @@
+  * Dave Gerlach <d-gerlach@ti.com>
+  */
+ 
++#include <linux/debugfs.h>
+ #include <linux/err.h>
+ #include <linux/firmware.h>
+ #include <linux/kernel.h>
+@@ -50,6 +51,9 @@
+ #define IPC_IO_ISOLATION_STAT_SHIFT	(10)
+ #define IPC_IO_ISOLATION_STAT_MASK	(0x1 << 10)
+ 
++#define IPC_DBG_HALT_SHIFT		(11)
++#define IPC_DBG_HALT_MASK		(0x1 << 11)
++
+ #define M3_STATE_UNKNOWN		0
+ #define M3_STATE_RESET			1
+ #define M3_STATE_INITED			2
+@@ -157,6 +161,73 @@ static int wkup_m3_init_scale_data(struct wkup_m3_ipc *m3_ipc,
+ 	return ret;
+ }
+ 
++#ifdef CONFIG_DEBUG_FS
++static void wkup_m3_set_halt_late(bool enabled)
++{
++	if (enabled)
++		m3_ipc_state->halt = (1 << IPC_DBG_HALT_SHIFT);
++	else
++		m3_ipc_state->halt = 0;
++}
++
++static int option_get(void *data, u64 *val)
++{
++	u32 *option = data;
++
++	*val = *option;
++
++	return 0;
++}
++
++static int option_set(void *data, u64 val)
++{
++	u32 *option = data;
++
++	*option = val;
++
++	if (option == &m3_ipc_state->halt) {
++		if (val)
++			wkup_m3_set_halt_late(true);
++		else
++			wkup_m3_set_halt_late(false);
++	}
++
++	return 0;
++}
++
++DEFINE_SIMPLE_ATTRIBUTE(wkup_m3_ipc_option_fops, option_get, option_set,
++			"%llu\n");
++
++static int wkup_m3_ipc_dbg_init(struct wkup_m3_ipc *m3_ipc)
++{
++	m3_ipc->dbg_path = debugfs_create_dir("wkup_m3_ipc", NULL);
++
++	if (!m3_ipc->dbg_path)
++		return -EINVAL;
++
++	(void)debugfs_create_file("enable_late_halt", 0644,
++				  m3_ipc->dbg_path,
++				  &m3_ipc->halt,
++				  &wkup_m3_ipc_option_fops);
++
++	return 0;
++}
++
++static inline void wkup_m3_ipc_dbg_destroy(struct wkup_m3_ipc *m3_ipc)
++{
++	debugfs_remove_recursive(m3_ipc->dbg_path);
++}
++#else
++static inline int wkup_m3_ipc_dbg_init(struct wkup_m3_ipc *m3_ipc)
++{
++	return 0;
++}
++
++static inline void wkup_m3_ipc_dbg_destroy(struct wkup_m3_ipc *m3_ipc)
++{
++}
++#endif /* CONFIG_DEBUG_FS */
++
+ static void am33xx_txev_eoi(struct wkup_m3_ipc *m3_ipc)
+ {
+ 	writel(AM33XX_M3_TXEV_ACK,
+@@ -402,7 +473,9 @@ static int wkup_m3_prepare_low_power(struct wkup_m3_ipc *m3_ipc, int state)
+ 	wkup_m3_ctrl_ipc_write(m3_ipc, m3_power_state, 1);
+ 	wkup_m3_ctrl_ipc_write(m3_ipc, m3_ipc->mem_type |
+ 			       m3_ipc->vtt_conf |
+-			       m3_ipc->isolation_conf, 4);
++			       m3_ipc->isolation_conf |
++			       m3_ipc->halt, 4);
++
+ 	wkup_m3_ctrl_ipc_write(m3_ipc, DS_IPC_DEFAULT, 2);
+ 	wkup_m3_ctrl_ipc_write(m3_ipc, DS_IPC_DEFAULT, 3);
+ 	wkup_m3_ctrl_ipc_write(m3_ipc, DS_IPC_DEFAULT, 6);
+@@ -633,6 +706,8 @@ static int wkup_m3_ipc_probe(struct platform_device *pdev)
+ 		goto err_put_rproc;
+ 	}
+ 
++	wkup_m3_ipc_dbg_init(m3_ipc);
++
+ 	return 0;
+ 
+ err_put_rproc:
+@@ -644,6 +719,8 @@ static int wkup_m3_ipc_probe(struct platform_device *pdev)
+ 
+ static int wkup_m3_ipc_remove(struct platform_device *pdev)
+ {
++	wkup_m3_ipc_dbg_destroy(m3_ipc_state);
++
+ 	mbox_free_channel(m3_ipc_state->mbox);
+ 
+ 	rproc_shutdown(m3_ipc_state->rproc);
+diff --git a/include/linux/wkup_m3_ipc.h b/include/linux/wkup_m3_ipc.h
+index fef0fac60f8c..26d1eb058fa3 100644
+--- a/include/linux/wkup_m3_ipc.h
++++ b/include/linux/wkup_m3_ipc.h
+@@ -36,6 +36,7 @@ struct wkup_m3_ipc {
+ 	int vtt_conf;
+ 	int isolation_conf;
+ 	int state;
++	u32 halt;
+ 
+ 	unsigned long volt_scale_offsets;
+ 	const char *sd_fw_name;
+@@ -46,6 +47,7 @@ struct wkup_m3_ipc {
+ 
+ 	struct wkup_m3_ipc_ops *ops;
+ 	int is_rtc_only;
++	struct dentry *dbg_path;
+ };
+ 
+ struct wkup_m3_wakeup_src {
+-- 
+2.32.0
 
-The small benefit of using the event number is that we can address all
-events in 8 bytes, whereas we'd need to extend the bitmap for >64
-events. I suppose we'll run into that issue either way, since the
-pending, registered, and enabled portions are also bitmaps.
-
-When live migration is in scope we should probably bark at userspace if
-it attempts to set more than a single bit in the register.
-
-> > > Furthermore, it's fair enough to put the (vcpu) mask state into 'flags'
-> > > field of struct kvm_vcpu_arch :)
-> > 
-> > I think you can get away with putting active in there too, I don't see
-> > why we need more than a single bit for this info.
-> > 
-> 
-> Not really. We just need one single bit for vCPU's mask state. We need
-> multiple bits for event's active state, depending on how many events are
-> supported. We need to know which event is currently active at least.
-> For now, there are only two supported events (0/1), but one single bit
-> is still not enough because there are 3 states: (1) software signaled
-> event is active. (2) async pf event is active. (3) none of them is
-> active.
-> 
-> Lets use a bitmap for the event active state as I said above, if you
-> don't strongly object :)
-> 
-> > > > > > > > Do we need this if we disallow nesting events?
-> > > > > > > > 
-> > > > > > > 
-> > > > > > > Yes, we need this. "event == NULL" is used as indication of invalid
-> > > > > > > context. @event is the associated SDEI event when the context is
-> > > > > > > valid.
-> > > > > > 
-> > > > > > What if we use some other plumbing to indicate the state of the vCPU? MP
-> > > > > > state comes to mind, for example.
-> > > > > > 
-> > > > > 
-> > > > > Even the indication is done by another state, kvm_sdei_vcpu_context still
-> > > > > need to be linked (associated) with the event. After the vCPU context becomes
-> > > > > valid after the event is delivered, we still need to know the associated
-> > > > > event when some of hypercalls are triggered. SDEI_1_0_FN_SDEI_EVENT_COMPLETE
-> > > > > is one of the examples, we need to decrease struct kvm_sdei_event::event_count
-> > > > > for the hypercall.
-> > > > 
-> > > > Why do we need to keep track of how many times an event has been
-> > > > signaled? Nothing in SDEI seems to suggest that the number of event
-> > > > signals corresponds to the number of times the handler is invoked. In
-> > > > fact, the documentation on SDEI_EVENT_SIGNAL corroborates this:
-> > > > 
-> > > > """
-> > > > The event has edgetriggered semantics and the number of event signals
-> > > > may not correspond to the number of times the handler is invoked in the
-> > > > target PE.
-> > > > """
-> > > > 
-> > > > DEN0054C 5.1.16.1
-> > > > 
-> > > > So perhaps we queue at most 1 pending event for the guest.
-> > > > 
-> > > > I'd also like to see if anyone else has thoughts on the topic, as I'd
-> > > > hate for you to go back to the whiteboard again in the next spin.
-> > > > 
-> > > 
-> > > Agreed. In next respin, we will have one pending event at most. Error
-> > > can be returned if user attempts to inject event whose pending state
-> > > (struct kvm_sdei_vcpu::pending) has been set.
-> > 
-> > I don't believe we can do that. The SDEI_EVENT_SIGNAL call should succeed,
-> > even if the event was already pending.
-> > 
-> 
-> I rethinking it a bit. Yes, you're correct. In this specific case, the
-> event handler is running for multiple events.
->
-> > > Indeed, the hardest part is to determine the data structures and
-> > > functions we need. Oliver, your valuable comments are helping to
-> > > bring this series to the right track. However, I do think it's
-> > > helpful if somebody else can confirm the outcomes from the previous
-> > > discussions. I'm not sure if Marc has time for a quick scan and provide
-> > > comments.
-> > > 
-> > > I would summarize the outcomes from our discussions, to help Marc
-> > > or others to confirm:
-> > 
-> > Going to take a look at some of your later patches as well, just a heads
-> > up.
-> > 
-> 
-> Yep, thanks again for your valuable comments :)
-> 
-> > > - Drop support for the shared event.
-> > > - Dropsupport for the critical event.
-> > > - The events in the implementations are all private and can be signaled
-> > >    (raised) by software.
-> > > - Drop migration support for now, and we will consider it using
-> > >    pseudo firmware registers. So add-on patches are expected to support
-> > >    the migration in future.
-> > 
-> > Migration will be supported in a future spin of this series, not a
-> > subsequent one right? :) I had just made the suggestion because there was
-> > a lot of renovations that we were discussing.
-> > 
-> 
-> I prefer a separate series to support migration after this series gets
-> merged. There are couple of reasons to do so: (1) The migration depends
-> on Raghavendra's series to support for hypercall services selection.
-> The series is close to be merged, but not happen yet. The SDEI is one
-> of the hypercall services at least. SDEI's pseudo firmware registers
-> for migration will be managed by the infrastructure. (2) I would focus
-> on the core functinality for now. In this way, we give migration space.
-> For example, the data structures needs sorts of adjustments for migration,
-> just in case.
-
-Although merging this series w/o support for LM would mean that a guest
-using SDEI could potentially explode when migrated, right? We can't
-break it to implement something else.
-
---
-Thanks,
-Oliver
