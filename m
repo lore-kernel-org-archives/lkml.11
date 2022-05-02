@@ -2,107 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A598CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 14:38:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D861C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 14:39:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238120AbiEBOln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 10:41:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
+        id S241703AbiEBOnS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 10:43:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237898AbiEBOlg (ORCPT
+        with ESMTP id S238116AbiEBOnQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 10:41:36 -0400
+        Mon, 2 May 2022 10:43:16 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E5E212620
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 07:38:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A17012A86
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 07:39:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651502287;
+        s=mimecast20190719; t=1651502386;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=wVoPR7+BaUM00iEkwlBxjF0xXPgmMZX2vpPWycEtV78=;
-        b=c4nzDu6RKXJ+l12VxDYsxfPyjlT70JPw1gUqzy/HCdWGNFO/Dvb3r0zVwJPSvMU0QDM8oX
-        Shh9jxfgMZjrVHQOoaHCINAynYglCrs6VXIAaDMZ/5s5pVxGj0PdHYFE7R362T7Y1x7Cxe
-        oGm3xNLyOINVDrAnW07gXwQEjI+GxPI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=58rLakAFNoJNnG5Di+FTawUYlxOYFnmmF/e8CRlldJQ=;
+        b=fDMMjsGob76Auxk9B/qKtQgr7d2vYKxTOqQuQZt4Kgsa1wn/KLlPf6OZJdHv2RXe2boCfT
+        qf7BbPfrKFI7ZYXDhL8/52SUX6Aqw7rtFPF93Qg4q3b/rRcdVg+C7c0g1qQDdDtI6SiEHs
+        TCRagxUWj4ZlguXTsTaiKq3brqZPznA=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-152-MmWCcKafP32gX5GLYtBFzw-1; Mon, 02 May 2022 10:37:59 -0400
-X-MC-Unique: MmWCcKafP32gX5GLYtBFzw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3E91C3806707;
-        Mon,  2 May 2022 14:37:58 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.34])
-        by smtp.corp.redhat.com (Postfix) with SMTP id DBB8540869CE;
-        Mon,  2 May 2022 14:37:52 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Mon,  2 May 2022 16:37:57 +0200 (CEST)
-Date:   Mon, 2 May 2022 16:37:51 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH v2 06/12] ptrace: Reimplement PTRACE_KILL by always
- sending SIGKILL
-Message-ID: <20220502143750.GC17276@redhat.com>
-References: <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
- <20220429214837.386518-6-ebiederm@xmission.com>
+ us-mta-260-ExDVaFBBNCGo9zrwtPcQig-1; Mon, 02 May 2022 10:39:45 -0400
+X-MC-Unique: ExDVaFBBNCGo9zrwtPcQig-1
+Received: by mail-wm1-f70.google.com with SMTP id u3-20020a05600c210300b0039430c7665eso1660340wml.2
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 07:39:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=58rLakAFNoJNnG5Di+FTawUYlxOYFnmmF/e8CRlldJQ=;
+        b=AbUfaDUrb7mqwbZuDzWhJg5N37Z1LAuNjiQPx6PYeIerW6GKok0OmNltPSdljzvVKO
+         gCd/Yj+UCkwiQfwtS1QQMoz8vBlhGkaundYyaV5rdGthexcbmbollr7n84+qO0Z0UVTG
+         ykX1IVG7VzC6G0Sboih2fzZxj2wab2JKASGHcb966vMK3JS1k77B/RWmOdCdQ+nIktYo
+         CIIT+5dOUDb06QQN+73+3Nq8tUtDDczFQWbojI7P6d6rwrYO5PLcac1NYuE6IsmdKksJ
+         5vxd+ZIolAQ4Pq9GA+1ARGSG0MmGQX2SSqS0C5UMobiaPwwLa70TbZmpqO/NfRQMMhJO
+         G/Qw==
+X-Gm-Message-State: AOAM533YtdGz5RS0qfoIX2EnufZXoTx6BHMxlONn9Sdul0AuG8Kyhws+
+        UH7PfmKB+GmtCmr9EHjL41J59J5zcvUJf5HCgIbXlXCNssgD/kYqOhAwYu3lzBsp5ZlkvoI8ZFl
+        /fjh9IElD3U0Mn2RydsqFoOPO4v8oY5KMIQyVnddH
+X-Received: by 2002:a7b:cb47:0:b0:393:dd9f:e64a with SMTP id v7-20020a7bcb47000000b00393dd9fe64amr15053002wmj.170.1651502383698;
+        Mon, 02 May 2022 07:39:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxeSqSrtlczNXNP5eDjRGWp+ntWxu/JB9aqmsfOg0rqpKIibXazTKglVMoMhIkmYF6H1Dn/NKWLxpLeWCbfFDQ=
+X-Received: by 2002:a7b:cb47:0:b0:393:dd9f:e64a with SMTP id
+ v7-20020a7bcb47000000b00393dd9fe64amr15052989wmj.170.1651502383468; Mon, 02
+ May 2022 07:39:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220429214837.386518-6-ebiederm@xmission.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+References: <20220420095720.3331609-1-kherbst@redhat.com>
+In-Reply-To: <20220420095720.3331609-1-kherbst@redhat.com>
+From:   Karol Herbst <kherbst@redhat.com>
+Date:   Mon, 2 May 2022 16:39:32 +0200
+Message-ID: <CACO55tv6rKETHhx=1yJ7Gf91sq1cDHyNgZxEdaN48PFBRdKu2g@mail.gmail.com>
+Subject: Re: [PATCH v2] drm/i915: Fix race in __i915_vma_remove_closed
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/29, Eric W. Biederman wrote:
+friendly ping.
+
+I am not even myself completely convinced that this is the correct
+patch and it might just workaround some issues, but list_debug.c does
+check if a list was already deleted and throws an error if it was and
+this patch indeed fixes this one issue as multiple threads could enter
+__i915_vma_remove_closed on the same vma.
+
+
+On Wed, Apr 20, 2022 at 11:57 AM Karol Herbst <kherbst@redhat.com> wrote:
 >
-> Call send_sig_info in PTRACE_KILL instead of ptrace_resume.  Calling
-> ptrace_resume is not safe to call if the task has not been stopped
-> with ptrace_freeze_traced.
-
-Oh, I was never, never able to understand why do we have PTRACE_KILL
-and what should it actually do.
-
-I suggested many times to simply remove it but OK, we probably can't
-do this.
-
-> --- a/kernel/ptrace.c
-> +++ b/kernel/ptrace.c
-> @@ -1238,7 +1238,7 @@ int ptrace_request(struct task_struct *child, long request,
->  	case PTRACE_KILL:
->  		if (child->exit_state)	/* already dead */
->  			return 0;
-> -		return ptrace_resume(child, request, SIGKILL);
-> +		return send_sig_info(SIGKILL, SEND_SIG_NOINFO, child);
-
-Note that currently ptrace(PTRACE_KILL) can never fail (yes, yes, it
-is unsafe), but send_sig_info() can. If we do not remove PTRACE_KILL,
-then I'd suggest
-
-	case PTRACE_KILL:
-		if (!child->exit_state)
-			send_sig_info(SIGKILL);
-		return 0;
-
-to make this change a bit more compatible.
-
-Also, please remove the note about PTRACE_KILL in set_task_blockstep().
-
-Oleg.
+> i915_vma_reopen checked if the vma is closed before without taking the
+> lock. So multiple threads could attempt removing the vma.
+>
+> Instead the lock needs to be taken before actually checking.
+>
+> v2: move struct declaration
+>
+> Cc: Chris Wilson <chris@chris-wilson.co.uk>
+> Cc: intel-gfx@lists.freedesktop.org
+> Cc: dri-devel@lists.freedesktop.org
+> Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/5732
+> Signed-off-by: Karol Herbst <kherbst@redhat.com>
+> ---
+>  drivers/gpu/drm/i915/i915_vma.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/i915/i915_vma.c b/drivers/gpu/drm/i915/i915_vma.c
+> index 162e8d83691b..2efdad2b43fa 100644
+> --- a/drivers/gpu/drm/i915/i915_vma.c
+> +++ b/drivers/gpu/drm/i915/i915_vma.c
+> @@ -1615,17 +1615,17 @@ void i915_vma_close(struct i915_vma *vma)
+>
+>  static void __i915_vma_remove_closed(struct i915_vma *vma)
+>  {
+> -       struct intel_gt *gt = vma->vm->gt;
+> -
+> -       spin_lock_irq(&gt->closed_lock);
+>         list_del_init(&vma->closed_link);
+> -       spin_unlock_irq(&gt->closed_lock);
+>  }
+>
+>  void i915_vma_reopen(struct i915_vma *vma)
+>  {
+> +       struct intel_gt *gt = vma->vm->gt;
+> +
+> +       spin_lock_irq(&gt->closed_lock);
+>         if (i915_vma_is_closed(vma))
+>                 __i915_vma_remove_closed(vma);
+> +       spin_unlock_irq(&gt->closed_lock);
+>  }
+>
+>  static void force_unbind(struct i915_vma *vma)
+> @@ -1641,6 +1641,7 @@ static void force_unbind(struct i915_vma *vma)
+>  static void release_references(struct i915_vma *vma, bool vm_ddestroy)
+>  {
+>         struct drm_i915_gem_object *obj = vma->obj;
+> +       struct intel_gt *gt = vma->vm->gt;
+>
+>         GEM_BUG_ON(i915_vma_is_active(vma));
+>
+> @@ -1651,7 +1652,9 @@ static void release_references(struct i915_vma *vma, bool vm_ddestroy)
+>
+>         spin_unlock(&obj->vma.lock);
+>
+> +       spin_lock_irq(&gt->closed_lock);
+>         __i915_vma_remove_closed(vma);
+> +       spin_unlock_irq(&gt->closed_lock);
+>
+>         if (vm_ddestroy)
+>                 i915_vm_resv_put(vma->vm);
+> --
+> 2.35.1
+>
 
