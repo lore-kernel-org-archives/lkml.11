@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC9F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 08:47:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 128B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 08:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383759AbiEBIug (ORCPT
+        id S1351536AbiEBIvB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 04:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46498 "EHLO
+        Mon, 2 May 2022 04:51:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383870AbiEBIuU (ORCPT
+        with ESMTP id S1383867AbiEBIuc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 04:50:20 -0400
+        Mon, 2 May 2022 04:50:32 -0400
 Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8C57D57B16;
-        Mon,  2 May 2022 01:46:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7686F4665A;
+        Mon,  2 May 2022 01:47:00 -0700 (PDT)
 Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 2428kHjO024175;
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 2428kHob024177;
         Mon, 2 May 2022 10:46:17 +0200
 From:   Willy Tarreau <w@1wt.eu>
 To:     netdev@vger.kernel.org
@@ -29,9 +29,9 @@ Cc:     David Miller <davem@davemloft.net>,
         Amit Klein <aksecurity@gmail.com>,
         "Jason A . Donenfeld" <Jason@zx2c4.com>,
         linux-kernel@vger.kernel.org, Willy Tarreau <w@1wt.eu>
-Subject: [PATCH v3 net 2/7] tcp: use different parts of the port_offset for index and offset
-Date:   Mon,  2 May 2022 10:46:09 +0200
-Message-Id: <20220502084614.24123-3-w@1wt.eu>
+Subject: [PATCH v3 net 4/7] tcp: add small random increments to the source port
+Date:   Mon,  2 May 2022 10:46:11 +0200
+Message-Id: <20220502084614.24123-5-w@1wt.eu>
 X-Mailer: git-send-email 2.17.5
 In-Reply-To: <20220502084614.24123-1-w@1wt.eu>
 References: <20220502084614.24123-1-w@1wt.eu>
@@ -39,33 +39,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Amit Klein suggests that we use different parts of port_offset for the
-table's index and the port offset so that there is no direct relation
-between them.
+Here we're randomly adding between 0 and 7 random increments to the
+selected source port in order to add some noise in the source port
+selection that will make the next port less predictable.
 
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+With the default port range of 32768-60999 this means a worst case
+reuse scenario of 14116/8=1764 connections between two consecutive
+uses of the same port, with an average of 14116/4.5=3137. This code
+was stressed at more than 800000 connections per second to a fixed
+target with all connections closed by the client using RSTs (worst
+condition) and only 2 connections failed among 13 billion, despite
+the hash being reseeded every 10 seconds, indicating a perfectly
+safe situation.
+
 Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
 Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
 Cc: Amit Klein <aksecurity@gmail.com>
 Reviewed-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 ---
- net/ipv4/inet_hashtables.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/inet_hashtables.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 9d24d9319f3d..29c701cd8312 100644
+index 29c701cd8312..63bb4902f018 100644
 --- a/net/ipv4/inet_hashtables.c
 +++ b/net/ipv4/inet_hashtables.c
-@@ -777,7 +777,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 	net_get_random_once(table_perturb, sizeof(table_perturb));
- 	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
+@@ -833,11 +833,12 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 	return -EADDRNOTAVAIL;
  
--	offset = READ_ONCE(table_perturb[index]) + port_offset;
-+	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
- 	offset %= remaining;
+ ok:
+-	/* If our first attempt found a candidate, skip next candidate
+-	 * in 1/16 of cases to add some noise.
++	/* Here we want to add a little bit of randomness to the next source
++	 * port that will be chosen. We use a max() with a random here so that
++	 * on low contention the randomness is maximal and on high contention
++	 * it may be inexistent.
+ 	 */
+-	if (!i && !(prandom_u32() % 16))
+-		i = 2;
++	i = max_t(int, i, (prandom_u32() & 7) * 2);
+ 	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
  
- 	/* In first pass we try ports of @low parity.
+ 	/* Head lock still held and bh's disabled */
 -- 
 2.17.5
 
