@@ -2,356 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69087C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E0B1C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 23:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232593AbiEBX0O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 19:26:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51346 "EHLO
+        id S233386AbiEBX0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 19:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233669AbiEBXYH (ORCPT
+        with ESMTP id S232273AbiEBXYM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 19:24:07 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A5BE68
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 16:20:32 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f7c5767f0fso147569337b3.4
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 16:20:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc:content-transfer-encoding;
-        bh=0TAk0nmCubnIEtozmQWacfwQLEk6ByxDGz3r/lPj7cw=;
-        b=lOWN9rzefUZ0edT8p5y5ADSerTjzqQHH9B8Nx9+g/DzybZnZQFIPC1y1vylXUAhzfb
-         48EacZnRhJFPXZQnt/XiOyLfjrQio+ZgDr5kxqEy2Z8uSsjG6bAXhCcwX0FCFwXnLLK1
-         zfZiHsSyWXuf4f0sxVZoQgNabkLSRI9n0GtF0YXaDPKpPrkkcifa0we7kaGwCNKAFgfM
-         mYUJ0njkyRtiW5Uuwbij4ddqTS4Fg9nbKBRaO4bqn2W8tXmtovV2++Q87iR0d3N0RqzA
-         Xz+T3RXQ3HfD8rg4u/fWinrkS2DnsuMDBlKjgdMo6p7C3PsDTRRKcxZRElpEqI3ZmrlX
-         1Gbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc:content-transfer-encoding;
-        bh=0TAk0nmCubnIEtozmQWacfwQLEk6ByxDGz3r/lPj7cw=;
-        b=rvgVE+MKLQFsd/tCpA7BNN/UwN+v3Y/bcnsyxDZUMmGMRTo0t8sfHX/8qRY9yYlSA/
-         Urb5LxleXytyjYx4XYNT3QMwAzHeJsKHUJWbSqurQfsgwwLxx1S9QRrNWlg77Nvj6rzF
-         p/Bc5vPTUwbMcThXOwN2cRBQ54pxNuCOM+ilqI1Z88EYXI88YXghd1mSzozalO5Tfrzq
-         G52IBfvh1A12al2mjAbMlHJfeYKlJPR2U7riWBF6PumaRQE/LaBAJ/pAqts2VU3dSxmD
-         zRayNvyDf9v5tcQWGIunzkxKbmDNyDwYcmzjxmcjiquUISNGNu4G2lUvetuLxrnT57mi
-         Brcw==
-X-Gm-Message-State: AOAM5321sK2fKXWHVK6C/dVBqesVW0ZqB1iqjCbkmLOJzd3HFseVesgc
-        tB1jMIHA1LJkfMjg9FYvS2NJ1mPBMTB6DOI=
-X-Google-Smtp-Source: ABdhPJyZJbG0ZG2PPgW/AhQlPJhLbqn/wtOk6UM6bU5+W9xCurl8VcjAduCdRLPhG2ZDDa9ZHojEC5JktltKEOI=
-X-Received: from tj.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:53a])
- (user=tjmercier job=sendgmr) by 2002:a05:6902:52:b0:645:bd1:970e with SMTP id
- m18-20020a056902005200b006450bd1970emr11802500ybh.413.1651533624083; Mon, 02
- May 2022 16:20:24 -0700 (PDT)
-Date:   Mon,  2 May 2022 23:19:39 +0000
-In-Reply-To: <20220502231944.3891435-1-tjmercier@google.com>
-Message-Id: <20220502231944.3891435-6-tjmercier@google.com>
-Mime-Version: 1.0
-References: <20220502231944.3891435-1-tjmercier@google.com>
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v6 5/6] binder: Add flags to relinquish ownership of fds
-From:   "T.J. Mercier" <tjmercier@google.com>
-To:     tjmercier@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "=?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?=" <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        "=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>
-Cc:     daniel@ffwll.ch, tj@kernel.org, jstultz@google.com,
-        cmllamas@google.com, kaleshsingh@google.com, Kenny.Ho@amd.com,
-        mkoutny@suse.com, skhan@linuxfoundation.org,
-        kernel-team@android.com, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 2 May 2022 19:24:12 -0400
+Received: from mail104.syd.optusnet.com.au (mail104.syd.optusnet.com.au [211.29.132.246])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 41BEE63CB;
+        Mon,  2 May 2022 16:20:40 -0700 (PDT)
+Received: from dread.disaster.area (pa49-181-2-147.pa.nsw.optusnet.com.au [49.181.2.147])
+        by mail104.syd.optusnet.com.au (Postfix) with ESMTPS id 71A01534701;
+        Tue,  3 May 2022 09:20:38 +1000 (AEST)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1nlfLH-007IoG-TM; Tue, 03 May 2022 09:20:35 +1000
+Date:   Tue, 3 May 2022 09:20:35 +1000
+From:   Dave Chinner <david@fromorbit.com>
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Cc:     Nitesh Shetty <nj.shetty@samsung.com>, linux-block@vger.kernel.org,
+        linux-scsi@vger.kernel.org, dm-devel@redhat.com,
+        linux-nvme@lists.infradead.org, linux-fsdevel@vger.kernel.org,
+        nitheshshetty@gmail.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 00/10] Add Copy offload support
+Message-ID: <20220502232035.GE1360180@dread.disaster.area>
+References: <CGME20220426101804epcas5p4a0a325d3ce89e868e4924bbdeeba6d15@epcas5p4.samsung.com>
+ <20220426101241.30100-1-nj.shetty@samsung.com>
+ <6a85e8c8-d9d1-f192-f10d-09052703c99a@opensource.wdc.com>
+ <20220427124951.GA9558@test-zns>
+ <20220502040951.GC1360180@dread.disaster.area>
+ <46e95412-9a79-51f8-3d52-caed4875d41f@opensource.wdc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <46e95412-9a79-51f8-3d52-caed4875d41f@opensource.wdc.com>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.4 cv=e9dl9Yl/ c=1 sm=1 tr=0 ts=62706747
+        a=ivVLWpVy4j68lT4lJFbQgw==:117 a=ivVLWpVy4j68lT4lJFbQgw==:17
+        a=IkcTkHD0fZMA:10 a=oZkIemNP1mAA:10 a=7-415B0cAAAA:8
+        a=kuBEN3JhnRn9nEiEWMwA:9 a=QEXdDO2ut3YA:10 a=biEYGPWJfzWAr4FL6Ov7:22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hridya Valsaraju <hridya@google.com>
+On Mon, May 02, 2022 at 09:54:55PM +0900, Damien Le Moal wrote:
+> On 2022/05/02 13:09, Dave Chinner wrote:
+> > On Wed, Apr 27, 2022 at 06:19:51PM +0530, Nitesh Shetty wrote:
+> >> O Wed, Apr 27, 2022 at 11:19:48AM +0900, Damien Le Moal wrote:
+> >>> On 4/26/22 19:12, Nitesh Shetty wrote:
+> >>>> The patch series covers the points discussed in November 2021 virtual call
+> >>>> [LSF/MM/BFP TOPIC] Storage: Copy Offload[0].
+> >>>> We have covered the Initial agreed requirements in this patchset.
+> >>>> Patchset borrows Mikulas's token based approach for 2 bdev
+> >>>> implementation.
+> >>>>
+> >>>> Overall series supports –
+> >>>>
+> >>>> 1. Driver
+> >>>> - NVMe Copy command (single NS), including support in nvme-target (for
+> >>>>     block and file backend)
+> >>>
+> >>> It would also be nice to have copy offload emulation in null_blk for testing.
+> >>>
+> >>
+> >> We can plan this in next phase of copy support, once this series settles down.
+> > 
+> > Why not just hook the loopback driver up to copy_file_range() so
+> > that the backend filesystem can just reflink copy the ranges being
+> > passed? That would enable testing on btrfs, XFS and NFSv4.2 hosted
+> > image files without needing any special block device setup at all...
+> 
+> That is a very good idea ! But that will cover only the non-zoned case. For copy
+> offload on zoned devices, adding support in null_blk is probably the simplest
+> thing to do.
 
-This patch introduces flags BINDER_FD_FLAG_XFER_CHARGE, and
-BINDER_FD_FLAG_XFER_CHARGE that a process sending an individual fd or
-fd array to another process over binder IPC can set to relinquish
-ownership of the fds being sent for memory accounting purposes. If the
-flag is found to be set during the fd or fd array translation and the
-fd is for a DMA-BUF, the buffer is uncharged from the sender's cgroup
-and charged to the receiving process's cgroup instead.
+Sure, but that's a zone device implementation issue, not a "how do
+applications use this offload" issue.
 
-It is up to the sending process to ensure that it closes the fds
-regardless of whether the transfer failed or succeeded.
+i.e. zonefs support is not necessary to test the bio/block layer
+interfaces at all. All we need is a block device that can decode the
+bio-encoded offload packet and execute it to do full block layer
+testing. We can build dm devices on top of loop devices, etc, so we
+can test that the oflload support is plumbed, sliced, diced, and
+regurgitated correctly that way. We don't need actual low level
+device drivers to test this.
 
-Most graphics shared memory allocations in Android are done by the
-graphics allocator HAL process. On requests from clients, the HAL process
-allocates memory and sends the fds to the clients over binder IPC.
-The graphics allocator HAL will not retain any references to the
-buffers. When the HAL sets *_FLAG_XFER_CHARGE for fd arrays holding
-DMA-BUF fds, or individual fd objects, the gpu cgroup controller will
-be able to correctly charge the buffers to the client processes instead
-of the graphics allocator HAL.
+And, unlike the nullblk device, using the loopback device w/
+copy_file_range() will also allow data integrity testing if a
+generic copy_file_range() offload implementation is added. That is,
+we test a non-reflink capable filesystem on the loop device with the
+image file hosted on a reflink-capable filesystem. The upper
+filesystem copy then gets offloaded to reflinks in the lower
+filesystem. We already have copy_file_range() support in fsx, so all
+the data integrity fsx tests in fstests will exercise this offload
+path and find all the data corruptions the initial block layer bugs
+expose...
 
-Since this is a new feature exposed to userspace, the kernel and userspace
-must be compatible for the accounting to work for transfers. In all cases
-the allocation and transport of DMA buffers via binder will succeed, but
-only when both the kernel supports, and userspace depends on this feature
-will the transfer accounting work. The possible scenarios are detailed
-below:
+Further, fsstress also has copy_file_range() support, and so all the
+fstests that generate stress tests or use fstress as load for
+failure testing will also exercise it.
 
-1. new kernel + old userspace
-The kernel supports the feature but userspace does not use it. The old
-userspace won't mount the new cgroup controller, accounting is not
-performed, charge is not transferred.
+Indeed, this then gives us fine-grained error injection capability
+within fstests via devices like dm-flakey. What happens when
+dm-flakey kills the device IO mid-offload? Does everything recover
+correctly? Do we end up with data corruption? Are partial offload
+completions when errors occur signalled correctly? Is there -any-
+test coverage (or even capability for testing) of user driven copy
+offload failure situations like this in any of the other test
+suites?
 
-2. old kernel + new userspace
-The new cgroup controller is not supported by the kernel, accounting is
-not performed, charge is not transferred.
+I mean, once the loop device has cfr offload, we can use dm-flakey
+to kill IO in the image file or even do a force shutdown of the
+image host filesystem. Hence we can actually trash the copy offload
+operation in mid-flight, not just error it out on full completion.
+This is trivial to do with the fstests infrastructure - it just
+relies on having generic copy_file_range() block offload support and
+a loopback device offload of hardware copy bios back to
+copy_file_range()....
 
-3. old kernel + old userspace
-Same as #2
+This is what I mean about copy offload being designed the wrong way.
+We have the high level hooks needed to implement it right though the
+filesystems and block layer without any specific hardware support,
+and we can test the whole stack without needing specific hardware
+support. We already have filesystem level copy offload acceleration,
+so the last thing we want to see is a block layer offload
+implementation that is incompatible with the semantics we've already
+exposed to userspace for copy offloads.
 
-4. new kernel + new userspace
-Cgroup is mounted, feature is supported and used.
+As I said:
 
-Signed-off-by: Hridya Valsaraju <hridya@google.com>
-Signed-off-by: T.J. Mercier <tjmercier@google.com>
+> > i.e. I think you're doing this compeltely backwards by trying to
+> > target non-existent hardware first....
 
----
-v6 changes
-Rename BINDER_FD{A}_FLAG_SENDER_NO_NEED ->
-BINDER_FD{A}_FLAG_XFER_CHARGE per Carlos Llamas.
+Rather than tie the block layer offload function/implementation to
+the specific quirks of a specific target hardware, we should be
+adding generic support in the block layer for the copy offload
+semantics we've already exposed to userspace. We already have test
+coverage and infrastructure for this interface and is already in use
+by applications.
 
-Return error on transfer failure per Carlos Llamas.
+Transparent hardware acceleration of data copies when the hardware
+supports it is exactly where copy offloads are useful - implementing
+support based around hardware made of unobtainium and then adding
+high level user facing API support as an afterthought is putting the
+cart before the horse. We need to make sure the high level
+functionality is robust and handles errors correctly before we even
+worry about what quirks the hardware might bring to the table.
 
-v5 changes
-Support both binder_fd_array_object and binder_fd_object. This is
-necessary because new versions of Android will use binder_fd_object
-instead of binder_fd_array_object, and we need to support both.
+Build a reference model first with the loop device and
+copy-file-range, test it, validate it, make sure it all works. Then
+hook up the hardware, and fix all the hardware bugs that are exposed
+before the hardware is released to the general public....
 
-Use the new, simpler dma_buf_transfer_charge API.
+Why haven't we learnt this lesson yet from all the problems we've
+had with, say, broken discard/trim, zeroing, erase, etc in hardware
+implementations, incompatible hardware protocol implementations of
+equivalent functionality, etc? i.e. We haven't defined the OS
+required behaviour that hardware must support and instead just tried
+to make whatever has come from the hardware vendor's
+"standarisation" process work ok?
 
-v3 changes
-Remove android from title per Todd Kjos.
+In this case, we already have a functioning model, syscalls and user
+applications making use of copy offloads at the OS level. Now we
+need to implement those exact semantics at the block layer to build
+a validated reference model for the block layer offload behaviour
+that hardware must comply with. Then hardware offloads in actual
+hardware can be compared and validated against the reference model
+behaviour, and any hardware that doesn't match can be
+quirked/blacklisted until the manufacturer fixes their firmware...
 
-Use more common dual author commit message format per John Stultz.
+Cheers,
 
-Include details on behavior for all combinations of kernel/userspace
-versions in changelog (thanks Suren Baghdasaryan) per Greg Kroah-Hartman.
-
-v2 changes
-Move dma-buf cgroup charge transfer from a dma_buf_op defined by every
-heap to a single dma-buf function for all heaps per Daniel Vetter and
-Christian K=C3=B6nig.
----
- drivers/android/binder.c            | 31 +++++++++++++++++++++++++----
- drivers/dma-buf/dma-buf.c           |  4 ++--
- include/linux/dma-buf.h             |  2 +-
- include/uapi/linux/android/binder.h | 23 +++++++++++++++++----
- 4 files changed, 49 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/android/binder.c b/drivers/android/binder.c
-index 8351c5638880..1f39b24498f1 100644
---- a/drivers/android/binder.c
-+++ b/drivers/android/binder.c
-@@ -42,6 +42,7 @@
-=20
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-=20
-+#include <linux/dma-buf.h>
- #include <linux/fdtable.h>
- #include <linux/file.h>
- #include <linux/freezer.h>
-@@ -2170,7 +2171,7 @@ static int binder_translate_handle(struct flat_binder=
-_object *fp,
- 	return ret;
- }
-=20
--static int binder_translate_fd(u32 fd, binder_size_t fd_offset,
-+static int binder_translate_fd(u32 fd, binder_size_t fd_offset, __u32 flag=
-s,
- 			       struct binder_transaction *t,
- 			       struct binder_thread *thread,
- 			       struct binder_transaction *in_reply_to)
-@@ -2208,6 +2209,26 @@ static int binder_translate_fd(u32 fd, binder_size_t=
- fd_offset,
- 		goto err_security;
- 	}
-=20
-+	if (IS_ENABLED(CONFIG_CGROUP_GPU) && (flags & BINDER_FD_FLAG_XFER_CHARGE)=
-) {
-+		struct dma_buf *dmabuf;
-+
-+		if (!is_dma_buf_file(file)) {
-+			binder_user_error(
-+				"%d:%d got transaction with XFER_CHARGE for non-dmabuf fd, %d\n",
-+				proc->pid, thread->pid, fd);
-+			ret =3D -EINVAL;
-+			goto err_dmabuf;
-+		}
-+
-+		dmabuf =3D file->private_data;
-+		ret =3D dma_buf_transfer_charge(dmabuf, target_proc->tsk);
-+		if (ret) {
-+			pr_warn("%d:%d Unable to transfer DMA-BUF fd charge to %d\n",
-+				proc->pid, thread->pid, target_proc->pid);
-+			goto err_xfer;
-+		}
-+	}
-+
- 	/*
- 	 * Add fixup record for this transaction. The allocation
- 	 * of the fd in the target needs to be done from a
-@@ -2226,6 +2247,8 @@ static int binder_translate_fd(u32 fd, binder_size_t =
-fd_offset,
- 	return ret;
-=20
- err_alloc:
-+err_xfer:
-+err_dmabuf:
- err_security:
- 	fput(file);
- err_fget:
-@@ -2528,7 +2551,7 @@ static int binder_translate_fd_array(struct list_head=
- *pf_head,
-=20
- 		ret =3D copy_from_user(&fd, sender_ufda_base + sender_uoffset, sizeof(fd=
-));
- 		if (!ret)
--			ret =3D binder_translate_fd(fd, offset, t, thread,
-+			ret =3D binder_translate_fd(fd, offset, fda->flags, t, thread,
- 						  in_reply_to);
- 		if (ret)
- 			return ret > 0 ? -EINVAL : ret;
-@@ -3179,8 +3202,8 @@ static void binder_transaction(struct binder_proc *pr=
-oc,
- 			struct binder_fd_object *fp =3D to_binder_fd_object(hdr);
- 			binder_size_t fd_offset =3D object_offset +
- 				(uintptr_t)&fp->fd - (uintptr_t)fp;
--			int ret =3D binder_translate_fd(fp->fd, fd_offset, t,
--						      thread, in_reply_to);
-+			int ret =3D binder_translate_fd(fp->fd, fd_offset, fp->flags,
-+						      t, thread, in_reply_to);
-=20
- 			fp->pad_binder =3D 0;
- 			if (ret < 0 ||
-diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-index f3fb844925e2..36ed6cd4ddcc 100644
---- a/drivers/dma-buf/dma-buf.c
-+++ b/drivers/dma-buf/dma-buf.c
-@@ -31,7 +31,6 @@
-=20
- #include "dma-buf-sysfs-stats.h"
-=20
--static inline int is_dma_buf_file(struct file *);
-=20
- struct dma_buf_list {
- 	struct list_head head;
-@@ -400,10 +399,11 @@ static const struct file_operations dma_buf_fops =3D =
-{
- /*
-  * is_dma_buf_file - Check if struct file* is associated with dma_buf
-  */
--static inline int is_dma_buf_file(struct file *file)
-+int is_dma_buf_file(struct file *file)
- {
- 	return file->f_op =3D=3D &dma_buf_fops;
- }
-+EXPORT_SYMBOL_NS_GPL(is_dma_buf_file, DMA_BUF);
-=20
- static struct file *dma_buf_getfile(struct dma_buf *dmabuf, int flags)
- {
-diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
-index 438ad8577b76..2b9812758fee 100644
---- a/include/linux/dma-buf.h
-+++ b/include/linux/dma-buf.h
-@@ -614,7 +614,7 @@ dma_buf_attachment_is_dynamic(struct dma_buf_attachment=
- *attach)
- {
- 	return !!attach->importer_ops;
- }
--
-+int is_dma_buf_file(struct file *file);
- struct dma_buf_attachment *dma_buf_attach(struct dma_buf *dmabuf,
- 					  struct device *dev);
- struct dma_buf_attachment *
-diff --git a/include/uapi/linux/android/binder.h b/include/uapi/linux/andro=
-id/binder.h
-index 11157fae8a8e..d17e791b38ab 100644
---- a/include/uapi/linux/android/binder.h
-+++ b/include/uapi/linux/android/binder.h
-@@ -91,14 +91,14 @@ struct flat_binder_object {
- /**
-  * struct binder_fd_object - describes a filedescriptor to be fixed up.
-  * @hdr:	common header structure
-- * @pad_flags:	padding to remain compatible with old userspace code
-+ * @flags:	One or more BINDER_FD_FLAG_* flags
-  * @pad_binder:	padding to remain compatible with old userspace code
-  * @fd:		file descriptor
-  * @cookie:	opaque data, used by user-space
-  */
- struct binder_fd_object {
- 	struct binder_object_header	hdr;
--	__u32				pad_flags;
-+	__u32				flags;
- 	union {
- 		binder_uintptr_t	pad_binder;
- 		__u32			fd;
-@@ -107,6 +107,17 @@ struct binder_fd_object {
- 	binder_uintptr_t		cookie;
- };
-=20
-+enum {
-+	/**
-+	 * @BINDER_FD_FLAG_XFER_CHARGE
-+	 *
-+	 * When set, the sender of a binder_fd_object wishes to relinquish owners=
-hip of the fd for
-+	 * memory accounting purposes. If the fd is for a DMA-BUF, the buffer is =
-uncharged from the
-+	 * sender's cgroup and charged to the receiving process's cgroup instead.
-+	 */
-+	BINDER_FD_FLAG_XFER_CHARGE =3D 0x2000,
-+};
-+
- /* struct binder_buffer_object - object describing a userspace buffer
-  * @hdr:		common header structure
-  * @flags:		one or more BINDER_BUFFER_* flags
-@@ -141,7 +152,7 @@ enum {
-=20
- /* struct binder_fd_array_object - object describing an array of fds in a =
-buffer
-  * @hdr:		common header structure
-- * @pad:		padding to ensure correct alignment
-+ * @flags:		One or more BINDER_FDA_FLAG_* flags
-  * @num_fds:		number of file descriptors in the buffer
-  * @parent:		index in offset array to buffer holding the fd array
-  * @parent_offset:	start offset of fd array in the buffer
-@@ -162,12 +173,16 @@ enum {
-  */
- struct binder_fd_array_object {
- 	struct binder_object_header	hdr;
--	__u32				pad;
-+	__u32				flags;
- 	binder_size_t			num_fds;
- 	binder_size_t			parent;
- 	binder_size_t			parent_offset;
- };
-=20
-+enum {
-+	BINDER_FDA_FLAG_XFER_CHARGE =3D BINDER_FD_FLAG_XFER_CHARGE,
-+};
-+
- /*
-  * On 64-bit platforms where user code may run in 32-bits the driver must
-  * translate the buffer (and local binder) addresses appropriately.
---=20
-2.36.0.464.gb9c8b46e94-goog
-
+Dave.
+-- 
+Dave Chinner
+david@fromorbit.com
