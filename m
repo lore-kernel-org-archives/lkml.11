@@ -2,111 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D62A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 21:54:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EA17C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 21:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344031AbiEBV6E (ORCPT
+        id S1387757AbiEBWB1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 17:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44890 "EHLO
+        Mon, 2 May 2022 18:01:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387818AbiEBV5W (ORCPT
+        with ESMTP id S1387840AbiEBV7k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 17:57:22 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4C3DECC;
-        Mon,  2 May 2022 14:53:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651528388; x=1683064388;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=qtB4f3PBYa9slEtt0yyA1hwh5ViHIlDuhumSk2JwEV0=;
-  b=uTvOgrNArrROjVjtmWHBbsD57+rAZjAnr3sVlBadiiR98RbX5VO5GwXu
-   Gngj+08BlTB0XsRZ7CaSF3C78kTzV7Trg5+7azcXV1yogGNEay8FUaLV3
-   x9zbGy2inwtKTPlTddXKQk6XYacxAFvmOXqFJTfxy9aWApms8L5PWoBAR
-   c=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 02 May 2022 14:53:08 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 14:53:07 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 2 May 2022 14:53:06 -0700
-Received: from [10.38.244.235] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 2 May 2022
- 14:53:03 -0700
-Message-ID: <0cd21ffb-448f-3dcf-df29-959da50c9108@quicinc.com>
-Date:   Mon, 2 May 2022 14:53:01 -0700
+        Mon, 2 May 2022 17:59:40 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64455F33;
+        Mon,  2 May 2022 14:55:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651528558; x=1683064558;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=xkColIiWzUzT63cjf0p5tiFtU1yhRN1jJlgXlzvVJqY=;
+  b=AfWWk3dqhm8sCaX51ak8gVDAVC/2QTLsqoO3+DlRUDn7w/jboVdQzT+k
+   rMYzpoNIub05Z0u1y3jNK3oCL1PO2P1lDC8uX58BWu/zGvDwqb9HnMLIo
+   2JoacArZzTYA1ROGGEzV3MixzNOOGKgVLQXtfzizqj+Ucyr7z6MhEKpwU
+   V5iobYoQzkW+Nz5xBABrBz1BGomYblJvFUNQ9Zovf1mdQLw7s1Wq++0Oe
+   p9uiZfsVDMAQeUkVBr7EBUrFZtcMFWOOr339iJ7Tlpu3/4lyMp/+j71go
+   8ox4cFUUgzqEtn7R6ir+ExbuJElfGvVnrH9kB2BUyChGyYjbCw2qhVTQs
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="266924602"
+X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
+   d="scan'208";a="266924602"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 14:55:58 -0700
+X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
+   d="scan'208";a="598813198"
+Received: from chgan-mobl1.gar.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.60.238])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 14:55:54 -0700
+Message-ID: <8ba1a3ec3a4c5a02c28476cbb36118f61aea8a6c.camel@intel.com>
+Subject: Re: [PATCH v3 13/21] x86/virt/tdx: Allocate and set up PAMTs for
+ TDMRs
+From:   Kai Huang <kai.huang@intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+Date:   Tue, 03 May 2022 09:55:52 +1200
+In-Reply-To: <8d5715b5-d561-f482-af11-03a9a46e651a@intel.com>
+References: <cover.1649219184.git.kai.huang@intel.com>
+         <ffc2eefdd212a31278978e8bfccd571355db69b0.1649219184.git.kai.huang@intel.com>
+         <c9b17e50-e665-3fc6-be8c-5bb16afa784e@intel.com>
+         <3664ab2a8e0b0fcbb4b048b5c3aa5a6e85f9618a.camel@intel.com>
+         <5984b61f-6a4a-c12a-944d-f4a78bdefc3d@intel.com>
+         <af603d66512ec5dca0c240cf81c83de7dfe730e7.camel@intel.com>
+         <8d5715b5-d561-f482-af11-03a9a46e651a@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH] drm/msm/dp: fix event thread stuck in wait_event after
- kthread_sop()
-Content-Language: en-US
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <swboyd@chromium.org>, <dianders@chromium.org>,
-        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
-        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
-        <bjorn.andersson@linaro.org>
-CC:     <quic_aravindh@quicinc.com>, <quic_sbillaka@quicinc.com>,
-        <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1651528223-882-1-git-send-email-quic_khsieh@quicinc.com>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <1651528223-882-1-git-send-email-quic_khsieh@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, 2022-05-02 at 07:17 -0700, Dave Hansen wrote:
+> On 5/1/22 22:59, Kai Huang wrote:
+> > On Fri, 2022-04-29 at 07:20 -0700, Dave Hansen wrote:
+> > How about adding below in the changelog:
+> > 
+> > "
+> > However using alloc_contig_pages() to allocate large physically contiguous
+> > memory at runtime may fail.  The larger the allocation, the more likely it is to
+> > fail.  Due to the fragmentation, the kernel may need to move pages out of the
+> > to-be-allocated contiguous memory range but it may fail to move even the last
+> > stubborn page.  A good way (although not foolproof) is to launch a TD VM early
+> > in boot to get PAMTs allocated before memory gets fragmented or consumed.
+> > "
+> 
+> Better, although it's getting a bit off topic for this changelog.
+> 
+> Just be short and sweet:
+> 
+> 1. the allocation can fail
+> 2. Launch a VM early to (badly) mitigate this
+> 3. the only way to fix it is to add a boot option
+> 
+OK. Thanks.
+
+> 
+> > > > > > +	/*
+> > > > > > +	 * One TDMR must cover at least one (or partial) RAM entry,
+> > > > > > +	 * otherwise it is kernel bug.  WARN_ON() in this case.
+> > > > > > +	 */
+> > > > > > +	if (WARN_ON_ONCE((start >= end) || start >= TDMR_END(tdmr)))
+> > > > > > +		return 0;
+> > > 
+> > > This really means "no RAM found for this TDMR", right?  Can we say that,
+> > > please.
+> > 
+> > OK will add it.  How about:
+> > 
+> > 	/*
+> > 	 * No RAM found for this TDMR.  WARN() in this case, as it
+> > 	 * cannot happen otherwise it is a kernel bug.
+> > 	 */
+> 
+> The only useful information in that comment is the first sentence.  The
+> jibberish about WARN() is patently obvious from the next two lines of code.
+> 
+> *WHY* can't this happen?  How might it have actually happened?
+
+When TDMRs are created, we already have made sure one TDMR must cover at least
+one or partial RAM entry.
+
+-- 
+Thanks,
+-Kai
 
 
-On 5/2/2022 2:50 PM, Kuogee Hsieh wrote:
-> Event thread supposed to exit from its while loop after kthread_stop().
-> However there may has possibility that event thread is pending in the
-> middle of wait_event due to condition checking never become true.
-> To make sure event thread exit its loop after kthread_stop(), this
-> patch OR kthread_should_stop() into wait_event's condition checking
-> so that event thread will exit its loop after kernal_stop().
-> 
-Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Fixes: 570d3e5d28db ("drm/msm/dp: stop event kernel thread when DP unbind")
-> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-> ---
->   drivers/gpu/drm/msm/dp/dp_display.c | 11 ++++++++---
->   1 file changed, 8 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-> index c388323..5200a58 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_display.c
-> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
-> @@ -1106,12 +1106,17 @@ static int hpd_event_thread(void *data)
->   	while (!kthread_should_stop()) {
->   		if (timeout_mode) {
->   			wait_event_timeout(dp_priv->event_q,
-> -				(dp_priv->event_pndx == dp_priv->event_gndx),
-> -						EVENT_TIMEOUT);
-> +				((dp_priv->event_pndx == dp_priv->event_gndx) ||
-> +					kthread_should_stop()), EVENT_TIMEOUT);
->   		} else {
->   			wait_event_interruptible(dp_priv->event_q,
-> -				(dp_priv->event_pndx != dp_priv->event_gndx));
-> +				((dp_priv->event_pndx != dp_priv->event_gndx) ||
-> +					kthread_should_stop()));
->   		}
-> +
-> +		if(kthread_should_stop())
-> +			break;
-> +
->   		spin_lock_irqsave(&dp_priv->event_lock, flag);
->   		todo = &dp_priv->event_list[dp_priv->event_gndx];
->   		if (todo->delay) {
