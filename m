@@ -2,128 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38611C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:18:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F9AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386648AbiEBRVa (ORCPT
+        id S1386654AbiEBRVd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 13:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59170 "EHLO
+        Mon, 2 May 2022 13:21:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386621AbiEBRVQ (ORCPT
+        with ESMTP id S1386634AbiEBRVV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 13:21:16 -0400
-X-Greylist: delayed 406 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 02 May 2022 10:17:46 PDT
-Received: from forward107p.mail.yandex.net (forward107p.mail.yandex.net [77.88.28.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20288AE7C
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:17:46 -0700 (PDT)
-Received: from forward101q.mail.yandex.net (forward101q.mail.yandex.net [IPv6:2a02:6b8:c0e:4b:0:640:4012:bb98])
-        by forward107p.mail.yandex.net (Yandex) with ESMTP id 6AA90556E59B;
-        Mon,  2 May 2022 20:10:59 +0300 (MSK)
-Received: from vla1-166bfab327a3.qloud-c.yandex.net (vla1-166bfab327a3.qloud-c.yandex.net [IPv6:2a02:6b8:c0d:3007:0:640:166b:fab3])
-        by forward101q.mail.yandex.net (Yandex) with ESMTP id 6613D13E80002;
-        Mon,  2 May 2022 20:10:59 +0300 (MSK)
-Received: from vla3-3dd1bd6927b2.qloud-c.yandex.net (vla3-3dd1bd6927b2.qloud-c.yandex.net [2a02:6b8:c15:350f:0:640:3dd1:bd69])
-        by vla1-166bfab327a3.qloud-c.yandex.net (mxback/Yandex) with ESMTP id TVcvmXr5ZA-AxgKLj8a;
-        Mon, 02 May 2022 20:10:59 +0300
-X-Yandex-Fwd: 2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lach.pw; s=mail; t=1651511459;
-        bh=Agoq4DRar/aNcme/ep3h/Ph9puEsY2Ulitbie9lM8hE=;
-        h=In-Reply-To:References:Date:Subject:Cc:To:From:Message-Id;
-        b=hp1HvciOXsQY1mQw5MW7itL9JqwMvVo0pNZPz/tzCcJaHaD0DXBXN6Qbo8Bv/+Wti
-         CWxJig41NJgQCkv5/S1e0xX00OKSZQ9TfQKyxE61LdlECV+X+QJr5J8cWkAiKqKpnw
-         HV2w/MDwpnH/k5SiMrAJMbSyIhd7HJuqBD7jaass=
-Authentication-Results: vla1-166bfab327a3.qloud-c.yandex.net; dkim=pass header.i=@lach.pw
-Received: by vla3-3dd1bd6927b2.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id xTgxo8AHyR-AuMSB13b;
-        Mon, 02 May 2022 20:10:58 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-From:   Yaroslav Bolyukin <iam@lach.pw>
-To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        "Lin, Wayne" <Wayne.Lin@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Yaroslav Bolyukin <iam@lach.pw>
-Subject: [RESEND PATCH v2 2/2] drm/amd: use fixed dsc bits-per-pixel from edid
-Date:   Mon,  2 May 2022 20:10:31 +0300
-Message-Id: <20220502171031.11797-2-iam@lach.pw>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220502171031.11797-1-iam@lach.pw>
-References: <20220220151940.58327-1-iam@lach.pw>
- <20220502171031.11797-1-iam@lach.pw>
+        Mon, 2 May 2022 13:21:21 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72596B7D4;
+        Mon,  2 May 2022 10:17:48 -0700 (PDT)
+Received: (Authenticated sender: joao@overdrivepizza.com)
+        by mail.gandi.net (Postfix) with ESMTPA id BA33C1BF205;
+        Mon,  2 May 2022 17:17:42 +0000 (UTC)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Date:   Mon, 02 May 2022 10:17:42 -0700
+From:   Joao Moreira <joao@overdrivepizza.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        peterz@infradead.org, andrew.cooper3@citrix.com,
+        keescook@chromium.org, samitolvanen@google.com,
+        mark.rutland@arm.com, hjl.tools@gmail.com,
+        alyssa.milburn@linux.intel.com, ndesaulniers@google.com,
+        gabriel.gomes@linux.intel.com, rick.p.edgecombe@intel.com
+Subject: Re: [RFC PATCH 01/11] x86: kernel FineIBT
+In-Reply-To: <20220429013704.4n4lmadpstdioe7a@treble>
+References: <20220420004241.2093-1-joao@overdrivepizza.com>
+ <20220420004241.2093-2-joao@overdrivepizza.com>
+ <20220429013704.4n4lmadpstdioe7a@treble>
+Message-ID: <d82459b887bcaf9181ad836051e2d16b@overdrivepizza.com>
+X-Sender: joao@overdrivepizza.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VESA vendor header from DisplayID spec may contain fixed bit per pixel
-rate, it should be respected by drm driver
+On 2022-04-28 18:37, Josh Poimboeuf wrote:
+> On Tue, Apr 19, 2022 at 05:42:31PM -0700, joao@overdrivepizza.com 
+> wrote:
+>> +void __noendbr __fineibt_handler(void){
+>> +	unsigned i;
+>> +	unsigned long flags;
+>> +	bool skip;
+>> +	void * ret;
+>> +	void * caller;
+>> +
+>> +	DO_ALL_PUSHS;
+> 
+> So this function isn't C ABI compliant, right? e.g. the compiler just
+> calls the handler without regard for preserving registers?
+> 
+> If this function is going to be implemented in C, it should probably
+> have an asm thunk wrapper which can properly save/restore the registers
+> before calling into the C version.
+> 
+> Even better, if the compiler did an invalid op (UD2?), which I think 
+> you
+> mentioned elsewhere, instead of calling the handler directly, and there
+> were a way for the trap code to properly detect it as a FineIBT
+> violation, we could get rid of the pushes/pops, plus the uaccess 
+> objtool
+> warning from patch 7, plus I'm guessing a bunch of noinstr validation
+> warnings.
 
-Signed-off-by: Yaroslav Bolyukin <iam@lach.pw>
-Reviewed-by: Wayne Lin <Wayne.Lin@amd.com>
----
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c | 2 ++
- drivers/gpu/drm/amd/display/dc/core/dc_stream.c           | 3 ++-
- drivers/gpu/drm/amd/display/dc/dc_types.h                 | 3 +++
- 3 files changed, 7 insertions(+), 1 deletion(-)
+Cool, I'll try to come up with something!
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-index f5f39984702f..5565d55f56f9 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-@@ -119,6 +119,8 @@ enum dc_edid_status dm_helpers_parse_edid_caps(
- 
- 	edid_caps->edid_hdmi = connector->display_info.is_hdmi;
- 
-+	edid_caps->dsc_fixed_bits_per_pixel_x16 = connector->display_info.dp_dsc_bpp;
-+
- 	sad_count = drm_edid_to_sad((struct edid *) edid->raw_edid, &sads);
- 	if (sad_count <= 0)
- 		return result;
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_stream.c b/drivers/gpu/drm/amd/display/dc/core/dc_stream.c
-index c4e871f358ab..65c90e432a39 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc_stream.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_stream.c
-@@ -105,6 +105,8 @@ static bool dc_stream_construct(struct dc_stream_state *stream,
- 
- 	/* EDID CAP translation for HDMI 2.0 */
- 	stream->timing.flags.LTE_340MCSC_SCRAMBLE = dc_sink_data->edid_caps.lte_340mcsc_scramble;
-+	stream->timing.dsc_fixed_bits_per_pixel_x16 =
-+		dc_sink_data->edid_caps.dsc_fixed_bits_per_pixel_x16;
- 
- 	memset(&stream->timing.dsc_cfg, 0, sizeof(stream->timing.dsc_cfg));
- 	stream->timing.dsc_cfg.num_slices_h = 0;
-@@ -773,4 +775,3 @@ void dc_stream_log(const struct dc *dc, const struct dc_stream_state *stream)
- 		}
- 	}
- }
--
-diff --git a/drivers/gpu/drm/amd/display/dc/dc_types.h b/drivers/gpu/drm/amd/display/dc/dc_types.h
-index 2ba9f528c0fe..e53c414b6c93 100644
---- a/drivers/gpu/drm/amd/display/dc/dc_types.h
-+++ b/drivers/gpu/drm/amd/display/dc/dc_types.h
-@@ -228,6 +228,9 @@ struct dc_edid_caps {
- 	bool edid_hdmi;
- 	bool hdr_supported;
- 
-+	/* DisplayPort caps */
-+	uint32_t dsc_fixed_bits_per_pixel_x16;
-+
- 	struct dc_panel_patch panel_patch;
- };
- 
--- 
-2.35.1
+> 
+>> +
+>> +	spin_lock_irqsave(&fineibt_lock, flags);
+>> +	skip = false;
+>> +
+>> +	asm("\t movq 0x90(%%rsp),%0" : "=r"(ret));
+>> +	asm("\t movq 0x98(%%rsp),%0" : "=r"(caller));
+> 
+> This is making some questionable assumptions about the stack layout.
+> 
+> I assume this function is still in the prototype stage ;-)
 
+Yeah, this is just a messy instrumentation to get reports about 
+mismatching prototypes (as the ones reported further down the series).
+
+The issue with having the call is that it bloats the binary, so the ud2 
+is 3-bytes-per-function better. Yet, we may consider a FINEIBT_DEBUG 
+config, which can then enable a handler. This would be useful together 
+with a fuzzer or a stress tool to cover possible control-flow paths 
+within the kernel and map mismatching prototypes more properly I guess.
+
+> 
+>> +	if(!skip) {
+>> +		printk("FineIBT violation: %px:%px:%u\n", ret, caller,
+>> +				vlts_next);
+>> +	}
+>> +	DO_ALL_POPS;
+>> +}
+> 
+> Right now this handler just does a printk if it hasn't already for this
+> caller/callee combo, and then resumes control.  Which is fine for
+> debugging, but it really needs to behave similarly to an IBT violation,
+> by panicking unless "ibt=warn" on the cmdline.
+> 
+> Not sure what would happen for "ibt=off"?  Maybe apply_ibt_endbr() 
+> could
+> NOP out all the FineIBT stuff.
+
+Either that, or...
+
+I'm thinking about a way to have FineIBT interchangeable with KCFI. 
+Currently KCFI adds a 4 byte hash + 2 byte nops before function entry, 
+to allow for proper prototype checking. After that, there should be an 
+ENDBR of 4 bytes. This gives us 10 bytes in total. Then, my yet to be 
+properly thought idea would be patch these 10 bytes with:
+
+endbr
+call fineibt_handler_<$HASH>
+nop
+
+and then, on the caller side, patch the "cmp <$HASH>, -0x6(%r11); je; 
+ud2; call" sequence with a "sub 0x6, r11; mov $HASH, %r10; call %r11, 
+add 0x6 %r11". This would then allow the kernel to verify if the CPU is 
+IBT capable on boot time and only then setting the proper scheme.
+
+The downsides of having something like this would be that this sub 
+r11/add r11 sequence is kinda meh. We can avoid that by having two 
+padding nops after the original ENDBR, which will be skipped when the 
+function is reached directly by the linker optimization I'm working on, 
+and that we can convert into a JMP -offset that makes control flow reach 
+the padding area before the prologue and from where we can call the 
+fineibt_handler function. The resulting instrumentation would be 
+something like:
+
+1:
+call fineibt_handler_<$HASH>
+jmp 2f
+<foo>
+endbr
+jmp 1b
+2:
+
+Also, it would prevent a paranoid user to have both schemes 
+simultaneously (there are reasons why people could want that).
+
+Any thoughts?
