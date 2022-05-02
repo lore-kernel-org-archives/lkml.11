@@ -2,98 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C9F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:18:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FA80C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386624AbiEBRVo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 13:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59426 "EHLO
+        id S243868AbiEBR1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 13:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386639AbiEBRV0 (ORCPT
+        with ESMTP id S235761AbiEBR1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 13:21:26 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10658B1EE
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:17:54 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id a1so17366759edt.3
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 10:17:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1z2xMYMcF+/vzx55XisKKTVU2oHyYL+qwW8wjgY4MBM=;
-        b=h7ETZog5UHxteO1Z4h2PQhLAnYd04U27aV7xua2b9cSc5JO0KVa2cLDc2aULBEc47h
-         +7xyK8zFhDozHC0NcaeSq+yPdzfKw4I8tQVfSymv2wxIgRPY9qzGbN+uEr/z0UuA/uBu
-         l+56NhBePzsTzScSOKtKGJ1236TPfg9G/Bhqs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1z2xMYMcF+/vzx55XisKKTVU2oHyYL+qwW8wjgY4MBM=;
-        b=mjh/tPdSPFHYqNeu8Otq5qb9fo9Lapc799jO0ErhWdOXNcKAPcVo4l1bT7VVjXi3O1
-         rS+izoq4JgVSeY45S/9EMU+1K2dAplllm9wUKAByOLGVxNyofIGMsE7Al1I58xLy0tAi
-         YJWci7+MrV9FbCIDL7Fj1qecN+bgo8i8tDpjPeq8kOK7st3YB89KPqBXcYSIJC1QUg68
-         gSYJHCJqB3zxCJBvDzZqWyzKGknB9vVm2EzXfKQqQ1sKBNWJVkmsnNUSN0qY30euQb5a
-         R9Ity0cPgLp+WurkUACOx5EbJxYPUOR9WRrsC8mfEo6cbrnXa0emX+BmXU1VcKoZKZMQ
-         DaKw==
-X-Gm-Message-State: AOAM530HwaACZMH7i1p4gkVM+8sIuCIxjkHx/s2NLN9bPoJWJGvkuXmF
-        HQ6Hge4TZ9FaRCARHY/LGqPe6wWh0Ao3DD/f
-X-Google-Smtp-Source: ABdhPJzuZ+AMLElaf/1BDqFHD1jzysFdb6EKZLo/tXd14iKtGVvhbJx8mqaY9WArCSSHW8KgLifnwA==
-X-Received: by 2002:a50:cd08:0:b0:426:1d9b:4b13 with SMTP id z8-20020a50cd08000000b004261d9b4b13mr14179895edi.360.1651511872344;
-        Mon, 02 May 2022 10:17:52 -0700 (PDT)
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
-        by smtp.gmail.com with ESMTPSA id u21-20020aa7d0d5000000b0042617ba63aasm6925885edo.52.2022.05.02.10.17.51
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 May 2022 10:17:51 -0700 (PDT)
-Received: by mail-wr1-f52.google.com with SMTP id q23so20389130wra.1
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 10:17:51 -0700 (PDT)
-X-Received: by 2002:a05:6000:2c1:b0:20c:5e37:3ed1 with SMTP id
- o1-20020a05600002c100b0020c5e373ed1mr5787424wry.342.1651511870901; Mon, 02
- May 2022 10:17:50 -0700 (PDT)
+        Mon, 2 May 2022 13:27:05 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B237A26E0;
+        Mon,  2 May 2022 10:23:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651512216; x=1683048216;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=LU179n8muWviqqb25jsmrJha83hqn2FjKhu7EZ5iR2M=;
+  b=MPweH+e4JhkJHQ2ct240bWvWRdizj4rRZaIY796PHPVlqM2dpC7UYjvS
+   7ZsiHbeWzcqOriwoj4D4l979T7x7+tLG87K4VsVWU7z2m6p2vuNz+MYBh
+   gKNFddwKetzSFSUpb+SpspyTJkBR68tPLZcGGGek4us20SWTLImE8bVXh
+   NH8vZFuJIf5tX2mFcsKG8CYfOnU6pADxj7OG8kz5XZtk9f27V5E0jzTct
+   FlZ7nhjpIyzeUci5iA9gRbt6c/eSEL5oOhjrnWEaDeMOPNnChpO3g3jKA
+   1mV10WcVedqt2LbIH9/lioMFdzq9Clqt8Lk42/m+jLg8tumEpbAcIvLfV
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="247823198"
+X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
+   d="scan'208";a="247823198"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 10:23:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
+   d="scan'208";a="516195920"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga003.jf.intel.com with ESMTP; 02 May 2022 10:23:35 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 2 May 2022 10:23:35 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 2 May 2022 10:23:34 -0700
+Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
+ fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.2308.027;
+ Mon, 2 May 2022 10:23:34 -0700
+From:   "Luck, Tony" <tony.luck@intel.com>
+To:     Hans de Goede <hdegoede@redhat.com>,
+        "markgross@kernel.org" <markgross@kernel.org>
+CC:     "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "Joseph, Jithu" <jithu.joseph@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>,
+        "patches@lists.linux.dev" <patches@lists.linux.dev>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>
+Subject: RE: [PATCH v5 00/10] Introduce In Field Scan driver
+Thread-Topic: [PATCH v5 00/10] Introduce In Field Scan driver
+Thread-Index: AQHYWxYVdsKdZt61BUSHj1qB1cqAT60MLiKA//+uBGA=
+Date:   Mon, 2 May 2022 17:23:34 +0000
+Message-ID: <6171e5bfd1c5402692dca346fc2a5350@intel.com>
+References: <20220422200219.2843823-1-tony.luck@intel.com>
+ <20220428153849.295779-1-tony.luck@intel.com>
+ <13054c5c-ed48-b7a2-a800-25b9b1b1ab0d@redhat.com>
+In-Reply-To: <13054c5c-ed48-b7a2-a800-25b9b1b1ab0d@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.401.20
+x-originating-ip: [10.1.200.100]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220430011402.1.If7c3471db53bea55213f7bcf17e9043084d3ac0c@changeid>
- <20220430011402.5.I93d9a95aa7299f48ec081845ed29a1128f2ebe32@changeid>
-In-Reply-To: <20220430011402.5.I93d9a95aa7299f48ec081845ed29a1128f2ebe32@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 2 May 2022 10:17:39 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VF5KJ1wc2V-MxgtJz+DVb7BFCieWoNaYVES-wbq6QwMQ@mail.gmail.com>
-Message-ID: <CAD=FV=VF5KJ1wc2V-MxgtJz+DVb7BFCieWoNaYVES-wbq6QwMQ@mail.gmail.com>
-Subject: Re: [PATCH 5/5] arm64: dts: qcom: sc7180: Add kingoftown dts files
-To:     "Joseph S. Barrera III" <joebar@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Alexandru M Stan <amstan@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Sat, Apr 30, 2022 at 1:19 AM Joseph S. Barrera III
-<joebar@chromium.org> wrote:
->
-> Kingoftown is a trogdor-based board. These dts files are copies from
-> the downstream Chrome OS 5.4 kernel, but with downstream bits removed.
-
-Actually for kingoftown no downstream bits were removed.
-
-
-> Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
-> ---
->
->  arch/arm64/boot/dts/qcom/Makefile             |   2 +
->  .../dts/qcom/sc7180-trogdor-kingoftown-r0.dts |  44 ++++
->  .../dts/qcom/sc7180-trogdor-kingoftown-r1.dts |  17 ++
->  .../dts/qcom/sc7180-trogdor-kingoftown.dtsi   | 223 ++++++++++++++++++
->  4 files changed, 286 insertions(+)
-
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+PiBJJ3ZlIHRha2VuIGEgcXVpY2sgbG9vayBhdCB0aGUgZW50aXJlIHNlcmllcyBhbmQgaXQgbG9v
+a3MgZ29vZCB0byBtZS4NCj4NCj4gSSdtIGZpbmUgd2l0aCB0aGlzIGVudGlyZSBzZXJpZXMgZ2V0
+dGluZyBtZXJnZWQgdGhyb3VnaCB0aGUgVElQDQo+IHRyZWUsIGhlcmUgaXMgbXkgYWNrIGZvciBt
+ZXJnaW5nIHRoZSBkcml2ZXJzL3BsYXRmb3JtL3g4NiBiaXRzDQo+IHRocm91Z2ggdGhlIFRJUCB0
+cmVlOg0KPg0KPiBBY2tlZC1ieTogSGFucyBkZSBHb2VkZSA8aGRlZ29lZGVAcmVkaGF0LmNvbT4N
+Cg0KDQpIYW5zLA0KDQpUaGFua3MgZm9yIGxvb2tpbmcsIGFuZCBkb3VibGUgdGhhbmtzIGZvciB0
+aGUgIkFjayIuDQoNCi1Ub255DQoNCg==
