@@ -2,80 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C96C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 10:03:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A0FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 10:09:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384383AbiEBKHA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 06:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46180 "EHLO
+        id S243948AbiEBKM0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 06:12:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384460AbiEBKGN (ORCPT
+        with ESMTP id S229491AbiEBKMW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 06:06:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF27F60
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 03:02:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 19EC7CE16E0
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:02:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A754C385AC;
-        Mon,  2 May 2022 10:02:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651485749;
-        bh=NguaT+/Q3HuD7q15xEi7PC7PJM/qponU/4ADlpgZs+w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Sd/guOm8G8Ap3pDANr1h6S8iv5TXhnudF/5d2+TgVdbjgGTaqB7A4fh01IW1MpuO7
-         aVIkzyDHXUXYhBiC8iCISKGyxn271S+bufNaZ+Q1d1jUi1IuwgzmV7HBCns+idAbtq
-         0xGOpoNsRhhIUU26yFTk2nZNPY63PR3zW2l8HhYjcGMusF3/kSvXImPzRc/uOuhWhb
-         x4AkQh9BhGzjmNZ80NKz0QCXSmJCXHIzHv5t6D2rtt4UH+3Cvvdz47RSXEMWEyKnFu
-         3YE5/bx7ChsOTrtAR0G5SPi85LZAKnqyW2QD2knP3QqwXqY3yWEnyY+HUXuCK3IkBw
-         1TbcUr5VHcl9g==
-Date:   Mon, 2 May 2022 11:02:26 +0100
-From:   Filipe Manana <fdmanana@kernel.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
-        Filipe Manana <fdmanana@suse.com>
-Subject: Re: [patch 0/3] x86/fpu: Prevent FPU state corruption
-Message-ID: <Ym+sMv5NUOhmLVPH@debian9.Home>
-References: <20220501192740.203963477@linutronix.de>
+        Mon, 2 May 2022 06:12:22 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E5B236;
+        Mon,  2 May 2022 03:08:54 -0700 (PDT)
+Date:   Mon, 2 May 2022 12:08:49 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651486133;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=63m7IFpyJnFKOQ8AnvnEPCTLSco6sTiRbyuaAdNF4fs=;
+        b=u4DzhGvBvgeEmjdmbffbpoosHxFATqBRLbiYdCD0732eDPLRY3F6uEifkO/Ctq9STnUgqq
+        Im6/rOVsJm7QDR6CzQDSNbYGXmpDxdMG3B4pYMJV7cJt08yvyI8Q4+6YAiezkpIXL+U2kc
+        NS6H37pqDryfADNo40x1qtYo0NfKDmqTf98B2UouiJj/gfu9EzeD0AygrBRPM4/Hzmi87y
+        0nttQrWACAnA6M1c5KXwddN5X8upHGJlf1jFJEs8ks91k+oZpEwIsijZ9ozTzTduhpzlDS
+        roiBQC4D40e2IXy/86w4pwoxFhnTzdXHxT/pk0CdjxTOS8lh6pdIPaHgR0oZBg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651486133;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=63m7IFpyJnFKOQ8AnvnEPCTLSco6sTiRbyuaAdNF4fs=;
+        b=DcKvs7WVaRfSQxdISGO1hUYCOUpk5mwoqI5/iZDWPsVEDcfKxJTA79vGQkcz2cFv4Kltke
+        cJCO5nJ05LfE5GDA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
+        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
+Subject: Re: [PATCH v2 10/12] ptrace: Only return signr from ptrace_stop if
+ it was provided
+Message-ID: <Ym+tsRcP2TQLcpJF@linutronix.de>
+References: <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
+ <20220429214837.386518-10-ebiederm@xmission.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220501192740.203963477@linutronix.de>
+In-Reply-To: <20220429214837.386518-10-ebiederm@xmission.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 01, 2022 at 09:31:42PM +0200, Thomas Gleixner wrote:
-> The recent changes in the random code unearthed a long standing FPU state
-> corruption due do a buggy condition for granting in-kernel FPU usage.
+On 2022-04-29 16:48:35 [-0500], Eric W. Biederman wrote:
+> In ptrace_stop a ptrace_unlink or SIGKILL can occur either after
+> siglock is dropped or after tasklist_lock is dropped.  At either point
+> the result can be that ptrace will continue and not stop at schedule.
+> 
+> This means that there are cases where the current logic fails to handle
+> the fact that ptrace_stop did not actually stop, and can potentially
+> cause ptrace_report_syscall to attempt to deliver a signal.
+> 
+> Instead of attempting to detect in ptrace_stop when it fails to
+> stop update ptrace_resume and ptrace_detach to set a flag to indicate
+      ,
+> that the signal to continue with has be set.   Use that
+                                       been
+> new flag to decided how to set return signal.
+> 
+> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 
-Thanks for fixing this. I had been reliably hitting that fpu state splat
-since 5.18-rc1 with fstests, and was annoying because it made a few tests
-fail (fstests reports a failure whenever there's a splat or warning in
-dmesg).
-
-I confirm that with this patchset applied the issue no longer happens and
-everything seems to be working fine, so:
-
-Tested-by: Filipe Manana <fdmanana@suse.com>
-
-> 
-> The following series addresses this issue and makes the code more robust.
-> 
-> Thanks,
-> 
-> 	tglx
-> ---
->  arch/um/include/asm/fpu/api.h       |    2 
->  arch/x86/include/asm/fpu/api.h      |   21 +-------
->  arch/x86/include/asm/simd.h         |    2 
->  arch/x86/kernel/fpu/core.c          |   92 +++++++++++++++++++-----------------
->  net/netfilter/nft_set_pipapo_avx2.c |    2 
->  5 files changed, 57 insertions(+), 62 deletions(-)
-> 
-> 
-> 
+Sebastian
