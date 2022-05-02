@@ -2,108 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BEDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 23:51:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F49C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 23:52:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230472AbiEBXyn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 19:54:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57170 "EHLO
+        id S230389AbiEBXz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 19:55:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230308AbiEBXxN (ORCPT
+        with ESMTP id S231294AbiEBXzO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 19:53:13 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F323833891
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 16:49:41 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id l16so9501548oil.6
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 16:49:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=f/8wAhfndevj/J1N3yBWJIasHRz86NCxkLOraqJEZ3I=;
-        b=U+eozlJiuwXweZAZwZgwKg8AbtEWzgT787jSunJqgNYKFAYU2sk9jF/tussaSBzEj6
-         zPONEEClbARzCV70uc7Eac8vMXYjko7CvW18CXSdgRFD6hiK9T7gZqDzUjmqV/b3PHmk
-         OWScniXMFIN7XUInNcGUHP0cy2DepwEIxBsrM=
+        Mon, 2 May 2022 19:55:14 -0400
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7596B3AE;
+        Mon,  2 May 2022 16:51:43 -0700 (PDT)
+Received: by mail-lf1-f44.google.com with SMTP id w1so27845181lfa.4;
+        Mon, 02 May 2022 16:51:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=f/8wAhfndevj/J1N3yBWJIasHRz86NCxkLOraqJEZ3I=;
-        b=lVsmQdFEM2OJB6fODumSUTohQRvCgD1waSU1721rXc1/bWSm6SsqIK3MgNMcTzl48W
-         jJIBOyYrO/6whZ24xjg66YkjXgqLAvEVy3xipCruimeRHnuzHxbOiAtXD4be1ZWAjMFF
-         wyizICE99Sls8tS4uqL0mVFi2d9G4N5Rvw8KUuQJ9ZER/hdpYL5LfHv0lYooCRan7rBv
-         9u0NGwaKhWL/l5PbZMN0nrCOTt66Z0Kcv1bih/fD6mdg2ecKOzN13l0Rx0X2sHGEpZBt
-         uPjkUlidqWArx/NeYruJY8x5M4SWzrDZ8Oo8wnOgsSHeRpb+6YV99QiFWbPWsPZPKhTU
-         nyXQ==
-X-Gm-Message-State: AOAM533REMSzIvJmyEQq/ruX/eldv79hLSnCV037MckhV/xtKwvBXF41
-        5/lB6619lMlKcPy2HGBrUAkuerh6rHsl15cPBAGSzw==
-X-Google-Smtp-Source: ABdhPJxXlou3d6XzjcL/neLV6qpKQUgvnmAFgJDuMOTACWhPnak8bHhRAo8T3khmrzYlbcN9YD2WnbIjkQoANiagm8E=
-X-Received: by 2002:a05:6808:18a5:b0:326:31ff:4232 with SMTP id
- bi37-20020a05680818a500b0032631ff4232mr249354oib.193.1651535380105; Mon, 02
- May 2022 16:49:40 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 2 May 2022 16:49:39 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=J29Au43aNgTC2idscwYSuOnypyhEFy3S2IpBzMhtJu8=;
+        b=hFXmcdNO9Dljl6vTrXrDBYgDNBc2n3evdWTar9hfyDx8TcpBuZm2zbaT4ylH70IDV3
+         zULYrifwyk+EIQZtWamBeZDdGmFyBlA4qa+aGqguoFJoMWE7T5gFAVkeij8QnNs8gO9C
+         J+ApentCN59ebdptNvRrXwrGy93z0K+T+2zIltfshNB9/xsT/rxiz3cBvdT56e+UZcoV
+         +fz/gyrIkBgZ+4W2zfNjLYk6xiroZtM4++jv6jb3Il7WDcHlKJhgk+7d2fIIPutO3bEq
+         dpQwh/cuW8L1xggAIEfHpwawswXH9gVNWXxaIqY/FGsLE/6MYDrhFoGKZGFPq9gy+2e/
+         9GsA==
+X-Gm-Message-State: AOAM5300diEbL1xkMN95W08mBY7+U8+kT5lFKA+O5zkO2IoTbiw4wz1J
+        ykTFXaQonszev8KVt9HMvWYirMomBlYxgu0hnk0=
+X-Google-Smtp-Source: ABdhPJx5aX46r2P23k0oblcmvYiBeg+7gTYoL+kgEnKuNqbORvogt3vqtN/xaIWH+8ccELy5XxyZixyEYt7Se/ytq8Y=
+X-Received: by 2002:a05:6512:39d3:b0:472:4920:96d7 with SMTP id
+ k19-20020a05651239d300b00472492096d7mr10369364lfu.47.1651535501462; Mon, 02
+ May 2022 16:51:41 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAE-0n50Y8tZD9Djn9TVaAiHxehFJ2cZKZ1Z09piDk47uw3nK+Q@mail.gmail.com>
-References: <20220429233112.2851665-1-swboyd@chromium.org> <20220429233112.2851665-2-swboyd@chromium.org>
- <CAD=FV=VX8EEgkeLgKwyKvjztcjbA8UhKOUpTr-sS1_Ec=QcWbA@mail.gmail.com>
- <CAKdAkRSOtAD6u_cwKhHeMLgz5dC2hfPvVvqmj+17b4i-nspfgg@mail.gmail.com> <CAE-0n50Y8tZD9Djn9TVaAiHxehFJ2cZKZ1Z09piDk47uw3nK+Q@mail.gmail.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Mon, 2 May 2022 16:49:39 -0700
-Message-ID: <CAE-0n51hke4j6ChZ0am53FEojXF96X3K+ptOMOhdN7T7W1550g@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: google,cros-ec-keyb: Introduce
- switches only compatible
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Doug Anderson <dianders@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
-        chrome-platform@lists.linux.dev,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        "Joseph S. Barrera III" <joebar@chromium.org>
+References: <20220430062324.1565215-1-irogers@google.com> <20220430062324.1565215-2-irogers@google.com>
+In-Reply-To: <20220430062324.1565215-2-irogers@google.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Mon, 2 May 2022 16:51:30 -0700
+Message-ID: <CAM9d7cir7=okKG0gNDkCKQQYNWRNA2aUz9+o3vtJFK+xKNjYew@mail.gmail.com>
+Subject: Re: [PATCH v4 1/6] perf cpumap: Switch to using perf_cpu_map API
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Stephen Boyd (2022-05-02 13:41:33)
-> Quoting Dmitry Torokhov (2022-05-02 10:43:06)
->
-> > We have
-> > implemented the notion that without rows/columns properties we will
-> > not be creating input device for the matrix portion, all older devices
-> > should have it defined, so the newer driver is compatible with them...
-> >
->
-> Agreed, that solves half the problem. This new compatible eases
-> integration so that devicetrees can say they're compatible with the old
-> binding that _requires_ the rows/column properties. By making the driver
-> change we loosened that requirement, but the binding should have been
-> making the properties required at the start because it fails to bind
-> otherwise.
->
-> My interpretation of what Doug is saying is that we should maintain that
-> requirement that rows/columns exists if the original compatible
-> google,cros-ec-keyb is present and use the new compatible to indicate
-> that there are switches. Combining the two compatibles means there's
-> switches and a matrix keyboard, having only the switches compatible
-> means only switches, and having only the keyboard compatible means only
-> matrix keyboard.
->
-> It sounds OK to me.
+Hi Ian,
 
-There's one more thing to mention. The switches are discovered by
-querying the EC. Reverting commit 4352e23a7ff2 ("Input: cros-ec-keyb -
-only register keyboard if rows/columns exist") makes it so that in the
-case you have a keyboard and switches you'll be tempted to define both
-compatibles because you have some switches, but for all practical
-purposes you don't need to change anything. The EC will still be queried
-for the switches. Maybe "google,cros-ec-keyb-switches" is a bad name. It
-should really be "google,cros-ec-keyb-v2" or
-"google,cros-ec-keyb-optional" where we clarify that matrix keyboard
-properties are optional now and are used to indicate if there's a matrix
-keyboard or not.
+On Fri, Apr 29, 2022 at 11:23 PM Ian Rogers <irogers@google.com> wrote:
+>
+> Switch some raw accesses to the cpu map to using the library API. This
+> can help with reference count checking.
+>
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+[...]
+> diff --git a/tools/perf/util/bpf_counter_cgroup.c b/tools/perf/util/bpf_counter_cgroup.c
+> index ac60c08e8e2a..a4b676920da0 100644
+> --- a/tools/perf/util/bpf_counter_cgroup.c
+> +++ b/tools/perf/util/bpf_counter_cgroup.c
+> @@ -47,7 +47,7 @@ static int bperf_load_program(struct evlist *evlist)
+>         struct evsel *evsel;
+>         struct cgroup *cgrp, *leader_cgrp;
+>         __u32 i, cpu;
+> -       __u32 nr_cpus = evlist->core.all_cpus->nr;
+> +       __u32 nr_cpus = perf_cpu_map__nr(evlist->core.all_cpus);
+>         int total_cpus = cpu__max_cpu().cpu;
+>         int map_size, map_fd;
+>         int prog_fd, err;
+> @@ -125,7 +125,7 @@ static int bperf_load_program(struct evlist *evlist)
+>                         for (cpu = 0; cpu < nr_cpus; cpu++) {
+>                                 int fd = FD(evsel, cpu);
+>                                 __u32 idx = evsel->core.idx * total_cpus +
+> -                                       evlist->core.all_cpus->map[cpu].cpu;
+> +                                       perf_cpu_map__cpu(evlist->core.all_cpus, cpu).cpu;
+>
+>                                 err = bpf_map_update_elem(map_fd, &idx, &fd,
+>                                                           BPF_ANY);
+> @@ -207,13 +207,13 @@ static int bperf_cgrp__install_pe(struct evsel *evsel __maybe_unused,
+>   */
+>  static int bperf_cgrp__sync_counters(struct evlist *evlist)
+>  {
+> -       int i, cpu;
+> -       int nr_cpus = evlist->core.all_cpus->nr;
+> +       struct perf_cpu cpu;
+> +       int idx;
+>         int prog_fd = bpf_program__fd(skel->progs.trigger_read);
+>
+> -       for (i = 0; i < nr_cpus; i++) {
+> -               cpu = evlist->core.all_cpus->map[i].cpu;
+> -               bperf_trigger_reading(prog_fd, cpu);
+> +       perf_cpu_map__for_each_cpu(cpu, idx, cpus) {
+
+s/cpus/evlist->core.all_cpus/?
+
+> +               cpu = perf_cpu_map__cpu(evlist->core.all_cpus, i);
+
+I don't think we need this line anymore.
+
+> +               bperf_trigger_reading(prog_fd, cpu.cpu);
+>         }
+>
+>         return 0;
+> @@ -244,12 +244,10 @@ static int bperf_cgrp__disable(struct evsel *evsel)
+>  static int bperf_cgrp__read(struct evsel *evsel)
+>  {
+>         struct evlist *evlist = evsel->evlist;
+> -       int i, cpu, nr_cpus = evlist->core.all_cpus->nr;
+>         int total_cpus = cpu__max_cpu().cpu;
+>         struct perf_counts_values *counts;
+>         struct bpf_perf_event_value *values;
+>         int reading_map_fd, err = 0;
+> -       __u32 idx;
+>
+>         if (evsel->core.idx)
+>                 return 0;
+> @@ -263,7 +261,10 @@ static int bperf_cgrp__read(struct evsel *evsel)
+>         reading_map_fd = bpf_map__fd(skel->maps.cgrp_readings);
+>
+>         evlist__for_each_entry(evlist, evsel) {
+> -               idx = evsel->core.idx;
+> +               __u32 idx = evsel->core.idx;
+> +               int i;
+> +               struct perf_cpu_map cpu;
+> +
+>                 err = bpf_map_lookup_elem(reading_map_fd, &idx, values);
+>                 if (err) {
+>                         pr_err("bpf map lookup failed: idx=%u, event=%s, cgrp=%s\n",
+> @@ -271,13 +272,11 @@ static int bperf_cgrp__read(struct evsel *evsel)
+>                         goto out;
+>                 }
+>
+> -               for (i = 0; i < nr_cpus; i++) {
+> -                       cpu = evlist->core.all_cpus->map[i].cpu;
+> -
+> +               perf_cpu_map__for_each_cpu(cpu, i, evlist->core.all_cpu) {
+
+evlist->core.all_cpus ?
+
+Thanks,
+Namhyung
+
+
+>                         counts = perf_counts(evsel->counts, i, 0);
+> -                       counts->val = values[cpu].counter;
+> -                       counts->ena = values[cpu].enabled;
+> -                       counts->run = values[cpu].running;
+> +                       counts->val = values[cpu.cpu].counter;
+> +                       counts->ena = values[cpu.cpu].enabled;
+> +                       counts->run = values[cpu.cpu].running;
+>                 }
+>         }
+>
+> --
+> 2.36.0.464.gb9c8b46e94-goog
+>
