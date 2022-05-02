@@ -2,133 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7574C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:27:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BBC7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387395AbiEBUao (ORCPT
+        id S1387403AbiEBUfG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 16:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57290 "EHLO
+        Mon, 2 May 2022 16:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382969AbiEBUam (ORCPT
+        with ESMTP id S1350516AbiEBUfE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 16:30:42 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842199FE2;
-        Mon,  2 May 2022 13:27:12 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id p18so17844740edr.7;
-        Mon, 02 May 2022 13:27:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OAT/69wtRvffN89vC/NPyLjFTXggz4+XzDvpqQchKZY=;
-        b=ZcvUi6TuwK26g91Wj+BvOBvLkRS94l9430HQO9Evx23oGlUQUwiM6EAtJ8xNLHowPI
-         mzffkJfkvuli2lMkWMQvt0t2os+zeKmDan94eeKbiMPrd9pkb38RNFZ63UVdP4aGnMNx
-         qJhVD6u6kosJmBSKPQS2Fe0/hhrIR483kNVdAoRII7mzG+Y7MbQ4FTn9+cXOxyhZArbK
-         ZbBtWI1anOlcbRILbG7LW2IEzQoFdzVve4X1P97neVIhR0s99jZlDnUwFbM7mZYeNVJQ
-         +Z93Q4GpFI5wCA9VtGDBg6AZG1qrBbjYA6Zzx92OshkCiJaWyCPk7GFQfY6SB0MfPB0g
-         Aubw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OAT/69wtRvffN89vC/NPyLjFTXggz4+XzDvpqQchKZY=;
-        b=8FZXwy6fqqTiAdWVojFu79C7EhX5ecMwslFgsPfz1luUf+mREoHTGnDWZiwRiRRkhH
-         A6fORbZbk9JPMemc07dpPc3PAPnZOZAzQYHfGhjsDh4xm165jBxslVST9JDExQ/9aWKF
-         V614HV3Pj56nvj3nXqEDe1ARrJCvDAA00SPihta4fIzKmrBvAQ5yKny3M8xV7XbWhgFK
-         /4iqwkyaHzjyQ49qNdRASQu17xkG6O6uE816HoDFyStZKP031zNjP5zlEpc7pqZYxdG3
-         GSFmqJEpxX/FFog/+PVJoU3uYh+txsONqle+q69GaxiKwZGjtDnamCpv1kdDrSKWIk5G
-         B0xQ==
-X-Gm-Message-State: AOAM532dqvY1ZY3Vc0Fp0p5DcyiIXPMnuc/K6GLlZK6gU/zdXB2+n9xs
-        tkBmFurht6SFnoQMNoiMgTg=
-X-Google-Smtp-Source: ABdhPJxODcFVbGH31VOkUTUnzD2LetaTmezsuSwjzyi7qh/PBLv/FTPz30bmyJeVSg8Xe5f/ZplNfg==
-X-Received: by 2002:a05:6402:335:b0:425:e3e0:5a90 with SMTP id q21-20020a056402033500b00425e3e05a90mr14497509edw.14.1651523230760;
-        Mon, 02 May 2022 13:27:10 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id e19-20020a056402105300b0042617ba6384sm7034024edu.14.2022.05.02.13.27.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 13:27:10 -0700 (PDT)
-Message-ID: <62703e9e.1c69fb81.23bb7.9395@mx.google.com>
-X-Google-Original-Message-ID: <YnA11BpBNqgolvXs@Ansuel-xps.>
-Date:   Mon, 2 May 2022 21:49:40 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] dt-bindings: arm: msm: Convert kpss-gcc driver
- Documentation to yaml
-References: <20220430060125.9124-1-ansuelsmth@gmail.com>
- <20220430060125.9124-4-ansuelsmth@gmail.com>
- <fec305d1-d4b3-3f9d-bc31-bc33490d1ad7@linaro.org>
- <626d4cbf.1c69fb81.e6965.76b4@mx.google.com>
- <0711b822-506b-7b90-6b63-50c5c0ce4f6e@linaro.org>
- <626fb971.1c69fb81.fcab0.5f71@mx.google.com>
- <b3bda9d7-2c50-547d-35ab-510ecab4f7d2@linaro.org>
+        Mon, 2 May 2022 16:35:04 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EB9AE53;
+        Mon,  2 May 2022 13:31:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1651523479;
+        bh=XklK64zlUwZuEnTr5Rz+EiXQTXXwRojoscvTGaQkPJ8=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=XQ+uAwyGERKUngyZtQi62d8g5F9lhnZI0SoQ0xUzv8toiQBxsjLYOY+niHdbr+qtV
+         Y3vbMPm8OX3DtxECaoocvNsFBo85P7VEykdnNM8TZZ2elqHaU98pTWAiBQzA68dkKf
+         o393Z4KnmCSOPscAK9mJjnbAnFsfctIdNp6ZrreQ=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [141.30.226.129] ([141.30.226.129]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MVN6j-1nNB2G0ha3-00SNt6; Mon, 02
+ May 2022 22:31:19 +0200
+Subject: Re: [PATCH 2/2] hwmon: acpi_power_meter: convert to
+ hwmon_device_register_with_info
+To:     LABBE Corentin <clabbe@baylibre.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Cc:     jdelvare@suse.com, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220502124249.682058-1-clabbe@baylibre.com>
+ <20220502124249.682058-2-clabbe@baylibre.com>
+ <0b154a30-7765-e3ac-9980-0ecc7447d7ad@roeck-us.net> <YnAqDxfTU27USQI+@Red>
+From:   Armin Wolf <W_Armin@gmx.de>
+Message-ID: <1b2bf215-faa1-649d-5ab4-85fc0b907ec2@gmx.de>
+Date:   Mon, 2 May 2022 22:31:18 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b3bda9d7-2c50-547d-35ab-510ecab4f7d2@linaro.org>
+In-Reply-To: <YnAqDxfTU27USQI+@Red>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+X-Provags-ID: V03:K1:M5uxf6WZcoVerfbPEAZEXF5O2+y/AzMfRsfNLeOoqO9A7Y9K8z2
+ BlqUfqkvRX/hUWYAO5Dfl17zUZGKiHFyKwacDA9IVdgikTm0+LB57B5MFIWO7AScvjfiROg
+ 7FJKlQdKMxhML/1Uxs/7HIS1SXM11c3UwCMJV7Nk+uVkKs1lw8u2NgqSS05mXBaia2Un8RI
+ EjLLURKa8YvirUfxhmNGQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:xFFzEfXvQII=:r67yR4TqmVHHinn9NzbmMU
+ d0sMuGwMdQ7gF4D+ozNZuY2dWJzut4o75cg3EpkHZe0c0euD0Z+u8cCeiUaj5Beyx+NO6C2UJ
+ XNdkJCUVAmSFRG6rPXTfLl8bMyl+WXSGl4crW+bKz9OAVE3tj30Y6+RDo8eZf6BQh8UM4xcre
+ gTDwuaSk4G7UvIQj8fqYUprxV2aMLlQB4ZTpPIiMOtQ/ynoWg1J/shqyS4JDMmV031np+Qw4Y
+ vW0baxnUrwLzlhmPMXtKdEwhVpaQroIXmAG+R55x3jqR+Jkg66OQPMU9JbWKe9KnmiX/rhtbL
+ pUucz9ZHla2RWUrNrX2GT+yo3MhhbPM0vclSiZ1BwovbyF/VFSkV9pc9A2zWf55VQePSiywVy
+ dQD9BTc70RchHQKZRsYZlx2tkPg7gJsjYngGNxO3nbb/8Sw81v0mMOsGZSgKPD3jmeEBoBWWR
+ PAt60lHeQSaiifHWl8IZx0SjUIa7aRREITgUYrahCkjaBnPN9Kv+E5unrJ1lYxWzBNjv8AMsJ
+ dk10y9Bd96YKhC5WWQUCEM/ntfG4KpvqeOaA8Csn0usHlJJKQtrVwVZ8//mfiqIRz5oGUkUc4
+ ICzfEDnUW5hA1JeL4+5Y4GerznEYjEbYEGfL408xjw9TCfD+JIFdJKVC4Hqm4/VpCtHQCGLgp
+ gIo5aaGWn2zVNSw86iPS2K/3y0Orp/G1ehk9HD8SYkhOillMZ6whrOQnHOWvffYpUJyV+bmQ3
+ VnBwMCNw+rETVOAYH7c8rk49MolFpO0OEOndwUAFCWm2jhOBt8x8Lvjgbf4mm127PcH8UVCMJ
+ erLScY28S8zQ4RqK45SIG7L39dQdi42GtLddzrXj2FgQp1pP1DEOYfZKyw1Jrn3eX8tKAxOhY
+ dVChwwuDEzbs8/31Xk/wWq0LnUzo1WYwYymqf4L+pabvvb3PTDeSlCCn/MS7WtC2TUTN2/KZZ
+ 5QhT/5tzqUJU26wf2UcJQO///ZhzAbJein4tJzUtgOwvtHJzC0PozI/uBRMD3NBTuJH7K7gut
+ 66/jBG+dJFlN4LyGqiYBSL1ms9zd3melUcuksYJvL8rG+a7eQfZnzPR6zGz86qwYytaZcjF8M
+ EnKn8+KGabAUdM=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 10:18:31PM +0200, Krzysztof Kozlowski wrote:
-> On 02/05/2022 12:40, Ansuel Smith wrote:
-> > 
-> > The idea is that you put the clk name in 'clock-output-names' and the
-> > driver needs to have support for it (and set the clk name based on the
-> > name defined in the dts)
-> > 
-> > This driver doesn't have support for it and is actually hardcoded.
-> > So you are right and I should just drop it.
-> > 
-> > But now another question... Since #clock-cells was added as a
-> > requirement for clock-output-names, should I drop also that?
-> > 
-> > In theory #clock-cells should always be declared for clock providers, is
-> > it right to add it in the conversion commit or I should put this change
-> > in another commit? (since it's now an addition and now something required
-> > to fix a bot warning)
-> 
-> These are not the best bindings to convert, if you are not into the qcom
-> DTS and drivers. :)
+Am 02.05.22 um 20:59 schrieb LABBE Corentin:
+
+> Le Mon, May 02, 2022 at 06:34:44AM -0700, Guenter Roeck a =C3=A9crit :
+>> On 5/2/22 05:42, Corentin Labbe wrote:
+>>> Booting lead to a hwmon_device_register() is deprecated. Please conver=
+t the driver to use hwmon_device_register_with_info().
+>>> So let's convert the driver to use hwmon_device_register_with_info().
+>>>
+>>> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+>>> ---
+>>>    drivers/hwmon/acpi_power_meter.c | 5 ++++-
+>>>    1 file changed, 4 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/hwmon/acpi_power_meter.c b/drivers/hwmon/acpi_pow=
+er_meter.c
+>>> index d2545a1be9fc..98293727f980 100644
+>>> --- a/drivers/hwmon/acpi_power_meter.c
+>>> +++ b/drivers/hwmon/acpi_power_meter.c
+>>> @@ -891,7 +891,10 @@ static int acpi_power_meter_add(struct acpi_devic=
+e *device)
+>>>    	if (res)
+>>>    		goto exit_free_capability;
+>>>
+>>> -	resource->hwmon_dev =3D hwmon_device_register(&device->dev);
+>>> +	resource->hwmon_dev =3D hwmon_device_register_with_info(&device->dev=
+,
+>>> +							      ACPI_POWER_METER_DEVICE_NAME,
+>>> +							      NULL, NULL,
+>>> +							      NULL);
+>> NACK. That isn't a conversion to the new API, it just abuses the fact
+>> that the new API has to accept a NULL info pointer for historic reasons=
+.
+>>
+> Hello
 >
+> I am sorry, I found a driver doing it, so I believed it was okay.
+> Converting seems not to hard but, by using the new API, how can I conver=
+t power1_model_number/power1_is_battery attribute ?
+> There are the remaining attributes I dont find how to convert.
+>
+> Regards
 
-As I said some times ago main problem of these thing is that they are
-ancient and they were not in a good state from the start. So it's hard
-to fix this in a sane way. (i'm trying tho so sorry for any mess i'm
-making in the process)
+Hi,
 
-> It looks like the bindings were added to match current Linux
-> implementation and in this implementation the device is not used in DTS
-> as a clock provider (even though it registers a clock) but as a syscon.
-> I am not even sure if it is used as a clock provider outside of DTS
-> (through using a fixed clock name in some clock consumer).
-> 
-> Probably this should be made either a proper clock controller or
-> something stripped down to the point matching current usage (accepting
-> the fact that bindings are incomplete). Anyway your choice should be
-> made according to how this device and its driver fit to entire system.
-> IOW, it's not a simple binding conversion and you should not just
-> convert it to make dtbs_check happy.
+for allowing the driver to provide nonstandard attributes, hwmon_device_re=
+gister_with_info()
+has the argument "extra_groups" which is an pointer to a list of sysfs att=
+ribute groups.
+There are some drivers which are using this functionality, maybe you can u=
+se them as an
+inspiration.
 
-I wonder if I should just drop this patch from the series and push it
-later in another series as a rework directly (with also the other
-relevant changes to fix the current problem we have with all the dts).
+Just a question: what is the name of the driver you originally used as an =
+inspiration?
 
-The intention of this series was to try to push small changes that could
-be merged in a short time.
+Armin Wolf
 
-> 
-> Best regards,
-> Krzysztof
-
--- 
-	Ansuel
