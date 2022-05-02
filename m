@@ -2,131 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75243C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:57:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2766AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:58:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243304AbiEBRAj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 13:00:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40676 "EHLO
+        id S244546AbiEBRCF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 13:02:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242425AbiEBRAi (ORCPT
+        with ESMTP id S236013AbiEBRCD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 13:00:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 62A3831C
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 09:57:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651510628;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=K0Gq4g+r6nSFFN2UMiOU7agj8frQhJOC3wt5ScKN4WI=;
-        b=EuaI6+8mGao7a8l+K63gjGBTuhOaz9qc/BGKNFHMEg40mW5WtgLZIF9RjoeRcIZLAO04Rc
-        5ZZmOh/tLkWmcpODSmYsqbE8j4iiDhq94ej36Wb0yZoAEft7kIIF9nW+S/54yO3gxlN4Hf
-        uJl/Syqb7aElGuowD8ShM8d+LnU7+rU=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-84-XQMEEnjZOW-EnBBejkhOMw-1; Mon, 02 May 2022 12:57:07 -0400
-X-MC-Unique: XQMEEnjZOW-EnBBejkhOMw-1
-Received: by mail-wm1-f71.google.com with SMTP id v9-20020a05600c214900b00393fedddf26so23157wml.1
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 09:57:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=K0Gq4g+r6nSFFN2UMiOU7agj8frQhJOC3wt5ScKN4WI=;
-        b=qRf1cEaUC5F5d1M7iHTDfizYeOTS5tpYS3Va0v0a/SoiKIltvAXquZgpsB8bD6isuo
-         P5Z3JsbpPEg/0apklI53s7p9TfqHL7nOuM0v6rHgue1Gx/VK8RfIMnKGdtsrvjJr84I6
-         4Q4pqT4a0GC7bNB+csDo45V4gEyOhZ9qjSk4byVKblBqK9QBupOs94TFxdVcg7VKOh0t
-         9zsNw0SFp5Ze6jQiV8aHoT39LsszcUdZ3AtinUNl7Hr6/yoKMTij7LLO7Xt+HRy8cq6W
-         tJ1AfEFbJyVXl5Rpj7Yqjtkl39SkW7OsoXsIKG58/o8Ao7iZhIejpEnJcUzapu0trces
-         SbZg==
-X-Gm-Message-State: AOAM5319xLS181qjveWJljWbE5XCIlkdu2MXiCEg2g3DKArJ+wvLvxr0
-        VXbkOOWAJwC5TfpX5wMFuS7NpNvNrZHKLQRpl61TKc/7dTDQfqYfNuhNikf+UFxNudZixF+Xu43
-        d4hTnQUgT3n3DzL0xvdaK7cTk
-X-Received: by 2002:a05:600c:4f08:b0:391:fe3c:40e6 with SMTP id l8-20020a05600c4f0800b00391fe3c40e6mr78536wmq.34.1651510626174;
-        Mon, 02 May 2022 09:57:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzBR5y6TmCRfu+8hzM0SQTGA4cZrpN3ZhuFriWyFUH2mb/ZbNn3olE2yOJI8bAuj+96a04yXQ==
-X-Received: by 2002:a05:600c:4f08:b0:391:fe3c:40e6 with SMTP id l8-20020a05600c4f0800b00391fe3c40e6mr78523wmq.34.1651510625948;
-        Mon, 02 May 2022 09:57:05 -0700 (PDT)
-Received: from [192.168.1.129] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id r20-20020adfa154000000b0020c5253d8c7sm7273243wrr.19.2022.05.02.09.57.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 May 2022 09:57:05 -0700 (PDT)
-Message-ID: <ac202e93-cde2-99fa-5aca-abdc1cf6a3bf@redhat.com>
-Date:   Mon, 2 May 2022 18:57:04 +0200
+        Mon, 2 May 2022 13:02:03 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C86A101F;
+        Mon,  2 May 2022 09:58:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651510713; x=1683046713;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wdkPKD+2olSZMP2pvVUKLQSf4T0fJjUAyhUpxv6oQQM=;
+  b=M3KRZu2CUgaDc56Skujk4wLtFAT3Orlj+IMmoqLjH0ubU+vMl9FVrvRt
+   Ggkgba5KvgRJpN4bxgy5jYPgdQolSI7iiK8f3qIg09Z62lk/uX1SRJPNd
+   dkudj+D+t8CvGAriqATGRR+s2JOS4GvEkkqBkPbJbO7er3FtQQll1ficT
+   r5h7AMlmMzBVY1I9Tfx3EOrQRQ9JZQy5Yf7Ld3L99yf7BoRoBiurY5OAs
+   jkJvlhhesYdE6XPZWyxR5SKN4b+xp0V2pcDwiKNaFx/SjhlwC4cwVNYlK
+   gR2qIPtrPBsMcAxOHGjZs9Fn5ECc/+qCd+qjY2zmfe9z1MKL6pxd2FLZL
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="353696317"
+X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
+   d="scan'208";a="353696317"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 09:58:32 -0700
+X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
+   d="scan'208";a="583796556"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 09:58:32 -0700
+From:   matthew.gerlach@linux.intel.com
+To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        dinguyen@vger.kernel.org, robh+dt@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Subject: [PATCH] arm64: dts: intel: add device tree for n6000
+Date:   Mon,  2 May 2022 09:58:18 -0700
+Message-Id: <20220502165818.4002157-1-matthew.gerlach@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2 2/3] drm/fb-helper: Rename preferred_bpp
- drm_fbdev_generic_setup() parameter
-Content-Language: en-US
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-mediatek@lists.infradead.org,
-        linux-mips@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-sunxi@lists.linux.dev, spice-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org
-References: <20220502153900.408522-1-javierm@redhat.com>
- <20220502153900.408522-3-javierm@redhat.com>
- <YnABz/4haOHe66Do@pendragon.ideasonboard.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <YnABz/4haOHe66Do@pendragon.ideasonboard.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/2/22 18:07, Laurent Pinchart wrote:
-> Hi Javier,
-> 
-> Thank you for the patch.
-> 
-> On Mon, May 02, 2022 at 05:38:59PM +0200, Javier Martinez Canillas wrote:
->> By default the bits per pixel for the emulated framebuffer device is set
->> to dev->mode_config.preferred_depth, but some devices need another value.
->>
->> Since this second parameter is only used by a few drivers, and to allow
->> drivers to use it for passing other configurations when registering the
->> fbdev, rename @preferred_bpp to @options and make it a multi-field param.
->>
->> The DRM_FB_OPTION() and DRM_FB_GET_OPTION() macros are provided to drivers
->> for computing options bitfield values and getting the values respectively
->>
->> For now, only the DRM_FB_BPP option exists but other options can be added.
->>
->> Suggested-by: Thomas Zimmermann <tzimmermann@suse.de>
->> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
->> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
->> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
->> ---
->>
->> Changes in v2:
->> - Rename DRM_FB_SET_OPTION() to DRM_FB_SET() and make more clear in the
-> 
-> I assume you meant DRM_FB_OPTION() here, not DRM_FB_SET().
-> 
->>   kernel-doc what this macro does (Laurent Pinchart).
->>
+From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
 
-Right, that's a typo. The patch description and content are correct though.
+Add a device tree for the n6000 instantiation of Agilex
+Hard Processor System (HPS).
 
-I'll fix the patch history log in v3.
+Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+---
+ arch/arm64/boot/dts/intel/Makefile            |  1 +
+ .../boot/dts/intel/socfpga_agilex_n6000.dts   | 77 +++++++++++++++++++
+ 2 files changed, 78 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/intel/socfpga_agilex_n6000.dts
 
+diff --git a/arch/arm64/boot/dts/intel/Makefile b/arch/arm64/boot/dts/intel/Makefile
+index 0b5477442263..1425853877cc 100644
+--- a/arch/arm64/boot/dts/intel/Makefile
++++ b/arch/arm64/boot/dts/intel/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ dtb-$(CONFIG_ARCH_INTEL_SOCFPGA) += socfpga_agilex_socdk.dtb \
+ 				socfpga_agilex_socdk_nand.dtb \
++				socfpga_agilex_n6000.dtb \
+ 				socfpga_n5x_socdk.dtb
+ dtb-$(CONFIG_ARCH_KEEMBAY) += keembay-evm.dtb
+diff --git a/arch/arm64/boot/dts/intel/socfpga_agilex_n6000.dts b/arch/arm64/boot/dts/intel/socfpga_agilex_n6000.dts
+new file mode 100644
+index 000000000000..07f5a5983e5c
+--- /dev/null
++++ b/arch/arm64/boot/dts/intel/socfpga_agilex_n6000.dts
+@@ -0,0 +1,77 @@
++// SPDX-License-Identifier:     GPL-2.0
++/*
++ * Copyright (C) 2021-2022, Intel Corporation
++ */
++#include "socfpga_agilex.dtsi"
++
++/ {
++	model = "SoCFPGA Agilex n6000";
++
++	aliases {
++		serial0 = &uart1;
++		serial1 = &uart0;
++		ethernet0 = &gmac0;
++		ethernet1 = &gmac1;
++		ethernet2 = &gmac2;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory {
++		device_type = "memory";
++		/* We expect the bootloader to fill in the reg */
++		reg = <0 0 0 0>;
++	};
++
++	soc {
++		clocks {
++			osc1 {
++				clock-frequency = <25000000>;
++			};
++		};
++		agilex_hps_bridges: bridge@80000000 {
++			compatible = "simple-bus";
++			reg = <0x80000000 0x60000000>,
++				<0xf9000000 0x00100000>;
++			reg-names = "axi_h2f", "axi_h2f_lw";
++			#address-cells = <0x2>;
++			#size-cells = <0x1>;
++			ranges = <0x00000000 0x00000000 0xf9000000 0x00001000>;
++
++			uio_cp_eng@0xf9000000 {
++				compatible = "generic-uio";
++				reg = <0x00000000 0x00000000 0x00001000>;
++				status = "okay";
++			};
++		};
++	};
++};
++
++&uart0 {
++	status = "okay";
++};
++
++&uart1 {
++	status = "okay";
++};
++
++&spi0 {
++	status = "okay";
++
++	spidev: spidev@0 {
++		status = "okay";
++		compatible = "linux,spidev";
++		spi-max-frequency = <25000000>;
++		reg = <0>;
++	};
++};
++
++&watchdog0 {
++	status = "okay";
++};
++
++&fpga_mgr {
++	status = "disabled";
++};
 -- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+2.25.1
 
