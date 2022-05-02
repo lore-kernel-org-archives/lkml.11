@@ -2,367 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C55C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:03:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EAE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:03:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386078AbiEBQHB (ORCPT
+        id S1347559AbiEBQHQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 12:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
+        Mon, 2 May 2022 12:07:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386284AbiEBQGn (ORCPT
+        with ESMTP id S1386145AbiEBQGv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 12:06:43 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCFD913F0B;
-        Mon,  2 May 2022 09:02:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651507357; x=1683043357;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mdNa5vpYzeuV+PQwgwwzti4VZsAM9kgYrf9yZL/L80U=;
-  b=dxff2n46Bt7zZC/sWY536PJ/lB8WYhWAPZ+lMiaiRkoNvakALt9DNWR0
-   WygvXjqr0tr1SCLKJoKuK4c6cRUJ/VoMsrZUjbLqhHGm/KeZp4b1Nqfhs
-   98/gx+hJ9NURxDx6UNbLUOAucwcYbTeXIPgld72F/0rq3jF9qJCtuA/8A
-   1HyHPB2W+GFCE0yaURaKyT6/u0PcmAhvlbz36hMW6AbM4ugBhUwFxpqSm
-   cSOBNyxlJnjysRPV5MDRYtgyOPHVTdGzZJQhuiAqauPMMKe4KtGgaSyK0
-   7CQCMoBP+GWEMYpSqFQNIAS0pectlmwp0znYtH1ZCXJV7F/TC3CRJSiXH
+        Mon, 2 May 2022 12:06:51 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF9813F47
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 09:02:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651507371; x=1683043371;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=KBeRLrN5kv3noIyPri6QAd7wn59IyT9R4gQ29Lb1Sro=;
+  b=fxGnrEbHjt031uucAZrzL8dA823hgzHBGsItyzf7AR2ChteiJ8hKaOXV
+   TqpdaUB7YORtAlX2gzYz+njluysXdKUCgXwRANy6OnDdfpBgBwYumy9vz
+   3uUuz874jGGseM++oPUpOMKEKt9PN8lWmu6zHNx4U0jBKJA0S1AR6SwSO
+   blRuglIeTf4gf/xf294nEJJGqyV35+1wmuiy+WeoUktTO9a8j1Cm5LC9N
+   ueuvCuu7VJUS4TlqhkSEfwCHrXxOlLiti2zkp9X4uAnMh07PuLhpd+ZMO
+   e3iuN/N3TcDmqJfcV5iHrY9JJb1gua48yNvPmqZM4aFE+eijwIIEv2cHi
    A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="330238577"
 X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
-   d="scan'208";a="94280825"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 May 2022 09:02:36 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 2 May 2022 09:02:36 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 2 May 2022 09:02:18 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     KP Singh <kpsingh@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
-        "Martin KaFai Lau" <kafai@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Vladimir Oltean" <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Vivien Didelot" <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [Patch net-next v12 09/13] net: dsa: microchip: add support for phylink management
-Date:   Mon, 2 May 2022 21:28:44 +0530
-Message-ID: <20220502155848.30493-10-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220502155848.30493-1-arun.ramadoss@microchip.com>
-References: <20220502155848.30493-1-arun.ramadoss@microchip.com>
+   d="scan'208";a="330238577"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 09:02:37 -0700
+X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
+   d="scan'208";a="583766235"
+Received: from wahmed-mobl.amr.corp.intel.com (HELO [10.209.71.202]) ([10.209.71.202])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 09:02:30 -0700
+Message-ID: <aae6c58c-a89f-e24c-946b-c16b2415c77e@linux.intel.com>
+Date:   Mon, 2 May 2022 09:02:27 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [PATCH v5 3/3] x86/tdx: Add Quote generation support
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+References: <20220501183500.2242828-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220501183500.2242828-4-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <7daf429ffda2bf834c129899426e204fbbcbd0b0.camel@intel.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <7daf429ffda2bf834c129899426e204fbbcbd0b0.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Hi Kai,
 
-phylink_get_caps() is implemented and reused KSZ common API for
-phylink_mac_link_down() operation
+On 5/1/22 10:01 PM, Kai Huang wrote:
+> 
+>> +
+>> +static long tdx_get_quote(void __user *argp)
+>> +{
+>> +	struct tdx_quote_req quote_req;
+>> +	long ret = 0;
+>> +	int order;
+>> +
+>> +	/* Hold lock to serialize GetQuote requests */
+>> +	mutex_lock(&quote_lock);
+>> +
+>> +	reinit_completion(&req_compl);
+>> +
+>> +	/* Copy GetQuote request struct from user buffer */
+>> +	if (copy_from_user(&quote_req, argp, sizeof(struct tdx_quote_req))) {
+>> +		ret = -EFAULT;
+>> +		goto quote_failed;
+>> +	}
+>> +
+>> +	/* Make sure the length & timeout is valid */
+>> +	if (!quote_req.len || !quote_req.timeout) {
+>> +		ret = -EINVAL;
+>> +		goto quote_failed;
+>> +	}
+>> +
+>> +	/* Get order for Quote buffer page allocation */
+>> +	order = get_order(quote_req.len);
+>> +
+>> +	/*
+>> +	 * Allocate buffer to get TD Quote from the VMM.
+>> +	 * Size needs to be 4KB aligned (which is already
+>> +	 * met in page allocation).
+>> +	 */
+>> +	tdquote = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, order);
+>> +	if (!tdquote) {
+>> +		ret = -ENOMEM;
+>> +		goto quote_failed;
+>> +	}
+>> +
+>> +	/*
+>> +	 * Since this buffer will be shared with the VMM via GetQuote
+>> +	 * hypercall, decrypt it.
+>> +	 */
+>> +	ret = set_memory_decrypted((unsigned long)tdquote, 1UL << order);
+>> +	if (ret)
+>> +		goto quote_failed;
+>> +
+>> +	/* Copy TDREPORT from user buffer to kernel Quote buffer */
+>> +	if (copy_from_user(tdquote, (void __user *)quote_req.buf, quote_req.len)) {
+>> +		ret = -EFAULT;
+>> +		goto quote_failed;
+>> +	}
+>> +
+>> +	/* Submit GetQuote Request */
+>> +	ret = tdx_get_quote_hypercall(tdquote, (1ULL << order) * PAGE_SIZE);
+>> +	if (ret) {
+>> +		pr_err("GetQuote hypercall failed, status:%lx\n", ret);
+>> +		ret = -EIO;
+>> +		goto quote_failed;
+>> +	}
+>> +
+>> +	/* Wait for attestation completion */
+>> +	ret = wait_for_completion_interruptible(&req_compl);
+>> +	if (ret <= 0) {
+>> +		ret = -EIO;
+>> +		goto quote_failed;
+>> +	}
+>> +
+>> +	/* Copy output data back to user buffer */
+>> +	if (copy_to_user((void __user *)quote_req.buf, tdquote, quote_req.len))
+>> +		ret = -EFAULT;
+>> +
+>> +quote_failed:
+>> +	if (tdquote)
+>> +		free_pages((unsigned long)tdquote, order);
+> 
+> The buffer is freed w/o being converted back to private.  How can you prevent
+> the buffer from being allocated by kernel and used as private pages again?
 
-lan937x_phylink_mac_config configures the interface using
-lan937x_mac_config and lan937x_phylink_mac_link_up configures
-the speed/duplex/flow control.
+Yes. It needs set_memory_encrypted() call here. I will fix this in next
+version.
 
-Currently SGMII & in-band neg are not supported & it will be
-added later.
+> 
+> Also, the  buffer may be still used by VMM when timeout (IN_FLIGHT), how can
+> this even work?
 
-Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/lan937x_dev.c  | 157 +++++++++++++++++++++++
- drivers/net/dsa/microchip/lan937x_dev.h  |   5 +
- drivers/net/dsa/microchip/lan937x_main.c |  66 ++++++++++
- 3 files changed, 228 insertions(+)
+We will never reach here for IN_FLIGHT case. We will block in
+wait_for_completion_interruptible() till the status changes to success
+or failure.
 
-diff --git a/drivers/net/dsa/microchip/lan937x_dev.c b/drivers/net/dsa/microchip/lan937x_dev.c
-index 353800edfa54..4612642e8f5e 100644
---- a/drivers/net/dsa/microchip/lan937x_dev.c
-+++ b/drivers/net/dsa/microchip/lan937x_dev.c
-@@ -313,6 +313,163 @@ int lan937x_internal_phy_read(struct ksz_device *dev, int addr, int reg,
- 	return ksz_read16(dev, REG_VPHY_IND_DATA__2, val);
- }
- 
-+static void lan937x_config_gbit(struct ksz_device *dev, bool gbit, u8 *data)
-+{
-+	if (gbit)
-+		*data &= ~PORT_MII_NOT_1GBIT;
-+	else
-+		*data |= PORT_MII_NOT_1GBIT;
-+}
-+
-+static void lan937x_update_rgmii_tx_rx_delay(struct ksz_device *dev, int port,
-+					     bool is_tx)
-+{
-+	u16 data16;
-+	int reg;
-+	u8 val;
-+
-+	/* Apply different codes based on the ports as per characterization
-+	 * results
-+	 */
-+	if (is_tx) {
-+		reg = REG_PORT_XMII_CTRL_5;
-+		val = (port == LAN937X_RGMII_1_PORT) ? RGMII_1_TX_DELAY_2NS :
-+						       RGMII_2_TX_DELAY_2NS;
-+	} else {
-+		reg = REG_PORT_XMII_CTRL_4;
-+		val = (port == LAN937X_RGMII_1_PORT) ? RGMII_1_RX_DELAY_2NS :
-+						       RGMII_2_RX_DELAY_2NS;
-+	}
-+
-+	lan937x_pread16(dev, port, reg, &data16);
-+
-+	/* clear tune Adjust */
-+	data16 &= ~PORT_TUNE_ADJ;
-+	data16 |= (val << 7);
-+	lan937x_pwrite16(dev, port, reg, data16);
-+
-+	data16 |= PORT_DLL_RESET;
-+	/* write DLL reset to take effect */
-+	lan937x_pwrite16(dev, port, reg, data16);
-+}
-+
-+static void lan937x_apply_rgmii_delay(struct ksz_device *dev, int port, u8 val)
-+{
-+	struct ksz_port *p = &dev->ports[port];
-+
-+	/* Clear Ingress & Egress internal delay enabled bits */
-+	val &= ~(PORT_RGMII_ID_EG_ENABLE | PORT_RGMII_ID_IG_ENABLE);
-+
-+	/* if the delay is 0, do not enable DLL */
-+	if (p->rgmii_tx_val) {
-+		lan937x_update_rgmii_tx_rx_delay(dev, port, true);
-+		dev_info(dev->dev, "Applied rgmii tx delay for the port %d\n",
-+			 port);
-+		val |= PORT_RGMII_ID_EG_ENABLE;
-+	}
-+
-+	/* if the delay is 0, do not enable DLL */
-+	if (p->rgmii_rx_val) {
-+		lan937x_update_rgmii_tx_rx_delay(dev, port, false);
-+		dev_info(dev->dev, "Applied rgmii rx delay for the port %d\n",
-+			 port);
-+		val |= PORT_RGMII_ID_IG_ENABLE;
-+	}
-+
-+	/* Enable RGMII internal delays */
-+	lan937x_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, val);
-+}
-+
-+void lan937x_mac_config(struct ksz_device *dev, int port,
-+			phy_interface_t interface)
-+{
-+	u8 data8;
-+
-+	lan937x_pread8(dev, port, REG_PORT_XMII_CTRL_1, &data8);
-+
-+	/* clear MII selection & set it based on interface later */
-+	data8 &= ~PORT_MII_SEL_M;
-+
-+	/* configure MAC based on interface */
-+	switch (interface) {
-+	case PHY_INTERFACE_MODE_MII:
-+		lan937x_config_gbit(dev, false, &data8);
-+		data8 |= PORT_MII_SEL;
-+		break;
-+	case PHY_INTERFACE_MODE_RMII:
-+		lan937x_config_gbit(dev, false, &data8);
-+		data8 |= PORT_RMII_SEL;
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+		lan937x_config_gbit(dev, true, &data8);
-+		data8 |= PORT_RGMII_SEL;
-+
-+		/* Apply rgmii internal delay for the mac */
-+		lan937x_apply_rgmii_delay(dev, port, data8);
-+
-+		/* rgmii delay configuration is already applied above,
-+		 * hence return from here as no changes required
-+		 */
-+		return;
-+	default:
-+		dev_err(dev->dev, "Unsupported interface '%s' for port %d\n",
-+			phy_modes(interface), port);
-+		return;
-+	}
-+
-+	/* Write the updated value */
-+	lan937x_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, data8);
-+}
-+
-+void lan937x_config_interface(struct ksz_device *dev, int port,
-+			      int speed, int duplex,
-+			      bool tx_pause, bool rx_pause)
-+{
-+	u8 xmii_ctrl0, xmii_ctrl1;
-+
-+	lan937x_pread8(dev, port, REG_PORT_XMII_CTRL_0, &xmii_ctrl0);
-+	lan937x_pread8(dev, port, REG_PORT_XMII_CTRL_1, &xmii_ctrl1);
-+
-+	switch (speed) {
-+	case SPEED_1000:
-+		lan937x_config_gbit(dev, true, &xmii_ctrl1);
-+		break;
-+	case SPEED_100:
-+		lan937x_config_gbit(dev, false, &xmii_ctrl1);
-+		xmii_ctrl0 |= PORT_MAC_SPEED_100;
-+		break;
-+	case SPEED_10:
-+		lan937x_config_gbit(dev, false, &xmii_ctrl1);
-+		xmii_ctrl0 &= ~PORT_MAC_SPEED_100;
-+		break;
-+	default:
-+		dev_err(dev->dev, "Unsupported speed on port %d: %d\n",
-+			port, speed);
-+		return;
-+	}
-+
-+	if (duplex)
-+		xmii_ctrl0 |= PORT_FULL_DUPLEX;
-+	else
-+		xmii_ctrl0 &= ~PORT_FULL_DUPLEX;
-+
-+	if (tx_pause)
-+		xmii_ctrl0 |= PORT_TX_FLOW_CTRL;
-+	else
-+		xmii_ctrl1 &= ~PORT_TX_FLOW_CTRL;
-+
-+	if (rx_pause)
-+		xmii_ctrl0 |= PORT_RX_FLOW_CTRL;
-+	else
-+		xmii_ctrl0 &= ~PORT_RX_FLOW_CTRL;
-+
-+	lan937x_pwrite8(dev, port, REG_PORT_XMII_CTRL_0, xmii_ctrl0);
-+	lan937x_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, xmii_ctrl1);
-+}
-+
- void lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- {
- 	struct dsa_switch *ds = dev->ds;
-diff --git a/drivers/net/dsa/microchip/lan937x_dev.h b/drivers/net/dsa/microchip/lan937x_dev.h
-index 4e6d6f41e138..0141d417c446 100644
---- a/drivers/net/dsa/microchip/lan937x_dev.h
-+++ b/drivers/net/dsa/microchip/lan937x_dev.h
-@@ -33,6 +33,11 @@ int lan937x_reset_switch(struct ksz_device *dev);
- void lan937x_cfg_port_member(struct ksz_device *dev, int port,
- 			     u8 member);
- void lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port);
-+void lan937x_config_interface(struct ksz_device *dev, int port,
-+			      int speed, int duplex,
-+			      bool tx_pause, bool rx_pause);
-+void lan937x_mac_config(struct ksz_device *dev, int port,
-+			phy_interface_t interface);
- 
- extern const struct dsa_switch_ops lan937x_switch_ops;
- extern const struct ksz_dev_ops lan937x_dev_ops;
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index f48b54d9d2c0..38d5311bf21f 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -258,6 +258,68 @@ static int lan937x_get_max_mtu(struct dsa_switch *ds, int port)
- 	return (FR_MAX_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN);
- }
- 
-+static void lan937x_phylink_mac_config(struct dsa_switch *ds, int port,
-+				       unsigned int mode,
-+				       const struct phylink_link_state *state)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	/* Internal PHYs */
-+	if (lan937x_is_internal_phy_port(dev, port))
-+		return;
-+
-+	if (phylink_autoneg_inband(mode)) {
-+		dev_err(ds->dev, "In-band AN not supported!\n");
-+		return;
-+	}
-+
-+	lan937x_mac_config(dev, port, state->interface);
-+}
-+
-+static void lan937x_phylink_mac_link_up(struct dsa_switch *ds, int port,
-+					unsigned int mode,
-+					phy_interface_t interface,
-+					struct phy_device *phydev,
-+					int speed, int duplex,
-+					bool tx_pause, bool rx_pause)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	/* Internal PHYs */
-+	if (lan937x_is_internal_phy_port(dev, port))
-+		return;
-+
-+	lan937x_config_interface(dev, port, speed, duplex,
-+				 tx_pause, rx_pause);
-+}
-+
-+static void lan937x_phylink_get_caps(struct dsa_switch *ds, int port,
-+				     struct phylink_config *config)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	/* non legacy driver */
-+	config->legacy_pre_march2020 = false;
-+
-+	config->mac_capabilities = MAC_100FD;
-+
-+	/* internal T1 PHY */
-+	if (lan937x_is_internal_phy_port(dev, port)) {
-+		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-+			  config->supported_interfaces);
-+	} else if (lan937x_is_rgmii_port(dev, port)) {
-+		/* MII/RMII/RGMII ports */
-+		config->mac_capabilities |= MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
-+					    MAC_100HD | MAC_10 | MAC_1000FD;
-+		phy_interface_set_rgmii(config->supported_interfaces);
-+
-+		__set_bit(PHY_INTERFACE_MODE_MII,
-+			  config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_RMII,
-+			  config->supported_interfaces);
-+	}
-+}
-+
- const struct dsa_switch_ops lan937x_switch_ops = {
- 	.get_tag_protocol = lan937x_get_tag_protocol,
- 	.setup = lan937x_setup,
-@@ -270,6 +332,10 @@ const struct dsa_switch_ops lan937x_switch_ops = {
- 	.port_fast_age = ksz_port_fast_age,
- 	.port_max_mtu = lan937x_get_max_mtu,
- 	.port_change_mtu = lan937x_change_mtu,
-+	.phylink_get_caps = lan937x_phylink_get_caps,
-+	.phylink_mac_link_down = ksz_mac_link_down,
-+	.phylink_mac_config = lan937x_phylink_mac_config,
-+	.phylink_mac_link_up = lan937x_phylink_mac_link_up,
- };
- 
- int lan937x_switch_register(struct ksz_device *dev)
+> 
+>> +	tdquote = NULL;
+>> +	mutex_unlock(&quote_lock);
+>> +	return ret;
+>> +}
+>> +
+>> +static void attestation_callback_handler(void)
+>> +{
+>> +	struct tdx_quote_hdr *quote_hdr;
+>> +
+>> +	quote_hdr = (struct tdx_quote_hdr *) tdquote;
+>> +
+>> +	/* Check for spurious callback IRQ case */
+>> +	if (!tdquote || quote_hdr->status == GET_QUOTE_IN_FLIGHT)
+>> +		return;
+> 
+> I don't get the logic.  Please explain.
+
+I am trying to handle spurious IRQ case here. If we receive a callback
+IRQ from VMM before even we allocate tdquote or post the GetQuote
+request, accessing quote_hdr->status will lead to NULL pointer
+exception. So I have added check for valid quote buffer (tdquote !=
+NULL)
+
+Second condition (quote_hdr->status == GET_QUOTE_IN_FLIGHT)) makes
+sure we don't mark the current quote request complete until the
+Quote buffer status changes to GET_QUOTE_SUCCESS, GET_QUOTE_ERROR or
+GET_QUOTE_SERVICE_UNAVAILABLE.
+
+> 
+>> +
+>> +	complete(&req_compl);
+>> +}
+>> +
+> 
+
 -- 
-2.33.0
-
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
