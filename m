@@ -2,144 +2,336 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 606C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 23:23:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D0E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 23:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231740AbiEBX0W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 19:26:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58290 "EHLO
+        id S232681AbiEBXZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 19:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234103AbiEBXZH (ORCPT
+        with ESMTP id S233378AbiEBXYC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 19:25:07 -0400
-Received: from skyrocket.fabmicro.ru (skyrocket.fabmicro.ru [217.116.57.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E042647
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 16:21:36 -0700 (PDT)
-Received: from mail.fabmicro.ru (skyrocket.fabmicro.ru [217.116.57.130])
-        by skyrocket.fabmicro.ru (8.14.9/8.14.9) with ESMTP id 242NK3ij032574;
-        Mon, 2 May 2022 23:20:03 GMT
-        (envelope-from rz@fabmicro.ru)
-MIME-Version: 1.0
-Date:   Tue, 03 May 2022 04:20:03 +0500
-From:   Ruslan Zalata <rz@fabmicro.ru>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH v2] hwmon: (sun4i-lradc) Add driver for LRADC found on
- Allwinner A13/A20 SoC
-In-Reply-To: <20220429142412.00001e43@Huawei.com>
-References: <20220428210906.29527-1-rz@fabmicro.ru>
- <f79a8edf-36d4-02af-da8f-32b4e491bd47@roeck-us.net>
- <20220429142412.00001e43@Huawei.com>
-User-Agent: Roundcube Webmail/1.4.3
-Message-ID: <d3d69373480f95ec7976055b7bb988a4@fabmicro.ru>
-X-Sender: rz@fabmicro.ru
-Organization: Fabmicro, LLC.
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+        Mon, 2 May 2022 19:24:02 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB4763DC
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 16:20:31 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id d188-20020a25cdc5000000b00648429e5ab9so14386674ybf.13
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 16:20:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc:content-transfer-encoding;
+        bh=Wn9v1CSaaj/fcp4H4m6fdK0VVkJ4e50woEWu1Yxarys=;
+        b=BCF74xud8cBNQW7tG9f2fW58o9oxEmFAzNkfL/9t0pr5jk1EL1JZMfv+x2SRbD+V9v
+         TtheFTeIOscrljY3nyBYFiNtB8sQwLUveg8wd0piZUxDeOPE8kLqWnDubzqVl5Dw3fGf
+         sm6+xZ4tLQeK3pwCPyw8lY+8ILvKs5L5o6xKjREPmKIeXvpQ83iVuTAytQ9+g0kzYkB6
+         fsjZPX9jcCBdOgVr0XBSfxB5o47yI9rTuwrq6ddJSxuFPO5E1Ud+3/+Sb6oQr5vcWC7b
+         +rTD9sxTV5QAizNpm1gcVkvak645ZDrYOlst6c9bBZ2YksFdYwdjbxhN5LToMfhQhpzJ
+         xAQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc:content-transfer-encoding;
+        bh=Wn9v1CSaaj/fcp4H4m6fdK0VVkJ4e50woEWu1Yxarys=;
+        b=14agsoyMkxEWzTCC3MAIsFwzIsZsBBKCIcsb6/HAO1dWmCZ13ZouIJFoyEBaOfjaw0
+         D4TCjfkw6huKvAO40or2ADfrCQpU2P13ncnDIbYhloz6MCp22kmctu/eveyK30MZyibR
+         xTbGOWuQr6D0n98/YtRI8IWlz15VjBVfKR2O65tvW0OqO+jyqKHaIOD3GRq5hJ4jkPKU
+         s3C0KJqTSCS2ZtGuK4l1OiKjOfOMM4KjJo3UUyUrDsjRwWQC3VJ+cQylJ2+zHKwbhWp+
+         Q1yTGOqQsiPU21kEQAET+dm7UoizBvF7CPzvxtXIJ0AZRPSuQ3nrN3iENEjKBE5VZp89
+         22CA==
+X-Gm-Message-State: AOAM533Y31vB708i3p219e2TXVVF0FgMikQz2ZcROiAitK/uugnmq3SC
+        6VmjofCEwX2Y1RHY+tihVFUtYS6hvbUVMwc=
+X-Google-Smtp-Source: ABdhPJxwRLjyLd3L5iYMsPvAGGu1aucdAWmyFZwOo/Sh7vl3w7W1o/rVjWtEBGjxnk6u9D9qOr9ZltUl4wapZpQ=
+X-Received: from tj.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:53a])
+ (user=tjmercier job=sendgmr) by 2002:a0d:d9c1:0:b0:2f4:e463:5dcd with SMTP id
+ b184-20020a0dd9c1000000b002f4e4635dcdmr12806740ywe.108.1651533620836; Mon, 02
+ May 2022 16:20:20 -0700 (PDT)
+Date:   Mon,  2 May 2022 23:19:38 +0000
+In-Reply-To: <20220502231944.3891435-1-tjmercier@google.com>
+Message-Id: <20220502231944.3891435-5-tjmercier@google.com>
+Mime-Version: 1.0
+References: <20220502231944.3891435-1-tjmercier@google.com>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+Subject: [PATCH v6 4/6] dmabuf: Add gpu cgroup charge transfer function
+From:   "T.J. Mercier" <tjmercier@google.com>
+To:     tjmercier@google.com, Sumit Semwal <sumit.semwal@linaro.org>,
+        "=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>
+Cc:     daniel@ffwll.ch, hridya@google.com, jstultz@google.com,
+        tkjos@android.com, cmllamas@google.com, surenb@google.com,
+        kaleshsingh@google.com, Kenny.Ho@amd.com, mkoutny@suse.com,
+        skhan@linuxfoundation.org, kernel-team@android.com,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+        cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jonathan,
+The dma_buf_transfer_charge function provides a way for processes to
+transfer charge of a buffer to a different process. This is essential
+for the cases where a central allocator process does allocations for
+various subsystems, hands over the fd to the client who requested the
+memory and drops all references to the allocated memory.
 
-Thank you for pointing to DEFINE_SIMPLE_DEV_PM_OPS macros, will use it.
+Originally-by: Hridya Valsaraju <hridya@google.com>
+Signed-off-by: T.J. Mercier <tjmercier@google.com>
 
 ---
-Regards,
-Ruslan.
+v5 changes
+Fix commit message which still contained the old name for
+dma_buf_transfer_charge per Michal Koutn=C3=BD.
 
-Fabmicro, LLC.
+Modify the dma_buf_transfer_charge API to accept a task_struct instead
+of a gpucg. This avoids requiring the caller to manage the refcount
+of the gpucg upon failure and confusing ownership transfer logic.
 
-On 2022-04-29 18:24, Jonathan Cameron wrote:
-> On Thu, 28 Apr 2022 14:30:06 -0700
-> Guenter Roeck <linux@roeck-us.net> wrote:
-> 
->> On 4/28/22 14:09, Ruslan Zalata wrote:
->> > Some Allwinner SoCs like A13, A20 or T2 are equipped with two-channel
->> > low rate (6 bit) ADC that is often used for extra keys. There's a driver
->> > for that already implementing standard input device, but it has these
->> > limitations: 1) it cannot be used for general ADC data equisition, and
->> 
->> acquisition
->> 
->> > 2) it uses only one LRADC channel of two available.
->> >
->> > This driver provides basic hwmon interface to both channels of LRADC on
->> > such Allwinner SoCs.
->> >
->> > Signed-off-by: Ruslan Zalata <rz@fabmicro.ru>
->> 
->> Ok, next phase of review.
->> 
-> 
-> One thing noticed whilst randomly glancing at this patch.
-> 
-> 
->> > +#ifdef CONFIG_PM
->> > +static int sun4i_lradc_resume(struct device *dev)
->> > +{
->> > +	struct sun4i_lradc_data *lradc = dev_get_drvdata(dev);
->> > +
->> > +	return sun4i_lradc_start(lradc);
->> > +}
->> > +
->> > +static int sun4i_lradc_suspend(struct device *dev)
->> > +{
->> > +	struct sun4i_lradc_data *lradc = dev_get_drvdata(dev);
->> > +
->> > +	sun4i_lradc_stop(lradc);
->> > +	return 0;
->> > +}
->> > +
->> > +#define SUN4I_LRADC_DEV_PM_OPS	(&sun4i_lradc_dev_pm_ops)
->> > +#else
->> > +#define SUN4I_LRADC_DEV_PM_OPS	NULL
->> > +#endif /* CONFIG_PM */
->> > +
->> > +static const struct dev_pm_ops sun4i_lradc_dev_pm_ops = {
-> 
-> We have much better infrastructure for this these days.
-> 
-> Take a look at DEFINE_SIMPLE_DEV_PM_OPS()
-> and pm_sleep_ptr()
-> 
-> Those two in combination will let you get rid of all the ifdef stuff
-> here by letting the compiler remove the unused code automatically.
-> 
->> > +	.suspend = sun4i_lradc_suspend,
->> > +	.resume = sun4i_lradc_resume,
->> > +};
->> > +
->> > +static const struct of_device_id sun4i_lradc_of_match[] = {
->> > +	{ .compatible = "allwinner,sun4i-a10-lradc-keys", .data = &variant_sun4i_a10_lradc},
->> > +	{ /* sentinel */ }
->> > +};
->> > +MODULE_DEVICE_TABLE(of, sun4i_lradc_of_match);
->> > +
->> > +static struct platform_driver sun4i_lradc_driver = {
->> > +	.driver = {
->> > +		.name	= "sun4i-lradc-hwmon",
->> > +		.of_match_table = of_match_ptr(sun4i_lradc_of_match),
->> > +		.pm = SUN4I_LRADC_DEV_PM_OPS,
->> > +	},
->> > +	.probe	= sun4i_lradc_probe,
->> > +};
->> > +
->> > +module_platform_driver(sun4i_lradc_driver);
->> > +
->> > +MODULE_DESCRIPTION("Allwinner A13/A20 LRADC hwmon driver");
->> > +MODULE_AUTHOR("Ruslan Zalata <rz@fabmicro.ru>");
->> > +MODULE_LICENSE("GPL");
->> > +No empty line at end, please
->> 
->> 
->> _______________________________________________
->> linux-arm-kernel mailing list
->> linux-arm-kernel@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+v4 changes
+Adjust ordering of charge/uncharge during transfer to avoid potentially
+hitting cgroup limit per Michal Koutn=C3=BD.
+
+v3 changes
+Use more common dual author commit message format per John Stultz.
+
+v2 changes
+Move dma-buf cgroup charge transfer from a dma_buf_op defined by every
+heap to a single dma-buf function for all heaps per Daniel Vetter and
+Christian K=C3=B6nig.
+---
+ drivers/dma-buf/dma-buf.c  | 57 +++++++++++++++++++++++++++++++++++
+ include/linux/cgroup_gpu.h | 14 +++++++++
+ include/linux/dma-buf.h    |  6 ++++
+ kernel/cgroup/gpu.c        | 62 ++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 139 insertions(+)
+
+diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
+index bc89c44bd9b9..f3fb844925e2 100644
+--- a/drivers/dma-buf/dma-buf.c
++++ b/drivers/dma-buf/dma-buf.c
+@@ -1341,6 +1341,63 @@ void dma_buf_vunmap(struct dma_buf *dmabuf, struct i=
+osys_map *map)
+ }
+ EXPORT_SYMBOL_NS_GPL(dma_buf_vunmap, DMA_BUF);
+=20
++/**
++ * dma_buf_transfer_charge - Change the GPU cgroup to which the provided d=
+ma_buf is charged.
++ * @dmabuf:	[in]	buffer whose charge will be migrated to a different GPU c=
+group
++ * @target:	[in]	the task_struct of the destination process for the GPU cg=
+roup charge
++ *
++ * Only tasks that belong to the same cgroup the buffer is currently charg=
+ed to
++ * may call this function, otherwise it will return -EPERM.
++ *
++ * Returns 0 on success, or a negative errno code otherwise.
++ */
++int dma_buf_transfer_charge(struct dma_buf *dmabuf, struct task_struct *ta=
+rget)
++{
++	struct gpucg *current_gpucg, *target_gpucg, *to_release;
++	int ret;
++
++	if (!dmabuf->gpucg || !dmabuf->gpucg_bucket) {
++		/* This dmabuf is not tracked under GPU cgroup accounting */
++		return 0;
++	}
++
++	current_gpucg =3D gpucg_get(current);
++	target_gpucg =3D gpucg_get(target);
++	to_release =3D target_gpucg;
++
++	/* If the source and destination cgroups are the same, don't do anything.=
+ */
++	if (current_gpucg =3D=3D target_gpucg) {
++		ret =3D 0;
++		goto skip_transfer;
++	}
++
++	/*
++	 * Verify that the cgroup of the process requesting the transfer
++	 * is the same as the one the buffer is currently charged to.
++	 */
++	mutex_lock(&dmabuf->lock);
++	if (current_gpucg !=3D dmabuf->gpucg) {
++		ret =3D -EPERM;
++		goto err;
++	}
++
++	ret =3D gpucg_transfer_charge(
++		dmabuf->gpucg, target_gpucg, dmabuf->gpucg_bucket, dmabuf->size);
++	if (ret)
++		goto err;
++
++	to_release =3D dmabuf->gpucg;
++	dmabuf->gpucg =3D target_gpucg;
++
++err:
++	mutex_unlock(&dmabuf->lock);
++skip_transfer:
++	gpucg_put(current_gpucg);
++	gpucg_put(to_release);
++	return ret;
++}
++EXPORT_SYMBOL_NS_GPL(dma_buf_transfer_charge, DMA_BUF);
++
+ #ifdef CONFIG_DEBUG_FS
+ static int dma_buf_debug_show(struct seq_file *s, void *unused)
+ {
+diff --git a/include/linux/cgroup_gpu.h b/include/linux/cgroup_gpu.h
+index 4dfe633d6ec7..f5973ef9f926 100644
+--- a/include/linux/cgroup_gpu.h
++++ b/include/linux/cgroup_gpu.h
+@@ -83,7 +83,13 @@ static inline struct gpucg *gpucg_parent(struct gpucg *c=
+g)
+ }
+=20
+ int gpucg_charge(struct gpucg *gpucg, struct gpucg_bucket *bucket, u64 siz=
+e);
++
+ void gpucg_uncharge(struct gpucg *gpucg, struct gpucg_bucket *bucket, u64 =
+size);
++
++int gpucg_transfer_charge(struct gpucg *source,
++			  struct gpucg *dest,
++			  struct gpucg_bucket *bucket,
++			  u64 size);
+ int gpucg_register_bucket(struct gpucg_bucket *bucket, const char *name);
+ #else /* CONFIG_CGROUP_GPU */
+=20
+@@ -118,6 +124,14 @@ static inline void gpucg_uncharge(struct gpucg *gpucg,
+ 				  struct gpucg_bucket *bucket,
+ 				  u64 size) {}
+=20
++static inline int gpucg_transfer_charge(struct gpucg *source,
++					struct gpucg *dest,
++					struct gpucg_bucket *bucket,
++					u64 size)
++{
++	return 0;
++}
++
+ static inline int gpucg_register_bucket(struct gpucg_bucket *bucket, const=
+ char *name) {}
+ #endif /* CONFIG_CGROUP_GPU */
+ #endif /* _CGROUP_GPU_H */
+diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
+index 8e7c55c830b3..438ad8577b76 100644
+--- a/include/linux/dma-buf.h
++++ b/include/linux/dma-buf.h
+@@ -18,6 +18,7 @@
+ #include <linux/file.h>
+ #include <linux/err.h>
+ #include <linux/scatterlist.h>
++#include <linux/sched.h>
+ #include <linux/list.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/fs.h>
+@@ -650,9 +651,14 @@ void dma_buf_vunmap(struct dma_buf *dmabuf, struct ios=
+ys_map *map);
+ void dma_buf_exp_info_set_gpucg(struct dma_buf_export_info *exp_info,
+ 				struct gpucg *gpucg,
+ 				struct gpucg_bucket *gpucg_bucket);
++
++int dma_buf_transfer_charge(struct dma_buf *dmabuf, struct task_struct *ta=
+rget);
+ #else/* CONFIG_CGROUP_GPU */
+ static inline void dma_buf_exp_info_set_gpucg(struct dma_buf_export_info *=
+exp_info,
+ 					      struct gpucg *gpucg,
+ 					      struct gpucg_bucket *gpucg_bucket) {}
++
++static inline int dma_buf_transfer_charge(struct dma_buf *dmabuf, struct t=
+ask_struct *target)
++{ return 0; }
+ #endif /* CONFIG_CGROUP_GPU */
+ #endif /* __DMA_BUF_H__ */
+diff --git a/kernel/cgroup/gpu.c b/kernel/cgroup/gpu.c
+index 34d0a5b85834..7dfbe0fd7e45 100644
+--- a/kernel/cgroup/gpu.c
++++ b/kernel/cgroup/gpu.c
+@@ -252,6 +252,68 @@ void gpucg_uncharge(struct gpucg *gpucg, struct gpucg_=
+bucket *bucket, u64 size)
+ 	css_put(&gpucg->css);
+ }
+=20
++/**
++ * gpucg_transfer_charge - Transfer a GPU charge from one cgroup to anothe=
+r.
++ *
++ * @source:	[in]	The GPU cgroup the charge will be transferred from.
++ * @dest:	[in]	The GPU cgroup the charge will be transferred to.
++ * @bucket:	[in]	The GPU cgroup bucket corresponding to the charge.
++ * @size:	[in]	The size of the memory in bytes.
++ *                      This size will be rounded up to the nearest page s=
+ize.
++ *
++ * Returns 0 on success, or a negative errno code otherwise.
++ */
++int gpucg_transfer_charge(struct gpucg *source,
++			  struct gpucg *dest,
++			  struct gpucg_bucket *bucket,
++			  u64 size)
++{
++	struct page_counter *counter;
++	u64 nr_pages;
++	struct gpucg_resource_pool *rp_source, *rp_dest;
++	int ret =3D 0;
++
++	nr_pages =3D PAGE_ALIGN(size) >> PAGE_SHIFT;
++
++	mutex_lock(&gpucg_mutex);
++	rp_source =3D cg_rpool_find_locked(source, bucket);
++	if (unlikely(!rp_source)) {
++		ret =3D -ENOENT;
++		goto exit_early;
++	}
++
++	rp_dest =3D cg_rpool_get_locked(dest, bucket);
++	if (IS_ERR(rp_dest)) {
++		ret =3D PTR_ERR(rp_dest);
++		goto exit_early;
++	}
++
++	/*
++	 * First uncharge from the pool it's currently charged to. This ordering =
+avoids double
++	 * charging while the transfer is in progress, which could cause us to hi=
+t a limit.
++	 * If the try_charge fails for this transfer, we need to be able to rever=
+se this uncharge,
++	 * so we continue to hold the gpucg_mutex here.
++	 */
++	page_counter_uncharge(&rp_source->total, nr_pages);
++	css_put(&source->css);
++
++	/* Now attempt the new charge */
++	if (page_counter_try_charge(&rp_dest->total, nr_pages, &counter)) {
++		css_get(&dest->css);
++	} else {
++		/*
++		 * The new charge failed, so reverse the uncharge from above. This shoul=
+d always
++		 * succeed since charges on source are blocked by gpucg_mutex.
++		 */
++		WARN_ON(!page_counter_try_charge(&rp_source->total, nr_pages, &counter))=
+;
++		css_get(&source->css);
++		ret =3D -ENOMEM;
++	}
++exit_early:
++	mutex_unlock(&gpucg_mutex);
++	return ret;
++}
++
+ /**
+  * gpucg_register_bucket - Registers a bucket for memory accounting using =
+the
+  * GPU cgroup controller.
+--=20
+2.36.0.464.gb9c8b46e94-goog
+
