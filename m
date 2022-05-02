@@ -2,219 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16E80C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:22:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7473AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240176AbiEBNZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 09:25:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54292 "EHLO
+        id S235532AbiEBN12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 09:27:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235316AbiEBNY3 (ORCPT
+        with ESMTP id S231477AbiEBN1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 09:24:29 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6374ABE2C;
-        Mon,  2 May 2022 06:21:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651497660; x=1683033660;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=sXU/IVDy9rrCxPCpPvE5yfxhUi+gnBz5lNKRc1KVowM=;
-  b=dE9ptC5RGVnn+UAYkTBfLvmxqNGn03dHunxY2qNHBvKJ6p89FwnmO7NI
-   APzTZO7EY43h1TSV8p+KcxmIRSQPzKugcQMEspdWuQzskaDIBhc62IQ3L
-   I0UczF/CWkJJgO3i+veAfwkb0q3dStpAVK4+BeII1lN0ZO4mDNdBcWVQu
-   YHhlDHThuwua41VEGDku4e6OxP+Mr5AGO4Ln0+gJfmk3rvT2EvLemDFlt
-   8XomZtkGl7BZ1V8U5MupUNhGDAmiLlRlRl8AIhr71EttYjfRnRsobXpYe
-   X+PSvWZEBJieKm2rjN435iYX4M38wMjBpxOzFPixHxi4s6FAqcuzeqfYE
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10334"; a="267364075"
-X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
-   d="scan'208,217";a="267364075"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 06:21:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
-   d="scan'208,217";a="707608336"
-Received: from black.fi.intel.com (HELO black.fi.intel.com.) ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 02 May 2022 06:20:57 -0700
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Benson Leung <bleung@google.com>,
-        Prashant Malani <pmalani@chromium.org>,
-        Jameson Thies <jthies@google.com>,
-        "Regupathy, Rajaram" <rajaram.regupathy@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Won Chung <wonchung@google.com>, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 0/3] usb: typec: Separate USB PD from USB Type-C
-Date:   Mon,  2 May 2022 16:20:55 +0300
-Message-Id: <20220502132058.86236-1-heikki.krogerus@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 2 May 2022 09:27:25 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C9EE10FD5;
+        Mon,  2 May 2022 06:23:53 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id a15-20020a17090ad80f00b001dc2e23ad84so4114038pjv.4;
+        Mon, 02 May 2022 06:23:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=BcnUXZZNeIgPM3jDnRqr16Lhe4Q17iMrfxOnue80pmo=;
+        b=P8RYjY8IdTpemn0mW+H76/VggJPGQeDixJnUQn8d+Y/yzZZqOZvjWVOzjvhXTBhq0F
+         D/lBp8Jdb63Xqrmrstk0m4aQDN6uGqESqSIXFmPevsh0nQohzHoLxta9cMXA8pG3fl7q
+         yzrI8vr4gMqUTBpatsHkKXbPN71kwyui6i3WPLi3x9KmDuy8UbSMrSWFayYTNEjn21Af
+         qBf6Dwzi58k9stSEczKQMe07eO0YUQ+jW2TYQWEw1uorFjQIzEPk2Wt1FTmsEcDc43fM
+         lW59WD5L/4owtBSYW1rrNWZ+Ftso/98a2gFDoCdonwGv5THGkZ45oiYC5wM2mM98bopm
+         G68Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=BcnUXZZNeIgPM3jDnRqr16Lhe4Q17iMrfxOnue80pmo=;
+        b=S5SyWI8UsyS5kyQKvI2b/nC/Q+ei9VMSK0kM+GWy0T+wmF29uA5uDyzi/rsABYInvm
+         sQg6q44IUnvUS3sbmsszxIlVIAGRxj7L/9fwzW0Riy7ioD9tPklHKmdo4fTQ5Snv0Fsg
+         dU9KMcm/dJ9BeUVNk0cG+lVw9FAETvzHlvK7VQ2HcMNknGiLKBDZUUH2TWal9mnJuaHn
+         UxRg31A+f6n/8JQ9dlOmucoc/15tjrZfyhG4TZFDLxoPZg0aXZLN1b7mUbDDQqpSP/5z
+         WzckXa4VsgDmWBS4PQXwAcWG0L2FuE3WC/wW2wSpnEbcgn2tgNbKKn4fTILXO3cOoPX3
+         ucZg==
+X-Gm-Message-State: AOAM531yBbdJ+QYGd6nT1AoaD8Hq5ClgRGuyfw4swM+niHjxaXBKvZq2
+        d9q8xGgcIMAw1geZ2kSLvj3bixv3VE0ixQ==
+X-Google-Smtp-Source: ABdhPJxWwrSAYD/A1KNYAnij2ANPC+T7EvfmpWZ+0EUrolZz+TENBzr/4frtJObv9aHBGMtx4PxLVQ==
+X-Received: by 2002:a17:90a:7f94:b0:1cb:1853:da1b with SMTP id m20-20020a17090a7f9400b001cb1853da1bmr13065757pjl.14.1651497832840;
+        Mon, 02 May 2022 06:23:52 -0700 (PDT)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id e11-20020a62ee0b000000b0050dc762818bsm4676897pfi.101.2022.05.02.06.23.50
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 02 May 2022 06:23:52 -0700 (PDT)
+From:   Wells Lu <wellslutw@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
+        pabeni@redhat.com, krzk+dt@kernel.org, roopa@nvidia.com,
+        andrew@lunn.ch, edumazet@google.com
+Cc:     wells.lu@sunplus.com, Wells Lu <wellslutw@gmail.com>
+Subject: [PATCH net-next v10 0/2] This is a patch series for Ethernet driver of Sunplus SP7021 SoC.
+Date:   Mon,  2 May 2022 21:23:36 +0800
+Message-Id: <1651497818-25352-1-git-send-email-wellslutw@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD card and
+etc.) into a single chip. It is designed for industrial control
+applications.
 
-The data structures are now named "usb_power_deliver*" and the kobject
-attributes are now device attributes.
+Refer to:
+https://sunplus.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
 
+Wells Lu (2):
+  devicetree: bindings: net: Add bindings doc for Sunplus SP7021.
+  net: ethernet: Add driver for Sunplus SP7021
 
-v3 cover letter:
-
-Now everything is a device. There are now other changes.
-
-
-v2 cover letter:
-
-In this version the USB Power Delivery support is now completely
-separated into its own little subsystem. The USB Power Delivery
-objects are not devices, but they are also no longer tied to any
-device by default. This change makes it possible to share the USB PD
-objects between multiple devices on top of being able to select the
-objects that we want the device to use.
-
-The USB Power Delivery objects are now placed under
-/sys/kernel/usb_power_delivery directory. As an example:
-
-        /sys/kernel/usb_power_delivery/pd0
-
-So now that pd0 can be linked to a device, or devices, that want (or
-can) use it to negotiate the USB PD contract with. An example where
-two devices share the PD:
-
-        /sys/class/typec/port0/usb_power_delivery -> ../../../../../../../kernel/usb_power_delivery/pd0
-        /sys/class/typec/port1/usb_power_delivery -> ../../../../../../../kernel/usb_power_delivery/pd0
-
-I did not change the directory hierarchy at all, because I'm assuming
-that it is not a problem anymore:
-
-        pd0/<message>/<object>/<field>
-
-On top of that change, I also switched to tcpm.c from ucsi.c as
-the first user of this thing.
-
-
-v1 cover letter:
-
-Ideally after this there should be no need to add any new USB Power
-Delivery specific attribute files directly to the USB Type-C devices
-in sysfs. They now have their own directory.
-
-The idea of the series is that any device (so not just USB Type-C
-connectors and the partners attached to them) that supports USB Power
-Delivery can have this separate sub-directory "usb_power_delivery" in
-sysfs, and that sub-directory will have all the USB Power Delivery
-objects and all the other USB Power Delivery details.
-
-There are already ways that allow us to read the USB Power Delivery
-capabilities from potentially any USB PD capable USB device attached
-to the bus - one way is defined in the USB Type-C Bridge
-Specification.
-
-Initially the Capability Messages (i.e. PDOs) are exposed.
-
-This is an example (tree view) of the capabilities that the ports on a
-normal x86 system advertise to the partner. First you have the message
-directory (source_capabilities and sink_capabilities), and that will
-have a sub-directory for each PDO that capability message has. The PDO
-sub-directories are named by their type. The number in front of the
-name is the object position of the PDO:
-
-/sys/class/typec/port0/usb_power_delivery
-|-- revision
-|-- sink_capabilities/
-|   |-- 1:fixed_supply/
-|   |   |-- dual_role_data
-|   |   |-- dual_role_power
-|   |   |-- fast_role_swap_current
-|   |   |-- operational_current
-|   |   |-- unchunked_extended_messages_supported
-|   |   |-- unconstrained_power
-|   |   |-- usb_communication_capable
-|   |   |-- usb_suspend_supported
-|   |   `-- voltage
-|   |-- 2:variable_supply/
-|   |   |-- maximum_voltage
-|   |   |-- minimum_voltage
-|   |   `-- operational_current
-|   `-- 3:battery/
-|       |-- maximum_voltage
-|       |-- minimum_voltage
-|       `-- operational_power
-`-- source_capabilities/
-    `-- 1:fixed_supply/
-        |-- dual_role_data
-        |-- dual_role_power
-        |-- maximum_current
-        |-- unchunked_extended_messages_supported
-        |-- unconstrained_power
-        |-- usb_communication_capable
-        |-- usb_suspend_supported
-        `-- voltage
-
-And these are the capabilities of my Thunderbolt3 dock:
-
-/sys/class/typec/port0-partner/usb_power_delivery
-|-- revision
-|-- sink_capabilities/
-|   `-- 1:fixed_supply/
-|       |-- dual_role_data
-|       |-- dual_role_power
-|       |-- fast_role_swap_current
-|       |-- operational_current
-|       |-- unchunked_extended_messages_supported
-|       |-- unconstrained_power
-|       |-- usb_communication_capable
-|       |-- usb_suspend_supported
-|       `-- voltage
-`-- source_capabilities/
-    |-- 1:fixed_supply/
-    |   |-- dual_role_data
-    |   |-- dual_role_power
-    |   |-- maximum_current
-    |   |-- unchunked_extended_messages_supported
-    |   |-- unconstrained_power
-    |   |-- usb_communication_capable
-    |   |-- usb_suspend_supported
-    |   `-- voltage
-    |-- 2:fixed_supply/
-    |   |-- maximum_current
-    |   `-- voltage
-    |-- 3:fixed_supply/
-    |   |-- maximum_current
-    |   `-- voltage
-    |-- 4:fixed_supply/
-    |   |-- maximum_current
-    |   `-- voltage
-    `-- 5:fixed_supply/
-        |-- maximum_current
-        `-- voltage
-
-
-Heikki Krogerus (3):
-  usb: typec: Separate USB Power Delivery from USB Type-C
-  usb: typec: USB Power Delivery helpers for ports and partners
-  usb: typec: tcpm: Register USB Power Delivery Capabilities
-
- Documentation/ABI/testing/sysfs-class-typec   |   8 +
- .../testing/sysfs-class-usb_power_delivery    | 240 ++++++
- drivers/usb/typec/Makefile                    |   2 +-
- drivers/usb/typec/class.c                     | 149 ++++
- drivers/usb/typec/class.h                     |   4 +
- drivers/usb/typec/pd.c                        | 708 ++++++++++++++++++
- drivers/usb/typec/pd.h                        |  30 +
- drivers/usb/typec/tcpm/tcpm.c                 | 142 +++-
- include/linux/usb/pd.h                        |  38 +
- include/linux/usb/typec.h                     |  23 +
- 10 files changed, 1342 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-class-usb_power_delivery
- create mode 100644 drivers/usb/typec/pd.c
- create mode 100644 drivers/usb/typec/pd.h
+ .../bindings/net/sunplus,sp7021-emac.yaml     | 141 +++++
+ MAINTAINERS                                   |   8 +
+ drivers/net/ethernet/Kconfig                  |   1 +
+ drivers/net/ethernet/Makefile                 |   1 +
+ drivers/net/ethernet/sunplus/Kconfig          |  35 ++
+ drivers/net/ethernet/sunplus/Makefile         |   6 +
+ drivers/net/ethernet/sunplus/spl2sw_define.h  | 270 ++++++++
+ drivers/net/ethernet/sunplus/spl2sw_desc.c    | 228 +++++++
+ drivers/net/ethernet/sunplus/spl2sw_desc.h    |  19 +
+ drivers/net/ethernet/sunplus/spl2sw_driver.c  | 578 ++++++++++++++++++
+ drivers/net/ethernet/sunplus/spl2sw_int.c     | 273 +++++++++
+ drivers/net/ethernet/sunplus/spl2sw_int.h     |  13 +
+ drivers/net/ethernet/sunplus/spl2sw_mac.c     | 274 +++++++++
+ drivers/net/ethernet/sunplus/spl2sw_mac.h     |  18 +
+ drivers/net/ethernet/sunplus/spl2sw_mdio.c    | 126 ++++
+ drivers/net/ethernet/sunplus/spl2sw_mdio.h    |  12 +
+ drivers/net/ethernet/sunplus/spl2sw_phy.c     |  92 +++
+ drivers/net/ethernet/sunplus/spl2sw_phy.h     |  12 +
+ .../net/ethernet/sunplus/spl2sw_register.h    |  86 +++
+ 19 files changed, 2193 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/sunplus,sp7021-emac.yaml
+ create mode 100644 drivers/net/ethernet/sunplus/Kconfig
+ create mode 100644 drivers/net/ethernet/sunplus/Makefile
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_define.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_desc.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_desc.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_driver.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_int.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_int.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mac.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mac.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mdio.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mdio.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_phy.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_phy.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_register.h
 
 -- 
-2.35.1
+2.25.1
 
