@@ -2,134 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95340C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 09:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC484C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 09:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384186AbiEBJ3W (ORCPT
+        id S1384203AbiEBJ33 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 05:29:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36272 "EHLO
+        Mon, 2 May 2022 05:29:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384173AbiEBJ2z (ORCPT
+        with ESMTP id S1384222AbiEBJ3L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 05:28:55 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3769A2DEA;
-        Mon,  2 May 2022 02:25:24 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        Mon, 2 May 2022 05:29:11 -0400
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61773DEF0;
+        Mon,  2 May 2022 02:25:42 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KsHkQ69N6z4yST;
-        Mon,  2 May 2022 19:25:18 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1651483519;
-        bh=IcZ6omKND5FLEVyamlgI53r/grm7FjajqIZhCPrHX0I=;
-        h=Date:From:To:Cc:Subject:From;
-        b=FdM3Gx8df/La5cv/wlCtKvE0MafYao7+4eSTbRaue9Yu/Uxg+tmWZNszlnwwRrwt+
-         /Rx9g22y5vc4DZlH2A2lSxTN8TI0957Xl6O6MHJoffuFaRF7UBqaETbEnMhp/5ygTo
-         KN3+Ikwj9w48jFeSLbeyppZ/XSWXw6FbSH0F1ybf2J9WkOipiTbNWnQZ68i1MS8uJA
-         B+ADeG4BIv2ouqjtsvUTLqIGLV1kF5r81bIzRaIlG5Sr5t3QWCmydk88Tm4XMorb5B
-         +4dY5vG0fIoSyx/qIV1RY0e+Fzg4jnZtpfeMReyqi/HQ7gLTM2JQzFj0diud/M7eVa
-         u2bS3fyULr8RQ==
-Date:   Mon, 2 May 2022 19:25:17 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Peter Collingbourne <pcc@google.com>
-Subject: linux-next: manual merge of the mm tree with the slab tree
-Message-ID: <20220502192517.28161b32@canb.auug.org.au>
+        (Authenticated sender: hector@marcansoft.com)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 1BF76419BC;
+        Mon,  2 May 2022 09:25:37 +0000 (UTC)
+From:   Hector Martin <marcan@marcan.st>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
+Subject: [PATCH] tty: serial: samsung_tty: Fix suspend/resume on S5L
+Date:   Mon,  2 May 2022 18:25:05 +0900
+Message-Id: <20220502092505.30934-1-marcan@marcan.st>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/z3zMWuT4tSOkpA1Q=w1ja6e";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/z3zMWuT4tSOkpA1Q=w1ja6e
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+We were restoring the IRQ masks then clearing them again, because
+ucon_mask wasn't set properly. Adding that makes suspend/resume
+work as intended.
 
-Hi all,
+Signed-off-by: Hector Martin <marcan@marcan.st>
+---
+ drivers/tty/serial/samsung_tty.c | 1 +
+ include/linux/serial_s3c.h       | 3 +++
+ 2 files changed, 4 insertions(+)
 
-Today's linux-next merge of the mm tree got a conflict in:
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 12bf6b18847f..88a0b01ee9ab 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -2840,6 +2840,7 @@ static const struct s3c24xx_serial_drv_data s5l_serial_drv_data = {
+ 		.num_clks	= 1,
+ 		.clksel_mask	= 0,
+ 		.clksel_shift	= 0,
++		.ucon_mask	= APPLE_S5L_UCON_MASK,
+ 	},
+ 	.def_cfg = {
+ 		.ucon		= APPLE_S5L_UCON_DEFAULT,
+diff --git a/include/linux/serial_s3c.h b/include/linux/serial_s3c.h
+index f6c3323fc4c5..dec15f5b3dec 100644
+--- a/include/linux/serial_s3c.h
++++ b/include/linux/serial_s3c.h
+@@ -256,6 +256,9 @@
+ #define APPLE_S5L_UCON_DEFAULT		(S3C2410_UCON_TXIRQMODE | \
+ 					 S3C2410_UCON_RXIRQMODE | \
+ 					 S3C2410_UCON_RXFIFO_TOI)
++#define APPLE_S5L_UCON_MASK		(APPLE_S5L_UCON_RXTO_ENA_MSK | \
++					 APPLE_S5L_UCON_RXTHRESH_ENA_MSK | \
++					 APPLE_S5L_UCON_TXTHRESH_ENA_MSK)
+ 
+ #define APPLE_S5L_UTRSTAT_RXTHRESH	(1<<4)
+ #define APPLE_S5L_UTRSTAT_TXTHRESH	(1<<5)
+-- 
+2.35.1
 
-  include/linux/slab.h
-
-between commit:
-
-  71aeb554a274 ("mm: slab: fix comment for __assume_kmalloc_alignment")
-
-from the slab tree and commits:
-
-  3f0cd9a623ec ("mm: make minimum slab alignment a runtime property")
-  78c0585fdbac ("mm-make-minimum-slab-alignment-a-runtime-property-fix")
-
-from the mm tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc include/linux/slab.h
-index 58bb9392775d,3d2f2a3ca17e..000000000000
---- a/include/linux/slab.h
-+++ b/include/linux/slab.h
-@@@ -216,10 -209,22 +216,22 @@@ void kmem_dump_obj(void *object)
-  #define ARCH_SLAB_MINALIGN __alignof__(unsigned long long)
-  #endif
- =20
-+ /*
-+  * Arches can define this function if they want to decide the minimum slab
-+  * alignment at runtime. The value returned by the function must be a pow=
-er
-+  * of two and >=3D ARCH_SLAB_MINALIGN.
-+  */
-+ #ifndef arch_slab_minalign
-+ static inline unsigned int arch_slab_minalign(void)
-+ {
-+ 	return ARCH_SLAB_MINALIGN;
-+ }
-+ #endif
-+=20
-  /*
- - * kmalloc and friends return ARCH_KMALLOC_MINALIGN aligned
- - * pointers. kmem_cache_alloc and friends return ARCH_SLAB_MINALIGN
- - * aligned pointers.
- + * kmem_cache_alloc and friends return pointers aligned to ARCH_SLAB_MINA=
-LIGN.
- + * kmalloc and friends return pointers aligned to both ARCH_KMALLOC_MINAL=
-IGN
- + * and ARCH_SLAB_MINALIGN, but here we only assume the former alignment.
-   */
-  #define __assume_kmalloc_alignment __assume_aligned(ARCH_KMALLOC_MINALIGN)
-  #define __assume_slab_alignment __assume_aligned(ARCH_SLAB_MINALIGN)
-
---Sig_/z3zMWuT4tSOkpA1Q=w1ja6e
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJvo30ACgkQAVBC80lX
-0GxLDgf/UIPTnpHeUkb6fDuQEabpZf2lWKmUpCY7uzBn0sBwakfMkZzQfu25UiC8
-GF6bqSAW/5I2gX7Xmc0EW7FMcCf8d3i672QD2vyd2VfCIYVxvudu6hQzV1S9l2s+
-SNKDkhGZD4H7KVCUkJeKCAfc3TwFvd+6rsGwuq6rk2NAYn171gbGzNtGEQyS0J6v
-IEtnXYbKETakQmORSHOBrRsVVFcRD4Kgg9bTCm0mOhATax+//9JwAsoHagnSo2TA
-ug+Z13SX6vHF7xo0ce1q/yqEMU3XLUEJXNBw7tqaLsYQOWB14yx824l2rceFrUMv
-ni6iq0Y+PNXm+0FohfJfTsob+uZjng==
-=uNBC
------END PGP SIGNATURE-----
-
---Sig_/z3zMWuT4tSOkpA1Q=w1ja6e--
