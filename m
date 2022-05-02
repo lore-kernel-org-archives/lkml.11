@@ -2,238 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA9E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D86F1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:03:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386444AbiEBREt (ORCPT
+        id S1386305AbiEBRGn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 13:04:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44902 "EHLO
+        Mon, 2 May 2022 13:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386455AbiEBREe (ORCPT
+        with ESMTP id S1357301AbiEBRGj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 13:04:34 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40044270D
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:01:05 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2ebf4b91212so154606977b3.8
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 10:01:05 -0700 (PDT)
+        Mon, 2 May 2022 13:06:39 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5926725EA
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:03:10 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id be20so17293732edb.12
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 10:03:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ZDNXgBhMz20++Q4yigO612T0eYygF7r9J92FIVtim7Y=;
-        b=JgdYu4i8LXmMnXLXrkcT7kHOAMHmAidhNS6U0ueSLoMV2xM914ojCWAfQT3FwPR+1l
-         PoLOfIxEoZUnpUcLAHkqdzewTFZmlPHzf2P4KtVSykjNiUaSjHEZ4JXGrO87YwYEfY29
-         Z+QTsgSlKNHz0OH4JLROLS99pvqLcEwt40oWqVFt9/peS0coGpNEREGC2CeybE9udTkZ
-         PBSCKT1mEj4EUvIGaFwp/YC2T3K64TVZ9MIoJHwe/x1WPyoerlcNsHxE9mUxBRzI6/O/
-         dA+GoQpNe65P4xsbfG25zceIOp2apEavuWjynEw+O1ENeDzWJe9o6sXQ0vlxCo8yyC69
-         UBEg==
+         :cc;
+        bh=/u6ctPDMxVgGjtnFGMUjLT8WYXeEvvG7PHjNe0QwddI=;
+        b=U+6pAjMkfydxMfXGeTmt3HKbxbXevcplbal5L1ckkQu9nHhDDr4SDRGgBekVn87CJd
+         YrmGEanXaLZSZ82VJResvpoYyRkLUcrMX7ZgkOFM7hnObCOd86KUkbaj6zmv9dig+Cl6
+         pXz5+eXdWfU0Vqp7yPjv4dFgsa7Lo+L0IpdMk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ZDNXgBhMz20++Q4yigO612T0eYygF7r9J92FIVtim7Y=;
-        b=U+om279C0KmLyf1GuJ6ccc61ZtLlMjZ8FNlwZhV9LCs0lgG70Yt8lZFatCUmsh9X27
-         cwWKEDyTTQPnTHQ9m0lqdXFyNs/9CXrX7e0HOZ8SaMqNIdKhOFIq8To7aPndy6DjfwbH
-         BvZK9gKGTlm5Q6JrTwZ1S7OCMdgUNT6KErb/Q9fQa6yVknT4RvRsLieN5YIPeYLxcIvT
-         Ul0bKrr7Zackb27LxPEUyEmzCExYaFRi+wfOoLF/bivvLOekt1uhy/WZv9gBdbjr9+SE
-         ckBtA+UWD7rJysiu6/YC7e0Cf5jAC3gE3A8gcP7+UlSx8vULjxj10WMskGjl7jihsUKj
-         lGIQ==
-X-Gm-Message-State: AOAM533i2h9i1zN814oVLdNPBqozV+s4R91lPiPha0owSTypWr/cqtj7
-        enHpJrYUBGQfN5tiuqF3EW2WQUVabMwsWnoTf4eKfg==
-X-Google-Smtp-Source: ABdhPJy9WXshcsyYnhmFBRjyjSz+xXgG968fsEWEpZo4KzR8Ug2a15AebqyxN7IoToxv1Gm1KUB+/NnO5+jeZO0Mdww=
-X-Received: by 2002:a81:1f8b:0:b0:2f8:5846:445e with SMTP id
- f133-20020a811f8b000000b002f85846445emr11776773ywf.50.1651510864112; Mon, 02
- May 2022 10:01:04 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=/u6ctPDMxVgGjtnFGMUjLT8WYXeEvvG7PHjNe0QwddI=;
+        b=X7E1nvoI6giUgDmrhFUzNjCsPJzEpVJHY/3FzBWlxmdiIdVZV2+UJCV9T1ZGdieyaf
+         trZ3+T8mIV/wnQjOm+OWmoaaj1Q7UVIWVq6ePJeW0v2I8YZ+gmizehk1MSJVhF0GbrMg
+         OcqzoKLBL/kV45zytNmLgkC6NRSJKSPYKF6Lmv5ty1eS313+KGlNr245OvS9/hqNy8bF
+         36yvF8i4hLT6JMujNbRtiA6W3tVbfnMobQDuzsarpuP0ACyvL9asc9Oq5AghvDv5kZ1g
+         R6mIye70lwFv++g1zxuSJub5Ak2v34yLmZe0o/fQUO9KiRbRTHXuOTB0Z6UNB7ith+aG
+         Setg==
+X-Gm-Message-State: AOAM531u1UD6sIkUI401l4WHN2eNIjfSVpQNz2RiV/aCQhR1eyOmh8pP
+        9TKgoxnfsLF78R1xp4Ec6lnmXfGM5ht4i9hn
+X-Google-Smtp-Source: ABdhPJx27BFvrnTzAfOrhJHaLFA6B1F/Usvgj+q5/e58ASh1G9/HJPr5LBeD6x4ELT8Y+CiBgKxtbQ==
+X-Received: by 2002:a05:6402:5107:b0:427:ded9:9234 with SMTP id m7-20020a056402510700b00427ded99234mr646768edd.275.1651510988667;
+        Mon, 02 May 2022 10:03:08 -0700 (PDT)
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com. [209.85.221.43])
+        by smtp.gmail.com with ESMTPSA id cy19-20020a0564021c9300b0042617ba6386sm6761042edb.16.2022.05.02.10.03.06
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 May 2022 10:03:07 -0700 (PDT)
+Received: by mail-wr1-f43.google.com with SMTP id k2so20323333wrd.5
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 10:03:06 -0700 (PDT)
+X-Received: by 2002:a5d:6d09:0:b0:20c:53a9:cc30 with SMTP id
+ e9-20020a5d6d09000000b0020c53a9cc30mr9166713wrq.513.1651510986299; Mon, 02
+ May 2022 10:03:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220426164315.625149-1-glider@google.com> <20220426164315.625149-29-glider@google.com>
- <87a6c6y7mg.ffs@tglx>
-In-Reply-To: <87a6c6y7mg.ffs@tglx>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Mon, 2 May 2022 19:00:28 +0200
-Message-ID: <CAG_fn=U7PPBmmkgxFcWFQUCqZitzMizr1e69D9f26sGGzeitLQ@mail.gmail.com>
-Subject: Re: [PATCH v3 28/46] kmsan: entry: handle register passing from
- uninstrumented code
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20220429233112.2851665-1-swboyd@chromium.org> <20220429233112.2851665-3-swboyd@chromium.org>
+In-Reply-To: <20220429233112.2851665-3-swboyd@chromium.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 2 May 2022 10:02:54 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=WAbfe9BC5QPDezz3FSEwHRFdQeZpARJYT4b9V1rNp_nA@mail.gmail.com>
+Message-ID: <CAD=FV=WAbfe9BC5QPDezz3FSEwHRFdQeZpARJYT4b9V1rNp_nA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] Input: cros-ec-keyb - skip keyboard registration
+ for switches compatible
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
+        chrome-platform@lists.linux.dev,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        "Joseph S. Barrera III" <joebar@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 3:32 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+Hi,
+
+On Fri, Apr 29, 2022 at 4:31 PM Stephen Boyd <swboyd@chromium.org> wrote:
 >
-> On Tue, Apr 26 2022 at 18:42, Alexander Potapenko wrote:
+> In commit 4352e23a7ff2 ("Input: cros-ec-keyb - only register keyboard if
+> rows/columns exist") we skipped registration of the keyboard if the
+> row/columns property didn't exist, but that has a slight problem for
+> existing DTBs. The DTBs have the rows/columns properties, so removing
+> the properties to indicate only switches exist makes this keyboard
+> driver fail to probe, resulting in broken power and volume buttons. Ease
+> the migration of existing DTBs by skipping keyboard registration if the
+> google,cros-ec-keyb-switches compatible exists.
 >
-> Can you please use 'entry:' as prefix. Slapping kmsan in front of
-> everything does not really make sense.
-Sure, will do.
-
-> > Replace instrumentation_begin()       with instrumentation_begin_with_r=
-egs()
-> > to let KMSAN handle the non-instrumented code and unpoison pt_regs
-> > passed from the instrumented part.
+> The end result is that new DTBs can either choose to remove the matrix
+> keymap properties or leave them in place and add this new compatible
+> indicating the matrix keyboard properties should be ignored. Existing
+> DTBs will continue to work, but they will keep registering the keyboard
+> that does nothing. To fix that problem we can add this extra compatible
+> to existing DTBs and the keyboard will stop being registered. Finally,
+> if google,cros-ec-keyb is missing then this driver won't even attempt to
+> register the matrix keyboard.
 >
-> That should be:
+> Cc: Krzysztof Kozlowski <krzk@kernel.org>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: <devicetree@vger.kernel.org>
+> Cc: Benson Leung <bleung@chromium.org>
+> Cc: Guenter Roeck <groeck@chromium.org>
+> Cc: Douglas Anderson <dianders@chromium.org>
+> Cc: Hsin-Yi Wang <hsinyi@chromium.org>
+> Cc: "Joseph S. Barrera III" <joebar@chromium.org>
+> Fixes: 4352e23a7ff2 ("Input: cros-ec-keyb - only register keyboard if rows/columns exist")
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>  drivers/input/keyboard/cros_ec_keyb.c | 15 +++++++++++++--
+>  1 file changed, 13 insertions(+), 2 deletions(-)
 >
->      from the non-instrumented part
-> or
->      passed to the instrumented part
+> diff --git a/drivers/input/keyboard/cros_ec_keyb.c b/drivers/input/keyboard/cros_ec_keyb.c
+> index eef909e52e23..1bbe2987bf52 100644
+> --- a/drivers/input/keyboard/cros_ec_keyb.c
+> +++ b/drivers/input/keyboard/cros_ec_keyb.c
+> @@ -536,6 +536,12 @@ static int cros_ec_keyb_register_matrix(struct cros_ec_keyb *ckdev)
+>         u32 *physmap;
+>         u32 key_pos;
+>         unsigned int row, col, scancode, n_physmap;
+> +       bool register_keyboard;
+> +
+> +       /* Skip matrix registration if no keyboard */
+> +       register_keyboard = device_get_match_data(dev);
+> +       if (!register_keyboard)
+> +               return 0;
 >
-> right?
+>         /*
+>          * No rows and columns? There isn't a matrix but maybe there are
 
-That should be "from the non-instrumented part", you are right.
+As per my comments in patch #1, I wonder if it makes sense to delete
+the "No rows and columns?" logic and settle on the compatible as the
+one true way to specify this.
 
-> > --- a/kernel/entry/common.c
-> > +++ b/kernel/entry/common.c
-> > @@ -23,7 +23,7 @@ static __always_inline void __enter_from_user_mode(st=
-ruct pt_regs *regs)
-> >       CT_WARN_ON(ct_state() !=3D CONTEXT_USER);
-> >       user_exit_irqoff();
-> >
-> > -     instrumentation_begin();
-> > +     instrumentation_begin_with_regs(regs);
->
-> I can see what you are trying to do, but this will end up doing the same
-> thing over and over. Let's just look at a syscall.
->
-> __visible noinstr void do_syscall_64(struct pt_regs *regs, int nr)
-> {
->         ...
->         nr =3D syscall_enter_from_user_mode(regs, nr)
->
->                 __enter_from_user_mode(regs)
->                         .....
->                         instrumentation_begin_with_regs(regs);
->                         ....
->
->                 instrumentation_begin_with_regs(regs);
->                 ....
->
->         instrumentation_begin_with_regs(regs);
->
->         if (!do_syscall_x64(regs, nr) && !do_syscall_x32(regs, nr) && nr =
-!=3D -1) {
->                 /* Invalid system call, but still a system call. */
->                 regs->ax =3D __x64_sys_ni_syscall(regs);
->         }
->
->         instrumentation_end();
->
->         syscall_exit_to_user_mode(regs);
->                 instrumentation_begin_with_regs(regs);
->                 __syscall_exit_to_user_mode_work(regs);
->         instrumentation_end();
->         __exit_to_user_mode();
->
-> That means you memset state four times and unpoison regs four times. I'm
-> not sure whether that's desired.
-
-Regarding the regs, you are right. It should be enough to unpoison the
-regs at idtentry prologue instead.
-I tried that initially, but IIRC it required patching each of the
-DEFINE_IDTENTRY_XXX macros, which already use instrumentation_begin().
-This decision can probably be revisited.
-
-As for the state, what we are doing here is still not enough, although
-it appears to work.
-
-Every time an instrumented function calls another function, it sets up
-the metadata for the function arguments in the per-task struct
-kmsan_context_state.
-Similarly, every instrumented function expects its caller to put the
-metadata into that structure.
-Now, if a non-instrumented function (e.g. every `noinstr` function)
-calls an instrumented one (which happens inside the
-instrumentation_begin()/instrumentation_end() region), nobody sets up
-the state for that instrumented function, so it may report false
-positives when accessing its arguments, if there are leftover poisoned
-values in the state.
-
-To overcome this problem, ideally we need to wipe kmsan_context_state
-every time a call from the non-instrumented function occurs.
-But this cannot be done automatically exactly because we cannot
-instrument the named function :)
-
-We therefore apply an approximation, wiping the state at the point of
-the first transition between instrumented and non-instrumented code.
-Because poison values are generally rare, and instrumented regions
-tend to be short, it is unlikely that further calls from the same
-non-instrumented function will result in false positives.
-Yet it is not completely impossible, so wiping the state for the
-second/third etc. time won't hurt.
-
->
-> instrumentation_begin()/end() are not really suitable IMO. They were
-> added to allow objtool to validate that nothing escapes into
-> instrumentable code unless annotated accordingly.
-
-An alternative to this would be adding some extra code unpoisoning the
-state to every non-instrumented function that contains an instrumented
-region.
-That code would have to precede the first instrumentation_begin()
-anyway, so I thought it would be reasonable to piggyback on the
-existing annotation.
-
->
-> Thanks,
->
->         tglx
-
-
-
---=20
-Alexander Potapenko
-Software Engineer
-
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
-
-Diese E-Mail ist vertraulich. Falls Sie diese f=C3=A4lschlicherweise
-erhalten haben sollten, leiten Sie diese bitte nicht an jemand anderes
-weiter, l=C3=B6schen Sie alle Kopien und Anh=C3=A4nge davon und lassen Sie =
-mich
-bitte wissen, dass die E-Mail an die falsche Person gesendet wurde.
-
-
-This e-mail is confidential. If you received this communication by
-mistake, please don't forward it to anyone else, please erase all
-copies and attachments, and please let me know that it has gone to the
-wrong person.
+-Doug
