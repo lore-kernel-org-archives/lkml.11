@@ -2,341 +2,322 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F2A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 08:06:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E23C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 08:08:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382421AbiEBIJ4 (ORCPT
+        id S1359281AbiEBIJg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 04:09:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
+        Mon, 2 May 2022 04:09:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359101AbiEBIJe (ORCPT
+        with ESMTP id S1383712AbiEBIJY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 04:09:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC3733CA57
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 01:06:05 -0700 (PDT)
+        Mon, 2 May 2022 04:09:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA203B012
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 01:05:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D031FB811CE
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:06:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 926E7C385AF;
-        Mon,  2 May 2022 08:06:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EFD660ECB
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:05:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3F43C385AF;
+        Mon,  2 May 2022 08:05:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651478762;
-        bh=Fi9oxpTItGqZov3qBcon3GBQcq8KJGOz8iZs1e2UkCU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XxMREyg99sZsYxy8fzKgCCKJKTh1BmXuJxs+x63PWlTivGSX7L4qtUPEqDnYBCOdq
-         NV/2gpSSo2AbhacKgVF9txJi4GLaRqkE0UF24LUYDscL0UGDPiV5CedmVqkvBMsnkS
-         DYDonhLtxr+cvMTscqocv34gZPU7W7u2BT2xHnM1n923xm90l4l6c4YHfwrUJ8Z+yB
-         /Oizrsfw4cNXswxBTkT9CZ+lU1Ap8MLPkkrdhzspVBdgJZkw10hkXeGWhLXBtlxjH6
-         6bfvhavG7frB0dGsBEAn6QeGNlIubnafqzlMty2VHGXzRAWHvdnxE8sFRBtQP1WL8H
-         IvPYpTAu9H05A==
+        s=k20201202; t=1651478754;
+        bh=13tm6JeNVfLfUpR+NJlHymQGWGkCOsEh9w23Yb+IBJ8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DeSi1ml1gIOLAymAio4jlQjrmZBIHRNI5MaXHxo7KXgozwg2tqyFiV5d9QpDLAmxM
+         0ZM+UjTg1gxw2fF6BEWtVJNzRa8UDeGLvTAHPphgwW2OC49FLZeddJUOAVTSRIziHk
+         mhwrP3VK1Ca1n7hS2TQ+zZBM9CbPkOiDLQ+UzAdMR8TqZhLSURvlNlFE0P/y5BrXAR
+         ayP5jgB2YZNZrnaSY2XMzaNM2IPKJEZQKserNvtJaZ3UUH5HryVmQVgUI1KucHgvl/
+         RdLr/d3eZmipAPFneErebm0hnOKp6fIpXFLjltD1nDfCZIJj18C8l20XCyaEaF/sZd
+         Yc0xV3FZmVNtQ==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Dafna Hirschfeld <dhirschfeld@habana.ai>
-Subject: [PATCH 6/6] habanalabs: add device memory scrub ability through debugfs
-Date:   Mon,  2 May 2022 11:05:49 +0300
-Message-Id: <20220502080549.230411-6-ogabbay@kernel.org>
+Cc:     Yuri Nudelman <ynudelman@habana.ai>
+Subject: [PATCH 1/6] habanalabs: hide memory manager page shift
+Date:   Mon,  2 May 2022 11:05:44 +0300
+Message-Id: <20220502080549.230411-1-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220502080549.230411-1-ogabbay@kernel.org>
-References: <20220502080549.230411-1-ogabbay@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dafna Hirschfeld <dhirschfeld@habana.ai>
+From: Yuri Nudelman <ynudelman@habana.ai>
 
-Add the ability to scrub the device memory with a given value.
-Add file 'dram_mem_scrub_val' to set the value
-and a file 'dram_mem_scrub' to scrub the dram.
+The new unified memory manager uses page offset to pass buffer handle
+during the mmap operation. One problem with this approach is that it
+requires the handle to always be divisible by the page size, else, the
+user would not be able to pass it correctly as an argument to the mmap
+system call.
 
-This is very important to help during automated tests, when you want
-the CI system to randomize the memory before training certain
-DL topologies.
+Previously, this was achieved by shifting the handle left after alloc
+operation, and shifting it right before get operation. This was done in
+the user code. This creates code duplication, and, what's worse,
+requires some knowledge from the user regarding the handle internal
+structure, hurting the encapsulation.
 
-Signed-off-by: Dafna Hirschfeld <dhirschfeld@habana.ai>
+This patch encloses all the page shifts inside memory manager functions.
+This way, the user can take the handle as a black box, and simply use
+it, without any concert about how it actually works.
+
+Signed-off-by: Yuri Nudelman <ynudelman@habana.ai>
 Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- .../ABI/testing/debugfs-driver-habanalabs     | 14 ++++++
- drivers/misc/habanalabs/common/debugfs.c      | 49 +++++++++++++++++++
- drivers/misc/habanalabs/common/habanalabs.h   |  6 +++
- .../misc/habanalabs/common/habanalabs_drv.c   |  8 +++
- drivers/misc/habanalabs/gaudi/gaudi.c         | 18 ++++---
- drivers/misc/habanalabs/goya/goya.c           |  6 +++
- drivers/misc/habanalabs/goya/goyaP.h          |  1 +
- 7 files changed, 94 insertions(+), 8 deletions(-)
+ .../habanalabs/common/command_submission.c    | 12 ++-------
+ drivers/misc/habanalabs/common/device.c       |  3 ++-
+ drivers/misc/habanalabs/common/habanalabs.h   | 20 ++++++++------
+ drivers/misc/habanalabs/common/memory.c       | 10 +++----
+ drivers/misc/habanalabs/common/memory_mgr.c   | 27 +++++++++----------
+ 5 files changed, 32 insertions(+), 40 deletions(-)
 
-diff --git a/Documentation/ABI/testing/debugfs-driver-habanalabs b/Documentation/ABI/testing/debugfs-driver-habanalabs
-index 84bf3da2bb27..0f8d20fe343f 100644
---- a/Documentation/ABI/testing/debugfs-driver-habanalabs
-+++ b/Documentation/ABI/testing/debugfs-driver-habanalabs
-@@ -170,6 +170,20 @@ KernelVersion:  5.1
- Contact:        ogabbay@kernel.org
- Description:    Sets the state of the third S/W led on the device
- 
-+What:           /sys/kernel/debug/habanalabs/hl<n>/memory_scrub
-+Date:           May 2022
-+KernelVersion:  5.19
-+Contact:        dhirschfeld@habana.ai
-+Description:    Allows the root user to scrub the dram memory. The scrubbing
-+                value can be set using the debugfs file memory_scrub_val.
-+
-+What:           /sys/kernel/debug/habanalabs/hl<n>/memory_scrub_val
-+Date:           May 2022
-+KernelVersion:  5.19
-+Contact:        dhirschfeld@habana.ai
-+Description:    The value to which the dram will be set to when the user
-+                scrubs the dram using 'memory_scrub' debugfs file
-+
- What:           /sys/kernel/debug/habanalabs/hl<n>/mmu
- Date:           Jan 2019
- KernelVersion:  5.1
-diff --git a/drivers/misc/habanalabs/common/debugfs.c b/drivers/misc/habanalabs/common/debugfs.c
-index a9c4f2d4139d..c6744bfc6da4 100644
---- a/drivers/misc/habanalabs/common/debugfs.c
-+++ b/drivers/misc/habanalabs/common/debugfs.c
-@@ -538,6 +538,39 @@ static int engines_show(struct seq_file *s, void *data)
- 	return 0;
- }
- 
-+static ssize_t hl_memory_scrub(struct file *f, const char __user *buf,
-+					size_t count, loff_t *ppos)
-+{
-+	struct hl_dbg_device_entry *entry = file_inode(f)->i_private;
-+	struct hl_device *hdev = entry->hdev;
-+	u64 val = entry->memory_scrub_val;
-+	int rc;
-+
-+	if (!hl_device_operational(hdev, NULL)) {
-+		dev_warn_ratelimited(hdev->dev, "Can't scrub memory, device is not operational\n");
-+		return -EIO;
-+	}
-+
-+	mutex_lock(&hdev->fpriv_list_lock);
-+	if (hdev->is_compute_ctx_active) {
-+		mutex_unlock(&hdev->fpriv_list_lock);
-+		dev_err(hdev->dev, "can't scrub dram, context exist\n");
-+		return -EBUSY;
-+	}
-+	hdev->is_in_dram_scrub = true;
-+	mutex_unlock(&hdev->fpriv_list_lock);
-+
-+	rc = hdev->asic_funcs->scrub_device_dram(hdev, val);
-+
-+	mutex_lock(&hdev->fpriv_list_lock);
-+	hdev->is_in_dram_scrub = false;
-+	mutex_unlock(&hdev->fpriv_list_lock);
-+
-+	if (rc)
-+		return rc;
-+	return count;
-+}
-+
- static bool hl_is_device_va(struct hl_device *hdev, u64 addr)
+diff --git a/drivers/misc/habanalabs/common/command_submission.c b/drivers/misc/habanalabs/common/command_submission.c
+index 6c13ae3ffa7c..a189157be104 100644
+--- a/drivers/misc/habanalabs/common/command_submission.c
++++ b/drivers/misc/habanalabs/common/command_submission.c
+@@ -2952,7 +2952,7 @@ static int _hl_interrupt_wait_ioctl(struct hl_device *hdev, struct hl_ctx *ctx,
+ 				bool register_ts_record, u64 ts_handle, u64 ts_offset,
+ 				u32 *status, u64 *timestamp)
  {
- 	struct asic_fixed_properties *prop = &hdev->asic_prop;
-@@ -1316,6 +1349,11 @@ static ssize_t hl_timeout_locked_write(struct file *f, const char __user *buf,
- 	return count;
- }
- 
-+static const struct file_operations hl_mem_scrub_fops = {
-+	.owner = THIS_MODULE,
-+	.write = hl_memory_scrub,
-+};
-+
- static const struct file_operations hl_data32b_fops = {
- 	.owner = THIS_MODULE,
- 	.read = hl_data_read32,
-@@ -1475,6 +1513,17 @@ void hl_debugfs_add_device(struct hl_device *hdev)
- 	dev_entry->root = debugfs_create_dir(dev_name(hdev->dev),
- 						hl_debug_root);
- 
-+	debugfs_create_x64("memory_scrub_val",
-+				0644,
-+				dev_entry->root,
-+				&dev_entry->memory_scrub_val);
-+
-+	debugfs_create_file("memory_scrub",
-+				0200,
-+				dev_entry->root,
-+				dev_entry,
-+				&hl_mem_scrub_fops);
-+
- 	debugfs_create_x64("addr",
- 				0644,
- 				dev_entry->root,
-diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
-index 496d61ee07c5..59150caa98a2 100644
---- a/drivers/misc/habanalabs/common/habanalabs.h
-+++ b/drivers/misc/habanalabs/common/habanalabs.h
-@@ -1246,6 +1246,7 @@ struct fw_load_mgr {
-  *                           its implementation is not trivial when the driver
-  *                           is loaded in simulation mode (not upstreamed).
-  * @scrub_device_mem: Scrub device memory given an address and size
-+ * @scrub_device_dram: Scrub the dram memory of the device.
-  * @get_int_queue_base: get the internal queue base address.
-  * @test_queues: run simple test on all queues for sanity check.
-  * @asic_dma_pool_zalloc: small DMA allocation of coherent memory from DMA pool.
-@@ -1357,6 +1358,7 @@ struct hl_asic_funcs {
- 	void (*asic_dma_free_coherent)(struct hl_device *hdev, size_t size,
- 					void *cpu_addr, dma_addr_t dma_handle);
- 	int (*scrub_device_mem)(struct hl_device *hdev, u64 addr, u64 size);
-+	int (*scrub_device_dram)(struct hl_device *hdev, u64 val);
- 	void* (*get_int_queue_base)(struct hl_device *hdev, u32 queue_id,
- 				dma_addr_t *dma_handle, u16 *queue_len);
- 	int (*test_queues)(struct hl_device *hdev);
-@@ -2011,6 +2013,7 @@ struct hl_debugfs_entry {
-  * @addr: next address to read/write from/to in read/write32.
-  * @mmu_addr: next virtual address to translate to physical address in mmu_show.
-  * @userptr_lookup: the target user ptr to look up for on demand.
-+ * @memory_scrub_val: the value to which the dram will be scrubbed to using cb scrub_device_dram
-  * @mmu_asid: ASID to use while translating in mmu_show.
-  * @state_dump_head: index of the latest state dump
-  * @i2c_bus: generic u8 debugfs file for bus value to use in i2c_data_read.
-@@ -2041,6 +2044,7 @@ struct hl_dbg_device_entry {
- 	u64				addr;
- 	u64				mmu_addr;
- 	u64				userptr_lookup;
-+	u64				memory_scrub_val;
- 	u32				mmu_asid;
- 	u32				state_dump_head;
- 	u8				i2c_bus;
-@@ -2704,6 +2708,7 @@ struct hl_reset_info {
-  * @id_control: minor of the control device
-  * @cpu_pci_msb_addr: 50-bit extension bits for the device CPU's 40-bit
-  *                    addresses.
-+ * @is_in_dram_scrub: true if dram scrub operation is on going.
-  * @disabled: is device disabled.
-  * @late_init_done: is late init stage was done during initialization.
-  * @hwmon_initialized: is H/W monitor sensors was initialized.
-@@ -2834,6 +2839,7 @@ struct hl_device {
- 	u16				id;
- 	u16				id_control;
- 	u16				cpu_pci_msb_addr;
-+	u8				is_in_dram_scrub;
- 	u8				disabled;
- 	u8				late_init_done;
- 	u8				hwmon_initialized;
-diff --git a/drivers/misc/habanalabs/common/habanalabs_drv.c b/drivers/misc/habanalabs/common/habanalabs_drv.c
-index 70203433e6cd..1210de39d661 100644
---- a/drivers/misc/habanalabs/common/habanalabs_drv.c
-+++ b/drivers/misc/habanalabs/common/habanalabs_drv.c
-@@ -158,6 +158,14 @@ int hl_device_open(struct inode *inode, struct file *filp)
- 		goto out_err;
+-	u32 cq_patched_handle, ts_patched_handle;
++	u32 cq_patched_handle;
+ 	struct hl_user_pending_interrupt *pend;
+ 	struct hl_mmap_mem_buf *buf;
+ 	struct hl_cb *cq_cb;
+@@ -2974,15 +2974,7 @@ static int _hl_interrupt_wait_ioctl(struct hl_device *hdev, struct hl_ctx *ctx,
+ 	if (register_ts_record) {
+ 		dev_dbg(hdev->dev, "Timestamp registration: interrupt id: %u, ts offset: %llu, cq_offset: %llu\n",
+ 					interrupt->interrupt_id, ts_offset, cq_counters_offset);
+-
+-		/* TODO:
+-		 * See if this can be removed.
+-		 * Embedding type in handle will no longer be needed as soon as we
+-		 * switch to using a single memory manager for all memory types.
+-		 * We may still need the page shift, though.
+-		 */
+-		ts_patched_handle = lower_32_bits(ts_handle >> PAGE_SHIFT);
+-		buf = hl_mmap_mem_buf_get(mmg, ts_patched_handle);
++		buf = hl_mmap_mem_buf_get(mmg, ts_handle);
+ 		if (!buf) {
+ 			rc = -EINVAL;
+ 			goto put_cq_cb;
+diff --git a/drivers/misc/habanalabs/common/device.c b/drivers/misc/habanalabs/common/device.c
+index 350cd61e06c1..bd74e0359473 100644
+--- a/drivers/misc/habanalabs/common/device.c
++++ b/drivers/misc/habanalabs/common/device.c
+@@ -384,13 +384,14 @@ static int hl_mmap(struct file *filp, struct vm_area_struct *vma)
  	}
  
-+	if (hdev->is_in_dram_scrub) {
-+		dev_dbg_ratelimited(hdev->dev,
-+			"Can't open %s during dram scrub\n",
-+			dev_name(hdev->dev));
-+		rc = -EAGAIN;
-+		goto out_err;
-+	}
-+
- 	if (hdev->compute_ctx_in_release) {
- 		dev_dbg_ratelimited(hdev->dev,
- 			"Can't open %s because another user is still releasing it\n",
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index 8e9bdbac512e..179d9d32f9a3 100644
---- a/drivers/misc/habanalabs/gaudi/gaudi.c
-+++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -4740,12 +4740,11 @@ static void gaudi_dma_free_coherent(struct hl_device *hdev, size_t size,
- 	dma_free_coherent(&hdev->pdev->dev, size, cpu_addr, fixed_dma_handle);
- }
+ 	vm_pgoff = vma->vm_pgoff;
+-	vma->vm_pgoff = HL_MMAP_OFFSET_VALUE_GET(vm_pgoff);
  
--static int gaudi_hbm_scrubbing(struct hl_device *hdev)
-+int gaudi_scrub_device_dram(struct hl_device *hdev, u64 val)
- {
- 	struct asic_fixed_properties *prop = &hdev->asic_prop;
- 	u64  cur_addr = DRAM_BASE_ADDR_USER;
--	u32 val;
--	u32 chunk_size;
-+	u32 chunk_size, busy;
- 	int rc, dma_id;
+ 	switch (vm_pgoff & HL_MMAP_TYPE_MASK) {
+ 	case HL_MMAP_TYPE_CB:
++		vma->vm_pgoff = HL_MMAP_OFFSET_VALUE_GET(vm_pgoff);
+ 		return hl_cb_mmap(hpriv, vma);
  
- 	while (cur_addr < prop->dram_end_address) {
-@@ -4759,8 +4758,10 @@ static int gaudi_hbm_scrubbing(struct hl_device *hdev)
- 				"Doing HBM scrubbing for 0x%09llx - 0x%09llx\n",
- 				cur_addr, cur_addr + chunk_size);
+ 	case HL_MMAP_TYPE_BLOCK:
++		vma->vm_pgoff = HL_MMAP_OFFSET_VALUE_GET(vm_pgoff);
+ 		return hl_hw_block_mmap(hpriv, vma);
  
--			WREG32(mmDMA0_CORE_SRC_BASE_LO + dma_offset, 0xdeadbeaf);
--			WREG32(mmDMA0_CORE_SRC_BASE_HI + dma_offset, 0xdeadbeaf);
-+			WREG32(mmDMA0_CORE_SRC_BASE_LO + dma_offset,
-+					lower_32_bits(val));
-+			WREG32(mmDMA0_CORE_SRC_BASE_HI + dma_offset,
-+					upper_32_bits(val));
- 			WREG32(mmDMA0_CORE_DST_BASE_LO + dma_offset,
- 						lower_32_bits(cur_addr));
- 			WREG32(mmDMA0_CORE_DST_BASE_HI + dma_offset,
-@@ -4783,8 +4784,8 @@ static int gaudi_hbm_scrubbing(struct hl_device *hdev)
- 			rc = hl_poll_timeout(
- 				hdev,
- 				mmDMA0_CORE_STS0 + dma_offset,
--				val,
--				((val & DMA0_CORE_STS0_BUSY_MASK) == 0),
-+				busy,
-+				((busy & DMA0_CORE_STS0_BUSY_MASK) == 0),
- 				1000,
- 				HBM_SCRUBBING_TIMEOUT_US);
- 
-@@ -4838,7 +4839,7 @@ static int gaudi_scrub_device_mem(struct hl_device *hdev, u64 addr, u64 size)
- 		}
- 
- 		/* Scrub HBM using all DMA channels in parallel */
--		rc = gaudi_hbm_scrubbing(hdev);
-+		rc = gaudi_scrub_device_dram(hdev, 0xdeadbeaf);
- 		if (rc)
- 			dev_err(hdev->dev,
- 				"Failed to clear HBM in mem scrub all\n");
-@@ -9208,6 +9209,7 @@ static const struct hl_asic_funcs gaudi_funcs = {
- 	.asic_dma_alloc_coherent = gaudi_dma_alloc_coherent,
- 	.asic_dma_free_coherent = gaudi_dma_free_coherent,
- 	.scrub_device_mem = gaudi_scrub_device_mem,
-+	.scrub_device_dram = gaudi_scrub_device_dram,
- 	.get_int_queue_base = gaudi_get_int_queue_base,
- 	.test_queues = gaudi_test_queues,
- 	.asic_dma_pool_zalloc = gaudi_dma_pool_zalloc,
-diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
-index f8fb6dc04269..7983c362da67 100644
---- a/drivers/misc/habanalabs/goya/goya.c
-+++ b/drivers/misc/habanalabs/goya/goya.c
-@@ -5434,6 +5434,11 @@ static int goya_mmu_prefetch_cache_range(struct hl_device *hdev, u32 flags, u32
- 	return 0;
- }
- 
-+int goya_scrub_device_dram(struct hl_device *hdev, u64 val)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
- static const struct hl_asic_funcs goya_funcs = {
- 	.early_init = goya_early_init,
- 	.early_fini = goya_early_fini,
-@@ -5452,6 +5457,7 @@ static const struct hl_asic_funcs goya_funcs = {
- 	.asic_dma_alloc_coherent = goya_dma_alloc_coherent,
- 	.asic_dma_free_coherent = goya_dma_free_coherent,
- 	.scrub_device_mem = goya_scrub_device_mem,
-+	.scrub_device_dram = goya_scrub_device_dram,
- 	.get_int_queue_base = goya_get_int_queue_base,
- 	.test_queues = goya_test_queues,
- 	.asic_dma_pool_zalloc = goya_dma_pool_zalloc,
-diff --git a/drivers/misc/habanalabs/goya/goyaP.h b/drivers/misc/habanalabs/goya/goyaP.h
-index 647f57402616..10118d4bc87d 100644
---- a/drivers/misc/habanalabs/goya/goyaP.h
-+++ b/drivers/misc/habanalabs/goya/goyaP.h
-@@ -177,6 +177,7 @@ struct goya_device {
- 	enum hl_pm_mng_profile		pm_mng_profile;
+ 	case HL_MMAP_TYPE_TS_BUFF:
+diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
+index 19f6af59cfc9..ea5cfea21a2c 100644
+--- a/drivers/misc/habanalabs/common/habanalabs.h
++++ b/drivers/misc/habanalabs/common/habanalabs.h
+@@ -750,21 +750,25 @@ struct hl_mem_mgr {
  };
  
-+int goya_scrub_device_dram(struct hl_device *hdev, u64 val);
- int goya_set_fixed_properties(struct hl_device *hdev);
- int goya_mmu_init(struct hl_device *hdev);
- void goya_init_dma_qmans(struct hl_device *hdev);
+ /**
+- * struct hl_mmap_mem_buf_ops - describes unified memory manager buffer behavior
++ * struct hl_mmap_mem_buf_behavior - describes unified memory manager buffer behavior
++ * @mem_id: memory type identifier, embedded in the handle and used to identify
++ *          the memory type by handle.
+  * @alloc: callback executed on buffer allocation, shall allocate the memory,
+  *         set it under buffer private, and set mappable size.
+  * @mmap: callback executed on mmap, must map the buffer to vma
+  * @release: callback executed on release, must free the resources used by the buffer
+  */
+-struct hl_mmap_mem_buf_ops {
++struct hl_mmap_mem_buf_behavior {
++	u64 mem_id;
++
+ 	int (*alloc)(struct hl_mmap_mem_buf *buf, gfp_t gfp, void *args);
+ 	int (*mmap)(struct hl_mmap_mem_buf *buf, struct vm_area_struct *vma, void *args);
+ 	void (*release)(struct hl_mmap_mem_buf *buf);
+ };
+ 
+ /**
+- * struct hl_mmap_mem_buf_ops - describes a single unified memory buffer
+- * @ops: buffer behavior
++ * struct hl_mmap_mem_buf - describes a single unified memory buffer
++ * @behavior: buffer behavior
+  * @mmg: back pointer to the unified memory manager
+  * @refcount: reference counter for buffer users
+  * @private: pointer to buffer behavior private data
+@@ -776,14 +780,14 @@ struct hl_mmap_mem_buf_ops {
+  * @handle: the buffer id in mmg handles store
+  */
+ struct hl_mmap_mem_buf {
+-	struct hl_mmap_mem_buf_ops *ops;
++	struct hl_mmap_mem_buf_behavior *behavior;
+ 	struct hl_mem_mgr *mmg;
+ 	struct kref refcount;
+ 	void *private;
+ 	atomic_t mmap;
+ 	u64 real_mapped_size;
+ 	u64 mappable_size;
+-	u32 handle;
++	u64 handle;
+ };
+ 
+ /**
+@@ -3288,11 +3292,11 @@ void hl_mem_mgr_fini(struct hl_mem_mgr *mmg);
+ int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
+ 		    void *args);
+ struct hl_mmap_mem_buf *hl_mmap_mem_buf_get(struct hl_mem_mgr *mmg,
+-						   u32 handle);
++						   u64 handle);
+ int hl_mmap_mem_buf_put(struct hl_mmap_mem_buf *buf);
+ struct hl_mmap_mem_buf *
+ hl_mmap_mem_buf_alloc(struct hl_mem_mgr *mmg,
+-		      struct hl_mmap_mem_buf_ops *behavior, gfp_t gfp,
++		      struct hl_mmap_mem_buf_behavior *behavior, gfp_t gfp,
+ 		      void *args);
+ 
+ #ifdef CONFIG_DEBUG_FS
+diff --git a/drivers/misc/habanalabs/common/memory.c b/drivers/misc/habanalabs/common/memory.c
+index 6face45c57e3..e7a0c44c487d 100644
+--- a/drivers/misc/habanalabs/common/memory.c
++++ b/drivers/misc/habanalabs/common/memory.c
+@@ -2140,7 +2140,8 @@ static int hl_ts_alloc_buf(struct hl_mmap_mem_buf *buf, gfp_t gfp, void *args)
+ 	return -ENOMEM;
+ }
+ 
+-static struct hl_mmap_mem_buf_ops hl_ts_behavior = {
++static struct hl_mmap_mem_buf_behavior hl_ts_behavior = {
++	.mem_id = HL_MMAP_TYPE_TS_BUFF,
+ 	.mmap = hl_ts_mmap,
+ 	.alloc = hl_ts_alloc_buf,
+ 	.release = ts_buff_release,
+@@ -2175,12 +2176,7 @@ static int allocate_timestamps_buffers(struct hl_fpriv *hpriv, struct hl_mem_in
+ 	if (!buf)
+ 		return -ENOMEM;
+ 
+-	/* TODO:
+-	 * Remove HL_MMAP_TYPE_TS_BUFF.
+-	 * Embedding type in handle will no longer be needed as soon as we
+-	 * switch to using a single memory manager for all memory types.
+-	 */
+-	*handle = ((u64)buf->handle | HL_MMAP_TYPE_TS_BUFF) << PAGE_SHIFT;
++	*handle = buf->handle;
+ 
+ 	return 0;
+ }
+diff --git a/drivers/misc/habanalabs/common/memory_mgr.c b/drivers/misc/habanalabs/common/memory_mgr.c
+index 1bc23362e61d..1cc2f2ebe3b6 100644
+--- a/drivers/misc/habanalabs/common/memory_mgr.c
++++ b/drivers/misc/habanalabs/common/memory_mgr.c
+@@ -17,16 +17,16 @@
+  * @return Find the buffer in the store and return a pointer to its descriptor.
+  *         Increase buffer refcount. If not found - return NULL.
+  */
+-struct hl_mmap_mem_buf *hl_mmap_mem_buf_get(struct hl_mem_mgr *mmg, u32 handle)
++struct hl_mmap_mem_buf *hl_mmap_mem_buf_get(struct hl_mem_mgr *mmg, u64 handle)
+ {
+ 	struct hl_mmap_mem_buf *buf;
+ 
+ 	spin_lock(&mmg->lock);
+-	buf = idr_find(&mmg->handles, handle);
++	buf = idr_find(&mmg->handles, lower_32_bits(handle >> PAGE_SHIFT));
+ 	if (!buf) {
+ 		spin_unlock(&mmg->lock);
+ 		dev_warn(mmg->dev,
+-			 "Buff get failed, no match to handle %u\n", handle);
++			 "Buff get failed, no match to handle %llu\n", handle);
+ 		return NULL;
+ 	}
+ 	kref_get(&buf->refcount);
+@@ -51,8 +51,8 @@ static void hl_mmap_mem_buf_release(struct kref *kref)
+ 	idr_remove(&buf->mmg->handles, lower_32_bits(buf->handle >> PAGE_SHIFT));
+ 	spin_unlock(&buf->mmg->lock);
+ 
+-	if (buf->ops->release)
+-		buf->ops->release(buf);
++	if (buf->behavior->release)
++		buf->behavior->release(buf);
+ 
+ 	kfree(buf);
+ }
+@@ -83,7 +83,7 @@ int hl_mmap_mem_buf_put(struct hl_mmap_mem_buf *buf)
+  */
+ struct hl_mmap_mem_buf *
+ hl_mmap_mem_buf_alloc(struct hl_mem_mgr *mmg,
+-		      struct hl_mmap_mem_buf_ops *behavior, gfp_t gfp,
++		      struct hl_mmap_mem_buf_behavior *behavior, gfp_t gfp,
+ 		      void *args)
+ {
+ 	struct hl_mmap_mem_buf *buf;
+@@ -102,19 +102,18 @@ hl_mmap_mem_buf_alloc(struct hl_mem_mgr *mmg,
+ 		goto free_buf;
+ 	}
+ 
+-	buf->handle = rc;
+ 	buf->mmg = mmg;
+-	buf->ops = behavior;
++	buf->behavior = behavior;
++	buf->handle = (((u64)rc | buf->behavior->mem_id) << PAGE_SHIFT);
+ 	kref_init(&buf->refcount);
+ 
+-	rc = buf->ops->alloc(buf, gfp, args);
++	rc = buf->behavior->alloc(buf, gfp, args);
+ 	if (rc) {
+ 		dev_err(mmg->dev, "Failure in buffer alloc callback %d\n",
+ 			rc);
+ 		goto remove_idr;
+ 	}
+ 
+-	dev_dbg(mmg->dev, "Created buff object handle %u\n", buf->handle);
+ 	return buf;
+ 
+ remove_idr:
+@@ -169,20 +168,20 @@ int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
+ {
+ 	struct hl_mmap_mem_buf *buf;
+ 	u64 user_mem_size;
+-	u32 handle;
++	u64 handle;
+ 	int rc;
+ 
+ 	/* We use the page offset to hold the idr and thus we need to clear
+ 	 * it before doing the mmap itself
+ 	 */
+-	handle = vma->vm_pgoff;
++	handle = vma->vm_pgoff << PAGE_SHIFT;
+ 	vma->vm_pgoff = 0;
+ 
+ 	/* Reference was taken here */
+ 	buf = hl_mmap_mem_buf_get(mmg, handle);
+ 	if (!buf) {
+ 		dev_err(mmg->dev,
+-			"Memory mmap failed, no match to handle %u\n", handle);
++			"Memory mmap failed, no match to handle %llu\n", handle);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -223,7 +222,7 @@ int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
+ 
+ 	vma->vm_private_data = buf;
+ 
+-	rc = buf->ops->mmap(buf, vma, args);
++	rc = buf->behavior->mmap(buf, vma, args);
+ 	if (rc) {
+ 		atomic_set(&buf->mmap, 0);
+ 		goto put_mem;
 -- 
 2.25.1
 
