@@ -2,103 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9EDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 22:19:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A97C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 22:21:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239918AbiEBWW2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 18:22:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
+        id S230490AbiEBWYe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 18:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230490AbiEBWWZ (ORCPT
+        with ESMTP id S231482AbiEBWYb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 18:22:25 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1B92AD
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 15:18:53 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id a23-20020a17090a6d9700b001d60327d73aso273988pjk.7
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 15:18:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
-        bh=TXIIJNLl5tS81cj1e6Sb3BybyFnRD2QLWwcLwhsiYDs=;
-        b=Qa0ikLUOxl2s5X8Ry8796VJb+tcDzIXLzrUSN7TnPSNNudW3bfEOQOU0kLfq1hxTfN
-         IP0sESs7FFstPfBGMaVlPw3HKJgDcJGjTmkSLqd0UrTUQtGrrOhmhHaEUYguiGrFlYpi
-         XX6v9u/nMe9PUrknwsQNDkHoJxoVXIQ2wh/eH25qHwZnKU/rnkU+MdkHiS3BC1oHQHOZ
-         ec8cSZKZ6NgLQEGvkV5zimwoWmRB8l7ztqb2//HE10AiNxDZOLT6df1hYp9p/CZGSAN7
-         WU8sq/BbQhJhtywBCzi4+sBjdWtrTkNbehr+5R6iHdwswF7JtkjD7Jo+AS2tZUokyc/C
-         eXjg==
+        Mon, 2 May 2022 18:24:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 28EA2A1BE
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 15:21:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651530061;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=t+pDY+Ex4Ewd/QjNKkxD0rhZSfDGQ+G9GZjOekpOl0o=;
+        b=VOi3PkH3pdqsXYDAtgEFrOLBzzXI0gfy0mVyJ3cEEvpScuDkTz8HFbsXqI6WnuCVI5xSUF
+        cHbQ8Z1Ne4q/kUvAOXkQRxBKXVV3Fn96bHLKCtD5SDG1PDOhC+kp3rUxrJW8ZFVWlPbxwB
+        k7z5wAbVBzMEez6JJbqAjHsG909sNsg=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-570-xTGScj9FPb2bERSdWdTAQg-1; Mon, 02 May 2022 18:20:58 -0400
+X-MC-Unique: xTGScj9FPb2bERSdWdTAQg-1
+Received: by mail-wr1-f69.google.com with SMTP id e21-20020adfa455000000b0020ae075cf35so5794770wra.11
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 15:20:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
-         :from:to:cc;
-        bh=TXIIJNLl5tS81cj1e6Sb3BybyFnRD2QLWwcLwhsiYDs=;
-        b=X/A4SoyRNHOOVypGclEBNCq7YX+NjQxq+S4NcgWAq5KQ+I7jcLPZ/AyZSKM4jgEwv2
-         NGoB5i6BRlEilEr/3XJjfs+uB5Khqjftxdpdo0gJPqyjVm2eH0lYDYUTumLUltLE1jHm
-         OCWNYcURNNqjX66AJAwuz4Wk5kMs1ZzVhrSjzDYtsznU4/kuE4pTX9DSs+kNU1k6uBis
-         VXWnP7GdvvSVUzn+EQ07dGLGQjQIIXE30Dse0ZnDvmZ690STVNDCZiqvL15TnZePziuw
-         dRw6A+SxRrBfp8DxWTbvTBGAwiZOfr3kQGUlhRoeKhWoDB3/1ioXr8207wxb34Df7bm6
-         KF8A==
-X-Gm-Message-State: AOAM530jIlhWx8lz8glyjCNDeTTjoQdJS0RGajN26uzYxSiJ6QeT63VM
-        RO01E3fPrDtwksy1g8FnqXxD0kr/hQI=
-X-Google-Smtp-Source: ABdhPJzAB+fTD/4HJyBSgaZ6B+/uiqDSapY8Q+Y3yfuxmKFMC3Uamz17CxAwrCKbS6zRQaerkilOVz5CgnQ=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:c986:b0:1d9:56e7:4e83 with SMTP id
- w6-20020a17090ac98600b001d956e74e83mr149900pjt.1.1651529932080; Mon, 02 May
- 2022 15:18:52 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Mon,  2 May 2022 22:18:50 +0000
-Message-Id: <20220502221850.131873-1-seanjc@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH] KVM: VMX: Exit to userspace if vCPU has injected exception
- and invalid state
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+cfafed3bb76d3e37581b@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=t+pDY+Ex4Ewd/QjNKkxD0rhZSfDGQ+G9GZjOekpOl0o=;
+        b=nC7SAziUV9QoM7kxF0UWFiGD6TM8pmNBk2Y6W9zQ3HudgjdZ4WGYqaYqA7jRmCNrFj
+         rSzw/DgiEKfq7hJtN4ztxWYW+PXILve2Fyrbe1IS0Zpb91Oc7ET0WReMhsvwl5kCsIZF
+         e1gpLf2Cn6X8OIMJuEWnTzkbAL65eUlz7ATA2472kyi+qbH5csHmpg1GzoxICg92bDGI
+         pDB6tKoyIcBmcdAnhDPGowX0M768nLNpKFSHvX9QF/vjmewoCEcNQfv0+2MQssV4GPeU
+         aS32Ai0jAy/f/dyzvz0i7j9bdYfVWbYTNMc71Pg2nFOlPi09pTqFTVLg7h4gcMLHHjkc
+         dWzw==
+X-Gm-Message-State: AOAM531ahEcrrXKmCIi7IuoEteAfrJioXiwxGHo6TFB853bByxYoe7tN
+        FJCgj5UKtEscqSbAgZjp0RKRApOs1N83ExiTLy7PoqcyzluqIGnEp4vuDOgfobTXHvAI3tpGQ+0
+        P8gu9HCg6SrUFSGN5nAte+tdj
+X-Received: by 2002:a05:600c:4f06:b0:393:ef13:62c5 with SMTP id l6-20020a05600c4f0600b00393ef1362c5mr902013wmq.33.1651530056987;
+        Mon, 02 May 2022 15:20:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxuoQW8PNhRMhYZlNoJGzUoUBWE/Jea5rFAz7zLOoPbWOoUwrZafgD8evcGGLl1zeR1+/hnyg==
+X-Received: by 2002:a05:600c:4f06:b0:393:ef13:62c5 with SMTP id l6-20020a05600c4f0600b00393ef1362c5mr901998wmq.33.1651530056770;
+        Mon, 02 May 2022 15:20:56 -0700 (PDT)
+Received: from redhat.com ([2.55.174.117])
+        by smtp.gmail.com with ESMTPSA id w7-20020adf8bc7000000b0020c5253d8f9sm7963822wra.69.2022.05.02.15.20.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 15:20:56 -0700 (PDT)
+Date:   Mon, 2 May 2022 18:20:51 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vilas R K <vilas.r.k@intel.com>,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next 0/2] vsock/virtio: add support for device
+ suspend/resume
+Message-ID: <20220502180554-mutt-send-email-mst@kernel.org>
+References: <20220428132241.152679-1-sgarzare@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220428132241.152679-1-sgarzare@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Exit to userspace with an emulation error if KVM encounters an injected
-exception with invalid guest state, in addition to the existing check of
-bailing if there's a pending exception (KVM doesn't support emulating
-exceptions except when emulating real mode via vm86).
+On Thu, Apr 28, 2022 at 03:22:39PM +0200, Stefano Garzarella wrote:
+> Vilas reported that virtio-vsock no longer worked properly after
+> suspend/resume (echo mem >/sys/power/state).
+> It was impossible to connect to the host and vice versa.
+> 
+> Indeed, the support has never been implemented.
+> 
+> This series implement .freeze and .restore callbacks of struct virtio_driver
+> to support device suspend/resume.
+> 
+> The first patch factors our the code to initialize and delete VQs.
+> The second patch uses that code to support device suspend/resume.
+> 
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 
-In theory, KVM should never get to such a situation as KVM is supposed to
-exit to userspace before injecting an exception with invalid guest state.
-But in practice, userspace can intervene and manually inject an exception
-and/or stuff registers to force invalid guest state while a previously
-injected exception is awaiting reinjection.
 
-Fixes: fc4fad79fc3d ("KVM: VMX: Reject KVM_RUN if emulation is required with pending exception")
-Reported-by: syzbot+cfafed3bb76d3e37581b@syzkaller.appspotmail.com
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/vmx/vmx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index cf8581978bce..c41f0ac700c7 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -5465,7 +5465,7 @@ static bool vmx_emulation_required_with_pending_exception(struct kvm_vcpu *vcpu)
- 	struct vcpu_vmx *vmx = to_vmx(vcpu);
- 
- 	return vmx->emulation_required && !vmx->rmode.vm86_active &&
--	       vcpu->arch.exception.pending;
-+	       (vcpu->arch.exception.pending || vcpu->arch.exception.injected);
- }
- 
- static int handle_invalid_guest_state(struct kvm_vcpu *vcpu)
-
-base-commit: 84e5ffd045f33e4fa32370135436d987478d0bf7
--- 
-2.36.0.464.gb9c8b46e94-goog
+> Stefano Garzarella (2):
+>   vsock/virtio: factor our the code to initialize and delete VQs
+>   vsock/virtio: add support for device suspend/resume
+> 
+>  net/vmw_vsock/virtio_transport.c | 197 ++++++++++++++++++++-----------
+>  1 file changed, 131 insertions(+), 66 deletions(-)
+> 
+> -- 
+> 2.35.1
 
