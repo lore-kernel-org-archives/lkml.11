@@ -2,105 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 357BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 08:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58B26C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 08:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383948AbiEBI5K (ORCPT
+        id S1383943AbiEBI57 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 04:57:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40156 "EHLO
+        Mon, 2 May 2022 04:57:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231442AbiEBI5F (ORCPT
+        with ESMTP id S231442AbiEBI56 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 04:57:05 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1868C57B3B;
-        Mon,  2 May 2022 01:53:37 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id l18so26491206ejc.7;
-        Mon, 02 May 2022 01:53:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8f/RfJ0v8ZoOWgcBYBXtS3wQ6ngQII+9nlVhwMqWD5M=;
-        b=LNnY4gKk4Q363NTaO3jxTzc4eW8JA4GIto43Z6wAA1H3SfTYWYy9VSM2v/UAhjqLU3
-         MoXn+ZCgNSWpD4MrZ4P1q0HuLNEZ/EiJDqBts1/fEE8nFOFkMw5NuSyF6/YCoJbcgiLK
-         CxPYY7z0nN3tsA0KjhLu8jHcVGNnEGDu2T6G2cEU3bgawSCVIfKHsbfTFSOm+yuvr92M
-         L6JiEkrCdi3NxKeBxLYC6RovPthN6hKBzKOZnb9/aRT/4U5cVp51gora4K9mRWx2Rb0/
-         bn2D8Dbw1B8gmU2tCCJwEpMPBBb6n9EoCZmbxWs0o3eQvQE6pB9X0YSHdM6V9YVFHQZm
-         0FEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8f/RfJ0v8ZoOWgcBYBXtS3wQ6ngQII+9nlVhwMqWD5M=;
-        b=5pbhFbLmsQ5h4EA9ns53KFhZBf4jiYnrBiB+P58UPkoDdEcgZpMAei5fQSUONepOQS
-         D7zEBIjXeQBHGxJxACyfGtJL2mQNYKI7JCGWLlsYadnSK1Ss2W/WrZwiSNj7i1Xjygkr
-         e/PHLJ+TVyQWutqiTl4PfblGCKyxO/PJKj9dqZ4d3mnNalQuSq53oA+bike284oFCvDl
-         4fGinZxI5Zk0ioU+EMpktT7Aqe5B43s7m5behoMtkz9wa0VgbFiCLdgWuwoVApe055bx
-         0aYQMO55j2Qm+kAzvtUP7mWo2zNYAcZGzRTVrGbRO1b6VM0LUv0t9I62V+JLCk9ijUMy
-         ulkg==
-X-Gm-Message-State: AOAM533aaTeWseIu/HbmVc2avxflgTwd7K5bMaqNGjifwyjek/IAS3GE
-        TB4mUMEmt9N/MGozg7DQjRfRKB+kguB6YqzyIHc=
-X-Google-Smtp-Source: ABdhPJwSEsaWJFk+5cjSPEVdnT3l9iqAnSc+JSYqIp7XaRy1pEG71+44Yfs6JDk6phWkSauHRXjMTGIJ7Qy5f1DFv14=
-X-Received: by 2002:a17:907:628e:b0:6d9:c6fa:6168 with SMTP id
- nd14-20020a170907628e00b006d9c6fa6168mr10330881ejc.132.1651481615508; Mon, 02
- May 2022 01:53:35 -0700 (PDT)
+        Mon, 2 May 2022 04:57:58 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADB857B38
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 01:54:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651481670; x=1683017670;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=I1Kokh7PAKPHoJWxBRQz7RioS+StlKTVIA22eUQ9K+Q=;
+  b=CbLiuSdmlrq6f75Xg9qciVGKjzxX5+gFPJn/l6/uYh1jjwkDmQXeugov
+   XVl28YlJZy9qXNi9v5v2qnTGmXaAhe+n7Ju0w2RuSedVOYlf2MPJ6Tlrr
+   aX/RKuzkYVdA1DFqJzGONCoV2L5ggVJYyJ+8raxWt8lkPy57XbUpfR2ew
+   2AUZpLIiLZJlWjT4a5g3BnUWDR1GIosc0IB32YJVh+xrAVpEAC8R+4NmB
+   CPrRdaKh09Z4BKF9QOQLaUWFT5vLVP+Hi9og3C2czpm2/IjJRjs91lLfU
+   3qjNYelZIa9r11pThXEHH68nX4fksWPG3Yd/pmtwXVs+IlpX9IKdREawS
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10334"; a="353588615"
+X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
+   d="scan'208";a="353588615"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 01:54:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
+   d="scan'208";a="515991940"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 02 May 2022 01:54:28 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nlRp5-0009QV-P5;
+        Mon, 02 May 2022 08:54:27 +0000
+Date:   Mon, 2 May 2022 16:53:32 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        x86@kernel.org, Borislav Petkov <bp@suse.de>
+Subject: [tip:master 18/29] vmlinux.o: warning: objtool:
+ do_user_addr_fault+0xac: unreachable instruction
+Message-ID: <202205021646.AwOPfinU-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220426131102.23966-1-andrea.merello@gmail.com>
- <CAHp75VcoXu=0yvxmTwGAzexV_MgACXg-Cufkigt_kCEvbnwq_Q@mail.gmail.com>
- <20220501180303.75a0d0a5@jic23-huawei> <CAN8YU5PYkQhqrGP8qUK6BgVWVWWECQvYGrSiREU7P5r4kFxVjA@mail.gmail.com>
- <CAHp75VcFZYyU0ap8WSBCTTpsUtDmC6TqURLOpAOKxYNtbLHAOg@mail.gmail.com> <CAN8YU5Peo8vi0MUqP2hSkKFyO=uAxx_Ad3aXRKBr3zzncS8RPQ@mail.gmail.com>
-In-Reply-To: <CAN8YU5Peo8vi0MUqP2hSkKFyO=uAxx_Ad3aXRKBr3zzncS8RPQ@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 2 May 2022 10:52:59 +0200
-Message-ID: <CAHp75VeRV-Nv_zw6Qe9huXzqi14GJhWxQEpbbejn0z33zPYKtg@mail.gmail.com>
-Subject: Re: [v5 00/14] Add support for Bosch BNO055 IMU
-To:     Andrea Merello <andrea.merello@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        jmondi <jacopo@jmondi.org>,
-        Andrea Merello <andrea.merello@iit.it>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 2, 2022 at 10:31 AM Andrea Merello <andrea.merello@gmail.com> wrote:
-> Il giorno lun 2 mag 2022 alle ore 09:48 Andy Shevchenko
-> <andy.shevchenko@gmail.com> ha scritto:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
+head:   aea1ae1ab93e60b266453b008238fbc5f0c65865
+commit: ad0952ac67d1bd2c1e0c25ce150b981f02cc23a3 [18/29] Merge objtool/core into tip/master
+config: x86_64-randconfig-a002-20220502 (https://download.01.org/0day-ci/archive/20220502/202205021646.AwOPfinU-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?id=ad0952ac67d1bd2c1e0c25ce150b981f02cc23a3
+        git remote add tip https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git
+        git fetch --no-tags tip master
+        git checkout ad0952ac67d1bd2c1e0c25ce150b981f02cc23a3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-...
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> > > BTW I have also gone through some kernel-robot reports; they also
-> > > state "If you fix the issue, kindly add following tag as appropriate
-> > > Reported-by: kernel test robot <lkp@intel.com>". I'd say that it would
-> > > be OK to add this tag to a patch that just fixes what is reported, but
-> > > I'm unsure whether it is appropriate to add this tag to the patches in
-> > > my series, because they add the code and the fix at once. Any advice
-> > > here?
-> >
-> > For this we specifically amended the kernel documentation recently.
-> > https://www.kernel.org/doc/html/latest/process/submitting-patches.html#using-reported-by-tested-by-reviewed-by-suggested-by-and-fixes
-> >
-> > "The tag is intended for bugs; please do not use it to credit feature requests."
->
-> Well, no any feature request to credit here; a bug and its fix are
-> involved. Sounds more like a "yes" so far.. But it wouldn't be clear
-> what the robot did report indeed (squashed bugs and fixes).. Maybe a
-> "thank" in the cover letter also to it would suffice?
+All warnings (new ones prefixed by >>):
 
-The reported from bots should be used when your patches.changes
-induced by those reports, it seems otherwise in your case.,
-
+>> vmlinux.o: warning: objtool: do_user_addr_fault+0xac: unreachable instruction
 
 -- 
-With Best Regards,
-Andy Shevchenko
+0-DAY CI Kernel Test Service
+https://01.org/lkp
