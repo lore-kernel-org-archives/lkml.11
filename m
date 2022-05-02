@@ -2,113 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED790C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:56:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39F33C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:59:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244202AbiEBR7z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 13:59:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56248 "EHLO
+        id S244402AbiEBSDC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 14:03:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231134AbiEBR7x (ORCPT
+        with ESMTP id S231134AbiEBSC5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 13:59:53 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44696DE6
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:56:23 -0700 (PDT)
-Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C4F441EC01E0;
-        Mon,  2 May 2022 19:56:17 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1651514177;
+        Mon, 2 May 2022 14:02:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9DDCDE6
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:59:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651514367;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=ax9mLqJq26WVCNoAnal0GnnYMD1isqJF7WNSRvnbeB4=;
-        b=FI21241rgEUpLXdSDgaERfq9PcBWw5BWbIddewGVzK3VwtM07Q+qJ9UvrUpSWVvm8os9cV
-        iz+4+LiSKtwZlMFGCQyBcLMGDh4ZjeYiO+PVT8m7xY6VRHHgL9FykYFFhfqgDW8s+DU4I8
-        z2999rdeBmwnnVKquraT5MR5kVKbG/w=
-Date:   Mon, 2 May 2022 19:56:16 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Juergen Gross <jgross@suse.com>
-Cc:     Lai Jiangshan <jiangshanlai@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>
-Subject: Re: [PATCH V6 6/8] x86/entry: Convert SWAPGS to swapgs and remove
- the definition of SWAPGS
-Message-ID: <YnAbQK9kLdCxxGSf@zn.tnic>
-References: <20220421141055.316239-1-jiangshanlai@gmail.com>
- <20220421141055.316239-7-jiangshanlai@gmail.com>
- <Ymu2XC7k8Xj/vMjG@zn.tnic>
- <3db51f9f-317a-352a-4214-0f159b6cd34c@suse.com>
+         in-reply-to:in-reply-to:references:references;
+        bh=52m/RMJe9vQWruEJqEyw+MPMfE0VFlYZPqLbzzwAEvg=;
+        b=Eu2R+zsIpl14ZUFfEXpqyy9yd5k+ilfe6Ss9G9roymQ1WLGlcwjNxQZ45DR6AGUduL/b2j
+        /E9Fm6QmP1hH2pf47GvkSXG4UFKHOS1PBmg+iQgEF8S5X9NCIn9liWRDOY5vEVSz15Dtcm
+        TCg/ITTx1zJ3Ulga8jct9FrMLDb4OuA=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-497-ocWIqvWZNZ2snWcMPjj7rg-1; Mon, 02 May 2022 13:59:26 -0400
+X-MC-Unique: ocWIqvWZNZ2snWcMPjj7rg-1
+Received: by mail-qk1-f198.google.com with SMTP id c84-20020a379a57000000b0069fcf83c373so3463942qke.20
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 10:59:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=52m/RMJe9vQWruEJqEyw+MPMfE0VFlYZPqLbzzwAEvg=;
+        b=U9OWdp6S264AP1fFoqXuSt81Tk6uy6dugxvnJ9xiU0hGnj54I4nwLxQN1d5nnQJIJv
+         P1nhGFWfpullmD3bXSl3ilgigKYN3oo8ytI98MvaKl3gT7aq9RsoUwDipZHEOwNNaZoM
+         xIH1aXNdDbdrUASLHWeYm1V+mrICCJxZinpAMk6oub5p1cOuU+jPf6Hjv0g8at0CWIet
+         lsEbTbXWeknkCyE0OC0fYrJcIP8DEjgI2/RB1pkIypLYnYOvk87G+K4yXVLeRVKOT7ib
+         bOHsVL+ut2jUrRiuBfsOnDaZGU9knDzyMkA5hcoJ+YjTJoQRcHVBn3tLvTUZhsUTCVbQ
+         qhtw==
+X-Gm-Message-State: AOAM532axS0ocRvOlFJDnoetRcMWU+XIaruQ4dYqcNN/MZBXnr4oM5Gu
+        8uXiLaac5jOQgGOFH8s+TbhvOlFpTI6JwF3vAX2p10BhHsobpNLGDAtcE2/pQf5AhtpherULXvo
+        jYwwtNDmTMF9Vi90ow+ckqyJU
+X-Received: by 2002:a05:6214:445:b0:456:4d9e:db71 with SMTP id cc5-20020a056214044500b004564d9edb71mr10428886qvb.93.1651514365466;
+        Mon, 02 May 2022 10:59:25 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx7rkjG3ZO067xLuanXZqyfDsInyWmL9p+DIIRyNJDZ72hWMgjJoOKZRjJwM12mgIEO+ieSOw==
+X-Received: by 2002:a05:6214:445:b0:456:4d9e:db71 with SMTP id cc5-20020a056214044500b004564d9edb71mr10428870qvb.93.1651514365173;
+        Mon, 02 May 2022 10:59:25 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::a])
+        by smtp.gmail.com with ESMTPSA id g19-20020ac842d3000000b002f1f934bedfsm4850258qtm.3.2022.05.02.10.59.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 10:59:24 -0700 (PDT)
+Date:   Mon, 2 May 2022 10:59:21 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH] objtool: Fix STACK_FRAME_NON_STANDARD reloc type
+Message-ID: <20220502175921.oruktb6dleabvdyx@treble>
+References: <20220429092024.GT2731@worktop.programming.kicks-ass.net>
+ <YmvTbN966XmLSZk+@hirez.programming.kicks-ass.net>
+ <20220429225636.6qm2orq4uwnl33ii@treble>
+ <Ym0hAA66vijBo7iF@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <3db51f9f-317a-352a-4214-0f159b6cd34c@suse.com>
+In-Reply-To: <Ym0hAA66vijBo7iF@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 02:18:35PM +0200, Juergen Gross wrote:
-> The syscall will land in the hypervisor, which then will activate
-> the related registered callback (xen_sysenter_target).
+On Sat, Apr 30, 2022 at 01:44:00PM +0200, Peter Zijlstra wrote:
+> > > I also don't see any kprobe/optprobe hooks in unwind.h, so what happens
+> > > if we hit an optprobe?
+> > 
+> > Same as for any other generated code, the unwinder will try to fall back
+> > to frame pointers, and if that doesn't work, the unwind stops.
+> > 
+> > That commit didn't change anything since it was already not being
+> > directly executed anyway, but rather used to generate code on the fly.
+> > 
+> > And before that commit it was being ignored by ORC anyway, thanks to
+> > STACK_FRAME_NON_STANDARD.  Which can now be removed since this code is
+> > now data and objtool will no longer try to understand it.
+> 
+> Right; but I suppose I'm wondering if we should fix this. It seems a
+> rather sub-optimal state of affairs.
 
-Aha, that would do a bit of a fixup and then go to the common label
-entry_SYSENTER_compat_after_hwframe.
+Masami recently fixed some kprobes ORC issues but I don't know if this
+one was fixed.
 
-We probably should document this so that it is clear what uses those...
+As to the whether it's worth fixing, I dunno.  There are trade offs.
 
----
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 9da5eef9affe..93065c4914ad 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -103,6 +103,11 @@ SYM_INNER_LABEL(entry_SYSCALL_64_safe_stack, SYM_L_GLOBAL)
- 	pushq	%r11					/* pt_regs->flags */
- 	pushq	$__USER_CS				/* pt_regs->cs */
- 	pushq	%rcx					/* pt_regs->ip */
-+
-+	/*
-+	 * XENPV jumps here after frame fixup in the respective entry points in
-+	 * ...xen-asm.S.
-+	 */
- SYM_INNER_LABEL(entry_SYSCALL_64_after_hwframe, SYM_L_GLOBAL)
- 	pushq	%rax					/* pt_regs->orig_ax */
- 
-diff --git a/arch/x86/entry/entry_64_compat.S b/arch/x86/entry/entry_64_compat.S
-index c5aeb0819707..b473f8e17afc 100644
---- a/arch/x86/entry/entry_64_compat.S
-+++ b/arch/x86/entry/entry_64_compat.S
-@@ -71,6 +71,11 @@ SYM_CODE_START(entry_SYSENTER_compat)
- 	pushfq				/* pt_regs->flags (except IF = 0) */
- 	pushq	$__USER32_CS		/* pt_regs->cs */
- 	pushq	$0			/* pt_regs->ip = 0 (placeholder) */
-+
-+	/*
-+	 * XENPV jumps here after frame fixup in the respective entry points in
-+	 * ...xen-asm.S.
-+	 */
- SYM_INNER_LABEL(entry_SYSENTER_compat_after_hwframe, SYM_L_GLOBAL)
- 
- 	/*
-
-> I wouldn't insist on the CONFIG_DEBUG_ENTRY chunk.
-
-Ok, simpler asm, cool, let's do it then.
-
-Thx.
+Depends on how common the stack trace is -- I'm guessing not very, since
+I've never seen a bug report -- and how important it is to get to full
+ORC coverage.  If our goal is full coverage, we'd need a way for
+generated code to add/remove ORC entries.
 
 -- 
-Regards/Gruss,
-    Boris.
+Josh
 
-https://people.kernel.org/tglx/notes-about-netiquette
