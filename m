@@ -2,140 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5717C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 10:18:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FEBEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 10:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384480AbiEBKWS (ORCPT
+        id S1384463AbiEBKW1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 06:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34612 "EHLO
+        Mon, 2 May 2022 06:22:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384463AbiEBKWP (ORCPT
+        with ESMTP id S1384510AbiEBKWY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 06:22:15 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1141D1112
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 03:18:46 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242AF2WZ038252;
-        Mon, 2 May 2022 10:18:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=qnlrrWXRiuHsjRIGUnyYyYn2kNaU+BCFWw1Jtl7IdrE=;
- b=Bzbyfu0mXrImezor+6i6laHeAo+0TUOOVKQrhwrwXX5iJ3ZJMslbXPvPhIraOHLpXGBZ
- FhfRtzVP3saNtfcFaYBFqUhc84FE7Byc/l6lUYWf2bb76YFDnBNWbLMzA3NtdYKmRSfB
- /kjP30BzqlhYUvTV3a9ljZOPJLjAZUx2Mi+JqlPr1eDhML13dqfZVjlc8H8PAY6XOpzC
- 24ahexdcLkWSROzAYMZqYWK1wOe0yUNJsM/enuGkd26dOomYKYMvcZ65qkfZ1AfvLD9E
- NnjOMWC4OpUS5FpSttB0JsadlHInTlZUaZ0V6EehjBRWvvSF59kRZOGYpo0fWu+GC0FY zw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ftdcj01x9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 May 2022 10:18:17 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 242AFgqW039059;
-        Mon, 2 May 2022 10:18:16 GMT
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ftdcj01wp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 May 2022 10:18:16 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 242AIF89030416;
-        Mon, 2 May 2022 10:18:15 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma06fra.de.ibm.com with ESMTP id 3frvcj22xq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 May 2022 10:18:15 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 242AIBn948234986
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 2 May 2022 10:18:12 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DB1FA52050;
-        Mon,  2 May 2022 10:18:11 +0000 (GMT)
-Received: from osiris (unknown [9.145.172.68])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id 6616D5204E;
-        Mon,  2 May 2022 10:18:11 +0000 (GMT)
-Date:   Mon, 2 May 2022 12:18:10 +0200
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Liam Howlett <liam.howlett@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Yu Zhao <yuzhao@google.com>, Juergen Gross <jgross@suse.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>
-Subject: Re: [PATCH v8 23/70] mm/mmap: change do_brk_flags() to expand
- existing VMA and add do_brk_munmap()
-Message-ID: <Ym+v4lfU5IyxkGc4@osiris>
-References: <20220426150616.3937571-1-Liam.Howlett@oracle.com>
- <20220426150616.3937571-24-Liam.Howlett@oracle.com>
- <20220428201947.GA1912192@roeck-us.net>
- <20220429003841.cx7uenepca22qbdl@revolver>
- <20220428181621.636487e753422ad0faf09bd6@linux-foundation.org>
- <20220502001358.s2azy37zcc27vgdb@revolver>
- <20220501172412.50268e7b217d0963293e7314@linux-foundation.org>
+        Mon, 2 May 2022 06:22:24 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF63263B
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 03:18:54 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1nlT8c-0006jf-QH; Mon, 02 May 2022 12:18:42 +0200
+Message-ID: <f91157496327cead5d098a4f37e9f019e526f7c8.camel@pengutronix.de>
+Subject: Re: [PATCH v1 0/4] imx8mm display controller power sequence
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Viraj Shah <viraj.shah@linutronix.de>, shawnguo@kernel.org,
+        s.hauer@pengutronix.de
+Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Peng Fan <peng.fan@nxp.com>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 02 May 2022 12:18:39 +0200
+In-Reply-To: <20220502100233.6023-1-viraj.shah@linutronix.de>
+References: <20220502100233.6023-1-viraj.shah@linutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220501172412.50268e7b217d0963293e7314@linux-foundation.org>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: p1KnFsuBiVVpyE0RuT8eMvo_hXOt7FPF
-X-Proofpoint-ORIG-GUID: w-4HAuyvV4ijDE1TzS4tpBIDHIlP49Fi
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-02_03,2022-04-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 adultscore=0
- bulkscore=0 mlxlogscore=933 impostorscore=0 priorityscore=1501
- suspectscore=0 spamscore=0 phishscore=0 malwarescore=0 mlxscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205020078
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 01, 2022 at 05:24:12PM -0700, Andrew Morton wrote:
-> (cc S390 maintainers)
-> (cc stable & Greg)
-> 
-> > I have been porting my patches over and hit a bit of a snag. It looked
-> > like my patches were not booting on the s390 - but not all the time. So
-> > I reverted back to mm-stable (059342d1dd4e) and found that also failed
-> > to boot sometimes on my qemu setup.  When it fails it's ~4-5sec into
-> > booting.  The last thing I see is:
-> > 
-> > "[    4.668916] Spectre V2 mitigation: execute trampolines"
-> > 
-> > I've bisected back to commit e553f62f10d9 (mm, page_alloc: fix
-> > build_zonerefs_node())
-> > 
-> > With the this commit, I am unable to boot one out of three times.  When
-> > using the previous commit I was not able to get it to hang after trying
-> > 10+ times.  This is a qemu s390 install with KASAN on and I see no error
-> > messages.  I think it's likely it is this patch, but no guaranteed.
-> > 
-> 
-> Great, thanks.  So mapletree is absolved.
-> 
-> Unfortunately 059342d1dd4e was cc:stable.  Greg, you might want to pull
-> the plug on that one if it isn't too late.
-> 
-> I'll await input from the S390 team, but from my reading the issues
-> which that patch addresses aren't terribly serious, so perhaps the
-> thing to do is to revert 059342d1dd4e (with a cc:stable) while
-> 059342d1dd4e gets a redo?
+Hi Viraj,
 
-I cannot confirm that Linus' tree currently has problems on s390 with
-commit e553f62f10d9 ("mm, page_alloc: fix build_zonerefs_node()").
+Am Montag, dem 02.05.2022 um 12:02 +0200 schrieb Viraj Shah:
+> This patch queue addresses the power sequence of the display controller
+> of the imx8mm SoC. The sequence mentioned in example code 5 in section
+> 5.2.9.5 of reference manual imx-8MMini-yhsc.pdf was not being performed.
+> This meant that the display controller was not coming up.
 
-This commit was applied by Linus on 15th of April, and our CI didn't
-report any problems since then. At least nothing that would point to
-this commit. Also I just gave e553f62f10d9 a try (defconfig + KASAN):
-no problems to report.
+I don't know where you got the idea that the current implementation
+doesn't work. Numerous people are using this to get the i.MX8MM display
+light up. All you need to do is add the various display pipeline
+peripherals into the virtual power-domains provided by the blk-ctrl
+driver. The only thing that prevents upstream from having a working
+display pipeline is the conversion of the exynos-dsi into a proper
+bridge driver, which has just landed upstream and the addition of a few
+DT nodes, now that the drivers are getting ready.
 
-Same with 059342d1dd4e (mm-stable): it just works for me.
+Regards,
+Lucas
 
-Liam, could you share your kernel config?
+> 
+> Viraj Shah (4):
+>   soc: imx: gpcv2: Power sequence for DISP
+>   soc: imx: imx8m-blk-ctrl: Display Power ON sequence
+>   soc: imx: imx8m-blk-ctrl: Add reset bits for mipi dsi phy
+>   arm64: dts: imx8mm.dtsi: Add resets for dispmix power domain.
+> 
+>  arch/arm64/boot/dts/freescale/imx8mm.dtsi |  1 +
+>  drivers/soc/imx/gpcv2.c                   | 36 +++++++++++++++++++----
+>  drivers/soc/imx/imx8m-blk-ctrl.c          |  9 ++++--
+>  3 files changed, 38 insertions(+), 8 deletions(-)
+> 
+
+
