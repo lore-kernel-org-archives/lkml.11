@@ -2,75 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF2B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 00:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A32EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 00:10:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378268AbiEBALS (ORCPT
+        id S1378733AbiEBAOM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 20:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37126 "EHLO
+        Sun, 1 May 2022 20:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiEBALQ (ORCPT
+        with ESMTP id S1378386AbiEBAOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 20:11:16 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4477F36B5F
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 17:07:48 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id i1so5187150plg.7
-        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 17:07:48 -0700 (PDT)
+        Sun, 1 May 2022 20:14:08 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6995FE0BD
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 17:10:36 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id 4so16646317ljw.11
+        for <linux-kernel@vger.kernel.org>; Sun, 01 May 2022 17:10:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=YzsDEybAjOOP1Cs8W+wRLjhXbrCelC2lIiMankmGxrA=;
-        b=fdyLSmlvCVmR79RNwMGF55XGN6VVAttNyNagk5QJFjzBc0CcMP2hi2gJg/pNGqLyn0
-         BKtc7tG/qgVzOn7ic53rXhi7IwJE6+7VnL2Ca+pN4Mjo5In0O7w2xYPLiYiHukBAmmnS
-         c9q5FFivEDfFltjAFgmjL0mOU3Qb/VMhIiN/APbMGCAwvHMYXQe0T4biiwlSesHJwaIi
-         1eVENR0XXPt8nsr5IrVwg12/P/64R/gaF443xcv+lVnjK3t3tk6ZuVi9175mtxwOrkHt
-         r6ukXULisdXkQExfEKpXMCsJJSZyXTvHmzi/XIQ80T59ZiJ6mvgdtb1Fx95JLXUGm3mT
-         0oOw==
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :references:content-language:in-reply-to:content-transfer-encoding;
+        bh=hd0y1OR/b4IeCBpDcty8eQdPQFVx3QSyhq2QmkPNM2U=;
+        b=69H2sZp3OJ0LOKrRShXopodHHx0OU2Q0oQ9nk2IPizjQ/AESBps1VdJ5Oq3dfBorHr
+         0Jpr+Ii0XIGAC9b027CE9SenODK76DnAoIWWvlqEW49Gu+29PZg2IyeJlFBM/wh5nMS5
+         yXq0RGQ8lNdwBpZIn0z/YqxF4Irp+B7lqzBA+PLV0/1eB6yiziFT4L+VbngWvp7+pT9j
+         i5zbmCEXZ3SaVNtPgvOS97VSGcHt1obphxpMqauFcLOizuZT94JuFThr6wCUy4EfD65Z
+         2sgiTD7dDr5lf7+AyxpsELyBBnmxFl4tKJ8AlhaZ0bV6G0MyHZoodMaXa13o7wi3NjNn
+         rbtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=YzsDEybAjOOP1Cs8W+wRLjhXbrCelC2lIiMankmGxrA=;
-        b=QCdRhtAmV4J3At9wYiawdKOt/iKyARFYTGYk0rl8Dbnw9vQWRxgD58W7GS9lOwYO2n
-         W1vi809dLaLkHBaOCRMHMGDtDoNA1MrgkZhmb0WEdQo4ZrkphfQRw9K0b1cAXOq51/+M
-         WpYoiGM8Tp8k60yCXmC+40FWP0nlRiXzhGVx4SlWDI3lUNwfGLfs2dKvzK+U6Gze3cQA
-         eoMQexhm/kwwVXGqScp/CjRrm1Ruor5qaaZ6ZULf9IeaLuQAtqfSYhiqICAtOO1tOTv+
-         YnppENLWm9JFikU1rgEORKqWZhzmgJYP/c9NDFDRf+Rigo7V7+n64CUHHkapTFyVtkzc
-         i6wg==
-X-Gm-Message-State: AOAM531yowZyp6R1xTt0HNq7Wspatb+tLB8gmkLsKZH1PUaQ0Z0/D402
-        lZe3RjZ22X+iJc+7TDUmgepnZA==
-X-Google-Smtp-Source: ABdhPJwuqokwBxkv6G0j9m11izMCwjLEp3r34bgEXl74l2B5d678+KrWl/Hg7ACIWVgllztB8CuXrQ==
-X-Received: by 2002:a17:90a:6d96:b0:1c9:c1de:ef2f with SMTP id a22-20020a17090a6d9600b001c9c1deef2fmr15160970pjk.210.1651450067557;
-        Sun, 01 May 2022 17:07:47 -0700 (PDT)
-Received: from [2620:15c:29:204:e310:ef81:d548:9992] ([2620:15c:29:204:e310:ef81:d548:9992])
-        by smtp.gmail.com with ESMTPSA id b14-20020a170902b60e00b0015e8d4eb2basm3356427pls.260.2022.05.01.17.07.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 May 2022 17:07:47 -0700 (PDT)
-Date:   Sun, 1 May 2022 17:07:46 -0700 (PDT)
-From:   David Rientjes <rientjes@google.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-cc:     cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com,
-        akpm@linux-foundation.org, vbabka@suse.cz,
-        roman.gushchin@linux.dev, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/slub: remove unused kmem_cache_order_objects max
-In-Reply-To: <20220429090545.33413-1-linmiaohe@huawei.com>
-Message-ID: <f2e856bc-693f-3019-920-c9c6c76b99a@google.com>
-References: <20220429090545.33413-1-linmiaohe@huawei.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:references:content-language:in-reply-to
+         :content-transfer-encoding;
+        bh=hd0y1OR/b4IeCBpDcty8eQdPQFVx3QSyhq2QmkPNM2U=;
+        b=Z62iwqBJCYqq0C4gIHIKD6eztRQ6bf8DzkBL7d0Lny+Dtf6pZUJ6lXgles6FQ9yPSI
+         oJQfXdVsZWYU5WGuWasw8/8OTWzzqhezdOKd7+dWx6PZdxvx1ILBpaZPVKEZOMEh8Ub2
+         LguVDrh1FcRLLGc9mM1qy7p1WwJ9/CoQ905rAiP+pQpzH6YAAvhtnLfg8MAtQV66XzOI
+         4U7eYohi9VFLBixJ9jpAHYNX2j8nvMitBWf5hRZQj/v4DBA6UsLx6oEFsBOvWGhMKHMk
+         l3TxspMftiXWaphFjus9jAPZrbyGNnVSWH4nU8tCkfu5mtqLUS8mmQ0oO5b5PiNVI0ks
+         +9XQ==
+X-Gm-Message-State: AOAM533N34X0QIUrBPc0CtCMthZc/h+C6PyQijTUTe2Rptse6oudlzdB
+        pF2ibEFOOXM6kcKfEMt7IhiHCA==
+X-Google-Smtp-Source: ABdhPJyz51F6s5TmukXjz8wMZrd2FYEXvb+rgt8PgukAcQ8O50QW9Uc9Pvf8CjBk2FqnN6M0JowK3w==
+X-Received: by 2002:a05:651c:505:b0:24f:5248:3018 with SMTP id o5-20020a05651c050500b0024f52483018mr3429236ljp.45.1651450234628;
+        Sun, 01 May 2022 17:10:34 -0700 (PDT)
+Received: from [192.168.1.65] ([46.188.121.177])
+        by smtp.gmail.com with ESMTPSA id c5-20020ac25305000000b0047255d211d1sm561008lfh.256.2022.05.01.17.10.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 01 May 2022 17:10:34 -0700 (PDT)
+Message-ID: <0ccfe7a4-c178-0b66-d481-2326c85a8ffb@openvz.org>
+Date:   Mon, 2 May 2022 03:10:32 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+From:   Vasily Averin <vvs@openvz.org>
+Subject: [PATCH memcg v5] net: set proper memcg for net_init hooks allocations
+To:     Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>
+Cc:     kernel@openvz.org, Florian Westphal <fw@strlen.de>,
+        linux-kernel@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@suse.com>, cgroups@vger.kernel.org,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <CALvZod5HugCO2G3+Av3pXC6s2sy0zKW_HRaRyhOO9GOOWV1SsQ@mail.gmail.com>
+Content-Language: en-US
+In-Reply-To: <CALvZod5HugCO2G3+Av3pXC6s2sy0zKW_HRaRyhOO9GOOWV1SsQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Apr 2022, Miaohe Lin wrote:
+__register_pernet_operations() executes init hook of registered
+pernet_operation structure in all existing net namespaces.
 
-> max field holds the largest slab order that was ever used for a slab cache.
-> But it's unused now. Remove it.
-> 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Typically, these hooks are called by a process associated with
+the specified net namespace, and all __GFP_ACCOUNT marked
+allocation are accounted for corresponding container/memcg.
 
-Acked-by: David Rientjes <rientjes@google.com>
+However __register_pernet_operations() calls the hooks in the same
+context, and as a result all marked allocations are accounted
+to one memcg for all processed net namespaces.
+
+This patch adjusts active memcg for each net namespace and helps
+to account memory allocated inside ops_init() into the proper memcg.
+
+Signed-off-by: Vasily Averin <vvs@openvz.org>
+Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
+Acked-by: Shakeel Butt <shakeelb@google.com>
+
+---
+v5: documented get_mem_cgroup_from_obj() and for mem_cgroup_or_root()
+    functions, asked by Shakeel.
+
+v4: get_mem_cgroup_from_kmem() renamed to get_mem_cgroup_from_obj(),
+    get_net_memcg() renamed to mem_cgroup_or_root(), suggested by Roman.
+
+v3: put_net_memcg() replaced by an alreay existing mem_cgroup_put()
+    It checks memcg before accessing it, this is required for
+    __register_pernet_operations() called before memcg initialization.
+    Additionally fixed leading whitespaces in non-memcg_kmem version
+    of mem_cgroup_from_obj().
+
+v2: introduced get/put_net_memcg(),
+    new functions are moved under CONFIG_MEMCG_KMEM
+    to fix compilation issues reported by Intel's kernel test robot
+
+v1: introduced get_mem_cgroup_from_kmem(), which takes the refcount
+    for the found memcg, suggested by Shakeel
+---
+ include/linux/memcontrol.h | 47 +++++++++++++++++++++++++++++++++++++-
+ net/core/net_namespace.c   |  7 ++++++
+ 2 files changed, 53 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 0abbd685703b..6405f9b8f5a8 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -1714,6 +1714,42 @@ static inline int memcg_cache_id(struct mem_cgroup *memcg)
+ 
+ struct mem_cgroup *mem_cgroup_from_obj(void *p);
+ 
++/**
++ * get_mem_cgroup_from_obj - get a memcg associated with passed kernel object.
++ * @p: pointer to object from which memcg should be extracted. It can be NULL.
++ *
++ * Retrieves the memory group into which the memory of the pointed kernel
++ * object is accounted. If memcg is found, its reference is taken.
++ * If a passed kernel object is uncharged, or if proper memcg cannot be found,
++ * as well as if mem_cgroup is disabled, NULL is returned.
++ *
++ * Return: valid memcg pointer with taken reference or NULL.
++ */
++static inline struct mem_cgroup *get_mem_cgroup_from_obj(void *p)
++{
++	struct mem_cgroup *memcg;
++
++	rcu_read_lock();
++	do {
++		memcg = mem_cgroup_from_obj(p);
++	} while (memcg && !css_tryget(&memcg->css));
++	rcu_read_unlock();
++	return memcg;
++}
++
++/**
++ * mem_cgroup_or_root - always returns a pointer to a valid memory cgroup.
++ * @memcg: pointer to a valid memory cgroup or NULL.
++ *
++ * If passed argument is not NULL, returns it without any additional checks
++ * and changes. Otherwise, root_mem_cgroup is returned.
++ *
++ * NOTE: root_mem_cgroup can be NULL during early boot.
++ */
++static inline struct mem_cgroup *mem_cgroup_or_root(struct mem_cgroup *memcg)
++{
++	return memcg ? memcg : root_mem_cgroup;
++}
+ #else
+ static inline bool mem_cgroup_kmem_disabled(void)
+ {
+@@ -1763,9 +1799,18 @@ static inline void memcg_put_cache_ids(void)
+ 
+ static inline struct mem_cgroup *mem_cgroup_from_obj(void *p)
+ {
+-       return NULL;
++	return NULL;
+ }
+ 
++static inline struct mem_cgroup *get_mem_cgroup_from_obj(void *p)
++{
++	return NULL;
++}
++
++static inline struct mem_cgroup *mem_cgroup_or_root(struct mem_cgroup *memcg)
++{
++	return NULL;
++}
+ #endif /* CONFIG_MEMCG_KMEM */
+ 
+ #endif /* _LINUX_MEMCONTROL_H */
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index a5b5bb99c644..240f3db77dec 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -26,6 +26,7 @@
+ #include <net/net_namespace.h>
+ #include <net/netns/generic.h>
+ 
++#include <linux/sched/mm.h>
+ /*
+  *	Our network namespace constructor/destructor lists
+  */
+@@ -1147,7 +1148,13 @@ static int __register_pernet_operations(struct list_head *list,
+ 		 * setup_net() and cleanup_net() are not possible.
+ 		 */
+ 		for_each_net(net) {
++			struct mem_cgroup *old, *memcg;
++
++			memcg = mem_cgroup_or_root(get_mem_cgroup_from_obj(net));
++			old = set_active_memcg(memcg);
+ 			error = ops_init(ops, net);
++			set_active_memcg(old);
++			mem_cgroup_put(memcg);
+ 			if (error)
+ 				goto out_undo;
+ 			list_add_tail(&net->exit_list, &net_exit_list);
+-- 
+2.31.1
+
