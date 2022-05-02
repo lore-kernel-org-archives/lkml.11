@@ -2,90 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94231C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E15C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350851AbiEBRDg (ORCPT
+        id S1386519AbiEBREZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 13:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42294 "EHLO
+        Mon, 2 May 2022 13:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238829AbiEBRDe (ORCPT
+        with ESMTP id S1386641AbiEBREL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 13:03:34 -0400
-Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F053D117C;
-        Mon,  2 May 2022 10:00:04 -0700 (PDT)
-Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-ed9ac77cbbso4251808fac.1;
-        Mon, 02 May 2022 10:00:04 -0700 (PDT)
+        Mon, 2 May 2022 13:04:11 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0F410D4
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:00:41 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id c23so12965561plo.0
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 10:00:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=eHBpjvV0xsoV/2E/yxAKoD7xjO9zfwPQ1d4jUnUE31Y=;
+        b=lvPK8H4vc+BAN657Xx1F3TXqqpbu97mZf4LGDeuVQ7CbIZ119ejBP80HsujmBElg5y
+         3OhzGwB5VlmeWNEpAOhWTHzjWyWgdkx3UVnNXF9steLeFtmf/a7us+5RUQWiHvUf1Wuz
+         hvkMpVlZ5dxVrU+4mElHsi5xYRNkKYWOnKe7ovwse/i6hZHIDI30x5QwktxDXfJxvb2d
+         scRF/cieQHMixK1Tyr/AH6Zw6BRZ5qhpF08qqvFcoonw0cM0ApL/TA5zVXmsuZJQ5JbG
+         OogWPxMHngRSfkPBHGOeCooTysASe6w3InrtP+UEMuHam2naL+jmOJlwn7DAhxcwAFUa
+         fN4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jL/zMMM/g6RvJvTqfaL3AxSBlJb7ZiFgbTZ+tEyGEr4=;
-        b=Hit/lFohIUyiIJtfRb/ySKReRMPF1jI4j53sm32NbpEOSu7CmUOU3ppN29cpDZJhOC
-         g0JpiP3iNAmkKqfRR6meY6Li1BwlXgg975rS7yeL2wrZAi9Ipzgns6dT/Hpan/va+UxA
-         TUPCHS4owpt4tiWg99lKNfDnxKo6VA2ZDQ59Uin2eYYYFK71HQwD9GW/yt6cVrwUehGz
-         edgx5CwHNHrTq3FI8GMDUODk+WN61unrOUAam+UjJgrDA9FVZK7aWxH8XRem6dQn4ONX
-         prPnEnNB89vVFM0Dp57evgrO2atlgAe4oJpwzYOv0/RBXuXeO1UOEF63qHeyDxeERwKV
-         0DAw==
-X-Gm-Message-State: AOAM532WH64oFr2wULUEJSGs8xtGoemz6OzIPkY4atHDsQOx+jpAiJJU
-        NV5b9SgUWXX4M2iFZ9Y8ZA==
-X-Google-Smtp-Source: ABdhPJyY8oqsNJ1CkInSExC9VYH++2hzZpE32bzXuh8V61fPi/nB1xZYHIdlXv08Rw5VQKyDhNR4zA==
-X-Received: by 2002:a05:6870:4610:b0:e9:a4a0:84 with SMTP id z16-20020a056870461000b000e9a4a00084mr48677oao.76.1651510804141;
-        Mon, 02 May 2022 10:00:04 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id h23-20020a4adcd7000000b0035eb4e5a6bbsm4033884oou.17.2022.05.02.10.00.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 10:00:03 -0700 (PDT)
-Received: (nullmailer pid 1331045 invoked by uid 1000);
-        Mon, 02 May 2022 17:00:02 -0000
-Date:   Mon, 2 May 2022 12:00:02 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     frowand.list@gmail.com
-Cc:     pantelis.antoniou@konsulko.com,
-        Slawomir Stepien <slawomir.stepien@nokia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Slawomir Stepien <sst@poczta.fm>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH 1/3] of: overlay: add entry to of_overlay_action_name[]
-Message-ID: <YnAOEqO23BQk53vz@robh.at.kernel.org>
-References: <20220501000543.1368005-1-frowand.list@gmail.com>
- <20220501000543.1368005-2-frowand.list@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=eHBpjvV0xsoV/2E/yxAKoD7xjO9zfwPQ1d4jUnUE31Y=;
+        b=GEW8zDYnZMyqTmFZvYWTMeyW5oVRQNgejzJGOCxyZJqOE4l7DR4WbAfQZPdpNobZ+a
+         EmZ/RenM7vT5P+1G9BLuqvJP7ZgpZtMG2X6sqHXG7IPYiMys0JfiKVzHnIS1j4ZWVPbf
+         5lgYaTXWTUb7dm5EhYiearRvnrKceWfmJhbENNz0AFcG2cqczcXXhSPK4jyFkPNZ04Ja
+         87fbT3FzPiJcBXWHsaObx4Klc9icL0Lj/3JNqZ6zODJXWuWIbSZH+1pdo/sc/+1kMDSM
+         baUq6m1g7dj58pjbKfnk+YrAYXMugg4RqXCWnLgKryEFpQ5HkRudzPpCfMJyuWwHzUph
+         q3LA==
+X-Gm-Message-State: AOAM531YnICNiOVXahaCRpc+x0D44r1DIiWVQFLGT1X3RTuukfiTkIHB
+        CMhom/h9AppfcJ2WoUXXPKrGlg==
+X-Google-Smtp-Source: ABdhPJz86mhBbGpqIE9j8RYZ8M7M1FBCdLWOj6qLKCtxIG/rlugzA0w1yHfEGRZM801GfYtiy1htYQ==
+X-Received: by 2002:a17:902:70c1:b0:156:16c0:dc7b with SMTP id l1-20020a17090270c100b0015616c0dc7bmr12658855plt.85.1651510840897;
+        Mon, 02 May 2022 10:00:40 -0700 (PDT)
+Received: from [10.10.71.43] ([8.34.116.185])
+        by smtp.gmail.com with ESMTPSA id m7-20020a170902f64700b0015e8d4eb1fdsm4908003plg.71.2022.05.02.10.00.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 May 2022 10:00:40 -0700 (PDT)
+Message-ID: <371c01dd-258c-e428-7428-ff390b664752@kernel.dk>
+Date:   Mon, 2 May 2022 11:00:38 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220501000543.1368005-2-frowand.list@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [REGRESSION] lxc-stop hang on 5.17.x kernels
+Content-Language: en-US
+From:   Jens Axboe <axboe@kernel.dk>
+To:     Daniel Harding <dharding@living180.net>,
+        Pavel Begunkov <asml.silence@gmail.com>
+Cc:     regressions@lists.linux.dev, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <7925e262-e0d4-6791-e43b-d37e9d693414@living180.net>
+ <6ad38ecc-b2a9-f0e9-f7c7-f312a2763f97@kernel.dk>
+ <ccf6cea1-1139-cd73-c4e5-dc9799708bdd@living180.net>
+ <bb283ff5-6820-d096-2fca-ae7679698a50@kernel.dk>
+In-Reply-To: <bb283ff5-6820-d096-2fca-ae7679698a50@kernel.dk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 30, 2022 at 07:05:41PM -0500, frowand.list@gmail.com wrote:
-> From: Frank Rowand <frank.rowand@sony.com>
+On 5/2/22 7:59 AM, Jens Axboe wrote:
+> On 5/2/22 7:36 AM, Daniel Harding wrote:
+>> On 5/2/22 16:26, Jens Axboe wrote:
+>>> On 5/2/22 7:17 AM, Daniel Harding wrote:
+>>>> I use lxc-4.0.12 on Gentoo, built with io-uring support
+>>>> (--enable-liburing), targeting liburing-2.1.  My kernel config is a
+>>>> very lightly modified version of Fedora's generic kernel config. After
+>>>> moving from the 5.16.x series to the 5.17.x kernel series, I started
+>>>> noticed frequent hangs in lxc-stop.  It doesn't happen 100% of the
+>>>> time, but definitely more than 50% of the time.  Bisecting narrowed
+>>>> down the issue to commit aa43477b040251f451db0d844073ac00a8ab66ee:
+>>>> io_uring: poll rework. Testing indicates the problem is still present
+>>>> in 5.18-rc5. Unfortunately I do not have the expertise with the
+>>>> codebases of either lxc or io-uring to try to debug the problem
+>>>> further on my own, but I can easily apply patches to any of the
+>>>> involved components (lxc, liburing, kernel) and rebuild for testing or
+>>>> validation.  I am also happy to provide any further information that
+>>>> would be helpful with reproducing or debugging the problem.
+>>> Do you have a recipe to reproduce the hang? That would make it
+>>> significantly easier to figure out.
+>>
+>> I can reproduce it with just the following:
+>>
+>>     sudo lxc-create --n lxc-test --template download --bdev dir --dir /var/lib/lxc/lxc-test/rootfs -- -d ubuntu -r bionic -a amd64
+>>     sudo lxc-start -n lxc-test
+>>     sudo lxc-stop -n lxc-test
+>>
+>> The lxc-stop command never exits and the container continues running.
+>> If that isn't sufficient to reproduce, please let me know.
 > 
-> The values of enum of_overlay_notify_action are used to index into
-> array of_overlay_action_name.  Add an entry to of_overlay_action_name
-> for the value recently added to of_overlay_notify_action.
-> 
-> Array of_overlay_action_name[] is moved into include/linux/of.h
-> adjacent to enum of_overlay_notify_action to make the connection
-> between the two more obvious if either is modified in the future.
-> 
-> The only use of of_overlay_action_name is for error reporting in
-> overlay_notify().  All callers of overlay_notify() report the same
-> error, but with fewer details.  Remove the redundant error reports
-> in the callers.
-> 
-> Fixes: 067c098766c6 ("of: overlay: rework overlay apply and remove kfree()s")
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Frank Rowand <frank.rowand@sony.com>
-> ---
->  drivers/of/overlay.c | 27 +++++----------------------
->  include/linux/of.h   | 13 +++++++++++++
->  2 files changed, 18 insertions(+), 22 deletions(-)
+> Thanks, that's useful! I'm at a conference this week and hence have
+> limited amount of time to debug, hopefully Pavel has time to take a look
+> at this.
 
-This isn't applying for me.
+Didn't manage to reproduce. Can you try, on both the good and bad
+kernel, to do:
 
-Rob
+# echo 1 > /sys/kernel/debug/tracing/events/io_uring/enable
+
+run lxc-stop
+
+# cp /sys/kernel/debug/tracing/trace ~/iou-trace
+
+so we can see what's going on? Looking at the source, lxc is just using
+plain POLL_ADD, so I'm guessing it's not getting a notification when it
+expects to, or it's POLL_REMOVE not doing its job. If we have a trace
+from both a working and broken kernel, that might shed some light on it.
+
+-- 
+Jens Axboe
+
