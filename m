@@ -2,52 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF64C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E99C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243622AbiEBQzI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 12:55:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35092 "EHLO
+        id S1386486AbiEBQzO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 12:55:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241977AbiEBQzE (ORCPT
+        with ESMTP id S241697AbiEBQzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 12:55:04 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A136569
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 09:51:31 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id 12so15720285oix.12
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 09:51:31 -0700 (PDT)
+        Mon, 2 May 2022 12:55:05 -0400
+Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46EF8B1E2
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 09:51:35 -0700 (PDT)
+Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-e5e433d66dso14801659fac.5
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 09:51:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qDbeIX3G7CAdlzYVZYrcGdjlGadN5/397vtFVJ5LGZ0=;
-        b=XooHx68yyT3HJJvAvwlP32zNjixKBDR2DZX+foZ/QUBBANRiEilHqqKIyJMKqQF8l/
-         USWW8mTYv0yD5WnhQ0199oxHJVfYZVVhMtab+xX+vTqWNRBVI827oWnXoJMh9n93ls2F
-         nK8foxy6JPLfD6Nw+a3+4xbM+FHpQjSzk4OnF1T1AEAjbTwArmAnU2215ZyRtP6OZNkY
-         VfkPJ6/gYjrj9tycLldB0fedH/O+ear22oankqOIHZjEeGz14YDpsbV+kvuEmjeijaLl
-         emcOmA1hbgQyUmRUGEEL9AwyWm5TliinL6rXMxDelAdp3wYsyqvMA8t1HxV9X+0HGmEk
-         77zQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=K90a1QhJHpsQXxatRkh1e5e68HIkTPZWj4pLHJQIQOA=;
+        b=FQdtOKJDpPgUqFOC6SLrbP7LwibhmUyCwt5JMP8J7hd8YFMu7yfmlKGGywt9yD2AzZ
+         4bNOCHHiB4eybvTS1NLlgDgqEqzaXe1WLrpi6/yEbiUSZF2iTfhDUcdd1aTSBJeMO0s+
+         RNrSMxkgJ+cDk16I0j3q/QuMvq9FTTHLpjVDaOXW87Soxx1WNnA4G05KHPsHX0Bt1RQA
+         Che3UYlwJtgGsO1iyGUIuklvTidR98D2Ml6CHj7wHGh1HQDEJRNLfW0dOlqfrKO3it+q
+         zq7mWXF6EKGzBH3tI8Ob+j4wTCs0Uu1e3d+TRSRlrso0O0Uq58gkXqcVYskUpugAfKiT
+         Z9gA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qDbeIX3G7CAdlzYVZYrcGdjlGadN5/397vtFVJ5LGZ0=;
-        b=hJzSvLJ9hrHfZMAkO65fubueDg4YFKirR/PP6T0kayMxnmzWXtZwKs/ujFZrkt8R3E
-         sGbdX+sUTZ1tM4Xvlsh6RYGAcbqxZEwYWc3hbxsIlp7oI4Ju8PT2dvIBlf8/fl9n9N1N
-         7G1SR3EtdxZS9e4eM30ejEP6eyfErhcvr92MX49vQrUjFdrQ0dBsfE5i037GMa1cDB1W
-         jKVAsBp254k7qLaV6XGcW93rf60VXTO66e62JMu2b8skuIFD5H4nmvTjrHOy91LqOUTY
-         p/YgtDGAM4jkvdAymRYcTyrpCtBsd5a5d638UKFevw+QUYHJ4ZhEBN+2IuoZJivLwwmD
-         WzhQ==
-X-Gm-Message-State: AOAM5304yFWMcVV1GGSnxgJimFN6tMjcilAbTcNdgi/SbozGjAGAjG/a
-        RN0EI5yUZsRR4+ViiVUBcQUgbA==
-X-Google-Smtp-Source: ABdhPJzBKz1yiIK2Jf2XUFNV3lOE1PeOdmDd6SS2he3gildxijlbqu95mdYr54pb4q4sU2bTKcztnQ==
-X-Received: by 2002:aca:502:0:b0:2cd:c24:278f with SMTP id 2-20020aca0502000000b002cd0c24278fmr33189oif.150.1651510290838;
-        Mon, 02 May 2022 09:51:30 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=K90a1QhJHpsQXxatRkh1e5e68HIkTPZWj4pLHJQIQOA=;
+        b=HJNG3e1kvmtTQF5O5tuycdOWICuiiSG2ydjj9hKSKRL3FtNdC1X6PnncaNXp8iM0Or
+         dC7A+8gHgX/P4U6J4Bmyr+jvM95zWLgQKdaUYRHsfckTFUzP2uZWbikvwg1plc+r5doz
+         yka7TkSyC2+Dlzt81KHhkKkSAlJELqn0Bp57OGJVcueKQ4Z57yoGXebwTpyRNY+xHA0y
+         ZFKYo3KnShlz7gt0XGvlHmB8xlXiR3ze/OAlWdDCZ0oBGqTb+NDSy311IxDSdOnnvMuf
+         CxSEiBXZptNFp7K1y/ppUaM8MiRriY6z4BPzmN10kPCPYJh2INkZdE2NK9mzT0YWeZU+
+         F8Nw==
+X-Gm-Message-State: AOAM533YGKbpIdZEaGtQ7J17UglqNHHIBNWd+6oeNzs+R5FvO1SNsDyR
+        NpEUefCC2N6IvWI2aWUyr2KXjg==
+X-Google-Smtp-Source: ABdhPJzCOneZu4AMnooib+bg8ZJwce3fsqFCE7WWhYymkLStPsKv55OzdAyCgnQNFba6Oycz1dDM2g==
+X-Received: by 2002:a05:6870:70a8:b0:e6:30d9:c7f6 with SMTP id v40-20020a05687070a800b000e630d9c7f6mr2821oae.179.1651510294594;
+        Mon, 02 May 2022 09:51:34 -0700 (PDT)
 Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id h11-20020a4add8b000000b0035eb4e5a6ccsm4029422oov.34.2022.05.02.09.51.29
+        by smtp.gmail.com with ESMTPSA id h11-20020a4add8b000000b0035eb4e5a6ccsm4029422oov.34.2022.05.02.09.51.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 09:51:29 -0700 (PDT)
+        Mon, 02 May 2022 09:51:34 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
         Maxime Ripard <mripard@kernel.org>,
@@ -68,59 +69,63 @@ Cc:     Stephen Boyd <swboyd@chromium.org>, linux-kernel@vger.kernel.org,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
         linux-usb@vger.kernel.org
-Subject: [PATCH v4 0/5] drm/msm/dp: implement HPD notifications handling
-Date:   Mon,  2 May 2022 09:53:11 -0700
-Message-Id: <20220502165316.4167199-1-bjorn.andersson@linaro.org>
+Subject: [PATCH v4 3/5] drm/bridge_connector: implement oob_hotplug_event
+Date:   Mon,  2 May 2022 09:53:14 -0700
+Message-Id: <20220502165316.4167199-4-bjorn.andersson@linaro.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220502165316.4167199-1-bjorn.andersson@linaro.org>
+References: <20220502165316.4167199-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-USB altmodes code would send OOB notifications to the drm_connector
-specified in the device tree. However as the MSM DP driver uses
-drm_bridge_connector, there is no way to receive these event directly.
-Implement a bridge between oob_hotplug_event and drm_bridge's hpd_notify
-and use it to deliver altmode messages to the MSM DP driver.
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-Note, I left the original 'bool connected' field to be used by the
-notifiers. However I think that it should be replaced in favour of using
-the dp->hpd_state properly.
+Implement the oob_hotplug_event() callback. Translate it to the HPD
+notification sent to the HPD bridge in the chain.
 
-Bjorn Andersson (2):
-  drm: Add HPD state to drm_connector_oob_hotplug_event()
-  drm/msm/dp: Implement hpd_notify()
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
 
-Dmitry Baryshkov (3):
-  drm/bridge_connector: stop filtering events in
-    drm_bridge_connector_hpd_cb()
-  drm/bridge_connector: implement oob_hotplug_event
-  drm/msm/dp: remove most of usbpd-related remains
+Changes since v3:
+- New patch
 
- drivers/gpu/drm/drm_bridge_connector.c   | 17 +++--
- drivers/gpu/drm/drm_connector.c          |  6 +-
- drivers/gpu/drm/i915/display/intel_dp.c  | 17 ++++-
- drivers/gpu/drm/i915/i915_drv.h          |  3 +
- drivers/gpu/drm/msm/Makefile             |  1 -
- drivers/gpu/drm/msm/dp/dp_ctrl.h         |  1 -
- drivers/gpu/drm/msm/dp/dp_debug.c        |  6 +-
- drivers/gpu/drm/msm/dp/dp_debug.h        |  4 +-
- drivers/gpu/drm/msm/dp/dp_display.c      | 81 +++++++++++-------------
- drivers/gpu/drm/msm/dp/dp_display.h      |  1 +
- drivers/gpu/drm/msm/dp/dp_drm.c          |  3 +
- drivers/gpu/drm/msm/dp/dp_drm.h          |  2 +
- drivers/gpu/drm/msm/dp/dp_hpd.c          | 67 --------------------
- drivers/gpu/drm/msm/dp/dp_hpd.h          | 78 -----------------------
- drivers/gpu/drm/msm/dp/dp_panel.h        |  1 -
- drivers/gpu/drm/msm/dp/dp_power.c        |  2 +-
- drivers/gpu/drm/msm/dp/dp_power.h        |  3 +-
- drivers/usb/typec/altmodes/displayport.c | 10 +--
- include/drm/drm_connector.h              |  6 +-
- 19 files changed, 88 insertions(+), 221 deletions(-)
- delete mode 100644 drivers/gpu/drm/msm/dp/dp_hpd.c
- delete mode 100644 drivers/gpu/drm/msm/dp/dp_hpd.h
+ drivers/gpu/drm/drm_bridge_connector.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
+diff --git a/drivers/gpu/drm/drm_bridge_connector.c b/drivers/gpu/drm/drm_bridge_connector.c
+index 0f6f3f653f65..6a0a6b14360a 100644
+--- a/drivers/gpu/drm/drm_bridge_connector.c
++++ b/drivers/gpu/drm/drm_bridge_connector.c
+@@ -123,6 +123,17 @@ static void drm_bridge_connector_hpd_cb(void *cb_data,
+ 	drm_kms_helper_hotplug_event(dev);
+ }
+ 
++static void drm_bridge_connector_oob_hotplug_event(struct drm_connector *connector,
++						   enum drm_connector_status status)
++{
++	struct drm_bridge_connector *bridge_connector =
++		to_drm_bridge_connector(connector);
++	struct drm_bridge *hpd = bridge_connector->bridge_hpd;
++
++	if (hpd)
++		drm_bridge_hpd_notify(hpd, status);
++}
++
+ /**
+  * drm_bridge_connector_enable_hpd - Enable hot-plug detection for the connector
+  * @connector: The DRM bridge connector
+@@ -233,6 +244,7 @@ static const struct drm_connector_funcs drm_bridge_connector_funcs = {
+ 	.atomic_duplicate_state = drm_atomic_helper_connector_duplicate_state,
+ 	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
+ 	.debugfs_init = drm_bridge_connector_debugfs_init,
++	.oob_hotplug_event = drm_bridge_connector_oob_hotplug_event,
+ };
+ 
+ /* -----------------------------------------------------------------------------
 -- 
 2.35.1
 
