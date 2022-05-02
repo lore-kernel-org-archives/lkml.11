@@ -2,139 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 10:18:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5717C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 10:18:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384461AbiEBKWM (ORCPT
+        id S1384480AbiEBKWS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 06:22:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34382 "EHLO
+        Mon, 2 May 2022 06:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353808AbiEBKWF (ORCPT
+        with ESMTP id S1384463AbiEBKWP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 06:22:05 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32541DAF;
-        Mon,  2 May 2022 03:18:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651486717; x=1683022717;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=40XRCuFqf9DIEV+ADubSNbv+BNliWy79WqN9dEr7Q54=;
-  b=T0iqA0HszQjAM3PuFVifm/49z2WoLpHr7EEvjOXntxE0i7f6rgrBTuKe
-   Ivs6pWyF/G+B0/N4Ltt8L9RaqLkE4cu7jcGZvhtI7SDgU3OCVtShDpyVt
-   DLQOhuem2mRkfgtxXzOpvhGVcxznjGdQu/TUOuKGolKCcapCHxiSh76fF
-   efNRuBdQnChRl7044R6n7Yz7zCBjqf0XS6PjvZ05S/naaGjUviLNITgZV
-   pp4Xs4THNW2NGwOweanDRczX1uVk7QvTjmeNP8AsSXoPyaGd5g3jMm9hK
-   D2C0ZkQ5zFhsaOBHvmJ2RJeXsWRTrgmkAjt0HHZ3rTnYqgDaV15M3AJ1c
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10334"; a="292352828"
-X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
-   d="scan'208";a="292352828"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 03:18:36 -0700
-X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
-   d="scan'208";a="733376340"
-Received: from bwu50-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.2.219])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 03:18:33 -0700
-Message-ID: <c393153f821d84d6c3745d76dd3f43a3ce3fc0a1.camel@intel.com>
-Subject: Re: [PATCH v3 00/21] TDX host kernel support
-From:   Kai Huang <kai.huang@intel.com>
-To:     Dave Hansen <dave.hansen@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "Brown, Len" <len.brown@intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Rafael J Wysocki <rafael.j.wysocki@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Isaku Yamahata <isaku.yamahata@intel.com>,
-        chao.p.peng@intel.com
-Date:   Mon, 02 May 2022 22:18:30 +1200
-In-Reply-To: <4d0c7316-3564-ef27-1113-042019d583dc@intel.com>
-References: <cover.1649219184.git.kai.huang@intel.com>
-         <522e37eb-68fc-35db-44d5-479d0088e43f@intel.com>
-         <CAPcyv4g5E_TOow=3pFJXyFr=KLV9pTSnDthgz6TuXvru4xDzaQ@mail.gmail.com>
-         <de9b8f4cef5da03226158492988956099199aa60.camel@intel.com>
-         <CAPcyv4iGsXkHAVgf+JZ4Pah_fkCZ=VvUmj7s3C6Rkejtdw_sgQ@mail.gmail.com>
-         <92af7b22-fa8a-5d42-ae15-8526abfd2622@intel.com>
-         <CAPcyv4iG977DErCfYTqhVzuZqjtqFHK3smnaOpO3p+EbxfvXcQ@mail.gmail.com>
-         <4a5143cc-3102-5e30-08b4-c07e44f1a2fc@intel.com>
-         <CAPcyv4i6X6ODNbOnT7+NEzpicLS4m9bNDybZLvN3gqXFTTf=mg@mail.gmail.com>
-         <4d0c7316-3564-ef27-1113-042019d583dc@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Mon, 2 May 2022 06:22:15 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1141D1112
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 03:18:46 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242AF2WZ038252;
+        Mon, 2 May 2022 10:18:17 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=qnlrrWXRiuHsjRIGUnyYyYn2kNaU+BCFWw1Jtl7IdrE=;
+ b=Bzbyfu0mXrImezor+6i6laHeAo+0TUOOVKQrhwrwXX5iJ3ZJMslbXPvPhIraOHLpXGBZ
+ FhfRtzVP3saNtfcFaYBFqUhc84FE7Byc/l6lUYWf2bb76YFDnBNWbLMzA3NtdYKmRSfB
+ /kjP30BzqlhYUvTV3a9ljZOPJLjAZUx2Mi+JqlPr1eDhML13dqfZVjlc8H8PAY6XOpzC
+ 24ahexdcLkWSROzAYMZqYWK1wOe0yUNJsM/enuGkd26dOomYKYMvcZ65qkfZ1AfvLD9E
+ NnjOMWC4OpUS5FpSttB0JsadlHInTlZUaZ0V6EehjBRWvvSF59kRZOGYpo0fWu+GC0FY zw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ftdcj01x9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 02 May 2022 10:18:17 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 242AFgqW039059;
+        Mon, 2 May 2022 10:18:16 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ftdcj01wp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 02 May 2022 10:18:16 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 242AIF89030416;
+        Mon, 2 May 2022 10:18:15 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma06fra.de.ibm.com with ESMTP id 3frvcj22xq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 02 May 2022 10:18:15 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 242AIBn948234986
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 2 May 2022 10:18:12 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DB1FA52050;
+        Mon,  2 May 2022 10:18:11 +0000 (GMT)
+Received: from osiris (unknown [9.145.172.68])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id 6616D5204E;
+        Mon,  2 May 2022 10:18:11 +0000 (GMT)
+Date:   Mon, 2 May 2022 12:18:10 +0200
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Liam Howlett <liam.howlett@oracle.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Yu Zhao <yuzhao@google.com>, Juergen Gross <jgross@suse.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>
+Subject: Re: [PATCH v8 23/70] mm/mmap: change do_brk_flags() to expand
+ existing VMA and add do_brk_munmap()
+Message-ID: <Ym+v4lfU5IyxkGc4@osiris>
+References: <20220426150616.3937571-1-Liam.Howlett@oracle.com>
+ <20220426150616.3937571-24-Liam.Howlett@oracle.com>
+ <20220428201947.GA1912192@roeck-us.net>
+ <20220429003841.cx7uenepca22qbdl@revolver>
+ <20220428181621.636487e753422ad0faf09bd6@linux-foundation.org>
+ <20220502001358.s2azy37zcc27vgdb@revolver>
+ <20220501172412.50268e7b217d0963293e7314@linux-foundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220501172412.50268e7b217d0963293e7314@linux-foundation.org>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: p1KnFsuBiVVpyE0RuT8eMvo_hXOt7FPF
+X-Proofpoint-ORIG-GUID: w-4HAuyvV4ijDE1TzS4tpBIDHIlP49Fi
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-02_03,2022-04-28_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 adultscore=0
+ bulkscore=0 mlxlogscore=933 impostorscore=0 priorityscore=1501
+ suspectscore=0 spamscore=0 phishscore=0 malwarescore=0 mlxscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205020078
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-04-29 at 11:34 -0700, Dave Hansen wrote:
-> On 4/29/22 10:48, Dan Williams wrote:
-> > > But, neither of those really help with, say, a device-DAX mapping of
-> > > TDX-*IN*capable memory handed to KVM.  The "new syscall" would just
-> > > throw up its hands and leave users with the same result: TDX can't be
-> > > used.  The new sysfs ABI for NUMA nodes wouldn't clearly apply to
-> > > device-DAX because they don't respect the NUMA policy ABI.
-> > They do have "target_node" attributes to associate node specific
-> > metadata, and could certainly express target_node capabilities in its
-> > own ABI. Then it's just a matter of making pfn_to_nid() do the right
-> > thing so KVM kernel side can validate the capabilities of all inbound
-> > pfns.
+On Sun, May 01, 2022 at 05:24:12PM -0700, Andrew Morton wrote:
+> (cc S390 maintainers)
+> (cc stable & Greg)
 > 
-> Let's walk through how this would work with today's kernel on tomorrow's
-> hardware, without KVM validating PFNs:
+> > I have been porting my patches over and hit a bit of a snag. It looked
+> > like my patches were not booting on the s390 - but not all the time. So
+> > I reverted back to mm-stable (059342d1dd4e) and found that also failed
+> > to boot sometimes on my qemu setup.  When it fails it's ~4-5sec into
+> > booting.  The last thing I see is:
+> > 
+> > "[    4.668916] Spectre V2 mitigation: execute trampolines"
+> > 
+> > I've bisected back to commit e553f62f10d9 (mm, page_alloc: fix
+> > build_zonerefs_node())
+> > 
+> > With the this commit, I am unable to boot one out of three times.  When
+> > using the previous commit I was not able to get it to hang after trying
+> > 10+ times.  This is a qemu s390 install with KASAN on and I see no error
+> > messages.  I think it's likely it is this patch, but no guaranteed.
+> > 
 > 
-> 1. daxaddr mmap("/dev/dax1234")
-> 2. kvmfd = open("/dev/kvm")
-> 3. ioctl(KVM_SET_USER_MEMORY_REGION, { daxaddr };
-> 4. guest starts running
-> 5. guest touches 'daxaddr'
-> 6. Page fault handler maps 'daxaddr'
-> 7. KVM finds new 'daxaddr' PTE
-> 8. TDX code tries to add physical address to Secure-EPT
-> 9. TDX "SEAMCALL" fails because page is not convertible
-> 10. Guest dies
+> Great, thanks.  So mapletree is absolved.
 > 
-> All we can do to improve on that is call something that pledges to only
-> map convertible memory at 'daxaddr'.  We can't *actually* validate the
-> physical addresses at mmap() time or even
-> KVM_SET_USER_MEMORY_REGION-time because the memory might not have been
-> allocated.
+> Unfortunately 059342d1dd4e was cc:stable.  Greg, you might want to pull
+> the plug on that one if it isn't too late.
 > 
-> Those pledges are hard for anonymous memory though.  To fulfill the
-> pledge, we not only have to validate that the NUMA policy is compatible
-> at KVM_SET_USER_MEMORY_REGION, we also need to decline changes to the
-> policy that might undermine the pledge.
+> I'll await input from the S390 team, but from my reading the issues
+> which that patch addresses aren't terribly serious, so perhaps the
+> thing to do is to revert 059342d1dd4e (with a cc:stable) while
+> 059342d1dd4e gets a redo?
 
-Hi Dave,
+I cannot confirm that Linus' tree currently has problems on s390 with
+commit e553f62f10d9 ("mm, page_alloc: fix build_zonerefs_node()").
 
-There's another series done by Chao "KVM: mm: fd-based approach for supporting
-KVM guest private memory" which essentially allows KVM to ask guest memory
-backend to allocate page w/o having to mmap() to userspace.  Please see my reply
-below:
+This commit was applied by Linus on 15th of April, and our CI didn't
+report any problems since then. At least nothing that would point to
+this commit. Also I just gave e553f62f10d9 a try (defconfig + KASAN):
+no problems to report.
 
-https://lore.kernel.org/lkml/cover.1649219184.git.kai.huang@intel.com/T/#mf9bf10a63eaaf0968c46ab33bdaf06bd2cfdd948
+Same with 059342d1dd4e (mm-stable): it just works for me.
 
-My understanding is for TDX guest KVM will be enforced to use the new mechanism.
-So when TDX supports NVDIMM in the future, dax can be extended to support the
-new mechanism to support using it as TD guest backend.
-
-Sean, Paolo, Isaku, Chao,
-
-Please correct me if I am wrong?
-
--- 
-Thanks,
--Kai
-
-
+Liam, could you share your kernel config?
