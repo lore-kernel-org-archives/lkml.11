@@ -2,332 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99AF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A92C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:12:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386193AbiEBQPY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 12:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57346 "EHLO
+        id S241872AbiEBQPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 12:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386111AbiEBQPS (ORCPT
+        with ESMTP id S1386198AbiEBQPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 12:15:18 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12982DF52;
-        Mon,  2 May 2022 09:11:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651507909; x=1683043909;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=KVc/+HNOqS4/r7m8XfOVVRZ+wIWothref+39qtK2eSk=;
-  b=V6Ycg7uKvQUAdLJwV5SkasjALwcQEX4rk/HJu27V6G5FqkVDYIKCxv89
-   gaP/We1G/pVzAmye3bJ8wr+kEMbyfPxPnOl8kwxxN4HOzooA7OvFZRq0e
-   gFR0X1V4YlFQIGA8XmhgTvGFmyIUw2dguFqkqjeSOfR7f5MAxQb7kNmlY
-   N3W7YWjFfxqFjF/sEFulpvvKBKYuJpzvLTHv/5J6plwkWDmWj8qcyTyKx
-   UY9yUAvWbmyFbqhPq8xLmERWA3vCmz+o53Y0F+a2F8Ke8ZO9X3deFuPmt
-   we5mt6zdEFcXzKX1zDO+nGVPwDrY5E0r6RnBvyfLv4CZ7G/lsusc6Lt26
-   w==;
-X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
-   d="scan'208";a="162033711"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 May 2022 09:11:48 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 2 May 2022 09:11:47 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 2 May 2022 09:11:26 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     KP Singh <kpsingh@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
-        "Martin KaFai Lau" <kafai@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Vladimir Oltean" <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Vivien Didelot" <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [Patch net-next v12 13/13] net: dsa: microchip: add support for vlan operations
-Date:   Mon, 2 May 2022 21:41:20 +0530
-Message-ID: <20220502161120.7441-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        Mon, 2 May 2022 12:15:39 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9078DF15
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 09:12:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651507928; x=1683043928;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=oqVfvIwO+ekNl8VYKW8L9XfK9KFqSFa9jxkzZ+Hsbz0=;
+  b=DeZTE+pUbycCrYYS9XdFSVZbInAFQbizrtUm+LU1w3qHR2nI/pC6G2vG
+   hpcrcTMO3S0y8KtwsPF2crzUgVB0uAS3ZKGlYejSk4lRLlsua2VpY4KYD
+   XWU4+Zvi54Md93eI1kdpvNpqyxI2/lI7LjNZ19rOFy4AoUpiqGAd/4oni
+   w=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 02 May 2022 09:12:08 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 09:12:08 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 2 May 2022 09:12:07 -0700
+Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 2 May 2022
+ 09:12:06 -0700
+Date:   Mon, 2 May 2022 12:12:04 -0400
+From:   Qian Cai <quic_qiancai@quicinc.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+CC:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        "Kevin Tian" <kevin.tian@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
+        <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [RESEND PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
+Message-ID: <20220502161204.GA22@qian>
+References: <20220418005000.897664-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220418005000.897664-1-baolu.lu@linux.intel.com>
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+On Mon, Apr 18, 2022 at 08:49:49AM +0800, Lu Baolu wrote:
+> Hi Joerg,
+> 
+> This is a resend version of v8 posted here:
+> https://lore.kernel.org/linux-iommu/20220308054421.847385-1-baolu.lu@linux.intel.com/
+> as we discussed in this thread:
+> https://lore.kernel.org/linux-iommu/Yk%2Fq1BGN8pC5HVZp@8bytes.org/
+> 
+> All patches can be applied perfectly except this one:
+>  - [PATCH v8 02/11] driver core: Add dma_cleanup callback in bus_type
+> It conflicts with below refactoring commit:
+>  - 4b775aaf1ea99 "driver core: Refactor sysfs and drv/bus remove hooks"
+> The conflict has been fixed in this post.
+> 
+> No functional changes in this series. I suppress cc-ing this series to
+> all v8 reviewers in order to avoid spam.
+> 
+> Please consider it for your iommu tree.
 
-Support for VLAN add, del, prepare and filtering operations.
+Reverting this series fixed an user-after-free while doing SR-IOV.
 
-The VLAN aware is a global setting. Mixed vlan filterings
-are not supported. vlan_filtering_is_global is made as true
-in lan937x_setup function.
+ BUG: KASAN: use-after-free in __lock_acquire
+ Read of size 8 at addr ffff080279825d78 by task qemu-system-aar/22429
+ CPU: 24 PID: 22429 Comm: qemu-system-aar Not tainted 5.18.0-rc5-next-20220502 #69
+ Call trace:
+  dump_backtrace
+  show_stack
+  dump_stack_lvl
+  print_address_description.constprop.0
+  print_report
+  kasan_report
+  __asan_report_load8_noabort
+  __lock_acquire
+  lock_acquire.part.0
+  lock_acquire
+  _raw_spin_lock_irqsave
+  arm_smmu_detach_dev
+  arm_smmu_detach_dev at drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:2377
+  arm_smmu_attach_dev
+  __iommu_attach_group
+  __iommu_attach_device at drivers/iommu/iommu.c:1942
+  (inlined by) iommu_group_do_attach_device at drivers/iommu/iommu.c:2058
+  (inlined by) __iommu_group_for_each_dev at drivers/iommu/iommu.c:989
+  (inlined by) __iommu_attach_group at drivers/iommu/iommu.c:2069
+  iommu_group_release_dma_owner
+  __vfio_group_unset_container
+  vfio_group_try_dissolve_container
+  vfio_group_put_external_user
+  kvm_vfio_destroy
+  kvm_destroy_vm
+  kvm_vm_release
+  __fput
+  ____fput
+  task_work_run
+  do_exit
+  do_group_exit
+  get_signal
+  do_signal
+  do_notify_resume
+  el0_svc
+  el0t_64_sync_handler
+  el0t_64_sync
 
-Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/dsa/microchip/lan937x_dev.h  |  10 ++
- drivers/net/dsa/microchip/lan937x_main.c | 186 +++++++++++++++++++++++
- 2 files changed, 196 insertions(+)
+ Allocated by task 22427:
+  kasan_save_stack
+  __kasan_kmalloc
+  kmem_cache_alloc_trace
+  arm_smmu_domain_alloc
+  iommu_domain_alloc
+  vfio_iommu_type1_attach_group
+  vfio_ioctl_set_iommu
+  vfio_fops_unl_ioctl
+  __arm64_sys_ioctl
+  invoke_syscall
+  el0_svc_common.constprop.0
+  do_el0_svc
+  el0_svc
+  el0t_64_sync_handler
+  el0t_64_sync
 
-diff --git a/drivers/net/dsa/microchip/lan937x_dev.h b/drivers/net/dsa/microchip/lan937x_dev.h
-index da8c708a03ea..2ce4d60b477e 100644
---- a/drivers/net/dsa/microchip/lan937x_dev.h
-+++ b/drivers/net/dsa/microchip/lan937x_dev.h
-@@ -104,6 +104,16 @@ struct lan_alu_struct {
- 	u8	mac[ETH_ALEN];
- };
- 
-+struct lan937x_vlan {
-+	/* entry 1 */
-+	bool valid;
-+	u8 fid;
-+	/* entry 2 */
-+	u32 untag_prtmap;
-+	/* entry 3 */
-+	u32 fwd_map;
-+};
-+
- extern const struct dsa_switch_ops lan937x_switch_ops;
- extern const struct ksz_dev_ops lan937x_dev_ops;
- extern const struct mib_names lan937x_mib_names[];
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index 516ab563721d..a509f0fc6347 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -17,6 +17,14 @@
- #include "ksz_common.h"
- #include "lan937x_dev.h"
- 
-+static int lan937x_wait_vlan_ctrl_ready(struct ksz_device *dev)
-+{
-+	unsigned int val;
-+
-+	return regmap_read_poll_timeout(dev->regmap[0], REG_SW_VLAN_CTRL, val,
-+					!(val & VLAN_START), 10, 1000);
-+}
-+
- static u8 lan937x_get_fid(u16 vid)
- {
- 	if (vid > ALU_FID_SIZE)
-@@ -25,6 +33,97 @@ static u8 lan937x_get_fid(u16 vid)
- 		return vid;
- }
- 
-+static int lan937x_get_vlan_table(struct ksz_device *dev, u16 vid,
-+				  struct lan937x_vlan *vlan_entry)
-+{
-+	u32 data;
-+	int ret;
-+
-+	mutex_lock(&dev->vlan_mutex);
-+
-+	ret = ksz_write16(dev, REG_SW_VLAN_ENTRY_INDEX__2, vid & VLAN_INDEX_M);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, VLAN_READ | VLAN_START);
-+	if (ret < 0)
-+		goto exit;
-+
-+	/* wait to be cleared */
-+	ret = lan937x_wait_vlan_ctrl_ready(dev);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY__4, &data);
-+	if (ret < 0)
-+		goto exit;
-+
-+	vlan_entry->valid = !!(data & VLAN_VALID);
-+	vlan_entry->fid	= data & VLAN_FID_M;
-+
-+	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY_UNTAG__4,
-+			 &vlan_entry->untag_prtmap);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY_PORTS__4,
-+			 &vlan_entry->fwd_map);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, 0);
-+	if (ret < 0)
-+		goto exit;
-+
-+exit:
-+	mutex_unlock(&dev->vlan_mutex);
-+
-+	return ret;
-+}
-+
-+static int lan937x_set_vlan_table(struct ksz_device *dev, u16 vid,
-+				  struct lan937x_vlan *vlan_entry)
-+{
-+	u32 data;
-+	int ret;
-+
-+	mutex_lock(&dev->vlan_mutex);
-+
-+	data = vlan_entry->valid ? VLAN_VALID : 0;
-+	data |= vlan_entry->fid;
-+
-+	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY__4, data);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY_UNTAG__4,
-+			  vlan_entry->untag_prtmap);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY_PORTS__4, vlan_entry->fwd_map);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write16(dev, REG_SW_VLAN_ENTRY_INDEX__2, vid & VLAN_INDEX_M);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, VLAN_START | VLAN_WRITE);
-+	if (ret < 0)
-+		goto exit;
-+
-+	/* wait to be cleared */
-+	ret = lan937x_wait_vlan_ctrl_ready(dev);
-+	if (ret < 0)
-+		goto exit;
-+
-+exit:
-+	mutex_unlock(&dev->vlan_mutex);
-+
-+	return ret;
-+}
-+
- static int lan937x_read_table(struct ksz_device *dev, u32 *table)
- {
- 	int ret;
-@@ -129,6 +228,90 @@ static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
- 	ksz_port_stp_state_set(ds, port, state, P_STP_CTRL);
- }
- 
-+static int lan937x_port_vlan_filtering(struct dsa_switch *ds, int port,
-+				       bool flag,
-+				       struct netlink_ext_ack *extack)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	/* enable/disable VLAN mode, once enabled, look up process starts
-+	 * and then forwarding and discarding are done based on port
-+	 * membership of the VLAN table
-+	 */
-+	return lan937x_cfg(dev, REG_SW_LUE_CTRL_0, SW_VLAN_ENABLE, flag);
-+}
-+
-+static int lan937x_port_vlan_add(struct dsa_switch *ds, int port,
-+				 const struct switchdev_obj_port_vlan *vlan,
-+				 struct netlink_ext_ack *extack)
-+{
-+	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
-+	struct ksz_device *dev = ds->priv;
-+	struct lan937x_vlan vlan_entry;
-+	int ret;
-+
-+	ret = lan937x_get_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to get vlan table");
-+		return ret;
-+	}
-+
-+	vlan_entry.fid = lan937x_get_fid(vlan->vid);
-+	vlan_entry.valid = true;
-+
-+	/* set/clear switch port when updating vlan table registers */
-+	if (untagged)
-+		vlan_entry.untag_prtmap |= BIT(port);
-+	else
-+		vlan_entry.untag_prtmap &= ~BIT(port);
-+
-+	vlan_entry.fwd_map |= BIT(port);
-+
-+	ret = lan937x_set_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to set vlan table");
-+		return ret;
-+	}
-+
-+	/* change PVID */
-+	if (vlan->flags & BRIDGE_VLAN_INFO_PVID) {
-+		ret = lan937x_pwrite16(dev, port, REG_PORT_DEFAULT_VID,
-+				       vlan->vid);
-+		if (ret < 0) {
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to set pvid");
-+			return ret;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int lan937x_port_vlan_del(struct dsa_switch *ds, int port,
-+				 const struct switchdev_obj_port_vlan *vlan)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct lan937x_vlan vlan_entry;
-+	int ret;
-+
-+	ret = lan937x_get_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		dev_err(dev->dev, "Failed to get vlan table\n");
-+		return ret;
-+	}
-+
-+	/* clear port fwd map & untag entries*/
-+	vlan_entry.fwd_map &= ~BIT(port);
-+	vlan_entry.untag_prtmap &= ~BIT(port);
-+
-+	ret = lan937x_set_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		dev_err(dev->dev, "Failed to set vlan table\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static int lan937x_port_fdb_add(struct dsa_switch *ds, int port,
- 				const unsigned char *addr, u16 vid,
- 				struct dsa_db db)
-@@ -1030,6 +1213,9 @@ const struct dsa_switch_ops lan937x_switch_ops = {
- 	.port_bridge_leave = ksz_port_bridge_leave,
- 	.port_stp_state_set = lan937x_port_stp_state_set,
- 	.port_fast_age = ksz_port_fast_age,
-+	.port_vlan_filtering = lan937x_port_vlan_filtering,
-+	.port_vlan_add = lan937x_port_vlan_add,
-+	.port_vlan_del = lan937x_port_vlan_del,
- 	.port_fdb_dump = lan937x_port_fdb_dump,
- 	.port_fdb_add = lan937x_port_fdb_add,
- 	.port_fdb_del = lan937x_port_fdb_del,
--- 
-2.33.0
-
+ Freed by task 22429:
+  kasan_save_stack
+  kasan_set_track
+  kasan_set_free_info
+  ____kasan_slab_free
+  __kasan_slab_free
+  slab_free_freelist_hook
+  kfree
+  arm_smmu_domain_free
+  arm_smmu_domain_free at iommu/arm/arm-smmu-v3/arm-smmu-v3.c:2067
+  iommu_domain_free
+  vfio_iommu_type1_detach_group
+  __vfio_group_unset_container
+  vfio_group_try_dissolve_container
+  vfio_group_put_external_user
+  kvm_vfio_destroy
+  kvm_destroy_vm
+  kvm_vm_release
+  __fput
+  ____fput
+  task_work_run
+  do_exit
+  do_group_exit
+  get_signal
+  do_signal
+  do_notify_resume
+  el0_svc
+  el0t_64_sync_handler
+  el0t_64_sync
