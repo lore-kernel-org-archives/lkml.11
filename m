@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C2A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 08:46:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44F8CC43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 08:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383778AbiEBIuM (ORCPT
+        id S1383879AbiEBIuV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 04:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45234 "EHLO
+        Mon, 2 May 2022 04:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349872AbiEBIuD (ORCPT
+        with ESMTP id S1359517AbiEBIuE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 04:50:03 -0400
+        Mon, 2 May 2022 04:50:04 -0400
 Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4565229808;
-        Mon,  2 May 2022 01:46:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 44BE521800;
+        Mon,  2 May 2022 01:46:35 -0700 (PDT)
 Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 2428kHAC024176;
-        Mon, 2 May 2022 10:46:17 +0200
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 2428kGoX024172;
+        Mon, 2 May 2022 10:46:16 +0200
 From:   Willy Tarreau <w@1wt.eu>
 To:     netdev@vger.kernel.org
 Cc:     David Miller <davem@davemloft.net>,
@@ -28,75 +28,101 @@ Cc:     David Miller <davem@davemloft.net>,
         Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
         Amit Klein <aksecurity@gmail.com>,
         "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 net 3/7] tcp: resalt the secret every 10 seconds
-Date:   Mon,  2 May 2022 10:46:10 +0200
-Message-Id: <20220502084614.24123-4-w@1wt.eu>
+        linux-kernel@vger.kernel.org, Willy Tarreau <w@1wt.eu>
+Subject: [PATCH v3 net 0/7] insufficient TCP source port randomness
+Date:   Mon,  2 May 2022 10:46:07 +0200
+Message-Id: <20220502084614.24123-1-w@1wt.eu>
 X-Mailer: git-send-email 2.17.5
-In-Reply-To: <20220502084614.24123-1-w@1wt.eu>
-References: <20220502084614.24123-1-w@1wt.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Hi,
 
-In order to limit the ability for an observer to recognize the source
-ports sequence used to contact a set of destinations, we should
-periodically shuffle the secret. 10 seconds looks effective enough
-without causing particular issues.
+In a not-yet published paper, Moshe Kol, Amit Klein, and Yossi Gilad
+report being able to accurately identify a client by forcing it to emit
+only 40 times more connections than the number of entries in the
+table_perturb[] table, which is indexed by hashing the connection tuple.
+The current 2^8 setting allows them to perform that attack with only 10k
+connections, which is not hard to achieve in a few seconds.
 
-Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
-Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
-Cc: Amit Klein <aksecurity@gmail.com>
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Tested-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Eric, Amit and I have been working on this for a few weeks now imagining,
+testing and eliminating a number of approaches that Amit and his team were
+still able to break or that were found to be too risky or too expensive,
+and ended up with the simple improvements in this series that resists to
+the attack, doesn't degrade the performance, and preserves a reliable port
+selection algorithm to avoid connection failures, including the odd/even
+port selection preference that allows bind() to always find a port quickly
+even under strong connect() stress.
+
+The approach relies on several factors:
+  - resalting the hash secret that's used to choose the table_perturb[]
+    entry every 10 seconds to eliminate slow attacks and force the
+    attacker to forget everything that was learned after this delay.
+    This already eliminates most of the problem because if a client
+    stays silent for more than 10 seconds there's no link between the
+    previous and the next patterns, and 10s isn't yet frequent enough
+    to cause too frequent repetition of a same port that may induce a
+    connection failure ;
+
+  - adding small random increments to the source port. Previously, a
+    random 0 or 1 was added every 16 ports. Now a random 0 to 7 is
+    added after each port. This means that with the default 32768-60999
+    range, a worst case rollover happens after 1764 connections, and
+    an average of 3137. This doesn't stop statistical attacks but
+    requires significantly more iterations of the same attack to
+    confirm a guess.
+
+  - increasing the table_perturb[] size from 2^8 to 2^16, which Amit
+    says will require 2.6 million connections to be attacked with the
+    changes above, making it pointless to get a fingerprint that will
+    only last 10 seconds. Due to the size, the table was made dynamic.
+
+  - a few minor improvements on the bits used from the hash, to eliminate
+    some unfortunate correlations that may possibly have been exploited
+    to design future attack models.
+
+These changes were tested under the most extreme conditions, up to
+1.1 million connections per second to one and a few targets, showing no
+performance regression, and only 2 connection failures within 13 billion,
+which is less than 2^-32 and perfectly within usual values.
+
+The series is split into small reviewable changes and was already reviewed
+by Amit and Eric.
+
+Regards,
+Willy
+
 ---
- net/core/secure_seq.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+v3:
+  - fix field ordering in secure_ipv6_port_ephemeral() so that the
+    timeseed is really part of the hashed array. Spotted by Jason.
 
-diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
-index 55aa5cc258e3..5f85e01d4093 100644
---- a/net/core/secure_seq.c
-+++ b/net/core/secure_seq.c
-@@ -22,6 +22,8 @@
- static siphash_aligned_key_t net_secret;
- static siphash_aligned_key_t ts_secret;
- 
-+#define EPHEMERAL_PORT_SHUFFLE_PERIOD (10 * HZ)
-+
- static __always_inline void net_secret_init(void)
- {
- 	net_get_random_once(&net_secret, sizeof(net_secret));
-@@ -100,11 +102,13 @@ u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
- 	const struct {
- 		struct in6_addr saddr;
- 		struct in6_addr daddr;
-+		unsigned int timeseed;
- 		__be16 dport;
- 	} __aligned(SIPHASH_ALIGNMENT) combined = {
- 		.saddr = *(struct in6_addr *)saddr,
- 		.daddr = *(struct in6_addr *)daddr,
--		.dport = dport
-+		.timeseed = jiffies / EPHEMERAL_PORT_SHUFFLE_PERIOD,
-+		.dport = dport,
- 	};
- 	net_secret_init();
- 	return siphash(&combined, offsetofend(typeof(combined), dport),
-@@ -145,8 +149,10 @@ EXPORT_SYMBOL_GPL(secure_tcp_seq);
- u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
- {
- 	net_secret_init();
--	return siphash_3u32((__force u32)saddr, (__force u32)daddr,
--			    (__force u16)dport, &net_secret);
-+	return siphash_4u32((__force u32)saddr, (__force u32)daddr,
-+			    (__force u16)dport,
-+			    jiffies / EPHEMERAL_PORT_SHUFFLE_PERIOD,
-+			    &net_secret);
- }
- EXPORT_SYMBOL_GPL(secure_ipv4_port_ephemeral);
- #endif
+v2:
+  - fixed build issue reported by lkp@intel.com on 32-bit archs due
+    to the 64-by-32 divide; it's now correctly 32-by-32 as suggested
+    by Eric
+  - addressed the IPv6 hash size as well that was overlooked, as
+    reported by Jason
+
+---
+Eric Dumazet (1):
+  tcp: resalt the secret every 10 seconds
+
+Willy Tarreau (6):
+  secure_seq: use the 64 bits of the siphash for port offset calculation
+  tcp: use different parts of the port_offset for index and offset
+  tcp: add small random increments to the source port
+  tcp: dynamically allocate the perturb table used by source ports
+  tcp: increase source port perturb table to 2^16
+  tcp: drop the hash_32() part from the index calculation
+
+ include/net/inet_hashtables.h |  2 +-
+ include/net/secure_seq.h      |  4 ++--
+ net/core/secure_seq.c         | 16 ++++++++-----
+ net/ipv4/inet_hashtables.c    | 42 ++++++++++++++++++++++-------------
+ net/ipv6/inet6_hashtables.c   |  4 ++--
+ 5 files changed, 43 insertions(+), 25 deletions(-)
+
 -- 
 2.17.5
-
