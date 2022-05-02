@@ -2,96 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E28B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 14:15:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BDAAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 14:15:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385561AbiEBOTN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 10:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56514 "EHLO
+        id S238052AbiEBOTR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 10:19:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385644AbiEBOTA (ORCPT
+        with ESMTP id S1385627AbiEBOS5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 10:19:00 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1458AB88;
-        Mon,  2 May 2022 07:15:31 -0700 (PDT)
+        Mon, 2 May 2022 10:18:57 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95167DED5;
+        Mon,  2 May 2022 07:15:27 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id a1so16782820edt.3;
+        Mon, 02 May 2022 07:15:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651500932; x=1683036932;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=AR3nROx9kSazZj+h7yJIP1c+hNRzoH3odyY+rnljXck=;
-  b=bVvryGDfw3VqJ626c12lpqA3+M08FMLCC+nQTS6o12wHrLV7W4a4QkdI
-   4mreLl4jmhCi+DPpJWeEFsZYNfkjBLNtIK1Vp+fNdHZGN09Pgq2OMPPYC
-   ASH1mqGhCrA0VQay4byJtbDMubu6E9zVtLNC9lnGcbou00g9jCo6A1pbt
-   Y=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 02 May 2022 07:15:31 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 07:15:01 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 2 May 2022 07:15:00 -0700
-Received: from kaushalk-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 2 May 2022 07:14:57 -0700
-From:   Kaushal Kumar <quic_kaushalk@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
-CC:     <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <manivannan.sadhasivam@linaro.org>,
-        "Kaushal Kumar" <quic_kaushalk@quicinc.com>
-Subject: [PATCH v2 1/4] ARM: dts: qcom: sdx65: Add QPIC BAM support
-Date:   Mon, 2 May 2022 07:14:35 -0700
-Message-ID: <1651500878-10244-2-git-send-email-quic_kaushalk@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1651500878-10244-1-git-send-email-quic_kaushalk@quicinc.com>
-References: <1651500878-10244-1-git-send-email-quic_kaushalk@quicinc.com>
+        d=googlemail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PR2akzjSHzRoLtewUgMac6+Y64PGqXA5YmcADTBjoU4=;
+        b=X7wEduK/sxNWcNtLYd0sc7+yrcRgmJh25G5yNy5TWFjEQdBZCMPhgaVDdOumB9XAMC
+         7xQxydrHn/tGdmLO9sK536W9YcTX8qRpG5zcaQEmHJuP0ohRIRIeXDicO0mNCYM65Teu
+         fBZbPs4HFzP7x1d7WBHr6flZpeyDaRwskBFU1FoPlE6CnEXHndnzPZe118SZSUMB/MDi
+         F3ZoZAiEowignsRgGSCUkAADIyAehrvUI8ekDGRi7PlavmoIan/OVGS7hXNHQve8OVOq
+         hRLepkxyn1ECWbKGdcANNmIIlxsWgEBgM7c8bbnucktUTSyR0pUncsIOMNyYWtfaGD0+
+         tbIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PR2akzjSHzRoLtewUgMac6+Y64PGqXA5YmcADTBjoU4=;
+        b=erqnaEvt/3J5F5JMmtkSP1q7k7XvtmvVpO2tkAJ/FJbOkoqPDw15/OT4LpbFCCfiy0
+         a7hozlRvgsDNULKiR5MBn4wbTCQFYFqmwk0ez1VBQbMmJzYjQKhpTBw+ig6Ck4lWnnvJ
+         S/pMCpik0RYcmtMlazA8a/NEwIBLK5OrFZVymKxVTtIWLak5G7MLreAGYXtf3mXXDUy4
+         IU1qW9ZjNctyuh3Q7Xl9otSblBM14HF5YSyXcXZiY515004NwXCZojwvYx9ox2nYhL/W
+         XEE+MeqcV7w9EqzgCd5XIz95vm530oUKpAtKlKOLXOZ8loIKX7or18hvP5mUsGqKaJTZ
+         rdxQ==
+X-Gm-Message-State: AOAM533JkfwhaWrn+jxVJvsSRguhS6iDdNzuEPx9a6Cuu3/t5oLk5sDc
+        an0PL5m9tTUHXycUhbfhKzEThoITvNE=
+X-Google-Smtp-Source: ABdhPJw+jDtp4IfHKIp26ybwHOkEk7fjBevcj7sFZ4t1Gq4UbzD+N99TSN8TYTqNZ3C95MsC3MT1yA==
+X-Received: by 2002:aa7:df15:0:b0:41d:675f:ea9a with SMTP id c21-20020aa7df15000000b0041d675fea9amr13886093edy.148.1651500926165;
+        Mon, 02 May 2022 07:15:26 -0700 (PDT)
+Received: from debianHome.localdomain (dynamic-077-001-135-067.77.1.pool.telefonica.de. [77.1.135.67])
+        by smtp.gmail.com with ESMTPSA id ig11-20020a1709072e0b00b006f3ef214e2dsm3771770ejc.147.2022.05.02.07.15.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 07:15:25 -0700 (PDT)
+From:   =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>
+To:     selinux@vger.kernel.org
+Cc:     Paul Moore <paul@paul-moore.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Zhongjun Tan <tanzhongjun@yulong.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] selinux: include necessary headers in headers
+Date:   Mon,  2 May 2022 16:15:20 +0200
+Message-Id: <20220502141524.35268-1-cgzones@googlemail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add devicetree node to enable support for QPIC
-BAM DMA controller on Qualcomm SDX65 platform.
+Include header files required for struct or typedef declarations in
+header files.  This is for example helpful when working with an IDE, which
+needs to resolve those symbols.
 
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Kaushal Kumar <quic_kaushalk@quicinc.com>
+Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
 ---
- arch/arm/boot/dts/qcom-sdx65.dtsi | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ security/selinux/include/audit.h   | 3 +++
+ security/selinux/include/avc_ss.h  | 2 +-
+ security/selinux/include/ibpkey.h  | 2 ++
+ security/selinux/include/netnode.h | 2 ++
+ security/selinux/include/netport.h | 2 ++
+ security/selinux/include/xfrm.h    | 2 ++
+ 6 files changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/qcom-sdx65.dtsi b/arch/arm/boot/dts/qcom-sdx65.dtsi
-index a64be20..d6a6087 100644
---- a/arch/arm/boot/dts/qcom-sdx65.dtsi
-+++ b/arch/arm/boot/dts/qcom-sdx65.dtsi
-@@ -199,6 +199,18 @@
- 			qcom,bcm-voters = <&apps_bcm_voter>;
- 		};
+diff --git a/security/selinux/include/audit.h b/security/selinux/include/audit.h
+index 073a3d34a0d2..be42d7dc2c0c 100644
+--- a/security/selinux/include/audit.h
++++ b/security/selinux/include/audit.h
+@@ -12,6 +12,9 @@
+ #ifndef _SELINUX_AUDIT_H
+ #define _SELINUX_AUDIT_H
  
-+		qpic_bam: dma-controller@1b04000 {
-+			compatible = "qcom,bam-v1.7.0";
-+			reg = <0x01b04000 0x1c000>;
-+			interrupts = <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rpmhcc RPMH_QPIC_CLK>;
-+			clock-names = "bam_clk";
-+			#dma-cells = <1>;
-+			qcom,ee = <0>;
-+			qcom,controlled-remotely;
-+			status = "disabled";
-+		};
++#include <linux/audit.h>
++#include <linux/types.h>
 +
- 		tcsr_mutex: hwlock@1f40000 {
- 			compatible = "qcom,tcsr-mutex";
- 			reg = <0x01f40000 0x40000>;
+ /**
+  *	selinux_audit_rule_init - alloc/init an selinux audit rule structure.
+  *	@field: the field this rule refers to
+diff --git a/security/selinux/include/avc_ss.h b/security/selinux/include/avc_ss.h
+index 88c384c5c09e..66a87559b788 100644
+--- a/security/selinux/include/avc_ss.h
++++ b/security/selinux/include/avc_ss.h
+@@ -7,7 +7,7 @@
+ #ifndef _SELINUX_AVC_SS_H_
+ #define _SELINUX_AVC_SS_H_
+ 
+-#include "flask.h"
++#include <linux/types.h>
+ 
+ struct selinux_avc;
+ int avc_ss_reset(struct selinux_avc *avc, u32 seqno);
+diff --git a/security/selinux/include/ibpkey.h b/security/selinux/include/ibpkey.h
+index e6ac1d23320b..c992f83b0aae 100644
+--- a/security/selinux/include/ibpkey.h
++++ b/security/selinux/include/ibpkey.h
+@@ -14,6 +14,8 @@
+ #ifndef _SELINUX_IB_PKEY_H
+ #define _SELINUX_IB_PKEY_H
+ 
++#include <linux/types.h>
++
+ #ifdef CONFIG_SECURITY_INFINIBAND
+ void sel_ib_pkey_flush(void);
+ int sel_ib_pkey_sid(u64 subnet_prefix, u16 pkey, u32 *sid);
+diff --git a/security/selinux/include/netnode.h b/security/selinux/include/netnode.h
+index e3f784a85840..9b8b655a8cd3 100644
+--- a/security/selinux/include/netnode.h
++++ b/security/selinux/include/netnode.h
+@@ -17,6 +17,8 @@
+ #ifndef _SELINUX_NETNODE_H
+ #define _SELINUX_NETNODE_H
+ 
++#include <linux/types.h>
++
+ void sel_netnode_flush(void);
+ 
+ int sel_netnode_sid(void *addr, u16 family, u32 *sid);
+diff --git a/security/selinux/include/netport.h b/security/selinux/include/netport.h
+index 31bc16e29cd1..9096a8289948 100644
+--- a/security/selinux/include/netport.h
++++ b/security/selinux/include/netport.h
+@@ -16,6 +16,8 @@
+ #ifndef _SELINUX_NETPORT_H
+ #define _SELINUX_NETPORT_H
+ 
++#include <linux/types.h>
++
+ void sel_netport_flush(void);
+ 
+ int sel_netport_sid(u8 protocol, u16 pnum, u32 *sid);
+diff --git a/security/selinux/include/xfrm.h b/security/selinux/include/xfrm.h
+index 74159400eeee..c75839860200 100644
+--- a/security/selinux/include/xfrm.h
++++ b/security/selinux/include/xfrm.h
+@@ -8,7 +8,9 @@
+ #ifndef _SELINUX_XFRM_H_
+ #define _SELINUX_XFRM_H_
+ 
++#include <linux/lsm_audit.h>
+ #include <net/flow.h>
++#include <net/xfrm.h>
+ 
+ int selinux_xfrm_policy_alloc(struct xfrm_sec_ctx **ctxp,
+ 			      struct xfrm_user_sec_ctx *uctx,
 -- 
-2.7.4
+2.36.0
 
