@@ -2,150 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83425C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44826C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:27:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387365AbiEBU2Y (ORCPT
+        id S1385578AbiEBUaa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 16:28:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55890 "EHLO
+        Mon, 2 May 2022 16:30:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236645AbiEBU2W (ORCPT
+        with ESMTP id S233639AbiEBUa1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 16:28:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0BF61247
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 13:24:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651523092;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UdZt71erzInkdQWP9nE3aPOYbCeSzdBMVJZpOjnab6U=;
-        b=f0FGb3lj/+SxscQXxi5URGJs3S+8k6WGyTU5okwJhzpQmMVXCG3K6ZlkH4Lg3MRQs1Hw0I
-        UN6+vkU2kGGGBlvv2pGK51lsnq0lfiO7g9auqzkDQh1NYM1UcTZtWBQbgRjK/BmTGvautd
-        LtgGcNvKw6RtngdDTiEtk+8fkWPTKKA=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-563-zQqkl90DPemgT1JHvT1TBA-1; Mon, 02 May 2022 16:24:43 -0400
-X-MC-Unique: zQqkl90DPemgT1JHvT1TBA-1
-Received: by mail-wr1-f72.google.com with SMTP id b10-20020adfc74a000000b0020ab029d5edso5627810wrh.18
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 13:24:43 -0700 (PDT)
+        Mon, 2 May 2022 16:30:27 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8529FE2
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 13:26:57 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id k126so5432858wme.2
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 13:26:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=matchdayarena-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:reply-to:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lJ+KH0aRdl8k8CwFrYo0ipoiGK0sWPv66PH3fZBi6XE=;
+        b=G1eWQAqHWkwMyCp6DGl0+lJAyVpDdF660ofb2j+dHM8+vYDizJS2KqFMTzeSh7Q1ax
+         WNAl7+3No6iLJ4iYPe5YIyMdTswEHbYwz51+yjdpVIUVVgXLnWdj1KnWINgTbiLBaP47
+         xrvpQfItRJ/wjr29rR/O6YYFE3zHqRBIEss+6b8WW2EBsSztBqgiAdECA0pZ2+gkvSb6
+         XvQbYwYma89BPbx8nE/1+K/WQjPLMZ3u48CcAnFqbRlFIzT5WYCDAJfgWIujdNGC7pj+
+         oM+gmjO77jmkzZ9Wl7rFmEsTKb+YQgFjUbZyGzKL7IbjK3oEAkjoEu6CstooEjbPRqHJ
+         uYhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UdZt71erzInkdQWP9nE3aPOYbCeSzdBMVJZpOjnab6U=;
-        b=LrPW1EZMMeobTnliYx5P8n3yCvxhVs3hSYrInWNjR8gI5UGu/1SIGDRWrMeKYhR5Ky
-         /Cb30bmj9MOjga2vFec2uwFP528zyJizXwUyCKoB3Xoeg+a3JWnryebXI7EjPcl997IH
-         z3JjpfIM8tlDweo7KIlphnmCWQPYIXGm+HDTfRZcpTop3zJ+MUyiRrP4Bvoes6dx//ol
-         RtIRlyKbH8g0YMviUUS4kVELjmlgFho708RO4qFIDfol0S9aVkvL2LFWD+POURmN0clp
-         SSmOTyZ0W8sA5y2Elbp1pVPznjvLjjVr8EkKkltAG7g9kj2et4iFzlOhHTbzjn9JJEfO
-         27jA==
-X-Gm-Message-State: AOAM533vZIxK/xUDiF0kuf2hp9r0+QkteWMAft///O1uGjdQbTIJcTWY
-        m9BE+2wv8YVOLm79qG6SSmh+qw9At9jW8oR4vBQEbVlkFjtbJ1hpy+k2orw076S0pPK6NrDxA0h
-        t2NfhARoP7IpHD+fdzB4wUfJH9JJvt4l/a80PjRVa
-X-Received: by 2002:a1c:2942:0:b0:392:3aff:4fcd with SMTP id p63-20020a1c2942000000b003923aff4fcdmr620246wmp.0.1651523082222;
-        Mon, 02 May 2022 13:24:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwcEsBewr8W5eVg62nkR1Wb4KVlY1M0XsuVK3vz1ojcr4Vc7wcJuVZJYI+tEdl0Qe0q+ayeeD8mjC8Nl1rx4+U=
-X-Received: by 2002:a1c:2942:0:b0:392:3aff:4fcd with SMTP id
- p63-20020a1c2942000000b003923aff4fcdmr620231wmp.0.1651523081803; Mon, 02 May
- 2022 13:24:41 -0700 (PDT)
+        h=x-gm-message-state:date:from:reply-to:to:subject:message-id
+         :mime-version:content-transfer-encoding;
+        bh=lJ+KH0aRdl8k8CwFrYo0ipoiGK0sWPv66PH3fZBi6XE=;
+        b=w2wwhNuMsMyAhUHwZWBqo5g9AKxwIefX4xB+diaXvSPRhy0HGIWAz0NK7Nr+KC/c+h
+         bh80OEbxLM1QoK1Od8PgKfVTib6SOGnPdkmZ0w7pYK2B8UYvHAKuTLUR4bKTHflCMU6f
+         5sd/LKEEGbTlrasa1GVQCUtbuvh983elFXxVVW6lWd5grKpcGUjoSjcyRM+2rh/DihSR
+         zvZRHmc8f3O+lJDYObL9//Pe8s4t8quY1RVvi2tbeISoe0DLRoyMgCVbRciBqxSKFJdD
+         2nICEdI+iEblLBZcYe+kULbGHD/cr9eQKxSnGLRokozP3CMAhS9k+x2/vI5jDZcFMcbS
+         /Atw==
+X-Gm-Message-State: AOAM532j7yPlVoJn5XEu79ujLQRBscCn4qvHtcgCdjAE5I/o/Z37VqZW
+        eOPPE2NagnXAolgFXrPV9AIwrFKh4MegAGVUaq2GanHZ
+X-Google-Smtp-Source: ABdhPJymaRxNk23Iz4XOLMvAMyaxBHlfUxXuVf3jFb58YgRU2Xd8MpKJHmk3O8MkNDd333ivEV4s7g==
+X-Received: by 2002:a05:600c:4994:b0:394:dcb:d66d with SMTP id h20-20020a05600c499400b003940dcbd66dmr609479wmp.178.1651523215468;
+        Mon, 02 May 2022 13:26:55 -0700 (PDT)
+Received: from localhhost.com ([41.218.193.3])
+        by smtp.gmail.com with ESMTPSA id l3-20020adfbd83000000b0020aca418f26sm7943969wrh.1.2022.05.02.13.26.54
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 02 May 2022 13:26:55 -0700 (PDT)
+Date:   Mon, 02 May 2022 13:26:55 -0700 (PDT)
+X-Google-Original-Date: 02 May 2022 20:26:48 +0800
+From:   RGICOMPANYLTD <no-reply@matchdayarena.com>
+X-Google-Original-From: RGICOMPANYLTD<Admin@localhhost.com>
+Reply-To: rgicompanyltd1@gmail.com
+To:     linux-kernel@vger.kernel.org
+Subject: Greetings
+Message-ID: <20220502202647.8BB3F87241F888A3@localhhost.com>
 MIME-Version: 1.0
-References: <20220426145445.2282274-1-agruenba@redhat.com> <CAHk-=wi7o+fHYBTuCQQdHD112YHQtO21Y3+wxNYypjdo8feKFg@mail.gmail.com>
- <CAHc6FU48681X8aUK+g7UUN7q5b6rkVBzTP7h_zbE4XqZYAiw3g@mail.gmail.com>
- <CAHk-=wjMB1-xCOCBtsSMmQuFV9G+vNyCY1O_LsoqOd=0QS4yYg@mail.gmail.com>
- <CAHc6FU5Bag5W2t79+WzUq=NibtEF+7z6=jyNCkLMMp9Yqvpmqw@mail.gmail.com>
- <CAHk-=whaz-g_nOOoo8RRiWNjnv2R+h6_xk2F1J4TuSRxk1MtLw@mail.gmail.com>
- <CAHc6FU5654k7QBU97g_Ubj8cJEWuA_bXPuXOPpBBYoXVPMJG=g@mail.gmail.com>
- <CAHk-=wgSYSNc5sF2EVxhjbSc+c4LTs90aYaK2wavNd_m2bUkGg@mail.gmail.com>
- <CAHc6FU69E4ke4Xg3zQ2MqjLbfM65D9ZajdY5MRDLN0azZOGmVQ@mail.gmail.com>
- <CAHk-=whQxvMvty8SjiGMh+gM4VmCYvqn6EAwmrDXJaHT2Aa+UA@mail.gmail.com>
- <CAHk-=wicJdoCjPLu7FhaErr6Z3UaW820U2b+F-8P4qwSFUZ0mg@mail.gmail.com>
- <CAHc6FU7GkXLkns5PONLvsSi6HB+rjaNSyFeQFS034tKL-JueMw@mail.gmail.com>
- <CAHk-=wg4ypnZUA5BOHAF1miKvOhW2yQSruuBKNXMDR=dTmp+ww@mail.gmail.com>
- <CAHc6FU6VgQDO7HT5f4S_4f=9hczKGRDQ6SbQ5kNHMi4i-6rxVA@mail.gmail.com>
- <CAHk-=whL74iP6v2P+OafGO0H72ag4wt42k+Kc_01boLP8aqUNQ@mail.gmail.com> <CAHk-=whrt9ofcyonPEbgPOaCG+15mDdz+O9bb0RKrJVTt7vR4w@mail.gmail.com>
-In-Reply-To: <CAHk-=whrt9ofcyonPEbgPOaCG+15mDdz+O9bb0RKrJVTt7vR4w@mail.gmail.com>
-From:   Andreas Gruenbacher <agruenba@redhat.com>
-Date:   Mon, 2 May 2022 22:24:30 +0200
-Message-ID: <CAHc6FU7TRD_2H6H4ucoqQ-8Q1d0xtoT68uopbZGQPwO9Z1k0kw@mail.gmail.com>
-Subject: Re: [GIT PULL] gfs2 fix
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        cluster-devel <cluster-devel@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 2, 2022 at 8:58 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
-> On Mon, May 2, 2022 at 11:31 AM Linus Torvalds <torvalds@linux-foundation.org> wrote:
-> >
-> > NOTE! This patch is entirely untested. I also didn't actually yet go
-> > look at what gfs2 does when 'bytes' and 'copied' are different.
->
-> Oh, it's a lot of generic iomap_write_end() code, so I guess it's just
-> as well that I brought in the iomap people.
->
-> And the iomap code has many different cases. Some of them do
->
->         if (unlikely(copied < len && !folio_test_uptodate(folio)))
->                 return 0;
->
-> to force the whole IO to be re-done (looks sane - that's the "the
-> underlying folio wasn't uptodate, because we expected the write to
-> make it so").
->
-> And that might not have happened before, but it looks like gfs2 does
-> actually try to deal with that case.
->
-> But since Andreas said originally that the IO wasn't aligned, I don't
-> think that "not uptodate" case is what is going on, and it's more
-> about some "partial write in the middle of a buffer succeeded"
->
-> And the code also has things like
->
->         if (ret < len)
->                 iomap_write_failed(iter->inode, pos, len);
->
-> which looks very wrong - it's not that the write failed, it's just
-> incomplete because it was done with page faults disabled. It seems to
-> try to do some page cache truncation based on the original 'len', but
-> not taking the successful part into account. Which all sounds
-> horrifically wrong.
->
-> But I don't know the code well enough to really judge. It just makes
-> me uncomfortable, and I do suspect this code may be quite buggy if the
-> copy of the full 'len' doesn't succeed.
+From: RGI Company Ltd
+Address, Netherlands
+Call:+3197005033311
+02/5/2022
 
-This has thrown me off in the past as well; it should be changed to
-iomap_write_failed(iter->inode, pos + ret, len - ret) for legibility.
-However, iomap_write_failed() only truncates past EOF and is preceded
-by i_size_write(iter->inode, pos + ret) here, so it's not strictly a
-bug.
+Atten:
 
-> Again, the patch I sent only _hides_ any issues and makes them
-> practically impossible to see. It doesn't really _fix_ anything, since
-> - as mentioned - regardless of fault_in_iov_iter_readable()
-> succeeding, racing with page-out could then cause the later
-> copy_page_from_iter_atomic() to have a partial copy anyway.
+RGI Genealogical Investigators specializes in probate research to=20
+locate missing funds, inherited funds around the world. We can=20
+also help you find wills, obtain copies of certificates.
 
-Indeed. Let's see what we'll get with it.
+Recently a woman from the Rothschild family, one of the famous=20
+families in Europe contacted our company that we should contact a=20
+business minded person who is capable of investing her funds in a=20
+lucrative business.
 
-In the meantime, we've reproduced with 5.18-rc4 + commit 296abc0d91d8
-("gfs2: No short reads or writes upon glock contention"), and it still
-has the data corruption.
+Our service fee is 2% of the funds and we will be paid after you=20
+receive the funds. The funds transfer process should take just a=20
+matter of days as we have the mechanism and expertise to get this=20
+done quickly. Please if you find this letter offensive ignore it=20
+and accept our apologies
 
-> And hey, maybe there's something entirely different going on, and my
-> "Heureka! It might be explained by that partial write_end that
-> generally didn't happen before" is only my shouting at windmills.
->
->              Linus
->
+Warmest Regards,
+
+Dr. J.T Woods, CEO
+RGI Genealogical
+
 
