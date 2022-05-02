@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76845C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:07:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B158C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387213AbiEBULF (ORCPT
+        id S1387247AbiEBULJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 16:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41184 "EHLO
+        Mon, 2 May 2022 16:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387181AbiEBUKr (ORCPT
+        with ESMTP id S231508AbiEBUKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 16:10:47 -0400
+        Mon, 2 May 2022 16:10:49 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4985F6336
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 13:07:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91668BCAF
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 13:07:19 -0700 (PDT)
 Received: from ipservice-092-217-077-109.092.217.pools.vodafone-ip.de ([92.217.77.109] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1nlcKA-0007ch-GR; Mon, 02 May 2022 22:07:14 +0200
+        id 1nlcKC-0007ch-2j; Mon, 02 May 2022 22:07:16 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,9 +28,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 5/9] staging: r8188eu: remove an unused category define
-Date:   Mon,  2 May 2022 22:06:48 +0200
-Message-Id: <20220502200652.143665-6-martin@kaiser.cx>
+Subject: [PATCH 7/9] staging: r8188eu: use ieee80211_mgmt for action category
+Date:   Mon,  2 May 2022 22:06:50 +0200
+Message-Id: <20220502200652.143665-8-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220502200652.143665-1-martin@kaiser.cx>
 References: <20220502200652.143665-1-martin@kaiser.cx>
@@ -40,25 +40,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RTW_WLAN_CATEGORY_TDLS is not used. Remove the define.
+Use the struct ieee80211_mgmt from ieee80211.h to read the action
+category. There's no need to parse the incoming frame ourselves.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/include/ieee80211.h | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/include/ieee80211.h b/drivers/staging/r8188eu/include/ieee80211.h
-index f9a8aa243877..c593f9278868 100644
---- a/drivers/staging/r8188eu/include/ieee80211.h
-+++ b/drivers/staging/r8188eu/include/ieee80211.h
-@@ -598,7 +598,6 @@ static inline int is_broadcast_mac_addr(const u8 *addr)
- enum rtw_ieee80211_category {
- 	RTW_WLAN_CATEGORY_BACK = 3,
- 	RTW_WLAN_CATEGORY_PUBLIC = 4, /* IEEE 802.11 public action frames */
--	RTW_WLAN_CATEGORY_TDLS = 12,
- 	RTW_WLAN_CATEGORY_P2P = 0x7f,/* P2P action frames */
- };
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+index 0df89bbdb63a..96b0da90c2ba 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+@@ -3871,15 +3871,9 @@ unsigned int OnAction_p2p(struct adapter *padapter, struct recv_frame *precv_fra
  
+ unsigned int OnAction(struct adapter *padapter, struct recv_frame *precv_frame)
+ {
+-	unsigned char	category;
+-	unsigned char	*frame_body;
+-	u8 *pframe = precv_frame->rx_data;
+-
+-	frame_body = (unsigned char *)(pframe + sizeof(struct ieee80211_hdr_3addr));
+-
+-	category = frame_body[0];
++	struct ieee80211_mgmt *mgmt = (struct ieee80211_mgmt *)precv_frame->rx_data;
+ 
+-	switch (category) {
++	switch (mgmt->u.action.category) {
+ 	case RTW_WLAN_CATEGORY_BACK:
+ 		OnAction_back(padapter, precv_frame);
+ 		break;
 -- 
 2.30.2
 
