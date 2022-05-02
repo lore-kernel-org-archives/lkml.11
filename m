@@ -2,90 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3CBBC3527A
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62301C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386067AbiEBPym (ORCPT
+        id S1386015AbiEBPxp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 11:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34654 "EHLO
+        Mon, 2 May 2022 11:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240096AbiEBPyj (ORCPT
+        with ESMTP id S1386007AbiEBPxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 11:54:39 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE602AC2;
-        Mon,  2 May 2022 08:51:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=vs1TxitJVaqXfZt5+JAgzgpJc3Rl9y+sqSF7sQt0958=; b=CYM+I+cStAj6nsmkdvAL01St6e
-        IV8WQNLOxWhy3UHpXhc9ZYxNJzq7ZxpyOwHWort+30gmSz14Tjb7K8kvM2hGR2PPX3dc7GXMEaskm
-        g34Tjq/8qIJgML47/2DCuEUnFB03pqMfnk/uwmQB09CDWgBvh7TL/gFDoH0TI9HOJ3bezLUV1DrKv
-        MwXxD9LKMhdDIB0wdDr6Kr32RysL68LVvKOkDfa5SERbORMzBS0ZyutauBA2Ekqa3472ChMBhe54V
-        1FaXK1lleaqm8beFaaq7IO5wyd2Jb5T5RV+lvaTO/6luDzRXN43duubtlHaOQOQQCOGaRTF8O2nxl
-        BUemy2kw==;
-Received: from [179.113.53.197] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nlYKD-0006x9-MY; Mon, 02 May 2022 17:51:01 +0200
-Message-ID: <af03a6ef-6b92-31cd-72d4-47b82bc47f87@igalia.com>
-Date:   Mon, 2 May 2022 12:50:35 -0300
+        Mon, 2 May 2022 11:53:42 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01AF82BB;
+        Mon,  2 May 2022 08:50:13 -0700 (PDT)
+Date:   Mon, 02 May 2022 15:50:09 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651506611;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RO1SJetwkEj2qJJP1iLyJ0Y8Cv4AWNWm2/rJMQngLE8=;
+        b=1V7DLmFVSIToud61kZUmeNEy49eS/Skz7+Qme9O535rwe5D0blfH7UFyahjgOEXV3SdGD4
+        gKmuwVQn/2KSxiR61qTN2oDff/O4K3c2toLwDPQbtl0ByCbbMsx9InUegAn1KygZ1iYqEV
+        6i+1OyQXx/Z85vJdgRVAtGgC1ThhKKZiEg9QtfZklaA6lAotMtBjB+nrX0XdpcTUS3fPef
+        57R63sxpKrIB0hJUuCcsxC7uKg1mE3953YQof397hMxB6LDoNBY55JMooKupQJ/WfoQt6y
+        u4/WqYuu+2ggZpPqkf8U68S5edMGdIrOvXkSX0tFHZpdBlBfsILOac1VdjA+Tg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651506611;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RO1SJetwkEj2qJJP1iLyJ0Y8Cv4AWNWm2/rJMQngLE8=;
+        b=GyoroTxblscvDsctMPVav58Sfz2Eb+B85PpD0AEg1jPTKcyYpme2oKOvWldj6dm4RWSmTw
+        WfleXiyzu9X6ZWBQ==
+From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/sev] x86/sev: Fix address space sparse warning
+Cc:     kernel test robot <lkp@intel.com>, Borislav Petkov <bp@suse.de>,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <202205022233.XgNDR7WR-lkp@intel.com>
+References: <202205022233.XgNDR7WR-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 15/30] bus: brcmstb_gisb: Clean-up panic/die notifiers
-Content-Language: en-US
-To:     Florian Fainelli <f.fainelli@gmail.com>, akpm@linux-foundation.org,
-        bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Brian Norris <computersforpeace@gmail.com>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-16-gpiccoli@igalia.com>
- <eaf3a893-00dd-8717-202e-911b395670e1@gmail.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <eaf3a893-00dd-8717-202e-911b395670e1@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Message-ID: <165150660983.4207.3708966616865362991.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/05/2022 12:38, Florian Fainelli wrote:
-> [...] 
-> 
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-> 
-> Not sure if the Fixes tag is warranted however as this is a clean up, 
-> and not really fixing a bug.
+The following commit has been merged into the x86/sev branch of tip:
 
-Perfect, thanks Florian. I'll add your ACK and remove the fixes tag in V2.
-Cheers,
+Commit-ID:     ab65f49253ff706723ecbf87af74e9383b5e4582
+Gitweb:        https://git.kernel.org/tip/ab65f49253ff706723ecbf87af74e9383b5e4582
+Author:        Borislav Petkov <bp@suse.de>
+AuthorDate:    Mon, 02 May 2022 17:33:40 +02:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Mon, 02 May 2022 17:34:29 +02:00
 
+x86/sev: Fix address space sparse warning
 
-Guilherme
+Fix:
+
+  arch/x86/kernel/sev.c:605:16: warning: incorrect type in assignment (different address spaces)
+  arch/x86/kernel/sev.c:605:16:    expected struct snp_secrets_page_layout *layout
+  arch/x86/kernel/sev.c:605:16:    got void [noderef] __iomem *[assigned] mem
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/202205022233.XgNDR7WR-lkp@intel.com
+---
+ arch/x86/kernel/sev.c |  9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
+index 1663750..c05f012 100644
+--- a/arch/x86/kernel/sev.c
++++ b/arch/x86/kernel/sev.c
+@@ -589,20 +589,23 @@ static u64 __init get_secrets_page(void)
+ static u64 __init get_snp_jump_table_addr(void)
+ {
+ 	struct snp_secrets_page_layout *layout;
++	void __iomem *mem;
+ 	u64 pa, addr;
+ 
+ 	pa = get_secrets_page();
+ 	if (!pa)
+ 		return 0;
+ 
+-	layout = (__force void *)ioremap_encrypted(pa, PAGE_SIZE);
+-	if (!layout) {
++	mem = ioremap_encrypted(pa, PAGE_SIZE);
++	if (!mem) {
+ 		pr_err("Unable to locate AP jump table address: failed to map the SNP secrets page.\n");
+ 		return 0;
+ 	}
+ 
++	layout = (__force struct snp_secrets_page_layout *)mem;
++
+ 	addr = layout->os_area.ap_jump_table_pa;
+-	iounmap(layout);
++	iounmap(mem);
+ 
+ 	return addr;
+ }
