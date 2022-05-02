@@ -2,466 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 191F7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 01:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D62F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 02:13:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380255AbiEBB4a (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 21:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54614 "EHLO
+        id S243739AbiEBCRS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 1 May 2022 22:17:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356884AbiEBB4F (ORCPT
+        with ESMTP id S231426AbiEBCRQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 21:56:05 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F9E21251
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 18:52:16 -0700 (PDT)
+        Sun, 1 May 2022 22:17:16 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2ADE393E1
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 19:13:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651456336; x=1682992336;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=lkANiqxwg+NKnt9wAD26mwUc2KXK0TgdKn2hUx8ny9E=;
-  b=lUr/fHrOFXjKd6CKRBL08ij7Tw9KjEPby1LOoEw6GPCrd2K5O7e9MNEc
-   5o5yFJmAxnXyeHhNh8EYD3RZk/L/C/ZcQ/jKS6A4Ul7BL0WjuqPqN2Kpa
-   ewGN4Pwz5W7bkm4t5wAmPXMKuAjbGupOeXjup0VGRGmt9S/bdOOBh53zy
-   gQH2RamSdP1pgIlv3Tkz5DQPsWDYMMywymSPM/iQCVWGq8icFcIgbto2J
-   Z5NoiwTYrqn7kNai6PAoNbrwIYuRLv0hbJmDiob9krfSAozLfoR252f2N
-   6vY0ki2Efwoy89QffORNXBxUJj6zYZYDHIEZtgff0BzbZKcAcd7kWinXN
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10334"; a="249062076"
+  t=1651457628; x=1682993628;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/T4k9vntaDfGuOw+mEwrRphDQ6ejkarytnqW2ROKQlQ=;
+  b=Oj+6BwKfJlF7scacvmgRZN4sfk1JZ97s3Womq2inBJSD9Y/9mcg8V5Qx
+   DbzLk1BRTAPdOGlSNa+ycTK+3poTq43E07SLUykpG4G3y2rLFPskhJAXv
+   8uJGmp8//dW49OIP9IyZ9ADnOswHsdTFXCQb4fp+Q/JzsR3JOz1cMZyKE
+   2do9PhdZpsmE1dnRez3a/YMExr/l1nBvM8w3Q2mTOI/CSBgbVwu3n0Psl
+   XroDj4TR1PfBklLLx66tqd0AC07qu+g038iSBNcl/BpcmgZZLcoMwJKwc
+   2qTS6FINjokhTKNj2EfGPT+eW9MbZnkGcg2IzfuzrrHY+/Urok6XQbenM
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10334"; a="292274293"
 X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
-   d="scan'208";a="249062076"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2022 18:52:16 -0700
+   d="scan'208";a="292274293"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2022 19:13:48 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
-   d="scan'208";a="707406507"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 01 May 2022 18:52:12 -0700
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>
-Cc:     Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v5 08/12] iommu/sva: Use attach/detach_pasid_dev in SVA interfaces
-Date:   Mon,  2 May 2022 09:48:38 +0800
-Message-Id: <20220502014842.991097-9-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220502014842.991097-1-baolu.lu@linux.intel.com>
-References: <20220502014842.991097-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="598408934"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 01 May 2022 19:13:46 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nlLZJ-0009Cx-FP;
+        Mon, 02 May 2022 02:13:45 +0000
+Date:   Mon, 2 May 2022 10:13:08 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Vinod Koul <vkoul@kernel.org>
+Subject: drivers/dma/imx-dma.c:1048:20: warning: cast to smaller integer type
+ 'enum imx_dma_type' from 'const void *'
+Message-ID: <202205021042.xPjJ6Z4J-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The existing iommu SVA interfaces are implemented by calling the SVA
-specific iommu ops provided by the IOMMU drivers. There's no need for
-any SVA specific ops in iommu_ops vector anymore as we can achieve
-this through the generic attach/detach_dev_pasid domain ops.
+Hi Fabio,
 
-This refactors the IOMMU SVA interfaces implementation by using the
-attach/detach_pasid_dev ops and align them with the concept of the
-iommu domain. Put the new SVA code in the sva related file in order
-to make it self-contained.
+FYI, the error/warning still remains.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/iommu.h         |  44 ++++----
- drivers/iommu/iommu-sva-lib.c | 194 ++++++++++++++++++++++++++++++++++
- drivers/iommu/iommu.c         |  92 ----------------
- 3 files changed, 217 insertions(+), 113 deletions(-)
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   672c0c5173427e6b3e2a9bbb7be51ceeec78093a
+commit: 0ab785c894e618587e83bb67e8a8e96649868ad1 dmaengine: imx-dma: Remove unused .id_table
+date:   1 year, 5 months ago
+config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220502/202205021042.xPjJ6Z4J-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 09325d36061e42b495d1f4c7e933e260eac260ed)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0ab785c894e618587e83bb67e8a8e96649868ad1
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 0ab785c894e618587e83bb67e8a8e96649868ad1
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/dma/
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index f582f434c513..c5a16b47cae8 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -683,12 +683,6 @@ int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features f);
- int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features f);
- bool iommu_dev_feature_enabled(struct device *dev, enum iommu_dev_features f);
- 
--struct iommu_sva *iommu_sva_bind_device(struct device *dev,
--					struct mm_struct *mm,
--					void *drvdata);
--void iommu_sva_unbind_device(struct iommu_sva *handle);
--u32 iommu_sva_get_pasid(struct iommu_sva *handle);
--
- int iommu_device_use_default_domain(struct device *dev);
- void iommu_device_unuse_default_domain(struct device *dev);
- 
-@@ -1030,21 +1024,6 @@ iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
- 	return -ENODEV;
- }
- 
--static inline struct iommu_sva *
--iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
--{
--	return NULL;
--}
--
--static inline void iommu_sva_unbind_device(struct iommu_sva *handle)
--{
--}
--
--static inline u32 iommu_sva_get_pasid(struct iommu_sva *handle)
--{
--	return IOMMU_PASID_INVALID;
--}
--
- static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
- {
- 	return NULL;
-@@ -1086,6 +1065,29 @@ static inline void iommu_detach_device_pasid(struct iommu_domain *domain,
- }
- #endif /* CONFIG_IOMMU_API */
- 
-+#ifdef CONFIG_IOMMU_SVA
-+struct iommu_sva *iommu_sva_bind_device(struct device *dev,
-+					struct mm_struct *mm,
-+					void *drvdata);
-+void iommu_sva_unbind_device(struct iommu_sva *handle);
-+u32 iommu_sva_get_pasid(struct iommu_sva *handle);
-+#else /* CONFIG_IOMMU_SVA */
-+static inline struct iommu_sva *
-+iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
-+{
-+	return NULL;
-+}
-+
-+static inline void iommu_sva_unbind_device(struct iommu_sva *handle)
-+{
-+}
-+
-+static inline u32 iommu_sva_get_pasid(struct iommu_sva *handle)
-+{
-+	return IOMMU_PASID_INVALID;
-+}
-+#endif /* CONFIG_IOMMU_SVA */
-+
- /**
-  * iommu_map_sgtable - Map the given buffer to the IOMMU domain
-  * @domain:	The IOMMU domain to perform the mapping
-diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
-index d524a402be3b..0524659a4c0c 100644
---- a/drivers/iommu/iommu-sva-lib.c
-+++ b/drivers/iommu/iommu-sva-lib.c
-@@ -11,6 +11,7 @@
- 
- static DEFINE_MUTEX(iommu_sva_lock);
- static DECLARE_IOASID_SET(iommu_sva_pasid);
-+static DEFINE_XARRAY_ALLOC(iommu_sva_ioas_array);
- 
- struct iommu_sva_ioas {
- 	struct mm_struct *mm;
-@@ -87,3 +88,196 @@ struct mm_struct *iommu_sva_find(ioasid_t pasid)
- 	return ioasid_find(&iommu_sva_pasid, pasid, __mmget_not_zero);
- }
- EXPORT_SYMBOL_GPL(iommu_sva_find);
-+
-+/*
-+ * Get or put an ioas for a shared memory.
-+ */
-+static struct iommu_sva_ioas *iommu_sva_ioas_get(struct mm_struct *mm,
-+						 ioasid_t pasid)
-+{
-+	struct iommu_sva_ioas *ioas;
-+	int ret;
-+
-+	ioas = xa_load(&iommu_sva_ioas_array, pasid);
-+	if (ioas) {
-+		if (WARN_ON(ioas->mm != mm))
-+			return ERR_PTR(-EINVAL);
-+		refcount_inc(&ioas->users);
-+		return ioas;
-+	}
-+
-+	ioas = kzalloc(sizeof(*ioas), GFP_KERNEL);
-+	if (!ioas)
-+		return ERR_PTR(-ENOMEM);
-+
-+	ioas->mm = mm;
-+	ioas->pasid = pasid;
-+	refcount_set(&ioas->users, 1);
-+	INIT_LIST_HEAD(&ioas->bonds);
-+	ret = xa_err(xa_store(&iommu_sva_ioas_array, pasid, ioas, GFP_KERNEL));
-+	if (ret) {
-+		kfree(ioas);
-+		return ERR_PTR(ret);
-+	}
-+
-+	mmgrab(mm);
-+
-+	return ioas;
-+}
-+
-+static void iommu_sva_ioas_put(struct iommu_sva_ioas *ioas)
-+{
-+	if (refcount_dec_and_test(&ioas->users)) {
-+		WARN_ON(!list_empty(&ioas->bonds));
-+		xa_erase(&iommu_sva_ioas_array, ioas->pasid);
-+		mmdrop(ioas->mm);
-+		kfree(ioas);
-+	}
-+}
-+
-+/*
-+ * IOMMU SVA driver-oriented interfaces
-+ */
-+static struct iommu_domain *
-+iommu_sva_alloc_domain(struct device *dev, struct iommu_sva_ioas *ioas)
-+{
-+	struct bus_type *bus = dev->bus;
-+	struct iommu_domain *domain;
-+
-+	if (!bus || !bus->iommu_ops)
-+		return NULL;
-+
-+	domain = bus->iommu_ops->domain_alloc(IOMMU_DOMAIN_SVA);
-+	if (!domain)
-+		return NULL;
-+
-+	/* The caller must hold a reference to ioas. */
-+	domain->sva_ioas = ioas;
-+	domain->type = IOMMU_DOMAIN_SVA;
-+
-+	return domain;
-+}
-+
-+/**
-+ * iommu_sva_bind_device() - Bind a process address space to a device
-+ * @dev: the device
-+ * @mm: the mm to bind, caller must hold a reference to it
-+ * @drvdata: opaque data pointer to pass to bind callback
-+ *
-+ * Create a bond between device and address space, allowing the device to access
-+ * the mm using the returned PASID. If a bond already exists between @device and
-+ * @mm, it is returned and an additional reference is taken. Caller must call
-+ * iommu_sva_unbind_device() to release each reference.
-+ *
-+ * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first, to
-+ * initialize the required SVA features.
-+ *
-+ * On error, returns an ERR_PTR value.
-+ */
-+struct iommu_sva *
-+iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
-+{
-+	int ret = -EINVAL;
-+	struct iommu_sva *handle;
-+	struct iommu_domain *domain;
-+	struct iommu_sva_ioas *ioas;
-+
-+	/*
-+	 * TODO: Remove the drvdata parameter after kernel PASID support is
-+	 * enabled for the idxd driver.
-+	 */
-+	if (drvdata)
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	/* Allocate mm->pasid if necessary. */
-+	ret = iommu_sva_alloc_pasid(mm, 1, (1U << dev->iommu->pasid_bits) - 1);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	mutex_lock(&iommu_sva_lock);
-+	ioas = iommu_sva_ioas_get(mm, mm->pasid);
-+	if (IS_ERR(ioas)) {
-+		ret = PTR_ERR(ioas);
-+		goto out_unlock;
-+	}
-+
-+	/* Search for an existing bond. */
-+	list_for_each_entry(handle, &ioas->bonds, node) {
-+		if (handle->dev == dev) {
-+			refcount_inc(&handle->users);
-+			/* No new bond, drop the counter. */
-+			iommu_sva_ioas_put(ioas);
-+			goto out_success;
-+		}
-+	}
-+
-+	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
-+	if (!handle) {
-+		ret = -ENOMEM;
-+		goto out_put_ioas;
-+	}
-+
-+	/* The reference to ioas will be kept until domain free. */
-+	domain = iommu_sva_alloc_domain(dev, ioas);
-+	if (!domain) {
-+		ret = -ENODEV;
-+		goto out_free_handle;
-+	}
-+
-+	ret = iommu_attach_device_pasid(domain, dev, mm->pasid);
-+	if (ret)
-+		goto out_free_domain;
-+
-+	handle->dev = dev;
-+	handle->domain = domain;
-+	handle->sva_ioas = ioas;
-+	refcount_set(&handle->users, 1);
-+	list_add_tail(&handle->node, &ioas->bonds);
-+
-+out_success:
-+	mutex_unlock(&iommu_sva_lock);
-+	return handle;
-+
-+out_free_domain:
-+	iommu_domain_free(domain);
-+out_free_handle:
-+	kfree(handle);
-+out_put_ioas:
-+	iommu_sva_ioas_put(ioas);
-+out_unlock:
-+	mutex_unlock(&iommu_sva_lock);
-+	return ERR_PTR(ret);
-+}
-+EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
-+
-+/**
-+ * iommu_sva_unbind_device() - Remove a bond created with iommu_sva_bind_device
-+ * @handle: the handle returned by iommu_sva_bind_device()
-+ *
-+ * Put reference to a bond between device and address space. The device should
-+ * not be issuing any more transaction for this PASID. All outstanding page
-+ * requests for this PASID must have been flushed to the IOMMU.
-+ */
-+void iommu_sva_unbind_device(struct iommu_sva *handle)
-+{
-+	struct device *dev = handle->dev;
-+	struct iommu_domain *domain = handle->domain;
-+	struct iommu_sva_ioas *ioas = handle->sva_ioas;
-+
-+	mutex_lock(&iommu_sva_lock);
-+	if (refcount_dec_and_test(&handle->users)) {
-+		list_del(&handle->node);
-+		iommu_detach_device_pasid(domain, dev, ioas->pasid);
-+		iommu_domain_free(domain);
-+		iommu_sva_ioas_put(ioas);
-+		kfree(handle);
-+	}
-+	mutex_unlock(&iommu_sva_lock);
-+}
-+EXPORT_SYMBOL_GPL(iommu_sva_unbind_device);
-+
-+u32 iommu_sva_get_pasid(struct iommu_sva *handle)
-+{
-+	return handle->sva_ioas->pasid;
-+}
-+EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 89c9d19ddb28..7cae631c1baa 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2731,98 +2731,6 @@ bool iommu_dev_feature_enabled(struct device *dev, enum iommu_dev_features feat)
- }
- EXPORT_SYMBOL_GPL(iommu_dev_feature_enabled);
- 
--/**
-- * iommu_sva_bind_device() - Bind a process address space to a device
-- * @dev: the device
-- * @mm: the mm to bind, caller must hold a reference to it
-- * @drvdata: opaque data pointer to pass to bind callback
-- *
-- * Create a bond between device and address space, allowing the device to access
-- * the mm using the returned PASID. If a bond already exists between @device and
-- * @mm, it is returned and an additional reference is taken. Caller must call
-- * iommu_sva_unbind_device() to release each reference.
-- *
-- * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first, to
-- * initialize the required SVA features.
-- *
-- * On error, returns an ERR_PTR value.
-- */
--struct iommu_sva *
--iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
--{
--	struct iommu_group *group;
--	struct iommu_sva *handle = ERR_PTR(-EINVAL);
--	const struct iommu_ops *ops = dev_iommu_ops(dev);
--
--	if (!ops->sva_bind)
--		return ERR_PTR(-ENODEV);
--
--	group = iommu_group_get(dev);
--	if (!group)
--		return ERR_PTR(-ENODEV);
--
--	/* Ensure device count and domain don't change while we're binding */
--	mutex_lock(&group->mutex);
--
--	/*
--	 * To keep things simple, SVA currently doesn't support IOMMU groups
--	 * with more than one device. Existing SVA-capable systems are not
--	 * affected by the problems that required IOMMU groups (lack of ACS
--	 * isolation, device ID aliasing and other hardware issues).
--	 */
--	if (iommu_group_device_count(group) != 1)
--		goto out_unlock;
--
--	handle = ops->sva_bind(dev, mm, drvdata);
--
--out_unlock:
--	mutex_unlock(&group->mutex);
--	iommu_group_put(group);
--
--	return handle;
--}
--EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
--
--/**
-- * iommu_sva_unbind_device() - Remove a bond created with iommu_sva_bind_device
-- * @handle: the handle returned by iommu_sva_bind_device()
-- *
-- * Put reference to a bond between device and address space. The device should
-- * not be issuing any more transaction for this PASID. All outstanding page
-- * requests for this PASID must have been flushed to the IOMMU.
-- */
--void iommu_sva_unbind_device(struct iommu_sva *handle)
--{
--	struct iommu_group *group;
--	struct device *dev = handle->dev;
--	const struct iommu_ops *ops = dev_iommu_ops(dev);
--
--	if (!ops->sva_unbind)
--		return;
--
--	group = iommu_group_get(dev);
--	if (!group)
--		return;
--
--	mutex_lock(&group->mutex);
--	ops->sva_unbind(handle);
--	mutex_unlock(&group->mutex);
--
--	iommu_group_put(group);
--}
--EXPORT_SYMBOL_GPL(iommu_sva_unbind_device);
--
--u32 iommu_sva_get_pasid(struct iommu_sva *handle)
--{
--	const struct iommu_ops *ops = dev_iommu_ops(handle->dev);
--
--	if (!ops->sva_get_pasid)
--		return IOMMU_PASID_INVALID;
--
--	return ops->sva_get_pasid(handle);
--}
--EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
--
- /*
-  * Changes the default domain of an iommu group that has *only* one device
-  *
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/dma/imx-dma.c:1048:20: warning: cast to smaller integer type 'enum imx_dma_type' from 'const void *' [-Wvoid-pointer-to-enum-cast]
+           imxdma->devtype = (enum imx_dma_type)of_device_get_match_data(&pdev->dev);
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   1 warning generated.
+
+
+vim +1048 drivers/dma/imx-dma.c
+
+  1035	
+  1036	static int __init imxdma_probe(struct platform_device *pdev)
+  1037	{
+  1038		struct imxdma_engine *imxdma;
+  1039		struct resource *res;
+  1040		int ret, i;
+  1041		int irq, irq_err;
+  1042	
+  1043		imxdma = devm_kzalloc(&pdev->dev, sizeof(*imxdma), GFP_KERNEL);
+  1044		if (!imxdma)
+  1045			return -ENOMEM;
+  1046	
+  1047		imxdma->dev = &pdev->dev;
+> 1048		imxdma->devtype = (enum imx_dma_type)of_device_get_match_data(&pdev->dev);
+  1049	
+  1050		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+  1051		imxdma->base = devm_ioremap_resource(&pdev->dev, res);
+  1052		if (IS_ERR(imxdma->base))
+  1053			return PTR_ERR(imxdma->base);
+  1054	
+  1055		irq = platform_get_irq(pdev, 0);
+  1056		if (irq < 0)
+  1057			return irq;
+  1058	
+  1059		imxdma->dma_ipg = devm_clk_get(&pdev->dev, "ipg");
+  1060		if (IS_ERR(imxdma->dma_ipg))
+  1061			return PTR_ERR(imxdma->dma_ipg);
+  1062	
+  1063		imxdma->dma_ahb = devm_clk_get(&pdev->dev, "ahb");
+  1064		if (IS_ERR(imxdma->dma_ahb))
+  1065			return PTR_ERR(imxdma->dma_ahb);
+  1066	
+  1067		ret = clk_prepare_enable(imxdma->dma_ipg);
+  1068		if (ret)
+  1069			return ret;
+  1070		ret = clk_prepare_enable(imxdma->dma_ahb);
+  1071		if (ret)
+  1072			goto disable_dma_ipg_clk;
+  1073	
+  1074		/* reset DMA module */
+  1075		imx_dmav1_writel(imxdma, DCR_DRST, DMA_DCR);
+  1076	
+  1077		if (is_imx1_dma(imxdma)) {
+  1078			ret = devm_request_irq(&pdev->dev, irq,
+  1079					       dma_irq_handler, 0, "DMA", imxdma);
+  1080			if (ret) {
+  1081				dev_warn(imxdma->dev, "Can't register IRQ for DMA\n");
+  1082				goto disable_dma_ahb_clk;
+  1083			}
+  1084			imxdma->irq = irq;
+  1085	
+  1086			irq_err = platform_get_irq(pdev, 1);
+  1087			if (irq_err < 0) {
+  1088				ret = irq_err;
+  1089				goto disable_dma_ahb_clk;
+  1090			}
+  1091	
+  1092			ret = devm_request_irq(&pdev->dev, irq_err,
+  1093					       imxdma_err_handler, 0, "DMA", imxdma);
+  1094			if (ret) {
+  1095				dev_warn(imxdma->dev, "Can't register ERRIRQ for DMA\n");
+  1096				goto disable_dma_ahb_clk;
+  1097			}
+  1098			imxdma->irq_err = irq_err;
+  1099		}
+  1100	
+  1101		/* enable DMA module */
+  1102		imx_dmav1_writel(imxdma, DCR_DEN, DMA_DCR);
+  1103	
+  1104		/* clear all interrupts */
+  1105		imx_dmav1_writel(imxdma, (1 << IMX_DMA_CHANNELS) - 1, DMA_DISR);
+  1106	
+  1107		/* disable interrupts */
+  1108		imx_dmav1_writel(imxdma, (1 << IMX_DMA_CHANNELS) - 1, DMA_DIMR);
+  1109	
+  1110		INIT_LIST_HEAD(&imxdma->dma_device.channels);
+  1111	
+  1112		dma_cap_set(DMA_SLAVE, imxdma->dma_device.cap_mask);
+  1113		dma_cap_set(DMA_CYCLIC, imxdma->dma_device.cap_mask);
+  1114		dma_cap_set(DMA_MEMCPY, imxdma->dma_device.cap_mask);
+  1115		dma_cap_set(DMA_INTERLEAVE, imxdma->dma_device.cap_mask);
+  1116	
+  1117		/* Initialize 2D global parameters */
+  1118		for (i = 0; i < IMX_DMA_2D_SLOTS; i++)
+  1119			imxdma->slots_2d[i].count = 0;
+  1120	
+  1121		spin_lock_init(&imxdma->lock);
+  1122	
+  1123		/* Initialize channel parameters */
+  1124		for (i = 0; i < IMX_DMA_CHANNELS; i++) {
+  1125			struct imxdma_channel *imxdmac = &imxdma->channel[i];
+  1126	
+  1127			if (!is_imx1_dma(imxdma)) {
+  1128				ret = devm_request_irq(&pdev->dev, irq + i,
+  1129						dma_irq_handler, 0, "DMA", imxdma);
+  1130				if (ret) {
+  1131					dev_warn(imxdma->dev, "Can't register IRQ %d "
+  1132						 "for DMA channel %d\n",
+  1133						 irq + i, i);
+  1134					goto disable_dma_ahb_clk;
+  1135				}
+  1136	
+  1137				imxdmac->irq = irq + i;
+  1138				timer_setup(&imxdmac->watchdog, imxdma_watchdog, 0);
+  1139			}
+  1140	
+  1141			imxdmac->imxdma = imxdma;
+  1142	
+  1143			INIT_LIST_HEAD(&imxdmac->ld_queue);
+  1144			INIT_LIST_HEAD(&imxdmac->ld_free);
+  1145			INIT_LIST_HEAD(&imxdmac->ld_active);
+  1146	
+  1147			tasklet_setup(&imxdmac->dma_tasklet, imxdma_tasklet);
+  1148			imxdmac->chan.device = &imxdma->dma_device;
+  1149			dma_cookie_init(&imxdmac->chan);
+  1150			imxdmac->channel = i;
+  1151	
+  1152			/* Add the channel to the DMAC list */
+  1153			list_add_tail(&imxdmac->chan.device_node,
+  1154				      &imxdma->dma_device.channels);
+  1155		}
+  1156	
+  1157		imxdma->dma_device.dev = &pdev->dev;
+  1158	
+  1159		imxdma->dma_device.device_alloc_chan_resources = imxdma_alloc_chan_resources;
+  1160		imxdma->dma_device.device_free_chan_resources = imxdma_free_chan_resources;
+  1161		imxdma->dma_device.device_tx_status = imxdma_tx_status;
+  1162		imxdma->dma_device.device_prep_slave_sg = imxdma_prep_slave_sg;
+  1163		imxdma->dma_device.device_prep_dma_cyclic = imxdma_prep_dma_cyclic;
+  1164		imxdma->dma_device.device_prep_dma_memcpy = imxdma_prep_dma_memcpy;
+  1165		imxdma->dma_device.device_prep_interleaved_dma = imxdma_prep_dma_interleaved;
+  1166		imxdma->dma_device.device_config = imxdma_config;
+  1167		imxdma->dma_device.device_terminate_all = imxdma_terminate_all;
+  1168		imxdma->dma_device.device_issue_pending = imxdma_issue_pending;
+  1169	
+  1170		platform_set_drvdata(pdev, imxdma);
+  1171	
+  1172		imxdma->dma_device.copy_align = DMAENGINE_ALIGN_4_BYTES;
+  1173		dma_set_max_seg_size(imxdma->dma_device.dev, 0xffffff);
+  1174	
+  1175		ret = dma_async_device_register(&imxdma->dma_device);
+  1176		if (ret) {
+  1177			dev_err(&pdev->dev, "unable to register\n");
+  1178			goto disable_dma_ahb_clk;
+  1179		}
+  1180	
+  1181		if (pdev->dev.of_node) {
+  1182			ret = of_dma_controller_register(pdev->dev.of_node,
+  1183					imxdma_xlate, imxdma);
+  1184			if (ret) {
+  1185				dev_err(&pdev->dev, "unable to register of_dma_controller\n");
+  1186				goto err_of_dma_controller;
+  1187			}
+  1188		}
+  1189	
+  1190		return 0;
+  1191	
+  1192	err_of_dma_controller:
+  1193		dma_async_device_unregister(&imxdma->dma_device);
+  1194	disable_dma_ahb_clk:
+  1195		clk_disable_unprepare(imxdma->dma_ahb);
+  1196	disable_dma_ipg_clk:
+  1197		clk_disable_unprepare(imxdma->dma_ipg);
+  1198		return ret;
+  1199	}
+  1200	
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
