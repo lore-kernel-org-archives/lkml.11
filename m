@@ -2,201 +2,265 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3FFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A88C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385746AbiEBP3W (ORCPT
+        id S1385724AbiEBPaz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 11:29:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35088 "EHLO
+        Mon, 2 May 2022 11:30:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385726AbiEBP3T (ORCPT
+        with ESMTP id S239467AbiEBPax (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 11:29:19 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C271913DCD;
-        Mon,  2 May 2022 08:25:48 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242EGuP1023012;
-        Mon, 2 May 2022 17:25:32 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=0JY2d4G0/9ojnnPUTXCbTsscUCh+1Ur6T7M/thuZ+6k=;
- b=Xg9f9f+bGTNx/dlF8d4WCPoiyDN8IXWJ4fRqDWhTx+dgo0nWDFuCpBjgBZrX/qTQJD9P
- eGJsnJHI8bWH6xjHWeoyIC3Cssk22kgxTKF1c14L52F2I8bp5hN6UciG6gbRfUzWN3qZ
- dbWHkSajCWnOXCuMtkx2FR+/WC4ybyH/HhBcsxbq8Oh37uW68PBGzUDuiV4RaX2usPYY
- 3A9gCPEqNN56oQpVwefy7nTta7lfMUS1Kv2vXK1fZMxycgAWEU/EjIPeWW6vnUB5lV23
- 4Ywfkl+LPkl4p+Vk4OT5NMMIqJ4O0L4d7aJ0ubvEEmHxgUH0rcMYIYvZDq4xyBNyrHN4 3w== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3frthjhc5y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 May 2022 17:25:32 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B321610002A;
-        Mon,  2 May 2022 17:25:31 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A9ECD22AFFD;
-        Mon,  2 May 2022 17:25:31 +0200 (CEST)
-Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 2 May 2022 17:25:31
- +0200
-From:   Fabien Dessenne <fabien.dessenne@foss.st.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        <linux-gpio@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Fabien Dessenne <fabien.dessenne@foss.st.com>
-Subject: [PATCH] pinctrl: stm32: improve debugfs information of pinconf-pins entry
-Date:   Mon, 2 May 2022 17:25:24 +0200
-Message-ID: <20220502152524.283374-1-fabien.dessenne@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 2 May 2022 11:30:53 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84BA12AA4
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:27:23 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id j4so25837841lfh.8
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 08:27:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jDyklUAoyTTdgVWsEoemT6UyP131z9n8RHUxpLnDQMY=;
+        b=SzyK3k+kqpQoPf/tgtIS+0zQDny5U8m8BHUrxZ+605/6WUUaouMkBB7ioblO9uVvKe
+         BBNBkkLqc9nUbsTX0148eSy2fT83S0K9IU8HLgWk4udmKEe6UtcBJj1PsN3ogzeqhQAf
+         IBx2HUZy8DTe01ZOAaju7+UbHuv4Z40WMm2aq2fRTupDVqLpWmC2whkaiR9hsYgJeBRj
+         nJyA3DAp8W57kW2dLH7rmMK0kFuBS4X1RRBKdrKopWLqoMY4hcAwHxnSQ+e25I1jBtb/
+         Eh3odnad+9akNU3FAXt6V/R1hMatFOxm5XdxT7mxresYACgQBTsJ6pQMPRMjKOWFrsjx
+         MWCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jDyklUAoyTTdgVWsEoemT6UyP131z9n8RHUxpLnDQMY=;
+        b=CicSbfbt5XjOTF8umgmoRHmswMjOOYxFqr8B6DbRA1BHN9UQI33ici5Pxt9Qvpy82X
+         /AOGrF5LdumOMAtctc2xrtugBlEA4gpcnoDc8CC/mPkXmArDaS7dpXDOdSwmRWLXCOkz
+         7cyo3/3MiQmVEkVHjxysmyce3DFjEidliQCD8xT7W1UVC8wRJw+31nU+PrvabY1pPlVN
+         WSz0taDI4dxjJ5VBiHst/Z2OlSRJWkP2bIapSvk3tdOrikof4JBWHLYOf0u4K1w2NZYG
+         FvMoJjgLaj2rViJtE0ABITVY7RBH1n91talKs9JCIh92NlAcyCXspfbmQRrEss8Sdy0X
+         GbWA==
+X-Gm-Message-State: AOAM5313qCzUDxGwjOynyxl4MWq/MaeSNtG32KcYTRLfWw2TdBy53uS2
+        3WWYR2HZ6FiZ/4uwY55s6yATHatdaI6rI/lIzLs+Hg==
+X-Google-Smtp-Source: ABdhPJwVQHfBkm+C6rwJ9ibpEHrwiQ1RaDpbcsb72JhY/SSv/MQPziWyxN8JLn91CyJtOB+Zkr7kBD2SzvYAA0ZlZTU=
+X-Received: by 2002:a05:6512:e86:b0:472:60c3:8430 with SMTP id
+ bi6-20020a0565120e8600b0047260c38430mr5659726lfb.226.1651505241787; Mon, 02
+ May 2022 08:27:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-02_04,2022-05-02_03,2022-02-23_01
+References: <20220429235644.697372-1-cmllamas@google.com> <20220429235644.697372-3-cmllamas@google.com>
+In-Reply-To: <20220429235644.697372-3-cmllamas@google.com>
+From:   Todd Kjos <tkjos@google.com>
+Date:   Mon, 2 May 2022 08:27:09 -0700
+Message-ID: <CAHRSSEwExt0mjpAsX86qKJyFcwmTDCoVF9SY8G_f_PE8w9=gow@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] binder: add BINDER_GET_EXTENDED_ERROR ioctl
+To:     Carlos Llamas <cmllamas@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Hridya Valsaraju <hridya@google.com>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Li Li <dualli@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Print the name of the selected alternate function in addition to its
-number. Ex:
-   "pin 135 (PI7): alternate 10 (SAI2_FS_A) - ..."
+On Fri, Apr 29, 2022 at 4:56 PM Carlos Llamas <cmllamas@google.com> wrote:
+>
+> Provide a userspace mechanism to pull precise error information upon
+> failed operations. Extending the current error codes returned by the
+> interfaces allows userspace to better determine the course of action.
+> This could be for instance, retrying a failed transaction at a later
+> point and thus offloading the error handling from the driver.
+>
+> Signed-off-by: Carlos Llamas <cmllamas@google.com>
 
-Signed-off-by: Fabien Dessenne <fabien.dessenne@foss.st.com>
-Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
----
- drivers/pinctrl/stm32/pinctrl-stm32.c | 31 +++++++++++++++++++++++----
- drivers/pinctrl/stm32/pinctrl-stm32.h | 13 +++++------
- 2 files changed, 34 insertions(+), 10 deletions(-)
+Acked-by: Todd Kjos <tkjos@google.com>
 
-diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
-index b308e7bb7487..2e8421600db5 100644
---- a/drivers/pinctrl/stm32/pinctrl-stm32.c
-+++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
-@@ -507,7 +507,7 @@ stm32_pctrl_find_group_by_pin(struct stm32_pinctrl *pctl, u32 pin)
- static bool stm32_pctrl_is_function_valid(struct stm32_pinctrl *pctl,
- 		u32 pin_num, u32 fnum)
- {
--	int i;
-+	int i, k;
- 
- 	for (i = 0; i < pctl->npins; i++) {
- 		const struct stm32_desc_pin *pin = pctl->pins + i;
-@@ -516,7 +516,7 @@ static bool stm32_pctrl_is_function_valid(struct stm32_pinctrl *pctl,
- 		if (pin->pin.number != pin_num)
- 			continue;
- 
--		while (func && func->name) {
-+		for (k = 0; k < STM32_CONFIG_NUM; k++) {
- 			if (func->num == fnum)
- 				return true;
- 			func++;
-@@ -1118,10 +1118,27 @@ static int stm32_pconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
- 	return 0;
- }
- 
-+static struct stm32_desc_pin *
-+stm32_pconf_get_pin_desc_by_pin_number(struct stm32_pinctrl *pctl,
-+				       unsigned int pin_number)
-+{
-+	struct stm32_desc_pin *pins = pctl->pins;
-+	int i;
-+
-+	for (i = 0; i < pctl->npins; i++) {
-+		if (pins->pin.number == pin_number)
-+			return pins;
-+		pins++;
-+	}
-+	return NULL;
-+}
-+
- static void stm32_pconf_dbg_show(struct pinctrl_dev *pctldev,
- 				 struct seq_file *s,
- 				 unsigned int pin)
- {
-+	struct stm32_pinctrl *pctl = pinctrl_dev_get_drvdata(pctldev);
-+	const struct stm32_desc_pin *pin_desc;
- 	struct pinctrl_gpio_range *range;
- 	struct stm32_gpio_bank *bank;
- 	int offset;
-@@ -1171,7 +1188,12 @@ static void stm32_pconf_dbg_show(struct pinctrl_dev *pctldev,
- 	case 2:
- 		drive = stm32_pconf_get_driving(bank, offset);
- 		speed = stm32_pconf_get_speed(bank, offset);
--		seq_printf(s, "%d - %s - %s - %s %s", alt,
-+		pin_desc = stm32_pconf_get_pin_desc_by_pin_number(pctl, pin);
-+		if (!pin_desc)
-+			return;
-+
-+		seq_printf(s, "%d (%s) - %s - %s - %s %s", alt,
-+			   pin_desc->functions[alt + 1].name,
- 			   drive ? "open drain" : "push pull",
- 			   biasing[bias],
- 			   speeds[speed], "speed");
-@@ -1386,7 +1408,8 @@ static int stm32_pctrl_create_pins_tab(struct stm32_pinctrl *pctl,
- 		if (pctl->pkg && !(pctl->pkg & p->pkg))
- 			continue;
- 		pins->pin = p->pin;
--		pins->functions = p->functions;
-+		memcpy((struct stm32_desc_pin *)pins->functions, p->functions,
-+		       STM32_CONFIG_NUM * sizeof(struct stm32_desc_function));
- 		pins++;
- 		nb_pins_available++;
- 	}
-diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.h b/drivers/pinctrl/stm32/pinctrl-stm32.h
-index b9584039cdf5..2ac2db41a498 100644
---- a/drivers/pinctrl/stm32/pinctrl-stm32.h
-+++ b/drivers/pinctrl/stm32/pinctrl-stm32.h
-@@ -17,6 +17,7 @@
- #define STM32_PIN_GPIO		0
- #define STM32_PIN_AF(x)		((x) + 1)
- #define STM32_PIN_ANALOG	(STM32_PIN_AF(15) + 1)
-+#define STM32_CONFIG_NUM	(STM32_PIN_ANALOG + 1)
- 
- /*  package information */
- #define STM32MP_PKG_AA		BIT(0)
-@@ -31,26 +32,26 @@ struct stm32_desc_function {
- 
- struct stm32_desc_pin {
- 	struct pinctrl_pin_desc pin;
--	const struct stm32_desc_function *functions;
-+	const struct stm32_desc_function functions[STM32_CONFIG_NUM];
- 	const unsigned int pkg;
- };
- 
- #define STM32_PIN(_pin, ...)					\
- 	{							\
- 		.pin = _pin,					\
--		.functions = (struct stm32_desc_function[]){	\
--			__VA_ARGS__, { } },			\
-+		.functions = {	\
-+			__VA_ARGS__},			\
- 	}
- 
- #define STM32_PIN_PKG(_pin, _pkg, ...)					\
- 	{							\
- 		.pin = _pin,					\
- 		.pkg  = _pkg,				\
--		.functions = (struct stm32_desc_function[]){	\
--			__VA_ARGS__, { } },			\
-+		.functions = {	\
-+			__VA_ARGS__},			\
- 	}
- #define STM32_FUNCTION(_num, _name)		\
--	{							\
-+	[_num] = {						\
- 		.num = _num,					\
- 		.name = _name,					\
- 	}
--- 
-2.25.1
-
+> ---
+>  drivers/android/binder.c            | 60 +++++++++++++++++++++++++++++
+>  drivers/android/binder_internal.h   |  3 ++
+>  include/uapi/linux/android/binder.h | 16 ++++++++
+>  3 files changed, 79 insertions(+)
+>
+> diff --git a/drivers/android/binder.c b/drivers/android/binder.c
+> index f0885baa53a1..b9df0c8a68d3 100644
+> --- a/drivers/android/binder.c
+> +++ b/drivers/android/binder.c
+> @@ -147,6 +147,13 @@ module_param_call(stop_on_user_error, binder_set_stop_on_user_error,
+>                         binder_stop_on_user_error = 2; \
+>         } while (0)
+>
+> +#define binder_set_extended_error(ee, _id, _command, _param) \
+> +       do { \
+> +               (ee)->id = _id; \
+> +               (ee)->command = _command; \
+> +               (ee)->param = _param; \
+> +       } while (0)
+> +
+>  #define to_flat_binder_object(hdr) \
+>         container_of(hdr, struct flat_binder_object, hdr)
+>
+> @@ -2697,6 +2704,24 @@ static struct binder_node *binder_get_node_refs_for_txn(
+>         return target_node;
+>  }
+>
+> +static void binder_set_txn_from_error(struct binder_transaction *t, int id,
+> +                                     uint32_t command, int32_t param)
+> +{
+> +       struct binder_thread *from = binder_get_txn_from_and_acq_inner(t);
+> +
+> +       if (!from) {
+> +               /* annotation for sparse */
+> +               __release(&from->proc->inner_lock);
+> +               return;
+> +       }
+> +
+> +       /* don't override existing errors */
+> +       if (from->ee.command == BR_OK)
+> +               binder_set_extended_error(&from->ee, id, command, param);
+> +       binder_inner_proc_unlock(from->proc);
+> +       binder_thread_dec_tmpref(from);
+> +}
+> +
+>  static void binder_transaction(struct binder_proc *proc,
+>                                struct binder_thread *thread,
+>                                struct binder_transaction_data *tr, int reply,
+> @@ -2742,6 +2767,10 @@ static void binder_transaction(struct binder_proc *proc,
+>         e->offsets_size = tr->offsets_size;
+>         strscpy(e->context_name, proc->context->name, BINDERFS_MAX_NAME);
+>
+> +       binder_inner_proc_lock(proc);
+> +       binder_set_extended_error(&thread->ee, t_debug_id, BR_OK, 0);
+> +       binder_inner_proc_unlock(proc);
+> +
+>         if (reply) {
+>                 binder_inner_proc_lock(proc);
+>                 in_reply_to = thread->transaction_stack;
+> @@ -3487,10 +3516,16 @@ static void binder_transaction(struct binder_proc *proc,
+>
+>         BUG_ON(thread->return_error.cmd != BR_OK);
+>         if (in_reply_to) {
+> +               binder_set_txn_from_error(in_reply_to, t_debug_id,
+> +                               return_error, return_error_param);
+>                 thread->return_error.cmd = BR_TRANSACTION_COMPLETE;
+>                 binder_enqueue_thread_work(thread, &thread->return_error.work);
+>                 binder_send_failed_reply(in_reply_to, return_error);
+>         } else {
+> +               binder_inner_proc_lock(proc);
+> +               binder_set_extended_error(&thread->ee, t_debug_id,
+> +                               return_error, return_error_param);
+> +               binder_inner_proc_unlock(proc);
+>                 thread->return_error.cmd = return_error;
+>                 binder_enqueue_thread_work(thread, &thread->return_error.work);
+>         }
+> @@ -4628,6 +4663,7 @@ static struct binder_thread *binder_get_thread_ilocked(
+>         thread->return_error.cmd = BR_OK;
+>         thread->reply_error.work.type = BINDER_WORK_RETURN_ERROR;
+>         thread->reply_error.cmd = BR_OK;
+> +       thread->ee.command = BR_OK;
+>         INIT_LIST_HEAD(&new_thread->waiting_thread_node);
+>         return thread;
+>  }
+> @@ -5066,6 +5102,25 @@ static int binder_ioctl_get_freezer_info(
+>         return 0;
+>  }
+>
+> +static int binder_ioctl_get_extended_error(struct binder_thread *thread,
+> +                                          void __user *ubuf)
+> +{
+> +       struct binder_extended_error *ee = &thread->ee;
+> +
+> +       binder_inner_proc_lock(thread->proc);
+> +       if (copy_to_user(ubuf, ee, sizeof(*ee))) {
+> +               binder_inner_proc_unlock(thread->proc);
+> +               return -EFAULT;
+> +       }
+> +
+> +       ee->id = 0;
+> +       ee->command = BR_OK;
+> +       ee->param = 0;
+> +       binder_inner_proc_unlock(thread->proc);
+> +
+> +       return 0;
+> +}
+> +
+>  static long binder_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+>  {
+>         int ret;
+> @@ -5274,6 +5329,11 @@ static long binder_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+>                 binder_inner_proc_unlock(proc);
+>                 break;
+>         }
+> +       case BINDER_GET_EXTENDED_ERROR:
+> +               ret = binder_ioctl_get_extended_error(thread, ubuf);
+> +               if (ret < 0)
+> +                       goto err;
+> +               break;
+>         default:
+>                 ret = -EINVAL;
+>                 goto err;
+> diff --git a/drivers/android/binder_internal.h b/drivers/android/binder_internal.h
+> index d6b6b8cb7346..7c366a854125 100644
+> --- a/drivers/android/binder_internal.h
+> +++ b/drivers/android/binder_internal.h
+> @@ -480,6 +480,8 @@ struct binder_proc {
+>   *                        (only accessed by this thread)
+>   * @reply_error:          transaction errors reported by target thread
+>   *                        (protected by @proc->inner_lock)
+> + * @ee:                   extended error information from this thread
+> + *                        (protected by @proc->inner_lock)
+>   * @wait:                 wait queue for thread work
+>   * @stats:                per-thread statistics
+>   *                        (atomics, no lock needed)
+> @@ -504,6 +506,7 @@ struct binder_thread {
+>         bool process_todo;
+>         struct binder_error return_error;
+>         struct binder_error reply_error;
+> +       struct binder_extended_error ee;
+>         wait_queue_head_t wait;
+>         struct binder_stats stats;
+>         atomic_t tmp_ref;
+> diff --git a/include/uapi/linux/android/binder.h b/include/uapi/linux/android/binder.h
+> index 11157fae8a8e..e6ee8cae303b 100644
+> --- a/include/uapi/linux/android/binder.h
+> +++ b/include/uapi/linux/android/binder.h
+> @@ -236,6 +236,21 @@ struct binder_frozen_status_info {
+>         __u32            async_recv;
+>  };
+>
+> +/* struct binder_extened_error - extended error information
+> + * @id:                identifier for the failed operation
+> + * @command:   command as defined by binder_driver_return_protocol
+> + * @param:     parameter holding a negative errno value
+> + *
+> + * Used with BINDER_GET_EXTENDED_ERROR. This extends the error information
+> + * returned by the driver upon a failed operation. Userspace can pull this
+> + * data to properly handle specific error scenarios.
+> + */
+> +struct binder_extended_error {
+> +       __u32   id;
+> +       __u32   command;
+> +       __s32   param;
+> +};
+> +
+>  #define BINDER_WRITE_READ              _IOWR('b', 1, struct binder_write_read)
+>  #define BINDER_SET_IDLE_TIMEOUT                _IOW('b', 3, __s64)
+>  #define BINDER_SET_MAX_THREADS         _IOW('b', 5, __u32)
+> @@ -249,6 +264,7 @@ struct binder_frozen_status_info {
+>  #define BINDER_FREEZE                  _IOW('b', 14, struct binder_freeze_info)
+>  #define BINDER_GET_FROZEN_INFO         _IOWR('b', 15, struct binder_frozen_status_info)
+>  #define BINDER_ENABLE_ONEWAY_SPAM_DETECTION    _IOW('b', 16, __u32)
+> +#define BINDER_GET_EXTENDED_ERROR      _IOWR('b', 17, struct binder_extended_error)
+>
+>  /*
+>   * NOTE: Two special error codes you should check for when calling
+> --
+> 2.36.0.464.gb9c8b46e94-goog
+>
