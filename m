@@ -2,137 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ADF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 07:26:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7661FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 07:27:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379415AbiEBH3b (ORCPT
+        id S1383467AbiEBHak (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 03:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
+        Mon, 2 May 2022 03:30:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358666AbiEBH32 (ORCPT
+        with ESMTP id S1358666AbiEBHae (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 03:29:28 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EEA0B186C9;
-        Mon,  2 May 2022 00:25:58 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Mon, 2 May 2022 15:25:14
- +0800 (GMT+08:00)
-X-Originating-IP: [10.190.66.80]
-Date:   Mon, 2 May 2022 15:25:14 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org,
-        gregkh@linuxfoundation.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, alexander.deucher@amd.com,
-        akpm@linux-foundation.org, broonie@kernel.org,
-        netdev@vger.kernel.org, linma@zju.edu.cn
-Subject: Re: Re: [PATCH net v5 2/2] nfc: nfcmrvl: main: reorder destructive
- operations in nfcmrvl_nci_unregister_dev to avoid bugs
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <405e3948-7fb2-01de-4c01-29775a21218c@linaro.org>
-References: <cover.1651194245.git.duoming@zju.edu.cn>
- <bb2769acc79f42d25d61ed8988c8d240c8585f33.1651194245.git.duoming@zju.edu.cn>
- <8656d527-94ab-228f-66f1-06e5d533e16a@linaro.org>
- <73fe1723.69fe.1807498ab4d.Coremail.duoming@zju.edu.cn>
- <405e3948-7fb2-01de-4c01-29775a21218c@linaro.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Mon, 2 May 2022 03:30:34 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66CEE183AD;
+        Mon,  2 May 2022 00:27:04 -0700 (PDT)
+Date:   Mon, 02 May 2022 07:27:00 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651476422;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+UxuM5f2tTJUDrv2jfqsdab0TsuFg0OcMG1oQ4Ohyjk=;
+        b=bJlQNwTeQHvmrAyDAwv0D25Bc3GR495DcIHdrffGI+0DIjpqQ/XMRQUuvxPt4k5ugCiVIn
+        xXYYNCMMogpfj6mhBq4Kq2/qMMxmMxwomCJXfeKFi5F10fVd3kY1d8h4nybh4FzAUztaLp
+        KMaBG4oZ7+SIfculXiDDJ//GsDC124pQWVfOTB+FakRAHyhlfzUdEw8t/4+87dRxAz05UF
+        xP3Cz1AwlAW0EaH2UulPFcwGRR1Gk0qfIVXorY9tfa8CV5deUQKsKB3pY05eBk/R+iQ76I
+        Hi0lFeKPGWMOpeJ2eEP5Aaf8WOGKA0w7ht+riRqRLhuRNEJlkPKUS4RTw1/aWg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651476422;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+UxuM5f2tTJUDrv2jfqsdab0TsuFg0OcMG1oQ4Ohyjk=;
+        b=jaZvf79wgiqrquc/l4YYeJq6F+oXRPhInO4niag0dGpUOU0I7UEc1lYalq7sfkWBFSDr8K
+        f6Bl80xP2TbOezDg==
+From:   "tip-bot2 for Thomas Gleixner" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/cleanups] x86/aperfperf: Make it correct on 32bit and UP kernels
+Cc:     kernel test robot <lkp@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <202205010106.06xRBR2C-lkp@intel.com>
+References: <202205010106.06xRBR2C-lkp@intel.com>
 MIME-Version: 1.0
-Message-ID: <614ae365.b499.18083a8bb17.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgCHj6dah29i5GA0Ag--.5296W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgESAVZdtZfSggAAsp
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Message-ID: <165147642077.4207.15451806111098153904.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgoKPiAtLS0tLeWOn+Wni+mCruS7ti0tLS0tCj4g5Y+R5Lu25Lq6OiAiS3J6eXN6dG9mIEtvemxv
-d3NraSIgPGtyenlzenRvZi5rb3psb3dza2lAbGluYXJvLm9yZz4KPiDlj5HpgIHml7bpl7Q6IDIw
-MjItMDUtMDIgMTQ6MzQ6MDcgKOaYn+acn+S4gCkKPiDmlLbku7bkuro6IGR1b21pbmdAemp1LmVk
-dS5jbgo+IOaKhOmAgTogbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZywga3ViYUBrZXJuZWwu
-b3JnLCBncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZywgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldCwgZWR1
-bWF6ZXRAZ29vZ2xlLmNvbSwgcGFiZW5pQHJlZGhhdC5jb20sIGFsZXhhbmRlci5kZXVjaGVyQGFt
-ZC5jb20sIGFrcG1AbGludXgtZm91bmRhdGlvbi5vcmcsIGJyb29uaWVAa2VybmVsLm9yZywgbmV0
-ZGV2QHZnZXIua2VybmVsLm9yZywgbGlubWFAemp1LmVkdS5jbgo+IOS4u+mimDogUmU6IFtQQVRD
-SCBuZXQgdjUgMi8yXSBuZmM6IG5mY21ydmw6IG1haW46IHJlb3JkZXIgZGVzdHJ1Y3RpdmUgb3Bl
-cmF0aW9ucyBpbiBuZmNtcnZsX25jaV91bnJlZ2lzdGVyX2RldiB0byBhdm9pZCBidWdzCj4gCj4g
-T24gMjkvMDQvMjAyMiAxMToxMywgZHVvbWluZ0B6anUuZWR1LmNuIHdyb3RlOgo+ID4gSGVsbG8s
-Cj4gPiAKPiA+IE9uIEZyaSwgMjkgQXByIDIwMjIgMDk6Mjc6NDggKzAyMDAgS3J6eXN6dG9mIHdy
-b3RlOgo+ID4gCj4gPj4+IFRoZXJlIGFyZSBkZXN0cnVjdGl2ZSBvcGVyYXRpb25zIHN1Y2ggYXMg
-bmZjbXJ2bF9md19kbmxkX2Fib3J0IGFuZAo+ID4+PiBncGlvX2ZyZWUgaW4gbmZjbXJ2bF9uY2lf
-dW5yZWdpc3Rlcl9kZXYuIFRoZSByZXNvdXJjZXMgc3VjaCBhcyBmaXJtd2FyZSwKPiA+Pj4gZ3Bp
-byBhbmQgc28gb24gY291bGQgYmUgZGVzdHJ1Y3RlZCB3aGlsZSB0aGUgdXBwZXIgbGF5ZXIgZnVu
-Y3Rpb25zIHN1Y2ggYXMKPiA+Pj4gbmZjbXJ2bF9md19kbmxkX3N0YXJ0IGFuZCBuZmNtcnZsX25j
-aV9yZWN2X2ZyYW1lIGlzIGV4ZWN1dGluZywgd2hpY2ggbGVhZHMKPiA+Pj4gdG8gZG91YmxlLWZy
-ZWUsIHVzZS1hZnRlci1mcmVlIGFuZCBudWxsLXB0ci1kZXJlZiBidWdzLgo+ID4+Pgo+ID4+PiBU
-aGVyZSBhcmUgdGhyZWUgc2l0dWF0aW9ucyB0aGF0IGNvdWxkIGxlYWQgdG8gZG91YmxlLWZyZWUg
-YnVncy4KPiA+Pj4KPiA+Pj4gVGhlIGZpcnN0IHNpdHVhdGlvbiBpcyBzaG93biBiZWxvdzoKPiA+
-Pj4KPiA+Pj4gICAgKFRocmVhZCAxKSAgICAgICAgICAgICAgICAgfCAgICAgIChUaHJlYWQgMikK
-PiA+Pj4gbmZjbXJ2bF9md19kbmxkX3N0YXJ0ICAgICAgICAgfAo+ID4+PiAgLi4uICAgICAgICAg
-ICAgICAgICAgICAgICAgICB8ICBuZmNtcnZsX25jaV91bnJlZ2lzdGVyX2Rldgo+ID4+PiAgcmVs
-ZWFzZV9maXJtd2FyZSgpICAgICAgICAgICB8ICAgbmZjbXJ2bF9md19kbmxkX2Fib3J0Cj4gPj4+
-ICAga2ZyZWUoZncpIC8vKDEpICAgICAgICAgICAgIHwgICAgZndfZG5sZF9vdmVyCj4gPj4+ICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgIHJlbGVhc2VfZmlybXdhcmUKPiA+Pj4g
-ICAuLi4gICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgIGtmcmVlKGZ3KSAvLygyKQo+ID4+
-PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAuLi4KPiA+Pj4KPiA+Pj4gVGhl
-IHNlY29uZCBzaXR1YXRpb24gaXMgc2hvd24gYmVsb3c6Cj4gPj4+Cj4gPj4+ICAgIChUaHJlYWQg
-MSkgICAgICAgICAgICAgICAgIHwgICAgICAoVGhyZWFkIDIpCj4gPj4+IG5mY21ydmxfZndfZG5s
-ZF9zdGFydCAgICAgICAgIHwKPiA+Pj4gIC4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgfAo+
-ID4+PiAgbW9kX3RpbWVyICAgICAgICAgICAgICAgICAgICB8Cj4gPj4+ICAod2FpdCBhIHRpbWUp
-ICAgICAgICAgICAgICAgIHwKPiA+Pj4gIGZ3X2RubGRfdGltZW91dCAgICAgICAgICAgICAgfCAg
-bmZjbXJ2bF9uY2lfdW5yZWdpc3Rlcl9kZXYKPiA+Pj4gICAgZndfZG5sZF9vdmVyICAgICAgICAg
-ICAgICAgfCAgIG5mY21ydmxfZndfZG5sZF9hYm9ydAo+ID4+PiAgICAgcmVsZWFzZV9maXJtd2Fy
-ZSAgICAgICAgICB8ICAgIGZ3X2RubGRfb3Zlcgo+ID4+PiAgICAgIGtmcmVlKGZ3KSAvLygxKSAg
-ICAgICAgICB8ICAgICByZWxlYXNlX2Zpcm13YXJlCj4gPj4+ICAgICAgLi4uICAgICAgICAgICAg
-ICAgICAgICAgIHwgICAgICBrZnJlZShmdykgLy8oMikKPiA+Pgo+ID4+IEhvdyBleGFjdGx5IHRo
-ZSBjYXNlIGhlcmUgaXMgYmVpbmcgcHJldmVudGVkPwo+ID4+Cj4gPj4gSWYgbmZjbXJ2bF9uY2lf
-dW5yZWdpc3Rlcl9kZXYoKSBoYXBwZW5zIHNsaWdodGx5IGVhcmxpZXIsIGJlZm9yZQo+ID4+IGZ3
-X2RubGRfdGltZW91dCgpIG9uIHRoZSBsZWZ0IHNpZGUgKFQxKSwgdGhlIFQxIHdpbGwgc3RpbGwg
-aGl0IGl0LCB3b24ndCBpdD8KPiA+IAo+ID4gSSB0aGluayBpdCBjb3VsZCBiZSBwcmV2ZW50ZWQu
-IFdlIHVzZSBuY2lfdW5yZWdpc3Rlcl9kZXZpY2UoKSB0byBzeW5jaHJvbml6ZSwgaWYgdGhlCj4g
-PiBmaXJtd2FyZSBkb3dubG9hZCByb3V0aW5lIGlzIHJ1bm5pbmcsIHRoZSBjbGVhbnVwIHJvdXRp
-bmUgd2lsbCB3YWl0IGl0IHRvIGZpbmlzaC4gCj4gPiBUaGUgZmxhZyAiZndfZG93bmxvYWRfaW5f
-cHJvZ3Jlc3MiIHdpbGwgYmUgc2V0IHRvIGZhbHNlLCBpZiB0aGUgdGhlIGZpcm13YXJlIGRvd25s
-b2FkCj4gPiByb3V0aW5lIGlzIGZpbmlzaGVkLiAKPiAKPiBmd19kb3dubG9hZF9pbl9wcm9ncmVz
-cyBpcyBub3Qgc3luY2hyb25pemVkIGluCj4gbmZjbXJ2bF9uY2lfdW5yZWdpc3Rlcl9kZXYoKSwg
-c28gZXZlbiBpZiBmd19kbmxkX3RpbWVvdXQoKSBzZXQgaXQgdG8KPiB0cnVlLCB0aGUgbmZjbXJ2
-bF9uY2lfdW5yZWdpc3Rlcl9kZXYoKSBoYXBwZW5pbmcgY29uY3VycmVudGx5IHdpbGwgbm90Cj4g
-c2VlIHVwZGF0ZWQgZndfZG93bmxvYWRfaW5fcHJvZ3Jlc3MuCgpUaGUgZndfZG93bmxvYWRfaW5f
-cHJvZ3Jlc3MgaXMgc2V0IHRvIGZhbHNlIGluIG5mY19md19kb3dubG9hZCgpLiBUaGUgbmZjX2Z3
-X2Rvd25sb2FkKCkgaXMKc3luY2hyb25pemVkIHdpdGggbmZjX3VucmVnaXN0ZXJfZGV2aWNlKCku
-IElmIG5mY19md19kb3dubG9hZCgpIGlzIHJ1bm5pbmcsIG5mY191bnJlZ2lzdGVyX2RldmljZSgp
-CndpbGwgd2FpdCBuZmNfZndfZG93bmxvYWQoKSB0byBmaW5pc2guIFNvIHRoZSBuZmNtcnZsX25j
-aV91bnJlZ2lzdGVyX2RldigpIGNvdWxkIHNlZSB0aGUgdXBkYXRlZApmd19kb3dubG9hZF9pbl9w
-cm9ncmVzcy4gVGhlIHByb2Nlc3MgaXMgc2hvd24gYmVsb3c6CgogICAgICAgIChUaHJlYWQgMSkg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgKFRocmVhZCAy
-KQogbmZjbXJ2bF9uY2lfdW5yZWdpc3Rlcl9kZXYgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIHwgbmZjX2Z3X2Rvd25sb2FkCiAgIG5jaV91bnJlZ2lzdGVyX2RldmljZSAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgfCAgLi4uCiAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgZGV2aWNlX2xvY2soKQogICAgIC4u
-LiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIGRl
-di0+ZndfZG93bmxvYWRfaW5fcHJvZ3Jlc3MgPSBmYWxzZTsgLy8oMSkKICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICBkZXZpY2VfdW5s
-b2NrKCkKICAgICBuZmNfdW5yZWdpc3Rlcl9kZXZpY2UgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICB8IAogICBpZiAocHJpdi0+bmRldi0+bmZjX2Rldi0+ZndfZG93bmxvYWRfaW5fcHJv
-Z3Jlc3MpIC8vKDIpIHwgCiAgICAgbmZjbXJ2bF9md19kbmxkX2Fib3J0KHByaXYpOyAvL25vdCBl
-eGVjdXRlICAgICAgICAgICAgfCAgIAoKV2Ugc2V0IGZ3X2Rvd25sb2FkX2luX3Byb2dyZXNzIHRv
-IGZhbHNlIGluIHBvc2l0aW9uICgxKSBhbmQgdGhlIGNoZWNrIGluIHBvc2l0aW9uICgyKSB3aWxs
-IGZhaWwsCnRoZSBuZmNtcnZsX2Z3X2RubGRfYWJvcnQoKSBpbiBuZmNtcnZsX25jaV91bnJlZ2lz
-dGVyX2RldigpIHdpbGwgbm90IGV4ZWN1dGUuIFNvIHRoZSBkb3VibGUtZnJlZQpidWdzIGNvdWxk
-IGJlIHByZXZlbnRlZC4KCj4gPiBBbHRob3VnaCB0aGUgdGltZXIgaGFuZGxlciBmd19kbmxkX3Rp
-bWVvdXQoKSBjb3VsZCBiZSBydW5uaW5nLCBuZmNtcnZsX25jaV91bnJlZ2lzdGVyX2RldigpCj4g
-PiB3aWxsIGNoZWNrIHRoZSBmbGFnICJmd19kb3dubG9hZF9pbl9wcm9ncmVzcyIgd2hpY2ggaXMg
-YWxyZWFkeSBzZXQgdG8gZmFsc2UgYW5kIG5mY21ydmxfZndfZG5sZF9hYm9ydCgpCj4gPiBpbiBu
-ZmNtcnZsX25jaV91bnJlZ2lzdGVyX2RldigpIHdpbGwgbm90IGV4ZWN1dGUuCj4gCj4gSSBhbSBz
-b3JyeSwgYnV0IHlvdSBjYW5ub3QgbW92ZSBjb2RlIGFyb3VuZCBob3BpbmcgaXQgd2lsbCBieSBp
-dHNlbGYKPiBzb2x2ZSBzeW5jaHJvbml6YXRpb24gaXNzdWVzLgoKSSB0aGluayB0aGlzIHNvbHV0
-aW9uIHNvdmUgc3luY2hyb25pemF0aW9uIGlzc3Vlcy4gSWYgeW91IHN0aWxsIGhhdmUgYW55IHF1
-ZXN0aW9ucyB3ZWxjb21lIHRvIGFzayBtZS4KCkJlc3QgcmVnYXJkcywKRHVvbWluZyBaaG91Cg==
+The following commit has been merged into the x86/cleanups branch of tip:
 
+Commit-ID:     1ff2fb982c52ed6c3478adc944441d6ea065d8fb
+Gitweb:        https://git.kernel.org/tip/1ff2fb982c52ed6c3478adc944441d6ea065d8fb
+Author:        Thomas Gleixner <tglx@linutronix.de>
+AuthorDate:    Mon, 02 May 2022 09:01:55 +02:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Mon, 02 May 2022 09:19:05 +02:00
+
+x86/aperfperf: Make it correct on 32bit and UP kernels
+
+The utilization of arch_scale_freq_tick() for CPU frequency readouts is
+incomplete as it failed to move the function prototype and the define
+out of the CONFIG_SMP && CONFIG_X86_64 #ifdef.
+
+Make them unconditionally available.
+
+Fixes: bb6e89df9028 ("x86/aperfmperf: Make parts of the frequency invariance code unconditional")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/lkml/202205010106.06xRBR2C-lkp@intel.com
+---
+ arch/x86/include/asm/topology.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/include/asm/topology.h b/arch/x86/include/asm/topology.h
+index 1b2553d..458c891 100644
+--- a/arch/x86/include/asm/topology.h
++++ b/arch/x86/include/asm/topology.h
+@@ -212,9 +212,6 @@ static inline long arch_scale_freq_capacity(int cpu)
+ }
+ #define arch_scale_freq_capacity arch_scale_freq_capacity
+ 
+-extern void arch_scale_freq_tick(void);
+-#define arch_scale_freq_tick arch_scale_freq_tick
+-
+ extern void arch_set_max_freq_ratio(bool turbo_disabled);
+ extern void freq_invariance_set_perf_ratio(u64 ratio, bool turbo_disabled);
+ #else
+@@ -222,6 +219,9 @@ static inline void arch_set_max_freq_ratio(bool turbo_disabled) { }
+ static inline void freq_invariance_set_perf_ratio(u64 ratio, bool turbo_disabled) { }
+ #endif
+ 
++extern void arch_scale_freq_tick(void);
++#define arch_scale_freq_tick arch_scale_freq_tick
++
+ #ifdef CONFIG_ACPI_CPPC_LIB
+ void init_freq_invariance_cppc(void);
+ #define arch_init_invariance_cppc init_freq_invariance_cppc
