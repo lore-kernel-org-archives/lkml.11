@@ -2,127 +2,603 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:07:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B6EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241115AbiEBQKu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 12:10:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51764 "EHLO
+        id S241437AbiEBQLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 12:11:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240854AbiEBQKr (ORCPT
+        with ESMTP id S241249AbiEBQLQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 12:10:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8E49EDE95
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 09:07:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651507636;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=s70MT6Y6b+EWzPq4TYtvjBhW+c7gKt8WCUmst+yWMcA=;
-        b=NOoPok6F3YLUvVYVKt0qwJG6RoU5PWdXFGSPb9ePPBDnF6dxQn3TlXsrV4i0w/NbtB6mG6
-        +OHYXJTom6VrDI5UcXv0MxtAklLUkuXb6tgcBc3hFOe1xuxBvuh6eq80E3f76Cz0ieGcGQ
-        +Raf/RLlEpAe0C5hcIlJSERBXN0UnZI=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-86-XKnsIJCBPLGUprwFo3Bohg-1; Mon, 02 May 2022 12:07:15 -0400
-X-MC-Unique: XKnsIJCBPLGUprwFo3Bohg-1
-Received: by mail-ej1-f71.google.com with SMTP id cw19-20020a170906479300b006f3e54b1dbcso4951204ejc.4
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 09:07:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=s70MT6Y6b+EWzPq4TYtvjBhW+c7gKt8WCUmst+yWMcA=;
-        b=qXGRC+Y/RdSA97IPrU6G1JKxZLy3ZWjUcPFVAUQ7SUG+W8o+dsUiCDd8nwToDp4gF+
-         p4cPJ2HADe8lnNYm/jiyHOonPjT2DW39Jrmrbq+lNcKh2UnMaM9VjKQn/AA0x+5gtoP5
-         mH39oTT7g+J0T8hdFBFPAkZxJBKUNuHWoRvD5KuQbBmhMYcGQW7xHAPE+Cshto2Plot+
-         1+x5sUAV70MepUjV7TT25W3RBA1ApIYHJBaisW5hVA9C6KbL5iOebAOAl5VVQ0hNYtzf
-         wmtYb4dW++RM6PeudlV6hBvk2ktuLwqbo0Hq+kjydI6bpgLtQ2djIf1iOomncyU1gb5r
-         +tmA==
-X-Gm-Message-State: AOAM532Zc535wyI6+nQYemDJpR0eFhKRA4ntNNqyGcN/F5MGCcKAQZB6
-        E3bwlNWpYNnS/iWdssEcxXFNOKueiIlQbnMN5HtfRG71XpSOCVCqHnfu3JF3l3rUEs3r4v2eXlM
-        2PC0qxiU4lgyQZ5KQj1dC4g5j
-X-Received: by 2002:a17:907:72d4:b0:6f4:7b2:1dea with SMTP id du20-20020a17090772d400b006f407b21deamr12049351ejc.532.1651507634255;
-        Mon, 02 May 2022 09:07:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxHV9JQOzWXQ2/EuMLNL2Sk7plhApTBZcA1FAn/4yisC7DdLA+Ho0CT7zFqHqrSbD0Bufb/EQ==
-X-Received: by 2002:a17:907:72d4:b0:6f4:7b2:1dea with SMTP id du20-20020a17090772d400b006f407b21deamr12049334ejc.532.1651507634023;
-        Mon, 02 May 2022 09:07:14 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id zp1-20020a17090684e100b006f3ef214df0sm3710399ejb.86.2022.05.02.09.07.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 May 2022 09:07:13 -0700 (PDT)
-Message-ID: <a06997fe-8dd7-e91a-2017-912827f554e7@redhat.com>
-Date:   Mon, 2 May 2022 18:07:11 +0200
+        Mon, 2 May 2022 12:11:16 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74CD855AF;
+        Mon,  2 May 2022 09:07:45 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id B82FC474;
+        Mon,  2 May 2022 18:07:43 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1651507664;
+        bh=j4SLZmcogiKq7RcNH1Xlzei1jsmmSCfCCxv2JeKeBgI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=a4MwFinFisjBerH/WxTtakwZ7XW0xx1Y3bDpgaVgRwglYtDnNhPW4HlAGI9MUVKi2
+         Yhl1LdSM1J0+WkYR4oSTdBhdwVoGhcf2mv1OxMe7/LehCplQRMWKxA/hVCaFrZ8dUQ
+         yA9gtE2bkpAXNzDtBG9gl80pCg7mtuntBVTW7chQ=
+Date:   Mon, 2 May 2022 19:07:43 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-mediatek@lists.infradead.org,
+        linux-mips@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-sunxi@lists.linux.dev, spice-devel@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH v2 2/3] drm/fb-helper: Rename preferred_bpp
+ drm_fbdev_generic_setup() parameter
+Message-ID: <YnABz/4haOHe66Do@pendragon.ideasonboard.com>
+References: <20220502153900.408522-1-javierm@redhat.com>
+ <20220502153900.408522-3-javierm@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v9 8/9] KVM: x86: Allow userspace set maximum VCPU id for
- VM
-Content-Language: en-US
-To:     Zeng Guang <guang.zeng@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Kai Huang <kai.huang@intel.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>
-References: <20220419154444.11888-1-guang.zeng@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220419154444.11888-1-guang.zeng@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220502153900.408522-3-javierm@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/19/22 17:44, Zeng Guang wrote:
-> +Userspace is able to calculate the limit to APIC ID values from designated CPU
-> +topology. This capability allows userspace to specify maximum possible APIC ID
-> +assigned for current VM session prior to the creation of vCPUs. By design, it
-> +can set only once and doesn't accept change any more. KVM will manage memory
-> +allocation of VM-scope structures which depends on the value of APIC ID.
+Hi Javier,
+
+Thank you for the patch.
+
+On Mon, May 02, 2022 at 05:38:59PM +0200, Javier Martinez Canillas wrote:
+> By default the bits per pixel for the emulated framebuffer device is set
+> to dev->mode_config.preferred_depth, but some devices need another value.
+> 
+> Since this second parameter is only used by a few drivers, and to allow
+> drivers to use it for passing other configurations when registering the
+> fbdev, rename @preferred_bpp to @options and make it a multi-field param.
+> 
+> The DRM_FB_OPTION() and DRM_FB_GET_OPTION() macros are provided to drivers
+> for computing options bitfield values and getting the values respectively
+> 
+> For now, only the DRM_FB_BPP option exists but other options can be added.
+> 
+> Suggested-by: Thomas Zimmermann <tzimmermann@suse.de>
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> ---
+> 
+> Changes in v2:
+> - Rename DRM_FB_SET_OPTION() to DRM_FB_SET() and make more clear in the
+
+I assume you meant DRM_FB_OPTION() here, not DRM_FB_SET().
+
+>   kernel-doc what this macro does (Laurent Pinchart).
+> - Fix some kernel-doc issues I didn't notice in v1.
+> - Add Reviewed-by tags from Thomas and Laurent.
+> 
+>  drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c         |  6 ++++--
+>  drivers/gpu/drm/arm/hdlcd_drv.c                 |  2 +-
+>  drivers/gpu/drm/arm/malidp_drv.c                |  2 +-
+>  drivers/gpu/drm/aspeed/aspeed_gfx_drv.c         |  2 +-
+>  drivers/gpu/drm/ast/ast_drv.c                   |  2 +-
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c    |  2 +-
+>  drivers/gpu/drm/drm_drv.c                       |  2 +-
+>  drivers/gpu/drm/drm_fb_helper.c                 | 17 +++++++++++++----
+>  drivers/gpu/drm/fsl-dcu/fsl_dcu_drm_drv.c       |  2 +-
+>  drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.c |  2 +-
+>  drivers/gpu/drm/imx/dcss/dcss-kms.c             |  2 +-
+>  drivers/gpu/drm/imx/imx-drm-core.c              |  2 +-
+>  drivers/gpu/drm/ingenic/ingenic-drm-drv.c       |  2 +-
+>  drivers/gpu/drm/mcde/mcde_drv.c                 |  2 +-
+>  drivers/gpu/drm/mediatek/mtk_drm_drv.c          |  2 +-
+>  drivers/gpu/drm/meson/meson_drv.c               |  2 +-
+>  drivers/gpu/drm/mxsfb/mxsfb_drv.c               |  2 +-
+>  drivers/gpu/drm/pl111/pl111_drv.c               |  2 +-
+>  drivers/gpu/drm/qxl/qxl_drv.c                   |  2 +-
+>  drivers/gpu/drm/rcar-du/rcar_du_drv.c           |  2 +-
+>  drivers/gpu/drm/sti/sti_drv.c                   |  2 +-
+>  drivers/gpu/drm/stm/drv.c                       |  2 +-
+>  drivers/gpu/drm/sun4i/sun4i_drv.c               |  2 +-
+>  drivers/gpu/drm/tidss/tidss_drv.c               |  2 +-
+>  drivers/gpu/drm/tilcdc/tilcdc_drv.c             |  2 +-
+>  drivers/gpu/drm/tiny/arcpgu.c                   |  2 +-
+>  drivers/gpu/drm/tiny/bochs.c                    |  2 +-
+>  drivers/gpu/drm/tve200/tve200_drv.c             |  2 +-
+>  drivers/gpu/drm/vboxvideo/vbox_drv.c            |  2 +-
+>  drivers/gpu/drm/vc4/vc4_drv.c                   |  2 +-
+>  drivers/gpu/drm/virtio/virtgpu_drv.c            |  2 +-
+>  drivers/gpu/drm/xlnx/zynqmp_dpsub.c             |  2 +-
+>  include/drm/drm_fb_helper.h                     | 12 ++++++++++++
+>  33 files changed, 59 insertions(+), 36 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+> index b03663f42cc9..0c54470975e3 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+> @@ -2118,9 +2118,11 @@ static int amdgpu_pci_probe(struct pci_dev *pdev,
+>  	    !list_empty(&adev_to_drm(adev)->mode_config.connector_list)) {
+>  		/* select 8 bpp console on low vram cards */
+>  		if (adev->gmc.real_vram_size <= (32*1024*1024))
+> -			drm_fbdev_generic_setup(adev_to_drm(adev), 8);
+> +			drm_fbdev_generic_setup(adev_to_drm(adev),
+> +						DRM_FB_OPTION(DRM_FB_BPP, 8));
+>  		else
+> -			drm_fbdev_generic_setup(adev_to_drm(adev), 32);
+> +			drm_fbdev_generic_setup(adev_to_drm(adev),
+> +						DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  	}
+>  
+>  	ret = amdgpu_debugfs_init(adev);
+> diff --git a/drivers/gpu/drm/arm/hdlcd_drv.c b/drivers/gpu/drm/arm/hdlcd_drv.c
+> index e89ae0ec60eb..b69b1e5be379 100644
+> --- a/drivers/gpu/drm/arm/hdlcd_drv.c
+> +++ b/drivers/gpu/drm/arm/hdlcd_drv.c
+> @@ -321,7 +321,7 @@ static int hdlcd_drm_bind(struct device *dev)
+>  	if (ret)
+>  		goto err_register;
+>  
+> -	drm_fbdev_generic_setup(drm, 32);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/arm/malidp_drv.c b/drivers/gpu/drm/arm/malidp_drv.c
+> index d5aef21426cf..25685b579a05 100644
+> --- a/drivers/gpu/drm/arm/malidp_drv.c
+> +++ b/drivers/gpu/drm/arm/malidp_drv.c
+> @@ -863,7 +863,7 @@ static int malidp_bind(struct device *dev)
+>  	if (ret)
+>  		goto register_fail;
+>  
+> -	drm_fbdev_generic_setup(drm, 32);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/aspeed/aspeed_gfx_drv.c b/drivers/gpu/drm/aspeed/aspeed_gfx_drv.c
+> index 7780b72de9e8..dcccc2e93aea 100644
+> --- a/drivers/gpu/drm/aspeed/aspeed_gfx_drv.c
+> +++ b/drivers/gpu/drm/aspeed/aspeed_gfx_drv.c
+> @@ -343,7 +343,7 @@ static int aspeed_gfx_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		goto err_unload;
+>  
+> -	drm_fbdev_generic_setup(&priv->drm, 32);
+> +	drm_fbdev_generic_setup(&priv->drm, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  	return 0;
+>  
+>  err_unload:
+> diff --git a/drivers/gpu/drm/ast/ast_drv.c b/drivers/gpu/drm/ast/ast_drv.c
+> index 7465c4f0156a..115be73e9b02 100644
+> --- a/drivers/gpu/drm/ast/ast_drv.c
+> +++ b/drivers/gpu/drm/ast/ast_drv.c
+> @@ -126,7 +126,7 @@ static int ast_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	if (ret)
+>  		return ret;
+>  
+> -	drm_fbdev_generic_setup(dev, 32);
+> +	drm_fbdev_generic_setup(dev, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	return 0;
+>  }
+> diff --git a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c b/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c
+> index 651e3c109360..d2ced1a03df9 100644
+> --- a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c
+> +++ b/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c
+> @@ -760,7 +760,7 @@ static int atmel_hlcdc_dc_drm_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		goto err_unload;
+>  
+> -	drm_fbdev_generic_setup(ddev, 24);
+> +	drm_fbdev_generic_setup(ddev, DRM_FB_OPTION(DRM_FB_BPP, 24));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/drm_drv.c b/drivers/gpu/drm/drm_drv.c
+> index 8214a0b1ab7f..9fbc2287c876 100644
+> --- a/drivers/gpu/drm/drm_drv.c
+> +++ b/drivers/gpu/drm/drm_drv.c
+> @@ -324,7 +324,7 @@ void drm_minor_release(struct drm_minor *minor)
+>   *		if (ret)
+>   *			return ret;
+>   *
+> - *		drm_fbdev_generic_setup(drm, 32);
+> + *		drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>   *
+>   *		return 0;
+>   *	}
+> diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
+> index d265a73313c9..fd0084ad77c3 100644
+> --- a/drivers/gpu/drm/drm_fb_helper.c
+> +++ b/drivers/gpu/drm/drm_fb_helper.c
+> @@ -2501,8 +2501,17 @@ static const struct drm_client_funcs drm_fbdev_client_funcs = {
+>  /**
+>   * drm_fbdev_generic_setup() - Setup generic fbdev emulation
+>   * @dev: DRM device
+> - * @preferred_bpp: Preferred bits per pixel for the device.
+> - *                 @dev->mode_config.preferred_depth is used if this is zero.
+> + * @options: options for the registered framebuffer.
+> + *
+> + * The @options parameter is a multi-field parameter that can contain
+> + * different options for the emulated framebuffer device registered.
+> + *
+> + * The options field values can be set using DRM_FB_OPTION() to compute
+> + * the value according to the option bitfield and can be obtained using
+> + * DRM_FB_GET_OPTION(). The options fields are the following:
+> + *
+> + * * DRM_FB_BPP: bits per pixel for the device. If the field is not set,
+> + *   @dev->mode_config.preferred_depth is used instead.
+>   *
+>   * This function sets up generic fbdev emulation for drivers that supports
+>   * dumb buffers with a virtual address and that can be mmap'ed.
+> @@ -2525,10 +2534,10 @@ static const struct drm_client_funcs drm_fbdev_client_funcs = {
+>   *
+>   * The fbdev is destroyed by drm_dev_unregister().
+>   */
+> -void drm_fbdev_generic_setup(struct drm_device *dev,
+> -			     unsigned int preferred_bpp)
+> +void drm_fbdev_generic_setup(struct drm_device *dev, unsigned int options)
+>  {
+>  	struct drm_fb_helper *fb_helper;
+> +	unsigned int preferred_bpp = DRM_FB_GET_OPTION(DRM_FB_BPP, options);
+>  	int ret;
+>  
+>  	drm_WARN(dev, !dev->registered, "Device has not been registered.\n");
+> diff --git a/drivers/gpu/drm/fsl-dcu/fsl_dcu_drm_drv.c b/drivers/gpu/drm/fsl-dcu/fsl_dcu_drm_drv.c
+> index 7a503bf08d0f..293390f0d99c 100644
+> --- a/drivers/gpu/drm/fsl-dcu/fsl_dcu_drm_drv.c
+> +++ b/drivers/gpu/drm/fsl-dcu/fsl_dcu_drm_drv.c
+> @@ -334,7 +334,7 @@ static int fsl_dcu_drm_probe(struct platform_device *pdev)
+>  	if (ret < 0)
+>  		goto put;
+>  
+> -	drm_fbdev_generic_setup(drm, legacyfb_depth);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, legacyfb_depth));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.c b/drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.c
+> index 2af51df6dca7..eb6f3e5d4c95 100644
+> --- a/drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.c
+> +++ b/drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.c
+> @@ -237,7 +237,7 @@ static int kirin_drm_bind(struct device *dev)
+>  	if (ret)
+>  		goto err_kms_cleanup;
+>  
+> -	drm_fbdev_generic_setup(drm_dev, 32);
+> +	drm_fbdev_generic_setup(drm_dev, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/imx/dcss/dcss-kms.c b/drivers/gpu/drm/imx/dcss/dcss-kms.c
+> index 9b84df34a6a1..f84b54793d96 100644
+> --- a/drivers/gpu/drm/imx/dcss/dcss-kms.c
+> +++ b/drivers/gpu/drm/imx/dcss/dcss-kms.c
+> @@ -148,7 +148,7 @@ struct dcss_kms_dev *dcss_kms_attach(struct dcss_dev *dcss)
+>  	if (ret)
+>  		goto cleanup_crtc;
+>  
+> -	drm_fbdev_generic_setup(drm, 32);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	return kms;
+>  
+> diff --git a/drivers/gpu/drm/imx/imx-drm-core.c b/drivers/gpu/drm/imx/imx-drm-core.c
+> index a57812ec36b1..5fd8cf003a4c 100644
+> --- a/drivers/gpu/drm/imx/imx-drm-core.c
+> +++ b/drivers/gpu/drm/imx/imx-drm-core.c
+> @@ -251,7 +251,7 @@ static int imx_drm_bind(struct device *dev)
+>  	if (ret)
+>  		goto err_poll_fini;
+>  
+> -	drm_fbdev_generic_setup(drm, legacyfb_depth);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, legacyfb_depth));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+> index 8eb0ad501a7b..2e7815294e32 100644
+> --- a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+> +++ b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+> @@ -1388,7 +1388,7 @@ static int ingenic_drm_bind(struct device *dev, bool has_components)
+>  		goto err_clk_notifier_unregister;
+>  	}
+>  
+> -	drm_fbdev_generic_setup(drm, 32);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/mcde/mcde_drv.c b/drivers/gpu/drm/mcde/mcde_drv.c
+> index e601baa87e55..e2ca0162061f 100644
+> --- a/drivers/gpu/drm/mcde/mcde_drv.c
+> +++ b/drivers/gpu/drm/mcde/mcde_drv.c
+> @@ -238,7 +238,7 @@ static int mcde_drm_bind(struct device *dev)
+>  	if (ret < 0)
+>  		goto unbind;
+>  
+> -	drm_fbdev_generic_setup(drm, 32);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> index 247c6ff277ef..fef2cc840baf 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> @@ -393,7 +393,7 @@ static int mtk_drm_bind(struct device *dev)
+>  	if (ret < 0)
+>  		goto err_deinit;
+>  
+> -	drm_fbdev_generic_setup(drm, 32);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+> index 1b70938cfd2c..87fcee9143a9 100644
+> --- a/drivers/gpu/drm/meson/meson_drv.c
+> +++ b/drivers/gpu/drm/meson/meson_drv.c
+> @@ -350,7 +350,7 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
+>  	if (ret)
+>  		goto uninstall_irq;
+>  
+> -	drm_fbdev_generic_setup(drm, 32);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/mxsfb/mxsfb_drv.c b/drivers/gpu/drm/mxsfb/mxsfb_drv.c
+> index 9d71c55a31c0..6b251916a6c9 100644
+> --- a/drivers/gpu/drm/mxsfb/mxsfb_drv.c
+> +++ b/drivers/gpu/drm/mxsfb/mxsfb_drv.c
+> @@ -357,7 +357,7 @@ static int mxsfb_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		goto err_unload;
+>  
+> -	drm_fbdev_generic_setup(drm, 32);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/pl111/pl111_drv.c b/drivers/gpu/drm/pl111/pl111_drv.c
+> index 520301b405f1..11b5aea3a166 100644
+> --- a/drivers/gpu/drm/pl111/pl111_drv.c
+> +++ b/drivers/gpu/drm/pl111/pl111_drv.c
+> @@ -308,7 +308,7 @@ static int pl111_amba_probe(struct amba_device *amba_dev,
+>  	if (ret < 0)
+>  		goto dev_put;
+>  
+> -	drm_fbdev_generic_setup(drm, priv->variant->fb_bpp);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, priv->variant->fb_bpp));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/qxl/qxl_drv.c b/drivers/gpu/drm/qxl/qxl_drv.c
+> index 1cb6f0c224bb..883beebe6317 100644
+> --- a/drivers/gpu/drm/qxl/qxl_drv.c
+> +++ b/drivers/gpu/drm/qxl/qxl_drv.c
+> @@ -122,7 +122,7 @@ qxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	if (ret)
+>  		goto modeset_cleanup;
+>  
+> -	drm_fbdev_generic_setup(&qdev->ddev, 32);
+> +	drm_fbdev_generic_setup(&qdev->ddev, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  	return 0;
+>  
+>  modeset_cleanup:
+> diff --git a/drivers/gpu/drm/rcar-du/rcar_du_drv.c b/drivers/gpu/drm/rcar-du/rcar_du_drv.c
+> index 957ea97541d5..6faadab6577b 100644
+> --- a/drivers/gpu/drm/rcar-du/rcar_du_drv.c
+> +++ b/drivers/gpu/drm/rcar-du/rcar_du_drv.c
+> @@ -681,7 +681,7 @@ static int rcar_du_probe(struct platform_device *pdev)
+>  
+>  	DRM_INFO("Device %s probed\n", dev_name(&pdev->dev));
+>  
+> -	drm_fbdev_generic_setup(&rcdu->ddev, 32);
+> +	drm_fbdev_generic_setup(&rcdu->ddev, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/sti/sti_drv.c b/drivers/gpu/drm/sti/sti_drv.c
+> index d858209cf8de..b97ab614d25a 100644
+> --- a/drivers/gpu/drm/sti/sti_drv.c
+> +++ b/drivers/gpu/drm/sti/sti_drv.c
+> @@ -200,7 +200,7 @@ static int sti_bind(struct device *dev)
+>  
+>  	drm_mode_config_reset(ddev);
+>  
+> -	drm_fbdev_generic_setup(ddev, 32);
+> +	drm_fbdev_generic_setup(ddev, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/stm/drv.c b/drivers/gpu/drm/stm/drv.c
+> index 0da7cce2a1a2..a04a54d0cc9a 100644
+> --- a/drivers/gpu/drm/stm/drv.c
+> +++ b/drivers/gpu/drm/stm/drv.c
+> @@ -203,7 +203,7 @@ static int stm_drm_platform_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		goto err_put;
+>  
+> -	drm_fbdev_generic_setup(ddev, 16);
+> +	drm_fbdev_generic_setup(ddev, DRM_FB_OPTION(DRM_FB_BPP, 16));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/sun4i_drv.c
+> index 275f7e4a03ae..f593a8d127fa 100644
+> --- a/drivers/gpu/drm/sun4i/sun4i_drv.c
+> +++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
+> @@ -112,7 +112,7 @@ static int sun4i_drv_bind(struct device *dev)
+>  	if (ret)
+>  		goto finish_poll;
+>  
+> -	drm_fbdev_generic_setup(drm, 32);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/tidss/tidss_drv.c b/drivers/gpu/drm/tidss/tidss_drv.c
+> index 04cfff89ee51..58f0d69b2979 100644
+> --- a/drivers/gpu/drm/tidss/tidss_drv.c
+> +++ b/drivers/gpu/drm/tidss/tidss_drv.c
+> @@ -180,7 +180,7 @@ static int tidss_probe(struct platform_device *pdev)
+>  		goto err_irq_uninstall;
+>  	}
+>  
+> -	drm_fbdev_generic_setup(ddev, 32);
+> +	drm_fbdev_generic_setup(ddev, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	dev_dbg(dev, "%s done\n", __func__);
+>  
+> diff --git a/drivers/gpu/drm/tilcdc/tilcdc_drv.c b/drivers/gpu/drm/tilcdc/tilcdc_drv.c
+> index eee3c447fbac..5216365ccab5 100644
+> --- a/drivers/gpu/drm/tilcdc/tilcdc_drv.c
+> +++ b/drivers/gpu/drm/tilcdc/tilcdc_drv.c
+> @@ -384,7 +384,7 @@ static int tilcdc_init(const struct drm_driver *ddrv, struct device *dev)
+>  		goto init_failed;
+>  	priv->is_registered = true;
+>  
+> -	drm_fbdev_generic_setup(ddev, bpp);
+> +	drm_fbdev_generic_setup(ddev, DRM_FB_OPTION(DRM_FB_BPP, bpp));
+>  	return 0;
+>  
+>  init_failed:
+> diff --git a/drivers/gpu/drm/tiny/arcpgu.c b/drivers/gpu/drm/tiny/arcpgu.c
+> index f0fa3b15c341..df989d5ff5a0 100644
+> --- a/drivers/gpu/drm/tiny/arcpgu.c
+> +++ b/drivers/gpu/drm/tiny/arcpgu.c
+> @@ -392,7 +392,7 @@ static int arcpgu_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		goto err_unload;
+>  
+> -	drm_fbdev_generic_setup(&arcpgu->drm, 16);
+> +	drm_fbdev_generic_setup(&arcpgu->drm, DRM_FB_OPTION(DRM_FB_BPP, 16));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/tiny/bochs.c b/drivers/gpu/drm/tiny/bochs.c
+> index ed971c8bb446..c99608f20bcc 100644
+> --- a/drivers/gpu/drm/tiny/bochs.c
+> +++ b/drivers/gpu/drm/tiny/bochs.c
+> @@ -663,7 +663,7 @@ static int bochs_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent
+>  	if (ret)
+>  		goto err_free_dev;
+>  
+> -	drm_fbdev_generic_setup(dev, 32);
+> +	drm_fbdev_generic_setup(dev, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  	return ret;
+>  
+>  err_free_dev:
+> diff --git a/drivers/gpu/drm/tve200/tve200_drv.c b/drivers/gpu/drm/tve200/tve200_drv.c
+> index 6d9d2921abf4..5fc940d09043 100644
+> --- a/drivers/gpu/drm/tve200/tve200_drv.c
+> +++ b/drivers/gpu/drm/tve200/tve200_drv.c
+> @@ -226,7 +226,7 @@ static int tve200_probe(struct platform_device *pdev)
+>  	 * Passing in 16 here will make the RGB565 mode the default
+>  	 * Passing in 32 will use XRGB8888 mode
+>  	 */
+> -	drm_fbdev_generic_setup(drm, 16);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, 16));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/vboxvideo/vbox_drv.c b/drivers/gpu/drm/vboxvideo/vbox_drv.c
+> index f4f2bd79a7cb..2212be1bf03e 100644
+> --- a/drivers/gpu/drm/vboxvideo/vbox_drv.c
+> +++ b/drivers/gpu/drm/vboxvideo/vbox_drv.c
+> @@ -79,7 +79,7 @@ static int vbox_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	if (ret)
+>  		goto err_irq_fini;
+>  
+> -	drm_fbdev_generic_setup(&vbox->ddev, 32);
+> +	drm_fbdev_generic_setup(&vbox->ddev, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/vc4/vc4_drv.c b/drivers/gpu/drm/vc4/vc4_drv.c
+> index 162bc18e7497..ddfdf9907344 100644
+> --- a/drivers/gpu/drm/vc4/vc4_drv.c
+> +++ b/drivers/gpu/drm/vc4/vc4_drv.c
+> @@ -291,7 +291,7 @@ static int vc4_drm_bind(struct device *dev)
+>  	if (ret < 0)
+>  		goto unbind_all;
+>  
+> -	drm_fbdev_generic_setup(drm, 16);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, 16));
+>  
+>  	return 0;
+>  
+> diff --git a/drivers/gpu/drm/virtio/virtgpu_drv.c b/drivers/gpu/drm/virtio/virtgpu_drv.c
+> index 5f25a8d15464..d62aa084392b 100644
+> --- a/drivers/gpu/drm/virtio/virtgpu_drv.c
+> +++ b/drivers/gpu/drm/virtio/virtgpu_drv.c
+> @@ -128,7 +128,7 @@ static int virtio_gpu_probe(struct virtio_device *vdev)
+>  	if (ret)
+>  		goto err_deinit;
+>  
+> -	drm_fbdev_generic_setup(vdev->priv, 32);
+> +	drm_fbdev_generic_setup(vdev->priv, DRM_FB_OPTION(DRM_FB_BPP, 32));
+>  	return 0;
+>  
+>  err_deinit:
+> diff --git a/drivers/gpu/drm/xlnx/zynqmp_dpsub.c b/drivers/gpu/drm/xlnx/zynqmp_dpsub.c
+> index 824b510e337b..be1f0f6b460b 100644
+> --- a/drivers/gpu/drm/xlnx/zynqmp_dpsub.c
+> +++ b/drivers/gpu/drm/xlnx/zynqmp_dpsub.c
+> @@ -135,7 +135,7 @@ static int zynqmp_dpsub_drm_init(struct zynqmp_dpsub *dpsub)
+>  		goto err_poll_fini;
+>  
+>  	/* Initialize fbdev generic emulation. */
+> -	drm_fbdev_generic_setup(drm, 24);
+> +	drm_fbdev_generic_setup(drm, DRM_FB_OPTION(DRM_FB_BPP, 24));
+>  
+>  	return 0;
+>  
+> diff --git a/include/drm/drm_fb_helper.h b/include/drm/drm_fb_helper.h
+> index 3af4624368d8..740f87560102 100644
+> --- a/include/drm/drm_fb_helper.h
+> +++ b/include/drm/drm_fb_helper.h
+> @@ -35,6 +35,7 @@ struct drm_fb_helper;
+>  #include <drm/drm_client.h>
+>  #include <drm/drm_crtc.h>
+>  #include <drm/drm_device.h>
+> +#include <linux/bitfield.h>
+>  #include <linux/kgdb.h>
+>  
+>  enum mode_set_atomic {
+> @@ -42,6 +43,17 @@ enum mode_set_atomic {
+>  	ENTER_ATOMIC_MODE_SET,
+>  };
+>  
+> +#define DRM_FB_BPP_MASK GENMASK(7, 0)
 > +
-> +Calling KVM_CHECK_EXTENSION for this capability returns the value of maximum APIC
-> +ID that KVM supports at runtime. It sets as KVM_MAX_VCPU_IDS by default.
+> +/* Using the GNU statement expression extension */
+> +#define DRM_FB_OPTION(option, value)				\
+> +	({							\
+> +		WARN_ON(!FIELD_FIT(option##_MASK, value));	\
+> +		FIELD_PREP(option##_MASK, value);		\
+> +	})
+> +
+> +#define DRM_FB_GET_OPTION(option, word) FIELD_GET(option##_MASK, word)
+> +
+>  /**
+>   * struct drm_fb_helper_surface_size - describes fbdev size and scanout surface size
+>   * @fb_width: fbdev width
+> -- 
+> 2.35.1
+> 
 
-Better:
+-- 
+Regards,
 
-This capability allows userspace to specify maximum possible APIC ID
-assigned for current VM session prior to the creation of vCPUs, saving
-memory for data structures indexed by the APIC ID.  Userspace is able
-to calculate the limit to APIC ID values from designated
-CPU topology.
-
-The value can be changed only until KVM_ENABLE_CAP is set to a nonzero
-value or until a vCPU is created.  Upon creation of the first vCPU,
-if the value was set to zero or KVM_ENABLE_CAP was not invoked, KVM
-uses the return value of KVM_CHECK_EXTENSION(KVM_CAP_MAX_VCPU_ID) as
-the maximum APIC ID.
-
->   	case KVM_CAP_MAX_VCPU_ID:
-> -		r = KVM_MAX_VCPU_IDS;
-> +		if (!kvm->arch.max_vcpu_ids)
-> +			r = KVM_MAX_VCPU_IDS;
-> +		else
-> +			r = kvm->arch.max_vcpu_ids;
-
-I think returning the constant KVM_CAP_MAX_VCPU_IDS is better.
-
-Paolo
-
+Laurent Pinchart
