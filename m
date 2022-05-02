@@ -2,178 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9539AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 07:57:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA918C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 07:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383604AbiEBIBU (ORCPT
+        id S1383609AbiEBIBn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 04:01:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35814 "EHLO
+        Mon, 2 May 2022 04:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376532AbiEBIBS (ORCPT
+        with ESMTP id S1376532AbiEBIBl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 04:01:18 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DA592A242
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 00:57:49 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id i22so87516ila.1
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 00:57:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1o9QvsSc9YvDxD2nqC58JtY0N0kXxGCwYzz2Lmsq/vM=;
-        b=MNmDR6LjeUsEmew0Wgu4RMGdcP3a67dvAeYb3t+/boWi6E2nguLti110ZCe6hmqhAp
-         WFYU9c+2WimTW4RRNJiQDX7UXlwzXXk9Ox1GSlRjaydYWLJHIkUsCJA4DcCdZn5SNWS/
-         THwRA8qduVTQLbfKY8i7e0lO5jOqBYyNAhxmui6j3j3Tqq972XM0Hcx24DvRFgSVC6Vj
-         3GoMrAJ3Ou16Wxf1hVIxob/akH9YmTbYFCyKtk/5BJ/WK8bYgc8wJp898qq71I3pXLzn
-         3lblg+rpDU4+TNByilE5nE0Os1+C3y4pniRvZcg0a4d5YO2kspkG3Ci+jBKI5pXu6kRo
-         Kadw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1o9QvsSc9YvDxD2nqC58JtY0N0kXxGCwYzz2Lmsq/vM=;
-        b=thmcRWnZsButPfXTDZq4eJYQokAVJgILJnbr+D5X2nVkv5oiVU97wM26FY2htSYs00
-         v16Hcy8/0EhLlTbOMogQQtv2TXLfg5f957wmzpMZrMFAKJgdbFNjliZLg/ZXayiFhSiO
-         Scz+NE+G16pE4rv8hTJYTVrLDAckrH1uBV+H9aqM+DyfA3cEnvr0onaUUcNkQ5Pm0Df2
-         tDL6hzIEWcXoc13A4ewGqX/OIB4eooYrWxqXImzNtf4nw2HMPgHaumumauVF9e1Q3G2E
-         livoPU02uth64ny5igVEy3BdegKIKE6ZosQy5cFSMwMhuH0nI3Ffhh9YDrA+B0bkS9cF
-         69Wg==
-X-Gm-Message-State: AOAM532xIDuqOtJsLYfFsTd5w++r97XiHG27nJjZctqRRBD+0bExZTJb
-        Osf5Wg6hgmemRJ4ByOCV8ITNvQ==
-X-Google-Smtp-Source: ABdhPJyz8XwenD+BQv29WOkJK8BBwVUoVg1aIa+1DN8PDqrLcq2aA8A7u2gdNelUEuD9J3o774/Ezw==
-X-Received: by 2002:a05:6e02:1a29:b0:2cc:36d8:5d59 with SMTP id g9-20020a056e021a2900b002cc36d85d59mr4223708ile.137.1651478268460;
-        Mon, 02 May 2022 00:57:48 -0700 (PDT)
-Received: from google.com (194.225.68.34.bc.googleusercontent.com. [34.68.225.194])
-        by smtp.gmail.com with ESMTPSA id o65-20020a022244000000b0032b3a7817d5sm2882449jao.153.2022.05.02.00.57.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 00:57:47 -0700 (PDT)
-Date:   Mon, 2 May 2022 07:57:44 +0000
-From:   Oliver Upton <oupton@google.com>
-To:     Gavin Shan <gshan@redhat.com>
-Cc:     kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
-        eauger@redhat.com, Jonathan.Cameron@huawei.com,
-        vkuznets@redhat.com, will@kernel.org, shannon.zhaosl@gmail.com,
-        james.morse@arm.com, mark.rutland@arm.com, maz@kernel.org,
-        pbonzini@redhat.com, shan.gavin@gmail.com
-Subject: Re: [PATCH v6 03/18] KVM: arm64: Add SDEI virtualization
- infrastructure
-Message-ID: <Ym+O+JLU5e9NUs39@google.com>
-References: <YmMiyt/TDjJt0mdG@google.com>
- <36899ea9-e8bd-27b2-8dfb-75b76eab50d7@redhat.com>
- <YmRI7Bh7fWCYLUGT@google.com>
- <0e26da1a-00bb-3d63-a8bf-6cd3271b0a38@redhat.com>
- <Ymr45B+8xTlhi7vk@google.com>
- <96711526-c4f3-3b50-c015-beba8cc9fcc9@redhat.com>
- <Ym1EztjkJIHrg4Qz@google.com>
- <62f06a03-d6fc-3803-a2d2-7a85cf733459@redhat.com>
- <Ym9So9YariC0M7Zu@google.com>
- <2d631426-17fd-e7e3-5c62-eda547732bb7@redhat.com>
+        Mon, 2 May 2022 04:01:41 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-cusazon11020016.outbound.protection.outlook.com [52.101.61.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DC029CB3;
+        Mon,  2 May 2022 00:58:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=F3dkt7+nCLig1weRU071EqvTJRkOBP46J8KG81Hqizu7ELsNu7xjPmr2n6KAeHLcinr1piNe0DWYsrQwRpw4OX6YmWjd9AlR9mUs/N0ijwHYUCO864cvpU4xOEOJCQmZU+7fg5lq1ubAtqr7nMxyI4YmjglHDraMOiDeHcwuD1fU1cphHAG3SYIl1GAPAA/w7D7ZtUHSlNmTzvgrwwSU7O9oSzrRe0+ymuEht7bXzMaXliWHIrglVmBTVWTlLdbNidQ8X9TZ0DsK0JsfcUyd5HcrCt9SRaRShIjnMP+HBGbq60fu21l0H3OG+GW5rrq5izY/kZs1s648ZcDUriUpWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gbUIZVvmh/wiSrp8bG5PwsR2tyAoOE4BtdcOQuS4gw8=;
+ b=ZF4KZnVpdG1yjwuiUczfbnR1vsGKrxZEaF6lGsUFsdrvZqtvg+Z6Q+3GYE75aKNq7sijHafvakrDM3aTZzVkvezqklo847S0B3veMe60C1MVyLK2mD+L1n5QTzWekWqSAR/eZbVpeJbrM0FdfAm2fWwKr/9nx/3rLnMcVVyonw0KsXvdYngB8NbniWDO1JwANdN5irpIy5T3ntiJu2rWx/nfg8TMVXJO+yFvgS+MypUglz4xuYRcPlaFkb6cMnoXdkKq9TRiCBJmJn/QIYBDnZvuAb3gtlFTnWUC6oXoLhEKxpnNV8WcyNgZNkenLgeAt4qxEI/dW7T5qbrG1uLdwg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gbUIZVvmh/wiSrp8bG5PwsR2tyAoOE4BtdcOQuS4gw8=;
+ b=R/MZlXYoj7gtUivT9O6/Jebuq6FfJZyXZMhddcf2ISMzrdsgoyUhc8vpg5S1I+agQCuihdquZEGSAL6UpTpSa2lklLeI5j9n3WsslhC57ixRsOutJFI+1Ag0mvh7cm6B2I5ujaLbtGR91ikDqhlymukaF9FK5P15Itz4D8mjDgE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+Received: from BL0PR2101MB1092.namprd21.prod.outlook.com
+ (2603:10b6:207:37::26) by BN6PR21MB0273.namprd21.prod.outlook.com
+ (2603:10b6:404:9b::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.4; Mon, 2 May
+ 2022 07:43:41 +0000
+Received: from BL0PR2101MB1092.namprd21.prod.outlook.com
+ ([fe80::c45a:9279:12d9:eca1]) by BL0PR2101MB1092.namprd21.prod.outlook.com
+ ([fe80::c45a:9279:12d9:eca1%9]) with mapi id 15.20.5250.004; Mon, 2 May 2022
+ 07:43:41 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     wei.liu@kernel.org, kys@microsoft.com, haiyangz@microsoft.com,
+        sthemmin@microsoft.com, lorenzo.pieralisi@arm.com,
+        bhelgaas@google.com, linux-hyperv@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mikelley@microsoft.com, robh@kernel.org, kw@linux.com,
+        helgaas@kernel.org, alex.williamson@redhat.com,
+        boqun.feng@gmail.com, Boqun.Feng@microsoft.com
+Cc:     jakeo@microsoft.com, Dexuan Cui <decui@microsoft.com>
+Subject: [PATCH v2] PCI: hv: Do not set PCI_COMMAND_MEMORY to reduce VM boot time
+Date:   Mon,  2 May 2022 00:42:55 -0700
+Message-Id: <20220502074255.16901-1-decui@microsoft.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: MW4PR03CA0065.namprd03.prod.outlook.com
+ (2603:10b6:303:b6::10) To BL0PR2101MB1092.namprd21.prod.outlook.com
+ (2603:10b6:207:37::26)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2d631426-17fd-e7e3-5c62-eda547732bb7@redhat.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5684d03c-f94f-4c9f-bfe3-08da2c0f7a04
+X-MS-TrafficTypeDiagnostic: BN6PR21MB0273:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR21MB027380E4184691E1EE328911BFC19@BN6PR21MB0273.namprd21.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: DsG/otRtLmDOZ27E4aMWpTfukSFTmBvAtoL1VHtTnJLXC1nJKYH/sDCguZxUIpKEo/n+u1+0pgPJ1izbLlu3805O9b1CjglwdrDoLsQlLkWihUGXPKQJ4B6e/CuFrOVDcccOgt4mY8j9hdMbdRi8FB/W5eGo7Y57qNw5pvLjfsUkw9xzH12BBEit8H6Ee1D0OxQQNDLe3judKcmZNHWEoqOu8YsWeaY93uVJhGJ6VUQl74LD9Si7nV6AOjGHtVGQsvRLtkUb0is3r9XoWGNwceiU97+B/fJ2Oi6rjAyOHtnOGxEdtUNYL/QZmIjJEFbBMs5w1qAVRNR4u9Wl2ImeWyBCpcPICwrUf4BD5FA3Zywm5nzbuLb249o7/94OLEzX0lDLRQVB06t1nWTgX/1ibTZ+uCaU24p1b4MbCDx6+jxUQ727t1S9/FC7g82NGXwAC4+wWxPIn0vORxuNJ/2oAt9G5Wvq9ewzBCRIlfY0XLReO5j0D1gR4oUDbycdz7Auro70V3sfOb6WNdyXY3DR6qcuJ6cEzagGv/7Vi1o5e+GJY1uAy9HbsU1yKc9YGxzXYBWdiKjWwmAl7GQHvHkQ71xMG3nlXWUiFxkL5XBtt5Y7u76OD+ytlPUw0JDspIJ8YtsAFCe600e1xdv6gOScOTIVhuVEXHDn/w2Xpfoo0DcNQq+Ho7wzP2CzD9WVoW9n5AAPme3m5pklmJVeGdGejOPWWGKDSqD/p5aFzTUWZjMEzaSVui0Fce6wKE7fCjpXcnSRppP3KrbiXLwcMQ2vZ7cRBfJh7aZ18U1uqF3JNiiAdlRIEUqkRLHwr30MGR1Uc4QTa6v1sk+pxoYEzB+SdaWzizUGx0jPNGe+kLDv9J8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR2101MB1092.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(6486002)(966005)(38100700002)(6512007)(86362001)(4326008)(8676002)(1076003)(6666004)(316002)(10290500003)(6636002)(186003)(66946007)(66556008)(66476007)(2616005)(82950400001)(6506007)(508600001)(52116002)(921005)(107886003)(7416002)(83380400001)(5660300002)(2906002)(8936002)(82960400001)(36756003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1ABnBg/7F1yvDCGpM9KcBPeAceozRRCc2HSQx7VW/QrcwkgBVtJRT5SIAXNB?=
+ =?us-ascii?Q?ozjEVupnOFSK4NIRLcb5qVukgA2cZSwvCTv08oNrY1FxYbjIrLgcKVCFz5rd?=
+ =?us-ascii?Q?5TlFNFu1bcPIlqY7od8qA3Okqxq+Ujq05zG/eqZxBOurO0n0Q8bkF63U78bX?=
+ =?us-ascii?Q?K59f57aX4bhuqU6vMhkciie5dSHizv2AEzT/A9gS9NW9YOFpiADmeOQC5uPR?=
+ =?us-ascii?Q?WWC1pmXjEjUHCHm56w+Zg9vlZ/e8k6pinI08W7/xqLWJtB8NhybpORvcG2Zf?=
+ =?us-ascii?Q?zPVEAztxZPpGc3xQf2NlA4VZBLU9sKltRT3KvzLu9Up8T7ieBnaPIbJPygmg?=
+ =?us-ascii?Q?5TRlW/LgJDEOmFs6gPJnhQoM8yCMDJBT0uM25I4zXQBgjHRmje5Zsx7hk9St?=
+ =?us-ascii?Q?REbCTZW2TiZA2Tj1fHjLAXW6CL4e8WwU2UlK54GwLhazq1vUhxZj/mNnsdGE?=
+ =?us-ascii?Q?tyOnJ5YSud/RzmvXufmBmcKJYULPae/4hUWwaP+xq4LrzTZsCZ/z4R42WLMP?=
+ =?us-ascii?Q?9FQ0NQkKjw/9m/pQMiKnYmjcLobA61RhpTMQQp0Nv3QksZ66VWgp2vpy6f2J?=
+ =?us-ascii?Q?2mjVm6q3C1/nd6LsG7CJLTif1T5Vv2su/Ol+SL2cPZIf9b9WA22rzVQ11Poy?=
+ =?us-ascii?Q?SwZcV5iG/z7ERy1PjNpimggsH+iibTwZ1AbQvosB2VqMjG4OtKKvGhRN7yLV?=
+ =?us-ascii?Q?68wk3+/GyKQRD27shv5VHIh2kDO1Mmp+Ou2GLzh4lDu0WFzF1u62A4wIhigP?=
+ =?us-ascii?Q?nUD7+6mkRN/taQmCKuu04TAkMQby/r4UQxP6E0CevnIMesJX4iBtU0WML30V?=
+ =?us-ascii?Q?RqioBq/BC+BYm00G6mEsxL7vr+3ccjSByYEZw/t/2dmVFYuUfKgmROxZzrFm?=
+ =?us-ascii?Q?8hpAPYlNFiVzMFOSCOcEvcOx+aC3jg9dGiL1mJljKsF8hbn1Q/ct5aa7EcrY?=
+ =?us-ascii?Q?NhwxX92fmBoTY+PXh5hjLyuKwvpjcbyZh0eKlX5QO59RUA5mLo8gK5xr6HIg?=
+ =?us-ascii?Q?3KbP2bPLk39UyDIE7zNK3tr7ptyYTcSlIRhd9scrj2OlFEk7PLeRNhPI3Vit?=
+ =?us-ascii?Q?2Lu8D/mx8fgWtYNaussSO+jKTksDcHcunxCquQgtGc5d0QNyUCOXh0Esh0sG?=
+ =?us-ascii?Q?U0AiDgaczn2X6XQbGLkGVYIbXYkIMsPKwSm36Tyc4ut+WHCYUDlKmdTK0PTK?=
+ =?us-ascii?Q?VmhrhAt67Hhtoq2FhgNTp4TJnvbFjASkz3vOqnvuymlusXlyqW4zKejeAlYy?=
+ =?us-ascii?Q?OZqceYWz/m2pyp8bJSB6/PtrFMrLWUijyjjf/6jdLLo2578B2+2A8PQJtIZ+?=
+ =?us-ascii?Q?sL+3GF0aB8dJK9zkZr/iUp8+ivfrS9pqMyJIsveQaiLW6k+MrkfW4RNon+RI?=
+ =?us-ascii?Q?Hszec5bjkGM6ZrGjfp7rysN/JO4U+t9ZodEyr76B17qyJe+Z+ugx/wjDmQV/?=
+ =?us-ascii?Q?B6WKSEpppehdOBe2GBAQyCIjXNDYY99+7JGot3hTHo/yOU/0oHt7bq32CppV?=
+ =?us-ascii?Q?FgoFJCr34PksLSnDP32Qjfgc4gGCKA4Zl0Km4KpRL+Wc5NKy60zxgzXQluO+?=
+ =?us-ascii?Q?okGTRKKDWs2jnlcMLbHEHEfg2Qiu2bAnA8MqLVisbhFrsgybpwzpJj4n8Zlv?=
+ =?us-ascii?Q?s8aiBdHOrq5nl3R9RfhmHRlalSGqhmZbSEC43SWi/dHmX0q73iKON5LwZBBS?=
+ =?us-ascii?Q?lYJNNzMTL5VzbvpHxgS1tAnfeocC94e0hyiwgb/xkeINpwH47Hy6GDe05uDB?=
+ =?us-ascii?Q?ywi4kwKaWx97cnJHQ8VJ2NM5W7BWqbSg/NpnRghlPWmUE8sClGGzO+qxaAST?=
+X-MS-Exchange-AntiSpam-MessageData-1: weL/5FPy0baCtA==
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5684d03c-f94f-4c9f-bfe3-08da2c0f7a04
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR2101MB1092.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2022 07:43:41.4009
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yE8rfMz+nda6DqZAkyKlFR4Gu6jtYygSE7ZgGjsPcDAgR6zxty4psOxYy2fMqKVCk/OAgsCX8SmhtI+8YVly+w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR21MB0273
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 03:25:40PM +0800, Gavin Shan wrote:
-> Oliver, how about to adjust struct kvm_sdei_vcpu like below. With the
-> changes, struct kvm_sdei_vcpu::unregistering is dropped, to match with
-> the specification strictly.
-> 
->    struct kvm_sdei_vcpu {
->        unsigned long registered;
->        unsigned long enabled;
->        unsigned long running;        // renamed from 'active' to match the specification strictly
->        unsigned long pending;        // event pending for delivery
->           :
->    };
-> 
->    state                          @registered  @enabled  @running  @pending
->    --------------------------------------------------------------------------------
->    unregistered                   0            0         0/1       0
->    registered-disabled            1            0         0         0/1
->    registered-enabled             1            1         0/1       0/1
->    handler-running                0/1          0/1       1         0/1
-> 
-> We can use the specific encoding to represent the unregistration-pending.
-> 
->    state                          @registered  @enabled  @running  @pending
->    -------------------------------------------------------------------------
->    handler-running                0            0          1        0
+Currently when the pci-hyperv driver finishes probing and initializing the
+PCI device, it sets the PCI_COMMAND_MEMORY bit; later when the PCI device
+is registered to the core PCI subsystem, the core PCI driver's BAR detection
+and initialization code toggles the bit multiple times, and each toggling of
+the bit causes the hypervisor to unmap/map the virtual BARs from/to the
+physical BARs, which can be slow if the BAR sizes are huge, e.g., a Linux VM
+with 14 GPU devices has to spend more than 3 minutes on BAR detection and
+initialization, causing a long boot time.
 
-Right, this is what I had in mind. This encodes the
-'handler-unregister-pending' state.
+Reduce the boot time by not setting the PCI_COMMAND_MEMORY bit when we
+register the PCI device (there is no need to have it set in the first place).
+The bit stays off till the PCI device driver calls pci_enable_device().
+With this change, the boot time of such a 14-GPU VM is reduced by almost
+3 minutes.
 
-> Thanks for your valuable comments, Oliver. I'm not starting to work on
-> v7 yet. I also would like to make everything clear before that. In that
-> case, it will be easier for you to review next revision :)
-> 
-> > > > >           unsigned long pending;       /* the event is pending for delivery and handling */
-> > > > >           unsigned long active;        /* the event is currently being handled           */
-> > > > > 
-> > > > >           :
-> > > > >           <this part is just like what you suggested>
-> > > > >       };
-> > > > > 
-> > > > > I rename @pending to @unregister. Besides, there are two states added:
-> > > > > 
-> > > > >      @pending: Indicate there has one event has been injected. The next step
-> > > > >                for the event is to deliver it for handling. For one particular
-> > > > >                event, we allow one pending event in the maximum.
-> > > > 
-> > > > Right, if an event retriggers when it is pending we still dispatch a
-> > > > single event to the guest. And since we're only doing normal priority
-> > > > events, it is entirely implementation defined which gets dispatched
-> > > > first.
-> > > > 
-> > > 
-> > > Yep, we will simply rely on find_first_bit() for the priority. It means
-> > > the software signaled event, whose number is zero, will have the highest
-> > > priority.
-> > > 
-> > > > >      @active:  Indicate the event is currently being handled. The information
-> > > > >                stored in 'struct kvm_sdei_event_context' instance can be
-> > > > >                correlated with the event.
-> > > > 
-> > > > Does this need to be a bitmap though? We can't ever have more than one
-> > > > SDEI event active at a time since this is private to a vCPU.
-> > > > 
-> > > 
-> > > Yes, one event is active at most on one particular vCPU. So tt don't
-> > > have to be a bitmap necessarily. The reason I proposed to use bitmap
-> > > for this state is to having all (event) states represented by bitmaps.
-> > > In this way, all states are managed in a unified fashion. The alternative
-> > > way is to have "unsigned long active_event", which traces the active
-> > > event number. It also consumes 8-bytes when live migration is concerned.
-> > > So I prefer a bitmap :)
-> > > 
-> > 
-> > The small benefit of using the event number is that we can address all
-> > events in 8 bytes, whereas we'd need to extend the bitmap for >64
-> > events. I suppose we'll run into that issue either way, since the
-> > pending, registered, and enabled portions are also bitmaps.
-> > 
-> > When live migration is in scope we should probably bark at userspace if
-> > it attempts to set more than a single bit in the register.
-> > 
-> 
-> Even it's unlikely to support the shared event, bitmap will help in that
-> case. I'm not sure about other VMM, the pseudo firmware registers are
-> almost transparent to user space in QEMU. They're accessed and no one
-> cares the values reading from and writing to these registers in QEMU ;-)
+Link: https://lore.kernel.org/lkml/20220419220007.26550-1-decui@microsoft.com/
+Tested-by: Boqun Feng (Microsoft) <boqun.feng@gmail.com>
+Signed-off-by: Dexuan Cui <decui@microsoft.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Jake Oshins <jakeo@microsoft.com>
 
-Regardless of whether userspace actually manipulates the registers we
-should still reject unsupported values. For example:
+---
 
-Let's say the VM is started on a kernel that introduced yet another SDEI
-widget outside of your series. The VM was migrated back to an older
-kernel w/o the SDEI widget, and as such the VMM attempts to set the
-widget bit. Since the old kernel doesn't know what to do with the value
-it should return EINVAL to userspace.
+Changes in v2:
+	Added Michael's Reviewed-by, Lorenzo's Acked-by, and a Link.
+	Rewrote the commit message by following Lorenzo's suggestion.
 
---
-Thanks,
-Oliver
+	Thanks all for the informatie discussion!
+
+@ Wei Liu: Lorenzo agrees that this patch can go via the Hyper-V tree's
+hyperv-next branch (the patch should not go via the hyperv-fixes branch),
+but in general we should keep the PCI folks in the review loop for PCI
+hyper-V changes: https://lore.kernel.org/lkml/YmuzOJy%2F6F5wSjY7@lpieralisi/
+
+ drivers/pci/controller/pci-hyperv.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+index d270a204324e..f9fbbd8d94db 100644
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -2082,12 +2082,17 @@ static void prepopulate_bars(struct hv_pcibus_device *hbus)
+ 				}
+ 			}
+ 			if (high_size <= 1 && low_size <= 1) {
+-				/* Set the memory enable bit. */
+-				_hv_pcifront_read_config(hpdev, PCI_COMMAND, 2,
+-							 &command);
+-				command |= PCI_COMMAND_MEMORY;
+-				_hv_pcifront_write_config(hpdev, PCI_COMMAND, 2,
+-							  command);
++				/*
++				 * No need to set the PCI_COMMAND_MEMORY bit as
++				 * the core PCI driver doesn't require the bit
++				 * to be pre-set. Actually here we intentionally
++				 * keep the bit off so that the PCI BAR probing
++				 * in the core PCI driver doesn't cause Hyper-V
++				 * to unnecessarily unmap/map the virtual BARs
++				 * from/to the physical BARs multiple times.
++				 * This reduces the VM boot time significantly
++				 * if the BAR sizes are huge.
++				 */
+ 				break;
+ 			}
+ 		}
+-- 
+2.17.1
+
