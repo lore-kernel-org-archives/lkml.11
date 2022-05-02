@@ -2,95 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86394C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC0F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:23:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238609AbiEBP1R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 11:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59538 "EHLO
+        id S239603AbiEBP1V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 11:27:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239307AbiEBP1H (ORCPT
+        with ESMTP id S239332AbiEBP1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 11:27:07 -0400
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B88B13CCF
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:23:37 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id 169243200999;
-        Mon,  2 May 2022 11:23:34 -0400 (EDT)
-Received: from imap47 ([10.202.2.97])
-  by compute2.internal (MEProxy); Mon, 02 May 2022 11:23:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-         h=cc:cc:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm1; t=1651505014; x=1651591414; bh=j3
-        oztXfiiTixSHUSE4nMfba+UoAMiIb0UBPpgppAZF8=; b=JVXOWOnT9nOTpZZ8g9
-        Pzwhtiw3h5UVMarY9Ztfd4jI9lF8wfo8imbsRHIy1tlWfOBKihrxmP1bCVwmGwLl
-        n6TmrgXXQ9q2QdBHEppAymCjQJfJUPZGOrzWZmsV0hQJspLENnmjORijEFcICdFa
-        hat4Bg7dL8ecMiK2OCHCie9ahWp2hraAuKYaylvMMTwwyWhRR3Pt1xX4qwnA49O6
-        RLxwufFjfpkcNv0SF8cVvNRySDzOxnAmXIkAxWk3U9RWe8Q8OOrTFrw3E9y2hbK5
-        QQsZh7RgALmFIvJjiPuXjdcBETfp60qNmBxT5BDh2uvFvfQX4PetOAsFc+D9aQu3
-        CIuA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1651505014; x=
-        1651591414; bh=j3oztXfiiTixSHUSE4nMfba+UoAMiIb0UBPpgppAZF8=; b=I
-        iWhGgMtgZiNuk5tUlfpYB5YIpVB4uKcJVrRsARRpw6iMZJlCkFytVVzsx9zXQmlS
-        V+CQEiPI9/9D0j4GyiEa5qf9f79bkNZxAOxFUlQk0Ihjt+YQv30KCRZMddHBWoxh
-        k4mhDNH6C5rb+9GAV6iQozaHQW9k4w4uNSfs1GGBje8AzejevxXnHk5NFs7Dy46z
-        McHngw/9f7lASeUKT2lE3upNLl6PJTjB5Isjke54WUkaeTMpw9/nCkYIr5vixaF9
-        KZdqD+uAzHalUPMMSYWboaj118jFeLoxk3CGJyJeEL9FgZg9GsWUlFD4+zUoPS3y
-        mW3j1FaSKKF4CQbFDaSyA==
-X-ME-Sender: <xms:dfdvYh3f1NqxGT3aNfT1NrbvS9Dakn6wg9Gn2eD0_kRIisqHxT3PTw>
-    <xme:dfdvYoEpyYkvvd_KlxSVOL8TWizGC8gNwNgAC6-UmOueQyDG-Hkbn5C8TNbpj4Rxk
-    PSEfVKMB3BB-NRpz3w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehgdekjecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdfuvhgv
-    nhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrg
-    htthgvrhhnpeelvefggeffheevtdeivefhkeehfeettdejteduveeiheevveeilefghfei
-    veeiueenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hsvhgvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:dvdvYh7qPH6er5JU0BFHVwdHS1vjgGCkwFkIzkLh-apI-SophSKHYQ>
-    <xmx:dvdvYu0O0pYyoRy6c7ZYDAOIr7Y3pJBoGoX-MvD86K-EBGCZS5hOTQ>
-    <xmx:dvdvYkENmXUMqtLpZrydrXkqYxtIxLhRFs7XHr5IM1w8dd5wz1nZSw>
-    <xmx:dvdvYoBN1hM4SPd7BlzjXHoMKEhqgsVkoM_OTH4jmHLR37tFKRXFEA>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id DE5C7A60063; Mon,  2 May 2022 11:23:33 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-591-gfe6c3a2700-fm-20220427.001-gfe6c3a27
-Mime-Version: 1.0
-Message-Id: <373887e4-2012-462c-82a9-10c70f39dd9f@www.fastmail.com>
-In-Reply-To: <20220502092238.30486-1-marcan@marcan.st>
-References: <20220502092238.30486-1-marcan@marcan.st>
-Date:   Mon, 02 May 2022 17:23:13 +0200
-From:   "Sven Peter" <sven@svenpeter.dev>
-To:     "Hector Martin" <marcan@marcan.st>,
-        "Joerg Roedel" <joro@8bytes.org>, "Will Deacon" <will@kernel.org>
-Cc:     "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
-        "Sven Peter" <iommu@lists.linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu: dart: Add missing module owner to ops structure
-Content-Type: text/plain
+        Mon, 2 May 2022 11:27:08 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF51D13CFD
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:23:38 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 4E787240003;
+        Mon,  2 May 2022 15:23:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651505017;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=NRx/sFS6cK8F7vvtOq0bTd/fTq+8EgoXR5ZO4+0mp4M=;
+        b=ALeOSdj5ocd2k5c4fb5khkuTBhanikviBNZHYLqLmdt3zMCQjZpWlsr/kx2yG6RDGpgvPD
+        im4ovTbh8lFCESsevh3NSZOi9grBSrnCtJb4tQi6Y4ehGWnFo4i3RMgbZrfRl3slvOg9rV
+        v3UON/nnTsGiKXYFlNrZJ3Oxq5WIDqdMwN5o/RP8JRjtSZUdDiwM6Wq9YHrnG7hPiHrM+w
+        N81slnI9vWp/gPmgTn+JTQkILYupuVYmBMmC4HAxIvBiKVuA9C13vlrPnVCVuFKDGbBiUF
+        pAAHzhoaV5KqTefgeRmhxkSXVPJ97A03y9ziWx6R9S5/7KjZ+PWRh3dvF2FdAQ==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Russell King <linux@armlinux.org.uk>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: [PATCH v3 0/2] ARM: at91: add support for secure suspend on sama5d2
+Date:   Mon,  2 May 2022 17:22:17 +0200
+Message-Id: <20220502152219.216758-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 2, 2022, at 11:22, Hector Martin wrote:
-> This is required to make loading this as a module work.
->
-> Signed-off-by: Hector Martin <marcan@marcan.st>
+Now that OP-TEE support for sama5d2 is more complete, add support to
+execute SMC calls and to set suspend mode. This series adds new files
+to be able to execute SMC calls targeting OP-TEE secure monitor. Then
+secure suspend support is added and uses these new functions.
 
-this could probably use a 
-Fixes: 46d1fb072e76 ("iommu/dart: Add DART iommu driver")
+---
+Changes in v3:
+ - Move warning for standby in sama5d2_pm_init()
+ - Remove missleading message in ATMEL_SECURE_PM help
 
-but otherwise
-Reviewed-by: Sven Peter <sven@svenpeter.dev>
+Changes in v2:
+ - Add suspend mode SMC in already existing secure support
 
+Clément Léger (2):
+  ARM: at91: add code to handle secure calls
+  ARM: at91: pm: add support for sama5d2 secure suspend
 
-Thanks,
+ arch/arm/mach-at91/Kconfig      | 11 +++++++-
+ arch/arm/mach-at91/Makefile     |  2 +-
+ arch/arm/mach-at91/pm.c         | 36 ++++++++++++++++++++++++++
+ arch/arm/mach-at91/sam_secure.c | 46 +++++++++++++++++++++++++++++++++
+ arch/arm/mach-at91/sam_secure.h | 18 +++++++++++++
+ arch/arm/mach-at91/sama5.c      |  2 ++
+ 6 files changed, 113 insertions(+), 2 deletions(-)
+ create mode 100644 arch/arm/mach-at91/sam_secure.c
+ create mode 100644 arch/arm/mach-at91/sam_secure.h
 
-Sven
+-- 
+2.34.1
+
