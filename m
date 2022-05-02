@@ -2,161 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6225CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 10:59:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC509C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 11:00:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229838AbiEBLCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 07:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58386 "EHLO
+        id S230291AbiEBLDu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 07:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbiEBLC2 (ORCPT
+        with ESMTP id S229946AbiEBLDr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 07:02:28 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62F5B39;
-        Mon,  2 May 2022 03:58:59 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id k23so27083873ejd.3;
-        Mon, 02 May 2022 03:58:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=94vn6QxCatU8SdwHnwlVFIAEM6kk0iWhQcT6gEzd07o=;
-        b=gIBigXRWRP2bwFWuVaRSpDB2XK5tmhst9NbbZAKxjzpxZ57dRDRuhB46XoS4fChnGH
-         AfmhiEWPWkHnIsdl2+uETGhLw+jDKVnZne+9aEhxND5jB3Uf2VEMfhVSxTUb8URewf+R
-         9yak+DM1mxKZ/azkdttalqJS8mezrEiIUsC3XPQZmuUF6rYTAanG/tv3Yf867xzx0f38
-         xZUNaFAqUe2knvK48Xl2Mudjw48BV/xtFyjb19c74borxpX3yoql620dC7rPBgImci9p
-         F9vYZ50KABB5DMsailubtBdEds6kOlwUi1cCSRP9CY3R3e420YM3whMl1xlOfblsCw9m
-         Xacg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=94vn6QxCatU8SdwHnwlVFIAEM6kk0iWhQcT6gEzd07o=;
-        b=GBpnpnyvcxvQrz9hwd5XtGq7dUkpyn621tUI50pKyeYfwcfDCMM1u1WtLCIHPjgDp3
-         6giUiZslQNPnaGgcFB8dT+xnWFR0XKPzGI4hh9bcJwnVsbcaRnZ9QYnrwiGpPr2bjfHx
-         mNx2aDsRysNvKUPdj+WIrCdXDpThaHyvQ7vhYbvC/pR06jjntinMMQsxHArP8eOWB9Fi
-         787FaqCdelmBGI0BXriTqrQGlK9z4TAXIvJcIwrVXMlHbtTTbr4teTGES6ksM/H7igOO
-         EM4ENVD+hp0y5ltjFJ+o119+iMiJ/gVku1k8a56VJoXeoIlnaux/j527e8LqjZQePv9F
-         R3gw==
-X-Gm-Message-State: AOAM530nPcp+kTRMJ07pwPORDPfjcP4hpqcrilGbf3GwZzAoq/W6Phcu
-        1wOH2tsy2VlZUkUH3mtkQgI=
-X-Google-Smtp-Source: ABdhPJxPUVektfI6QlOweHtlDjKawi2DznTY/c8J0WmbTy3aNTOdjpiML6izXDS8jIbBZBWL5NL6BQ==
-X-Received: by 2002:a17:907:d28:b0:6f4:6375:5245 with SMTP id gn40-20020a1709070d2800b006f463755245mr2281563ejc.12.1651489138048;
-        Mon, 02 May 2022 03:58:58 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id n6-20020a056402514600b0042617ba63bcsm6596291edd.70.2022.05.02.03.58.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 03:58:57 -0700 (PDT)
-Message-ID: <626fb971.1c69fb81.fcab0.5f71@mx.google.com>
-X-Google-Original-Message-ID: <Ym+1BPrdj2qz/SmT@Ansuel-xps.>
-Date:   Mon, 2 May 2022 12:40:04 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] dt-bindings: arm: msm: Convert kpss-gcc driver
- Documentation to yaml
-References: <20220430060125.9124-1-ansuelsmth@gmail.com>
- <20220430060125.9124-4-ansuelsmth@gmail.com>
- <fec305d1-d4b3-3f9d-bc31-bc33490d1ad7@linaro.org>
- <626d4cbf.1c69fb81.e6965.76b4@mx.google.com>
- <0711b822-506b-7b90-6b63-50c5c0ce4f6e@linaro.org>
+        Mon, 2 May 2022 07:03:47 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B64822A;
+        Mon,  2 May 2022 04:00:16 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 7E4465C00D3;
+        Mon,  2 May 2022 07:00:14 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Mon, 02 May 2022 07:00:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1651489214; x=1651575614; bh=ItYICrTgTo
+        hpwpBDhrRzrv8Mk71TJQUctJQK+kNCaEg=; b=LYscJNJ6Guke04cT64YEDVdjPk
+        ZMKEn58Y41ffSfK8puh+bLL8Il/6dVJCwe4qSMJUNXWfMqBNmftpGAynZlUzbSQr
+        aED+fki4Eq7DLKNWXZb6F0qa3RwbxEn+/eO11NZQglhXj14J7eDz+6lPWx5wEx2P
+        No6/xGxh2vzIYk5eOlF4t8FWICQwJ3oyaYmqRy2a4745Ef3XdRUcRfe8UAOaHnht
+        gKajLcDMaCbFe8bopUKxsWkB+QTdov7Ym4McXAZLAS13P13UMbwQOyJUY0wsVvs4
+        p0yVsFzj9negvdfW9yMcI2XEt2VNY+w09LXuCxDTlTvIE58pF1tMxu+tFg2g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1651489214; x=
+        1651575614; bh=ItYICrTgTohpwpBDhrRzrv8Mk71TJQUctJQK+kNCaEg=; b=f
+        NJxWMgo52DAUSvr5ppVD+jC98ovCq/y/mMenmbrdp1EDOWqHv4+xjHNd9jMw+aoA
+        7vDzbEfF0CJMBMc398il+QjxgJFmtskl12ypCYCMldCTPlTExBPk/uQGCs29N61N
+        CRC9XF90FvFRnHCLN5uqoIqsPEZ8hf/PQf7XkFuolTHaVksroukqiM4O6NbEWBXH
+        r7u+9Ujfwui2a/QraPDLfb5wuXQyLACkhhWvdVkWXBrLscWzhObwOeHPRw0hBT+x
+        b6+56x+V39044xAn9XmHlEOivbXdjY0qSg35eN1DrKzTgUEOZZTHhehertKdRkKP
+        ftdQgGe+2vQWGjy7JQlHg==
+X-ME-Sender: <xms:vLlvYjR4YVGLpJu6ZquLlIf-XQi967msLSX4px2vi9WFcvV4L0qbFw>
+    <xme:vLlvYkwCZWhz55WPjTh2TH0oX6gARsWO8YljXKjUhIPZ5faiD4cl4dc5WlcY-GAB4
+    yJ82HJHpuzM41R_5Nc>
+X-ME-Received: <xmr:vLlvYo2agjDSHTbynvHVJWXHrMG4QpDLvI2mCLCVnqfJrazd8TdCK_DoiM9OeIERiU1EarzL-4UJqwoqVSYFCQsCoz1j_-hBECBxhME>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehgdeffecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
+    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+    htvghrnhepteefffefgfektdefgfeludfgtdejfeejvddttdekteeiffejvdfgheehfffh
+    vedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
+    grgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:vLlvYjDoVQPSrU9DIM4GPu6EZp8Su4e_o5YCQvDZYIk5IbG89SV_3w>
+    <xmx:vLlvYsjAsoL1FPfpWcxksuDQ_nbt-7XVgR4cjSCe0Lk7KzFoHP-WYA>
+    <xmx:vLlvYnphluj0VrpjS-ZULyjgnx7wOwCnYRFqORRRVDj7j1lAdWeDAg>
+    <xmx:vrlvYlVA8XUyTDMdzKQLvVQxzRNDBJ9b2eK4lsOf65Eg0WVZsT9pVQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 2 May 2022 07:00:12 -0400 (EDT)
+Date:   Mon, 2 May 2022 13:00:10 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Ruslan Zalata <rz@fabmicro.ru>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH v2] hwmon: (sun4i-lradc) Add driver for LRADC found on
+ Allwinner A13/A20 SoC
+Message-ID: <20220502110010.q7vvdkdpaiz5acjl@houat>
+References: <20220428210906.29527-1-rz@fabmicro.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jlw5hd26lnyezkda"
 Content-Disposition: inline
-In-Reply-To: <0711b822-506b-7b90-6b63-50c5c0ce4f6e@linaro.org>
+In-Reply-To: <20220428210906.29527-1-rz@fabmicro.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 01, 2022 at 10:26:47AM +0200, Krzysztof Kozlowski wrote:
-> On 30/04/2022 09:42, Ansuel Smith wrote:
-> > On Sat, Apr 30, 2022 at 04:40:54PM +0200, Krzysztof Kozlowski wrote:
-> >> On 30/04/2022 08:01, Ansuel Smith wrote:
-> >>> Convert kpss-gcc driver Documentation to yaml.
-> >>> Add #clock-cells additional binding to required bindings and example
-> >>> as it's a required binding for clock-output-names.
-> >>>
-> >>> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> >>
-> >>
-> >> (...)
-> >>
-> >>> +properties:
-> >>> +  compatible:
-> >>> +    items:
-> >>> +      - enum:
-> >>> +          - qcom,kpss-gcc-ipq8064
-> >>> +          - qcom,kpss-gcc-apq8064
-> >>> +          - qcom,kpss-gcc-msm8974
-> >>> +          - qcom,kpss-gcc-msm8960
-> >>> +      - const: qcom,kpss-gcc
-> >>> +
-> >>> +  reg:
-> >>> +    maxItems: 1
-> >>> +
-> >>> +  clocks:
-> >>> +    items:
-> >>> +      - description: phandle to pll8_vote
-> >>> +      - description: phandle to pxo_board
-> >>> +
-> >>> +  clock-names:
-> >>> +    items:
-> >>> +      - const: pll8_vote
-> >>> +      - const: pxo
-> >>> +
-> >>> +  clock-output-names:
-> >>> +    const: acpu_l2_aux
-> >>
-> >> It does not make sense having a constant output name. What is the
-> >> meaning this property in such case? The original binding did not enforce it.
-> >>
-> >>
-> >>
-> >> Best regards,
-> >> Krzysztof
-> > 
-> > Mh. Should I just drop the const and put a description referring to an
-> > advised name? The driver with the kpss-gcc hardcode the name to
-> > acpu_l2_aux that's why I thought it was a correct conversion using a
-> > const but I assume this is another problem of not making a correct 1:1
-> > conversion and adding fixes on pure conversion.
-> 
-> Hard-coding a name by implementation is not a reason to put that name in
-> DTS. DTS is not a place for values stored in the driver.
-> 
-> > Think I should drop it and put a description to it. (and then later fix
-> > it when I will push the other series with all the tweaks)
-> 
-> The driver kpss-gcc does not use this property at all, so I am not sure
-> if there is a point to even keep it. Any other user of bindings makes
-> use of the property?
-> 
-> 
-> Best regards,
-> Krzysztof
 
-The idea is that you put the clk name in 'clock-output-names' and the
-driver needs to have support for it (and set the clk name based on the
-name defined in the dts)
+--jlw5hd26lnyezkda
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This driver doesn't have support for it and is actually hardcoded.
-So you are right and I should just drop it.
+Hi,
 
-But now another question... Since #clock-cells was added as a
-requirement for clock-output-names, should I drop also that?
+On Thu, Apr 28, 2022 at 09:09:03PM +0000, Ruslan Zalata wrote:
+> Some Allwinner SoCs like A13, A20 or T2 are equipped with two-channel
+> low rate (6 bit) ADC that is often used for extra keys. There's a driver
+> for that already implementing standard input device, but it has these
+> limitations: 1) it cannot be used for general ADC data equisition, and
+> 2) it uses only one LRADC channel of two available.
+>=20
+> This driver provides basic hwmon interface to both channels of LRADC on
+> such Allwinner SoCs.
+>=20
+> Signed-off-by: Ruslan Zalata <rz@fabmicro.ru>
+> ---
+>  MAINTAINERS                       |   6 +
+>  drivers/hwmon/Kconfig             |  13 ++
+>  drivers/hwmon/Makefile            |   1 +
+>  drivers/hwmon/sun4i-lradc-hwmon.c | 280 ++++++++++++++++++++++++++++++
+>  4 files changed, 300 insertions(+)
+>  create mode 100644 drivers/hwmon/sun4i-lradc-hwmon.c
+>=20
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 5e8c2f61176..d9c71e94133 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -18861,6 +18861,12 @@ S:	Maintained
+>  F:	Documentation/devicetree/bindings/input/allwinner,sun4i-a10-lradc-key=
+s.yaml
+>  F:	drivers/input/keyboard/sun4i-lradc-keys.c
+> =20
+> +SUN4I LOW RES ADC HWMON DRIVER
+> +M:	Ruslan Zalata <rz@fabmicro.ru>
+> +L:	linux-hwmon@vger.kernel.org
+> +S:	Maintained
+> +F:	drivers/hwmon/sun4i-lradc-hwmon.c
+> +
+>  SUNDANCE NETWORK DRIVER
+>  M:	Denis Kirjanov <kda@linux-powerpc.org>
+>  L:	netdev@vger.kernel.org
+> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+> index 68a8a27ab3b..86776488a81 100644
+> --- a/drivers/hwmon/Kconfig
+> +++ b/drivers/hwmon/Kconfig
+> @@ -1691,6 +1691,19 @@ config SENSORS_SIS5595
+>  	  This driver can also be built as a module. If so, the module
+>  	  will be called sis5595.
+> =20
+> +config SENSORS_SUN4I_LRADC
+> +	tristate "Allwinner A13/A20 LRADC hwmon"
+> +	depends on ARCH_SUNXI && !KEYBOARD_SUN4I_LRADC
+> +	help
+> +	  Say y here to support the LRADC found in Allwinner A13/A20 SoCs.
+> +	  Both channels are supported.
+> +
+> +	  This driver can also be built as module. If so, the module
+> +	  will be called sun4i-lradc-hwmon.
+> +
+> +	  This option is not compatible with KEYBOARD_SUN4I_LRADC, one
+> +	  of these must be used at a time.
 
-In theory #clock-cells should always be declared for clock providers, is
-it right to add it in the conversion commit or I should put this change
-in another commit? (since it's now an addition and now something required
-to fix a bot warning)
+How do you plan on enforcing that?
 
--- 
-	Ansuel
+I guess a better path forward would be to either register an hwmon
+device in the original driver, or convert that driver to iio and use
+iio-hwmon.
+
+Maxime
+
+--jlw5hd26lnyezkda
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYm+5ugAKCRDj7w1vZxhR
+xWLTAQCboX/1BSKFvZS12C8iuG73rMmjtoEPp7an4m1k3cxlmQEA1j3nBoQoAViK
+ntBC9sXc867rFYwx0NGyOqdWhao8Ywk=
+=5vhh
+-----END PGP SIGNATURE-----
+
+--jlw5hd26lnyezkda--
