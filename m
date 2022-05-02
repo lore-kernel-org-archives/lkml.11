@@ -2,118 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE4F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 18:45:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F81C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 18:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356287AbiEBStO (ORCPT
+        id S1352775AbiEBSuT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 14:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57754 "EHLO
+        Mon, 2 May 2022 14:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387018AbiEBStF (ORCPT
+        with ESMTP id S242074AbiEBSuO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 14:49:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DE7E8B7CA
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 11:45:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651517135;
+        Mon, 2 May 2022 14:50:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894B6BE04;
+        Mon,  2 May 2022 11:46:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C175614A5;
+        Mon,  2 May 2022 18:46:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CB9BC385AC;
+        Mon,  2 May 2022 18:46:43 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="pc08Ys26"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1651517201;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=YnpbZs50SiOUxfAVjbV2pZV2prkPBtBeiEirw1AUs2U=;
-        b=GcYRAQuMd7R5PUji1Fd4P7AmBzSZVEtNz2fXHV0i/K6QSB2t+tsOsa03ot4QSCKnmxxwzv
-        l/WT4fbXSQoolF1lhBdqeUyNnYkzGM7KnxrAm++9uiUmYaobjmZxgfcuIPU+L89BXMe7Go
-        k4bktLUhAt2zMcZ9hAeI/gw+FH9sxAg=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-622-nj22mpb1NO6Gfw_0Sqr2BQ-1; Mon, 02 May 2022 14:45:33 -0400
-X-MC-Unique: nj22mpb1NO6Gfw_0Sqr2BQ-1
-Received: by mail-wr1-f71.google.com with SMTP id g7-20020adfbc87000000b0020ac76d254bso5592367wrh.6
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 11:45:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YnpbZs50SiOUxfAVjbV2pZV2prkPBtBeiEirw1AUs2U=;
-        b=dFG6n5mc7GEJEWx/KvadE9QVORbeTWLqKwnSLmAGzG9RYS+X6BMGFr945w8aG1WdRP
-         VCcB7SZDhN8g5hTFjhvj5N43VCp/rdUcGo5Gepbp+8cKGPClVrO1bz8pKrWocv4yePQ3
-         12zK7dWcrFTSjq8o2BI+OBtLKFMeI3aljhCYEtIaP61f+xc1yt0ldxrsVpKp64FlxpaI
-         UglmUpeX3l7XjQecaN+Mdm5bioO+1p1+RGwdsnY3h/TNKM5jfxxzEhf8UlHIS6UkQCp7
-         cXF8aM4fvHFpx6zRtaIeUBKsKWkrUY9BBdTXVm8///dwBh6dRnlmi/fLcDQaq4TL2a9U
-         YanQ==
-X-Gm-Message-State: AOAM531wZvFaT5DO2q3bkvhX6wBxC6ZTUAVM8UssIasoMejC8vseOhNF
-        lorExl1Zxmz1PNiztqrOj+WmDmHnJoXjicnGDjV7Ap3IxO7pn/iPOn/FYML5a1/RRNBxscKruOB
-        8ejqpge3Mk+e8FdsU0C9poAQ=
-X-Received: by 2002:adf:de04:0:b0:20a:da05:39b with SMTP id b4-20020adfde04000000b0020ada05039bmr10116696wrm.550.1651517132776;
-        Mon, 02 May 2022 11:45:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx0CRrYsZbpYaf26cjkrGdBToN8jh082LL+RimY903CNaZts3xfryiuVWt6qLIKcs5La+OBdw==
-X-Received: by 2002:adf:de04:0:b0:20a:da05:39b with SMTP id b4-20020adfde04000000b0020ada05039bmr10116681wrm.550.1651517132544;
-        Mon, 02 May 2022 11:45:32 -0700 (PDT)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id l12-20020adfbd8c000000b0020c5253d8edsm7822588wrh.57.2022.05.02.11.45.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 11:45:31 -0700 (PDT)
-Date:   Mon, 2 May 2022 19:45:30 +0100
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "cl@linux.com" <cl@linux.com>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "atomlin@atomlin.com" <atomlin@atomlin.com>,
-        "ghalat@redhat.com" <ghalat@redhat.com>,
-        "oleksandr@natalenko.name" <oleksandr@natalenko.name>,
-        "neelx@redhat.com" <neelx@redhat.com>
-Subject: Re: [PATCH v4 2/2] module: Introduce module unload taint tracking
-Message-ID: <20220502184530.qjbl7rkilmxtmsgg@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220425090841.3958494-1-atomlin@redhat.com>
- <20220425090841.3958494-3-atomlin@redhat.com>
- <73869e4f-7190-221c-897b-fc13ec54c8cb@csgroup.eu>
+        bh=pCPz9yDQbtceEsLuC3rMNC0OSyPzfVOMTuOAVe0IAaI=;
+        b=pc08Ys26CvQoChqk5TWzKuQrrCDplm9XM18Nz3iWgufCENImlQUhBGLML2o/lPWGKcqYPq
+        FJaivNTJI9lFFR3MbAQtaedId3uE4WGZg6GClWGiJ/kezmvk29n1zwnUXHv3rFFia4wCQ2
+        wO6oFUr7D6SKvUb91cXB4A6GqTSopfo=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id fcb55f61 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 2 May 2022 18:46:41 +0000 (UTC)
+Date:   Mon, 2 May 2022 20:46:34 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Alexander Graf <graf@amazon.com>
+Cc:     Lennart Poettering <mzxreary@0pointer.de>,
+        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Colm MacCarthaigh <colmmacc@amazon.com>,
+        Torben Hansen <htorben@amazon.co.uk>,
+        Jann Horn <jannh@google.com>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Subject: Re: [PATCH 2/2] random: add fork_event sysctl for polling VM forks
+Message-ID: <YnAnCgxmPBrMdKt5@zx2c4.com>
+References: <20220502140602.130373-1-Jason@zx2c4.com>
+ <20220502140602.130373-2-Jason@zx2c4.com>
+ <Ym/7UlgQ5VjjC76P@gardel-login>
+ <YnAC00VtU8MGb7vO@zx2c4.com>
+ <YnAMBzhcJhGR5XOK@gardel-login>
+ <YnAc4hwPyByF4kZ5@zx2c4.com>
+ <480469e6-0eb0-8d76-0b8d-111579e73701@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <73869e4f-7190-221c-897b-fc13ec54c8cb@csgroup.eu>
+In-Reply-To: <480469e6-0eb0-8d76-0b8d-111579e73701@amazon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-05-02 11:07 +0000, Christophe Leroy wrote:
-> > @@ -150,6 +160,41 @@ int unregister_module_notifier(struct notifier_block *nb)
-> >   }
-> >   EXPORT_SYMBOL(unregister_module_notifier);
-> >   
-> > +#ifdef CONFIG_MODULE_UNLOAD_TAINT_TRACKING
-> > +static int try_add_tainted_module(struct module *mod)
-> > +{
-> > +	struct mod_unload_taint *mod_taint;
-> > +
-> > +	module_assert_mutex_or_preempt();
-> > +
-> > +	list_for_each_entry_rcu(mod_taint, &unloaded_tainted_modules, list,
-> > +				lockdep_is_held(&module_mutex)) {
-> > +		size_t len = strlen(mod_taint->name);
+On Mon, May 02, 2022 at 08:34:38PM +0200, Alexander Graf wrote:
+> Michael, since we already changed the CID in the spec, can we add a 
+> property to the device that indicates the first 4 bytes of the UUID will 
+> always be different between parent and child?
 > 
-> Why do you need that strlen() at all, can't you just use strcmp() ?
-> With strncmp() what happens if for instance mod_taint->name is "dead" 
-> and mod->name is "deadbeef" ?
+> That should give us the ability to mmap the vmgenid directly to user 
+> space and act based on a simple u32 compare for clone notification, no?
 
-Hi Christophe,
+That is not a good idea. We want an _additional_ 4 bytes, so that we can
+keep the first 16 bytes (128 bits) as a kernel space secret.
 
-Thanks for your feedback.
-
-I see that. Furthermore, the length of a module's name is fixed.
-Hence strcmp() should be fine.
-
-
-Kind regards,
-
--- 
-Aaron Tomlin
-
+Jason
