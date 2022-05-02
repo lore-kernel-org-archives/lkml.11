@@ -2,183 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB146C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 980E2C43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349643AbiEBUHF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 16:07:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39458 "EHLO
+        id S235149AbiEBUKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 16:10:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232596AbiEBUHB (ORCPT
+        with ESMTP id S231508AbiEBUK3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 16:07:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A08BC3F;
-        Mon,  2 May 2022 13:03:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C769A614E3;
-        Mon,  2 May 2022 20:03:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 031AFC385A4;
-        Mon,  2 May 2022 20:03:28 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="RVNBaSAN"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651521807;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iQ49h26zaKpjAUeQljwnaf9r3WN1R89i6oAXsSSE18I=;
-        b=RVNBaSANisHa5WiEuHDWzCrh7+tIA5oziEIdE9Hnu+ePF6XkfSXz3BP+8XeZOXaKwtD9zT
-        Uln1eQ8xX2GZTh8XhaCo+crluZ+3GSK09mG1vAdxUSbPXVsvUzT2jf198pEHM9Y4AGLRl+
-        9Mv5NubEd32GzzAi46uWjGnm/+ZW7mc=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 4a578e43 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 2 May 2022 20:03:26 +0000 (UTC)
-Date:   Mon, 2 May 2022 22:03:21 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Alexander Graf <graf@amazon.com>
-Cc:     Lennart Poettering <mzxreary@0pointer.de>,
-        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Colm MacCarthaigh <colmmacc@amazon.com>,
-        Torben Hansen <htorben@amazon.co.uk>,
-        Jann Horn <jannh@google.com>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Subject: Re: [PATCH 2/2] random: add fork_event sysctl for polling VM forks
-Message-ID: <YnA5CUJKvqmXJxf2@zx2c4.com>
-References: <20220502140602.130373-1-Jason@zx2c4.com>
- <20220502140602.130373-2-Jason@zx2c4.com>
- <Ym/7UlgQ5VjjC76P@gardel-login>
- <YnAC00VtU8MGb7vO@zx2c4.com>
- <YnAMBzhcJhGR5XOK@gardel-login>
- <7a1cfd1c-9f0e-f134-e544-83ee6d3cd9c9@amazon.com>
- <YnAiylnSytuYM53z@zx2c4.com>
- <f90d5e06-8cd7-14b3-43d5-c4799597d023@amazon.com>
+        Mon, 2 May 2022 16:10:29 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1469A63E8;
+        Mon,  2 May 2022 13:07:00 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id jt15so1774207qvb.8;
+        Mon, 02 May 2022 13:07:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=v3wD5SALNmRJFLj9tUWRsXDgRKKhZDunmdZcipLQpV4=;
+        b=Uq36JCx5K0KFPY82rUyOkrL7gpRtRpV8qwV7pUpi7ZblohNY77FDprju+2thZr/DCz
+         IURVugcQ4/25LVRJWq2wza3H8mhAYjZccCf85fJulyduF3r1Hj9qKXuEAWrDIO0FSZU9
+         qdT1iBcAiRavaiLaO7zwRAx+RePYqKUbXADQASvw23Wbs5RYgyEouE0PT1PlS3XMekJD
+         mq959KdKlcnZNxUc0kLS+puVh9HfuTCZGeIB40KD946fqq2idzrHT/i0INSqoSwWgZ4r
+         sIxxSwzeu/FTCOK34gRXAKzTlfe5zuUbbsJ1gpXVKh1pLs+L6qRolofrTnUCT/KcWM8D
+         5c1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=v3wD5SALNmRJFLj9tUWRsXDgRKKhZDunmdZcipLQpV4=;
+        b=FiTKpLjSyYo287zEIjZ68hBEuYpwehF7nO5fpALuhJM2Q6k4ZRtChVtT8+eWrDXqJH
+         q68BlUwfGIEWDhB3N2mbd+lNlIhz4gER39jZ52DB4qPcGxfim6B7p3b7tS5zxc/MW6VY
+         5ai5LG+gMUIQB8eJv+WKo4N1GtSKEluw519ChYRUnxDr+4Fk+Woz6IUR7UTQ0lc+jl3f
+         4OhAhX9Lg/zDVU0AeXPT7NJKSbKBimWkYj+1kzpN0GYlUG8860yzKODGhtDhpbo2F9EH
+         3yA7J2knHphQCWr0rIGCI09+D1QSlsQW9xYFMGlM4XLNflIF3daqsoq0HJrMXSt6hPul
+         f7PQ==
+X-Gm-Message-State: AOAM533KgfShIurQry7Hp5lBUr+SI4grfY3negFKipC2LjgLQyNo39Zv
+        RSBKTP51INdLO6mxvIRqD2k=
+X-Google-Smtp-Source: ABdhPJyn1OXV0CXpTEdhtUwpy1u82XZ916qh1IHA1s6fQUtXW4a+i8V6Kt7lDT4N+V9R07MrAOeWMA==
+X-Received: by 2002:a05:6214:c8d:b0:44b:f11e:63d with SMTP id r13-20020a0562140c8d00b0044bf11e063dmr11038124qvr.7.1651522019148;
+        Mon, 02 May 2022 13:06:59 -0700 (PDT)
+Received: from localhost ([2601:c4:c432:9a9:ce8e:a55c:4848:4d10])
+        by smtp.gmail.com with ESMTPSA id u18-20020a05620a121200b0069fc13ce1e2sm4779593qkj.19.2022.05.02.13.06.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 13:06:58 -0700 (PDT)
+Date:   Mon, 2 May 2022 13:06:56 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: Re: [PATCH 2/5] lib: add bitmap_{from,to}_arr64
+Message-ID: <YnA54HzrdfOr2QYl@yury-laptop>
+References: <20220428205116.861003-1-yury.norov@gmail.com>
+ <20220428205116.861003-3-yury.norov@gmail.com>
+ <YmvhLbIoHDhEhJFq@smile.fi.intel.com>
+ <YmwIHRhS2f1QTW3b@yury-laptop>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f90d5e06-8cd7-14b3-43d5-c4799597d023@amazon.com>
+In-Reply-To: <YmwIHRhS2f1QTW3b@yury-laptop>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alex,
-
-On Mon, May 02, 2022 at 08:57:01PM +0200, Alexander Graf wrote:
-> So far I see little that would block your patch? It seems to go into a 
-> good direction from all I can tell.
-
-With kernel code for the kernel, if it's good enough, it's good enough,
-and can be made better later. With kernel code for userspace, it might
-not be possible to make it better later, so if we've got a plethora of
-options, it makes the incrementalism I was enthusiastic about a little
-bit more risky.
-
-Here's where we're at:
-
-- /proc/sys has this easy to use poll() interface [which currently breaks
-  normal poll() semantics; see patch 1/2]. It'd be nice to use this as
-  an async notifier interface.
-
-- A race-free mmap()d mechanism needs virtual hardware support to be
-  useful, so I don't want to add it now. But when we do have it, where
-  should it be added?
-
-  * Atop the same /proc/sys file that this patch has returning -ENODATA
-    at the moment? /proc/sys doesn't do mmap now so that'd be some
-    plumbing work, which would be pretty odd for the sysctl abstraction.
-
-  * Atop some new file elsewhere? Not hard to do, but also begs the
-    question of which driver should do it, where the file should be, and
-    a whole host of bikesheddy questions.
-
-  * In the VDSO? This would make the most sense to me if we're ever
-    going to do a VDSO RNG, and to design it along with the userspace
-    RNG stuff people think they want, even if it's maybe not the best
-    idea in the end. This is a huge can of worms. Termites, even, and
-    they'll eat through the beams of your house.
-
-  * Nowhere, because even though this race-free mechanism is attractive,
-    it's way too hard to program for, and nobody is going to use it, and
-    not many people care /that/ much about having this mechanism being
-    100% race-free. Colm said Amazon doesn't, for example, since it uses
-    quiescent states. And apparently Microsoft doesn't care much either,
-    and they don't even use quiescent states. Maybe I'm the only one
-    raising a fuss about the race window (while hypocritically also not
-    being very eager to write code around an interface that has to check
-    a variable all the time).
-
-- A file in /proc/sys can return -ENODATA, as this patch has it doing,
-  or it can return something else:
-
-  * A counter. Flawed for reasons discussed elsewhere.
-
-  * A UUID, just like /proc/sys/kernel/random/boot_id, except we'd name
-    it generation_id or something and it'd change on VM fork. An earlier
-    version of this patch did that.
-
-  * -ENODATA, as this patch does, because each caller can get a new unique
-    value with getrandom(), as there's no point in having some global
-    identifier like with boot_id. This is what I'm leaning toward. It
-    seems like getrandom() would handle Lennart's case, Go's case, s2n's
-    case, and we don't need a particular ID.
-
-  * The direct value of the ACPI vmgenid value. Discussed in earlier
-    emails; I don't want to do this.
-
-- You don't care about race-free, but you do care about mmap(), for
-  "programming reasons" in s2n. I'm not yet sympathetic to this case
-  :-P. The point of mmap() should be for the race-free stuff. Otherwise
-  poll() should do the job, and if you can't poll, you can hack around
-  it with another process or a thread or whatever other trick. Your
-  systemd proposal with a file was just punting the idea elsewhere in
-  userspace (which I think is a bit ugly too...).
-
-This state of affairs inclines me to:
-
-- Have a /proc/sys/kernel/random/fork_event that has a poll() interface
-  with reads returning -ENODATA (this patch).
-
-- Try to convince whomever that poll()ing on fork_event and then calling
-  getrandom() for a process-local snapshot ID is better than poll()ing
-  on and subsequently read()ing a /proc/sys/kernel/random/generation_id
-  that returns a global UUID like boot_id. [Lennart - I'm specifically
-  interested in trying to convince you of this. Thoughts?]
-
-- Given that you are okay with an async mechanism, figure out how poll()
-  can work for s2n rather than mmap().
-
-- Not really pursue the race-free mmap() thing unless Microsoft goes
-  full steam ahead with it because it's complicated to program for and
-  maybe (or maybe not? I don't know? data please?) a theoretical
-  concern.
- 
-> You block the thread on poll, so the only option is a thread. I was 
-> until now always under the working assumption that we can't do this in a 
-> thread because you don't want your single threaded application to turn 
-> into a pthreaded one, but you make me wonder. Let me check with Torben 
-> tomorrow.
-
-Can't you use raw clone() and just have a super dirty thread that shares
-a single page mapping and nothing else? Poll on the pidfd of the parent
-and the fork_event fd, quit on the former, and ++ on the latter.
-
-> >> 2) A way to notify larger applications (think Java here) that a system
-> >> is going to be suspended soon so it can wipe PII before it gets cloned
-> >> for example.
-> > Suspension, like S3 power notification stuff? Talk to Rafael about that;
+On Fri, Apr 29, 2022 at 08:45:35AM -0700, Yury Norov wrote:
+> On Fri, Apr 29, 2022 at 03:59:25PM +0300, Andy Shevchenko wrote:
+> > On Thu, Apr 28, 2022 at 01:51:13PM -0700, Yury Norov wrote:
+> > > Manipulating 64-bit arrays with bitmap functions is potentially dangerous
+> > > because on 32-bit BE machines the order of halfwords doesn't match.
+> > > Another issue is that compiler may throw a warning about out-of-boundary
+> > > access.
+> > > 
+> > > This patch adds bitmap_{from,to}_arr64 functions in addition to existing
+> > > bitmap_{from,to}_arr32.
+> > 
+> > ...
+> > 
+> > > +	bitmap_copy_clear_tail((unsigned long *) (bitmap),	\
+> > > +			(const unsigned long *) (buf), (nbits))
+> > 
+> > Drop spaces after castings. Besides that it might be placed on a single line.
+> > 
+> > ...
 > 
+> OK
+>  
+> > 
+> > > +	bitmap_copy_clear_tail((unsigned long *) (buf),		\
+> > > +			(const unsigned long *) (bitmap), (nbits))
+> > 
+> > Ditto.
+> > 
+> > ...
+> > 
+> > > +void bitmap_to_arr64(u64 *buf, const unsigned long *bitmap, unsigned int nbits)
+> > > +{
+> > > +	const unsigned long *end = bitmap + BITS_TO_LONGS(nbits);
+> > > +
+> > > +	while (bitmap < end) {
+> > > +		*buf = *bitmap++;
+> > > +		if (bitmap < end)
+> > > +			*buf |= (u64)(*bitmap++) << 32;
+> > > +		buf++;
+> > > +	}
+> > >  
+> > > +	/* Clear tail bits in last element of array beyond nbits. */
+> > > +	if (nbits % 64)
+> > > +		buf[-1] &= GENMASK_ULL(nbits, 0);
+> > 
+> > Hmm... if nbits is > 0 and < 64, wouldn't be this problematic, since
+> > end == bitmap? Or did I miss something?
 > 
-> Whether you go running -> S3 -> clone or you go running -> paused -> 
-> clone is an implementation detail I'm not terribly worried about. Users 
-> can do either, because on both cases the VM is in paused state.
+> BITS_TO_LONGS(0) == 0
+> BITS_TO_LONGS(1..32) == 1
+> BITS_TO_LONGS(33..64) == 2
+> 
+> The only potential problem with buf[-1] is nbits == 0, but fortunately
+> (0 % 64) == 0, and it doesn't happen.
+> 
+> Thanks,
+> Yury
 
-Ahh, I see.
-https://lore.kernel.org/lkml/20220501123849.3858-1-Jason@zx2c4.com/
-might interest you.
+Are there any other concerns? If no, I'll fix formatting and append it to
+bitmap-for-next.
 
-Jason
+Thanks,
+Yury
