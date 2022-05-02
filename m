@@ -2,298 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:21:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 916C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:22:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385268AbiEBNYy (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 09:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54456 "EHLO
+        id S236178AbiEBNY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 09:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385246AbiEBNYj (ORCPT
+        with ESMTP id S1385309AbiEBNYA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 09:24:39 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977DF10FD5;
-        Mon,  2 May 2022 06:21:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651497669; x=1683033669;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Vhjt4KJNLWab4SNtPeWonpcHbv2BrmLKxf16cfZ1ZuE=;
-  b=fN0RTkmiwzYDvCL1Ar3NBloETP72ei7mzaRPvlcPhzmGUh2tJSoCs0kQ
-   j2LK0mp/6TXM8D5EemaynhwQhx5nR0M4TStDbaok9JSGkI3zqYvcwnfRJ
-   0ZpImddq5YCwoFdNdhNU7zjrIkYHp/ah4lduwvif4v5cUdFNTx4jsgR2Y
-   9+S87g0Cvjo9qtCrbsLI7OoZ/E0HTSO7fOtHnfuOUr5VFcfwK0i/9vlBu
-   Bejq71JH33/vkuEYLo6P8DC0sDW6LNGQ0gv81430yVpzzjRSng00k9Lqz
-   Ve02IRhm0dndq+/UeUCdGhU5KdOt7J4o3jUDt6y1/QIfajovYrxneuBeF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10334"; a="267364131"
-X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
-   d="scan'208";a="267364131"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 06:21:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
-   d="scan'208";a="707608396"
-Received: from black.fi.intel.com (HELO black.fi.intel.com.) ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 02 May 2022 06:21:06 -0700
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Benson Leung <bleung@google.com>,
-        Prashant Malani <pmalani@chromium.org>,
-        Jameson Thies <jthies@google.com>,
-        "Regupathy, Rajaram" <rajaram.regupathy@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Won Chung <wonchung@google.com>, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 3/3] usb: typec: tcpm: Register USB Power Delivery Capabilities
-Date:   Mon,  2 May 2022 16:20:58 +0300
-Message-Id: <20220502132058.86236-4-heikki.krogerus@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220502132058.86236-1-heikki.krogerus@linux.intel.com>
-References: <20220502132058.86236-1-heikki.krogerus@linux.intel.com>
+        Mon, 2 May 2022 09:24:00 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946CB13B;
+        Mon,  2 May 2022 06:20:25 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id DA987210E3;
+        Mon,  2 May 2022 13:20:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1651497623; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=d2Ek6JLvpHBKhP9xYjX+TNERo7MBjYhMMbP3fK5HvYQ=;
+        b=amXr9iXgmhXMym3/MvAWFma/GlvWTX7dVs4HHaCPxfkUJDzwkqoU3Ih/XFUizusV+PaB2b
+        2/Kr0uU+F06Gqh0nQSrQsaBk807NIsTlSunRiPNOH6SaPsiCs4w5h+k/xbSa2TnerTzdlF
+        pCcrCdkqhYh7HrvPCnAJDnOlbJ9kfbA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1651497623;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=d2Ek6JLvpHBKhP9xYjX+TNERo7MBjYhMMbP3fK5HvYQ=;
+        b=ttDojIWHIPmEPHkL6F/jIP5EWJSbGL8YHK50uR+2k5VqBgHE1hF5t5G0Aw/znHGG9wwkqh
+        EurWKJiuigRCUkBw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 99E19133E5;
+        Mon,  2 May 2022 13:20:23 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id wC+VJJfab2LXEgAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Mon, 02 May 2022 13:20:23 +0000
+Message-ID: <193c9eef-af13-219c-e5e0-2cc9469bf562@suse.de>
+Date:   Mon, 2 May 2022 15:20:23 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 2/2] fbdev: Make fb_release() return -ENODEV if fbdev was
+ unregistered
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org
+Cc:     linux-fbdev@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        Zheyu Ma <zheyuma97@gmail.com>,
+        Changcheng Deng <deng.changcheng@zte.com.cn>,
+        dri-devel@lists.freedesktop.org, Maxime Ripard <maxime@cerno.tech>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Guenter Roeck <linux@roeck-us.net>
+References: <20220502130944.363776-1-javierm@redhat.com>
+ <20220502130944.363776-3-javierm@redhat.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220502130944.363776-3-javierm@redhat.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------iz1bNvbGdLcki36S08vCV0oM"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Register both the port and partner USB Power Delivery
-Capabilities so they are exposed to the user space.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------iz1bNvbGdLcki36S08vCV0oM
+Content-Type: multipart/mixed; boundary="------------q1K1zep9Mqp7z0IfDOIbTW60";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Javier Martinez Canillas <javierm@redhat.com>,
+ linux-kernel@vger.kernel.org
+Cc: linux-fbdev@vger.kernel.org, Helge Deller <deller@gmx.de>,
+ Zheyu Ma <zheyuma97@gmail.com>, Changcheng Deng
+ <deng.changcheng@zte.com.cn>, dri-devel@lists.freedesktop.org,
+ Maxime Ripard <maxime@cerno.tech>, Zhen Lei <thunder.leizhen@huawei.com>,
+ Alex Deucher <alexander.deucher@amd.com>, Sam Ravnborg <sam@ravnborg.org>,
+ Guenter Roeck <linux@roeck-us.net>
+Message-ID: <193c9eef-af13-219c-e5e0-2cc9469bf562@suse.de>
+Subject: Re: [PATCH 2/2] fbdev: Make fb_release() return -ENODEV if fbdev was
+ unregistered
+References: <20220502130944.363776-1-javierm@redhat.com>
+ <20220502130944.363776-3-javierm@redhat.com>
+In-Reply-To: <20220502130944.363776-3-javierm@redhat.com>
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
----
- drivers/usb/typec/tcpm/tcpm.c | 142 +++++++++++++++++++++++++++++++++-
- 1 file changed, 141 insertions(+), 1 deletion(-)
+--------------q1K1zep9Mqp7z0IfDOIbTW60
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-diff --git a/drivers/usb/typec/tcpm/tcpm.c b/drivers/usb/typec/tcpm/tcpm.c
-index 3bc2f4ebd1feb..ff86e2fb24233 100644
---- a/drivers/usb/typec/tcpm/tcpm.c
-+++ b/drivers/usb/typec/tcpm/tcpm.c
-@@ -394,6 +394,14 @@ struct tcpm_port {
- 	bool explicit_contract;
- 	unsigned int rx_msgid;
- 
-+	/* USB PD objects */
-+	struct usb_power_delivery *pd;
-+	struct usb_power_delivery_capabilities *port_source_caps;
-+	struct usb_power_delivery_capabilities *port_sink_caps;
-+	struct usb_power_delivery *partner_pd;
-+	struct usb_power_delivery_capabilities *partner_source_caps;
-+	struct usb_power_delivery_capabilities *partner_sink_caps;
-+
- 	/* Partner capabilities/requests */
- 	u32 sink_request;
- 	u32 source_caps[PDO_MAX_OBJECTS];
-@@ -2352,6 +2360,52 @@ static void tcpm_pd_handle_msg(struct tcpm_port *port,
- 	}
- }
- 
-+static int tcpm_register_source_caps(struct tcpm_port *port)
-+{
-+	struct usb_power_delivery_desc desc = { port->negotiated_rev };
-+	struct usb_power_delivery_capabilities_desc caps = { };
-+	struct usb_power_delivery_capabilities *cap;
-+
-+	if (!port->partner_pd)
-+		port->partner_pd = usb_power_delivery_register(NULL, &desc);
-+	if (IS_ERR(port->partner_pd))
-+		return PTR_ERR(port->partner_pd);
-+
-+	memcpy(caps.pdo, port->source_caps, sizeof(u32) * port->nr_source_caps);
-+	caps.role = TYPEC_SOURCE;
-+
-+	cap = usb_power_delivery_register_capabilities(port->partner_pd, &caps);
-+	if (IS_ERR(cap))
-+		return PTR_ERR(cap);
-+
-+	port->partner_source_caps = cap;
-+
-+	return 0;
-+}
-+
-+static int tcpm_register_sink_caps(struct tcpm_port *port)
-+{
-+	struct usb_power_delivery_desc desc = { port->negotiated_rev };
-+	struct usb_power_delivery_capabilities_desc caps = { };
-+	struct usb_power_delivery_capabilities *cap;
-+
-+	if (!port->partner_pd)
-+		port->partner_pd = usb_power_delivery_register(NULL, &desc);
-+	if (IS_ERR(port->partner_pd))
-+		return PTR_ERR(port->partner_pd);
-+
-+	memcpy(caps.pdo, port->sink_caps, sizeof(u32) * port->nr_sink_caps);
-+	caps.role = TYPEC_SINK;
-+
-+	cap = usb_power_delivery_register_capabilities(port->partner_pd, &caps);
-+	if (IS_ERR(cap))
-+		return PTR_ERR(cap);
-+
-+	port->partner_sink_caps = cap;
-+
-+	return 0;
-+}
-+
- static void tcpm_pd_data_request(struct tcpm_port *port,
- 				 const struct pd_message *msg)
- {
-@@ -2381,6 +2435,8 @@ static void tcpm_pd_data_request(struct tcpm_port *port,
- 		tcpm_validate_caps(port, port->source_caps,
- 				   port->nr_source_caps);
- 
-+		tcpm_register_source_caps(port);
-+
- 		/*
- 		 * Adjust revision in subsequent message headers, as required,
- 		 * to comply with 6.2.1.1.5 of the USB PD 3.0 spec. We don't
-@@ -2488,6 +2544,8 @@ static void tcpm_pd_data_request(struct tcpm_port *port,
- 
- 		port->nr_sink_caps = cnt;
- 		port->sink_cap_done = true;
-+		tcpm_register_sink_caps(port);
-+
- 		if (port->ams == GET_SINK_CAPABILITIES)
- 			tcpm_set_state(port, ready_state(port), 0);
- 		/* Unexpected Sink Capabilities */
-@@ -3554,6 +3612,7 @@ static void tcpm_typec_connect(struct tcpm_port *port)
- 		port->partner = typec_register_partner(port->typec_port,
- 						       &port->partner_desc);
- 		port->connected = true;
-+		typec_partner_set_usb_power_delivery(port->partner, port->partner_pd);
- 	}
- }
- 
-@@ -3622,6 +3681,7 @@ static int tcpm_src_attach(struct tcpm_port *port)
- static void tcpm_typec_disconnect(struct tcpm_port *port)
- {
- 	if (port->connected) {
-+		typec_partner_set_usb_power_delivery(port->partner, NULL);
- 		typec_unregister_partner(port->partner);
- 		port->partner = NULL;
- 		port->connected = false;
-@@ -3684,6 +3744,13 @@ static void tcpm_reset_port(struct tcpm_port *port)
- 	port->sink_cap_done = false;
- 	if (port->tcpc->enable_frs)
- 		port->tcpc->enable_frs(port->tcpc, false);
-+
-+	usb_power_delivery_unregister_capabilities(port->partner_sink_caps);
-+	port->partner_sink_caps = NULL;
-+	usb_power_delivery_unregister_capabilities(port->partner_source_caps);
-+	port->partner_source_caps = NULL;
-+	usb_power_delivery_unregister(port->partner_pd);
-+	port->partner_pd = NULL;
- }
- 
- static void tcpm_detach(struct tcpm_port *port)
-@@ -5924,6 +5991,68 @@ void tcpm_tcpc_reset(struct tcpm_port *port)
- }
- EXPORT_SYMBOL_GPL(tcpm_tcpc_reset);
- 
-+static void tcpm_port_unregister_pd(struct tcpm_port *port)
-+{
-+	usb_power_delivery_unregister_capabilities(port->port_sink_caps);
-+	port->port_sink_caps = NULL;
-+	usb_power_delivery_unregister_capabilities(port->port_source_caps);
-+	port->port_source_caps = NULL;
-+	usb_power_delivery_unregister(port->pd);
-+	port->pd = NULL;
-+}
-+
-+static int tcpm_port_register_pd(struct tcpm_port *port)
-+{
-+	struct usb_power_delivery_desc desc = { port->typec_caps.pd_revision };
-+	struct usb_power_delivery_capabilities_desc caps = { };
-+	struct usb_power_delivery_capabilities *cap;
-+	int ret;
-+
-+	if (!port->nr_src_pdo && !port->nr_snk_pdo)
-+		return 0;
-+
-+	port->pd = usb_power_delivery_register(port->dev, &desc);
-+	if (IS_ERR(port->pd)) {
-+		ret = PTR_ERR(port->pd);
-+		goto err_unregister;
-+	}
-+
-+	if (port->nr_src_pdo) {
-+		memcpy_and_pad(caps.pdo, sizeof(caps.pdo), port->src_pdo,
-+			       port->nr_src_pdo * sizeof(u32), 0);
-+		caps.role = TYPEC_SOURCE;
-+
-+		cap = usb_power_delivery_register_capabilities(port->pd, &caps);
-+		if (IS_ERR(cap)) {
-+			ret = PTR_ERR(cap);
-+			goto err_unregister;
-+		}
-+
-+		port->port_source_caps = cap;
-+	}
-+
-+	if (port->nr_snk_pdo) {
-+		memcpy_and_pad(caps.pdo, sizeof(caps.pdo), port->snk_pdo,
-+			       port->nr_snk_pdo * sizeof(u32), 0);
-+		caps.role = TYPEC_SINK;
-+
-+		cap = usb_power_delivery_register_capabilities(port->pd, &caps);
-+		if (IS_ERR(cap)) {
-+			ret = PTR_ERR(cap);
-+			goto err_unregister;
-+		}
-+
-+		port->port_sink_caps = cap;
-+	}
-+
-+	return 0;
-+
-+err_unregister:
-+	tcpm_port_unregister_pd(port);
-+
-+	return ret;
-+}
-+
- static int tcpm_fw_get_caps(struct tcpm_port *port,
- 			    struct fwnode_handle *fwnode)
- {
-@@ -6382,10 +6511,16 @@ struct tcpm_port *tcpm_register_port(struct device *dev, struct tcpc_dev *tcpc)
- 		goto out_role_sw_put;
- 	power_supply_changed(port->psy);
- 
-+	err = tcpm_port_register_pd(port);
-+	if (err)
-+		goto out_role_sw_put;
-+
-+	port->typec_caps.pd = port->pd;
-+
- 	port->typec_port = typec_register_port(port->dev, &port->typec_caps);
- 	if (IS_ERR(port->typec_port)) {
- 		err = PTR_ERR(port->typec_port);
--		goto out_role_sw_put;
-+		goto out_unregister_pd;
- 	}
- 
- 	typec_port_register_altmodes(port->typec_port,
-@@ -6400,6 +6535,8 @@ struct tcpm_port *tcpm_register_port(struct device *dev, struct tcpc_dev *tcpc)
- 	tcpm_log(port, "%s: registered", dev_name(dev));
- 	return port;
- 
-+out_unregister_pd:
-+	tcpm_port_unregister_pd(port);
- out_role_sw_put:
- 	usb_role_switch_put(port->role_sw);
- out_destroy_wq:
-@@ -6422,6 +6559,9 @@ void tcpm_unregister_port(struct tcpm_port *port)
- 	hrtimer_cancel(&port->state_machine_timer);
- 
- 	tcpm_reset_port(port);
-+
-+	tcpm_port_unregister_pd(port);
-+
- 	for (i = 0; i < ARRAY_SIZE(port->port_altmode); i++)
- 		typec_unregister_altmode(port->port_altmode[i]);
- 	typec_unregister_port(port->typec_port);
--- 
-2.35.1
+DQoNCkFtIDAyLjA1LjIyIHVtIDE1OjA5IHNjaHJpZWIgSmF2aWVyIE1hcnRpbmV6IENhbmls
+bGFzOg0KPiBBIHJlZmVyZW5jZSB0byB0aGUgZnJhbWVidWZmZXIgZGV2aWNlIHN0cnVjdCBm
+Yl9pbmZvIGlzIHN0b3JlZCBpbiB0aGUgZmlsZQ0KPiBwcml2YXRlIGRhdGEsIGJ1dCB0aGlz
+IHJlZmVyZW5jZSBjb3VsZCBubyBsb25nZXIgYmUgdmFsaWQgYW5kIG11c3Qgbm90IGJlDQo+
+IGFjY2Vzc2VkIGRpcmVjdGx5LiBJbnN0ZWFkLCB0aGUgZmlsZV9mYl9pbmZvKCkgYWNjZXNz
+b3IgZnVuY3Rpb24gbXVzdCBiZQ0KPiB1c2VkIHNpbmNlIGl0IGRvZXMgc2FuaXR5IGNoZWNr
+aW5nIHRvIG1ha2Ugc3VyZSB0aGF0IHRoZSBmYl9pbmZvIGlzIHZhbGlkLg0KPiANCj4gVGhp
+cyBjYW4gaGFwcGVuIGZvciBleGFtcGxlIGlmIHRoZSBmYmRldiBkcml2ZXIgd2FzIG9uZSB0
+aGF0IGlzIHVzaW5nIGENCj4gZnJhbWVidWZmZXIgcHJvdmlkZWQgYnkgdGhlIHN5c3RlbSBm
+aXJtd2FyZS4gSW4gdGhhdCBjYXNlLCB0aGUgZmJkZXYgY29yZQ0KPiBjb3VsZCB1bnJlZ2lz
+dGVyIHRoZSBmcmFtZWJ1ZmZlciBkZXZpY2UgaWYgYSByZWFsIHZpZGVvIGRyaXZlciBpcyBw
+cm9iZWQuDQo+IA0KPiBSZXBvcnRlZC1ieTogTWF4aW1lIFJpcGFyZCA8bWF4aW1lQGNlcm5v
+LnRlY2g+DQo+IFNpZ25lZC1vZmYtYnk6IEphdmllciBNYXJ0aW5leiBDYW5pbGxhcyA8amF2
+aWVybUByZWRoYXQuY29tPg0KDQpSZXZpZXdlZC1ieTogVGhvbWFzIFppbW1lcm1hbm4gPHR6
+aW1tZXJtYW5uQHN1c2UuZGU+DQoNClRoaXMgc2VlbXMgbGlrZSB0aGUgY29ycmVjdCB0aGlu
+ZyB0byBkbyBpbiBhbnkgY2FzZS4gVGhhbmtzIGZvciB0aGUgDQpwYXRjaC4gQmVmb3JlIG1l
+cmdpbmcsIHlvdSBzaG91bGQgYWxzbyBhZGQNCg0KRml4ZXM6IDI3NTk5YWFjYmFlZiAoImZi
+ZGV2OiBIb3QtdW5wbHVnIGZpcm13YXJlIGZiIGRldmljZXMgb24gZm9yY2VkIA0KcmVtb3Zh
+bCIpDQpSZXBvcnRlZC1ieTogSnVueGlhbyBDaGFuZyA8anVueGlhby5jaGFuZ0BpbnRlbC5j
+b20+DQoNCkJlc3QgcmVnYXJkcw0KVGhvbWFzDQoNCj4gLS0tDQo+IA0KPiAgIGRyaXZlcnMv
+dmlkZW8vZmJkZXYvY29yZS9mYm1lbS5jIHwgNSArKysrLQ0KPiAgIDEgZmlsZSBjaGFuZ2Vk
+LCA0IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL3ZpZGVvL2ZiZGV2L2NvcmUvZmJtZW0uYyBiL2RyaXZlcnMvdmlkZW8vZmJkZXYv
+Y29yZS9mYm1lbS5jDQo+IGluZGV4IDIwZDg5MjlkZjc5Zi4uZDY4MDk3MTA1ZjkzIDEwMDY0
+NA0KPiAtLS0gYS9kcml2ZXJzL3ZpZGVvL2ZiZGV2L2NvcmUvZmJtZW0uYw0KPiArKysgYi9k
+cml2ZXJzL3ZpZGVvL2ZiZGV2L2NvcmUvZmJtZW0uYw0KPiBAQCAtMTQzOSw3ICsxNDM5LDEw
+IEBAIGZiX3JlbGVhc2Uoc3RydWN0IGlub2RlICppbm9kZSwgc3RydWN0IGZpbGUgKmZpbGUp
+DQo+ICAgX19hY3F1aXJlcygmaW5mby0+bG9jaykNCj4gICBfX3JlbGVhc2VzKCZpbmZvLT5s
+b2NrKQ0KPiAgIHsNCj4gLQlzdHJ1Y3QgZmJfaW5mbyAqIGNvbnN0IGluZm8gPSBmaWxlLT5w
+cml2YXRlX2RhdGE7DQo+ICsJc3RydWN0IGZiX2luZm8gKiBjb25zdCBpbmZvID0gZmlsZV9m
+Yl9pbmZvKGZpbGUpOw0KPiArDQo+ICsJaWYgKCFpbmZvKQ0KPiArCQlyZXR1cm4gLUVOT0RF
+VjsNCj4gICANCj4gICAJbG9ja19mYl9pbmZvKGluZm8pOw0KPiAgIAlpZiAoaW5mby0+ZmJv
+cHMtPmZiX3JlbGVhc2UpDQoNCi0tIA0KVGhvbWFzIFppbW1lcm1hbm4NCkdyYXBoaWNzIERy
+aXZlciBEZXZlbG9wZXINClNVU0UgU29mdHdhcmUgU29sdXRpb25zIEdlcm1hbnkgR21iSA0K
+TWF4ZmVsZHN0ci4gNSwgOTA0MDkgTsO8cm5iZXJnLCBHZXJtYW55DQooSFJCIDM2ODA5LCBB
+RyBOw7xybmJlcmcpDQpHZXNjaMOkZnRzZsO8aHJlcjogSXZvIFRvdGV2DQo=
 
+--------------q1K1zep9Mqp7z0IfDOIbTW60--
+
+--------------iz1bNvbGdLcki36S08vCV0oM
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmJv2pcFAwAAAAAACgkQlh/E3EQov+AA
+lRAAs9/I2Ec7f8mNoik0X1EWbynPc59K/6jn7nozsTzUx5/rlqt+e+JHAG1YFmij8tuCaS3qVJC3
+WxtXCy2/UDPeCljwWxikOf47gPWrOEIQgB2IVYFT/vD9RCptLiNWfGdluUuwcqE8TeV2LbgI0XKi
+h5STdRPudu4NxX5VUdo7MjapwOJA6n2NcRvATKicaTJPsSKAc66B+8vIzlMjCHlj908zGOfjR7Op
+ZU7n47LMQJJLDKlTFmfhDK04FApaI7V2Hh1inLRQUXMKbSkyWQqZsOTg/USxOdalOdzVAN8gDaPR
+vzo5pzbFMv9jfaPkgqCTqM4s720FD3on2+Xb+IB7T7dOZMuBfild5BeZ5Havxx8o/qBnQgHWq/zI
+34oipAxGZjK9NHAH1FGgswtDhheI8DVBE75Pe2sMkWtAT9j2bl4Mieb7qZDa0iMxkTry5OG6o/fJ
+5Z9Y3ZInNityIZDooom+a2LLYpeQa8tWZFRC7V9e8Z0hlX4uWYbFeHOCKCmX0XAJ+oF8C6K0lsP2
++tMjYdUla5aRwNIMUv2/KNKfntqMPf3hUoFhTdgky/3/2tVyFpnhvhMscANbNpD5M09jghyo6jSn
+7q58EbVMH0NQGCMl4Z0JSndaMqNm5vaj+oXuiPKuxn+ysjDU0eadlTSfOvVVng9wPn59Td7UPVsx
+uc0=
+=hMuj
+-----END PGP SIGNATURE-----
+
+--------------iz1bNvbGdLcki36S08vCV0oM--
