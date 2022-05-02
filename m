@@ -2,80 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA81C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:38:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34987C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:39:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385342AbiEBNmR (ORCPT
+        id S1385351AbiEBNm0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 09:42:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47018 "EHLO
+        Mon, 2 May 2022 09:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384036AbiEBNmN (ORCPT
+        with ESMTP id S1385350AbiEBNmX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 09:42:13 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11293DE9B;
-        Mon,  2 May 2022 06:38:44 -0700 (PDT)
-Date:   Mon, 2 May 2022 15:38:40 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651498723;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rCK70YCIekd+wr/DbuX1bEqSok0FDuC7B7kL2Dida9Q=;
-        b=4no3pu+Wyxofhs7LZK9RoECmU958FPN+Uepm/pk0UPnouutOfcuxkug2w4O0nHZVxkUS1j
-        DUhoIdfTRq5Ci0BDqtaN2s2rpkYq7mSGh3gxMXn89TI6RrsUETT12irAV/sAityfH2nI+T
-        mtUnLPY79AWT/gwjMfHq/DJq4YjruFZwpE6pyonCT0XzRXL56bILYdg+PSilOfEBIkuEcL
-        EbPvUdJipBsq8ONbUjq6mwzB0uy1v6v1isV1IiwxK4vWCSowdohS1LO3Yk0RhlYmKHYt6R
-        D3KVZyla2BqIi28HT1EffA73HloLCU7Dh7/wjoSs5JkLVIOuOnQc2zuc5O3tqQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651498723;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rCK70YCIekd+wr/DbuX1bEqSok0FDuC7B7kL2Dida9Q=;
-        b=uxpoBt/FPixZPlqItwmphRlmPiv34Wlmv4nFQwSTcymj6Tww5UrT8L0LKzZ3XYVume+84v
-        gJw9eymNDzwkMyBA==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, oleg@redhat.com,
-        mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>, linux-ia64@vger.kernel.org,
-        tglx@linutronix.de
-Subject: Re: [PATCH 0/12] ptrace: cleaning up ptrace_stop
-Message-ID: <Ym/e4CrxwV3HlsJj@linutronix.de>
-References: <20220421150248.667412396@infradead.org>
- <20220421150654.817117821@infradead.org>
- <87czhap9dy.fsf@email.froward.int.ebiederm.org>
- <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
- <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
+        Mon, 2 May 2022 09:42:23 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08212DF24
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 06:38:50 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id w19so25276292lfu.11
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 06:38:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=DcMGZbv7z3p/v1eaiOcddW90mQtWVDMmjqmh18TpdpI=;
+        b=UGAWAyJUXoavkDZu/6uiyPyXQTdFJov3kbe74IyPdqB8tJNB1DkzhUq18MRTgb7Geg
+         J1Vpjhyolal+iggBoo5jcEznptqbOvyFBOWCfImJ+5EcVzC20xDOZ8Ve6PAuXTafyIas
+         0pLWBUR2ievavlNtXwDxDcP5QZFb8k6nNyibG8HKsPGqBEmZSMaWqKSz1uoFDUkiT22v
+         N8nqHaek4ehCqRhJn6rBX30mRbm3knHnTzXmMrPhz5xXFRSI2jjOtq9zbx2ILyrGQagv
+         yQRRnzHGMfswyQfLASHEEUMggmLvmdnRge0KT78jvbMsxyU29Cy5spwAxnapnip9DhJQ
+         UXKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DcMGZbv7z3p/v1eaiOcddW90mQtWVDMmjqmh18TpdpI=;
+        b=1MqPJU9sModO1MbMcIZwk522OgtQnEjC25/k6MjP0z9natSmf1bpxGngqEFoFiL0C7
+         4SsmsaabH8vjRYda3ivl8K88W7KNQ6P2bgrS9ZVNs4DaEdkCijQcA7sk+lFCbpCYJuLY
+         a/rqjDMLLEapJeOtC0zZOX6HGqvavsZ0vuDWrKEI5p/3a2vlzwAyuPfrQV3Q53JS5P0w
+         Wspwe9y1opDJOoJSYn1vQoEohrL3aDpWePKJkEfw8D0n+/cTt6h/liDcop/7QiIW3eS4
+         BXQPi3o1tes0LNhGvRL8g7jpKrAxEaJMQErIjzvM/ztzjttRRwnJXvGhZNO5ayWV5exH
+         7NIg==
+X-Gm-Message-State: AOAM533ZSK8Zr2zvH4KQ1bCsu+mZY7iH4FIH4r9NF0/05KR2Vqrc8QxS
+        FJoTMhXAcyrgUsnqK0WM8uwzDg==
+X-Google-Smtp-Source: ABdhPJwKLan9oIQwmL4/yFUO5pWv5jwZqmLJ0VZW89luPSjNXnrV7OWnfCjA79YKn2buk4EZYnbTPw==
+X-Received: by 2002:a05:6512:400e:b0:450:e09d:c9a6 with SMTP id br14-20020a056512400e00b00450e09dc9a6mr9413485lfb.243.1651498728392;
+        Mon, 02 May 2022 06:38:48 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id n21-20020a2e86d5000000b0024cac53a82csm1046025ljj.0.2022.05.02.06.38.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 06:38:47 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id F1167104AD8; Mon,  2 May 2022 16:40:31 +0300 (+03)
+Date:   Mon, 2 May 2022 16:40:31 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv5 05/12] efi/x86: Implement support for unaccepted memory
+Message-ID: <20220502134031.roylivc3icazuk5h@box.shutemov.name>
+References: <20220425033934.68551-1-kirill.shutemov@linux.intel.com>
+ <20220425033934.68551-6-kirill.shutemov@linux.intel.com>
+ <YmvDqgcyKOgLYNrT@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
+In-Reply-To: <YmvDqgcyKOgLYNrT@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-29 16:46:59 [-0500], Eric W. Biederman wrote:
+On Fri, Apr 29, 2022 at 12:53:30PM +0200, Borislav Petkov wrote:
+> > +	/*
+> > +	 * If unaccepted memory is present allocate a bitmap to track what
+> > +	 * memory has to be accepted before access.
+> > +	 *
+> > +	 * One bit in the bitmap represents 2MiB in the address space:
+> > +	 * A 4k bitmap can track 64GiB of physical address space.
+> > +	 *
+> > +	 * In the worst case scenario -- a huge hole in the middle of the
+> > +	 * address space -- It needs 256MiB to handle 4PiB of the address
+> > +	 * space.
+> > +	 *
+> > +	 * TODO: handle situation if params->unaccepted_memory has already set.
 > 
-> The states TASK_STOPPED and TASK_TRACE are special in they can not
-> handle spurious wake-ups.  This plus actively depending upon and
-> changing the value of tsk->__state causes problems for PREEMPT_RT and
-> Peter's freezer rewrite.
+> "... is already set."
+> 
+> And when is that TODO taken care of? Later patch or patchset?
 
-PREEMPT_RT wise, I had to duct tape wait_task_inactive() and remove the
-preempt-disable section in ptrace_stop() (like previously). This reduces
-the amount of __state + saved_state checks and looks otherwise stable in
-light testing.
+No, not yet. kexec is not a priority at the moment. It will come later.
 
-Sebastian
+-- 
+ Kirill A. Shutemov
