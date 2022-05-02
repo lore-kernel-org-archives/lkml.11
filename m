@@ -2,117 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F197C43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:18:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89035C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:19:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387270AbiEBUWH (ORCPT
+        id S1387294AbiEBUXO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 16:22:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48822 "EHLO
+        Mon, 2 May 2022 16:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352110AbiEBUWF (ORCPT
+        with ESMTP id S1387279AbiEBUXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 16:22:05 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E80BF7E
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 13:18:35 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id y3so29737257ejo.12
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 13:18:35 -0700 (PDT)
+        Mon, 2 May 2022 16:23:12 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A21DF24
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 13:19:42 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id d5so20877900wrb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 13:19:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=jDGt1toRucqj+cK6LtNSDQpKseZ2xT2PNfCkDdoqIXE=;
-        b=toBxE4V5+mFB5bvYet/OhPmOhK4Dutdz6f3lm5zbVetmSHCSlhSLvBVNiz8TAwVzXN
-         aePuCPComJN8lKFroxUwx9Htebi/8fzhYomJ9Gsa/PNEG64fr9+oaVlGQlZivSwaGgdl
-         5rY2/534CchDq7QF40I+nmtdZDV9nWUoHPb+G9bhMWCijpAzr4kuz/gJ62/Lg07Ijqmh
-         hIqlhmZbE4q1LXe//1okxmwS4XpZFKQXb+lPF0FUCG/uIEHQ9ALZuS9DXRy8L8v5K3Zi
-         yRiNkbam2C3XZ3Zn1P0+JsqSo2Sx9dDlRTl605GlmE3dHi5CmXdlSjIRp4vOKbV9TV9A
-         DRHg==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=JyBeaEisTTfuBdyCjdFWz6rU+RcrjfHX51t6baBS7eg=;
+        b=SjEekoWNBPcf3lpiJQWJK3I3LHwV7RSSCc40VX8rmYY5qQh3xHAqc84yg8k4jN4Vyg
+         sTWx1WUExcrE5U7JOuRfjunQYhS6S07xId9kB7NxwcImPY51YARBPZlD4ZFFgTLoBxJE
+         Ge4M0uCN/GjxWAfFORKX59Il0yVAbSn6xDNI4Ui+6Eogcz62RKIWQ9CXKpm/CMm9J41L
+         /7qetdF9qs2lKq+gGmFqKJzO3otm1KJKm1WfoNLyrKgIAd/kG8vgVVyWRmIm7S9qAqHg
+         RHIpGZ57JJIz7SEo18J8nKu73LNk3SkvSrylt5sXGnHdOHO5Ytl/qPoEzSOk944jJeLS
+         RkCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jDGt1toRucqj+cK6LtNSDQpKseZ2xT2PNfCkDdoqIXE=;
-        b=jrmOUhVK2/kN6VQgtlVu6LwKnwwpZ/LDQ5+uZ2G/VCQB2kbq2w3hIzXGcYzhRhHX2/
-         gknRsvuDYDyFqder9xDbiGK2joKDSrhEmQYJpqXA3ozeykqf9QhhvXAplBfN+1zBzPlV
-         WrgqDROuBEuZ5k0By1fc3s8/OXsa1EHrGe22zqxnG5ftTn9ZL8BHziWYUZxS3PAAAKMt
-         r+DEM5A12AA49W9btl6svBMgfcPY4JaZUSq4dIRHYG9Rf9jxPe9weUr+mW2RE3hs9nl/
-         5rUvgFXW0PEvPoaqrMjK8fhtDv7wcrspSj6iWXTCqen7zRvqNgP1s15H58ue93qyAWX8
-         RDVw==
-X-Gm-Message-State: AOAM530Mlsz3XiteJG6fxwCGbuVIdLIdOks5OoFemNjAGJSwyx2KNwMc
-        Z7FpI8qbFtRmqIPUo7oCBGKWSQ==
-X-Google-Smtp-Source: ABdhPJwAYb0fylLmk7MP2C/59GviEWpwlDWkT4/97mN4Lqiw2X3v8TDzbdRlW7U5Ma537L+RGk5mfg==
-X-Received: by 2002:a17:907:c0d:b0:6f3:ed89:d9c with SMTP id ga13-20020a1709070c0d00b006f3ed890d9cmr12526499ejc.502.1651522713790;
-        Mon, 02 May 2022 13:18:33 -0700 (PDT)
-Received: from [192.168.0.197] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id d12-20020a50fb0c000000b0042617ba6399sm7002590edq.35.2022.05.02.13.18.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 May 2022 13:18:33 -0700 (PDT)
-Message-ID: <b3bda9d7-2c50-547d-35ab-510ecab4f7d2@linaro.org>
-Date:   Mon, 2 May 2022 22:18:31 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=JyBeaEisTTfuBdyCjdFWz6rU+RcrjfHX51t6baBS7eg=;
+        b=WJVL/KtKXEzan2IvrlVfrkhKzX290owARWXrUttVtTo+2LnAleIkuHxTN6u+dkhsz3
+         QTpVEZXuqVX+ATcdyoYR98AZaNBGUEsoCEc+OGV9+W/p7d+wCTHLc4NTVUQo08kYIWp/
+         X0oXFJWCegLodgDi+qy9hnlxeB/klphTRf4GVoTN70oqqeJXZxIAZe2EwWuIhpDaoCNR
+         mqWzp9nsStz6e5Rg8XMU7eMNkqkxpv4SGyRSIEZU17p5i5ASoYr7hc2HqMLoGRkYLj46
+         iMiYa7v92Zsv9022bSnGNvOeXNLN82D9snb6Er5T+E7J9i7T2U0X4Am6lN36755hK+XD
+         LjVw==
+X-Gm-Message-State: AOAM530dNCQ2O3KIqQ+VrNMdICWBFcBlhh84m1BCIM8h0nWC+PNkKLEm
+        QgJfJmDKsj57/f25ZMe5VDbY5w==
+X-Google-Smtp-Source: ABdhPJzU1nZZ771o9FZhdjnbZOE84F+KnOeDrsRL6QyXPle5+aSlX4Tdq0QRmYpQPEcfMtu/UKdpow==
+X-Received: by 2002:a05:6000:2ae:b0:20c:57b6:32e1 with SMTP id l14-20020a05600002ae00b0020c57b632e1mr8763861wry.285.1651522780863;
+        Mon, 02 May 2022 13:19:40 -0700 (PDT)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id l2-20020adfb102000000b0020c547f75easm7238183wra.101.2022.05.02.13.19.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 13:19:40 -0700 (PDT)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     herbert@gondor.apana.org.au, jernej.skrabec@gmail.com,
+        samuel@sholland.org, wens@csie.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH v2 01/19] crypto: sun8i-ce: Fix minor style issue
+Date:   Mon,  2 May 2022 20:19:11 +0000
+Message-Id: <20220502201929.843194-2-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220502201929.843194-1-clabbe@baylibre.com>
+References: <20220502201929.843194-1-clabbe@baylibre.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 3/3] dt-bindings: arm: msm: Convert kpss-gcc driver
- Documentation to yaml
-Content-Language: en-US
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org
-References: <20220430060125.9124-1-ansuelsmth@gmail.com>
- <20220430060125.9124-4-ansuelsmth@gmail.com>
- <fec305d1-d4b3-3f9d-bc31-bc33490d1ad7@linaro.org>
- <626d4cbf.1c69fb81.e6965.76b4@mx.google.com>
- <0711b822-506b-7b90-6b63-50c5c0ce4f6e@linaro.org>
- <626fb971.1c69fb81.fcab0.5f71@mx.google.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <626fb971.1c69fb81.fcab0.5f71@mx.google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/05/2022 12:40, Ansuel Smith wrote:
-> 
-> The idea is that you put the clk name in 'clock-output-names' and the
-> driver needs to have support for it (and set the clk name based on the
-> name defined in the dts)
-> 
-> This driver doesn't have support for it and is actually hardcoded.
-> So you are right and I should just drop it.
-> 
-> But now another question... Since #clock-cells was added as a
-> requirement for clock-output-names, should I drop also that?
-> 
-> In theory #clock-cells should always be declared for clock providers, is
-> it right to add it in the conversion commit or I should put this change
-> in another commit? (since it's now an addition and now something required
-> to fix a bot warning)
+This patch remove a double blank line.
 
-These are not the best bindings to convert, if you are not into the qcom
-DTS and drivers. :)
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+---
+ drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-It looks like the bindings were added to match current Linux
-implementation and in this implementation the device is not used in DTS
-as a clock provider (even though it registers a clock) but as a syscon.
-I am not even sure if it is used as a clock provider outside of DTS
-(through using a fixed clock name in some clock consumer).
+diff --git a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
+index 35e3cadccac2..01d032e08825 100644
+--- a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
++++ b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
+@@ -398,7 +398,6 @@ int sun8i_ce_cipher_init(struct crypto_tfm *tfm)
+ 	sktfm->reqsize = sizeof(struct sun8i_cipher_req_ctx) +
+ 			 crypto_skcipher_reqsize(op->fallback_tfm);
+ 
+-
+ 	dev_info(op->ce->dev, "Fallback for %s is %s\n",
+ 		 crypto_tfm_alg_driver_name(&sktfm->base),
+ 		 crypto_tfm_alg_driver_name(crypto_skcipher_tfm(op->fallback_tfm)));
+-- 
+2.35.1
 
-Probably this should be made either a proper clock controller or
-something stripped down to the point matching current usage (accepting
-the fact that bindings are incomplete). Anyway your choice should be
-made according to how this device and its driver fit to entire system.
-IOW, it's not a simple binding conversion and you should not just
-convert it to make dtbs_check happy.
-
-Best regards,
-Krzysztof
