@@ -2,104 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E53C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD84C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:30:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378055AbiEBRcu (ORCPT
+        id S1386665AbiEBRd7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 13:32:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38194 "EHLO
+        Mon, 2 May 2022 13:33:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235761AbiEBRcr (ORCPT
+        with ESMTP id S1386658AbiEBRds (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 13:32:47 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10CE4A1A1;
-        Mon,  2 May 2022 10:29:18 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id v10so12147840pgl.11;
-        Mon, 02 May 2022 10:29:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oyJeFqHoGWWfsmN7ZUpT0hPaBi24D+V4aGuy1zcw08U=;
-        b=gkB3nWHWQfhKPTtg6lYd+R/7QE9aVQPHgvJtP+ctJQ0SBARAm7Sc7BRdc6cdk3juc9
-         ZJdHsXlMexuGv8fVXyAYNdbL/cNP1soLaojegZvIp/Awj7Dhg00wO+PQQf+HTXhpWFWX
-         BzndP2dJuMu3QU8Y6BoKOlHozEp6gaKV1lw3z1bfaBfebkKOXlj5HP4RJe6UhiYNu+qs
-         MMEwC3mX6ypQIuWLK1Sb966deUIyH3tr6ez3WGKHDXFNwUe3FH5Y5b+JZ2sfCfzm9yhJ
-         v1Pq1TmVb6qarjhBSpK1euW2N1S6uD9l+AbLaWM12sudV1HwnJTQ/3xjJhXnxN3lX6bR
-         FOXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oyJeFqHoGWWfsmN7ZUpT0hPaBi24D+V4aGuy1zcw08U=;
-        b=0fYRCwmXX1AiBwJYQM/ACIEaTvQOisgZPbuLZpPF6Ej8kXT+6j2/Hi52bRiMkJ1Nd2
-         YDVr64cTAoy67NEPrAT0gXmO4wZ4yJzICFmsbvEaJfcTyG2HZF0zZ4/E9vSEdmwS60o3
-         mTCO6QQ6EY7P3t5C4OorWxBYFN0cPZBJQZFCFxC4g3e14x4W5vMpqAZX+ECd9SYKZKFX
-         5r5fvviiLXlYm779A15vETvH4AusqWPfs2bBFH/COpRtgK2f8POjen25DDaIduUl0EBx
-         x0MEZFXT2VEDq8vvtEgF3DEqhTGj9UV1irTHcbcknFyX+lA25h7hSIyVMj+Qt16A49yM
-         Qwjg==
-X-Gm-Message-State: AOAM530B3Mb0LFjOyzSSi5CnEF/l0aWyc4xn7UuQunoXKwqa4tomagCW
-        ZNTtAdLq7/ZVB3U11t74sJU=
-X-Google-Smtp-Source: ABdhPJyHf2OnaMoWX9/L1t52Z6eiweABLqlfrwiAvsNXVNVXwVpwyq5gx/jIDQrFotPphBbhdWbNHw==
-X-Received: by 2002:a63:1c0d:0:b0:3ab:1a76:953f with SMTP id c13-20020a631c0d000000b003ab1a76953fmr10499701pgc.73.1651512557459;
-        Mon, 02 May 2022 10:29:17 -0700 (PDT)
-Received: from localhost ([172.19.27.22])
-        by smtp.gmail.com with ESMTPSA id j14-20020aa7800e000000b0050dc762816bsm4942208pfi.69.2022.05.02.10.29.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 10:29:16 -0700 (PDT)
-From:   Rob Clark <robdclark@gmail.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Luca Weiss <luca@z3ntu.xyz>,
-        Rob Clark <robdclark@chromium.org>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] drm/msm: Limit command submission when no IOMMU
-Date:   Mon,  2 May 2022 10:29:08 -0700
-Message-Id: <20220502172908.3569799-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 2 May 2022 13:33:48 -0400
+X-Greylist: delayed 911 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 02 May 2022 10:30:16 PDT
+Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EFD0E25DE;
+        Mon,  2 May 2022 10:30:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:Message-ID:MIME-Version; bh=76j0I
+        vA+I38dm9XbzmM3FuswAc3dTUCCDmQhUcsk+2Y=; b=Wl+Y3oMk2j9KfVEFnmNLH
+        eg6GIloHE8BebBvjaOrJsoqg0fI36q4L9/D5d1age8+6bwL58KX2m/Pxnw+ztwLR
+        G6B+/2G04FTD4oDHRVw41oCG+8buoG1VLHJ5V4oZJl3dxIUjFfOyr7EwT6QWPqwR
+        14ReLd/MZLV3Tx5vk89Mz8=
+Received: from localhost (unknown [49.235.41.28])
+        by smtp1 (Coremail) with SMTP id GdxpCgCHteaAEXBicD8XAg--.29129S2;
+        Tue, 03 May 2022 01:14:40 +0800 (CST)
+Date:   Tue, 3 May 2022 01:14:40 +0800
+From:   Hui Su <suhui_kernel@163.com>
+To:     sumit.semwal@linaro.org, christian.koenig@amd.com,
+        daniel.vetter@ffwll.ch, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] drivers/dma-buf: fix the wrong return val
+Message-ID: <20220502171440.GA377545@localhost.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-CM-TRANSID: GdxpCgCHteaAEXBicD8XAg--.29129S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWruF45ZFW8trW3GFW3Ar4fXwb_yoWkXrgEgr
+        48Xw4xX34vkr45tw1qywn5ZFyxKa4DZrZ5Arn2q3yayry5GrnxWw4ku3Z8A348Xa18WFWv
+        9ryfW34FkryUXjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8YNt7UUUUU==
+X-Originating-IP: [49.235.41.28]
+X-CM-SenderInfo: 5vxk3xhbnh20lho6il2tof0z/1tbiMwD0bVXmBJls4AAAsI
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+The function should return the correct value.
 
-Running the GPU without an IOMMU is not really a supported (or sane)
-configuration.  Yet it can be useful during SoC bringup (ie. if the
-iommu driver doesn't work yet).
-
-Lets limit it to users who already have /dev/mem access, to avoid the
-chance that a user accidentially configures kernel without IOMMU
-support.
-
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Fixes: 64a8f92fd783 ("dma-buf: add dma_fence_unwrap v2")
+Signed-off-by: Hui Su <suhui@zeku.com>
 ---
- drivers/gpu/drm/msm/msm_gem_submit.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/dma-buf/st-dma-fence-unwrap.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_gem_submit.c b/drivers/gpu/drm/msm/msm_gem_submit.c
-index 23b68bc945f6..9cd8c8708990 100644
---- a/drivers/gpu/drm/msm/msm_gem_submit.c
-+++ b/drivers/gpu/drm/msm/msm_gem_submit.c
-@@ -734,6 +734,11 @@ int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
- 	if (args->pad)
- 		return -EINVAL;
- 
-+	if (unlikely(!ctx->aspace) && !capable(CAP_SYS_RAWIO)) {
-+		DRM_ERROR_RATELIMITED("IOMMU support or CAP_SYS_RAWIO required!\n");
-+		return -EPERM;
-+	}
-+
- 	/* for now, we just have 3d pipe.. eventually this would need to
- 	 * be more clever to dispatch to appropriate gpu module:
- 	 */
--- 
-2.35.1
+diff --git a/drivers/dma-buf/st-dma-fence-unwrap.c b/drivers/dma-buf/st-dma-fence-unwrap.c
+index 039f016b57be..0f156fca9697 100644
+--- a/drivers/dma-buf/st-dma-fence-unwrap.c
++++ b/drivers/dma-buf/st-dma-fence-unwrap.c
+@@ -157,7 +157,7 @@ static int unwrap_array(void *arg)
+ 	dma_fence_signal(f1);
+ 	dma_fence_signal(f2);
+ 	dma_fence_put(array);
+-	return 0;
++	return err;
+ }
+
+ static int unwrap_chain(void *arg)
+@@ -199,7 +199,7 @@ static int unwrap_chain(void *arg)
+ 	dma_fence_signal(f1);
+ 	dma_fence_signal(f2);
+ 	dma_fence_put(chain);
+-	return 0;
++	return err;
+ }
+
+ static int unwrap_chain_array(void *arg)
+@@ -245,7 +245,7 @@ static int unwrap_chain_array(void *arg)
+ 	dma_fence_signal(f1);
+ 	dma_fence_signal(f2);
+ 	dma_fence_put(chain);
+-	return 0;
++	return err;
+ }
+
+ int dma_fence_unwrap(void)
+--
+2.34.1
 
