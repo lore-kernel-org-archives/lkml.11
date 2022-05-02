@@ -2,111 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BA1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B784FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241145AbiEBQLm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 12:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52508 "EHLO
+        id S241045AbiEBQMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 12:12:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241843AbiEBQLe (ORCPT
+        with ESMTP id S240612AbiEBQMu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 12:11:34 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95DACDF94
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 09:07:59 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:39356)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nlYaW-00G66k-43; Mon, 02 May 2022 10:07:52 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:36676 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nlYaV-002zy7-2q; Mon, 02 May 2022 10:07:51 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Alexey Gladkov <legion@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Daniel Walsh <dwalsh@redhat.com>,
-        Davidlohr Bueso <dbueso@suse.de>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Linux Containers <containers@lists.linux.dev>,
-        Manfred Spraul <manfred@colorfullife.com>,
-        Serge Hallyn <serge@hallyn.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Vasily Averin <vvs@virtuozzo.com>
-References: <CAHk-=wgBB8iPd0W=MQWnQJukMAPAqgsC0QX2wwiSvcct9zu_RA@mail.gmail.com>
-        <cover.1650631347.git.legion@kernel.org>
-        <e2c8df40672ca854b754cc3a412be2d6f684ac8b.1650631347.git.legion@kernel.org>
-Date:   Mon, 02 May 2022 11:07:24 -0500
-In-Reply-To: <e2c8df40672ca854b754cc3a412be2d6f684ac8b.1650631347.git.legion@kernel.org>
-        (Alexey Gladkov's message of "Fri, 22 Apr 2022 14:53:37 +0200")
-Message-ID: <875ymnvryb.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 2 May 2022 12:12:50 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF88CDEFB;
+        Mon,  2 May 2022 09:09:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651507761; x=1683043761;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HIEm6DHONqf1fh3RVxZ900oiPNIDtiHGMYYJWK8XUcg=;
+  b=Q4w7ye9PAR2TVYI9BijEFAPzOy/MfHnyE2ylzEfcl0PBTbv2obfr7TeG
+   TvXyF1oWFrZunnfULG/p91ktPcxB+owr5lxrvdEgL6zC5AFP9I7CYdSyJ
+   3SuOIkvVF6fXCfJ3LFqskXgklXcGOZD4o27VCQDxFqWb5OYRHlLWxoy0/
+   /EySVOxmwbI0Dn5kVmYzUtpr7k5yzPw11kVggf8hZh5oNYA2OqQTJ0vh8
+   +teExmAEehtd8JwQL4WJN+yOTlM+FrOxgkeGrh5tEtoCvc4IiH6qW89ir
+   nQ6C/RjeLX7VEV2tXr6qov7f5I6y58OEEZYxdNyM5BoyjLWCQNZzJHXNr
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="330241183"
+X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
+   d="scan'208";a="330241183"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 09:09:21 -0700
+X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
+   d="scan'208";a="583770530"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.59.59])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 09:09:13 -0700
+Message-ID: <8510a140-e2e2-39ce-b344-b456f069a9d0@intel.com>
+Date:   Mon, 2 May 2022 19:09:08 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nlYaV-002zy7-2q;;;mid=<875ymnvryb.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+wXehoCMqRnCn8sog7V37uBF8NwpGbygA=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v1 1/4] ipc: Remove extra1 field abuse to pass ipc
- namespace
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.8.1
+Subject: Re: [PATCH v4 3/6] perf stat: Avoid printing cpus with no counters
+Content-Language: en-US
+To:     Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>
+References: <20220430062324.1565215-1-irogers@google.com>
+ <20220430062324.1565215-4-irogers@google.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <20220430062324.1565215-4-irogers@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Alexey Gladkov <legion@kernel.org> writes:
+On 30/04/22 09:23, Ian Rogers wrote:
+> perf_evlist's user_requested_cpus can contain CPUs not present in any
+> evsel's cpus, for example uncore counters. Avoid printing the prefix and
+> trailing \n until the first valid counter is encountered.
+> 
+> Signed-off-by: Ian Rogers <irogers@google.com>
 
-> Eric Biederman pointed out that using .extra1 to pass ipc namespace
-> looks like an ugly hack and there is a better solution.
->
-> Link: https://lore.kernel.org/lkml/87czib9g38.fsf@email.froward.int.ebiederm.org/
-> Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
-> Signed-off-by: Alexey Gladkov <legion@kernel.org>
+Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
+
 > ---
->  ipc/ipc_sysctl.c | 26 ++++++++------------------
->  1 file changed, 8 insertions(+), 18 deletions(-)
->
-> diff --git a/ipc/ipc_sysctl.c b/ipc/ipc_sysctl.c
-> index 15210ac47e9e..eb7ba8e0a355 100644
-> @@ -55,20 +50,15 @@ static int proc_ipc_auto_msgmni(struct ctl_table *table, int write,
->  static int proc_ipc_sem_dointvec(struct ctl_table *table, int write,
->  	void *buffer, size_t *lenp, loff_t *ppos)
->  {
-> -	struct ipc_namespace *ns = table->extra1;
-> -	struct ctl_table ipc_table;
-> +	struct ipc_namespace *ns =
-> +		container_of(table->data, struct ipc_namespace, sem_ctls);
->  	int ret, semmni;
+>  tools/perf/util/stat-display.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/tools/perf/util/stat-display.c b/tools/perf/util/stat-display.c
+> index d9629a83aa78..13f705737367 100644
+> --- a/tools/perf/util/stat-display.c
+> +++ b/tools/perf/util/stat-display.c
+> @@ -948,8 +948,6 @@ static void print_no_aggr_metric(struct perf_stat_config *config,
+>  		struct evsel *counter;
+>  		bool first = true;
 >  
-> -	memcpy(&ipc_table, table, sizeof(ipc_table));
-> -
-> -	ipc_table.extra1 = NULL;
-> -	ipc_table.extra2 = NULL;
-> -
->  	semmni = ns->sem_ctls[3];
->  	ret = proc_dointvec(table, write, buffer, lenp, ppos);
+> -		if (prefix)
+> -			fputs(prefix, config->output);
+>  		evlist__for_each_entry(evlist, counter) {
+>  			u64 ena, run, val;
+>  			double uval;
+> @@ -961,6 +959,8 @@ static void print_no_aggr_metric(struct perf_stat_config *config,
 >  
->  	if (!ret)
-> -		ret = sem_check_semmni(current->nsproxy->ipc_ns);
-> +		ret = sem_check_semmni(ns);
-		^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Can you break this one line change into a separate patch?
-
-It is a bug fix so that the entire function uses the same
-ns value.  I expect the change would read easier if the
-change was separate.
-
+>  			id = aggr_cpu_id__cpu(cpu, /*data=*/NULL);
+>  			if (first) {
+> +				if (prefix)
+> +					fputs(prefix, config->output);
+>  				aggr_printout(config, counter, id, 0);
+>  				first = false;
+>  			}
+> @@ -972,7 +972,8 @@ static void print_no_aggr_metric(struct perf_stat_config *config,
+>  			printout(config, id, 0, counter, uval, prefix,
+>  				 run, ena, 1.0, &rt_stat);
+>  		}
+> -		fputc('\n', config->output);
+> +		if (!first)
+> +			fputc('\n', config->output);
+>  	}
+>  }
 >  
->  	/*
->  	 * Reset the semmni value if an error happens.
 
-Eric
