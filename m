@@ -2,262 +2,377 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CEB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:24:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86CFFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:25:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376454AbiEBP2F (ORCPT
+        id S1385715AbiEBP3G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 11:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60756 "EHLO
+        Mon, 2 May 2022 11:29:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239588AbiEBP17 (ORCPT
+        with ESMTP id S239588AbiEBP3E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 11:27:59 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDFFB13CCD;
-        Mon,  2 May 2022 08:24:29 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id gh6so28500015ejb.0;
-        Mon, 02 May 2022 08:24:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5JlRQCvAcuJPfq+J5yVcoCOkpKkMcU56ENlg86d7ai8=;
-        b=pJu49czcNYpe0rC6GeFENSl/WLDwHSVM5d56cL3COHRer/SHDhAc6nvpgSRHmPFvJa
-         lGmKgJJp0dXvB8UK4fhxFkske3G4yOY3XV4ys3nXHOTCtWQ4qXwAxJuNnjsXGkOENUKx
-         MxGdTes95b970fM0J87w17qIpkvZ0bBMq/ONxlF2Fjtg25O/KHkq1Wlo+EferYDSfljS
-         vmA0vGWjPEfhO+tDdaEoCThBtKbtLLVZw+CFiWurUOZvHw4wfWQLDl94qRAWtBL0dpEQ
-         T1+smn1nrlEAKC+/dB0HI+tFPzIrlZaOvOw+Fn8AfFaqyBrjMOV2ZeU6ym0mAfIfEX84
-         byUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5JlRQCvAcuJPfq+J5yVcoCOkpKkMcU56ENlg86d7ai8=;
-        b=iKJmR7PBa1I2i+8F7zBvbQoirSM/Gi3xqbIfVMVkQw40UBFtIhHCJED593QxxCby37
-         xNsvYgHZBUV2vik9vdgxVDvaAQelO0RI2Rr2/3NyV0KWU1yZxnw208Hk02BiuMqLpZzq
-         BdWVG3pCK44bF9dgVm4DqbDLCKKtj9gLq5Ee7tWxIx2fRa3Y29LVjFYj/qA9pwQ4zEYZ
-         Gx01wELixpNWVldRbYAIooafZgmLvUi6uoBIYKAoAvAAWGZwOtunmt8Z5HUmMGl2AmvS
-         ywLSGCJ8ODgfcycHW+CTqyAkFAhv/ol+BKpD3t9maOtjF8pQ9Y9g5RRLjpG8+9/cIM1I
-         ECYg==
-X-Gm-Message-State: AOAM533iOqoRwPGf5metbpKgyHJI/bv6aPTdBtnWJg++gIGIjVMEsgfy
-        1U7ELKrR1jQQGdnO/PFad8EiIcuGG65JTQ==
-X-Google-Smtp-Source: ABdhPJzb+5ieXFsu0eXyyU2x+aSBTk3OL+QJNpbY6q1pm/iOpFUlMnHZ617ZOGJbdaq4srMD4470gw==
-X-Received: by 2002:a17:907:6daa:b0:6f4:4822:549d with SMTP id sb42-20020a1709076daa00b006f44822549dmr5737046ejc.322.1651505068151;
-        Mon, 02 May 2022 08:24:28 -0700 (PDT)
-Received: from debianHome.localdomain (dynamic-077-001-135-067.77.1.pool.telefonica.de. [77.1.135.67])
-        by smtp.gmail.com with ESMTPSA id hx8-20020a170906846800b006f3ef214dd0sm3641947ejc.54.2022.05.02.08.24.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 08:24:26 -0700 (PDT)
-From:   =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>
-To:     selinux@vger.kernel.org
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] [RFC PATCH] sched: only perform capability check on privileged operation
-Date:   Mon,  2 May 2022 17:24:14 +0200
-Message-Id: <20220502152414.110922-1-cgzones@googlemail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20200904160031.6444-1-cgzones@googlemail.com>
-References: <20200904160031.6444-1-cgzones@googlemail.com>
+        Mon, 2 May 2022 11:29:04 -0400
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF2813DDB
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:25:33 -0700 (PDT)
+Date:   Mon, 2 May 2022 23:26:14 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1651505131;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8pH9yYlFSDS7DkFtcXpgQA5kN8jeCWrTO/A7MT7lsqU=;
+        b=mtX2CQTltKrsEYAnmXSu18cJ4znF2GMB+pMVtkdQNH1iuHAZ2qmTx9W30DB3LnoApz7QuL
+        5t7yqTBrP1fkrJ7NJTpGHClHqGXm5VOYpMBhk6kcyy8MwPxIHxSehLLsWTyr6LbwSQ6V5Y
+        lf1DRfIRzMb+r6mlDRe4mAtPQBeoTiQ=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Tao Zhou <tao.zhou@linux.dev>
+To:     Vincent Guittot <vincent.guittot@linaro.org>,
+        Tao Zhou <tao.zhou@linux.dev>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, linux-kernel@vger.kernel.org, parth@linux.ibm.com,
+        qais.yousef@arm.com, chris.hyser@oracle.com, vschneid@redhat.com,
+        patrick.bellasi@matbug.net, David.Laight@aculab.com,
+        pjt@google.com, pavel@ucw.cz, tj@kernel.org, qperret@google.com,
+        tim.c.chen@linux.intel.com
+Subject: Re: [RFC 5/6] sched/fair: Take into account latency nice at wakeup
+Message-ID: <Ym/4Fs9GEctSNFM3@geo.homenetwork>
+References: <20220311161406.23497-1-vincent.guittot@linaro.org>
+ <20220311161406.23497-6-vincent.guittot@linaro.org>
+ <Ym6uMoHVkqr9zOpj@geo.homenetwork>
+ <CAKfTPtD2Hb_ZU8x1J9B6he7fYNvw2AyUBOKdfRk6zcSvJEvYTg@mail.gmail.com>
+ <CAKfTPtCkMGnATuBZObRTabn0-OTUbB6j8f_Sg57HCg4cgQ96rQ@mail.gmail.com>
+ <Ym/z39Qk/QDJckKE@geo.homenetwork>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ym/z39Qk/QDJckKE@geo.homenetwork>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sched_setattr(2) issues via kernel/sched/core.c:__sched_setscheduler()
-a CAP_SYS_NICE audit event unconditionally, even when the requested
-operation does not require that capability / is unprivileged, i.e. for
-reducing niceness.
-This is relevant in connection with SELinux, where a capability check
-results in a policy decision and by default a denial message on
-insufficient permission is issued.
-It can lead to three undesired cases:
-  1. A denial message is generated, even in case the operation was an
-     unprivileged one and thus the syscall succeeded, creating noise.
-  2. To avoid the noise from 1. the policy writer adds a rule to ignore
-     those denial messages, hiding future syscalls, where the task
-     performs an actual privileged operation, leading to hidden limited
-     functionality of that task.
-  3. To avoid the noise from 1. the policy writer adds a rule to allow
-     the task the capability CAP_SYS_NICE, while it does not need it,
-     violating the principle of least privilege.
+On Mon, May 02, 2022 at 11:08:15PM +0800, Tao Zhou wrote:
+> On Mon, May 02, 2022 at 02:30:55PM +0200, Vincent Guittot wrote:
+> 
+> > On Mon, 2 May 2022 at 11:54, Vincent Guittot <vincent.guittot@linaro.org> wrote:
+> > >
+> > > Hi Tao,
+> > >
+> > > On Sun, 1 May 2022 at 17:58, Tao Zhou <tao.zhou@linux.dev> wrote:
+> > > >
+> > > > Hi Vincent,
+> > > >
+> > > > Change to Valentin Schneider's now using mail address.
+> > >
+> > > Thanks
+> > >
+> > > >
+> > > > On Fri, Mar 11, 2022 at 05:14:05PM +0100, Vincent Guittot wrote:
+> > > >
+> > > > > Take into account the nice latency priority of a thread when deciding to
+> > > > > preempt the current running thread. We don't want to provide more CPU
+> > > > > bandwidth to a thread but reorder the scheduling to run latency sensitive
+> > > > > task first whenever possible.
+> > > > >
+> > > > > As long as a thread didn't use its bandwidth, it will be able to preempt
+> > > > > the current thread.
+> > > > >
+> > > > > At the opposite, a thread with a low latency priority will preempt current
+> > > > > thread at wakeup only to keep fair CPU bandwidth sharing. Otherwise it will
+> > > > > wait for the tick to get its sched slice.
+> > > > >
+> > > > >                                    curr vruntime
+> > > > >                                        |
+> > > > >                       sysctl_sched_wakeup_granularity
+> > > > >                                    <-->
+> > > > > ----------------------------------|----|-----------------------|---------------
+> > > > >                                   |    |<--------------------->
+> > > > >                                   |    .  sysctl_sched_latency
+> > > > >                                   |    .
+> > > > > default/current latency entity    |    .
+> > > > >                                   |    .
+> > > > > 1111111111111111111111111111111111|0000|-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-
+> > > > > se preempts curr at wakeup ------>|<- se doesn't preempt curr -----------------
+> > > > >                                   |    .
+> > > > >                                   |    .
+> > > > >                                   |    .
+> > > > > low latency entity                |    .
+> > > > >                                    ---------------------->|
+> > > > >                                % of sysctl_sched_latency  |
+> > > > > 1111111111111111111111111111111111111111111111111111111111|0000|-1-1-1-1-1-1-1-
+> > > > > preempt ------------------------------------------------->|<- do not preempt --
+> > > > >                                   |    .
+> > > > >                                   |    .
+> > > > >                                   |    .
+> > > > > high latency entity               |    .
+> > > > >          |<-----------------------|    .
+> > > > >          | % of sysctl_sched_latency   .
+> > > > > 111111111|0000|-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1
+> > > > > preempt->|<- se doesn't preempt curr ------------------------------------------
+> > > > >
+> > > > > Tests results of nice latency impact on heavy load like hackbench:
+> > > > >
+> > > > > hackbench -l (2560 / group) -g group
+> > > > > group        latency 0             latency 19
+> > > > > 1            1.450(+/- 0.60%)      1.376(+/- 0.54%) + 5%
+> > > > > 4            1.537(+/- 1.75%)      1.335(+/- 1.81%) +13%
+> > > > > 8            1.414(+/- 1.91%)      1.348(+/- 1.88%) + 5%
+> > > > > 16           1.423(+/- 1.65%)      1.374(+/- 0.58%) + 3%
+> > > > >
+> > > > > hackbench -p -l (2560 / group) -g group
+> > > > > group
+> > > > > 1            1.416(+/- 3.45%)      0.886(+/- 0.54%) +37%
+> > > > > 4            1.634(+/- 7.14%)      0.888(+/- 5.40%) +45%
+> > > > > 8            1.449(+/- 2.14%)      0.804(+/- 4.55%) +44%
+> > > > > 16           0.917(+/- 4.12%)      0.777(+/- 1.41%) +15%
+> > > > >
+> > > > > By deacreasing the latency prio, we reduce the number of preemption at
+> > > >
+> > > > s/deacreasing/decreasing/
+> > >
+> > > yes
+> > >
+> > > > s/reduce/increase/
+> > >
+> > > not in the case of hackbench tests above. By decreasing the latency
+> > > prio of all hackbench threads, we make sure that they will not preempt
+> > > the current thread and let it move forward so we reduce the number of
+> > > preemption.
+> > >
+> > > >
+> > > > > wakeup and help hackbench making progress.
+> > > > >
+> > > > > Test results of nice latency impact on short live load like cyclictest
+> > > > > while competing with heavy load like hackbench:
+> > > > >
+> > > > > hackbench -l 10000 -g group &
+> > > > > cyclictest --policy other -D 5 -q -n
+> > > > >         latency 0           latency -20
+> > > > > group   min  avg    max     min  avg    max
+> > > > > 0       16    17     28      15   17     27
+> > > > > 1       61   382  10603      63   89   4628
+> > > > > 4       52   437  15455      54   98  16238
+> > > > > 8       56   728  38499      61  125  28983
+> > > > > 16      53  1215  52207      61  183  80751
+> > > > >
+> > > > > group = 0 means that hackbench is not running.
+> > > > >
+> > > > > The avg is significantly improved with nice latency -20 especially with
+> > > > > large number of groups but min and max remain quite similar. If we add the
+> > > > > histogram parameters to get details of latency, we have :
+> > > > >
+> > > > > hackbench -l 10000 -g 16 &
+> > > > > cyclictest --policy other -D 5 -q -n  -H 20000 --histfile data.txt
+> > > > >               latency 0    latency -20
+> > > > > Min Latencies:    63           62
+> > > > > Avg Latencies:  1397          218
+> > > > > Max Latencies: 44926        42291
+> > > > > 50% latencies:   100           98
+> > > > > 75% latencies:   762          116
+> > > > > 85% latencies:  1118          126
+> > > > > 90% latencies:  1540          130
+> > > > > 95% latencies:  5610          138
+> > > > > 99% latencies: 13738          266
+> > > > >
+> > > > > With percentile details, we see the benefit of nice latency -20 as
+> > > > > 1% of the latencies stays above 266us whereas the default latency has
+> > > > > got 25% are above 762us and 10% over the 1ms.
+> > > > >
+> > >
+> > > [..]
+> > >
+> > > > > +static long wakeup_latency_gran(int latency_weight)
+> > > > > +{
+> > > > > +     long thresh = sysctl_sched_latency;
+> > > > > +
+> > > > > +     if (!latency_weight)
+> > > > > +             return 0;
+> > > > > +
+> > > > > +     if (sched_feat(GENTLE_FAIR_SLEEPERS))
+> > > > > +             thresh >>= 1;
+> > > > > +
+> > > > > +     /*
+> > > > > +      * Clamp the delta to stay in the scheduler period range
+> > > > > +      * [-sysctl_sched_latency:sysctl_sched_latency]
+> > > > > +      */
+> > > > > +     latency_weight = clamp_t(long, latency_weight,
+> > > > > +                             -1 * NICE_LATENCY_WEIGHT_MAX,
+> > > > > +                             NICE_LATENCY_WEIGHT_MAX);
+> > > > > +
+> > > > > +     return (thresh * latency_weight) >> NICE_LATENCY_SHIFT;
+> > > > > +}
+> > > > > +
+> > > > >  static unsigned long wakeup_gran(struct sched_entity *se)
+> > > > >  {
+> > > > >       unsigned long gran = sysctl_sched_wakeup_granularity;
+> > > > > @@ -7008,6 +7059,10 @@ static int
+> > > > >  wakeup_preempt_entity(struct sched_entity *curr, struct sched_entity *se)
+> > > > >  {
+> > > > >       s64 gran, vdiff = curr->vruntime - se->vruntime;
+> > > > > +     int latency_weight = se->latency_weight - curr->latency_weight;
+> > > > > +
+> > > > > +     latency_weight = min(latency_weight, se->latency_weight);
+> > > >
+> > > > Let lable A=se->latency_weight, B=curr->latency_weight, C=A-B.
+> > > >
+> > > > 1 A>0 B>0
+> > > >     ::C=A-B<0, min(C,A)=C, latency decrease, C is the real diff value no matter
+> > > >       what A is. That means it can be very 'long'(-sched_latency) and vdiff is
+> > > >       more possible to be in <= 0 case and return -1.
+> > > >     ::C=A-B>0, min(C,A)=A, latency increase, but it is conservative. Limit to
+> > >
+> > > A>0 and B>0  then min(C=A-B, A) = C
+> 
+> It's my mistake. And in this case the calculating of value added to vdiff
+> for latency increase and deleted to vdiff for latency decrease is the same.
+> 
+> > >
+> > > >       A/1024*sched_latency.
+> > > >     When latecy is decreased, the negtive value added to vdiff is larger than the
+> > > >     positive value added to vdiff when latency is increased.
+> > >
+> > > When the weight > 0, the tasks have some latency requirements so we
+> > > use their relative priority to decide if we can preempt current which
+> > > also has some latency requirement
+> > >
+> > > >
+> > > > 2 A>0 B<0
+> > > >     ::C=A-B>0 and C>A, min(C,A)=A, latency increase and it is conservative.
+> > 
+> > For this one we want to use delta like for UC 1 above
+> > 
+> > > >
+> > > > 3 A<0 B<0
+> > > >     ::C=A-B>0, min(C,A)=A, latency increase but min(C,A)<0, I think if latency
+> > > >     increase means the value added to vdiff will be a positive value to increase
+> > > >     the chance to return 1. I would say it is max(C,A)=C
+> > > >     ::C=A-B<0, min(C,A)=A, latency decrease and the real negtive value.
+> > >
+> > > When the weight < 0, the tasks haven't latency requirement and even
+> > > don't care of being scheduled "quickly". In this case, we don't care
+> > > about the relative priority but we want to minimize the preemption of
+> > > current so we use the weight
+> > >
+> > > >
+> > > > 4 A<0,B>0
+> > > >     ::C=A-B<0, min(C,A)=C, latency decrease and the real negtive value.
+> > 
+> > And for this one we probably want to use A like for other UC with A < 0
+> > 
+> > I'm going to update the way the weight is computed to match this
+> 
+> According to your explanations, the min(C,A) is used for A and B both in
+> the negtive region or in the postive region, the max(C,A) is use for A and
+> B both not in the same region.
+> 
+> if ((A>>31)^(B>>31))
+>   max(C,A)
+> else
+>   min(C,A)
 
-Conduct privilged/unprivileged categorization first and perform a
-capable test (and at most once) only if needed.
+Not right. 
 
-Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
+  if ((A&(1<<31))^(B(1<<31)))
+      max(C,A)
+  else
+      min(C,A)
 
----
-v2:
-  add is_nice_reduction() to avoid duplicate capable(CAP_SYS_NICE)
-  checks via can_nice()
----
- kernel/sched/core.c | 135 +++++++++++++++++++++++++++-----------------
- 1 file changed, 84 insertions(+), 51 deletions(-)
+> 
+> wakeup_preempt_entity(struct sched_entity *curr, struct sched_entity *se)
+> {
+>     s64 gran, vdiff = curr->vruntime - se->vruntime;
+>     int latency_weight = se->latency_weight - curr->latency_weight;
+> 
+>     if ((se->latency_weight>>(WMULT_SHIFT-1)) ^
+>          curr->latency_weight>>(WMULT_SHIFT-1))
+>         latency_weight = max(latency_weight, se->latency_weight);
+>     else
+>         latency_weight = min(latency_weight, se->latency_weight);
+> 
+>     vdiff += wakeup_latency_gran(latency_weight);
+>     ...
+> }
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index d575b4914925..b9c1e67af46f 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -7211,6 +7211,86 @@ static bool check_same_owner(struct task_struct *p)
- 	return match;
- }
- 
-+/*
-+ * is_nice_reduction - check if nice value is an actual reduction
-+ *
-+ * Similar to can_nice() but does not perform a capability check.
-+ *
-+ * @p: task
-+ * @nice: nice value
-+ */
-+static bool is_nice_reduction(const struct task_struct *p, const int nice)
-+{
-+	/* Convert nice value [19,-20] to rlimit style value [1,40]: */
-+	int nice_rlim = nice_to_rlimit(nice);
-+
-+	return (nice_rlim <= task_rlimit(p, RLIMIT_NICE));
-+}
-+
-+/*
-+ * Allow unprivileged RT tasks to decrease priority.
-+ * Only issue a capable test if needed and only once to avoid an audit
-+ * event on permitted non-privileged operations:
-+ */
-+static int user_check_sched_setscheduler(struct task_struct *p,
-+					 const struct sched_attr *attr,
-+					 int policy, int reset_on_fork)
-+{
-+	if (fair_policy(policy)) {
-+		if (attr->sched_nice < task_nice(p) &&
-+			!is_nice_reduction(p, attr->sched_nice))
-+			goto req_priv;
-+	}
-+
-+	if (rt_policy(policy)) {
-+		unsigned long rlim_rtprio =
-+		task_rlimit(p, RLIMIT_RTPRIO);
-+
-+		/* Can't set/change the rt policy: */
-+		if (policy != p->policy && !rlim_rtprio)
-+			goto req_priv;
-+
-+		/* Can't increase priority: */
-+		if (attr->sched_priority > p->rt_priority &&
-+			attr->sched_priority > rlim_rtprio)
-+			goto req_priv;
-+	}
-+
-+	/*
-+	 * Can't set/change SCHED_DEADLINE policy at all for now
-+	 * (safest behavior); in the future we would like to allow
-+	 * unprivileged DL tasks to increase their relative deadline
-+	 * or reduce their runtime (both ways reducing utilization)
-+	 */
-+	if (dl_policy(policy))
-+		goto req_priv;
-+
-+	/*
-+	 * Treat SCHED_IDLE as nice 20. Only allow a switch to
-+	 * SCHED_NORMAL if the RLIMIT_NICE would normally permit it.
-+	 */
-+	if (task_has_idle_policy(p) && !idle_policy(policy)) {
-+		if (!is_nice_reduction(p, task_nice(p)))
-+			goto req_priv;
-+	}
-+
-+	/* Can't change other user's priorities: */
-+	if (!check_same_owner(p))
-+		goto req_priv;
-+
-+	/* Normal users shall not reset the sched_reset_on_fork flag: */
-+	if (p->sched_reset_on_fork && !reset_on_fork)
-+		goto req_priv;
-+
-+	return 0;
-+
-+req_priv:
-+	if (!capable(CAP_SYS_NICE))
-+		return -EPERM;
-+
-+	return 0;
-+}
-+
- static int __sched_setscheduler(struct task_struct *p,
- 				const struct sched_attr *attr,
- 				bool user, bool pi)
-@@ -7252,58 +7332,11 @@ static int __sched_setscheduler(struct task_struct *p,
- 	    (rt_policy(policy) != (attr->sched_priority != 0)))
- 		return -EINVAL;
- 
--	/*
--	 * Allow unprivileged RT tasks to decrease priority:
--	 */
--	if (user && !capable(CAP_SYS_NICE)) {
--		if (fair_policy(policy)) {
--			if (attr->sched_nice < task_nice(p) &&
--			    !can_nice(p, attr->sched_nice))
--				return -EPERM;
--		}
--
--		if (rt_policy(policy)) {
--			unsigned long rlim_rtprio =
--					task_rlimit(p, RLIMIT_RTPRIO);
--
--			/* Can't set/change the rt policy: */
--			if (policy != p->policy && !rlim_rtprio)
--				return -EPERM;
--
--			/* Can't increase priority: */
--			if (attr->sched_priority > p->rt_priority &&
--			    attr->sched_priority > rlim_rtprio)
--				return -EPERM;
--		}
--
--		 /*
--		  * Can't set/change SCHED_DEADLINE policy at all for now
--		  * (safest behavior); in the future we would like to allow
--		  * unprivileged DL tasks to increase their relative deadline
--		  * or reduce their runtime (both ways reducing utilization)
--		  */
--		if (dl_policy(policy))
--			return -EPERM;
--
--		/*
--		 * Treat SCHED_IDLE as nice 20. Only allow a switch to
--		 * SCHED_NORMAL if the RLIMIT_NICE would normally permit it.
--		 */
--		if (task_has_idle_policy(p) && !idle_policy(policy)) {
--			if (!can_nice(p, task_nice(p)))
--				return -EPERM;
--		}
--
--		/* Can't change other user's priorities: */
--		if (!check_same_owner(p))
--			return -EPERM;
--
--		/* Normal users shall not reset the sched_reset_on_fork flag: */
--		if (p->sched_reset_on_fork && !reset_on_fork)
--			return -EPERM;
--	}
--
- 	if (user) {
-+		retval = user_check_sched_setscheduler(p, attr, policy, reset_on_fork);
-+		if (retval)
-+			return retval;
-+
- 		if (attr->sched_flags & SCHED_FLAG_SUGOV)
- 			return -EINVAL;
- 
--- 
-2.36.0
+Not right.
 
+wakeup_preempt_entity(struct sched_entity *curr, struct sched_entity *se)
+{
+    s64 gran, vdiff = curr->vruntime - se->vruntime;
+    int latency_weight = se->latency_weight - curr->latency_weight;
+
+    if ((se->latency_weight & (1 << WMULT_SHIFT-1)) ^
+         curr->latency_weight & (1 << WMULT_SHIFT-1))
+        latency_weight = max(latency_weight, se->latency_weight);
+    else
+        latency_weight = min(latency_weight, se->latency_weight);
+
+    vdiff += wakeup_latency_gran(latency_weight);
+    ...
+}
+
+> > > >
+> > > > Is there a reason that the value when latency increase and latency decrease
+> > > > be treated differently. Latency increase value is limited to se's latency_weight
+> > >
+> > > I have tried to explain why I treat differently if weight is > 0 or < 0.
+> > >
+> > > > but latency decrease value can extend to -sched_latency or treat them the same.
+> > > > Penalty latency decrease and conserve latency increase.
+> > > >
+> > > >
+> > > > There is any value that this latency_weight can be considered to be a average.
+> > > >
+> > > > The delta value choose is ~%5 to 1024. %5*sched_latency=0.05*6ms=0.3ms.(no scale)
+> > > > I do not think over that vdiff equation  and others though.
+> > > >
+> > > > Thanks,
+> > > > Tao
+> > > > > +     vdiff += wakeup_latency_gran(latency_weight);
+> > > > >
+> > > > >       if (vdiff <= 0)
+> > > > >               return -1;
+> > > > > @@ -7117,6 +7172,7 @@ static void check_preempt_wakeup(struct rq *rq, struct task_struct *p, int wake_
+> > > > >               return;
+> > > > >
+> > > > >       update_curr(cfs_rq_of(se));
+> > > > > +
+> > > > >       if (wakeup_preempt_entity(se, pse) == 1) {
+> > > > >               /*
+> > > > >                * Bias pick_next to pick the sched entity that is
+> > > > > diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+> > > > > index 456ad2159eb1..dd92aa9c36f9 100644
+> > > > > --- a/kernel/sched/sched.h
+> > > > > +++ b/kernel/sched/sched.h
+> > > > > @@ -122,6 +122,17 @@ extern void call_trace_sched_update_nr_running(struct rq *rq, int count);
+> > > > >   * Default tasks should be treated as a task with latency_nice = 0.
+> > > > >   */
+> > > > >  #define DEFAULT_LATENCY_NICE 0
+> > > > > +#define DEFAULT_LATENCY_PRIO (DEFAULT_LATENCY_NICE + LATENCY_NICE_WIDTH/2)
+> > > > > +
+> > > > > +/*
+> > > > > + * Convert user-nice values [ -20 ... 0 ... 19 ]
+> > > > > + * to static latency [ 0..39 ],
+> > > > > + * and back.
+> > > > > + */
+> > > > > +#define NICE_TO_LATENCY(nice)        ((nice) + DEFAULT_LATENCY_PRIO)
+> > > > > +#define LATENCY_TO_NICE(prio)        ((prio) - DEFAULT_LATENCY_PRIO)
+> > > > > +#define NICE_LATENCY_SHIFT   (SCHED_FIXEDPOINT_SHIFT)
+> > > > > +#define NICE_LATENCY_WEIGHT_MAX      (1L << NICE_LATENCY_SHIFT)
+> > > > >
+> > > > >  /*
+> > > > >   * Increase resolution of nice-level calculations for 64-bit architectures.
+> > > > > @@ -2098,6 +2109,7 @@ static_assert(WF_TTWU == SD_BALANCE_WAKE);
+> > > > >
+> > > > >  extern const int             sched_prio_to_weight[40];
+> > > > >  extern const u32             sched_prio_to_wmult[40];
+> > > > > +extern const int             sched_latency_to_weight[40];
+> > > > >
+> > > > >  /*
+> > > > >   * {de,en}queue flags:
+> > > > > --
+> > > > > 2.17.1
+> > > > >
