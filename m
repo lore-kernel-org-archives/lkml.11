@@ -2,69 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B64E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 22:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D43CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 22:25:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344671AbiEBW2B (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 18:28:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59060 "EHLO
+        id S242052AbiEBW3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 18:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237210AbiEBW1v (ORCPT
+        with ESMTP id S235789AbiEBW3R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 18:27:51 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E9DB7CD;
-        Mon,  2 May 2022 15:24:21 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nleSe-0005bu-O7; Tue, 03 May 2022 00:24:08 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        inki.dae@samsung.com
-Cc:     Heiko Stuebner <heiko@sntech.de>, linux-kernel@vger.kernel.org,
-        laurent.pinchart@ideasonboard.com, dri-devel@lists.freedesktop.org,
-        samuel@sholland.org, krzk@kernel.org, wens@csie.org,
-        hjc@rock-chips.com, airlied@linux.ie, sw0312.kim@samsung.com,
-        alain.volmat@foss.st.com, daniel@ffwll.ch, lgirdwood@gmail.com,
-        linux-samsung-soc@vger.kernel.org, jernej.skrabec@gmail.com,
-        linux-rockchip@lists.infradead.org, jy0922.shim@samsung.com,
-        alim.akhtar@samsung.com, linux-sunxi@lists.linux.dev,
-        broonie@kernel.org, p.zabel@pengutronix.de,
-        linux-arm-kernel@lists.infradead.org, kyungmin.park@samsung.com,
-        mripard@kernel.org
-Subject: Re: (subset) [PATCH 0/5] Replace drm_detect_hdmi_monitor() with drm_display_info.is_hdmi
-Date:   Tue,  3 May 2022 00:24:02 +0200
-Message-Id: <165153020899.255051.7449667943189045907.b4-ty@sntech.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220421170725.903361-1-jose.exposito89@gmail.com>
-References: <20220421170725.903361-1-jose.exposito89@gmail.com>
+        Mon, 2 May 2022 18:29:17 -0400
+Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254FF6558;
+        Mon,  2 May 2022 15:25:47 -0700 (PDT)
+Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-deb9295679so15643852fac.6;
+        Mon, 02 May 2022 15:25:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZPti66UXm4IfcYFrgHcjam8ivBztkVbKAN8MYJx8xXQ=;
+        b=Ov7duLdPGjVqWvBPsPXHV+BIM5HYMYw7LF9RmmehjFd4S3mudRk8NurLZlAyE4TEky
+         f7XJRg6oJFcHFnjdWMTqt+lRCVojuEj2gThSLrHz7symD/yZN/JEBD/Hz7su5+2FPVP8
+         At4OagDXbNishLuhT0jg6JklHrht1ZW+CUl5wMuCn1H08H0KA5u5Zkoa5iGUXQv9SbyZ
+         UjXv7hqjp0qyOaDioWwsgX89AzQxacNOPsF8NFLBiTlq2ETSG+dPTVgtfII5X2FJP05c
+         A3ieUWyenbLOSI6oppNHPWmQtyjAjCkCsJHTZaThkNUcvaztRPsLoGNdUcTYEgfPYrhq
+         M5Tg==
+X-Gm-Message-State: AOAM531tP7aBLaUfTxihlWhUD6BU07PEYiad3fYmGC0xVa28wSx9DYit
+        hrexD8rAU/voaaG/p++htQ==
+X-Google-Smtp-Source: ABdhPJzc4zIGhmlMsPFpeqVHjYHKdxOfI2UDtoL6zkpdou6xZUxdMnFAkvVXaS7pha3iEYhHB6FtYQ==
+X-Received: by 2002:a05:6870:c59d:b0:e2:bd6d:afcc with SMTP id ba29-20020a056870c59d00b000e2bd6dafccmr589284oab.284.1651530346411;
+        Mon, 02 May 2022 15:25:46 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id v186-20020aca61c3000000b00325cda1ffa1sm2800603oib.32.2022.05.02.15.25.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 15:25:45 -0700 (PDT)
+Received: (nullmailer pid 1905532 invoked by uid 1000);
+        Mon, 02 May 2022 22:25:44 -0000
+Date:   Mon, 2 May 2022 17:25:44 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Vidya Sagar <vidyas@nvidia.com>
+Cc:     bhelgaas@google.com, devicetree@vger.kernel.org, kishon@ti.com,
+        lorenzo.pieralisi@arm.com, kw@linux.com,
+        linux-phy@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kthota@nvidia.com, robh+dt@kernel.org, vkoul@kernel.org,
+        p.zabel@pengutronix.de, mmaddireddy@nvidia.com, krzk@kernel.org,
+        thierry.reding@gmail.com, linux-pci@vger.kernel.org,
+        jonathanh@nvidia.com, linux-tegra@vger.kernel.org,
+        mperttunen@nvidia.com, sagar.tv@gmail.com
+Subject: Re: [PATCH V2 1/8] dt-bindings: PHY: P2U: Add support for Tegra234
+ P2U block
+Message-ID: <YnBaaA4HIg0bVGUV@robh.at.kernel.org>
+References: <20220423124858.25946-1-vidyas@nvidia.com>
+ <20220423124858.25946-2-vidyas@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220423124858.25946-2-vidyas@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Apr 2022 19:07:20 +0200, José Expósito wrote:
-> After implementing a similar change in the VC4 driver [1], as suggested
-> by Laurent in the ToDo list [2], I noticed that a similar pattern is
-> used in the Exynos, Rockchip, STI and sun4i drivers.
+On Sat, 23 Apr 2022 18:18:51 +0530, Vidya Sagar wrote:
+> Add support for Tegra234 P2U (PIPE to UPHY) module block which is a glue
+> module instantiated once for each PCIe lane between Synopsys DesignWare
+> core based PCIe IP and Universal PHY block.
 > 
-> This patchset replaces drm_detect_hdmi_monitor() with is_hdmi in the
-> mentioned drivers.
+> Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
+> ---
+> V2:
+> * Addressed review comments from Rob and Raul
+> * Ran 'dt_binding_check' and 'dtbs_check' on this change
 > 
-> [...]
+>  .../bindings/phy/phy-tegra194-p2u.yaml          | 17 +++++++++++++----
+>  1 file changed, 13 insertions(+), 4 deletions(-)
+> 
 
-Applied, thanks!
-
-[2/5] drm/rockchip: inno_hdmi: Replace drm_detect_hdmi_monitor() with is_hdmi
-      commit: d449222dd533ca83a3a2f88aafe06fdd8d589280
-[3/5] drm/rockchip: rk3066_hdmi: Replace drm_detect_hdmi_monitor() with is_hdmi
-      commit: d2eabdb64474c2101953859601794f1ea08ec1d9
-
-Best regards,
--- 
-Heiko Stuebner <heiko@sntech.de>
+Reviewed-by: Rob Herring <robh@kernel.org>
