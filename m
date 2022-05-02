@@ -2,78 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15728C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D63B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:34:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385319AbiEBNgD (ORCPT
+        id S1358997AbiEBNiR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 09:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39680 "EHLO
+        Mon, 2 May 2022 09:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385301AbiEBNfn (ORCPT
+        with ESMTP id S230212AbiEBNiQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 09:35:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDDAAE43;
-        Mon,  2 May 2022 06:32:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13A2BB817B6;
-        Mon,  2 May 2022 13:32:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BECBCC385AC;
-        Mon,  2 May 2022 13:32:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651498328;
-        bh=6xMJIjb4ThOhMwQf4r65Gq5uouG0yeD4uluNZN0RTbE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=TCbtJlTSB3NOJlzOSZiaZnpwrjj0DIJBaqTQfxlAzOKmdq7Cc8d3FcYwCjPC/6C86
-         KUWM3imIKqPGY8rCBzbqF/dQ6dCGQR/R9+4Kmo1if5gLxOrf6Usm5hXRewHOzSy5fh
-         PZ+8eHapkPliNKvtsUKACoPKLHlq16tLeRWWlLc6MVN7+CzHDZrtf48iXmWHLCyAKQ
-         kSO0xD4l53iToxEkZRQcGdUV76UeOEMxNilOutJwWsyIG8VuA2rUfcHz6JrwyVvIZu
-         39Rl9x0K8kswL7kV8TyLYEkAOa5a1HjyYjwYD78Zqd4wAGRlfQnonZSojcHjJXejKe
-         6F3EaHrtB4XCA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1nlW9m-00014x-Qj; Mon, 02 May 2022 15:32:07 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH v2 0/2] phy: qcom-qmp: pipe clock fixes
-Date:   Mon,  2 May 2022 15:31:28 +0200
-Message-Id: <20220502133130.4125-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Mon, 2 May 2022 09:38:16 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B62FA1B0;
+        Mon,  2 May 2022 06:34:47 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id e189so15187418oia.8;
+        Mon, 02 May 2022 06:34:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gQMyKlyvtn7NB43AhDDTs9JaSXDF/dP/VHiUOIz/tGw=;
+        b=IK6Ow2IsupUWDqHvAII0diazA3Gzsqsa1KTofXUFt6QVttbkPonEO/F1weiWjqEUeK
+         GD5lsOFTw+VEPqzbxtY9G3pGx4gOJErdmHEhk2pEkqOqeBUo7d9gOxmRZ7EOLvYGt+Zm
+         Xa0wZG1aYIvaqMlYcwCl5y5TFbS81abNJTZ/6DR0vL9wD+aHKjasiIzbanIWXiW2oh9h
+         eyXB2Z/ntblf03cQc5zMRsoxh6l7k8bDcpoWFnnY6ygtWddbRkZ1pzAV2Y/tshM7fii6
+         OmnGifOSSMjzn/YI+wNXQCz+izQVoejUXDd1Rv0DJdcAGD3bnDQZ+tj8U0+i3hOKufY6
+         aEnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gQMyKlyvtn7NB43AhDDTs9JaSXDF/dP/VHiUOIz/tGw=;
+        b=0a0drz2my6sfjBKIJln3EnsCDakEOgQUd5pm07AKcXfhh90TcvROirz879jEAtwcgK
+         JmnyOKPvLd/GIV2tZF94iXccKRpZkRaj8ufoP1n5OpUAlCmiIo+otEpTyFP3mWBkxspt
+         ffuq1iNycUo7aVQoeFi62aFZDPKCFY1V/MPWo4Bw82gQ8v2tlpsSLFhM5u9a2SxiZsLr
+         ECvNt1RnPro1Aqgk6SMvRt3yX8Z8vdjmrVC86IcBedIxmugitAU31iyKzQrcqdH2r64T
+         TknkU+OlzsHC4dcmTuV1Upt7lKeKAxPr/1wMvv2asQ1jMJbfl3zp6S5VbrHukboNKWhs
+         wyEQ==
+X-Gm-Message-State: AOAM531Cb2oQE10/BXYBTlDG5qqQbyNyrD9V5Sziam4oRALbZ1PvV0Ns
+        vF8LSbgJIILPiNFq7V6jy38=
+X-Google-Smtp-Source: ABdhPJzprsnADVm1kafKkZtd/+x/LieJhbzhXSesIBDddxmYoPlY5Awod2ChCHmDpzgs8WxCpRp2Pg==
+X-Received: by 2002:a05:6808:180b:b0:325:e888:da1b with SMTP id bh11-20020a056808180b00b00325e888da1bmr3341801oib.247.1651498486830;
+        Mon, 02 May 2022 06:34:46 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id r17-20020a9d7511000000b0060603221272sm2835923otk.66.2022.05.02.06.34.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 May 2022 06:34:46 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <0b154a30-7765-e3ac-9980-0ecc7447d7ad@roeck-us.net>
+Date:   Mon, 2 May 2022 06:34:44 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 2/2] hwmon: acpi_power_meter: convert to
+ hwmon_device_register_with_info
+Content-Language: en-US
+To:     Corentin Labbe <clabbe@baylibre.com>, jdelvare@suse.com
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220502124249.682058-1-clabbe@baylibre.com>
+ <20220502124249.682058-2-clabbe@baylibre.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220502124249.682058-2-clabbe@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series fixes a pipe clock imbalance on PHY power-on failures and
-renames some error labels in order to improve readability and avoid
-future bugs in the same category.
+On 5/2/22 05:42, Corentin Labbe wrote:
+> Booting lead to a hwmon_device_register() is deprecated. Please convert the driver to use hwmon_device_register_with_info().
+> So let's convert the driver to use hwmon_device_register_with_info().
+> 
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+>   drivers/hwmon/acpi_power_meter.c | 5 ++++-
+>   1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/hwmon/acpi_power_meter.c b/drivers/hwmon/acpi_power_meter.c
+> index d2545a1be9fc..98293727f980 100644
+> --- a/drivers/hwmon/acpi_power_meter.c
+> +++ b/drivers/hwmon/acpi_power_meter.c
+> @@ -891,7 +891,10 @@ static int acpi_power_meter_add(struct acpi_device *device)
+>   	if (res)
+>   		goto exit_free_capability;
+>   
+> -	resource->hwmon_dev = hwmon_device_register(&device->dev);
+> +	resource->hwmon_dev = hwmon_device_register_with_info(&device->dev,
+> +							      ACPI_POWER_METER_DEVICE_NAME,
+> +							      NULL, NULL,
+> +							      NULL);
 
-Both patches can be applied for -next.
+NACK. That isn't a conversion to the new API, it just abuses the fact
+that the new API has to accept a NULL info pointer for historic reasons.
 
-Johan
-
-Changes in v2:
- - drop kernel doc fix which has been applied
- - split pipe-clock fix from error label rename and rename also the
-   remaining labels in qcom_qmp_phy_com_init() in a separate patch
-
-Johan Hovold (2):
-  phy: qcom-qmp: fix pipe-clock imbalance on power-on failure
-  phy: qcom-qmp: rename error labels
-
- drivers/phy/qualcomm/phy-qcom-qmp.c | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
-
--- 
-2.35.1
-
+Guenter
