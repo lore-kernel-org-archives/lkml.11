@@ -2,95 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43369C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 21:26:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F00C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 21:27:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387634AbiEBV3i (ORCPT
+        id S1387650AbiEBVa3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 17:29:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58644 "EHLO
+        Mon, 2 May 2022 17:30:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379908AbiEBV3g (ORCPT
+        with ESMTP id S237004AbiEBVaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 17:29:36 -0400
-X-Greylist: delayed 1200 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 02 May 2022 14:26:04 PDT
-Received: from sibelius.xs4all.nl (80-61-163-207.fixed.kpn.net [80.61.163.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1714DE90;
-        Mon,  2 May 2022 14:26:03 -0700 (PDT)
-Received: from localhost (bloch.sibelius.xs4all.nl [local])
-        by bloch.sibelius.xs4all.nl (OpenSMTPD) with ESMTPA id e3c03a39;
-        Mon, 2 May 2022 22:59:21 +0200 (CEST)
-Date:   Mon, 2 May 2022 22:59:21 +0200 (CEST)
-From:   Mark Kettenis <mark.kettenis@xs4all.nl>
-To:     Rob Herring <robh@kernel.org>
-CC:     "Marc Zyngier" <maz@kernel.org>,
-        "Lorenzo Pieralisi" <lorenzo.pieralisi@arm.com>, kw@linux.com,
-        "Bjorn Helgaas" <bhelgaas@google.com>,
-        "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
-        "Sven Peter" <sven@svenpeter.dev>, PCI <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] PCI: apple: Add support for optional PWREN GPIO
-Message-ID: <d3cd3ad1ee4f31f5@bloch.sibelius.xs4all.nl>
+        Mon, 2 May 2022 17:30:23 -0400
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1DBDE92;
+        Mon,  2 May 2022 14:26:53 -0700 (PDT)
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-e9027efe6aso15485351fac.10;
+        Mon, 02 May 2022 14:26:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jUXadxcBM2wGghQUZGspLXPv1H+K2sEgrmrW9LXrYH4=;
+        b=USZYw8k/HXF1/4NmsLjukmn7Hr6xtDRkcwoyZ3XfIuHT1Oe8SHJYgyaoyNlCw3qZpz
+         G2ENRNtS+wIHarmbjjzZaz8HrMKBgCPLaw2iB9uWNMnWzW9S/m/OgfCAzdYIr/N/pvjw
+         OjIgGmQhIF41y+ULBCSE2KwL1cGPrW9ZXX6uKmH6RAUpiy0b6GdloHcIzR+4BLkWC/n1
+         ml7Vhf8tmYVtNu2tMCdyc9QQFFNyIDfloJXtmKlpWMA+/JPiqAOW8u/1z025MuoBNiUa
+         bbyLKLCjGTiNX06ePXCaa67yze3asCQOisvWpngx4EtQQXwXX/uCXX5fzO/80WdOAuo1
+         x2HA==
+X-Gm-Message-State: AOAM532/SzN3Yw6GAjsFiL491SVOLxYb+fyi4s0r4ZL2Wf6O0z2TgmsE
+        aWk1AADWurtbSATuS/ZLig==
+X-Google-Smtp-Source: ABdhPJy5aexT9fpRtVRW+BykQHq+euRFdmPRG6US0k26rcVqaqzGKoPFTWQt8OnGoRceqsXjqE4Vzg==
+X-Received: by 2002:a05:6870:969e:b0:ed:9e77:8eba with SMTP id o30-20020a056870969e00b000ed9e778ebamr516885oaq.269.1651526813128;
+        Mon, 02 May 2022 14:26:53 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id n44-20020a056870822c00b000e686d13894sm6244497oae.46.2022.05.02.14.26.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 14:26:52 -0700 (PDT)
+Received: (nullmailer pid 1784491 invoked by uid 1000);
+        Mon, 02 May 2022 21:26:51 -0000
+Date:   Mon, 2 May 2022 16:26:51 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc:     devicetree@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        soc@kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
+        arnd@arndb.de, linux-kernel@vger.kernel.org,
+        Marek Vasut <marex@denx.de>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, etienne.carriere@st.com,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Subject: Re: [PATCH 3/8] dt-bindings: clock: stm32mp15: rename CK_SCMI define
+Message-ID: <YnBMm7wE5/Jz6N3l@robh.at.kernel.org>
+References: <20220422150952.20587-1-alexandre.torgue@foss.st.com>
+ <20220422150952.20587-4-alexandre.torgue@foss.st.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422150952.20587-4-alexandre.torgue@foss.st.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob (& Hector),
-
-On 03/05/2022 00.14, Rob Herring wrote:
-> On Mon, May 2, 2022 at 4:39 AM Hector Martin <marcan@marcan.st> wrote:
->>
->> WiFi and SD card devices on M1 Macs have a separate power enable GPIO.
->> Add support for this to the PCIe controller. This is modeled after how
->> pcie-fu740 does it.
+On Fri, 22 Apr 2022 17:09:47 +0200, Alexandre Torgue wrote:
+> As we only have one SCMI instance, it's not necessary to add an index to
+> the name.
 > 
-> It did, but it's not ideal really. The problem is the GPIO is really
-> associated with the device (WiFi/SD) rather than the PCI host and
-> therefore should be part of a WiFi or SD node. You probably don't have
-> one (yet), but I would suspect that SD will need one for all the
-> standard MMC/SD DT properties.
+> Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+> 
 
-Not really.  The SD card controller is a "standard" GL9755 PCIe SDHC
-controller that is already supported by Linux.
-
-It does indeed get a DT node though because the card detect and write
-protect signals are inverted and the driver needs to initialize some
-PCIe config space registers to compensate for that.
-
-> The secondary issue is we'll end up adding more power sequencing
-> properties to control ordering and timing for different devices.
-
-That isn't obvious.  Even though there isn't an actual PCIe slot these
-still are PCIe compliant devices and therefore governed by the PCIe
-standard power up sequencing.
-
-> The exception here is standard PCI slot properties like perst#,
-> clkreq, and standard voltage rails can go in the host bridge (and
-> for new bindings, those should really be in the root port node). For
-> a complicated example, see Hikey960 or 970.
-
-I don't think there is a fundamental difference between having a GPIO
-that controls the standard voltage rails of a PCIe slot (like on the
-HiFive Unmatched board) and a GPIO that controls the power to a chip
-soldered onto the motherboard (like the ASM2824 soldered onto the
-HiFive Unmatched board and WiFi/SD on these Apple M1 systems).  I
-don't think it makes sense to describe this in different ways just
-because in one case there is a physical connector present.
-
-Note that the proposed patch does add the "pwren-gpio" property on the
-root port node as you suggest.
-
-> Of course with power control related properties there's a chicken or
-> egg issue that the PCI device is not discoverable until the device is
-> powered on. This issue comes up over and over with various hacky
-> solutions in the bindings. The PCI subsystem needs to solve this. My
-> suggestion is that if the firmware says there is a device on the bus
-> and it wasn't probed, then we should force probing (or add a pre-probe
-> hook for drivers). That is what MDIO bus does for example.
-
-But in the case of an actual PCIe slot firmware can't really describe
-the PCIe device itself in the DT since it might not be there.
-
-And your suggestion would be quite painful in other contexts where the
-device tree will be used (U-Boot, *BSD), which all assume that a PCI
-bus can be enumerated.
+Acked-by: Rob Herring <robh@kernel.org>
