@@ -2,106 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BB1DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 03:22:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C418C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 03:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357115AbiEBDXy (ORCPT
+        id S1357023AbiEBDfl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 23:23:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52444 "EHLO
+        Sun, 1 May 2022 23:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352309AbiEBDXl (ORCPT
+        with ESMTP id S230268AbiEBDfg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 23:23:41 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8A632B;
-        Sun,  1 May 2022 20:20:13 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id iq2-20020a17090afb4200b001d93cf33ae9so15064891pjb.5;
-        Sun, 01 May 2022 20:20:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IePjmsv/wJb+ld44IWbALrDKn84ocVyOv7AyLW74QVM=;
-        b=MslsXcZBG2Ebnlr9tTvufxRaYlBTsHexqrXWNDSpk3cQquHbeSpd6jMP+ZKXNWJZtD
-         Gx2GrUAph/nqjClE8WNNBueryr+yg3+Q9NdZusbcvZSKmyinEMLnvCwVNqG3u4hxifRi
-         7aA/oxJJf9e9MTtdwqrB/ZD+t4OjLxwlIOb+wapIlDfnoWlVLFfEgluFDr4vvh1y5zth
-         xactzwlG1YxnnwnihWIsWZJmKdD/FbaEXsT+N6veOcVMfB/WElUyKDeQR2BnrpUCM1Yf
-         glUQoT66t1jG8D3S9AboY8f1djrcUH8Ese8wL2RgzcA1y7o/geuQ7dutNH7HR+dlhwzJ
-         TKjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IePjmsv/wJb+ld44IWbALrDKn84ocVyOv7AyLW74QVM=;
-        b=XOWRCAM6xNkXq1a1l+7YkStbdIMP9YiNL50e9jQ7dhIWMxcBYBUOmZDjdmVQjz8Lt7
-         ME3gV1+5SMaGf6UORVuZDaenX3f/U9hG1Ablff8NwQ1SdlBuz2jOBFv8Bgh2xzibquJK
-         istLP38rwNSjnVlscEhlOPB5XS9fph/qVGWP1zyVbar2O5b1N4KDR7AMvYiwBlIrynxJ
-         xGQqHGY75Op5tLAgxcgZtj95B/ec7Y1ReAPkGR4txjux3IY9KTn8FpiXda67ts80Ye0Y
-         YuUGWR4grRe2gByYIoD18pJ0PBxYllIfFgdnOJIuOMq0oqEyAYM1gJA3DIy1lciEDxMn
-         DzBA==
-X-Gm-Message-State: AOAM530tmupPDjiZKuWx8zMOxUI/ErUX9JNtzvbTT9vmaQRV+7AjMRLu
-        vqe+p4ZV65+eeMbQ0vt9Q1Y=
-X-Google-Smtp-Source: ABdhPJxEVZNbg++xtGxYC7vFyL8C5z1r9M//0XFPWYGl7jb9BmPnwTVysa5bRV8u5tMhTopwQPwSXw==
-X-Received: by 2002:a17:90a:a593:b0:1c9:b837:e77d with SMTP id b19-20020a17090aa59300b001c9b837e77dmr10778341pjq.205.1651461612983;
-        Sun, 01 May 2022 20:20:12 -0700 (PDT)
-Received: from localhost.localdomain ([103.197.71.140])
-        by smtp.gmail.com with ESMTPSA id i1-20020a17090332c100b0015e8d4eb1f4sm3507824plr.62.2022.05.01.20.20.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 May 2022 20:20:12 -0700 (PDT)
-From:   Stephen Zhang <starzhangzsd@gmail.com>
-To:     macro@orcam.me.uk, tsbogend@alpha.franken.de,
-        liam.howlett@oracle.com, geert@linux-m68k.org,
-        ebiederm@xmission.com, dbueso@suse.de, alobakin@pm.me,
-        f.fainelli@gmail.com, paul@crapouillou.net, linux@roeck-us.net,
-        anemo@mba.ocn.ne.jp
-Cc:     zhangshida@kylinos.cn, starzhangzsd@gmail.com,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
-Subject: [PATCH v4] MIPS: adding a safety check for cpu_has_fpu
-Date:   Mon,  2 May 2022 11:20:02 +0800
-Message-Id: <20220502032002.840029-1-starzhangzsd@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 1 May 2022 23:35:36 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C6364E5
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 20:32:06 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Ks7tT4rXtzhYC2;
+        Mon,  2 May 2022 11:31:45 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 2 May 2022 11:32:04 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 2 May 2022 11:32:03 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+CC:     <intel-gfx@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH] drm/i915: use IOMEM_ERR_PTR() directly
+Date:   Mon, 2 May 2022 11:43:28 +0800
+Message-ID: <20220502034328.78486-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shida Zhang <zhangshida@kylinos.cn>
+Use IOMEM_ERR_PTR() instead of self defined IO_ERR_PTR().
 
-There is a chance 'cpu_has_fpu' would still be overridden when the
-CONFIG_MIPS_FP_SUPPORT configuration option has been disabled. So
-add a safety check for 'cpu_has_fpu'.
-
-Suggested-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Signed-off-by: Shida Zhang <zhangshida@kylinos.cn>
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 ---
- Changelog in v1 -> v2:
- - Choose to redefine cpu_has_fpu to solve the problem silently.
+ drivers/gpu/drm/i915/i915_vma.c | 4 ++--
+ drivers/gpu/drm/i915/i915_vma.h | 1 -
+ 2 files changed, 2 insertions(+), 3 deletions(-)
 
- Changelog in v2 -> v3:
- - Choose to point out the error instead.
-
- Changelog in v3 -> v4:
- - Make the check work for 'nofpu' option.
-
- arch/mips/include/asm/cpu-features.h | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/arch/mips/include/asm/cpu-features.h b/arch/mips/include/asm/cpu-features.h
-index de8cb2ccb781..c0983130a44c 100644
---- a/arch/mips/include/asm/cpu-features.h
-+++ b/arch/mips/include/asm/cpu-features.h
-@@ -133,6 +133,9 @@
- #  define raw_cpu_has_fpu	0
- # endif
- #else
-+# if cpu_has_fpu
-+#  error "Forcing `cpu_has_fpu' to non-zero is not supported"
-+# endif
- # define raw_cpu_has_fpu	cpu_has_fpu
- #endif
- #ifndef cpu_has_32fpr
+diff --git a/drivers/gpu/drm/i915/i915_vma.c b/drivers/gpu/drm/i915/i915_vma.c
+index 94fcdb7bd21d..639605c89b7b 100644
+--- a/drivers/gpu/drm/i915/i915_vma.c
++++ b/drivers/gpu/drm/i915/i915_vma.c
+@@ -541,7 +541,7 @@ void __iomem *i915_vma_pin_iomap(struct i915_vma *vma)
+ 	int err;
+ 
+ 	if (WARN_ON_ONCE(vma->obj->flags & I915_BO_ALLOC_GPU_ONLY))
+-		return IO_ERR_PTR(-EINVAL);
++		return IOMEM_ERR_PTR(-EINVAL);
+ 
+ 	if (!i915_gem_object_is_lmem(vma->obj)) {
+ 		if (GEM_WARN_ON(!i915_vma_is_map_and_fenceable(vma))) {
+@@ -594,7 +594,7 @@ void __iomem *i915_vma_pin_iomap(struct i915_vma *vma)
+ err_unpin:
+ 	__i915_vma_unpin(vma);
+ err:
+-	return IO_ERR_PTR(err);
++	return IOMEM_ERR_PTR(err);
+ }
+ 
+ void i915_vma_flush_writes(struct i915_vma *vma)
+diff --git a/drivers/gpu/drm/i915/i915_vma.h b/drivers/gpu/drm/i915/i915_vma.h
+index 67ae7341c7e0..8e74972fdca3 100644
+--- a/drivers/gpu/drm/i915/i915_vma.h
++++ b/drivers/gpu/drm/i915/i915_vma.h
+@@ -331,7 +331,6 @@ static inline bool i915_node_color_differs(const struct drm_mm_node *node,
+  * Returns a valid iomapped pointer or ERR_PTR.
+  */
+ void __iomem *i915_vma_pin_iomap(struct i915_vma *vma);
+-#define IO_ERR_PTR(x) ((void __iomem *)ERR_PTR(x))
+ 
+ /**
+  * i915_vma_unpin_iomap - unpins the mapping returned from i915_vma_iomap
 -- 
-2.30.2
+2.35.3
 
