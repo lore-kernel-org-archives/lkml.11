@@ -2,91 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED29C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:12:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76624C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240025AbiEBQQG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 12:16:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57856 "EHLO
+        id S1386171AbiEBQRI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 12:17:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386111AbiEBQPl (ORCPT
+        with ESMTP id S1357459AbiEBQRE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 12:15:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CD9EBC93;
-        Mon,  2 May 2022 09:12:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27141B8187D;
-        Mon,  2 May 2022 16:12:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAA36C385A4;
-        Mon,  2 May 2022 16:12:08 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ZTIUL47t"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651507927;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JthCT2QbwaNt2DB/F/sxRyKukGJ0r6w86ZPxmmA4K2I=;
-        b=ZTIUL47tvZtuvCUjjZMxKFfCRkY8sopVe/HQ8NTwyO2noS3cv31HHMJV6NvUrCSpQ5dHy8
-        EjGU0nc0qviHQVdS3wDIY9FPoGDdY52b6Axrn3EkE76PlJx6kWhx1v6LPgD05WgaAxEkV+
-        YSxaN3oHZ8Khpp6ZW3HdGY+r4UpC91k=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d724f6c4 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 2 May 2022 16:12:06 +0000 (UTC)
-Date:   Mon, 2 May 2022 18:12:03 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Lennart Poettering <mzxreary@0pointer.de>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Alexander Graf <graf@amazon.com>,
-        Colm MacCarthaigh <colmmacc@amazon.com>,
-        Torben Hansen <htorben@amazon.co.uk>,
-        Jann Horn <jannh@google.com>
-Subject: Re: [PATCH 2/2] random: add fork_event sysctl for polling VM forks
-Message-ID: <YnAC00VtU8MGb7vO@zx2c4.com>
-References: <20220502140602.130373-1-Jason@zx2c4.com>
- <20220502140602.130373-2-Jason@zx2c4.com>
- <Ym/7UlgQ5VjjC76P@gardel-login>
+        Mon, 2 May 2022 12:17:04 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA7B2DF90;
+        Mon,  2 May 2022 09:13:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651508015; x=1683044015;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=T51mlRRi96dsufwk/s91k182O3qd8tVYt8XcdmiuPww=;
+  b=NEj2CmfSIjsLUJGGDaG8bdT1KngZfC45stPBu+x01AWTLqpPBY+YePOx
+   4RrXDO4jUzPOrtFXl146enQiDSFjw0o19rGVHz97G3lQ9QWFi8TQOmzxs
+   zmUlnX8HJOU5RkqDk+cjKSwgyvQDismYff6zWbZaxaTIeGpkxrvWqYmFN
+   eH+c1gFSfS6J29H9ikbvoA+kr7iABjmChue1f4ptCq2J2yB8pW/vLxn7E
+   FPRkXoUJb1/E+H6x645S+IIWnBJ6n20kaW2qDI96ElT7cUpUJzuZRpbLA
+   2D3cns5tLTarHfgfTd78ezqo68mHs72KCQ7s6CsWtEDhoImjh5EgA7BwJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="327795722"
+X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
+   d="scan'208";a="327795722"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 09:13:35 -0700
+X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
+   d="scan'208";a="583772313"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.59.59])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 09:13:27 -0700
+Message-ID: <b0551170-f559-4801-1cb4-3653b9685474@intel.com>
+Date:   Mon, 2 May 2022 19:13:22 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Ym/7UlgQ5VjjC76P@gardel-login>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.8.1
+Subject: Re: [PATCH v4 4/6] perf cpumap: Handle dummy maps as empty in subset
+Content-Language: en-US
+To:     Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>
+References: <20220430062324.1565215-1-irogers@google.com>
+ <20220430062324.1565215-5-irogers@google.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <20220430062324.1565215-5-irogers@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 05:40:02PM +0200, Lennart Poettering wrote:
-> On Mo, 02.05.22 16:06, Jason A. Donenfeld (Jason@zx2c4.com) wrote:
-> 
-> > In order to inform userspace of virtual machine forks, this commit adds
-> > a "fork_event" sysctl, which does not return any data, but allows
-> > userspace processes to poll() on it for notification of VM forks.
-> >
-> > It avoids exposing the actual vmgenid from the hypervisor to userspace,
-> > in case there is any randomness value in keeping it secret. Rather,
-> > userspace is expected to simply use getrandom() if it wants a fresh
-> > value.
-> 
-> Wouldn't it make sense to expose a monotonic 64bit counter of detected
-> VM forks since boot through read()? It might be interesting to know
-> for userspace how many forks it missed the fork events for. Moreover it
-> might be interesting to userspace to know if any fork happened so far
-> *at* *all*, by checking if the counter is non-zero.
+On 30/04/22 09:23, Ian Rogers wrote:
+> perf_cpu_map__empty is true for empty and dummy maps. Make is_subset
+> respect that.
 
-"Might be interesting" is different from "definitely useful". I'm not
-going to add this without a clear use case. This feature is pretty
-narrowly scoped in its objectives right now, and I intend to keep it
-that way if possible. (And yes, I realize that is likely considerably
-different from your development philosophy.)
+I think this might be the opposite of what I am trying to do, which is
+enable all_cpus to represent all the "cpu" values (3rd parameter of
+perf_event_open()) to iterate over including -1 so that per-thread and
+per-cpu events can be mixed.
 
 > 
-> (Ideally that counter file would even be mmapable...)
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  tools/lib/perf/cpumap.c   |  4 ++--
+>  tools/perf/tests/cpumap.c | 10 +++++++++-
+>  2 files changed, 11 insertions(+), 3 deletions(-)
+> 
+> diff --git a/tools/lib/perf/cpumap.c b/tools/lib/perf/cpumap.c
+> index 384d5e076ee4..9c83675788c2 100644
+> --- a/tools/lib/perf/cpumap.c
+> +++ b/tools/lib/perf/cpumap.c
+> @@ -322,9 +322,9 @@ struct perf_cpu perf_cpu_map__max(struct perf_cpu_map *map)
+>  /** Is 'b' a subset of 'a'. */
+>  bool perf_cpu_map__is_subset(const struct perf_cpu_map *a, const struct perf_cpu_map *b)
+>  {
+> -	if (a == b || !b)
+> +	if (a == b || perf_cpu_map__empty(b))
+>  		return true;
+> -	if (!a || b->nr > a->nr)
+> +	if (perf_cpu_map__empty(a) || b->nr > a->nr)
+>  		return false;
+>  
+>  	for (int i = 0, j = 0; i < a->nr; i++) {
+> diff --git a/tools/perf/tests/cpumap.c b/tools/perf/tests/cpumap.c
+> index f94929ebb54b..d52b58395385 100644
+> --- a/tools/perf/tests/cpumap.c
+> +++ b/tools/perf/tests/cpumap.c
+> @@ -128,13 +128,21 @@ static int test__cpu_map_merge(struct test_suite *test __maybe_unused, int subte
+>  	struct perf_cpu_map *a = perf_cpu_map__new("4,2,1");
+>  	struct perf_cpu_map *b = perf_cpu_map__new("4,5,7");
+>  	struct perf_cpu_map *c = perf_cpu_map__merge(a, b);
+> +	struct perf_cpu_map *d = perf_cpu_map__dummy_new();
+> +	struct perf_cpu_map *e = perf_cpu_map__merge(b, d);
+>  	char buf[100];
+>  
+>  	TEST_ASSERT_VAL("failed to merge map: bad nr", perf_cpu_map__nr(c) == 5);
+>  	cpu_map__snprint(c, buf, sizeof(buf));
+>  	TEST_ASSERT_VAL("failed to merge map: bad result", !strcmp(buf, "1-2,4-5,7"));
+> -	perf_cpu_map__put(b);
+> +
+> +	TEST_ASSERT_VAL("failed to merge map: bad nr", perf_cpu_map__nr(e) == 3);
+> +	cpu_map__snprint(e, buf, sizeof(buf));
+> +	TEST_ASSERT_VAL("failed to merge map: bad result", !strcmp(buf, "4-5,7"));
+> +
+>  	perf_cpu_map__put(c);
+> +	perf_cpu_map__put(d);
+> +	perf_cpu_map__put(e);
+>  	return 0;
+>  }
+>  
 
-You missed the last year of discussion about this and why we have wound
-up here as a first step. Check the archives for extensive discussion.
-
-Jason
