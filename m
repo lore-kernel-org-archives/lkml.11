@@ -2,201 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 19:14:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE4DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 19:14:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387076AbiEBTRo (ORCPT
+        id S1387082AbiEBTRz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 15:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45652 "EHLO
+        Mon, 2 May 2022 15:17:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387066AbiEBTRk (ORCPT
+        with ESMTP id S1387078AbiEBTRv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 15:17:40 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCFA7DECC
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 12:14:10 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id g26-20020a25b11a000000b0064984a4ffb7so2855324ybj.7
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 12:14:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
-        bh=kctQu0Q+rBx9IOI1jVYX1kCsToTQ9FXaErspFG8A+BM=;
-        b=PUaFQEUXTVeO3j8UqhdilVFBoS8MQyXXLOdKDTrAxE3OYq/faQPkSJWo8e7me1GEfx
-         6PsNj1xxLGPhdzYlihe1rWIfDUcGXvJXU10tkvtxr6B/1FN7NalgVecXju0dhY3zvC3z
-         Wn9cP13pNuedWp+KZQejkmkLKJWMyilvnVCZCeigqzu7y0HNaezqXPUdmoMOtc+bcbZg
-         iGVOT37xPO8vnZ857v/bBUTDGk0QN0BZCLo8QSwtH1V7yUaedGw7RwWpenSonKMyFTwi
-         MaX/+nPpNpve5ilD2cuRr96xbl7NBZ2cJyokJ9Cl3NLX6dlXkrvqfAJBFp8SZMNQPpEZ
-         jtEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:cc;
-        bh=kctQu0Q+rBx9IOI1jVYX1kCsToTQ9FXaErspFG8A+BM=;
-        b=hc5qJIrrzBy0uRmIGV4UR/SV27aYUB5VzD44UI8ofi61uTlOvjuZgErORzHn+W/Pca
-         Fb3hBLrY2Y+Ediia4KP5UmjSp8SzFHPI31KevRclAUO7VcbadmTytQLJfr/EazL3DNU3
-         xvqYd7gzeTF02iYhI63SDhO0ItGqNmGhGzcpwnJV906XP9JGN9hdirT4SwNtR/cbCe72
-         CPd9LkB967wRPAW3FO1LPSBeYFmgKowmQxpQ2u9k9vYsgQizAosh9ltEuGbjQfUOWLln
-         4DxaHSU+2RLhnCQET2SoCHzTTTilsfKl62KQIUVkvlDbj83ZXma0xBq2OJqNauQ10ja5
-         2C4A==
-X-Gm-Message-State: AOAM5327olPCe1o9iajQpT8nBNIkqqpN3UeKrmb0XeAZ2YkT23ILQzcD
-        J0E/ZVA97lJHpAmi4PX8QEFDAxbyzyaAogo2jg==
-X-Google-Smtp-Source: ABdhPJxJbanbmKIqaVzeagTqMg3TVUzh6s0fqdiC3NI5Unq1sq+s6VeUa3qJVINa7kZWA+10cnCzYiMEVqhMJfYwMg==
-X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:55c:7548:7073:c14f])
- (user=kaleshsingh job=sendgmr) by 2002:a05:6902:50c:b0:648:67e5:f160 with
- SMTP id x12-20020a056902050c00b0064867e5f160mr11569415ybs.22.1651518850044;
- Mon, 02 May 2022 12:14:10 -0700 (PDT)
-Date:   Mon,  2 May 2022 12:12:04 -0700
-In-Reply-To: <20220502191222.4192768-1-kaleshsingh@google.com>
-Message-Id: <20220502191222.4192768-5-kaleshsingh@google.com>
-Mime-Version: 1.0
-References: <20220502191222.4192768-1-kaleshsingh@google.com>
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v2 4/5] KVM: arm64: Allocate shared stacktrace pages
-From:   Kalesh Singh <kaleshsingh@google.com>
-Cc:     mark.rutland@arm.com, broonie@kernel.org, will@kernel.org,
-        maz@kernel.org, qperret@google.com, tabba@google.com,
-        surenb@google.com, kernel-team@android.com,
-        Kalesh Singh <kaleshsingh@google.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Andrew Jones <drjones@redhat.com>,
-        Marco Elver <elver@google.com>,
-        Zenghui Yu <yuzenghui@huawei.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Keir Fraser <keirf@google.com>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org
+        Mon, 2 May 2022 15:17:51 -0400
+Received: from mail1.bemta31.messagelabs.com (mail1.bemta31.messagelabs.com [67.219.246.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D539DDECF;
+        Mon,  2 May 2022 12:14:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lenovo.com;
+        s=Selector; t=1651518860; i=@lenovo.com;
+        bh=Zh7IkU9khBQUNiI+Yavix2ggPTmaSrJrJiecXjwo6RU=;
+        h=Message-ID:Date:MIME-Version:Subject:From:To:CC:References:
+         In-Reply-To:Content-Type:Content-Transfer-Encoding;
+        b=N+buZ8M4oBhQYdZzYsLlCi1zUHxYrBJq/71rVAon36OMVhxnUo+4wYzXNSQIeLWQf
+         lJ98Rl9Jyo/xYAK5QxFrpfl/Ll9AAAGeV+jNirm7CkiHyHCVUP94tlj1XqvYD5seNv
+         wHruHbZ71g+BJYf4/e4eW8CjChP1do7r1VsPzQm/kFARhsnZl7ojTbJ2iSQJGjopiP
+         UTWFrKzTfLnAfA1thVmZ91XTXY1p0suiI7MCHlpuKx0Cqdfah2AQksa+Zk+etkcGit
+         JjXXYuTddSB5RNyFOgKdMDdRZ/b//5tWB/U1DlJwX7Jhwoj91MbHx1JTsw+sR+oIxY
+         4IwvzteSiIIhA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrNJsWRWlGSWpSXmKPExsWSoS+Vp9utW5B
+  k8Pwvj8Wb49OZLNb/XsliMfuwjUX7662MFpd3zWGzmLq7n9XiwNRpzBar97xgduDw+H2A0WPT
+  qk42j90LPjN5vN93lc3j8ya5ANYo1sy8pPyKBNaMPcvaWAr2y1a8mBjQwPhRoouRi4NRYCmzx
+  LHvSxghnEWsEi1LD0E5nUwSk+fdYwdxhARmMkksOvWHFcLZzyTx5PtGMEdC4DijRPehdUwQmU
+  5GiR+vTrFAOP1MEs0rrjFCOI8ZJR4+24jgtF3cwNbFyMnBK2Ar8brrBhOIzSKgIvGm9xcjRFx
+  Q4uTMJywgtqhAuET3/v2sILawQJbExJ6jYL3MAuISt57MB+tlE9CW2LLlF1hcRKBQYtaKyWBn
+  MAvsZpTYvuY61OmNTBJdJ1vANnAK2ElMX3ScBWKSpkTr9t/sELa8RPPW2cwgtpCAssSv/vNgt
+  oSAosSnU8dYIewEieYpRxkhbEmJazcvsEPYshJHz85hgbB9JXYvBanhALJ1JWZPFYQI50icev
+  sZqlxO4lTvOaYJjLqzkPw8C8lvs5BcNwvJdQsYWVYxWiYVZaZnlOQmZuboGhoY6Boamuia6hp
+  b6CVW6SbqlRbrpiYWl+ga6iWWF+ulFhfrFVfmJuek6OWllmxiBKa0lCJWtR2Mk3p+6h1ilORg
+  UhLlrVMrSBLiS8pPqcxILM6ILyrNSS0+xKjBwSFw5eCR2YxSLHn5ealKErzmmkB1gkWp6akVa
+  Zk5wLQLUyrBwaMkwssjCJTmLS5IzC3OTIdInWK057iybe9eZo4HJ04CyUuHrgDJa+sX7GMWAp
+  sqJc5rrQjUJgDSllGaBzcUlicuMcpKCfMyMjAwCPEUpBblZpagyr9iFOdgVBLm7dAGmsKTmVc
+  Ct/sV0FlMQGc1peeCnFWSiJCSamCqYF+3fPXxR0xbq1qmvTz6aZla7taCH++f7zi048vyp35f
+  e1iEuPWclFjOr48/fsThS9+7zL8Lrm/9mlj+aMLX0+UqaiwGquFZUQHTr35zdm52n/zic3nNR
+  H3pVRr3Xws5/amf3hqtyrG/afp2tR+vtxyNi60876/xbVXLuifPZY9s0HrwjF9U4K2t28HG0s
+  Kl/nPrPx+wn6hx/m92SX1zx8LLC2KWXV11x1q7zpSlYP6FtvXiKRvFP65UfeniWM9i6qR8w7/
+  IqqH+XktqVnxUfoWe99epYalv7fqiG/1YfyQwJWj5fBd58Nb88KcbfakLVnJ2nDm54ceCLsvZ
+  3ZOcBZt3aHG9TPBkvFe4/rm1EktxRqKhFnNRcSIAnjnbtY4EAAA=
+X-Env-Sender: markpearson@lenovo.com
+X-Msg-Ref: server-6.tower-706.messagelabs.com!1651518857!35151!1
+X-Originating-IP: [104.47.26.110]
+X-SYMC-ESS-Client-Auth: mailfrom-relay-check=pass
+X-StarScan-Received: 
+X-StarScan-Version: 9.86.4; banners=-,-,-
+X-VirusChecked: Checked
+Received: (qmail 17032 invoked from network); 2 May 2022 19:14:18 -0000
+Received: from mail-sgaapc01lp2110.outbound.protection.outlook.com (HELO APC01-SG2-obe.outbound.protection.outlook.com) (104.47.26.110)
+  by server-6.tower-706.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP; 2 May 2022 19:14:18 -0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X9sDdZ25FvrwIcPoVY7MO3r0P6SPYEP636BsAjrBzugvL+RiptjgipLARlJ5DAWNTdw9NWAt/kr26pVe0z2VSpwWnfmxU7H6DO+S4+e91Hxbjjc6aidxUBMCX+AmFb8u/DOYsFgSp5ZhQkfU6CWdHkQYAiDicZ2tUkLOTvDffs7MIHAW5rlHS0uWMvplcs9yAyW7ooBDqZ41POZyqA17OtGkyv1/52KHp+qQzqkpmJ4Ko28eHY4sL1JhuZypwGxRErut4u9NPfTnh8qo0BPjF3Z29xnavbNYV9hkUqSWGcJjnREyICPRj9BGU2LF3bR9jL1m2B/DSABkKURRY0ahZQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Zh7IkU9khBQUNiI+Yavix2ggPTmaSrJrJiecXjwo6RU=;
+ b=Ob7YPujUQJY0BwFWGyRriXpxLMQbu7KYIQClqJxhLmE9avbT5AXE5SQPe22QLy3UMNY6Um0f26eONbMrI3ldUBpykLibZWFlgu+Qnq6tZm4tflODJ4fmlL/mD5J9+WxMb/K3nvjv3svutWVBeaVgJ7nt7ynM8Sdf4VZZ4V1gnIijRQNqarCQKICE1G4d6j6BlgeihTGfOUiihdJH4F1/gUCBreCwkh0lOx7ZbIFIipxQpcKdLSi07CAsQ9Dd1WVsDrj8k28mBE3HK7BBcp4sFMm0uf6gADb0sYqUvdS0a/naGdJSS9uC04rkf99jMigSbk4oi+XdKqddAx7sQTsZBw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=softfail (sender ip
+ is 104.232.225.7) smtp.rcpttodomain=redhat.com smtp.mailfrom=lenovo.com;
+ dmarc=fail (p=none sp=none pct=100) action=none header.from=lenovo.com;
+ dkim=none (message not signed); arc=none
+Received: from SG2PR06CA0227.apcprd06.prod.outlook.com (2603:1096:4:68::35) by
+ SG2PR03MB4568.apcprd03.prod.outlook.com (2603:1096:4:85::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5206.13; Mon, 2 May 2022 19:14:16 +0000
+Received: from SG2APC01FT0030.eop-APC01.prod.protection.outlook.com
+ (2603:1096:4:68:cafe::e2) by SG2PR06CA0227.outlook.office365.com
+ (2603:1096:4:68::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24 via Frontend
+ Transport; Mon, 2 May 2022 19:14:16 +0000
+X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is
+ 104.232.225.7) smtp.mailfrom=lenovo.com; dkim=none (message not signed)
+ header.d=none;dmarc=fail action=none header.from=lenovo.com;
+Received-SPF: SoftFail (protection.outlook.com: domain of transitioning
+ lenovo.com discourages use of 104.232.225.7 as permitted sender)
+Received: from mail.lenovo.com (104.232.225.7) by
+ SG2APC01FT0030.mail.protection.outlook.com (10.13.37.86) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5206.12 via Frontend Transport; Mon, 2 May 2022 19:14:15 +0000
+Received: from reswpmail01.lenovo.com (10.62.32.20) by mail.lenovo.com
+ (10.62.123.117) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.27; Mon, 2 May
+ 2022 15:13:58 -0400
+Received: from [10.38.104.132] (10.38.104.132) by reswpmail01.lenovo.com
+ (10.62.32.20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.27; Mon, 2 May
+ 2022 15:15:03 -0400
+Message-ID: <24fdaa0c-5f63-5e81-5f7c-cd439d301f8c@lenovo.com>
+Date:   Mon, 2 May 2022 15:13:56 -0400
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [External] [PATCH 1/2] platform/x86: thinkpad_acpi: Restore X1
+ Carbon 9th Gen dual fan quirk
+Content-Language: en-US
+From:   Mark Pearson <markpearson@lenovo.com>
+To:     Lyude Paul <lyude@redhat.com>,
+        <ibm-acpi-devel@lists.sourceforge.net>,
+        <platform-driver-x86@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-hwmon@vger.kernel.org>,
+        "Hans de Goede" <hdegoede@redhat.com>,
+        Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
+        Mark Gross <markgross@kernel.org>
+References: <20220429211418.4546-1-lyude@redhat.com>
+ <20220429211418.4546-2-lyude@redhat.com>
+ <d3461670-a905-4956-4f4d-d847adf4289b@lenovo.com>
+ <2769588a352e9c3b43a4e09afff100d52a9ba524.camel@redhat.com>
+ <d7a35afb-6b3a-7d76-0dc1-975842407fea@lenovo.com>
+In-Reply-To: <d7a35afb-6b3a-7d76-0dc1-975842407fea@lenovo.com>
 Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.38.104.132]
+X-ClientProxiedBy: reswpmail01.lenovo.com (10.62.32.20) To
+ reswpmail01.lenovo.com (10.62.32.20)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2faf0db6-8738-4ba9-7819-08da2c6ff362
+X-MS-TrafficTypeDiagnostic: SG2PR03MB4568:EE_
+X-Microsoft-Antispam-PRVS: <SG2PR03MB4568A02B846765978DA1D0E5C5C19@SG2PR03MB4568.apcprd03.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: r7mIcKZNtuXBh/abq/tTpkJnGVLjVn5QWJb4THS/Avqm1OTK2xSdbJCbknEWq0p2xyNAhONsXr674IZu6Wz+KdS6i5R6ziu0zDIuHEkzfLK0tdyeY9RPD03URDRzN2N9LBSSyixzVwjcbhUfNMby3P0gourGjIv7sBxW2xt1G2pRm86AaS0LlIlLqGZjwB/OnzbDhQqTNNU7SifzfQPpb6n2ysg/6nGcIbZWwsKZRBWpmzN3Ba3ehaKHn91Gb29MZqMkrtrUgRbGZfrCAGT8FQ8uO7Lk40MBnlsPmNyeAGhnISVLzaMwsruvEb6YCJfFGAtXEsLt87dirSNqHnw05a0E4xlrreXQNy4gyGIGJ2BqbVHh6BSVeBFE8Gier0orbPgperWwER9+hzIzet3lfgv4agyj974C1YoSabkDqZZ/baI5860WMMad69vE2UIwGXqMyJ0BszIXV7ymcx5YJBdo7ABY66qCAshnnhVgLhQpdwEQiY+9yqp4MjiZRrG+v53ixUlM6XQ5xUGbbhBxrbIEZsB7DfzmB2DqwWcmW1Gr1YhQ7d6f7zTB72x7Gi/rREKJHE/nimstYk8Iie9t/6twTE+J0qauIw+61QbNNE2HkPeHaC67L1cTC7TQrSOEzrVorHaFaYNpj7Hxk31LJClx558vMWIsulEZQ1rDyQqx/7GxXvah/G8AvO2jTGyL+IM1vhtenm8bftVG5VBs4V3O4YUsQjxw/55Na7iapHPHA5oOHxbgRKwF+qrOs5GjenSXY7kuFliAshG/Kx6SNg9WLYlvUbXbSIjzJjxxQ0KwB/doyvd9PGbdfTRUMvpR
+X-Forefront-Antispam-Report: CIP:104.232.225.7;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.lenovo.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(356005)(70586007)(70206006)(81166007)(8936002)(36906005)(16576012)(54906003)(86362001)(31696002)(40460700003)(110136005)(5660300002)(36860700001)(53546011)(426003)(2906002)(316002)(47076005)(508600001)(2616005)(6666004)(16526019)(336012)(186003)(83380400001)(82960400001)(31686004)(8676002)(82310400005)(36756003)(26005)(4326008)(3940600001)(43740500002)(36900700001);DIR:OUT;SFP:1102;
+X-OriginatorOrg: lenovo.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2022 19:14:15.7499
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2faf0db6-8738-4ba9-7819-08da2c6ff362
+X-MS-Exchange-CrossTenant-Id: 5c7d0b28-bdf8-410c-aa93-4df372b16203
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5c7d0b28-bdf8-410c-aa93-4df372b16203;Ip=[104.232.225.7];Helo=[mail.lenovo.com]
+X-MS-Exchange-CrossTenant-AuthSource: SG2APC01FT0030.eop-APC01.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR03MB4568
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The nVHE hypervisor can use this shared area to dump its stacktrace
-addresses on hyp_panic(). Symbolization and printing the stacktrace can
-then be handled by the host in EL1 (done in a later patch in this series).
 
-Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
----
- arch/arm64/include/asm/kvm_asm.h |  1 +
- arch/arm64/kvm/arm.c             | 34 ++++++++++++++++++++++++++++++++
- arch/arm64/kvm/hyp/nvhe/setup.c  | 11 +++++++++++
- 3 files changed, 46 insertions(+)
 
-diff --git a/arch/arm64/include/asm/kvm_asm.h b/arch/arm64/include/asm/kvm_asm.h
-index 2e277f2ed671..ad31ac68264f 100644
---- a/arch/arm64/include/asm/kvm_asm.h
-+++ b/arch/arm64/include/asm/kvm_asm.h
-@@ -174,6 +174,7 @@ struct kvm_nvhe_init_params {
- 	unsigned long hcr_el2;
- 	unsigned long vttbr;
- 	unsigned long vtcr;
-+	unsigned long stacktrace_hyp_va;
- };
- 
- /* Translate a kernel address @ptr into its equivalent linear mapping */
-diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-index d300def44f5c..26005182da20 100644
---- a/arch/arm64/kvm/arm.c
-+++ b/arch/arm64/kvm/arm.c
-@@ -50,6 +50,7 @@ DEFINE_STATIC_KEY_FALSE(kvm_protected_mode_initialized);
- DECLARE_KVM_HYP_PER_CPU(unsigned long, kvm_hyp_vector);
- 
- static DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
-+DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stacktrace_page);
- unsigned long kvm_arm_hyp_percpu_base[NR_CPUS];
- DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_init_params, kvm_init_params);
- 
-@@ -1484,6 +1485,7 @@ static void cpu_prepare_hyp_mode(int cpu)
- 	tcr |= (idmap_t0sz & GENMASK(TCR_TxSZ_WIDTH - 1, 0)) << TCR_T0SZ_OFFSET;
- 	params->tcr_el2 = tcr;
- 
-+	params->stacktrace_hyp_va = kern_hyp_va(per_cpu(kvm_arm_hyp_stacktrace_page, cpu));
- 	params->pgd_pa = kvm_mmu_get_httbr();
- 	if (is_protected_kvm_enabled())
- 		params->hcr_el2 = HCR_HOST_NVHE_PROTECTED_FLAGS;
-@@ -1777,6 +1779,7 @@ static void teardown_hyp_mode(void)
- 	free_hyp_pgds();
- 	for_each_possible_cpu(cpu) {
- 		free_page(per_cpu(kvm_arm_hyp_stack_page, cpu));
-+		free_page(per_cpu(kvm_arm_hyp_stacktrace_page, cpu));
- 		free_pages(kvm_arm_hyp_percpu_base[cpu], nvhe_percpu_order());
- 	}
- }
-@@ -1868,6 +1871,23 @@ static int init_hyp_mode(void)
- 		per_cpu(kvm_arm_hyp_stack_page, cpu) = stack_page;
- 	}
- 
-+	/*
-+	 * Allocate stacktrace pages for Hypervisor-mode.
-+	 * This is used by the hypervisor to share its stacktrace
-+	 * with the host on a hyp_panic().
-+	 */
-+	for_each_possible_cpu(cpu) {
-+		unsigned long stacktrace_page;
-+
-+		stacktrace_page = __get_free_page(GFP_KERNEL);
-+		if (!stacktrace_page) {
-+			err = -ENOMEM;
-+			goto out_err;
-+		}
-+
-+		per_cpu(kvm_arm_hyp_stacktrace_page, cpu) = stacktrace_page;
-+	}
-+
- 	/*
- 	 * Allocate and initialize pages for Hypervisor-mode percpu regions.
- 	 */
-@@ -1975,6 +1995,20 @@ static int init_hyp_mode(void)
- 		params->stack_hyp_va = hyp_addr + (2 * PAGE_SIZE);
- 	}
- 
-+	/*
-+	 * Map the hyp stacktrace pages.
-+	 */
-+	for_each_possible_cpu(cpu) {
-+		char *stacktrace_page = (char *)per_cpu(kvm_arm_hyp_stacktrace_page, cpu);
-+
-+		err = create_hyp_mappings(stacktrace_page, stacktrace_page + PAGE_SIZE,
-+					  PAGE_HYP);
-+		if (err) {
-+			kvm_err("Cannot map hyp stacktrace page\n");
-+			goto out_err;
-+		}
-+	}
-+
- 	for_each_possible_cpu(cpu) {
- 		char *percpu_begin = (char *)kvm_arm_hyp_percpu_base[cpu];
- 		char *percpu_end = percpu_begin + nvhe_percpu_size();
-diff --git a/arch/arm64/kvm/hyp/nvhe/setup.c b/arch/arm64/kvm/hyp/nvhe/setup.c
-index e8d4ea2fcfa0..9b81bf2d40d7 100644
---- a/arch/arm64/kvm/hyp/nvhe/setup.c
-+++ b/arch/arm64/kvm/hyp/nvhe/setup.c
-@@ -135,6 +135,17 @@ static int recreate_hyp_mappings(phys_addr_t phys, unsigned long size,
- 
- 		/* Update stack_hyp_va to end of the stack's private VA range */
- 		params->stack_hyp_va = hyp_addr + (2 * PAGE_SIZE);
-+
-+		/*
-+		 * Map the stacktrace pages as shared and transfer ownership to
-+		 * the hypervisor.
-+		 */
-+		prot = pkvm_mkstate(PAGE_HYP, PKVM_PAGE_SHARED_OWNED);
-+		start = (void *)params->stacktrace_hyp_va;
-+		end = start + PAGE_SIZE;
-+		ret = pkvm_create_mappings(start, end, prot);
-+		if (ret)
-+			return ret;
- 	}
- 
- 	/*
--- 
-2.36.0.464.gb9c8b46e94-goog
+On 5/2/22 13:44, Mark Pearson wrote:
+> 
+> 
+> On 5/2/22 13:42, Lyude Paul wrote:
+>> Some answers/comments down below
+>>
+>> On Fri, 2022-04-29 at 21:25 -0400, Mark Pearson wrote:
+>>> Hi Lyude
+>>>
+>>> On 4/29/22 17:14, Lyude Paul wrote:
+>>>> The new method of probing dual fan support introduced in:
+>>>>
+>>>> bf779aaf56ea ("platform/x86: thinkpad_acpi: Add dual fan probe")
+>>>>
+>>>> While this commit says this works on the X1 Carbon 9th Gen, it actually
+>>>> just results in hiding the second fan on my local machine. Additionally,
+>>>> I'm fairly sure this machine powers on quite often without either of the
+>>>> two fans spinning.
+>>>>
+>>>> So let's fix this by adding back the dual fan quirk for the X1 Carbon 9th
+>>>> Gen.
+>>>>
+>>>> Signed-off-by: Lyude Paul <lyude@redhat.com>
+>>>> Fixes: bf779aaf56ea ("platform/x86: thinkpad_acpi: Add dual fan probe")
+>>>> Cc: Mark Pearson <markpearson@lenovo.com>
+>>>> Cc: Hans de Goede <hdegoede@redhat.com>
+>>>> Cc: Henrique de Moraes Holschuh <hmh@hmh.eng.br>
+>>>> Cc: Mark Gross <markgross@kernel.org>
+>>>> Cc: ibm-acpi-devel@lists.sourceforge.net
+>>>> Cc: platform-driver-x86@vger.kernel.org
+>>>> ---
+>>>>  drivers/platform/x86/thinkpad_acpi.c | 1 +
+>>>>  1 file changed, 1 insertion(+)
+>>>>
+>>>> diff --git a/drivers/platform/x86/thinkpad_acpi.c
+>>>> b/drivers/platform/x86/thinkpad_acpi.c
+>>>> index c568fae56db2..9067fd0a945c 100644
+>>>> --- a/drivers/platform/x86/thinkpad_acpi.c
+>>>> +++ b/drivers/platform/x86/thinkpad_acpi.c
+>>>> @@ -8699,6 +8699,7 @@ static const struct tpacpi_quirk fan_quirk_table[]
+>>>> __initconst = {
+>>>>         TPACPI_Q_LNV3('N', '2', 'E', TPACPI_FAN_2CTL),  /* P1 / X1 Extreme
+>>>> (1st gen) */
+>>>>         TPACPI_Q_LNV3('N', '2', 'O', TPACPI_FAN_2CTL),  /* P1 / X1 Extreme
+>>>> (2nd gen) */
+>>>>         TPACPI_Q_LNV3('N', '3', '0', TPACPI_FAN_2CTL),  /* P15 (1st gen) /
+>>>> P15v (1st gen) */
+>>>> +       TPACPI_Q_LNV3('N', '3', '2', TPACPI_FAN_2CTL),  /* X1 Carbon (9th
+>>>> gen) */
+>>>>         TPACPI_Q_LNV3('N', '3', '7', TPACPI_FAN_2CTL),  /* T15g (2nd gen)
+>>>> */
+>>>>         TPACPI_Q_LNV3('N', '1', 'O', TPACPI_FAN_NOFAN), /* X1 Tablet (2nd
+>>>> gen) */
+>>>>  };
+>>> I just double checked this on my X1C9 - and it's working correctly. 2nd
+>>> fan is detected correctly.
+>>>
+>>> I'd rather understand why it's not working on your setup then just
+>>> re-introduce the quirk.
+>>
+>> Of course! I figured as much, it's just easy to start conversations with a
+>> revert :P
+>>
+>>>
+>>> What happens on your system when the
+>>>   res = fan2_get_speed(&speed);
+>>> is called? If that is failing it means your 2nd fan isn't responding and
+>>> that's not supposed to happen. Could you let me know if you get an error
+>>> code, if it happens every boot, etc
+>>> I assume when the function is called later it works successfully?
+>>
+>> It definitely seems to happen every boot, not sure about the error code it
+>> returns. I will check and get you this info asap
+>>
+>>>
+>>> Also please confirm which BIOS and EC version you have.
+>>
+>> BIOS version N32ET75W (1.51) release date 12/02/2021, embedded controller is
+>> 0.1.32
+>>
+>>
+> Thanks!
+> 
+> Along with Thomas' notes I think I've found the problem (though still
+> bemused why I don't see the problem on my X1C9 and I tested on multiple
+> platforms previously...so it is somewhat weird).
+> 
+> Working on a fix - will try and have that out for review later today or
+> tomorrow.
+> 
+Not sure exactly what the etiquette here is for the mailing list but I
+just posted an updated patch "platform/x86: thinkpad_acpi: Correct dual
+fan probe" that I think addresses all the issues raised in this patch
+sequence.
 
+Please let me know any feedback or concerns. And thanks for raising this!
+
+Mark
