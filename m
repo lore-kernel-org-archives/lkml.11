@@ -2,168 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A92C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:12:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13F76C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:12:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241872AbiEBQPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 12:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
+        id S1385906AbiEBQP4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 12:15:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386198AbiEBQPj (ORCPT
+        with ESMTP id S1386196AbiEBQPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 2 May 2022 12:15:39 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9078DF15
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 09:12:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651507928; x=1683043928;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=oqVfvIwO+ekNl8VYKW8L9XfK9KFqSFa9jxkzZ+Hsbz0=;
-  b=DeZTE+pUbycCrYYS9XdFSVZbInAFQbizrtUm+LU1w3qHR2nI/pC6G2vG
-   hpcrcTMO3S0y8KtwsPF2crzUgVB0uAS3ZKGlYejSk4lRLlsua2VpY4KYD
-   XWU4+Zvi54Md93eI1kdpvNpqyxI2/lI7LjNZ19rOFy4AoUpiqGAd/4oni
-   w=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 02 May 2022 09:12:08 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 09:12:08 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 2 May 2022 09:12:07 -0700
-Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 2 May 2022
- 09:12:06 -0700
-Date:   Mon, 2 May 2022 12:12:04 -0400
-From:   Qian Cai <quic_qiancai@quicinc.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-CC:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        "Kevin Tian" <kevin.tian@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
-        <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [RESEND PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
-Message-ID: <20220502161204.GA22@qian>
-References: <20220418005000.897664-1-baolu.lu@linux.intel.com>
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABDD2DFFC;
+        Mon,  2 May 2022 09:12:09 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id 34F4B1F42BC7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651507928;
+        bh=yFJOMKwuIhisyg/HTjYUfFFgojnjn1gaRe4MzlvPbJ8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WugItvxTkOGGNHaEeKBTDncAM3wUeRs3oShgHGf4GWeVrX/mMiT1QygpMU4x5j065
+         Gt6pyaBHFSuQyXEAYYa28BgHWT2AFjZ8qhjXyFtxtQaQAgj1scf++bvYnN0LPsRNLi
+         Nce9SmSI9VJi9VrUeXPTLEafQp1+wPzugsIy3ByqPyONYVqhh07PyqnzfKsbe/QdCG
+         M96xm5UA5kIIdPqVzlfRRSV4yCAJ8jrFmk0njylohNyipmPCk2/FWxZxrQV8qDr8Iy
+         LL96d6HWQYUl894lIIUIdjaj/+4WOzRgEiBtOgz52UELJWKVB3NbSFCGf44AUVzO6H
+         Ua1OkdPiuO7ug==
+Date:   Mon, 2 May 2022 12:12:03 -0400
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] arm64: dts: mediatek: Add fallback compatible for
+ mt8192's flash
+Message-ID: <20220502161203.pfmjyep4escqwjix@notapiano>
+References: <20220429195745.2203461-1-nfraprado@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220418005000.897664-1-baolu.lu@linux.intel.com>
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220429195745.2203461-1-nfraprado@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 08:49:49AM +0800, Lu Baolu wrote:
-> Hi Joerg,
+On Fri, Apr 29, 2022 at 03:57:45PM -0400, Nícolas F. R. A. Prado wrote:
+> The dt-binding for Mediatek's SPI NOR flash controller expects a mt8173
+> fallback compatible for mt8192, so add it in mt8192.dtsi.
 > 
-> This is a resend version of v8 posted here:
-> https://lore.kernel.org/linux-iommu/20220308054421.847385-1-baolu.lu@linux.intel.com/
-> as we discussed in this thread:
-> https://lore.kernel.org/linux-iommu/Yk%2Fq1BGN8pC5HVZp@8bytes.org/
+> The driver already sets custom data based on the mt8192 compatible, so
+> this fallback compatible won't be used and is added purely to suppress
+> the dt-binding warning.
 > 
-> All patches can be applied perfectly except this one:
->  - [PATCH v8 02/11] driver core: Add dma_cleanup callback in bus_type
-> It conflicts with below refactoring commit:
->  - 4b775aaf1ea99 "driver core: Refactor sysfs and drv/bus remove hooks"
-> The conflict has been fixed in this post.
+> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+
+By the way, I wonder if this patch should be accompanied by a patch adding the 
+mediatek,mt8192-nor standalone compatible as deprecated in the dt-binding. I
+feel like the answer is in theory yes, but in practice no.
+
+The fact that the mediatek,mt8192-nor standalone compatible was accepted in the
+devicetree means that it should show in the dt-binding, since it's an acceptable
+binding. But since the binding already shows up there with a fallback binding,
+then this standalone binding should be considered deprecated.
+
+But in practice, the mediatek,mt8192-nor is the more specific binding so
+documenting its standalone use as deprecated wouldn't accomplish much.
+
+What do you think?
+
+Thanks,
+Nícolas
+
 > 
-> No functional changes in this series. I suppress cc-ing this series to
-> all v8 reviewers in order to avoid spam.
+> ---
 > 
-> Please consider it for your iommu tree.
-
-Reverting this series fixed an user-after-free while doing SR-IOV.
-
- BUG: KASAN: use-after-free in __lock_acquire
- Read of size 8 at addr ffff080279825d78 by task qemu-system-aar/22429
- CPU: 24 PID: 22429 Comm: qemu-system-aar Not tainted 5.18.0-rc5-next-20220502 #69
- Call trace:
-  dump_backtrace
-  show_stack
-  dump_stack_lvl
-  print_address_description.constprop.0
-  print_report
-  kasan_report
-  __asan_report_load8_noabort
-  __lock_acquire
-  lock_acquire.part.0
-  lock_acquire
-  _raw_spin_lock_irqsave
-  arm_smmu_detach_dev
-  arm_smmu_detach_dev at drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:2377
-  arm_smmu_attach_dev
-  __iommu_attach_group
-  __iommu_attach_device at drivers/iommu/iommu.c:1942
-  (inlined by) iommu_group_do_attach_device at drivers/iommu/iommu.c:2058
-  (inlined by) __iommu_group_for_each_dev at drivers/iommu/iommu.c:989
-  (inlined by) __iommu_attach_group at drivers/iommu/iommu.c:2069
-  iommu_group_release_dma_owner
-  __vfio_group_unset_container
-  vfio_group_try_dissolve_container
-  vfio_group_put_external_user
-  kvm_vfio_destroy
-  kvm_destroy_vm
-  kvm_vm_release
-  __fput
-  ____fput
-  task_work_run
-  do_exit
-  do_group_exit
-  get_signal
-  do_signal
-  do_notify_resume
-  el0_svc
-  el0t_64_sync_handler
-  el0t_64_sync
-
- Allocated by task 22427:
-  kasan_save_stack
-  __kasan_kmalloc
-  kmem_cache_alloc_trace
-  arm_smmu_domain_alloc
-  iommu_domain_alloc
-  vfio_iommu_type1_attach_group
-  vfio_ioctl_set_iommu
-  vfio_fops_unl_ioctl
-  __arm64_sys_ioctl
-  invoke_syscall
-  el0_svc_common.constprop.0
-  do_el0_svc
-  el0_svc
-  el0t_64_sync_handler
-  el0t_64_sync
-
- Freed by task 22429:
-  kasan_save_stack
-  kasan_set_track
-  kasan_set_free_info
-  ____kasan_slab_free
-  __kasan_slab_free
-  slab_free_freelist_hook
-  kfree
-  arm_smmu_domain_free
-  arm_smmu_domain_free at iommu/arm/arm-smmu-v3/arm-smmu-v3.c:2067
-  iommu_domain_free
-  vfio_iommu_type1_detach_group
-  __vfio_group_unset_container
-  vfio_group_try_dissolve_container
-  vfio_group_put_external_user
-  kvm_vfio_destroy
-  kvm_destroy_vm
-  kvm_vm_release
-  __fput
-  ____fput
-  task_work_run
-  do_exit
-  do_group_exit
-  get_signal
-  do_signal
-  do_notify_resume
-  el0_svc
-  el0t_64_sync_handler
-  el0t_64_sync
+>  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> index 26dbe9ecc528..32a836105ea7 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> @@ -896,7 +896,7 @@ pcie_intc0: interrupt-controller {
+>  		};
+>  
+>  		nor_flash: spi@11234000 {
+> -			compatible = "mediatek,mt8192-nor";
+> +			compatible = "mediatek,mt8192-nor", "mediatek,mt8173-nor";
+>  			reg = <0 0x11234000 0 0xe0>;
+>  			interrupts = <GIC_SPI 431 IRQ_TYPE_LEVEL_HIGH 0>;
+>  			clocks = <&topckgen CLK_TOP_SFLASH_SEL>,
+> -- 
+> 2.36.0
+> 
