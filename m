@@ -2,107 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D4FEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 09:39:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDBE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 09:41:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384316AbiEBJml (ORCPT
+        id S1384348AbiEBJob (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 05:42:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44806 "EHLO
+        Mon, 2 May 2022 05:44:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384278AbiEBJm2 (ORCPT
+        with ESMTP id S1384402AbiEBJn6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 05:42:28 -0400
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E9B1BE9E;
-        Mon,  2 May 2022 02:38:59 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id B4F7041E96;
-        Mon,  2 May 2022 09:38:54 +0000 (UTC)
-From:   Hector Martin <marcan@marcan.st>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Hector Martin <marcan@marcan.st>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Sven Peter <sven@svenpeter.dev>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: [PATCH 2/3] PCI: apple: Probe all GPIOs for availability first
-Date:   Mon,  2 May 2022 18:38:31 +0900
-Message-Id: <20220502093832.32778-3-marcan@marcan.st>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220502093832.32778-1-marcan@marcan.st>
-References: <20220502093832.32778-1-marcan@marcan.st>
+        Mon, 2 May 2022 05:43:58 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A03A111D;
+        Mon,  2 May 2022 02:40:30 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651484429;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jYGGwnXeFPcIOHQmhzSCBgH4HMwEO9aRAXTxvIySbxU=;
+        b=xRWWMcx6q1hFZvKKcNEOiGEFpsCUiKlY3VDrrJdA8NHIq54CXy7UgGxYIgzdrLUKPVauf0
+        WSQlkGf1n6FdJbu4X74JyfeuhB9d+ZwAQNEmSxp1+MyX+kkH3q6zKnRPbOXiXjYoth8uDD
+        sAV576M4VAGOoMYcjo1+6PVJVxCvHQQjHZRYBES853/sY3GVU3pFSbI3f72cKVIgGsmGDn
+        mMFdpXX/e5b6df01EgTZSHHQ8LHWsWKsp2Az2u5dChqNNJqNiJQOLKM/DTSUJGZvrooQgX
+        9Xr8hWfvLEUOC5/+pUe9Sso7X7doWNQiKXxg4xKte2TWxeElwlW3ZCQBQout0Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651484429;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jYGGwnXeFPcIOHQmhzSCBgH4HMwEO9aRAXTxvIySbxU=;
+        b=dOSkoFARma2uJzbg6ynhp4U13J6hLMTQeSZWPMHb9PQQCFgpLOuL3PitpqCpKJt9Ievkw+
+        VKQ03GE9hEn4MmBw==
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        bp@alien8.de
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Arnd Bergmann <arnd@arndb.de>, x86@kernel.org
+Subject: Re: [PATCH v7 13/17] x86/asm: use fallback for random_get_entropy()
+ instead of zero
+In-Reply-To: <20220426083301.816458-1-Jason@zx2c4.com>
+References: <YmbZZwXxaC+S863+@zx2c4.com>
+ <20220426083301.816458-1-Jason@zx2c4.com>
+Date:   Mon, 02 May 2022 11:40:28 +0200
+Message-ID: <87v8uomfw3.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If we're probing the PCI controller and some GPIOs are not available and
-cause a probe defer, we can end up leaving some ports initialized and
-not others and making a mess.
+On Tue, Apr 26 2022 at 10:33, Jason A. Donenfeld wrote:
 
-Check for PERST# GPIOs for all ports first, and just return
--EPROBE_DEFER if any are not ready yet, without bringing anything up.
+Subject: x86/tsc: Use .....
 
-Fixes: 1e33888fbe44 ("PCI: apple: Add initial hardware bring-up")
-Cc: stable@vger.kernel.org
-Signed-off-by: Hector Martin <marcan@marcan.st>
----
- drivers/pci/controller/pcie-apple.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+This has absolutely nothing to do with ASM and the sentence after the
+colon starts with an uppercase letter.
 
-diff --git a/drivers/pci/controller/pcie-apple.c b/drivers/pci/controller/pcie-apple.c
-index e0c06c0ee731..e3aa2d461739 100644
---- a/drivers/pci/controller/pcie-apple.c
-+++ b/drivers/pci/controller/pcie-apple.c
-@@ -507,6 +507,20 @@ static u32 apple_pcie_rid2sid_write(struct apple_pcie_port *port,
- 	return readl_relaxed(port->base + PORT_RID2SID(idx));
- }
- 
-+static int apple_pcie_probe_port(struct device_node *np)
-+{
-+	struct gpio_desc *gd;
-+
-+	gd = gpiod_get_from_of_node(np, "reset-gpios", 0,
-+				    GPIOD_OUT_LOW, "PERST#");
-+	if (IS_ERR(gd)) {
-+		return PTR_ERR(gd);
-+	}
-+
-+	gpiod_put(gd);
-+	return 0;
-+}
-+
- static int apple_pcie_setup_port(struct apple_pcie *pcie,
- 				 struct device_node *np)
- {
-@@ -797,8 +811,18 @@ static int apple_pcie_init(struct pci_config_window *cfg)
- 
- static int apple_pcie_probe(struct platform_device *pdev)
- {
-+	struct device *dev = &pdev->dev;
-+	struct device_node *of_port;
- 	int ret;
- 
-+	/* Check for probe dependencies for all ports first */
-+	for_each_child_of_node(dev->of_node, of_port) {
-+		ret = apple_pcie_probe_port(of_port);
-+		of_node_put(of_port);
-+		if (ret)
-+			return dev_err_probe(dev, ret, "Port %pOF probe fail\n", of_port);
-+	}
-+
- 	ret = bus_register_notifier(&pci_bus_type, &apple_pcie_nb);
- 	if (ret)
- 		return ret;
--- 
-2.35.1
+> In the event that random_get_entropy() can't access a cycle counter or
+> similar, falling back to returning 0 is suboptimal. Instead, fallback
+> to calling random_get_entropy_fallback(), which isn't extremely high
+> precision or guaranteed to be entropic, but is certainly better than
+> returning zero all the time.
+>
+> If CONFIG_X86_TSC=n, then it's possible for the kernel to run on systems
+> without RDTSC, such as 486 and certain 586, so the fallback code is only
+> required for that case.
+>
+> As well, fix up both the new function and the get_cycles() function from
+> which it was derived to use cpu_feature_enabled() rather than
+> boot_cpu_has(), and use !IS_ENABLED() instead of #ifndef.
+>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Borislav Petkov <bp@alien8.de>
+> Cc: x86@kernel.org
 
+Same comments vs. Cc's
+
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+> Changes v6->v7:
+> - Adjust commit subject and body to match tip commit style.
+
+Mostly ... :)
+
+With that fixed:
+
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
