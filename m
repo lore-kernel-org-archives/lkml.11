@@ -2,180 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDCB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 08:04:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5419C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 08:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383605AbiEBIH7 (ORCPT
+        id S1383636AbiEBIJl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 04:07:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51200 "EHLO
+        Mon, 2 May 2022 04:09:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233357AbiEBIH5 (ORCPT
+        with ESMTP id S1359198AbiEBIJ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 04:07:57 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E9E37A9E;
-        Mon,  2 May 2022 01:04:28 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Mon, 2 May 2022 04:09:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22633B3FF
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 01:05:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KsFx641x8z4x7Y;
-        Mon,  2 May 2022 18:04:26 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1651478667;
-        bh=AlKYgOI+es/EpKkfFdJ/AxpxreKRAHEWfgntPF/V9j8=;
-        h=Date:From:To:Cc:Subject:From;
-        b=TbAEob4ktIYddDMwS7uzfRJILYgVdZ9CrtmR/77ag/wgTRFL9wiXFwSIHjduwUnIc
-         0O0LDQPT6BpG51OukVBoKn9jOq14G9+l0bOi0ftxcMr7CPaJ5hb50pK4FQvxNNhRe8
-         FaN6Z8FNjgBAfpbIMtf3Hi+0untYO1sj9yfufDJXMPRQcohyeL7api2HCljPnOXXvb
-         vKwwdUNfm+OfDj8MWb3LFRr38ENPe1nnqpZKc1Re8gF0O8ShaGYmhjxlT4pMoPTK/r
-         1Y1pdlyC1uwNvglVRxY4Bb8QfQ6PxNpSGwynPCm2xe9ZY90FKL49uhwgxf1nyCP83u
-         yWjzLCa6aZPgQ==
-Date:   Mon, 2 May 2022 18:04:25 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Matthew Wilcox <willy@infradead.org>, Gao Xiang <xiang@kernel.org>
-Cc:     Gao Xiang <hsiangkao@linux.alibaba.com>,
-        Jeffle Xu <jefflexu@linux.alibaba.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the folio tree
-Message-ID: <20220502180425.7305c335@canb.auug.org.au>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F770B811CE
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:05:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 619F7C385B0;
+        Mon,  2 May 2022 08:05:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651478756;
+        bh=reI0GYhvyZGDahuSNQT0x3xx8RnuDPayoMRn+YbsRJs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=G+YMI1oh1A5rkQvaiCoExW4gmnJVhc5Xqm9M36V+Fwvl/m1P5xY4qhsD/FTWvqEpn
+         Oxxno0IWkFWoNFDk+39Ux2OzHUU06Ld9kqknY2WrdgnNVPnqYEvLZFfhQQfVNdhhJ/
+         Mx8wK6eo4mNVylPtP4XQzs0hU1WLPVh8cIxcaZZPajJ/F3PyP9tqSQqlunMdVQVZQi
+         evzQUmVehWJ0rwHQewJulM4XzAU0E5oqVktvjCgjLEykcqqzQhfRndPp6v4G8dlmof
+         O9zkYsv6a5dPiL0qEyEEqos/rxbEmY8qcnPYEL8Abz7yWt1ebLEVlj738UPS6zDWpw
+         P826i4I26F6HA==
+From:   Oded Gabbay <ogabbay@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Yuri Nudelman <ynudelman@habana.ai>
+Subject: [PATCH 2/6] habanalabs: add put by handle method to memory manager
+Date:   Mon,  2 May 2022 11:05:45 +0300
+Message-Id: <20220502080549.230411-2-ogabbay@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220502080549.230411-1-ogabbay@kernel.org>
+References: <20220502080549.230411-1-ogabbay@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/aILqJDFCeVw.QWbKJYPtk/K";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/aILqJDFCeVw.QWbKJYPtk/K
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Yuri Nudelman <ynudelman@habana.ai>
 
-Hi all,
+Putting object by its handle and not by object pointer is useful in
+some finalization flows that do not have object pointer available.
+It eliminates the need to first get the object and then perform
+put twice.
 
-After merging the folio tree, today's linux-next build (x86_64
-allmodconfig) failed like this:
-
-fs/erofs/fscache.c:255:10: error: 'const struct address_space_operations' h=
-as no member named 'readpage'
-  255 |         .readpage =3D erofs_fscache_meta_readpage,
-      |          ^~~~~~~~
-fs/erofs/fscache.c:255:21: error: initialization of 'int (*)(struct page *,=
- struct writeback_control *)' from incompatible pointer type 'int (*)(struc=
-t file *, struct page *)' [-Werror=3Dincompatible-pointer-types]
-  255 |         .readpage =3D erofs_fscache_meta_readpage,
-      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-fs/erofs/fscache.c:255:21: note: (near initialization for 'erofs_fscache_me=
-ta_aops.writepage')
-fs/erofs/fscache.c:259:10: error: 'const struct address_space_operations' h=
-as no member named 'readpage'
-  259 |         .readpage =3D erofs_fscache_readpage,
-      |          ^~~~~~~~
-fs/erofs/fscache.c:259:21: error: initialization of 'int (*)(struct page *,=
- struct writeback_control *)' from incompatible pointer type 'int (*)(struc=
-t file *, struct page *)' [-Werror=3Dincompatible-pointer-types]
-  259 |         .readpage =3D erofs_fscache_readpage,
-      |                     ^~~~~~~~~~~~~~~~~~~~~~
-fs/erofs/fscache.c:259:21: note: (near initialization for 'erofs_fscache_ac=
-cess_aops.writepage')
-
-Caused by commit
-
-  00da6d4b7219 ("mm,fs: Remove stray references to ->readpage")
-
-interacting with commits
-
-  60aa7e805f00 ("erofs: implement fscache-based metadata read")
-  e472f468adbe ("erofs: implement fscache-based data read for non-inline la=
-yout")
-
-from the erofs tree.
-
-I have applied the following merge fix patch.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Mon, 2 May 2022 17:57:39 +1000
-Subject: [PATCH] fixup for "mm,fs: Remove stray references to ->readpage"
-
-interacting with commits
-
-  60aa7e805f00 ("erofs: implement fscache-based metadata read")
-  e472f468adbe ("erofs: implement fscache-based data read for non-inline la=
-yout")
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Yuri Nudelman <ynudelman@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- fs/erofs/fscache.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/misc/habanalabs/common/habanalabs.h |  1 +
+ drivers/misc/habanalabs/common/memory_mgr.c | 76 +++++++++++++++++++--
+ 2 files changed, 71 insertions(+), 6 deletions(-)
 
-diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-index a402d8f0a063..1bb2d0fc19c8 100644
---- a/fs/erofs/fscache.c
-+++ b/fs/erofs/fscache.c
-@@ -59,10 +59,9 @@ static int erofs_fscache_read_folios(struct fscache_cook=
-ie *cookie,
- 	return ret;
- }
-=20
--static int erofs_fscache_meta_readpage(struct file *data, struct page *pag=
-e)
-+static int erofs_fscache_meta_read_folio(struct file *data, struct folio *=
-folio)
+diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
+index ea5cfea21a2c..cfe349ebd0bb 100644
+--- a/drivers/misc/habanalabs/common/habanalabs.h
++++ b/drivers/misc/habanalabs/common/habanalabs.h
+@@ -3293,6 +3293,7 @@ int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
+ 		    void *args);
+ struct hl_mmap_mem_buf *hl_mmap_mem_buf_get(struct hl_mem_mgr *mmg,
+ 						   u64 handle);
++int hl_mmap_mem_buf_put_handle(struct hl_mem_mgr *mmg, u64 handle);
+ int hl_mmap_mem_buf_put(struct hl_mmap_mem_buf *buf);
+ struct hl_mmap_mem_buf *
+ hl_mmap_mem_buf_alloc(struct hl_mem_mgr *mmg,
+diff --git a/drivers/misc/habanalabs/common/memory_mgr.c b/drivers/misc/habanalabs/common/memory_mgr.c
+index 1cc2f2ebe3b6..9f3ab6cf25d3 100644
+--- a/drivers/misc/habanalabs/common/memory_mgr.c
++++ b/drivers/misc/habanalabs/common/memory_mgr.c
+@@ -14,8 +14,8 @@
+  * @mmg: parent unifed memory manager
+  * @handle: requested buffer handle
+  *
+- * @return Find the buffer in the store and return a pointer to its descriptor.
+- *         Increase buffer refcount. If not found - return NULL.
++ * Find the buffer in the store and return a pointer to its descriptor.
++ * Increase buffer refcount. If not found - return NULL.
+  */
+ struct hl_mmap_mem_buf *hl_mmap_mem_buf_get(struct hl_mem_mgr *mmg, u64 handle)
  {
- 	int ret;
--	struct folio *folio =3D page_folio(page);
- 	struct super_block *sb =3D folio_mapping(folio)->host->i_sb;
- 	struct erofs_map_dev mdev =3D {
- 		.m_deviceid =3D 0,
-@@ -110,9 +109,8 @@ static int erofs_fscache_readpage_inline(struct folio *=
-folio,
- 	return 0;
+@@ -34,6 +34,23 @@ struct hl_mmap_mem_buf *hl_mmap_mem_buf_get(struct hl_mem_mgr *mmg, u64 handle)
+ 	return buf;
  }
-=20
--static int erofs_fscache_readpage(struct file *file, struct page *page)
-+static int erofs_fscache_read_folio(struct file *file, struct folio *folio)
- {
--	struct folio *folio =3D page_folio(page);
- 	struct inode *inode =3D folio_mapping(folio)->host;
- 	struct super_block *sb =3D inode->i_sb;
- 	struct erofs_map_blocks map;
-@@ -252,11 +250,11 @@ static void erofs_fscache_readahead(struct readahead_=
-control *rac)
+ 
++/**
++ * hl_mmap_mem_buf_destroy - destroy the unused buffer
++ *
++ * @buf: memory manager buffer descriptor
++ *
++ * Internal function, used as a final step of buffer release. Shall be invoked
++ * only when the buffer is no longer in use (removed from idr). Will call the
++ * release callback (if applicable), and free the memory.
++ */
++static void hl_mmap_mem_buf_destroy(struct hl_mmap_mem_buf *buf)
++{
++	if (buf->behavior->release)
++		buf->behavior->release(buf);
++
++	kfree(buf);
++}
++
+ /**
+  * hl_mmap_mem_buf_release - release buffer
+  *
+@@ -51,10 +68,23 @@ static void hl_mmap_mem_buf_release(struct kref *kref)
+ 	idr_remove(&buf->mmg->handles, lower_32_bits(buf->handle >> PAGE_SHIFT));
+ 	spin_unlock(&buf->mmg->lock);
+ 
+-	if (buf->behavior->release)
+-		buf->behavior->release(buf);
++	hl_mmap_mem_buf_destroy(buf);
++}
+ 
+-	kfree(buf);
++/**
++ * hl_mmap_mem_buf_remove_idr_locked - remove handle from idr
++ *
++ * @kref: kref that reached 0.
++ *
++ * Internal function, used for kref put by handle. Assumes mmg lock is taken.
++ * Will remove the buffer from idr, without destroying it.
++ */
++static void hl_mmap_mem_buf_remove_idr_locked(struct kref *kref)
++{
++	struct hl_mmap_mem_buf *buf =
++		container_of(kref, struct hl_mmap_mem_buf, refcount);
++
++	idr_remove(&buf->mmg->handles, lower_32_bits(buf->handle >> PAGE_SHIFT));
  }
-=20
- static const struct address_space_operations erofs_fscache_meta_aops =3D {
--	.readpage =3D erofs_fscache_meta_readpage,
-+	.read_folio =3D erofs_fscache_meta_read_folio,
- };
-=20
- const struct address_space_operations erofs_fscache_access_aops =3D {
--	.readpage =3D erofs_fscache_readpage,
-+	.read_folio =3D erofs_fscache_read_folio,
- 	.readahead =3D erofs_fscache_readahead,
- };
-=20
---=20
-2.35.1
+ 
+ /**
+@@ -71,7 +101,41 @@ int hl_mmap_mem_buf_put(struct hl_mmap_mem_buf *buf)
+ }
+ 
+ /**
+- * hl_mmap_mem_buf_alloc - allocate a new mappable buffer
++ * hl_mmap_mem_buf_put_handle - decrease the reference to the buffer with the
++ *                              given handle.
++ *
++ * @mmg: parent unifed memory manager
++ * @handle: requested buffer handle
++ *
++ * Decrease the reference to the buffer, and release it if it was the last one.
++ * Shall not be called from an interrupt context. Return -EINVAL if handle was
++ * not found, else return the put outcome (0 or 1).
++ */
++int hl_mmap_mem_buf_put_handle(struct hl_mem_mgr *mmg, u64 handle)
++{
++	struct hl_mmap_mem_buf *buf;
++
++	spin_lock(&mmg->lock);
++	buf = idr_find(&mmg->handles, lower_32_bits(handle >> PAGE_SHIFT));
++	if (!buf) {
++		spin_unlock(&mmg->lock);
++		dev_warn(mmg->dev,
++			 "Buff put failed, no match to handle %llu\n", handle);
++		return -EINVAL;
++	}
++
++	if (kref_put(&buf->refcount, hl_mmap_mem_buf_remove_idr_locked)) {
++		spin_unlock(&mmg->lock);
++		hl_mmap_mem_buf_destroy(buf);
++		return 1;
++	}
++
++	spin_unlock(&mmg->lock);
++	return 0;
++}
++
++/**
++ * @hl_mmap_mem_buf_alloc - allocate a new mappable buffer
+  *
+  * @mmg: parent unifed memory manager
+  * @behavior: behavior object describing this buffer polymorphic behavior
+-- 
+2.25.1
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/aILqJDFCeVw.QWbKJYPtk/K
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJvkIkACgkQAVBC80lX
-0GzACgf/a6pKIsy2qA2M/IHl2rYJ/zahTNsXgWDJ1yFXBJIkKSb+A55iyo0kQZQg
-Z8/ctAYCcfvsHgFeFpfcTxA74DKaGdqHRTr6Zjp77BuYuCtP0NHTbdMVDatU1XoQ
-9WmmU5NEya4gQtMOf3zlV4cWxCoPG3KllgWzOaYF71cee9YeJhE114/S1vnlxyai
-NFjjJA1gUeD0xajUZJdZ/ZVCRHL+VSgolON6nuS+GzN58XoAQjXXLBNYQxZY94mD
-J0U+Smakk0is6I+dRvL6shG1M425jCQD8sHNCtr4KZYXJwfTx/RrusrWqyptihHF
-WKoKXbOJ6CdjRojfPciponq4wLU99A==
-=V2VD
------END PGP SIGNATURE-----
-
---Sig_/aILqJDFCeVw.QWbKJYPtk/K--
