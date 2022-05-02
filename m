@@ -2,143 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 178E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 19:13:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 19:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387067AbiEBTRX (ORCPT
+        id S1387076AbiEBTRo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 15:17:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
+        Mon, 2 May 2022 15:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387053AbiEBTRS (ORCPT
+        with ESMTP id S1387066AbiEBTRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 15:17:18 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32655DEA2
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 12:13:49 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id z18so16553188iob.5
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 12:13:49 -0700 (PDT)
+        Mon, 2 May 2022 15:17:40 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCFA7DECC
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 12:14:10 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id g26-20020a25b11a000000b0064984a4ffb7so2855324ybj.7
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 12:14:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y0LBGAd1mzPzBgDI34ZO9E56JL4JndzFBjXWTJ7seYs=;
-        b=ckPp/NdRMXgf5FFXPyGc9liaDJqL2hcNn8pjXgoavzCrY0KDzgtvF0XFqZcMNDXfOr
-         6l0lOd/hHI50esNE7LrmDR6dg2UfbkHDyciTF6LeHVIUleHrSlXIeRHzr97J1v7x8kSk
-         uzomDevaWRkXHoUH1qWDXTMfMsXSKVz+jFnJCewEpD4C6IMblNSJx23INuzLghEhlxQE
-         6mEsGQvJu3GuLNm3d8F4s/JrjutfEMrDVMEOfsJPdPIG+JojWyMeaaIRprxbMHoaoQxh
-         Gk4SpxniQhemtQMl77jiDeVgdZebFILROTazekNN8BwMh2KFYXZPPdsTcFTHY45nWptd
-         Am4w==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
+        bh=kctQu0Q+rBx9IOI1jVYX1kCsToTQ9FXaErspFG8A+BM=;
+        b=PUaFQEUXTVeO3j8UqhdilVFBoS8MQyXXLOdKDTrAxE3OYq/faQPkSJWo8e7me1GEfx
+         6PsNj1xxLGPhdzYlihe1rWIfDUcGXvJXU10tkvtxr6B/1FN7NalgVecXju0dhY3zvC3z
+         Wn9cP13pNuedWp+KZQejkmkLKJWMyilvnVCZCeigqzu7y0HNaezqXPUdmoMOtc+bcbZg
+         iGVOT37xPO8vnZ857v/bBUTDGk0QN0BZCLo8QSwtH1V7yUaedGw7RwWpenSonKMyFTwi
+         MaX/+nPpNpve5ilD2cuRr96xbl7NBZ2cJyokJ9Cl3NLX6dlXkrvqfAJBFp8SZMNQPpEZ
+         jtEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y0LBGAd1mzPzBgDI34ZO9E56JL4JndzFBjXWTJ7seYs=;
-        b=mQmjkc8aYAwHJDA7WXzNScxejz1TNN83nGeAvthnUPrC9cAVRNkcxdhYb4+H2viGx3
-         qSwy81XKV1WO/eLNIHRBuu1EnBQjv7QY5efUCgHwGOxnz6eF6OdKZsZnRKzvx2p7qSb4
-         PxEm3MvWDL3sNgO9woUYYWC6nbdZ1BAZQxd8nf46VrqWO7+j3r0ZBLzwBu8w0Lm98+sA
-         GDDJ3lm9dBxNqdtzrTY3HSyFJLkWA/m74VzxFZPehtAC27C9CoCwQiVBxjtPAMgoqase
-         Pwmgbz9NWq0BvprJLUGJRkA8efUP1N2+gern1GaQVMhIjuYfToM4OnOWSsEajZo5n7lO
-         inEQ==
-X-Gm-Message-State: AOAM530lWzvG850vEVYPswA6+prBjQclgaC4Sw467V8E5B8Fm8gzgeYc
-        Ii9Fe6J3GCri7TI0dfItIipU7jeF6LsEDV/6sOKNrg==
-X-Google-Smtp-Source: ABdhPJwHqlWg5WB6OOOBQLDDEVN8nqKNBqzia3qBgR8p0HecQJbYk6Xkq8myPoSaLOqltKHBMqJU5Kkn5+UKlAQieTA=
-X-Received: by 2002:a6b:4419:0:b0:657:aeaa:d2e with SMTP id
- r25-20020a6b4419000000b00657aeaa0d2emr4701122ioa.24.1651518828432; Mon, 02
- May 2022 12:13:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220412224348.1038613-1-tansuresh@google.com>
- <20220412224348.1038613-2-tansuresh@google.com> <CAJZ5v0ivNq3aYCEcxPYMosLJCAyWiAnucwOCmRBzkM=sbyPWgQ@mail.gmail.com>
- <CALVARr6v5hcY0Vcf1izPUX-tXNJyyNXBMANbKX4CW9wfRf-pYQ@mail.gmail.com> <YmzqrqfVLQ9/4KXp@kroah.com>
-In-Reply-To: <YmzqrqfVLQ9/4KXp@kroah.com>
-From:   Tanjore Suresh <tansuresh@google.com>
-Date:   Mon, 2 May 2022 12:13:37 -0700
-Message-ID: <CALVARr50MWexNpCf_PoZ4-pdnexiZiibz7Nd0PH+b-EVnBUN6w@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] driver core: Support asynchronous driver shutdown
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-nvme <linux-nvme@lists.infradead.org>,
-        Linux PCI <linux-pci@vger.kernel.org>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:cc;
+        bh=kctQu0Q+rBx9IOI1jVYX1kCsToTQ9FXaErspFG8A+BM=;
+        b=hc5qJIrrzBy0uRmIGV4UR/SV27aYUB5VzD44UI8ofi61uTlOvjuZgErORzHn+W/Pca
+         Fb3hBLrY2Y+Ediia4KP5UmjSp8SzFHPI31KevRclAUO7VcbadmTytQLJfr/EazL3DNU3
+         xvqYd7gzeTF02iYhI63SDhO0ItGqNmGhGzcpwnJV906XP9JGN9hdirT4SwNtR/cbCe72
+         CPd9LkB967wRPAW3FO1LPSBeYFmgKowmQxpQ2u9k9vYsgQizAosh9ltEuGbjQfUOWLln
+         4DxaHSU+2RLhnCQET2SoCHzTTTilsfKl62KQIUVkvlDbj83ZXma0xBq2OJqNauQ10ja5
+         2C4A==
+X-Gm-Message-State: AOAM5327olPCe1o9iajQpT8nBNIkqqpN3UeKrmb0XeAZ2YkT23ILQzcD
+        J0E/ZVA97lJHpAmi4PX8QEFDAxbyzyaAogo2jg==
+X-Google-Smtp-Source: ABdhPJxJbanbmKIqaVzeagTqMg3TVUzh6s0fqdiC3NI5Unq1sq+s6VeUa3qJVINa7kZWA+10cnCzYiMEVqhMJfYwMg==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:55c:7548:7073:c14f])
+ (user=kaleshsingh job=sendgmr) by 2002:a05:6902:50c:b0:648:67e5:f160 with
+ SMTP id x12-20020a056902050c00b0064867e5f160mr11569415ybs.22.1651518850044;
+ Mon, 02 May 2022 12:14:10 -0700 (PDT)
+Date:   Mon,  2 May 2022 12:12:04 -0700
+In-Reply-To: <20220502191222.4192768-1-kaleshsingh@google.com>
+Message-Id: <20220502191222.4192768-5-kaleshsingh@google.com>
+Mime-Version: 1.0
+References: <20220502191222.4192768-1-kaleshsingh@google.com>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+Subject: [PATCH v2 4/5] KVM: arm64: Allocate shared stacktrace pages
+From:   Kalesh Singh <kaleshsingh@google.com>
+Cc:     mark.rutland@arm.com, broonie@kernel.org, will@kernel.org,
+        maz@kernel.org, qperret@google.com, tabba@google.com,
+        surenb@google.com, kernel-team@android.com,
+        Kalesh Singh <kaleshsingh@google.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Andrew Jones <drjones@redhat.com>,
+        Marco Elver <elver@google.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Keir Fraser <keirf@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 30, 2022 at 12:52 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> A: http://en.wikipedia.org/wiki/Top_post
-> Q: Were do I find info about this thing called top-posting?
-> A: Because it messes up the order in which people normally read text.
-> Q: Why is top-posting such a bad thing?
-> A: Top-posting.
-> Q: What is the most annoying thing in e-mail?
->
-> A: No.
-> Q: Should I include quotations after my reply?
->
-> http://daringfireball.net/2007/07/on_top
->
-> On Fri, Apr 29, 2022 at 11:03:07AM -0700, Tanjore Suresh wrote:
-> > Rafael,
-> >
-> > That is a good observation, however, many of the use cases in data
-> > centers (deployment of devices in data centers) do not exploit device
-> > power management. Therefore, I'm not sure that is the right way to
-> > design this.
->
-> Yes it is, enable device power management and use that interface please.
-> Devices in data centers should of course be doing the same thing as
-> everyone else, as it actually saves real money in power costs.  To not
-> do so is very odd.
->
+The nVHE hypervisor can use this shared area to dump its stacktrace
+addresses on hyp_panic(). Symbolization and printing the stacktrace can
+then be handled by the host in EL1 (done in a later patch in this series).
 
-I guess we are intermixing the  terminology of device power management
-with shutdown.
-My second, third reasoning in my previous e-mail, thought it brings
-out that difference. Maybe not.
-I will try one more time, my thought process on this one.
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+---
+ arch/arm64/include/asm/kvm_asm.h |  1 +
+ arch/arm64/kvm/arm.c             | 34 ++++++++++++++++++++++++++++++++
+ arch/arm64/kvm/hyp/nvhe/setup.c  | 11 +++++++++++
+ 3 files changed, 46 insertions(+)
 
-This patch is only for shutdown. The shutdown can be done in a system
-in various flavors,
-(this may include a power being pulled from the system components when
-all the devices
-are quiescent and it can also be soft shutdown, where power is not
-removed from the system, but system
-could be attempting a reboot)
+diff --git a/arch/arm64/include/asm/kvm_asm.h b/arch/arm64/include/asm/kvm_asm.h
+index 2e277f2ed671..ad31ac68264f 100644
+--- a/arch/arm64/include/asm/kvm_asm.h
++++ b/arch/arm64/include/asm/kvm_asm.h
+@@ -174,6 +174,7 @@ struct kvm_nvhe_init_params {
+ 	unsigned long hcr_el2;
+ 	unsigned long vttbr;
+ 	unsigned long vtcr;
++	unsigned long stacktrace_hyp_va;
+ };
+ 
+ /* Translate a kernel address @ptr into its equivalent linear mapping */
+diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+index d300def44f5c..26005182da20 100644
+--- a/arch/arm64/kvm/arm.c
++++ b/arch/arm64/kvm/arm.c
+@@ -50,6 +50,7 @@ DEFINE_STATIC_KEY_FALSE(kvm_protected_mode_initialized);
+ DECLARE_KVM_HYP_PER_CPU(unsigned long, kvm_hyp_vector);
+ 
+ static DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
++DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stacktrace_page);
+ unsigned long kvm_arm_hyp_percpu_base[NR_CPUS];
+ DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_init_params, kvm_init_params);
+ 
+@@ -1484,6 +1485,7 @@ static void cpu_prepare_hyp_mode(int cpu)
+ 	tcr |= (idmap_t0sz & GENMASK(TCR_TxSZ_WIDTH - 1, 0)) << TCR_T0SZ_OFFSET;
+ 	params->tcr_el2 = tcr;
+ 
++	params->stacktrace_hyp_va = kern_hyp_va(per_cpu(kvm_arm_hyp_stacktrace_page, cpu));
+ 	params->pgd_pa = kvm_mmu_get_httbr();
+ 	if (is_protected_kvm_enabled())
+ 		params->hcr_el2 = HCR_HOST_NVHE_PROTECTED_FLAGS;
+@@ -1777,6 +1779,7 @@ static void teardown_hyp_mode(void)
+ 	free_hyp_pgds();
+ 	for_each_possible_cpu(cpu) {
+ 		free_page(per_cpu(kvm_arm_hyp_stack_page, cpu));
++		free_page(per_cpu(kvm_arm_hyp_stacktrace_page, cpu));
+ 		free_pages(kvm_arm_hyp_percpu_base[cpu], nvhe_percpu_order());
+ 	}
+ }
+@@ -1868,6 +1871,23 @@ static int init_hyp_mode(void)
+ 		per_cpu(kvm_arm_hyp_stack_page, cpu) = stack_page;
+ 	}
+ 
++	/*
++	 * Allocate stacktrace pages for Hypervisor-mode.
++	 * This is used by the hypervisor to share its stacktrace
++	 * with the host on a hyp_panic().
++	 */
++	for_each_possible_cpu(cpu) {
++		unsigned long stacktrace_page;
++
++		stacktrace_page = __get_free_page(GFP_KERNEL);
++		if (!stacktrace_page) {
++			err = -ENOMEM;
++			goto out_err;
++		}
++
++		per_cpu(kvm_arm_hyp_stacktrace_page, cpu) = stacktrace_page;
++	}
++
+ 	/*
+ 	 * Allocate and initialize pages for Hypervisor-mode percpu regions.
+ 	 */
+@@ -1975,6 +1995,20 @@ static int init_hyp_mode(void)
+ 		params->stack_hyp_va = hyp_addr + (2 * PAGE_SIZE);
+ 	}
+ 
++	/*
++	 * Map the hyp stacktrace pages.
++	 */
++	for_each_possible_cpu(cpu) {
++		char *stacktrace_page = (char *)per_cpu(kvm_arm_hyp_stacktrace_page, cpu);
++
++		err = create_hyp_mappings(stacktrace_page, stacktrace_page + PAGE_SIZE,
++					  PAGE_HYP);
++		if (err) {
++			kvm_err("Cannot map hyp stacktrace page\n");
++			goto out_err;
++		}
++	}
++
+ 	for_each_possible_cpu(cpu) {
+ 		char *percpu_begin = (char *)kvm_arm_hyp_percpu_base[cpu];
+ 		char *percpu_end = percpu_begin + nvhe_percpu_size();
+diff --git a/arch/arm64/kvm/hyp/nvhe/setup.c b/arch/arm64/kvm/hyp/nvhe/setup.c
+index e8d4ea2fcfa0..9b81bf2d40d7 100644
+--- a/arch/arm64/kvm/hyp/nvhe/setup.c
++++ b/arch/arm64/kvm/hyp/nvhe/setup.c
+@@ -135,6 +135,17 @@ static int recreate_hyp_mappings(phys_addr_t phys, unsigned long size,
+ 
+ 		/* Update stack_hyp_va to end of the stack's private VA range */
+ 		params->stack_hyp_va = hyp_addr + (2 * PAGE_SIZE);
++
++		/*
++		 * Map the stacktrace pages as shared and transfer ownership to
++		 * the hypervisor.
++		 */
++		prot = pkvm_mkstate(PAGE_HYP, PKVM_PAGE_SHARED_OWNED);
++		start = (void *)params->stacktrace_hyp_va;
++		end = start + PAGE_SIZE;
++		ret = pkvm_create_mappings(start, end, prot);
++		if (ret)
++			return ret;
+ 	}
+ 
+ 	/*
+-- 
+2.36.0.464.gb9c8b46e94-goog
 
-The device power management allows the device to bring down any
-devices that may be idle to various power states that
-device may support in a selective manner & based on the transition
-allowed by the device. Such a transition initiated by
-the system can be achieved using the 'dpm' interface for runtime power
-management (more for extending laptop battery life).
-It can also be exploited for system sleep models (suspend and resume -
-where state is preserved and restarted from where it left off
---> More applicable for laptops/desktops). That does not mean data
-center devices cannot exploit, but they worry about slight latency
-variation in any
-I/O initiated to any device. Such power management could introduce
-more latency when it transitions from one state to another.
-Therefore, the use case is more apt for Laptops, in certain cases
-desktops in my opinion or understanding.
-
-The shutdown entry point has been traditionally different and the
-semantics is that the whole system is going down to a
-quiescent state and power may be pulled or may not be, IMO, i am
-seeing both are independent requirements, in my view.
-Let me know if I am mistaken. I am not sure why we should break the
-shutdown semantics as understood by driver developers and
-overload it with dpm requirements?
-
-Thanks
-sureshtk
-
-
-> thanks,
->
-> greg k-h
