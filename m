@@ -2,136 +2,1169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E07C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:20:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F2C9C43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:21:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385234AbiEBNXi (ORCPT
+        id S1385251AbiEBNYj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 09:23:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52036 "EHLO
+        Mon, 2 May 2022 09:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237635AbiEBNXf (ORCPT
+        with ESMTP id S233987AbiEBNYd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 09:23:35 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2085.outbound.protection.outlook.com [40.107.92.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04953B7DB
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 06:20:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PgRRka8fYi/AjAvhVZObVCEBUdyu8a1GAx59RetEHdHrK8ZbfjSE5QU5t2BZlFvkZ+UXzCnPPXPrk1GI71EXE7AA4bEMuX3/3IrrPlSmMbVhp6fQjsGNOCzxlV+ee3tdjSptVkPWWf3ZDjau0Q3AgTBQshq8q33q7dHvXEhPM20KAsmDL28adTOH4fWe6VT8Ply6vgX9IHcR+NnFHkMC2CVqgCSI8VaF0RynxGhTdzJ8+ONkE2+3Twdi9vzfrf8mTnHIA5UegBCTEfn/vZFAQraXsXTtP3qezXPorKZLNctwUfcfNPAcTArMTNbbDQK7Dg0UEHWOh4jLA5LK7dKbhQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=x+7ZGfUrBeVFp+tZhq64PYUTl/E3Oa2NUCQJ+ervlOs=;
- b=YCOZg0a0oa5dij8pZoF2KoItiVwZdDhRfxNpdpHKq4Y1hEh9n78uhCJvle2DRQdWr0Nq1pbhcCHa6R1s3sOW5Z5S2Et+ZMVTNPFylbDa1niAWcnRHhgHt4gemZlI271SKgQn7MqF91ySDM/lUhBNho6fF/vKaiviokiRZJ94TPPxNlm7lYecN4wsEHUBfKjTDtABZkmhzckhyLRxyPy8eE+ItG401RM0iWx2votmKN5oQdxUCsUxMNRw4r8WL9f976+RpW/mIxQQaZFhg+lwvoM4Qa9DI3AuPUykmu86SCp6zmWDeyYnq4DsgNDK7vh8CJijiDve4CE+QfQJMuOJLA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x+7ZGfUrBeVFp+tZhq64PYUTl/E3Oa2NUCQJ+ervlOs=;
- b=etbqBStBJGnNCll1cqd3z+K/ZLqDRlYF9ph3hyavu+Am78xkLqHuOVpzB06Fc3W1CYNk4OyTAbgmkoo3Sy0u/EvhS2tnAMuvXNCSWbnPO7kVMOCUbBLcP7w+Uju/BmKITkhFS9nIiMTrtm7kpPn9ni8im9XTmL1cKi0GLEuoXtHwNOoiFp6MyFQA44JhmN1mghC7lEe6YA46Cm+sncVE+7v9nwciYRwVH8eeaPtpuxbwSn0GuoXlOtNNhPNH6mrWYopLLQeHQurgm3nnoaFPrPDizZuSCKMkn8Wa2NN1o0UcpBa+0fNhEXmfz9GMyS3WIuPXNM8HMydIWZbNHJd+RA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BN8PR12MB3076.namprd12.prod.outlook.com (2603:10b6:408:61::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.28; Mon, 2 May
- 2022 13:20:01 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2%6]) with mapi id 15.20.5206.024; Mon, 2 May 2022
- 13:20:01 +0000
-Date:   Mon, 2 May 2022 10:19:59 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/5] iommu/vt-d: Remove hard coding PGSNP bit in PASID
- entries
-Message-ID: <20220502131959.GL8364@nvidia.com>
-References: <20220501112434.874236-1-baolu.lu@linux.intel.com>
- <20220501112434.874236-6-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220501112434.874236-6-baolu.lu@linux.intel.com>
-X-ClientProxiedBy: MN2PR19CA0066.namprd19.prod.outlook.com
- (2603:10b6:208:19b::43) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        Mon, 2 May 2022 09:24:33 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB69F1B1;
+        Mon,  2 May 2022 06:21:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651497663; x=1683033663;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=36Wep1oLBFpd7edpDkkthyuyFJl2bnI/rXOCbCF4/gM=;
+  b=DHeeNQbeKlqBvPl50QpvGjzGcsND5zPQnEWCYyTOShfGRpC/U8IPvg5f
+   B1XpSn4M95l5gaM67dD7qj5Kp53cwiyXRvA9QfEHm3kQ4VEBZ2RrPqVso
+   VF1aOIpcjzOwB3siDTVl7hIB77UKSnqpGPcaa0uDiMB464dLMdyvNlo/p
+   Q8YLFO0H9ahCkEANcs+0XcObX/AxCuLdaEapIobsYUEAr5xYXoaBHV+K+
+   B2og6jsqR4g0whYS4CqS8lBrCvzxOMuO8HbhnkhGuMgRmdDeBF5pVixCC
+   yYuOTJU9W3dUr3HRoGd7PhNPUGX6cXig5y03+Sda6pdZNh0/+lYpMU15j
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10334"; a="267364109"
+X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
+   d="scan'208";a="267364109"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 06:21:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
+   d="scan'208";a="707608352"
+Received: from black.fi.intel.com (HELO black.fi.intel.com.) ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 02 May 2022 06:21:00 -0700
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Benson Leung <bleung@google.com>,
+        Prashant Malani <pmalani@chromium.org>,
+        Jameson Thies <jthies@google.com>,
+        "Regupathy, Rajaram" <rajaram.regupathy@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Won Chung <wonchung@google.com>, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4 1/3] usb: typec: Separate USB Power Delivery from USB Type-C
+Date:   Mon,  2 May 2022 16:20:56 +0300
+Message-Id: <20220502132058.86236-2-heikki.krogerus@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220502132058.86236-1-heikki.krogerus@linux.intel.com>
+References: <20220502132058.86236-1-heikki.krogerus@linux.intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 902f6c28-1c80-4664-a69e-08da2c3e7671
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3076:EE_
-X-Microsoft-Antispam-PRVS: <BN8PR12MB30761707E2B2BC5ED1921015C2C19@BN8PR12MB3076.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ekrf6i6lbVbXuPbflEpFnqk++eqhSDVqV++pAnXQs6veXjQLWgJD/bSmulVeipE5oJrLkh+Yu3xfY2wQp4n6wxtOZb/Z1di9cJcLPFZO63FpqSNZKkZpppreE3unDrZQQWvU/AubJrzFzB8fMe6hxaWRCPjzFhylHuPZIyDXicPAM9SAhOHE/M8QmB/9R0qv3cmCEJO9KwjYUe8cpc8t6gha+GMHcRvK3oBMO0WJv6s3sQUA7IWi/vz2lBsZJmBhQInGwSGKmfj9L90lljKXKvnJO8pxX//1nJtraHmkJKVXshF0BDVWfUUN4AmBSRpagJMeq8NnDZrf6/eqlRFHWrHg0r8lWgqtObAqoG48KS4ufwvif0ljhw2XYdioxRPfVvZqANebuyx9Po/yen5yqKFX7BpZReZsLlytrwhGXMuHKezuFjXeQcoWUSCfhfkHOC0RzkTaRL9a3ZjIVabXjYuMCK1WeX7Q0V3/8sGVp2JtenjNikW4sbhMk13omKueLZAkFSN17CZoJmABABH91/jpP3MQWYNaFE0+ACFNBFUOXLX9T+4N/GNp4W0EAbaQMM46hpLym99Pfk1Rd3c0evDZzoHpQYp2ZvIDXXR1JGoEXp4gAx/Jt/MKDZ13kn4NgP4WTav1xnXZd6vRw/pFgQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(6506007)(5660300002)(4744005)(6512007)(66946007)(6916009)(8676002)(4326008)(66556008)(316002)(66476007)(54906003)(38100700002)(86362001)(508600001)(6486002)(186003)(2616005)(1076003)(83380400001)(36756003)(33656002)(2906002)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hEnM46onj1kY6QDV5xMFpEhTbJ367VouwP6N6ZCDkUstEmp9k0CiTOs8Rar4?=
- =?us-ascii?Q?zhogBcxOSRFQWnTThO85+9YIq660nkO34s93WhkXuIAGUzy24hcVHlC1jzle?=
- =?us-ascii?Q?TaKCjX6Z8oRYxj2LnlSPS+mBVf7LeKIOA0MicwUwB0ZIMxRqDOXOUBH/DtMo?=
- =?us-ascii?Q?gQbzwKvLLzASVpUUCOmVxEruHKJ74bZ0HxSdGueszyDzzv3hUKHy97b7KQRG?=
- =?us-ascii?Q?Uz2iC6cf2CWDp/ajQSgdnvMDj3Ej9/ZQwmhS+JkXojqDrE9y2suhPf/nCqp9?=
- =?us-ascii?Q?GKS6ZocQ5gaKBcWbgbkyq9bCjGkhn+J06D6quj2xnmjhjKSF7h7/fShwRsmZ?=
- =?us-ascii?Q?7QC603l0CIfP8bZAdnnx7EGO0oU+YWD2b0qW+4s1Cr8JobuRp5fr2OuMDm7E?=
- =?us-ascii?Q?VCPnUmNmAJJOb+Bns0erDDmh3rv93pxfM64ramWWnFNRW3duHtZU79uLcdyF?=
- =?us-ascii?Q?bBn51psoln4S8bdilXkD/wTDivDPJ0jYHCA8G46yMOcj9YkFtqLfNIxm4ObW?=
- =?us-ascii?Q?yohKi10glrYWwof1GL8KL22om/8ZTLUr3oDKnMhEq2BGbdCGFepLxGv8XbAV?=
- =?us-ascii?Q?ol/LKKXt2D6XV+Y+KOXLya1z0EbOq8QtNgVz+ObkyeflvL3cO9mM+9+IMV2+?=
- =?us-ascii?Q?PT1bwD8rcsyKkj2QFkEtPVe7J7JWsSvA3mT8D9wQiF/0WyY9Ws0bkfsnXrBu?=
- =?us-ascii?Q?CQzbLn5pPewYeff2JLqhI384DMSsds1DD2spcYxHiwX3BlQkSZMziXftb8yn?=
- =?us-ascii?Q?kJeAMX5K9IYcGgFJfvIubiM2WyBAIxHaQ66ACz/X+4kBsQTp9qFUNaISRkdt?=
- =?us-ascii?Q?cjNv+dmuaIsh+nUhvhQycNodg2jWz9tv0qnDdKShZ+7/juXRuFSqgLNGD5oI?=
- =?us-ascii?Q?tBYAk5ipRBWHaNLH62+ZOfYC5Cg1rzIiIUZ5b4R/Bg2twO4IjerTRN5OiQTQ?=
- =?us-ascii?Q?wyFEdLC+u+PMcFGZuIAvJVsN5Owv3a3ZRakI5Fcv2LGXvoGvdFAcfx0cRGtI?=
- =?us-ascii?Q?OaHwint6a35m7swvcPHtQmuSlOWzcJq0p5nF8PAwQy1GxYs+AqrkWnxccGsY?=
- =?us-ascii?Q?4Sgo+hCMDnp7pqJDJenvWoUbgr5YkWCJZ9dj1+JrXmRK16jFEWbeTRElHMy0?=
- =?us-ascii?Q?FEaEJlupWlrF+XIyFCmh3WSOrOg71OxusSsmDuxKZUfMlTVQe+xtboWRVATd?=
- =?us-ascii?Q?X3ebxeyTCPg2JiwYOutKFgG/X+pMTNhnd/usn0VE1rj4F5mukdc55qVHzEy2?=
- =?us-ascii?Q?/udYQdY0XPYajVc9G2hydi+PHpsuV8V+sSEx56Lptnl+PD6MnRyxk/esKWha?=
- =?us-ascii?Q?FDd4Qjd4lva6u1JbQnyDP4kRLcTzbUwm7HI1hmfR7itlbc8pOVHEEX9GgPRG?=
- =?us-ascii?Q?3mNDuhsHTultV8TdiRQhagk7c4D5qqw7B7e4xNLxV2RHeauNu3ayJoKXmJxK?=
- =?us-ascii?Q?ah5nc6b+3oMmoSinQCgGIPh8P8fVmvF9IHzcJocz0Ewzcx4+HCuxfkoErvTP?=
- =?us-ascii?Q?CtJRDzb+c3dqpulAZhlnM2Yo+VJinck52vIL3eyMrXyOecSeULetPxsKkbCL?=
- =?us-ascii?Q?thSHpIGApJ9ucQP/+HSs7NcnYR7qXp/HQPuMQZwtC61YCByUQSOB9VixmSe8?=
- =?us-ascii?Q?eFHN+S4dW3XC/KUIgFUoXSb8lpYJf40aWVYqPTg6iaaGPL6439Hx2vUZnrxG?=
- =?us-ascii?Q?9o8ElgVjB8ihfF54EH5CHnVo82eCppt+7bm6yrn0EnKR43k25EXjCfwb4SQT?=
- =?us-ascii?Q?NUNtcUCwyg=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 902f6c28-1c80-4664-a69e-08da2c3e7671
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2022 13:20:01.4194
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3KP8OIonJpCosyFBZ3gHJgtZS7H1hf9mjJKVxVm/ZTLLH+bhKrN8gfXnc7TsKvCR
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3076
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 01, 2022 at 07:24:34PM +0800, Lu Baolu wrote:
-> As enforce_cache_coherency has been introduced into the iommu_domain_ops,
-> the kernel component which owns the iommu domain is able to opt-in its
-> requirement for force snooping support. The iommu driver has no need to
-> hard code the page snoop control bit in the PASID table entries anymore.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/intel/pasid.h | 1 -
->  drivers/iommu/intel/iommu.c | 3 ---
->  drivers/iommu/intel/pasid.c | 6 ------
->  3 files changed, 10 deletions(-)
+Introducing a small device class for USB Power Delivery.
+The idea with it is that we do not mix any more USB Power
+Delivery information into the USB Type-C connectors only.
+This separation will make it possible to register USB Power
+Delivery devices also from other places, for example from
+USB Type-C Bridges (see USB Type-C Bridge Specification).
 
-It seems fine, but as in the other email where do we do
-pasid_set_pgsnp() for a new device attach on an already no-snopp domain?
+The device class will not always deal with only the messages
+and objects that were negotiated with the partner, but
+instead messages and objects that can be used in the
+negotiation. That allows the USB PD devices to be shared and
+reconfigured. The ports can decide which objects are to be
+advertised to the partner before the contract is negotiated.
+It is also possible to allow the user space to make that
+decision if needed.
 
-Jason
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+---
+ .../testing/sysfs-class-usb_power_delivery    | 240 ++++++
+ drivers/usb/typec/Makefile                    |   2 +-
+ drivers/usb/typec/pd.c                        | 708 ++++++++++++++++++
+ drivers/usb/typec/pd.h                        |  30 +
+ include/linux/usb/pd.h                        |  38 +
+ include/linux/usb/typec.h                     |  10 +
+ 6 files changed, 1027 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-class-usb_power_delivery
+ create mode 100644 drivers/usb/typec/pd.c
+ create mode 100644 drivers/usb/typec/pd.h
+
+diff --git a/Documentation/ABI/testing/sysfs-class-usb_power_delivery b/Documentation/ABI/testing/sysfs-class-usb_power_delivery
+new file mode 100644
+index 0000000000000..ce2b1b563cb34
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-class-usb_power_delivery
+@@ -0,0 +1,240 @@
++What:		/sys/class/usb_power_delivery
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Directory for USB Power Delivery devices.
++
++What:		/sys/class/usb_power_delivery/.../revision
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		File showing the USB Power Delivery Specification Revision used
++		in communication.
++
++What:		/sys/class/usb_power_delivery/.../version
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		This is an optional attribute file showing the version of the
++		specific revision of the USB Power Delivery Specification. In
++		most cases the specification version is not known and the file
++		is not available.
++
++What:		/sys/class/usb_power_delivery/.../source-capabilities
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		The source capabilities message "Source_Capabilities" contains a
++		set of Power Data Objects (PDO), each representing a type of
++		power supply. The order of the PDO objects is defined in the USB
++		Power Delivery Specification. Each PDO - power supply - will
++		have its own device, and the PDO device name will start with the
++		object position number as the first character followed by the
++		power supply type name (":" as delimiter).
++
++			/sys/class/usb_power_delivery/.../source_capabilities/<position>:<type>
++
++What:		/sys/class/usb_power_delivery/.../sink-capabilities
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		The sink capability message "Sink_Capabilities" contains a set
++		of Power Data Objects (PDO) just like with source capabilities,
++		but instead of describing the power capabilities, these objects
++		describe the power requirements.
++
++		The order of the objects in the sink capability message is the
++		same as with the source capabilities message.
++
++Fixed Supplies
++
++What:		/sys/class/usb_power_delivery/.../<capability>/<position>:fixed_supply
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Devices containing the attributes (the bit fields) defined for
++		Fixed Supplies.
++
++		The device "1:fixed_supply" is special. USB Power Delivery
++		Specification dictates that the first PDO (at object position
++		1), and the only mandatory PDO, is always the vSafe5V Fixed
++		Supply Object. vSafe5V Object has additional fields defined for
++		it that the other Fixed Supply Objects do not have and that are
++		related to the USB capabilities rather than power capabilities.
++
++What:		/sys/class/usb_power_delivery/.../<capability>/1:fixed_supply/dual_role_power
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		This file contains boolean value that tells does the device
++		support both source and sink power roles.
++
++What:		/sys/class/usb_power_delivery/.../<capability>/1:fixed_supply/usb_suspend_supported
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		This file shows the value of the USB Suspend Supported bit in
++		vSafe5V Fixed Supply Object. If the bit is set then the device
++		will follow the USB 2.0 and USB 3.2 rules for suspend and
++		resume.
++
++What:		/sys/class/usb_power_delivery/.../<capability>/1:fixed_supply/unconstrained_power
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		This file shows the value of the Unconstrained Power bit in
++		vSafe5V Fixed Supply Object. The bit is set when an external
++		source of power, powerful enough to power the entire system on
++		its own, is available for the device.
++
++What:		/sys/class/usb_power_delivery/.../<capability>/1:fixed_supply/usb_communication_capable
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		This file shows the value of the USB Communication Capable bit in
++		vSafe5V Fixed Supply Object.
++
++What:		/sys/class/usb_power_delivery/.../<capability>/1:fixed_supply/dual_role_data
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		This file shows the value of the Dual-Role Data bit in vSafe5V
++		Fixed Supply Object. Dual role data means ability act as both
++		USB host and USB device.
++
++What:		/sys/class/usb_power_delivery/.../<capability>/1:fixed_supply/unchunked_extended_messages_supported
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		This file shows the value of the Unchunked Extended Messages
++		Supported bit in vSafe5V Fixed Supply Object.
++
++What:		/sys/class/usb_power_delivery/.../<capability>/<position>:fixed_supply/voltage
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		The voltage the supply supports in millivolts.
++
++What:		/sys/class/usb_power_delivery/.../source-capabilities/<position>:fixed_supply/maximum_current
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Maximum current of the fixed source supply in milliamperes.
++
++What:		/sys/class/usb_power_delivery/.../sink-capabilities/<position>:fixed_supply/operational_current
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Operational current of the sink in milliamperes.
++
++What:		/sys/class/usb_power_delivery/.../sink-capabilities/<position>:fixed_supply/fast_role_swap_current
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		This file contains the value of the "Fast Role Swap USB Type-C
++		Current" field that tells the current level the sink requires
++		after a Fast Role Swap.
++		0 - Fast Swap not supported"
++		1 - Default USB Power"
++		2 - 1.5A@5V"
++		3 - 3.0A@5V"
++
++Variable Supplies
++
++What:		/sys/class/usb_power_delivery/.../<capability>/<position>:variable_supply
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Variable Power Supply PDO.
++
++What:		/sys/class/usb_power_delivery/.../<capability>/<position>:variable_supply/maximum_voltage
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Maximum Voltage in millivolts.
++
++What:		/sys/class/usb_power_delivery/.../<capability>/<position>:variable_supply/minimum_voltage
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Minimum Voltage in millivolts.
++
++What:		/sys/class/usb_power_delivery/.../source-capabilities/<position>:variable_supply/maximum_current
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		The maximum current in milliamperes that the source can supply
++		at the given Voltage range.
++
++What:		/sys/class/usb_power_delivery/.../sink-capabilities/<position>:variable_supply/operational_current
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		The operational current in milliamperes that the sink requires
++		at the given Voltage range.
++
++Battery Supplies
++
++What:		/sys/class/usb_power_delivery/.../<capability>/<position>:battery
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Battery PDO.
++
++What:		/sys/class/usb_power_delivery/.../<capability>/<position>:battery/maximum_voltage
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Maximum Voltage in millivolts.
++
++What:		/sys/class/usb_power_delivery/.../<capability>/<position>:battery/minimum_voltage
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Minimum Voltage in millivolts.
++
++What:		/sys/class/usb_power_delivery/.../source-capabilities/<position>:battery/maximum_power
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Maximum allowable Power in milliwatts.
++
++What:		/sys/class/usb_power_delivery/.../sink-capabilities/<position>:battery/operational_power
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		The operational power that the sink requires at the given
++		voltage range.
++
++Standard Power Range (SPR) Programmable Power Supplies
++
++What:		/sys/class/usb_power_delivery/.../<capability>/<position>:programmable_supply
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Programmable Power Supply (PPS) Augmented PDO (APDO).
++
++What:		/sys/class/usb_power_delivery/.../<capability>/<position>:programmable_supply/maximum_voltage
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Maximum Voltage in millivolts.
++
++What:		/sys/class/usb_power_delivery/.../<capability>/<position>:programmable_supply/minimum_voltage
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Minimum Voltage in millivolts.
++
++What:		/sys/class/usb_power_delivery/.../<capability>/<position>:programmable_supply/maximum_current
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		Maximum Current in milliamperes.
++
++What:		/sys/class/usb_power_delivery/.../source-capabilities/<position>:programmable_supply/pps_power_limited
++Date:		May 2022
++Contact:	Heikki Krogerus <heikki.krogerus@linux.intel.com>
++Description:
++		The PPS Power Limited bit indicates whether or not the source
++		supply will exceed the rated output power if requested.
+diff --git a/drivers/usb/typec/Makefile b/drivers/usb/typec/Makefile
+index 43626acc0aafb..2f174cd3e5df1 100644
+--- a/drivers/usb/typec/Makefile
++++ b/drivers/usb/typec/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_TYPEC)		+= typec.o
+-typec-y				:= class.o mux.o bus.o
++typec-y				:= class.o mux.o bus.o pd.o
+ typec-$(CONFIG_ACPI)		+= port-mapper.o
+ obj-$(CONFIG_TYPEC)		+= altmodes/
+ obj-$(CONFIG_TYPEC_TCPM)	+= tcpm/
+diff --git a/drivers/usb/typec/pd.c b/drivers/usb/typec/pd.c
+new file mode 100644
+index 0000000000000..dc72005d68db9
+--- /dev/null
++++ b/drivers/usb/typec/pd.c
+@@ -0,0 +1,708 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * USB Power Delivery sysfs entries
++ *
++ * Copyright (C) 2022, Intel Corporation
++ * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
++ */
++
++#include <linux/slab.h>
++#include <linux/usb/pd.h>
++
++#include "pd.h"
++
++static DEFINE_IDA(pd_ida);
++
++static struct class pd_class = {
++	.name = "usb_power_delivery",
++	.owner = THIS_MODULE,
++};
++
++#define to_pdo(o) container_of(o, struct pdo, dev)
++
++struct pdo {
++	struct device dev;
++	int object_position;
++	u32 pdo;
++};
++
++static void pdo_release(struct device *dev)
++{
++	kfree(to_pdo(dev));
++}
++
++/* -------------------------------------------------------------------------- */
++/* Fixed Supply */
++
++static ssize_t
++dual_role_power_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%u\n", !!(to_pdo(dev)->pdo & PDO_FIXED_DUAL_ROLE));
++}
++static DEVICE_ATTR_RO(dual_role_power);
++
++static ssize_t
++usb_suspend_supported_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%u\n", !!(to_pdo(dev)->pdo & PDO_FIXED_SUSPEND));
++}
++static DEVICE_ATTR_RO(usb_suspend_supported);
++
++static ssize_t
++unconstrained_power_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%u\n", !!(to_pdo(dev)->pdo & PDO_FIXED_EXTPOWER));
++}
++static DEVICE_ATTR_RO(unconstrained_power);
++
++static ssize_t
++usb_communication_capable_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%u\n", !!(to_pdo(dev)->pdo & PDO_FIXED_USB_COMM));
++}
++static DEVICE_ATTR_RO(usb_communication_capable);
++
++static ssize_t
++dual_role_data_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%u\n", !!(to_pdo(dev)->pdo & PDO_FIXED_DATA_SWAP));
++}
++static DEVICE_ATTR_RO(dual_role_data);
++
++static ssize_t
++unchunked_extended_messages_supported_show(struct device *dev,
++					   struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%u\n", !!(to_pdo(dev)->pdo & PDO_FIXED_UNCHUNK_EXT));
++}
++static DEVICE_ATTR_RO(unchunked_extended_messages_supported);
++
++/*
++ * REVISIT: Peak Current requires access also to the RDO.
++static ssize_t
++peak_current_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	...
++}
++*/
++
++static ssize_t
++fast_role_swap_current_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%u\n", to_pdo(dev)->pdo >> PDO_FIXED_FRS_CURR_SHIFT) & 3;
++}
++static DEVICE_ATTR_RO(fast_role_swap_current);
++
++static ssize_t voltage_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%umV\n", pdo_fixed_voltage(to_pdo(dev)->pdo));
++}
++static DEVICE_ATTR_RO(voltage);
++
++/* Shared with Variable supplies, both source and sink */
++static ssize_t current_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%umA\n", pdo_max_current(to_pdo(dev)->pdo));
++}
++
++/* Shared with Variable type supplies */
++static struct device_attribute maximum_current_attr = {
++	.attr = {
++		.name = "maximum_current",
++		.mode = 0444,
++	},
++	.show = current_show,
++};
++
++static struct device_attribute operational_current_attr = {
++	.attr = {
++		.name = "operational_current",
++		.mode = 0444,
++	},
++	.show = current_show,
++};
++
++static struct attribute *source_fixed_supply_attrs[] = {
++	&dev_attr_dual_role_power.attr,
++	&dev_attr_usb_suspend_supported.attr,
++	&dev_attr_unconstrained_power.attr,
++	&dev_attr_usb_communication_capable.attr,
++	&dev_attr_dual_role_data.attr,
++	&dev_attr_unchunked_extended_messages_supported.attr,
++	/*&dev_attr_peak_current.attr,*/
++	&dev_attr_voltage.attr,
++	&maximum_current_attr.attr,
++	NULL
++};
++
++static umode_t fixed_attr_is_visible(struct kobject *kobj, struct attribute *attr, int n)
++{
++	if (to_pdo(kobj_to_dev(kobj))->object_position &&
++	    /*attr != &dev_attr_peak_current.attr &&*/
++	    attr != &dev_attr_voltage.attr &&
++	    attr != &maximum_current_attr.attr &&
++	    attr != &operational_current_attr.attr)
++		return 0;
++
++	return attr->mode;
++}
++
++static const struct attribute_group source_fixed_supply_group = {
++	.is_visible = fixed_attr_is_visible,
++	.attrs = source_fixed_supply_attrs,
++};
++__ATTRIBUTE_GROUPS(source_fixed_supply);
++
++static struct device_type source_fixed_supply_type = {
++	.name = "pdo",
++	.release = pdo_release,
++	.groups = source_fixed_supply_groups,
++};
++
++static struct attribute *sink_fixed_supply_attrs[] = {
++	&dev_attr_dual_role_power.attr,
++	&dev_attr_usb_suspend_supported.attr,
++	&dev_attr_unconstrained_power.attr,
++	&dev_attr_usb_communication_capable.attr,
++	&dev_attr_dual_role_data.attr,
++	&dev_attr_unchunked_extended_messages_supported.attr,
++	&dev_attr_fast_role_swap_current.attr,
++	&dev_attr_voltage.attr,
++	&operational_current_attr.attr,
++	NULL
++};
++
++static const struct attribute_group sink_fixed_supply_group = {
++	.is_visible = fixed_attr_is_visible,
++	.attrs = sink_fixed_supply_attrs,
++};
++__ATTRIBUTE_GROUPS(sink_fixed_supply);
++
++static struct device_type sink_fixed_supply_type = {
++	.name = "pdo",
++	.release = pdo_release,
++	.groups = sink_fixed_supply_groups,
++};
++
++/* -------------------------------------------------------------------------- */
++/* Variable Supply */
++
++static ssize_t
++maximum_voltage_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%umV\n", pdo_max_voltage(to_pdo(dev)->pdo));
++}
++static DEVICE_ATTR_RO(maximum_voltage);
++
++static ssize_t
++minimum_voltage_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%umV\n", pdo_min_voltage(to_pdo(dev)->pdo));
++}
++static DEVICE_ATTR_RO(minimum_voltage);
++
++static struct attribute *source_variable_supply_attrs[] = {
++	&dev_attr_maximum_voltage.attr,
++	&dev_attr_minimum_voltage.attr,
++	&maximum_current_attr.attr,
++	NULL
++};
++ATTRIBUTE_GROUPS(source_variable_supply);
++
++static struct device_type source_variable_supply_type = {
++	.name = "pdo",
++	.release = pdo_release,
++	.groups = source_variable_supply_groups,
++};
++
++static struct attribute *sink_variable_supply_attrs[] = {
++	&dev_attr_maximum_voltage.attr,
++	&dev_attr_minimum_voltage.attr,
++	&operational_current_attr.attr,
++	NULL
++};
++ATTRIBUTE_GROUPS(sink_variable_supply);
++
++static struct device_type sink_variable_supply_type = {
++	.name = "pdo",
++	.release = pdo_release,
++	.groups = sink_variable_supply_groups,
++};
++
++/* -------------------------------------------------------------------------- */
++/* Battery */
++
++static ssize_t
++maximum_power_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%umW\n", pdo_max_power(to_pdo(dev)->pdo));
++}
++static DEVICE_ATTR_RO(maximum_power);
++
++static ssize_t
++operational_power_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%umW\n", pdo_max_power(to_pdo(dev)->pdo));
++}
++static DEVICE_ATTR_RO(operational_power);
++
++static struct attribute *source_battery_attrs[] = {
++	&dev_attr_maximum_voltage.attr,
++	&dev_attr_minimum_voltage.attr,
++	&dev_attr_maximum_power.attr,
++	NULL
++};
++ATTRIBUTE_GROUPS(source_battery);
++
++static struct device_type source_battery_type = {
++	.name = "pdo",
++	.release = pdo_release,
++	.groups = source_battery_groups,
++};
++
++static struct attribute *sink_battery_attrs[] = {
++	&dev_attr_maximum_voltage.attr,
++	&dev_attr_minimum_voltage.attr,
++	&dev_attr_operational_power.attr,
++	NULL
++};
++ATTRIBUTE_GROUPS(sink_battery);
++
++static struct device_type sink_battery_type = {
++	.name = "pdo",
++	.release = pdo_release,
++	.groups = sink_battery_groups,
++};
++
++/* -------------------------------------------------------------------------- */
++/* Standard Power Range (SPR) Programmable Power Supply (PPS) */
++
++static ssize_t
++pps_power_limited_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%u\n", !!(to_pdo(dev)->pdo & BIT(27)));
++}
++static DEVICE_ATTR_RO(pps_power_limited);
++
++static ssize_t
++pps_max_voltage_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%umV\n", pdo_pps_apdo_max_voltage(to_pdo(dev)->pdo));
++}
++
++static ssize_t
++pps_min_voltage_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%umV\n", pdo_pps_apdo_min_voltage(to_pdo(dev)->pdo));
++}
++
++static ssize_t
++pps_max_current_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%umA\n", pdo_pps_apdo_max_current(to_pdo(dev)->pdo));
++}
++
++static struct device_attribute pps_max_voltage_attr = {
++	.attr = {
++		.name = "maximum_voltage",
++		.mode = 0444,
++	},
++	.show = pps_max_voltage_show,
++};
++
++static struct device_attribute pps_min_voltage_attr = {
++	.attr = {
++		.name = "minimum_voltage",
++		.mode = 0444,
++	},
++	.show = pps_min_voltage_show,
++};
++
++static struct device_attribute pps_max_current_attr = {
++	.attr = {
++		.name = "maximum_current",
++		.mode = 0444,
++	},
++	.show = pps_max_current_show,
++};
++
++static struct attribute *source_pps_attrs[] = {
++	&dev_attr_pps_power_limited.attr,
++	&pps_max_voltage_attr.attr,
++	&pps_min_voltage_attr.attr,
++	&pps_max_current_attr.attr,
++	NULL
++};
++ATTRIBUTE_GROUPS(source_pps);
++
++static struct device_type source_pps_type = {
++	.name = "pdo",
++	.release = pdo_release,
++	.groups = source_pps_groups,
++};
++
++static struct attribute *sink_pps_attrs[] = {
++	&pps_max_voltage_attr.attr,
++	&pps_min_voltage_attr.attr,
++	&pps_max_current_attr.attr,
++	NULL
++};
++ATTRIBUTE_GROUPS(sink_pps);
++
++static struct device_type sink_pps_type = {
++	.name = "pdo",
++	.release = pdo_release,
++	.groups = sink_pps_groups,
++};
++
++/* -------------------------------------------------------------------------- */
++
++static const char * const supply_name[] = {
++	[PDO_TYPE_FIXED] = "fixed_supply",
++	[PDO_TYPE_BATT]  = "battery",
++	[PDO_TYPE_VAR]	 = "variable_supply",
++};
++
++static const char * const apdo_supply_name[] = {
++	[APDO_TYPE_PPS]  = "programmable_supply",
++};
++
++static struct device_type *source_type[] = {
++	[PDO_TYPE_FIXED] = &source_fixed_supply_type,
++	[PDO_TYPE_BATT]  = &source_battery_type,
++	[PDO_TYPE_VAR]   = &source_variable_supply_type,
++};
++
++static struct device_type *source_apdo_type[] = {
++	[APDO_TYPE_PPS]  = &source_pps_type,
++};
++
++static struct device_type *sink_type[] = {
++	[PDO_TYPE_FIXED] = &sink_fixed_supply_type,
++	[PDO_TYPE_BATT]  = &sink_battery_type,
++	[PDO_TYPE_VAR]   = &sink_variable_supply_type,
++};
++
++static struct device_type *sink_apdo_type[] = {
++	[APDO_TYPE_PPS]  = &sink_pps_type,
++};
++
++/* REVISIT: Export when EPR_*_Capabilities need to be supported. */
++static int add_pdo(struct usb_power_delivery_capabilities *cap, u32 pdo, int position)
++{
++	struct device_type *type;
++	const char *name;
++	struct pdo *p;
++	int ret;
++
++	p = kzalloc(sizeof(*p), GFP_KERNEL);
++	if (!p)
++		return -ENOMEM;
++
++	p->pdo = pdo;
++	p->object_position = position;
++
++	if (pdo_type(pdo) == PDO_TYPE_APDO) {
++		/* FIXME: Only PPS supported for now! Skipping others. */
++		if (pdo_apdo_type(pdo) > APDO_TYPE_PPS) {
++			dev_warn(&cap->dev, "Unknown APDO type. PDO 0x%08x\n", pdo);
++			kfree(p);
++			return 0;
++		}
++
++		if (is_source(cap->role))
++			type = source_apdo_type[pdo_apdo_type(pdo)];
++		else
++			type = sink_apdo_type[pdo_apdo_type(pdo)];
++
++		name = apdo_supply_name[pdo_apdo_type(pdo)];
++	} else {
++		if (is_source(cap->role))
++			type = source_type[pdo_type(pdo)];
++		else
++			type = sink_type[pdo_type(pdo)];
++
++		name = supply_name[pdo_type(pdo)];
++	}
++
++	p->dev.parent = &cap->dev;
++	p->dev.type = type;
++	dev_set_name(&p->dev, "%u:%s", position + 1, name);
++
++	ret = device_register(&p->dev);
++	if (ret) {
++		put_device(&p->dev);
++		return ret;
++	}
++
++	return 0;
++}
++
++static int remove_pdo(struct device *dev, void *data)
++{
++	device_unregister(dev);
++	return 0;
++}
++
++/* -------------------------------------------------------------------------- */
++
++static const char * const cap_name[] = {
++	[TYPEC_SINK]    = "sink-capabilities",
++	[TYPEC_SOURCE]  = "source-capabilities",
++};
++
++static void pd_capabilities_release(struct device *dev)
++{
++	kfree(to_usb_power_delivery_capabilities(dev));
++}
++
++static struct device_type pd_capabilities_type = {
++	.name = "capabilities",
++	.release = pd_capabilities_release,
++};
++
++/**
++ * usb_power_delivery_register_capabilities - Register a set of capabilities.
++ * @pd: The USB PD instance that the capabilities belong to.
++ * @desc: Description of the Capablities Message.
++ *
++ * This function registers a Capabilities Message described in @desc. The
++ * capabilities will have their own sub-directory under @pd in sysfs.
++ *
++ * The function returns pointer to struct usb_power_delivery_capabilities, or
++ * ERR_PRT(errno).
++ */
++struct usb_power_delivery_capabilities *
++usb_power_delivery_register_capabilities(struct usb_power_delivery *pd,
++					 struct usb_power_delivery_capabilities_desc *desc)
++{
++	struct usb_power_delivery_capabilities *cap;
++	int ret;
++	int i;
++
++	cap = kzalloc(sizeof(*cap), GFP_KERNEL);
++	if (!cap)
++		return ERR_PTR(-ENOMEM);
++
++	cap->pd = pd;
++	cap->role = desc->role;
++
++	cap->dev.parent = &pd->dev;
++	cap->dev.type = &pd_capabilities_type;
++	dev_set_name(&cap->dev, "%s", cap_name[cap->role]);
++
++	ret = device_register(&cap->dev);
++	if (ret) {
++		put_device(&cap->dev);
++		return ERR_PTR(ret);
++	}
++
++	for (i = 0; i < PDO_MAX_OBJECTS && desc->pdo[i]; i++) {
++		ret = add_pdo(cap, desc->pdo[i], i);
++		if (ret) {
++			usb_power_delivery_unregister_capabilities(cap);
++			return ERR_PTR(ret);
++		}
++	}
++
++	return cap;
++}
++EXPORT_SYMBOL_GPL(usb_power_delivery_register_capabilities);
++
++/**
++ * usb_power_delivery_unregister_capabilities - Unregister a set of capabilities
++ * @cap: The capabilities
++ */
++void usb_power_delivery_unregister_capabilities(struct usb_power_delivery_capabilities *cap)
++{
++	if (!cap)
++		return;
++
++	device_for_each_child(&cap->dev, NULL, remove_pdo);
++	device_unregister(&cap->dev);
++}
++EXPORT_SYMBOL_GPL(usb_power_delivery_unregister_capabilities);
++
++/* -------------------------------------------------------------------------- */
++
++static ssize_t revision_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct usb_power_delivery *pd = to_usb_power_delivery(dev);
++
++	return sysfs_emit(buf, "%u.%u\n", (pd->revision >> 8) & 0xff, (pd->revision >> 4) & 0xf);
++}
++static DEVICE_ATTR_RO(revision);
++
++static ssize_t version_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct usb_power_delivery *pd = to_usb_power_delivery(dev);
++
++	return sysfs_emit(buf, "%u.%u\n", (pd->version >> 8) & 0xff, (pd->version >> 4) & 0xf);
++}
++static DEVICE_ATTR_RO(version);
++
++static struct attribute *pd_attrs[] = {
++	&dev_attr_revision.attr,
++	&dev_attr_version.attr,
++	NULL
++};
++
++static umode_t pd_attr_is_visible(struct kobject *kobj, struct attribute *attr, int n)
++{
++	struct usb_power_delivery *pd = to_usb_power_delivery(kobj_to_dev(kobj));
++
++	if (attr == &dev_attr_version.attr && !pd->version)
++		return 0;
++
++	return attr->mode;
++}
++
++static const struct attribute_group pd_group = {
++	.is_visible = pd_attr_is_visible,
++	.attrs = pd_attrs,
++};
++__ATTRIBUTE_GROUPS(pd);
++
++static void pd_release(struct device *dev)
++{
++	struct usb_power_delivery *pd = to_usb_power_delivery(dev);
++
++	ida_simple_remove(&pd_ida, pd->id);
++	kfree(pd);
++}
++
++static struct device_type pd_type = {
++	.name = "usb_power_delivery",
++	.release = pd_release,
++	.groups = pd_groups,
++};
++
++struct usb_power_delivery *usb_power_delivery_find(const char *name)
++{
++	struct device *dev;
++
++	dev = class_find_device_by_name(&pd_class, name);
++
++	return dev ? to_usb_power_delivery(dev) : NULL;
++}
++
++/**
++ * usb_power_delivery_register - Register USB Power Delivery Support.
++ * @parent: Parent device.
++ * @desc: Description of the USB PD contract.
++ *
++ * This routine can be used to register USB Power Delivery capabilities that a
++ * device or devices can support. These capabilities represent all the
++ * capabilities that can be negotiated with a partner, so not only the Power
++ * Capabilities that are negotiated using the USB PD Capabilities Message.
++ *
++ * The USB Power Delivery Support object that this routine generates can be used
++ * as the parent object for all the actual USB Power Delivery Messages and
++ * objects that can be negotiated with the partner.
++ *
++ * Returns handle to struct usb_power_delivery or ERR_PTR.
++ */
++struct usb_power_delivery *
++usb_power_delivery_register(struct device *parent, struct usb_power_delivery_desc *desc)
++{
++	struct usb_power_delivery *pd;
++	int ret;
++
++	pd = kzalloc(sizeof(*pd), GFP_KERNEL);
++	if (!pd)
++		return ERR_PTR(-ENOMEM);
++
++	ret = ida_simple_get(&pd_ida, 0, 0, GFP_KERNEL);
++	if (ret < 0) {
++		kfree(pd);
++		return ERR_PTR(ret);
++	}
++
++	pd->id = ret;
++	pd->revision = desc->revision;
++	pd->version = desc->version;
++
++	pd->dev.parent = parent;
++	pd->dev.type = &pd_type;
++	pd->dev.class = &pd_class;
++	dev_set_name(&pd->dev, "pd%d", pd->id);
++
++	ret = device_register(&pd->dev);
++	if (ret) {
++		put_device(&pd->dev);
++		return ERR_PTR(ret);
++	}
++
++	return pd;
++}
++EXPORT_SYMBOL_GPL(usb_power_delivery_register);
++
++/**
++ * usb_power_delivery_unregister - Unregister USB Power Delivery Support.
++ * @pd: The USB PD contract.
++ */
++void usb_power_delivery_unregister(struct usb_power_delivery *pd)
++{
++	if (IS_ERR_OR_NULL(pd))
++		return;
++
++	device_unregister(&pd->dev);
++}
++EXPORT_SYMBOL_GPL(usb_power_delivery_unregister);
++
++/**
++ * usb_power_delivery_link_device - Link device to its USB PD object.
++ * @pd: The USB PD instance.
++ * @dev: The device.
++ *
++ * This function can be used to create a symlink named "usb_power_delivery" for
++ * @dev that points to @pd.
++ */
++int usb_power_delivery_link_device(struct usb_power_delivery *pd, struct device *dev)
++{
++	int ret;
++
++	if (IS_ERR_OR_NULL(pd) || !dev)
++		return 0;
++
++	ret = sysfs_create_link(&dev->kobj, &pd->dev.kobj, "usb_power_delivery");
++	if (ret)
++		return ret;
++
++	get_device(&pd->dev);
++	get_device(dev);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(usb_power_delivery_link_device);
++
++/**
++ * usb_power_delivery_unlink_device - Unlink device from its USB PD object.
++ * @pd: The USB PD instance.
++ * @dev: The device.
++ *
++ * Remove the symlink that was previously created with pd_link_device().
++ */
++void usb_power_delivery_unlink_device(struct usb_power_delivery *pd, struct device *dev)
++{
++	if (IS_ERR_OR_NULL(pd) || !dev)
++		return;
++
++	sysfs_remove_link(&dev->kobj, "usb_power_delivery");
++	put_device(&pd->dev);
++	put_device(dev);
++}
++EXPORT_SYMBOL_GPL(usb_power_delivery_unlink_device);
++
++/* -------------------------------------------------------------------------- */
++
++int __init usb_power_delivery_init(void)
++{
++	return class_register(&pd_class);
++}
++
++void __exit usb_power_delivery_exit(void)
++{
++	ida_destroy(&pd_ida);
++	class_unregister(&pd_class);
++}
+diff --git a/drivers/usb/typec/pd.h b/drivers/usb/typec/pd.h
+new file mode 100644
+index 0000000000000..049a1aad440a3
+--- /dev/null
++++ b/drivers/usb/typec/pd.h
+@@ -0,0 +1,30 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef __USB_POWER_DELIVERY__
++#define __USB_POWER_DELIVERY__
++
++#include <linux/device.h>
++#include <linux/usb/typec.h>
++
++struct usb_power_delivery {
++	struct device dev;
++	int id;
++	u16 revision;
++	u16 version;
++};
++
++struct usb_power_delivery_capabilities {
++	struct device dev;
++	struct usb_power_delivery *pd;
++	enum typec_role role;
++};
++
++#define to_usb_power_delivery_capabilities(o) container_of(o, struct usb_power_delivery_capabilities, dev)
++#define to_usb_power_delivery(o) container_of(o, struct usb_power_delivery, dev)
++
++struct usb_power_delivery *usb_power_delivery_find(const char *name);
++
++int usb_power_delivery_init(void);
++void usb_power_delivery_exit(void);
++
++#endif /* __USB_POWER_DELIVERY__ */
+diff --git a/include/linux/usb/pd.h b/include/linux/usb/pd.h
+index 96b7ff66f074b..c59fb79a42e86 100644
+--- a/include/linux/usb/pd.h
++++ b/include/linux/usb/pd.h
+@@ -495,4 +495,42 @@ static inline unsigned int rdo_max_power(u32 rdo)
+ 
+ #define PD_P_SNK_STDBY_MW	2500	/* 2500 mW */
+ 
++#if IS_ENABLED(CONFIG_TYPEC)
++
++struct usb_power_delivery;
++
++/**
++ * usb_power_delivery_desc - USB Power Delivery Descriptor
++ * @revision: USB Power Delivery Specification Revision
++ * @version: USB Power Delivery Specicication Version - optional
++ */
++struct usb_power_delivery_desc {
++	u16 revision;
++	u16 version;
++};
++
++/**
++ * usb_power_delivery_capabilities_desc - Description of USB Power Delivery Capabilities Message
++ * @pdo: The Power Data Objects in the Capability Message
++ * @role: Power role of the capabilities
++ */
++struct usb_power_delivery_capabilities_desc {
++	u32 pdo[PDO_MAX_OBJECTS];
++	enum typec_role role;
++};
++
++struct usb_power_delivery_capabilities *
++usb_power_delivery_register_capabilities(struct usb_power_delivery *pd,
++					 struct usb_power_delivery_capabilities_desc *desc);
++void usb_power_delivery_unregister_capabilities(struct usb_power_delivery_capabilities *cap);
++
++struct usb_power_delivery *usb_power_delivery_register(struct device *parent,
++						       struct usb_power_delivery_desc *desc);
++void usb_power_delivery_unregister(struct usb_power_delivery *pd);
++
++int usb_power_delivery_link_device(struct usb_power_delivery *pd, struct device *dev);
++void usb_power_delivery_unlink_device(struct usb_power_delivery *pd, struct device *dev);
++
++#endif /* CONFIG_TYPEC */
++
+ #endif /* __LINUX_USB_PD_H */
+diff --git a/include/linux/usb/typec.h b/include/linux/usb/typec.h
+index fdf737d48b3bf..45e28d14ae56e 100644
+--- a/include/linux/usb/typec.h
++++ b/include/linux/usb/typec.h
+@@ -52,6 +52,16 @@ enum typec_role {
+ 	TYPEC_SOURCE,
+ };
+ 
++static inline int is_sink(enum typec_role role)
++{
++	return role == TYPEC_SINK;
++}
++
++static inline int is_source(enum typec_role role)
++{
++	return role == TYPEC_SOURCE;
++}
++
+ enum typec_pwr_opmode {
+ 	TYPEC_PWR_MODE_USB,
+ 	TYPEC_PWR_MODE_1_5A,
+-- 
+2.35.1
+
