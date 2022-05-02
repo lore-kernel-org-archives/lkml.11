@@ -2,210 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53ECDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA9E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353113AbiEBREm (ORCPT
+        id S1386444AbiEBREt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 13:04:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44818 "EHLO
+        Mon, 2 May 2022 13:04:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386464AbiEBREa (ORCPT
+        with ESMTP id S1386455AbiEBREe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 13:04:30 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA4425F7
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:00:58 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id dk23so28893990ejb.8
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 10:00:58 -0700 (PDT)
+        Mon, 2 May 2022 13:04:34 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40044270D
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:01:05 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2ebf4b91212so154606977b3.8
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 10:01:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pw2/oXmpaIHCVTryeNN1ZqUEyp67KQCQZki+AHhMtg4=;
-        b=WFLlqSaRxtRM1eXCMOy3bfOnfmy/O0CNxC/Kvxvq/ZIAe6jSq6QKKTxR2533G2Ma+M
-         cJ7mlkEywoFDQhZG7+kRn8mhBuqtd3heRlnY0oV+pOFJG3vEXsS/ZpfmMuuJ838fRTyq
-         Xk6I4ysRfS7pCyUZj4MDQtXlPkIN333kbsYkE=
+         :cc:content-transfer-encoding;
+        bh=ZDNXgBhMz20++Q4yigO612T0eYygF7r9J92FIVtim7Y=;
+        b=JgdYu4i8LXmMnXLXrkcT7kHOAMHmAidhNS6U0ueSLoMV2xM914ojCWAfQT3FwPR+1l
+         PoLOfIxEoZUnpUcLAHkqdzewTFZmlPHzf2P4KtVSykjNiUaSjHEZ4JXGrO87YwYEfY29
+         Z+QTsgSlKNHz0OH4JLROLS99pvqLcEwt40oWqVFt9/peS0coGpNEREGC2CeybE9udTkZ
+         PBSCKT1mEj4EUvIGaFwp/YC2T3K64TVZ9MIoJHwe/x1WPyoerlcNsHxE9mUxBRzI6/O/
+         dA+GoQpNe65P4xsbfG25zceIOp2apEavuWjynEw+O1ENeDzWJe9o6sXQ0vlxCo8yyC69
+         UBEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pw2/oXmpaIHCVTryeNN1ZqUEyp67KQCQZki+AHhMtg4=;
-        b=RYhf4/Q5YT+g3XccJquruic3bp6OWO7g+k+ZKVcmvwaC6452iXRXLD78EzMGCuTI4K
-         MFJLFXIoErG1xLWN+28fRgT74pvcSBFOnZt6XPK9MMJnaAaJD7SZoIxkn59dgzUbCWT7
-         zQWKxoRfxkniJyuiUuBXuWl+qRMsRfeYBsa1hetK8u8OIjquqXd5gwlP6R1xpxhVDo6w
-         cmlDN8l/lfEYFVGyPzpqJyzWCu7YIJUNcoJmf6NzgxHWcmjBIGZ7W4rs45EHxGFaJ5Jy
-         xBU/FQsnayBZMsSYxDv9AF5eYg1KwWVPVhTqZQV6tQ6H6vrw2O9bZe11+WV8ZbL0mtLt
-         u8yw==
-X-Gm-Message-State: AOAM5300vNXwhBmLUFhY5la68ErHWzY5VYaPYR/x68KdU88reUmFLYbi
-        ZYbC8KZZDetxM6EcfuEtEy9e9Ef9u1l6qZke
-X-Google-Smtp-Source: ABdhPJzXJBmbCAhIYzuXYO5JSbPNqAkkp1zp+lqt9HQHdD9KgA8gMv/zGzlBZR8bZ2MBmoeERNXGLQ==
-X-Received: by 2002:a17:907:3fa6:b0:6f3:a758:73b3 with SMTP id hr38-20020a1709073fa600b006f3a75873b3mr12143791ejc.108.1651510857164;
-        Mon, 02 May 2022 10:00:57 -0700 (PDT)
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com. [209.85.128.49])
-        by smtp.gmail.com with ESMTPSA id er22-20020a170907739600b006f3ef214e7bsm3793006ejc.225.2022.05.02.10.00.56
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 May 2022 10:00:56 -0700 (PDT)
-Received: by mail-wm1-f49.google.com with SMTP id k126so5184219wme.2
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 10:00:56 -0700 (PDT)
-X-Received: by 2002:a05:600c:4e44:b0:394:46b4:7b0e with SMTP id
- e4-20020a05600c4e4400b0039446b47b0emr57531wmq.29.1651510855777; Mon, 02 May
- 2022 10:00:55 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ZDNXgBhMz20++Q4yigO612T0eYygF7r9J92FIVtim7Y=;
+        b=U+om279C0KmLyf1GuJ6ccc61ZtLlMjZ8FNlwZhV9LCs0lgG70Yt8lZFatCUmsh9X27
+         cwWKEDyTTQPnTHQ9m0lqdXFyNs/9CXrX7e0HOZ8SaMqNIdKhOFIq8To7aPndy6DjfwbH
+         BvZK9gKGTlm5Q6JrTwZ1S7OCMdgUNT6KErb/Q9fQa6yVknT4RvRsLieN5YIPeYLxcIvT
+         Ul0bKrr7Zackb27LxPEUyEmzCExYaFRi+wfOoLF/bivvLOekt1uhy/WZv9gBdbjr9+SE
+         ckBtA+UWD7rJysiu6/YC7e0Cf5jAC3gE3A8gcP7+UlSx8vULjxj10WMskGjl7jihsUKj
+         lGIQ==
+X-Gm-Message-State: AOAM533i2h9i1zN814oVLdNPBqozV+s4R91lPiPha0owSTypWr/cqtj7
+        enHpJrYUBGQfN5tiuqF3EW2WQUVabMwsWnoTf4eKfg==
+X-Google-Smtp-Source: ABdhPJy9WXshcsyYnhmFBRjyjSz+xXgG968fsEWEpZo4KzR8Ug2a15AebqyxN7IoToxv1Gm1KUB+/NnO5+jeZO0Mdww=
+X-Received: by 2002:a81:1f8b:0:b0:2f8:5846:445e with SMTP id
+ f133-20020a811f8b000000b002f85846445emr11776773ywf.50.1651510864112; Mon, 02
+ May 2022 10:01:04 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220429233112.2851665-1-swboyd@chromium.org> <20220429233112.2851665-2-swboyd@chromium.org>
-In-Reply-To: <20220429233112.2851665-2-swboyd@chromium.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 2 May 2022 10:00:44 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VX8EEgkeLgKwyKvjztcjbA8UhKOUpTr-sS1_Ec=QcWbA@mail.gmail.com>
-Message-ID: <CAD=FV=VX8EEgkeLgKwyKvjztcjbA8UhKOUpTr-sS1_Ec=QcWbA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: google,cros-ec-keyb: Introduce
- switches only compatible
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
-        chrome-platform@lists.linux.dev,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        "Joseph S. Barrera III" <joebar@chromium.org>
+References: <20220426164315.625149-1-glider@google.com> <20220426164315.625149-29-glider@google.com>
+ <87a6c6y7mg.ffs@tglx>
+In-Reply-To: <87a6c6y7mg.ffs@tglx>
+From:   Alexander Potapenko <glider@google.com>
+Date:   Mon, 2 May 2022 19:00:28 +0200
+Message-ID: <CAG_fn=U7PPBmmkgxFcWFQUCqZitzMizr1e69D9f26sGGzeitLQ@mail.gmail.com>
+Subject: Re: [PATCH v3 28/46] kmsan: entry: handle register passing from
+ uninstrumented code
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Fri, Apr 29, 2022 at 4:31 PM Stephen Boyd <swboyd@chromium.org> wrote:
+On Wed, Apr 27, 2022 at 3:32 PM Thomas Gleixner <tglx@linutronix.de> wrote:
 >
-> If the device is a detachable, this device won't have a matrix keyboard
-> but it may have some button switches, e.g. volume buttons and power
-> buttons. Let's add a more specific compatible for this type of device
-> that indicates to the OS that there are only switches and no matrix
-> keyboard present. If only the switches compatible is present, then the
-> matrix keyboard properties are denied. This lets us gracefully migrate
-> devices that only have switches over to the new compatible string.
-
-I know the history here so I know the reasons for the 3 choices, but
-I'm not sure I'd fully understand it just from the description above.
-Maybe a summary in the CL desc would help?
-
-Summary:
-
-1. If you have a matrix keyboard and maybe also some buttons/switches
-then use the compatible: google,cros-ec-keyb
-
-2. If you only have buttons/switches but you want to be compatible
-with the old driver in Linux that looked for the compatible
-"google,cros-ec-keyb" and required the matrix properties, use the
-compatible: "google,cros-ec-keyb-switches", "google,cros-ec-keyb"
-
-3. If you have only buttons/switches and don't need compatibility with
-old Linux drivers, use the compatible: "google,cros-ec-keyb-switches"
-
-
-> Similarly, start enforcing that the keypad rows/cols and keymap
-> properties exist if the google,cros-ec-keyb compatible is present. This
-> more clearly describes what the driver is expecting, i.e. that the
-> kernel driver will fail to probe if the row or column or keymap
-> properties are missing and only the google,cros-ec-keyb compatible is
-> present.
+> On Tue, Apr 26 2022 at 18:42, Alexander Potapenko wrote:
 >
-> Cc: Krzysztof Kozlowski <krzk@kernel.org>
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: <devicetree@vger.kernel.org>
-> Cc: Benson Leung <bleung@chromium.org>
-> Cc: Guenter Roeck <groeck@chromium.org>
-> Cc: Douglas Anderson <dianders@chromium.org>
-> Cc: Hsin-Yi Wang <hsinyi@chromium.org>
-> Cc: "Joseph S. Barrera III" <joebar@chromium.org>
-> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> ---
->  .../bindings/input/google,cros-ec-keyb.yaml   | 95 +++++++++++++++++--
->  1 file changed, 89 insertions(+), 6 deletions(-)
+> Can you please use 'entry:' as prefix. Slapping kmsan in front of
+> everything does not really make sense.
+Sure, will do.
+
+> > Replace instrumentation_begin()       with instrumentation_begin_with_r=
+egs()
+> > to let KMSAN handle the non-instrumented code and unpoison pt_regs
+> > passed from the instrumented part.
 >
-> diff --git a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> index e8f137abb03c..c1b079449cf3 100644
-> --- a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> +++ b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> @@ -15,14 +15,19 @@ description: |
->    Google's ChromeOS EC Keyboard is a simple matrix keyboard
->    implemented on a separate EC (Embedded Controller) device. It provides
->    a message for reading key scans from the EC. These are then converted
-> -  into keycodes for processing by the kernel.
-> -
-> -allOf:
-> -  - $ref: "/schemas/input/matrix-keymap.yaml#"
-> +  into keycodes for processing by the kernel. This device also supports
-> +  switches/buttons like power and volume buttons.
+> That should be:
 >
->  properties:
->    compatible:
-> -    const: google,cros-ec-keyb
-> +    oneOf:
-> +      - items:
-> +          - const: google,cros-ec-keyb-switches
-> +      - items:
-> +          - const: google,cros-ec-keyb-switches
-> +          - const: google,cros-ec-keyb
-> +      - items:
-> +          - const: google,cros-ec-keyb
+>      from the non-instrumented part
+> or
+>      passed to the instrumented part
 >
->    google,needs-ghost-filter:
->      description:
-> @@ -41,15 +46,40 @@ properties:
->        where the lower 16 bits are reserved. This property is specified only
->        when the keyboard has a custom design for the top row keys.
+> right?
+
+That should be "from the non-instrumented part", you are right.
+
+> > --- a/kernel/entry/common.c
+> > +++ b/kernel/entry/common.c
+> > @@ -23,7 +23,7 @@ static __always_inline void __enter_from_user_mode(st=
+ruct pt_regs *regs)
+> >       CT_WARN_ON(ct_state() !=3D CONTEXT_USER);
+> >       user_exit_irqoff();
+> >
+> > -     instrumentation_begin();
+> > +     instrumentation_begin_with_regs(regs);
 >
-> +dependencies:
-> +  function-row-phsymap: [ 'linux,keymap' ]
-> +  google,needs-ghost-filter: [ 'linux,keymap' ]
-> +
->  required:
->    - compatible
+> I can see what you are trying to do, but this will end up doing the same
+> thing over and over. Let's just look at a syscall.
 >
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: google,cros-ec-keyb
-> +    then:
-> +      allOf:
-> +        - $ref: "/schemas/input/matrix-keymap.yaml#"
-> +  - if:
-> +      not:
-> +        properties:
-> +          compatible:
-> +            contains:
-> +              const: google,cros-ec-keyb-switches
-> +    then:
-> +      required:
-> +        - keypad,num-rows
-> +        - keypad,num-columns
-> +        - linux,keymap
+> __visible noinstr void do_syscall_64(struct pt_regs *regs, int nr)
+> {
+>         ...
+>         nr =3D syscall_enter_from_user_mode(regs, nr)
+>
+>                 __enter_from_user_mode(regs)
+>                         .....
+>                         instrumentation_begin_with_regs(regs);
+>                         ....
+>
+>                 instrumentation_begin_with_regs(regs);
+>                 ....
+>
+>         instrumentation_begin_with_regs(regs);
+>
+>         if (!do_syscall_x64(regs, nr) && !do_syscall_x32(regs, nr) && nr =
+!=3D -1) {
+>                 /* Invalid system call, but still a system call. */
+>                 regs->ax =3D __x64_sys_ni_syscall(regs);
+>         }
+>
+>         instrumentation_end();
+>
+>         syscall_exit_to_user_mode(regs);
+>                 instrumentation_begin_with_regs(regs);
+>                 __syscall_exit_to_user_mode_work(regs);
+>         instrumentation_end();
+>         __exit_to_user_mode();
+>
+> That means you memset state four times and unpoison regs four times. I'm
+> not sure whether that's desired.
 
-I think that:
+Regarding the regs, you are right. It should be enough to unpoison the
+regs at idtentry prologue instead.
+I tried that initially, but IIRC it required patching each of the
+DEFINE_IDTENTRY_XXX macros, which already use instrumentation_begin().
+This decision can probably be revisited.
 
-1. If you only have buttons/switches and care about backward
-compatibility, you use the "two compatibles" version.
+As for the state, what we are doing here is still not enough, although
+it appears to work.
 
-2. If you care about backward compatibility then you _must_ include
-the matrix properties.
+Every time an instrumented function calls another function, it sets up
+the metadata for the function arguments in the per-task struct
+kmsan_context_state.
+Similarly, every instrumented function expects its caller to put the
+metadata into that structure.
+Now, if a non-instrumented function (e.g. every `noinstr` function)
+calls an instrumented one (which happens inside the
+instrumentation_begin()/instrumentation_end() region), nobody sets up
+the state for that instrumented function, so it may report false
+positives when accessing its arguments, if there are leftover poisoned
+values in the state.
 
-Thus I would be tempted to say that we should just have one "if" test
-that says that if matrix properties are allowed then they're also
-required.
+To overcome this problem, ideally we need to wipe kmsan_context_state
+every time a call from the non-instrumented function occurs.
+But this cannot be done automatically exactly because we cannot
+instrument the named function :)
 
-That goes against the recently landed commit 4352e23a7ff2 ("Input:
-cros-ec-keyb - only register keyboard if rows/columns exist") but
-perhaps we should just _undo_ that that since it landed pretty
-recently and say that the truly supported way to specify that you only
-have keyboards/switches is with the compatible.
+We therefore apply an approximation, wiping the state at the point of
+the first transition between instrumented and non-instrumented code.
+Because poison values are generally rare, and instrumented regions
+tend to be short, it is unlikely that further calls from the same
+non-instrumented function will result in false positives.
+Yet it is not completely impossible, so wiping the state for the
+second/third etc. time won't hurt.
 
-What do you think?
+>
+> instrumentation_begin()/end() are not really suitable IMO. They were
+> added to allow objtool to validate that nothing escapes into
+> instrumentable code unless annotated accordingly.
 
--Doug
+An alternative to this would be adding some extra code unpoisoning the
+state to every non-instrumented function that contains an instrumented
+region.
+That code would have to precede the first instrumentation_begin()
+anyway, so I thought it would be reasonable to piggyback on the
+existing annotation.
+
+>
+> Thanks,
+>
+>         tglx
+
+
+
+--=20
+Alexander Potapenko
+Software Engineer
+
+Google Germany GmbH
+Erika-Mann-Stra=C3=9Fe, 33
+80636 M=C3=BCnchen
+
+Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
+Registergericht und -nummer: Hamburg, HRB 86891
+Sitz der Gesellschaft: Hamburg
+
+Diese E-Mail ist vertraulich. Falls Sie diese f=C3=A4lschlicherweise
+erhalten haben sollten, leiten Sie diese bitte nicht an jemand anderes
+weiter, l=C3=B6schen Sie alle Kopien und Anh=C3=A4nge davon und lassen Sie =
+mich
+bitte wissen, dass die E-Mail an die falsche Person gesendet wurde.
+
+
+This e-mail is confidential. If you received this communication by
+mistake, please don't forward it to anyone else, please erase all
+copies and attachments, and please let me know that it has gone to the
+wrong person.
