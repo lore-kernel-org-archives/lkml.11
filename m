@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16DB1C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 595F9C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:44:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386354AbiEBQrZ (ORCPT
+        id S1386387AbiEBQrd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 12:47:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55824 "EHLO
+        Mon, 2 May 2022 12:47:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381744AbiEBQrX (ORCPT
+        with ESMTP id S1386347AbiEBQrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 2 May 2022 12:47:23 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EE9864F0;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ED43AE78;
         Mon,  2 May 2022 09:43:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=vJE7QliYsB7YM6ZsAruj4XA4/Kp3LRvjyux1A61AjZ4=; b=HGHq7yBHWru8vaQHTEuM05iajw
-        yDxa4tpj+h+F77jrYjIL858SHzkqxe6Hg8qkLpMrOmLEDgPJAD1imsls5NsAvckRy+RWgXMGLcuiF
-        qDT5NBMvKMoLImR+dmqewoE7YXv5TJiwSxnrMI6zoKVbTjtaWdOI5LhxFiIQfU+69h4Ru/K/J+dMd
-        rRQjqNZ8cYuys1dQtAZP4L38bwxB8hz3UgzVkuFiRyyh7JYMpqMZ9EkZfyCwao53Z0bg8JAM62CcR
-        /C6g4HPROhQOWA0J8Ja0VWp74oSr+8coZFCTActEEtv3VIGij2qwhjAb9bThWLCM9oBXPcJ2mEwm0
-        Nba2bgUw==;
+        bh=Wxo80Y3piPxU/ni1/aWITQ3M0ga5tlrrjhx+fd5z4n4=; b=RSnH+m2ZJrWxoENLMdMbKKdNVi
+        /nlG4JEyuf8Yg709juxCTNo1tEyt3XnX3jnQhiPyGK6ITSUgLX8df5zfLcMZYmN1PPvM2tX5mu7Ag
+        O6JMH9y14huViNU9qYmS3dhz/zmBFEn+xa4RFV7YOM8JShcVK/bQJePdPw2BxJrSt7t7yUCFMKgXR
+        MMzRxCP+haAW0Rul9fES6t3nbjiIkvc/8GStzfbrGkAnszQET4g6w/6oCd5jmWrpSGNAbjpskdfFs
+        YY+A/8O3d6FqZ9+OH8yDY1vZkNtBUXGd4AWoXhT/67jQtJpO48UEv+GLnLPPd/RwQ64yt2DMSnweL
+        XHxsB+GA==;
 Received: from [8.34.116.185] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nlZ96-001kfT-Fc; Mon, 02 May 2022 16:43:36 +0000
+        id 1nlZ92-001ke9-8B; Mon, 02 May 2022 16:43:32 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Russell King <linux@armlinux.org.uk>,
         Arnd Bergmann <arnd@kernel.org>
@@ -44,10 +44,11 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         Robin Murphy <robin.murphy@arm.com>,
         iommu@lists.linux-foundation.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 06/10] ARM/dma-mapping: use the generic versions of dma_to_phys/phys_to_dma by default
-Date:   Mon,  2 May 2022 09:43:26 -0700
-Message-Id: <20220502164330.229685-7-hch@lst.de>
+        linux-usb@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Christoph Hellwig <hch@infradead.org>
+Subject: [PATCH 01/10] ARM: sa1100/assabet: move dmabounce hack to ohci driver
+Date:   Mon,  2 May 2022 09:43:21 -0700
+Message-Id: <20220502164330.229685-2-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220502164330.229685-1-hch@lst.de>
 References: <20220502164330.229685-1-hch@lst.de>
@@ -58,183 +59,247 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Only the footbridge platforms provide their own DMA address translation
-helpers, so switch to the generic version for all other platforms, and
-consolidate the footbridge implementation to remove two levels of
-indirection.
+From: Arnd Bergmann <arnd@arndb.de>
 
+The sa1111 platform is one of the two remaining users of the old Arm
+specific "dmabounce" code, which is an earlier implementation of the
+generic swiotlb.
+
+Linus Walleij submitted a patch that removes dmabounce support from
+the ixp4xx, and I had a look at the other user, which is the sa1111
+companion chip.
+
+Looking at how dmabounce is used, I could narrow it down to one driver
+one three machines:
+
+ - dmabounce is only initialized on assabet/neponset, jornada720 and
+   badge4, which are the platforms that have an sa1111 and support
+   DMA on it.
+
+ - All three of these suffer from "erratum #7" that requires only
+   doing DMA to half the memory sections based on one of the address
+   lines, in addition, the neponset also can't DMA to the RAM that
+   is connected to sa1111 itself.
+
+ - the pxa lubbock machine also has sa1111, but does not support DMA
+   on it and does not set dmabounce.
+
+ - only the OHCI and audio devices on sa1111 support DMA, but as
+   there is no audio driver for this hardware, only OHCI remains.
+
+In the OHCI code, I noticed that two other platforms already have
+a local bounce buffer support in the form of the "local_mem"
+allocator. Specifically, TMIO and SM501 use this on a few other ARM
+boards with 16KB or 128KB of local SRAM that can be accessed from the
+OHCI and from the CPU.
+
+While this is not the same problem as on sa1111, I could not find a
+reason why we can't re-use the existing implementation but replace the
+physical SRAM address mapping with a locally allocated DMA buffer.
+
+There are two main downsides:
+
+ - rather than using a dynamically sized pool, this buffer needs
+   to be allocated at probe time using a fixed size. Without
+   having any idea of what it should be, I picked a size of
+   64KB, which is between what the other two OHCI front-ends use
+   in their SRAM. If anyone has a better idea what that size
+   is reasonable, this can be trivially changed.
+
+ - Previously, only USB transfers to unaddressable memory needed
+   to go through the bounce buffer, now all of them do, which may
+   impact runtime performance for USB endpoints that do a lot of
+   transfers.
+
+On the upside, the local_mem support uses write-combining buffers,
+which should be a bit faster for transfers to the device compared to
+normal uncached coherent memory as used in dmabounce.
+
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Christoph Hellwig <hch@infradead.org>
+Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Cc: linux-usb@vger.kernel.org
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
 Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
 ---
- arch/arm/Kconfig                              |  1 -
- arch/arm/include/asm/dma-direct.h             | 41 +------------------
- arch/arm/include/asm/memory.h                 |  2 -
- arch/arm/mach-footbridge/Kconfig              |  1 +
- arch/arm/mach-footbridge/common.c             | 19 +++++----
- .../mach-footbridge/include/mach/dma-direct.h |  8 ++++
- .../arm/mach-footbridge/include/mach/memory.h |  4 --
- 7 files changed, 21 insertions(+), 55 deletions(-)
- create mode 100644 arch/arm/mach-footbridge/include/mach/dma-direct.h
+ arch/arm/common/Kconfig        |  2 +-
+ arch/arm/common/sa1111.c       | 64 ----------------------------------
+ drivers/usb/core/hcd.c         | 17 +++++++--
+ drivers/usb/host/ohci-sa1111.c | 25 +++++++++++++
+ 4 files changed, 40 insertions(+), 68 deletions(-)
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 2e8091e2d8a86..ac2e3e4957d66 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -15,7 +15,6 @@ config ARM
- 	select ARCH_HAS_MEMBARRIER_SYNC_CORE
- 	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
- 	select ARCH_HAS_PTE_SPECIAL if ARM_LPAE
--	select ARCH_HAS_PHYS_TO_DMA
- 	select ARCH_HAS_SETUP_DMA_OPS
- 	select ARCH_HAS_SET_MEMORY
- 	select ARCH_HAS_STRICT_KERNEL_RWX if MMU && !XIP_KERNEL
-diff --git a/arch/arm/include/asm/dma-direct.h b/arch/arm/include/asm/dma-direct.h
-index 6fd52713b5d12..4f7bcde03abb5 100644
---- a/arch/arm/include/asm/dma-direct.h
-+++ b/arch/arm/include/asm/dma-direct.h
-@@ -1,40 +1 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef ASM_ARM_DMA_DIRECT_H
--#define ASM_ARM_DMA_DIRECT_H 1
--
--#include <asm/memory.h>
--
+diff --git a/arch/arm/common/Kconfig b/arch/arm/common/Kconfig
+index c8e198631d418..bc158fd227e12 100644
+--- a/arch/arm/common/Kconfig
++++ b/arch/arm/common/Kconfig
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+ config SA1111
+ 	bool
+-	select DMABOUNCE if !ARCH_PXA
++	select ZONE_DMA if ARCH_SA1100
+ 
+ config DMABOUNCE
+ 	bool
+diff --git a/arch/arm/common/sa1111.c b/arch/arm/common/sa1111.c
+index 5367f03beb468..eaf2b527b0673 100644
+--- a/arch/arm/common/sa1111.c
++++ b/arch/arm/common/sa1111.c
+@@ -1386,70 +1386,9 @@ void sa1111_driver_unregister(struct sa1111_driver *driver)
+ }
+ EXPORT_SYMBOL(sa1111_driver_unregister);
+ 
+-#ifdef CONFIG_DMABOUNCE
 -/*
-- * dma_to_pfn/pfn_to_dma are architecture private
-- * functions used internally by the DMA-mapping API to provide DMA
-- * addresses. They must not be used by drivers.
+- * According to the "Intel StrongARM SA-1111 Microprocessor Companion
+- * Chip Specification Update" (June 2000), erratum #7, there is a
+- * significant bug in the SA1111 SDRAM shared memory controller.  If
+- * an access to a region of memory above 1MB relative to the bank base,
+- * it is important that address bit 10 _NOT_ be asserted. Depending
+- * on the configuration of the RAM, bit 10 may correspond to one
+- * of several different (processor-relative) address bits.
+- *
+- * This routine only identifies whether or not a given DMA address
+- * is susceptible to the bug.
+- *
+- * This should only get called for sa1111_device types due to the
+- * way we configure our device dma_masks.
 - */
--static inline dma_addr_t pfn_to_dma(struct device *dev, unsigned long pfn)
+-static int sa1111_needs_bounce(struct device *dev, dma_addr_t addr, size_t size)
 -{
--	if (dev && dev->dma_range_map)
--		pfn = PFN_DOWN(translate_phys_to_dma(dev, PFN_PHYS(pfn)));
--	return (dma_addr_t)__pfn_to_bus(pfn);
+-	/*
+-	 * Section 4.6 of the "Intel StrongARM SA-1111 Development Module
+-	 * User's Guide" mentions that jumpers R51 and R52 control the
+-	 * target of SA-1111 DMA (either SDRAM bank 0 on Assabet, or
+-	 * SDRAM bank 1 on Neponset). The default configuration selects
+-	 * Assabet, so any address in bank 1 is necessarily invalid.
+-	 */
+-	return (machine_is_assabet() || machine_is_pfs168()) &&
+-		(addr >= 0xc8000000 || (addr + size) >= 0xc8000000);
 -}
 -
--static inline unsigned long dma_to_pfn(struct device *dev, dma_addr_t addr)
+-static int sa1111_notifier_call(struct notifier_block *n, unsigned long action,
+-	void *data)
 -{
--	unsigned long pfn = __bus_to_pfn(addr);
+-	struct sa1111_dev *dev = to_sa1111_device(data);
 -
--	if (dev && dev->dma_range_map)
--		pfn = PFN_DOWN(translate_dma_to_phys(dev, PFN_PHYS(pfn)));
--	return pfn;
+-	switch (action) {
+-	case BUS_NOTIFY_ADD_DEVICE:
+-		if (dev->dev.dma_mask && dev->dma_mask < 0xffffffffUL) {
+-			int ret = dmabounce_register_dev(&dev->dev, 1024, 4096,
+-					sa1111_needs_bounce);
+-			if (ret)
+-				dev_err(&dev->dev, "failed to register with dmabounce: %d\n", ret);
+-		}
+-		break;
+-
+-	case BUS_NOTIFY_DEL_DEVICE:
+-		if (dev->dev.dma_mask && dev->dma_mask < 0xffffffffUL)
+-			dmabounce_unregister_dev(&dev->dev);
+-		break;
+-	}
+-	return NOTIFY_OK;
 -}
 -
--static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
--{
--	unsigned int offset = paddr & ~PAGE_MASK;
--	return pfn_to_dma(dev, __phys_to_pfn(paddr)) + offset;
--}
+-static struct notifier_block sa1111_bus_notifier = {
+-	.notifier_call = sa1111_notifier_call,
+-};
+-#endif
 -
--static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dev_addr)
--{
--	unsigned int offset = dev_addr & ~PAGE_MASK;
--	return __pfn_to_phys(dma_to_pfn(dev, dev_addr)) + offset;
--}
--
--#endif /* ASM_ARM_DMA_DIRECT_H */
-+#include <mach/dma-direct.h>
-diff --git a/arch/arm/include/asm/memory.h b/arch/arm/include/asm/memory.h
-index f673e13e0f942..a55a9038abc89 100644
---- a/arch/arm/include/asm/memory.h
-+++ b/arch/arm/include/asm/memory.h
-@@ -378,8 +378,6 @@ static inline unsigned long __virt_to_idmap(unsigned long x)
- #ifndef __virt_to_bus
- #define __virt_to_bus	__virt_to_phys
- #define __bus_to_virt	__phys_to_virt
--#define __pfn_to_bus(x)	__pfn_to_phys(x)
--#define __bus_to_pfn(x)	__phys_to_pfn(x)
- #endif
+ static int __init sa1111_init(void)
+ {
+ 	int ret = bus_register(&sa1111_bus_type);
+-#ifdef CONFIG_DMABOUNCE
+-	if (ret == 0)
+-		bus_register_notifier(&sa1111_bus_type, &sa1111_bus_notifier);
+-#endif
+ 	if (ret == 0)
+ 		platform_driver_register(&sa1111_device_driver);
+ 	return ret;
+@@ -1458,9 +1397,6 @@ static int __init sa1111_init(void)
+ static void __exit sa1111_exit(void)
+ {
+ 	platform_driver_unregister(&sa1111_device_driver);
+-#ifdef CONFIG_DMABOUNCE
+-	bus_unregister_notifier(&sa1111_bus_type, &sa1111_bus_notifier);
+-#endif
+ 	bus_unregister(&sa1111_bus_type);
+ }
+ 
+diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
+index d9712c2602afe..3893be6303522 100644
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -1251,7 +1251,8 @@ void usb_hcd_unlink_urb_from_ep(struct usb_hcd *hcd, struct urb *urb)
+ EXPORT_SYMBOL_GPL(usb_hcd_unlink_urb_from_ep);
  
  /*
-diff --git a/arch/arm/mach-footbridge/Kconfig b/arch/arm/mach-footbridge/Kconfig
-index 728aff93fba9d..b5bbdcf2e4896 100644
---- a/arch/arm/mach-footbridge/Kconfig
-+++ b/arch/arm/mach-footbridge/Kconfig
-@@ -60,6 +60,7 @@ endmenu
+- * Some usb host controllers can only perform dma using a small SRAM area.
++ * Some usb host controllers can only perform dma using a small SRAM area,
++ * or have restrictions on addressable DRAM.
+  * The usb core itself is however optimized for host controllers that can dma
+  * using regular system memory - like pci devices doing bus mastering.
+  *
+@@ -3100,8 +3101,18 @@ int usb_hcd_setup_local_mem(struct usb_hcd *hcd, phys_addr_t phys_addr,
+ 	if (IS_ERR(hcd->localmem_pool))
+ 		return PTR_ERR(hcd->localmem_pool);
  
- # Footbridge support
- config FOOTBRIDGE
-+	select ARCH_HAS_PHYS_TO_DMA
- 	bool
- 
- # Footbridge in host mode
-diff --git a/arch/arm/mach-footbridge/common.c b/arch/arm/mach-footbridge/common.c
-index 322495df271d5..5020eb96b025d 100644
---- a/arch/arm/mach-footbridge/common.c
-+++ b/arch/arm/mach-footbridge/common.c
-@@ -12,6 +12,7 @@
- #include <linux/init.h>
- #include <linux/io.h>
- #include <linux/spinlock.h>
-+#include <linux/dma-direct.h>
- #include <video/vga.h>
- 
- #include <asm/page.h>
-@@ -335,17 +336,19 @@ unsigned long __bus_to_virt(unsigned long res)
- 	return res;
- }
- EXPORT_SYMBOL(__bus_to_virt);
--
--unsigned long __pfn_to_bus(unsigned long pfn)
-+#else
-+static inline unsigned long fb_bus_sdram_offset(void)
- {
--	return __pfn_to_phys(pfn) + (fb_bus_sdram_offset() - PHYS_OFFSET);
-+	return BUS_OFFSET;
- }
--EXPORT_SYMBOL(__pfn_to_bus);
-+#endif /* CONFIG_FOOTBRIDGE_ADDIN */
- 
--unsigned long __bus_to_pfn(unsigned long bus)
-+dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
--	return __phys_to_pfn(bus - (fb_bus_sdram_offset() - PHYS_OFFSET));
-+	return paddr + (fb_bus_sdram_offset() - PHYS_OFFSET);
- }
--EXPORT_SYMBOL(__bus_to_pfn);
- 
--#endif
-+phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dev_addr)
-+{
-+	return dev_addr - (fb_bus_sdram_offset() - PHYS_OFFSET);
-+}
-diff --git a/arch/arm/mach-footbridge/include/mach/dma-direct.h b/arch/arm/mach-footbridge/include/mach/dma-direct.h
-new file mode 100644
-index 0000000000000..01f9e8367c009
---- /dev/null
-+++ b/arch/arm/mach-footbridge/include/mach/dma-direct.h
-@@ -0,0 +1,8 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef MACH_FOOTBRIDGE_DMA_DIRECT_H
-+#define MACH_FOOTBRIDGE_DMA_DIRECT_H 1
+-	local_mem = devm_memremap(hcd->self.sysdev, phys_addr,
+-				  size, MEMREMAP_WC);
++	/*
++	 * if a physical SRAM address was passed, map it, otherwise
++	 * allocate system memory as a buffer.
++	 */
++	if (phys_addr)
++		local_mem = devm_memremap(hcd->self.sysdev, phys_addr,
++					  size, MEMREMAP_WC);
++	else
++		local_mem = dmam_alloc_attrs(hcd->self.sysdev, size, &dma,
++					     GFP_KERNEL,
++					     DMA_ATTR_WRITE_COMBINE);
 +
-+dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr);
-+phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dev_addr);
+ 	if (IS_ERR(local_mem))
+ 		return PTR_ERR(local_mem);
+ 
+diff --git a/drivers/usb/host/ohci-sa1111.c b/drivers/usb/host/ohci-sa1111.c
+index feca826d3f6a8..75c2b28b33794 100644
+--- a/drivers/usb/host/ohci-sa1111.c
++++ b/drivers/usb/host/ohci-sa1111.c
+@@ -203,6 +203,31 @@ static int ohci_hcd_sa1111_probe(struct sa1111_dev *dev)
+ 		goto err1;
+ 	}
+ 
++	/*
++	 * According to the "Intel StrongARM SA-1111 Microprocessor Companion
++	 * Chip Specification Update" (June 2000), erratum #7, there is a
++	 * significant bug in the SA1111 SDRAM shared memory controller.  If
++	 * an access to a region of memory above 1MB relative to the bank base,
++	 * it is important that address bit 10 _NOT_ be asserted. Depending
++	 * on the configuration of the RAM, bit 10 may correspond to one
++	 * of several different (processor-relative) address bits.
++	 *
++	 * Section 4.6 of the "Intel StrongARM SA-1111 Development Module
++	 * User's Guide" mentions that jumpers R51 and R52 control the
++	 * target of SA-1111 DMA (either SDRAM bank 0 on Assabet, or
++	 * SDRAM bank 1 on Neponset). The default configuration selects
++	 * Assabet, so any address in bank 1 is necessarily invalid.
++	 *
++	 * As a workaround, use a bounce buffer in addressable memory
++	 * as local_mem, relying on ZONE_DMA to provide an area that
++	 * fits within the above constraints.
++	 *
++	 * SZ_64K is an estimate for what size this might need.
++	 */
++	ret = usb_hcd_setup_local_mem(hcd, 0, 0, SZ_64K);
++	if (ret)
++		goto err1;
 +
-+#endif /* MACH_FOOTBRIDGE_DMA_DIRECT_H */
-diff --git a/arch/arm/mach-footbridge/include/mach/memory.h b/arch/arm/mach-footbridge/include/mach/memory.h
-index 46fd4a8872b9a..3a5d2638c18f8 100644
---- a/arch/arm/mach-footbridge/include/mach/memory.h
-+++ b/arch/arm/mach-footbridge/include/mach/memory.h
-@@ -26,8 +26,6 @@
- #ifndef __ASSEMBLY__
- extern unsigned long __virt_to_bus(unsigned long);
- extern unsigned long __bus_to_virt(unsigned long);
--extern unsigned long __pfn_to_bus(unsigned long);
--extern unsigned long __bus_to_pfn(unsigned long);
- #endif
- #define __virt_to_bus	__virt_to_bus
- #define __bus_to_virt	__bus_to_virt
-@@ -42,8 +40,6 @@ extern unsigned long __bus_to_pfn(unsigned long);
- #define BUS_OFFSET		0xe0000000
- #define __virt_to_bus(x)	((x) + (BUS_OFFSET - PAGE_OFFSET))
- #define __bus_to_virt(x)	((x) - (BUS_OFFSET - PAGE_OFFSET))
--#define __pfn_to_bus(x)		(__pfn_to_phys(x) + (BUS_OFFSET - PHYS_OFFSET))
--#define __bus_to_pfn(x)		__phys_to_pfn((x) - (BUS_OFFSET - PHYS_OFFSET))
- 
- #else
- 
+ 	if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len, hcd_name)) {
+ 		dev_dbg(&dev->dev, "request_mem_region failed\n");
+ 		ret = -EBUSY;
 -- 
 2.30.2
 
