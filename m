@@ -2,113 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 227E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 09:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75583C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 09:38:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384275AbiEBJlO (ORCPT
+        id S1384276AbiEBJlc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 05:41:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41714 "EHLO
+        Mon, 2 May 2022 05:41:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384251AbiEBJlJ (ORCPT
+        with ESMTP id S1384260AbiEBJlR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 05:41:09 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9CCBCE09B
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 02:37:40 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 274661FB;
-        Mon,  2 May 2022 02:37:40 -0700 (PDT)
-Received: from [10.163.32.39] (unknown [10.163.32.39])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E9D673F774;
-        Mon,  2 May 2022 02:37:33 -0700 (PDT)
-Message-ID: <204421f9-a0d9-35bb-ea86-ea4cea3b4f83@arm.com>
-Date:   Mon, 2 May 2022 15:08:30 +0530
+        Mon, 2 May 2022 05:41:17 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4C515A22;
+        Mon,  2 May 2022 02:37:48 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651484267;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bQykcMLoo3whmre75eemO2BA9Si3o9mNKcRIijtvUfk=;
+        b=XBdjfKe1Dkrz1xS4lgbxg4+Xdi9FHfpQWtUHVGsy+kluZqlqT5HZ34j07EpaeTp6Nuoz4A
+        7JN3rh8M87SxPSIMTNlEsEBEB0sFMp893gzxSswdwVWAO4EdASuIxNMtYSiAqEIllm5MmK
+        gxJMraMEpJ+N08aJagDo6zZB0xfsE6yTxAyR2yvbp/iMrGay8rvkO8zo5IEctDWTSgwFVn
+        0XNXVRTetdkyle6WknpSNIXALp1DO7LvKWKHT+oRLzQDtPNLWyqWKqlr2POgteln6/o0fU
+        F7/lLdfFi2fY442kwsD0EkowbQr7KaYER/bqp/R/Qk6Oa2kCbKweNpOTF30keg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651484267;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bQykcMLoo3whmre75eemO2BA9Si3o9mNKcRIijtvUfk=;
+        b=LY1K/DPFg7Mos6VSpKHVS2booc8Iw7choSEnDW2iiCcxWF2qLPVcST9n1fhHDocoNcuJZw
+        XgOMvnVhGCvCepBg==
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        arnd@arndb.de, Theodore Ts'o <tytso@mit.edu>
+Subject: Re: [PATCH v6 06/17] timekeeping: add raw clock fallback for
+ random_get_entropy()
+In-Reply-To: <YmageFiSs0h1jzS7@zx2c4.com>
+References: <20220423212623.1957011-1-Jason@zx2c4.com>
+ <20220423212623.1957011-7-Jason@zx2c4.com> <87y1zt1gqw.ffs@tglx>
+ <YmageFiSs0h1jzS7@zx2c4.com>
+Date:   Mon, 02 May 2022 11:37:46 +0200
+Message-ID: <87y1zkmg0l.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/5] mm: ioremap: Use more sensibly name in
- ioremap_prot()
-Content-Language: en-US
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>, catalin.marinas@arm.com,
-        will@kernel.org, akpm@linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, hch@infradead.org, arnd@arndb.de
-References: <20220429103225.75121-1-wangkefeng.wang@huawei.com>
- <20220429103225.75121-2-wangkefeng.wang@huawei.com>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-In-Reply-To: <20220429103225.75121-2-wangkefeng.wang@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Apr 25 2022 at 15:22, Jason A. Donenfeld wrote:
+> On Mon, Apr 25, 2022 at 02:37:11PM +0200, Thomas Gleixner wrote:
+>> On Sat, Apr 23 2022 at 23:26, Jason A. Donenfeld wrote:
+>> >
+>> > Cc: Thomas Gleixner <tglx@linutronix.de>
+>> > Cc: Arnd Bergmann <arnd@arndb.de>
+>> > Cc: Theodore Ts'o <tytso@mit.edu>
+>> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+>> 
+>> Not that I care much, but in general taking over authorship w/o
+>> attribution via Suggested-by or such is frowned upon.
+>
+> Sorry about that. Usually I'm pretty good about adding those. I guess
+> something must have gotten lost this time through, as the v1 of this
+> started out using sched_clock() (Arnd's suggestion) and then moved to
+> using the raw ktime clock after your suggestion, and I missed the
+> Suggested-by. I'll add that. Meanwhile, do you want to Ack this patch?
+> Do the technical aspects look okay to you?
 
+Yes. Please fix the subject line:
 
-On 4/29/22 16:02, Kefeng Wang wrote:
-> Use more meaningful and sensibly naming phys_addr
-> instead addr in ioremap_prot().
-> 
-> Suggested-by: Andrew Morton <akpm@linux-foundation.org>
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+     timekeeping: Add raw clock fallback for random_get_entropy()
 
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+and stick the Cc's below the SOB, so it conforms with the TIP tree
+rules. Other than that:
 
-> ---
->  include/asm-generic/io.h |  2 +-
->  mm/ioremap.c             | 12 ++++++------
->  2 files changed, 7 insertions(+), 7 deletions(-)
-> 
-> diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
-> index 7ce93aaf69f8..e6ffa2519f08 100644
-> --- a/include/asm-generic/io.h
-> +++ b/include/asm-generic/io.h
-> @@ -964,7 +964,7 @@ static inline void iounmap(volatile void __iomem *addr)
->  #elif defined(CONFIG_GENERIC_IOREMAP)
->  #include <linux/pgtable.h>
->  
-> -void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot);
-> +void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long prot);
->  void iounmap(volatile void __iomem *addr);
->  
->  static inline void __iomem *ioremap(phys_addr_t addr, size_t size)
-> diff --git a/mm/ioremap.c b/mm/ioremap.c
-> index 5fe598ecd9b7..1f9597fbcc07 100644
-> --- a/mm/ioremap.c
-> +++ b/mm/ioremap.c
-> @@ -11,20 +11,20 @@
->  #include <linux/io.h>
->  #include <linux/export.h>
->  
-> -void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot)
-> +void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long prot)
->  {
->  	unsigned long offset, vaddr;
->  	phys_addr_t last_addr;
->  	struct vm_struct *area;
->  
->  	/* Disallow wrap-around or zero size */
-> -	last_addr = addr + size - 1;
-> -	if (!size || last_addr < addr)
-> +	last_addr = phys_addr + size - 1;
-> +	if (!size || last_addr < phys_addr)
->  		return NULL;
->  
->  	/* Page-align mappings */
-> -	offset = addr & (~PAGE_MASK);
-> -	addr -= offset;
-> +	offset = phys_addr & (~PAGE_MASK);
-> +	phys_addr -= offset;
->  	size = PAGE_ALIGN(size + offset);
->  
->  	area = get_vm_area_caller(size, VM_IOREMAP,
-> @@ -33,7 +33,7 @@ void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot)
->  		return NULL;
->  	vaddr = (unsigned long)area->addr;
->  
-> -	if (ioremap_page_range(vaddr, vaddr + size, addr, __pgprot(prot))) {
-> +	if (ioremap_page_range(vaddr, vaddr + size, phys_addr, __pgprot(prot))) {
->  		free_vm_area(area);
->  		return NULL;
->  	}
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
