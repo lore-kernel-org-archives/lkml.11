@@ -2,137 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF741C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 09:14:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3747FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 09:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384105AbiEBJSC (ORCPT
+        id S1384130AbiEBJSg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 05:18:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35780 "EHLO
+        Mon, 2 May 2022 05:18:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234028AbiEBJSB (ORCPT
+        with ESMTP id S234028AbiEBJSa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 05:18:01 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB0B369F3;
-        Mon,  2 May 2022 02:14:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651482873; x=1683018873;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mrdpF69sgCUgjY0iIsOoVsoDaXbqkIBauMYAKitutdM=;
-  b=JNJYTZG8707V5b7Jy7pWVWbh+VGMqUgPve7/Su6NUyU00zEZxvlRxjH8
-   jbd12ck9w0WDdGtLkePR1M1Ly/Kkrwdhvq/IQgXzFcpTXnqmjHKvVjc5/
-   WNelm2BWICOXw1jsbUk2Z+xWfiha1bOruXmjv8oAbC4JBzNRY2Jw10whV
-   LJnLSX2DukS0ADPEmg8R1n4vx1qQOxNEmd69ewvPzlKHNhdEnZAyw6c3k
-   Yfm9oZz6OlX+EzJ2QGiXiAKIYkGh6l9m5qGkWvmU27c7TY6PH/HTyUYU+
-   KkpUHgJOOJlJWTJ9cQcQrZLX+/cFqvfu2On+I0eTupldqJ2J3r9kIKcNl
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10334"; a="247714633"
-X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
-   d="scan'208";a="247714633"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 02:14:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
-   d="scan'208";a="886465610"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 02 May 2022 02:14:29 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nlS8T-0009RP-5Y;
-        Mon, 02 May 2022 09:14:29 +0000
-Date:   Mon, 2 May 2022 17:13:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>, agross@kernel.org,
-        bjorn.andersson@linaro.org, joro@8bytes.org, will@kernel.org,
-        sricharan@codeaurora.org
-Cc:     kbuild-all@lists.01.org, linux-arm-msm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v2] iommu: fix an incorrect NULL check on list iterator
-Message-ID: <202205021754.GETHfNnS-lkp@intel.com>
-References: <20220501131259.11529-1-xiam0nd.tong@gmail.com>
+        Mon, 2 May 2022 05:18:30 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 50E8036B50;
+        Mon,  2 May 2022 02:15:01 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 776CE92009C; Mon,  2 May 2022 11:15:00 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 712B392009B;
+        Mon,  2 May 2022 10:15:00 +0100 (BST)
+Date:   Mon, 2 May 2022 10:15:00 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Subject: Re: [RFC v2 34/39] tty: serial: add HAS_IOPORT dependencies
+In-Reply-To: <20220429135108.2781579-63-schnelle@linux.ibm.com>
+Message-ID: <alpine.DEB.2.21.2205020341140.64520@angie.orcam.me.uk>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com> <20220429135108.2781579-63-schnelle@linux.ibm.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220501131259.11529-1-xiam0nd.tong@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Xiaomeng,
+On Fri, 29 Apr 2022, Niklas Schnelle wrote:
 
-Thank you for the patch! Yet something to improve:
+> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
+> not being declared. We thus need to add HAS_IOPORT as dependency for
+> those drivers using them.
+[...]
+> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+> index cd93ea6eed65..e216bf745e78 100644
+> --- a/drivers/tty/serial/8250/Kconfig
+> +++ b/drivers/tty/serial/8250/Kconfig
+> @@ -6,7 +6,7 @@
+>  
+>  config SERIAL_8250
+>  	tristate "8250/16550 and compatible serial support"
+> -	depends on !S390
+> +	depends on HAS_IOPORT
+>  	select SERIAL_CORE
+>  	select SERIAL_MCTRL_GPIO if GPIOLIB
+>  	help
 
-[auto build test ERROR on joro-iommu/next]
-[also build test ERROR on v5.18-rc5 next-20220429]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+ Similarly here some 8250-compatible platform or PCI/e serial port devices 
+use MMIO, e.g.:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Xiaomeng-Tong/iommu-fix-an-incorrect-NULL-check-on-list-iterator/20220501-211400
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
-config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220502/202205021754.GETHfNnS-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/99e334beef5d5be25ed19d3142d16000f0a1986d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Xiaomeng-Tong/iommu-fix-an-incorrect-NULL-check-on-list-iterator/20220501-211400
-        git checkout 99e334beef5d5be25ed19d3142d16000f0a1986d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/
+serial8250.0: ttyS2 at MMIO 0x1f000900 (irq = 20, base_baud = 230400) is a 16550A
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+or:
 
-All errors (new ones prefixed by >>):
+0001:01:00.0: ttyS0 at MMIO 0x600c080401000 (irq = 40, base_baud = 15625000) is a 16C950/954
 
-   drivers/iommu/msm_iommu.c: In function 'qcom_iommu_of_xlate':
->> drivers/iommu/msm_iommu.c:629:17: error: 'ret' undeclared (first use in this function); did you mean 'net'?
-     629 |                 ret = -ENODEV;
-         |                 ^~~
-         |                 net
-   drivers/iommu/msm_iommu.c:629:17: note: each undeclared identifier is reported only once for each function it appears in
-   drivers/iommu/msm_iommu.c:638:1: error: control reaches end of non-void function [-Werror=return-type]
-     638 | }
-         | ^
-   cc1: some warnings being treated as errors
+so this has to be sorted out within the driver rather than by disabling it 
+altogether.  Possibly with a suitable conditional wired to HAS_IOPORT in 
+`set_io_from_upio' in drivers/tty/serial/8250/8250_port.c.
 
-
-vim +629 drivers/iommu/msm_iommu.c
-
-f78ebca8ff3d61 Sricharan R   2016-06-13  614  
-f78ebca8ff3d61 Sricharan R   2016-06-13  615  static int qcom_iommu_of_xlate(struct device *dev,
-f78ebca8ff3d61 Sricharan R   2016-06-13  616  			       struct of_phandle_args *spec)
-f78ebca8ff3d61 Sricharan R   2016-06-13  617  {
-99e334beef5d5b Xiaomeng Tong 2022-05-01  618  	struct msm_iommu_dev *iommu = NULL, *iter;
-f78ebca8ff3d61 Sricharan R   2016-06-13  619  	unsigned long flags;
-f78ebca8ff3d61 Sricharan R   2016-06-13  620  
-f78ebca8ff3d61 Sricharan R   2016-06-13  621  	spin_lock_irqsave(&msm_iommu_lock, flags);
-99e334beef5d5b Xiaomeng Tong 2022-05-01  622  	list_for_each_entry(iter, &qcom_iommu_devices, dev_node)
-99e334beef5d5b Xiaomeng Tong 2022-05-01  623  		if (iter->dev->of_node == spec->np) {
-99e334beef5d5b Xiaomeng Tong 2022-05-01  624  			iommu = iter;
-f78ebca8ff3d61 Sricharan R   2016-06-13  625  			break;
-99e334beef5d5b Xiaomeng Tong 2022-05-01  626  		}
-f78ebca8ff3d61 Sricharan R   2016-06-13  627  
-99e334beef5d5b Xiaomeng Tong 2022-05-01  628  	if (!iommu) {
-f78ebca8ff3d61 Sricharan R   2016-06-13 @629  		ret = -ENODEV;
-f78ebca8ff3d61 Sricharan R   2016-06-13  630  		goto fail;
-f78ebca8ff3d61 Sricharan R   2016-06-13  631  	}
-f78ebca8ff3d61 Sricharan R   2016-06-13  632  
-bb5bdc5ab7f133 Xiaoke Wang   2022-04-28  633  	ret = insert_iommu_master(dev, &iommu, spec);
-f78ebca8ff3d61 Sricharan R   2016-06-13  634  fail:
-f78ebca8ff3d61 Sricharan R   2016-06-13  635  	spin_unlock_irqrestore(&msm_iommu_lock, flags);
-f78ebca8ff3d61 Sricharan R   2016-06-13  636  
-f78ebca8ff3d61 Sricharan R   2016-06-13  637  	return ret;
-f78ebca8ff3d61 Sricharan R   2016-06-13  638  }
-f78ebca8ff3d61 Sricharan R   2016-06-13  639  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+  Maciej
