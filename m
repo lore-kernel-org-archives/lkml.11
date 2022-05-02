@@ -2,94 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A05FAC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80925C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385739AbiEBPYc (ORCPT
+        id S1385730AbiEBPYa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 11:24:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56212 "EHLO
+        Mon, 2 May 2022 11:24:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385751AbiEBPYA (ORCPT
+        with ESMTP id S1385769AbiEBPYC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 11:24:00 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DEEBA1AF
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:20:28 -0700 (PDT)
+        Mon, 2 May 2022 11:24:02 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A6955B3
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:20:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651504830; x=1683040830;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=3eV2vVXH7WHHzEX7UlnYBUTcCZN92RvrzzPd/WWwpzQ=;
-  b=UxnBSN9QyG/5RrrRGvMOO76SDBEOJBprRzOqswsjTr9UXBFQmmrepSPl
-   DeaKUF7SqT0iStblxnkwyFFNsEtDs8h7cGsCLl3kqF4DwQra+uKrQtFQB
-   PqD/7gK7j8XSqOH5PpxpVe4XHgkzUKqwK7jJ+QPWbs7975qjZlDkkp1c3
-   cCUvVHrBNiolTLxD3O0uOYvgJh2VbKdhAAmsdTLvpPxe8Ate4AXVPvl3m
-   FWGd3y3nDRhx1Gv+5Md0luynz5Dv4XnIG7g9IIag6ZoQ9cDoJfL36cgBo
-   y4OqHjIAJAEgT+vOEi4Vkdhw6OwvQFEePHeDjha138Q2bmwkw7QtKAo/0
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="330227449"
+  t=1651504833; x=1683040833;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+skAkhDg06hvLMrJWFmLdWZ0pxA6nwrAmG1HffehxzM=;
+  b=TxaG3NhwKkzJ6Go/i53Q/OIe0UpvoY8iNRT0b3oRVE1xsZR8Sn5TxqKV
+   rlfO+61rs9dtyQAhOBy+noP7i4kdMRZA4RUEAr1P/0Nvr1WIPgl3nRIB/
+   DJh1pOdf1k6F3FxovI5OnkELqlul25s29GOp+yo16+xM7wT4rGiMfLbsZ
+   w8JG7u2v7cmvGAJnGSCCrH2lnLNwrbwoZmXQifURe8YwOPq5oBETFk36Z
+   AC+ZlHOYKK2RShuXVMrLpcPEniCR6iAkeBYxtZ95d7UvqtgclsPaI6GU2
+   MtKDBUpdOf8n5HddgRHs3ZngNA9EO0bnA0jbiKvUUOBLMpxxPlymOGgTG
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="247146167"
 X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
-   d="scan'208";a="330227449"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 08:20:28 -0700
+   d="scan'208";a="247146167"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 08:20:33 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
-   d="scan'208";a="663565365"
-Received: from gsteinke-mobl.amr.corp.intel.com (HELO [10.209.165.8]) ([10.209.165.8])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 08:20:26 -0700
-Message-ID: <c18e273b-f30c-da5c-581b-0cc4672f4481@intel.com>
-Date:   Mon, 2 May 2022 08:20:45 -0700
+   d="scan'208";a="516144562"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 02 May 2022 08:20:31 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nlXqg-0009dr-LS;
+        Mon, 02 May 2022 15:20:30 +0000
+Date:   Mon, 2 May 2022 23:19:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
+Subject: [asahilinux:bits/070-audio 15/20] sound/soc/codecs/tas2764.c:683:20:
+ warning: cast to smaller integer type 'enum tas2764_devid' from 'const void
+ *'
+Message-ID: <202205022313.dZqidUBY-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: RFC: Memory Tiering Kernel Interfaces
-Content-Language: en-US
-To:     Wei Xu <weixugc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Yang Shi <shy828301@gmail.com>, Linux MM <linux-mm@kvack.org>,
-        Greg Thelen <gthelen@google.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Michal Hocko <mhocko@kernel.org>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Feng Tang <feng.tang@intel.com>, Jonathan.Cameron@huawei.com
-References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> The current memory tiering interface needs to be improved to address
-> several important use cases:
+tree:   https://github.com/AsahiLinux/linux bits/070-audio
+head:   91b81123719d8b742da188f01ee3d897e0fac92b
+commit: 29756799398dae179e17370b2e5d2a397b683440 [15/20] ASoC: tas2764: Extend driver to SN012776
+config: arm64-randconfig-r005-20220501 (https://download.01.org/0day-ci/archive/20220502/202205022313.dZqidUBY-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 09325d36061e42b495d1f4c7e933e260eac260ed)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/AsahiLinux/linux/commit/29756799398dae179e17370b2e5d2a397b683440
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/070-audio
+        git checkout 29756799398dae179e17370b2e5d2a397b683440
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash sound/soc/codecs/
 
-FWIW, I totally agree.  We knew when that code went in that the default
-ordering was feeble.  There were patches to export the demotion order
-and allow it to be modified from userspace, but they were jettisoned at
-some point.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> Memory tiering hierarchy is rebuilt upon hot-add or hot-remove of a
-> memory node, but is NOT rebuilt upon hot-add or hot-remove of a CPU
-> node.
+All warnings (new ones prefixed by >>):
 
-Yeah, this would be a welcome improvement if we can get there.
+>> sound/soc/codecs/tas2764.c:683:20: warning: cast to smaller integer type 'enum tas2764_devid' from 'const void *' [-Wvoid-pointer-to-enum-cast]
+                   tas2764->devid = (enum tas2764_devid) of_id->data;
+                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   1 warning generated.
 
-> * /sys/devices/system/node/memory_tiers
-> 
->   Format: node list (one tier per line, in the tier order)
-> 
->   When read, list memory nodes by tiers.
 
-Nit: this would seems to violate the one-value-per-file sysfs guideline.
- It can be fixed by making tiers actual objects, which would have some
-other nice benefits too.
+vim +683 sound/soc/codecs/tas2764.c
+
+   666	
+   667	static int tas2764_i2c_probe(struct i2c_client *client,
+   668				const struct i2c_device_id *id)
+   669	{
+   670		struct tas2764_priv *tas2764;
+   671		const struct of_device_id *of_id = NULL;
+   672		int result;
+   673	
+   674		tas2764 = devm_kzalloc(&client->dev, sizeof(struct tas2764_priv),
+   675				       GFP_KERNEL);
+   676		if (!tas2764)
+   677			return -ENOMEM;
+   678	
+   679		if (client->dev.of_node)
+   680			of_id = of_match_device(tas2764_of_match, &client->dev);	
+   681	
+   682		if (of_id)
+ > 683			tas2764->devid = (enum tas2764_devid) of_id->data;
+   684		else
+   685			tas2764->devid = DEVID_TAS2764;
+   686	
+   687		tas2764->dev = &client->dev;
+   688		i2c_set_clientdata(client, tas2764);
+   689		dev_set_drvdata(&client->dev, tas2764);
+   690	
+   691		tas2764->regmap = devm_regmap_init_i2c(client, &tas2764_i2c_regmap);
+   692		if (IS_ERR(tas2764->regmap)) {
+   693			result = PTR_ERR(tas2764->regmap);
+   694			dev_err(&client->dev, "Failed to allocate register map: %d\n",
+   695						result);
+   696			return result;
+   697		}
+   698	
+   699		if (client->dev.of_node) {
+   700			result = tas2764_parse_dt(&client->dev, tas2764);
+   701			if (result) {
+   702				dev_err(tas2764->dev, "%s: Failed to parse devicetree\n",
+   703					__func__);
+   704				return result;
+   705			}
+   706		}
+   707	
+   708		return devm_snd_soc_register_component(tas2764->dev,
+   709						       &soc_component_driver_tas2764,
+   710						       tas2764_dai_driver,
+   711						       ARRAY_SIZE(tas2764_dai_driver));
+   712	}
+   713	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
