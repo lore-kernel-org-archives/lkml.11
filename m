@@ -2,169 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67751C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:13:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99292C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386600AbiEBRQ6 (ORCPT
+        id S1386538AbiEBRTY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 13:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56284 "EHLO
+        Mon, 2 May 2022 13:19:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386593AbiEBRQ4 (ORCPT
+        with ESMTP id S1386632AbiEBRSw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 13:16:56 -0400
+        Mon, 2 May 2022 13:18:52 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D3F94627B
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:13:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9A5012631
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:15:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651511606;
+        s=mimecast20190719; t=1651511719;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7vf4sT7dDfJ18mM5fdZ4gMEt5hbjvc3fPcu9zyp1RQg=;
-        b=YXiyMbisp992Bn58rpqbsBFwaIXoRYoPvX4m1fNM5B15meNnDnRYTUaxACoWNy1tI8hwc5
-        wtqiY3fgWNwEJvAnF8uEnoCiE8vttQkLWDYUsOSnRr6YyX7AalWTqioLdd5CAjJhf90rA2
-        H9fXLFdNWQ1t0d/dSxLFGfj0wFnkspI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=TNhZbt5WmLs9YdL2p377OAwSFXloJynsUEcZgN+34jM=;
+        b=EAiKspRfImrtcdZ4wf21vE6xt7sOY+yxJ3xGIV+upESPXrZzXDskjMOjTuKmei09lnIb7P
+        +3En3/EQeIiZjR4pRcUzqhto8e6FjjGSAqs8N+CLpr9PU2jpeG2EiB75h4iNP7Igm4jbdE
+        rJ4DCmroYMklNlhC/MOcN1c+40i/lVM=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-277-KvGehVF_Pf2MdwaAFs1QEA-1; Mon, 02 May 2022 13:13:23 -0400
-X-MC-Unique: KvGehVF_Pf2MdwaAFs1QEA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 67CA7801210;
-        Mon,  2 May 2022 17:13:22 +0000 (UTC)
-Received: from starship (unknown [10.40.192.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5216440E7F06;
-        Mon,  2 May 2022 17:13:20 +0000 (UTC)
-Message-ID: <24b74f5bd8810c7f79777ed6898baeaf47bfe3e3.camel@redhat.com>
-Subject: Re: [PATCH v2 08/12] KVM: SVM: Update AVIC settings when changing
- APIC mode
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Mon, 02 May 2022 20:13:19 +0300
-In-Reply-To: <9307c734-3473-0bdc-57be-c39e96bca4d8@amd.com>
-References: <20220412115822.14351-1-suravee.suthikulpanit@amd.com>
-         <20220412115822.14351-9-suravee.suthikulpanit@amd.com>
-         <abb93e2d73b7ada6cbabcd3ebbf7b38e4701ec57.camel@redhat.com>
-         <9307c734-3473-0bdc-57be-c39e96bca4d8@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+ us-mta-655-9_GDwuzAN8KLHBputbILYw-1; Mon, 02 May 2022 13:15:19 -0400
+X-MC-Unique: 9_GDwuzAN8KLHBputbILYw-1
+Received: by mail-wr1-f72.google.com with SMTP id g7-20020adfbc87000000b0020ac76d254bso5514803wrh.6
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 10:15:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=TNhZbt5WmLs9YdL2p377OAwSFXloJynsUEcZgN+34jM=;
+        b=Yi3VAYc5nlvd4ILZZavDi0w1xIGTX7CwyItlMtYQNa/cw4YHvuSSXiVg5j0XTg1KTU
+         tOFlk+PSoxFVzFEqaaxWF53HIGZ1jjYZDHvE8DNVR/jM9B4ZqiCfCK5IeaSwKBCH8w8U
+         q9r+onu2cZHeyoWe2khTlDp01ShBwqLu21CJhte8oN0yUpeaVYojrr/pJcHBTTkToqw5
+         l+DRoSSgN1Q60SDHGvPPGV3bxF4PS8H/ZsdKflXvnhOR99T2EwGZYI6qPbOYILDM/FJh
+         W2SssuEschF4D9n5jBSpRQ1Nfckd2jd83lvxmgPN3ISVZDiXulrz35mbn1noRvXQPFh3
+         r1Mw==
+X-Gm-Message-State: AOAM531n/NEMNZ4ZXp1jJlUU/gniR2JxW83vtdAPDwTLZy5+W9NXBBCv
+        +TtBhNVPfmBDbpNGJLMBEiUL/BFiyBMgW3OYdBFQWqMhg2bL+xBB/RIE1d+0WodJCpRuqDb1pye
+        89B9W5VoFvT54XAjQd9hIllZq
+X-Received: by 2002:adf:d1c9:0:b0:203:c4f8:dd17 with SMTP id b9-20020adfd1c9000000b00203c4f8dd17mr10068562wrd.633.1651511717578;
+        Mon, 02 May 2022 10:15:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwsIQ70V0swN3ajpzcihZtgWd7Y7xEQmDVKoinoDZrZIjQMH2cqaPWdg9iqJElhYFpe1gjTzA==
+X-Received: by 2002:adf:d1c9:0:b0:203:c4f8:dd17 with SMTP id b9-20020adfd1c9000000b00203c4f8dd17mr10068550wrd.633.1651511717373;
+        Mon, 02 May 2022 10:15:17 -0700 (PDT)
+Received: from [192.168.1.129] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id u21-20020adfa195000000b0020c5253d8c4sm7520081wru.16.2022.05.02.10.15.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 May 2022 10:15:17 -0700 (PDT)
+Message-ID: <bc6b6598-0e09-1a43-4086-e4164ab42a20@redhat.com>
+Date:   Mon, 2 May 2022 19:15:16 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2 1/3] drm: Remove superfluous arg when calling to
+ drm_fbdev_generic_setup()
+Content-Language: en-US
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org
+References: <20220502153900.408522-1-javierm@redhat.com>
+ <20220502153900.408522-2-javierm@redhat.com>
+ <YnABjdpGC166yIY7@pendragon.ideasonboard.com>
+ <5dd80287-1b09-d02c-9f67-5a0bb0a4566c@redhat.com>
+In-Reply-To: <5dd80287-1b09-d02c-9f67-5a0bb0a4566c@redhat.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-02 at 21:07 +0700, Suravee Suthikulpanit wrote:
-> Maxim, Sean
-> 
-> On 4/18/22 7:55 PM, Maxim Levitsky wrote:
-> > On Tue, 2022-04-12 at 06:58 -0500, Suravee Suthikulpanit wrote:
-> > > When APIC mode is updated (e.g. disabled, xAPIC, or x2APIC),
-> > > KVM needs to call kvm_vcpu_update_apicv() to update AVIC settings
-> > > accordingly.
-> > > 
-> > > Signed-off-by: Suravee Suthikulpanit<suravee.suthikulpanit@amd.com>
-> > > ---
-> > >   arch/x86/kvm/svm/avic.c | 15 +++++++++++++++
-> > >   arch/x86/kvm/svm/svm.c  |  1 +
-> > >   2 files changed, 16 insertions(+)
-> > > 
-> > > diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> > > index 22ee1098e2a5..01392b8364f4 100644
-> > > --- a/arch/x86/kvm/svm/avic.c
-> > > +++ b/arch/x86/kvm/svm/avic.c
-> > > @@ -616,6 +616,21 @@ void avic_apicv_post_state_restore(struct kvm_vcpu *vcpu)
-> > >   	avic_handle_ldr_update(vcpu);
-> > >   }
-> > >   
-> > > +void avic_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
-> > > +{
-> > > +	struct vcpu_svm *svm = to_svm(vcpu);
-> > > +
-> > > +	if (!lapic_in_kernel(vcpu) || (avic_mode == AVIC_MODE_NONE))
-> > > +		return;
-> > > +
-> > > +	if (kvm_get_apic_mode(vcpu) == LAPIC_MODE_INVALID) {
-> > > +		WARN_ONCE(true, "Invalid local APIC state (vcpu_id=%d)", vcpu->vcpu_id);
-> > > +		return;
-> > > +	}
-> > > +
-> > > +	kvm_vcpu_update_apicv(&svm->vcpu);
-> > I think it makes sense to call avic_refresh_apicv_exec_ctrl directly here.
-> >   
-> > I am not sure that kvm_vcpu_update_apicv will even call it
-> > because it has an optimization of doing nothing when inhibition status
-> > didn't change.
-> >   
-> >   
-> > Another semi-related note:
-> >   
-> > the current way the x2avic msrs are configured creates slight performance
-> > problem for nesting:
-> >   
-> > The problem is that when entering a nested guest, AVIC on the current vCPU
-> > is inhibited, but this is done only so that this vCPU*peers*  don't
-> > try to use AVIC to send IPIs to it, so there is no need to update vmcb01
-> > msr interception bitmap, and vmcb02 should have all these msrs intercepted always.
-> > Same with returning to host.
-> > 
-> > It also should be checked that during nested entry, at least vmcb01 msr bitmap
-> > is updated - TL;DR - please check that x2avic works when there is a nested guest running.
-> 
-> In the kvm/queue branch, I found a regression on nested SVM guest, where L2 guest cannot
-> launch. The bad commit is:
-> 
-> commit a4cfff3f0f8c07f1f7873a82bdeb3995807dac8c (bisect)
-> Merge: 42dcbe7d8bac 8d5678a76689
-> Author: Paolo Bonzini <pbonzini@redhat.com>
-> Date:   Fri Apr 8 12:43:40 2022 -0400
-> 
->      Merge branch 'kvm-older-features' into HEAD
-> 
->      Merge branch for features that did not make it into 5.18:
-> 
->      * New ioctls to get/set TSC frequency for a whole VM
-> 
->      * Allow userspace to opt out of hypercall patching
-> 
->      Nested virtualization improvements for AMD:
-> 
->      * Support for "nested nested" optimizations (nested vVMLOAD/VMSAVE,
->        nested vGIF)
-> 
->      * Allow AVIC to co-exist with a nested guest running
-> 
->      * Fixes for LBR virtualizations when a nested guest is running,
->        and nested LBR virtualization support
-> 
->      * PAUSE filtering for nested hypervisors
-> 
->      Guest support:
-> 
->      * Decoupling of vcpu_is_preempted from PV spinlocks
-> 
->      Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> 
-> I am still working on the bisect into the merge commits.
-> 
-> Regards,
-> Suravee
-> 
+On 5/2/22 18:55, Javier Martinez Canillas wrote:
 
-What happens when the guest can't launch? It sure works for me for kvm/queue
-from yesterday.
+[snip]
 
-I'll test again tomorrow.
+> 
+>> drop the depth option to drm_fbdev_generic_setup() ? There's a FIXME
+>> comment in drm_fbdev_generic_setup() that could be related.
+>>
+> 
+> A FIXME makes sense, I'll add that to when posting a v3.
 
+There's actually a FIXME already in drm_fbdev_generic_setup(), so it's
+a documented issue [0]:
 
+void drm_fbdev_generic_setup(struct drm_device *dev,
+			     unsigned int preferred_bpp)
+{
+...
+	/*
+	 * FIXME: This mixes up depth with bpp, which results in a glorious
+	 * mess, resulting in some drivers picking wrong fbdev defaults and
+	 * others wrong preferred_depth defaults.
+	 */
+	if (!preferred_bpp)
+		preferred_bpp = dev->mode_config.preferred_depth;
+	if (!preferred_bpp)
+		preferred_bpp = 32;
+	fb_helper->preferred_bpp = preferred_bpp;
+...
+}
+
+[0]: https://elixir.bootlin.com/linux/v5.18-rc5/source/drivers/gpu/drm/drm_fb_helper.c#L2553
+
+-- 
 Best regards,
-	Maxim Levitsky
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
