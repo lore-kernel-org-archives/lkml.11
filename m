@@ -2,183 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D48C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:11:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB798C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 17:12:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386398AbiEBRO3 (ORCPT
+        id S1386578AbiEBRPj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 13:14:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54634 "EHLO
+        Mon, 2 May 2022 13:15:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242779AbiEBRO1 (ORCPT
+        with ESMTP id S1386537AbiEBRPg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 13:14:27 -0400
-Received: from forward103j.mail.yandex.net (forward103j.mail.yandex.net [IPv6:2a02:6b8:0:801:2::106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35F0A6176
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:10:57 -0700 (PDT)
-Received: from forward101q.mail.yandex.net (forward101q.mail.yandex.net [IPv6:2a02:6b8:c0e:4b:0:640:4012:bb98])
-        by forward103j.mail.yandex.net (Yandex) with ESMTP id 22C80100A0A;
-        Mon,  2 May 2022 20:10:55 +0300 (MSK)
-Received: from vla1-692e383ae130.qloud-c.yandex.net (vla1-692e383ae130.qloud-c.yandex.net [IPv6:2a02:6b8:c0d:4e82:0:640:692e:383a])
-        by forward101q.mail.yandex.net (Yandex) with ESMTP id 1D94E13E80013;
-        Mon,  2 May 2022 20:10:55 +0300 (MSK)
-Received: from vla3-3dd1bd6927b2.qloud-c.yandex.net (vla3-3dd1bd6927b2.qloud-c.yandex.net [2a02:6b8:c15:350f:0:640:3dd1:bd69])
-        by vla1-692e383ae130.qloud-c.yandex.net (mxback/Yandex) with ESMTP id wAlxiCjCOW-Arg8C3hQ;
-        Mon, 02 May 2022 20:10:55 +0300
-X-Yandex-Fwd: 2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lach.pw; s=mail; t=1651511455;
-        bh=EL8vW3m6OCPjznoXCXY4p2BDvFflry15CcmJdzjBFzA=;
-        h=In-Reply-To:References:Date:Subject:Cc:To:From:Message-Id;
-        b=RPvmFqyXyvXTbC7t2B4nTfJalnZxzc+ZnNhCz/ep8OGSnG0IjIKX1qMACxgxOCGil
-         lxgKYO5D8uCFhUUwa9VNVNUD08ctt9zK+iVWnseEnYmWJgpGb86KnMj4bsF4jwceOQ
-         NbqsrEgGtiuYr7bGiUu85sqiRrFPQCTzAQgkBBi4=
-Authentication-Results: vla1-692e383ae130.qloud-c.yandex.net; dkim=pass header.i=@lach.pw
-Received: by vla3-3dd1bd6927b2.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id xTgxo8AHyR-ApMSX4BE;
-        Mon, 02 May 2022 20:10:52 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-From:   Yaroslav Bolyukin <iam@lach.pw>
-To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        "Lin, Wayne" <Wayne.Lin@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Yaroslav Bolyukin <iam@lach.pw>
-Subject: [RESEND PATCH v2 1/2] drm/edid: parse DRM VESA dsc bpp target
-Date:   Mon,  2 May 2022 20:10:30 +0300
-Message-Id: <20220502171031.11797-1-iam@lach.pw>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220220151940.58327-1-iam@lach.pw>
-References: <20220220151940.58327-1-iam@lach.pw>
+        Mon, 2 May 2022 13:15:36 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A2EC6176
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 10:12:07 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id w19so26314095lfu.11
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 10:12:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tfJfzW5D4/+mvV5ypqeVXDbthQVO2IvgikDBXjGyA60=;
+        b=Jk1QN88CqvFdk0UuRuqURJ4UVhpx8OAxnd0T493cwxqjOVXjBnAeoL1MaFMAWTRShO
+         dZ69nMzm3LLz5RUjb3A+97DsAxCv5FfIKrQtCD+1CGB0FUNIw5/8axd156kxWuRCeJAZ
+         qyxq3e4bZo9MffWtnlr78MZyevS6X1fzaRemUL6vVl5nTs5Gk2ei10hH7srkUh+vhLGA
+         YmqbDDOGu3AlNL7Besk0vVhmRFs2Bfg/pA/5v7itsUmoF+AIeMFjnzmVuDZTq/vYdR8K
+         hfUwI06aYWpby8NTV7c+BS5wj+dBKJASQ4UK7G8Vsukj6jPKM2qko9QQ955jz4T32Yxs
+         5LWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tfJfzW5D4/+mvV5ypqeVXDbthQVO2IvgikDBXjGyA60=;
+        b=tEMft9fboNowraTKIuOuDKcYiPiKyPN1BaZ1cBikzD+x3n6XAZWQsoJc12+ahv3Aza
+         LvFgjL5g9h2IJyF8h9K/sf0+qwcHoMIWmsCch3MDQ1uEVtw+FQV2kNQqfxopEAMd9f+A
+         liFr2/8TF2gQmf4jdyiBpAuOoUUjadWZEdVboO/UKRtKV8QtJJxf3wllr00EsLAYxeLV
+         mRu3xubIB1u3AhwvHypTsBn11Za1At9sAUY+MwXDXXWii8ChQXz4DXkxyqOwk8c6MCIV
+         fK2hSENjLHZJxuE/EMPOjI1n/dFwSaRQMF5SqhBjS4NFFt/OF9q+QiJXwvyq9Nl3EOqt
+         AGzg==
+X-Gm-Message-State: AOAM5302mxTncmMc6A8XG6H25ij1sNFFPO+w1kiG9NYEaSkBIgV9u1j3
+        BuUXMivelJ9eF57W/3LDWmPy5w==
+X-Google-Smtp-Source: ABdhPJxK9FbHHdv2wyG8oI74ITCgks3MnQGVEBJhOGVP3JLuuzGptrCfLdlnkkol35ZbWzze7LqIEQ==
+X-Received: by 2002:a05:6512:448:b0:472:3c0e:cf7f with SMTP id y8-20020a056512044800b004723c0ecf7fmr9457323lfk.279.1651511525368;
+        Mon, 02 May 2022 10:12:05 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id be40-20020a05651c172800b0024f3d1daec5sm1108268ljb.77.2022.05.02.10.12.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 May 2022 10:12:05 -0700 (PDT)
+Message-ID: <f9dbdfc1-117c-b713-7f1d-40de9726baa1@linaro.org>
+Date:   Mon, 2 May 2022 20:12:04 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2] drm/msm/disp/dpu1: avoid clearing hw interrupts if
+ hw_intr is null during drm uninit
+Content-Language: en-GB
+To:     Vinod Polimera <quic_vpolimer@quicinc.com>,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, robdclark@gmail.com,
+        dianders@chromium.org, swboyd@chromium.org,
+        quic_kalyant@quicinc.com, quic_abhinavk@quicinc.com
+References: <1651509846-4842-1-git-send-email-quic_vpolimer@quicinc.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <1651509846-4842-1-git-send-email-quic_vpolimer@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As per DisplayID v2.0 Errata E9 spec "DSC pass-through timing support"
-VESA vendor-specific data block may contain target DSC bits per pixel
-fields
+On 02/05/2022 19:44, Vinod Polimera wrote:
+> If edp modeset init is failed due to panel being not ready and
+> probe defers during drm bind, avoid clearing irqs and derefernce
+> hw_intr when hw_intr is null.
+> 
+> BUG: Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
+> 
+> Call trace:
+>   dpu_core_irq_uninstall+0x50/0xb0
+>   dpu_irq_uninstall+0x18/0x24
+>   msm_drm_uninit+0xd8/0x16c
+>   msm_drm_bind+0x580/0x5fc
+>   try_to_bring_up_master+0x168/0x1c0
+>   __component_add+0xb4/0x178
+>   component_add+0x1c/0x28
+>   dp_display_probe+0x38c/0x400
+>   platform_probe+0xb0/0xd0
+>   really_probe+0xcc/0x2c8
+>   __driver_probe_device+0xbc/0xe8
+>   driver_probe_device+0x48/0xf0
+>   __device_attach_driver+0xa0/0xc8
+>   bus_for_each_drv+0x8c/0xd8
+>   __device_attach+0xc4/0x150
+>   device_initial_probe+0x1c/0x28
+> 
+> Changes in V2:
+> - Update commit message and coreect fixes tag.
+> 
+> Fixes: f25f656608e3 ("drm/msm/dpu: merge struct dpu_irq into struct dpu_hw_intr")
+> Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
 
-Signed-off-by: Yaroslav Bolyukin <iam@lach.pw>
----
- drivers/gpu/drm/drm_edid.c  | 33 ++++++++++++++++++++++-----------
- include/drm/drm_connector.h |  6 ++++++
- include/drm/drm_displayid.h |  4 ++++
- 3 files changed, 32 insertions(+), 11 deletions(-)
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
-index bc43e1b32092..e2ced222a081 100644
---- a/drivers/gpu/drm/drm_edid.c
-+++ b/drivers/gpu/drm/drm_edid.c
-@@ -5433,7 +5433,7 @@ static void drm_parse_vesa_mso_data(struct drm_connector *connector,
- 	if (oui(vesa->oui[0], vesa->oui[1], vesa->oui[2]) != VESA_IEEE_OUI)
- 		return;
- 
--	if (sizeof(*vesa) != sizeof(*block) + block->num_bytes) {
-+	if (block->num_bytes < 5) {
- 		drm_dbg_kms(connector->dev, "Unexpected VESA vendor block size\n");
- 		return;
- 	}
-@@ -5453,20 +5453,29 @@ static void drm_parse_vesa_mso_data(struct drm_connector *connector,
- 		break;
- 	}
- 
--	if (!info->mso_stream_count) {
--		info->mso_pixel_overlap = 0;
--		return;
-+	info->mso_pixel_overlap = 0;
-+
-+	if (info->mso_stream_count) {
-+		info->mso_pixel_overlap = FIELD_GET(DISPLAYID_VESA_MSO_OVERLAP, vesa->mso);
-+		if (info->mso_pixel_overlap > 8) {
-+			drm_dbg_kms(connector->dev, "Reserved MSO pixel overlap value %u\n",
-+				info->mso_pixel_overlap);
-+			info->mso_pixel_overlap = 8;
-+		}
-+
-+		drm_dbg_kms(connector->dev, "MSO stream count %u, pixel overlap %u\n",
-+			info->mso_stream_count, info->mso_pixel_overlap);
- 	}
- 
--	info->mso_pixel_overlap = FIELD_GET(DISPLAYID_VESA_MSO_OVERLAP, vesa->mso);
--	if (info->mso_pixel_overlap > 8) {
--		drm_dbg_kms(connector->dev, "Reserved MSO pixel overlap value %u\n",
--			    info->mso_pixel_overlap);
--		info->mso_pixel_overlap = 8;
-+	if (block->num_bytes < 7) {
-+		/* DSC bpp is optional */
-+		return;
- 	}
- 
--	drm_dbg_kms(connector->dev, "MSO stream count %u, pixel overlap %u\n",
--		    info->mso_stream_count, info->mso_pixel_overlap);
-+	info->dp_dsc_bpp = FIELD_GET(DISPLAYID_VESA_DSC_BPP_INT, vesa->dsc_bpp_int) * 16 +
-+		FIELD_GET(DISPLAYID_VESA_DSC_BPP_FRACT, vesa->dsc_bpp_fract);
-+
-+	drm_dbg_kms(connector->dev, "DSC bits per pixel %u\n", info->dp_dsc_bpp);
- }
- 
- static void drm_update_mso(struct drm_connector *connector, const struct edid *edid)
-@@ -5511,6 +5520,8 @@ drm_reset_display_info(struct drm_connector *connector)
- 
- 	info->mso_stream_count = 0;
- 	info->mso_pixel_overlap = 0;
-+
-+	info->dp_dsc_bpp = 0;
- }
- 
- u32 drm_add_display_info(struct drm_connector *connector, const struct edid *edid)
-diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
-index 3ac4bf87f257..77ce9515afc4 100644
---- a/include/drm/drm_connector.h
-+++ b/include/drm/drm_connector.h
-@@ -634,6 +634,12 @@ struct drm_display_info {
- 	 * @mso_pixel_overlap: eDP MSO segment pixel overlap, 0-8 pixels.
- 	 */
- 	u8 mso_pixel_overlap;
-+
-+	/**
-+	 * @dp_dsc_bpp: DP Display-Stream-Compression (DSC) timing's target
-+	 * DST bits per pixel in 6.4 fixed point format. 0 means undefined
-+	 */
-+	u16 dp_dsc_bpp;
- };
- 
- int drm_display_info_set_bus_formats(struct drm_display_info *info,
-diff --git a/include/drm/drm_displayid.h b/include/drm/drm_displayid.h
-index 7ffbd9f7bfc7..1be6deddcce3 100644
---- a/include/drm/drm_displayid.h
-+++ b/include/drm/drm_displayid.h
-@@ -131,12 +131,16 @@ struct displayid_detailed_timing_block {
- 
- #define DISPLAYID_VESA_MSO_OVERLAP	GENMASK(3, 0)
- #define DISPLAYID_VESA_MSO_MODE		GENMASK(6, 5)
-+#define DISPLAYID_VESA_DSC_BPP_INT	GENMASK(5, 0)
-+#define DISPLAYID_VESA_DSC_BPP_FRACT GENMASK(3, 0)
- 
- struct displayid_vesa_vendor_specific_block {
- 	struct displayid_block base;
- 	u8 oui[3];
- 	u8 data_structure_type;
- 	u8 mso;
-+	u8 dsc_bpp_int;
-+	u8 dsc_bpp_fract;
- } __packed;
- 
- /* DisplayID iteration */
+> ---
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
+> index c515b7c..ab28577 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
+> @@ -599,6 +599,9 @@ void dpu_core_irq_uninstall(struct dpu_kms *dpu_kms)
+>   {
+>   	int i;
+>   
+> +	if (!dpu_kms->hw_intr)
+> +		return;
+> +
+>   	pm_runtime_get_sync(&dpu_kms->pdev->dev);
+>   	for (i = 0; i < dpu_kms->hw_intr->total_irqs; i++)
+>   		if (!list_empty(&dpu_kms->hw_intr->irq_cb_tbl[i]))
 
-base-commit: 6a47a16dcef3fdda79a95452964d001a620db473
+
 -- 
-2.35.1
-
+With best wishes
+Dmitry
