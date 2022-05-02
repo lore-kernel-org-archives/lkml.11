@@ -2,178 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB52C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:32:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C902FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385784AbiEBPfl convert rfc822-to-8bit (ORCPT
+        id S1385761AbiEBPfr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 11:35:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41068 "EHLO
+        Mon, 2 May 2022 11:35:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385799AbiEBPfd (ORCPT
+        with ESMTP id S1385802AbiEBPfe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 11:35:33 -0400
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5390B84D;
+        Mon, 2 May 2022 11:35:34 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121CDB1FC;
         Mon,  2 May 2022 08:32:04 -0700 (PDT)
-Received: by mail-qt1-f173.google.com with SMTP id x9so11327812qts.6;
-        Mon, 02 May 2022 08:32:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=QjZfb+3ITLJWXClmfGWV99+ID1+wL1sj8gOCc0jKQYs=;
-        b=iUDq0kuZymd6Zu7t6FQeB23+oxyIVSVbcCnUAU2iksGK+l37qJ6sObWx68BhuvEusT
-         Tncp1tIetlTHEZDMUeRsJxEnU0yy9Hnj+7q3NoNNxfOlkCIwn1UxGaYovczG9klfcUuT
-         1TfPVyy9aukn/pgg25BrsaNAlNSf0EyPpsgtcWUCpIfR2ecC1fE9o9ItLUnhwkbYFUe+
-         ZXtXMA7kgpuCvQJgB5yCdDewdElP4I0v+tEnC6Jjkp2ymAqp7B8K6vtQR4yOfcksCff6
-         5b8BTZR5cbSeZTflgQmAdxIjwmR00QZ5cV0RpkeTIMHmSemLn61CbXu3HzpJAj2RDQvb
-         Tf0Q==
-X-Gm-Message-State: AOAM5331VFt+cTZbvpt0yEkFVNcqphFI1H84HaqcthwCXo+k2qS2Ttup
-        M4VKx83uNfhR4NzzTAll9WTKDEsSAp6S2A==
-X-Google-Smtp-Source: ABdhPJxzU7oegChzm6ml1tArrHFkw7150iPmbgna/hfEe1IoczLQaxVC2k3QjlITqbIfGUMcuzJDLQ==
-X-Received: by 2002:a05:622a:550:b0:2f3:87b2:47bf with SMTP id m16-20020a05622a055000b002f387b247bfmr10718918qtx.137.1651505523528;
-        Mon, 02 May 2022 08:32:03 -0700 (PDT)
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
-        by smtp.gmail.com with ESMTPSA id i62-20020a37b841000000b0069fc13ce20esm4404484qkf.63.2022.05.02.08.32.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 May 2022 08:32:02 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2f7d19cac0bso151467617b3.13;
-        Mon, 02 May 2022 08:32:02 -0700 (PDT)
-X-Received: by 2002:a81:913:0:b0:2f7:c833:f304 with SMTP id
- 19-20020a810913000000b002f7c833f304mr11881281ywj.283.1651505522091; Mon, 02
- May 2022 08:32:02 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242DcwT8016032;
+        Mon, 2 May 2022 17:31:51 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=8ralpS6yoB5LO57RRVOsPiKbowhvCD5Zg9HRkpvi//Q=;
+ b=amVVkvUB++ArDu1frvMEWiCWegAHeCFncbNip1pkxC/kFaDNO7VQZpScJACiJVd5G10+
+ yY99knlCzJLv+Gf34FSTbV85KIAwbFp5I5Yiyw/y3M7foD51HhGFmn5giQdzCJJxbmB6
+ eYsLpRFNmsCmnx2kOO/l1b/VYKqyHjul+d14dOPYbskcyyBqLcuMIhOV/8YZ1m5Od9yJ
+ c8XmVEblaQNeMmwnEdlxjUsIfZG83gXG+cQrTP89MFnAYNxNksTB3XMX5OVXlfuTPMO/
+ OtUfde2YKUtDDS3vpyHYG3laU2cID1W0A2CamWg82no0s8QcnG/7PW52efZrUq+8pEdZ 3w== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3frv0g1wnh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 02 May 2022 17:31:51 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6F58210002A;
+        Mon,  2 May 2022 17:31:42 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 672CE22ECE6;
+        Mon,  2 May 2022 17:31:42 +0200 (CEST)
+Received: from localhost (10.75.127.45) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 2 May 2022 17:31:41
+ +0200
+From:   Fabien Dessenne <fabien.dessenne@foss.st.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <linux-gpio@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Fabien Dessenne <fabien.dessenne@foss.st.com>
+Subject: [PATCH] pinctrl: stm32: prevent the use of the secure protected pins
+Date:   Mon, 2 May 2022 17:31:14 +0200
+Message-ID: <20220502153114.283618-1-fabien.dessenne@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220429143505.88208-1-clement.leger@bootlin.com>
- <20220429123235.3098ed12@kernel.org> <20220502085103.19b4f47b@fixe.home>
- <CAMuHMdVKY7=CjfazEjNw-5vGP0_eQFX=K1H7DOSWajo2u-dkAQ@mail.gmail.com> <20220502170846.24e5e003@fixe.home>
-In-Reply-To: <20220502170846.24e5e003@fixe.home>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 2 May 2022 17:31:50 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXUFa9brq0jTOv2ZWMYE7Y9ytf+0+kkK1xN9e7sFcHOzA@mail.gmail.com>
-Message-ID: <CAMuHMdXUFa9brq0jTOv2ZWMYE7Y9ytf+0+kkK1xN9e7sFcHOzA@mail.gmail.com>
-Subject: Re: [net-next v2 00/12] add support for Renesas RZ/N1 ethernet
- subsystem devices
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.45]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-02_04,2022-05-02_03,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Clément,
+The hardware denies any access from the Linux non-secure world to the
+secure-protected pins. Hence, prevent any driver to request such a pin.
 
-On Mon, May 2, 2022 at 5:10 PM Clément Léger <clement.leger@bootlin.com> wrote:
-> Le Mon, 2 May 2022 14:27:38 +0200,
-> Geert Uytterhoeven <geert@linux-m68k.org> a écrit :
-> > On Mon, May 2, 2022 at 8:52 AM Clément Léger
-> > <clement.leger@bootlin.com> wrote:
-> > > Le Fri, 29 Apr 2022 12:32:35 -0700,
-> > > Jakub Kicinski <kuba@kernel.org> a écrit :
-> > >
-> > > > On Fri, 29 Apr 2022 16:34:53 +0200 Clément Léger wrote:
-> > > > > The Renesas RZ/N1 SoCs features an ethernet subsystem which
-> > > > > contains (most notably) a switch, two GMACs, and a MII
-> > > > > converter [1]. This series adds support for the switch and the
-> > > > > MII converter.
-> > > > >
-> > > > > The MII converter present on this SoC has been represented as a
-> > > > > PCS which sit between the MACs and the PHY. This PCS driver is
-> > > > > probed from the device-tree since it requires to be configured.
-> > > > > Indeed the MII converter also contains the registers that are
-> > > > > handling the muxing of ports (Switch, MAC, HSR, RTOS, etc)
-> > > > > internally to the SoC.
-> > > > >
-> > > > > The switch driver is based on DSA and exposes 4 ports + 1 CPU
-> > > > > management port. It include basic bridging support as well as
-> > > > > FDB and statistics support.
-> > > >
-> > > > Build's not happy (W=1 C=1):
-> > > >
-> > > > drivers/net/dsa/rzn1_a5psw.c:574:29: warning: symbol
-> > > > 'a5psw_switch_ops' was not declared. Should it be static? In file
-> > > > included from ../drivers/net/dsa/rzn1_a5psw.c:17:
-> > > > drivers/net/dsa/rzn1_a5psw.h:221:1: note: offset of packed
-> > > > bit-field ‘port_mask’ has changed in GCC 4.4 221 | } __packed; | ^
-> > > >
-> > >
-> > > Hi Jakub, I only had this one (due to the lack of W=1 C=1 I guess)
-> > > which I thought (wrongly) that it was due to my GCC version:
-> > >
-> > >   CC      net/dsa/switch.o
-> > >   CC      net/dsa/tag_8021q.o
-> > > In file included from ../drivers/net/dsa/rzn1_a5psw.c:17:
-> > > ../drivers/net/dsa/rzn1_a5psw.h:221:1: note: offset of packed
-> > > bit-field ‘port_mask’ has changed in GCC 4.4 221 | } __packed;
-> > >       | ^
-> > >   CC      kernel/module.o
-> > >   CC      drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.o
-> > >   CC      drivers/net/ethernet/stmicro/stmmac/dwmac100_core.o
-> > >
-> > > I'll fix the other errors which are more trivial, however, I did not
-> > > found a way to fix the packed bit-field warning.
-> >
-> > The "port_mask" field is split across 2 u8s.
-> > What about using u16 instead, and adding explicit padding while
-> > at it? The below gets rid of the warning, while the generated code
-> > is the same.
-> >
-> > --- a/drivers/net/dsa/rzn1_a5psw.h
-> > +++ b/drivers/net/dsa/rzn1_a5psw.h
-> > @@ -169,10 +169,11 @@
-> >
-> >  struct fdb_entry {
-> >         u8 mac[ETH_ALEN];
-> > -       u8 valid:1;
-> > -       u8 is_static:1;
-> > -       u8 prio:3;
-> > -       u8 port_mask:5;
-> > +       u16 valid:1;
-> > +       u16 is_static:1;
-> > +       u16 prio:3;
-> > +       u16 port_mask:5;
-> > +       u16 reserved:6;
-> >  } __packed;
->
-> Hi Geert ! Indeed, while looking a bit more in depth at this error I
-> found that using u16 avoids this error. I did switch to u16 but did not
-> add any "reserved" field at the end and there is no more error. Do you
-> think adding the "reserved" field would be preferable ?
+Mark the secure-protected GPIO lines as invalid (.init_valid_mask) and
+prevent the pinmux request / pinconf setting operations.
+Identify the secure pins with "NO ACCESS" in the pinconf sysfs.
 
-As this structure reflects a hardware definition, I think it is better to
-make this explicit.
+Signed-off-by: Fabien Dessenne <fabien.dessenne@foss.st.com>
+---
+ drivers/pinctrl/stm32/pinctrl-stm32.c      | 64 ++++++++++++++++++++++
+ drivers/pinctrl/stm32/pinctrl-stm32.h      |  1 +
+ drivers/pinctrl/stm32/pinctrl-stm32mp135.c |  1 +
+ 3 files changed, 66 insertions(+)
 
-Gr{oetje,eeting}s,
+diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
+index b308e7bb7487..e81772255e43 100644
+--- a/drivers/pinctrl/stm32/pinctrl-stm32.c
++++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
+@@ -43,6 +43,7 @@
+ #define STM32_GPIO_LCKR		0x1c
+ #define STM32_GPIO_AFRL		0x20
+ #define STM32_GPIO_AFRH		0x24
++#define STM32_GPIO_SECCFGR	0x30
+ 
+ /* custom bitfield to backup pin status */
+ #define STM32_GPIO_BKP_MODE_SHIFT	0
+@@ -94,6 +95,7 @@ struct stm32_gpio_bank {
+ 	u32 bank_ioport_nr;
+ 	u32 pin_backup[STM32_GPIO_PINS_PER_BANK];
+ 	u8 irq_type[STM32_GPIO_PINS_PER_BANK];
++	bool secure_control;
+ };
+ 
+ struct stm32_pinctrl {
+@@ -283,6 +285,33 @@ static int stm32_gpio_get_direction(struct gpio_chip *chip, unsigned int offset)
+ 	return ret;
+ }
+ 
++static int stm32_gpio_init_valid_mask(struct gpio_chip *chip,
++				      unsigned long *valid_mask,
++				      unsigned int ngpios)
++{
++	struct stm32_gpio_bank *bank = gpiochip_get_data(chip);
++	struct stm32_pinctrl *pctl = dev_get_drvdata(bank->gpio_chip.parent);
++	unsigned int i;
++	u32 sec;
++
++	/* All gpio are valid per default */
++	bitmap_fill(valid_mask, ngpios);
++
++	if (bank->secure_control) {
++		/* Tag secured pins as invalid */
++		sec = readl_relaxed(bank->base + STM32_GPIO_SECCFGR);
++
++		for (i = 0; i < ngpios; i++) {
++			if (sec & BIT(i)) {
++				clear_bit(i, valid_mask);
++				dev_dbg(pctl->dev, "No access to gpio %d - %d\n", bank->bank_nr, i);
++			}
++		}
++	}
++
++	return 0;
++}
++
+ static const struct gpio_chip stm32_gpio_template = {
+ 	.request		= stm32_gpio_request,
+ 	.free			= stm32_gpio_free,
+@@ -293,6 +322,7 @@ static const struct gpio_chip stm32_gpio_template = {
+ 	.to_irq			= stm32_gpio_to_irq,
+ 	.get_direction		= stm32_gpio_get_direction,
+ 	.set_config		= gpiochip_generic_config,
++	.init_valid_mask	= stm32_gpio_init_valid_mask,
+ };
+ 
+ static void stm32_gpio_irq_trigger(struct irq_data *d)
+@@ -837,12 +867,32 @@ static int stm32_pmx_gpio_set_direction(struct pinctrl_dev *pctldev,
+ 	return stm32_pmx_set_mode(bank, pin, !input, 0);
+ }
+ 
++static int stm32_pmx_request(struct pinctrl_dev *pctldev, unsigned int gpio)
++{
++	struct stm32_pinctrl *pctl = pinctrl_dev_get_drvdata(pctldev);
++	struct pinctrl_gpio_range *range;
++
++	range = pinctrl_find_gpio_range_from_pin_nolock(pctldev, gpio);
++	if (!range) {
++		dev_err(pctl->dev, "No gpio range defined.\n");
++		return -EINVAL;
++	}
++
++	if (!gpiochip_line_is_valid(range->gc, stm32_gpio_pin(gpio))) {
++		dev_warn(pctl->dev, "Can't access gpio %d\n", gpio);
++		return -EACCES;
++	}
++
++	return 0;
++}
++
+ static const struct pinmux_ops stm32_pmx_ops = {
+ 	.get_functions_count	= stm32_pmx_get_funcs_cnt,
+ 	.get_function_name	= stm32_pmx_get_func_name,
+ 	.get_function_groups	= stm32_pmx_get_func_groups,
+ 	.set_mux		= stm32_pmx_set_mux,
+ 	.gpio_set_direction	= stm32_pmx_gpio_set_direction,
++	.request		= stm32_pmx_request,
+ 	.strict			= true,
+ };
+ 
+@@ -1039,6 +1089,11 @@ static int stm32_pconf_parse_conf(struct pinctrl_dev *pctldev,
+ 	bank = gpiochip_get_data(range->gc);
+ 	offset = stm32_gpio_pin(pin);
+ 
++	if (!gpiochip_line_is_valid(range->gc, offset)) {
++		dev_warn(pctl->dev, "Can't access gpio %d\n", pin);
++		return -EACCES;
++	}
++
+ 	switch (param) {
+ 	case PIN_CONFIG_DRIVE_PUSH_PULL:
+ 		ret = stm32_pconf_set_driving(bank, offset, 0);
+@@ -1141,6 +1196,11 @@ static void stm32_pconf_dbg_show(struct pinctrl_dev *pctldev,
+ 	bank = gpiochip_get_data(range->gc);
+ 	offset = stm32_gpio_pin(pin);
+ 
++	if (!gpiochip_line_is_valid(range->gc, offset)) {
++		seq_puts(s, "NO ACCESS");
++		return;
++	}
++
+ 	stm32_pmx_get_mode(bank, offset, &mode, &alt);
+ 	bias = stm32_pconf_get_bias(bank, offset);
+ 
+@@ -1253,6 +1313,7 @@ static int stm32_gpiolib_register_bank(struct stm32_pinctrl *pctl,
+ 	bank->gpio_chip.parent = dev;
+ 	bank->bank_nr = bank_nr;
+ 	bank->bank_ioport_nr = bank_ioport_nr;
++	bank->secure_control = pctl->match_data->secure_control;
+ 	spin_lock_init(&bank->lock);
+ 
+ 	/* create irq hierarchical domain */
+@@ -1567,6 +1628,9 @@ static int __maybe_unused stm32_pinctrl_restore_gpio_regs(
+ 	if (!range)
+ 		return 0;
+ 
++	if (!gpiochip_line_is_valid(range->gc, offset))
++		return 0;
++
+ 	pin_is_irq = gpiochip_line_is_irq(range->gc, offset);
+ 
+ 	if (!desc || (!pin_is_irq && !desc->gpio_owner))
+diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.h b/drivers/pinctrl/stm32/pinctrl-stm32.h
+index b9584039cdf5..d078c3ac5815 100644
+--- a/drivers/pinctrl/stm32/pinctrl-stm32.h
++++ b/drivers/pinctrl/stm32/pinctrl-stm32.h
+@@ -58,6 +58,7 @@ struct stm32_desc_pin {
+ struct stm32_pinctrl_match_data {
+ 	const struct stm32_desc_pin *pins;
+ 	const unsigned int npins;
++	bool secure_control;
+ };
+ 
+ struct stm32_gpio_bank;
+diff --git a/drivers/pinctrl/stm32/pinctrl-stm32mp135.c b/drivers/pinctrl/stm32/pinctrl-stm32mp135.c
+index f98717fe23ed..fde1df191c24 100644
+--- a/drivers/pinctrl/stm32/pinctrl-stm32mp135.c
++++ b/drivers/pinctrl/stm32/pinctrl-stm32mp135.c
+@@ -1649,6 +1649,7 @@ static const struct stm32_desc_pin stm32mp135_pins[] = {
+ static struct stm32_pinctrl_match_data stm32mp135_match_data = {
+ 	.pins = stm32mp135_pins,
+ 	.npins = ARRAY_SIZE(stm32mp135_pins),
++	.secure_control = true,
+ };
+ 
+ static const struct of_device_id stm32mp135_pctrl_match[] = {
+-- 
+2.25.1
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
