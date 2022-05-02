@@ -2,151 +2,301 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31298C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 12:43:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EBB4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 12:44:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385087AbiEBMqf (ORCPT
+        id S1385081AbiEBMr5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 08:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44142 "EHLO
+        Mon, 2 May 2022 08:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385073AbiEBMq2 (ORCPT
+        with ESMTP id S237379AbiEBMr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 08:46:28 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7775413E9E
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 05:42:57 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id j15so19473586wrb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 05:42:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vVvWe9CoZBTdNyE3eHbun0xPih5mbPe7IlFMtVIhZ0k=;
-        b=BtfBeu1aqgUSyQZe0mcdvRYb4j2TlOHGS0GBgmr+zcQ4ScZSQr+K1DKeD5S6N/Ofpl
-         pztcRIH6/NR6QIuTCyzBERhX8TOM7J5l0ghTn7CgX2/2LrUr6uyiNv4c0IIVgBbnCfuF
-         VjWjH8kumF+/tkE7dJl3FD5pC2MMQq7GvGtiadpRUtKA0WEEWtypxfL7Eu2IxA7bKXTb
-         yqQFkMtdKknCX1prLQMQ+5j6sR7opHwsQx3Y8c4bHOzY2JPjcZKdt5zPprM5tdupTemm
-         +fTnb6kYK/dxEVN9ayKa8366ubv6qOYvD0W9uOL4rt09/BAn4uMKXre2mP4/gG+64JTI
-         U2YQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vVvWe9CoZBTdNyE3eHbun0xPih5mbPe7IlFMtVIhZ0k=;
-        b=DRCAvzLelkmTbheKcV4mPT278EMjD9ZDyX3qcdQ7A7lzzR2dYev21V91tKvXJLsRo/
-         p8TiGPdh/009MGmeVtuLiP4nu+KsmAe4Y0c4arz/1KSzE6mJcWjOc8RZyYP+U5kquKyA
-         q0RzcBTY8Nyc/YioytJjAV/cucIgUz/0XguIae81hIOb9dKjM5rfrqyEHvJARPATZe1/
-         7Oo1ucnXgwVVxCSs2+VIQXBWvxxiVMDtphCadDIMecn1bTrjpdWZaxpV5N6sWSrGI90K
-         kr6XVkrZbxVUkTFVqnFq0ZuHn3Fe4BKw8lUM6nuW04mkzs7qT+n2qS0rjb2zU2vjVCod
-         OOFA==
-X-Gm-Message-State: AOAM533JCWNXtdHlK8aU8uJAoG133d1W7Dr8hJvIUeUCwSPdAsvkn3ke
-        r66OYfVykdzlWNg1vWBbeautyE9j0t8Nlg==
-X-Google-Smtp-Source: ABdhPJz/ybYbVPx+PHksA3jc6jfVx19vofEhtVZf31TSZntCS76xIG2EvhKN0/UCRxIrp4CsmUaYeQ==
-X-Received: by 2002:adf:f64f:0:b0:209:ead2:e0ae with SMTP id x15-20020adff64f000000b00209ead2e0aemr9378966wrp.277.1651495376039;
-        Mon, 02 May 2022 05:42:56 -0700 (PDT)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id n10-20020a05600c294a00b003942a244f30sm6254680wmd.9.2022.05.02.05.42.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 05:42:55 -0700 (PDT)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     jdelvare@suse.com, linux@roeck-us.net
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH 1/2] hwmon: acpi_power_meter: fix style issue
-Date:   Mon,  2 May 2022 12:42:48 +0000
-Message-Id: <20220502124249.682058-1-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 2 May 2022 08:47:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8DAF213E91
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 05:44:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651495466;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vS6aYjf5BkmHwIAK/loQ2sNshRhq0zEaS4wmG9psNgU=;
+        b=QqLUVtCTpO6xKsu55Sb1TxAaeieVxH/mdQ+iOlsGK1hTozzH5g+s2aNvRORs9DPDqNFycW
+        LCUf1eeX6PVFwg/nQStEv/4LhCf/wyujTCmtIIj2Gi2kj1lPGJuwszqWrmj30snuK72Fc+
+        iY3g4VaRgEoez2mxET3w4ApH91dtvKk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-647-0Nnr-ju4Nz-H9zbMp3MV2A-1; Mon, 02 May 2022 08:44:15 -0400
+X-MC-Unique: 0Nnr-ju4Nz-H9zbMp3MV2A-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 580D42811769;
+        Mon,  2 May 2022 12:44:05 +0000 (UTC)
+Received: from fedora (unknown [10.22.8.190])
+        by smtp.corp.redhat.com (Postfix) with SMTP id F025140FF6B3;
+        Mon,  2 May 2022 12:44:01 +0000 (UTC)
+Date:   Mon, 2 May 2022 09:44:00 -0300
+From:   Wander Lairson Costa <wander@redhat.com>
+To:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 2/3] x86/tdx: Add TDX Guest event notify interrupt
+ support
+Message-ID: <Ym/SEKWS7ouTHtsF@fedora>
+References: <20220501183500.2242828-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220501183500.2242828-3-sathyanarayanan.kuppuswamy@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220501183500.2242828-3-sathyanarayanan.kuppuswamy@linux.intel.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix style issues found by checkpatch.
+On Sun, May 01, 2022 at 11:34:59AM -0700, Kuppuswamy Sathyanarayanan wrote:
+> Host-guest event notification via configured interrupt vector is useful
+> in cases where a guest makes an asynchronous request and needs a
+> callback from the host to indicate the completion or to let the host
+> notify the guest about events like device removal. One usage example is,
+> callback requirement of GetQuote asynchronous hypercall.
+> 
+> In TDX guest, SetupEventNotifyInterrupt hypercall can be used by the
+> guest to specify which interrupt vector to use as an event-notify
+> vector to the VMM. Details about the SetupEventNotifyInterrupt
+> hypercall can be found in TDX Guest-Host Communication Interface
+> (GHCI) Specification, sec 3.5 "VP.VMCALL<SetupEventNotifyInterrupt>".
+> Add a tdx_hcall_set_notify_intr() helper function to implement the
+> SetupEventNotifyInterrupt hypercall.
+> 
+> Reserve 0xec IRQ vector address for TDX guest to receive the event
+> completion notification from VMM. Also add related IDT handler to
+> process the notification event.
+> 
+> Add support to track the notification event status via
+> /proc/interrupts.
+> 
+> Reviewed-by: Tony Luck <tony.luck@intel.com>
+> Reviewed-by: Andi Kleen <ak@linux.intel.com>
+> Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> ---
+>  arch/x86/coco/tdx/tdx.c            | 73 ++++++++++++++++++++++++++++++
+>  arch/x86/include/asm/hardirq.h     |  3 ++
+>  arch/x86/include/asm/idtentry.h    |  4 ++
+>  arch/x86/include/asm/irq_vectors.h |  7 ++-
+>  arch/x86/include/asm/tdx.h         |  4 ++
+>  arch/x86/kernel/irq.c              |  7 +++
+>  6 files changed, 97 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+> index 03deb4d6920d..b49211994864 100644
+> --- a/arch/x86/coco/tdx/tdx.c
+> +++ b/arch/x86/coco/tdx/tdx.c
+> @@ -11,6 +11,10 @@
+>  #include <asm/insn.h>
+>  #include <asm/insn-eval.h>
+>  #include <asm/pgtable.h>
+> +#include <asm/apic.h>
+> +#include <asm/idtentry.h>
+> +#include <asm/irq_regs.h>
+> +#include <asm/desc.h>
+>  
+>  /* TDX module Call Leaf IDs */
+>  #define TDX_GET_INFO			1
+> @@ -19,6 +23,7 @@
+>  
+>  /* TDX hypercall Leaf IDs */
+>  #define TDVMCALL_MAP_GPA		0x10001
+> +#define TDVMCALL_SETUP_NOTIFY_INTR	0x10004
+>  
+>  /* MMIO direction */
+>  #define EPT_READ	0
+> @@ -34,6 +39,28 @@
+>  #define VE_GET_PORT_NUM(e)	((e) >> 16)
+>  #define VE_IS_IO_STRING(e)	((e) & BIT(4))
+>  
+> +/*
+> + * Handler used to report notifications about
+> + * TDX_GUEST_EVENT_NOTIFY_VECTOR IRQ. Currently it will be
+> + * used only by the attestation driver. So, race condition
+> + * with read/write operation is not considered.
+> + */
+> +static void (*tdx_event_notify_handler)(void);
+> +
+> +/* Helper function to register tdx_event_notify_handler */
+> +void tdx_setup_ev_notify_handler(void (*handler)(void))
+> +{
+> +	tdx_event_notify_handler = handler;
+> +}
+> +EXPORT_SYMBOL_GPL(tdx_setup_ev_notify_handler);
+> +
+> +/* Helper function to unregister tdx_event_notify_handler */
+> +void tdx_remove_ev_notify_handler(void)
+> +{
+> +	tdx_event_notify_handler = NULL;
+> +}
+> +EXPORT_SYMBOL_GPL(tdx_remove_ev_notify_handler);
+> +
+>  /*
+>   * Wrapper for standard use of __tdx_hypercall with no output aside from
+>   * return code.
+> @@ -98,6 +125,46 @@ static inline void tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
+>  		panic("TDCALL %lld failed (Buggy TDX module!)\n", fn);
+>  }
+>  
+> +/* TDX guest event notification handler */
+> +DEFINE_IDTENTRY_SYSVEC(sysvec_tdx_event_notify)
+> +{
+> +	struct pt_regs *old_regs = set_irq_regs(regs);
+> +
+> +	inc_irq_stat(irq_tdx_event_notify_count);
+> +
+> +	if (tdx_event_notify_handler)
+> +		tdx_event_notify_handler();
+> +
+> +	ack_APIC_irq();
+> +
+> +	set_irq_regs(old_regs);
+> +}
+> +
+> +/*
+> + * tdx_hcall_set_notify_intr() - Setup Event Notify Interrupt Vector.
+> + *
+> + * @vector: Vector address to be used for notification.
+> + *
+> + * return 0 on success or failure error number.
+> + */
+> +static long tdx_hcall_set_notify_intr(u8 vector)
+> +{
+> +	/* Minimum vector value allowed is 32 */
+> +	if (vector < 32)
+> +		return -EINVAL;
+> +
+> +	/*
+> +	 * Register callback vector address with VMM. More details
+> +	 * about the ABI can be found in TDX Guest-Host-Communication
+> +	 * Interface (GHCI), sec titled
+> +	 * "TDG.VP.VMCALL<SetupEventNotifyInterrupt>".
+> +	 */
+> +	if (_tdx_hypercall(TDVMCALL_SETUP_NOTIFY_INTR, vector, 0, 0, 0))
+> +		return -EIO;
+> +
+> +	return 0;
+> +}
+> +
+>  static u64 get_cc_mask(void)
+>  {
+>  	struct tdx_module_output out;
+> @@ -688,5 +755,11 @@ void __init tdx_early_init(void)
+>  	x86_platform.guest.enc_tlb_flush_required   = tdx_tlb_flush_required;
+>  	x86_platform.guest.enc_status_change_finish = tdx_enc_status_changed;
+>  
+> +	alloc_intr_gate(TDX_GUEST_EVENT_NOTIFY_VECTOR,
+> +			asm_sysvec_tdx_event_notify);
+> +
+> +	if (tdx_hcall_set_notify_intr(TDX_GUEST_EVENT_NOTIFY_VECTOR))
+> +		pr_warn("Setting event notification interrupt failed\n");
+> +
+>  	pr_info("Guest detected\n");
+>  }
+> diff --git a/arch/x86/include/asm/hardirq.h b/arch/x86/include/asm/hardirq.h
+> index 275e7fd20310..582deff56210 100644
+> --- a/arch/x86/include/asm/hardirq.h
+> +++ b/arch/x86/include/asm/hardirq.h
+> @@ -44,6 +44,9 @@ typedef struct {
+>  	unsigned int irq_hv_reenlightenment_count;
+>  	unsigned int hyperv_stimer0_count;
+>  #endif
+> +#if IS_ENABLED(CONFIG_INTEL_TDX_GUEST)
+> +	unsigned int irq_tdx_event_notify_count;
+> +#endif
+>  } ____cacheline_aligned irq_cpustat_t;
+>  
+>  DECLARE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat);
+> diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm/idtentry.h
+> index 72184b0b2219..655086dd940e 100644
+> --- a/arch/x86/include/asm/idtentry.h
+> +++ b/arch/x86/include/asm/idtentry.h
+> @@ -700,6 +700,10 @@ DECLARE_IDTENTRY_SYSVEC(HYPERVISOR_CALLBACK_VECTOR,	sysvec_xen_hvm_callback);
+>  DECLARE_IDTENTRY_SYSVEC(HYPERVISOR_CALLBACK_VECTOR,	sysvec_kvm_asyncpf_interrupt);
+>  #endif
+>  
+> +#if IS_ENABLED(CONFIG_INTEL_TDX_GUEST)
+> +DECLARE_IDTENTRY_SYSVEC(TDX_GUEST_EVENT_NOTIFY_VECTOR,	sysvec_tdx_event_notify);
+> +#endif
+> +
+>  #undef X86_TRAP_OTHER
+>  
+>  #endif
+> diff --git a/arch/x86/include/asm/irq_vectors.h b/arch/x86/include/asm/irq_vectors.h
+> index 43dcb9284208..82ac0c0a34b1 100644
+> --- a/arch/x86/include/asm/irq_vectors.h
+> +++ b/arch/x86/include/asm/irq_vectors.h
+> @@ -104,7 +104,12 @@
+>  #define HYPERV_STIMER0_VECTOR		0xed
+>  #endif
+>  
+> -#define LOCAL_TIMER_VECTOR		0xec
+> +#if IS_ENABLED(CONFIG_INTEL_TDX_GUEST)
+> +/* Vector on which TDX Guest event notification is delivered */
+> +#define TDX_GUEST_EVENT_NOTIFY_VECTOR	0xec
+> +#endif
+> +
+> +#define LOCAL_TIMER_VECTOR		0xeb
+>  
+>  #define NR_VECTORS			 256
+>  
+> diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+> index 020c81a7c729..eb4db837cc44 100644
+> --- a/arch/x86/include/asm/tdx.h
+> +++ b/arch/x86/include/asm/tdx.h
+> @@ -67,6 +67,10 @@ void tdx_safe_halt(void);
+>  
+>  bool tdx_early_handle_ve(struct pt_regs *regs);
+>  
+> +void tdx_setup_ev_notify_handler(void (*handler)(void));
+> +
+> +void tdx_remove_ev_notify_handler(void);
+> +
+>  #else
+>  
+>  static inline void tdx_early_init(void) { };
+> diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
+> index 766ffe3ba313..a96ecd866723 100644
+> --- a/arch/x86/kernel/irq.c
+> +++ b/arch/x86/kernel/irq.c
+> @@ -181,6 +181,13 @@ int arch_show_interrupts(struct seq_file *p, int prec)
+>  		seq_printf(p, "%10u ",
+>  			   irq_stats(j)->kvm_posted_intr_wakeup_ipis);
+>  	seq_puts(p, "  Posted-interrupt wakeup event\n");
+> +#endif
+> +#if IS_ENABLED(CONFIG_INTEL_TDX_GUEST)
+> +	seq_printf(p, "%*s: ", prec, "TGN");
+> +	for_each_online_cpu(j)
+> +		seq_printf(p, "%10u ",
+> +			   irq_stats(j)->irq_tdx_event_notify_count);
+> +	seq_puts(p, "  TDX Guest event notification\n");
+>  #endif
+>  	return 0;
+>  }
+> -- 
+> 2.25.1
+> 
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
- drivers/hwmon/acpi_power_meter.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/hwmon/acpi_power_meter.c b/drivers/hwmon/acpi_power_meter.c
-index c405a5869581..d2545a1be9fc 100644
---- a/drivers/hwmon/acpi_power_meter.c
-+++ b/drivers/hwmon/acpi_power_meter.c
-@@ -481,7 +481,7 @@ static struct sensor_template meter_attrs[] = {
- 	RO_SENSOR_TEMPLATE("power1_average_interval_max", show_val, 1),
- 	RO_SENSOR_TEMPLATE("power1_is_battery", show_val, 5),
- 	RW_SENSOR_TEMPLATE(POWER_AVG_INTERVAL_NAME, show_avg_interval,
--		set_avg_interval, 0),
-+			   set_avg_interval, 0),
- 	{},
- };
- 
-@@ -530,6 +530,7 @@ static void remove_domain_devices(struct acpi_power_meter_resource *resource)
- 
- 	for (i = 0; i < resource->num_domain_devices; i++) {
- 		struct acpi_device *obj = resource->domain_devices[i];
-+
- 		if (!obj)
- 			continue;
- 
-@@ -580,7 +581,7 @@ static int read_domain_devices(struct acpi_power_meter_resource *resource)
- 	}
- 
- 	resource->holders_dir = kobject_create_and_add("measures",
--					&resource->acpi_dev->dev.kobj);
-+						       &resource->acpi_dev->dev.kobj);
- 	if (!resource->holders_dir) {
- 		res = -ENOMEM;
- 		goto exit_free;
-@@ -590,7 +591,7 @@ static int read_domain_devices(struct acpi_power_meter_resource *resource)
- 
- 	for (i = 0; i < pss->package.count; i++) {
- 		struct acpi_device *obj;
--		union acpi_object *element = &(pss->package.elements[i]);
-+		union acpi_object *element = &pss->package.elements[i];
- 
- 		/* Refuse non-references */
- 		if (element->type != ACPI_TYPE_LOCAL_REFERENCE)
-@@ -603,7 +604,7 @@ static int read_domain_devices(struct acpi_power_meter_resource *resource)
- 			continue;
- 
- 		res = sysfs_create_link(resource->holders_dir, &obj->dev.kobj,
--				      kobject_name(&obj->dev.kobj));
-+					kobject_name(&obj->dev.kobj));
- 		if (res) {
- 			acpi_dev_put(obj);
- 			resource->domain_devices[i] = NULL;
-@@ -788,7 +789,7 @@ static int read_capabilities(struct acpi_power_meter_resource *resource)
- 	str = &resource->model_number;
- 
- 	for (i = 11; i < 14; i++) {
--		union acpi_object *element = &(pss->package.elements[i]);
-+		union acpi_object *element = &pss->package.elements[i];
- 
- 		if (element->type != ACPI_TYPE_STRING) {
- 			res = -EINVAL;
-@@ -868,8 +869,7 @@ static int acpi_power_meter_add(struct acpi_device *device)
- 	if (!device)
- 		return -EINVAL;
- 
--	resource = kzalloc(sizeof(struct acpi_power_meter_resource),
--			   GFP_KERNEL);
-+	resource = kzalloc(sizeof(*resource), GFP_KERNEL);
- 	if (!resource)
- 		return -ENOMEM;
- 
-@@ -884,7 +884,8 @@ static int acpi_power_meter_add(struct acpi_device *device)
- 	if (res)
- 		goto exit_free;
- 
--	resource->trip[0] = resource->trip[1] = -1;
-+	resource->trip[0] = -1;
-+	resource->trip[1] = -1;
- 
- 	res = setup_attrs(resource);
- 	if (res)
--- 
-2.35.1
+Acked-by: Wander Lairson Costa <wander@redhat.com>
 
