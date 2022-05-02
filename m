@@ -2,131 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33CFFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 19:44:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 19:46:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387177AbiEBTrs (ORCPT
+        id S1387162AbiEBTti (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 15:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60112 "EHLO
+        Mon, 2 May 2022 15:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387162AbiEBTrn (ORCPT
+        with ESMTP id S238542AbiEBTtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 15:47:43 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8659FF6
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 12:44:12 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id p18so17740476edr.7
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 12:44:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KDKVWt6i2JVgFk5hQ0cN9rigyvuCgGuIi+Y1yp/hEyU=;
-        b=TLtjDxEJVxuw3SDFmLZl8TjFa8ejjCV3hSGdqXW2sRhBwizgDwOo86ygS46gw7eTvm
-         PBhdDyHf67jHns5ihyVOs1EfqxVt7ghQtbNRbE/sVB6sTp68ZpTvEkvn3tJjmmNJvSRw
-         RDQaqk4afuv9yqUsvbQy0Go1AgpdtuumIJ1g92KJ3ZiNk0T9CXWokaS+GAGSn0I0TjTh
-         Wv5u0d1BjKgGgVdwosc4UX/r5t9UGsx8DdITX0PmNMYzh34kmaq6gakslFC0c6AfQkmZ
-         7Dd+xJKBepC2+GMa3teQ1Z8xFFTEe31e1TKdpiAWN0Ic48syWs7ikQFT09Hing9UxufT
-         +e2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KDKVWt6i2JVgFk5hQ0cN9rigyvuCgGuIi+Y1yp/hEyU=;
-        b=KsyYDPyYJMhWAtdGycooBMAALHLNLHskhjErh5NTCuBxn5WolPZ3uziGuOHO8PEVZ0
-         xXb9ZlSyxI6qph/d9f6rdGPZUwLFnvBwzJsCPjfYjXrcHki1d0WAhpP+xeEzTqhHA3O8
-         AjC7LXn5UhivdY9aSfijJiDT9gYcoRcgJ2jUNJDi5QwQBBKc7E5XtOvhEn6npTfgcM83
-         O0w/afMRkYCsemDT8UmZrUBuMse3u8gG9TVFlHe/rZRyicdoSsjyXEpZT0ye438N0UX3
-         O315QZ0j3xbvWLNyjco2nQq6hg2Ow4cQNfq0RtKIkMJ1zpGQHjubXKqtSGgZWCeixQhK
-         9hLA==
-X-Gm-Message-State: AOAM5331w+1W6u00xAcGtuZsY91O0RkSBJzsj3Zxe/jGeU0pVm44+eWM
-        1hjHhUpZvqlYRs03+rDaLrXBQvdnCy6I6hjmtIhsEA==
-X-Google-Smtp-Source: ABdhPJyun65U+qmsvNP0CPUrRwCwtM7NXVQ4tmjQOfX2KctcnsTKxhSP1ggdLyYcwj+iiMCezATnBVAevDvBMIb1V2g=
-X-Received: by 2002:a50:d585:0:b0:425:c9db:cf26 with SMTP id
- v5-20020a50d585000000b00425c9dbcf26mr14841032edi.222.1651520651119; Mon, 02
- May 2022 12:44:11 -0700 (PDT)
+        Mon, 2 May 2022 15:49:36 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0387565BD
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 12:46:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651520762; x=1683056762;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=M4niFshntDK2QmAcs2/a7uHttMZ31/JR2/RX9cUSQiY=;
+  b=TzY8khPahPW/xDLbrsL+cngPiKU3cC2EWHOv+jlOq/L89cbeACV0V6e8
+   D2ksFctfjzw7lmRE/x3Kcu3Qu5IyMU5lYT8QVvGi4nAnXXubERk1CYXUY
+   85JfQ+skAqYr8f5Qn4gf7zyQ39umSRLZs5y+fw2rcIwB0c9uNcjtl9Oj3
+   NGo3EJdrYjGCxgu2HeLBu/pOTEeLkAdKjhk+2aiwNQTAXPyaADDtkElCP
+   goQCANMqvQSnCgru7hj2Wb6t6vQvELHmkel47CUz0Ovh7xZ7lzpZHRdQK
+   Uob6VZSPzzwhjBlwzfyMLau3SIqswxhn+D/JbQBLEvb9YpQyLaEydSJbE
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="330305168"
+X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
+   d="scan'208";a="330305168"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 12:46:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
+   d="scan'208";a="546592237"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 02 May 2022 12:46:01 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nlbzc-0009p0-R3;
+        Mon, 02 May 2022 19:46:00 +0000
+Date:   Tue, 3 May 2022 03:45:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dmitry Osipenko <digetx@gmail.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Hector Martin <marcan@marcan.st>
+Subject: [asahilinux:bits/100-shutdown-notifier 4/20] kernel/reboot.o:
+ warning: objtool: sys_off_handler_power_off() falls through to next function
+ type_store()
+Message-ID: <202205030300.tbyjHXmy-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220502093625.GA23225@kernel.org>
-In-Reply-To: <20220502093625.GA23225@kernel.org>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Mon, 2 May 2022 14:43:59 -0500
-Message-ID: <CAGS_qxoc=AnkzUtaFpJvF08Z_Z15h9sZxYNQT5-S9C7aM4poEg@mail.gmail.com>
-Subject: Re: [PATCH] kunit: take `kunit_assert` as `const`
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 2, 2022 at 4:36 AM Miguel Ojeda <ojeda@kernel.org> wrote:
->
-> The `kunit_do_failed_assertion` function passes its
-> `struct kunit_assert` argument to `kunit_fail`. This one,
-> in turn, calls its `format` field passing the assert again
-> as a `const` pointer.
->
-> Therefore, the whole chain may be made `const`.
->
-> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+tree:   https://github.com/AsahiLinux/linux bits/100-shutdown-notifier
+head:   06115822707a3ed6f89da2ea9c157c283b6750ee
+commit: 6025f4b3d1a321e1cfc8a6b6651395cc43ceb2f3 [4/20] kernel: Add combined power-off+restart handler call chain API
+config: x86_64-randconfig-a011 (https://download.01.org/0day-ci/archive/20220503/202205030300.tbyjHXmy-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/AsahiLinux/linux/commit/6025f4b3d1a321e1cfc8a6b6651395cc43ceb2f3
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/100-shutdown-notifier
+        git checkout 6025f4b3d1a321e1cfc8a6b6651395cc43ceb2f3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-Reviewed-by: Daniel Latypov <dlatypov@google.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks for this, the code definitely should have been this way from the start.
+All warnings (new ones prefixed by >>):
 
-I had wanted to make this change but mistakenly thought the format
-func took it via non-const for some reason.
-I must have misread it once and got it into my head that we were
-leaving the door open for mutable child structs (which sounds like a
-bad idea).
+>> kernel/reboot.o: warning: objtool: sys_off_handler_power_off() falls through to next function type_store()
 
-> ---
->  include/kunit/test.h | 2 +-
->  lib/kunit/test.c     | 4 ++--
->  2 files changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/include/kunit/test.h b/include/kunit/test.h
-> index 00b9ff7783ab..2eff4f1beb42 100644
-> --- a/include/kunit/test.h
-> +++ b/include/kunit/test.h
-> @@ -774,7 +774,7 @@ void __printf(2, 3) kunit_log_append(char *log, const char *fmt, ...);
->  void kunit_do_failed_assertion(struct kunit *test,
->                                const struct kunit_loc *loc,
->                                enum kunit_assert_type type,
-> -                              struct kunit_assert *assert,
-> +                              const struct kunit_assert *assert,
->                                const char *fmt, ...);
->
->  #define KUNIT_ASSERTION(test, assert_type, pass, assert_class, INITIALIZER, fmt, ...) do { \
-> diff --git a/lib/kunit/test.c b/lib/kunit/test.c
-> index 3bca3bf5c15b..b84aed09a009 100644
-> --- a/lib/kunit/test.c
-> +++ b/lib/kunit/test.c
-> @@ -241,7 +241,7 @@ static void kunit_print_string_stream(struct kunit *test,
->  }
->
->  static void kunit_fail(struct kunit *test, const struct kunit_loc *loc,
-> -                      enum kunit_assert_type type, struct kunit_assert *assert,
-> +                      enum kunit_assert_type type, const struct kunit_assert *assert,
->                        const struct va_format *message)
->  {
->         struct string_stream *stream;
-> @@ -281,7 +281,7 @@ static void __noreturn kunit_abort(struct kunit *test)
->  void kunit_do_failed_assertion(struct kunit *test,
->                                const struct kunit_loc *loc,
->                                enum kunit_assert_type type,
-> -                              struct kunit_assert *assert,
-> +                              const struct kunit_assert *assert,
->                                const char *fmt, ...)
->  {
->         va_list args;
-> --
-> 2.35.3
->
-> --
-> You received this message because you are subscribed to the Google Groups "KUnit Development" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to kunit-dev+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/kunit-dev/20220502093625.GA23225%40kernel.org.
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
