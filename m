@@ -2,555 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E05C1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D01D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:58:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240096AbiEBPzs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 11:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35354 "EHLO
+        id S240372AbiEBQCM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 12:02:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239981AbiEBPzo (ORCPT
+        with ESMTP id S240090AbiEBQCL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 11:55:44 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE256155
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:52:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651506734; x=1683042734;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=gPI+Y75IYQy3oVAe2KH+UNESkIf6Iemvo3jv0ixeYHQ=;
-  b=FhgOKqquzz3TcAY5m8BMEEZHJ0vL6dpEO9M7uvGZrOsRjDwBbdSmjy6i
-   FRDTEXp3I9zNE0Y0W6yT8h3YkdPJCO4uUY0AJWeDM41aTQOixbcdnXLkj
-   IRyxo1Zxg4vED7M1E/hsnbW0eZvd3x6SxGeH3K9Fv3ZS2CmfTrAnfSuhM
-   NgHmadVrMecfSr50LScH+LR4cRZB2CiqkvSEyfU1PRHedi55Qt4v6DopR
-   /YoYOxWYXImu02e4od6jxZZk7V5sDtp/avEJz+Rnn/jtaFGKwdTBNpNgl
-   /kj1m9HCUPK3Dy4WmfVK5Xy8l+byK6vFCl2uHBMbQwU4J+dOfr5td4yYc
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="330235475"
-X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
-   d="scan'208";a="330235475"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 08:52:14 -0700
-X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
-   d="scan'208";a="583760984"
-Received: from wahmed-mobl.amr.corp.intel.com (HELO [10.209.71.202]) ([10.209.71.202])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 08:52:13 -0700
-Message-ID: <e5aed619-20ce-7eb3-22a3-64b51de9cce3@linux.intel.com>
-Date:   Mon, 2 May 2022 08:52:12 -0700
+        Mon, 2 May 2022 12:02:11 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD2BDF44
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:58:42 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651507121;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HJPfsguArwZ596yti4dAVW3XVwKfh1DhOc2Y4P/j3jA=;
+        b=Oqr2TDYZHy8m3rVI4Q63176uq2NiTUlG62XwYY1hKEiLWB8ZpGM+1bVY4buVxM3u7QXBNt
+        YIZ0NlJbfLpKbPr7YDo/StV5IDiZZtzw9DCexJlSP2T7OfVMzehxp3oBz+ZPFmhGVsg1lS
+        NhL4qJnxKCFfGS4Xgzw6zpAA7dwdx89Ayt1KrTEZThUCsfndztE/ZLQzEzCE36agVrUOR7
+        OLUTQ1slRv8D2SXCpXUQB25VxxIWL580oy3v2mUQV8YujyNiLOc7B3a7s34HXdIRYnBrv+
+        JSgoIS5c9qlIqyEi7kkqVer4hDEb7kU9gfDcxifxlrtp9Zn3GsPuts9i1VlYwg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651507121;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HJPfsguArwZ596yti4dAVW3XVwKfh1DhOc2Y4P/j3jA=;
+        b=00SRPYk7xO6OAsgIDnTxp6hC4Ht3gQUtm7oTsbGedXTuTsKy09GUKrvI1h2HHmusenx77f
+        u/9nj8ksHDBjBgCQ==
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
+        Filipe Manana <fdmanana@suse.com>
+Subject: Re: [patch 3/3] x86/fpu: Make FPU protection more robust
+In-Reply-To: <Ym/sHqKqmLOJubgE@zn.tnic>
+References: <20220501192740.203963477@linutronix.de>
+ <20220501193102.704267030@linutronix.de> <Ym/sHqKqmLOJubgE@zn.tnic>
+Date:   Mon, 02 May 2022 17:58:40 +0200
+Message-ID: <87k0b4lydr.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.7.0
-Subject: Re: [PATCH v5 1/3] x86/tdx: Add TDX Guest attestation interface
- driver
-Content-Language: en-US
-To:     Kai Huang <kai.huang@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
-Cc:     "H . Peter Anvin" <hpa@zytor.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Wander Lairson Costa <wander@redhat.com>,
-        Isaku Yamahata <isaku.yamahata@gmail.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        linux-kernel@vger.kernel.org
-References: <20220501183500.2242828-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20220501183500.2242828-2-sathyanarayanan.kuppuswamy@linux.intel.com>
- <5473f606bd8e60dd7b8d58a540285d126a1361bd.camel@intel.com>
-From:   Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <5473f606bd8e60dd7b8d58a540285d126a1361bd.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kai,
+On Mon, May 02 2022 at 16:35, Borislav Petkov wrote:
+> On Sun, May 01, 2022 at 09:31:47PM +0200, Thomas Gleixner wrote:
+>>  /**
+>> + * fpregs_lock - Lock FPU state for maintenance operations
+>
+> "maintenance"?
 
-On 5/1/22 7:31 PM, Kai Huang wrote:
-> On Sun, 2022-05-01 at 11:34 -0700, Kuppuswamy Sathyanarayanan wrote:
->> In TDX guest, attestation is used to verify the trustworthiness of a TD
->> to other entities before provisioning secrets to the TD.
->>     
->> One usage example is, when a TD guest uses encrypted drive and if the
->> decryption keys required to access the drive are stored in a secure 3rd
->> party keyserver, the key server can use attestation to verify TD's
->> trustworthiness and release the decryption keys to the TD.
->>
->> The attestation process consists of two steps: TDREPORT generation and
->> Quote generation.
->>
->> TDREPORT (TDREPORT_STRUCT) is a fixed-size data structure generated by
->> the TDX module which contains TD-specific information (such as TD
->> measurements), platform security version, and the MAC to protect the
->> integrity of the TDREPORT. The TD kernel uses TDCALL[TDG.MR.REPORT] to
->> get the TDREPORT from the TDX module. A user-provided 64-Byte
->> REPORTDATA is used as input and included in the TDREPORT. Typically it
->> can be some nonce provided by attestation service so the TDREPORT can
->> be verified uniquely. More details about TDREPORT can be found in
->> Intel TDX Module specification, section titled "TDG.MR.REPORT Leaf".
->>
->> After getting the TDREPORT, the second step of the attestation process
->> is to send the TDREPORT to Quoting Enclave (QE) or Quote Generation
->> Service (QGS) to generate the Quote. However the method of sending the
->> TDREPORT to QE/QGS, communication channel used and data format used is
->> specific to the implementation of QE/QGS.
->>
->> A typical implementation is, TD userspace attestation software gets the
->> TDREPORT from TD kernel, sends it to QE/QGS, and QE/QGS returns the
->> Quote. TD attestation software can use any available communication
->> channel to talk to QE/QGS, such as using vsock and tcp/ip.
->>
->> To support the case that those communication channels are not directly
->> available to the TD, TDX also defines TDVMCALLs to allow TD to ask VMM
->> to help with sending the TDREPORT and receiving the Quote. This support
->> is documented in the GHCI spec section titled "5.4 TD attestation".
-> 
-> Sorry I didn't think thoroughly in the reply to v4.  I think it's still
-> necessary to mention TDREPORT can only be verified locally, because otherwise
-> Quote isn't conceptually needed.  And above 3 paragraphs are too verbose I
-> guess.  How about below:
-> 
-> "
-> TDREPORT can only be verified locally as the MAC key is bound to the platform.
-> TDX attestation leverages Intel SGX Quote Enclave (QE) to verify the TDREPORT
-> locally and convert it to a remote verifiable Quote to support remote
-> attestation of the TDREPORT.
-> 
-> TD userspace attestation software firstly gets the TDREPORT from the TD kernel,
-> and then sends it to the QE to generate a TD Quote.  The QE sends the Quote back
-> after it is generated.  How is the data sent and received is QE implementation
-> and deployment specific.  TD userspace attestation software can use whatever
-> communication channel available (i.e. tcp/ip, vsock) to communicate with the QE
-> using whatever data format.  TDX also defines TDVMCALLs to allow TD to ask VMM
-> to facilitate sending/receiving data between TD attestation software and the QE.
-> This support is documented in GHCI 1.0 spec "5.4 TD attestation".
-> 
-> Implement a basic attestation driver to ...
+I meant maintenance of user thread FPU state. Let me rephrase. 
 
-Final version looks like below:
-
-In TDX guest, attestation is used to verify the trustworthiness of a TD
-to other entities before provisioning secrets to the TD.
-
-One usage example is, when a TD guest uses encrypted drive and if the
-decryption keys required to access the drive are stored in a secure 3rd
-party keyserver, the key server can use attestation to verify TD's
-trustworthiness and release the decryption keys to the TD.
-
-The attestation process consists of two steps: TDREPORT generation and
-Quote generation.
-
-TDREPORT (TDREPORT_STRUCT) is a fixed-size data structure generated by
-the TDX module which contains TD-specific information (such as TD
-measurements), platform security version, and the MAC to protect the
-integrity of the TDREPORT. The TD kernel uses TDCALL[TDG.MR.REPORT] to
-get the TDREPORT from the TDX module. A user-provided 64-Byte
-REPORTDATA is used as input and included in the TDREPORT. Typically it
-can be some nonce provided by attestation service so the TDREPORT can
-be verified uniquely. More details about TDREPORT can be found in
-Intel TDX Module specification, section titled "TDG.MR.REPORT Leaf".
-
-Also note that the MAC added to the TDREPORT is bound to the platform.
-So TDREPORT can only be verified locally. Intel SGX Quote Enclave (QE)
-can be leveraged to verify the TDREPORT locally and convert it to a
-remote verifiable Quote to support remote attestation of the TDREPORT.
-
-After getting the TDREPORT, the second step of the attestation process
-is to send it to QE or Quote Generation Service (QGS) to generate a TD
-Quote. The QE sends the Quote back after it is generated. How is the
-data sent and received is QE implementation and deployment specific.TD
-userspace attestation software can use whatever communication channel
-available (i.e. tcp/ip, vsock) to communicate with the QE using whatever
-data format. TDX also defines TDVMCALLs to allow TD to ask VMM to
-facilitate sending/receiving data between TD attestation software and
-the QE. This support is documented in GHCI 1.0 spec "5.4 TD attestation".
-
-Implement a basic attestation driver to allow TD userspace to get the
-TDREPORT, which is sent to QE by the attestation software to generate
-a Quote for remote verification.
-
-Also note that explicit access permissions are not enforced in this
-driver because the quote and measurements are not a secret. However
-the access permissions of the device node can be used to set any
-desired access policy. The udev default is usually root access
-only.
-
-Operations like getting TDREPORT or Quote generation involves sending
-a blob of data as input and getting another blob of data as output. It
-was considered to use a sysfs interface for this, but it doesn't fit
-well into the standard sysfs model for configuring values. It would be
-possible to do read/write on files, but it would need multiple file
-descriptors, which would be somewhat messy. IOCTLs seems to be the best
-fitting and simplest model here.
-
-> "
-> 
->>
->> Implement a basic attestation driver to allow TD userspace to get the
->> TDREPORT, which is sent to QE by the attestation software to generate
->> a Quote for remote verification.
->>
->> Also note that explicit access permissions are not enforced in this
->> driver because the quote and measurements are not a secret. However
->> the access permissions of the device node can be used to set any
->> desired access policy. The udev default is usually root access
->> only.
-> 
-> The IOCTL vs /sysfs isn't discussed.
-
-My previous versions had it. But I removed it in later revisions
-because I thought the commit log is alredy long and IOCTL interface
-justification is less important compared to other details.
-
-> 
-> For instance, after rough thinking, why is the IOCTL better than below approach
-> using /sysfs?
-> 
-> echo <REPORTDATA> > /sys/kernel/coco/tdx/attest/reportdata
-> cat /sys/kernel/coco/tdx/attest/tdreport
-> 
-> Each "echo <REPORTDATA>" to '/sys/.../reportdata' triggers the driver to call
-> TDCALL to get the TDREPORT, which is available at '/sys/.../tdreport'.
-> 
-> The benefit of using IOCTL I can think of now is it is perhaps more secure, as
-> with IOCTL the REPORTDATA and the TDREPORT is visible to the process which calls
-> the IOCTL, while using the /sysfs they are potentially visible to any process.
-> Especially the REPORTDATA, i.e. it can come from attestation service after the
-> TD attestation agent sets up a secure connection with it.
-> 
-> Anyway, my 2cents above.
-
-IMO, since TDREPORT is not a secret we don't have to hightlight security
-concern here. How about following?
-
-Operations like getting TDREPORT or Quote generation involves sending
-a blob of data as input and getting another blob of data as output. It
-was considered to use a sysfs interface for this, but it doesn't fit
-well into the standard sysfs model for configuring values. It would be
-possible to do read/write on files, but it would need multiple file
-descriptors, which would be somewhat messy. IOCTLs seems to be the best
-fitting and simplest model here.
-
-
-
-> 
->>
->> Reviewed-by: Tony Luck <tony.luck@intel.com>
->> Reviewed-by: Andi Kleen <ak@linux.intel.com>
->> Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
->> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
->> ---
->>   arch/x86/coco/tdx/Makefile      |   2 +-
->>   arch/x86/coco/tdx/attest.c      | 138 ++++++++++++++++++++++++++++++++
->>   arch/x86/include/uapi/asm/tdx.h |  36 +++++++++
->>   3 files changed, 175 insertions(+), 1 deletion(-)
->>   create mode 100644 arch/x86/coco/tdx/attest.c
->>   create mode 100644 arch/x86/include/uapi/asm/tdx.h
->>
->> diff --git a/arch/x86/coco/tdx/Makefile b/arch/x86/coco/tdx/Makefile
->> index 46c55998557d..d2db3e6770e5 100644
->> --- a/arch/x86/coco/tdx/Makefile
->> +++ b/arch/x86/coco/tdx/Makefile
->> @@ -1,3 +1,3 @@
->>   # SPDX-License-Identifier: GPL-2.0
->>   
->> -obj-y += tdx.o tdcall.o
->> +obj-y += tdx.o tdcall.o attest.o
->> diff --git a/arch/x86/coco/tdx/attest.c b/arch/x86/coco/tdx/attest.c
->> new file mode 100644
->> index 000000000000..4543a0264ce7
->> --- /dev/null
->> +++ b/arch/x86/coco/tdx/attest.c
->> @@ -0,0 +1,138 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/*
->> + * attest.c - TDX guest attestation interface driver.
 >> + *
->> + * Implements user interface to trigger attestation process.
+>> + * This protects against preemption, soft interrupts and in-kernel FPU
+>> + * usage on both !RT and RT enabled kernels.
 >> + *
->> + * Copyright (C) 2022 Intel Corporation
+>> + * !RT kernels use local_bh_disable() to prevent soft interrupt processing
+>> + * and preemption.
 >> + *
+>> + * On RT kernels local_bh_disable() is not sufficient because it only
+>> + * serializes soft interrupt related sections via a local lock, but stays
+>> + * preemptible. Disabling preemption is the right choice here as bottom
+>> + * half processing is always in thread context on RT kernels so it
+>> + * implicitly prevents bottom half processing as well.
 >> + */
->> +
->> +#define pr_fmt(fmt) "x86/tdx: attest: " fmt
->> +
->> +#include <linux/module.h>
-> 
-> Still need this?
-> 
->> +#include <linux/miscdevice.h>
->> +#include <linux/uaccess.h>
->> +#include <linux/fs.h>
->> +#include <linux/mm.h>
->> +#include <linux/slab.h>
->> +#include <linux/set_memory.h>
->> +#include <linux/dma-mapping.h>
-> 
-> Still need above two?
-> 
->> +#include <linux/jiffies.h>
-> 
-> Don't need this either.
-> 
->> +#include <linux/io.h>
->> +#include <asm/apic.h>
->> +#include <asm/tdx.h>
->> +#include <asm/irq_vectors.h>
->> +#include <uapi/asm/tdx.h>
-> 
-> Please get rid of unnecessary headers.
-
-Ok. I will remove unused headers.
-
-> 
->> +
->> +#define DRIVER_NAME "tdx-attest"
->> +
->> +/* TDREPORT module call leaf ID */
->> +#define TDX_GET_REPORT			4
->> +
->> +/* Upper 32 bits has the status code, so mask it */
->> +#define TDCALL_STATUS_CODE_MASK		0xffffffff00000000
->> +#define TDCALL_STATUS_CODE(a)		((a) & TDCALL_STATUS_CODE_MASK)
->> +
->> +static struct miscdevice miscdev;
->> +
->> +static long tdx_get_report(void __user *argp)
+>> +void fpregs_lock(void)
 >> +{
->> +	void *reportdata = NULL, *tdreport = NULL;
->> +	long ret = 0;
->> +
->> +	/* Allocate buffer space for REPORTDATA */
->> +	reportdata = kmalloc(TDX_REPORTDATA_LEN, GFP_KERNEL);
->> +	if (!reportdata)
->> +		return -ENOMEM;
->> +
->> +	/* Allocate buffer space for TDREPORT */
->> +	tdreport = kmalloc(TDX_REPORT_LEN, GFP_KERNEL);
->> +	if (!tdreport) {
->> +		ret = -ENOMEM;
->> +		goto failed;
+>> +	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
+>> +		local_bh_disable();
+>> +	else
+>> +		preempt_disable();
+>
+> So I'm wondering: can we get rid of this distinction and simply do
+> preempt_disable()?
 > 
-> Perhaps 'failed' -> 'out'.  That code is for both error and non-error case.
+> Or can FPU be used in softirq processing too so we want to block that
+> there?
 
-Ok.
+Yes, FPU can be used legitimately in softirq processing context.
 
-> 
->> +	}
->> +
->> +	/* Copy REPORTDATA from the user buffer */
->> +	if (copy_from_user(reportdata, argp, TDX_REPORTDATA_LEN)) {
->> +		ret = -EFAULT;
->> +		goto failed;
->> +	}
->> +
->> +	/*
->> +	 * Generate TDREPORT using "TDG.MR.REPORT" TDCALL.
->> +	 *
->> +	 * Pass the physical address of user generated REPORTDATA
->> +	 * and the physical address of the output buffer to the TDX
->> +	 * module to generate the TDREPORT. Generated data contains
->> +	 * measurements/configuration data of the TD guest. More info
->> +	 * about ABI can be found in TDX 1.0 Module specification, sec
->> +	 * titled "TDG.MR.REPORT".
-> 
-> I guess you can get rid of the entire second paragraph.  If the reference to the
-> spec is useful, then keep it but other sentences are not quite useful.  Perhaps:
-> 
-> 	Get the TDREPORT using REPORTDATA as input.  Refer to 22.3.3
-> 	TDG.MR.REPORT leaf in the TDX Module 1.0 Specification for detail
-> 	information.
+> But even if, fpu_in_use will already state that fact...
 
-How about following?
+Right, though currently it's guaranteed that softirq processing context
+can use the FPU. Quite some of the network crypto work runs in softirq
+context, so this might cause a regression. If so, then this needs to be
+an explicit commit on top which is easy to revert. Let me stare at it
+some more.
 
-Pass REPORTDATA as input and generate TDREPORT using "TDG.MR.REPORT"
-TDCALL. Refer to 22.3.3 TDG.MR.REPORT leaf in the TDX Module 1.0
-Specification for detailed information.
+>> @@ -410,10 +433,9 @@ void kernel_fpu_begin_mask(unsigned int
+>>  {
+>>  	preempt_disable();
+>>  
+>> -	WARN_ON_FPU(!kernel_fpu_usable());
+>> -	WARN_ON_FPU(this_cpu_read(in_kernel_fpu));
+>> +	WARN_ON_ONCE(!kernel_fpu_usable());
+>>  
+>> -	this_cpu_write(in_kernel_fpu, true);
+>> +	this_cpu_write(fpu_in_use, true);
+>
+> This starts to look awfully similar to fpregs_lock()...
 
-> 
->> +	 */
->> +	ret = __tdx_module_call(TDX_GET_REPORT, virt_to_phys(tdreport),
->> +				virt_to_phys(reportdata), 0, 0, NULL);
->> +	if (ret) {
->> +		pr_debug("TDREPORT TDCALL failed, status:%lx\n",
->> +				TDCALL_STATUS_CODE(ret));
-> 
-> You can just print out the exact error code.  It's more informative and can help
-> to debug.
+Similar, but not identical and we cannot use fpregs_lock() here as we
+don't want to have local_bh_disable() when in hard interrupt context.
 
-As per spec, only upper 32 bits has status code. 0:32 does not have any
-useful info.
+>>  	if (!(current->flags & PF_KTHREAD) &&
+>>  	    !test_thread_flag(TIF_NEED_FPU_LOAD)) {
+>> @@ -433,9 +455,9 @@ EXPORT_SYMBOL_GPL(kernel_fpu_begin_mask)
+>>  
+>>  void kernel_fpu_end(void)
+>>  {
+>> -	WARN_ON_FPU(!this_cpu_read(in_kernel_fpu));
+>> +	WARN_ON_ONCE(!this_cpu_read(fpu_in_use));
+>>  
+>> -	this_cpu_write(in_kernel_fpu, false);
+>> +	this_cpu_write(fpu_in_use, false);
+>>  	preempt_enable();
+>
+> ... and this to fpregs_unlock().
+>
+> Can we use those here too instead of open-coding them mostly?
 
-> 
->> +		ret = -EIO;
->> +		goto failed;
->> +	}
->> +
->> +	/* Copy TDREPORT back to the user buffer */
->> +	if (copy_to_user(argp, tdreport, TDX_REPORT_LEN))
->> +		ret = -EFAULT;
->> +
->> +failed:
->> +	kfree(reportdata);
->> +	kfree(tdreport);
->> +	return ret;
->> +}
->> +
->> +static long tdx_attest_ioctl(struct file *file, unsigned int cmd,
->> +			     unsigned long arg)
->> +{
->> +	void __user *argp = (void __user *)arg;
->> +	long ret = 0;
-> 
-> If you initialize ret to -EINVAL here, then ...
+Not really, unless we drop the use FPU in softirq processing context
+guarantee. See above.
 
-Ok. I will initialize it to -EINVAL.
+Let me think about it.
 
->> +
->> +	switch (cmd) {
->> +	case TDX_CMD_GET_REPORT:
->> +		ret = tdx_get_report(argp);
->> +		break;
->> +	default:
->> +		pr_debug("cmd %d not supported\n", cmd);
->> +		ret = -EINVAL;
-> 
-> You don't have to set it here.
+Thanks,
 
-Ok.
-
-> 
->> +		break;
->> +	}
->> +
->> +	return ret;
->> +}
->> +
->> +static const struct file_operations tdx_attest_fops = {
->> +	.owner		= THIS_MODULE,
->> +	.unlocked_ioctl	= tdx_attest_ioctl,
->> +	.llseek		= no_llseek,
->> +};
->> +
->> +static int __init tdx_attestation_init(void)
->> +{
->> +	long ret;
->> +
->> +	/* Make sure we are in a valid TDX platform */
->> +	if (!cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
->> +		return -EIO;
->> +
->> +	miscdev.name = DRIVER_NAME;
->> +	miscdev.minor = MISC_DYNAMIC_MINOR;
->> +	miscdev.fops = &tdx_attest_fops;
->> +
->> +	ret = misc_register(&miscdev);
->> +	if (ret) {
->> +		pr_err("misc device registration failed\n");
-> 
-> pr_debug() is used when __tdx_module_call() fails, and in the default case in
-> tdx_attest_ioctl() too.
-> 
-> Shouldn't those error msg be printed using the same way?
-
-For IOCTL case, I expect userspace to print the error. But for init
-code error, it needs to be handled by kernel. So I have used pr_err
-here.
-
-> 
->> +		return ret;
->> +	}
->> +
->> +	pr_debug("module initialization success\n");
-> 
-> I don't think it's a module anymore?
-
-Agree. I will remove the keyword module here.
-
-> 
-> Also perhaps just pr_info()?
-
-Misc device creation itself is sufficient proof of successful
-loading. So I will remove this debug message completely.
-
-> 
->> +
->> +	return 0;
->> +}
->> +device_initcall(tdx_attestation_init)
->> diff --git a/arch/x86/include/uapi/asm/tdx.h b/arch/x86/include/uapi/asm/tdx.h
->> new file mode 100644
->> index 000000000000..9a7377723667
->> --- /dev/null
->> +++ b/arch/x86/include/uapi/asm/tdx.h
->> @@ -0,0 +1,36 @@
->> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
->> +#ifndef _UAPI_ASM_X86_TDX_H
->> +#define _UAPI_ASM_X86_TDX_H
->> +
->> +#include <linux/types.h>
->> +#include <linux/ioctl.h>
->> +
->> +/* Length of the REPORTDATA used in TDG.MR.REPORT TDCALL */
->> +#define TDX_REPORTDATA_LEN		64
->> +
->> +/* Length of TDREPORT used in TDG.MR.REPORT TDCALL */
->> +#define TDX_REPORT_LEN			1024
-> 
-> I prefer TDX_TDREPORT_LEN.
-> 
->> +
->> +/**
->> + * struct tdx_report_req: Get TDREPORT from the TDX module.
-> 
-> Just get the TDREPORT is enough I guess.
-
-Get TDREPORT using REPORTDATA as input?
-
-> 
->> + *
->> + * @reportdata : User-defined 64-Byte REPORTDATA to be included into
->> + *		 TDREPORT. Typically it can be some nonce provided by
->> + *		 attestation software so the generated TDREPORT can be
->> + *		 uniquely verified.
->> + * @tdreport   : TDREPORT output from TDCALL[TDG.MR.REPORT] of size
->> + *		 TDX_REPORT_LEN.
->> + *
->> + * Used in TDX_CMD_GET_REPORT IOCTL request.
->> + */
->> +struct tdx_report_req {
->> +	union {
->> +		__u8 reportdata[TDX_REPORTDATA_LEN];
->> +		__u8 tdreport[TDX_REPORT_LEN];
->> +	};
->> +};
-> 
-> I am not sure overriding the input is a good idea, but will leave to others.
-
-TDCALL uses it that way. So I have followed the same model.
-
-> 
->> +
->> +/* Get TDREPORT from the TDX module using TDCALL[TDG.MR.REPORT) */
-> 
-> Just get the TDREPORT is enough I guess.
-
-May be following?
-
-Get TDREPORT using TDCALL[TDG.MR.REPORT)
-
-> 
->> +#define TDX_CMD_GET_REPORT		_IOWR('T', 0x01, struct tdx_report_req)
->> +
->> +#endif /* _UAPI_ASM_X86_TDX_H */
-> 
-
--- 
-Sathyanarayanan Kuppuswamy
-Linux Kernel Developer
+        tglx
