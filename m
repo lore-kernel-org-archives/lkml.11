@@ -2,101 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BAC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385224AbiEBNVN (ORCPT
+        id S1359372AbiEBNVX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 09:21:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50324 "EHLO
+        Mon, 2 May 2022 09:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385210AbiEBNVG (ORCPT
+        with ESMTP id S1385219AbiEBNVU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 09:21:06 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4118DB7DB;
-        Mon,  2 May 2022 06:17:38 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id D8BAC5C0089;
-        Mon,  2 May 2022 09:17:35 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Mon, 02 May 2022 09:17:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=living180.net;
-         h=cc:cc:content-transfer-encoding:content-type:date:date:from
-        :from:in-reply-to:message-id:mime-version:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1651497455; x=1651583855; bh=Re
-        UNB5qURC1x6lVfQVLPXptH6UKZn9HvHv/GBtLg1r8=; b=o/ytHf5mWgj1XYJ48V
-        YNMhE+RdxqOxN2l4Oz0JV0ZJ8HSxMbxXkHdRDuX3lAJ/WsTs2DYy1FsXAle7wiJM
-        AXnlbUf1H6DSDd4eCqG5c0QJBSKmGPzvlf/5+Ufi0YTVw+ZevQv+MgWAWArGQ3H2
-        WyJ1gId21z3xTPulBr1I39xfVUmkwHNbGobQghhKwgEWh9By6B1s5yNTxhKP5aHw
-        9Xx9aNvBU73NwItmo1DMWbjpkj2tSIQejpAY3YPdoE/fB79hBMj+/dgcxqvGBdfb
-        OJv4Ns6/gviVwWEAtmGAcs0+wQ8YjC+fuqiLf8rKHb4phZeGOqAFsYloUhlX2tDM
-        RE4g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1651497455; x=1651583855; bh=ReUNB5qURC1x6lVfQVLPXptH6UKZn9HvHv/
-        GBtLg1r8=; b=v2fHZeUsa1HzjFnENokBZVERtuU/DS6fo1d3j4gH8cYehUxp0TQ
-        Acgv2dGpUH7lIc231gVslpwnoLg72WUy9IvalFBBUYJhG9nrF+UCMqZKc0522+53
-        QN3JDzCDgGEGMo6j4GU45UNO+BkKwXNnyCzSHRrzx1Go4zwOsX9TFsxCtx7ANl4+
-        aG2auxt07O3X5vuWAkZRTAGEL4fQTArEiLOubKEQmtdszGvMW+kV3o5uo0EhgJlN
-        pjfVgL8LP/J5+EFPHQA0sU9oUpol/+cpw7+g78+1gQK58boIvcMYAzSVCprzy93M
-        MCMzmXvtJCd0ICQOdmVLWx+R1PJ9itDxrVg==
-X-ME-Sender: <xms:79lvYhhKUjtopLgrujDk0-uF4cMvJk0A7wGUMNkQXFetGoojB4puNA>
-    <xme:79lvYmA4sZZUYWi_pDly5MsQnTGk8M8gIVpnz3GVdQBcCChn3UlWQOGW-TUdyB2Lp
-    BkoYJudM5wuBw>
-X-ME-Received: <xmr:79lvYhGZ-5GS059KtRjQyL-KJG0eiZoXkR-sUuJOF16_BHjTlqp00zUTsBwkCQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehgdeiudcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefkffggfgfhufevvfgtgfesthekredttdefjeenucfhrhhomhepffgrnhhivghl
-    ucfjrghrughinhhguceoughhrghrughinhhgsehlihhvihhnghdukedtrdhnvghtqeenuc
-    ggtffrrghtthgvrhhnpedvffelhffgvdefueeufffhgeekgeehtedvudeikeefudejgfej
-    lefgleehfedtvdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpeguhhgrrhguihhngheslhhivhhinhhgudektddrnhgvth
-X-ME-Proxy: <xmx:79lvYmTeNFKxc22-4DensirrktA3_tGVi7b6lZDCLptp_JH3H_MJyg>
-    <xmx:79lvYuxMxHiCvYqEQO2FfXplWfl0eCIDxjaEGOCTSKo9DBhcutfM6A>
-    <xmx:79lvYs5kJ9v9SKa7IYueaZdi-0fYg_FWsTm0jdjl3XhYfXZ9qbnPBg>
-    <xmx:79lvYi9WHiEdEGGUOLar5bHZQJrHt0A56UtKUjZPowiyzWnD-ZxwmA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 2 May 2022 09:17:33 -0400 (EDT)
-Message-ID: <7925e262-e0d4-6791-e43b-d37e9d693414@living180.net>
-Date:   Mon, 2 May 2022 16:17:30 +0300
+        Mon, 2 May 2022 09:21:20 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2051.outbound.protection.outlook.com [40.107.237.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD18B7DB
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 06:17:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BmJ0b7Yb7F86+vK00bFoqqZjUofmchKFARv9xLznSHXqkxHoqfNAZWnaNGA81TX7w86aSTWlB3WMCk429FsHHBMrghTFB5K7FNdo2Xn9TRqB1y+xUsgSex+axdMPpZ7X9P/2CMaaLQiVCrCVNwYpBY9yEOcUXv0xhq8K+JCcLnXv08cPUq2cBxULmNseaM0rtpDGFYdo5ZniAY6ZDTgA7rotvtnE8fJWv65BS8walglmuTm+WHGW0zJb9dWT2UjKIZEWupETA6gEtFxy4WBXiu+10oiOiPXWlK5Y/RnxhJfYEtqmYRFFz/Nnb0ijLY0nBka/ZzlcmYgxGulGrx3E4g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=arye5+VMbcqJ0y+iYaCcf/471wTNKXplpmjEaQMs45U=;
+ b=USwHtGrS5bRL7aiZKOVSBenYj4ykQs2bX8gJKCMmr0vcfeuGz69HZYfdBKVZTlH53W9B0b8ux4wsqhDWmn6Yk2onS1GJ6z/2eQY2yRjuf7U9xukKIM74Mnm4uUwVuV2ks1boRqnFZr1UrPqohl5oG1rdzky3U3xpZQ+pTdph1zsp4zxECpJTp57F/iaTcbQem/9uIcoMxd/EEdPpc25nZWz0nwbGlm1cAJWpLEkvMfL66Iz4WLWal+L8zsetgMk9FHBGAyR354eRXesEjhKw0XutuzGt+a3Tr+VC7ILc/aW+yGrWn72qwnTzp1Xqk07V/mHfUqmLeUEZ0ZpiM/Mquw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=arye5+VMbcqJ0y+iYaCcf/471wTNKXplpmjEaQMs45U=;
+ b=NZK+jQREMtLXAIUWWaEb5PMqBc5FcK+zYd3w0YziAjLAANo9gqoFthntdZiNuOfAsMg7G8Gj1lVJwheEytqiF6xe1pdPBLWZsWvVZXFjPkCkRty8Ez5/uMqf1aOjmp1Z/uwm4nJ0CG2ZPGGghMcEFVKxNkV4BNwksGgfi6hJ9SD9vTXxWcUUw0mPDKxjp8SIy8RadItglrM/4FLgRvGri0J3DbGRLvFwN8QIiVq9wJuEwIMeuG/nMUm35i+Z7nwxWb+Yp/5TdfWQAig5bNym01UQUomVATsF7eLRjPemZMik6EJrOGNOX0OVJqcxSJ1kbtHoeECehMXDVriVTdH3dg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by CH2PR12MB3798.namprd12.prod.outlook.com (2603:10b6:610:23::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Mon, 2 May
+ 2022 13:17:48 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ec2d:9167:1b47:2db2%6]) with mapi id 15.20.5206.024; Mon, 2 May 2022
+ 13:17:48 +0000
+Date:   Mon, 2 May 2022 10:17:47 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/5] iommu/vt-d: Check domain force_snooping against
+ attached devices
+Message-ID: <20220502131747.GJ8364@nvidia.com>
+References: <20220501112434.874236-1-baolu.lu@linux.intel.com>
+ <20220501112434.874236-4-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220501112434.874236-4-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: MN2PR01CA0005.prod.exchangelabs.com (2603:10b6:208:10c::18)
+ To MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Daniel Harding <dharding@living180.net>
-Subject: [REGRESSION] lxc-stop hang on 5.17.x kernels
-Content-Language: en-US
-Cc:     regressions@lists.linux.dev, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-To:     Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1e1ffe83-f0e5-4c7d-4d7a-08da2c3e274c
+X-MS-TrafficTypeDiagnostic: CH2PR12MB3798:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR12MB3798F85A586A4048D959A095C2C19@CH2PR12MB3798.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /FOtB7CuQTDHyyls5u7Cp96Ojts5F2G9qCikw9eSQuz2aAcZ+9k40JertCtUAT2t64JY8i1dP9Ew2luzFcdPRPs8Tz83m9srgAQkTP1e/P7hBQ/yN0dP/zvMrjeMC/IQqTs8xARbWsSGLQOO3o34viOyAAFC8cuB9jDBOrPK1N6T/G37BiuxnPQtxtj0MlTxLWj5jdpCKpTJzpUE2KiadR7QEOOPBIoKj+y/XoGjK0fnVRCnw4JnSAtFxfjToYp+bjabDPW6PaDsHhHBZvMCJqqh2ohOgBEv3U2WBxbq9GIKR8mbjJcN6cMxd5uDHv49SRrYcb1QXnJms0sz6fl7pA4is3SIuES62FTiX1vVM9SC4qFxl4HoWdmXwnsUhudSgwVB1nQLklPIkzuTMVMRNt7Tu1BVS1+Epmvdsd+hPe59iF5ivyRGGGU1b4BaeOfDvFibLvdoNrPrIoj4Pnt3bSRjUq6P9EJjXI6uQILhKcSfBaBiPgKjEuFkfAhzPAo/I18ODQb/Rm2Bc+ouK+s5SFisMkxsjn6INw36u8q3/kE7iOQbydMjLYX0fuaonK8EVFY0ZO122bXztKKPnTqZ4NNnKyx2y21eRPjWSbxs5YaWWT8jaDcbwkVPUt+aMUbHzQ7BxViH3GCgz+GA8H21Xw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(6506007)(83380400001)(5660300002)(6512007)(38100700002)(316002)(86362001)(186003)(2616005)(8936002)(1076003)(36756003)(4326008)(33656002)(6916009)(8676002)(66556008)(54906003)(2906002)(508600001)(66946007)(66476007)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?p8CHKvlnBeU09sijha3BOZHDUoi98kwXruqEGxLUXAfVyIGbKLRrI3MHjwiv?=
+ =?us-ascii?Q?O2fmjd+8Aig5vkoW02AeDS7wPNVFHjo+/PudVmStDa0elPdTJlErc+Y9Z/FO?=
+ =?us-ascii?Q?1j6dA9tFKtlnADaUCu8TVr36qYmZzk0NZiIaKZ4nz01pyvg07ZfALBKqV1R3?=
+ =?us-ascii?Q?G3AGvWLt/pZm60K9wZiDi5yrSXXeCLt03bMVz0cEUoOygg19H/bmQqBVCCzH?=
+ =?us-ascii?Q?yctiRkdpLTZG2PCwe6+wELZfM4cZN/O47jBhEH1FsSNNtUlNswWxh2sVNM6i?=
+ =?us-ascii?Q?d7cfm10Pfo5Wy3otjvlnSQlUbHx+Bpf2OOVV+PuH5zff5IdP+hI02vXG0TaS?=
+ =?us-ascii?Q?W/hvxe2rxECYwscxj8dujlh1S2aOoj91wgcePG4qxMAGHfBfNVcLceWmkvkF?=
+ =?us-ascii?Q?1n5LTlRUxcAbQNk682cB4XfNlBljyVdtOsvfHAncyNmeiZfrpsLl++w33KHa?=
+ =?us-ascii?Q?HjyPh9zkfgA6x7Bk21efubQKpqps2O3KOgT4Wr45EpWrDPXm9q98rEXigCv+?=
+ =?us-ascii?Q?Z8/0hvwyJxokCQtVwFzVMpHoEyfnTzLJiTkUfVrAh4nJ5uU6kTFqlwJzVGM7?=
+ =?us-ascii?Q?8OAqk9omIRaUlZng7DadMZnP8I9jBzekXMYkAnGf4J6Hp/tEUAomt59nO16m?=
+ =?us-ascii?Q?TQzFhfUw0RcLSqoBhR99Cu5K5NSTHwLPkBEyQRzat1m3fe04nZsnoSh24HY/?=
+ =?us-ascii?Q?qqbjMb6fAsBR91N8MeSu2iEuhf80Dk8tV+dUp18TEmlvTbnHPB0TmNtYSzBn?=
+ =?us-ascii?Q?TgweXdB8oJ0XJsc2a55UKN1wswpHR1k0MmxVxsszSTnU1cDTs7C/dDyZnfMN?=
+ =?us-ascii?Q?sypxuW0rjDFJxnZs1wIeD8OBoqPfOeR6lBiqHWu76gDDH+CPacbBxILi4YbB?=
+ =?us-ascii?Q?Za8pNrhnO4fcB2xfij0gDScG90axCO3e4gxyoTxta+ksy3aKkONehXU5ai4F?=
+ =?us-ascii?Q?sKzMLOBhdGpEp1K8VMqFeFNHb0Je3S1f8dO79NkE0Jny9QuW2jfIXRt5RYgS?=
+ =?us-ascii?Q?S3ISHvQYkMRRSozOj9767qwm6U1qK7eMHbznXLzrvuyR4cKqrV3zocVN0gqQ?=
+ =?us-ascii?Q?tLtMAOqQVX5MO8q+Ig98hrldcBGbS9pWxwXk2uNOvwku6UqOn/MbjkBzA34r?=
+ =?us-ascii?Q?6Y3pHAE3W31kZ46CkBvTT/4CWVyIDlvdJruezqSWqU4qsCW1qjpRdcKmd6sp?=
+ =?us-ascii?Q?ibHWa9kWOmNPK23YfMzyI+RltalW1JxcsH1BK1X5oSoReHxlr8F0YElnjAe5?=
+ =?us-ascii?Q?zaljLc0GOVo6ZwBL9ybov8/4PKnDw6JVx5ecSSVStTt7KQYe0l88FDlejgaO?=
+ =?us-ascii?Q?4OckfHEagnipgkgvzv4FsEvOOybo091rNr4y/UsuLET3eCEOGQ4VqSmPLEBc?=
+ =?us-ascii?Q?Abob7taF24WaKGHvl6OnpYB6fzW4raw+8qetO1lGLjYqi81zfA3z78umK5Zk?=
+ =?us-ascii?Q?JYVOq8ErskJmSfg6Ht449+Uuffs8FMlnBX/gQUPWsR6fRyBxJbByaTtiOqEG?=
+ =?us-ascii?Q?rY6N87kVAyiGo0CW8w40ObBbEh9Rxp1090TJaQHCvkT1gsCmFmKXzgFmMS82?=
+ =?us-ascii?Q?kVlv5KDu8kz/fuhscNWvF5nYVWdXZQIqg3B+KPGCRn3CGsrTTaOGfRJDYt0b?=
+ =?us-ascii?Q?tbsjygzJvyJYArWETlUefLLeMRNiHbFadzoYKe+pDuCDT9UtyYYERRZGjBT0?=
+ =?us-ascii?Q?KuBKzv29xDJ4p401TGqQUzdFV0JZWN0WsdTJbLj7z+/xGZQ6FkY/AAoEC7EG?=
+ =?us-ascii?Q?Knzas90YSg=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e1ffe83-f0e5-4c7d-4d7a-08da2c3e274c
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2022 13:17:48.6502
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: eDlMqMVKaw3OFQTuqVQBCCkXCmDh6uus4mNyq9YiAUffIIiPhc9KjBnYiDpB0ufY
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB3798
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I use lxc-4.0.12 on Gentoo, built with io-uring support 
-(--enable-liburing), targeting liburing-2.1.  My kernel config is a very 
-lightly modified version of Fedora's generic kernel config. After moving 
-from the 5.16.x series to the 5.17.x kernel series, I started noticed 
-frequent hangs in lxc-stop.  It doesn't happen 100% of the time, but 
-definitely more than 50% of the time.  Bisecting narrowed down the issue 
-to commit aa43477b040251f451db0d844073ac00a8ab66ee: io_uring: poll 
-rework. Testing indicates the problem is still present in 5.18-rc5. 
-Unfortunately I do not have the expertise with the codebases of either 
-lxc or io-uring to try to debug the problem further on my own, but I can 
-easily apply patches to any of the involved components (lxc, liburing, 
-kernel) and rebuild for testing or validation.  I am also happy to 
-provide any further information that would be helpful with reproducing 
-or debugging the problem.
+On Sun, May 01, 2022 at 07:24:32PM +0800, Lu Baolu wrote:
+> +static bool domain_support_force_snooping(struct dmar_domain *domain)
+> +{
+> +	struct device_domain_info *info;
+> +	unsigned long flags;
+> +	bool support = true;
+> +
+> +	spin_lock_irqsave(&device_domain_lock, flags);
+> +	if (list_empty(&domain->devices))
+> +		goto out;
 
-Regards,
+Why? list_for_each_entry will just do nothing..
 
-Daniel Harding
+> +	list_for_each_entry(info, &domain->devices, link) {
+> +		if (!ecap_sc_support(info->iommu->ecap)) {
+> +			support = false;
+> +			break;
+> +		}
+> +	}
+> +out:
+> +	spin_unlock_irqrestore(&device_domain_lock, flags);
+> +	return support;
+> +}
+> +
+> +static void domain_set_force_snooping(struct dmar_domain *domain)
+> +{
+> +	struct device_domain_info *info;
+> +	unsigned long flags;
+> +
+> +	/*
+> +	 * Second level page table supports per-PTE snoop control. The
+> +	 * iommu_map() interface will handle this by setting SNP bit.
+> +	 */
+> +	if (!domain_use_first_level(domain))
+> +		return;
+> +
+> +	spin_lock_irqsave(&device_domain_lock, flags);
+> +	if (list_empty(&domain->devices))
+> +		goto out_unlock;
+> +
+> +	list_for_each_entry(info, &domain->devices, link)
+> +		intel_pasid_setup_page_snoop_control(info->iommu, info->dev,
+> +						     PASID_RID2PASID);
+> +
+> +out_unlock:
+> +	spin_unlock_irqrestore(&device_domain_lock, flags);
+> +}
+> +
+>  static bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain)
+>  {
+>  	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+>  
+> -	if (!domain_update_iommu_snooping(NULL))
+> +	if (!domain_support_force_snooping(dmar_domain))
+>  		return false;
 
-#regzbot introduced: aa43477b040251f451db0d844073ac00a8ab66ee
+Maybe exit early if force_snooping = true?
+
+> +	domain_set_force_snooping(dmar_domain);
+>  	dmar_domain->force_snooping = true;
+> +
+>  	return true;
+>  }
+>  
+> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> index f8d215d85695..815c744e6a34 100644
+> +++ b/drivers/iommu/intel/pasid.c
+> @@ -762,3 +762,21 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+>  
+>  	return 0;
+>  }
+> +
+> +/*
+> + * Set the page snoop control for a pasid entry which has been set up.
+> + */
+
+So the 'first level' is only used with pasid?
+
+> +void intel_pasid_setup_page_snoop_control(struct intel_iommu *iommu,
+> +					  struct device *dev, u32 pasid)
+> +{
+> +	struct pasid_entry *pte;
+> +	u16 did;
+> +
+> +	pte = intel_pasid_get_entry(dev, pasid);
+> +	if (WARN_ON(!pte || !pasid_pte_is_present(pte)))
+> +		return;
+> +
+> +	pasid_set_pgsnp(pte);
+
+Doesn't this need to be done in other places too, like when a new attach
+is made? Patch 5 removed it, but should that be made if
+domain->force_snooping?
+
+Jason
