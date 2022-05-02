@@ -2,52 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C61FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 14:15:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BE00C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 14:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385517AbiEBOSa (ORCPT
+        id S1385522AbiEBOSh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 10:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54836 "EHLO
+        Mon, 2 May 2022 10:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235633AbiEBOS1 (ORCPT
+        with ESMTP id S1385523AbiEBOSd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 10:18:27 -0400
+        Mon, 2 May 2022 10:18:33 -0400
 Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC15615830;
-        Mon,  2 May 2022 07:14:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E8915830;
+        Mon,  2 May 2022 07:15:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651500899; x=1683036899;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=t9A0/owut74r5wrIreSk8Ef8X68zNYGXFoWQAifley0=;
-  b=JW/tKRKTFGEilYxb7bi6QZ2DQH3qmy8RNOCzy4CpkOrw9O4y5V/eZa7U
-   3ha8wrAWodW1dIVzT1wRGccvq4LnAQ5y2TwY5JSWexQp/+t1f4fMnZ475
-   syrvxZ+G6ZBsOucIERe6vS0j/l+U2DJ1klhqxygCYbv7HuWpflvHVqkMl
+  t=1651500904; x=1683036904;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=48+rVERvNTQxNqzw5fqv4Nm35unnocBFemLJibc0Q54=;
+  b=YWgn7RQ6jD7QXGM2gYgQbmq3fRy0lv+IPXNbXBVF/OioVLNtFyjr+4zs
+   cxBgY1x7MemnpDRsO9KjxGbeA4uYVOkNltNDNL7iMPfo/dSaO2ZRbXbXe
+   zceIAQ5UvikRdNKVE9217mN8cCCmCsG5oR8OvimjxbdrI35pQkYlnzIVk
    w=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 02 May 2022 07:14:58 -0700
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 02 May 2022 07:15:04 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 07:14:57 -0700
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 07:15:04 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 2 May 2022 07:14:57 -0700
+ 15.2.986.22; Mon, 2 May 2022 07:15:04 -0700
 Received: from kaushalk-linux.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 2 May 2022 07:14:53 -0700
+ 15.2.986.22; Mon, 2 May 2022 07:15:00 -0700
 From:   Kaushal Kumar <quic_kaushalk@quicinc.com>
 To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
         <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
 CC:     <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <manivannan.sadhasivam@linaro.org>,
         "Kaushal Kumar" <quic_kaushalk@quicinc.com>
-Subject: [PATCH v2 0/4] Add QPIC BAM and QPIC NAND devicetree support for SDX65
-Date:   Mon, 2 May 2022 07:14:34 -0700
-Message-ID: <1651500878-10244-1-git-send-email-quic_kaushalk@quicinc.com>
+Subject: [PATCH v2 2/4] ARM: dts: qcom: sdx65: Add QPIC NAND support
+Date:   Mon, 2 May 2022 07:14:36 -0700
+Message-ID: <1651500878-10244-3-git-send-email-quic_kaushalk@quicinc.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1651500878-10244-1-git-send-email-quic_kaushalk@quicinc.com>
+References: <1651500878-10244-1-git-send-email-quic_kaushalk@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
@@ -57,25 +60,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Add devicetree node to enable support for QPIC
+NAND controller on Qualcomm SDX65 platform.
+Since there is no "aon" clock in SDX65, a dummy
+clock is provided.
 
-This series adds and enables devicetree nodes for QPIC BAM
-and QPIC NAND for Qualcomm SDX65 platform.
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Kaushal Kumar <quic_kaushalk@quicinc.com>
+---
+ arch/arm/boot/dts/qcom-sdx65.dtsi | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-Changes since v1:
- - Sort the nodes added for sdx65-mtp in alphabetical order.
- - Rebased on top of 5.18-rc5.
-
-Kaushal Kumar (4):
-  ARM: dts: qcom: sdx65: Add QPIC BAM support
-  ARM: dts: qcom: sdx65: Add QPIC NAND support
-  ARM: dts: qcom: sdx65-mtp: Enable QPIC BAM support
-  ARM: dts: qcom: sdx65-mtp: Enable QPIC NAND support
-
- arch/arm/boot/dts/qcom-sdx65-mtp.dts | 27 +++++++++++++++++++++++----
- arch/arm/boot/dts/qcom-sdx65.dtsi    | 34 ++++++++++++++++++++++++++++++++++
- 2 files changed, 57 insertions(+), 4 deletions(-)
-
---
+diff --git a/arch/arm/boot/dts/qcom-sdx65.dtsi b/arch/arm/boot/dts/qcom-sdx65.dtsi
+index d6a6087..a75e9f1 100644
+--- a/arch/arm/boot/dts/qcom-sdx65.dtsi
++++ b/arch/arm/boot/dts/qcom-sdx65.dtsi
+@@ -37,6 +37,12 @@
+ 			clock-output-names = "sleep_clk";
+ 			#clock-cells = <0>;
+ 		};
++
++		nand_clk_dummy: nand-clk-dummy {
++			compatible = "fixed-clock";
++			clock-frequency = <32764>;
++			#clock-cells = <0>;
++		};
+ 	};
+ 
+ 	cpus {
+@@ -211,6 +217,22 @@
+ 			status = "disabled";
+ 		};
+ 
++		qpic_nand: nand-controller@1b30000 {
++			compatible = "qcom,sdx55-nand";
++			reg = <0x01b30000 0x10000>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++			clocks = <&rpmhcc RPMH_QPIC_CLK>,
++				 <&nand_clk_dummy>;
++			clock-names = "core", "aon";
++
++			dmas = <&qpic_bam 0>,
++			       <&qpic_bam 1>,
++			       <&qpic_bam 2>;
++			dma-names = "tx", "rx", "cmd";
++			status = "disabled";
++		};
++
+ 		tcsr_mutex: hwlock@1f40000 {
+ 			compatible = "qcom,tcsr-mutex";
+ 			reg = <0x01f40000 0x40000>;
+-- 
 2.7.4
 
