@@ -2,168 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 06:54:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 165C2C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 07:02:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358171AbiEBG5b (ORCPT
+        id S1358201AbiEBHFa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 02:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50392 "EHLO
+        Mon, 2 May 2022 03:05:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238801AbiEBG51 (ORCPT
+        with ESMTP id S238801AbiEBHF1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 02:57:27 -0400
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD8B381B9
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 23:53:57 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:194e:5782:c420:7f87])
-        by albert.telenet-ops.be with bizsmtp
-        id Ritu2700P28fWK506ituFL; Mon, 02 May 2022 08:53:55 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nlPwQ-002l6W-Je
-        for linux-kernel@vger.kernel.org; Mon, 02 May 2022 08:53:54 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nlPwP-00B9ju-Jo
-        for linux-kernel@vger.kernel.org; Mon, 02 May 2022 08:53:53 +0200
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     linux-kernel@vger.kernel.org
-Subject: Build regressions/improvements in v5.18-rc5
-Date:   Mon,  2 May 2022 08:53:53 +0200
-Message-Id: <20220502065353.2658957-1-geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <CAHk-=wjUhfhaes6_hMYDQFTbGjkmA-j2ZSeXZ32H66ufRfYrmQ@mail.gmail.com>
-References: <CAHk-=wjUhfhaes6_hMYDQFTbGjkmA-j2ZSeXZ32H66ufRfYrmQ@mail.gmail.com>
+        Mon, 2 May 2022 03:05:27 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D9C6460;
+        Mon,  2 May 2022 00:01:58 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id gj17-20020a17090b109100b001d8b390f77bso15408208pjb.1;
+        Mon, 02 May 2022 00:01:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=t7MLSEk1Zg4N4Mn5YyAWZbEoas0CNhuGYCu9wwnw6i0=;
+        b=ahirv5dzvVouAXT8RwoOabSoKNJRRFLUSaFEEDTZHdRUVq8VW4Lg+/2s7OcTUPj+LF
+         e/Gub+1gSkUehxRdDEmTx8QS4LhPhfbBlFWTAYI3NNvlq4OpoH6wDUAwjxQ0TzoUQVWQ
+         zuawSMlfn12c9eNHRqiLgln342w45ahqetAY825Q4YzsyV/5IN0P1dZSgByv04NeM6cv
+         1nj7oIwFez4xYH5gp8kvEvBPQxkacKDdCBPvha7MRShPSEtAphDqOZuWNx8tfp0J5+ZV
+         k9njEY5PmaM/hWLDv4jjUwTmP98fgYJPWVSeU+wGwxGxns5rqc45RsuW7hqGpuindlCE
+         YCcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=t7MLSEk1Zg4N4Mn5YyAWZbEoas0CNhuGYCu9wwnw6i0=;
+        b=kWQCx5yRvEI/Oyc+zvtGgn0pqhVUPi1wVtwhD30zr0xHSUEH0C8MHi1y5dWBcl1igP
+         zoPeJgKiue7Kyd7dT6wHYD0Qhdo8M09ksu5KDQ6koPMW9B3hLXnrBf5QE2J8oEfy5rZ6
+         zYJHE+VHtYHFYzTImdY01uPi3F1eZCGerj78sxr7nom3RTRJp1kZ0Vn+XM4u6tHedtIt
+         1GE5q0BObwtZlGzvFishOIetdCSzNV51Eq6D90VDVJIvoNtP+c8BfqN23bUt1HbCCBER
+         9+56WaMUXNGVZ2ZiGhE6hR6CGXI77MErDZkYXdRE90YeurN0mZlRnzifJXSbTiZosylH
+         trog==
+X-Gm-Message-State: AOAM532cG43wWpHctFpnAjABDzbZC7k01/MJRCPQSID0bO7n8fBAOA6X
+        XLPTlkXRdzyM8wf8jTxzzJCsG6jqz/qlkczrKnlt9nvcM58VnQ==
+X-Google-Smtp-Source: ABdhPJyLnXWeFBYfu0Jytog6gpjuXEhblMXCokzspuU4e1BS5ALMzpdzv00HDfvDy9mglADiTH0OmM5KUFbsINklhtk=
+X-Received: by 2002:a17:90b:380b:b0:1dc:6d24:76ff with SMTP id
+ mq11-20020a17090b380b00b001dc6d2476ffmr393653pjb.42.1651474917714; Mon, 02
+ May 2022 00:01:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220415005015.525191-1-avagin@gmail.com>
+In-Reply-To: <20220415005015.525191-1-avagin@gmail.com>
+From:   Andrei Vagin <avagin@gmail.com>
+Date:   Mon, 2 May 2022 00:01:46 -0700
+Message-ID: <CANaxB-wcf0Py9eCeA8YKcBSnwzW6pKAD5edCDUadebmo=JLYhA@mail.gmail.com>
+Subject: Re: [PATCH] fs: sendfile handles O_NONBLOCK of out_fd
+To:     LKML <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-fsdevel <linux-fsdevel@vger.kernel.org>, stable@kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Below is the list of build error/warning regressions/improvements in
-v5.18-rc5[1] compared to v5.17[2].
+Andrew, could you take a look at this patch?
 
-Summarized:
-  - build errors: +14/-6
-  - build warnings: +37/-21
+Here is a small reproducer for the problem:
 
-JFYI, when comparing v5.18-rc5[1] to v5.18-rc4[3], the summaries are:
-  - build errors: +6/-21
-  - build warnings: +18/-5
-
-Note that there may be false regressions, as some logs are incomplete.
-Still, they're build errors/warnings.
-
-Happy fixing! ;-)
-
-Thanks to the linux-next team for providing the build service.
-
-[1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/672c0c5173427e6b3e2a9bbb7be51ceeec78093a/ (all 138 configs)
-[2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/f443e374ae131c168a065ea1748feac6b2e76613/ (96 out of 138 configs)
-[3] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/af2d861d4cd2a4da5137f795ee3509e6f944a25b/ (96 out of 138 configs)
+#define _GNU_SOURCE /* See feature_test_macros(7) */
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/sendfile.h>
 
 
-*** ERRORS ***
+#define FILE_SIZE (1UL << 30)
+int main(int argc, char **argv) {
+        int p[2], fd;
 
-14 error regressions:
-  + /kisskb/src/arch/m68k/include/asm/bitops.h: error: array subscript 2 is above array bounds of 'long unsigned int[1]' [-Werror=array-bounds]:  => 329:20
-  + /kisskb/src/arch/sh/kernel/machvec.c: error: array subscript 'struct sh_machine_vector[0]' is partly outside array bounds of 'long int[1]' [-Werror=array-bounds]:  => 105:33
-  + /kisskb/src/arch/sparc/kernel/irq_32.c: error: array subscript [16, 79] is outside array bounds of 'struct tt_entry[1]' [-Werror=array-bounds]:  => 262:14, 263:14, 259:14, 261:46, 258:14
-  + /kisskb/src/drivers/gpu/drm/r128/r128_cce.c: error: case label does not reduce to an integer constant:  => 417:2, 418:2
-  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: 'X86_VENDOR_AMD' undeclared (first use in this function):  => 149:37
-  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: 'struct cpuinfo_um' has no member named 'x86_vendor':  => 149:22
-  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: control reaches end of non-void function [-Werror=return-type]:  => 150:1
-  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: 'struct cpuinfo_um' has no member named 'x86_cache_size':  => 88:22
-  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: control reaches end of non-void function [-Werror=return-type]:  => 89:1
-  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: implicit declaration of function '__copy_user_nocache' [-Werror=implicit-function-declaration]:  => 100:2
-  + /kisskb/src/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c: error: case label does not reduce to an integer constant:  => 4917:4
-  + /kisskb/src/drivers/scsi/aacraid/commsup.c: error: case label does not reduce to an integer constant:  => 1983:2
-  + /kisskb/src/include/linux/sh_intc.h: error: division 'sizeof (void *) / sizeof (void)' does not compute the number of array elements [-Werror=sizeof-pointer-div]:  => 100:63
-  + {standard input}: Error: branch to a symbol in another ISA mode:  => 1295
+        if (pipe2(p, O_NONBLOCK))
+                return 1;
 
-6 error improvements:
-  - /kisskb/src/crypto/blake2b_generic.c: error: the frame size of 2288 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]: 109:1 => 
-  - /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: assignment makes pointer from integer without a cast [-Werror=int-conversion]: 317:9, 324:9 => 
-  - /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: implicit declaration of function 'ioport_map' [-Werror=implicit-function-declaration]: 317:11 => 
-  - /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: implicit declaration of function 'ioport_unmap' [-Werror=implicit-function-declaration]: 338:15 => 
-  - error: arch/powerpc/kvm/book3s_64_entry.o: relocation truncated to fit: R_PPC64_REL14 (stub) against symbol `machine_check_common' defined in .text section in arch/powerpc/kernel/head_64.o: (.text+0x3e4) => 
-  - error: arch/powerpc/kvm/book3s_64_entry.o: relocation truncated to fit: R_PPC64_REL14 (stub) against symbol `system_reset_common' defined in .text section in arch/powerpc/kernel/head_64.o: (.text+0x3ec) => 
+        fd = open(argv[1], O_RDWR | O_TMPFILE, 0666);
+        if (fd < 0)
+                return 1;
+        ftruncate(fd, FILE_SIZE);
 
+        if (sendfile(p[1], fd, 0, FILE_SIZE) == -1) {
+                fprintf(stderr, "FAIL\n");
+        }
+        if (sendfile(p[1], fd, 0, FILE_SIZE) != -1 || errno != EAGAIN) {
+                fprintf(stderr, "FAIL\n");
+        }
+        return 0;
+}
 
-*** WARNINGS ***
+It worked before b964bf53e540, it is stuck after b964bf53e540, and it
+works again with this fix.
 
-37 warning regressions:
-  + ./.config.32r1_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 94
-  + ./.config.32r2_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 94
-  + ./.config.32r6_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 96
-  + ./.config.64r1_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 97
-  + ./.config.64r2_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 97
-  + ./.config.64r6_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 99
-  + ./.config.micro32r2_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 95
-  + .config: warning: override: CPU_BIG_ENDIAN changes choice state:  => 95, 96, 93, 98, 94
-  + .config: warning: override: reassigning to symbol MIPS_CPS_NS16550_SHIFT: 13516, 13503 => 13758, 13769, 13763
-  + /kisskb/src/arch/m68k/include/asm/string.h: warning: '__builtin_memset' offset [0, 11] is out of the bounds [0, 0] [-Warray-bounds]:  => 68:25
-  + /kisskb/src/arch/sh/kernel/cpu/sh2/../../entry-common.S: Warning: overflow in branch to __restore_all; converted into longer instruction sequence:  => 85
-  + /kisskb/src/arch/sh/kernel/cpu/sh2/../../entry-common.S: Warning: overflow in branch to syscall_exit_work; converted into longer instruction sequence:  => 360, 357
-  + /kisskb/src/arch/sh/kernel/machvec.c: warning: array subscript 'struct sh_machine_vector[0]' is partly outside array bounds of 'long int[1]' [-Warray-bounds]:  => 105:33
-  + /kisskb/src/drivers/net/ethernet/i825xx/sun3_82586.c: warning: array subscript 1 is above array bounds of 'volatile struct transmit_cmd_struct *[1]' [-Warray-bounds]:  => 989:108, 989:122
-  + /kisskb/src/drivers/scsi/mpt3sas/mpt3sas_base.c: warning: array subscript 'Mpi2SasIOUnitPage1_t {aka struct _MPI2_CONFIG_PAGE_SASIOUNIT_1}[0]' is partly outside array bounds of 'unsigned char[20]' [-Warray-bounds]:  => 5403:43, 5396:40, 5400:40
-  + /kisskb/src/drivers/tty/serial/sh-sci.c: warning: unused variable 'sport' [-Wunused-variable]: 2651:19 => 2651:19, 2651:26
-  + /kisskb/src/fs/ext4/readpage.c: warning: the frame size of 1136 bytes is larger than 1024 bytes [-Wframe-larger-than=]:  => 407:1
-  + /kisskb/src/fs/mpage.c: warning: the frame size of 1088 bytes is larger than 1024 bytes [-Wframe-larger-than=]:  => 303:1
-  + /kisskb/src/fs/mpage.c: warning: the frame size of 1148 bytes is larger than 1024 bytes [-Wframe-larger-than=]:  => 636:1
-  + /opt/cross/kisskb/korg/gcc-5.5.0-nolibc/aarch64-linux/bin/../lib/gcc/aarch64-linux/5.5.0/plugin/include/config/elfos.h: warning: invalid suffix on literal; C++11 requires a space between literal and string macro [-Wliteral-suffix]:  => 102:21, 170:24
-  + /opt/cross/kisskb/korg/gcc-5.5.0-nolibc/aarch64-linux/bin/../lib/gcc/aarch64-linux/5.5.0/plugin/include/defaults.h: warning: invalid suffix on literal; C++11 requires a space between literal and string macro [-Wliteral-suffix]:  => 126:24
-  + modpost: WARNING: modpost: EXPORT symbol "___rw_read_enter" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "___rw_read_exit" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "___rw_read_try" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "___rw_write_enter" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__ashldi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__ashrdi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__copy_1page" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__divdi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__lshrdi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__muldi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__ndelay" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__udelay" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "_mcount" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "bzero_1page" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "empty_zero_page" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: vmlinux.o(.text.unlikely+0x45d4): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names:  => N/A
+Thanks,
+Andrei
 
-21 warning improvements:
-  - /kisskb/src/samples/seccomp/user-trap.c: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]: 83:2, 50:2 => 
-  - /opt/cross/kisskb/br-aarch64-glibc-2016.08-613-ge98b4dd/bin/../lib/gcc/aarch64-buildroot-linux-gnu/5.4.0/plugin/include/config/elfos.h: warning: invalid suffix on literal; C++11 requires a space between literal and string macro [-Wliteral-suffix]: 102:21, 170:24 => 
-  - /opt/cross/kisskb/br-aarch64-glibc-2016.08-613-ge98b4dd/bin/../lib/gcc/aarch64-buildroot-linux-gnu/5.4.0/plugin/include/defaults.h: warning: invalid suffix on literal; C++11 requires a space between literal and string macro [-Wliteral-suffix]: 126:24 => 
-  - modpost: WARNING: modpost: EXPORT symbol "___rw_read_enter" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "___rw_read_exit" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "___rw_read_try" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "___rw_write_enter" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__ashldi3" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__ashrdi3" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__copy_1page" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__divdi3" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__lshrdi3" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__muldi3" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__ndelay" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__udelay" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "_mcount" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "bzero_1page" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "empty_zero_page" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: vmlinux.o(.text.unlikely+0x4530): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names: N/A => 
-  - warning: LSE atomics not supported by binutils: N/A => 
-  - warning: ld does not support --fix-cortex-a53-843419; kernel may be susceptible to erratum: N/A => 
-
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
+On Thu, Apr 14, 2022 at 5:50 PM Andrei Vagin <avagin@gmail.com> wrote:
+>
+> sendfile has to return EAGAIN if out_fd is nonblocking and the write
+> into it would block.
+>
+> Cc: Al Viro <viro@zeniv.linux.org.uk>
+> Cc: stable@kernel.org
+> Fixes: b964bf53e540 ("teach sendfile(2) to handle send-to-pipe directly")
+> Signed-off-by: Andrei Vagin <avagin@gmail.com>
+> ---
+>  fs/read_write.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/fs/read_write.c b/fs/read_write.c
+> index e643aec2b0ef..ee59419cbf0f 100644
+> --- a/fs/read_write.c
+> +++ b/fs/read_write.c
+> @@ -1247,6 +1247,9 @@ static ssize_t do_sendfile(int out_fd, int in_fd, loff_t *ppos,
+>                                           count, fl);
+>                 file_end_write(out.file);
+>         } else {
+> +               if (out.file->f_flags & O_NONBLOCK)
+> +                       fl |= SPLICE_F_NONBLOCK;
+> +
+>                 retval = splice_file_to_pipe(in.file, opipe, &pos, count, fl);
+>         }
+>
+> --
+> 2.35.1
+>
