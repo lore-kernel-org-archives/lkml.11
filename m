@@ -2,81 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02840C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13389C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385852AbiEBPhH (ORCPT
+        id S1385856AbiEBPhJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 11:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43008 "EHLO
+        Mon, 2 May 2022 11:37:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355963AbiEBPhF (ORCPT
+        with ESMTP id S1351821AbiEBPhF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 2 May 2022 11:37:05 -0400
-Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABDCBC22;
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654EFBC1C;
         Mon,  2 May 2022 08:33:35 -0700 (PDT)
-Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-ed9ac77cbbso4020345fac.1;
+Received: by mail-oi1-f177.google.com with SMTP id l16so8291644oil.6;
         Mon, 02 May 2022 08:33:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=dD2Y3vOMl2tr/XEHZTE9aVU35/4IL1e3I9wJvGZpl2M=;
-        b=M7pYKdd2uedkmcrcRbthb/xGW+RthwBl0cryFQvRKbCrZVC8lWrGfvRsEha25wDRC3
-         4Lmqt9fJ9ahiPAmdnuX/x1Dyj/KLEE1O+dOXqJH4ru8imIVMBi/M9FTIfWbc4uX5JqAh
-         WOvSoNQgGAFlS2ljWLI+5yQnR7iwe2rEuXnrhD4AHe9iuU2HKnsYF/s6dm5J/EmUwF3f
-         /sAzN53emB7lfQl0Al5U2uR3IhNZFSEX9iZ0OabC58cez+z4CMS0RfdFRQROeq8ynptl
-         MJh/4h0ni+niJ7772p3blsHidKhzwjjpoaRZyG+16m0MoBOJ0D5SGmG4B5KNLRgGJFr5
-         CY9A==
-X-Gm-Message-State: AOAM531jqHDFcJYG+qJRW8Y3H7nXjJukhF0hC/bt8BmxXDe9oEId7KC6
-        WkWMvg+QYDNl4YxEmtOiJhVqbGCBJw==
-X-Google-Smtp-Source: ABdhPJwlvrfdTgjaRkOgo9CjTot/4UQsJOPWIqMwz3jzRpOIldIk7cbmsTcBnhJhaUqFMsfxE8sRng==
-X-Received: by 2002:a05:6870:e9a0:b0:e6:9d2:ff42 with SMTP id r32-20020a056870e9a000b000e609d2ff42mr5126607oao.7.1651505614677;
-        Mon, 02 May 2022 08:33:34 -0700 (PDT)
+        bh=JTr8vcwPekKNxgaP35/VIOaNAgxzoIKDrhPTZqxgCxU=;
+        b=7OwkSe5n9Zzsp7Qcx3IA0J518knboVSaMgvoua/YexsWTPcXDKhLFcuTW9b1uP9b0i
+         VEteYfAsWple6fwx0lzULoDfcHlaL+uyGP+CxTiOsXhJBo+vIjlbutoCe8uUBEMpdeMQ
+         qzTWGeIROdM4NaC6VUY7ldWmZvVLkESJ3y1QiZ4NSU7mkbKmG5cxSHyZDjdtEzNObj4z
+         2lF7xO8fUeRDKdCtfmiSHfCM6zOI4bMK69RrnP6ojkkhfwfKsQZcVCqNxgKJMYAt6mJ6
+         JKPn3cmnvoHZvZPTwrHg8SSOZ9ZWKQ0DWiFnHAipHG6JPXeE5OSvlcUcd6PXo/74KYlH
+         Mzqw==
+X-Gm-Message-State: AOAM532oUqSa4W/ibfQ5dSGQ2/RkDYkghwzut01U8F4MFOGPBhGytaJW
+        qW1bQ7v1UrOxxipIlo1zGcrQQxEELg==
+X-Google-Smtp-Source: ABdhPJxa6lKGhgt8BCT4MFbjaP/pVYGPXQU98T1b6xKT0Rz+NpKi1Ij5LNe546qeMFfARWCfjo9rDg==
+X-Received: by 2002:a05:6808:ecc:b0:2fa:7d95:8dec with SMTP id q12-20020a0568080ecc00b002fa7d958decmr7581969oiv.34.1651505613227;
+        Mon, 02 May 2022 08:33:33 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r4-20020a056830120400b0060603221240sm2950294otp.16.2022.05.02.08.33.33
+        by smtp.gmail.com with ESMTPSA id m9-20020a4ad509000000b0035eb4e5a6dasm3916737oos.48.2022.05.02.08.33.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 08:33:34 -0700 (PDT)
-Received: (nullmailer pid 1161773 invoked by uid 1000);
+        Mon, 02 May 2022 08:33:32 -0700 (PDT)
+Received: (nullmailer pid 1161777 invoked by uid 1000);
         Mon, 02 May 2022 15:33:29 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?b?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        kernel@collabora.com, Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-mediatek@lists.infradead.org,
-        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-In-Reply-To: <20220429211111.2214119-2-nfraprado@collabora.com>
-References: <20220429211111.2214119-1-nfraprado@collabora.com> <20220429211111.2214119-2-nfraprado@collabora.com>
-Subject: Re: [PATCH 1/2] dt-bindings: remoteproc: mediatek: Fix optional reg-names for mtk,scp
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+In-Reply-To: <20220430060125.9124-4-ansuelsmth@gmail.com>
+References: <20220430060125.9124-1-ansuelsmth@gmail.com> <20220430060125.9124-4-ansuelsmth@gmail.com>
+Subject: Re: [PATCH v2 3/3] dt-bindings: arm: msm: Convert kpss-gcc driver Documentation to yaml
 Date:   Mon, 02 May 2022 10:33:29 -0500
-Message-Id: <1651505609.475123.1161772.nullmailer@robh.at.kernel.org>
+Message-Id: <1651505609.498439.1161776.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Apr 2022 17:11:09 -0400, Nícolas F. R. A. Prado wrote:
-> The SCP has three memory regions: sram, l1tcm and cfg. Only sram is
-> required, the other two are optional. Fix the dt-binding so that the
-> optional regions can be omitted and passed in any order.
+On Sat, 30 Apr 2022 08:01:25 +0200, Ansuel Smith wrote:
+> Convert kpss-gcc driver Documentation to yaml.
+> Add #clock-cells additional binding to required bindings and example
+> as it's a required binding for clock-output-names.
 > 
-> Also add the missing minItems to the reg property and update the
-> description.
-> 
-> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 > ---
-> 
->  .../devicetree/bindings/remoteproc/mtk,scp.yaml      | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
+>  .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ------------
+>  .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 68 +++++++++++++++++++
+>  2 files changed, 68 insertions(+), 44 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
+>  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
 > 
 
 Running 'make dtbs_check' with the schema in this patch gives the
@@ -89,57 +82,81 @@ This will change in the future.
 Full log is available here: https://patchwork.ozlabs.org/patch/
 
 
-scp@10500000: interrupts: [[0, 174, 4]] is not of type 'object'
-	arch/arm64/boot/dts/mediatek/mt8183-evb.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-burnet.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-cozmo.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-damu.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel14.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel14-sku2.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel-sku1.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel-sku6.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel-sku7.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-juniper-sku16.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-kappa.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-kenzo.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-willow-sku0.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-willow-sku1.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu-sku22.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku16.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku272.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku288.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku32.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-krane-sku0.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-krane-sku176.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dtb
+clock-controller@2011000: '#clock-cells' is a required property
+	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+	arch/arm/boot/dts/qcom-apq8064-sony-xperia-yuga.dtb
+	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+	arch/arm/boot/dts/qcom-mdm9615-wp8548-mangoh-green.dtb
+	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
 
-scp@10500000: memory-region: [[25]] is not of type 'object'
-	arch/arm64/boot/dts/mediatek/mt8183-evb.dtb
+clock-controller@2011000: 'clock-names' is a required property
+	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+	arch/arm/boot/dts/qcom-apq8064-sony-xperia-yuga.dtb
+	arch/arm/boot/dts/qcom-mdm9615-wp8548-mangoh-green.dtb
+	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
 
-scp@10500000: memory-region: [[27]] is not of type 'object'
-	arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dtb
+clock-controller@2011000: 'clock-output-names' is a required property
+	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+	arch/arm/boot/dts/qcom-apq8064-sony-xperia-yuga.dtb
+	arch/arm/boot/dts/qcom-mdm9615-wp8548-mangoh-green.dtb
+	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
 
-scp@10500000: memory-region: [[28]] is not of type 'object'
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-burnet.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-cozmo.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-damu.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel14.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel14-sku2.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel-sku1.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel-sku6.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel-sku7.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-juniper-sku16.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-kappa.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-kenzo.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-willow-sku0.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-willow-sku1.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu-sku22.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku16.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku272.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku288.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku32.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-krane-sku0.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-krane-sku176.dtb
+clock-controller@2011000: 'clocks' is a required property
+	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+	arch/arm/boot/dts/qcom-apq8064-sony-xperia-yuga.dtb
+	arch/arm/boot/dts/qcom-mdm9615-wp8548-mangoh-green.dtb
+	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
+
+clock-controller@2011000: compatible:0: 'qcom,kpss-gcc' is not one of ['qcom,kpss-gcc-ipq8064', 'qcom,kpss-gcc-apq8064', 'qcom,kpss-gcc-msm8974', 'qcom,kpss-gcc-msm8960']
+	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+	arch/arm/boot/dts/qcom-apq8064-sony-xperia-yuga.dtb
+	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+	arch/arm/boot/dts/qcom-mdm9615-wp8548-mangoh-green.dtb
+	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
+
+clock-controller@2011000: compatible:1: 'qcom,kpss-gcc' was expected
+	arch/arm/boot/dts/qcom-apq8064-asus-nexus7-flo.dtb
+	arch/arm/boot/dts/qcom-apq8064-cm-qs600.dtb
+	arch/arm/boot/dts/qcom-apq8064-ifc6410.dtb
+	arch/arm/boot/dts/qcom-apq8064-sony-xperia-yuga.dtb
+	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+	arch/arm/boot/dts/qcom-mdm9615-wp8548-mangoh-green.dtb
+	arch/arm/boot/dts/qcom-msm8960-cdp.dtb
+
+clock-controller@2082000: '#clock-cells' is a required property
+	arch/arm/boot/dts/qcom-apq8060-dragonboard.dtb
+	arch/arm/boot/dts/qcom-msm8660-surf.dtb
+
+clock-controller@2082000: 'clock-names' is a required property
+	arch/arm/boot/dts/qcom-apq8060-dragonboard.dtb
+	arch/arm/boot/dts/qcom-msm8660-surf.dtb
+
+clock-controller@2082000: 'clock-output-names' is a required property
+	arch/arm/boot/dts/qcom-apq8060-dragonboard.dtb
+	arch/arm/boot/dts/qcom-msm8660-surf.dtb
+
+clock-controller@2082000: 'clocks' is a required property
+	arch/arm/boot/dts/qcom-apq8060-dragonboard.dtb
+	arch/arm/boot/dts/qcom-msm8660-surf.dtb
+
+clock-controller@2082000: compatible:0: 'qcom,kpss-gcc' is not one of ['qcom,kpss-gcc-ipq8064', 'qcom,kpss-gcc-apq8064', 'qcom,kpss-gcc-msm8974', 'qcom,kpss-gcc-msm8960']
+	arch/arm/boot/dts/qcom-apq8060-dragonboard.dtb
+	arch/arm/boot/dts/qcom-msm8660-surf.dtb
+
+clock-controller@2082000: compatible:1: 'qcom,kpss-gcc' was expected
+	arch/arm/boot/dts/qcom-apq8060-dragonboard.dtb
+	arch/arm/boot/dts/qcom-msm8660-surf.dtb
 
