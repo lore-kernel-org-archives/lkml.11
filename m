@@ -2,100 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2BCEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 09:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 227E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 09:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384256AbiEBJkX (ORCPT
+        id S1384275AbiEBJlO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 05:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38448 "EHLO
+        Mon, 2 May 2022 05:41:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384262AbiEBJkT (ORCPT
+        with ESMTP id S1384251AbiEBJlJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 05:40:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C241645AF0;
-        Mon,  2 May 2022 02:36:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E2CA611D6;
-        Mon,  2 May 2022 09:36:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDDF1C385AC;
-        Mon,  2 May 2022 09:36:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651484208;
-        bh=9BAQqLLOLL2trD6C1GTCsmN5pgx0ztTic3hcYSWhX9A=;
-        h=Date:From:To:Cc:Subject:From;
-        b=oUxQcaHM94xydxjvrkgSw7NmKshl+4h5S4T5rb4cqqPnvNZKwuu5M2wMUBPZ47qTk
-         3saZe7V6J5rhz5bzxG1j/TiorgbmXoq0b5oDsBcU/DL5EP3wntWBaaA4KovkksdWza
-         7pUZVAvYBX/QCF2yXj/P3LEmzeg34mTDIf3H7fxKDELdw3aPpypuufSM4Es7rzKM7f
-         llRT6M7wmTM5DFie+q/JrZEcn3bykvPHWpdV7DgTViKBRaEYp/UngYXtmi5SzOmAfq
-         TGwKui26HxsYysoDnsFGpo8OfOK1Ye5RcZagalecH6Zm9vD7Yp31BFYHYNRawVaStF
-         9pyiErpIANLqg==
-Date:   Mon, 2 May 2022 11:36:25 +0200
-From:   Miguel Ojeda <ojeda@kernel.org>
-To:     Brendan Higgins <brendanhiggins@google.com>
-Cc:     linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] kunit: take `kunit_assert` as `const`
-Message-ID: <20220502093625.GA23225@kernel.org>
+        Mon, 2 May 2022 05:41:09 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9CCBCE09B
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 02:37:40 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 274661FB;
+        Mon,  2 May 2022 02:37:40 -0700 (PDT)
+Received: from [10.163.32.39] (unknown [10.163.32.39])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E9D673F774;
+        Mon,  2 May 2022 02:37:33 -0700 (PDT)
+Message-ID: <204421f9-a0d9-35bb-ea86-ea4cea3b4f83@arm.com>
+Date:   Mon, 2 May 2022 15:08:30 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: elm/2
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 1/5] mm: ioremap: Use more sensibly name in
+ ioremap_prot()
+Content-Language: en-US
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>, catalin.marinas@arm.com,
+        will@kernel.org, akpm@linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     linux-mm@kvack.org, hch@infradead.org, arnd@arndb.de
+References: <20220429103225.75121-1-wangkefeng.wang@huawei.com>
+ <20220429103225.75121-2-wangkefeng.wang@huawei.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <20220429103225.75121-2-wangkefeng.wang@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The `kunit_do_failed_assertion` function passes its
-`struct kunit_assert` argument to `kunit_fail`. This one,
-in turn, calls its `format` field passing the assert again
-as a `const` pointer.
 
-Therefore, the whole chain may be made `const`.
 
-Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
----
- include/kunit/test.h | 2 +-
- lib/kunit/test.c     | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+On 4/29/22 16:02, Kefeng Wang wrote:
+> Use more meaningful and sensibly naming phys_addr
+> instead addr in ioremap_prot().
+> 
+> Suggested-by: Andrew Morton <akpm@linux-foundation.org>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 
-diff --git a/include/kunit/test.h b/include/kunit/test.h
-index 00b9ff7783ab..2eff4f1beb42 100644
---- a/include/kunit/test.h
-+++ b/include/kunit/test.h
-@@ -774,7 +774,7 @@ void __printf(2, 3) kunit_log_append(char *log, const char *fmt, ...);
- void kunit_do_failed_assertion(struct kunit *test,
- 			       const struct kunit_loc *loc,
- 			       enum kunit_assert_type type,
--			       struct kunit_assert *assert,
-+			       const struct kunit_assert *assert,
- 			       const char *fmt, ...);
- 
- #define KUNIT_ASSERTION(test, assert_type, pass, assert_class, INITIALIZER, fmt, ...) do { \
-diff --git a/lib/kunit/test.c b/lib/kunit/test.c
-index 3bca3bf5c15b..b84aed09a009 100644
---- a/lib/kunit/test.c
-+++ b/lib/kunit/test.c
-@@ -241,7 +241,7 @@ static void kunit_print_string_stream(struct kunit *test,
- }
- 
- static void kunit_fail(struct kunit *test, const struct kunit_loc *loc,
--		       enum kunit_assert_type type, struct kunit_assert *assert,
-+		       enum kunit_assert_type type, const struct kunit_assert *assert,
- 		       const struct va_format *message)
- {
- 	struct string_stream *stream;
-@@ -281,7 +281,7 @@ static void __noreturn kunit_abort(struct kunit *test)
- void kunit_do_failed_assertion(struct kunit *test,
- 			       const struct kunit_loc *loc,
- 			       enum kunit_assert_type type,
--			       struct kunit_assert *assert,
-+			       const struct kunit_assert *assert,
- 			       const char *fmt, ...)
- {
- 	va_list args;
--- 
-2.35.3
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
 
+> ---
+>  include/asm-generic/io.h |  2 +-
+>  mm/ioremap.c             | 12 ++++++------
+>  2 files changed, 7 insertions(+), 7 deletions(-)
+> 
+> diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
+> index 7ce93aaf69f8..e6ffa2519f08 100644
+> --- a/include/asm-generic/io.h
+> +++ b/include/asm-generic/io.h
+> @@ -964,7 +964,7 @@ static inline void iounmap(volatile void __iomem *addr)
+>  #elif defined(CONFIG_GENERIC_IOREMAP)
+>  #include <linux/pgtable.h>
+>  
+> -void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot);
+> +void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long prot);
+>  void iounmap(volatile void __iomem *addr);
+>  
+>  static inline void __iomem *ioremap(phys_addr_t addr, size_t size)
+> diff --git a/mm/ioremap.c b/mm/ioremap.c
+> index 5fe598ecd9b7..1f9597fbcc07 100644
+> --- a/mm/ioremap.c
+> +++ b/mm/ioremap.c
+> @@ -11,20 +11,20 @@
+>  #include <linux/io.h>
+>  #include <linux/export.h>
+>  
+> -void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot)
+> +void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long prot)
+>  {
+>  	unsigned long offset, vaddr;
+>  	phys_addr_t last_addr;
+>  	struct vm_struct *area;
+>  
+>  	/* Disallow wrap-around or zero size */
+> -	last_addr = addr + size - 1;
+> -	if (!size || last_addr < addr)
+> +	last_addr = phys_addr + size - 1;
+> +	if (!size || last_addr < phys_addr)
+>  		return NULL;
+>  
+>  	/* Page-align mappings */
+> -	offset = addr & (~PAGE_MASK);
+> -	addr -= offset;
+> +	offset = phys_addr & (~PAGE_MASK);
+> +	phys_addr -= offset;
+>  	size = PAGE_ALIGN(size + offset);
+>  
+>  	area = get_vm_area_caller(size, VM_IOREMAP,
+> @@ -33,7 +33,7 @@ void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot)
+>  		return NULL;
+>  	vaddr = (unsigned long)area->addr;
+>  
+> -	if (ioremap_page_range(vaddr, vaddr + size, addr, __pgprot(prot))) {
+> +	if (ioremap_page_range(vaddr, vaddr + size, phys_addr, __pgprot(prot))) {
+>  		free_vm_area(area);
+>  		return NULL;
+>  	}
