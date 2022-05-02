@@ -2,111 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BCA7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 22:22:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4CAEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 22:24:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231174AbiEBWZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 18:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57198 "EHLO
+        id S236539AbiEBW1u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 18:27:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231423AbiEBWXy (ORCPT
+        with ESMTP id S231423AbiEBW1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 18:23:54 -0400
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF10A1BE;
-        Mon,  2 May 2022 15:20:24 -0700 (PDT)
-Received: by mail-oi1-f178.google.com with SMTP id y63so16590242oia.7;
-        Mon, 02 May 2022 15:20:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VR6aQATCwdPyj2a2nSMH6aYl4mUSCVGJN91iqP+EUDc=;
-        b=XSU42yiZiJu/CzAJFTD/5J2C91N0mAM3f+J74g/XKVxqL9TrSrrJvP40rPzEE7Z7LA
-         ZwxJvJ4wwfh8vNeYFMH+o9O+mKcQgz6JsynGhoh3tNLCwdHqFWOch6EBkGJD++GJg37x
-         /w6YIolQwahv3Mm3qTxHSowh+GYwTTh3lSY2csYZvJvSgCwYO2GG+HmfWHhUHVswVDvI
-         WxCwO873xS7FacqlW8tM3uWe8eJ54G5f9wWE2i1HT9qLeNcgRxEoQNMcjsFJmHbKoSl+
-         J7YAW0C0eZrWn1q7KgjKyUYMo2ZWpVAQHSnkBUiwx2B2PkGHzQrZvDrN1Z+dGtlkClub
-         pNoA==
-X-Gm-Message-State: AOAM531dtkYJ/dm6dsVlG0033Otu6GOSzUYHNIQ8XiMgxixAtyIPnrqe
-        XpjtMtEGyeynjku6Fa04Gw==
-X-Google-Smtp-Source: ABdhPJx8V52EJ5MZQdiCVJ7+iHueY+QIxBxyN68rDX9lMZGqh4wHsvqRFvMWHd4cNinWBJjPJ6PZNg==
-X-Received: by 2002:a54:4e92:0:b0:325:224c:8ff7 with SMTP id c18-20020a544e92000000b00325224c8ff7mr586298oiy.154.1651530023456;
-        Mon, 02 May 2022 15:20:23 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id dw40-20020a056870772800b000e686d1387csm6287149oab.22.2022.05.02.15.20.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 15:20:23 -0700 (PDT)
-Received: (nullmailer pid 1896541 invoked by uid 1000);
-        Mon, 02 May 2022 22:20:21 -0000
-Date:   Mon, 2 May 2022 17:20:21 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>
+        Mon, 2 May 2022 18:27:46 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB084B1F3
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 15:24:14 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1nleSf-0005bu-N0; Tue, 03 May 2022 00:24:09 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     Daniel Vetter <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Sandy Huang <hjc@rock-chips.com>
 Cc:     Heiko Stuebner <heiko@sntech.de>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@lists.collabora.co.uk,
-        Kever Yang <kever.yang@rock-chips.com>, kernel@collabora.com,
-        Yifeng Zhao <yifeng.zhao@rock-chips.com>,
-        Elaine Zhang <zhangqing@rock-chips.com>,
-        Sugar Zhang <sugar.zhang@rock-chips.com>
-Subject: Re: [PATCHv1 18/19] arm64: dts: rockchip: Add base DT for rk3588 SoC
-Message-ID: <YnBZJa/dCKnGRF3n@robh.at.kernel.org>
-References: <20220422170920.401914-1-sebastian.reichel@collabora.com>
- <20220422170920.401914-19-sebastian.reichel@collabora.com>
+        linux-rockchip@lists.infradead.org,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drm/rockchip: Support YUV formats with U/V swapped
+Date:   Tue,  3 May 2022 00:24:05 +0200
+Message-Id: <165153020899.255051.8265541516247012144.b4-ty@sntech.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220114074038.2633848-1-wenst@chromium.org>
+References: <20220114074038.2633848-1-wenst@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422170920.401914-19-sebastian.reichel@collabora.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 07:09:19PM +0200, Sebastian Reichel wrote:
-> From: Kever Yang <kever.yang@rock-chips.com>
+On Fri, 14 Jan 2022 15:40:38 +0800, Chen-Yu Tsai wrote:
+> The VOP in Rockchip SoCs that support YUV planes also support swapping
+> of the U and V elements. Supporting the swapped variants, especially
+> NV21, would be beneficial for multimedia applications, as the hardware
+> video decoders only output NV21, and supporting this pixel format in
+> the display pipeline would allow the decoded video frames to be output
+> directly.
 > 
-> This initial version supports (single core) CPU, dma, interrupts, timers,
-> UART and SDHCI. In short - everything necessary to boot Linux on this
-> system on chip.
-> 
-> The DT is split into rk3588 and rk3588s, which is a reduced version
-> (i.e. with less peripherals) of the former.
-> 
-> Signed-off-by: Yifeng Zhao <yifeng.zhao@rock-chips.com>
-> Signed-off-by: Elaine Zhang <zhangqing@rock-chips.com>
-> Signed-off-by: Sugar Zhang <sugar.zhang@rock-chips.com>
-> Signed-off-by: Kever Yang <kever.yang@rock-chips.com>
-> [rebase, squash and reword commit message]
-> Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-> ---
+> [...]
 
-[...]
+Applied, thanks!
 
-> diff --git a/include/dt-bindings/clock/rk3588-cru.h b/include/dt-bindings/clock/rk3588-cru.h
-> index d51e6ed939b3..2f046f048a83 100644
-> --- a/include/dt-bindings/clock/rk3588-cru.h
-> +++ b/include/dt-bindings/clock/rk3588-cru.h
-> @@ -1451,6 +1451,7 @@
->  #define SCMI_CRYPTO_CORE		20
->  #define SCMI_CRYPTO_PKA			21
->  #define SCMI_SPLL			22
-> +#define SCMI_HCLK_SD			23
+[1/1] drm/rockchip: Support YUV formats with U/V swapped
+      commit: 3fa50896c35982afb59ad5bcbe04ec2e91bb54a5
 
-Belongs in the header patch?
-
->  
->  /********Name=SECURE_SOFTRST_CON00,Offset=0xA00********/
->  #define SRST_A_SECURE_NS_BIU		10
-> -- 
-> 2.35.1
-> 
-> 
+Best regards,
+-- 
+Heiko Stuebner <heiko@sntech.de>
