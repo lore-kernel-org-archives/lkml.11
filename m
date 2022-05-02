@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 791AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 22:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0546FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 22:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238975AbiEBW1y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 18:27:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59008 "EHLO
+        id S244887AbiEBW14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 18:27:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230161AbiEBW1q (ORCPT
+        with ESMTP id S231571AbiEBW1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 2 May 2022 18:27:46 -0400
 Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A1FB1EA
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 15:24:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE43B7CD
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 15:24:16 -0700 (PDT)
 Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1nleSg-0005bu-0w; Tue, 03 May 2022 00:24:10 +0200
+        id 1nleSf-0005bu-Cw; Tue, 03 May 2022 00:24:09 +0200
 From:   Heiko Stuebner <heiko@sntech.de>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+To:     Tom Rix <trix@redhat.com>, hjc@rock-chips.com, daniel@ffwll.ch,
+        airlied@linux.ie
+Cc:     Heiko Stuebner <heiko@sntech.de>,
+        linux-arm-kernel@lists.infradead.org,
         dri-devel@lists.freedesktop.org,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        linux-rockchip@lists.infradead.org
-Cc:     Heiko Stuebner <heiko@sntech.de>, markyao0591@gmail.com,
-        hjc@rock-chips.com, daniel@ffwll.ch
-Subject: Re: [PATCH] drm/rockchip: vop: fix possible null-ptr-deref in vop_bind()
-Date:   Tue,  3 May 2022 00:24:06 +0200
-Message-Id: <165153020898.255051.10275204034959482615.b4-ty@sntech.de>
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drm/rockchip: cdn-dp: change rk3399_cdn_dp from global to static
+Date:   Tue,  3 May 2022 00:24:04 +0200
+Message-Id: <165153020899.255051.8052745569188083636.b4-ty@sntech.de>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220422032854.2995175-1-yangyingliang@huawei.com>
-References: <20220422032854.2995175-1-yangyingliang@huawei.com>
+In-Reply-To: <20220421144304.586396-1-trix@redhat.com>
+References: <20220421144304.586396-1-trix@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -40,15 +40,17 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Apr 2022 11:28:54 +0800, Yang Yingliang wrote:
-> It will cause null-ptr-deref in resource_size(), if platform_get_resource()
-> returns NULL, move calling resource_size() after devm_ioremap_resource() that
-> will check 'res' to avoid null-ptr-deref.
+On Thu, 21 Apr 2022 10:43:04 -0400, Tom Rix wrote:
+> Smatch reports this issue
+> cdn-dp-core.c:51:20: warning: symbol 'rk3399_cdn_dp' was not declared. Should it be static?
+> 
+> rk3399_cdn_dp is only used in cdn-dp-core.c so change
+> its storge-class specifier to static.
 
 Applied, thanks!
 
-[1/1] drm/rockchip: vop: fix possible null-ptr-deref in vop_bind()
-      commit: f8c242908ad15bbd604d3bcb54961b7d454c43f8
+[1/1] drm/rockchip: cdn-dp: change rk3399_cdn_dp from global to static
+      commit: 7494b1ed1df414e43dc8429f0c016b2054b1b5da
 
 Best regards,
 -- 
