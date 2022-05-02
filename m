@@ -2,72 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49C59C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:39:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E69C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385903AbiEBPmk (ORCPT
+        id S1385920AbiEBPmu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 11:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48970 "EHLO
+        Mon, 2 May 2022 11:42:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385891AbiEBPmg (ORCPT
+        with ESMTP id S1385910AbiEBPmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 11:42:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBD72BE09
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:39:07 -0700 (PDT)
+        Mon, 2 May 2022 11:42:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D930B1C1
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:39:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651505947;
+        s=mimecast20190719; t=1651505951;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qGLa+lXukZKp8BbfHT/fB6GHKDmAj4WrWWwniVTMInI=;
-        b=LObeA4hU56PZy3E5ow7pVk/Ojjhd4cxnwhRHj0PhLRj67DkFIpaawna6VlJ/BpPUKNDvqQ
-        DroHMUclVmPmcbHNQ5Ea75gBKnK1if0c3tVOjRCO8lLRZGU3JvbJMqGXalePziMEO0xedw
-        4zAQmmTUsfw2WRjup/0s62sJulYu3BA=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=NjxoxE0JKElHTb/WpKcB2BiZO2PHnuo9tVxz/TUikho=;
+        b=OHAzUaShyqDqw/WmKCKrrPFv7fjin1UMiqeVAQCBiMiRFpEAYBwat9wrNmRileC9L1edLk
+        me6EBgWvx2Bbhx2AUy1n8YWNXkL1hiiNvQvYCgF2qW4YLa1rUrXmJfycmqUmbykSg07fXX
+        oirhFEyNjkG/xL3q2NGwoiBAcPZNutU=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-547-GerOuCvhNheqZJNQz4QZ6g-1; Mon, 02 May 2022 11:39:06 -0400
-X-MC-Unique: GerOuCvhNheqZJNQz4QZ6g-1
-Received: by mail-wr1-f72.google.com with SMTP id l7-20020adfa387000000b0020acc61dbaeso5463736wrb.7
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 08:39:05 -0700 (PDT)
+ us-mta-198-2h71-vQwNyeJSFnqCklaNg-1; Mon, 02 May 2022 11:39:10 -0400
+X-MC-Unique: 2h71-vQwNyeJSFnqCklaNg-1
+Received: by mail-wr1-f70.google.com with SMTP id k20-20020adfc714000000b001e305cd1597so5416241wrg.19
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 08:39:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qGLa+lXukZKp8BbfHT/fB6GHKDmAj4WrWWwniVTMInI=;
-        b=Nj0DWEvWq+qRZ46Nx+Xvpfn5IGX1rXDmlbs2DBfWw+RIgF7+2fgsaIIoG0rV5S7qbf
-         UeKpiQeSCd9oFwb2gziFxp6DDSZUnu6B37d4IBhunGN+BP0vrvqBwiQCkz//ZgmJrfyc
-         q5Y/yg4VLYSlk3WXh6cMGItDcjHABfoTAfuhiAgPV9HwHhcM9hr16/QubqBH8lZIz5J7
-         QdGBWo0BnoR0Up5PgrPDLPuFzTWwwPPNMsTXrI/BwGphCfSm42ti2cm+h49rEkspRU1K
-         2xxpckw6cS/xtEAEBK91nwJSPfwiarVqTjCchSwv6c7U3zPlP5KS02GTz4sNJf81cL7E
-         kgPQ==
-X-Gm-Message-State: AOAM532Z2bb9KTe+00cXeuGPDNch9MmpXs1ZVJNsmhIxEaG7G7X8dQJ0
-        2mTTWz4F/lkE0oEvqcIuIvf43Pmr11brPZcyBRiH9nbN4x0ZMyQrVIVAkbl/rzTSTjl3dDpMBCd
-        d9wJJ1zpkWaX3QfZfuHLejlAICEmlf98S0+S1oRv5GV2AxFkyhCfJYJtCPd1eow0e9HrqyUdKOV
-        Q=
-X-Received: by 2002:a05:600c:268b:b0:394:13d6:c176 with SMTP id 11-20020a05600c268b00b0039413d6c176mr11124078wmt.184.1651505944667;
-        Mon, 02 May 2022 08:39:04 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyWSbJhAkXVVu+oVX5bF/r4ippsODeDHinPDW6sbIqFvmnW9SSlA9Sk7qtkg3/18TRsa7LmjA==
-X-Received: by 2002:a05:600c:268b:b0:394:13d6:c176 with SMTP id 11-20020a05600c268b00b0039413d6c176mr11124061wmt.184.1651505944432;
-        Mon, 02 May 2022 08:39:04 -0700 (PDT)
+        bh=NjxoxE0JKElHTb/WpKcB2BiZO2PHnuo9tVxz/TUikho=;
+        b=NPC4aqVDyLgpGgw3iGarGZylpHfiD2VSBmuAqUIWFGR96MaOYnHI8jaslCojdn7LBn
+         EOlCmbsQkM3gvJ52AQ/2mck8cWJv0PVikOMvvX6qxzFaM9cNZ6K7N7fQFTXVsp0s4GCF
+         +q+MQAr1fb1eWPgczuxuo/8zVD6+ZuMuyZBu+x53OgZmhe/Ck4DeMjMmTZ5MexQZkEJv
+         P82tHoEIy+Btq9X9gpkZAcI1LeWKyKI8gIpoootSsEJ4nbckNuHZ0eaLU5+SqbQCt+l6
+         mDDBYJB0vCpTW6OFIFynalWO5BxMlAwIMC6wgCiD9ttWbpafupeEWJmCPyJn1OugAuWX
+         KqGw==
+X-Gm-Message-State: AOAM5321cU8OFSwmMc5VWNyx1NgHmJT1H8W8ak1VQZLHnMEsx88QK/yX
+        ezoaK/FupjI2eVPdDC58M10TLamNgdEVOZhqdZtsYEIgdDV5NY6FwQlJ1GQXDkFqW40zFocTByT
+        gHeQnXgScZnDEcqFP/ALbgs68Q+CKoWJ1+RdvPEUY25vDokVyHTX4qd8A2qixLu/e2Sy5iW1Qyn
+        k=
+X-Received: by 2002:adf:f4c5:0:b0:20a:ece1:1e91 with SMTP id h5-20020adff4c5000000b0020aece11e91mr9894288wrp.172.1651505948866;
+        Mon, 02 May 2022 08:39:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx3Da6qZWFhP++jyhVMD/l4xJcEKuWzBbFQeF2rJfhQtQ7IqvFSHRl36OTYCsrPs3Om4eZVZw==
+X-Received: by 2002:adf:f4c5:0:b0:20a:ece1:1e91 with SMTP id h5-20020adff4c5000000b0020aece11e91mr9894274wrp.172.1651505948606;
+        Mon, 02 May 2022 08:39:08 -0700 (PDT)
 Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id v28-20020adfa1dc000000b0020c5253d923sm7294489wrv.111.2022.05.02.08.39.03
+        by smtp.gmail.com with ESMTPSA id v28-20020adfa1dc000000b0020c5253d923sm7294489wrv.111.2022.05.02.08.39.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 08:39:03 -0700 (PDT)
+        Mon, 02 May 2022 08:39:06 -0700 (PDT)
 From:   Javier Martinez Canillas <javierm@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Thomas Zimmermann <tzimmermann@suse.de>,
         Daniel Vetter <daniel.vetter@ffwll.ch>,
         Javier Martinez Canillas <javierm@redhat.com>,
-        dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH v2 1/3] drm: Remove superfluous arg when calling to drm_fbdev_generic_setup()
-Date:   Mon,  2 May 2022 17:38:58 +0200
-Message-Id: <20220502153900.408522-2-javierm@redhat.com>
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH v2 3/3] drm: Allow simpledrm to setup its emulated FB as firmware provided
+Date:   Mon,  2 May 2022 17:39:00 +0200
+Message-Id: <20220502153900.408522-4-javierm@redhat.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220502153900.408522-1-javierm@redhat.com>
 References: <20220502153900.408522-1-javierm@redhat.com>
@@ -77,49 +76,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The drm_fbdev_generic_setup() function already sets the preferred bits per
-pixel for the device to dev->mode_config.preferred_depth, if preferred_bpp
-value is zero.
+Indicate to fbdev subsystem that the registered framebuffer is provided by
+the system firmware, so that it can handle accordingly. For example, would
+unregister the FB devices if asked to remove the conflicting framebuffers.
 
-Passing the same value to the function is unnecessary. Let's cleanup that
-in the two drivers that do it.
+Add a new DRM_FB_FW field to drm_fbdev_generic_setup() options parameter.
+Drivers can use this to indicate the FB helper initialization that the FB
+registered is provided by the firmware, so it can be configured as such.
 
+Suggested-by: Thomas Zimmermann <tzimmermann@suse.de>
 Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
 ---
 
 (no changes since v1)
 
- drivers/gpu/drm/hisilicon/hibmc/hibmc_drm_drv.c | 2 +-
- drivers/gpu/drm/tiny/cirrus.c                   | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/drm_fb_helper.c  |  9 +++++++++
+ drivers/gpu/drm/tiny/simpledrm.c |  2 +-
+ include/drm/drm_fb_helper.h      | 10 ++++++++++
+ 3 files changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/hisilicon/hibmc/hibmc_drm_drv.c b/drivers/gpu/drm/hisilicon/hibmc/hibmc_drm_drv.c
-index fe4269c5aa0a..ace92459e462 100644
---- a/drivers/gpu/drm/hisilicon/hibmc/hibmc_drm_drv.c
-+++ b/drivers/gpu/drm/hisilicon/hibmc/hibmc_drm_drv.c
-@@ -349,7 +349,7 @@ static int hibmc_pci_probe(struct pci_dev *pdev,
- 		goto err_unload;
- 	}
+diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
+index fd0084ad77c3..775e47c5de1f 100644
+--- a/drivers/gpu/drm/drm_fb_helper.c
++++ b/drivers/gpu/drm/drm_fb_helper.c
+@@ -1891,6 +1891,10 @@ __drm_fb_helper_initial_config_and_unlock(struct drm_fb_helper *fb_helper,
+ 		/* don't leak any physical addresses to userspace */
+ 		info->flags |= FBINFO_HIDE_SMEM_START;
  
--	drm_fbdev_generic_setup(dev, dev->mode_config.preferred_depth);
-+	drm_fbdev_generic_setup(dev, 0);
++	/* Indicate that the framebuffer is provided by the firmware */
++	if (fb_helper->firmware)
++		info->flags |= FBINFO_MISC_FIRMWARE;
++
+ 	/* Need to drop locks to avoid recursive deadlock in
+ 	 * register_framebuffer. This is ok because the only thing left to do is
+ 	 * register the fbdev emulation instance in kernel_fb_helper_list. */
+@@ -2512,6 +2516,8 @@ static const struct drm_client_funcs drm_fbdev_client_funcs = {
+  *
+  * * DRM_FB_BPP: bits per pixel for the device. If the field is not set,
+  *   @dev->mode_config.preferred_depth is used instead.
++ * * DRM_FB_FW: if the framebuffer for the device is provided by the
++ *   system firmware.
+  *
+  * This function sets up generic fbdev emulation for drivers that supports
+  * dumb buffers with a virtual address and that can be mmap'ed.
+@@ -2538,6 +2544,7 @@ void drm_fbdev_generic_setup(struct drm_device *dev, unsigned int options)
+ {
+ 	struct drm_fb_helper *fb_helper;
+ 	unsigned int preferred_bpp = DRM_FB_GET_OPTION(DRM_FB_BPP, options);
++	bool firmware = DRM_FB_GET_OPTION(DRM_FB_FW, options);
+ 	int ret;
  
- 	return 0;
+ 	drm_WARN(dev, !dev->registered, "Device has not been registered.\n");
+@@ -2570,6 +2577,8 @@ void drm_fbdev_generic_setup(struct drm_device *dev, unsigned int options)
+ 		preferred_bpp = 32;
+ 	fb_helper->preferred_bpp = preferred_bpp;
  
-diff --git a/drivers/gpu/drm/tiny/cirrus.c b/drivers/gpu/drm/tiny/cirrus.c
-index c8e791840862..ed5a2e14894a 100644
---- a/drivers/gpu/drm/tiny/cirrus.c
-+++ b/drivers/gpu/drm/tiny/cirrus.c
-@@ -601,7 +601,7 @@ static int cirrus_pci_probe(struct pci_dev *pdev,
++	fb_helper->firmware = firmware;
++
+ 	ret = drm_fbdev_client_hotplug(&fb_helper->client);
+ 	if (ret)
+ 		drm_dbg_kms(dev, "client hotplug ret=%d\n", ret);
+diff --git a/drivers/gpu/drm/tiny/simpledrm.c b/drivers/gpu/drm/tiny/simpledrm.c
+index f5b8e864a5cd..5dcc21ea6180 100644
+--- a/drivers/gpu/drm/tiny/simpledrm.c
++++ b/drivers/gpu/drm/tiny/simpledrm.c
+@@ -901,7 +901,7 @@ static int simpledrm_probe(struct platform_device *pdev)
  	if (ret)
  		return ret;
  
--	drm_fbdev_generic_setup(dev, dev->mode_config.preferred_depth);
-+	drm_fbdev_generic_setup(dev, 0);
+-	drm_fbdev_generic_setup(dev, 0);
++	drm_fbdev_generic_setup(dev, DRM_FB_SET_OPTION(DRM_FB_FW, 1));
+ 
  	return 0;
  }
+diff --git a/include/drm/drm_fb_helper.h b/include/drm/drm_fb_helper.h
+index 740f87560102..77a72d55308d 100644
+--- a/include/drm/drm_fb_helper.h
++++ b/include/drm/drm_fb_helper.h
+@@ -44,6 +44,7 @@ enum mode_set_atomic {
+ };
  
+ #define DRM_FB_BPP_MASK GENMASK(7, 0)
++#define DRM_FB_FW_MASK GENMASK(8, 8)
+ 
+ /* Using the GNU statement expression extension */
+ #define DRM_FB_OPTION(option, value)				\
+@@ -197,6 +198,15 @@ struct drm_fb_helper {
+ 	 * See also: @deferred_setup
+ 	 */
+ 	int preferred_bpp;
++
++	/**
++	 * @firmware:
++	 *
++	 * Set if the driver indicates to the FB helper initialization that the
++	 * framebuffer for the device being registered is provided by firmware,
++	 * so that it can pass this on when registering the framebuffer device.
++	 */
++	bool firmware;
+ };
+ 
+ static inline struct drm_fb_helper *
 -- 
 2.35.1
 
