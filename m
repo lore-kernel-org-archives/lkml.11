@@ -2,118 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E19FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86C15C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 15:32:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385787AbiEBPeZ (ORCPT
+        id S1385797AbiEBPfa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 11:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38792 "EHLO
+        Mon, 2 May 2022 11:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385846AbiEBPeC (ORCPT
+        with ESMTP id S1352619AbiEBPf2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 11:34:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB130109E;
-        Mon,  2 May 2022 08:30:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF55F610A3;
-        Mon,  2 May 2022 15:30:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DA16C385A4;
-        Mon,  2 May 2022 15:30:29 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="eyCIu4wo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651505427;
+        Mon, 2 May 2022 11:35:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 121EC9FFB
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 08:31:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651505518;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qWDIwzU5x3UuWsZp+HhTp4LQrtqpnPHHxwXe77v7dMY=;
-        b=eyCIu4woGQwRluJ81yt4j3UmCFhltI8z4Rf7zFiHwOthQkVAb3o+whdo8HpoQojM3YOjYH
-        Vs/QB/Zjo6AImQ+X0lg6B0v+9DHeyEjGWb4icLkEzfIZB02hQw03kYy3CWuLdCVsrxtsAV
-        VJwJJgDNho6/kl7x/hwD9KxeFHkexow=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 7f1160cf (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 2 May 2022 15:30:27 +0000 (UTC)
-Date:   Mon, 2 May 2022 17:30:24 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     mzxreary@0pointer.de, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org
-Subject: Re: [PATCH 1/2] sysctl: read() must consume poll events, not poll()
-Message-ID: <Ym/5EEYHbk56hV1H@zx2c4.com>
-References: <20220502140602.130373-1-Jason@zx2c4.com>
+        bh=0sglHWDk0UrNSQnvXeEwWDQVaJy7moHeM6s16y69uVg=;
+        b=P5BmmuXlnQksTAsfgDTsMCXTOSiurC7Axl/LyVnRyL4xtOxYHhbZa50fewfWDu8vbjNS2l
+        vEpHjD90/89DHJe0/XOK/WLE/fsxBS7QcBJbBFtLlWQTtBIawchYdXOhGXIynT1YZhqsDx
+        RZrZLh/75b8PtgEMhdD6I6WolDXfMew=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-413-G1GqP083MjSUpb8UhjssYA-1; Mon, 02 May 2022 11:31:56 -0400
+X-MC-Unique: G1GqP083MjSUpb8UhjssYA-1
+Received: by mail-ej1-f70.google.com with SMTP id qw30-20020a1709066a1e00b006f45e7f44b0so925819ejc.5
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 08:31:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=0sglHWDk0UrNSQnvXeEwWDQVaJy7moHeM6s16y69uVg=;
+        b=BQHNQ/xrQPvoFg0TBSGhGu1oSC2SOuJguD7bQMXxhOQ+bPNBMsoJVSJFoW4/XHw8Bs
+         V9u3HvvVDQwJ5BaWGdDPGffocyPTSD3XyMDtXQvSemRvfV6vCYEH+bzgWW9SXi1MzRZh
+         UhEaTqTyfosliB5FVuvUCWWajUJS4wYWWJxurjw8riPHtGiPH5aNiFwlrNOkkK52urcP
+         mmSSX7w4Vfkugy+qs59XFtdgtg3K97aezk4Ayn/sH/aCFiDcH3P07t3+pgB6tugHZCRf
+         0Ppj9P+TDbw4YMV7jtQzlDQCadtOFixVaOLmeUW3lsPW+fRamy08L7OmSoEZNQgd66jh
+         POWw==
+X-Gm-Message-State: AOAM531IZH1gu/Zdeh65mtkCvCeDbYdvKhIWMKBOT1c+D/4zfFQ5/QwG
+        ygC+0kQ2/6D0gqSLBoOfkAHzUkNzxxgyNM7tHlRYHJuf0k2nfjkJx8k9qrOH7gyP9jMlkCUA/3i
+        02pNsi1VsC4CINyL3pE3sqbA2
+X-Received: by 2002:a17:906:3104:b0:6ce:6b85:ecc9 with SMTP id 4-20020a170906310400b006ce6b85ecc9mr11125203ejx.339.1651505515473;
+        Mon, 02 May 2022 08:31:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzIVrdqnhRmWiDRTOAiDHV2xSjT5UaIDqHpuf7N4+qIPVbf8KtFs1CmxMzjfWdo0GGG2m0qpw==
+X-Received: by 2002:a17:906:3104:b0:6ce:6b85:ecc9 with SMTP id 4-20020a170906310400b006ce6b85ecc9mr11125166ejx.339.1651505515066;
+        Mon, 02 May 2022 08:31:55 -0700 (PDT)
+Received: from [10.40.98.142] ([78.108.130.194])
+        by smtp.gmail.com with ESMTPSA id jl1-20020a17090775c100b006f3ef214e2bsm3772097ejc.145.2022.05.02.08.31.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 May 2022 08:31:54 -0700 (PDT)
+Message-ID: <0232e24a-eda6-4baa-6a95-13e32b777ce6@redhat.com>
+Date:   Mon, 2 May 2022 17:31:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220502140602.130373-1-Jason@zx2c4.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 0/2] Add a workaround for s2idle resume on Lenovo laptops
+Content-Language: en-US
+To:     Mario Limonciello <mario.limonciello@amd.com>,
+        Mark Pearson <markpearson@lenovo.com>
+Cc:     Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
+        Mark Gross <mgross@linux.intel.com>,
+        "open list:THINKPAD ACPI EXTRAS DRIVER" 
+        <ibm-acpi-devel@lists.sourceforge.net>,
+        "open list:THINKPAD ACPI EXTRAS DRIVER" 
+        <platform-driver-x86@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220429030501.1909-1-mario.limonciello@amd.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220429030501.1909-1-mario.limonciello@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Lennart, since systemd is the only userspace I know of currently making
-use of this.
+Hi,
 
-On Mon, May 02, 2022 at 04:06:01PM +0200, Jason A. Donenfeld wrote:
-> Events that poll() responds to are supposed to be consumed when the file
-> is read(), not by the poll() itself. By putting it on the poll() itself,
-> it makes it impossible to poll() on a epoll file descriptor, since the
-> event gets consumed too early. Jann wrote a PoC, available in the link
-> below.
+On 4/29/22 05:04, Mario Limonciello wrote:
+> Lenovo Thinkpads have a SMI handler during the D0 transition for NVME
+> devices specifically during resume from s2idle.  When the IOMMU
+> translation layer is enabled for NVME devices (which is the default
+> behavior per the IVRS table), then this SMI handler causes a very long
+> resume time (10+ seconds).
 > 
-> Reported-by: Jann Horn <jannh@google.com>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Luis Chamberlain <mcgrof@kernel.org>
-> Cc: linux-fsdevel@vger.kernel.org
-> Link: https://lore.kernel.org/lkml/CAG48ez1F0P7Wnp=PGhiUej=u=8CSF6gpD9J=Oxxg0buFRqV1tA@mail.gmail.com/
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
->  fs/proc/proc_sysctl.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
+> For the common s2idle circumstance on Linux this SMI handler is
+> unnecessary and just significantly inflates resume time. To avoid it,
+> add a new s2idle resume handler to thinkpad_acpi that will prevent it
+> from running on known problematic systems.  If the SMI handler is fixed on
+> these systems the DMI data can be modified to exclude them or only match
+> problematic BIOS versions.
 > 
-> diff --git a/fs/proc/proc_sysctl.c b/fs/proc/proc_sysctl.c
-> index 7d9cfc730bd4..1aa145794207 100644
-> --- a/fs/proc/proc_sysctl.c
-> +++ b/fs/proc/proc_sysctl.c
-> @@ -622,6 +622,14 @@ static ssize_t proc_sys_call_handler(struct kiocb *iocb, struct iov_iter *iter,
->  
->  static ssize_t proc_sys_read(struct kiocb *iocb, struct iov_iter *iter)
->  {
-> +	struct inode *inode = file_inode(iocb->ki_filp);
-> +	struct ctl_table_header *head = grab_header(inode);
-> +	struct ctl_table *table = PROC_I(inode)->sysctl_entry;
-> +
-> +	if (!IS_ERR(head) && table->poll)
-> +		iocb->ki_filp->private_data = proc_sys_poll_event(table->poll);
-> +	sysctl_head_finish(head);
-> +
->  	return proc_sys_call_handler(iocb, iter, 0);
->  }
->  
-> @@ -668,10 +676,8 @@ static __poll_t proc_sys_poll(struct file *filp, poll_table *wait)
->  	event = (unsigned long)filp->private_data;
->  	poll_wait(filp, &table->poll->wait, wait);
->  
-> -	if (event != atomic_read(&table->poll->event)) {
-> -		filp->private_data = proc_sys_poll_event(table->poll);
-> +	if (event != atomic_read(&table->poll->event))
->  		ret = EPOLLIN | EPOLLRDNORM | EPOLLERR | EPOLLPRI;
-> -	}
->  
->  out:
->  	sysctl_head_finish(head);
-> -- 
-> 2.35.1
+> Mario Limonciello (2):
+>   platform/x86: thinkpad_acpi: Convert btusb DMI list to quirks
+>   platform/x86: thinkpad_acpi: Add a s2idle resume quirk for a number of
+>     laptops
+> 
+>  drivers/platform/x86/thinkpad_acpi.c | 134 ++++++++++++++++++++++++++-
+>  1 file changed, 131 insertions(+), 3 deletions(-)
 
-Just wanted to double check with you that this change wouldn't break how
-you're using it in systemd for /proc/sys/kernel/hostname:
+Thank you for your patch-series, I've applied the series to my
+review-hans branch:
+https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
 
-https://github.com/systemd/systemd/blob/39cd62c30c2e6bb5ec13ebc1ecf0d37ed015b1b8/src/journal/journald-server.c#L1832
-https://github.com/systemd/systemd/blob/39cd62c30c2e6bb5ec13ebc1ecf0d37ed015b1b8/src/resolve/resolved-manager.c#L465
+Note it will show up in my review-hans branch once I've pushed my
+local branch there, which might take a while.
 
-I couldn't find anybody else actually polling on it. Interestingly, it
-looks like sd_event_add_io uses epoll() inside, but you're not hitting
-the bug that Jann pointed out (because I suppose you're not poll()ing on
-an epoll fd).
+Once I've run some tests on this branch the patches there will be
+added to the platform-drivers-x86/for-next branch and eventually
+will be included in the pdx86 pull-request to Linus for the next
+merge-window.
 
-Jason
+I'll also cherry-pick these into the pdx86 fixes branch and add them
+to my next 5.18 fixes pull-req to Linus.
+
+Regards,
+
+Hans
+
+ 
+
