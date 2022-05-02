@@ -2,183 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3867C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 22:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECE3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 22:31:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343905AbiEBWci (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 18:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34010 "EHLO
+        id S233584AbiEBWeg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 18:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiEBWcg (ORCPT
+        with ESMTP id S229462AbiEBWee (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 18:32:36 -0400
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6280CB7E4
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 15:29:05 -0700 (PDT)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220502222902euoutp014ee6c569db8463530ebbb6d0e507d9a9~rakc6X7BD0106001060euoutp016
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 22:29:02 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220502222902euoutp014ee6c569db8463530ebbb6d0e507d9a9~rakc6X7BD0106001060euoutp016
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1651530542;
-        bh=JISPIXGx+t2797poWPfDGEXeiCnRRaIzH+pykhQARJ8=;
-        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-        b=BxpFuHTvvdrTin1VCBJBRV/oEFtBFk0hW2MtR13eQNhIIuKugbRbGf9Hp3RFtrNcI
-         TEa+O6ZGSwOQ0z2xF9fQMxFkyBEtUPR8asube+hys2KJ4JGg5S9DcjWdASFgSFp1rD
-         bwGTHc8mCk07L0mx2yCeAXUv/1hsC1GzOJ+LA1j4=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20220502222901eucas1p17d2b8f927ccab98b8d62154285f6a68c~rakbrOuJh1783017830eucas1p1s;
-        Mon,  2 May 2022 22:29:01 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges1new.samsung.com (EUCPMTA) with SMTP id 3D.70.10009.D2B50726; Mon,  2
-        May 2022 23:29:01 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220502222900eucas1p267df21cbfbdd081fc78ea567cf8f145d~rakbXzDWh0571905719eucas1p2I;
-        Mon,  2 May 2022 22:29:00 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220502222900eusmtrp1af424595ed1aaa8c9a6fd6b1a9ef9375~rakbVt4qn1603816038eusmtrp1h;
-        Mon,  2 May 2022 22:29:00 +0000 (GMT)
-X-AuditID: cbfec7f2-e95ff70000002719-d7-62705b2dc747
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 95.3E.09522.C2B50726; Mon,  2
-        May 2022 23:29:00 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220502222900eusmtip2149c260383c899bca1cb4148e433dd8b~rakasr7SN3199331993eusmtip2I;
-        Mon,  2 May 2022 22:29:00 +0000 (GMT)
-Message-ID: <601d6979-7462-6f20-0d60-2fcfcf1e405b@samsung.com>
-Date:   Tue, 3 May 2022 00:29:00 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
-        Gecko/20100101 Thunderbird/91.8.0
-Subject: Re: [PATCH printk v5 1/1] printk: extend console_lock for
- per-console locking
-Content-Language: en-US
-To:     John Ogness <john.ogness@linutronix.de>,
-        Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
+        Mon, 2 May 2022 18:34:34 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF196A1B2
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 15:31:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651530663; x=1683066663;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=tFPyJeC9v4cwAKfebe+SVDC0yXGBwGjA41mm9dEzQmw=;
+  b=B5GLNbd5wnAiIwymz+dX4S+GvBT+Hz7g8+oQMV+pnvpue4n6gXRU6KTs
+   PxYcVUQ978Ih5/wvS20o5eZRr5M9YtZLUWISEe/OJZF0XOPEKLwyMAOrF
+   g/8k6Er7ZE1waVO6xk/aRZzgj5MQqmgZg7TlWUoG9LWywNh+9JFQxN/34
+   9ZMJFLu9nwhpbPyFR7+WPokCgOuh+QCy8oLe9GEJH8z5+ZEyA62byM9pp
+   KOO5Hh5+JZz9r3hxch+HRsXH/OfYH3oSBdUlRJpsOa7l2L1QrTk2vS3vr
+   W3UtxqfTYwCArbh+x/X7PZJY6Gbh3KF71pQSOpikWtVnXcivjlaXkpnbL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="266192524"
+X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
+   d="scan'208";a="266192524"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 15:31:03 -0700
+X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
+   d="scan'208";a="598826345"
+Received: from chgan-mobl1.gar.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.60.238])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 15:30:59 -0700
+Message-ID: <b8eadd3079101a2cf93ee87d36dbedf93d8a2725.camel@intel.com>
+Subject: Re: [PATCH v5 1/3] x86/tdx: Add TDX Guest attestation interface
+ driver
+From:   Kai Huang <kai.huang@intel.com>
+To:     Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-amlogic@lists.infradead.org
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <87y1zkkrjy.fsf@jogness.linutronix.de>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrBKsWRmVeSWpSXmKPExsWy7djPc7q60QVJBnOOsFo0L17PZrHtynxG
-        iwWzuS0u75rDZvH/8VdWi30dD5gsdm9cxGaxedNUZgcOj9kNF1k8WvbdYvd4d+4cu8f+uWvY
-        PTYvqfdYv+Uqi8fnTXIB7FFcNimpOZllqUX6dglcGZM/LWIpeCNcseDmW/YGxnUCXYycHBIC
-        JhLdb2cxdzFycQgJrGCUOH/jEjuE84VR4tnWPWwQzmdGiTVdrYwwLR1b1rFAJJYzSrScmsoO
-        khAS+MgoceVNPIjNK2AnsefUHiYQm0VAReLfnbfMEHFBiZMzn7CA2KICSRJz990DinNwCAtE
-        SLTtDQUJMwuIS9x6Mh+sVUTAW2LV671gFzELfGWUmDz5P9gRbAKGEl1vu9hAbE4BY4mHk4+z
-        QTTLS2x/OwfsHwmBLxwSh57/Z4K42kXi+vq1ULawxKvjW9ghbBmJ05N7WECOkBDIl/g7wxgi
-        XCFx7fUaZgjbWuLOuV9sICXMApoS63fpQ4QdJab86mOH6OSTuPFWEOICPolJ26YzQ4R5JTra
-        hCCq1SRmHV8Ht/PghUvMExiVZiGFySwkz89C8ssshL0LGFlWMYqnlhbnpqcWG+allusVJ+YW
-        l+al6yXn525iBCam0/+Of9rBOPfVR71DjEwcjIcYJTiYlUR42zbkJAnxpiRWVqUW5ccXleak
-        Fh9ilOZgURLnTc7ckCgkkJ5YkpqdmlqQWgSTZeLglGpgypj04Yb61+IiXjaZievvHHwS4tqd
-        7co/w2KlwpOf9otOzozerMGp+WWuxP3OXYV3e9PKzx7rU84+Eju/PbZ+Q2ZcNUOFV0vY3adz
-        ZCZIefm1OXmctC7XYjY0rxVf/Th4ZrzdxjOp1+2MjszQ6Tb8vGTbgsyVnfVreJQ9Ziu/lZ/r
-        Mndj/Lxjp3fvyyxz4QqyCBdS8Pn0ePI3p+/t87eZ2s+RTzigw/r7j+TiPfnRbdXvM1l+eX7W
-        +Ml82+bQ0weWx6t3/Dzcuk377z4+dePnN96mnZ27vSDmePbtQCWBn3NVY594v2B7s/55W6pm
-        KpdnfbayumUnm2KKHWe74syV7QrB66I5XtT9tvs4adUSJZbijERDLeai4kQAKbCBJbsDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrLIsWRmVeSWpSXmKPExsVy+t/xe7o60QVJBusbtS2aF69ns9h2ZT6j
-        xYLZ3BaXd81hs/j/+Curxb6OB0wWuzcuYrPYvGkqswOHx+yGiyweLftusXu8O3eO3WP/3DXs
-        HpuX1Hus33KVxePzJrkA9ig9m6L80pJUhYz84hJbpWhDCyM9Q0sLPSMTSz1DY/NYKyNTJX07
-        m5TUnMyy1CJ9uwS9jMmfFrEUvBGuWHDzLXsD4zqBLkZODgkBE4mOLetYQGwhgaWMElM36UDE
-        ZSROTmtghbCFJf5c62LrYuQCqnnPKLF2cwszSIJXwE5iz6k9TCA2i4CKxL87b6HighInZz4B
-        GyoqkCTxYttzxi5GDg5hgQiJ971gYWYBcYlbT+aDtYoIeEuser2XHWQ+s8BXoPkfnjFCLOtn
-        leh/dxGsg03AUKLrLcgVnBycAsYSDycfZ4OYZCbRtbWLEcKWl9j+dg7zBEahWUjumIVk4Swk
-        LbOQtCxgZFnFKJJaWpybnltsqFecmFtcmpeul5yfu4kRGI/bjv3cvINx3quPeocYmTgYDzFK
-        cDArifC2bchJEuJNSaysSi3Kjy8qzUktPsRoCgyMicxSosn5wISQVxJvaGZgamhiZmlgamlm
-        rCTO61nQkSgkkJ5YkpqdmlqQWgTTx8TBKdXA5HOLXaMu79fbes1vJX85wv6cZUtceKP86c5/
-        U1PP7c+P+MK4aoaoSKXc3l/8Gy1/WHcF2R8vmCTpdfqo+anVswNOM/rpnK1U3e1le/LRga8L
-        DB0TWRamzbyocq6k9+w/J6f1XHwbnVaIMh1vcbOa9LHnttFWWV5/N+/ntYvvafP67933/v+R
-        hUdOLHCc9lorJOzZE0mJtfM9z4vXlp1YcO7x1O6iVYFTT9ocknz7n/txrHDFhpVJkXtXGgfH
-        LelXY1RvYD72O3SXl0rh0bsh+p6yr3Ylx2z13rQ+5WlVcJj4kpfFyXw3thxIejp57p0ztw+d
-        /JqozL3my3euf+ym7hsPbcz/dVjqweTXcyJUk2uVWIozEg21mIuKEwHaym2MUAMAAA==
-X-CMS-MailID: 20220502222900eucas1p267df21cbfbdd081fc78ea567cf8f145d
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20220427070833eucas1p27a32ce7c41c0da26f05bd52155f0031c
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220427070833eucas1p27a32ce7c41c0da26f05bd52155f0031c
-References: <20220421212250.565456-1-john.ogness@linutronix.de>
-        <20220421212250.565456-15-john.ogness@linutronix.de>
-        <878rrs6ft7.fsf@jogness.linutronix.de> <Ymfgis0EAw0Oxoa5@alley>
-        <Ymfwk+X0CHq6ex3s@alley>
-        <CGME20220427070833eucas1p27a32ce7c41c0da26f05bd52155f0031c@eucas1p2.samsung.com>
-        <2a82eae7-a256-f70c-fd82-4e510750906e@samsung.com> <Ymjy3rHRenba7r7R@alley>
-        <b6c1a8ac-c691-a84d-d3a1-f99984d32f06@samsung.com>
-        <87fslyv6y3.fsf@jogness.linutronix.de>
-        <51dfc4a0-f6cf-092f-109f-a04eeb240655@samsung.com>
-        <87k0b6blz2.fsf@jogness.linutronix.de>
-        <32bba8f8-dec7-78aa-f2e5-f62928412eda@samsung.com>
-        <87y1zkkrjy.fsf@jogness.linutronix.de>
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 03 May 2022 10:30:57 +1200
+In-Reply-To: <e5aed619-20ce-7eb3-22a3-64b51de9cce3@linux.intel.com>
+References: <20220501183500.2242828-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+         <20220501183500.2242828-2-sathyanarayanan.kuppuswamy@linux.intel.com>
+         <5473f606bd8e60dd7b8d58a540285d126a1361bd.camel@intel.com>
+         <e5aed619-20ce-7eb3-22a3-64b51de9cce3@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi John,
 
-On 02.05.2022 15:11, John Ogness wrote:
-> On 2022-05-02, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
->> Data written to /dev/kmsg and all kernel logs were always displayed
->> correctly. Also data written directly to /dev/ttyAML0 is displayed
->> properly on the console. The latter doesn't however trigger the input
->> related activity.
->>
->> It looks that the data read from the uart is delivered only if other
->> activity happens on the kernel console. If I type 'reboot' and press
->> enter, nothing happens immediately. If I type 'date >/dev/ttyAML0' via
->> ssh then, I only see the date printed on the console. However if I
->> type 'date >/dev/kmsg', the the date is printed and reboot happens.
-> I suppose if you login via ssh and check /proc/interrupts, then type
-> some things over serial, then check /proc/interrupts again, you will see
-> there have been no interrupts for the uart. But interrupts for other
-> devices are happening. Is this correct?
+> 
+> Also note that the MAC added to the TDREPORT is bound to the platform.
+> So TDREPORT can only be verified locally. Intel SGX Quote Enclave (QE)
+> can be leveraged to verify the TDREPORT locally and convert it to a
+> remote verifiable Quote to support remote attestation of the TDREPORT.
 
-Right. The counter for ttyAML0 is not increased when lockup happens and 
-I type something to the uart console.
+Why "can be"?  TDX must use QE to generate the Quote.
 
->> For comparison, here is a 't' sysrq result from the 'working' serial
->> console (next-20220429), which happens usually 1 of 4 boots:
->>
->> https://protect2.fireeye.com/v1/url?k=3ef0fd63-5f7be855-3ef1762c-000babff9b5d-2e40dc5adc30a14c&q=1&e=1469838f-8586-403e-bd4d-922675d8b658&u=https%3A%2F%2Fpastebin.com%2Fmp8zGFbW
-> This still looks odd to me. We should be seeing a trace originating from
-> ret_from_fork+0x10/0x20 and kthread+0x118/0x11c.
->
-> I wonder if the early creation of the thread is somehow causing
-> problems. Could you try the following patch to see if it makes a
-> difference? I would also like to see the sysrq-t output with this patch
-> applied:
->
-> ---------------- BEGIN PATCH ---------------
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index 2311a0ad584a..c4362d25de22 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -3837,7 +3837,7 @@ static int __init printk_activate_kthreads(void)
->   
->   	return 0;
->   }
-> -early_initcall(printk_activate_kthreads);
-> +late_initcall(printk_activate_kthreads);
->   
->   #if defined CONFIG_PRINTK
->   /* If @con is specified, only wait for that console. Otherwise wait for all. */
-> ---------------- END PATCH ---------------
->
-> Thanks for your help with this!
+[...]
 
-Well, nothing has changed. The lockup still happens.
+> 
+> > 
+> > For instance, after rough thinking, why is the IOCTL better than below approach
+> > using /sysfs?
+> > 
+> > echo <REPORTDATA> > /sys/kernel/coco/tdx/attest/reportdata
+> > cat /sys/kernel/coco/tdx/attest/tdreport
+> > 
+> > Each "echo <REPORTDATA>" to '/sys/.../reportdata' triggers the driver to call
+> > TDCALL to get the TDREPORT, which is available at '/sys/.../tdreport'.
+> > 
+> > The benefit of using IOCTL I can think of now is it is perhaps more secure, as
+> > with IOCTL the REPORTDATA and the TDREPORT is visible to the process which calls
+> > the IOCTL, while using the /sysfs they are potentially visible to any process.
+> > Especially the REPORTDATA, i.e. it can come from attestation service after the
+> > TD attestation agent sets up a secure connection with it.
+> > 
+> > Anyway, my 2cents above.
+> 
+> IMO, since TDREPORT is not a secret we don't have to hightlight security
+> concern here. 
+> 
 
-Best regards
+Right the TDREPORT itself isn't a secret.  However my thinking is the REPORTDATA
+might be.  It's typically provided by the attestation service to the TD so the
+Quote can be verified for instance per-session or per-connect or whatever.  The
+REPORTDATA is the only thing that can be used to prevent reply attack anyway. 
+From this perspective, it is kinda secret.  However the TDREPORT can be captured
+by untrusted software and used for reply attack if no crypto-protection is used
+when it is sent to the QE, so I am not sure how bad can the reply attack cause.
+
+> How about following?
+> 
+> Operations like getting TDREPORT or Quote generation involves sending
+> a blob of data as input and getting another blob of data as output. It
+> was considered to use a sysfs interface for this, but it doesn't fit
+> well into the standard sysfs model for configuring values. It would be
+> possible to do read/write on files, but it would need multiple file
+> descriptors, which would be somewhat messy. IOCTLs seems to be the best
+> fitting and simplest model here.
+> 
+> 
+
+Let's forget about GetQuote now.  As you can see it has couple of problems.  
+
+If we don't argue from security perspective, what's wrong with the approach
+using /sysfs I mentioned above?
+
+[...]
+
+> > > +
+> > > +	/*
+> > > +	 * Generate TDREPORT using "TDG.MR.REPORT" TDCALL.
+> > > +	 *
+> > > +	 * Pass the physical address of user generated REPORTDATA
+> > > +	 * and the physical address of the output buffer to the TDX
+> > > +	 * module to generate the TDREPORT. Generated data contains
+> > > +	 * measurements/configuration data of the TD guest. More info
+> > > +	 * about ABI can be found in TDX 1.0 Module specification, sec
+> > > +	 * titled "TDG.MR.REPORT".
+> > 
+> > I guess you can get rid of the entire second paragraph.  If the reference to the
+> > spec is useful, then keep it but other sentences are not quite useful.  Perhaps:
+> > 
+> > 	Get the TDREPORT using REPORTDATA as input.  Refer to 22.3.3
+> > 	TDG.MR.REPORT leaf in the TDX Module 1.0 Specification for detail
+> > 	information.
+> 
+> How about following?
+> 
+> Pass REPORTDATA as input and generate TDREPORT using "TDG.MR.REPORT"
+> TDCALL. Refer to 22.3.3 TDG.MR.REPORT leaf in the TDX Module 1.0
+> Specification for detailed information.
+
+No problem.
+
+> 
+> > 
+> > > +	 */
+> > > +	ret = __tdx_module_call(TDX_GET_REPORT, virt_to_phys(tdreport),
+> > > +				virt_to_phys(reportdata), 0, 0, NULL);
+> > > +	if (ret) {
+> > > +		pr_debug("TDREPORT TDCALL failed, status:%lx\n",
+> > > +				TDCALL_STATUS_CODE(ret));
+> > 
+> > You can just print out the exact error code.  It's more informative and can help
+> > to debug.
+> 
+> As per spec, only upper 32 bits has status code. 0:32 does not have any
+> useful info.
+
+Bits 0:31 are also defined by TDX error codes.  For instance, it also prints
+which argument caused this error in case of OPERAND_INVALID.  Why is it not
+useful?
+
+[...]
+
+> > > +	ret = misc_register(&miscdev);
+> > > +	if (ret) {
+> > > +		pr_err("misc device registration failed\n");
+> > 
+> > pr_debug() is used when __tdx_module_call() fails, and in the default case in
+> > tdx_attest_ioctl() too.
+> > 
+> > Shouldn't those error msg be printed using the same way?
+> 
+> For IOCTL case, I expect userspace to print the error. But for init
+> code error, it needs to be handled by kernel. So I have used pr_err
+> here.
+
+I don't quite get.  Why "userspace will print the error or not" has anything to
+do with using pr_debug() vs pr_err() here?
+
+[...]
+
+> 
+> > > +
+> > > +/**
+> > > + * struct tdx_report_req: Get TDREPORT from the TDX module.
+> > 
+> > Just get the TDREPORT is enough I guess.
+> 
+> Get TDREPORT using REPORTDATA as input?
+
+No problem.
+
+> 
+> > 
+> > > + *
+> > > + * @reportdata : User-defined 64-Byte REPORTDATA to be included into
+> > > + *		 TDREPORT. Typically it can be some nonce provided by
+> > > + *		 attestation software so the generated TDREPORT can be
+> > > + *		 uniquely verified.
+> > > + * @tdreport   : TDREPORT output from TDCALL[TDG.MR.REPORT] of size
+> > > + *		 TDX_REPORT_LEN.
+> > > + *
+> > > + * Used in TDX_CMD_GET_REPORT IOCTL request.
+> > > + */
+> > > +struct tdx_report_req {
+> > > +	union {
+> > > +		__u8 reportdata[TDX_REPORTDATA_LEN];
+> > > +		__u8 tdreport[TDX_REPORT_LEN];
+> > > +	};
+> > > +};
+> > 
+> > I am not sure overriding the input is a good idea, but will leave to others.
+> 
+> TDCALL uses it that way. So I have followed the same model.
+
+Which TDCALL?
+
+And TDCALL is kernel internal implementation, but we are talking about userspace
+ABI here.  I don't see any connection between them.
+
+> 
+> > 
+> > > +
+> > > +/* Get TDREPORT from the TDX module using TDCALL[TDG.MR.REPORT) */
+> > 
+> > Just get the TDREPORT is enough I guess.
+> 
+> May be following?
+> 
+> Get TDREPORT using TDCALL[TDG.MR.REPORT)
+
+My thinking is you don't need to call out the exact TDCALL in the uapi header. 
+But no opinion here.  Will leave to maintainers.
+
+> 
+> > 
+> > > +#define TDX_CMD_GET_REPORT		_IOWR('T', 0x01, struct tdx_report_req)
+> > > +
+> > > +#endif /* _UAPI_ASM_X86_TDX_H */
+> > 
+> 
+
+
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Thanks,
+-Kai
+
 
