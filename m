@@ -2,93 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3870BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A06C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385248AbiEBN3t (ORCPT
+        id S1385255AbiEBNaZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 09:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60894 "EHLO
+        Mon, 2 May 2022 09:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385270AbiEBN3m (ORCPT
+        with ESMTP id S236235AbiEBNaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 09:29:42 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5F1192B8
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 06:26:02 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id o69so11325129pjo.3
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 06:26:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=u1bDTYTZw1pMjI7Gqthg6fqrtoSnEG5Dk6/Cva86VCI=;
-        b=J8Zdfqky2G1V8EPU1ecXE3UoyFHfxsLoaZAqG1MZpJBsvn3p/pzvopC7EtHDzygAzv
-         WD3/uf9+OzfoKTnviGt0r3Wf9rA3sBjvr6JQ34+f2CZqLVAu3nCeEV6HQq0OXGPtBap+
-         WaZAaLCC0IXSkD0EcLYc7qX5h3MpjEoBY/Xd3bH4olmsTKKcEulfGRHQmB4ZfIhiYfqK
-         SSPMfQv4pFCtmO17HeunMnDleLR/4yhC/Untzzc5EWObwKj3ToOw0qGR2Jf9jtXM7imX
-         SW5LG9+WIexO9pvqe4S3Pp0Gr39wvgtlcSq4aFpbqOyk0Msg0XRXTREEnLeAhq7EoiF8
-         9w4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=u1bDTYTZw1pMjI7Gqthg6fqrtoSnEG5Dk6/Cva86VCI=;
-        b=Bl8AVE9Ec0azkp7OSLPu6bm7ydTWXJJZrUblbHYh0bqOTHTHbruU/0tpolbZdTBXCa
-         9uqnsh55f10Jfd1330OqGp9u/60yl++kte2HjyDYMbwSsYWtDiR2xOl5KDe3OzIBjENK
-         wkhMezpobH/x5CHggxj3vp++CQO/b6kXfzfKq6RKy72P8Nd6eqgfzJDmQal+KPdgSOPr
-         YDMezUBcKqfrrd8eRDcG3hK3GjRz7F5tP5gV1zaeaKqo16tHHKC+TbA79j6KCE4NLiV1
-         0nm8zrztWBP741wJe2wBdwoha3bjcMQT52JeRWNO/8Mn/PUWk8apbrGo522W+dGmTi3b
-         Hk2w==
-X-Gm-Message-State: AOAM531l0i4Y14FeBxhlW+m2uC6Oknjq1DvKs4oYnzeOfKdJfYKYdXoZ
-        jHng0Aw8lSoQbNJBr409C7k+Bw==
-X-Google-Smtp-Source: ABdhPJzQTiuO7lIQ/FePbEmWbZv+DY73/I4ctb8nms0SxtRXkj+EdjJSmDi2u1196zt5vr0VCWjOpA==
-X-Received: by 2002:a17:90b:3b4c:b0:1da:2001:a222 with SMTP id ot12-20020a17090b3b4c00b001da2001a222mr13020897pjb.84.1651497962364;
-        Mon, 02 May 2022 06:26:02 -0700 (PDT)
-Received: from [192.168.4.166] (cpe-72-132-29-68.dc.res.rr.com. [72.132.29.68])
-        by smtp.gmail.com with ESMTPSA id m10-20020a170902db0a00b0015e8d4eb2dbsm4627740plx.293.2022.05.02.06.26.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 May 2022 06:26:01 -0700 (PDT)
-Message-ID: <6ad38ecc-b2a9-f0e9-f7c7-f312a2763f97@kernel.dk>
-Date:   Mon, 2 May 2022 07:26:00 -0600
+        Mon, 2 May 2022 09:30:16 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0AADF42;
+        Mon,  2 May 2022 06:26:47 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 98ECF1F38D;
+        Mon,  2 May 2022 13:26:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1651498006; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=t7mYhzVIijfS2u6zKyiGE65SdMXrZnKk56ieyLXm2bM=;
+        b=OQi8JYs6fQ97+yvu03rmQ2kh+3v6zp4y6dG7XwGWt70l0w/3H6WbDVrChl54Qk9v3KmkZg
+        5/kvgrq129PzcQxz8QIx0Gb108yhh9EzocxNyZP6Vi8P9P/T0R0d72QJ0ijZfp6Ak/iiUx
+        tjG5sdSLZ+E7Q1Ux0v7sTlSxQCZs8oI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1651498006;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=t7mYhzVIijfS2u6zKyiGE65SdMXrZnKk56ieyLXm2bM=;
+        b=TQqWk+L1WxWYM8vpryDBtz4mMLWFKq+ysXcyNXlQy9XTMbfOHuA0MGBo3ZLFQ4ZLqA928v
+        iFg4DuZ+pR2uvQCg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 61E7E133E5;
+        Mon,  2 May 2022 13:26:46 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id dRnxFhbcb2L1FQAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Mon, 02 May 2022 13:26:46 +0000
+Message-ID: <fa010244-b250-ea6d-275e-bfbe1bd8f212@suse.de>
+Date:   Mon, 2 May 2022 15:26:46 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [REGRESSION] lxc-stop hang on 5.17.x kernels
+Subject: Re: [PATCH 1/2] fbdev: Check in file_fb_info() if the fb_info was
+ already been freed
 Content-Language: en-US
-To:     Daniel Harding <dharding@living180.net>,
-        Pavel Begunkov <asml.silence@gmail.com>
-Cc:     regressions@lists.linux.dev, io-uring@vger.kernel.org,
+To:     Javier Martinez Canillas <javierm@redhat.com>,
         linux-kernel@vger.kernel.org
-References: <7925e262-e0d4-6791-e43b-d37e9d693414@living180.net>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <7925e262-e0d4-6791-e43b-d37e9d693414@living180.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Cc:     linux-fbdev@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Helge Deller <deller@gmx.de>,
+        Changcheng Deng <deng.changcheng@zte.com.cn>,
+        dri-devel@lists.freedesktop.org, Maxime Ripard <maxime@cerno.tech>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sam Ravnborg <sam@ravnborg.org>
+References: <20220502130944.363776-1-javierm@redhat.com>
+ <20220502130944.363776-2-javierm@redhat.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220502130944.363776-2-javierm@redhat.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------GxDwQo1TEarUTpectLcHvWN4"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/2/22 7:17 AM, Daniel Harding wrote:
-> I use lxc-4.0.12 on Gentoo, built with io-uring support
-> (--enable-liburing), targeting liburing-2.1.  My kernel config is a
-> very lightly modified version of Fedora's generic kernel config. After
-> moving from the 5.16.x series to the 5.17.x kernel series, I started
-> noticed frequent hangs in lxc-stop.  It doesn't happen 100% of the
-> time, but definitely more than 50% of the time.  Bisecting narrowed
-> down the issue to commit aa43477b040251f451db0d844073ac00a8ab66ee:
-> io_uring: poll rework. Testing indicates the problem is still present
-> in 5.18-rc5. Unfortunately I do not have the expertise with the
-> codebases of either lxc or io-uring to try to debug the problem
-> further on my own, but I can easily apply patches to any of the
-> involved components (lxc, liburing, kernel) and rebuild for testing or
-> validation.  I am also happy to provide any further information that
-> would be helpful with reproducing or debugging the problem.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------GxDwQo1TEarUTpectLcHvWN4
+Content-Type: multipart/mixed; boundary="------------ItrIdni06cTQRrs0VpNguz7k";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Javier Martinez Canillas <javierm@redhat.com>,
+ linux-kernel@vger.kernel.org
+Cc: linux-fbdev@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+ Helge Deller <deller@gmx.de>, Changcheng Deng <deng.changcheng@zte.com.cn>,
+ dri-devel@lists.freedesktop.org, Maxime Ripard <maxime@cerno.tech>,
+ Zhen Lei <thunder.leizhen@huawei.com>,
+ Alex Deucher <alexander.deucher@amd.com>, Sam Ravnborg <sam@ravnborg.org>
+Message-ID: <fa010244-b250-ea6d-275e-bfbe1bd8f212@suse.de>
+Subject: Re: [PATCH 1/2] fbdev: Check in file_fb_info() if the fb_info was
+ already been freed
+References: <20220502130944.363776-1-javierm@redhat.com>
+ <20220502130944.363776-2-javierm@redhat.com>
+In-Reply-To: <20220502130944.363776-2-javierm@redhat.com>
 
-Do you have a recipe to reproduce the hang? That would make it
-significantly easier to figure out.
+--------------ItrIdni06cTQRrs0VpNguz7k
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
--- 
-Jens Axboe
+SGkNCg0KQW0gMDIuMDUuMjIgdW0gMTU6MDkgc2NocmllYiBKYXZpZXIgTWFydGluZXogQ2Fu
+aWxsYXM6DQo+IElmIHJlYWwgZHJpdmVyIHByb2JlcywgdGhlIGZiZGV2IGNvcmUga2lja3Mg
+b3V0IGFsbCBkcml2ZXJzIHRoYXQgYXJlIHVzaW5nDQo+IGEgZnJhbWVidWZmZXIgdGhhdCB3
+ZXJlIHByb3ZpZGVkIGJ5IHRoZSBzeXN0ZW0gZmlybXdhcmUuIEJ1dCBpdCBjb3VsZCBiZSBh
+DQo+IHVzZXItc3BhY2UgcHJvY2VzcyBzdGlsbCBoYXMgYSBmaWxlIGRlc2NyaXB0b3IgZm9y
+IHRoZSBmYmRldiBkZXZpY2Ugbm9kZS4NCj4gDQo+IFRoaXMgY2FuIGxlYWQgdG8gYSBOVUxM
+IHBvaW50ZXIgZGVyZWZlcmVuY2UsIGlmIHRoZSBmcmFtZWJ1ZmZlciBkZXZpY2UgaXMNCj4g
+dW5yZWdpc3RlcmVkIGFuZCBhc3NvY2lhdGVkIGRhdGEgZnJlZWQsIGJ1dCBsYXRlciBpbiB0
+aGUgLnJlbGVhc2UgY2FsbGJhY2sNCj4gaXMgYXR0ZW1wdGVkIHRvIGFjY2VzcyBpdHMgc3Ry
+dWN0IGZiX2luZm8uDQo+IA0KPiBUbyBwcmV2ZW50IHRoaXMsIG1ha2UgZmlsZV9mYl9pbmZv
+KCkgdG8gYWxzbyBjaGVjayB0aGUgZmJfaW5mbyByZWZlcmVuY2UNCj4gY291bnRlciBhbmQg
+anVzdCByZXR1cm4gTlVMTCBpZiB0aGlzIGVxdWFscyB6ZXJvLiBTaW5jZSB0aGF0IG1lYW5z
+IGl0IGhhcw0KPiBhbHJlYWR5IGJlZW4gZnJlZWQuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBK
+YXZpZXIgTWFydGluZXogQ2FuaWxsYXMgPGphdmllcm1AcmVkaGF0LmNvbT4NCj4gLS0tDQo+
+IA0KPiAgIGRyaXZlcnMvdmlkZW8vZmJkZXYvY29yZS9mYm1lbS5jIHwgOSArKysrKysrLS0N
+Cj4gICAxIGZpbGUgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0K
+PiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlkZW8vZmJkZXYvY29yZS9mYm1lbS5jIGIv
+ZHJpdmVycy92aWRlby9mYmRldi9jb3JlL2ZibWVtLmMNCj4gaW5kZXggODQ0Mjc0NzAzNjdi
+Li4yMGQ4OTI5ZGY3OWYgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvdmlkZW8vZmJkZXYvY29y
+ZS9mYm1lbS5jDQo+ICsrKyBiL2RyaXZlcnMvdmlkZW8vZmJkZXYvY29yZS9mYm1lbS5jDQo+
+IEBAIC03NTEsOCArNzUxLDEzIEBAIHN0YXRpYyBzdHJ1Y3QgZmJfaW5mbyAqZmlsZV9mYl9p
+bmZvKHN0cnVjdCBmaWxlICpmaWxlKQ0KPiAgIAlpbnQgZmJpZHggPSBpbWlub3IoaW5vZGUp
+Ow0KPiAgIAlzdHJ1Y3QgZmJfaW5mbyAqaW5mbyA9IHJlZ2lzdGVyZWRfZmJbZmJpZHhdOw0K
+PiAgIA0KPiAtCWlmIChpbmZvICE9IGZpbGUtPnByaXZhdGVfZGF0YSkNCj4gLQkJaW5mbyA9
+IE5VTEw7DQo+ICsJaWYgKCFpbmZvKQ0KPiArCQlyZXR1cm4gTlVMTDsNCj4gKw0KPiArCS8q
+IGNoZWNrIHRoYXQgdGhlIGZiX2luZm8gaGFzIG5vdCBjaGFuZ2VkIG9yIHdhcyBhbHJlYWR5
+IGZyZWVkICovDQo+ICsJaWYgKGluZm8gIT0gZmlsZS0+cHJpdmF0ZV9kYXRhIHx8IHJlZmNv
+dW50X3JlYWQoJmluZm8tPmNvdW50KSA9PSAwKQ0KPiArCQlyZXR1cm4gTlVMTDsNCj4gKw0K
+DQpBY2tlZC1ieTogVGhvbWFzIFppbW1lcm1hbm4gPHR6aW1tZXJtYW5uQHN1c2UuZGU+DQoN
+Ckhvd2V2ZXIsIEknbSBoYXZpbmcgcHJvYmxlbXMgd2l0aCB0aGUgc2VtYW50aWNzIG9mIHRo
+ZXNlIHZhcmlhYmxlczogaWYgDQp3ZSBoYXZlIGFuIGluZm8gZnJvbSByZWdpc3RlcmVkX2Zi
+W2ZiaW54XSBhbmQgdGhlIHJlZmNvdW50IGluIA0KaW5mby0+Y291bnQgaXMgc3RpbGwgMCwg
+aXNuJ3QgdGhhdCBhIGNvbnNpc3RlbmN5IHByb2JsZW0/IElmIHNvLCB3ZSANCnNob3VsZCBw
+cmludCBhIFdBUk5fT04oKS4NCg0KQmVzdCByZWdhcmRzDQpUaG9tYXMNCg0KDQo+ICAgCXJl
+dHVybiBpbmZvOw0KPiAgIH0NCj4gICANCg0KLS0gDQpUaG9tYXMgWmltbWVybWFubg0KR3Jh
+cGhpY3MgRHJpdmVyIERldmVsb3Blcg0KU1VTRSBTb2Z0d2FyZSBTb2x1dGlvbnMgR2VybWFu
+eSBHbWJIDQpNYXhmZWxkc3RyLiA1LCA5MDQwOSBOw7xybmJlcmcsIEdlcm1hbnkNCihIUkIg
+MzY4MDksIEFHIE7DvHJuYmVyZykNCkdlc2Now6RmdHNmw7xocmVyOiBJdm8gVG90ZXYNCg==
 
+
+--------------ItrIdni06cTQRrs0VpNguz7k--
+
+--------------GxDwQo1TEarUTpectLcHvWN4
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmJv3BYFAwAAAAAACgkQlh/E3EQov+D+
+bxAAktuIMYX016QZSXR5Od44lyk39YY23fpUoPgSy+PHxbq/JQhL9XezZqHh5q2wJ1fCAmp9CV/I
+XOJSmGhBh+eBHcop7dKjtJzA01P6EOhKNlh6hlYgtaD1N9wP3MMrb9xgzgtvl9py1dKTwH8aAoqg
+lNWYzV4p0EIFUWtsR4XIX2dcN6upBjcDLnk83OtZWMlBmSbYKAMuJryA44CRAqPzGLu/bzCq7LKD
+Cu5fhiFOPHH9dj55UJKQNpVrtHhjWiAFOc1ftqE2Gml24dkqVo7gdxgpb+ahfp6iIRH1TBl3EQTR
+p475oVk5jHx05aaDbCrBPcr3A3vyM955BwiI3Vpg9bxsQ/NzADPxWxzHFSbdZHO/V6AbnLa4tThG
++LEPr2DUdVnHwOVVAP6DbdAAXf1yD61EpIL58/pThtHmCetHZLbgAvVWGThfEqHMJLGTifgh7jyt
+jjkyXg2Q0fRyjvPRLmYn/ykj6C96mqkyffAzNChEx5t5NJWUQMrj7bHQFQkIYXCL0Kcv1pi+fdKl
+a2KWg74n7r/WD5WI15VYtXA8/SLFyb+PnpVKNvA+vcEQWhTQzLS4w/Ui2mXYN1zRN2fG3SsELXVq
+7392yHYKEPS3nXbRCst+9prlyFeFZPJNp1eIRIqD3L+fwRr1837QuCooXiRSPYX+8tx4D7YYuA1I
+fkw=
+=+q52
+-----END PGP SIGNATURE-----
+
+--------------GxDwQo1TEarUTpectLcHvWN4--
