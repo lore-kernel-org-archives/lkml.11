@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 904BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 18:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A280AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 18:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386833AbiEBSV2 (ORCPT
+        id S1386853AbiEBSVf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 14:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39542 "EHLO
+        Mon, 2 May 2022 14:21:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386789AbiEBSVY (ORCPT
+        with ESMTP id S1386818AbiEBSV0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 14:21:24 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96641F3F;
-        Mon,  2 May 2022 11:17:54 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id z12so8376218ilp.8;
-        Mon, 02 May 2022 11:17:54 -0700 (PDT)
+        Mon, 2 May 2022 14:21:26 -0400
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8F1109B;
+        Mon,  2 May 2022 11:17:56 -0700 (PDT)
+Received: by mail-il1-x12f.google.com with SMTP id d3so8376935ilr.10;
+        Mon, 02 May 2022 11:17:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oljhvr5L//T9Vy02GcvXRkCXJypJDloAClOtYKsY/0E=;
-        b=m8g+klr4FSoI2I5mvjR+ATb/3XQ5Mh5s9DwzGed58GsXWVUbF4mq3GH+lVjr5f5AhU
-         12UWNwsWDOb2Z85I9rHqYmC7DiU6MfAtWZSZFKKEorv7U9IWVh27fTnexF3l28nJ1Ug+
-         S9KqUcHmyh6hQPhhJeZ6XuV7LcBjwN8QlsiioG8w5lJTI+4zsWhhro/6dbWe7VtNa/rn
-         XCvpgt3BwNQghGs+iV3DSWZgIN72E832AVZlcD+eVAWueyMwZUP6TwwFTIDXnazn6+wg
-         dxLfzJNn0A+uRWTjF+e+nhEpFh3U+l5ANpQqY42f/ReFqR1XF0cLlTVvjfgE+lWzsJIn
-         aFXA==
+        bh=TJq9Y2j2hvjQOKUEqQsEklHfEq8wyddeCa52aAthpsM=;
+        b=MS4i9i1M056zAMef/ia3Kh2Ot8KqLzlLj/J45yrFWVW24uDlE6Z0y2tVYgqVda2Cn+
+         C6WZYHLf8VGwgAjuTIIwJYqeVdiDAaKiZ2kcJ3pZIaS2E23A3ZEFrRQ+Udt7ogYJGTNx
+         7Mf7Vhyp8dOy2FQwegmEH3mkNxXempihpLIAVn8/l4D6ocM5lWJu/0OX14RaJWOMQeac
+         T+GcTUpqwQVE3JMFWAH7QMzX5ZdyWQ3YiWKo2F4drMn27LDVxnc87pN2BGlbQQttctqu
+         QX7hJhI1iMRST6wgZDyPjUn3Duwyi0S2G8d6X//9lo1pNysN899eGHtx51DqHzeIXRCV
+         VYcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oljhvr5L//T9Vy02GcvXRkCXJypJDloAClOtYKsY/0E=;
-        b=ztsXn1I8JCZwO6aL7Lwf6gyqgomRgFuU1ktFFvH103q8Gexy/pLQxUVZxMY6tMEg5Y
-         GcifaNs58bSX/z25SRc9/4OLWC2fOKvrCWsMH7O0arDEqIgHTZwSOaMcjCc6lUT/5cSi
-         vSy9davqeevioCRJAZ8bhp+YMawXNrpKIPyn6ADfGZG2V/DLbAZ3xi82IZDqyN/0DTO5
-         tSkWO8twFnuvWhOF6Nr+adZR+9A/dszlKCGy3yyXxTrxWTfyAXoEHFAI2eXrLJ2zI1Kr
-         C26eUEdt+KQY/SZkW0CVDsUiZQuwNLRzw5v3ZhoPlwvL4kf+AlqMnamz43jkuqOLqRkn
-         ONlA==
-X-Gm-Message-State: AOAM532NxHcnZo5eN9XmJ4padbDM2zhZkAhqiNEhGR6URNC3xBSbZLlx
-        JoSNz9u5K941p0Yk/m33oYwZ21Vmgv0=
-X-Google-Smtp-Source: ABdhPJx/NXLucnD6P0oMjFgEU5sNoFUlCqSo2QDN0SEVxjEh4UX3XcYl4M8nazibbtYM3Sfdi3FFJA==
-X-Received: by 2002:a92:c26a:0:b0:2cd:9acf:c42d with SMTP id h10-20020a92c26a000000b002cd9acfc42dmr5153571ild.143.1651515474007;
-        Mon, 02 May 2022 11:17:54 -0700 (PDT)
+        bh=TJq9Y2j2hvjQOKUEqQsEklHfEq8wyddeCa52aAthpsM=;
+        b=K9uhBvcSjrPbUp7WtOfY9+ENNl7XUg3L6n+tf2jbGzLhOlzMTVcmkZxxr7MVOgFtvq
+         sqMgKnct5Pi/xWq7oPFcpHG+56c0i6HTmlOjjD/SeXRCHWPrNeMTAz083Ukk+IhD95Q0
+         xtvZ3fCmzEP4qlXMbDIOnEJmTgSa1YhXDryVc7Rt6F/K9K6uvd2fPKS79/rFl03UT2/7
+         Jf3+MkXXRp+ja2ZId68Ukar1DAYcizxYem2n2UunUR9QuJ+YnL/pdSCvpujWz8ae4vxc
+         fUOwOC9Je2rG4MCCOMSw5TgyqauOaVgAWbwUidO1luD4F6fx4BRi1R/BflsAcudqJcdf
+         pYwQ==
+X-Gm-Message-State: AOAM530Mv21mbNakcgKUHgtsbwOy//yh4sn+v+5DLfKbjkwDcZith0Qr
+        SEgs4d3qA00adaHagnlCej8=
+X-Google-Smtp-Source: ABdhPJxd7u0XnbmXPnGFaxJCsYXOLdMq3rXoAV+PBXFZY5be3h+QpLTuU5xzRSvXpmRQouSr1Clojw==
+X-Received: by 2002:a05:6e02:152b:b0:2cd:ffb6:59bf with SMTP id i11-20020a056e02152b00b002cdffb659bfmr4617792ilu.180.1651515476048;
+        Mon, 02 May 2022 11:17:56 -0700 (PDT)
 Received: from xps8900.attlocal.net ([2600:1700:2442:6db0:2d25:3fcb:9ffb:5d5a])
-        by smtp.gmail.com with ESMTPSA id f43-20020a02242b000000b0032b3a7817a9sm3230678jaa.109.2022.05.02.11.17.53
+        by smtp.gmail.com with ESMTPSA id f43-20020a02242b000000b0032b3a7817a9sm3230678jaa.109.2022.05.02.11.17.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 11:17:53 -0700 (PDT)
+        Mon, 02 May 2022 11:17:55 -0700 (PDT)
 From:   frowand.list@gmail.com
 To:     Rob Herring <robh+dt@kernel.org>, pantelis.antoniou@konsulko.com,
         Slawomir Stepien <slawomir.stepien@nokia.com>,
@@ -57,9 +57,9 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Slawomir Stepien <sst@poczta.fm>,
         Jan Kiszka <jan.kiszka@siemens.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 1/3] of: overlay: add entry to of_overlay_action_name[]
-Date:   Mon,  2 May 2022 13:17:40 -0500
-Message-Id: <20220502181742.1402826-2-frowand.list@gmail.com>
+Subject: [PATCH v2 3/3] of: overlay: do not free changeset when of_overlay_apply returns error
+Date:   Mon,  2 May 2022 13:17:42 -0500
+Message-Id: <20220502181742.1402826-4-frowand.list@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220502181742.1402826-1-frowand.list@gmail.com>
 References: <20220502181742.1402826-1-frowand.list@gmail.com>
@@ -71,134 +71,137 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Frank Rowand <frank.rowand@sony.com>
 
-The values of enum of_overlay_notify_action are used to index into
-array of_overlay_action_name.  Add an entry to of_overlay_action_name
-for the value recently added to of_overlay_notify_action.
+New unittests for overlay notifiers reveal a memory leak in
+of_overlay_apply() when a notifier returns an error for action
+OF_OVERLAY_POST_APPLY.  The pr_err() message is:
 
-Array of_overlay_action_name[] is moved into include/linux/of.h
-adjacent to enum of_overlay_notify_action to make the connection
-between the two more obvious if either is modified in the future.
+   OF: ERROR: memory leak, expected refcount 1 instead of 3,
+   of_node_get()/of_node_put() unbalanced - destroy cset entry: attach
+   overlay node /testcase-data/overlay-node/test-bus/test-unittest17
 
-The only use of of_overlay_action_name is for error reporting in
-overlay_notify().  All callers of overlay_notify() report the same
-error, but with fewer details.  Remove the redundant error reports
-in the callers.
+Change the error path to no longer call free_overlay_changeset(),
+and document that the caller of of_overlay_fdt_apply() may choose
+to remove the overlay.
 
-Fixes: 067c098766c6 ("of: overlay: rework overlay apply and remove kfree()s")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Update the unittest that triggered the error to expect the changed
+return values and to call of_overlay_remove().
+
 Signed-off-by: Frank Rowand <frank.rowand@sony.com>
 ---
 Changes since version 1:
   - patch 1/1 v1 did not apply on Rob's dt/next branch, rebase on top of
     5f756a2eaa44 of: overlay: do not break notify on NOTIFY_{OK|STOP}
 
- drivers/of/overlay.c | 27 +++++----------------------
- include/linux/of.h   | 13 +++++++++++++
- 2 files changed, 18 insertions(+), 22 deletions(-)
+Output of the new overlay notifier unittests, as filtered by
+scripts/dtc/of_unittest_expect:
+
+   ### dt-test ### pass of_unittest_overlay_notify():2825
+ok OF: overlay: overlay changeset pre-apply notifier error -16, target: /testcase-data/overlay-node/test-bus
+   ### dt-test ### pass of_unittest_overlay_notify():2846
+   ### dt-test ### pass of_unittest_overlay_notify():2851
+ok OF: overlay: overlay changeset post-apply notifier error -17, target: /testcase-data/overlay-node/test-bus
+   ### dt-test ### pass of_unittest_overlay_notify():2857
+   ### dt-test ### pass of_unittest_overlay_notify():2862
+   ### dt-test ### pass of_unittest_overlay_notify():2866
+   ### dt-test ### pass of_unittest_overlay_notify():2872
+   ### dt-test ### pass of_unittest_overlay_notify():2875
+ok OF: overlay: overlay changeset pre-remove notifier error -18, target: /testcase-data/overlay-node/test-bus
+   ### dt-test ### pass of_unittest_overlay_notify():2886
+   ### dt-test ### pass of_unittest_overlay_notify():2894
+   ### dt-test ### pass of_unittest_overlay_notify():2898
+   ### dt-test ### pass of_unittest_overlay_notify():2901
+ok OF: overlay: overlay changeset post-remove notifier error -19, target: /testcase-data/overlay-node/test-bus
+   ### dt-test ### pass of_unittest_overlay_notify():2908
+   ### dt-test ### pass of_unittest_overlay_notify():2915
+   ### dt-test ### pass of_unittest_overlay_notify():2920
+   ### dt-test ### pass of_unittest_overlay_notify():2932
+
+
+ drivers/of/overlay.c  | 29 ++++++++++++++++++++++++++---
+ drivers/of/unittest.c | 10 ++++++++--
+ 2 files changed, 34 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/of/overlay.c b/drivers/of/overlay.c
-index bd522da7f76b..ae5ea5b1079b 100644
+index ae5ea5b1079b..4044ddcb02c6 100644
 --- a/drivers/of/overlay.c
 +++ b/drivers/of/overlay.c
-@@ -152,13 +152,6 @@ int of_overlay_notifier_unregister(struct notifier_block *nb)
+@@ -952,6 +952,25 @@ static int of_overlay_apply(struct overlay_changeset *ovcs)
+ 	return ret;
  }
- EXPORT_SYMBOL_GPL(of_overlay_notifier_unregister);
  
--static char *of_overlay_action_name[] = {
--	"pre-apply",
--	"post-apply",
--	"pre-remove",
--	"post-remove",
--};
--
- static int overlay_notify(struct overlay_changeset *ovcs,
- 		enum of_overlay_notify_action action)
++/*
++ * of_overlay_fdt_apply() - Create and apply an overlay changeset
++ * @overlay_fdt:	pointer to overlay FDT
++ * @overlay_fdt_size:	number of bytes in @overlay_fdt
++ * @ret_ovcs_id:	pointer for returning created changeset id
++ *
++ * Creates and applies an overlay changeset.
++ *
++ * See of_overlay_apply() for important behavior information.
++ *
++ * Return: 0 on success, or a negative error number.  *@ret_ovcs_id is set to
++ * the value of overlay changeset id, which can be passed to of_overlay_remove()
++ * to remove the overlay.
++ *
++ * On error return, the changeset may be partially applied.  This is especially
++ * likely if an OF_OVERLAY_POST_APPLY notifier returns an error.  In this case
++ * the caller should call of_overlay_remove() with the value in *@ret_ovcs_id.
++ */
++
+ int of_overlay_fdt_apply(const void *overlay_fdt, u32 overlay_fdt_size,
+ 			 int *ret_ovcs_id)
  {
-@@ -178,7 +171,7 @@ static int overlay_notify(struct overlay_changeset *ovcs,
- 		if (notifier_to_errno(ret)) {
- 			ret = notifier_to_errno(ret);
- 			pr_err("overlay changeset %s notifier error %d, target: %pOF\n",
--			       of_overlay_action_name[action], ret, nd.target);
-+			       of_overlay_action_name(action), ret, nd.target);
- 			return ret;
- 		}
- 	}
-@@ -925,10 +918,8 @@ static int of_overlay_apply(struct overlay_changeset *ovcs)
- 		goto out;
+@@ -1019,15 +1038,19 @@ int of_overlay_fdt_apply(const void *overlay_fdt, u32 overlay_fdt_size,
+ 	ovcs->overlay_mem = overlay_mem;
  
- 	ret = overlay_notify(ovcs, OF_OVERLAY_PRE_APPLY);
--	if (ret) {
--		pr_err("overlay changeset pre-apply notify error %d\n", ret);
-+	if (ret)
- 		goto out;
--	}
+ 	ret = of_overlay_apply(ovcs);
+-	if (ret < 0)
+-		goto err_free_ovcs;
++	/*
++	 * If of_overlay_apply() error, calling free_overlay_changeset() may
++	 * result in a memory leak if the apply partly succeeded, so do NOT
++	 * goto err_free_ovcs.  Instead, the caller of of_overlay_fdt_apply()
++	 * can call of_overlay_remove();
++	 */
  
- 	ret = build_changeset(ovcs);
- 	if (ret)
-@@ -951,12 +942,9 @@ static int of_overlay_apply(struct overlay_changeset *ovcs)
- 	/* notify failure is not fatal, continue */
+ 	mutex_unlock(&of_mutex);
+ 	of_overlay_mutex_unlock();
  
- 	ret_tmp = overlay_notify(ovcs, OF_OVERLAY_POST_APPLY);
--	if (ret_tmp) {
--		pr_err("overlay changeset post-apply notify error %d\n",
--		       ret_tmp);
-+	if (ret_tmp)
- 		if (!ret)
- 			ret = ret_tmp;
--	}
+ 	*ret_ovcs_id = ovcs->id;
  
- out:
- 	pr_debug("%s() err=%d\n", __func__, ret);
-@@ -1192,10 +1180,8 @@ int of_overlay_remove(int *ovcs_id)
- 	}
+-	return 0;
++	return ret;
  
- 	ret = overlay_notify(ovcs, OF_OVERLAY_PRE_REMOVE);
--	if (ret) {
--		pr_err("overlay changeset pre-remove notify error %d\n", ret);
-+	if (ret)
- 		goto err_unlock;
--	}
- 
- 	ret_apply = 0;
- 	ret = __of_changeset_revert_entries(&ovcs->cset, &ret_apply);
-@@ -1218,12 +1204,9 @@ int of_overlay_remove(int *ovcs_id)
- 	 * OF_OVERLAY_POST_REMOVE returns an error.
- 	 */
- 	ret_tmp = overlay_notify(ovcs, OF_OVERLAY_POST_REMOVE);
--	if (ret_tmp) {
--		pr_err("overlay changeset post-remove notify error %d\n",
--		       ret_tmp);
-+	if (ret_tmp)
- 		if (!ret)
- 			ret = ret_tmp;
--	}
- 
+ err_free_ovcs:
  	free_overlay_changeset(ovcs);
+diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
+index e28c3df2c4c2..dff55ae09d97 100644
+--- a/drivers/of/unittest.c
++++ b/drivers/of/unittest.c
+@@ -2848,7 +2848,7 @@ static void __init of_unittest_overlay_notify(void)
  
-diff --git a/include/linux/of.h b/include/linux/of.h
-index 17741eee0ca4..f0a5d6b10c5a 100644
---- a/include/linux/of.h
-+++ b/include/linux/of.h
-@@ -1550,6 +1550,19 @@ enum of_overlay_notify_action {
- 	OF_OVERLAY_POST_REMOVE,
- };
+ 	EXPECT_END(KERN_INFO, "OF: overlay: overlay changeset pre-apply notifier error -16, target: /testcase-data/overlay-node/test-bus");
  
-+static inline char *of_overlay_action_name(enum of_overlay_notify_action action)
-+{
-+	static char *of_overlay_action_name[] = {
-+		"init",
-+		"pre-apply",
-+		"post-apply",
-+		"pre-remove",
-+		"post-remove",
-+	};
+-	unittest(!ovcs_id, "ovcs_id created for overlay_16\n");
++	unittest(ovcs_id, "ovcs_id not created for overlay_16\n");
+ 
+ 	/* ---  overlay 17  --- */
+ 
+@@ -2859,7 +2859,13 @@ static void __init of_unittest_overlay_notify(void)
+ 
+ 	EXPECT_END(KERN_INFO, "OF: overlay: overlay changeset post-apply notifier error -17, target: /testcase-data/overlay-node/test-bus");
+ 
+-	unittest(!ovcs_id, "ovcs_id created for overlay_17\n");
++	unittest(ovcs_id, "ovcs_id not created for overlay_17\n");
 +
-+	return of_overlay_action_name[action];
-+}
-+
- struct of_overlay_notify_data {
- 	struct device_node *overlay;
- 	struct device_node *target;
++	if (ovcs_id) {
++		ret = of_overlay_remove(&ovcs_id);
++		unittest(!ret,
++			"overlay_17 of_overlay_remove(), ret = %d\n", ret);
++	}
+ 
+ 	/* ---  overlay 18  --- */
+ 
 -- 
 Frank Rowand <frank.rowand@sony.com>
 
