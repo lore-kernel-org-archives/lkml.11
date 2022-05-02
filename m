@@ -2,140 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 218BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 22:42:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C76EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 22:45:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240793AbiEBWqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 18:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39544 "EHLO
+        id S232785AbiEBWse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 18:48:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357693AbiEBWpL (ORCPT
+        with ESMTP id S230368AbiEBWs3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 18:45:11 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A60E0C2;
-        Mon,  2 May 2022 15:41:40 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id BA1532225D;
-        Tue,  3 May 2022 00:41:38 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1651531298;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MLWEvQ8H+N+3ves5MQiRM3TPUboBDqPSmRhE9EEJUOU=;
-        b=WAxU/t/88HEbE3Q+VI5LbQcqn0mMy3+OUBscftabnkHQfSha+X9STuQjjPZ8KJvNUkKiZg
-        AXmRQlcXzOaCZVESiO70BqkJXxI/VkW8EToF2AuhkB5RbpxdkcFYOyEs17ECLPga56Kxm5
-        L9AhR78s3VucnnlqJB5NUlQ+VYRpKW4=
-From:   Michael Walle <michael@walle.cc>
-To:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Tudor.Ambarus@microchip.com,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v4 12/13] ARM: dts: lan966x: add switch node
-Date:   Tue,  3 May 2022 00:41:26 +0200
-Message-Id: <20220502224127.2604333-13-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220502224127.2604333-1-michael@walle.cc>
-References: <20220502224127.2604333-1-michael@walle.cc>
+        Mon, 2 May 2022 18:48:29 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2551E0AA
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 15:44:58 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id l11-20020a17090a49cb00b001d923a9ca99so582119pjm.1
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 15:44:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9Pev6TadqoPCvCslhpANrkqa0tRzANTdzEtaxAf0Hbw=;
+        b=IO+ItVxTbHRREuluGK2fhmQblF4cgW5vavOTKIpFPkRROJX9gmuVnnXRYdROnlh0zK
+         5E/tkPZJOY5b9uCPVSTrQo5ZT1qEvx0sCk9u5l6zkQG9tJNfyrMIAV++5Lw/q2Ftl4OP
+         5q5eBsfs5slcB3cSP6ZXkHWEyjFQtO83O56Dk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9Pev6TadqoPCvCslhpANrkqa0tRzANTdzEtaxAf0Hbw=;
+        b=JkxuA7Kj5GsXHcOkWj/TFpTc7w8LfEeODlQHHWOMjkt6amGKwczFfjxdUgpUiD6Nm/
+         /JbJZO+LjnIomrhr2C7EicBuUpXwlxJwT0ZjU/StBJ4FKBPVj75uU7i2jGsCjWQECukd
+         fO34Ye30VQHwHd2uF8q0W+GqokZ13a7DYdr2Fhaqgmi4cTPLA3vnqeHjq1r4kFWBLOnq
+         gpylmA11pIG/vW0x8MLw3a36XYW4aZDYmlBkPmbA8rHwnKlFYAo7AZt2CvkGTONZz0LN
+         4fsD3NqParg/EtJbaj+LwqjmIAc6QT3CaCki9J/lxxfHqq7FVB+a2fzciv0s7HymczYA
+         QOtw==
+X-Gm-Message-State: AOAM532+LqbUbyLlYnBkESfF3hSmevHYZLaenj7+XLkU1Cza4RgqAwyP
+        Pxn3attDSvRnhd51RPbNU8g5Pg==
+X-Google-Smtp-Source: ABdhPJxhVHtiibpNcHj8mIUaI5q3jvfhB3UxBy63zLm72g4zQPjmd26WW0fmoc9EkpEka6ka3qUucw==
+X-Received: by 2002:a17:902:d4c2:b0:15e:abd0:926f with SMTP id o2-20020a170902d4c200b0015eabd0926fmr4925055plg.129.1651531497972;
+        Mon, 02 May 2022 15:44:57 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:1e1a:955c:a9ca:e550])
+        by smtp.gmail.com with UTF8SMTPSA id f3-20020a17090a654300b001d26c7d5aacsm218470pjs.13.2022.05.02.15.44.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 May 2022 15:44:57 -0700 (PDT)
+Date:   Mon, 2 May 2022 15:44:56 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org, dm-devel@redhat.com,
+        linux-raid@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Song Liu <song@kernel.org>
+Subject: Re: [PATCH v2 2/3] LoadPin: Enable loading from trusted dm-verity
+ devices
+Message-ID: <YnBe6K72iKSDSqk9@google.com>
+References: <20220426213110.3572568-1-mka@chromium.org>
+ <20220426143059.v2.2.I01c67af41d2f6525c6d023101671d7339a9bc8b5@changeid>
+ <202204302316.AF04961@keescook>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <202204302316.AF04961@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the switch node and its 8 children ports. All are disabled by default.
+On Sat, Apr 30, 2022 at 11:21:54PM -0700, Kees Cook wrote:
+> On Tue, Apr 26, 2022 at 02:31:09PM -0700, Matthias Kaehlcke wrote:
+> > I'm still doubting what would be the best way to configure
+> > the list of trusted digests. The approach in v2 of writing
+> > a path through sysctl is flexible, but it also feels a bit
+> > odd. I did some experiments with passing a file descriptor
+> > through sysctl, but it's also odd and has its own issues.
+> > Passing the list through a kernel parameter seems hacky.
+> > A Kconfig string would work, but can be have issues when
+> > the same config is used for different platforms, where
+> > some may have trusted digests and others not.
+> 
+> I prefer the idea of passing an fd, since that can just use LoadPin
+> itself to verify the origin of the fd.
+> 
+> I also agree, though, that it's weird as a sysctl. Possible thoughts:
+> 
+> - make it a new ioctl on /dev/mapper/control (seems reasonable given
+>   that it's specifically about dm devices).
+> - have LoadPin grow a securityfs node, maybe something like
+>   /sys/kernel/security/loadpin/dm-verify and do the ioctl there (seems
+>   reasonable given that it's specifically about LoadPin, but is perhaps
+>   more overhead to built the securityfs).
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- arch/arm/boot/dts/lan966x.dtsi | 62 ++++++++++++++++++++++++++++++++++
- 1 file changed, 62 insertions(+)
+Thanks for your feedback!
 
-diff --git a/arch/arm/boot/dts/lan966x.dtsi b/arch/arm/boot/dts/lan966x.dtsi
-index d8185f5c7bfc..38e90a31d2dd 100644
---- a/arch/arm/boot/dts/lan966x.dtsi
-+++ b/arch/arm/boot/dts/lan966x.dtsi
-@@ -84,6 +84,68 @@ soc {
- 		#size-cells = <1>;
- 		ranges;
- 
-+		switch: switch@e0000000 {
-+			compatible = "microchip,lan966x-switch";
-+			reg = <0xe0000000 0x0100000>,
-+			      <0xe2000000 0x0800000>;
-+			reg-names = "cpu", "gcb";
-+			interrupts = <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "xtr", "fdma", "ana", "ptp",
-+					  "ptp-ext";
-+			resets = <&reset 0>;
-+			reset-names = "switch";
-+			status = "disabled";
-+
-+			ethernet-ports {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				port0: port@0 {
-+					reg = <0>;
-+					status = "disabled";
-+				};
-+
-+				port1: port@1 {
-+					reg = <1>;
-+					status = "disabled";
-+				};
-+
-+				port2: port@2 {
-+					reg = <2>;
-+					status = "disabled";
-+				};
-+
-+				port3: port@3 {
-+					reg = <3>;
-+					status = "disabled";
-+				};
-+
-+				port4: port@4 {
-+					reg = <4>;
-+					status = "disabled";
-+				};
-+
-+				port5: port@5 {
-+					reg = <5>;
-+					status = "disabled";
-+				};
-+
-+				port6: port@6 {
-+					reg = <6>;
-+					status = "disabled";
-+				};
-+
-+				port7: port@7 {
-+					reg = <7>;
-+					status = "disabled";
-+				};
-+			};
-+		};
-+
- 		flx0: flexcom@e0040000 {
- 			compatible = "atmel,sama5d2-flexcom";
- 			reg = <0xe0040000 0x100>;
--- 
-2.30.2
-
+Agreed that an ioctl is preferable over a sysctl interface. I wasn't aware
+of securityfs and prefer it over a /dev/mapper/control ioctl. Ultimately
+the list of digests is meaningful to LoadPin, not (directly) to the device
+mapper / verity. I'm not sure how well this feature of integrating LoadPin
+with verity will be by the verity maintainers in the first place, it's
+probably best to limit the LoadPin specific stuff in verity to a minimum.
+I experimented a bit with the securityfs option, building it doesn't seem
+too much of an overhead. If loadpin.c ends up too cluttered with the
+verity and securityfs stuff I could try to outsource some of it to (a)
+dedicated file(s).
