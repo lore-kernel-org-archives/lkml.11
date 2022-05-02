@@ -2,75 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 899C0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 23:03:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F3F0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 23:04:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234814AbiEBXG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 19:06:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59900 "EHLO
+        id S232439AbiEBXIK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 19:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235890AbiEBXGY (ORCPT
+        with ESMTP id S231575AbiEBXII (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 19:06:24 -0400
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E5642E09E;
-        Mon,  2 May 2022 16:02:51 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-e2442907a1so15710228fac.8;
-        Mon, 02 May 2022 16:02:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8IspzxFERsjs7LWJZpaODsneW32XlcgqODx6/89mEyA=;
-        b=z6R2+WAZpCKsxl63U813D5VptQWh+yZf/sYLzQUHRy81qSZ712//XrFpg8ANcO4uUg
-         f8mrz3gJSyon4v4yfGgp8Pe9VMtXjyinSlWzy+rH43q5H13QT2OwNLzDlb7BwE50SuBz
-         LkItSfEXN0foUWhecGlfsVBAJiBnd5ykXwzQi5+kugRTqv2oETXbIGxx7cFNddlRig+/
-         ryQ+fvN8IxF1yxr+Jvuc/rSAW0TcdHb3dmDJh+EAtNev2qnUKmlAVmly4otRlFEaX+bm
-         guNcznlISlELczrxfEhb10hquZJx7n9qGteUmaUbFbpbsUconQjHphmbvzTFb9zR4Pl6
-         jrjg==
-X-Gm-Message-State: AOAM533JlUZfpVjXSvuHIesiaT/b8EIBnvBe2AcDUOcBvOan6fdl/ZDA
-        RLF8TqIxhcVaIOq7NkHC8mi6L+6rxw==
-X-Google-Smtp-Source: ABdhPJwQfGK5FsZDVaTzCNCXyNiXx5vtTSbwkLOnrcW53NjjUhXEtmJRE3zq4UZYvrUnP/Bgut2bmQ==
-X-Received: by 2002:a05:6870:f601:b0:e8:c1bb:3843 with SMTP id ek1-20020a056870f60100b000e8c1bb3843mr664299oab.4.1651532570352;
-        Mon, 02 May 2022 16:02:50 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id m13-20020a9d73cd000000b0060613c844adsm2137012otk.10.2022.05.02.16.02.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 16:02:49 -0700 (PDT)
-Received: (nullmailer pid 1964955 invoked by uid 1000);
-        Mon, 02 May 2022 23:02:49 -0000
-Date:   Mon, 2 May 2022 18:02:49 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Johan Hovold <johan@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: gnss: Add Broacom BCM4751 family bindings
-Message-ID: <YnBjGW2ODC3nMbse@robh.at.kernel.org>
-References: <20220425132215.1309216-1-linus.walleij@linaro.org>
+        Mon, 2 May 2022 19:08:08 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D8C2DD46;
+        Mon,  2 May 2022 16:04:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651532678; x=1683068678;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=ckEAP8ApiIt+mqi1MEQVL+jvWJidDY78/Cy+N1HYKmE=;
+  b=aCdkhN3RakadWyfYTbLwAZRGhWid1IG0b7WMbwbGHB7mN1xX2s42yAXt
+   bOivAAPapZSoHMzSoenPBy/JRKq7vHe/hw8r85fxULhj3PLowjJX1toee
+   yoBhPdoX6JmAkO9sCagAI+g/ycN25QnfBSeB+EUBGK64B4j4sVK441qXv
+   c=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 02 May 2022 16:04:38 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 16:04:35 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 2 May 2022 16:04:37 -0700
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 2 May 2022 16:04:36 -0700
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
+        <dianders@chromium.org>, <vkoul@kernel.org>, <daniel@ffwll.ch>,
+        <airlied@linux.ie>, <agross@kernel.org>,
+        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
+CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_khsieh@quicinc.com>, <quic_sbillaka@quicinc.com>,
+        <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2] drm/msm/dp: fix event thread stuck in wait_event after kthread_stop()
+Date:   Mon, 2 May 2022 16:04:28 -0700
+Message-ID: <1651532668-18873-1-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220425132215.1309216-1-linus.walleij@linaro.org>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 25 Apr 2022 15:22:15 +0200, Linus Walleij wrote:
-> The Broadcom BCM4751 family of (A-)GPS chips have been around for
-> some years. The latest iteration BCM4753 is for example mounted
-> on the Huawei HiKey970.
-> 
-> Cc: devicetree@vger.kernel.org
-> Cc: phone-devel@vger.kernel.org
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> ChangeLog v1->v2:
-> - Switch do dual GPL/BSD license.
-> ---
->  .../bindings/gnss/brcm,bcm4751.yaml           | 69 +++++++++++++++++++
->  1 file changed, 69 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/gnss/brcm,bcm4751.yaml
-> 
+Event thread supposed to exit from its while loop after kthread_stop().
+However there may has possibility that event thread is pending in the
+middle of wait_event due to condition checking never become true.
+To make sure event thread exit its loop after kthread_stop(), this
+patch OR kthread_should_stop() into wait_event's condition checking
+so that event thread will exit its loop after kernal_stop().
 
-Applied, thanks!
+Changes in v2:
+--  correct spelling error at commit title
+
+Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: 570d3e5d28db ("drm/msm/dp: stop event kernel thread when DP unbind")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+---
+ drivers/gpu/drm/msm/dp/dp_display.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index c388323..5200a58 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -1106,12 +1106,17 @@ static int hpd_event_thread(void *data)
+ 	while (!kthread_should_stop()) {
+ 		if (timeout_mode) {
+ 			wait_event_timeout(dp_priv->event_q,
+-				(dp_priv->event_pndx == dp_priv->event_gndx),
+-						EVENT_TIMEOUT);
++				((dp_priv->event_pndx == dp_priv->event_gndx) ||
++					kthread_should_stop()), EVENT_TIMEOUT);
+ 		} else {
+ 			wait_event_interruptible(dp_priv->event_q,
+-				(dp_priv->event_pndx != dp_priv->event_gndx));
++				((dp_priv->event_pndx != dp_priv->event_gndx) ||
++					kthread_should_stop()));
+ 		}
++
++		if(kthread_should_stop())
++			break;
++
+ 		spin_lock_irqsave(&dp_priv->event_lock, flag);
+ 		todo = &dp_priv->event_list[dp_priv->event_gndx];
+ 		if (todo->delay) {
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
+
