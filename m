@@ -2,116 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5623DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 07:38:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 987DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 07:43:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358823AbiEBHmF (ORCPT
+        id S1358857AbiEBHrL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 03:42:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48374 "EHLO
+        Mon, 2 May 2022 03:47:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358360AbiEBHmC (ORCPT
+        with ESMTP id S1350995AbiEBHrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 03:42:02 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C610BB87C
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 00:38:34 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id m6so11111555iob.4
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 00:38:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GPkNxE2r6P0xG3q/R7zfqzTrygEF3DAcqbdmgZiq2s0=;
-        b=sCjuqeXJ9DCpoV1lQZ3M1xkzDHYEbWrrb+jsdTHqJB+kPx7YW+DS0fPHMMusOaTbBf
-         UwISChxKC4zWaO+uzfsdTxi9lOWf9OIgLc1PMUTvLrQ9T36aA1+Ey6n3dPew/979MJhs
-         KQflJzjLOIEmkUKeRMdbBeUcWVKeqG0DaybXe6oNqhLxvwSMmvEAVs+rcQw9n0OkOqqN
-         yUQ7o+/qUit8hGWFJfsmlowJWJIPyt/XqRZFjwidmDTYkt1lw/32UNLfB+gFPBvhn0jT
-         yTM/T2R4627TLJ4HSM+J4G63hU/xfkd45M62WWnyGObjL/s5dqrufqvVn/CDY4GGUjSx
-         wh3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GPkNxE2r6P0xG3q/R7zfqzTrygEF3DAcqbdmgZiq2s0=;
-        b=zWPdMILWpNq/PeZJ0m4FcearwEvj+PqgWy4XIk09zM3hkKxtXHMgunNU7knKAeQVit
-         NPdgvry+jB906eeI80iEx/Fqls8qPN3400i8PezooTjFwG2do1hZUI72Gljrf4jjiLsI
-         dfEIzXaHq7n8n9Zq4Q//8Ry9m30cnJ+WQ+YZbEt1LGt8ElrbhuS0iUPi/LMgIhZOqyed
-         rxM/ZKnOIueGgWLwtRhVhm3/9R4ifanlMY0rXDr6xv/SeYspyH0j0dw/OxL31P3PJAGp
-         BWc3+t7L3T62UXsEjbxBCspjPgnfe3HNq79OwcuRw4FUs687vgk4Vu8zlhoX+soLW6pJ
-         wTlw==
-X-Gm-Message-State: AOAM531fH8t11Le4LhqBpHkHePZcjBsqE8zVNfc2cIWPEjEsD0pCQLYV
-        DFLqirl0U5wX3cdZnACC8nhhyw==
-X-Google-Smtp-Source: ABdhPJyjhIe2znQiZB9jWAMBJcQm0B6Fv4anyhMrjJ5mNDxihDCEre28mU7PNuGJ+PLTTB3+fTcdGg==
-X-Received: by 2002:a05:6638:2494:b0:32b:4c44:aaf1 with SMTP id x20-20020a056638249400b0032b4c44aaf1mr4447202jat.224.1651477113989;
-        Mon, 02 May 2022 00:38:33 -0700 (PDT)
-Received: from google.com (194.225.68.34.bc.googleusercontent.com. [34.68.225.194])
-        by smtp.gmail.com with ESMTPSA id a10-20020a92330a000000b002cde6e352c8sm2507300ilf.18.2022.05.02.00.38.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 00:38:33 -0700 (PDT)
-Date:   Mon, 2 May 2022 07:38:29 +0000
-From:   Oliver Upton <oupton@google.com>
-To:     Gavin Shan <gshan@redhat.com>
-Cc:     kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
-        eauger@redhat.com, Jonathan.Cameron@huawei.com,
-        vkuznets@redhat.com, will@kernel.org, shannon.zhaosl@gmail.com,
-        james.morse@arm.com, mark.rutland@arm.com, maz@kernel.org,
-        pbonzini@redhat.com, shan.gavin@gmail.com
-Subject: Re: [PATCH v6 13/18] KVM: arm64: Support
- SDEI_EVENT_{COMPLETE,COMPLETE_AND_RESUME} hypercall
-Message-ID: <Ym+KdY2y2vzMeDOL@google.com>
-References: <20220403153911.12332-1-gshan@redhat.com>
- <20220403153911.12332-14-gshan@redhat.com>
- <Ym4tzRL0iMxyumJe@google.com>
- <ba094956-2e58-4913-527a-af79475ee949@redhat.com>
+        Mon, 2 May 2022 03:47:09 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202E72715D;
+        Mon,  2 May 2022 00:43:38 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KsFT26MdJz4xXk;
+        Mon,  2 May 2022 17:43:34 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1651477416;
+        bh=nxcY+wlkmUEFwHJpOpv1mcBXCb0BZLBH2dC8Mvqgl5U=;
+        h=Date:From:To:Cc:Subject:From;
+        b=X372vutKHx2ANNxVi4FFyKrBjYWazZy8UwGQR7xghPuDkPwHzzbxbcUSsCZClM6c1
+         tBZy+34TcqoIBuacpadUO7PL8ev7DzVm7Trvzm5b4VdTZf5pepSwc0WcMA14AQ1+Dk
+         iX7HiKzF6wJCYL3oHIV4s70dF7JzpSHXNCDRI+LtttBVuphbZ+2zo0OxtWd5VlSJmL
+         ib3Y1fK/snCg4gQbVcfgfhW3HXdM42ywuJVWbh4voNGI0kB4DmSGj5+d4cmH13HL7i
+         zYTj23KD66K7FZNGgFhvoPSyk7wpSPgMOxXC+H0Nbg+2QPpkt6iGleHr64mJfA4XxP
+         q5DcfEUR3ZoCg==
+Date:   Mon, 2 May 2022 17:43:33 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Matthew Wilcox <willy@infradead.org>,
+        David Sterba <dsterba@suse.cz>
+Cc:     Christoph Hellwig <hch@lst.de>, David Sterba <dsterba@suse.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the folio tree with the btrfs tree
+Message-ID: <20220502174305.1cbf7b40@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ba094956-2e58-4913-527a-af79475ee949@redhat.com>
+Content-Type: multipart/signed; boundary="Sig_/jn1Ms63ppBkLEKtFyZNOA4W";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 02:19:30PM +0800, Gavin Shan wrote:
-> Hi Oliver,
-> 
-> On 5/1/22 2:50 PM, Oliver Upton wrote:
-> > On Sun, Apr 03, 2022 at 11:39:06PM +0800, Gavin Shan wrote:
-> > > This supports SDEI_EVENT_{COMPLETE, COMPLETE_AND_RESUME} hypercall.
-> > > They are used by guest to notify the completion of event in its
-> > > handler. The previously interrupted or preempted context is restored
-> > > like below.
-> > > 
-> > >     * x0 - x17, PC and PState are restored to what values we had in
-> > >       the interrupted or preempted context.
-> > > 
-> > >     * If it's SDEI_EVENT_COMPLETE_AND_RESUME hypercall, IRQ exception
-> > >       is injected.
-> > 
-> > I don't think that's how COMPLETE_AND_RESUME works. The caller specifies an
-> > address at which it would like to begin execution within the client
-> > exception level.
-> > 
-> > SDEI spec suggests this behaves like a synchronous exception. DEN 0054C
-> > 5.2.2 'Event Resume Context' speaks more about how it is supposed to
-> > work.
-> > 
-> 
-> It's actually the linux convention. If the event handler, which was
-> specified in previous hypercall to EVENT_REGISTER, returns success,
-> the (linux) client calls into COMPLETE_AND_RESUME and the resume
-> address is specified with FIQ vector offset. More details can be
-> found from arch/arm64/kernel::sdei.c::do_sdei_event().
+--Sig_/jn1Ms63ppBkLEKtFyZNOA4W
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Right -- but look at what its doing. It returns the address at which it
-wants to resume execution.
+Hi all,
 
-arch/arm64/kernel.entry.S::__sdei_asm_handler winds up passing this as
-an argument to COMPLETE_AND_RESUME. Also, what would happen if we run
-something that isn't Linux inside of KVM? This is why I suggested
-implementing COMPLETE_AND_RESUME in line with the specification, not
-based on what the kernel is presently doing.
+Today's linux-next merge of the folio tree got conflicts in:
 
---
-Thanks,
-Oliver
+  fs/btrfs/ctree.h
+  fs/btrfs/inode.c
+
+between commit:
+
+  a3e4d924b41d ("btrfs: move btrfs_readpage to extent_io.c")
+
+from the btrfs tree and commit:
+
+  5a912a9c68ac ("btrfs: Convert btrfs to read_folio")
+
+from the folio tree.
+
+I fixed it up (I used the conflicting parts of the above files from the
+former and applied the below patch) and can carry the fix as necessary.
+This is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Mon, 2 May 2022 17:21:26 +1000
+Subject: [PATCH] fix up for "btrfs: move btrfs_readpage to extent_io.c"
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ fs/btrfs/extent_io.c | 3 ++-
+ fs/btrfs/extent_io.h | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+index 5de09556b1c3..aa8905a0d63a 100644
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -3792,8 +3792,9 @@ static int btrfs_do_readpage(struct page *page, struc=
+t extent_map **em_cached,
+ 	return ret;
+ }
+=20
+-int btrfs_readpage(struct file *file, struct page *page)
++int btrfs_read_folio(struct file *file, struct folio *folio)
+ {
++	struct page *page =3D &folio->page;
+ 	struct btrfs_inode *inode =3D BTRFS_I(page->mapping->host);
+ 	u64 start =3D page_offset(page);
+ 	u64 end =3D start + PAGE_SIZE - 1;
+diff --git a/fs/btrfs/extent_io.h b/fs/btrfs/extent_io.h
+index 375a721c48eb..4a2205fd189a 100644
+--- a/fs/btrfs/extent_io.h
++++ b/fs/btrfs/extent_io.h
+@@ -166,7 +166,7 @@ typedef struct extent_map *(get_extent_t)(struct btrfs_=
+inode *inode,
+ int try_release_extent_mapping(struct page *page, gfp_t mask);
+ int try_release_extent_buffer(struct page *page);
+=20
+-int btrfs_readpage(struct file *file, struct page *page);
++int btrfs_read_folio(struct file *file, struct folio *folio);
+ int extent_write_full_page(struct page *page, struct writeback_control *wb=
+c);
+ int extent_write_locked_range(struct inode *inode, u64 start, u64 end);
+ int extent_writepages(struct address_space *mapping,
+--=20
+2.35.1
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/jn1Ms63ppBkLEKtFyZNOA4W
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJvi6YACgkQAVBC80lX
+0GzL2Qf+JmpUJDiYOmb7QWDIaPWWF1+L0XINehDtxVS6WKRPzQn/v6Y3fCLedqxz
+yAhRgMPY2fcI0I3oCnTLET6rIKgXF+bn6xA4hMHDjSerWKN0qYtFv2QpYs0oIymU
+mkolecA410LZENlpe9KjlQ0yUaCKnQoey/qAyL3SWOFaQGoLcGSl92Q+2GCx7LR1
+/bfmtLcViVDhEi2g245x8PkTz++krGdSTi51hMK03HzbXep8h9s4Qv5uspJSxoYd
+gheEx+KTBbUjCUEqi7qT7jWrJdeXfgA+DflYtmrTAnI3rzSy+Ix2wkA90iM/FF+7
+b7YYTjq5Ol9ZbB+hOxgKcXKx0lCVhg==
+=HzLx
+-----END PGP SIGNATURE-----
+
+--Sig_/jn1Ms63ppBkLEKtFyZNOA4W--
