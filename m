@@ -2,102 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3843C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:23:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD1A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 20:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233873AbiEBU1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 16:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54440 "EHLO
+        id S1384083AbiEBU2Q (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 16:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387401AbiEBU0s (ORCPT
+        with ESMTP id S236645AbiEBU2O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 16:26:48 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A71B1A
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 13:22:47 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id l18so29773354ejc.7
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 13:22:47 -0700 (PDT)
+        Mon, 2 May 2022 16:28:14 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99DC412D;
+        Mon,  2 May 2022 13:24:44 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id m6-20020a05683023a600b0060612720715so3213806ots.10;
+        Mon, 02 May 2022 13:24:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=8u8XXP2+TwizatTtq/0sBU/H2kbpvchvGg+Or95glsU=;
-        b=c+u7IILtHnqh3gPerojkWNYCi37vsTGEfLtc4gbTUp68Qhm/m2Jbc85vGXEHjTeyGE
-         eF45TX5oeQRnC/yF/jQKLLEOl0pD6br0SYzd/pDcX1ggVJEWEwxlsiYtZkx3mL0A9Afv
-         nxQldhMXLdNIwGxAOodlzhM7I6dinj/npkrWemfHZqYpM75omr++Enhy5sz/mbDuj2e4
-         ujuuna2uVCOiHVsT5TqAA9k1mwrPlqjDQDO2umL5HcvadDh3fUXSGvocKb1Mm+rurad0
-         8lmbm5Vl4XPe3fJl30zFLXmYfXJmSZByYyoMlcw6Q7972rb3HkVax4gtzTPvaa1JwyEZ
-         V3Pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=8u8XXP2+TwizatTtq/0sBU/H2kbpvchvGg+Or95glsU=;
-        b=lMWvrICFqOcbtp5+cgB6fnP6vmNSwSVm/hmQTlyruLmHN1bNt673W6LDLNTW82K7hE
-         oB4dlbzUDFBpKraquPL/0NBfuiikCnhhvi735kiS7AORggy5XeqYcW/CK7xZObJn652c
-         n3G1kFiBm2qDW/FbZJev07rkFSw2AQQ5pzeDLyXhILPxRZQS8TrtNw2yjzd+i7kJId06
-         xZL5qknwb6GI/MU7OtCufKToz2CrGb3QM9pwXUwejK0wVguMohZU7aKqnzIQd0PVWrNU
-         73w0DJkkoMJ/7fTr1BAs8+/PNfKICGNGcwgJICGBtp4ny0hienoiy6N75foZqE685lum
-         zczw==
-X-Gm-Message-State: AOAM532F+wtqBm7I7r+UKItvBffiuYTM5+4ceFAla7ztucLt9WcjEZvX
-        75XT0IIBNghHtLWLbkWeTsjarQ==
-X-Google-Smtp-Source: ABdhPJzt13eXU45qtuo9lvfRz350biQpqqSKjro+GENo7tn3fUz/J8MoV2Z2s7NhXEZ/nmTp8xPJ3g==
-X-Received: by 2002:a17:906:5d08:b0:6da:b4ea:937 with SMTP id g8-20020a1709065d0800b006dab4ea0937mr12972514ejt.446.1651522965974;
-        Mon, 02 May 2022 13:22:45 -0700 (PDT)
-Received: from [192.168.0.197] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id yo1-20020a170907136100b006f3ef214e0dsm3916399ejb.115.2022.05.02.13.22.44
+        bh=r94YqMx5ZctK7unoMYrvuw3Flpa+xJ8HQV4BFyvkHjA=;
+        b=A2ha8ppwEZtRbANOmJc36UU9WgMmCKwOsl/JaXS3NnekJ0YIbT2XJ3i2NefuRRDsJp
+         mtIh4gAahJR94D5N3N+gz4YUlfOg8Cf25yqkO8rjWWdgQlFkp8OdEbMbnYiC8/TwQIbe
+         3vVCf22YH+soM/9QvixQAezDauWR62gnaE6Vlv5bODXX+x4ZVk/U1RpL8mtQH2IkGXFh
+         0w1Ep5sg5qK5mgMwUjzjq1K2tz9H09oXo4u3HhsaAF1ZjCprMn32qxs+8dJLEi1cYf3J
+         v5s9XN8IXRDJpaYlU9bzdi8H2VUEhvFQjFfR7+us6OFW0utwrUfRYk2LrUzm63CLb1MI
+         Ennw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=r94YqMx5ZctK7unoMYrvuw3Flpa+xJ8HQV4BFyvkHjA=;
+        b=5vqwiWLhM6bKj8K6tWUeM8zmi49fLFFy0ctR0WnRIn11CxomWaJdhBxKkgGUvt/2vT
+         mAw6O+yAiSOY/mLC3hWByDuBjMSAlPKxkrnWdAUi78WrCAQe74D3G9Sdo3+sqEI7jqSU
+         vkLQfGfwV7CetibS6FlSlfI3ihxwxxXANQ1cQruOKCXCvc9XjqYKRs/15tjnK5HbKkTz
+         +p/AgUKPSMb8gNwGU5OKm0QCIdNk/85KbbRUwl/H4w/PESUhgyGths4SUkr6SFhT6Uo+
+         KPwzMI4pro6zwqeACJO0JaeiQ1ny6uXcKEqKosCDrGsx/2qFB9UswgtuWTO+3j2VO00T
+         xPHA==
+X-Gm-Message-State: AOAM533P3YmRH9+kET6A0XSbiDZpCpITdT37j+gMT65466QWjFzOLGIL
+        QkTtt+I6mGRIfYThgm0astR2krOcYT1lpg==
+X-Google-Smtp-Source: ABdhPJzJXYa5/fRgrnyVASb+qWV4MG0ae/aiXN4wkUqtojSduR7g+Od37ICi7neYmWcl/2WFp8iS9g==
+X-Received: by 2002:a9d:6447:0:b0:5b2:35ae:7ad6 with SMTP id m7-20020a9d6447000000b005b235ae7ad6mr4719131otl.275.1651523083729;
+        Mon, 02 May 2022 13:24:43 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id z13-20020a056808028d00b00325cda1ff90sm2710133oic.15.2022.05.02.13.24.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 May 2022 13:22:45 -0700 (PDT)
-Message-ID: <d58c4881-8a23-bf7b-4845-b2fa50788997@linaro.org>
-Date:   Mon, 2 May 2022 22:22:44 +0200
+        Mon, 02 May 2022 13:24:43 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <b6553cc2-034d-8a70-cf9b-b9d244dc3597@roeck-us.net>
+Date:   Mon, 2 May 2022 13:24:40 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] tty: serial: samsung_tty: Fix suspend/resume on S5L
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 2/2] hwmon: acpi_power_meter: convert to
+ hwmon_device_register_with_info
 Content-Language: en-US
-To:     Hector Martin <marcan@marcan.st>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+To:     LABBE Corentin <clabbe@baylibre.com>
+Cc:     jdelvare@suse.com, linux-hwmon@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20220502092505.30934-1-marcan@marcan.st>
- <Ym/EAGq3IzW5rYwr@kroah.com> <c5413c42-b728-b88b-4229-9d4e3943413e@marcan.st>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <c5413c42-b728-b88b-4229-9d4e3943413e@marcan.st>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220502124249.682058-1-clabbe@baylibre.com>
+ <20220502124249.682058-2-clabbe@baylibre.com>
+ <0b154a30-7765-e3ac-9980-0ecc7447d7ad@roeck-us.net> <YnAqDxfTU27USQI+@Red>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <YnAqDxfTU27USQI+@Red>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/05/2022 14:39, Hector Martin wrote:
-> On 02/05/2022 20.44, Greg Kroah-Hartman wrote:
->> On Mon, May 02, 2022 at 06:25:05PM +0900, Hector Martin wrote:
->>> We were restoring the IRQ masks then clearing them again, because
->>> ucon_mask wasn't set properly. Adding that makes suspend/resume
->>> work as intended.
+On 5/2/22 11:59, LABBE Corentin wrote:
+> Le Mon, May 02, 2022 at 06:34:44AM -0700, Guenter Roeck a écrit :
+>> On 5/2/22 05:42, Corentin Labbe wrote:
+>>> Booting lead to a hwmon_device_register() is deprecated. Please convert the driver to use hwmon_device_register_with_info().
+>>> So let's convert the driver to use hwmon_device_register_with_info().
 >>>
->>> Signed-off-by: Hector Martin <marcan@marcan.st>
+>>> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 >>> ---
->>>  drivers/tty/serial/samsung_tty.c | 1 +
->>>  include/linux/serial_s3c.h       | 3 +++
->>>  2 files changed, 4 insertions(+)
+>>>    drivers/hwmon/acpi_power_meter.c | 5 ++++-
+>>>    1 file changed, 4 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/hwmon/acpi_power_meter.c b/drivers/hwmon/acpi_power_meter.c
+>>> index d2545a1be9fc..98293727f980 100644
+>>> --- a/drivers/hwmon/acpi_power_meter.c
+>>> +++ b/drivers/hwmon/acpi_power_meter.c
+>>> @@ -891,7 +891,10 @@ static int acpi_power_meter_add(struct acpi_device *device)
+>>>    	if (res)
+>>>    		goto exit_free_capability;
+>>>    
+>>> -	resource->hwmon_dev = hwmon_device_register(&device->dev);
+>>> +	resource->hwmon_dev = hwmon_device_register_with_info(&device->dev,
+>>> +							      ACPI_POWER_METER_DEVICE_NAME,
+>>> +							      NULL, NULL,
+>>> +							      NULL);
 >>
->> Does this fix a specific older commit?
+>> NACK. That isn't a conversion to the new API, it just abuses the fact
+>> that the new API has to accept a NULL info pointer for historic reasons.
 >>
->> And should it be backported to older stable kernels?
 > 
-> It does fix the commit that introduced this device support in general; I
-> can add a Fixes line for that. I don't think anyone cares about
-> backporting though, since there are other fairly critical devices that
-> don't have support outright and there's still work to do before
-> suspend/resume is generally usable on these machines.
+> Hello
+> 
+> I am sorry, I found a driver doing it, so I believed it was okay.
 
-Then please add only Fixes tag.
+Yeah, that is what happens if an API is flexible: It is prone to
+abuse, and once the abuse starts others start to abuse it as well
+"because that other driver did it".
 
-Best regards,
-Krzysztof
+> Converting seems not to hard but, by using the new API, how can I convert power1_model_number/power1_is_battery attribute ?
+> There are the remaining attributes I dont find how to convert.
+> 
+
+It is ok to use the pointer to sysfs attribute groups
+for non-standard attributes.
+
+Guenter
