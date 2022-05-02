@@ -2,124 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42AD4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:16:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B720C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 16:17:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386257AbiEBQUN (ORCPT
+        id S1386266AbiEBQU4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 12:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33728 "EHLO
+        Mon, 2 May 2022 12:20:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386250AbiEBQUH (ORCPT
+        with ESMTP id S1382720AbiEBQUv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 12:20:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D6BAE0AD
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 09:16:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651508197;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rsSALeBOA7ZWPCcmJgm1/wGrXg4q+JRs+W7rdBh5ql0=;
-        b=ddC85xIe6EyqknPGRq3GtNS4EXuI15HxsJdpEO0Tl5onc3PSWV58fjxh9JHjYSDOHF1hVw
-        NxwOlAb+slnI8T04sYUzBU1TlxbmKXf/9ALAOD0aoaN4606cGwnZvz0q45bGsl0v4QyfKt
-        EDH3AlW6m3HF3wuoQWaEowMNEoXCNJU=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-621-dH9-QEFyMpmXPjuTvrU91Q-1; Mon, 02 May 2022 12:16:36 -0400
-X-MC-Unique: dH9-QEFyMpmXPjuTvrU91Q-1
-Received: by mail-ej1-f70.google.com with SMTP id jg5-20020a170907970500b006f42a861bb9so1609980ejc.11
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 09:16:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rsSALeBOA7ZWPCcmJgm1/wGrXg4q+JRs+W7rdBh5ql0=;
-        b=dUnfqrJ45UFO21IdwvfnpuOoDOdi/N2JDdIUG7iqAxXSxrNV31DqcAA5jbVAA9Qu9D
-         IKy/kPXYLIXBbll+QLQ7Na2pkNCOKBuvJCWmvgh3a1iUm8d94TBbQc5/7WN0vk9ZjvgI
-         dGFBw9L9OF742fX+omtgWclFK7dLgHhn04Fd9LevPIGqHAEzgeAf+YOMXngKWJpfHz6I
-         kYV2mKqCoB38SzT6GFlMMOKfYRv6JAs3zpLhMnNgBRguzPeirtGrMPhjn9hrsJwQxYPW
-         m5F0ki7xYSe7S1OxVs1Ip1Rg4JhDWKhWoU2T2wyU6kTCKAmFrdB0ODLD8zWwvKwku0im
-         vtaA==
-X-Gm-Message-State: AOAM530z+ygCG4xKdEtueQScRiFlxB3gGPHNT1pOKC8pdKJZfEYn1c0f
-        2xUVbFNts2mwei7gtcHF7mWCf5Z2NMEsUpVScZpjVrvqJ6vVwW1RtvqOsmVDd34hJkgk4sKITVN
-        NeS0tO98dXPtWW+PeykNDBoU0
-X-Received: by 2002:a17:907:7243:b0:6f4:1ce5:4ac4 with SMTP id ds3-20020a170907724300b006f41ce54ac4mr10031089ejc.198.1651508195310;
-        Mon, 02 May 2022 09:16:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzU+EeBkU27lcZBl76YkQuPJxEcLDXD3icDKAgpvTHo8/6jVVf/8/GP3t2VfXVkZob1OASV3A==
-X-Received: by 2002:a17:907:7243:b0:6f4:1ce5:4ac4 with SMTP id ds3-20020a170907724300b006f41ce54ac4mr10031056ejc.198.1651508195058;
-        Mon, 02 May 2022 09:16:35 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id j12-20020a50ed0c000000b0042617ba63d4sm6834162eds.94.2022.05.02.09.16.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 May 2022 09:16:34 -0700 (PDT)
-Message-ID: <bcb2a90f-a2ed-94fa-985e-d7b9efe52ae4@redhat.com>
-Date:   Mon, 2 May 2022 18:16:13 +0200
+        Mon, 2 May 2022 12:20:51 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C59FCE0C4
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 09:17:20 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 1555C474;
+        Mon,  2 May 2022 18:17:19 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1651508239;
+        bh=c+lFCqqrxYQkBT4Dk1RtT/1nSh3E7EO4tZr2yzZYmYI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=E6VHAMn3IuCnmDyXupcm1VxxL/fCaJsfOpOk0BF0ok1Be+zl9cuHuaV22sUgCMHKI
+         PMCTsRA/pWv3s+s2mjByj5GDWvJGUkQ+3/NZp/TYckr7YjPguUgoH4gG3sL0jj5GVU
+         vSiid340Eer6gfojKpc20F0j1AM1OLozPtI9WYA4=
+Date:   Mon, 2 May 2022 19:17:18 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH v2 3/3] drm: Allow simpledrm to setup its emulated FB as
+ firmware provided
+Message-ID: <YnAEDlikr+d8cvy4@pendragon.ideasonboard.com>
+References: <20220502153900.408522-1-javierm@redhat.com>
+ <20220502153900.408522-4-javierm@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v9 9/9] KVM: VMX: enable IPI virtualization
-Content-Language: en-US
-To:     Zeng Guang <guang.zeng@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Kai Huang <kai.huang@intel.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>
-References: <20220419154510.11938-1-guang.zeng@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220419154510.11938-1-guang.zeng@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220502153900.408522-4-javierm@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/19/22 17:45, Zeng Guang wrote:
-> +static bool vmx_can_use_pi_wakeup(struct kvm_vcpu *vcpu)
-> +{
-> +	/*
-> +	 * If a blocked vCPU can be the target of posted interrupts,
-> +	 * switching notification vector is needed so that kernel can
-> +	 * be informed when an interrupt is posted and get the chance
-> +	 * to wake up the blocked vCPU. For now, using posted interrupt
-> +	 * for vCPU wakeup when IPI virtualization or VT-d PI can be
-> +	 * enabled.
+Hi Javier,
+
+Thank you for the patch.
+
+On Mon, May 02, 2022 at 05:39:00PM +0200, Javier Martinez Canillas wrote:
+> Indicate to fbdev subsystem that the registered framebuffer is provided by
+> the system firmware, so that it can handle accordingly. For example, would
+> unregister the FB devices if asked to remove the conflicting framebuffers.
+> 
+> Add a new DRM_FB_FW field to drm_fbdev_generic_setup() options parameter.
+> Drivers can use this to indicate the FB helper initialization that the FB
+> registered is provided by the firmware, so it can be configured as such.
+> 
+> Suggested-by: Thomas Zimmermann <tzimmermann@suse.de>
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+> ---
+> 
+> (no changes since v1)
+> 
+>  drivers/gpu/drm/drm_fb_helper.c  |  9 +++++++++
+>  drivers/gpu/drm/tiny/simpledrm.c |  2 +-
+>  include/drm/drm_fb_helper.h      | 10 ++++++++++
+>  3 files changed, 20 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
+> index fd0084ad77c3..775e47c5de1f 100644
+> --- a/drivers/gpu/drm/drm_fb_helper.c
+> +++ b/drivers/gpu/drm/drm_fb_helper.c
+> @@ -1891,6 +1891,10 @@ __drm_fb_helper_initial_config_and_unlock(struct drm_fb_helper *fb_helper,
+>  		/* don't leak any physical addresses to userspace */
+>  		info->flags |= FBINFO_HIDE_SMEM_START;
+>  
+> +	/* Indicate that the framebuffer is provided by the firmware */
+> +	if (fb_helper->firmware)
+> +		info->flags |= FBINFO_MISC_FIRMWARE;
+> +
+>  	/* Need to drop locks to avoid recursive deadlock in
+>  	 * register_framebuffer. This is ok because the only thing left to do is
+>  	 * register the fbdev emulation instance in kernel_fb_helper_list. */
+> @@ -2512,6 +2516,8 @@ static const struct drm_client_funcs drm_fbdev_client_funcs = {
+>   *
+>   * * DRM_FB_BPP: bits per pixel for the device. If the field is not set,
+>   *   @dev->mode_config.preferred_depth is used instead.
+> + * * DRM_FB_FW: if the framebuffer for the device is provided by the
+> + *   system firmware.
+>   *
+>   * This function sets up generic fbdev emulation for drivers that supports
+>   * dumb buffers with a virtual address and that can be mmap'ed.
+> @@ -2538,6 +2544,7 @@ void drm_fbdev_generic_setup(struct drm_device *dev, unsigned int options)
+>  {
+>  	struct drm_fb_helper *fb_helper;
+>  	unsigned int preferred_bpp = DRM_FB_GET_OPTION(DRM_FB_BPP, options);
+> +	bool firmware = DRM_FB_GET_OPTION(DRM_FB_FW, options);
+>  	int ret;
+>  
+>  	drm_WARN(dev, !dev->registered, "Device has not been registered.\n");
+> @@ -2570,6 +2577,8 @@ void drm_fbdev_generic_setup(struct drm_device *dev, unsigned int options)
+>  		preferred_bpp = 32;
+>  	fb_helper->preferred_bpp = preferred_bpp;
+>  
+> +	fb_helper->firmware = firmware;
+
+I'd get rid of the local variable and write
+
+	fb_helper->firmware = DRM_FB_GET_OPTION(DRM_FB_FW, options);
+
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+
+> +
+>  	ret = drm_fbdev_client_hotplug(&fb_helper->client);
+>  	if (ret)
+>  		drm_dbg_kms(dev, "client hotplug ret=%d\n", ret);
+> diff --git a/drivers/gpu/drm/tiny/simpledrm.c b/drivers/gpu/drm/tiny/simpledrm.c
+> index f5b8e864a5cd..5dcc21ea6180 100644
+> --- a/drivers/gpu/drm/tiny/simpledrm.c
+> +++ b/drivers/gpu/drm/tiny/simpledrm.c
+> @@ -901,7 +901,7 @@ static int simpledrm_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		return ret;
+>  
+> -	drm_fbdev_generic_setup(dev, 0);
+> +	drm_fbdev_generic_setup(dev, DRM_FB_SET_OPTION(DRM_FB_FW, 1));
+>  
+>  	return 0;
+>  }
+> diff --git a/include/drm/drm_fb_helper.h b/include/drm/drm_fb_helper.h
+> index 740f87560102..77a72d55308d 100644
+> --- a/include/drm/drm_fb_helper.h
+> +++ b/include/drm/drm_fb_helper.h
+> @@ -44,6 +44,7 @@ enum mode_set_atomic {
+>  };
+>  
+>  #define DRM_FB_BPP_MASK GENMASK(7, 0)
+> +#define DRM_FB_FW_MASK GENMASK(8, 8)
+>  
+>  /* Using the GNU statement expression extension */
+>  #define DRM_FB_OPTION(option, value)				\
+> @@ -197,6 +198,15 @@ struct drm_fb_helper {
+>  	 * See also: @deferred_setup
+>  	 */
+>  	int preferred_bpp;
+> +
+> +	/**
+> +	 * @firmware:
+> +	 *
+> +	 * Set if the driver indicates to the FB helper initialization that the
+> +	 * framebuffer for the device being registered is provided by firmware,
+> +	 * so that it can pass this on when registering the framebuffer device.
 > +	 */
-> +	return vmx_can_use_ipiv(vcpu) || vmx_can_use_vtd_pi(vcpu->kvm);
-> +}
+> +	bool firmware;
+>  };
+>  
+>  static inline struct drm_fb_helper *
 
-Slightly more accurate name and comment:
+-- 
+Regards,
 
-static bool vmx_needs_pi_wakeup(struct kvm_vcpu *vcpu)
-{
-         /*
-          * The default posted interrupt vector does nothing when
-          * invoked outside guest mode.   Return whether a blocked vCPU
-          * can be the target of posted interrupts, as is the case when
-          * using either IPI virtualization or VT-d PI, so that the
-          * notification vector is switched to the one that calls
-          * back to the pi_wakeup_handler() function.
-          */
-         return vmx_can_use_ipiv(vcpu) || vmx_can_use_vtd_pi(vcpu->kvm);
-}
-
-
-Paolo
-
+Laurent Pinchart
