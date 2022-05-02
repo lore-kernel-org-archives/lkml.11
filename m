@@ -2,99 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0490BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 10:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A39E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 10:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384652AbiEBKqw (ORCPT
+        id S1384632AbiEBKtH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 06:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55174 "EHLO
+        Mon, 2 May 2022 06:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384670AbiEBKqe (ORCPT
+        with ESMTP id S1384592AbiEBKtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 06:46:34 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACD6B1EC6E
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 03:42:52 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id y32so24548580lfa.6
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 03:42:52 -0700 (PDT)
+        Mon, 2 May 2022 06:49:02 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D58013D02;
+        Mon,  2 May 2022 03:45:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gJW2hpX0jDXzFSio868cnZYVwu80EHBYg4jMatUzfuo=;
-        b=H0lDuGWxfOP2AzWshD1t3hIT54ArwKdHMwwIH0aEvePpuw1tyEgIVWneFG6ipMo3oR
-         oOWmxaBqh40ckpKhnMUqBkWG9N1QNb5X6QysDvnKjWCsKAPhU102olPSxYREqaV2GVko
-         ZAcaCokSB0sxgrWDAjLjUW5Ft1SEXmXGQQd06Pz6L5Dcpb8zHZaKZkt7PZpnKFuEtKG5
-         iRVAGDYHaefsn1A8cNCWBrmsDtKl+wNkRMbOZObbUBJb4a5NT+mgTEdPhADD0o6BmH22
-         2teumeELF2eeF+0V98AUikaTZFyPfvEzs1lUhIo2XJcl9w1coq7Lj2hmhJyJNGbhaepc
-         vmVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gJW2hpX0jDXzFSio868cnZYVwu80EHBYg4jMatUzfuo=;
-        b=45MyYCthtA8EorVkv8p8o9ujp4You03mZUg9cvdMEiJTN8luOtwkUknJ3Xh+vyhsxm
-         xC6ia7FHl0ekZz7wG9l2tBgYRdezqvDHAMKccrWLlyjky2ChQexZHeeHemjxD27tzuwa
-         KseD0AoMIR8+Gqrqr/Vx2f9HOTXQTyXM/eEyP4ZLIePNl4JPl4sEmZ43PXQ9ufUaOhlm
-         dFPACKF5l7wikDFrawVofMiRlAsqMVX3S9mMJuezdfMIs96wqfXQMHJLHN2paj66/qn1
-         7KH7OqZBgohBRTbM6eLmUMtN70XMjvgQM3mrU9hB+hIiSKAvVkfQXR+ajbpoIYsCW723
-         RCPQ==
-X-Gm-Message-State: AOAM532Z/SHMfxDfLOqFXSjQi6wd6jZsi65rYKo6AixyN+radO9Gsozo
-        2eD+SqKpisOa//aAEyEZf15J9Q==
-X-Google-Smtp-Source: ABdhPJwhS9zpzLBSwfTZ54BY2m//olODt6cmW03GY4OQEa2073XfSdto2TGmuUAYeO8WFx8PeClbpg==
-X-Received: by 2002:ac2:4250:0:b0:44a:ff88:3795 with SMTP id m16-20020ac24250000000b0044aff883795mr8649215lfl.384.1651488171034;
-        Mon, 02 May 2022 03:42:51 -0700 (PDT)
-Received: from eriador.lan ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id q12-20020ac25a0c000000b0047255d211dfsm670929lfn.270.2022.05.02.03.42.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 03:42:50 -0700 (PDT)
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
-        bhelgaas@google.com
-Cc:     linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] PCI: qcom-ep: use qcom_pcie_disable_resources() in qcom_pcie_ep_remove()
-Date:   Mon,  2 May 2022 13:42:50 +0300
-Message-Id: <20220502104250.73311-1-dmitry.baryshkov@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220502044625.25210-1-manivannan.sadhasivam@linaro.org>
-References: <20220502044625.25210-1-manivannan.sadhasivam@linaro.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651488333; x=1683024333;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=6iHGRSOgrWXi0lQ9VNy7cHosK8o01EFmqWMART4qQrI=;
+  b=ll2ABofMad8pYBHtFeiIGD5ASJ7A6qz93HZQky0+yCRPL2OU5R/T0FqN
+   yQ7S+4w2t+b/Cg6mcNVDkClhh59YToA0RVnKuhHGxFbWdgj4CDi/sCbbM
+   0/aP6PYYLTfItjJkn02qMk5UOLWbv+F9p6Do+lo/W0ElPnwIE4wNEQpAL
+   E=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 02 May 2022 03:45:33 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 02 May 2022 03:45:31 -0700
+X-QCInternal: smtphost
+Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 02 May 2022 16:15:20 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id 38FAD3D9A; Mon,  2 May 2022 16:15:19 +0530 (+0530)
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, quic_vtanuku@quicinc.com,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [PATCH 2/2] tty: serial: qcom_geni_serial: Disable MMIO tracing
+Date:   Mon,  2 May 2022 16:15:14 +0530
+Message-Id: <1651488314-19382-3-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1651488314-19382-1-git-send-email-quic_vnivarth@quicinc.com>
+References: <1651488314-19382-1-git-send-email-quic_vnivarth@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove code duplication between qcom_pcie_disable_resources() and
-qcom_pcie_ep_remove().
+Register read/write tracing is causing excessive
+logging and filling the rtb buffer and effecting
+performance.
 
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Disabled MMIO tracing to disable register
+read/write tracing.
+
+Signed-off-by: Visweswara Tanuku <quic_vtanuku@quicinc.com>
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 ---
+ drivers/tty/serial/qcom_geni_serial.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-Could you please squash the following patch and repost it?
-
----
- drivers/pci/controller/dwc/pcie-qcom-ep.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
-diff --git a/drivers/pci/controller/dwc/pcie-qcom-ep.c b/drivers/pci/controller/dwc/pcie-qcom-ep.c
-index 80a9acf683ba..11f40a6467ba 100644
---- a/drivers/pci/controller/dwc/pcie-qcom-ep.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom-ep.c
-@@ -689,10 +689,7 @@ static int qcom_pcie_ep_remove(struct platform_device *pdev)
- 	if (pcie_ep->link_status == QCOM_PCIE_EP_LINK_DISABLED)
- 		return 0;
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index f496102..aa8facb 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1,5 +1,11 @@
+ // SPDX-License-Identifier: GPL-2.0
+-// Copyright (c) 2017-2018, The Linux foundation. All rights reserved.
++/*
++ * Copyright (c) 2017-2018, The Linux foundation. All rights reserved.
++ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
++ */
++
++/* Disable MMIO tracing */
++#define __DISABLE_TRACE_MMIO__
  
--	phy_power_off(pcie_ep->phy);
--	phy_exit(pcie_ep->phy);
--	clk_bulk_disable_unprepare(ARRAY_SIZE(qcom_pcie_ep_clks),
--				   qcom_pcie_ep_clks);
-+	qcom_pcie_disable_resources(pcie_ep);
- 
- 	return 0;
- }
+ #include <linux/clk.h>
+ #include <linux/console.h>
 -- 
-2.35.1
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
 
