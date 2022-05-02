@@ -2,113 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B77C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 23:52:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F585C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 23:53:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230154AbiEBXyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 19:54:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33086 "EHLO
+        id S229883AbiEBX5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 19:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232217AbiEBXyO (ORCPT
+        with ESMTP id S229930AbiEBX4a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 19:54:14 -0400
-Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41CCA2
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 16:50:44 -0700 (PDT)
-Received: by mail-oo1-xc35.google.com with SMTP id y27-20020a4a9c1b000000b0032129651bb0so2849837ooj.2
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 16:50:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=z7Cw+Kh2PwkVaz2CcLvmIqjqnZHIcRL3vzxNDm28vQI=;
-        b=qUJMJzIghsthGyWraON5sQRLlRKSCoeCtBLqhKJxW+nZKX+BqUjkWgnilkYzSgnBqs
-         ZgN1/gkwEi+9c2RnHpNtWioNpP/BXFLJBZdzymI1P+EuPoyeJWQL/nxy1AnvGQ159gqR
-         zXwryGn81LW3dUC6mRtWsiyH4qnVUV+qCk+lcynIagdTX4YkYsJ3A6WfUAZnf2QV0BKv
-         kWxI50BXL7mFaYi67tBF1BlWawAv+ZAAsnLzMI0Vdw3tg7DP8ChWMB7X3AnzKqttwNpo
-         E7TF149IXP7bGqe9ftVMsqI8K5u+dBCsBKqJT/UeB3z3AIs17lfGrqtomLhC/oR0QrF5
-         ZgQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=z7Cw+Kh2PwkVaz2CcLvmIqjqnZHIcRL3vzxNDm28vQI=;
-        b=n56nEyusNqRIy741Q5jKvky9P0aYsc5bfuCe50rbke6fs+j9MnvwvSpfdUcyXmw4Hd
-         M5CwOqP5BDEf9x9pmzy+YnIYc0ryOnwlV7nKohmK7NojKD7orqghO4SjDaFp9onSb/E1
-         DsQM3inmg76dByq20vRYYaC7Re9L6CN8nT7ekPpxsC1liLImqCfka/MW+lXAyCQKEfSg
-         7Gn8T/gvf61CiB0cteMh4kR6NwuLtfNW2B5lx2/QYUTNQlhavepob+hbwQR6IBRAI/qK
-         GlO5PjW2pwtoQRqUO/kj6Oe5k/y0LpqlA8vC3rsHb1oW4zJv3UdqXu4f3GrW6nImGFmd
-         ZBJA==
-X-Gm-Message-State: AOAM530rkHfPJelI209LdufxODsMEU/moHuE9xccbbOmWa9VqKD+7iSV
-        1Fq7vHWKF4P0H+X04bPyKAqxRwwQ0ds+X41tDSD4aA==
-X-Google-Smtp-Source: ABdhPJwXgvnATQa1rZ5EKOQDBk3E5T5DKJmlC3FwomnAmQjTyGDvBY73DuXdqDwMNiO01v0nBWKkIHXKLl9A2AM2Jpw=
-X-Received: by 2002:a4a:bb10:0:b0:35e:d6a9:3208 with SMTP id
- f16-20020a4abb10000000b0035ed6a93208mr4306723oop.85.1651535443613; Mon, 02
- May 2022 16:50:43 -0700 (PDT)
+        Mon, 2 May 2022 19:56:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E9233E94
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 16:53:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80D1861358
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:52:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AC4FC385AC;
+        Mon,  2 May 2022 23:52:58 +0000 (UTC)
+Date:   Mon, 2 May 2022 19:52:51 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Subject: Re: [PATCH 2/2] recordmcount: Handle sections with no non-weak
+ symbols
+Message-ID: <20220502195251.5d862365@rorschach.local.home>
+In-Reply-To: <819939e3-285b-2a65-9c4c-85640d2a3a02@csgroup.eu>
+References: <cover.1651047542.git.naveen.n.rao@linux.vnet.ibm.com>
+        <1b9566f0e7185fb8fd8ef2535add7a081501ccc8.1651047542.git.naveen.n.rao@linux.vnet.ibm.com>
+        <20220427095415.594e5120@gandalf.local.home>
+        <1651129169.fpixr00hgx.naveen@linux.ibm.com>
+        <20220428100602.7b215e52@gandalf.local.home>
+        <819939e3-285b-2a65-9c4c-85640d2a3a02@csgroup.eu>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <cover.1651058600.git.sandipan.das@amd.com> <3fef83d9c2b2f7516e8ff50d60851f29a4bcb716.1651058600.git.sandipan.das@amd.com>
-In-Reply-To: <3fef83d9c2b2f7516e8ff50d60851f29a4bcb716.1651058600.git.sandipan.das@amd.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Mon, 2 May 2022 16:50:32 -0700
-Message-ID: <CALMp9eSdUW6et2Us1if-j2Do6cv9ssyT4C2KPiyomFd7i_Dc1Q@mail.gmail.com>
-Subject: Re: [PATCH v4 7/7] kvm: x86/cpuid: Fix CPUID leaf 0xA
-To:     Sandipan Das <sandipan.das@amd.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        x86@kernel.org, peterz@infradead.org, bp@alien8.de,
-        dave.hansen@linux.intel.com, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, namhyung@kernel.org,
-        jolsa@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        pbonzini@redhat.com, like.xu.linux@gmail.com, eranian@google.com,
-        puwen@hygon.cn, ananth.narayan@amd.com, ravi.bangoria@amd.com,
-        santosh.shukla@amd.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 4:34 AM Sandipan Das <sandipan.das@amd.com> wrote:
->
-> On some x86 processors, CPUID leaf 0xA provides information
-> on Architectural Performance Monitoring features. It
-> advertises a PMU version which Qemu uses to determine the
-> availability of additional MSRs to manage the PMCs.
->
-> Upon receiving a KVM_GET_SUPPORTED_CPUID ioctl request for
-> the same, the kernel constructs return values based on the
-> x86_pmu_capability irrespective of the vendor.
->
-> This leaf and the additional MSRs are not supported on AMD
-> and Hygon processors. If AMD PerfMonV2 is detected, the PMU
-> version is set to 2 and guest startup breaks because of an
-> attempt to access a non-existent MSR. Return zeros to avoid
-> this.
->
-> Fixes: a6c06ed1a60a ("KVM: Expose the architectural performance monitoring CPUID leaf")
-> Reported-by: Vasant Hegde <vasant.hegde@amd.com>
-> Signed-off-by: Sandipan Das <sandipan.das@amd.com>
-> ---
->  arch/x86/kvm/cpuid.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-> index 4b62d80bb22f..e66ebb747084 100644
-> --- a/arch/x86/kvm/cpuid.c
-> +++ b/arch/x86/kvm/cpuid.c
-> @@ -872,6 +872,11 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
->                 union cpuid10_eax eax;
->                 union cpuid10_edx edx;
->
-> +               if (!static_cpu_has(X86_FEATURE_ARCH_PERFMON)) {
+On Mon, 2 May 2022 14:44:56 +0000
+Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
 
-Should this be checking kvm_cpu_cap_has(X86_FEATURE_ARCH_PERFMON) instead?
+> If we do that after the linking, won't it be a nightmare with the 
+> trampolines installed by the linker when the destination is over the 24 
+> bits limit ?
 
-> +                       entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
-> +                       break;
-> +               }
-> +
->                 perf_get_x86_pmu_capability(&cap);
->
->                 /*
-> --
-> 2.34.1
->
+Not sure what you mean. The locations I'm talking about is the full
+address saved in the __mcount_loc table (data section).
+
+-- Steve
