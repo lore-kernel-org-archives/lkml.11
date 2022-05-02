@@ -2,211 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C3EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 09:42:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 09:47:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384404AbiEBJn6 (ORCPT
+        id S1381379AbiEBJuv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 05:43:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46624 "EHLO
+        Mon, 2 May 2022 05:50:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352101AbiEBJng (ORCPT
+        with ESMTP id S1384371AbiEBJuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 05:43:36 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE14213D2E;
-        Mon,  2 May 2022 02:39:53 -0700 (PDT)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2426twBr021004;
-        Mon, 2 May 2022 09:39:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=OEvhbqOZ9NwoylHOvcW5vWY09m40+BG8RWO2gTnZi4s=;
- b=jI3puI/95AKcbgfr5LE/2yipPVyQad875KxQXVlSpzmh069GItF5WeHT67goQfmpjjJ+
- JJOVHxc0ExPQ2f35VG7pJtGoP4oTI0F5ds/hclD5r5zrCcRSYsa0xXNV3y8+kN/xkp3r
- fK3q27wN5oIB5QTSUHWSAp8joXj5LddLJ7yPx7HmxR1WeTgupm2zuEWxR3parXc4EhPn
- F4fuA+/9ImO8U+fmEngw1XVbeqyL7Om8NE5pdxbjmQbEoKxn+qUb/2+XgOzAffuwE/Hl
- y2/IsA1MQglMytDpLhGbr6AfjYKaGLt+ffb3NaV3vUtYhQGEqh+DvoBSNX3/pPxwoFSa xQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3ftafd2udj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 May 2022 09:39:50 +0000
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2429dovX019565;
-        Mon, 2 May 2022 09:39:50 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3ftafd2ud5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 May 2022 09:39:49 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2429c8vB005324;
-        Mon, 2 May 2022 09:39:48 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04fra.de.ibm.com with ESMTP id 3frvr8t19g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 May 2022 09:39:47 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2429di5A53871014
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 2 May 2022 09:39:44 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 93A6911C052;
-        Mon,  2 May 2022 09:39:44 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 46C8011C04C;
-        Mon,  2 May 2022 09:39:44 +0000 (GMT)
-Received: from [9.152.212.236] (unknown [9.152.212.236])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  2 May 2022 09:39:44 +0000 (GMT)
-Message-ID: <d36e7dc7-e063-365f-2bf4-8cac590b5802@linux.ibm.com>
-Date:   Mon, 2 May 2022 11:39:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] perf test: Add skip to --per-thread test
-Content-Language: en-US
-To:     Ian Rogers <irogers@google.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, acme@kernel.org,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>
-Cc:     svens@linux.ibm.com, gor@linux.ibm.com, sumanthk@linux.ibm.com,
-        hca@linux.ibm.com
-References: <20220429061336.1184848-1-irogers@google.com>
-From:   Thomas Richter <tmricht@linux.ibm.com>
-Organization: IBM
-In-Reply-To: <20220429061336.1184848-1-irogers@google.com>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: vX0SZHQjo7c5Jqw1tTa1HPzvVp5p12dK
-X-Proofpoint-GUID: GXEDPIT1L1tULqZMTAWKd65zblM7M8ak
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Mon, 2 May 2022 05:50:35 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A205413F1A
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 02:47:00 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2429khig030092;
+        Mon, 2 May 2022 04:46:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1651484803;
+        bh=/f3+ZN1BRGOPjS26Jk9C7pfpeHeos4hddQADZyloaso=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=hpBeSDROS88ZzV1RwsUTd7IItg2jtfZ2v+SJLCd58Q2vsh1C5YCSDaRbcrahEj2Ot
+         CtJ3+FKrrfvt7h2eZrNsyu+ormjOBXRGT+e5ONlQHSMJmNv/lrf//sL2xcbwHFHw7G
+         uMh5uIx7B7RGfuF96cxXXJMNgLbR39N56LfFJqDE=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2429khF9042579
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 2 May 2022 04:46:43 -0500
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 2
+ May 2022 04:46:43 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 2 May 2022 04:46:43 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2429kgkh040255;
+        Mon, 2 May 2022 04:46:43 -0500
+Date:   Mon, 2 May 2022 15:16:42 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     Michael Walle <michael@walle.cc>
+CC:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-kernel@vger.kernel.org>, <linux-mtd@lists.infradead.org>
+Subject: Re: [PATCH v3 2/2] mtd: spi-nor: expose internal parameters via
+ debugfs
+Message-ID: <20220502094642.trl7fggx6se5cqhg@ti.com>
+References: <20220429102018.2361038-1-michael@walle.cc>
+ <20220429102018.2361038-2-michael@walle.cc>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-02_03,2022-04-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- phishscore=0 lowpriorityscore=0 impostorscore=0 mlxscore=0 mlxlogscore=999
- suspectscore=0 clxscore=1011 spamscore=0 bulkscore=0 malwarescore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205020074
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220429102018.2361038-2-michael@walle.cc>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/29/22 08:13, Ian Rogers wrote:
-> As reported in:
-> https://lore.kernel.org/linux-perf-users/20220428122821.3652015-1-tmricht@linux.ibm.com/
-> the 'instructions:u' event may not be supported. Add a skip using 'perf
-> stat'.
+On 29/04/22 12:20PM, Michael Walle wrote:
+> There is no way to gather all information to verify support for a new
+> flash chip. Also if you want to convert an existing flash chip to the
+> new SFDP parsing, there is not enough information to determine if the
+> flash will work like before. To ease this development, expose internal
+> parameters via the debugfs.
 > 
-> Switch some code away from pipe to make the failures clearer.
-> 
-> Reported-by: Thomas Richter <tmricht@linux.ibm.com>
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/perf/tests/shell/record.sh | 44 +++++++++++++++++++++++++++++---
->  1 file changed, 41 insertions(+), 3 deletions(-)
-> 
-> diff --git a/tools/perf/tests/shell/record.sh b/tools/perf/tests/shell/record.sh
-> index cd1cf14259b8..efc0cb07a929 100755
-> --- a/tools/perf/tests/shell/record.sh
-> +++ b/tools/perf/tests/shell/record.sh
-> @@ -5,11 +5,43 @@
->  set -e
->  
->  err=0
-> +perfdata=$(mktemp /tmp/__perf_test.perf.data.XXXXX)
-> +
-> +cleanup() {
-> +  rm -f ${perfdata}
-> +  rm -f ${perfdata}.old
-> +  trap - exit term int
-> +}
-> +
-> +trap_cleanup() {
-> +  cleanup
-> +  exit 1
-> +}
-> +trap trap_cleanup exit term int
-> +
->  test_per_thread() {
->    echo "Basic --per-thread mode test"
-> -  perf record -e instructions:u --per-thread -o- true 2> /dev/null \
-> -    | perf report -i- -q \
-> -    | egrep -q true
-> +  if ! perf stat -e instructions:u --quiet true
-> +  then
-> +    echo "Per-thread record [Skipped instructions:u not supported]"
-> +    if [ $err -ne 1 ]
-> +    then
-> +      err=2
-> +    fi
-> +    return
-> +  fi
-> +  if ! perf record -e instructions:u --per-thread -o ${perfdata} true 2> /dev/null
-> +  then
-> +    echo "Per-thread record of instructions:u [Failed]"
-> +    err=1
-> +    return
-> +  fi
-> +  if ! perf report -i ${perfdata} -q | egrep -q true
-> +  then
-> +    echo "Per-thread record [Failed missing output]"
-> +    err=1
-> +    return
-> +  fi
->    echo "Basic --per-thread mode test [Success]"
->  }
->  
-> @@ -18,6 +50,10 @@ test_register_capture() {
->    if ! perf list | egrep -q 'br_inst_retired.near_call'
->    then
->      echo "Register capture test [Skipped missing instruction]"
-> +    if [ $err -ne 1 ]
-> +    then
-> +      err=2
-> +    fi
->      return
->    fi
->    if ! perf record --intr-regs=\? 2>&1 | egrep -q 'available registers: AX BX CX DX SI DI BP SP IP FLAGS CS SS R8 R9 R10 R11 R12 R13 R14 R15'
-> @@ -39,4 +75,6 @@ test_register_capture() {
->  
->  test_per_thread
->  test_register_capture
-> +
-> +cleanup
->  exit $err
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-Ian,
+Did some basic testing, seems fine to me. I'll wait a couple more days 
+if someone has any comments or else I'll apply it.
 
-thanks very much for looking into this.
-I have tested your patch on several configurations and to be perfect, please
-change this line:
-# git diff
-diff --git a/tools/perf/tests/shell/record.sh b/tools/perf/tests/shell/record.sh
-index efc0cb07a929..9cb8494f314d 100755
---- a/tools/perf/tests/shell/record.sh
-+++ b/tools/perf/tests/shell/record.sh
-@@ -21,7 +21,7 @@ trap trap_cleanup exit term int
- 
- test_per_thread() {
-   echo "Basic --per-thread mode test"
--  if ! perf stat -e instructions:u --quiet true
-+  if ! perf record -e instructions:u --quiet true 2> /dev/null
-   then
-     echo "Per-thread record [Skipped instructions:u not supported]"
-     if [ $err -ne 1 ]
-# 
+Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
 
-This runs fine, just use record instead of stat, you use perf record later
-on anyway.
-
-With this change you have my
-Tested-by: Thomas Richter <tmricht@linux.ibm.com>
 -- 
-Thomas Richter, Dept 3303, IBM s390 Linux Development, Boeblingen, Germany
---
-Vorsitzender des Aufsichtsrats: Gregor Pillen
-Geschäftsführung: David Faller
-Sitz der Gesellschaft: Böblingen / Registergericht: Amtsgericht Stuttgart, HRB 243294
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
