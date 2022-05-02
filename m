@@ -2,143 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B05C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 21:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37AF9C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 21:34:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387679AbiEBVfy (ORCPT
+        id S1387688AbiEBVhz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 17:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33646 "EHLO
+        Mon, 2 May 2022 17:37:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239512AbiEBVfw (ORCPT
+        with ESMTP id S239512AbiEBVhy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 17:35:52 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30F52E09E
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 14:32:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651527143; x=1683063143;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=G0FF9i1jLHjZ/yzasx+agtmTQl9xoAQw3ixOJN2ci8o=;
-  b=dz7We7e+kF/k31RFE3cuiz4z2jAyl+enLi/JHSTbhc6Psyiw9m80sx+O
-   HoCpmCrdJdCJAaPdB2NhhOxB5YpFbf4yuM0HKEOIHEwbgXm9XpIq68vub
-   L8ZpYBhGOaDIF4XPAo6r5TG/BVWvwrQnxTHlcHXy8UEeOEpWgdIMMLoWg
-   phtDGyUz9eOvWDjwe0QFMTSJnknHyTKH4sFfR4+W8gcRnqCUbW49jWfFH
-   TJqKlDIprExlNAln8diHsOkcAwPh4vzPBxqxnRWRxjerY6fbC9kVJjTQt
-   6GaktZ3hpQQvmAoOQglCrtPf6C++u3/TpnWKaCkwMe3187PNHTyTtil83
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="353769373"
-X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
-   d="scan'208";a="353769373"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 14:32:23 -0700
-X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
-   d="scan'208";a="652997307"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 14:32:22 -0700
-Date:   Mon, 2 May 2022 14:36:03 -0700
-From:   Jacob Pan <jacob.jun.pan@intel.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        "Alex Williamson" <alex.williamson@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
-        jacob.jun.pan@intel.com
-Subject: Re: [PATCH 4/5] iommu/vt-d: Remove domain_update_iommu_snooping()
-Message-ID: <20220502143603.4143dd66@jacob-builder>
-In-Reply-To: <20220501112434.874236-5-baolu.lu@linux.intel.com>
-References: <20220501112434.874236-1-baolu.lu@linux.intel.com>
-        <20220501112434.874236-5-baolu.lu@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Mon, 2 May 2022 17:37:54 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCC3E09E;
+        Mon,  2 May 2022 14:34:24 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Ksbvf0Bwsz4ySV;
+        Tue,  3 May 2022 07:34:21 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1651527262;
+        bh=Sw9+kEws1IXisWpPFuVd1ZJRyrUj/xmq/YIS9Y8hUdo=;
+        h=Date:From:To:Cc:Subject:From;
+        b=CdZiBHdlY55VYxxlKXZ2hhOqiTuWfnl7jbbxrN8wyRQIWVLELbhqVdjCUNL70mQiR
+         Kv0mB/kYZtd1spTCmnLJWR+m1to/0PDFAeE59290CgEbPpFwrEmK6EOvsvidDRVGoe
+         Gbw44cwnvz8qnjM50nl9/wQ86lEuVYTy2H2tnNGMr/lhx+I0ZQWdME1ndkpiryUxA2
+         JztGJ7E9OWtIEzvh0kzrp4sg8i9uBtLkp/T/+79sz+48K+9CmBCzj/hmYeJs02cLFt
+         Ym8U/rvFNck4u2zcGmIRibqSMqPn4yJ7D3MtpmgQv+YD8FA1wpAEBtPdOi4zsPAM9P
+         /yBYj3MsmZlIQ==
+Date:   Tue, 3 May 2022 07:34:20 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Pavel Begunkov <asml.silence@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warning after merge of the net-next tree
+Message-ID: <20220503073420.6d3f135d@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_//Vy1iPreFSvni.a6So.7c2G";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi BaoLu,
+--Sig_//Vy1iPreFSvni.a6So.7c2G
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, 1 May 2022 19:24:33 +0800, Lu Baolu <baolu.lu@linux.intel.com>
-wrote:
+Hi all,
 
-> The IOMMU force snooping capability is not required to be consistent
-> among all the IOMMUs anymore. Remove force snooping capability check
-> in the IOMMU hot-add path and domain_update_iommu_snooping() becomes
-> a dead code now.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/intel/iommu.c | 34 +---------------------------------
->  1 file changed, 1 insertion(+), 33 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 3c1c228f9031..d5808495eb64 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -533,33 +533,6 @@ static void domain_update_iommu_coherency(struct
-> dmar_domain *domain) rcu_read_unlock();
->  }
->  
-> -static bool domain_update_iommu_snooping(struct intel_iommu *skip)
-> -{
-> -	struct dmar_drhd_unit *drhd;
-> -	struct intel_iommu *iommu;
-> -	bool ret = true;
-> -
-> -	rcu_read_lock();
-> -	for_each_active_iommu(iommu, drhd) {
-> -		if (iommu != skip) {
-> -			/*
-> -			 * If the hardware is operating in the scalable
-> mode,
-> -			 * the snooping control is always supported
-> since we
-> -			 * always set PASID-table-entry.PGSNP bit if the
-> domain
-> -			 * is managed outside (UNMANAGED).
-> -			 */
-> -			if (!sm_supported(iommu) &&
-> -			    !ecap_sc_support(iommu->ecap)) {
-> -				ret = false;
-> -				break;
-> -			}
-> -		}
-> -	}
-> -	rcu_read_unlock();
-> -
-> -	return ret;
-> -}
-> -
->  static int domain_update_iommu_superpage(struct dmar_domain *domain,
->  					 struct intel_iommu *skip)
->  {
-> @@ -3593,12 +3566,7 @@ static int intel_iommu_add(struct dmar_drhd_unit
-> *dmaru) iommu->name);
->  		return -ENXIO;
->  	}
-> -	if (!ecap_sc_support(iommu->ecap) &&
-> -	    domain_update_iommu_snooping(iommu)) {
-> -		pr_warn("%s: Doesn't support snooping.\n",
-> -			iommu->name);
-> -		return -ENXIO;
-> -	}
-> +
-Maybe I missed earlier patches, so this bit can also be deleted?
+After merging the net-next tree, today's linux-next build (htmldocs)
+produced this warning:
 
-struct dmar_domain {
-	u8 iommu_snooping: 1;		/* indicate snooping control
-feature */
+Documentation/networking/kapi:92: net/core/dev.c:4101: WARNING: Missing mat=
+ching underline for section title overline.
 
->  	sp = domain_update_iommu_superpage(NULL, iommu) - 1;
->  	if (sp >= 0 && !(cap_super_page_val(iommu->cap) & (1 << sp))) {
->  		pr_warn("%s: Doesn't support large page.\n",
+---------------------------------------------------------------------------=
+--------
+     I notice this method can also return errors from the queue disciplines,
+     including NET_XMIT_DROP, which is a positive value.  So, errors can al=
+so
 
 
-Thanks,
+Introduced by commit
 
-Jacob
+  c526fd8f9f4f ("net: inline dev_queue_xmit()")
+
+I am not sure why this has turned up just now.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_//Vy1iPreFSvni.a6So.7c2G
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJwTlwACgkQAVBC80lX
+0Gxspwf/YQhrwk/tVyL8lqzhKezG6Dk3aS7piRkFropCVqbH2PqzUJnUMXZS/TI4
+dJDp+0mmbhj7fxYV7pz5pxFjRo964iak2SXBCV32b/VBs9X3cOxTWIT+PcPgFwx8
+7F6YUDlMmTg8mXuHJ9XKno0GI1pugOTdkWA8G5VkmTGygONDx7B1i7X0yeXw6OI4
+rlEdxCA3iV0jsZEt95q4eHz59a3287N2ce7VzdhyfTENBTh3Fpy/1L/wREoBSLV5
+LB0BXEncheguJ2XEm7pFZBB8a8upHHdXCVyzTpUFDuJsKnZrrb3u+J8DKxa8oi7i
+uRMB4nM8giMwe/nkqm7TSJ4By8VQXw==
+=h0GC
+-----END PGP SIGNATURE-----
+
+--Sig_//Vy1iPreFSvni.a6So.7c2G--
