@@ -2,105 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8117BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 03:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F090C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 03:18:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355501AbiEBDJ0 (ORCPT
+        id S1356753AbiEBDTu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 1 May 2022 23:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50422 "EHLO
+        Sun, 1 May 2022 23:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353074AbiEBDJY (ORCPT
+        with ESMTP id S1349452AbiEBDTr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 1 May 2022 23:09:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D40AD289B0
-        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 20:05:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651460757;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qfBorVSUOCzQ7q3zYlG2+R/WTZRAKdQmUnILyiogGHk=;
-        b=NAeQFv+IfNNSvZJGgfPIMll9eTaD1EXOwPJgfND3gjqUS6hrblD2YQhn2jnf4BZJH61gwY
-        th51CNdP5FzrxnqOEFW6Ww3Io4SawfMasbyFhIq9L3BSefvDJk9Tm9sKfWL3VDUbrlF7E0
-        I2kgfsopk95PgZw/wknwknjp77oKzSk=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-43-6GRA4kaIMLWNyA4Yy77asw-1; Sun, 01 May 2022 23:05:51 -0400
-X-MC-Unique: 6GRA4kaIMLWNyA4Yy77asw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 38EA61E13783;
-        Mon,  2 May 2022 03:05:51 +0000 (UTC)
-Received: from [10.72.12.86] (ovpn-12-86.pek2.redhat.com [10.72.12.86])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 44B7040869CB;
-        Mon,  2 May 2022 03:05:44 +0000 (UTC)
-Reply-To: Gavin Shan <gshan@redhat.com>
-Subject: Re: [PATCH v6 15/18] KVM: arm64: Support SDEI_FEATURES hypercall
-To:     Oliver Upton <oupton@google.com>
-Cc:     kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
-        eauger@redhat.com, Jonathan.Cameron@huawei.com,
-        vkuznets@redhat.com, will@kernel.org, shannon.zhaosl@gmail.com,
-        james.morse@arm.com, mark.rutland@arm.com, maz@kernel.org,
-        pbonzini@redhat.com, shan.gavin@gmail.com
-References: <20220403153911.12332-1-gshan@redhat.com>
- <20220403153911.12332-16-gshan@redhat.com> <Ym4uyaGGhPXlnkHQ@google.com>
-From:   Gavin Shan <gshan@redhat.com>
-Message-ID: <9a522677-cfee-5a72-af27-8a401546ad14@redhat.com>
-Date:   Mon, 2 May 2022 11:05:42 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+        Sun, 1 May 2022 23:19:47 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46432DAA5
+        for <linux-kernel@vger.kernel.org>; Sun,  1 May 2022 20:16:18 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ks7TV5FR2zGp2K;
+        Mon,  2 May 2022 11:13:34 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 2 May 2022 11:16:15 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 2 May 2022 11:16:14 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     <catalin.marinas@arm.com>, <will@kernel.org>,
+        <akpm@linux-foundation.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <linux-mm@kvack.org>, <hch@infradead.org>, <arnd@arndb.de>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH v2 resend 4/5] arm64: mm: Convert to GENERIC_IOREMAP
+Date:   Mon, 2 May 2022 11:27:51 +0800
+Message-ID: <20220502032751.21503-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220429103225.75121-5-wangkefeng.wang@huawei.com>
+References: <20220429103225.75121-5-wangkefeng.wang@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <Ym4uyaGGhPXlnkHQ@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Oliver,
+Add hook for arm64's special operation when ioremap() and iounmap(),
+then ioremap_wc/np/cache is converted to use ioremap_prot()
+from GENERIC_IOREMAP, update the Copyright and kill the unused
+inclusions.
 
-On 5/1/22 2:55 PM, Oliver Upton wrote:
-> On Sun, Apr 03, 2022 at 11:39:08PM +0800, Gavin Shan wrote:
->> This supports SDEI_FEATURES hypercall. It's used by guest to
->> retrieve the supported features, which are number of slots for
->> the interrupt binding events and relative mode for the event
->> handler. Currently, none of them is supported.
->>
->> Signed-off-by: Gavin Shan <gshan@redhat.com>
->> ---
->>   arch/arm64/kvm/sdei.c | 20 ++++++++++++++++++++
->>   1 file changed, 20 insertions(+)
->>
->> diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
->> index e1f6ab9800ee..ab0b7b5e3191 100644
->> --- a/arch/arm64/kvm/sdei.c
->> +++ b/arch/arm64/kvm/sdei.c
->> @@ -527,6 +527,23 @@ static unsigned long hypercall_reset(struct kvm_vcpu *vcpu, bool private)
->>   	return ret;
->>   }
->>   
->> +static unsigned long hypercall_features(struct kvm_vcpu *vcpu)
->> +{
->> +	unsigned long feature = smccc_get_arg(vcpu, 1);
->> +	unsigned long ret;
->> +
->> +	switch (feature) {
->> +	case 0: /* BIND_SLOTS */
->> +	case 1: /* RELATIVE_MODE */
-> 
-> Can you create macros for these?
-> 
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+v2 resend:
+- use IOMEM_ERR_PTR to fix sparse warning found by lkp
 
-Surely I will do. Thanks for your review and comments :)
+ arch/arm64/Kconfig          |  1 +
+ arch/arm64/include/asm/io.h | 20 ++++++---
+ arch/arm64/kernel/acpi.c    |  2 +-
+ arch/arm64/mm/ioremap.c     | 85 +++++--------------------------------
+ 4 files changed, 27 insertions(+), 81 deletions(-)
 
-Thanks,
-Gavin
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 20ea89d9ac2f..56673209fdb9 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -123,6 +123,7 @@ config ARM64
+ 	select GENERIC_CPU_VULNERABILITIES
+ 	select GENERIC_EARLY_IOREMAP
+ 	select GENERIC_IDLE_POLL_SETUP
++	select GENERIC_IOREMAP
+ 	select GENERIC_IRQ_IPI
+ 	select GENERIC_IRQ_PROBE
+ 	select GENERIC_IRQ_SHOW
+diff --git a/arch/arm64/include/asm/io.h b/arch/arm64/include/asm/io.h
+index 7fd836bea7eb..042fa01940b8 100644
+--- a/arch/arm64/include/asm/io.h
++++ b/arch/arm64/include/asm/io.h
+@@ -163,13 +163,21 @@ extern void __memset_io(volatile void __iomem *, int, size_t);
+ /*
+  * I/O memory mapping functions.
+  */
+-extern void __iomem *__ioremap(phys_addr_t phys_addr, size_t size, pgprot_t prot);
+-extern void iounmap(volatile void __iomem *addr);
+-extern void __iomem *ioremap_cache(phys_addr_t phys_addr, size_t size);
+ 
+-#define ioremap(addr, size)		__ioremap((addr), (size), __pgprot(PROT_DEVICE_nGnRE))
+-#define ioremap_wc(addr, size)		__ioremap((addr), (size), __pgprot(PROT_NORMAL_NC))
+-#define ioremap_np(addr, size)		__ioremap((addr), (size), __pgprot(PROT_DEVICE_nGnRnE))
++void __iomem *arch_ioremap(phys_addr_t phys_addr, size_t size, unsigned long prot);
++#define arch_ioremap arch_ioremap
++
++int arch_iounmap(void __iomem *addr);
++#define arch_iounmap arch_iounmap
++
++#define _PAGE_IOREMAP PROT_DEVICE_nGnRE
++
++#define ioremap_wc(addr, size)		ioremap_prot((addr), (size), PROT_NORMAL_NC)
++#define ioremap_np(addr, size)		ioremap_prot((addr), (size), PROT_DEVICE_nGnRnE)
++#define ioremap_cache(addr, size) ({							\
++	pfn_is_map_memory(__phys_to_pfn(addr)) ?					\
++	(void __iomem *)__phys_to_virt(addr) : ioremap_prot(addr, size, PROT_NORMAL);	\
++})
+ 
+ /*
+  * io{read,write}{16,32,64}be() macros
+diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
+index e4dea8db6924..a5a256e3f9fe 100644
+--- a/arch/arm64/kernel/acpi.c
++++ b/arch/arm64/kernel/acpi.c
+@@ -351,7 +351,7 @@ void __iomem *acpi_os_ioremap(acpi_physical_address phys, acpi_size size)
+ 				prot = __acpi_get_writethrough_mem_attribute();
+ 		}
+ 	}
+-	return __ioremap(phys, size, prot);
++	return ioremap_prot(phys, size, pgprot_val(prot));
+ }
+ 
+ /*
+diff --git a/arch/arm64/mm/ioremap.c b/arch/arm64/mm/ioremap.c
+index b7c81dacabf0..08fc30eb2721 100644
+--- a/arch/arm64/mm/ioremap.c
++++ b/arch/arm64/mm/ioremap.c
+@@ -1,96 +1,33 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+-/*
+- * Based on arch/arm/mm/ioremap.c
+- *
+- * (C) Copyright 1995 1996 Linus Torvalds
+- * Hacked for ARM by Phil Blundell <philb@gnu.org>
+- * Hacked to allow all architectures to build, and various cleanups
+- * by Russell King
+- * Copyright (C) 2012 ARM Ltd.
+- */
+ 
+-#include <linux/export.h>
+ #include <linux/mm.h>
+ #include <linux/vmalloc.h>
+ #include <linux/io.h>
+ 
+-#include <asm/fixmap.h>
+-#include <asm/tlbflush.h>
+-
+-static void __iomem *__ioremap_caller(phys_addr_t phys_addr, size_t size,
+-				      pgprot_t prot, void *caller)
++void __iomem *arch_ioremap(phys_addr_t phys_addr, size_t size, unsigned long prot)
+ {
+-	unsigned long last_addr;
+-	unsigned long offset = phys_addr & ~PAGE_MASK;
+-	int err;
+-	unsigned long addr;
+-	struct vm_struct *area;
+-
+-	/*
+-	 * Page align the mapping address and size, taking account of any
+-	 * offset.
+-	 */
+-	phys_addr &= PAGE_MASK;
+-	size = PAGE_ALIGN(size + offset);
++	unsigned long last_addr = phys_addr + size - 1;
++	int ret = -EINVAL;
+ 
+-	/*
+-	 * Don't allow wraparound, zero size or outside PHYS_MASK.
+-	 */
+-	last_addr = phys_addr + size - 1;
+-	if (!size || last_addr < phys_addr || (last_addr & ~PHYS_MASK))
+-		return NULL;
++	/* Don't allow outside PHYS_MASK */
++	if (last_addr & ~PHYS_MASK)
++		return IOMEM_ERR_PTR(ret);
+ 
+-	/*
+-	 * Don't allow RAM to be mapped.
+-	 */
++	/* Don't allow RAM to be mapped. */
+ 	if (WARN_ON(pfn_is_map_memory(__phys_to_pfn(phys_addr))))
+-		return NULL;
++		return IOMEM_ERR_PTR(ret);
+ 
+-	area = get_vm_area_caller(size, VM_IOREMAP, caller);
+-	if (!area)
+-		return NULL;
+-	addr = (unsigned long)area->addr;
+-	area->phys_addr = phys_addr;
+-
+-	err = ioremap_page_range(addr, addr + size, phys_addr, prot);
+-	if (err) {
+-		vunmap((void *)addr);
+-		return NULL;
+-	}
+-
+-	return (void __iomem *)(offset + addr);
+-}
+-
+-void __iomem *__ioremap(phys_addr_t phys_addr, size_t size, pgprot_t prot)
+-{
+-	return __ioremap_caller(phys_addr, size, prot,
+-				__builtin_return_address(0));
++	return NULL;
+ }
+-EXPORT_SYMBOL(__ioremap);
+ 
+-void iounmap(volatile void __iomem *io_addr)
++int arch_iounmap(void __iomem *addr)
+ {
+-	unsigned long addr = (unsigned long)io_addr & PAGE_MASK;
+-
+ 	/*
+ 	 * We could get an address outside vmalloc range in case
+ 	 * of ioremap_cache() reusing a RAM mapping.
+ 	 */
+-	if (is_vmalloc_addr((void *)addr))
+-		vunmap((void *)addr);
+-}
+-EXPORT_SYMBOL(iounmap);
+-
+-void __iomem *ioremap_cache(phys_addr_t phys_addr, size_t size)
+-{
+-	/* For normal memory we already have a cacheable mapping. */
+-	if (pfn_is_map_memory(__phys_to_pfn(phys_addr)))
+-		return (void __iomem *)__phys_to_virt(phys_addr);
+-
+-	return __ioremap_caller(phys_addr, size, __pgprot(PROT_NORMAL),
+-				__builtin_return_address(0));
++	return is_vmalloc_addr(addr) ? 0 : -EINVAL;
+ }
+-EXPORT_SYMBOL(ioremap_cache);
+ 
+ /*
+  * Must be called after early_fixmap_init
+-- 
+2.35.3
 
