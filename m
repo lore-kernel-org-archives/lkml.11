@@ -2,156 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 154F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 18:47:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E78C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 18:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358146AbiEBSue (ORCPT
+        id S1386959AbiEBSv2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 14:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58638 "EHLO
+        Mon, 2 May 2022 14:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349799AbiEBSuc (ORCPT
+        with ESMTP id S1349799AbiEBSvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 14:50:32 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1B8BE05
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 11:47:03 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2f7d7e3b5bfso157816377b3.5
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 11:47:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u9wSiuSwEdY5mnTnkaPbFc68dMNs+2B7Kv3x/mlBROY=;
-        b=B5EJ0yX/6p4KphD4mHUJ1Rf/ah2ZGGbyCj3/Fg8jz6NZgaKjFGHXri9nWa56usJkQV
-         i315aF1sZwZQCXuqR1GAJi/UydKqqqyJKrMK8NO2ltYq2E6LzRLcZv32EwENsp7gEeoz
-         iSHMNZvgfxxeDjj5++SiliEGaOkXpt+a8RHyXVhO5DpOnU48kj++PVL3oUiAbWHvgwWt
-         /8Cr6IfX5ViwgwukGvi0D67RRVTS2aaUOaOIh181LsfJrySzqwochKRZSrWUxxtwgj0X
-         utkbg7G1h+72m4iLsTXSquLZ7P0i2NJO3VNDlb1N0tn+bpBJNirD0jDtdQa9nWw8JgOP
-         HsHw==
+        Mon, 2 May 2022 14:51:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 07FA2BE05
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 11:47:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651517275;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=o31KDKAjASCg4O6xIHCxaz/umy+aWKrPUxdDjD2fwoI=;
+        b=OoSAHJ+UstuAtQFpGzBZjzbwZpFAC62V1x9nwTXZ9lIJiZOfUBJWzrAyp0nWnzV5Myi0t8
+        wUk1elo4GPkcvGHHz1w9qllBjzDPtnBReVY9bAy/K43KfSCNItFn/hXcCt/+KXP4l8fQN8
+        LdJJ2UsU9mRye5CFOqyXiTptlpPPwMY=
+Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com
+ [209.85.160.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-110-2nisNgt9MziPI563ZzJVNQ-1; Mon, 02 May 2022 14:47:51 -0400
+X-MC-Unique: 2nisNgt9MziPI563ZzJVNQ-1
+Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-e1fa5c533eso5054590fac.19
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 11:47:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u9wSiuSwEdY5mnTnkaPbFc68dMNs+2B7Kv3x/mlBROY=;
-        b=yTTSSJYF3b3Rz/nPuxbAHLS0uUkkTCgs9ipE/Is/iMp6oKYyqkH6hGbmzeXPBT+wpC
-         SrN28lyHJvrx0urErczaYeOHcrt+8/4bw/9KZZ0GwwxlFiuGw8xExoPWtjJ/FHhzjEjk
-         ySP6Q228XrlCiAba9x4am38VclFRDkfS6tChfwZSAQ2ng/Jj01+gVKoaN+TjgTVvMFcP
-         1d3rdy/XtJzmNgdLhgEs5G6gKkj5XKsbSjFSRDgxu54lnWbPKiJYZNewirw1PYnzV9qw
-         r7EmJJVq2dcbA9ooaC/vX5k7XI2rkm67iJTYtMIklyhLuEyO78oMvRHplD+Or1Lgy4ed
-         9gfA==
-X-Gm-Message-State: AOAM5316OKswayuioQbvH4FliVe8P9LNmoeqMNZjgXyzJMmkHW+11Cdm
-        piN037SeBVhYcCgtw6y+HYiMeZVOdDVYGJqJHsmoyg==
-X-Google-Smtp-Source: ABdhPJwxpqbxXyab8ESki88sczGcbJxWGMwzL5arJQ5jrtTs062e6/AT9v4MrGSdRY/uVxIocNtDe7xab3HHmq5sxbI=
-X-Received: by 2002:a81:dd07:0:b0:2eb:f701:286e with SMTP id
- e7-20020a81dd07000000b002ebf701286emr11872882ywn.341.1651517222179; Mon, 02
- May 2022 11:47:02 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=o31KDKAjASCg4O6xIHCxaz/umy+aWKrPUxdDjD2fwoI=;
+        b=la1+RIuAd1AaFROAK3UJCKfdoaRAinsOdABOpg8m9tfti5H4Ez3ZRJLeN2Rye8p4dJ
+         stCczsV16dU8ONCe4OrkGt/Nyd741fllpMdtaMbIKMIMTU37pGf1V3nlyQvjYjna6N35
+         tH+Q5GHJ1RgmdPmG35xcrDFRlJkSd3nBduGCqkJr9y7D9kgKe/9DJ24sE2h0nwK3rqAk
+         YPrp9xGKCBXY5jZtIxNu3Pq/7zrAznL/K1ozwpqbOSULbOjTLhxS4y3gdhmFrpwgHgGS
+         tuMpRXya59aZKlI7rteqW/D5m71HRqwzpXrKa1f7OI7QNtItdEdzQtZR3zpAJWH0z0M8
+         9Qqg==
+X-Gm-Message-State: AOAM5331M1yRXo86jhCx2erScP28b7L8uIYWq7kQYmT4f9sOBh5URBUj
+        BgoIChMV7qmVjajNm9pZxkUCir2OcAjwCaBqTr3MOSKy5s4pPX3l4HFBo+fPtesBdl0hhD93yBr
+        9flB6nn03rM8Tg47gKqMEQXSG
+X-Received: by 2002:a05:6870:819e:b0:e9:8de4:5ff9 with SMTP id k30-20020a056870819e00b000e98de45ff9mr266061oae.70.1651517271069;
+        Mon, 02 May 2022 11:47:51 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz1uGJ2E9K/79jmhcECha9MBujuJqI4NSml86exkjHlO+7PauvXrhkdt5CgbRxUlFD0It9H9A==
+X-Received: by 2002:a05:6870:819e:b0:e9:8de4:5ff9 with SMTP id k30-20020a056870819e00b000e98de45ff9mr266055oae.70.1651517270805;
+        Mon, 02 May 2022 11:47:50 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::a])
+        by smtp.gmail.com with ESMTPSA id z21-20020a056870e15500b000e686d1389dsm6135246oaa.55.2022.05.02.11.47.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 11:47:50 -0700 (PDT)
+Date:   Mon, 2 May 2022 11:47:47 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, elver@google.com,
+        jbaron@akamai.com, rostedt@goodmis.org, ardb@kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH 2/3] x86/cpu: Elide KCSAN for cpu_has() and friends
+Message-ID: <20220502184747.cr5ssem3g4mel4qq@treble>
+References: <20220502110741.951055904@infradead.org>
+ <20220502111216.290518605@infradead.org>
 MIME-Version: 1.0
-References: <20220429201131.3397875-1-yosryahmed@google.com>
- <20220429201131.3397875-2-yosryahmed@google.com> <87ilqoi77b.wl-maz@kernel.org>
-In-Reply-To: <87ilqoi77b.wl-maz@kernel.org>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Mon, 2 May 2022 11:46:26 -0700
-Message-ID: <CAJD7tkY7JF25XXUFq2mGroetMkfo-2zGOaQC94pjZE3D42+oaw@mail.gmail.com>
-Subject: Re: [PATCH v4 1/4] mm: add NR_SECONDARY_PAGETABLE to count secondary
- page table uses.
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Tejun Heo <tj@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Oliver Upton <oupton@google.com>, cgroups@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm@vger.kernel.org, Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220502111216.290518605@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 2, 2022 at 3:01 AM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Fri, 29 Apr 2022 21:11:28 +0100,
-> Yosry Ahmed <yosryahmed@google.com> wrote:
-> >
-> > Add NR_SECONDARY_PAGETABLE stat to count secondary page table uses, e.g.
-> > KVM mmu. This provides more insights on the kernel memory used
-> > by a workload.
-> >
-> > This stat will be used by subsequent patches to count KVM mmu
-> > memory usage.
-> >
-> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> > ---
-> >  Documentation/admin-guide/cgroup-v2.rst | 5 +++++
-> >  Documentation/filesystems/proc.rst      | 4 ++++
-> >  drivers/base/node.c                     | 2 ++
-> >  fs/proc/meminfo.c                       | 2 ++
-> >  include/linux/mmzone.h                  | 1 +
-> >  mm/memcontrol.c                         | 1 +
-> >  mm/page_alloc.c                         | 6 +++++-
-> >  mm/vmstat.c                             | 1 +
-> >  8 files changed, 21 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
-> > index 69d7a6983f78..828cb6b6f918 100644
-> > --- a/Documentation/admin-guide/cgroup-v2.rst
-> > +++ b/Documentation/admin-guide/cgroup-v2.rst
-> > @@ -1312,6 +1312,11 @@ PAGE_SIZE multiple when read back.
-> >         pagetables
-> >                  Amount of memory allocated for page tables.
-> >
-> > +       secondary_pagetables
-> > +             Amount of memory allocated for secondary page tables,
-> > +             this currently includes KVM mmu allocations on x86
-> > +             and arm64.
->
-> Can you please explain what the rationale is for this? We already
-> account for the (arm64) S2 PTs as a userspace allocation (see
+On Mon, May 02, 2022 at 01:07:43PM +0200, Peter Zijlstra wrote:
+> vmlinux.o: warning: objtool: enter_from_user_mode+0x24: call to __kcsan_check_access() leaves .noinstr.text section
+> vmlinux.o: warning: objtool: syscall_enter_from_user_mode+0x28: call to __kcsan_check_access() leaves .noinstr.text section
+> vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare+0x24: call to __kcsan_check_access() leaves .noinstr.text section
+> vmlinux.o: warning: objtool: irqentry_enter_from_user_mode+0x24: call to __kcsan_check_access() leaves .noinstr.text section
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 
-This can be considered as continuation for that work. The mentioned
-commit accounts S2 PTs to the VM process cgroup kernel memory. We have
-stats for the total kernel memory, and some fine-grained categories of
-that, like (pagetables, stack, slab, etc.).
+An explanation about *why* this fixes it would help, as I have no idea
+from looking at the patch.
 
-This patch just adds another category to give further insights into
-what exactly is using kernel memory.
+> ---
+>  arch/x86/include/asm/cpufeature.h |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> --- a/arch/x86/include/asm/cpufeature.h
+> +++ b/arch/x86/include/asm/cpufeature.h
+> @@ -51,7 +51,7 @@ extern const char * const x86_power_flag
+>  extern const char * const x86_bug_flags[NBUGINTS*32];
+>  
+>  #define test_cpu_cap(c, bit)						\
+> -	 test_bit(bit, (unsigned long *)((c)->x86_capability))
+> +	 arch_test_bit(bit, (unsigned long *)((c)->x86_capability))
+>  
+>  /*
+>   * There are 32 bits/features in each mask word.  The high bits
+> 
+> 
 
-> 115bae923ac8bb29ee635). You are saying that this is related to a
-> 'workload', but given that the accounting is global, I fail to see how
-> you can attribute these allocations on a particular VM.
+-- 
+Josh
 
-The main motivation is having the memcg stats, which give attribution
-to workloads. If you think it's more appropriate, we can add it as a
-memcg-only stat, like MEMCG_VMALLOC (see 4e5aa1f4c2b4 ("memcg: add
-per-memcg vmalloc stat")). The only reason I made this as a global
-stat too is to be consistent with NR_PAGETABLE.
-
->
-> What do you plan to do for IOMMU page tables? After all, they serve
-> the exact same purpose, and I'd expect these to be handled the same
-> way (i.e. why is this KVM specific?).
-
-The reason this was named NR_SECONDARY_PAGTABLE instead of
-NR_KVM_PAGETABLE is exactly that. To leave room to incrementally
-account other types of secondary page tables to this stat. It is just
-that we are currently interested in the KVM MMU usage.
-
->
-> Thanks,
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
