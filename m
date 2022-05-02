@@ -2,108 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6E57C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:08:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DECDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 13:09:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385103AbiEBNMM (ORCPT
+        id S1385152AbiEBNNO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 09:12:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40794 "EHLO
+        Mon, 2 May 2022 09:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234947AbiEBNMK (ORCPT
+        with ESMTP id S234947AbiEBNNM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 09:12:10 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC8D19290
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 06:08:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651496921; x=1683032921;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=TRBohxboTMUTpfDTiSX38welX9/T8q5AoQ7VTXHhiO4=;
-  b=HafUaXLstyHWXnFBIKfOE9RdNqj5A91W0Hki1TmQOduhA0Ce/HjO+RMG
-   JYSe3Dyl24RHiS4u34UJzPLsChOvqDTepnK4gqevdmSTNs1xHlNTMVOcv
-   I+3XpB/JkXNKUB2UI2VUP2/0+xs9cMeZsEmnx0grA4qudhd9rf+t69Qj2
-   sz0KMQQJrf9QpkuIGAkqdbsPOQmh7Q7uuHQeByQ6wH+/UGXegbq/7DbpA
-   QY+185WZKve/oOgtSz3P7WShGTtvyoDqjycNRMB3tl+0xT4sGhaUkiv+n
-   zy5vjSaQww1F44f4QZKpslUXZ/w/hl/RhFsyKPAElSABBJYDWfM06fFCM
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10334"; a="264797207"
-X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
-   d="scan'208";a="264797207"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 06:08:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
-   d="scan'208";a="690279646"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 02 May 2022 06:08:18 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nlVmj-0009Yx-IB;
-        Mon, 02 May 2022 13:08:17 +0000
-Date:   Mon, 2 May 2022 21:08:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        0day robot <lkp@intel.com>
-Subject: drivers/pci/controller/dwc/pcie-qcom-ep.c:694:9: error: implicit
- declaration of function 'qcom_pcie_disable_resources'; did you mean
- 'qcom_pcie_ep_get_resources'?
-Message-ID: <202205022102.2MzCb1qA-lkp@intel.com>
+        Mon, 2 May 2022 09:13:12 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C5319290
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 06:09:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=lEEpp6Yh5c17KamMJCZy6/ew0Vycd9WIVP93R8z7Vuc=; b=mVJscScUJ9u/IezeDDPgHYhNoC
+        LH4VIJwDlSwRibe5Wlt6baYceOoWgSVtXPObRhZVZbvber38kBcjC478fiS6lGmPVrgF1cx6hD1cN
+        DBmRb8AhFFJip93WgfDZeOTD+aawpzpSUEiCc8vm86wTwi9p3WHXtJBZmILZKF/A4OxALgHMbyrFM
+        fX7vDu4llt0eQ++gNOhS0W2/agaRyKYZnZtmjkkwQHoes/HOE0DBjXt3DHc8U2mMhDYHb6NKOou8x
+        WYvnXEeuJb6S1olbM0kHCs1z+CkZzlsFQCs1N2+6U5CVP5VLDe6fFcGMFpGTUZrmE5TpYVq3oH/2K
+        ozgGhRRA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nlVnj-00ATF3-14; Mon, 02 May 2022 13:09:19 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 15EB030017D;
+        Mon,  2 May 2022 15:09:17 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id DEC0A20288CED; Mon,  2 May 2022 15:09:16 +0200 (CEST)
+Date:   Mon, 2 May 2022 15:09:16 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     x86@kernel.org, jpoimboe@redhat.com
+Cc:     linux-kernel@vger.kernel.org, elver@google.com, jbaron@akamai.com,
+        rostedt@goodmis.org, ardb@kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH v2 3/3] jump_label,noinstr: Avoid instrumentation for
+ JUMP_LABEL=n builds
+Message-ID: <Ym/X/BuXCi8H0vud@hirez.programming.kicks-ass.net>
+References: <20220502110741.951055904@infradead.org>
+ <20220502111216.350926848@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220502111216.350926848@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220502-184544/Manivannan-Sadhasivam/PCI-qcom-ep-Move-enable-disable-resources-code-to-common-functions/20220502-124818
-head:   9cb459b5dc9b6a7c837726501f453ad78a829d3a
-commit: 9cb459b5dc9b6a7c837726501f453ad78a829d3a PCI: qcom-ep: use qcom_pcie_disable_resources() in qcom_pcie_ep_remove()
-date:   2 hours ago
-config: riscv-allmodconfig (https://download.01.org/0day-ci/archive/20220502/202205022102.2MzCb1qA-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/9cb459b5dc9b6a7c837726501f453ad78a829d3a
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review UPDATE-20220502-184544/Manivannan-Sadhasivam/PCI-qcom-ep-Move-enable-disable-resources-code-to-common-functions/20220502-124818
-        git checkout 9cb459b5dc9b6a7c837726501f453ad78a829d3a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/pci/
 
-If you fix the issue, kindly add following tag as appropriate
+Subject: jump_label,noinstr: Avoid instrumentation for JUMP_LABEL=n builds
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Mon May  2 12:30:20 CEST 2022
+
+When building x86_64 with JUMP_LABEL=n it's possible for
+instrumentation to sneak into noinstr:
+
+vmlinux.o: warning: objtool: exit_to_user_mode+0x14: call to static_key_count.constprop.0() leaves .noinstr.text section
+vmlinux.o: warning: objtool: syscall_exit_to_user_mode+0x2d: call to static_key_count.constprop.0() leaves .noinstr.text section
+vmlinux.o: warning: objtool: irqentry_exit_to_user_mode+0x1b: call to static_key_count.constprop.0() leaves .noinstr.text section
+
 Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+---
+ include/linux/jump_label.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-All errors (new ones prefixed by >>):
-
-   drivers/pci/controller/dwc/pcie-qcom-ep.c: In function 'qcom_pcie_ep_remove':
->> drivers/pci/controller/dwc/pcie-qcom-ep.c:694:9: error: implicit declaration of function 'qcom_pcie_disable_resources'; did you mean 'qcom_pcie_ep_get_resources'? [-Werror=implicit-function-declaration]
-     694 |         qcom_pcie_disable_resources(pcie_ep);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |         qcom_pcie_ep_get_resources
-   cc1: some warnings being treated as errors
-
-
-vim +694 drivers/pci/controller/dwc/pcie-qcom-ep.c
-
-   686	
-   687	static int qcom_pcie_ep_remove(struct platform_device *pdev)
-   688	{
-   689		struct qcom_pcie_ep *pcie_ep = platform_get_drvdata(pdev);
-   690	
-   691		if (pcie_ep->link_status == QCOM_PCIE_EP_LINK_DISABLED)
-   692			return 0;
-   693	
- > 694		qcom_pcie_disable_resources(pcie_ep);
-   695	
-   696		return 0;
-   697	}
-   698	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--- a/include/linux/jump_label.h
++++ b/include/linux/jump_label.h
+@@ -256,9 +256,9 @@ extern void static_key_disable_cpuslocke
+ #include <linux/atomic.h>
+ #include <linux/bug.h>
+ 
+-static inline int static_key_count(struct static_key *key)
++static __always_inline int static_key_count(struct static_key *key)
+ {
+-	return atomic_read(&key->enabled);
++	return arch_atomic_read(&key->enabled.count);
+ }
+ 
+ static __always_inline void jump_label_init(void)
