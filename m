@@ -2,152 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEACAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 10:29:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8863FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  2 May 2022 10:31:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384567AbiEBKdK (ORCPT
+        id S1384587AbiEBKfA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 06:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
+        Mon, 2 May 2022 06:35:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384722AbiEBKcY (ORCPT
+        with ESMTP id S1384538AbiEBKen (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 06:32:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04AD81FCD9;
-        Mon,  2 May 2022 03:27:41 -0700 (PDT)
+        Mon, 2 May 2022 06:34:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9990B7F0;
+        Mon,  2 May 2022 03:31:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40C02B815E9;
-        Mon,  2 May 2022 10:27:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 045F8C385AC;
-        Mon,  2 May 2022 10:27:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B5AB6123B;
+        Mon,  2 May 2022 10:31:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E887C385A4;
+        Mon,  2 May 2022 10:31:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651487259;
-        bh=R56O39Gq1VR272NSCyjIJ7OwI2OeAY/9yHGTpdl3FnM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RRMmbNpW+fg48uBABCutnJSZ+LegyqtECzIqxyK2iDimwkVb3JgHfB/2Rc9wRRyD2
-         4yiUiiWp5HUPHfBS0w4UzrAnCHcuqpJ3p29cJQR6/5mAScHqAB9GD2a96hcM/EkppX
-         9hbOK/3mCLCc+IlKaCOIo4sMPGPYgYrPluRV/PnV8xJbcPYu+fqGXr+MxRMtdB1zKy
-         qcsR3MCDOlD7SqK/bhoY1CfhGGy7rWy+/sXDXu2yZu377O+fI8d9rJibq54MfCsmwl
-         aHqHScZRDBVrXNLgnu2FVWHSjF5xeNypFF+jLrjyjZeI6HYX7YFkma3gSV2rUFT9e0
-         VW8ge73V+Z98Q==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nlTHF-0004NJ-HI; Mon, 02 May 2022 12:27:37 +0200
-Date:   Mon, 2 May 2022 12:27:37 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>
-Subject: Re: [PATCH 2/2] phy: qcom-qmp: fix pipe-clock imbalance on power-on
- failure
-Message-ID: <Ym+yGa0xT82d9XOf@hovoldconsulting.com>
-References: <20220420152331.5527-1-johan+linaro@kernel.org>
- <20220420152331.5527-3-johan+linaro@kernel.org>
- <Ym+t5YVL8HdJaBl4@matsya>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ym+t5YVL8HdJaBl4@matsya>
+        s=k20201202; t=1651487473;
+        bh=F47tb2LcIQl1JzmX/6+L6mZEb8vZi9kPtE/YAoCVFFQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RbZeh2W3aXkSAYwbcO1vfSGS9AalqPh0LtpikQHrl1l6XQJJMZpAFRtIgkuxVW2Fe
+         ncn/24QnrG+TKvF+jpgTBnp4dqNqAmt2irGJpvxucnGXK3316JTsFEnQfdWOPJ4w+m
+         Y5Xg2Tdgc2p56WW1yOx6+mmkLBcV++Fk5uNIwjgKrD0tUys8gyI+bbrnEW7PcIY+Ao
+         pggFxy0cGNuKDukuJz93xigqnijwnu8EvFlWZzwpVZGcwKCYBS5sUa9nMamp6H5z0p
+         Xy01cTMR2Klt/Rut43CblnibnjlKkjCZP6Njf7uG5NVF63Qno68PN8MbclRfvi9eWC
+         6edOpUA8dU6PQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nlTKh-008OYC-DR; Mon, 02 May 2022 11:31:11 +0100
+Date:   Mon, 02 May 2022 11:31:11 +0100
+Message-ID: <87ee1ci5u8.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Sven Peter <sven@svenpeter.dev>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] PCI: apple: Add support for optional PWREN GPIO
+In-Reply-To: <20220502093832.32778-4-marcan@marcan.st>
+References: <20220502093832.32778-1-marcan@marcan.st>
+        <20220502093832.32778-4-marcan@marcan.st>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: marcan@marcan.st, lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com, bhelgaas@google.com, alyssa@rosenzweig.io, sven@svenpeter.dev, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 03:39:41PM +0530, Vinod Koul wrote:
-> On 20-04-22, 17:23, Johan Hovold wrote:
-> > Make sure to disable the pipe clock also if ufs-reset deassertion fails
-> > during power on.
-> > 
-> > Note that the ufs-reset is asserted in qcom_qmp_phy_com_exit().
-> > 
-> > Fixes: c9b589791fc1 ("phy: qcom: Utilize UFS reset controller")
-> > Cc: Evan Green <evgreen@chromium.org>
-> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> > ---
-> >  drivers/phy/qualcomm/phy-qcom-qmp.c | 14 +++++++-------
-> >  1 file changed, 7 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
-> > index 8c2300bfe489..7d2d1ab061f7 100644
-> > --- a/drivers/phy/qualcomm/phy-qcom-qmp.c
-> > +++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
-> > @@ -5375,14 +5375,14 @@ static int qcom_qmp_phy_power_on(struct phy *phy)
-> >  		if (ret) {
-> >  			dev_err(qmp->dev, "lane%d reset deassert failed\n",
-> >  				qphy->index);
-> > -			goto err_lane_rst;
-> > +			return ret;
+On Mon, 02 May 2022 10:38:32 +0100,
+Hector Martin <marcan@marcan.st> wrote:
 > 
-> This can be skipped if we retain the err_lane_rst label
+> WiFi and SD card devices on M1 Macs have a separate power enable GPIO.
+> Add support for this to the PCIe controller. This is modeled after how
+> pcie-fu740 does it.
+
+Please update the DT binding to reflect this as an optional property.
+
 > 
-> >  		}
-> >  	}
-> >  
-> >  	ret = clk_prepare_enable(qphy->pipe_clk);
-> >  	if (ret) {
-> >  		dev_err(qmp->dev, "pipe_clk enable failed err=%d\n", ret);
-> > -		goto err_clk_enable;
-> > +		goto err_reset_lane;
-> >  	}
-> >  
-> >  	/* Tx, Rx, and PCS configurations */
-> > @@ -5433,7 +5433,7 @@ static int qcom_qmp_phy_power_on(struct phy *phy)
-> >  
-> >  	ret = reset_control_deassert(qmp->ufs_reset);
-> >  	if (ret)
-> > -		goto err_lane_rst;
-> > +		goto err_disable_pipe_clk;
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> ---
+>  drivers/pci/controller/pcie-apple.c | 35 ++++++++++++++++++++++++++---
+>  1 file changed, 32 insertions(+), 3 deletions(-)
 > 
-> this is the actual fix...
+> diff --git a/drivers/pci/controller/pcie-apple.c b/drivers/pci/controller/pcie-apple.c
+> index e3aa2d461739..5b73c03ebe94 100644
+> --- a/drivers/pci/controller/pcie-apple.c
+> +++ b/drivers/pci/controller/pcie-apple.c
+> @@ -518,6 +518,16 @@ static int apple_pcie_probe_port(struct device_node *np)
+>  	}
+>  
+>  	gpiod_put(gd);
+> +
+> +	gd = gpiod_get_from_of_node(np, "pwren-gpios", 0,
+> +				    GPIOD_OUT_LOW, "PWREN");
+> +	if (IS_ERR(gd)) {
+> +		if (PTR_ERR(gd) != -ENOENT)
+> +			return PTR_ERR(gd);
+> +	} else {
+> +		gpiod_put(gd);
+> +	}
+> +
+>  	return 0;
+>  }
+>  
+> @@ -526,7 +536,7 @@ static int apple_pcie_setup_port(struct apple_pcie *pcie,
+>  {
+>  	struct platform_device *platform = to_platform_device(pcie->dev);
+>  	struct apple_pcie_port *port;
+> -	struct gpio_desc *reset;
+> +	struct gpio_desc *reset, *pwren = NULL;
+>  	u32 stat, idx;
+>  	int ret, i;
+>  
+> @@ -535,6 +545,15 @@ static int apple_pcie_setup_port(struct apple_pcie *pcie,
+>  	if (IS_ERR(reset))
+>  		return PTR_ERR(reset);
+>  
+> +	pwren = devm_gpiod_get_from_of_node(pcie->dev, np, "pwren-gpios", 0,
+> +					    GPIOD_OUT_LOW, "PWREN");
+> +	if (IS_ERR(pwren)) {
+> +		if (PTR_ERR(pwren) == -ENOENT)
+> +			pwren = NULL;
+> +		else
+> +			return PTR_ERR(pwren);
+> +	}
+> +
+>  	port = devm_kzalloc(pcie->dev, sizeof(*port), GFP_KERNEL);
+>  	if (!port)
+>  		return -ENOMEM;
+> @@ -557,12 +576,22 @@ static int apple_pcie_setup_port(struct apple_pcie *pcie,
+>  	/* Assert PERST# before setting up the clock */
+>  	gpiod_set_value_cansleep(reset, 1);
+>  
+> +	/* Power on the device if required */
+> +	if (pwren)
+> +		gpiod_set_value_cansleep(pwren, 1);
 
-Right, but with a one-line fix this would read
+nit: AFAICT, the gpiod_* helpers already check for a NULL descriptor,
+and silently return without an error.
 
-	goto err_pcs_ready;
+> +
+>  	ret = apple_pcie_setup_refclk(pcie, port);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	/* The minimal Tperst-clk value is 100us (PCIe CEM r5.0, 2.9.2) */
+> -	usleep_range(100, 200);
+> +	/*
+> +	 * The minimal Tperst-clk value is 100us (PCIe CEM r5.0, 2.9.2)
+> +	 * If powering up, the minimal Tpvperl is 100ms
+> +	 */
+> +	if (pwren)
+> +		msleep(100);
+> +	else
+> +		usleep_range(100, 200);
+>  
+>  	/* Deassert PERST# */
+>  	rmw_set(PORT_PERST_OFF, port->base + PORT_PERST);
 
-which makes no sense at all. Is that really what you prefer?
+With the documentation aspect addressed:
 
-Renaming just this one and the below one, would leave the error labels
-named using two different schemes, which also isn't very nice, but
-perhaps ok.
+Acked-by: Marc Zyngier <maz@kernel.org>
 
-> >  
-> >  	qcom_qmp_phy_configure(pcs_misc, cfg->regs, cfg->pcs_misc_tbl,
-> >  			       cfg->pcs_misc_tbl_num);
-> > @@ -5472,17 +5472,17 @@ static int qcom_qmp_phy_power_on(struct phy *phy)
-> >  					 PHY_INIT_COMPLETE_TIMEOUT);
-> >  		if (ret) {
-> >  			dev_err(qmp->dev, "phy initialization timed-out\n");
-> > -			goto err_pcs_ready;
-> > +			goto err_disable_pipe_clk;
-> 
-> same rename here
-> 
-> >  		}
-> >  	}
-> >  	return 0;
-> >  
-> > -err_pcs_ready:
-> > +err_disable_pipe_clk:
-> >  	clk_disable_unprepare(qphy->pipe_clk);
-> > -err_clk_enable:
-> > +err_reset_lane:
-> >  	if (cfg->has_lane_rst)
-> >  		reset_control_assert(qphy->lane_rst);
-> > -err_lane_rst:
-> > +
-> >  	return ret;
-> 
-> while I feel the names given by this patch are better, they should not
-> be in a fix patch. We should just add the one line fix here and do
-> renames later
+	M.
 
-I'll respin if you prefer, just want to double check that you really
-want a one line fix (i.e. goto err_pcs_ready).
-
-Johan
+-- 
+Without deviation from the norm, progress is not possible.
