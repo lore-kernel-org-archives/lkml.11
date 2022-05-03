@@ -2,187 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3008BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 22:04:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8485DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 22:04:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243475AbiECWHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 18:07:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49238 "EHLO
+        id S243492AbiECWIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 18:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234803AbiECWHx (ORCPT
+        with ESMTP id S243507AbiECWIG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 18:07:53 -0400
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85FB9424B5
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 15:04:19 -0700 (PDT)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-e2fa360f6dso18598641fac.2
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 15:04:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=czLZHU7MG6H1spBLHXY5jaZbzV59tXkMuN+Ck8Z7wc4=;
-        b=hhWjsHnmVba6J3iaRJaO09nZL4LxjIq8C9W91LOfNC4XgTIwgTHymewopsSR7xhrbE
-         wJfMPDofFT9Orm5X1Xmnq6csdeG70AmAjQHsJ6oidSvnu+c5NqT0zTpfwvGt6c7imJaY
-         Yx4JIofQGY7s+yKOtcqFuF1p2zpjcELmsl0YE=
+        Tue, 3 May 2022 18:08:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 00B48427ED
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 15:04:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651615468;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NCw2YbW2b06vdpfX9KTc0Sz/4kzxAVFUC7Z0+7uCYMw=;
+        b=QV8SeB9u1oxu2AZzk6hjOS1LlKtUj2LpNBB5DLkROzHeqEfTakgB5/zp2s3Bd/4AEf4bJE
+        orXaoq+FmnrdoK05RC6Wz/OgM+A64sto7wsFhpc+CLUM5uXBqDumNUE1VhTO5zpFdGu/gr
+        tAnahlJciSAzmonKdlU1+uwL/hGM4ng=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-616-1pWux-LAMiOgjaI_OcHTsQ-1; Tue, 03 May 2022 18:01:47 -0400
+X-MC-Unique: 1pWux-LAMiOgjaI_OcHTsQ-1
+Received: by mail-wm1-f69.google.com with SMTP id c125-20020a1c3583000000b0038e3f6e871aso6285507wma.8
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 15:01:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=czLZHU7MG6H1spBLHXY5jaZbzV59tXkMuN+Ck8Z7wc4=;
-        b=wQRguaFNdmzFsqJ2OgQd9uSHQYMqJu/+kp2fFKGqum10vQjkTnzWwGpp8VYOqWjFdb
-         0ZLQ90qLVMQZwJ17/8JslDxi6dYObyOg3LKuMakH3NmktoI1Jp1p1KI6h7qGgjgtkH5v
-         bIqM0/njMSa5kam3ZVjo0TJPC9cyVYyYzUXpKSdqj2refYtzb6Y+0vmLHoaR4bGAqxcb
-         cWOi8QzxvqX1dW+YmDCzy67BC8uGGWJtrVF/ksfu4Bs5wTlKpBEgcNWQIPNbYiZWDvPb
-         SJ8fNIeOXelPr+47BwDppjKJQWRQavAV2eG8KhZZjFUgFaD8+yIxhFvh8PBc+GYneZxQ
-         VQFg==
-X-Gm-Message-State: AOAM532oEsiBoZI2xEVgK+NTxvVzwdMVxOUeSiMeWXbiNRFlrBy5eu54
-        6RAbdkJGBAjo7LGf+oXrOuHEhZXTJ3mzYCcE
-X-Google-Smtp-Source: ABdhPJwOb/qzyuR68vReISWKevDz751vc+wAhgknWNITAbyuZCNR/h2mpSfAhuhY63iZtN/pnXaQgA==
-X-Received: by 2002:a05:6870:d68e:b0:e2:af08:6cc3 with SMTP id z14-20020a056870d68e00b000e2af086cc3mr2682022oap.189.1651615458636;
-        Tue, 03 May 2022 15:04:18 -0700 (PDT)
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com. [209.85.167.175])
-        by smtp.gmail.com with ESMTPSA id r4-20020a056830120400b0060603221240sm4405948otp.16.2022.05.03.15.04.18
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 15:04:18 -0700 (PDT)
-Received: by mail-oi1-f175.google.com with SMTP id m11so19573516oib.11
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 15:04:18 -0700 (PDT)
-X-Received: by 2002:a05:6808:219a:b0:325:93fc:e0fd with SMTP id
- be26-20020a056808219a00b0032593fce0fdmr2775646oib.241.1651615054192; Tue, 03
- May 2022 14:57:34 -0700 (PDT)
+        bh=NCw2YbW2b06vdpfX9KTc0Sz/4kzxAVFUC7Z0+7uCYMw=;
+        b=HrRQusNDCfI8eJYT5sK5VtZ/Hu7fpLhAXzNDSCKhzhi9MUy30Zzoi59GuHr5rsljz/
+         u2B9Loi+q8rVtiIxVJb++B2WtRoCh5iZqb8ly7r4UxcL/1q744sYIlnR1bCvycE/l44t
+         SDBgPo9/f0XbAnO/S5VThYUgPFm9H/By3lYc7yOkx/nA8c8XkQz15jFDxV56xkGap3c/
+         +WrANk0a8Zy98D/VhJ/RF02KhmtIyWch8O303QWhV0k4rjVJoDaXLnO2RtFqUvkQaNrX
+         /V+wn039iEcRnwOVokYQHTjAHZpoD3VcH5oiVYPXVXD+r+ypVYYYPN/2pmII1gMugrs/
+         7ECg==
+X-Gm-Message-State: AOAM533U7J57vkaP68q6aPSm9SyfagF4oBDlpbEnwDU9ocouWXUN+rw4
+        +e23VQohsmtuWMNgOcTAdEAsya0DsNVmbzXg7B5dBfKfKbL/BhshMneRAGDG3/IZGtA/vWO1Rxo
+        YDs9WOjifXMcbJEK8/Y1DgBHd09AnnOJb+k++G+oa
+X-Received: by 2002:a5d:4a81:0:b0:207:9abe:2908 with SMTP id o1-20020a5d4a81000000b002079abe2908mr14084331wrq.341.1651615305548;
+        Tue, 03 May 2022 15:01:45 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzDZF5QtU8eWm5iH5MBr3nBAiPSuIRf8s8hX0zAE2sJW3Opo+sznt5voV5+vjORprV7H4visxp4de0FdVUYT74=
+X-Received: by 2002:a5d:4a81:0:b0:207:9abe:2908 with SMTP id
+ o1-20020a5d4a81000000b002079abe2908mr14084317wrq.341.1651615305322; Tue, 03
+ May 2022 15:01:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220427224924.592546-1-gpiccoli@igalia.com> <20220427224924.592546-5-gpiccoli@igalia.com>
- <CAE=gft5Pq25L4KFoPWbftkPF-JN1ex2yws77mMJ4GQnn9W0L2g@mail.gmail.com> <adcf6d0e-c37c-6ede-479e-29959d03d8c0@igalia.com>
-In-Reply-To: <adcf6d0e-c37c-6ede-479e-29959d03d8c0@igalia.com>
-From:   Evan Green <evgreen@chromium.org>
-Date:   Tue, 3 May 2022 14:56:58 -0700
-X-Gmail-Original-Message-ID: <CAE=gft623NxqetRssrZnaRmJLSP4BT5=-sVVwtYoHuspO_gULQ@mail.gmail.com>
-Message-ID: <CAE=gft623NxqetRssrZnaRmJLSP4BT5=-sVVwtYoHuspO_gULQ@mail.gmail.com>
-Subject: Re: [PATCH 04/30] firmware: google: Convert regular spinlock into
- trylock on panic path
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
-        pmladek@suse.com, kexec@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de,
-        Kees Cook <keescook@chromium.org>, luto@kernel.org,
-        mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org,
-        peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, Alan Stern <stern@rowland.harvard.edu>,
-        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
-        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        David Gow <davidgow@google.com>,
-        Julius Werner <jwerner@chromium.org>
+References: <20220429195350.85620-1-lyude@redhat.com> <CACO55ttsBxe6V88CTtGZgUj8k+gT+ne+FD_9FD_OxowF1XG5Bg@mail.gmail.com>
+In-Reply-To: <CACO55ttsBxe6V88CTtGZgUj8k+gT+ne+FD_9FD_OxowF1XG5Bg@mail.gmail.com>
+From:   Karol Herbst <kherbst@redhat.com>
+Date:   Wed, 4 May 2022 00:01:34 +0200
+Message-ID: <CACO55tv=u+HNKS9tH-ggy_O0YRiZQvAyb48gxRVqrz-fmWcvwA@mail.gmail.com>
+Subject: Re: [PATCH] drm/nouveau/subdev/bus: Ratelimit logging for fault errors
+To:     Lyude Paul <lyude@redhat.com>
+Cc:     nouveau <nouveau@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Guilherme,
+Actually, there is another place we have to put this, we can spam
+"SCHED_ERROR" things which are triggered within multiple
+drivers/gpu/drm/nouveau/nvkm/engine/fifo/ files.
 
-On Tue, May 3, 2022 at 12:12 PM Guilherme G. Piccoli
-<gpiccoli@igalia.com> wrote:
+On Tue, May 3, 2022 at 9:23 PM Karol Herbst <kherbst@redhat.com> wrote:
 >
-> On 03/05/2022 15:03, Evan Green wrote:
-> > [...]
-> > gsmi_shutdown_reason() is a common function called in other scenarios
-> > as well, like reboot and thermal trip, where it may still make sense
-> > to wait to acquire a spinlock. Maybe we should add a parameter to
-> > gsmi_shutdown_reason() so that you can get your change on panic, but
-> > we don't convert other callbacks into try-fail scenarios causing us to
-> > miss logs.
+> not able to hit any error on my machine, but regardless:
+>
+> Reviewed-by: Karol Herbst <kherbst@redhat.com>
+>
+> I suspect there are more places where we could put it, but we can add
+> those later.
+>
+> Anyway, I think it's valuable to push it through fixes, not sure how
+> far back we want to CC stable though.
+>
+> On Fri, Apr 29, 2022 at 9:54 PM Lyude Paul <lyude@redhat.com> wrote:
 > >
->
-> Hi Evan, thanks for your feedback, much appreciated!
-> What I've done in other cases like this was to have a helper checking
-> the spinlock in the panic notifier - if we can acquire that, go ahead
-> but if not, bail out. For a proper example of an implementation, check
-> patch 13 of the series:
-> https://lore.kernel.org/lkml/20220427224924.592546-14-gpiccoli@igalia.com/ .
->
-> Do you agree with that, or prefer really a parameter in
-> gsmi_shutdown_reason() ? I'll follow your choice =)
+> > There's plenty of ways to fudge the GPU when developing on nouveau by
+> > mistake, some of which can result in nouveau seriously spamming dmesg with
+> > fault errors. This can be somewhat annoying, as it can quickly overrun the
+> > message buffer (or your terminal emulator's buffer) and get rid of actually
+> > useful feedback from the driver. While working on my new atomic only MST
+> > branch, I ran into this issue a couple of times.
+> >
+> > So, let's fix this by adding nvkm_error_ratelimited(), and using it to
+> > ratelimit errors from faults. This should be fine for developers, since
+> > it's nearly always only the first few faults that we care about seeing.
+> > Plus, you can turn off rate limiting in the kernel if you really need to.
+> >
+> > Signed-off-by: Lyude Paul <lyude@redhat.com>
+> > ---
+> >  drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h |  2 ++
+> >  drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c    | 14 +++++++-------
+> >  drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c     |  6 +++---
+> >  drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c     |  6 +++---
+> >  4 files changed, 15 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h b/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h
+> > index 1665738948fb..96113c8bee8c 100644
+> > --- a/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h
+> > +++ b/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h
+> > @@ -62,4 +62,6 @@ void nvkm_subdev_intr(struct nvkm_subdev *);
+> >  #define nvkm_debug(s,f,a...) nvkm_printk((s), DEBUG,   info, f, ##a)
+> >  #define nvkm_trace(s,f,a...) nvkm_printk((s), TRACE,   info, f, ##a)
+> >  #define nvkm_spam(s,f,a...)  nvkm_printk((s),  SPAM,    dbg, f, ##a)
+> > +
+> > +#define nvkm_error_ratelimited(s,f,a...) nvkm_printk((s), ERROR, err_ratelimited, f, ##a)
+> >  #endif
+> > diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c
+> > index 53a6651ac225..80b5aaceeaad 100644
+> > --- a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c
+> > +++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c
+> > @@ -35,13 +35,13 @@ gf100_bus_intr(struct nvkm_bus *bus)
+> >                 u32 addr = nvkm_rd32(device, 0x009084);
+> >                 u32 data = nvkm_rd32(device, 0x009088);
+> >
+> > -               nvkm_error(subdev,
+> > -                          "MMIO %s of %08x FAULT at %06x [ %s%s%s]\n",
+> > -                          (addr & 0x00000002) ? "write" : "read", data,
+> > -                          (addr & 0x00fffffc),
+> > -                          (stat & 0x00000002) ? "!ENGINE " : "",
+> > -                          (stat & 0x00000004) ? "PRIVRING " : "",
+> > -                          (stat & 0x00000008) ? "TIMEOUT " : "");
+> > +               nvkm_error_ratelimited(subdev,
+> > +                                      "MMIO %s of %08x FAULT at %06x [ %s%s%s]\n",
+> > +                                      (addr & 0x00000002) ? "write" : "read", data,
+> > +                                      (addr & 0x00fffffc),
+> > +                                      (stat & 0x00000002) ? "!ENGINE " : "",
+> > +                                      (stat & 0x00000004) ? "PRIVRING " : "",
+> > +                                      (stat & 0x00000008) ? "TIMEOUT " : "");
+> >
+> >                 nvkm_wr32(device, 0x009084, 0x00000000);
+> >                 nvkm_wr32(device, 0x001100, (stat & 0x0000000e));
+> > diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c
+> > index ad8da523bb22..c75e463f3501 100644
+> > --- a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c
+> > +++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c
+> > @@ -45,9 +45,9 @@ nv31_bus_intr(struct nvkm_bus *bus)
+> >                 u32 addr = nvkm_rd32(device, 0x009084);
+> >                 u32 data = nvkm_rd32(device, 0x009088);
+> >
+> > -               nvkm_error(subdev, "MMIO %s of %08x FAULT at %06x\n",
+> > -                          (addr & 0x00000002) ? "write" : "read", data,
+> > -                          (addr & 0x00fffffc));
+> > +               nvkm_error_ratelimited(subdev, "MMIO %s of %08x FAULT at %06x\n",
+> > +                                      (addr & 0x00000002) ? "write" : "read", data,
+> > +                                      (addr & 0x00fffffc));
+> >
+> >                 stat &= ~0x00000008;
+> >                 nvkm_wr32(device, 0x001100, 0x00000008);
+> > diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c
+> > index 3a1e45adeedc..2055d0b100d3 100644
+> > --- a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c
+> > +++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c
+> > @@ -60,9 +60,9 @@ nv50_bus_intr(struct nvkm_bus *bus)
+> >                 u32 addr = nvkm_rd32(device, 0x009084);
+> >                 u32 data = nvkm_rd32(device, 0x009088);
+> >
+> > -               nvkm_error(subdev, "MMIO %s of %08x FAULT at %06x\n",
+> > -                          (addr & 0x00000002) ? "write" : "read", data,
+> > -                          (addr & 0x00fffffc));
+> > +               nvkm_error_ratelimited(subdev, "MMIO %s of %08x FAULT at %06x\n",
+> > +                                      (addr & 0x00000002) ? "write" : "read", data,
+> > +                                      (addr & 0x00fffffc));
+> >
+> >                 stat &= ~0x00000008;
+> >                 nvkm_wr32(device, 0x001100, 0x00000008);
+> > --
+> > 2.35.1
+> >
 
-I'm fine with either, thanks for the link. Mostly I want to make sure
-other paths to gsmi_shutdown_reason() aren't also converted to a try.
-
->
->
-> > Though thinking more about it, is this really a Good Change (TM)? The
-> > spinlock itself already disables interrupts, meaning the only case
-> > where this change makes a difference is if the panic happens from
-> > within the function that grabbed the spinlock (in which case the
-> > callback is also likely to panic), or in an NMI that panics within
-> > that window. The downside of this change is that if one core was
-> > politely working through an event with the lock held, and another core
-> > panics, we now might lose the panic log, even though it probably would
-> > have gone through fine assuming the other core has a chance to
-> > continue.
->
-> My feeling is that this is a good change, indeed - a lot of places are
-> getting changed like this, in this series.
->
-> Reasoning: the problem with your example is that, by default, secondary
-> CPUs are disabled in the panic path, through an IPI mechanism. IPIs take
-> precedence and interrupt the work in these CPUs, effectively
-> interrupting the "polite work" with the lock held heh
-
-The IPI can only interrupt a CPU with irqs disabled if the IPI is an
-NMI. I haven't looked before to see if we use NMI IPIs to corral the
-other CPUs on panic. On x86, I grepped my way down to
-native_stop_other_cpus(), which looks like it does a normal IPI, waits
-1 second, then does an NMI IPI. So, if a secondary CPU has the lock
-held, on x86 it has roughly 1s to finish what it's doing and re-enable
-interrupts before smp_send_stop() brings the NMI hammer down. I think
-this should be more than enough time for the secondary CPU to get out
-and release the lock.
-
-So then it makes sense to me that you're fixing cases where we
-panicked with the lock held, or hung with the lock held. Given the 1
-second grace period x86 gives us, I'm on board, as that helps mitigate
-the risk that we bailed out early with the try and should have spun a
-bit longer instead. Thanks.
-
--Evan
-
->
-> Then, such CPU is put to sleep and we finally reach the panic notifier
-> hereby discussed, in the main CPU. If the other CPU was shut-off *with
-> the lock held*, it's never finishing such work, so the lock is never to
-> be released. Conclusion: the spinlock can't be acquired, hence we broke
-> the machine (which is already broken, given it's panic) in the path of
-> this notifier.
-> This should be really rare, but..possible. So I think we should protect
-> against this scenario.
->
-> We can grab others' feedback if you prefer, and of course you have the
-> rights to refuse this change in the gsmi code, but from my
-> point-of-view, I don't see any advantage in just assume the risk,
-> specially since the change is very very simple.
->
-> Cheers,
->
->
-> Guilherme
