@@ -2,145 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 555D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 01:09:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D8DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 01:09:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229823AbiECBMu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 21:12:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
+        id S229800AbiECBNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 21:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbiECBMq (ORCPT
+        with ESMTP id S229831AbiECBNE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 21:12:46 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A4837A10
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 18:09:09 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id z19so18328838edx.9
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 18:09:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+GS/UD7rTSn/SrbnLBVwvNdcnYAN1i32IbtuzZWmvMs=;
-        b=GjPF8T0LFSfzHmDfzTyaQdTHc7/c7Au3dfdO9t7Jo7HNtVLIYTlK7boOyvbs8TaHWd
-         u9Fc4NyJgxlRHYIObzxW3VHsk8uI5SiIRPIDVCqgNVN2nW1uFL7RyBgX5amGCEBX1Dqa
-         wMPbnPQOsxEp8F4lvG7gMmlYdyq2+7Bca8HEw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+GS/UD7rTSn/SrbnLBVwvNdcnYAN1i32IbtuzZWmvMs=;
-        b=ItyWNTTUeC9SfAYUIz8xpqLx+JrKZnWK8Gm7sTDb3mdLlHCgI9ftV6MzNK1qy2Hl9u
-         9Uv1xajYhJlEl/4KpLepoKhY0O45087PzPU5oeeaTA27+LmGCoQtHbkshncHNdM9TAnc
-         R4tgTFqO7AmAky/CtUqJeRNu7JgFlYncMrDzawiChNp6VWnJirWN0n0KuxlDLv20Q6e1
-         n0DF7OYnlyyFXVz/Nm3Qq2Et96+zQsh6iUqEJuucsMw1NnX9A+aWt0p7ZlSsdfqMPd/R
-         l77cSrHW9Va4KQ7Be+c+xC5PrZK00BSI2RCrqBOYPANuu/JqUEJZI+npoalP9FrW1272
-         ofEA==
-X-Gm-Message-State: AOAM5325Q6BR4E1D2/SJCv1jwDmMkDkzswlWMkAa3l0JbsbhgFwWMDSz
-        d2RPq86Lv8BD6bmPIEQmD5JnKdTFYwJK9QLE
-X-Google-Smtp-Source: ABdhPJzje6pl6sHl6BxXgXaNJDOmmqzEylTCuBFzUtNLNh22zeQrZBfP57w28f4Pw+kC0zBCLGdsTw==
-X-Received: by 2002:a05:6402:4384:b0:427:b5c0:4bf with SMTP id o4-20020a056402438400b00427b5c004bfmr11072939edc.127.1651540012503;
-        Mon, 02 May 2022 18:06:52 -0700 (PDT)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
-        by smtp.gmail.com with ESMTPSA id em20-20020a170907289400b006f3ef214e05sm4087995ejc.107.2022.05.02.18.06.51
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 May 2022 18:06:51 -0700 (PDT)
-Received: by mail-wr1-f47.google.com with SMTP id i5so21456484wrc.13
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 18:06:51 -0700 (PDT)
-X-Received: by 2002:a5d:6d09:0:b0:20c:53a9:cc30 with SMTP id
- e9-20020a5d6d09000000b0020c53a9cc30mr10094457wrq.513.1651540011049; Mon, 02
- May 2022 18:06:51 -0700 (PDT)
+        Mon, 2 May 2022 21:13:04 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43FD759976
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 18:09:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651540164; x=1683076164;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xcX7ZSUlfJN5lM63F+DM0r69oVAMDHJEKRwiRlW4Bp8=;
+  b=mAz0Eg0JK6kPg5FnqUXIcnvCK6Q71FflojB1XM0u5CPaqgVHbovSL7oG
+   cGImK5csttMbBSszOycgeCvQyYQ4l54mA3qzToCVW2UEV03Jp7jakO0K8
+   LdhkxTX/R1YlOYaU2Gx3XrIi/Gl2M8UjB6IXPb2Rk0QFLv0kbPpsqRX4z
+   XBMvltifxg0laXIWq9ujXnWs7pThuJA5uzJcFvktb0mFssTGfwDeZIQxa
+   waq2KU0rbjL3NEVzha65gZ+Sb2a7qW2tKQeh1Oaviieh7CMbw52R1mnBl
+   ad1JNlZuPwpu6jHUSoKDfgqFe1WWVMmOThXdVbXtj8/MxTd2ZbUWbgxy5
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="267246251"
+X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
+   d="scan'208";a="267246251"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 18:06:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
+   d="scan'208";a="546827160"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 02 May 2022 18:06:09 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nlgzQ-000A1r-JU;
+        Tue, 03 May 2022 01:06:08 +0000
+Date:   Tue, 3 May 2022 09:05:34 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH v2 3/3] drm: Allow simpledrm to setup its emulated FB as
+ firmware provided
+Message-ID: <202205030810.VwAEOAqj-lkp@intel.com>
+References: <20220502153900.408522-4-javierm@redhat.com>
 MIME-Version: 1.0
-References: <20220429233112.2851665-1-swboyd@chromium.org> <20220429233112.2851665-3-swboyd@chromium.org>
- <CAD=FV=WAbfe9BC5QPDezz3FSEwHRFdQeZpARJYT4b9V1rNp_nA@mail.gmail.com> <CAE-0n53x77n2ACuMYsFrdGhSkmO_4f8Uocnb+vKhcgoiY4RPQg@mail.gmail.com>
-In-Reply-To: <CAE-0n53x77n2ACuMYsFrdGhSkmO_4f8Uocnb+vKhcgoiY4RPQg@mail.gmail.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 2 May 2022 18:06:39 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=W5SeUNAiQi_h8LyUn+7EQG1Sf9N6Nq9HtVnQWqr0Ltsw@mail.gmail.com>
-Message-ID: <CAD=FV=W5SeUNAiQi_h8LyUn+7EQG1Sf9N6Nq9HtVnQWqr0Ltsw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] Input: cros-ec-keyb - skip keyboard registration
- for switches compatible
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
-        chrome-platform@lists.linux.dev,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        "Joseph S. Barrera III" <joebar@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220502153900.408522-4-javierm@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi Javier,
 
-On Mon, May 2, 2022 at 3:02 PM Stephen Boyd <swboyd@chromium.org> wrote:
->
-> Quoting Doug Anderson (2022-05-02 10:02:54)
-> > On Fri, Apr 29, 2022 at 4:31 PM Stephen Boyd <swboyd@chromium.org> wrote:
-> > >
-> > >
-> > > diff --git a/drivers/input/keyboard/cros_ec_keyb.c b/drivers/input/keyboard/cros_ec_keyb.c
-> > > index eef909e52e23..1bbe2987bf52 100644
-> > > --- a/drivers/input/keyboard/cros_ec_keyb.c
-> > > +++ b/drivers/input/keyboard/cros_ec_keyb.c
-> > > @@ -536,6 +536,12 @@ static int cros_ec_keyb_register_matrix(struct cros_ec_keyb *ckdev)
-> > >         u32 *physmap;
-> > >         u32 key_pos;
-> > >         unsigned int row, col, scancode, n_physmap;
-> > > +       bool register_keyboard;
-> > > +
-> > > +       /* Skip matrix registration if no keyboard */
-> > > +       register_keyboard = device_get_match_data(dev);
-> > > +       if (!register_keyboard)
-> > > +               return 0;
-> > >
-> > >         /*
-> > >          * No rows and columns? There isn't a matrix but maybe there are
-> >
-> > As per my comments in patch #1, I wonder if it makes sense to delete
-> > the "No rows and columns?" logic and settle on the compatible as the
-> > one true way to specify this.
-> >
->
-> Ok. My only concern is that means we have to check for both compatibles
-> which is not really how DT compatible strings work. The compatible
-> string usually finds the more specific compatible that is first in the
-> list of compatibles in DT. You're essentially proposing that the
-> switches compatible could be first or last, the order doesn't matter.
+I love your patch! Yet something to improve:
 
-It's not quite what I was proposing. I think my summary really sums it up:
+[auto build test ERROR on drm/drm-next]
+[also build test ERROR on shawnguo/for-next linus/master linux/master v5.18-rc5 next-20220502]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-1. If you have a matrix keyboard and maybe also some buttons/switches
-then use the compatible: google,cros-ec-keyb
+url:    https://github.com/intel-lab-lkp/linux/commits/Javier-Martinez-Canillas/drm-Allow-simpledrm-to-setup-its-emulated-FB-as-firmware-provided/20220502-234145
+base:   git://anongit.freedesktop.org/drm/drm drm-next
+config: x86_64-randconfig-a011 (https://download.01.org/0day-ci/archive/20220503/202205030810.VwAEOAqj-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/28ef46724e385165777a21d9f661188fa2577a1e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Javier-Martinez-Canillas/drm-Allow-simpledrm-to-setup-its-emulated-FB-as-firmware-provided/20220502-234145
+        git checkout 28ef46724e385165777a21d9f661188fa2577a1e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-2. If you only have buttons/switches but you want to be compatible
-with the old driver in Linux that looked for the compatible
-"google,cros-ec-keyb" and required the matrix properties, use the
-compatible: "google,cros-ec-keyb-switches", "google,cros-ec-keyb"
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-3. If you have only buttons/switches and don't need compatibility with
-old Linux drivers, use the compatible: "google,cros-ec-keyb-switches"
+All errors (new ones prefixed by >>):
 
-...but just to say it another way:
+   drivers/gpu/drm/tiny/simpledrm.c: In function 'simpledrm_probe':
+>> drivers/gpu/drm/tiny/simpledrm.c:904:38: error: implicit declaration of function 'DRM_FB_SET_OPTION'; did you mean 'DRM_FB_GET_OPTION'? [-Werror=implicit-function-declaration]
+     904 |         drm_fbdev_generic_setup(dev, DRM_FB_SET_OPTION(DRM_FB_FW, 1));
+         |                                      ^~~~~~~~~~~~~~~~~
+         |                                      DRM_FB_GET_OPTION
+>> drivers/gpu/drm/tiny/simpledrm.c:904:56: error: 'DRM_FB_FW' undeclared (first use in this function)
+     904 |         drm_fbdev_generic_setup(dev, DRM_FB_SET_OPTION(DRM_FB_FW, 1));
+         |                                                        ^~~~~~~~~
+   drivers/gpu/drm/tiny/simpledrm.c:904:56: note: each undeclared identifier is reported only once for each function it appears in
+   cc1: some warnings being treated as errors
 
-* If you have the compatible "google,cros-ec-keyb-switches" I mean to
-say that you _only_ have switches and buttons. You'd _never_ have this
-compatible string if you truly have a matrix keyboard. If you have
-this, it will always be first.
 
-* If you only have switches and buttons but you care about backward
-compatibility then you can add a fallback compatible second:
-"google,cros-ec-keyb"
+vim +904 drivers/gpu/drm/tiny/simpledrm.c
 
-* In order for the fallback compatible to be at all useful as a
-fallback (it's only useful at all if you're on an old driver), if you
-specify it you should pretend that you have matrix properties even
-though you don't really have them, just like we used to do.
+   884	
+   885	/*
+   886	 * Platform driver
+   887	 */
+   888	
+   889	static int simpledrm_probe(struct platform_device *pdev)
+   890	{
+   891		struct simpledrm_device *sdev;
+   892		struct drm_device *dev;
+   893		int ret;
+   894	
+   895		sdev = simpledrm_device_create(&simpledrm_driver, pdev);
+   896		if (IS_ERR(sdev))
+   897			return PTR_ERR(sdev);
+   898		dev = &sdev->dev;
+   899	
+   900		ret = drm_dev_register(dev, 0);
+   901		if (ret)
+   902			return ret;
+   903	
+ > 904		drm_fbdev_generic_setup(dev, DRM_FB_SET_OPTION(DRM_FB_FW, 1));
+   905	
+   906		return 0;
+   907	}
+   908	
 
--Doug
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
