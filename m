@@ -2,100 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C355C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:08:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE00C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:09:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235891AbiECNM0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 09:12:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60688 "EHLO
+        id S235883AbiECNMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 09:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235892AbiECNMY (ORCPT
+        with ESMTP id S231795AbiECNMb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 09:12:24 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B102B276
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 06:08:51 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 243D8XS7064528;
-        Tue, 3 May 2022 08:08:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651583313;
-        bh=KTPCr/0aiBOeqkppu9KyymNBBNEpv17gShG+xUaiRNU=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=otb/DmnBbR7pP2ghUSV9TIEYrhys1NlRt96lnLzzwtIPQDDnl8Il4Hr1JtQVgBDUf
-         SljJ0n2vE3+lzUn9bKgF8JAugyO9EYmeFCx3WU7FHaqgVO6OSySfgdxIw+G+LMHFv7
-         ykQ6XlG0+GoniUze/uZwtMzrmFghmPTdQAUIKe0Y=
-Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 243D8XoN081952
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 3 May 2022 08:08:33 -0500
-Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 3
- May 2022 08:08:33 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 3 May 2022 08:08:33 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 243D8XRP048583;
-        Tue, 3 May 2022 08:08:33 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Haowen Bai <baihaowen@meizu.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>
-CC:     Nishanth Menon <nm@ti.com>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] soc: ti: use IS_ERR insead of IS_ERR_OR_NULL when checking knav_queue_open() result
-Date:   Tue, 3 May 2022 08:08:30 -0500
-Message-ID: <165158329738.6333.14689284990960224931.b4-ty@ti.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <1650765944-20170-1-git-send-email-baihaowen@meizu.com>
-References: <1650765944-20170-1-git-send-email-baihaowen@meizu.com>
+        Tue, 3 May 2022 09:12:31 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997572B259;
+        Tue,  3 May 2022 06:08:58 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id l203so18152427oif.0;
+        Tue, 03 May 2022 06:08:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=K5L1V6+k4xNcdQ9TAb0X4k6sNdC8CWPzZSB0oyYsbZg=;
+        b=VxBcwfGjnWLmTnRRGCQVsFW+v6sIC0+PMx7SQFV1jM1u0pMSgV+6CHwmAHEUFXHVG3
+         PShRVdf1M/kmFdfDOr0X/624JOb1v3Mfv5dHMs9AGRT2QdoDbcSD7MkB84RqN7W+6L2k
+         gz7p+rbz4m2xDD3xZAwg4L5gsyKcDurnNW9aYAWmyAt8fmPKfgsVzj0FaHdR6rdR7tgj
+         vCFXo5uW+uO1fmmG0S4zfjbTwJyTAHwuVyO8EWiYt78fzgL5iuGaf0t+AesS6iD6ToIA
+         wsP97oP0ruakFE2zvanrTGqU99HibW0mD1x1aqky0pntWaWFceCybjvlELsom47tDX2h
+         nYPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=K5L1V6+k4xNcdQ9TAb0X4k6sNdC8CWPzZSB0oyYsbZg=;
+        b=3Lm5lL4FuMlYeHDq0W0+9shxMLbP9MdPaBFHiS84DA5qUfLWZ3fZwT55TCwQHeCPDJ
+         z1AKBstehPESIALQjxutYalD2ZRkqNK0qzSxGupimAsZINwCSjZ0wHksq8XPvO6pYwLU
+         Q7lpotE+VX9wxlov2v27s5oxGpfrGyqVKnx1IJxFkK2X2CUk5SOz3wnukHRjGSLN23Jn
+         ZppV/txcDVXyyq9CFW+WxonnCGxGeP1q9qzIXjl9qSnZ38zat5KsEakXTQEaf1SpXAkQ
+         lwV1hkCKJf1t32ZZVqWatihVrZwM+79ME2PstWR3Ib+Zq3FhF1Th5Thm9m1PPSWJJuJq
+         CHeg==
+X-Gm-Message-State: AOAM5310IlTz3Uch/kYa8DK5eKDCbvBahGpzZ9LFHpYvra28ZtKoJvqm
+        Y4lv0OrVltM7VqYULoK9Y3HhsGw1o6L9DQ==
+X-Google-Smtp-Source: ABdhPJyp4O3dFqFSB3wJfnt9ZnNY0j8O8wDrc7ss7C9zsdoMjcdQSpfRu/V/1y4v0QTfOvoT1v/VoA==
+X-Received: by 2002:a05:6808:1526:b0:323:1194:d3bf with SMTP id u38-20020a056808152600b003231194d3bfmr1716642oiw.120.1651583337923;
+        Tue, 03 May 2022 06:08:57 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id v15-20020a4ae6cf000000b0035eb4e5a6cdsm4841560oot.35.2022.05.03.06.08.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 06:08:56 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <997daccd-94e0-fa8a-83de-a97f53314989@roeck-us.net>
+Date:   Tue, 3 May 2022 06:08:54 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: linux-next: build warning after merge of the hwmon-staging tree
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220503172259.294a15a1@canb.auug.org.au>
+ <02ca2b24427d1ad4a8cb84cbf131c64e@walle.cc>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <02ca2b24427d1ad4a8cb84cbf131c64e@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Haowen Bai,
-
-On Sun, 24 Apr 2022 10:05:43 +0800, Haowen Bai wrote:
-> As the usage of knav_queue_open():
+On 5/3/22 00:34, Michael Walle wrote:
+> Hi,
 > 
-> * Returns a handle to the open hardware queue if successful. Use IS_ERR()
-> * to check the returned value for error codes.
+> Am 2022-05-03 09:22, schrieb Stephen Rothwell:
+>> After merging the hwmon-staging tree, today's linux-next build (htmldocs)
+>> produced this warning:
+>>
+>> Documentation/hwmon/lan966x.rst: WARNING: document isn't included in any toctree
+>>
+>> Introduced by commit
+>>
+>>   14ed2cdb02e0 ("hwmon: add driver for the Microchip LAN966x SoC")
 > 
-> It will only return error codes, not null.
+> Ouch. Guenter, should I send a fix on top or will you fix it in
+> your tree?
 > 
-> [...]
 
-I have applied the following to branch ti-drivers-soc-next on [1].
-Thank you!
+I'll fix it up.
 
-[1/1] soc: ti: use IS_ERR insead of IS_ERR_OR_NULL when checking knav_queue_open() result
-      commit: d4c41d32cf8af10e4c0a35a6d4995de253b54df6
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent up the chain during
-the next merge window (or sooner if it is a relevant bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-[1] git://git.kernel.org/pub/scm/linux/kernel/git/ti/linux.git
--- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+Guenter
 
