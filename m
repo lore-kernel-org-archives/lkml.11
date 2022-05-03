@@ -2,371 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6739C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:23:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2754C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238373AbiECP0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59610 "EHLO
+        id S238379AbiECP1C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:27:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238362AbiECP0i (ORCPT
+        with ESMTP id S238362AbiECP07 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:26:38 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D4FD14039
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:23:05 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id q8so18081405oif.13
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 08:23:05 -0700 (PDT)
+        Tue, 3 May 2022 11:26:59 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80049.outbound.protection.outlook.com [40.107.8.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5F5140DD;
+        Tue,  3 May 2022 08:23:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EXXmu72Yuaikn7skLoR4VBCOVdcUL9RohNuiprNpGLiS5JluItQyvxvRnm9y+Hgr9j+2S0h5fz5hWiudzSxQ+0Z/SpF+yGLrbzCZ9tC2+KHxhw716jifMtjKo1RTxC26v8FGlXKKBmTFxlp2IVSiIqFpIJcbwvLrzJhNeJkbNQzpH6dlaBVOmczBeUdu8vuhJZRJpqlhD+nsPrCaXlarqLeWnOt54Z9RZCbepKko5BrP4PtLkBl1z6y4wpIOwNRMgFJlSfm7Nt0d3ig7cmopCAi6Oi1ItxOhgPE7ZpnfItX7psYJdIt79QOQZxbE3+choB0yPLJan6xjs0G7M+WXKA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HUguABPNYAJI/VdVJbafwtKJ4TL4HC5mvaQ4UMGlEOw=;
+ b=ZeGp67aSVQC7lG9gbBcmhAPbOwX59o4Zk53KpfdG69xnghzHvdkLBDcSfzpMvCmqieeBJ/uny1MhIFZ/etU5dz+ar3B9FSTRXgsCbhWQdoHMQL+78aoet/AlOA3L3N1HDyGf+MaC7ecc+LtSOMhS5cOoq+feMRlrzoNYBVnrotgLXGPyycbeXng7gwifMNpm8mcD06S+SBetLzHmXcOl9Hd2VXx9cBTeXgKGtOdTbPrqvKQLCSqfYMFakVGtQfcRxstymG99+wGESkkcGe6HtY+xmTSL5HfhWja1lXbGm2mN5upeyWUU6Clk4erRfBoqc7e3OnI/Z4UY3fsaEvt0Hw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=theobroma-systems.com; dmarc=pass action=none
+ header.from=theobroma-systems.com; dkim=pass header.d=theobroma-systems.com;
+ arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4P5u4OI435MR6q9gonw3hHdJ5OVddGQ9PjO+Qc38Sqg=;
-        b=oh5WuUGpmKwqn+E873tD5aaCBYM9lw2MPw1kPZKC2KZQHVOUY66AXNNNSmwK5ea4Pp
-         94btZNhWmdkTvAVSoI9oVaCyqvn1aRNL9stI4xRkc8rTQt0dTfv3hmNMhvHMQrfXf7dV
-         AL/gVdsphj+WY84o9r+I2UglHHSWfFcGXtF/Q/Muz8ZYQ/Aqri2a0sAjar/BtnDsKqiz
-         zwR/axThmpZgTfrHXPocOKrACAbeZPRSuiXLNt5RM9MUISqPmI2XmGa9IfPvRnSOG6Ts
-         ejKat0QjL6b8Hpa3VdJZrGK4TNhv2sCnApo/sZtWXOTFiKHpltuDrs/rx2XPQ1/lD/u2
-         yFiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4P5u4OI435MR6q9gonw3hHdJ5OVddGQ9PjO+Qc38Sqg=;
-        b=VuNXCYXF3ni/dzrPj0l4xqYEEkY29XVPiGWpcGXmUxbygI0OkRSCFNTwBcWWmVSCYf
-         4Y1aDCDexusKnqhKZSCFZBBh3k2Tsie+qoi1QK1WKjcGXQsCw6LpD0wbbSMo3kUmkOiz
-         t2l8wshMViRp5z3QmpckV0HzcjujcqCSLMCTv0xmaOY1sM8cxlthBDxXIqrmfGQrz9tc
-         6Tfg7Pmgy+T9C66IxDyX9v4qNhcSvAyA6bSdV2JJ4Cfxm8GTDrpk0ATbZdFtvBc7Z43x
-         sViuAMAJl9gT6gdMfV3RglfP+NWppMpti/I0hsvAzf2wUdFtzBDnEoxy8J1LT2XjK2+W
-         dgpg==
-X-Gm-Message-State: AOAM533rZz77mwPj126o2t5lyMyGbQDfwNjQbaX0cSs1bABz+MSsUhvs
-        FMZls99sqP5tssRQA3XISGl+Kg==
-X-Google-Smtp-Source: ABdhPJyend/3+6xY469d/PjqFIHV3pliLy+ub0ALUoV+NiRLHJ1lem9ABT/kcCmd1y3mBdXMtBfxBQ==
-X-Received: by 2002:a05:6808:7d1:b0:325:9728:7a2b with SMTP id f17-20020a05680807d100b0032597287a2bmr2049729oij.76.1651591384014;
-        Tue, 03 May 2022 08:23:04 -0700 (PDT)
-Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id w7-20020a9d5387000000b005b22a0d826csm3985356otg.1.2022.05.03.08.23.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 08:23:03 -0700 (PDT)
-Date:   Tue, 3 May 2022 08:24:50 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Taniya Das <quic_tdas@quicinc.com>
-Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] clk: qcom: rcg2: Cache CFG register updates for
- parked RCGs
-Message-ID: <YnFJQiRkbn3C6KP1@ripper>
-References: <20220426212136.1543984-1-bjorn.andersson@linaro.org>
+ d=cherrycloud.onmicrosoft.com; s=selector2-cherrycloud-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HUguABPNYAJI/VdVJbafwtKJ4TL4HC5mvaQ4UMGlEOw=;
+ b=Kl7RepRmaGxqHVUJEmARK7ol2EVn+uBq7o1OYs8G5SRIF70n4xwOe6dffu4YTLSWjJwyQGUFnQmJodUHylejy/MMoS05v/1Zs3KxRNggCfa9y55y6oTFvyaSKiT2PUPUvfWGlbQ70LblMC2UACOkZ0xIm3ltJijCLS5EIJ0GPK4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=theobroma-systems.com;
+Received: from PA4PR04MB9367.eurprd04.prod.outlook.com (2603:10a6:102:2aa::7)
+ by AM6PR04MB4006.eurprd04.prod.outlook.com (2603:10a6:209:3f::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Tue, 3 May
+ 2022 15:23:23 +0000
+Received: from PA4PR04MB9367.eurprd04.prod.outlook.com
+ ([fe80::28d3:b4fa:2319:83fb]) by PA4PR04MB9367.eurprd04.prod.outlook.com
+ ([fe80::28d3:b4fa:2319:83fb%5]) with mapi id 15.20.5206.024; Tue, 3 May 2022
+ 15:23:23 +0000
+Message-ID: <7091bd70-d7d1-8e88-d0d9-22ec944ff9df@theobroma-systems.com>
+Date:   Tue, 3 May 2022 17:23:21 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 1/3] drm/panel: ltk050h3146w: add
+ mipi_dsi_device.mode_flags to of_match_data
+Content-Language: en-US
+Cc:     thierry.reding@gmail.com, sam@ravnborg.org, airlied@linux.ie,
+        daniel@ffwll.ch, robh+dt@kernel.org,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Quentin Schulz <foss+kernel@0leil.net>
+References: <20220131164723.714836-1-quentin.schulz@theobroma-systems.com>
+From:   Quentin Schulz <quentin.schulz@theobroma-systems.com>
+In-Reply-To: <20220131164723.714836-1-quentin.schulz@theobroma-systems.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AS9PR06CA0137.eurprd06.prod.outlook.com
+ (2603:10a6:20b:467::29) To PA4PR04MB9367.eurprd04.prod.outlook.com
+ (2603:10a6:102:2aa::7)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220426212136.1543984-1-bjorn.andersson@linaro.org>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 755a7280-1f5f-4287-3aaf-08da2d18dcce
+X-MS-TrafficTypeDiagnostic: AM6PR04MB4006:EE_
+X-Microsoft-Antispam-PRVS: <AM6PR04MB400669D872C79854995943D4C2C09@AM6PR04MB4006.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5xUl/N/cocd0sS7Wqy43JXdJ0zO12hfHcCRZHFe4vJzGkcSuf4gI9B0TvfgJI7VTMIc1XzlKUWg5yy3icnAKe0m5tzVh5+dpNUyJULbFFQtLv/eGn5yiNeAWglIT6Jg+nzsh6e4/FYOsbyQcJAEh2E3MTmug74FivQtbQqGO49CFakPrLZwTXGPgv1Of6bo1inTE68jK8reTF25NNEU7MN+naolvRsSC58ST1uJvvCeBPX0jqFZxsEpyrT5I0/d13pP7wcA17VEzYjsTzHxV2ddX9mxGunZ70tj+j4afk8c7blq/KKJdT3DWERCMi0jBpXkEfMHIKE4+edCftiyIRgpelcAZSIUDmrIbaqNWuTpTFjNe6sdERVUIBvgkwXsGNGjM18ZKbqZ1nICRlxrmLVYHbyMD10hO6AnK5uNyUM7I23tGzqf8HK+ExqERoQaUn88+sAhhafVkL+iRXSq8Axy6d3HlbtDxZeRAXqNO+qdDMcc0BfENibB+YtohhV2g73M44ZnyJZa0h9y/xjAHuPxBR7f0DaFrjKS6j4KT0y5sXhiuEmMCbBayEi5wC8PqpqHFhefuy5+QP//Vj4Ul5YTWgC0rAqjsBSiehMUkaM4yg+HCKtU0CGePQrOBksdkyFreEDH1pddrEcFaw2TW5PrDmbf/QPWi9DZnu/+1QeVqzIwbxkIWHR2sMdFU7HJpL8YYdRRkbnaMu8jNNpHnzL/b6ufgC3unk3KSaTHxk44=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR04MB9367.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(186003)(316002)(6486002)(2906002)(86362001)(53546011)(6506007)(44832011)(508600001)(6512007)(26005)(38100700002)(109986005)(8676002)(8936002)(4326008)(2616005)(66556008)(66946007)(66476007)(83380400001)(31686004)(31696002)(5660300002)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RnlBYVhTQndVSnplSDBEOWJwT3dtVGI4Mm9nQlhHWjNhbDRSNzFKT2JXMGpv?=
+ =?utf-8?B?WkRtRmN0ekRMV0FYZGpjcUIrQTNIMVk5c2JGNXhtV3Znamk3OGJLelpOTUF1?=
+ =?utf-8?B?cUQ2WkN6enMrYjBOU1d5TktlU2dNS1Ftamg3MmtkNXRjbmRDRk1sSEFGanh6?=
+ =?utf-8?B?eHNiOFZFdWRTUHJoV0JXbzFtb3JyWTJKMVluRDZoc0ZqVldkNGZrNmhvclVm?=
+ =?utf-8?B?TDNKYkRFTDJRSm1nSzJTdTRERjdvRzMyTTc3dXBCWWZybXQrL3FZcGw1KzNR?=
+ =?utf-8?B?eDFqVnRubGc1U2J1amJlRzB2NWkrcTR5Wmgrdysxa25EQ0lBRlFIYmxXMHNE?=
+ =?utf-8?B?cTlBWmtocTVpY0RyKzdwZkhjOFd3MVA0RFJlSlZJaDluamNLTlB4TWVwbUxk?=
+ =?utf-8?B?OWhmb0hjU1ZsY3FkeW8vOHBHVU40cjhpSnc3QmgveXhROXlHcUJUWnVBYTlr?=
+ =?utf-8?B?UHNVbHBaTXVrWUpJUFh0ZFlacjdLL3FaYXlHOW1IZCtkbnE4cllIM3d2WjVv?=
+ =?utf-8?B?WXN2UG9XaHAwOE9SUHJSN1I1RDB6RWV2VmtPM1ZlaFlmaHdQQVVoaEY3aUp0?=
+ =?utf-8?B?cjBvVlhKd1FmV3VRSDFkL0I4Z08ybnNJWUFOTUk1bkZIZWNIeXFSa0NncE1l?=
+ =?utf-8?B?azJjOW9ZMkxPMTdETXc0MnJKV3lTYXRKVytrNEVsMG5VN2pFdE56eDNmZVVt?=
+ =?utf-8?B?T3B6UksxOTYrYUR3MXhBTGpRL3NNYjJ6SEE1YjloOW1rdFpPRXZHMGhPb1JX?=
+ =?utf-8?B?N29IUFNzWGhnTUpKYnMyT21FRVlIbGwvUzFqVTJFbUV5bDNwOVFkdjBPZFBr?=
+ =?utf-8?B?U3BSdXRpM2JnSUVzVUUyQzV4VjhRQXM0SmZqSThvOWhFWWkvK2NXVUdxK1JJ?=
+ =?utf-8?B?amRRU1BmcFVqMDRsZTlJUERjZXgzMkNteGpvMytjcHlhYUU2Z0ZITThqN1J0?=
+ =?utf-8?B?Zkpma0ZlTGl5QjZqanJxR01ReHJvVk51WDhqZUIva3M3eVl0VDBSSTRVSE05?=
+ =?utf-8?B?Q1BRZndkcnR6OVhST0lUT2xyZ01ON2ZOZG1GRVo3eU9OKzY3bHBwM2w4QVFS?=
+ =?utf-8?B?VWlqVHlBU09nb01vT3JyTFUzcG90L1k0Tk92dW1DRnpQTFRhSzFQcGJwWW9z?=
+ =?utf-8?B?ZjB6SkM2UFVjU1hSNnFVa0I1SDU3d1A3ZGVKNXhsUEJqdTVlbGI0OHFmTVZX?=
+ =?utf-8?B?YzZSTUl4M2tBVWo2bnBHQUpSSmZxZ01pTm1UQ1RmeFhiaC9MSW01UXVSUzFk?=
+ =?utf-8?B?Wkl6Q3J3dnluMzh5Y0FGaFlKa3NhTjBkMUY4bHA1bUFzYW90VzRMaTV3a0VC?=
+ =?utf-8?B?M0QwVElNTDRFM1p1YW9KUjc3NWhYM3ZIWXE0MGRtVHFZU0NNTDVKMWsrbmVB?=
+ =?utf-8?B?Z1U3bnpjZldGTkM2RnRBZndmcVppMUpKNmhpa21UelIvS3NKb0o2VzdDM3RZ?=
+ =?utf-8?B?RkdyWFp1Z1ZNRE9yYmNJNUlzeEhWUjU5K3c1OHlZT3ozOGgwQUJZSFRzNGFn?=
+ =?utf-8?B?TEUwdVgzd1pjV1E1MDRtWS9RQy9XcVhhRVF5Z2loVG1YbmhwcndXNXI4QS9S?=
+ =?utf-8?B?U2RmQ0tBMFlPNm9LREtBczMrL1A4QmwycEw2M0dxZ0dkSmZlTUh4Yi9objhP?=
+ =?utf-8?B?SUlKMG9Ebk9NRVpRMXpTcDZHd2FvQnlabDRzRG8wcDVwSFk4eU1pVkV1OUxs?=
+ =?utf-8?B?QUlxTWxjS1NEZ3ZZRGhnQlcwbUplZHMra0RsNDg1TEdMTTlOeks3TzZnaFdV?=
+ =?utf-8?B?dWNjVWpNb3pFdFNPcDg1L0EvVWZJUzlFSi9TV3dyMnVGbUxoUkI4aVZqOTA5?=
+ =?utf-8?B?YW9MbW5ETWROWWJWQnBtZFozZWZhZDBqM2REN1RieXNqcmhmd2UyaU9Pbmho?=
+ =?utf-8?B?MzNKbnc1TEVqVFo3VXJTbVdXTjBJdnRyMytUZW9tS1ZnMHREQnJ6c3gvUnpX?=
+ =?utf-8?B?WXFhTThMeisvdDQzVTA3aVZ1THNSSTBpYUhPZUE1aEppWHo3TmY5bG1FSmdi?=
+ =?utf-8?B?ZGx0ZEwvOGVoRW1GbkFKV0NmOTBGWGVNTUJyWEMwRmJFWFVDaE1Cdk9VWXAv?=
+ =?utf-8?B?R1hHT1g4eFlhOWJDdkpyMXdhNmIrdnZuOE05YjRWeXVBYjBxRksyVHExaHBM?=
+ =?utf-8?B?WXJmTjRQaUxjTm5DZW0rYnBDbmRnOVZDWnNQd3pDUHYyUDZLMHdLL0FoaG9C?=
+ =?utf-8?B?WGhwRnk1V1NUbnJaQ0FXQStLaFpnTzNtVzZreUxOSVFrY0xZZzAzczd5ZUR0?=
+ =?utf-8?B?dU43ZUZrUy9yMmFMaVNrWUQrdGQ1ZDhvNTdKZnd6YlZRTThUbXJXaFRJTGNS?=
+ =?utf-8?B?dGhTT2xzNWRzcEN3WE50aWE2Q1BTT084RGx4a1ZlU01pU08xMDNQblBNS1Jw?=
+ =?utf-8?Q?hLjVtjj7P0/Z5AgghJO3odN+D1B3PS0FjkdNV?=
+X-OriginatorOrg: theobroma-systems.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 755a7280-1f5f-4287-3aaf-08da2d18dcce
+X-MS-Exchange-CrossTenant-AuthSource: PA4PR04MB9367.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2022 15:23:23.5501
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5e0e1b52-21b5-4e7b-83bb-514ec460677e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Q+db7K6Uu8qGyaIVvGB1rTPjvRl5r+iJT1Fb7yjmtdzTfcWXc1kizdVHzCB0G7aZcnlWYQdrE5tA7j7iF9iatVQTLy3GmVdv2Ij38cmhlsLqPszHc0oZKrVtsExPScF6
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB4006
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 26 Apr 14:21 PDT 2022, Bjorn Andersson wrote:
+Hi all,
 
-(+ Taniya's new email address)
+Seems I'm not the only one who forgot about this patch series, so, 
+kindly pinging :)
 
-> As GDSCs are turned on and off some associated clocks are momentarily
-> enabled for house keeping purposes. For this, and similar, purposes the
-> "shared RCGs" will park the RCG on a source clock which is known to be
-> available.
-> When the RCG is parked, a safe clock source will be selected and
-> committed, then the original source would be written back and upon enable
-> the change back to the unparked source would be committed.
-> 
-> But starting with SM8350 this fails, as the value in CFG is committed by
-> the GDSC handshake and without a ticking parent the GDSC enablement will
-> time out.
-> 
-> This becomes a concrete problem if the runtime supended state of a
-> device includes disabling such rcg's parent clock. As the device
-> attempts to power up the domain again the rcg will fail to enable and
-> hence the GDSC enablement will fail, preventing the device from
-> returning from the suspended state.
-> 
-> This can be seen in e.g. the display stack during probe on SM8350.
-> 
-> To avoid this problem, the software needs to ensure that the RCG is
-> configured to a active parent clock while it is disabled. This is done
-> by caching the CFG register content while the shared RCG is parked on
-> this safe source.
-> 
-> Writes to M, N and D registers are committed as they are requested. New
-> helpers for get_parent() and recalc_rate() are extracted from their
-> previous implementations and __clk_rcg2_configure() is modified to allow
-> it to operate on the cached value.
-> 
-> Fixes: 7ef6f11887bd ("clk: qcom: Configure the RCGs to a safe source as needed")
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Thanks!
+Quentin
 
-Ping?
-
-Thanks,
-Bjorn
-
+On 1/31/22 17:47, quentin.schulz@theobroma-systems.com wrote:
+> From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+> 
+> To prepare for a new display to be supported by this driver which has a
+> slightly different set of DSI mode related flags, let's move the
+> currently hardcoded mode flags to the .data field of of_device_id
+> structure.
+> 
+> Cc: Quentin Schulz <foss+kernel@0leil.net>
+> Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 > ---
+>   drivers/gpu/drm/panel/panel-leadtek-ltk050h3146w.c | 8 ++++++--
+>   1 file changed, 6 insertions(+), 2 deletions(-)
 > 
-> Changes since v3:
-> - Three more __clk_is_enabled() replaced with clk_hw_is_enabled()
-> - Fix spelling used -> use in two places
-> 
->  drivers/clk/qcom/clk-rcg.h  |   2 +
->  drivers/clk/qcom/clk-rcg2.c | 126 ++++++++++++++++++++++++++++--------
->  2 files changed, 101 insertions(+), 27 deletions(-)
-> 
-> diff --git a/drivers/clk/qcom/clk-rcg.h b/drivers/clk/qcom/clk-rcg.h
-> index 00cea508d49e..012e745794fd 100644
-> --- a/drivers/clk/qcom/clk-rcg.h
-> +++ b/drivers/clk/qcom/clk-rcg.h
-> @@ -140,6 +140,7 @@ extern const struct clk_ops clk_dyn_rcg_ops;
->   * @freq_tbl: frequency table
->   * @clkr: regmap clock handle
->   * @cfg_off: defines the cfg register offset from the CMD_RCGR + CFG_REG
-> + * @parked_cfg: cached value of the CFG register for parked RCGs
->   */
->  struct clk_rcg2 {
->  	u32			cmd_rcgr;
-> @@ -150,6 +151,7 @@ struct clk_rcg2 {
->  	const struct freq_tbl	*freq_tbl;
->  	struct clk_regmap	clkr;
->  	u8			cfg_off;
-> +	u32			parked_cfg;
->  };
->  
->  #define to_clk_rcg2(_hw) container_of(to_clk_regmap(_hw), struct clk_rcg2, clkr)
-> diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
-> index f675fd969c4d..c913fd326f1a 100644
-> --- a/drivers/clk/qcom/clk-rcg2.c
-> +++ b/drivers/clk/qcom/clk-rcg2.c
-> @@ -73,16 +73,11 @@ static int clk_rcg2_is_enabled(struct clk_hw *hw)
->  	return (cmd & CMD_ROOT_OFF) == 0;
->  }
->  
-> -static u8 clk_rcg2_get_parent(struct clk_hw *hw)
-> +static u8 __clk_rcg2_get_parent(struct clk_hw *hw, u32 cfg)
->  {
->  	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
->  	int num_parents = clk_hw_get_num_parents(hw);
-> -	u32 cfg;
-> -	int i, ret;
-> -
-> -	ret = regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
-> -	if (ret)
-> -		goto err;
-> +	int i;
->  
->  	cfg &= CFG_SRC_SEL_MASK;
->  	cfg >>= CFG_SRC_SEL_SHIFT;
-> @@ -91,12 +86,27 @@ static u8 clk_rcg2_get_parent(struct clk_hw *hw)
->  		if (cfg == rcg->parent_map[i].cfg)
->  			return i;
->  
-> -err:
->  	pr_debug("%s: Clock %s has invalid parent, using default.\n",
->  		 __func__, clk_hw_get_name(hw));
->  	return 0;
->  }
->  
-> +static u8 clk_rcg2_get_parent(struct clk_hw *hw)
-> +{
-> +	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
-> +	u32 cfg;
-> +	int ret;
-> +
-> +	ret = regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
-> +	if (ret) {
-> +		pr_debug("%s: Unable to read CFG register for %s\n",
-> +			 __func__, clk_hw_get_name(hw));
-> +		return 0;
-> +	}
-> +
-> +	return __clk_rcg2_get_parent(hw, cfg);
-> +}
-> +
->  static int update_config(struct clk_rcg2 *rcg)
->  {
->  	int count, ret;
-> @@ -163,12 +173,10 @@ calc_rate(unsigned long rate, u32 m, u32 n, u32 mode, u32 hid_div)
->  }
->  
->  static unsigned long
-> -clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
-> +__clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate, u32 cfg)
->  {
->  	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
-> -	u32 cfg, hid_div, m = 0, n = 0, mode = 0, mask;
-> -
-> -	regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
-> +	u32 hid_div, m = 0, n = 0, mode = 0, mask;
->  
->  	if (rcg->mnd_width) {
->  		mask = BIT(rcg->mnd_width) - 1;
-> @@ -189,6 +197,17 @@ clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
->  	return calc_rate(parent_rate, m, n, mode, hid_div);
->  }
->  
-> +static unsigned long
-> +clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
-> +{
-> +	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
-> +	u32 cfg;
-> +
-> +	regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
-> +
-> +	return __clk_rcg2_recalc_rate(hw, parent_rate, cfg);
-> +}
-> +
->  static int _freq_tbl_determine_rate(struct clk_hw *hw, const struct freq_tbl *f,
->  				    struct clk_rate_request *req,
->  				    enum freq_policy policy)
-> @@ -262,7 +281,8 @@ static int clk_rcg2_determine_floor_rate(struct clk_hw *hw,
->  	return _freq_tbl_determine_rate(hw, rcg->freq_tbl, req, FLOOR);
->  }
->  
-> -static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
-> +static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f,
-> +				u32 *_cfg)
->  {
->  	u32 cfg, mask, d_val, not2d_val, n_minus_m;
->  	struct clk_hw *hw = &rcg->clkr.hw;
-> @@ -304,15 +324,27 @@ static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
->  	cfg |= rcg->parent_map[index].cfg << CFG_SRC_SEL_SHIFT;
->  	if (rcg->mnd_width && f->n && (f->m != f->n))
->  		cfg |= CFG_MODE_DUAL_EDGE;
-> -	return regmap_update_bits(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg),
-> -					mask, cfg);
-> +
-> +	*_cfg &= ~mask;
-> +	*_cfg |= cfg;
-> +
-> +	return 0;
->  }
->  
->  static int clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
->  {
-> +	u32 cfg;
->  	int ret;
->  
-> -	ret = __clk_rcg2_configure(rcg, f);
-> +	ret = regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = __clk_rcg2_configure(rcg, f, &cfg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), cfg);
->  	if (ret)
->  		return ret;
->  
-> @@ -979,11 +1011,12 @@ static int clk_rcg2_shared_set_rate(struct clk_hw *hw, unsigned long rate,
->  		return -EINVAL;
->  
->  	/*
-> -	 * In case clock is disabled, update the CFG, M, N and D registers
-> -	 * and don't hit the update bit of CMD register.
-> +	 * In case clock is disabled, update the M, N and D registers, cache
-> +	 * the CFG value in parked_cfg and don't hit the update bit of CMD
-> +	 * register.
->  	 */
-> -	if (!__clk_is_enabled(hw->clk))
-> -		return __clk_rcg2_configure(rcg, f);
-> +	if (!clk_hw_is_enabled(hw))
-> +		return __clk_rcg2_configure(rcg, f, &rcg->parked_cfg);
->  
->  	return clk_rcg2_shared_force_enable_clear(hw, f);
->  }
-> @@ -1007,6 +1040,11 @@ static int clk_rcg2_shared_enable(struct clk_hw *hw)
->  	if (ret)
->  		return ret;
->  
-> +	/* Write back the stored configuration corresponding to current rate */
-> +	ret = regmap_write(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, rcg->parked_cfg);
-> +	if (ret)
-> +		return ret;
-> +
->  	ret = update_config(rcg);
->  	if (ret)
->  		return ret;
-> @@ -1017,13 +1055,12 @@ static int clk_rcg2_shared_enable(struct clk_hw *hw)
->  static void clk_rcg2_shared_disable(struct clk_hw *hw)
->  {
->  	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
-> -	u32 cfg;
->  
->  	/*
->  	 * Store current configuration as switching to safe source would clear
->  	 * the SRC and DIV of CFG register
->  	 */
-> -	regmap_read(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, &cfg);
-> +	regmap_read(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, &rcg->parked_cfg);
->  
->  	/*
->  	 * Park the RCG at a safe configuration - sourced off of safe source.
-> @@ -1041,17 +1078,52 @@ static void clk_rcg2_shared_disable(struct clk_hw *hw)
->  	update_config(rcg);
->  
->  	clk_rcg2_clear_force_enable(hw);
-> +}
->  
-> -	/* Write back the stored configuration corresponding to current rate */
-> -	regmap_write(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, cfg);
-> +static u8 clk_rcg2_shared_get_parent(struct clk_hw *hw)
-> +{
-> +	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
-> +
-> +	/* If the shared rcg is parked use the cached cfg instead */
-> +	if (!clk_hw_is_enabled(hw))
-> +		return __clk_rcg2_get_parent(hw, rcg->parked_cfg);
-> +
-> +	return clk_rcg2_get_parent(hw);
-> +}
-> +
-> +static int clk_rcg2_shared_set_parent(struct clk_hw *hw, u8 index)
-> +{
-> +	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
-> +
-> +	/* If the shared rcg is parked only update the cached cfg */
-> +	if (!clk_hw_is_enabled(hw)) {
-> +		rcg->parked_cfg &= ~CFG_SRC_SEL_MASK;
-> +		rcg->parked_cfg |= rcg->parent_map[index].cfg << CFG_SRC_SEL_SHIFT;
-> +
-> +		return 0;
-> +	}
-> +
-> +	return clk_rcg2_set_parent(hw, index);
-> +}
-> +
-> +static unsigned long
-> +clk_rcg2_shared_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
-> +{
-> +	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
-> +
-> +	/* If the shared rcg is parked use the cached cfg instead */
-> +	if (!clk_hw_is_enabled(hw))
-> +		return __clk_rcg2_recalc_rate(hw, parent_rate, rcg->parked_cfg);
-> +
-> +	return clk_rcg2_recalc_rate(hw, parent_rate);
->  }
->  
->  const struct clk_ops clk_rcg2_shared_ops = {
->  	.enable = clk_rcg2_shared_enable,
->  	.disable = clk_rcg2_shared_disable,
-> -	.get_parent = clk_rcg2_get_parent,
-> -	.set_parent = clk_rcg2_set_parent,
-> -	.recalc_rate = clk_rcg2_recalc_rate,
-> +	.get_parent = clk_rcg2_shared_get_parent,
-> +	.set_parent = clk_rcg2_shared_set_parent,
-> +	.recalc_rate = clk_rcg2_shared_recalc_rate,
->  	.determine_rate = clk_rcg2_determine_rate,
->  	.set_rate = clk_rcg2_shared_set_rate,
->  	.set_rate_and_parent = clk_rcg2_shared_set_rate_and_parent,
-> -- 
-> 2.35.1
-> 
+> diff --git a/drivers/gpu/drm/panel/panel-leadtek-ltk050h3146w.c b/drivers/gpu/drm/panel/panel-leadtek-ltk050h3146w.c
+> index a5a414920430..67eb474e28c6 100644
+> --- a/drivers/gpu/drm/panel/panel-leadtek-ltk050h3146w.c
+> +++ b/drivers/gpu/drm/panel/panel-leadtek-ltk050h3146w.c
+> @@ -25,6 +25,7 @@ struct ltk050h3146w_cmd {
+>   
+>   struct ltk050h3146w;
+>   struct ltk050h3146w_desc {
+> +	const unsigned long mode_flags;
+>   	const struct drm_display_mode *mode;
+>   	int (*init)(struct ltk050h3146w *ctx);
+>   };
+> @@ -339,6 +340,8 @@ static const struct drm_display_mode ltk050h3146w_mode = {
+>   static const struct ltk050h3146w_desc ltk050h3146w_data = {
+>   	.mode = &ltk050h3146w_mode,
+>   	.init = ltk050h3146w_init_sequence,
+> +	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST |
+> +		MIPI_DSI_MODE_LPM | MIPI_DSI_MODE_NO_EOT_PACKET,
+>   };
+>   
+>   static int ltk050h3146w_a2_select_page(struct ltk050h3146w *ctx, int page)
+> @@ -433,6 +436,8 @@ static const struct drm_display_mode ltk050h3146w_a2_mode = {
+>   static const struct ltk050h3146w_desc ltk050h3146w_a2_data = {
+>   	.mode = &ltk050h3146w_a2_mode,
+>   	.init = ltk050h3146w_a2_init_sequence,
+> +	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST |
+> +		MIPI_DSI_MODE_LPM | MIPI_DSI_MODE_NO_EOT_PACKET,
+>   };
+>   
+>   static int ltk050h3146w_unprepare(struct drm_panel *panel)
+> @@ -592,8 +597,7 @@ static int ltk050h3146w_probe(struct mipi_dsi_device *dsi)
+>   
+>   	dsi->lanes = 4;
+>   	dsi->format = MIPI_DSI_FMT_RGB888;
+> -	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST |
+> -			  MIPI_DSI_MODE_LPM | MIPI_DSI_MODE_NO_EOT_PACKET;
+> +	dsi->mode_flags = ctx->panel_desc->mode_flags;
+>   
+>   	drm_panel_init(&ctx->panel, &dsi->dev, &ltk050h3146w_funcs,
+>   		       DRM_MODE_CONNECTOR_DSI);
