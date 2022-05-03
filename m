@@ -2,91 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C35C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 12:24:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E935C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 12:26:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235245AbiECM2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 08:28:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39112 "EHLO
+        id S235254AbiECM3e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 08:29:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235230AbiECM2E (ORCPT
+        with ESMTP id S235239AbiECM3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 08:28:04 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C83A344EC;
-        Tue,  3 May 2022 05:24:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651580672; x=1683116672;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=ezDP8VhxvFVapCaHLcnpQwxSE8jZ53x6V8Z6T9fWMdc=;
-  b=RI3YRcIAE6o8G9PIPKa+pIAiZr3ZSl4L/IGdqL/ANr+RSgBL+h0wJZUD
-   ZM4HkPOSSSrdqen3cjCFvI8W/c8Sv+QVTJdCm4PAj7OT7UATzmSl9BV4P
-   P88PVdJqwW0W+RPcqIg//Rf3Ybb22picmjLR8RQdLFoWXypukeau34FuA
-   GyfHqcfYeRenL0reR4/2VhfRG9A8+OhGeK9d+u7NZ/LcqBjmnAMgTg/kZ
-   9Jds+oMgajnvAnr2r2RafTORUU5ADMJtj7PoV0tFDQ0AbzV8tBny692ja
-   nEXeJvIDmnrduo/ODoJNQ8l/9IYQp7awzzrMqkyNFcdSRl7Uwovy+uzYd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="328004739"
-X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="328004739"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 05:24:32 -0700
-X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="584176810"
-Received: from oelagadx-mobl2.ger.corp.intel.com ([10.252.60.48])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 05:24:29 -0700
-Date:   Tue, 3 May 2022 15:24:23 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] serial: 8250: core: Remove unneeded
- <linux/pm_runtime.h>
-In-Reply-To: <2545eaa7fc552013a5d04c4df027255204e64834.1651494971.git.geert+renesas@glider.be>
-Message-ID: <c0144ed6-811e-bc2d-7bff-91e7c4ba855@linux.intel.com>
-References: <2545eaa7fc552013a5d04c4df027255204e64834.1651494971.git.geert+renesas@glider.be>
+        Tue, 3 May 2022 08:29:30 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0603636E3C
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 05:25:57 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id t5so9014983edw.11
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 05:25:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=GCGJOVaFvPi2cdZAa6UPkRWwapZJfoD9FjLKsOzvOl8=;
+        b=zZpYb09NzsULIdZvqjDWB34wsfCyTIW5qhy/Esiwqa0TJfdQ0n7LVmNrsNmV9pyYX/
+         DOXjArMo3aj+3DszDWbmUxffbbzRcO+PfFNXvLHttb9IL3AsZ4t55iSPu5Kep3RbgDEI
+         On09x1duQp/RjmK699DnwteUsXUHhTlQEUoRxhk2VrDxk3RpN38pfzvawTR0tWOjYm9M
+         NsQGospBzheK8/z/zqufHgKDQv1LNN2yESPk6B4p4fhOF/kUPU3RIFmN0X0DTOwxxVbx
+         J7mFj0hO6o6JoWysUrtCd3xUCy3izDNsJTqNfb6Cw4OqLBR3Y44FMnkLGAYLH4Gox31N
+         zHyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=GCGJOVaFvPi2cdZAa6UPkRWwapZJfoD9FjLKsOzvOl8=;
+        b=x7oB58nkzY7FuROtZtR6vx5Z1UoASZQAQWPNll/gfDsC1IalUfTKhM8RnstGcFIB1l
+         yAP8AF7cIBamzMx7URvoE/8QDF4x7WHKSfd9r/1nyJKZpCIS0yVRLcpQc7kFbfe0c4S8
+         cf9eBpxuVLRz9fUMXpc4Fu0QsDzq8DTnf8oO7oMD2fpjV/1wWOOgcVHEkCkYp5xqJ3nq
+         C6Jlom1/RdaOM8QlEnTdxwyLhxOFAyQd0TglP8K/Oq/6Ty4Dvs02xW4lw6DpR863VAF+
+         En9agawiJlqMEEZZivOyOHvqDMsO1R5nnh2fEawnQB7Ir6F6RnKuoPvLiQwTux9dPO3n
+         9U4w==
+X-Gm-Message-State: AOAM5301dPPrY/mwLKkVCi2QtYyS3Z5lGIh9f8gy2ROrOQVeGkZVtv2g
+        86ZnsuD/dcJ/i2gX5XFSqTR0mA==
+X-Google-Smtp-Source: ABdhPJxaIEfqBaZo/WyNo6ukWwIiffhWb+nMnmw0GMvJWG2DxptvaFbjV2ed02Ff/JuclfPWdiESsQ==
+X-Received: by 2002:a05:6402:2554:b0:423:f3e3:81da with SMTP id l20-20020a056402255400b00423f3e381damr17651983edb.87.1651580756428;
+        Tue, 03 May 2022 05:25:56 -0700 (PDT)
+Received: from [192.168.0.203] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id ia15-20020a170907a06f00b006f3ef214e78sm4554780ejc.222.2022.05.03.05.25.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 05:25:55 -0700 (PDT)
+Message-ID: <9868ae89-57fc-0f1a-89a5-5ee0cd9207aa@linaro.org>
+Date:   Tue, 3 May 2022 14:25:54 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 3/4] dt-bindings: arm-smmu: Add binding for SDX65 SMMU
+Content-Language: en-US
+To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, will@kernel.org,
+        robin.murphy@arm.com, joro@8bytes.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, ulf.hansson@linaro.org,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        adrian.hunter@intel.com, bhupesh.sharma@linaro.org
+Cc:     linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+References: <1651480665-14978-1-git-send-email-quic_rohiagar@quicinc.com>
+ <1651480665-14978-4-git-send-email-quic_rohiagar@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1651480665-14978-4-git-send-email-quic_rohiagar@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2 May 2022, Geert Uytterhoeven wrote:
-
-> The last calls into Runtime PM were moved to 8250_port.c a long time
-> ago.
+On 02/05/2022 10:37, Rohit Agarwal wrote:
+> Add devicetree binding for Qualcomm SDX65 SMMU.
 > 
-> Fixes: b6830f6df8914faa ("serial: 8250: Split base port operations from universal driver")
+> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
 
-Does this really "fix" something or is it just a useful cleanup? To me it 
-looks the latter.
 
--- 
- i.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  drivers/tty/serial/8250/8250_core.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 01d30f6ed8fb5931..cfbd2de0ca6e4bcd 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -32,7 +32,6 @@
->  #include <linux/mutex.h>
->  #include <linux/slab.h>
->  #include <linux/uaccess.h>
-> -#include <linux/pm_runtime.h>
->  #include <linux/io.h>
->  #ifdef CONFIG_SPARC
->  #include <linux/sunserialcore.h>
-> 
+
+Best regards,
+Krzysztof
