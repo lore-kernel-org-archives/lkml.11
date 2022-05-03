@@ -2,76 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B29C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 11:05:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C04C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 11:11:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234603AbiECLIn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 07:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46494 "EHLO
+        id S234601AbiECLPM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 07:15:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234535AbiECLIh (ORCPT
+        with ESMTP id S233641AbiECLPK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 07:08:37 -0400
-Received: from mail.schwermer.no (mail.schwermer.no [49.12.228.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E279E33375;
-        Tue,  3 May 2022 04:05:01 -0700 (PDT)
-X-Virus-Scanned: Yes
-From:   Sven Schwermer <sven@svenschwermer.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=svenschwermer.de;
-        s=mail; t=1651575898;
-        bh=f7LOPbAVv1vwG5hpUbka3+lbR6oTfswOHOcwYhEpF88=;
-        h=From:To:Cc:Subject:In-Reply-To:References;
-        b=qyoE/dlTXwTBA+zlQ/8IZClSvD6AdZ5IMUDzVnQsY62rV/sHJ8m+IBt2euZJbtLi3
-         xLgwLH8t4oujcsKVCBVFQv6EQnt9zgGYIrQ1u7FTejKBQzjyUNSxiHaPJZP6dxBQMx
-         lZilLrbFaTADBPxnmH0Ty31cwyN1G47JR/Dcr9vxt/TsQ4qVpef5m81LTioUN80Soo
-         eFE/8O0hOAEWjv2o8AArvlz8ZXQ9hFi3Nn1BOmIIlYDn18ocMXeuB9CVG5Rfbi2tcL
-         VHkPNw/Nq/AXrXQn7QrstHGQm/wATUnQngo0YfWy8+HHnOVpCaMXbx4uVaC9sqhjO9
-         S9gSAF1a7eWmA==
-To:     linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org,
-        pavel@ucw.cz, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, dmurphy@ti.com,
-        devicetree@vger.kernel.org
-Cc:     Sven Schwermer <sven.schwermer@disruptive-technologies.com>
-Subject: [PATCH v1 1/2] dt-bindings: leds: Add multi-color default-intensities property
-Date:   Tue,  3 May 2022 13:04:50 +0200
-Message-Id: <364df52a196fa0ae5db07e599995fcf8dfafb43e.1651575831.git.sven.schwermer@disruptive-technologies.com>
-In-Reply-To: <20220502204616.GA27288@ucw.cz>
-References: <20220502204616.GA27288@ucw.cz>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 3 May 2022 07:15:10 -0400
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A583464A;
+        Tue,  3 May 2022 04:11:38 -0700 (PDT)
+Received: by mail-wm1-f49.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so1076660wmn.1;
+        Tue, 03 May 2022 04:11:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GsogsT9bhJS0azISfSjF4/Gdtg2bL/l2CaKN/yJOq2U=;
+        b=KMTJX39ow68qWmWxgO+TP55iaLnuVRVItcxZCM/jcq0PDeUUkyUlH2Ta5j4TiY67tq
+         YyUyAMb3Va1AMjWmF8veGu5qMzZuUjBWGmNXmavS8exzwHLMsfphZzNnHv2ppX2DHFjZ
+         wMCFdHKhTnBTJDc+HnHyIg5mAyEKqcGkF1IjVvMxczSXu5Nl194gOsaLXz/yfa8eqPBi
+         B//FIZKXozbu4IwJcrJQ4EjqDdaiUPqt0C6ZAyB0frYn6IpTJxD3LnsDjsQGVM0fmCXj
+         xtXbsXGZ9QNFMU8E2k/CCy7e3Vr1Sf3p/kRAVjemRTqynn+o+ZwOzfGnuLNBPSchnqqQ
+         LkXA==
+X-Gm-Message-State: AOAM5309pMk1fKYbLOTgnX3bNOJrvnHBQ21xbEnFeozjTcrWu2epPEk2
+        JQ7nHJLhhBeWCp+/+HoX3EM=
+X-Google-Smtp-Source: ABdhPJyhUyArLZ6U7eQ4wiMgOJiKkSAK1pVUfdJy3Bn7VLBKr52ZTx0gXisXtzzC4SGwFA0Yn97PTA==
+X-Received: by 2002:a1c:770b:0:b0:394:3fae:ab79 with SMTP id t11-20020a1c770b000000b003943faeab79mr2884315wmi.200.1651576297176;
+        Tue, 03 May 2022 04:11:37 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id n21-20020a7bc5d5000000b003942a244f47sm1708601wmk.32.2022.05.03.04.11.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 04:11:36 -0700 (PDT)
+Date:   Tue, 3 May 2022 11:11:34 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Wei Liu <wei.liu@kernel.org>
+Subject: Re: [PATCH v3 07/34] x86/hyperv: Introduce
+ HV_MAX_SPARSE_VCPU_BANKS/HV_VCPUS_PER_SPARSE_BANK constants
+Message-ID: <20220503111134.zuzidhqfmac2csfm@liuwe-devbox-debian-v2>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
+ <20220414132013.1588929-8-vkuznets@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414132013.1588929-8-vkuznets@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+On Thu, Apr 14, 2022 at 03:19:46PM +0200, Vitaly Kuznetsov wrote:
+> It may not come clear from where the magical '64' value used in
+> __cpumask_to_vpset() come from. Moreover, '64' means both the maximum
+> sparse bank number as well as the number of vCPUs per bank. Add defines
+> to make things clear. These defines are also going to be used by KVM.
+> 
+> No functional change.
+> 
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-This allows to assign intensity values to the indivisual sub LEDs
-(colors) at driver probe time, i.e. most commonly at kernel boot time.
-This is crucial for setting a specific color early in the boot process.
-
-Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
----
- .../devicetree/bindings/leds/leds-class-multicolor.yaml    | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/leds/leds-class-multicolor.yaml b/Documentation/devicetree/bindings/leds/leds-class-multicolor.yaml
-index 37445c68cdef..c483967a847c 100644
---- a/Documentation/devicetree/bindings/leds/leds-class-multicolor.yaml
-+++ b/Documentation/devicetree/bindings/leds/leds-class-multicolor.yaml
-@@ -31,6 +31,13 @@ patternProperties:
-           include/linux/leds/common.h.
-         enum: [ 8, 9 ]
- 
-+      default-intensities:
-+        description: |
-+          This parameter, if present, sets the initial intensities of the
-+          individual colors. This array must have the same length as the
-+          multi-color LED has sub LEDs (colors).
-+        $ref: /schemas/types.yaml#/definitions/uint32-array
-+
-     $ref: "common.yaml#"
- 
-     required:
--- 
-2.36.0
-
+Acked-by: Wei Liu <wei.liu@kernel.org>
