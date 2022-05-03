@@ -2,104 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B706C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:31:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5C4C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237597AbiECUf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 16:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44504 "EHLO
+        id S237735AbiECUhU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 16:37:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237237AbiECUf1 (ORCPT
+        with ESMTP id S235722AbiECUhR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 16:35:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2A8222E0AE
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 13:31:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651609905;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=syat7YMhuZsVmWB5UU3BjXsEYQfynCb0liib1ovne74=;
-        b=Z+ZYmM85F3CgtrikbE2tDyIwF4JyZQC2/QRMlK7jjViuKAFUu4x/BlyAYyz3sWksp1VHYB
-        BEsNLmqQ9Dt/O2ccZsxDRB60EAzVGPQccHmt3k9YcNsv/VL8NUU1MKAxmlCtWXHf8cEMwB
-        6EGDP4KrXk9tbqu4VsGB17GZp1DAFqw=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-651-NPW8qe14MHO1H1xVrfqppA-1; Tue, 03 May 2022 16:10:36 -0400
-X-MC-Unique: NPW8qe14MHO1H1xVrfqppA-1
-Received: by mail-wr1-f71.google.com with SMTP id p18-20020adf9592000000b00207bc12decbso6726654wrp.21
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 13:10:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=syat7YMhuZsVmWB5UU3BjXsEYQfynCb0liib1ovne74=;
-        b=Nsw3MCHKD2deLtumRuL4IAO8pdnP+cH3jKXqzUvnm9EC1Fann7yX5WQRxEOPZ4nWtV
-         ebtltOAfFzMgKRSAlf2JzeaJC1/oJyVz9J5jEHaEYVVie+mdzviwsyAOOh9IGbRGGXCC
-         jHP777hObeZxJtO/Swqvk0PODWHc80+b7FlQA/WQsT96NbnR1ZUoRdLSylEiV4+IGMPB
-         DaVAfCsZC2jRKsotcZG0c9miE2D+V52Ciy6RmDpXz47k++cN5lXzpgjSMcSZTfSghk5e
-         vrNYdgZuQU+7cOI5L8cXPDV2CBGEkcSOND1fkIybcuq/FGZBEhB/39AG/wHEwLVMWK3G
-         4kjw==
-X-Gm-Message-State: AOAM533SU9dz9JUevclZ+6AoZ9eP2arM/xqY4WE87s65SLN4BP1FI/0d
-        E9Eoc6ordwUaNp+7LyqGplkHBlg4yHTVyKmVToBUQlGzlsMpRQ0UI1PO3aDcOMf0cGW8xs8HwJJ
-        KS+UwtbDz5a6GEvWNbpyYIbt3
-X-Received: by 2002:a5d:64c1:0:b0:20c:6ff9:3a61 with SMTP id f1-20020a5d64c1000000b0020c6ff93a61mr5677532wri.709.1651608634855;
-        Tue, 03 May 2022 13:10:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxplYC3nN3AU/qbF7B/q23G6fIYuctdgY1cqefQA5M02QsqpsEPVQ8d3IifAGDcAdL4PT0raA==
-X-Received: by 2002:a5d:64c1:0:b0:20c:6ff9:3a61 with SMTP id f1-20020a5d64c1000000b0020c6ff93a61mr5677518wri.709.1651608634651;
-        Tue, 03 May 2022 13:10:34 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id l3-20020adfbd83000000b0020aca418f26sm10156318wrh.1.2022.05.03.13.10.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 13:10:34 -0700 (PDT)
-Message-ID: <9907fa2f-807d-f07c-152b-e09d35afa332@redhat.com>
-Date:   Tue, 3 May 2022 22:10:33 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] fbdev: Use helper to get fb_info in all file operations
-Content-Language: en-US
-To:     Sam Ravnborg <sam@ravnborg.org>
-Cc:     linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        Junxiao Chang <junxiao.chang@intel.com>,
-        dri-devel@lists.freedesktop.org, Maxime Ripard <maxime@cerno.tech>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-References: <20220503164616.663796-1-javierm@redhat.com>
- <YnFi2nrK0I7893S2@ravnborg.org>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <YnFi2nrK0I7893S2@ravnborg.org>
+        Tue, 3 May 2022 16:37:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7643389A;
+        Tue,  3 May 2022 13:33:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF5CB61228;
+        Tue,  3 May 2022 20:33:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4210FC385A4;
+        Tue,  3 May 2022 20:33:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651610023;
+        bh=+S+gI1rUYoYq98LrroKUD/OVNIAreoq4PC0e3oaD+DM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=q6x1lzU+6y4QJQE53ZAVYfNknpKqET8REpetEZQOASqdJqet0iFBjVOQXjdxCNW4j
+         4yCJzqLFjtQ1hF0FsD4bjwdTYumlcYknmcnG00CnhjFSJNsl3mpWhcrxANWjStmP+2
+         GdGBOX0Rh4RQzXuRGojk34t2bw2lfhwxVk8QYOlfIK16nVF/smo5oiVSLrIgLpEWPa
+         qrvhFY4BLfC9/WgqlPOhIKXnrE9tVcVlDDZpQJEgNC4knATTysgnvtqvNNWvdlQ3c3
+         gtSsrM95ANJIndvWT5eukBbKDhcjtFLsUVQjx49n42kpHhevPAGkcRV+g+o+zatF0V
+         DoI+2rKPXiglQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nlzDI-008jtX-PA; Tue, 03 May 2022 21:33:40 +0100
+Date:   Tue, 03 May 2022 21:33:40 +0100
+Message-ID: <878rriicez.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Raghavendra Rao Ananta <rananta@google.com>
+Cc:     Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH v7 0/9] KVM: arm64: Add support for hypercall services selection
+In-Reply-To: <CAJHc60xp=UQT_CX0zoiSjAmkS8JSe+NB5Gr+F5mmybjJAWkUtQ@mail.gmail.com>
+References: <20220502233853.1233742-1-rananta@google.com>
+        <878rri8r78.wl-maz@kernel.org>
+        <CAJHc60xp=UQT_CX0zoiSjAmkS8JSe+NB5Gr+F5mmybjJAWkUtQ@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: rananta@google.com, drjones@redhat.com, james.morse@arm.com, alexandru.elisei@arm.com, suzuki.poulose@arm.com, pbonzini@redhat.com, catalin.marinas@arm.com, will@kernel.org, pshier@google.com, ricarkol@google.com, oupton@google.com, reijiw@google.com, jingzhangos@google.com, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Sam,
+On Tue, 03 May 2022 19:49:13 +0100,
+Raghavendra Rao Ananta <rananta@google.com> wrote:
+>=20
+> Hi Marc,
+>=20
+> On Tue, May 3, 2022 at 10:24 AM Marc Zyngier <maz@kernel.org> wrote:
+> >
+> > On Tue, 03 May 2022 00:38:44 +0100,
+> > Raghavendra Rao Ananta <rananta@google.com> wrote:
+> > >
+> > > Hello,
+> > >
+> > > Continuing the discussion from [1], the series tries to add support
+> > > for the userspace to elect the hypercall services that it wishes
+> > > to expose to the guest, rather than the guest discovering them
+> > > unconditionally. The idea employed by the series was taken from
+> > > [1] as suggested by Marc Z.
+> >
+> > As it took some time to get there, and that there was still a bunch of
+> > things to address, I've taken the liberty to apply my own fixes to the
+> > series.
+> >
+> > Please have a look at [1], and let me know if you're OK with the
+> > result. If you are, I'll merge the series for 5.19.
+> >
+> > Thanks,
+> >
+> >         M.
+> >
+> Thank you for speeding up the process; appreciate it. However, the
+> series's selftest patches have a dependency on Oliver's
+> PSCI_SYSTEM_SUSPEND's selftest patches [1][2]. Can we pull them in
+> too?
 
-On 5/3/22 19:14, Sam Ravnborg wrote:
-> Hi Javier,
-> 
+Urgh... I guess this is the time to set some ground rules:
 
-[snip]
+- Please don't introduce dependencies between series, that's
+  unmanageable. I really need to see each series independently, and if
+  there is a merge conflict, that's my job to fix (and I don't really
+  mind).
 
->>  
->>  int fb_deferred_io_fsync(struct file *file, loff_t start, loff_t end, int datasync)
->>  {
->> -	struct fb_info *info = file->private_data;
->> +	struct fb_info *info = fb_file_fb_info(file->private_data);
-> This looks wrong. I assume you wanted to write:
->> +	struct fb_info *info = fb_file_fb_info(file);
+- If there is a dependency between series, please post a version of
+  the required patches as a prefix to your series, assuming this
+  prefix is itself standalone. If it isn't, then something really is
+  wrong, and the series should be resplit.
 
-Right I did. Thanks for pointing out.
+- You also should be basing your series on an *official* tag from
+  Linus' tree (preferably -rc1, -rc2 or -rc3), and not something
+  random like any odd commit from the KVM tree (I had conflicts while
+  applying this on -rc3, probably due to the non-advertised dependency
+  on Oliver's series).
 
--- 
-Best regards,
+>=20
+> aarch64/hypercalls.c: In function =E2=80=98guest_test_hvc=E2=80=99:
+> aarch64/hypercalls.c:95:30: error: storage size of =E2=80=98res=E2=80=99 =
+isn=E2=80=99t known
+>    95 |         struct arm_smccc_res res;
+>       |                              ^~~
+> aarch64/hypercalls.c:103:17: warning: implicit declaration of function
+> =E2=80=98smccc_hvc=E2=80=99 [-Wimplicit-function-declaration]
+>   103 |                 smccc_hvc(hc_info->func_id, hc_info->arg1, 0,
+> 0, 0, 0, 0, 0, &res);
+>       |                 ^~~~~~~~~
+>
 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+I've picked the two patches, which means they will most likely appear
+twice in the history. In the future, please reach out so that we can
+organise this better.
 
+> Also, just a couple of readability nits in the fixed version:
+>=20
+> 1. Patch-2/9, hypercall.c:kvm_hvc_call_default_allowed(), in the
+> 'default' case, do you think we should probably add a small comment
+> that mentions we are checking for func_id in the PSCI range?
+
+Dumped a one-liner there.
+
+> 2. Patch-2/9, arm_hypercall.h, clear all the macros in this patch
+> itself instead of doing it in increments (unless there's some reason
+> that I'm missing)?
+
+Ah, rebasing leftovers, now gone.
+
+I've pushed an updated branch again, please have a look.
+
+	M.
+
+--=20
+Without deviation from the norm, progress is not possible.
