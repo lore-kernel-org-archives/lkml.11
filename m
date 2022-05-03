@@ -2,147 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E384CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 00:39:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD638C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 00:41:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244729AbiEDAnJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 20:43:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43494 "EHLO
+        id S244734AbiEDAo6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 20:44:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236921AbiEDAnI (ORCPT
+        with ESMTP id S236921AbiEDAo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 20:43:08 -0400
+        Tue, 3 May 2022 20:44:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1510F38BC6;
-        Tue,  3 May 2022 17:39:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC84F13D0B;
+        Tue,  3 May 2022 17:41:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2E02B8227E;
-        Wed,  4 May 2022 00:39:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EC3EC385A4;
-        Wed,  4 May 2022 00:39:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E2D5B817A7;
+        Wed,  4 May 2022 00:41:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1529C385A4;
+        Wed,  4 May 2022 00:41:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651624771;
-        bh=xlKxpLDsGDGqIEBxZuWucqMujX6BG0fM6Gh35+FdMGY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=b9JoHDXlj3YVviGODLUCXCiwap0JGZceDZFB8LsU8AHsYwzyjBJ4Xo6aoKC84aqPk
-         xaQ+ZoXuRr+DrZV/j+/BD6Rtnlg3tXACE5zvfF1xmaRGhDnl5zX5K9qpLDj5Qe0LGX
-         OpCIEJ5wgQmw71F/3NlylbGuRq1L50tx8R1aCOUk6kzEXsOpD9aMPG4Vs93tOSqo6R
-         Spz7Tz9DqEi8k6sErFcR/PKNTPVhmtMO0qPtdyny7r3aO5iYlIQGSXrA/skflGN9xC
-         j0JxoZ2S5J325sCuBXMXzHbFPyNMUdeYR1KLaW8mR/LkHrDACOgRAqmaFzF2YDkrpI
-         wj6ha0aV+rwLg==
-Message-ID: <6c0e4596-1698-25d5-7b59-c0ee6ef7eefd@kernel.org>
-Date:   Wed, 4 May 2022 08:39:12 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] f2fs: fix deadloop in foreground GC
-Content-Language: en-US
-To:     Jaegeuk Kim <jaegeuk@kernel.org>
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Ming Yan <yanming@tju.edu.cn>, Chao Yu <chao.yu@oppo.com>
-References: <20220429204631.7241-1-chao@kernel.org>
- <YnGrvEjxgaXDnxxi@google.com>
+        s=k20201202; t=1651624880;
+        bh=1sRYRjLbt8trZsAxQP405ve5/+hZRzhVT+rXdU002IU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JdHXMCIdcKimHtn1qV4jHB0cf6iOcdtQ5pD3TFKARDhTTqLR9aA/Z0TBjQZ36GSRa
+         JQxFFWkbORN2XNInCg4MvUw0ODHGfVtYF9X2QGOWjd93MCiv3P3YvWpOaeYx90wrSn
+         CMjC+HmtTfiFzmw9H+GpnDyM8nA0bGynxVb/ght29WV2CaFc4l9zSHVGrgzOSMlF5f
+         O36U0a/Ep3Yqas9JhpB2HWj0WW9f35mK4JoW4hdYPQVtryZr6cMW9D5i8W082KoReQ
+         kXUnxfKtSVJc02E5/YGdaZB9BemEPrQ+fId6qQHPRzp/sRfHWDdXvVdaB5WkSqmGXt
+         4ODiMubLzvu9A==
 From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <YnGrvEjxgaXDnxxi@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     jaegeuk@kernel.org
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>
+Subject: [PATCH v2] f2fs: fix deadloop in foreground GC
+Date:   Wed,  4 May 2022 00:24:37 +0800
+Message-Id: <20220503162437.20913-1-chao@kernel.org>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/4 6:25, Jaegeuk Kim wrote:
-> On 04/30, Chao Yu wrote:
->> As Yanming reported in bugzilla:
->>
->> https://bugzilla.kernel.org/show_bug.cgi?id=215914
->>
->> The root cause is: in a very small sized image, it's very easy to
->> exceed threshold of foreground GC, if we calculate free space and
->> dirty data based on section granularity, in corner case,
->> has_not_enough_free_secs() will always return true, result in
->> deadloop in f2fs_gc().
-> 
-> Performance regression was reported. Can we check this for very small sized
-> image only?
+As Yanming reported in bugzilla:
 
-I noticed that, I've fixed the issue in v2, could you please take a look?
+https://bugzilla.kernel.org/show_bug.cgi?id=215914
 
-Thanks,
+The root cause is: in a very small sized image, it's very easy to
+exceed threshold of foreground GC, if we calculate free space and
+dirty data based on section granularity, in corner case,
+has_not_enough_free_secs() will always return true, result in
+deadloop in f2fs_gc().
 
-> 
->>
->> So this patch refactors has_not_enough_free_secs() as below to fix
->> this issue:
->> 1. calculate needed space based on block granularity, and separate
->> all blocks to two parts, section part, and block part, comparing
->> section part to free section, and comparing block part to free space
->> in openned log.
->> 2. account F2FS_DIRTY_NODES, F2FS_DIRTY_IMETA and F2FS_DIRTY_DENTS
->> as node block consumer;
->> 3. account F2FS_DIRTY_DENTS as data block consumer;
->>
->> Cc: stable@vger.kernel.org
->> Reported-by: Ming Yan <yanming@tju.edu.cn>
->> Signed-off-by: Chao Yu <chao.yu@oppo.com>
->> ---
->>   fs/f2fs/segment.h | 30 +++++++++++++++++-------------
->>   1 file changed, 17 insertions(+), 13 deletions(-)
->>
->> diff --git a/fs/f2fs/segment.h b/fs/f2fs/segment.h
->> index 8a591455d796..28f7aa9b40bf 100644
->> --- a/fs/f2fs/segment.h
->> +++ b/fs/f2fs/segment.h
->> @@ -575,11 +575,10 @@ static inline int reserved_sections(struct f2fs_sb_info *sbi)
->>   	return GET_SEC_FROM_SEG(sbi, reserved_segments(sbi));
->>   }
->>   
->> -static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi)
->> +static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi,
->> +			unsigned int node_blocks, unsigned int dent_blocks)
->>   {
->> -	unsigned int node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
->> -					get_pages(sbi, F2FS_DIRTY_DENTS);
->> -	unsigned int dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
->> +
->>   	unsigned int segno, left_blocks;
->>   	int i;
->>   
->> @@ -605,19 +604,24 @@ static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi)
->>   static inline bool has_not_enough_free_secs(struct f2fs_sb_info *sbi,
->>   					int freed, int needed)
->>   {
->> -	int node_secs = get_blocktype_secs(sbi, F2FS_DIRTY_NODES);
->> -	int dent_secs = get_blocktype_secs(sbi, F2FS_DIRTY_DENTS);
->> -	int imeta_secs = get_blocktype_secs(sbi, F2FS_DIRTY_IMETA);
->> +	unsigned int total_node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
->> +					get_pages(sbi, F2FS_DIRTY_DENTS) +
->> +					get_pages(sbi, F2FS_DIRTY_IMETA);
->> +	unsigned int total_dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
->> +	unsigned int node_secs = total_node_blocks / BLKS_PER_SEC(sbi);
->> +	unsigned int dent_secs = total_dent_blocks / BLKS_PER_SEC(sbi);
->> +	unsigned int node_blocks = total_node_blocks % BLKS_PER_SEC(sbi);
->> +	unsigned int dent_blocks = total_dent_blocks % BLKS_PER_SEC(sbi);
->>   
->>   	if (unlikely(is_sbi_flag_set(sbi, SBI_POR_DOING)))
->>   		return false;
->>   
->> -	if (free_sections(sbi) + freed == reserved_sections(sbi) + needed &&
->> -			has_curseg_enough_space(sbi))
->> -		return false;
->> -	return (free_sections(sbi) + freed) <=
->> -		(node_secs + 2 * dent_secs + imeta_secs +
->> -		reserved_sections(sbi) + needed);
->> +	if (free_sections(sbi) + freed <=
->> +			node_secs + dent_secs + reserved_sections(sbi) + needed)
->> +		return true;
->> +	if (!has_curseg_enough_space(sbi, node_blocks, dent_blocks))
->> +		return true;
->> +	return false;
->>   }
->>   
->>   static inline bool f2fs_is_checkpoint_ready(struct f2fs_sb_info *sbi)
->> -- 
->> 2.32.0
+So this patch refactors has_not_enough_free_secs() as below to fix
+this issue:
+1. calculate needed space based on block granularity, and separate
+all blocks to two parts, section part, and block part, comparing
+section part to free section, and comparing block part to free space
+in openned log.
+2. account F2FS_DIRTY_NODES, F2FS_DIRTY_IMETA and F2FS_DIRTY_DENTS
+as node block consumer;
+3. account F2FS_DIRTY_DENTS as data block consumer;
+
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+---
+v2:
+- fix performance regression
+ fs/f2fs/segment.h | 32 ++++++++++++++++++++------------
+ 1 file changed, 20 insertions(+), 12 deletions(-)
+
+diff --git a/fs/f2fs/segment.h b/fs/f2fs/segment.h
+index 8a591455d796..c38263dbc5ca 100644
+--- a/fs/f2fs/segment.h
++++ b/fs/f2fs/segment.h
+@@ -575,11 +575,10 @@ static inline int reserved_sections(struct f2fs_sb_info *sbi)
+ 	return GET_SEC_FROM_SEG(sbi, reserved_segments(sbi));
+ }
+ 
+-static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi)
++static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi,
++			unsigned int node_blocks, unsigned int dent_blocks)
+ {
+-	unsigned int node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
+-					get_pages(sbi, F2FS_DIRTY_DENTS);
+-	unsigned int dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
++
+ 	unsigned int segno, left_blocks;
+ 	int i;
+ 
+@@ -605,19 +604,28 @@ static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi)
+ static inline bool has_not_enough_free_secs(struct f2fs_sb_info *sbi,
+ 					int freed, int needed)
+ {
+-	int node_secs = get_blocktype_secs(sbi, F2FS_DIRTY_NODES);
+-	int dent_secs = get_blocktype_secs(sbi, F2FS_DIRTY_DENTS);
+-	int imeta_secs = get_blocktype_secs(sbi, F2FS_DIRTY_IMETA);
++	unsigned int total_node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
++					get_pages(sbi, F2FS_DIRTY_DENTS) +
++					get_pages(sbi, F2FS_DIRTY_IMETA);
++	unsigned int total_dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
++	unsigned int node_secs = total_node_blocks / BLKS_PER_SEC(sbi);
++	unsigned int dent_secs = total_dent_blocks / BLKS_PER_SEC(sbi);
++	unsigned int node_blocks = total_node_blocks % BLKS_PER_SEC(sbi);
++	unsigned int dent_blocks = total_dent_blocks % BLKS_PER_SEC(sbi);
++	unsigned int free, need_lower, need_upper;
+ 
+ 	if (unlikely(is_sbi_flag_set(sbi, SBI_POR_DOING)))
+ 		return false;
+ 
+-	if (free_sections(sbi) + freed == reserved_sections(sbi) + needed &&
+-			has_curseg_enough_space(sbi))
++	free = free_sections(sbi) + freed;
++	need_lower = node_secs + dent_secs + reserved_sections(sbi) + needed;
++	need_upper = need_lower + node_blocks ? 1 : 0 + dent_blocks ? 1 : 0;
++
++	if (free > need_upper)
+ 		return false;
+-	return (free_sections(sbi) + freed) <=
+-		(node_secs + 2 * dent_secs + imeta_secs +
+-		reserved_sections(sbi) + needed);
++	else if (free <= need_lower)
++		return true;
++	return !has_curseg_enough_space(sbi, node_blocks, dent_blocks);
+ }
+ 
+ static inline bool f2fs_is_checkpoint_ready(struct f2fs_sb_info *sbi)
+-- 
+2.32.0
+
