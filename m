@@ -2,56 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 19:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 188A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 19:01:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241684AbiECTEz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 15:04:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33252 "EHLO
+        id S241721AbiECTFA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 15:05:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238698AbiECTEk (ORCPT
+        with ESMTP id S241510AbiECTEn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 15:04:40 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9412B269;
-        Tue,  3 May 2022 12:01:06 -0700 (PDT)
-Date:   Tue, 03 May 2022 19:01:04 -0000
+        Tue, 3 May 2022 15:04:43 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F6722B269;
+        Tue,  3 May 2022 12:01:09 -0700 (PDT)
+Date:   Tue, 03 May 2022 19:01:06 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651604465;
+        s=2020; t=1651604467;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=XMzq850vNfHhv+MvNguNCyeAr1+CeQZ1FuzBSbLtguk=;
-        b=g7EfAS++xoY5/xdPL2MUqi5CXf2mAFbuQgaqXsSNqpcDq2K2hWlNMu+VWSUVQdJrnpK2dn
-        bIm8MNvFQ5lFrNs/P/UI4j4xWGSldsbcyscXogFNSuk6TkCH+VDlkY/Quj+z3iamgkMx/j
-        oYP+CwXtIyfthwdliFo6FxPzPlQFrJAnwuvALFqyRJgpGFrQ7xoxT0RqIfyWCtmQbyzTo5
-        y+/LPz2hyv1pxwzjMg3mr+mU7aNxIY/KIsgikzSYY0Mo5fGhl0RPtrqmbBLc3BfmtuKLJk
-        py5oU/+ms0QOCYx8J4W4unAvMurWdnhlmPh8K+ek4QpEi4cWaH5sYy+gl9gOew==
+        bh=ZfbsK3DEwofUyZP10SDohoj0R8YYZ9/UiaSs68zJg/M=;
+        b=CpNdu6qRgsPFlatg/oTxj5KfHGBoyXQo0gIQSSN+syg7IBtDErY0rk0K9pDoo4RRX5DprV
+        xWapHyoOjkN8TsQ3iWY2/gvlxCM8U5+PD69tZfkAvZW2uHjQLvuQCHKcQKDXaD61T17wEA
+        00YiDm5dlbH28KvS7Kq8fKcS7FXK49XSp8JK/kch5OxwoT/Asub7aN56OWqWGSDx8e+1pB
+        Tuu6xVn7IqqMCyCxKe8rxkp728wv21L5RcgvSeLxTDZV3EMNKbtafe/xO5p43+omvikIeR
+        /4Ndt1mh9qCPDpx3fTRqtrvhpyWuB2rUkuFVbYkt8PiaumM71KnqRBXoR6JWhw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651604465;
+        s=2020e; t=1651604467;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=XMzq850vNfHhv+MvNguNCyeAr1+CeQZ1FuzBSbLtguk=;
-        b=gr0CKgfDfwUR8cBsLraVBvHUF4v5gpvPDIK297EvZs5Ias+5W2uccTppcks+YiWzmyyMS4
-        4CPOMshyEgtvOdCg==
+        bh=ZfbsK3DEwofUyZP10SDohoj0R8YYZ9/UiaSs68zJg/M=;
+        b=EJgSDBsW39CxBVnrMnqxs6GNhtkQ0cYP1xQvwYV9UEryXXvHwiWeioQVFPk6ExQvkT4vl5
+        lw/IJvjsqMZZ9aAQ==
 From:   "tip-bot2 for Lai Jiangshan" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/asm] x86/entry: Move CLD to the start of the idtentry macro
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+Subject: [tip: x86/asm] x86/entry: Switch the stack after error_entry() returns
+Cc:     Lai Jiangshan <jiangshan.ljs@antgroup.com>,
         Borislav Petkov <bp@suse.de>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220503032107.680190-5-jiangshanlai@gmail.com>
-References: <20220503032107.680190-5-jiangshanlai@gmail.com>
+In-Reply-To: <20220503032107.680190-3-jiangshanlai@gmail.com>
+References: <20220503032107.680190-3-jiangshanlai@gmail.com>
 MIME-Version: 1.0
-Message-ID: <165160446427.4207.18135528397275142825.tip-bot2@tip-bot2>
+Message-ID: <165160446663.4207.12038427447242778092.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,90 +61,84 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/asm branch of tip:
 
-Commit-ID:     c64cc2802a784ecfd25d39945e57e7a147854a5b
-Gitweb:        https://git.kernel.org/tip/c64cc2802a784ecfd25d39945e57e7a147854a5b
+Commit-ID:     520a7e80c96d655fbe4650d9cc985bd9d0443389
+Gitweb:        https://git.kernel.org/tip/520a7e80c96d655fbe4650d9cc985bd9d0443389
 Author:        Lai Jiangshan <jiangshan.ljs@antgroup.com>
-AuthorDate:    Thu, 21 Apr 2022 22:10:51 +08:00
+AuthorDate:    Thu, 21 Apr 2022 22:10:49 +08:00
 Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Tue, 03 May 2022 12:17:16 +02:00
+CommitterDate: Tue, 03 May 2022 11:35:34 +02:00
 
-x86/entry: Move CLD to the start of the idtentry macro
+x86/entry: Switch the stack after error_entry() returns
 
-Move it after CLAC.
+error_entry() calls fixup_bad_iret() before sync_regs() if it is a fault
+from a bad IRET, to copy pt_regs to the kernel stack. It switches to the
+kernel stack directly after sync_regs().
 
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
+But error_entry() itself is also a function call, so it has to stash
+the address it is going to return to, in %r12 which is unnecessarily
+complicated.
+
+Move the stack switching after error_entry() and get rid of the need to
+handle the return address.
+
+  [ bp: Massage commit message. ]
+
 Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220503032107.680190-5-jiangshanlai@gmail.com
+Link: https://lore.kernel.org/r/20220503032107.680190-3-jiangshanlai@gmail.com
 ---
- arch/x86/entry/entry_64.S | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/x86/entry/entry_64.S | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index b1cef3b..ab6ab6d 100644
+index ecbfca3..ca3e99e 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -371,6 +371,7 @@ SYM_CODE_START(\asmsym)
- 	UNWIND_HINT_IRET_REGS offset=\has_error_code*8
- 	ENDBR
- 	ASM_CLAC
-+	cld
+@@ -326,6 +326,8 @@ SYM_CODE_END(ret_from_fork)
+ .macro idtentry_body cfunc has_error_code:req
  
- 	.if \has_error_code == 0
- 		pushq	$-1			/* ORIG_RAX: no syscall to restart */
-@@ -439,6 +440,7 @@ SYM_CODE_START(\asmsym)
- 	UNWIND_HINT_IRET_REGS
- 	ENDBR
- 	ASM_CLAC
-+	cld
+ 	call	error_entry
++	movq	%rax, %rsp			/* switch to the task stack if from userspace */
++	ENCODE_FRAME_POINTER
+ 	UNWIND_HINT_REGS
  
- 	pushq	$-1			/* ORIG_RAX: no syscall to restart */
+ 	movq	%rsp, %rdi			/* pt_regs pointer into 1st argument*/
+@@ -1002,14 +1004,10 @@ SYM_CODE_START_LOCAL(error_entry)
+ 	/* We have user CR3.  Change to kernel CR3. */
+ 	SWITCH_TO_KERNEL_CR3 scratch_reg=%rax
  
-@@ -495,6 +497,7 @@ SYM_CODE_START(\asmsym)
- 	UNWIND_HINT_IRET_REGS
- 	ENDBR
- 	ASM_CLAC
-+	cld
++	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
+ .Lerror_entry_from_usermode_after_swapgs:
+ 	/* Put us onto the real thread stack. */
+-	popq	%r12				/* save return addr in %12 */
+-	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
+ 	call	sync_regs
+-	movq	%rax, %rsp			/* switch stack */
+-	ENCODE_FRAME_POINTER
+-	pushq	%r12
+ 	RET
  
  	/*
- 	 * If the entry is from userspace, switch stacks and treat it as
-@@ -557,6 +560,7 @@ SYM_CODE_START(\asmsym)
- 	UNWIND_HINT_IRET_REGS offset=8
- 	ENDBR
- 	ASM_CLAC
-+	cld
- 
- 	/* paranoid_entry returns GS information for paranoid_exit in EBX. */
- 	call	paranoid_entry
-@@ -882,7 +886,6 @@ SYM_CODE_END(xen_failsafe_callback)
-  */
- SYM_CODE_START_LOCAL(paranoid_entry)
- 	UNWIND_HINT_FUNC
--	cld
- 	PUSH_AND_CLEAR_REGS save_ret=1
- 	ENCODE_FRAME_POINTER 8
- 
-@@ -1000,7 +1003,6 @@ SYM_CODE_END(paranoid_exit)
-  */
- SYM_CODE_START_LOCAL(error_entry)
- 	UNWIND_HINT_FUNC
--	cld
- 	testb	$3, CS+8(%rsp)
- 	jz	.Lerror_kernelspace
- 
-@@ -1134,6 +1136,7 @@ SYM_CODE_START(asm_exc_nmi)
+@@ -1041,6 +1039,7 @@ SYM_CODE_START_LOCAL(error_entry)
  	 */
+ .Lerror_entry_done_lfence:
+ 	FENCE_SWAPGS_KERNEL_ENTRY
++	leaq	8(%rsp), %rax			/* return pt_regs pointer */
+ 	RET
  
- 	ASM_CLAC
-+	cld
- 
- 	/* Use %rdx as our temp variable throughout */
- 	pushq	%rdx
-@@ -1153,7 +1156,6 @@ SYM_CODE_START(asm_exc_nmi)
+ .Lbstep_iret:
+@@ -1061,12 +1060,9 @@ SYM_CODE_START_LOCAL(error_entry)
+ 	 * Pretend that the exception came from user mode: set up pt_regs
+ 	 * as if we faulted immediately after IRET.
  	 */
+-	popq	%r12				/* save return addr in %12 */
+-	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
++	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
+ 	call	fixup_bad_iret
+-	mov	%rax, %rsp
+-	ENCODE_FRAME_POINTER
+-	pushq	%r12
++	mov	%rax, %rdi
+ 	jmp	.Lerror_entry_from_usermode_after_swapgs
+ SYM_CODE_END(error_entry)
  
- 	swapgs
--	cld
- 	FENCE_SWAPGS_USER_ENTRY
- 	SWITCH_TO_KERNEL_CR3 scratch_reg=%rdx
- 	movq	%rsp, %rdx
