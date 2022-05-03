@@ -2,167 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 108B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B09DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:06:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229752AbiECGGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 02:06:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51768 "EHLO
+        id S229469AbiECGKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 02:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbiECGFx (ORCPT
+        with ESMTP id S229447AbiECGKJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 02:05:53 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3699033A35
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:02:20 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id j187-20020a638bc4000000b003c1922b0f1bso5927761pge.3
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 23:02:20 -0700 (PDT)
+        Tue, 3 May 2022 02:10:09 -0400
+Received: from mail-vk1-xa2d.google.com (mail-vk1-xa2d.google.com [IPv6:2607:f8b0:4864:20::a2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70773336F
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:06:37 -0700 (PDT)
+Received: by mail-vk1-xa2d.google.com with SMTP id h144so7115979vkh.3
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 23:06:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=lyIfp9262fAQLqy8qC0Pz4SUM4FAzF4N7A6nbmSHB2c=;
-        b=NTvfdy6F18lFgUV8clR+0g6Lw3bcq5UgO40+92jzBn0iZGYe3Xw9MVeBL3+fvWQw5N
-         LB3zzRWSU4HLPPJXB/Dyw7ffCQbjT5/AAfQ9WdrD5WumB7wAGc8Ii16bK1GqoyShUxFT
-         T3kMr/bzKtBbctXnCXxWSUOFUbNsLWTvcedPoBzLgEc0OoGSRyBn6HFbR1QI6Sxm0ib1
-         LETkvqwaLmlU1m3vcCJyPISK9GXof6Kzpm1nbZPFsnyvcGewnf1XII3NShtf5PlhixsL
-         o+7dDUpiE1S+Xes0LqAZedN1LJOIxguMZTGVLGJBoZivv+psCSQs/f/P1ED6jOuNtCkh
-         UBAg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=7N4xc/wMzuulecI04es1Ttu3ntRturBloFa549S0Y3Q=;
+        b=NEVrVzg9Pe7LgLukiVkco8UDTV6L59oHrngUV4vIQi1UdW9T5lIL78M4V4Q8qQKIFJ
+         DLHLChcTxDhzAcdGXIh5iSm1rZ7eJRQXd9My+REEAGmqWRKjHa2lyUXfN3+2N4UVX8Fq
+         GeujgEZzSMb6mfbE2Wf/objpyHuRUunvrk/NmpQq9qySmCUdy7VVudW3tWxLPdB4zlwo
+         S8V+p2TevVjqVcURU/nIg9m8fDH7xx7B/vg+nv5XR7UFULjcv7aWGiBl8oGFuVc1ZkqL
+         voxnEbtK36gSGYTkwYM92/5J0q9xcferwd12sIh4tg08NKsnaQ2SoD7+ougi/LEF3T59
+         56yQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=lyIfp9262fAQLqy8qC0Pz4SUM4FAzF4N7A6nbmSHB2c=;
-        b=uTwMnMp48pczwWUcX5KKLzkjTxOM237nOSKKaCH1OqtKa66FVfH1/FMdelSU3fRRW2
-         dG6Cehdy/CmB5kbov7274+ORdfN3qkLVvxeMNm56x4tTW6bXOZBTuviPXTai4NC57MDr
-         HwOJ8UiKKNd0Ixh7cTLnJnm+AIdInJe7t+H2n0y3jOYn2FWFa2KKIYY2UWJPZ8b60IzR
-         FKymj8GelhtgOwql7S9nxY7G/gmawWEt9NB/pPID6GYXwRWQ1oDP45JC1+Bv8QoSnA3y
-         xIRnfZnep/BH9LeOuJ2ZOCIqFWV8eW0HL6oCyRH/QCURvlwUnr0Hic/0j3MMWXV6EbeR
-         VxLg==
-X-Gm-Message-State: AOAM533jlRmciu5NHvchLct5xa0xOjX+Yx+nVmaOtUTXgiMtnkgAj04i
-        GIKxgJYSnM97iCtLyUvZ1UBsbqexE4g=
-X-Google-Smtp-Source: ABdhPJySoUR5II5RZFESdkmpRUNaWMWZc4db9m57Xb50n4CBJPr51KRBblc9PtMJAUv+qFnKQOynLlQ7TLQ=
-X-Received: from oupton3.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:21eb])
- (user=oupton job=sendgmr) by 2002:a17:90b:e89:b0:1dc:18dc:26a0 with SMTP id
- fv9-20020a17090b0e8900b001dc18dc26a0mr2986517pjb.188.1651557739605; Mon, 02
- May 2022 23:02:19 -0700 (PDT)
-Date:   Tue,  3 May 2022 06:02:05 +0000
-In-Reply-To: <20220503060205.2823727-1-oupton@google.com>
-Message-Id: <20220503060205.2823727-8-oupton@google.com>
-Mime-Version: 1.0
-References: <20220503060205.2823727-1-oupton@google.com>
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v4 7/7] Revert "KVM/arm64: Don't emulate a PMU for 32-bit
- guests if feature not set"
-From:   Oliver Upton <oupton@google.com>
-To:     kvmarm@lists.cs.columbia.edu
-Cc:     kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, maz@kernel.org, james.morse@arm.com,
-        alexandru.elisei@arm.com, suzuki.poulose@arm.com,
-        reijiw@google.com, ricarkol@google.com,
-        Oliver Upton <oupton@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=7N4xc/wMzuulecI04es1Ttu3ntRturBloFa549S0Y3Q=;
+        b=7PeyhJm2FyfB75edlLnpbMEu49zudWv+GWWuAczH0GG75R/PHl8d2DtOsUB9vPAHbt
+         0SeX5K4Ca61ec7nIbtDiV+bdFPX3r1hxfeDSKg9HaSknn1jtdpNtnajW/oXG8P6M2S1j
+         TUIrD+Wk20F+NVRwFGQcKvHpwPtWGNCTNHyWVis24toos4zodDmr4ZFkBJAhWdISeNT0
+         z2BjJIufDYWVgbnikHSkBcMJ02qYbB9YuNqrD6x4JHyPTk+plQukx3MMBKVLg23lecdX
+         rfDYcBziRC0VF7LKy8Z1o93p7twSNKnzsISUhnSAw4iUvd8/TcrQb5HLpzS+wB9A6fkp
+         DXGQ==
+X-Gm-Message-State: AOAM531eHHOvEfh5YN069ns8/GPW/vcjx1hyS6ZmnZjrdXruLmLZM39V
+        fyyWlRlVJ3H1400J6pPMt2AJ76Bh7YyNBFU3O8rRGg==
+X-Google-Smtp-Source: ABdhPJybo+d0kbBuduaYftUo3seNL4tZkqegmoofOoOd+SP9ml8MIN+ga2yGL+UEog18KotV0y6a+Lszzi+VSenrjx0=
+X-Received: by 2002:a1f:9b85:0:b0:32d:4d56:cf64 with SMTP id
+ d127-20020a1f9b85000000b0032d4d56cf64mr4410925vke.31.1651557996716; Mon, 02
+ May 2022 23:06:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
+ <20220501175813.tvytoosygtqlh3nn@offworld>
+In-Reply-To: <20220501175813.tvytoosygtqlh3nn@offworld>
+From:   Wei Xu <weixugc@google.com>
+Date:   Mon, 2 May 2022 23:06:25 -0700
+Message-ID: <CAAPL-u8i_wc15iJzU9s9V1YuuS+FQL2zdw3o7MqNnSFao3u4KA@mail.gmail.com>
+Subject: Re: RFC: Memory Tiering Kernel Interfaces
+To:     Wei Xu <weixugc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Yang Shi <shy828301@gmail.com>, Linux MM <linux-mm@kvack.org>,
+        Greg Thelen <gthelen@google.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alistair Popple <apopple@nvidia.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Feng Tang <feng.tang@intel.com>, Jonathan.Cameron@huawei.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 8f6379e207e7d834065a080f407a60d67349d961.
+On Sun, May 1, 2022 at 11:09 AM Davidlohr Bueso <dave@stgolabs.net> wrote:
+>
+> Nice summary, thanks. I don't know who of the interested parties will be
+> at lsfmm, but fyi we have a couple of sessions on memory tiering Tuesday
+> at 14:00 and 15:00.
+>
+> On Fri, 29 Apr 2022, Wei Xu wrote:
+>
+> >The current kernel has the basic memory tiering support: Inactive
+> >pages on a higher tier NUMA node can be migrated (demoted) to a lower
+> >tier NUMA node to make room for new allocations on the higher tier
+> >NUMA node.  Frequently accessed pages on a lower tier NUMA node can be
+> >migrated (promoted) to a higher tier NUMA node to improve the
+> >performance.
+>
+> Regardless of the promotion algorithm, at some point I see the NUMA hinting
+> fault mechanism being in the way of performance. It would be nice if hardware
+> began giving us page "heatmaps" instead of having to rely on faulting or
+> sampling based ways to identify hot memory.
 
-The original change was not problematic but chose nonarchitected PMU
-register behavior over a NULL deref as KVM failed to hide the PMU in the
-ID_DFR0.
+I agree with your comments on both NUMA hinting faults and
+hardware-assisted "heatmaps".
 
-Since KVM now provides a sane value for ID_DFR0 and UNDEFs the guest for
-unsupported accesses, drop the unneeded checks in PMU register handlers.
 
-Signed-off-by: Oliver Upton <oupton@google.com>
----
- arch/arm64/kvm/pmu-emul.c | 23 +----------------------
- 1 file changed, 1 insertion(+), 22 deletions(-)
+> >A tiering relationship between NUMA nodes in the form of demotion path
+> >is created during the kernel initialization and updated when a NUMA
+> >node is hot-added or hot-removed.  The current implementation puts all
+> >nodes with CPU into the top tier, and then builds the tiering hierarchy
+> >tier-by-tier by establishing the per-node demotion targets based on
+> >the distances between nodes.
+> >
+> >The current memory tiering interface needs to be improved to address
+> >several important use cases:
+> >
+> >* The current tiering initialization code always initializes
+> >  each memory-only NUMA node into a lower tier.  But a memory-only
+> >  NUMA node may have a high performance memory device (e.g. a DRAM
+> >  device attached via CXL.mem or a DRAM-backed memory-only node on
+> >  a virtual machine) and should be put into the top tier.
+>
+> At least the CXL memory (volatile or not) will still be slower than
+> regular DRAM, so I think that we'd not want this to be top-tier. But
+> in general, yes I agree that defining top tier as whether or not the
+> node has a CPU a bit limiting, as you've detailed here.
+>
+> >Tiering Hierarchy Initialization
+> >================================
+> >
+> >By default, all memory nodes are in the top tier (N_TOPTIER_MEMORY).
+> >
+> >A device driver can remove its memory nodes from the top tier, e.g.
+> >a dax driver can remove PMEM nodes from the top tier.
+> >
+> >The kernel builds the memory tiering hierarchy and per-node demotion
+> >order tier-by-tier starting from N_TOPTIER_MEMORY.  For a node N, the
+> >best distance nodes in the next lower tier are assigned to
+> >node_demotion[N].preferred and all the nodes in the next lower tier
+> >are assigned to node_demotion[N].allowed.
+> >
+> >node_demotion[N].preferred can be empty if no preferred demotion node
+> >is available for node N.
+>
+> Upon cases where there more than one possible demotion node (with equal
+> cost), I'm wondering if we want to do something better than choosing
+> randomly, like we do now - perhaps round robin? Of course anything
+> like this will require actual performance data, something I have seen
+> very little of.
 
-diff --git a/arch/arm64/kvm/pmu-emul.c b/arch/arm64/kvm/pmu-emul.c
-index 3dc990ac4f44..78fdc443adc7 100644
---- a/arch/arm64/kvm/pmu-emul.c
-+++ b/arch/arm64/kvm/pmu-emul.c
-@@ -177,9 +177,6 @@ u64 kvm_pmu_get_counter_value(struct kvm_vcpu *vcpu, u64 select_idx)
- 	struct kvm_pmu *pmu = &vcpu->arch.pmu;
- 	struct kvm_pmc *pmc = &pmu->pmc[select_idx];
- 
--	if (!kvm_vcpu_has_pmu(vcpu))
--		return 0;
--
- 	counter = kvm_pmu_get_pair_counter_value(vcpu, pmc);
- 
- 	if (kvm_pmu_pmc_is_chained(pmc) &&
-@@ -201,9 +198,6 @@ void kvm_pmu_set_counter_value(struct kvm_vcpu *vcpu, u64 select_idx, u64 val)
- {
- 	u64 reg;
- 
--	if (!kvm_vcpu_has_pmu(vcpu))
--		return;
--
- 	reg = (select_idx == ARMV8_PMU_CYCLE_IDX)
- 	      ? PMCCNTR_EL0 : PMEVCNTR0_EL0 + select_idx;
- 	__vcpu_sys_reg(vcpu, reg) += (s64)val - kvm_pmu_get_counter_value(vcpu, select_idx);
-@@ -328,9 +322,6 @@ void kvm_pmu_enable_counter_mask(struct kvm_vcpu *vcpu, u64 val)
- 	struct kvm_pmu *pmu = &vcpu->arch.pmu;
- 	struct kvm_pmc *pmc;
- 
--	if (!kvm_vcpu_has_pmu(vcpu))
--		return;
--
- 	if (!(__vcpu_sys_reg(vcpu, PMCR_EL0) & ARMV8_PMU_PMCR_E) || !val)
- 		return;
- 
-@@ -366,7 +357,7 @@ void kvm_pmu_disable_counter_mask(struct kvm_vcpu *vcpu, u64 val)
- 	struct kvm_pmu *pmu = &vcpu->arch.pmu;
- 	struct kvm_pmc *pmc;
- 
--	if (!kvm_vcpu_has_pmu(vcpu) || !val)
-+	if (!val)
- 		return;
- 
- 	for (i = 0; i < ARMV8_PMU_MAX_COUNTERS; i++) {
-@@ -536,9 +527,6 @@ void kvm_pmu_software_increment(struct kvm_vcpu *vcpu, u64 val)
- 	struct kvm_pmu *pmu = &vcpu->arch.pmu;
- 	int i;
- 
--	if (!kvm_vcpu_has_pmu(vcpu))
--		return;
--
- 	if (!(__vcpu_sys_reg(vcpu, PMCR_EL0) & ARMV8_PMU_PMCR_E))
- 		return;
- 
-@@ -588,9 +576,6 @@ void kvm_pmu_handle_pmcr(struct kvm_vcpu *vcpu, u64 val)
- {
- 	int i;
- 
--	if (!kvm_vcpu_has_pmu(vcpu))
--		return;
--
- 	if (val & ARMV8_PMU_PMCR_E) {
- 		kvm_pmu_enable_counter_mask(vcpu,
- 		       __vcpu_sys_reg(vcpu, PMCNTENSET_EL0));
-@@ -754,9 +739,6 @@ void kvm_pmu_set_counter_event_type(struct kvm_vcpu *vcpu, u64 data,
- {
- 	u64 reg, mask;
- 
--	if (!kvm_vcpu_has_pmu(vcpu))
--		return;
--
- 	mask  =  ARMV8_PMU_EVTYPE_MASK;
- 	mask &= ~ARMV8_PMU_EVTYPE_EVENT;
- 	mask |= kvm_pmu_event_mask(vcpu->kvm);
-@@ -845,9 +827,6 @@ u64 kvm_pmu_get_pmceid(struct kvm_vcpu *vcpu, bool pmceid1)
- 	u64 val, mask = 0;
- 	int base, i, nr_events;
- 
--	if (!kvm_vcpu_has_pmu(vcpu))
--		return 0;
--
- 	if (!pmceid1) {
- 		val = read_sysreg(pmceid0_el0);
- 		base = 0;
--- 
-2.36.0.464.gb9c8b46e94-goog
+I'd prefer that the demotion node selection follows the way how the
+kernel selects the node/zone for normal allocations.  If we want to
+group several demotion nodes with equal cost together (e.g. to better
+utilize the bandwidth from these nodes), we'd better to improve such
+an optimization in __alloc_pages_nodemask() to benefit normal
+allocations as well.
 
+> >Memory tiering hierarchy is rebuilt upon hot-add or hot-remove of a
+> >memory node, but is NOT rebuilt upon hot-add or hot-remove of a CPU
+> >node.
+>
+> I think this makes sense.
+>
+> Thanks,
+> Davidlohr
