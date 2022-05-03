@@ -2,111 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3836C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:04:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9335DC4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:05:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229769AbiECUHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 16:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36348 "EHLO
+        id S238086AbiECUJR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 16:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236354AbiECUHq (ORCPT
+        with ESMTP id S237119AbiECUI5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 16:07:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93517403CC;
-        Tue,  3 May 2022 13:04:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F6BCB82062;
-        Tue,  3 May 2022 20:04:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21F65C385A4;
-        Tue,  3 May 2022 20:04:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651608251;
-        bh=yEwIKUkYrUe+UB4k6sDSTOcJaUQFRLK0s3/p+P/axO8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GI4PqtOAj9PMvq17VbxQwejZWyW9waSFBPKixzYGnlcgVZKbWRTtbDsNIZZwaqgJW
-         oRbRzsBLXIeXqedBxITy5sBQxpsdE8I0dm3cEPiXGUZcnaeNIQ12WIBdr1DNLQll1t
-         +pUS07koL10aaZ31K0ZVF/uLZ+EZZBoxW+DCQadgwgerGjiYcHn3UgSgB4OcJyJiYe
-         i6tehN8h7cCda5ctDbs17t6pRzGracdobePQtcHkfSJEEz+G6rES43RSs+L4zfA7c4
-         iHfsO8Ek/+4eQNxEj3/7v/WG9g0aL4gDw9K4vOzjBpm1V5OnkKQ8fUIpjm9PDrF8aA
-         kouE3UjVHDJkQ==
-Date:   Tue, 3 May 2022 13:04:08 -0700
-From:   Jaegeuk Kim <jaegeuk@kernel.org>
-To:     Pankaj Raghav <p.raghav@samsung.com>
-Cc:     axboe@kernel.dk, snitzer@kernel.org, hch@lst.de, mcgrof@kernel.org,
-        naohiro.aota@wdc.com, sagi@grimberg.me,
-        damien.lemoal@opensource.wdc.com, dsterba@suse.com,
-        johannes.thumshirn@wdc.com, linux-kernel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, clm@fb.com, gost.dev@samsung.com,
-        chao@kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        josef@toxicpanda.com, jonathan.derrick@linux.dev, agk@redhat.com,
-        kbusch@kernel.org, kch@nvidia.com, linux-nvme@lists.infradead.org,
-        dm-devel@redhat.com, bvanassche@acm.org, jiangbo.365@bytedance.com,
-        linux-fsdevel@vger.kernel.org, matias.bjorling@wdc.com,
-        linux-block@vger.kernel.org
-Subject: Re: [PATCH 14/16] f2fs: call bdev_zone_sectors() only once on
- init_blkz_info()
-Message-ID: <YnGKuET79JQ+ssPp@google.com>
-References: <20220427160255.300418-1-p.raghav@samsung.com>
- <CGME20220427160311eucas1p151141fc73adc590b40ad6f935b1ac214@eucas1p1.samsung.com>
- <20220427160255.300418-15-p.raghav@samsung.com>
+        Tue, 3 May 2022 16:08:57 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73CD72DFA;
+        Tue,  3 May 2022 13:05:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=6y73UrLkuBeZbqQWQxE1t7/fvOkdPG7FrQgvW5TbCZk=; b=uV47lbaYCI77SzKFgjANFlLdPi
+        L02iSgJfX9+DktwQKv2+gW04aiFG88sPWwCOpfbWVfsKcu5mcv6/fSFU+nTtYhp4/nG6vb6sK6vO1
+        VuOYw0zbi0N5oB1BXqerDMF7l1psgHzPI174q4fF7eoDfL7w+JUkH5bAerAOHbru+Yd3kpigqC8Qv
+        qaW65HJ2rsoeJpsMNjSwiawKJyE5v7ztmXTNDLnq1z+n3rPjhh/MtEwPoeXxzP0/w7t/fjkR8jMOD
+        yUESiFI99BpsJg2J6h3EUzozTZNBVnIfNljmTXGlRhcUON7mxblWtRdlKKftawmCl9vCGYK6Z3Mag
+        IuaQzkHg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nlylv-007UQd-7t; Tue, 03 May 2022 20:05:23 +0000
+Date:   Tue, 3 May 2022 13:05:23 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     linux-doc@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Russ Weight <russell.h.weight@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: [PATCH] firmware_loader: describe 'module' parameter of
+ firmware_upload_register()
+Message-ID: <YnGLA92KGlloOsLf@bombadil.infradead.org>
+References: <20220502051456.30741-1-bagasdotme@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220427160255.300418-15-p.raghav@samsung.com>
+In-Reply-To: <20220502051456.30741-1-bagasdotme@gmail.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied to f2fs tree. Thanks,
+On Mon, May 02, 2022 at 12:14:56PM +0700, Bagas Sanjaya wrote:
+> Stephen Rothwell reported kernel-doc warning:
+> 
+> drivers/base/firmware_loader/sysfs_upload.c:285: warning: Function parameter or member 'module' not described in 'firmware_upload_register'
+> 
+> Fix the warning by describing the 'module' parameter.
+> 
+> Fixes: 97730bbb242cde ("firmware_loader: Add firmware-upload support")
+> Link: https://lore.kernel.org/linux-next/20220502083658.266d55f8@canb.auug.org.au/
+> Cc: Stephen Rothwell <sfr@canb.auug.org.au>
+> Cc: Russ Weight <russell.h.weight@intel.com>
+> Cc: Luis Chamberlain <mcgrof@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+> Cc: Linux Next Mailing List <linux-next@vger.kernel.org>
+> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-On 04/27, Pankaj Raghav wrote:
-> From: Luis Chamberlain <mcgrof@kernel.org>
-> 
-> Instead of calling bdev_zone_sectors() multiple times, call
-> it once and cache the value locally. This will make the
-> subsequent change easier to read.
-> 
-> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-> Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
-> ---
->  fs/f2fs/super.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
-> 
-> diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
-> index ea939db18f88..f64761a15df7 100644
-> --- a/fs/f2fs/super.c
-> +++ b/fs/f2fs/super.c
-> @@ -3678,22 +3678,25 @@ static int init_blkz_info(struct f2fs_sb_info *sbi, int devi)
->  	struct block_device *bdev = FDEV(devi).bdev;
->  	sector_t nr_sectors = bdev_nr_sectors(bdev);
->  	struct f2fs_report_zones_args rep_zone_arg;
-> +	u64 zone_sectors;
->  	int ret;
->  
->  	if (!f2fs_sb_has_blkzoned(sbi))
->  		return 0;
->  
-> +	zone_sectors = bdev_zone_sectors(bdev);
-> +
->  	if (sbi->blocks_per_blkz && sbi->blocks_per_blkz !=
-> -				SECTOR_TO_BLOCK(bdev_zone_sectors(bdev)))
-> +				SECTOR_TO_BLOCK(zone_sectors))
->  		return -EINVAL;
-> -	sbi->blocks_per_blkz = SECTOR_TO_BLOCK(bdev_zone_sectors(bdev));
-> +	sbi->blocks_per_blkz = SECTOR_TO_BLOCK(zone_sectors);
->  	if (sbi->log_blocks_per_blkz && sbi->log_blocks_per_blkz !=
->  				__ilog2_u32(sbi->blocks_per_blkz))
->  		return -EINVAL;
->  	sbi->log_blocks_per_blkz = __ilog2_u32(sbi->blocks_per_blkz);
->  	FDEV(devi).nr_blkz = SECTOR_TO_BLOCK(nr_sectors) >>
->  					sbi->log_blocks_per_blkz;
-> -	if (nr_sectors & (bdev_zone_sectors(bdev) - 1))
-> +	if (nr_sectors & (zone_sectors - 1))
->  		FDEV(devi).nr_blkz++;
->  
->  	FDEV(devi).blkz_seq = f2fs_kvzalloc(sbi,
-> -- 
-> 2.25.1
+Acked-by: Luis Chamberlain <mcgrof@kernel.org>
+
+  Luis
