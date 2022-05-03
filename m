@@ -2,132 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97096C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 10:46:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 262C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 10:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233121AbiECKuP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 06:50:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43378 "EHLO
+        id S234262AbiECKvu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 06:51:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234269AbiECKtj (ORCPT
+        with ESMTP id S234385AbiECKvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 06:49:39 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C243625E8A;
-        Tue,  3 May 2022 03:46:06 -0700 (PDT)
-Received: from mail-yw1-f182.google.com ([209.85.128.182]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MuF4v-1o6fdx2cY9-00uVlI; Tue, 03 May 2022 12:46:04 +0200
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-2f7b815ac06so175216487b3.3;
-        Tue, 03 May 2022 03:46:04 -0700 (PDT)
-X-Gm-Message-State: AOAM530SHApsi5p4D3Wx1ZoWrXfqN/TgkqydF9WILkkbIYLyoO2DiLeu
-        7tv5+SxIHt/QPkY5s48HwaLwDCsG+/350+/aG2c=
-X-Google-Smtp-Source: ABdhPJylICN3Lkv4MnajtKZ/mtz5v98V10dI0vpMrO0w3cw4ngaYj64jqdkCQYAkS/F2fDxRL5svru9bENy/YJPD9Ww=
-X-Received: by 2002:a0d:fc83:0:b0:2e5:b0f4:c125 with SMTP id
- m125-20020a0dfc83000000b002e5b0f4c125mr14878150ywf.347.1651574763350; Tue, 03
- May 2022 03:46:03 -0700 (PDT)
+        Tue, 3 May 2022 06:51:42 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F5B224589;
+        Tue,  3 May 2022 03:47:15 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id 7so9839754pga.12;
+        Tue, 03 May 2022 03:47:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=aG/aVj/0In7nlCfbR9Z9KrTZBBSD3p1SNhXLiwsJA/g=;
+        b=GpO8rnAR/dME4iamMQ8zzAZCRWBqhDhX5g7aSNqljX3bWS9BvCtq9sxh5vCRjMeBi1
+         mTgqn3Thn5ihldNIF0S/J+qeA3MoaNzZNcOYFHa5xKD2KXK+EAe0b+ZnoIxqqdpk78ng
+         jJPcJAPE6AFE9p0MEMDppLe8bolez3YdyEIRSmQJfqzkiE/fzsb6v2lJhAlJhM6/GdOu
+         nS1mzgNIrh252QunHXrwmrWGeEiY7fXEYugE/pCvn5KtZyGob/KPaEOCZd3QTUIflmUg
+         UiP6LPTb2lHvbaHsXEWzXG2VbrtKEuuxGKtd+6ZTO4M2BK3ZKMChsZysjrXUODucZkzj
+         J9HA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=aG/aVj/0In7nlCfbR9Z9KrTZBBSD3p1SNhXLiwsJA/g=;
+        b=QX7I3Cp7WfK0Wm1S3QadGw7ftBslITpCzvsg6cR+u8NIWjFO7mvZglJXNaKjwVyV1s
+         qpdDKXoOUNazAIml5wkDfCSWoug5r13ZD0+VCuLcU6qtZ/hotGga8eBUyoQrnQBY99L/
+         D2H2gyOVDCJMm4nqnAX009Huek2h5zUCUklBTkKov5Gsedvl4jOwFbmsK7MpHrOaKfMw
+         vDWiMbUuukOPWDo1CuJEFQdxzjKLthqZX39VOKrv8kDgJMtnAkS/LgamYgEY8p1JfsYG
+         U+WS3ctxD5kc0jgaxQ5Es6WHM8syXhwonjDavJ62gPgWEhf7I6eIlHdfdzCJQt3haLvd
+         BB+g==
+X-Gm-Message-State: AOAM530/54vTkeM56C+CYZShkLFwLmQwj7AV8avDzUTcZJV69a0G43rD
+        xn5DGYODz1aI+y7Nak3uFhfRgoXpHzw=
+X-Google-Smtp-Source: ABdhPJy36XDIH1tWs8mU1C2Sy4+ydHmo/gCupYIDbBQ3hofF2PO26jlJlwoOqQJpoLaGt5MIAFoH8Q==
+X-Received: by 2002:aa7:84cf:0:b0:50d:d25a:5d37 with SMTP id x15-20020aa784cf000000b0050dd25a5d37mr13741177pfn.84.1651574835041;
+        Tue, 03 May 2022 03:47:15 -0700 (PDT)
+Received: from localhost.localdomain (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id s21-20020aa78295000000b0050dc76281b7sm6270533pfm.145.2022.05.03.03.47.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 03:47:14 -0700 (PDT)
+From:   Akira Yokosawa <akiyks@gmail.com>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     Akira Yokosawa <akiyks@gmail.com>,
+        Tsugikazu Shibata <shibata@linuxfoundation.org>,
+        Kosuke Fujimoto <fujimotokosuke0@gmail.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 2/5] docs/ja_JP/SubmittingPatches: Suggest the use of scripts/get_maintainer.pl
+Date:   Tue,  3 May 2022 19:46:50 +0900
+Message-Id: <20220503104650.49068-1-akiyks@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220503102429.48304-1-akiyks@gmail.com>
+References: <20220503102429.48304-1-akiyks@gmail.com>
 MIME-Version: 1.0
-References: <20220502204050.88316-1-nick.hawkins@hpe.com> <20220502204050.88316-7-nick.hawkins@hpe.com>
-In-Reply-To: <20220502204050.88316-7-nick.hawkins@hpe.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 3 May 2022 12:45:47 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2rzmVrpnf2r73iXB=T06OMOsgwyq1i8z7swuOW-q88eQ@mail.gmail.com>
-Message-ID: <CAK8P3a2rzmVrpnf2r73iXB=T06OMOsgwyq1i8z7swuOW-q88eQ@mail.gmail.com>
-Subject: Re: [PATCH v6 7/8] ARM: dts: Introduce HPE GXP Device tree
-To:     "Hawkins, Nick" <nick.hawkins@hpe.com>
-Cc:     "Verdun, Jean-Marie" <verdun@hpe.com>, nick@hpe.com,
-        Joel Stanley <joel@jms.id.au>, Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Olof Johansson <olof@lixom.net>, SoC Team <soc@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        DTML <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:wXneJVDhHANw/r8NfxFZJbswJ5oULr5QQoJSkOab5zb02IKUsK3
- hU48wlq9luJx9Qoaz/y6lqRqo5n7oJNPBxLfvqaj8nctFIQCVlU5tKgYq+02fahppNXbB0V
- Vzj9eLNbGpAh7x+eGFiamO7uSy7tAvhbGGakj89UvhYf0/J7GwIXwYt1dyUmuerSLd9EFMY
- H0Wcb1padTZHYgf0IaKNw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:7hyjKbR4LJ4=:yf7szBniFb+nnTPpUNum3x
- /XO7jhSGCpyiLmiCadG31blS20eHeYAMn9tTRqC7f4TYpSzPbtuDNaQDWsv7vulp6usimvrsx
- 3/n1QFpAEAxZhjLtAJADndzm8sh3Fep68O9JuocpLwUH5Gha6tjnMtO43MwRQ6DzFBc7bzit9
- e/Gmp5CKq2mSC7K1tNdsBdhnlFW8lbnuRbpyNq5LW0k7lP4AK7sgQBonBr1dMD0aCN8A1Dyhh
- gJ6Bn+Ygv+0F82GgVo6ueAm6FVA3vibtefDhwHMJ0Vk14e5rBJrATbGx/F9DrnrOTKLmog4k8
- 0x4jQg7NE5aZb+GTYkgTUTTpNfZTMGzOuA9er1/t2S9hFbqqwHfb4h974TR1QLLhQFGh4glrz
- cKQLLAACQnE7wTFvixDR+Dza0rNSNA2ohxi27f9VQvqwkgNTvcrCB/UFzCW+pxVl0BagwViNF
- xdarzmVSKhOxKhNkXRt5Nx9DfEIy4jALh7yy6/3trRIlOfCLMxy+3kxs8Ma28gTLD/OwtcXX/
- 26Fh0wpYqf2C5q1USwjheQwcXM6DzmBbZNBvkQ+KX48Z0yyLRmGnuhrbosyRpbBVYcQYJLdJF
- ZFbRiqQ6QCJHK3IThp9su3qWoEqPvSZjh3dVb1or9qWVRgwmr1GHGnYy+oLvpklWtduLOcLK/
- SFDJoukHhU1x9hjN71WbME6yd1AA7dlyyOxnsOzEIcNrJwta3UX5l9T05vbL05byv4bjrjq3j
- qYvpm509Jw64fu9QPLx21yaXVvAdlvkzZDHkAVKMG9G/nOG3dFFDdQjqFjVNf8068ETD3m24h
- fTDWaDGuqUlYGboIlcFPOiJol1gdX4b/7BYWg9dgo+02cYdGA4=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 2, 2022 at 10:40 PM <nick.hawkins@hpe.com> wrote:
+Reflect changes made in commit e52d2e1f25f0
+("Documentation/SubmittingPatches: suggested the use of
+scripts/get_maintainer.pl").
 
-> --- /dev/null
-> +++ b/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
-> @@ -0,0 +1,13 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Device Tree file for HPE DL360Gen10
-> + */
-> +
-> +/include/ "hpe-gxp.dtsi"
-> +
-> +/ {
-> +       #address-cells = <1>;
-> +       #size-cells = <1>;
-> +       compatible = "hpe,gxp-dl360gen10","hpe,gxp";
-> +       model = "Hewlett Packard Enterprise ProLiant dl360 Gen10";
-> +};
+Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+Cc: Tsugikazu Shibata <shibata@linuxfoundation.org>
+Cc: Kosuke Fujimoto <fujimotokosuke0@gmail.com>
+Cc: linux-doc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ Documentation/translations/ja_JP/SubmittingPatches | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-In the board specific file, you normally have "aliases", "chosen" and "memory"
-nodes that define e.g. which uart is used for the console.
+diff --git a/Documentation/translations/ja_JP/SubmittingPatches b/Documentation/translations/ja_JP/SubmittingPatches
+index c986d925de51..230e62401c78 100644
+--- a/Documentation/translations/ja_JP/SubmittingPatches
++++ b/Documentation/translations/ja_JP/SubmittingPatches
+@@ -162,7 +162,8 @@ http://savannah.nongnu.org/projects/quilt
+ 
+ MAINTAINERS ファイルとソースコードに目を通してください。そして、その変
+ 更がメンテナのいる特定のサブシステムに加えられるものであることが分か
+-れば、その人に電子メールを送ってください。
++れば、その人に電子メールを送ってください。その際
++./scripts/get_maintainers.pl のスクリプトが有用です。
+ 
+ もし、メンテナが載っていなかったり、メンテナからの応答がないなら、
+ LKML ( linux-kernel@vger.kernel.org )へパッチを送ってください。ほとんど
+-- 
+2.25.1
 
-> diff --git a/arch/arm/boot/dts/hpe-gxp.dtsi b/arch/arm/boot/dts/hpe-gxp.dtsi
-> new file mode 100644
-> index 000000000000..7a99e174e4b3
-> --- /dev/null
-> +++ b/arch/arm/boot/dts/hpe-gxp.dtsi
-> @@ -0,0 +1,132 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Device Tree file for HPE GXP
-> + */
-> +
-> +/dts-v1/;
-> +/ {
-> +       model = "Hewlett Packard Enterprise GXP BMC";
-> +       compatible = "hpe,gxp", "hpe,gxp-dl360gen10";
-
-I think "hpe,gxp-dl360gen10" is misplaced here, if that is the identifier
-of a particular machine rather than the SoC.
-
-> +       memory@40000000 {
-> +               device_type = "memory";
-> +               reg = <0x40000000 0x20000000>;
-> +       };
-
-If the memory is outside of the SoC, it should not be here.
-
-> +       axi {
-> +               compatible = "simple-bus";
-> +               #address-cells = <1>;
-> +               #size-cells = <1>;
-> +               ranges;
-> +               dma-ranges;
-> +
-> +               L2: cache-controller@b0040000 {
-> +                       compatible = "arm,pl310-cache";
-> +                       reg = <0xb0040000 0xFFC>;
-> +                       cache-unified;
-> +                       cache-level = <2>;
-> +               };
-
-The length of the register area looks wrong, this is usually the full
-4KB area, rather than leaving out the last four bytes.
-
-        Arnd
