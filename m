@@ -2,85 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 619B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 22:26:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3353C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 22:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243589AbiECWaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 18:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47544 "EHLO
+        id S243702AbiECWb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 18:31:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235020AbiECWaK (ORCPT
+        with ESMTP id S235020AbiECWby (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 18:30:10 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1BC925C63;
-        Tue,  3 May 2022 15:26:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651616796; x=1683152796;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=q2lfP6lL4V6JxT4T08VZfjVMMWww9jkNTtb6NsjN4dU=;
-  b=xeNoWUws0dXt7yo3kbpif2LQTKzNcQTDwv5vVscivt8kkKCfZyCy2rxm
-   eJWyTtm+zEediZKzgUF3/6zmg/lyNn5dY2WqUZkaeEOyLO4wyzMXYVaEQ
-   pqZbRPchFsaa2puOb4eCeik2epVQz+lDUpZyjAOPGGvscOnM1PtN0YHWx
-   o=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 03 May 2022 15:26:35 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 15:26:34 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 3 May 2022 15:26:33 -0700
-Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 3 May 2022
- 15:26:31 -0700
-Date:   Tue, 3 May 2022 18:26:29 -0400
-From:   Qian Cai <quic_qiancai@quicinc.com>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-CC:     Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        <lkft-triage@lists.linaro.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Arnd Bergmann <arnd@arndb.de>, "Zi Yan" <ziy@nvidia.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "David Hildenbrand" <david@redhat.com>,
-        Eric Ren <renzhengeek@gmail.com>,
-        "kernel test robot" <lkp@intel.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        "Mike Rapoport" <rppt@linux.ibm.com>,
-        Minchan Kim <minchan@kernel.org>,
-        "Oscar Salvador" <osalvador@suse.de>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Chen Wandun <chenwandun@huawei.com>, NeilBrown <neilb@suse.de>,
-        <joao.m.martins@oracle.com>, <mawupeng1@huawei.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Song Liu <song@kernel.org>
-Subject: Re: [next] mm: libhugetlbfs: WARNING: at mm/page_alloc.c:5368
- __alloc_pages
-Message-ID: <YnGsFS5C1bi5TCHN@qian>
-References: <CA+G9fYveMF-NU-rvrsbaora2g2QWxrkF7AWViuDrJyN9mNScJg@mail.gmail.com>
- <20220429160317.GA71@qian>
- <CA+G9fYui9OuyFbg7SV8D_4ueC_Jc=71ybbhBeif0bczo957Hqg@mail.gmail.com>
+        Tue, 3 May 2022 18:31:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7A02725C5A
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 15:28:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651616900;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XuOARFW3gYZOmM4Y4nSXFBD8lHm6BchzW975izB6OwE=;
+        b=iuBRe20hnQHQVQ0swIUR96GUeNQGJnMv7wv9r87aIyy08tnwLb0gWhiH6ScRw6cLfGiTlX
+        ixMtg4sS1gNcl8V6wmaVoEOP4iJO8bbDfjPo0uzq8Z07JuSMTUwbJQadrNcURt/zwFkhYr
+        ugc9Zrea8eiWpeImx666Qk9IyOfa3KQ=
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com
+ [209.85.160.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-627-jzvhMj81N7y9tKQjdCVuKQ-1; Tue, 03 May 2022 16:21:09 -0400
+X-MC-Unique: jzvhMj81N7y9tKQjdCVuKQ-1
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-e1fa5c533eso6398262fac.19
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 13:21:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=XuOARFW3gYZOmM4Y4nSXFBD8lHm6BchzW975izB6OwE=;
+        b=wtdmET3sB2ox6gIQ/lfvZq/Y5mkOQRZH3N+2zdKkkFrrq6js89hUo6iJ3xlLto5zTY
+         17/HgCsAAeCS9YPcwEGue5mv56Q5//M5W4uxRlTVOJBW0FkQpHoHV+etgIrp9qJdgMVk
+         V5nRz0rwKToxz6UOK95Awa1GDUc0LpReC6MYLcFXYdSjEQ1w9OF0P15nIAFlA38nTOi9
+         HCrdeZwJLjfTqhvOoiLdxkdm3pVNZ8Fgc7kMSaPWTz2uYygAyMpsYnowbbvhV/aSvhvn
+         zVw8y7T59dtqZ/l4miLFQl2ukBdn7wCr9sYX4IbSuIjc9+zSt3owvt8jn+AyiEYmAIhS
+         EL7g==
+X-Gm-Message-State: AOAM532FIK2NE1+gnuuPHx/3jTxo3H2+gCLagQ4T89trf25M6C2D7SBr
+        z0chpbcL3UYe2bL9+8WJim224zQYXZCfVqQK4GgztHfczIGyouBXEPGHT8XQJBLYskAfMYVf6jX
+        vS4iK80cquCcgLa3CCzIoZgsS
+X-Received: by 2002:a05:6808:14d3:b0:325:ed6b:e748 with SMTP id f19-20020a05680814d300b00325ed6be748mr2683340oiw.105.1651609267936;
+        Tue, 03 May 2022 13:21:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwKRbb5OLkMV2UmDQ1VLpoVhTPJwDt2cIVnFXrIsYyzxEIudxX/SPJKn8BJ62U+FH4qM5Vz5Q==
+X-Received: by 2002:a05:6808:14d3:b0:325:ed6b:e748 with SMTP id f19-20020a05680814d300b00325ed6be748mr2683301oiw.105.1651609267392;
+        Tue, 03 May 2022 13:21:07 -0700 (PDT)
+Received: from [10.10.69.234] ([8.34.116.185])
+        by smtp.gmail.com with ESMTPSA id w11-20020a4adecb000000b0035eb4e5a6cesm5328939oou.36.2022.05.03.13.21.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 13:21:06 -0700 (PDT)
+Message-ID: <2bb92a84-18f4-d007-9465-fdc19f6f1c86@redhat.com>
+Date:   Tue, 3 May 2022 22:21:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYui9OuyFbg7SV8D_4ueC_Jc=71ybbhBeif0bczo957Hqg@mail.gmail.com>
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCHv5 02/12] mm: Add support for unaccepted memory
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Mike Rapoport <rppt@kernel.org>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mike Rapoport <rppt@linux.ibm.com>
+References: <20220425033934.68551-1-kirill.shutemov@linux.intel.com>
+ <20220425033934.68551-3-kirill.shutemov@linux.intel.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220425033934.68551-3-kirill.shutemov@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 30, 2022 at 03:41:41AM +0530, Naresh Kamboju wrote:
-> The reported kernel warning was not solved by reverted above patches.
 
-FYI, we found the sucker.
+>  
+> +/*
+> + * Page acceptance can be very slow. Do not call under critical locks.
+> + */
+> +static void accept_page(struct page *page, unsigned int order)
+> +{
+> +	phys_addr_t start = page_to_phys(page);
+> +	int i;
+> +
+> +	accept_memory(start, start + (PAGE_SIZE << order));
+> +
+> +	for (i = 0; i < (1 << order); i++) {
+> +		if (PageUnaccepted(page + i))
+> +			__ClearPageUnaccepted(page + i);
+> +	}
+> +}
 
-https://lore.kernel.org/all/YnGrbEt3oBBTly7u@qian/
+What was the rationale of leaving PageUnaccepted() set on sub-pages when
+merging pages?
+
+I'd just clear the flag when merging and avoid the loop here. You could
+even assert here that we don't have any PageUnaccepted() on tail pages.
+
+-- 
+Thanks,
+
+David / dhildenb
+
