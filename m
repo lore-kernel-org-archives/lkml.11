@@ -2,197 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BCE1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24489C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241350AbiECSc2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 14:32:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48570 "EHLO
+        id S241365AbiECSdC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 14:33:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235501AbiECScV (ORCPT
+        with ESMTP id S235501AbiECSdA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 14:32:21 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7303CFF5
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 11:28:47 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id v9so3686731qkp.11
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 11:28:47 -0700 (PDT)
+        Tue, 3 May 2022 14:33:00 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 572533CFDA
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 11:29:27 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id c11so14675282wrn.8
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 11:29:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=iFzlk+xOmTmM/Rg9uDKOcUmWuXtZUa3NXSFCcREp6dA=;
-        b=VLAEGb/xxfXFOdK14PjW8BMKhVNfQ2mlyO22SQw42f+1nio4diX27liKNCU1qxLzyC
-         W0pcdAVCm0R4VvXyf73HIBA2IdvUlbsG2ttkPo32xoY6eQNDthM0yl3R4uERQqzJocY0
-         34ETDcQKarsLbshXTn5fp6uf39lflTa/T+RucHDsBjUGxe6pLDfuBBGr8l053CkgFMt9
-         MfV88SN6/q00gvOBqTsX64/X3GT7Ra2JzDjgiA0emPTC4jLxHnPuOgF/aUeetZCl9UcE
-         Vj1t9uGRHUWVdjq53ySUhVp6X9ba/xhzVZhIpy/yNbmSY6ZY/iqE8Rd314cVAPEjAnJw
-         K1ig==
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=O//TZ8AQgOTifP2Ve5RKBVYlVaMT99XAuVZDHhF+ZX4=;
+        b=t4OWS8r1F2PMxVGmJ7l2BzCN3j9MHsFr0g36f1x+UkP9Mu4fhMx8+F02GuRZiVqcaS
+         CBEb6BOfkSt7k8jGNkQSLZGGawWlvmpo2tjX4RYNWVB0mY/DTG7YX6/V2IR9ZCPC9/M8
+         zA7RDbXDDIYs76lQgCFo6irnG0tZqj0QvXUCrBqi+lqlEu8WvLYRdnnFsp2fx4Z6kA72
+         V1JgYnf79xnfw0uXt28Tb2nsDIax7R2e7YS12EbwOjZc0VUym0BG3Z9eKmypvd9OrPR8
+         ZU/ShcLVtaY7M5Pf65OdWdozf/4Ss+xs/ZoTmzstov7CNGichuYU2XqZdhsFDJcuDYgU
+         /3yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iFzlk+xOmTmM/Rg9uDKOcUmWuXtZUa3NXSFCcREp6dA=;
-        b=V4+RPImoVcDUwXqRPpTIvluQqMHm9x92NDMhMf5/8mFfaJe3gBexAa5NXdcRnVI3q2
-         mZag/kFlEWnJs7q4F0hY95l6JiAtRQQ5rBxXHHSLjfPCEzAvaAXYcZ8KHXMBeRFRsc1Q
-         jCCrbDlX4W2PW4euZpg7yzgl+1EAJg6ZfYRBdBdrF6uCHgDJj0GXb/GOKDoMT8hEK5nx
-         Sr31UJxe1u1beFTPeDUehIaSB1VhH8vjd1DyLHN6FFdhRAkK4NaFve/SEDz+9zxmLesw
-         WvjpIxozfnWzW30vKtv9ekIjGKrZ/B+eCe30VfvL1d2wfUzlDOuJMjYxOumzar96MejC
-         NDhA==
-X-Gm-Message-State: AOAM530FXL+GFDdYIWHQX1LbaxfnQIu/9vDmsBYGxntKgLO5ZnB8xwgO
-        2vXuXSepnsgdiHbKmmmi3J5i+w==
-X-Google-Smtp-Source: ABdhPJwg5NoW02Rs307zSADt1uOWE4ZSf3AUVJaY1yGF50Rm6gYq2Rh8F9YaWMhdhgT/Sq7hdr36tg==
-X-Received: by 2002:a37:f516:0:b0:69f:83cd:f557 with SMTP id l22-20020a37f516000000b0069f83cdf557mr13568196qkk.555.1651602526714;
-        Tue, 03 May 2022 11:28:46 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id x19-20020a05620a12b300b0069fc13ce206sm6115930qki.55.2022.05.03.11.28.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 11:28:46 -0700 (PDT)
-Date:   Tue, 3 May 2022 19:28:19 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 12/12] iommu: Rename iommu-sva-lib.{c,h}
-Message-ID: <YnF0QwnndI6opJtb@myrica>
-References: <20220502014842.991097-1-baolu.lu@linux.intel.com>
- <20220502014842.991097-13-baolu.lu@linux.intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=O//TZ8AQgOTifP2Ve5RKBVYlVaMT99XAuVZDHhF+ZX4=;
+        b=x0SXm2LyCQACuThchsRD+yTmQbWYM5bwnOsokfgzakUEF3BkybnBMDwZbAPLPiuZUy
+         1KSDdoCzHtLEh4D6eSTzQmaRePAxQfWTk2ZwTlyaAqFO82hJc0k+5pLOmBvxDkyjSaFh
+         bpcaebq9i1pMuCTGf6zxsbTI9l9BlNh9BwmF8X0YvyNV4M8oby0e8nn3RVhAYk76XHBt
+         VnnZ8l9IjzFJ4vz1tydMyr/cq7fW0M9fIeNEN6fMnm3IpIv+KzsxfWYNo8ivLT4ZQdiP
+         pHzKlJG3DtFduVib6RHMA05M+lfKcaSEKgAYWympyw03Yd9KAqbnQbV3u3+e53G436S7
+         QmPA==
+X-Gm-Message-State: AOAM530cqv6Kjda4tVxH4XDAfpz7w7XQLk2/frdu1ygkNGjHd/qpsikV
+        ttc0ws+3/OpnyzQfhU/hBASnbL8bz0C4DfLD0REU
+X-Google-Smtp-Source: ABdhPJyXJN604FDM5zMX4YKzWSkjZxHuD5oPdFkB8NFvBP7EUSwC+tvj6LTz0VSqArxbIRSRaeV+KNtEIsVMNqgDa7Y=
+X-Received: by 2002:a05:6000:80e:b0:20c:5b45:a700 with SMTP id
+ bt14-20020a056000080e00b0020c5b45a700mr10114526wrb.662.1651602565860; Tue, 03
+ May 2022 11:29:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220502014842.991097-13-baolu.lu@linux.intel.com>
+References: <20220502140547.32685-1-cgzones@googlemail.com>
+In-Reply-To: <20220502140547.32685-1-cgzones@googlemail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 3 May 2022 14:29:15 -0400
+Message-ID: <CAHC9VhSyzKTpz4etPx0SMiGx2DwPcDOT7w-2uGzxRZXUbU8KSg@mail.gmail.com>
+Subject: Re: [PATCH] selinux: fix indentation level of mls_ops block
+To:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
+Cc:     selinux@vger.kernel.org,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Michal Orzel <michalorzel.eng@gmail.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        Austin Kim <austin.kim@lge.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 09:48:42AM +0800, Lu Baolu wrote:
-> Rename iommu-sva-lib.c[h] to iommu-sva.c[h] as it contains all code
-> for SVA implementation in iommu core.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-
+On Mon, May 2, 2022 at 10:05 AM Christian G=C3=B6ttsche
+<cgzones@googlemail.com> wrote:
+>
+> Add one level of indentation to the code block of the label mls_ops in
+> constraint_expr_eval(), to adjust the trailing break; to the parent
+> case: branch.
+>
+> Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
 > ---
->  drivers/iommu/{iommu-sva-lib.h => iommu-sva.h}  | 0
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 2 +-
->  drivers/iommu/intel/iommu.c                     | 2 +-
->  drivers/iommu/intel/svm.c                       | 2 +-
->  drivers/iommu/io-pgfault.c                      | 2 +-
->  drivers/iommu/{iommu-sva-lib.c => iommu-sva.c}  | 2 +-
->  drivers/iommu/Makefile                          | 2 +-
->  8 files changed, 7 insertions(+), 7 deletions(-)
->  rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (100%)
->  rename drivers/iommu/{iommu-sva-lib.c => iommu-sva.c} (99%)
-> 
-> diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva.h
-> similarity index 100%
-> rename from drivers/iommu/iommu-sva-lib.h
-> rename to drivers/iommu/iommu-sva.h
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index 0ace04b27d4b..73a336e17dc8 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -9,7 +9,7 @@
->  #include <linux/slab.h>
->  
->  #include "arm-smmu-v3.h"
-> -#include "../../iommu-sva-lib.h"
-> +#include "../../iommu-sva.h"
->  #include "../../io-pgtable-arm.h"
->  
->  struct arm_smmu_mmu_notifier {
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 543d3ef1c102..ca2bd17eec41 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -31,7 +31,7 @@
->  #include <linux/amba/bus.h>
->  
->  #include "arm-smmu-v3.h"
-> -#include "../../iommu-sva-lib.h"
-> +#include "../../iommu-sva.h"
->  
->  static bool disable_bypass = true;
->  module_param(disable_bypass, bool, 0444);
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 46e2eb15197b..b38f50810459 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -27,7 +27,7 @@
->  #include <linux/tboot.h>
->  
->  #include "../irq_remapping.h"
-> -#include "../iommu-sva-lib.h"
-> +#include "../iommu-sva.h"
->  #include "pasid.h"
->  #include "cap_audit.h"
->  
-> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-> index 6084f960ba27..38c33cde177e 100644
-> --- a/drivers/iommu/intel/svm.c
-> +++ b/drivers/iommu/intel/svm.c
-> @@ -25,7 +25,7 @@
->  
->  #include "pasid.h"
->  #include "perf.h"
-> -#include "../iommu-sva-lib.h"
-> +#include "../iommu-sva.h"
->  
->  static irqreturn_t prq_event_thread(int irq, void *d);
->  static void intel_svm_drain_prq(struct device *dev, u32 pasid);
-> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-> index 8a2bb56e1474..a9ecf6bf5500 100644
-> --- a/drivers/iommu/io-pgfault.c
-> +++ b/drivers/iommu/io-pgfault.c
-> @@ -11,7 +11,7 @@
->  #include <linux/slab.h>
->  #include <linux/workqueue.h>
->  
-> -#include "iommu-sva-lib.h"
-> +#include "iommu-sva.h"
->  
->  /**
->   * struct iopf_queue - IO Page Fault queue
-> diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva.c
-> similarity index 99%
-> rename from drivers/iommu/iommu-sva-lib.c
-> rename to drivers/iommu/iommu-sva.c
-> index ae3595d60f38..b631765fa8c0 100644
-> --- a/drivers/iommu/iommu-sva-lib.c
-> +++ b/drivers/iommu/iommu-sva.c
-> @@ -7,7 +7,7 @@
->  #include <linux/slab.h>
->  #include <linux/sched/mm.h>
->  
-> -#include "iommu-sva-lib.h"
-> +#include "iommu-sva.h"
->  
->  static DEFINE_MUTEX(iommu_sva_lock);
->  static DECLARE_IOASID_SET(iommu_sva_pasid);
-> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> index 44475a9b3eea..c1763476162b 100644
-> --- a/drivers/iommu/Makefile
-> +++ b/drivers/iommu/Makefile
-> @@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
->  obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
->  obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
->  obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
-> -obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
-> +obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o io-pgfault.o
->  obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
->  obj-$(CONFIG_APPLE_DART) += apple-dart.o
-> -- 
-> 2.25.1
-> 
+>  security/selinux/ss/services.c | 42 +++++++++++++++++-----------------
+>  1 file changed, 21 insertions(+), 21 deletions(-)
+
+Merged into selinux/next, thanks.
+
+--=20
+paul-moore.com
