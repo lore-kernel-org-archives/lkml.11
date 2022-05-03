@@ -2,110 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 548A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:55:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31DDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229654AbiECG6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 02:58:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47120 "EHLO
+        id S230408AbiECHAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231464AbiECG6L (ORCPT
+        with ESMTP id S230283AbiECHAm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 02:58:11 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FEA72495F
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:54:15 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id y3so31592960ejo.12
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 23:54:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=8rzcyxWl1wMJihRThXzFaCrK82eFdfscpNcxmBTO4Zs=;
-        b=rp2vJMX2WRd+WTVaQ+gAByXbAnWH+BH3nPt1AIbQ7cvijNLUhZuGgyhenA0yhVQfPG
-         uWS19Gc5sw0Cwo9fi2HSZpD67a0AFpYFAUu+FDSkPNG39e0Sx1ZxADNP7bzrMieFkE/V
-         8I7cwqj7gLtG5QpeDaFiAjIEVz6T3rbfNTPh/cdoOKAtJTJ9t/lnpE2F/LD7EQ0vYbtm
-         HTQRRII0xkl3ds2941iMPvF/OlTtArm0GX17CBUY6NV/OT2rQk8F2HMS6ZW78f2GplHd
-         j3Y3clcH9BQiy9by7+RaPrellpvkMGHsA16N1spNie00vu/pjSs3NAixMIxJh58SYvLf
-         YE3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=8rzcyxWl1wMJihRThXzFaCrK82eFdfscpNcxmBTO4Zs=;
-        b=A5Yw/rX+6FruxfxJ7od2YLU858i7S5NJpe6Zm+imDagTXwNVkzQwNVBl4gw6DtMF9G
-         qkC8wtraH4aL1nBhLk0Vv9R6551SHmxKyTPrCtLGYKw+R8h6ga8dUagWIUy1CluRK7B2
-         f0KqtWjP9AjYkwHXm2zW8Y923eiRwCwYsGlwR/6jBjb24kzgVIMEREOFERp4nb0aYTNx
-         Q2OEsOF2ozgNcSzjKjJj/r8nB8GHetwrW6w50nqcrVHvMj0yDRdDaJ8uSUP4jjWKEdm5
-         IEVu281hKj/Zm6s9HjEdEpQ9fiPKny2iLav1Y4H0/WWGE3SlrxkWM4SynJfI7TWG36tO
-         QTsQ==
-X-Gm-Message-State: AOAM532uwnre+q6ELPZQpqv751I+Ywo1dEVIGnHdaX2q1HwVLV6gvyxZ
-        P1TJYbPtGwPUEeHkchtTerXlnQ==
-X-Google-Smtp-Source: ABdhPJzlAgp3dhSdZgvOmwYwRgPSdCumZoCd77/K2/s+req5QrJ7sIjCLWN5Fwu2Fu5B5FKCAmrc9Q==
-X-Received: by 2002:a17:907:9706:b0:6f4:7ed4:db57 with SMTP id jg6-20020a170907970600b006f47ed4db57mr2916444ejc.432.1651560854100;
-        Mon, 02 May 2022 23:54:14 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id l23-20020aa7c3d7000000b0042617ba6396sm7565326edr.32.2022.05.02.23.54.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 23:54:13 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 3/4] dmaengine: mmp: deprecate '#dma-channels'
-Date:   Tue,  3 May 2022 08:54:06 +0200
-Message-Id: <20220503065407.52188-4-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220503065407.52188-1-krzysztof.kozlowski@linaro.org>
-References: <20220503065407.52188-1-krzysztof.kozlowski@linaro.org>
+        Tue, 3 May 2022 03:00:42 -0400
+Received: from out203-205-221-205.mail.qq.com (out203-205-221-205.mail.qq.com [203.205.221.205])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886BE240B5
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:57:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1651561021;
+        bh=IkD2eC64H4a98Hm5EUi6JNXhMplBS97eRkzCZjPYuZk=;
+        h=From:To:Cc:Subject:Date;
+        b=pPKAxDC2hYAc6zZDWQ8/rUIWAeFrq7C68wIAHdjNgh5AJTN03EHtB2WNUo9MUtVtL
+         C5QpsGW2mSfGkZPbhMu24crFpzi3GyRZ+aGS6MCvFBUuMH/RU7jvoSRlIRKCjeE1Y2
+         FjJnF76WmRGHPyGan6+//Pitool3/Yzl4jiEMavM=
+Received: from localhost.localdomain ([59.172.176.242])
+        by newxmesmtplogicsvrsza7.qq.com (NewEsmtp) with SMTP
+        id E3B30812; Tue, 03 May 2022 14:56:59 +0800
+X-QQ-mid: xmsmtpt1651561019tgdnr890c
+Message-ID: <tencent_A80380E4306BE7BA73E450F084232B4DFC0A@qq.com>
+X-QQ-XMAILINFO: MR/iVh5QLeieuDg962aXAZu67cxzwJSFTylAyyn0cBZ7CDblJEpwNipuMzCDi1
+         Kt45NMxcYnlvKh1wZqr6osnAWSeJkAON2Y+vNxBuM+uwhp4X268pPE1w3Kj6tM36FRjkSV7VC3Ru
+         23YahIBoWsi0+TydIlyv8+BsLY0sUyc+ZHQdumbXYLxPhWX/NbmB+CTz4YdjiOni3regbGUO67Wb
+         GMJrO3L+jYwvz/r1gvbWsmPDZ/KpFhB0AICXckVWVyiXmiIdQjc2SFoPVxg/7mIoBAR96t63azKp
+         4L9Xkigv31wSi7hNqbpYgzENjCv1sJm1CKl5gIzdFSdJUx9GQVyApyLryBhwReXRmbDv9SkEamUI
+         IjZ+dsNyg//aYG3q+w5+2EAd3W7zCS+OkieYbIROfC5D0NeMdTnVY0SQK0B92k6fZz2zYs4eRY4B
+         xKqBSNA1fxmjQtRaYrPjFM73azm+kdPuPvoYwCP01lnLJvbXr5/BiVNYzMdwLc9w9y2kRZBMxkpr
+         c4PSX4HC+AFCRmov9TnBoYuIvPztTHnjEJnKxU21VJpZonS7fd5hrdKaOl46cbBG71IkoE+m5XVa
+         Kr/25AhaRsJ/DE7xIi6Jm6FYIO3mHB7e07okm/JD6S2MElnU+fx2SMf7rgzStO1/sbSSWdF655bS
+         6ejmo/e3ZSLHFUokYu7ZojA2jKq06ktmE4MwK3abXVuizuH+f6yBL4TgOb+HSPXC2NRMak2o0jfn
+         ThPuOKYLD45seASS+9wyAE7S4zme4G8Nr27EfkMwLJrAjVOMk6KVe/F3vYsToXGsMKkrlk1ONkmz
+         +NFn7UV89MD19blPJiou9Xy019C/o9sHivXqLyOPvmO4XDxHn9lIHSASKmVStRn47270RggOyadA
+         NP3PpT+M4lseZ3nuzA/OltoB8HqMTlS2U8OfW5EBlLkm2z8B1JPoIW4NziACQ7QWrnigFLQcaG8j
+         ScIoeiVFs=
+From:   xkernel.wang@foxmail.com
+To:     gregkh@linuxfoundation.org
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH 00/12] staging: some memory-related patches
+Date:   Tue,  3 May 2022 14:56:47 +0800
+X-OQ-MSGID: <20220503065647.3153-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The generic property, used in most of the drivers and defined in generic
-dma-common DT bindings, is 'dma-channels'.  Switch to new property while
-keeping backward compatibility.
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- drivers/dma/mmp_pdma.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+This is a collection about some memory-related bugs fixing.
+In brief, there are two types about them.
+First is some memory allocation functions are called without proper
+checking, which may result in wrong memory access in the subsequent
+running or some else.
+Second is lacking proper error handling that does not release some
+allocated resources, which may result in memory leak problems.
 
-diff --git a/drivers/dma/mmp_pdma.c b/drivers/dma/mmp_pdma.c
-index 5a53d7fcef01..e8d71b35593e 100644
---- a/drivers/dma/mmp_pdma.c
-+++ b/drivers/dma/mmp_pdma.c
-@@ -1043,13 +1043,17 @@ static int mmp_pdma_probe(struct platform_device *op)
- 		return PTR_ERR(pdev->base);
- 
- 	of_id = of_match_device(mmp_pdma_dt_ids, pdev->dev);
--	if (of_id)
--		of_property_read_u32(pdev->dev->of_node, "#dma-channels",
--				     &dma_channels);
--	else if (pdata && pdata->dma_channels)
-+	if (of_id) {
-+		/* Parse new and deprecated dma-channels properties */
-+		if (of_property_read_u32(pdev->dev->of_node, "dma-channels",
-+					 &dma_channels))
-+			of_property_read_u32(pdev->dev->of_node, "#dma-channels",
-+					     &dma_channels);
-+	} else if (pdata && pdata->dma_channels) {
- 		dma_channels = pdata->dma_channels;
--	else
-+	} else {
- 		dma_channels = 32;	/* default 32 channel */
-+	}
- 	pdev->dma_channels = dma_channels;
- 
- 	for (i = 0; i < dma_channels; i++) {
+These issuses are similar, so they are put in this series together.
+Note that most of them are sent as each separate patch before, this series
+rebased them to the lasted version. While there are some inherent logical
+relationships between 03~05/11~12.
+
+Xiaoke Wang (12):
+  staging: rtl8712: fix potential memory leak in
+    r8712_xmit_resource_alloc()
+  staging: rtl8712: fix potential memory leak in _r8712_init_xmit_priv()
+  staging: rtl8712: fix potential memory leak in r8712_init_drv_sw()
+  staging: rtl8712: change the type of _r8712_init_recv_priv()
+  staging: rtl8712: add two validation check in r8712_init_drv_sw()
+  staging: rtl8723bs: fix a potential memory leak in rtw_init_cmd_priv()
+  staging: rtl8723bs: fix potential memory leak in _rtw_init_xmit_priv()
+  staging: rtl8723bs: fix potential memory leak in rtw_init_drv_sw()
+  staging: r8188eu: fix a potential memory leak in _rtw_init_cmd_priv()
+  staging: r8188eu: fix potential memory leak in
+    rtw_os_xmit_resource_alloc()
+  staging: r8188eu: fix potential memory leak in _rtw_init_xmit_priv()
+  staging: r8188eu: check the return of kzalloc()
+
+ drivers/staging/r8188eu/core/rtw_cmd.c      | 16 +++---
+ drivers/staging/r8188eu/core/rtw_xmit.c     | 42 +++++++++++----
+ drivers/staging/r8188eu/include/rtw_xmit.h  |  2 +-
+ drivers/staging/r8188eu/os_dep/xmit_linux.c |  4 +-
+ drivers/staging/rtl8712/os_intfs.c          | 26 +++++++--
+ drivers/staging/rtl8712/recv_osdep.h        |  2 +-
+ drivers/staging/rtl8712/rtl871x_recv.c      |  6 +--
+ drivers/staging/rtl8712/rtl871x_xmit.c      | 27 +++++++---
+ drivers/staging/rtl8712/xmit_linux.c        |  3 +-
+ drivers/staging/rtl8723bs/core/rtw_cmd.c    | 17 +++---
+ drivers/staging/rtl8723bs/core/rtw_xmit.c   | 50 ++++++++++++-----
+ drivers/staging/rtl8723bs/os_dep/os_intfs.c | 60 +++++++++++----------
+ 12 files changed, 163 insertions(+), 92 deletions(-)
+
 -- 
-2.32.0
-
