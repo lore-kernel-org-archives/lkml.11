@@ -2,174 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B69D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:07:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B22C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:08:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235301AbiECNKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 09:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
+        id S235633AbiECNLu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 09:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233216AbiECNKu (ORCPT
+        with ESMTP id S233216AbiECNLr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 09:10:50 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2052.outbound.protection.outlook.com [40.107.212.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E44729C94
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 06:07:18 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mY+v40n9eQg3mYv45xkrImZaUWGgNk2rISHIcPHdU4/7Wek9vpNdPgkCcCRqGOmsI0+w8EFvN1G3FphKepZv6TbPb/AAFYGQG1MfNV2Vttu3JNaTu+/9ZaIa7Wi7c0BR5UYIJVIrg+36CiPrFk89XHI/Rm7BmlOe5bwg2HjKXwU+9cByWkj5JAgcdlJAocH1AQPWhMVXnEwGrOLgPmKMJaGX2t5s4nb08hjV+z3P2yoak8IzDH/6EPqNy2sFGyTasZAFr7t1Ns+tJLG/Xas7Qtg6ZgazdmmpC2UN00LyIOSrGeMyZy4qf4LQ5uFU5z/X7G0TXI/z0/spdJnuy+vgoA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WbDBwsXM1m9tUqiQIhaCzUosKZM2WhcM0m3lyAMRX3U=;
- b=izYOoO0NdgTs3rTfnV6R/zT+dEF6sKXL8dw+BbIZFqEgfrBCweplsXpo76dbfVkUoJAmkcXUho0Zr8Hl5HWHgReUG/1T8TvKhn9GUV1ontCAs/dbtMuunPxQQlsa1xNDIFw00znXoK+JskdZq9FkfTcsZprhG9A8nOKkO901E6IpL+sdFMb1D6/cVDaclw3s7W+lQ9PA6Ie/7Y/MqhADiMpbk0cTiCcTWw26XOhucnNdllU3SiXR59Q8tc7uvs1vO8MT2A/9+Gt/jjVwRj/aLos+r3Oe2Heor2MXPVwW5s/KAn/ZKsxjLNlFzvFfUZRn0NSPMqILz07nIH76e3P4+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WbDBwsXM1m9tUqiQIhaCzUosKZM2WhcM0m3lyAMRX3U=;
- b=VRw5kvbTagLIEYwjFetqZtM5j6/Uxj4NHBwx/uWrjm3daax+c49TG3BdE6oSX+dW8LmGq+uvoO3PNxn/BZSfUQ0R519De1kd8Z2rVofhSnIkQaiuZ91KJuR2hz1cF4EtvRv/yaVflBC4KqVzPTS2nSgpdT0l5bTjGpZpbHZ3ew8=
-Received: from BL1PR12MB5157.namprd12.prod.outlook.com (2603:10b6:208:308::15)
- by DM5PR12MB1691.namprd12.prod.outlook.com (2603:10b6:4:8::11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5186.15; Tue, 3 May 2022 13:07:15 +0000
-Received: from BL1PR12MB5157.namprd12.prod.outlook.com
- ([fe80::797d:cbc4:9716:310e]) by BL1PR12MB5157.namprd12.prod.outlook.com
- ([fe80::797d:cbc4:9716:310e%5]) with mapi id 15.20.5206.024; Tue, 3 May 2022
- 13:07:13 +0000
-From:   "Limonciello, Mario" <Mario.Limonciello@amd.com>
-To:     kernel test robot <lkp@intel.com>
-CC:     "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [RFC PATCH pdx86-platform-drivers-x86] platform/x86:
- thinkpad_acpi: quirk_btusb_bug can be static
-Thread-Topic: [RFC PATCH pdx86-platform-drivers-x86] platform/x86:
- thinkpad_acpi: quirk_btusb_bug can be static
-Thread-Index: AQHYXt+N1KX18mXWX06Lb6ljkwtjIK0NH4kQ
-Date:   Tue, 3 May 2022 13:07:13 +0000
-Message-ID: <BL1PR12MB5157478736D9C5E82B4D9B1DE2C09@BL1PR12MB5157.namprd12.prod.outlook.com>
-References: <202205031944.EP1ElC1B-lkp@intel.com>
- <YnEPbSO2rBJq37Ez@74ccfaeec2ea>
-In-Reply-To: <YnEPbSO2rBJq37Ez@74ccfaeec2ea>
-Accept-Language: en-US
-Content-Language: en-US
+        Tue, 3 May 2022 09:11:47 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1AFE62B183
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 06:08:07 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-234-VLCMgDn0OwqNyGTPU6svxg-1; Tue, 03 May 2022 14:08:05 +0100
+X-MC-Unique: VLCMgDn0OwqNyGTPU6svxg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Tue, 3 May 2022 14:08:04 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Tue, 3 May 2022 14:08:04 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Linus Walleij' <linus.walleij@linaro.org>,
+        William Breathitt Gray <william.gray@linaro.org>
+CC:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>
+Subject: RE: [RFC v2 10/39] gpio: add HAS_IOPORT dependencies
+Thread-Topic: [RFC v2 10/39] gpio: add HAS_IOPORT dependencies
+Thread-Index: AQHYXaY4HSGVKKYe1UmuRZfv/6NY/a0NHk4Q
+Date:   Tue, 3 May 2022 13:08:04 +0000
+Message-ID: <c3a3cdd99d4645e2bbbe082808cbb2a5@AcuMS.aculab.com>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+ <20220429135108.2781579-19-schnelle@linux.ibm.com> <Ymv3DnS1vPMY8QIg@fedora>
+ <f006229ae056d4cdcf57fc5722a695ad4c257182.camel@linux.ibm.com>
+ <YmwGLrh4U+pVJo0m@fedora>
+ <CACRpkdaha37y-ZNSqYSbf=TvsJNcvbH1Y=N0JkVCewB-Lvf81Q@mail.gmail.com>
+In-Reply-To: <CACRpkdaha37y-ZNSqYSbf=TvsJNcvbH1Y=N0JkVCewB-Lvf81Q@mail.gmail.com>
+Accept-Language: en-GB, en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Enabled=true;
- MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_SetDate=2022-05-03T13:06:48Z;
- MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Method=Privileged;
- MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Name=Public-AIP 2.0;
- MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
- MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_ActionId=1e6ac0de-a6d0-42fd-b4fc-6a3a2b7b01c7;
- MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_ContentBits=1
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_enabled: true
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_setdate: 2022-05-03T13:07:11Z
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_method: Privileged
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_name: Public-AIP 2.0
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_actionid: 419cbe7e-fc99-4408-89d8-7b4a59c60509
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_contentbits: 0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d1398504-e392-4130-6bcc-08da2d05d72f
-x-ms-traffictypediagnostic: DM5PR12MB1691:EE_
-x-microsoft-antispam-prvs: <DM5PR12MB1691BECA136A3704519C99BAE2C09@DM5PR12MB1691.namprd12.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: R3mbwUVC58foMBFAhim4sLSNkM7iB9Tc1JlLt8ZTqrlMHhVCZrKr7E384b73sk+2kYRROpu+gMbVc7JBJN/NFloaujdtVFv1xtnb5EPRe+wTZ7NzHSari169th5zQ43xHIwreMTs99qg4S18YrFYKOeoZk5nfaU0LRsH9mR4QNcd7DUtswTxFuAgrwjZBZnz1KlqKbTa9fRSkdeC7vhtCUiyq7EmVPSWh6q/6yiRq0v4W6OqId60ziNG+MbeK1lSFkr+B3xf4fJhUbY40+0h5j/bn1ANp9QX+qRajmMbPRp6c16PCZ7IawBVpRGMZDjYAZt8H+g/LJ2Lb+U6DWuPKtFK8DYmdZgfXNhj6ex5V/35svi8EPmSTVoH8Xx2pjJgEaSNM3IhI6ZqmHugd7VVByOhkU722v0Nnd8uctSs2fNo6lUuWAvO5RNP6DEBHQ9wx/9ClLYOc55cAuTER1sEIfc+z3oV2Fnr+6LkY9SjsXZbRDl2UCR223dIL6tXs98F4yT5OXw5jdeXnW7k+psMnAmSNQ5piujFhFWF+oyCAlLg/oPo4b4k3msavqUNVWVS/5xuqkElVNOI9AVrSKziIygvYZxTpz1natm8uJydlW8Sto0iOtkkeNnfkEGiTstuMoYgfq1T4N5A1Y5ZY+nikYmkPCDS2qhWEIyY/5iMWu67GnHAj/mK6rxf2JJ5OIwpS9CyRtwSQL74fAFR68JALQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5157.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8676002)(66556008)(122000001)(66476007)(64756008)(66446008)(38100700002)(38070700005)(4326008)(66946007)(76116006)(52536014)(8936002)(55016003)(54906003)(5660300002)(6916009)(2906002)(71200400001)(316002)(86362001)(508600001)(83380400001)(33656002)(7696005)(186003)(6506007)(53546011)(9686003)(26005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?P8zqKBRzZM8HxVTj2uYEjGDdoWnpyX6AoJHlqnIrq0jCaYDLoEnGWtPI7P4A?=
- =?us-ascii?Q?K3yhBvLziHRWvNWap2xYIW0PDlxfUTfm4zWVq48nBw790FTpsLxC2nsge/dj?=
- =?us-ascii?Q?PzvQD7HJgO8mCMJicQJZUcRJtAnBCk07ZZfpFOdyAl9ZTyHYZOtEz7aJJGBN?=
- =?us-ascii?Q?fZSUrXX6+y7OM1wgzFhgbU1FzuCu8ehOTe/WFi9ZtpXjn2lBwIcd2Ljpzmlb?=
- =?us-ascii?Q?0aYmV5nIjS6XmYSht4JgppsxCJeHkv5pm48FoQalIcow2YGkKtrBxVGTKYi/?=
- =?us-ascii?Q?wlowAn56w1QHzsFjft3pahQQVDhM+ZsyZQLtR1sGvDa2vmOj0Z+xVT5MqQyp?=
- =?us-ascii?Q?8Fdw3R628TpL4zRTRasdj/8ldqyZppSgysiVWD6ImPXmPQiSXAryiTeZwEXL?=
- =?us-ascii?Q?jxTAipYzeMkUZ2byL0qsrZ+crCLHZ7+TMhwk0s3Ex9Ie/PxkuPTnARa66nGV?=
- =?us-ascii?Q?ZyT6MGfA5PyGPi6hsgEutGXa6xsR7YUt2fRX5i/JC2M38sNwwlgYhLi+qeOa?=
- =?us-ascii?Q?2l/AlmmlfwGfE0NZAyFcCBJDGuOxEzERB/WuEvDwWymJCnPyFC5Rq2LfKofw?=
- =?us-ascii?Q?3a3//jqUAvvVp9veSh4AEbrwFJnudBakky8B+0pwOLYtiU4+4n+WmEko69Ed?=
- =?us-ascii?Q?ZDGn27IjqXvGvjBs9EIyxWk5aaNCjs6P/SUv2JBNbFy03pMA9Lj0l5cyx7uv?=
- =?us-ascii?Q?j03atibvHk2oG4PnKWYAn8sxGSZ1K/VAaJ+p4dwS+pLFnP5ohlgz2Yh7QXkG?=
- =?us-ascii?Q?XyH3gpX8MK5yNeCQm0Kv0OB1CV2u3NeJXCrlQ0mmcYP4rp5pQUhWvTEPOB5O?=
- =?us-ascii?Q?epSS8/T0kIpC2PZcNU6Wp2xRx/EadFNXLTfaAxEb+Xj5Qtmg27JbevB49krC?=
- =?us-ascii?Q?KsWiDzbtr6as9OawLau1ktND2Sat5m75Im0nLfp+caVemaODAVRNrDOHg6JJ?=
- =?us-ascii?Q?L/ZjUkA9QF3+NNe7r9Xvzmsv4xfBen1vSrYfryxN+2Y1I81aAuiec/W+0GTA?=
- =?us-ascii?Q?pGHsyU5538jexRTComN1SFM70aoM9oCCZSDE5HF5Tz8DItMFmcf2XlRUCRbt?=
- =?us-ascii?Q?KWWtXzs1dz8BGB1g329KwDMFaa/314tsHJ2zivp/3LGfAzxU3wz+ujH2h8OB?=
- =?us-ascii?Q?t/9KLel02lmtgkgPorT/nHpDWII8EsNyhNupwTKR750ZpWXBVC0CO6V5DU9Q?=
- =?us-ascii?Q?FAe/JGWb9dNcBDg1bBokDVQlctzqqaRC5vxTKo2tHY6UA164Okry1FJ+OH1X?=
- =?us-ascii?Q?3udmOqG4o8z3f7uvymDHOSo34iR5EZFkdIM2Ikfoa+iIqerAByTz+3sJ8Hjn?=
- =?us-ascii?Q?WzOe9cfYg+1wN624HzfLFCu6sD3Dn4FHK13OwUFt3cA5celP70/3cvZ0bBVF?=
- =?us-ascii?Q?WARTY5RMk4RZdbNH7Acr5THCWXH9864hJjv2EyWj8bvEKh4SqzhvsukvMXVp?=
- =?us-ascii?Q?/aoMGdR2WGMLpEBoSL/fa1Hvrfn4t7bzsE4zbfP9HfvwGwZyKyFc1UGCgH4c?=
- =?us-ascii?Q?Yg5UmwRY9lOSJ94h3D3wV8voLPhmZ9Xk6IKtB68AsVvxSIeIl72PUCMs6+GE?=
- =?us-ascii?Q?5AHIMMycHcMyH79Jje1DihgGkFGKwxBfI+0jM39n3ze9hFFWt2HIVEtmuIb3?=
- =?us-ascii?Q?N/KRnLnbj0BB5PD7BxBgqTRu8GD0CB6rssyBDaP9XubeKLt17oaczkpA42l1?=
- =?us-ascii?Q?3oNnzPtPMMBvsNmX4T/+EmDnzKGl3uERFLCP03H5Jy2eVJAr?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5157.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d1398504-e392-4130-6bcc-08da2d05d72f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 May 2022 13:07:13.4017
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VITF74XS5s06ri+D2pZfFWkKb3Ig7AN1QoZRiqp7LO8NuyCWNuDCk9olfNvzAP/kRMR4/iS8hp3QQuGaXajgkA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1691
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[Public]
+RnJvbTogTGludXMgV2FsbGVpag0KPiBTZW50OiAwMSBNYXkgMjAyMiAyMjo1Ng0KPiANCj4gT24g
+RnJpLCBBcHIgMjksIDIwMjIgYXQgNTozNyBQTSBXaWxsaWFtIEJyZWF0aGl0dCBHcmF5DQo+IDx3
+aWxsaWFtLmdyYXlAbGluYXJvLm9yZz4gd3JvdGU6DQo+ID4gT24gRnJpLCBBcHIgMjksIDIwMjIg
+YXQgMDQ6NDY6MDBQTSArMDIwMCwgTmlrbGFzIFNjaG5lbGxlIHdyb3RlOg0KPiANCj4gPiA+IEdv
+b2QgcXVlc3Rpb24uIEFzIGZhciBhcyBJIGNhbiBzZWUgbW9zdCAoYWxsPykgb2YgdGhlc2UgaGF2
+ZSAic2VsZWN0DQo+ID4gPiBJU0FfQlVTX0FQSSIgd2hpY2ggaXMgImRlZl9ib29sIElTQSIuIE5v
+dyAiY29uZmlnIElTQSIgc2VlbXMgdG8NCj4gPiA+IGN1cnJlbnRseSBiZSByZXBlYXRlZCBpbiBh
+cmNoaXRlY3R1cmVzIGFuZCBkb2Vzbid0IGhhdmUgYW4gZXhwbGljaXQNCj4gPiA+IEhBU19JT1BP
+UlQgZGVwZW5kZW5jeSAoaXQgbWF5YmUgc2hvdWxkIGhhdmUgb25lKS4gQnV0IGl0IGRvZXMgb25s
+eSBtYWtlDQo+ID4gPiBzZW5zZSBvbiBhcmNoaXRlY3R1cmVzIHdpdGggSEFTX0lPUE9SVCBzZXQu
+DQo+ID4NCj4gPiBUaGVyZSBpcyBzdWNoIGEgdGhpbmcgYXMgSVNBIERNQSwgYnV0IHlvdSdsbCBz
+dGlsbCBuZWVkIHRvIGluaXRpYWxpemUNCj4gPiB0aGUgZGV2aWNlIHZpYSB0aGUgSU8gUG9ydCBi
+dXMgZmlyc3QsIHNvIHBlcmhhcHMgc2V0dGluZyBIQVNfSU9QT1JUIGZvcg0KPiA+ICJjb25maWcg
+SVNBIiBpcyB0aGUgcmlnaHQgdGhpbmcgdG8gZG86IGFsbCBJU0EgZGV2aWNlcyBhcmUgZXhwZWN0
+ZWQgdG8NCj4gPiBjb21tdW5pY2F0ZSBpbiBzb21lIHdheSB2aWEgaW9wb3J0Lg0KPiANCj4gQWRk
+aW5nIHRoYXQgZGVwZW5kZW5jeSBzZWVtcyBsaWtlIHRoZSByaWdodCBzb2x1dGlvbiB0byBtZS4N
+Cg0KSSB0aGluayBpdCBhbGwgZGVwZW5kcyBvbiB3aGF0IEhBU19JT1BPUlQgaXMgbWVhbnQgdG8g
+bWVhbiBhbmQNCmhvdyBwb3J0YWJsZSBrZXJuZWwgYmluYXJpZXMgbmVlZCB0byBiZS4NCg0KeDg2
+IGlzIChwcm9iYWJseSkgdGhlIG9ubHkgYXJjaGl0ZWN0dXJlIHRoYXQgYWN0dWFsbHkgaGFzICdp
+bicNCmFuZCAnb3V0JyBpbnN0cnVjdGlvbnMgLSBidXQgdGhhdCBkb2Vzbid0IG1lYW4gdGhhdCBz
+b21lIG90aGVyDQpjcHUgKGFuZCBJIG1lYW4gY3B1K3BjYiBub3QgYXJjaGl0ZWN0dXJlKSBoYXZl
+IHRoZSBhYmlsaXR5IHRvDQpnZW5lcmF0ZSAnSU8nIGJ1cyBjeWNsZXMgb24gYSBzcGVjaWZpYyBw
+aHlzaWNhbCBidXMuDQoNCldoaWxlIHRoZSBvYnZpb3VzIGNhc2UgaXMgYSBwaHlzaWNhbCBhZGRy
+ZXNzIHdpbmRvdyB0aGF0IGdlbmVyYXRlcw0KUENJKGUpIElPIGN5Y2xlcyBmcm9tIG5vcm1hbCBt
+ZW1vcnkgY3ljbGVzIGl0IGlzbid0IHRoZSBvbmx5IG9uZS4NCg0KSSd2ZSB1c2VkIHNwYXJjIGNw
+dSBzeXN0ZW1zIHRoYXQgaGF2ZSBwY21jaWEgY2FyZCBzbG90cy4NClRoZXNlIGFyZSBwcmV0dHkg
+bXVjaCBJU0EgYW5kIHRoZSBkcml2ZXJzIG1pZ2h0IGV4cGVjdCB0bw0KYWNjZXNzIHBvcnQgMHgz
+MDAgKGV0YykgLSBjZXJ0YWlubHkgdGhhdCB3b3VsZCBiZSByaWdodCBvbiB4ODYuDQoNCkluIHRo
+aXMgY2FzZSBpcyBpc24ndCBzbyBtdWNoIHRoYXQgdGhlIElTQV9CVVMgZGVwZW5kcyBvbiBzdXBw
+b3J0DQpmb3IgaW4vb3V0IGJ1dCB0aGF0IHByZXNlbmNlIG9mIHRoZSBJU0EgYnVzIHByb3ZpZGVz
+IHRoZSByZXF1aXJlZA0KaW4vb3V0IHN1cHBvcnQuDQoNCk5vdywgbWF5YmUsIHRoZSBkcml2ZXJz
+IHNob3VsZCBiZSB1c2luZyBzb21lIGlvcmVtYXAgdmFyaWFudCBhbmQNCnRoZW4gY2FsbGluZyBp
+b3JlYWQ4KCkgcmF0aGVyIHRoYW4gZGlyZWN0bHkgY2FsbGluZyBpbmIoKS4NCkJ1dCB0aGF0IHNl
+ZW1zIG9ydGhvZ29uYWwgdG8gdGhpcyBjaGFuZ2VzZXQuDQoNCglEYXZpZA0KDQotDQpSZWdpc3Rl
+cmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtl
+eW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
-
-
-> -----Original Message-----
-> From: kernel test robot <lkp@intel.com>
-> Sent: Tuesday, May 3, 2022 06:18
-> To: Limonciello, Mario <Mario.Limonciello@amd.com>
-> Cc: kbuild-all@lists.01.org; Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com>; Hans de Goede
-> <hdegoede@redhat.com>; linux-kernel@vger.kernel.org
-> Subject: [RFC PATCH pdx86-platform-drivers-x86] platform/x86:
-> thinkpad_acpi: quirk_btusb_bug can be static
->=20
-> drivers/platform/x86/thinkpad_acpi.c:317:20: warning: symbol
-> 'quirk_btusb_bug' was not declared. Should it be static?
->=20
-> Fixes: 25eecc2ff6cc ("platform/x86: thinkpad_acpi: Convert btusb DMI list=
- to
-> quirks")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: kernel test robot <lkp@intel.com>
-
-Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
-
-> ---
->  drivers/platform/x86/thinkpad_acpi.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/platform/x86/thinkpad_acpi.c
-> b/drivers/platform/x86/thinkpad_acpi.c
-> index aed17d32ed84b..eefa22e86ae10 100644
-> --- a/drivers/platform/x86/thinkpad_acpi.c
-> +++ b/drivers/platform/x86/thinkpad_acpi.c
-> @@ -314,7 +314,7 @@ struct quirk_entry {
->  	bool btusb_bug;
->  };
->=20
-> -struct quirk_entry quirk_btusb_bug =3D {
-> +static struct quirk_entry quirk_btusb_bug =3D {
->  	.btusb_bug =3D true,
->  };
->=20
