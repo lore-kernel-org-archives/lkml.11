@@ -2,262 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53510C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40B63C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241033AbiECSLb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 14:11:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
+        id S241046AbiECSME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 14:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240965AbiECSLa (ORCPT
+        with ESMTP id S240965AbiECSMA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 14:11:30 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73293EAAB
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 11:07:54 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id g6so34986569ejw.1
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 11:07:54 -0700 (PDT)
+        Tue, 3 May 2022 14:12:00 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6683EABC
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 11:08:28 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id gj17-20020a17090b109100b001d8b390f77bso2997677pjb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 11:08:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=CAlYiIhh6pgNH2aA5Z1WYg+YY5VaTEuIKmdxG9INjP0=;
-        b=Kh1WAjKn9+eoDulUuBkXOif8gJJyDVzvosxRo04NXHiWzAxo49XgCSb71PzbDS/+Jh
-         gY//JhkQdnLdfiWgeNdqNuoCJ1p/SVZEsChjhDaT6jrzArLylfd/+nIiZBFzRAitVWvU
-         EVh+YVCgJzObQhazQTV7X29ZQCAgZHg/fXcvggmB1KDYtT93t/YY0jWjKJcE/RBoeA+w
-         Al4k1lkX3JbUU8dHDrtuHIr7drhMg0QxTd+gzfAadmNsMK9XlpgndsLZJtdJqCHQtIwS
-         ozPBW+jKST3wAOfbWyvLxLh84Stnyn3WC5d5jmt26oyawsuvlNkRatwJZdVmQcDRe+L4
-         153w==
+        bh=TttXqLUVM2RUYcddmpbzTO7OqJ9zNGbHPbTMQOyiNYg=;
+        b=ekJaSHYhcsRmVQABuTaZ47dOTUN9IgcSoi9eRGTW2HnBfftv2scK1Zn6X+TrUXW01C
+         1IBEHbKciriXj6hlLOAMMLNB7e8205lSTnbb+lVpAAjLR9Qq74WxNEYpcFXpVI7nqXIa
+         0xG1fOTj7+tpDRHvxKX7dy361g+gRJpEk2GeYeFU3am+0+MIcnT+5TaVus6D/7qDgzS7
+         rGanXqJy7MhRwVU3LaxijcSYkLozjAIzaMkCnCxBBtk1Zd5bKQMVnLFRYKr+YtxGneQy
+         d251Hsi+ICvSjFyqsWvbQ9kkx83gSTww87m+o5mVr5BZ8DxhNUNyek9NCnppgvkab49N
+         GXxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CAlYiIhh6pgNH2aA5Z1WYg+YY5VaTEuIKmdxG9INjP0=;
-        b=jX5iG6HgxZAVbAZe4/3/qAX8s0NTsFnIHSTIbWgCdXWdYZUhwxknqPZPHbo4tzpBrV
-         eyOgdytfUGm6ODQZtNj5rocQ5mLmLpbLVX+Lb1E8tvgDRLfN/NUf74WRw2wBlC0if5BZ
-         AArohDHjUPMsUJMyw2bszThich8Ku/KlVxEKVk8B4zOeAhnLB02SmsCrwOFzJn4qtsJ/
-         pbNoAdoE62Mh2LIs98MyfXhbVsBeZAZMx8mfrTq1sKOhlTJ6RrZBfJjhTkqhH+3ipWW5
-         urAz4byEj8+CW4s2KADlvvq/XI/DxJasDTWX59XyJJXJubSfJ/bcZsUe8vkiTWmErHx0
-         4gtw==
-X-Gm-Message-State: AOAM530ZRqaqiDDmgA9xi3CnLrIIPsLN0mdqxVmgcgmhWBU47qdBroes
-        MWSZ2VIPX+Ns42fkupbzSsaDQQ==
-X-Google-Smtp-Source: ABdhPJzhOeQPH/8j7gVM23B+jQ578rJRgDPkXcwX4cB7js1XoH0ZNbgdqXOgLT7NoLlHZxmSOokqZw==
-X-Received: by 2002:a17:906:79c4:b0:6cf:5489:da57 with SMTP id m4-20020a17090679c400b006cf5489da57mr16263726ejo.48.1651601273400;
-        Tue, 03 May 2022 11:07:53 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id a1-20020aa7cf01000000b0042617ba6398sm7986163edy.34.2022.05.03.11.07.52
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=TttXqLUVM2RUYcddmpbzTO7OqJ9zNGbHPbTMQOyiNYg=;
+        b=FDS8pI/BRNURXxWxKycz+HRDsG/rYfeQSNRCjxHKZIyzdvpwVe85k5nXlCUQThd3+z
+         kzxBM/PTIBrOa3dGiMWcn6UYxd7jZcuq59OVgmZPsCUGSqX/VDYV3stW698hzZo0bs2g
+         CtvI+Ed8biVQhejt7H3genaPJW03nc66kXDFiBIP8YjPT354Uuv+QCM5tsrsPFcw8ZJB
+         Nd2MQyHXzaXqmSskIFy84RT2tx5eesFll4/1ZRe2d0KXPCNop1iTkr+Dvogrb8vjFGjI
+         BuJ4Ae3zI/VM5ah/dFpSzBc2AaiFww51y07uaOS737kC5r/ogg9FpCvkPoJLKUQnf3PX
+         3tnw==
+X-Gm-Message-State: AOAM53056b+tnrOXix84MVQSvKqU0InYJ7M5Z2jJs9MMTNkEuqGBPrAm
+        /5Rl7/fzpOtgGvlZ/7F6Tiw=
+X-Google-Smtp-Source: ABdhPJydu4K9sL6j3Nm0fG7o8gS9ZV86d0mg8BCm5EO9+gPM3A5XHTLmCJZxSM/8Zy0jHkWpvvWOXg==
+X-Received: by 2002:a17:90a:4f0b:b0:1d9:acbd:1204 with SMTP id p11-20020a17090a4f0b00b001d9acbd1204mr6031920pjh.201.1651601307400;
+        Tue, 03 May 2022 11:08:27 -0700 (PDT)
+Received: from google.com ([2620:15c:211:201:8998:54e:9def:1e7c])
+        by smtp.gmail.com with ESMTPSA id w3-20020a17090a8a0300b001cd4989ff40sm1655162pjn.7.2022.05.03.11.08.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 11:07:52 -0700 (PDT)
-Date:   Tue, 3 May 2022 19:07:27 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 03/12] iommu: Add attach/detach_dev_pasid domain ops
-Message-ID: <YnFvX8IUwP2drNoj@myrica>
-References: <20220502014842.991097-1-baolu.lu@linux.intel.com>
- <20220502014842.991097-4-baolu.lu@linux.intel.com>
+        Tue, 03 May 2022 11:08:26 -0700 (PDT)
+Sender: Minchan Kim <minchan.kim@gmail.com>
+Date:   Tue, 3 May 2022 11:08:25 -0700
+From:   Minchan Kim <minchan@kernel.org>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        John Hubbard <jhubbard@nvidia.com>,
+        John Dias <joaodias@google.com>
+Subject: Re: [PATCH] mm: fix is_pinnable_page against on cma page
+Message-ID: <YnFvmc+eMoXvLCWf@google.com>
+References: <20220502173558.2510641-1-minchan@kernel.org>
+ <29d0c1c3-a44e-4573-7e7e-32be07544dbe@redhat.com>
+ <YnAhaRNjmIhtGUjk@google.com>
+ <08e9855c-395d-f40c-de3d-1ec8b644bfe8@redhat.com>
+ <YnFJss0doXGCmq3w@google.com>
+ <da07530d-92ad-7aef-2f2b-d115f878ef76@redhat.com>
+ <YnFkZmvW2thpIn8o@google.com>
+ <f271ca5e-c573-1c48-35a7-b59e9f2e122e@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220502014842.991097-4-baolu.lu@linux.intel.com>
+In-Reply-To: <f271ca5e-c573-1c48-35a7-b59e9f2e122e@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 09:48:33AM +0800, Lu Baolu wrote:
-> Attaching an IOMMU domain to a PASID of a device is a generic operation
-> for modern IOMMU drivers which support PASID-granular DMA address
-> translation. Currently visible usage scenarios include (but not limited):
+On Tue, May 03, 2022 at 07:27:06PM +0200, David Hildenbrand wrote:
+> >> GUP would see MIGRATE_ISOLATE and would reject pinning. The page has to
+> >> be migrated, which can fail if the page is temporarily unmovable.
+> > 
+> > Why is the page temporarily unmovable? The GUP didn't increase the
+> > refcount in the case. If it's not migrabtable, that's not a fault
+> > from the GUP but someone is already holding the temporal refcount.
+> > It's not the scope this patchset would try to solve it.
 > 
->  - SVA (Shared Virtual Address)
->  - kernel DMA with PASID
->  - hardware-assist mediated device
+> You can have other references on the page that turn it temporarily
+> unmovable, for example, via FOLL_GET, short-term FOLL_PIN.
+
+Sure. However, user didn't passed the FOLL_LONGTERM. In that case,
+the temporal page migration failure was expected.
+What we want to guarantee for successful page migration is only
+FOLL_LONGTERM.
+
+If you are talking about the general problem(any GUP API without
+FOLL_LONGTERM flag which is supposed to be short-term could turn
+into long-term pinning by several reasons - I had struggled with
+those issues - FOLL_LONGTERM is misnormer to me), yeah, I agree
+we need to fix it but it's orthgonal issue.
+
 > 
-> This adds a pair of common domain ops for this purpose and adds helpers
-> to attach/detach a domain to/from a {device, PASID}. Some buses, like
-> PCI, route packets without considering the PASID value. Thus a DMA target
-> address with PASID might be treated as P2P if the address falls into the
-> MMIO BAR of other devices in the group. To make things simple, these
-> interfaces only apply to devices belonging to the singleton groups, and
-> the singleton is immutable in fabric i.e. not affected by hotplug.
+> > 
+> >>
+> >> See my point? We will try migrating in cases where we don't have to
+> > 
+> > Still not clear for me what you are concerning.
+> > 
+> >> migrate. I think what we would want to do is always reject pinning a CMA
+> >> page, independent of the isolation status. but we don't have that
+> > 
+> > Always reject pinning a CMA page if it is *FOLL_LONGTERM*
 > 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-
-just a nit below
-
-> ---
->  include/linux/iommu.h | 21 ++++++++++++
->  drivers/iommu/iommu.c | 76 +++++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 97 insertions(+)
+> Yes.
 > 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index b8ffaf2cb1d0..ab36244d4e94 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -263,6 +263,8 @@ struct iommu_ops {
->   * struct iommu_domain_ops - domain specific operations
->   * @attach_dev: attach an iommu domain to a device
->   * @detach_dev: detach an iommu domain from a device
-> + * @attach_dev_pasid: attach an iommu domain to a pasid of device
-> + * @detach_dev_pasid: detach an iommu domain from a pasid of device
->   * @map: map a physically contiguous memory region to an iommu domain
->   * @map_pages: map a physically contiguous set of pages of the same size to
->   *             an iommu domain.
-> @@ -283,6 +285,10 @@ struct iommu_ops {
->  struct iommu_domain_ops {
->  	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
->  	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
-> +	int (*attach_dev_pasid)(struct iommu_domain *domain,
-> +				struct device *dev, ioasid_t pasid);
-> +	void (*detach_dev_pasid)(struct iommu_domain *domain,
-> +				 struct device *dev, ioasid_t pasid);
->  
->  	int (*map)(struct iommu_domain *domain, unsigned long iova,
->  		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
-> @@ -678,6 +684,10 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner);
->  void iommu_group_release_dma_owner(struct iommu_group *group);
->  bool iommu_group_dma_owner_claimed(struct iommu_group *group);
->  
-> +int iommu_attach_device_pasid(struct iommu_domain *domain,
-> +			      struct device *dev, ioasid_t pasid);
-> +void iommu_detach_device_pasid(struct iommu_domain *domain,
-> +			       struct device *dev, ioasid_t pasid);
->  #else /* CONFIG_IOMMU_API */
->  
->  struct iommu_ops {};
-> @@ -1051,6 +1061,17 @@ static inline bool iommu_group_dma_owner_claimed(struct iommu_group *group)
->  {
->  	return false;
->  }
-> +
-> +static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
-> +					    struct device *dev, ioasid_t pasid)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline void iommu_detach_device_pasid(struct iommu_domain *domain,
-> +					     struct device *dev, ioasid_t pasid)
-> +{
-> +}
->  #endif /* CONFIG_IOMMU_API */
->  
->  /**
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 29906bc16371..89c9d19ddb28 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -38,6 +38,7 @@ struct iommu_group {
->  	struct kobject kobj;
->  	struct kobject *devices_kobj;
->  	struct list_head devices;
-> +	struct xarray pasid_array;
->  	struct mutex mutex;
->  	void *iommu_data;
->  	void (*iommu_data_release)(void *iommu_data);
-> @@ -630,6 +631,7 @@ struct iommu_group *iommu_group_alloc(void)
->  	mutex_init(&group->mutex);
->  	INIT_LIST_HEAD(&group->devices);
->  	INIT_LIST_HEAD(&group->entry);
-> +	xa_init(&group->pasid_array);
->  
->  	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
->  	if (ret < 0) {
-> @@ -3190,3 +3192,77 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
->  	return user;
->  }
->  EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
-> +
-> +/*
-> + * Use standard PCI bus topology and isolation features to check immutable
-> + * singleton. Otherwise, assume the bus is static and then singleton can
-> + * know from the device count in the group.
-> + */
-
-The comment doesn't really add anything that can't be directly understood
-from the code.
-
-> +static bool device_group_immutable_singleton(struct device *dev)
-> +{
-> +	struct iommu_group *group = iommu_group_get(dev);
-> +	int count;
-> +
-> +	if (!group)
-> +		return false;
-> +
-> +	mutex_lock(&group->mutex);
-> +	count = iommu_group_device_count(group);
-> +	mutex_unlock(&group->mutex);
-> +	iommu_group_put(group);
-> +
-> +	if (count != 1)
-> +		return false;
-> +
-> +	/*
-> +	 * The PCI device could be considered to be fully isolated if all
-> +	 * devices on the path from the device to the host-PCI bridge are
-> +	 * protected from peer-to-peer DMA by ACS.
-> +	 */
-> +	if (dev_is_pci(dev))
-> +		return pci_acs_path_enabled(to_pci_dev(dev), NULL,
-> +					    REQ_ACS_FLAGS);
-> +
-> +	return true;
-> +}
-> +
-> +int iommu_attach_device_pasid(struct iommu_domain *domain,
-> +			      struct device *dev, ioasid_t pasid)
-> +{
-> +	struct iommu_group *group;
-> +	int ret = -EINVAL;
-> +	void *curr;
-> +
-> +	if (!domain->ops->attach_dev_pasid)
-> +		return -EOPNOTSUPP;
-> +
-> +	if (!device_group_immutable_singleton(dev))
-> +		return -EINVAL;
-> +
-> +	group = iommu_group_get(dev);
-> +	mutex_lock(&group->mutex);
-> +	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
-> +	if (curr)
-> +		goto out_unlock;
-> +	ret = domain->ops->attach_dev_pasid(domain, dev, pasid);
-> +	if (ret)
-> +		xa_erase(&group->pasid_array, pasid);
-> +out_unlock:
-> +	mutex_unlock(&group->mutex);
-> +	iommu_group_put(group);
-> +
-> +	return ret;
-> +}
-> +
-> +void iommu_detach_device_pasid(struct iommu_domain *domain,
-> +			       struct device *dev, ioasid_t pasid)
-> +{
-> +	struct iommu_group *group = iommu_group_get(dev);
-> +
-> +	mutex_lock(&group->mutex);
-> +	domain->ops->detach_dev_pasid(domain, dev, pasid);
-> +	xa_erase(&group->pasid_array, pasid);
-> +	mutex_unlock(&group->mutex);
-> +
-> +	iommu_group_put(group);
-> +}
-> -- 
-> 2.25.1
+> > 
+> >> information available.
+> > 
+> > page && (MIGRATE_CMA | MIGRATE_ISOLATE) && gup_flags is not enough
+> > for it?
+> > 
+> >>
+> >> I raised in the past that we should look into preserving the migration
+> >> type and turning MIGRATE_ISOLATE essentially into an additional flag.
+> >>
+> >>
+> >> So I guess this patch is the right thing to do for now, but I wanted to
+> >> spell out the implications.
+> > 
+> > I want but still don't understand what you want to write further
+> > about the implication parts. If you make more clear, I am happy to
+> > include it.
 > 
+> What I am essentially saying is that when rejecting to long-term
+> FOLL_PIN something that is MIGRATE_ISOLATE now, we might now end up
+> having to migrate pages that are actually fine to get pinned, because
+> they are not actual CMA pages. And any such migration might fail when
+> pages are temporarily unmovable.
+
+Now I understand concern. Then how about introducing cma areas list
+and use it instead of migrate type in is_pinnable_page
+
+struct cma  {
+  ..
+  ..
+  list_head list
+};
+
+bool is_cma_page(unsigned long pfn) {
+    for cma in cma_list
+      if (pfn >= cma->base_pfn && pfn < cma->base_pfn + count
+        return true;
+
+    return false;
+}
+
+Do you want to fix it at this moment or just write down the
+possibility in the description and then we could fix once it
+really happens later?
+
+> 
+> 
+> > 
+> >>
+> >>>
+> >>> A thing to get some attention is whether we need READ_ONCE or not
+> >>> for the local variable mt.
+> >>>
+> >>
+> >> Hmm good point. Staring at __get_pfnblock_flags_mask(), I don't think
+> >> there is anything stopping the compiler from re-reading the value. But
+> >> we don't care if we're reading MIGRATE_CMA or MIGRATE_ISOLATE, not
+> >> something in between.
+> > 
+> > How about this?
+> > 
+> >      CPU A                                                      CPU B
+> > 
+> > is_pinnable_page
+> >   ..
+> >   ..                                                set_pageblock_migratetype(MIGRATE_ISOLATE)
+> >   mt == MIGRATE_CMA
+> >     get_pageblock_miratetype(page)
+> >         returns MIGRATE_ISOLATE
+> >   mt == MIGRATE_ISOLATE                             set_pageblock_migratetype(MIGRATE_CMA)
+> >     get_pageblock_miratetype(page)
+> >         returns MIGRATE_CMA
+> >  
+> > So both conditions fails to detect it.
+> 
+> I think you're right. That's nasty.
+
+Ccing Paul to borrow expertise. :)
+
+int mt = get_pageblock_migratetype(page);
+
+if (mt == MIGRATE_CMA)
+  return true;
+
+if (mt == MIGRATE_ISOLATE)
+  return true;
+
+I'd like to keep use the local variable mt's value in folloing
+conditions checks instead of refetching the value from
+get_pageblock_migratetype.
+
+What's the right way to achieve it?
+
+Thanks in advance!
