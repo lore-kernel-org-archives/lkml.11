@@ -2,176 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04BC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 05:40:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77094C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 05:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389254AbiEFFn4 (ORCPT
+        id S1389268AbiEFFsX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 01:43:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46702 "EHLO
+        Fri, 6 May 2022 01:48:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235988AbiEFFnu (ORCPT
+        with ESMTP id S1389259AbiEFFsV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 01:43:50 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA6465409
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 22:40:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651815608; x=1683351608;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=RIVpEAtkuYO7pp01GcFGdlSw/mydcbT7MxtS5DfXDFI=;
-  b=DUVyWhKP4s/TiNAejY3qz08TiYLJCpzC8OJIh0UDnA86kjj14814TuCA
-   Eg/oCRs0kR4miOpHyI1H07chINF+J/O3GjWwi/nRAmYWxvClab9YJLi8C
-   DedefbzJEeXURdR1hu3nzQx1pdQdcpgB1tksy7V7yN3z73oOEVA+BV+aj
-   jBWf7+7Q3PbVMPMu0xquS/moqKtdj2ao2OBAbW4+mCSX/8dRe028meXU9
-   qxkXrI7bhfHjloTTlbybHr8myGd+EPfEI7thoNXuXEEAd/4Kn0qjpdzls
-   Ek0HhXx7vEd/L4TQ9oc+HK62YHJmt2byOVZPpA63cZJsmqUov4qNeajVI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="255840840"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="255840840"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 22:40:07 -0700
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="735409172"
-Received: from sunyanwa-mobl1.ccr.corp.intel.com (HELO [10.255.31.183]) ([10.255.31.183])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 22:40:04 -0700
-Message-ID: <5bbf6ccf-2a49-7611-b8af-143252decc1f@linux.intel.com>
-Date:   Fri, 6 May 2022 13:40:01 +0800
+        Fri, 6 May 2022 01:48:21 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF7E5A5AC;
+        Thu,  5 May 2022 22:44:38 -0700 (PDT)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242MkbAg018676;
+        Tue, 3 May 2022 00:52:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=/yMc+68rWG/3heF7y7WQjy5vXUZ3ILi1SV6zf9lxjCs=;
+ b=G6ut9T7quCoMvq6y5pCHeAfonD12JyxulfH22wtz1tKaZSmEutY+SDDcv3W6w3fShihF
+ MHkaTkjhWf+MALC+MqfLZ+1rvolJgVoJzkFq6Z2OQF6P2FI9ivjbBq9Gok37WtOwuRZi
+ iJ4Xwcm0R0J7P/xl3EfjRTVlLlxpLMF2f5BrWqg+iA1ljnqYZEMm+aKXK6XQ/+OIChv+
+ VLWp7SCjZu8JZYBCrM7Xtkg5RF9DeIK0peiltn9F/pBrQdZq3H0ZSkllKCdfxOVNsHFb
+ 1RmXc2h5vrgVyfT7+X06KSolb0daBs2JlxDVput8ucqGS71bky1pGF1bwm6nrEWMRLwX Nw== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frwnt4kxa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:52:07 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430oobc008887;
+        Tue, 3 May 2022 00:52:06 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83xcb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:52:06 +0000
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430plk4010389;
+        Tue, 3 May 2022 00:52:06 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-34;
+        Tue, 03 May 2022 00:52:05 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     GR-QLogic-Storage-Upstream@marvell.com,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>, jejb@linux.ibm.com,
+        skashyap@marvell.com, jhasan@marvell.com
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
+Subject: Re: [RESEND][PATCH] qedf: remove an unneeded NULL check on list iterator
+Date:   Mon,  2 May 2022 20:51:44 -0400
+Message-Id: <165153836362.24053.12346613816767008308.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220405004055.24312-1-xiam0nd.tong@gmail.com>
+References: <20220405004055.24312-1-xiam0nd.tong@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v5 10/12] iommu: Prepare IOMMU domain for IOPF
-Content-Language: en-US
-To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <20220502014842.991097-1-baolu.lu@linux.intel.com>
- <20220502014842.991097-11-baolu.lu@linux.intel.com> <YnFydE8j8l7Q4m+b@myrica>
- <9144a782-04d2-a09d-4ac1-7133e5986619@linux.intel.com>
- <YnPTXwjpHnnGp4j2@myrica>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <YnPTXwjpHnnGp4j2@myrica>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: rSAztyxMg1cpFyDVEJEZ96yiVuUg8b84
+X-Proofpoint-GUID: rSAztyxMg1cpFyDVEJEZ96yiVuUg8b84
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/5 21:38, Jean-Philippe Brucker wrote:
-> Hi Baolu,
-> 
-> On Thu, May 05, 2022 at 04:31:38PM +0800, Baolu Lu wrote:
->> On 2022/5/4 02:20, Jean-Philippe Brucker wrote:
->>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>>> index 7cae631c1baa..33449523afbe 100644
->>>> --- a/drivers/iommu/iommu.c
->>>> +++ b/drivers/iommu/iommu.c
->>>> @@ -3174,3 +3174,24 @@ void iommu_detach_device_pasid(struct iommu_domain *domain,
->>>>    	iommu_group_put(group);
->>>>    }
->>>> +
->>>> +struct iommu_domain *iommu_get_domain_for_dev_pasid(struct device *dev,
->>>> +						    ioasid_t pasid)
->>>> +{
->>>> +	struct iommu_domain *domain;
->>>> +	struct iommu_group *group;
->>>> +
->>>> +	if (!pasid_valid(pasid))
->>>> +		return NULL;
->>>> +
->>>> +	group = iommu_group_get(dev);
->>>> +	if (!group)
->>>> +		return NULL;
->>>> +
->>>> +	mutex_lock(&group->mutex);
->>> Unfortunately this still causes the deadlock when unbind() flushes the
->>> IOPF queue while holding the group mutex.
->>
->> Sorry, I didn't get your point here.
->>
->> Do you mean unbind() could hold group mutex before calling this helper?
->> The group mutex is only available in iommu.c. The unbind() has no means
->> to hold this lock. Or, I missed anything?
-> 
-> I wasn't clear, it's iommu_detach_device_pasid() that holds the
-> group->mutex:
-> 
->   iommu_sva_unbind_device()          |
->    iommu_detach_device_pasid()       |
->     mutex_lock(&group->mutex)        |
->     domain->ops->detach_dev_pasid()  | iopf_handle_group()
->      iopf_queue_flush_dev()          |  iommu_get_domain_for_dev_pasid()
->       ... wait for IOPF work         |   mutex_lock(&group->mutex)
->                                      |    ... deadlock
+On Tue, 5 Apr 2022 08:40:55 +0800, Xiaomeng Tong wrote:
 
-Ah! Yes. Thank you for the clarification.
-
+> The list iterator 'fcport' is always non-NULL so it doesn't need to be
+> checked. Thus just remove the unnecessary NULL check. Also remove the
+> unnecessary initializer because the list iterator is always initialized.
+> And adjust the position of blank lines.
 > 
-> Thanks,
-> Jean
 > 
->>
->> Best regards,
->> baolu
->>
->>>
->>> If we make this function private to IOPF, then we can get rid of this
->>> mutex_lock(). It's OK because:
->>>
->>> * xarray protects its internal state with RCU, so we can call
->>>     xa_load() outside the lock.
->>>
->>> * The domain obtained from xa_load is finalized. Its content is valid
->>>     because xarray stores the domain using rcu_assign_pointer(), which has a
->>>     release memory barrier, which pairs with data dependencies in IOPF
->>>     (domain->sva_ioas etc).
->>>
->>>     We'll need to be careful about this when allowing other users to install
->>>     a fault handler. Should be fine as long as the handler and data are
->>>     installed before the domain is added to pasid_array.
->>>
->>> * We know the domain is valid the whole time IOPF is using it, because
->>>     unbind() waits for pending faults.
->>>
->>> We just need a comment explaining the last point, something like:
->>>
->>>          /*
->>> 	* Safe to fetch outside the group mutex because:
->>>           * - xarray protects its internal state with RCU
->>>           * - the domain obtained is either NULL or fully formed
->>> 	* - the IOPF work is the only caller and is flushed before the
->>> 	*   domain is freed.
->>>           */
 
-Agreed. The mutex is needed only when domain could possibly be freed
-before unbind(). In that case, we need this mutex and get a reference
-from the domain. As we have dropped the domain user reference, this lock
-is unnecessary.
+Applied to 5.19/scsi-queue, thanks!
 
->>>
->>> Thanks,
->>> Jean
->>>
->>>> +	domain = xa_load(&group->pasid_array, pasid);
->>>> +	mutex_unlock(&group->mutex);
->>>> +	iommu_group_put(group);
->>>> +
->>>> +	return domain;
->>>> +}
->>
+[1/1] qedf: remove an unneeded NULL check on list iterator
+      https://git.kernel.org/mkp/scsi/c/505420bd5543
 
-Best regards,
-baolu
+-- 
+Martin K. Petersen	Oracle Linux Engineering
