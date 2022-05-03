@@ -2,85 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36280C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:39:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA087C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:40:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236187AbiECUmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 16:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48142 "EHLO
+        id S237819AbiECUnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 16:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbiECUme (ORCPT
+        with ESMTP id S230391AbiECUn3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 16:42:34 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0BCF22511;
-        Tue,  3 May 2022 13:39:01 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242MkbAd018676;
-        Tue, 3 May 2022 00:52:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=WIoVTgq0vIEZvmnR+NEgL1XkmCDUTNJpZDr6GzvN/kc=;
- b=U0SpwCyy8dC27IPsfbkPvqS0fqmLoYUhJ1e8+yJpvu5h1d7JtzTSjHphkVRrBc0HzQ5v
- 3p3l9vv8D+vDV/08aERL4G8v/amn5J5MRvXZMmlQ/gxUSpZgQ2Vb334zCl/D9W1C4wjY
- SMfpcC2b382skaKqJHNzXty+T1ree5hwA6Nsd/7jFv0NWIFTUS5zNwX+Orm9Bu/CJzdP
- QjEcYBE0o4Xx31r/KdoWv1JCslyHi2RDRNcJecBX5PXxskbHp1p41fSn6irGq7Rn3JWK
- dToYT0MAGi8oFPsVQ73OboV5y50/Ta1NlJcICPAjVMfy2RX13AX2eJ9B1IA65o0BgVqw YA== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frwnt4kx2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:52:01 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430opOY008941;
-        Tue, 3 May 2022 00:52:00 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x9x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:52:00 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430pljg010389;
-        Tue, 3 May 2022 00:52:00 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-23;
-        Tue, 03 May 2022 00:51:59 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     John Garry <john.garry@huawei.com>, jejb@linux.ibm.com
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: Re: [PATCH v2] scsi: core: Refine how we set tag_set NUMA node
-Date:   Mon,  2 May 2022 20:51:33 -0400
-Message-Id: <165153836362.24053.7061141693570031456.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <1648640315-21419-1-git-send-email-john.garry@huawei.com>
-References: <1648640315-21419-1-git-send-email-john.garry@huawei.com>
+        Tue, 3 May 2022 16:43:29 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F39B33A1B
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 13:39:53 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id z126so14733967qkb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 13:39:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=marek-ca.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=CF1rRZMBdGFikP/j43V46JlTy9v9S59RO3PJDooXZCk=;
+        b=s4MMs4b32ZZlqeuY7DthE+KfUczBMMggh5ly/jPZxCKBUh11m+/esR549euW/Q7UY8
+         NVlyl1RSnMXxUjsoElM0SIYxLJexmAeA7Mam8Ofsk/zZJVMK2ulqDKbTAw8USZ1OP00S
+         KSGN3LqcSwpTSBJWQG3sNs5jlms2w6iWNECQ73xaHxG5yMlNdbOOHQ/RPyTKUEQ2Dn+1
+         GXsgLUpy5eHISipD2maX85qvG2d184/ss3Vejuub114MCzJi/N9OPmJqJQ1IokBSuskl
+         kH7k4tU6Aem/mtTobdtDvKpNCEdBwAhPtd2S0hFO7Gdfb2jETPvquu8Qk1ZKJ0B36pk2
+         aNiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=CF1rRZMBdGFikP/j43V46JlTy9v9S59RO3PJDooXZCk=;
+        b=p7yD/3kTTIAi+hHCD9ENwDX37M/QnGDKK5yzKpc9sg5eoOepCrQbWvZaqUtGXSGbTS
+         niVN+XRt4ka4iQVGQkw2oL6UE26+uFI3Vz2FZST8/FvZdqrVWhKCdDbpZedZ9g1YIjlP
+         XftgjfkJb38AJL1zG7XaYyi/Pv8xoMlkzbdqGK3Ujvwn6YXIf1nwxyFmy/yjADUX3BFh
+         Vt/tXEU+edla8IaidcoEgJIvZq3wUhdsm1dyLO1kRzMjdzTvSCK3yrP83xiVtAhZNV97
+         /iPLPXA/DLBHdGnhSyVtpYJeca2rMc2s3cye9260pbgZOY1qrEA5gpgLzuckwY7UeFyn
+         HguA==
+X-Gm-Message-State: AOAM530o6MyMFwZOgsnnj9tXHqO0PgFYI5htG/YsSz24hJZKjuqm7kdH
+        8+LwCx9VxAJ6GLIeYPTNCbjLeQ==
+X-Google-Smtp-Source: ABdhPJxqJm0wwuWGMwBvmBmgvducSLG4QQzA7m59lPsrpRYVx2+ZymLmVLU1Tjr0wZ0b/FZ5UPc6cQ==
+X-Received: by 2002:a05:620a:d87:b0:67b:3105:4f7f with SMTP id q7-20020a05620a0d8700b0067b31054f7fmr13658867qkl.230.1651610392536;
+        Tue, 03 May 2022 13:39:52 -0700 (PDT)
+Received: from [192.168.0.189] (modemcable134.222-177-173.mc.videotron.ca. [173.177.222.134])
+        by smtp.gmail.com with ESMTPSA id y8-20020ae9f408000000b0069fc13ce20fsm6271493qkl.64.2022.05.03.13.39.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 13:39:51 -0700 (PDT)
+Subject: Re: [PATCH v2 4/8] clk: qcom: add support for SM8350 GPUCC
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Robert Foss <robert.foss@linaro.org>
+Cc:     agross@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        robh+dt@kernel.org, krzk+dt@kernel.org, tdas@codeaurora.org,
+        anischal@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+References: <20220503130448.520470-1-robert.foss@linaro.org>
+ <20220503130448.520470-4-robert.foss@linaro.org>
+ <YnFkn3CMS+VdJ9u7@builder.lan>
+From:   Jonathan Marek <jonathan@marek.ca>
+Message-ID: <e7935b8e-1e4c-a424-7d77-307e346f507f@marek.ca>
+Date:   Tue, 3 May 2022 16:39:41 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: 0SWjchfUlf8QrgHUKMczPIsYukTmH39J
-X-Proofpoint-GUID: 0SWjchfUlf8QrgHUKMczPIsYukTmH39J
+In-Reply-To: <YnFkn3CMS+VdJ9u7@builder.lan>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 30 Mar 2022 19:38:35 +0800, John Garry wrote:
-
-> For SCSI hosts which enable host_tagset the NUMA node returned from
-> blk_mq_hw_queue_to_node() is NUMA_NO_NODE always. Then, since in
-> scsi_mq_setup_tags() the default we choose for the tag_set NUMA node is
-> NUMA_NO_NODE, we always evaluate the NUMA node as NUMA_NO_NODE in
-> functions like blk_mq_alloc_rq_map().
+On 5/3/22 1:21 PM, Bjorn Andersson wrote:
+> On Tue 03 May 08:04 CDT 2022, Robert Foss wrote:
 > 
-> The reason we get NUMA_NO_NODE from blk_mq_hw_queue_to_node() is that
-> the hctx_idx passed is BLK_MQ_NO_HCTX_IDX - so we can't match against a
-> (HW) queue mapping index.
+>> From: Jonathan Marek <jonathan@marek.ca>
+>>
+>> The GPUCC manages the clocks for the Adreno GPU found on the
+>> sm8350 SoCs.
+>>
 > 
-> [...]
+> If the patch is authored by Jonathan, we need Jonathan's S-o-b as well.
+> 
 
-Applied to 5.19/scsi-queue, thanks!
+Signed-off-by: Jonathan Marek <jonathan@marek.ca>
 
-[1/1] scsi: core: Refine how we set tag_set NUMA node
-      https://git.kernel.org/mkp/scsi/c/973dac8a8a14
-
--- 
-Martin K. Petersen	Oracle Linux Engineering
+(but I didn't change much from downstream, I never submitted this patch 
+so didn't clean up things like using ARRAY_SIZE, etc.)
