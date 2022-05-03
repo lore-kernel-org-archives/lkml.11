@@ -2,87 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A73E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 05:02:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6137FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 05:06:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231362AbiECFF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 01:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59012 "EHLO
+        id S231370AbiECFJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 01:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231342AbiECFFy (ORCPT
+        with ESMTP id S231342AbiECFJZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 01:05:54 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13BB83EBB5;
-        Mon,  2 May 2022 22:02:23 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2430TJqh004092;
-        Tue, 3 May 2022 00:52:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=yFd4NJS8ZhexAsGkucoumLavXxhcMU4eu5Tb4OVqoxg=;
- b=wUeMbfXmPFimS/iBwXMhjP/qUgG/DEL6bb3NPUuPCziNvLgIp9X4veQeCAxjaRD0LRVT
- wZHlcI4vWRShFsq+W4wyf5Tuy8O4A6FIJKXrLLiqx2zUgazNjQ4l9peEY4WFl2vEHXn/
- Ltf29fXSNhNoNM9ckCKsKV3HZ1oiBkUQt1zulFYzbB3EPfdLEpKw0jm8mYJEqNNRW0MK
- IlofsfbymJkyukKQvevtSqPFfasigVxgFIcspq9SO9fSzDFtm/b/3FH6VADuLxdA25Ds
- s+Jbu7199tFlOskQq/Bb59T/2CTFHihb2yPYrjDtk6/DfmB5+8MUFF9sfcuNdGsvfujb yQ== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frw0amhje-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:52:01 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430oobu008895;
-        Tue, 3 May 2022 00:52:00 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x9s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:59 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430plje010389;
-        Tue, 3 May 2022 00:51:59 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-22;
-        Tue, 03 May 2022 00:51:59 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Nilesh Javali <njavali@marvell.com>,
-        "open list:QLOGIC QLA2XXX FC-SCSI DRIVER" 
-        <linux-scsi@vger.kernel.org>,
-        "supporter:QLOGIC QLA2XXX FC-SCSI DRIVER" 
-        <GR-QLogic-Storage-Upstream@marvell.com>,
-        Guo Zhengkui <guozhengkui@vivo.com>
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        zhengkui_guo@outlook.com
-Subject: Re: [PATCH] qla2xxx: edif: remove unneeded variable
-Date:   Mon,  2 May 2022 20:51:32 -0400
-Message-Id: <165153836363.24053.11308117842867099296.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220426074334.9281-1-guozhengkui@vivo.com>
-References: <20220426074334.9281-1-guozhengkui@vivo.com>
+        Tue, 3 May 2022 01:09:25 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2203C49B
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 22:05:54 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id e24so14416641pjt.2
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 22:05:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uUR+Fzyi0wXWDRgicMjU0F6RGiNS9EhyaW4ixdRzu8Y=;
+        b=LPwXhlpWKq1b0+lhNSyGJV0JJL4714gxXsCDDuPz5ivWqq5p94jBP4P1QaqC/YV7hk
+         9MzrewJsaWZzlE7SG6jiXu2GGjFolaq0hhgH3OPzpaKdaIV03b5rndYTJALgBOdno2fE
+         a3QZ5BuB6zna2SgaDGWgCDLGxq+q3Ms4/WnDpHc8DxKP323Y3xRUkNgHwYXSSeEcjYYc
+         N+JCaBzPe+7PWIBsFAUYlO2va65IirqIB+Iq6nMT2rMaFOKd4eELBy4ZySGPOFh8oCif
+         soDydPkbmykOWGVYH9YZ7HfDfy8CnoJ3unP+C3bDkRwqFVV/EohXeaW14ujE+Z0rSPHi
+         d/yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uUR+Fzyi0wXWDRgicMjU0F6RGiNS9EhyaW4ixdRzu8Y=;
+        b=GwkKQgbdoIqQvi2TjlZ0pZ/dG4ke2UB0AuHvajdEA2kVjqchczTcP23Tn7TXAbzD0x
+         hCeGIZlGbWS2F0IgQD3j08PutLf+k6OSBNsR2OPhxgdxICtenCLxlMDL5rxaYmyIrFES
+         uagwrOMRHFiL+uALqkU+vjqPdE2dDMs8rVCzqkFqf7rXWsEoDRRYi2Zej257eEWNXu8z
+         /i3jBFZp+i5B7r8hDv8ppfd1YflGDB5PKl0FujbtuO1o7O3FaTAr3b2ODOA3EO7QFZng
+         Bhrs6roFQlHSAYvG6/QCiGLPWYsQIdH4sibRkg7LdU3SqOTAjRiVAJeMejrvOouy6d88
+         zYQw==
+X-Gm-Message-State: AOAM530R1+87+Q9zRHrosol5JZPB6UxQNusPuvZo43sZJI/2vSvblaAo
+        397THK5Syl+dbZRNRISFbKc=
+X-Google-Smtp-Source: ABdhPJwhG708Pk8DgLSic/jLiIG+CXDDAmvkWy/Dbv+YFaKQ9Zn/10y0UimG67gpFHbGoq6TLnlP1Q==
+X-Received: by 2002:a17:902:dac3:b0:15e:a136:b59c with SMTP id q3-20020a170902dac300b0015ea136b59cmr9146438plx.135.1651554354432;
+        Mon, 02 May 2022 22:05:54 -0700 (PDT)
+Received: from localhost.localdomain ([125.131.156.123])
+        by smtp.gmail.com with ESMTPSA id v21-20020a17090331d500b0015e8d4eb2a6sm5502122ple.240.2022.05.02.22.05.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 22:05:53 -0700 (PDT)
+From:   Wonhyuk Yang <vvghjk1234@gmail.com>
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+Cc:     Wonhyuk Yang <vvghjk1234@gmail.com>,
+        Baik Song An <bsahn@etri.re.kr>,
+        Hong Yeon Kim <kimhy@etri.re.kr>,
+        Taeung Song <taeung@reallinux.co.kr>, linuxgeek@linuxgeek.io,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] tracing: Fix return value of trace_pid_write()
+Date:   Tue,  3 May 2022 14:05:46 +0900
+Message-Id: <20220503050546.288911-1-vvghjk1234@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: LmUNEdavoshKYgzs-Dc4RUzoxPKAK1yT
-X-Proofpoint-ORIG-GUID: LmUNEdavoshKYgzs-Dc4RUzoxPKAK1yT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 26 Apr 2022 15:43:34 +0800, Guo Zhengkui wrote:
+Setting set_event_pid with trailing whitespace lead to endless write
+system calls like below.
 
-> Fix the following coccicheck warning:
-> 
-> drivers/scsi/qla2xxx/qla_edif.c:660:11-15: Unneeded variable: "rval".
-> Return "0" on line 761.
-> 
-> 
+    $ strace echo "123 " > /sys/kernel/debug/tracing/set_event_pid
+    execve("/usr/bin/echo", ["echo", "123 "], ...) = 0
+    ...
+    write(1, "123 \n", 5)                   = 4
+    write(1, "\n", 1)                       = 0
+    write(1, "\n", 1)                       = 0
+    write(1, "\n", 1)                       = 0
+    write(1, "\n", 1)                       = 0
+    write(1, "\n", 1)                       = 0
+    ....
 
-Applied to 5.19/scsi-queue, thanks!
+This is because, the result of trace_get_user's are not returned when it
+read at least one pid. To fix it, update read variable even if
+parser->idx == 0.
 
-[1/1] qla2xxx: edif: remove unneeded variable
-      https://git.kernel.org/mkp/scsi/c/1497e95e22c3
+The result of applied patch is below.
 
+    $ strace echo "123 " > /sys/kernel/debug/tracing/set_event_pid
+    execve("/usr/bin/echo", ["echo", "123 "], ...) = 0
+    ...
+    write(1, "123 \n", 5)                   = 5
+    close(1)                                = 0
+
+Cc: Baik Song An <bsahn@etri.re.kr>
+Cc: Hong Yeon Kim <kimhy@etri.re.kr>
+Cc: Taeung Song <taeung@reallinux.co.kr>
+Cc: linuxgeek@linuxgeek.io
+Signed-off-by: Wonhyuk Yang <vvghjk1234@gmail.com>
+---
+ kernel/trace/trace.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 124f1897fd56..a8bef684e8a3 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -721,13 +721,16 @@ int trace_pid_write(struct trace_pid_list *filtered_pids,
+ 		pos = 0;
+ 
+ 		ret = trace_get_user(&parser, ubuf, cnt, &pos);
+-		if (ret < 0 || !trace_parser_loaded(&parser))
++		if (ret < 0)
+ 			break;
+ 
+ 		read += ret;
+ 		ubuf += ret;
+ 		cnt -= ret;
+ 
++		if (!trace_parser_loaded(&parser))
++			break;
++
+ 		ret = -EINVAL;
+ 		if (kstrtoul(parser.buffer, 0, &val))
+ 			break;
+@@ -753,7 +756,6 @@ int trace_pid_write(struct trace_pid_list *filtered_pids,
+ 	if (!nr_pids) {
+ 		/* Cleared the list of pids */
+ 		trace_pid_list_free(pid_list);
+-		read = ret;
+ 		pid_list = NULL;
+ 	}
+ 
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+2.30.2
+
