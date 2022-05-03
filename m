@@ -2,120 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 271D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 09:35:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D004C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 09:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233464AbiECJjT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 05:39:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45592 "EHLO
+        id S233484AbiECJlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 05:41:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230238AbiECJjR (ORCPT
+        with ESMTP id S233468AbiECJlS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 05:39:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6F7F624BD0
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 02:35:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651570544;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Vm1AHL4rFcbvCeBzsVIadvhZvmSkslM9GulbqwY1CBg=;
-        b=Ye0UwbQQfc8ZfPfoWSrtVIw0EOmOibkBaH6NemM2F9waLotiVQDUZoqaV2B/XmIda9bc9s
-        EpgeC0to2vlAN95PFq+JRIst6+EkXCITW4Rpn1ynHeJ/hYsg59BI/7tJfU7GdNppeY6k7h
-        VTQux/PQhiJf9XaozjHOEYxX4cWzIA0=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-594-I7haL4UXPp-hZaMCPcnvbQ-1; Tue, 03 May 2022 05:35:38 -0400
-X-MC-Unique: I7haL4UXPp-hZaMCPcnvbQ-1
-Received: by mail-wm1-f72.google.com with SMTP id d6-20020a05600c34c600b0039296a2ac7cso542586wmq.1
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 02:35:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Vm1AHL4rFcbvCeBzsVIadvhZvmSkslM9GulbqwY1CBg=;
-        b=xZp/OIJ0c6onL2qZAcfvLwQB9X67B1fot0duBuyTBnm1suwAyL4lnB2kdxnfrFHL9c
-         Osr3z0PQbbM3k5BS94pZCV/9OTNi4lSDrfLWP0Ly4S1qQUeFIVP2xXCIczTT6PZPgD11
-         8Ch7YdnfOCtIoTgd6X1vnABXCZSJ9P7uHgdaIlP9c4CmwNxsTS/9/wAw0kl3OAgmQRAw
-         MoIFst3FmdVnOGHBnO0rt9bSO5dWzLQsJMl/M8itq4fCuTOHojoRNAQCRZGo9cXnaPi7
-         ObH9svxuQgmIzsAovuiL29aayUSGCeV5RPC3PcY/9gqUyLIspyzPFiOAdJJlPTH1VhPY
-         tmCg==
-X-Gm-Message-State: AOAM531HNqH0dPDQwNn3t8Ru/oehRcFjzM4qw76fUQVDfCoWeGpWspi6
-        EDGFKe1PKK1IzZk82G9JgctMardNfnN1oqy1J6NGDPI/Mu/pq0KUsjMrQDeTm2fXLdMIXB3EwAt
-        v8Gc7UrSe3e0QsmwDK42MWfoS
-X-Received: by 2002:adf:ded2:0:b0:20c:55cc:ab3e with SMTP id i18-20020adfded2000000b0020c55ccab3emr10945403wrn.376.1651570537660;
-        Tue, 03 May 2022 02:35:37 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxEmAquiSRy6OLItqDdXhrnPrw1k3bDoBoXFwZLlG+mHYAvbLpPmkSc5lN9GYwzWwQxdGRIwg==
-X-Received: by 2002:adf:ded2:0:b0:20c:55cc:ab3e with SMTP id i18-20020adfded2000000b0020c55ccab3emr10945390wrn.376.1651570537412;
-        Tue, 03 May 2022 02:35:37 -0700 (PDT)
-Received: from [10.32.181.74] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id d15-20020adf9b8f000000b0020c5253d8c9sm8701504wrc.21.2022.05.03.02.35.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 02:35:36 -0700 (PDT)
-Message-ID: <ae806798-b98e-c2d8-1926-32fa982a0a50@redhat.com>
-Date:   Tue, 3 May 2022 11:35:35 +0200
+        Tue, 3 May 2022 05:41:18 -0400
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00FEB3204F
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 02:37:45 -0700 (PDT)
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220503093743epoutp0300d7405c4eca8cbd60da9764cf069036~rjsSxe_wK0773207732epoutp03K
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 09:37:43 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220503093743epoutp0300d7405c4eca8cbd60da9764cf069036~rjsSxe_wK0773207732epoutp03K
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1651570663;
+        bh=eZPCA5Ld61CjuQcfpKdQrmY+FdOllgiJ6OejF1D7514=;
+        h=From:To:In-Reply-To:Subject:Date:References:From;
+        b=dhZAx9C0XSzZVEuHcp9Gs/Hkm0FNzvD3jpPzYCjMsaw0xth3MGi5LkW18avHZG8RB
+         PdwF6hDQlcdrXD2klFioXw3CtIjMeDwFveyU20Mx/AcXAE0qe3vY6YExxvbBtUmcXF
+         F2YWo0DT5+MTP3rtoQUDLlOiaPWLBmRDpa7iW7D8=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+        20220503093742epcas2p284bf0d52e1dbb7404ba5ca1ccf50c3d5~rjsR-cuhb0806408064epcas2p2w;
+        Tue,  3 May 2022 09:37:42 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.102]) by
+        epsnrtp3.localdomain (Postfix) with ESMTP id 4KsvyF0cjcz4x9Q1; Tue,  3 May
+        2022 09:37:41 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        F3.C6.10069.4E7F0726; Tue,  3 May 2022 18:37:40 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220503093740epcas2p327ab7c0718b4cd1effda87f106ceeebd~rjsPwTRTO1761517615epcas2p3S;
+        Tue,  3 May 2022 09:37:40 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220503093740epsmtrp1fa65665fc1c16dae8f6b4711ac6b85aa~rjsPvfdIb2127221272epsmtrp1c;
+        Tue,  3 May 2022 09:37:40 +0000 (GMT)
+X-AuditID: b6c32a45-a79ff70000002755-22-6270f7e499f2
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        EC.DE.08853.4E7F0726; Tue,  3 May 2022 18:37:40 +0900 (KST)
+Received: from KORCO082417 (unknown [10.229.8.121]) by epsmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220503093740epsmtip21eafc03609f612cdeef5581012b9e420~rjsPhIF2k2820728207epsmtip20;
+        Tue,  3 May 2022 09:37:40 +0000 (GMT)
+From:   "Chanho Park" <chanho61.park@samsung.com>
+To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@linaro.org>,
+        "'Rob Herring'" <robh+dt@kernel.org>,
+        "'Krzysztof Kozlowski'" <krzysztof.kozlowski+dt@linaro.org>,
+        "'Alim Akhtar'" <alim.akhtar@samsung.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-samsung-soc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+In-Reply-To: <20220503092631.174713-1-krzysztof.kozlowski@linaro.org>
+Subject: RE: [PATCH] arm64: dts: exynos: move XTCXO clock frequency to board
+ in Exynos Auto v9
+Date:   Tue, 3 May 2022 18:37:40 +0900
+Message-ID: <02a301d85ed1$6e942cd0$4bbc8670$@samsung.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] KVM: VMX: Exit to userspace if vCPU has injected
- exception and invalid state
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+cfafed3bb76d3e37581b@syzkaller.appspotmail.com
-References: <20220502221850.131873-1-seanjc@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220502221850.131873-1-seanjc@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQM0AewJ+A1wrOc8leVM2OSm1bsp/wEgrbzdqkyYVfA=
+Content-Language: ko
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprFJsWRmVeSWpSXmKPExsWy7bCmhe6T7wVJBsf/mVo8mLeNzWL+kXOs
+        Fn0vHjJb7H29ld1i0+NrrBaXd81hs5hxfh+TReveI+wOHB6bVnWyedy5tofNY/OSeo++LasY
+        PT5vkgtgjcq2yUhNTEktUkjNS85PycxLt1XyDo53jjc1MzDUNbS0MFdSyEvMTbVVcvEJ0HXL
+        zAE6RUmhLDGnFCgUkFhcrKRvZ1OUX1qSqpCRX1xiq5RakJJTYF6gV5yYW1yal66Xl1piZWhg
+        YGQKVJiQnfHt+XKmgsfsFa9W/2NvYDzJ1sXIySEhYCLxZcJUli5GLg4hgR2MEp277jFBOJ8Y
+        JZrm7IbKfGOUWDCzgQWmZWXrIUaIxF5GiWd/QVo4gZwXjBKTXzmA2GwC+hIvO7axghSJCNxn
+        kvj8dR4rSIJTwFXi5awfQA0cHMICCRKvF9qAhFkEVCQaT61iBrF5BSwlHjyDsQUlTs58AraY
+        WUBeYvvbOcwQRyhI/Hy6DGykiICVxOJlV5khakQkZne2MYPslRCYyCFxbspdqEddJL5+/Qn1
+        gbDEq+Nb2CFsKYmX/W1QdrHE0lmfmCCaGxglLm/7BdVsLDHrWTsjyNHMApoS63fpg5gSAsoS
+        R25B3cYn0XH4LztEmFeio00IolFd4sD26VBbZSW653xmhSjxkOj5wj2BUXEWkidnIXlyFpJn
+        ZiGsXcDIsopRLLWgODc9tdiowBAe18n5uZsYwYlUy3UH4+S3H/QOMTJxMB5ilOBgVhLhdV5a
+        kCTEm5JYWZValB9fVJqTWnyI0RQY7BOZpUST84GpPK8k3tDE0sDEzMzQ3MjUwFxJnNcrZUOi
+        kEB6YklqdmpqQWoRTB8TB6dUA1PPtKfLHmULCwt/+z1xuzqX1S3F3nTdLft3RsdtqHvYe0g2
+        7JR/ru3RjyVzDkrvmi11RGa7iL/0gdxvb1mM1tlJsfovjlv3p/Ju0ddlpzaJn92d9dhrTZsQ
+        p9YyMwVJjq8rzSp2ZfX8YJMLS0y74md8O9D7zTb1uxPNY0vFN2337tmxie/5h4Mmk7bUvhe/
+        J7pgeWzatV/eEyXy37KzN35+m/3Qrorf8JYZs7pOzOmCR99L5wlNL/12dsofg6VrfWcb9q7u
+        y3vwSz1QRfJkxOE6sUdPcier7D01x0pz7gRTud5o7m1fBHOKtiXtyZyeXX+4+4/S9FPMR2uP
+        rxbp+LnmQ3tN5o7deXsdRb+XSj9UYinOSDTUYi4qTgQAKPiuNS0EAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrNLMWRmVeSWpSXmKPExsWy7bCSvO6T7wVJBksWSFk8mLeNzWL+kXOs
+        Fn0vHjJb7H29ld1i0+NrrBaXd81hs5hxfh+TReveI+wOHB6bVnWyedy5tofNY/OSeo++LasY
+        PT5vkgtgjeKySUnNySxLLdK3S+DK+PZ8OVPBY/aKV6v/sTcwnmTrYuTkkBAwkVjZeoixi5GL
+        Q0hgN6PEzgt7oBKyEs/e7WCHsIUl7rccYYUoesYo8ehGJ1gRm4C+xMuObWAJEYHHTBLN/z5B
+        jZrGKLGyoYERpIpTwFXi5awfTCC2sECcxKlzq8DGsgioSDSeWsUMYvMKWEo8eAZjC0qcnPmE
+        pYuRg4NZQE+ibSPYGGYBeYntb+cwQ1ykIPHz6TJWEFtEwEpi8bKrzBA1IhKzO9uYJzAKzUIy
+        aRbCpFlIJs1C0rGAkWUVo2RqQXFuem6xYYFhXmq5XnFibnFpXrpecn7uJkZw/Ghp7mDcvuqD
+        3iFGJg7GQ4wSHMxKIrzOSwuShHhTEiurUovy44tKc1KLDzFKc7AoifNe6DoZLySQnliSmp2a
+        WpBaBJNl4uCUamCyvnNolaoMVxRTt4PWmv5DPXUBseUaU7naA9kqrh+w++f1zntHuiTHBfd9
+        r3LUXI4+nDgp+9+Zg0/vc3xk0Mq8stPwfNz2LTHLilfNOfUmyev5l6n2SaLZ4kY/uDN/Z6+d
+        sEgsnWNxgKWv0TLpC9ors8yfJvb7JF8Ila/5s34zS//2bZdjxWt6ey/orVvtfmKP+tR6Kc2f
+        JcwVNj/cNu1hudbbtzjVMUJV3KvRLNnTyKfywOIjKjuercztWLploXOp6U7N77cmWmxdO+dW
+        /5Qdq1YfeykdUChw6kNnNG+ox+QVC7/4ztP7FSUsJDtHxsxcXmPXl97fyyvuP3p62cROYIod
+        6+ronVespE+03QlQYinOSDTUYi4qTgQAjnpmng4DAAA=
+X-CMS-MailID: 20220503093740epcas2p327ab7c0718b4cd1effda87f106ceeebd
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220503092638epcas2p368d663b2d309b1fe8ed68b8465c5ff69
+References: <CGME20220503092638epcas2p368d663b2d309b1fe8ed68b8465c5ff69@epcas2p3.samsung.com>
+        <20220503092631.174713-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/3/22 00:18, Sean Christopherson wrote:
-> Exit to userspace with an emulation error if KVM encounters an injected
-> exception with invalid guest state, in addition to the existing check of
-> bailing if there's a pending exception (KVM doesn't support emulating
-> exceptions except when emulating real mode via vm86).
+> -----Original Message-----
+> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Sent: Tuesday, May 3, 2022 6:27 PM
+> To: Rob Herring <robh+dt@kernel.org>; Krzysztof Kozlowski
+> <krzysztof.kozlowski+dt@linaro.org>; Alim Akhtar
+<alim.akhtar@samsung.com>;
+> devicetree@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
+> samsung-soc@vger.kernel.org; linux-kernel@vger.kernel.org
+> Cc: Chanho Park <chanho61.park@samsung.com>; Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org>
+> Subject: [PATCH] arm64: dts: exynos: move XTCXO clock frequency to board
+> in Exynos Auto v9
 > 
-> In theory, KVM should never get to such a situation as KVM is supposed to
-> exit to userspace before injecting an exception with invalid guest state.
-> But in practice, userspace can intervene and manually inject an exception
-> and/or stuff registers to force invalid guest state while a previously
-> injected exception is awaiting reinjection.
-> 
-> Fixes: fc4fad79fc3d ("KVM: VMX: Reject KVM_RUN if emulation is required with pending exception")
-> Reported-by: syzbot+cfafed3bb76d3e37581b@syzkaller.appspotmail.com
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->   arch/x86/kvm/vmx/vmx.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index cf8581978bce..c41f0ac700c7 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -5465,7 +5465,7 @@ static bool vmx_emulation_required_with_pending_exception(struct kvm_vcpu *vcpu)
->   	struct vcpu_vmx *vmx = to_vmx(vcpu);
->   
->   	return vmx->emulation_required && !vmx->rmode.vm86_active &&
-> -	       vcpu->arch.exception.pending;
-> +	       (vcpu->arch.exception.pending || vcpu->arch.exception.injected);
->   }
->   
->   static int handle_invalid_guest_state(struct kvm_vcpu *vcpu)
-> 
-> base-commit: 84e5ffd045f33e4fa32370135436d987478d0bf7
+> The external oscillator - XTCXO - is an input to the SoC.  It is defined
+> in the Exynos Auto v9 SoC DTSI, because all boards will provide it and
+> clock controller bindings expect it, however the actual frequency of the
+> clock should be determined by the board.
 
-Queued, thanks.
+Thanks for the update.
+Reviewed-by: Chanho Park <chanho61.park@samsung.com>
 
-Paolo
+Best Regards,
+Chanho Park
 
