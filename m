@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE51CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 10:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F89C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 10:57:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234540AbiECLAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 07:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58972 "EHLO
+        id S234717AbiECLAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 07:00:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234635AbiECK7k (ORCPT
+        with ESMTP id S234417AbiECLAY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 06:59:40 -0400
+        Tue, 3 May 2022 07:00:24 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3088289A3;
-        Tue,  3 May 2022 03:56:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11174275F9;
+        Tue,  3 May 2022 03:56:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651575367; x=1683111367;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=0PUJoXw0gUXYhcx8VbGlgka6mzwXGjiMPFzKkCRtCqw=;
-  b=cp8pxKjs8fVb7W32/k4RG51qsxmt2Jl4WR4La+W467xXc5bKJ4LZ+AGQ
-   QYTK6RSRHD9N418G3h/PCRWYSMcwTmTUz6sHUQ9BES4XfmHE6DKm0KyNU
-   uC7kpWm/au0JCqIWrl8cL76BjkBrMOpvOXkPmPpRVlpVTvBJtUqFSfpKR
-   7dr0QIYxrDYAkYdxopobGrcN/q3gFaISCm97UL83IZXX+W0GGPV+mdHxJ
-   mlZvC518L9nwXnBC2/iJjRdEXt4PkD2c6hkKN4dwgDsRzfvT/dnMeGuZg
-   scBU0tGiCG52yZsdm0aLGq+1paUA3ixoXy+nOMzXsv4ri9ULjMqFy+MEc
-   Q==;
+  t=1651575391; x=1683111391;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=SRrXglg6r6VWu9S1ahzrarbkehQWcyMubV3bZWXG/sk=;
+  b=n9x2ClDZ1kLDchFN9S+gak5/ooRIOhAV0No3vljj/Y0H4JqP3JXsvgrA
+   F+HCVpEoNrnXMOyju5N7ugE7uxff6xsLWrApPXU8krft5roHo1JIW9rBo
+   rxTm9SUmcOcOCTOlYCAzESNSiP5tyZGGyAu7ySkVl2y7uaePw0qD13/mE
+   Yv+X425EceYxqcIgfL3DmarbiXlx+5yDwocAMn2GxKgl/HSJKbyS1dRnt
+   bI3J1q/bPu5ypdxaE75bylMtiDZPV6lE54tVtTgeAOMMXI9GSFpy73mlZ
+   kfrnDxmX3V9C7zPvoe4tfGG6X0Oy6JtwrvwdeJq8d/IAWF85shOyToSCK
+   w==;
 X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="162127842"
+   d="scan'208";a="162127862"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 May 2022 03:56:06 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 May 2022 03:56:30 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 3 May 2022 03:56:06 -0700
+ 15.1.2375.17; Tue, 3 May 2022 03:56:30 -0700
 Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 3 May 2022 03:56:01 -0700
+ 15.1.2375.17 via Frontend Transport; Tue, 3 May 2022 03:56:25 -0700
 From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
 To:     <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
         <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
@@ -47,43 +48,88 @@ CC:     <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <lee.jones@linaro.org>,
         <linux@armlinux.org.uk>, <Manohar.Puri@microchip.com>,
         <Kavyasree.Kotagiri@microchip.com>, <UNGLinuxDriver@microchip.com>
-Subject: [PATCH 0/4] Add support for lan966 flexcom multiplexer
-Date:   Tue, 3 May 2022 16:25:24 +0530
-Message-ID: <20220503105528.12824-1-kavyasree.kotagiri@microchip.com>
+Subject: [PATCH 3/4] dt-bindings: mux: Add lan966 flexcom mux controller
+Date:   Tue, 3 May 2022 16:25:27 +0530
+Message-ID: <20220503105528.12824-4-kavyasree.kotagiri@microchip.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220503105528.12824-1-kavyasree.kotagiri@microchip.com>
+References: <20220503105528.12824-1-kavyasree.kotagiri@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series implements driver for lan966 flexcom multiplexer.
-Converts atmel-flexcom.txt bindings to yaml format and add new
-compatible string for lan966 flexcom.
+This adds DT bindings documentation for lan966 flexcom
+mux controller.
 
-This patch also adds dt bindings for lan966 flexcom multiplexer.
-
-Kavyasree Kotagiri (4):
-  dt-bindings: mfd: atmel,flexcom: Convert to json-schema
-  dt-bindings: mfd: atmel,flexcom: Add lan966 compatible string and mux
-    properties
-  dt-bindings: mux: Add lan966 flexcom mux controller
-  mux: lan966: Add support for flexcom mux controller
-
- .../bindings/mfd/atmel,flexcom.yaml           |  84 +++++++++++++
- .../devicetree/bindings/mfd/atmel-flexcom.txt |  63 ----------
- .../mux/microchip,lan966-flx-mux.yaml         |  55 +++++++++
- arch/arm/mach-at91/Kconfig                    |   2 +
- drivers/mfd/atmel-flexcom.c                   |  55 ++++++++-
- drivers/mux/Kconfig                           |  12 ++
- drivers/mux/Makefile                          |   2 +
- drivers/mux/lan966-flx.c                      | 116 ++++++++++++++++++
- 8 files changed, 325 insertions(+), 64 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
- delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
+Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+---
+ .../mux/microchip,lan966-flx-mux.yaml         | 55 +++++++++++++++++++
+ 1 file changed, 55 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/mux/microchip,lan966-flx-mux.yaml
- create mode 100644 drivers/mux/lan966-flx.c
 
+diff --git a/Documentation/devicetree/bindings/mux/microchip,lan966-flx-mux.yaml b/Documentation/devicetree/bindings/mux/microchip,lan966-flx-mux.yaml
+new file mode 100644
+index 000000000000..8b20f531781a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mux/microchip,lan966-flx-mux.yaml
+@@ -0,0 +1,55 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mux/microchip,lan966-flx-mux.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: microchip Lan966 Flexcom multiplexer bindings
++
++maintainers:
++  - Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
++
++description: |+
++  The Microchip Lan966 have 5 Flexcoms. Each flexcom has 2 chip-selects
++  when operating in USART and SPI modes.
++  Each chip select of each flexcom can be mapped to 21 flexcom shared pins.
++  Define register offset and pin number to map a flexcom chip-select
++  to flexcom shared pin.
++
++properties:
++  compatible:
++    enum:
++      - microchip,lan966-flx-mux
++
++  reg:
++    maxItems: 1
++
++  '#mux-control-cells':
++    const: 1
++
++  mux-offset-pin:
++    description: an array of register offset and flexcom shared pin(0-20).
++
++required:
++  - compatible
++  - '#mux-control-cells'
++  - mux-offset-pin
++
++additionalProperties: false
++
++examples:
++  - |
++    mux: mux-controller@e2004168 {
++        compatible = "microchip,lan966-flx-mux";
++        reg = <0xe2004168 0x8>;
++        #mux-control-cells = <1>;
++        mux-offset-pin =
++                <0x18 9>; /* 0: flx3 cs0 offset, pin-9 */
++    };
++
++    flx3 {
++        atmel,flexcom-mode = <2>;
++        mux-controls = <&mux 0>;
++        mux-control-names = "cs0";
++    };
++...
 -- 
 2.17.1
 
