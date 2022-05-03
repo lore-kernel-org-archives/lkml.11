@@ -2,88 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76603C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 10:53:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C699C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 10:54:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234404AbiECK50 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 06:57:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56268 "EHLO
+        id S234373AbiECK6A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 06:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234351AbiECK5M (ORCPT
+        with ESMTP id S233634AbiECK55 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 06:57:12 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E605338A4;
-        Tue,  3 May 2022 03:53:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651575217; x=1683111217;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=0PUJoXw0gUXYhcx8VbGlgka6mzwXGjiMPFzKkCRtCqw=;
-  b=MKzOL8HpjvPo2bFj79pTstGdSDCxVORuuRY9AVa7pgB56LirvK7UPRfm
-   BvIOOaqfp4a8mZQlzvFapP9BkjdNWkjSH2E1yUrLJkZ3gsEvyxWsmS8aj
-   6jANRTuoqrWKKXpMJBkgdUulAnJvFyyJoTtW/7WoMn6SWOtuWOHkYf8Dw
-   JRSdUK4Qe9q2Zbc2mqnr4qHAKhc2jSOtZHzAVeCQUtqjx5WF8PlMYIx4E
-   Q10tgUX9sWI3iZK5JKVIFI6CmTNyn76hOTLnYgSl8C09TND6ZTfQ7Xx6V
-   LXgTBve4blYeidRvjhFOEJw07xn1bFpsEpwbUDCkrSd0CVWbGMWODQHjy
-   g==;
-X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="171750931"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 May 2022 03:53:37 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 3 May 2022 03:53:36 -0700
-Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 3 May 2022 03:53:32 -0700
-From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-To:     <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
-        <peda@axentia.se>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <lee.jones@linaro.org>,
-        <linux@armlinux.org.uk>, <Manohar.Puri@microchip.com>,
-        <Kavyasree.Kotagiri@microchip.com>, <UNGLinuxDriver@microchip.com>
-Subject: [Internal PATCH 0/4] Add support for lan966 flexcom multiplexer
-Date:   Tue, 3 May 2022 16:23:16 +0530
-Message-ID: <20220503105320.12727-1-kavyasree.kotagiri@microchip.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 3 May 2022 06:57:57 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA7E37BE8;
+        Tue,  3 May 2022 03:54:14 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 9CC871F43E0F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651575250;
+        bh=tUFa36FJdRvQXQNs914k7i3npmd0tCRASCn8j1c9KiY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AMt6Snv6vPYTd7c3E2G7yqqwWbnRDUHSlYpZZC1P8p/FugIfPFswzeD2JnE6wCmRX
+         ybb6fW3xghNYm0GbmRW/25uiVKUPgfqKskaRNTnfx6msZyZxcoZ7RVwsqiyyoR05vb
+         pv6spBVYHYFjDoi0jLBPIe5I0OsAPQvZUYIp1Fqz+oDxAJdr4htpkacXVb5sxkzjAj
+         G5BP3OuBEynmBBVVy+BA3hUpdKlWIxW4B6SI5Kyi9eRKHNummoTU2X9mfmSh0Vb0Pq
+         YVPa4ioOZdhUbi+lRNO7AkQ8xkZh4fWJgWS9iikXn9IcIP7+xmyXsA0E8hAIApvFWH
+         lSpyjSjKb2fRg==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     thierry.reding@gmail.com
+Cc:     u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, kernel@collabora.com,
+        nfraprado@collabora.com,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 0/2] MediaTek Helio X10 MT6795 - PWM driver
+Date:   Tue,  3 May 2022 12:54:03 +0200
+Message-Id: <20220503105405.54832-1-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series implements driver for lan966 flexcom multiplexer.
-Converts atmel-flexcom.txt bindings to yaml format and add new
-compatible string for lan966 flexcom.
+In an effort to give some love to the apparently forgotten MT6795 SoC,
+I am upstreaming more components that are necessary to support platforms
+powered by this one apart from a simple boot to serial console.
 
-This patch also adds dt bindings for lan966 flexcom multiplexer.
+This series introduces support for the PWMs found in Helio X10.
 
-Kavyasree Kotagiri (4):
-  dt-bindings: mfd: atmel,flexcom: Convert to json-schema
-  dt-bindings: mfd: atmel,flexcom: Add lan966 compatible string and mux
-    properties
-  dt-bindings: mux: Add lan966 flexcom mux controller
-  mux: lan966: Add support for flexcom mux controller
+Tested on a Sony Xperia M5 (codename "Holly") smartphone.
 
- .../bindings/mfd/atmel,flexcom.yaml           |  84 +++++++++++++
- .../devicetree/bindings/mfd/atmel-flexcom.txt |  63 ----------
- .../mux/microchip,lan966-flx-mux.yaml         |  55 +++++++++
- arch/arm/mach-at91/Kconfig                    |   2 +
- drivers/mfd/atmel-flexcom.c                   |  55 ++++++++-
- drivers/mux/Kconfig                           |  12 ++
- drivers/mux/Makefile                          |   2 +
- drivers/mux/lan966-flx.c                      | 116 ++++++++++++++++++
- 8 files changed, 325 insertions(+), 64 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
- delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
- create mode 100644 Documentation/devicetree/bindings/mux/microchip,lan966-flx-mux.yaml
- create mode 100644 drivers/mux/lan966-flx.c
+AngeloGioacchino Del Regno (2):
+  pwm: pwm-mediatek: Add support for MediaTek Helio X10 MT6795
+  dt-bindings: pwm: pwm-mediatek: Add documentation for MT6795 SoC
+
+ Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 1 +
+ drivers/pwm/pwm-mediatek.c                             | 7 +++++++
+ 2 files changed, 8 insertions(+)
 
 -- 
-2.17.1
+2.35.1
 
