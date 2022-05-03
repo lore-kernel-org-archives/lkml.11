@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16BFCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:06:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C349C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:06:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235896AbiECNJm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 09:09:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
+        id S235899AbiECNJt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 09:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235860AbiECNIm (ORCPT
+        with ESMTP id S235903AbiECNIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 09:08:42 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F101A38BC0
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 06:05:02 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id y3so33254136ejo.12
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 06:05:02 -0700 (PDT)
+        Tue, 3 May 2022 09:08:45 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC4739168
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 06:05:06 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id g6so33357058ejw.1
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 06:05:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=VGgH65380y95brlQIz6JvdhcmorlPZghZbuMFrVE/7E=;
-        b=nimFKgBu4RlKdpVw7NQWW9Vn8YV5ZobX8Zj0G28O7cD/t82ELjsZFbSFNALn+6QDxB
-         h9FCtd/aX3Hwd2jmZg3UNK52XjaFf6hrpDE+zWnAiqSBEIb51On+V4eZwSKBTcyI/tyT
-         0fvP9mHg4u1p7m9QT9Zd5Vigqc74Xubhk4vtJJKAEO44s+50pa7X2LA4ZcbHhumCfMz3
-         xpirP6vO1bVJJterm3jnRaIdDc6gzliB79erzOXs+4ZZuV/WVUEhl9DlXaC/tS4c/aPU
-         av3co4GoKjI/KSGnsI4CBxORfx5EVWC5PXA7S2dLI1lXcU03gmrB4+nuNuOk3RhAIxqU
-         C/nw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=YVZd3VX5yDYHZFsgN5vgd0V6QUlWGwER/REYExEMMg0=;
+        b=csNpYjc4eRvrfqmATKfLTAmBvnvnCMLWE/GsmHyi6IhYJC98WztvFdjZffp5n3FDS2
+         7EckGJqAWC/FlT/DzCFuRjoog4OHIRo4npSQUqjgopM9lf9Atxn+T9s8kJttJxf3tmif
+         qkZJhdGaMA2f/H2eFtgin8YaIY97Sc7RR04ek4Q7m6NCTsDrDBYNnRfEp8Z0PkLMJKT1
+         83X5i7OeJSSZ/qmcYY/xdH83H19Z32A/N+U0w0RwLWMVCCYbG0IfqOJTSn4xsInkEehg
+         WzX9xycipOxRnlfkXk8vEIXkTPrKWO7xDk09UosYpR8K4DhEJgNCRh5YAM3WyKjwITH3
+         +zkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VGgH65380y95brlQIz6JvdhcmorlPZghZbuMFrVE/7E=;
-        b=6/Myykm5HFKT11rdnnvLJgEUfaTk8sCNOTGiNrXk6fAwjiYDOPcaJ/1sMZ8GNgsNir
-         /eMjbqXVVSaY72PTsh1h96qPEKc5xP1it3O/6QZkMR+7se/fq4Joxsgh/KyMNp9wjBXI
-         nAr5nLRYirYMAsecdPeVe2+Q0qRMtXhz7qL6rYbdJsyKzaTGc8cmQoqhBL9/Yio7Mdck
-         UHUC7llPBnBpY8ow9nuWDvco28MS+LjhbKhrPuskoiYtk+eLjUPOnK88nGR4lTxpDYfC
-         QagB5AOObKYU07mPdMoNaPckQd3d3Tz9AHh9WLnHnHKXX8Z4rLN46dpfaszgJt7Z75ma
-         C9Zg==
-X-Gm-Message-State: AOAM532snVYjIaud2M+Eve0gHlwvV/LDcB4iubLz8GUAUuvVhQM/kruC
-        0Fzp+mBFgxj8mCo3cvvNrngtKw==
-X-Google-Smtp-Source: ABdhPJy8U91tlfVNs30dSE//PkGpdIMT/KqUTFeSrZBWUYEiQO4bdahskyNZPa7cEuIRVs4Dw4W+lg==
-X-Received: by 2002:a17:907:8a21:b0:6f3:d0f0:b56b with SMTP id sc33-20020a1709078a2100b006f3d0f0b56bmr15502100ejc.305.1651583101375;
-        Tue, 03 May 2022 06:05:01 -0700 (PDT)
+        bh=YVZd3VX5yDYHZFsgN5vgd0V6QUlWGwER/REYExEMMg0=;
+        b=mFqemvjnHALbk2VxAtrEGO/e+Gj3VhUBRQtPcxGiE5RcyTmwIHWT9WdzslCGoCQAuw
+         Msxx9DxqySge+dDaqNwCeAaYpUpdIr2D9eBku+w6NXo+VVR99q9Z0Us7YqxvVaBmAzHg
+         6/8OKs98anCLx/NIQcX9eFvbMj63nBCQ2i5v2OjkP0HazXQjDu8DqmSDl3xa5dbzsYf6
+         d+WMSj19+VNhyfUn0uoppgLiILaKg1sNBmC9XFJXBevdFeR0ydzQeSdXK1MmL7Vx8UZP
+         qvi/jw/vxLiSFyGW5z4/IesVffir0yC5i7U91OktxoChPMBV0DifSOGgo/GsjUyeXCn0
+         u3Qw==
+X-Gm-Message-State: AOAM532Mom2xs2EDcjJV7zD7gMr7cRnQs6cyAuiBDRi6pmUWleoILcHU
+        V/rRtEBNEddI7F3osWCWcq452A==
+X-Google-Smtp-Source: ABdhPJxFX2C0kYEgEZ+7lW5XsDBQeItTn6bDarTIf1+s0VuH4ATzexJD24XtSi3M+wHrQMVybYQLZQ==
+X-Received: by 2002:a17:907:d22:b0:6f4:8766:2042 with SMTP id gn34-20020a1709070d2200b006f487662042mr3434137ejc.259.1651583105046;
+        Tue, 03 May 2022 06:05:05 -0700 (PDT)
 Received: from prec5560.. (freifunk-gw.bsa1-cpe1.syseleven.net. [176.74.57.43])
-        by smtp.gmail.com with ESMTPSA id y13-20020aa7cccd000000b0042617ba639asm7868782edt.36.2022.05.03.06.04.59
+        by smtp.gmail.com with ESMTPSA id y13-20020aa7cccd000000b0042617ba639asm7868782edt.36.2022.05.03.06.05.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 06:05:00 -0700 (PDT)
+        Tue, 03 May 2022 06:05:04 -0700 (PDT)
 From:   Robert Foss <robert.foss@linaro.org>
 To:     bjorn.andersson@linaro.org, agross@kernel.org,
         mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
@@ -56,9 +56,10 @@ To:     bjorn.andersson@linaro.org, agross@kernel.org,
         linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [PATCH v2 6/8] clk: qcom: add support for SM8350 DISPCC
-Date:   Tue,  3 May 2022 15:04:46 +0200
-Message-Id: <20220503130448.520470-6-robert.foss@linaro.org>
+Cc:     Robert Foss <robert.foss@linaro.org>
+Subject: [PATCH v2 8/8] arm64: dts: qcom: sm8350: Add DISPCC node
+Date:   Tue,  3 May 2022 15:04:48 +0200
+Message-Id: <20220503130448.520470-8-robert.foss@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220503130448.520470-1-robert.foss@linaro.org>
 References: <20220503130448.520470-1-robert.foss@linaro.org>
@@ -68,134 +69,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Marek <jonathan@marek.ca>
+Add the dispcc clock-controller DT node for sm8350.
 
-Add support to the SM8350 display clock controller by extending the SM8250
-display clock controller, which is almost identical but has some minor
-differences.
-
-Signed-off-by: Jonathan Marek <jonathan@marek.ca>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
 Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
+ arch/arm64/boot/dts/qcom/sm8350.dtsi | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-Changes since v1
- - Remove comment - Dmitry
+diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+index 52428b6df64e..94c2519e9f48 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+@@ -3,7 +3,9 @@
+  * Copyright (c) 2020, Linaro Limited
+  */
  
-
- drivers/clk/qcom/Kconfig         |  4 +--
- drivers/clk/qcom/dispcc-sm8250.c | 60 +++++++++++++++++++++++++++++++-
- 2 files changed, 61 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/clk/qcom/Kconfig b/drivers/clk/qcom/Kconfig
-index 9b1f54e634b9..1752ca0ee405 100644
---- a/drivers/clk/qcom/Kconfig
-+++ b/drivers/clk/qcom/Kconfig
-@@ -609,11 +609,11 @@ config SM_DISPCC_6125
- 	  splash screen
++#include <dt-bindings/interconnect/qcom,sm8350.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/clock/qcom,dispcc-sm8350.h>
+ #include <dt-bindings/clock/qcom,gcc-sm8350.h>
+ #include <dt-bindings/clock/qcom,rpmh.h>
+ #include <dt-bindings/dma/qcom-gpi.h>
+@@ -2525,6 +2527,31 @@ usb_2_dwc3: usb@a800000 {
+ 			};
+ 		};
  
- config SM_DISPCC_8250
--	tristate "SM8150 and SM8250 Display Clock Controller"
-+	tristate "SM8150/SM8250/SM8350 Display Clock Controller"
- 	depends on SM_GCC_8150 || SM_GCC_8250
- 	help
- 	  Support for the display clock controller on Qualcomm Technologies, Inc
--	  SM8150 and SM8250 devices.
-+	  SM8150/SM8250/SM8350 devices.
- 	  Say Y if you want to support display devices and functionality such as
- 	  splash screen.
- 
-diff --git a/drivers/clk/qcom/dispcc-sm8250.c b/drivers/clk/qcom/dispcc-sm8250.c
-index 22d9cbabecab..daa3714cfc7d 100644
---- a/drivers/clk/qcom/dispcc-sm8250.c
-+++ b/drivers/clk/qcom/dispcc-sm8250.c
-@@ -43,6 +43,10 @@ static struct pll_vco vco_table[] = {
- 	{ 249600000, 2000000000, 0 },
- };
- 
-+static struct pll_vco lucid_5lpe_vco[] = {
-+	{ 249600000, 1750000000, 0 },
-+};
++		dispcc: clock-controller@af00000 {
++			compatible = "qcom,sm8350-dispcc";
++			reg = <0 0x0af00000 0 0x10000>;
++			clocks = <&rpmhcc RPMH_CXO_CLK>,
++				 <0>,
++				 <0>,
++				 <0>,
++				 <0>,
++				 <0>,
++				 <0>;
++			clock-names = "bi_tcxo",
++				      "dsi0_phy_pll_out_byteclk",
++				      "dsi0_phy_pll_out_dsiclk",
++				      "dsi1_phy_pll_out_byteclk",
++				      "dsi1_phy_pll_out_dsiclk",
++				      "dp_phy_pll_link_clk",
++				      "dp_phy_pll_vco_div_clk";
++			#clock-cells = <1>;
++			#reset-cells = <1>;
++			#power-domain-cells = <1>;
 +
- static struct alpha_pll_config disp_cc_pll0_config = {
- 	.l = 0x47,
- 	.alpha = 0xE000,
-@@ -1228,6 +1232,7 @@ static const struct of_device_id disp_cc_sm8250_match_table[] = {
- 	{ .compatible = "qcom,sc8180x-dispcc" },
- 	{ .compatible = "qcom,sm8150-dispcc" },
- 	{ .compatible = "qcom,sm8250-dispcc" },
-+	{ .compatible = "qcom,sm8350-dispcc" },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, disp_cc_sm8250_match_table);
-@@ -1258,7 +1263,7 @@ static int disp_cc_sm8250_probe(struct platform_device *pdev)
- 		return PTR_ERR(regmap);
- 	}
- 
--	/* note: trion == lucid, except for the prepare() op */
-+	/* Apply differences for SM8150 and SM8350 */
- 	BUILD_BUG_ON(CLK_ALPHA_PLL_TYPE_TRION != CLK_ALPHA_PLL_TYPE_LUCID);
- 	if (of_device_is_compatible(pdev->dev.of_node, "qcom,sc8180x-dispcc") ||
- 	    of_device_is_compatible(pdev->dev.of_node, "qcom,sm8150-dispcc")) {
-@@ -1270,6 +1275,59 @@ static int disp_cc_sm8250_probe(struct platform_device *pdev)
- 		disp_cc_pll1_config.config_ctl_hi1_val = 0x00000024;
- 		disp_cc_pll1_config.user_ctl_hi1_val = 0x000000D0;
- 		disp_cc_pll1_init.ops = &clk_alpha_pll_trion_ops;
-+	} else if (of_device_is_compatible(pdev->dev.of_node, "qcom,sm8350-dispcc")) {
-+		static struct clk_rcg2 * const rcgs[] = {
-+			&disp_cc_mdss_byte0_clk_src,
-+			&disp_cc_mdss_byte1_clk_src,
-+			&disp_cc_mdss_dp_aux1_clk_src,
-+			&disp_cc_mdss_dp_aux_clk_src,
-+			&disp_cc_mdss_dp_link1_clk_src,
-+			&disp_cc_mdss_dp_link_clk_src,
-+			&disp_cc_mdss_dp_pixel1_clk_src,
-+			&disp_cc_mdss_dp_pixel2_clk_src,
-+			&disp_cc_mdss_dp_pixel_clk_src,
-+			&disp_cc_mdss_esc0_clk_src,
-+			&disp_cc_mdss_mdp_clk_src,
-+			&disp_cc_mdss_pclk0_clk_src,
-+			&disp_cc_mdss_pclk1_clk_src,
-+			&disp_cc_mdss_rot_clk_src,
-+			&disp_cc_mdss_vsync_clk_src,
++			power-domains = <&rpmhpd SM8350_MMCX>;
++			power-domain-names = "mmcx";
 +		};
-+		static struct clk_regmap_div * const divs[] = {
-+			&disp_cc_mdss_byte0_div_clk_src,
-+			&disp_cc_mdss_byte1_div_clk_src,
-+			&disp_cc_mdss_dp_link1_div_clk_src,
-+			&disp_cc_mdss_dp_link_div_clk_src,
-+		};
-+		unsigned int i;
-+		static bool offset_applied;
 +
-+		/* only apply the offsets once (in case of deferred probe) */
-+		if (!offset_applied) {
-+			for (i = 0; i < ARRAY_SIZE(rcgs); i++)
-+				rcgs[i]->cmd_rcgr -= 4;
-+
-+			for (i = 0; i < ARRAY_SIZE(divs); i++) {
-+				divs[i]->reg -= 4;
-+				divs[i]->width = 4;
-+			}
-+
-+			disp_cc_mdss_ahb_clk.halt_reg -= 4;
-+			disp_cc_mdss_ahb_clk.clkr.enable_reg -= 4;
-+
-+			offset_applied = true;
-+		}
-+
-+		disp_cc_mdss_ahb_clk_src.cmd_rcgr = 0x22a0;
-+
-+		disp_cc_pll0_config.config_ctl_hi1_val = 0x2A9A699C;
-+		disp_cc_pll0_config.test_ctl_hi1_val = 0x01800000;
-+		disp_cc_pll0_init.ops = &clk_alpha_pll_lucid_5lpe_ops;
-+		disp_cc_pll0.vco_table = lucid_5lpe_vco;
-+		disp_cc_pll1_config.config_ctl_hi1_val = 0x2A9A699C;
-+		disp_cc_pll1_config.test_ctl_hi1_val = 0x01800000;
-+		disp_cc_pll1_init.ops = &clk_alpha_pll_lucid_5lpe_ops;
-+		disp_cc_pll1.vco_table = lucid_5lpe_vco;
- 	}
- 
- 	clk_lucid_pll_configure(&disp_cc_pll0, regmap, &disp_cc_pll0_config);
+ 		adsp: remoteproc@17300000 {
+ 			compatible = "qcom,sm8350-adsp-pas";
+ 			reg = <0 0x17300000 0 0x100>;
 -- 
 2.34.1
 
