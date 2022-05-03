@@ -2,83 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 17:47:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4897C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 17:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240624AbiECRuv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 13:50:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40610 "EHLO
+        id S240636AbiECRu6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 13:50:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240599AbiECRuq (ORCPT
+        with ESMTP id S240621AbiECRu4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 13:50:46 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791762717C
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 10:47:12 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id w187so32369971ybe.2
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 10:47:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wH9AqNVAXAx+G8p70VLB9NLbw+BOxltF83VPYgsU5tU=;
-        b=V6/QN94FhhxIxqe8YbyaOCHnphbTgJrBTkf0BsoQbw1QuH//ynFGSx01fnUpHsY+2f
-         AKNPpBEP4ZaHDvIoEYvZUEdYNRB52cLValVbK5drg2y7PycdnKY0paVsWa/QPw+pqUvx
-         y+CKExy99v2cxDrCvoO+IdjXElcDZkAEShcKYMjm6P8sQouiNjSJ/xnnJzSczk59X5vQ
-         QvMmpELOhMPiNv6PmcZbys1gtAzlMXRVHA6YX/PXBivLKMoR0w/49P33V5fR2OBkg+Sz
-         ACpuao1aCaguqwqD77zKnRE8J38NJSbtOTN0D6g5QhleEigk9WTLqcxvPvGwdG+cuxZB
-         CEHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wH9AqNVAXAx+G8p70VLB9NLbw+BOxltF83VPYgsU5tU=;
-        b=g3bDeaHtz9gst6F6YF2sLgURsMZcAhK0higU/7LYiACmTh3/OlmvnQ3w2fpW/mHiHo
-         LiCK9+rj1gnOt2KHR2CvYoPuoRRikab8dGT0qx7cRGlbfdwIDPqMoy+OMcMrqwb3I31r
-         Y39Hfz9VFKukI824LQ8vPAAguxt6IeDWwOXqsOqiSV4y5QmCOtOdI3l0Q0ruZCuGZ07M
-         CKi2YNsrUdujeP/h5uaXWh1RYWzJn0cj2W75SH/50frIvFEVLKAuouoVM7noUf0YRlLd
-         kugEKNTJ4+sTVYqkywEx9zcD4CWg97oULkWQSOCRaGvNL+j2/MnAHeQIixghZntZGMZX
-         lVdw==
-X-Gm-Message-State: AOAM53378m4SeCdb8OYdWLpwDeRLnDqCVyoCnrEmf+v35G7Vg1Qy83kx
-        MJapjMdQ67+emFHVbm9g9kjnXAZ9JRCQCSn1zpnyvw==
-X-Google-Smtp-Source: ABdhPJxyfn/UPn8JhbzCElu45EEVIRaxIOY63aN6mUJjop+zXdOGi1to9G+/0FjgUmEdeI2Q9N+4Q/+PJGB3nZtwMMM=
-X-Received: by 2002:a5b:dcc:0:b0:628:d6d9:d4bc with SMTP id
- t12-20020a5b0dcc000000b00628d6d9d4bcmr14393804ybr.178.1651600031693; Tue, 03
- May 2022 10:47:11 -0700 (PDT)
+        Tue, 3 May 2022 13:50:56 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE1427B0E
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 10:47:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651600042; x=1683136042;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=sxiHAHKs3kGHAX7nEqE25i1M6VS4EbzVzl9niPw4Uv4=;
+  b=TCYXAwFjhAWnieAh5FBmN7OkM7sTqpS/kbwsv4/Zh8neiMsWhZUT9VHi
+   4kYO0FjWa7NmsPDs9/b3yIRH3GiitTGXFdY/bpEYPMMS3kxO1/7pZPd6J
+   sJFsmWrU6NkbUsewPle5KrDr6hSATZvbZ9Is0wTcdEH3lF/tzvVu6Gv0o
+   bQs6PR/ArRjo2vD1iXEXwXUI8Wpaic2qIS+RqbdvrrVwe49ZNWSyD2NmY
+   Sud+kh7Lv4i+1rUD9+tqFfieTiaobaeuvNbz+o/f6xrUbjSaZY3Z5LnAJ
+   McJrgtEKjBneRD6pxrwveUTqZdJ1AQGnYyeTHrcbQ92jVLGCJhYNGtx51
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="267136843"
+X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
+   d="scan'208";a="267136843"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 10:47:02 -0700
+X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
+   d="scan'208";a="536435108"
+Received: from prdidome-mobl.amr.corp.intel.com (HELO [10.212.51.158]) ([10.212.51.158])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 10:47:01 -0700
+Message-ID: <e47bf89c-cee7-3006-5c1b-c76f640c3e23@intel.com>
+Date:   Tue, 3 May 2022 10:47:20 -0700
 MIME-Version: 1.0
-References: <20220503130448.520470-1-robert.foss@linaro.org>
- <20220503130448.520470-6-robert.foss@linaro.org> <YnFlnbPsf6oBf+A1@builder.lan>
-In-Reply-To: <YnFlnbPsf6oBf+A1@builder.lan>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Tue, 3 May 2022 19:47:00 +0200
-Message-ID: <CAG3jFyuuAxN7OXyN3q8=avvi-5xVBC2Toa2Y_42ssFgHnU3j8A@mail.gmail.com>
-Subject: Re: [PATCH v2 6/8] clk: qcom: add support for SM8350 DISPCC
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     agross@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-        robh+dt@kernel.org, krzk+dt@kernel.org, jonathan@marek.ca,
-        tdas@codeaurora.org, anischal@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: RFC: Memory Tiering Kernel Interfaces
+Content-Language: en-US
+To:     Alistair Popple <apopple@nvidia.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Cc:     Wei Xu <weixugc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Yang Shi <shy828301@gmail.com>, Linux MM <linux-mm@kvack.org>,
+        Greg Thelen <gthelen@google.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Feng Tang <feng.tang@intel.com>, Jonathan.Cameron@huawei.com
+References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
+ <20220501175813.tvytoosygtqlh3nn@offworld> <87o80eh65f.fsf@nvdebian.thelocal>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <87o80eh65f.fsf@nvdebian.thelocal>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 3 May 2022 at 19:25, Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
->
-> On Tue 03 May 08:04 CDT 2022, Robert Foss wrote:
->
-> > From: Jonathan Marek <jonathan@marek.ca>
-> >
-> > Add support to the SM8350 display clock controller by extending the SM8250
-> > display clock controller, which is almost identical but has some minor
-> > differences.
-> >
-> > Signed-off-by: Jonathan Marek <jonathan@marek.ca>
-> > Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
->
-> You handled this patch, as such your S-o-b should be here as well.
->
+On 5/3/22 10:14, Alistair Popple wrote:
+> I would certainly be interested in figuring out how HW could provide some sort
+> of heatmap to identify which pages are hot and which processing unit is using
+> them. Currently for these systems users have to manually assign memory policy to
+> get any reasonable performance, both to disable NUMA balancing and make sure
+> memory is allocated on the right node.
 
-Ack
+Autonuma-induced page faults are a total non-starter for lots of
+workloads, even ignoring GPUs.  Basically anyone who is latency
+sensitive stays far, far away from autonuma.
+
+As for improving on page faults for data collection...
+
+*Can* hardware provide this information?  Definitely.
+
+Have hardware vendors been motivated enough to add hardware to do this?
+ Nope, not yet.
+
+Do you know anyone that works for any hardware companies? ;)
+
+Seriously, though.  Folks at Intel _are_ thinking about this problem.
+I'm hoping we have hardware some day to help lend a hand.  The more
+hardware vendors that do this, the more likely it is that we'll have
+good kernel code to consume data from the hardware.
