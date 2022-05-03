@@ -2,102 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0844FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 03:38:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC13FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 03:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344428AbiEDDlk (ORCPT
+        id S1344415AbiEDDmC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 23:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44676 "EHLO
+        Tue, 3 May 2022 23:42:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344413AbiEDDl0 (ORCPT
+        with ESMTP id S1344366AbiEDDly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 23:41:26 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9562F28996
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 20:37:46 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id t13so155498pgn.8
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 20:37:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mnH+42aht6yqmG7U5pfKT59kRTusDPAPgC1nDObmhLU=;
-        b=xq0OE+G1oprXqRtC6pQz/5wP42YdYcl3p8QPLJHh1Zo400NXUFiruszN4dZxmb8CKL
-         2rglpn6BJ6BPeW4159iBSgG3jVIhdjiQSMXsqIT6j+sxjiCurYrjcpRORaFCjatHlZY3
-         /jgUT5V7IcFACKZNJTn2kkt54kOyO2x1EhkmUYwXJWRUd9yvhmgQz5snWeCKBlewCfuw
-         uZDdZsC1iAyr/owg+4eguxIJlluL0zrJFNQZu2D5un4lWb8e022BJ4ZXuHPCb54IH6kd
-         nrioLR3t6d5Ko7a/ie9dEa0HCsXJKzjlptJrY91Cx6BR0GyjE+mb+E75bu3DTNTV/twp
-         yk0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mnH+42aht6yqmG7U5pfKT59kRTusDPAPgC1nDObmhLU=;
-        b=6CYcP9oqRRIzfamsF0fVFNww3gcUQd6U6Vwj2IZ8R4qxV0zDoCAym+C2p7KyS8ZLPT
-         SmuBeRDtFplDJBX+g69JGnmE4U44Quo6NF0UI+H43sUx+rcTLsY7GZDny0QAGX7SUpRq
-         qRExesnu8QERhPlz6BYpE7vpje691+7T+P+mNPelLwfWpZKfpy8Zmq76V57X9GvSYBl6
-         /99HBCsSLYPxUiIPyu3iAAvG7Bo3EDfXMCysa8VkWveATLMqAtilosEspZHvxPhOkWZ1
-         flTMmNvqWirlf7pDbf5VXn1oRL0TLSW5L5BdHbHRNV+paQbH/RNsyQBzOdjzvGjLUCcB
-         Ig/w==
-X-Gm-Message-State: AOAM532ycbcmBUOD44kGSR2SbwkBPz1aD+BC2six+KbpPIKWd6taJBMe
-        Mxa6rMN0rfQvBD1vRrcz2/oGXw==
-X-Google-Smtp-Source: ABdhPJwnrBK2PxUL2wLY3YNmxal8cHQW0OPf/mceeWgk1gF2mGj25P+YfQ8ZF5ZQfsXlWJPDRcm7zg==
-X-Received: by 2002:aa7:848a:0:b0:510:44da:223d with SMTP id u10-20020aa7848a000000b0051044da223dmr263616pfn.66.1651635466035;
-        Tue, 03 May 2022 20:37:46 -0700 (PDT)
-Received: from localhost ([139.177.225.239])
-        by smtp.gmail.com with ESMTPSA id v4-20020a62a504000000b0050dc7628149sm7057285pfm.35.2022.05.03.20.37.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 20:37:45 -0700 (PDT)
-Date:   Wed, 4 May 2022 11:37:43 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     corbet@lwn.net, akpm@linux-foundation.org, mcgrof@kernel.org,
-        keescook@chromium.org, yzaikin@google.com, osalvador@suse.de,
-        david@redhat.com, masahiroy@kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        duanxiongchun@bytedance.com, smuchun@gmail.com
-Subject: Re: [PATCH v9 2/4] mm: memory_hotplug: override memmap_on_memory
- when hugetlb_free_vmemmap=on
-Message-ID: <YnH1B1Al/oW3rbmu@FVFYT0MHHV2J.usts.net>
-References: <20220429121816.37541-1-songmuchun@bytedance.com>
- <20220429121816.37541-3-songmuchun@bytedance.com>
- <3d040faf-7fc1-80a6-c584-aafeff27af18@oracle.com>
+        Tue, 3 May 2022 23:41:54 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE0B27FE1;
+        Tue,  3 May 2022 20:38:20 -0700 (PDT)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242MCRCl030007;
+        Tue, 3 May 2022 00:51:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=co1HKWWIuvqZK5K23IbCWayVwEyZTYw1u2eKWn80D5Y=;
+ b=FwFL/J/c9I5g3ahWu7vrXF2J/PeooBeLfKe7CpwYI22QQEOd0RDNh1BiiK+Wxj0TA9kP
+ JtcfAa2EmSk6Oeknbvt5bzZK5iQe1er+/u8RGI7yT0rq+PCGb9jHaeTnq1MbTd6fEvhU
+ 1SNUdBqVZNlN5uRzQ5ryh3KGkA2dt05PDZCglyMz3snCRjyCW2+PVysTadMDhGsGhGLF
+ QKYAjXIGSpx1fp1uEAX8gYO6ZKJ82K+Vcn7IBM/BHh4CbBuGERgVuR09syWTqs5FgQlI
+ lII4nCw3ge0V6my7yXWyRtHeq8pmdnFiV8w52c9ooEo9jj6hoijolfmmpY64OGNzYdlx og== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fruq0cp5k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:51:57 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430ooiZ008905;
+        Tue, 3 May 2022 00:51:56 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x8d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:51:56 +0000
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430pljS010389;
+        Tue, 3 May 2022 00:51:56 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-16;
+        Tue, 03 May 2022 00:51:56 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     cgel.zte@gmail.com, james.smart@broadcom.com
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        linux-kernel@vger.kernel.org, jejb@linux.ibm.com,
+        Zeal Robot <zealci@zte.com.cn>,
+        Changcheng Deng <deng.changcheng@zte.com.cn>,
+        linux-scsi@vger.kernel.org, dick.kennedy@broadcom.com
+Subject: Re: [PATCH] scsi: lpfc: Remove unneeded variable
+Date:   Mon,  2 May 2022 20:51:26 -0400
+Message-Id: <165153836362.24053.10060021441010287017.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220419065750.2573861-1-deng.changcheng@zte.com.cn>
+References: <20220419065750.2573861-1-deng.changcheng@zte.com.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3d040faf-7fc1-80a6-c584-aafeff27af18@oracle.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: zLpwvjFFXZwgsdli8mx19IOIUys6xj_-
+X-Proofpoint-GUID: zLpwvjFFXZwgsdli8mx19IOIUys6xj_-
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 05:23:37PM -0700, Mike Kravetz wrote:
-> On 4/29/22 05:18, Muchun Song wrote:
-> > When "hugetlb_free_vmemmap=on" and "memory_hotplug.memmap_on_memory"
-> > are both passed to boot cmdline, the variable of "memmap_on_memory"
-> > will be set to 1 even if the vmemmap pages will not be allocated from
-> > the hotadded memory since the former takes precedence over the latter.
-> 
-> I had to read that sentence a few times before understanding what it was
-> trying to say.  Not insisting, but how about this instead:
->
+On Tue, 19 Apr 2022 06:57:50 +0000, cgel.zte@gmail.com wrote:
 
-Sorry for my poor English.
- 
-> Freeing HugeTLB vmemmap pages is not compatible with allocating memmap on
-> hot added memory. If "hugetlb_free_vmemmap=on" and
-> memory_hotplug.memmap_on_memory" are both passed on the kernel command line,
-> freeing hugetlb pages takes precedence.  However, the global variable
-> memmap_on_memory will still be set to 1, even though we will not try to
-> allocate memmap on hot added memory.
+> From: Changcheng Deng <deng.changcheng@zte.com.cn>
 > 
-> Not sure if that is more clear or not.
+> Remove unneeded variable used to store return value.
+> 
 > 
 
-Clearer than mine.
+Applied to 5.19/scsi-queue, thanks!
 
-> Acked-by: Mike Kravetz <mike.kravetz@oracle.com>
->
+[1/1] scsi: lpfc: Remove unneeded variable
+      https://git.kernel.org/mkp/scsi/c/a346f28ad231
 
-Thanks.
- 
+-- 
+Martin K. Petersen	Oracle Linux Engineering
