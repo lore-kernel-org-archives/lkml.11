@@ -2,83 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31CF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:45:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF5B7C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:45:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238568AbiECPsp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32802 "EHLO
+        id S238824AbiECPtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:49:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233041AbiECPsm (ORCPT
+        with ESMTP id S238842AbiECPtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:48:42 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4B331DF7;
-        Tue,  3 May 2022 08:45:10 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2430a43s003197;
-        Tue, 3 May 2022 00:51:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=2tMXzFKtYB1Ka8zEzGtnUkCLUCD5m7cpkfp8tz9wj1Q=;
- b=chZ3Pa5AHZrUQ5Ppd06RHOkZ/kmLToarkvZ8ffpytha6m9P/0bEtjoMjay4/TfvFm1nb
- Orawo+cu6WhOJXMk1aKAT1I7u0cY3+ieh2RIb4/byCKVp4neIBJLoNV2uHBk7MUrQJdb
- QZ8hlIdPvWbY90xJ93TEE8GhtSXIlj4VMDavfjGSXU7dVtSwGVjP+iW6vyg3YqNeCs5d
- e17/QUPmyNeQ4FBCdvjUTqD3ayuabLWs00SeSs240u5qY398Zzd23wNg+Ca208Pg3R+6
- jO7nvrK1Ptnm/SbEKpihwfQt0j0NHHH1hiTxNcV1MT3pllRX0/tRtC9Znp4gYWuGbcXT JQ== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frw0amhj5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:56 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430ooba008887;
-        Tue, 3 May 2022 00:51:55 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x7y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:55 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430pljO010389;
-        Tue, 3 May 2022 00:51:54 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-14;
-        Tue, 03 May 2022 00:51:54 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     anil.gurumurthy@qlogic.com, cgel.zte@gmail.com
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        ran jianping <ran.jianping@zte.com.cn>,
-        linux-kernel@vger.kernel.org, jejb@linux.ibm.com,
-        Zeal Robot <zealci@zte.com.cn>, sudarsana.kalluru@qlogic.com,
-        linux-scsi@vger.kernel.org
-Subject: Re: [PATCH] scsi: bfa: remove unneeded flush_workqueue
-Date:   Mon,  2 May 2022 20:51:24 -0400
-Message-Id: <165153836361.24053.1864207484794019663.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220424061845.3218774-1-ran.jianping@zte.com.cn>
-References: <20220424061845.3218774-1-ran.jianping@zte.com.cn>
+        Tue, 3 May 2022 11:49:05 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C785015FD7;
+        Tue,  3 May 2022 08:45:30 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id y3so34176882ejo.12;
+        Tue, 03 May 2022 08:45:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mINKKACEUSc3nz+5DZb97F3BUF/I57s2OxAWUmNfvkI=;
+        b=CtOHYiswVqrgLZHaIvLLcJVTDwKunZ3vcO9GDZyyGL9OsouVQRjUzC6okDPrLMMbO6
+         cjmw+dSZidAG0zEKjylz97DYzb8FWeO/vgwz53Ctd3iFpMR7we5kKNOo3hHKWukX/tE/
+         LogxrcMw+GHPD5VEDuWKkRpR7zIuMm/qUVLehApFmEpx8BPQAB5kcQeVJtLuucse9QYK
+         6pbwUHVFPAUgXvkc3up19qOfM/cdb+M2GE8a3U1SqYufTaWOYZi0UlnFmxEJD2UuqZN6
+         hubN3Rs+FlvRh2uOPAwGu3W8YYd6AQvuLx847bUhukuqPG2F4hSUuF3DsEAddbvLVbEG
+         J8aA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mINKKACEUSc3nz+5DZb97F3BUF/I57s2OxAWUmNfvkI=;
+        b=v92WvXWDfjZ15PXZAbdraxmRU2CcCkGcUXCRWQ/4m536Yw74OYu7Jg8PLMMcjFDdhZ
+         RUnIP+QEwfZH89542kYNScqJ7vWuaJYnUuw5Q4GNzzsYWFnt79jKIvYOWHi6GO9/zsdx
+         A60549kh5zYfSLj1jKS6IFadK7RATXWHtI4cKWWyQJ+ubOFx+A6+T1YHLLjGPm9RY5vi
+         NGV3R8hq7U2IZWxpwd0pALgeP4XgGZ+Hf15Lnaj8nwR1xtU6D4fiZFQ2kO0SKvSzrwwD
+         LU3Ssbn5Sc7levth/pbtrEam6MUlKkTL5nrZRztNU8vO36/CV/SGSup2X01hSC4d6s1s
+         iAUg==
+X-Gm-Message-State: AOAM531fqsB1UDpLqPeHtebr9mRBA7cU/FEvhH3iFWp/Lndj+Jl7dziF
+        bChU9mdKnecZxiKbgNDJcVc=
+X-Google-Smtp-Source: ABdhPJz02pBN9VWvWZakAo8EyGCtLIpnR5f9jaXZwXt64fPpWKFXYnVJ/WyG4ipB+qpc5sSjErRu3Q==
+X-Received: by 2002:a17:907:3c81:b0:6e6:cf3e:6e14 with SMTP id gl1-20020a1709073c8100b006e6cf3e6e14mr16468035ejc.181.1651592729117;
+        Tue, 03 May 2022 08:45:29 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id zp26-20020a17090684fa00b006f3ef214e62sm4723961ejb.200.2022.05.03.08.45.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 08:45:28 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-mtd@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [PATCH v2 0/2] Add support for unprotected spare data page
+Date:   Tue,  3 May 2022 17:43:51 +0200
+Message-Id: <20220503154353.4367-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: uzfbBu2mTR9XnuBeXcxpYIcmev4PVRlw
-X-Proofpoint-ORIG-GUID: uzfbBu2mTR9XnuBeXcxpYIcmev4PVRlw
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 24 Apr 2022 06:18:45 +0000, cgel.zte@gmail.com wrote:
+Some background about this.
+On original qsdk ipq8064 based firmware there was a big separation from
+boot partition and user partition. With boot partition we refer to
+partition used to init the router (bootloader, spm firmware and other
+internal stuff) With user partition we refer to linux partition and data
+partition not used to init the router.
+When someone had to write to these boot partition a special mode was
+needed, to switch the nand driver to this special configuration.
 
-> From: ran jianping <ran.jianping@zte.com.cn>
-> 
-> All work currently pending will be done first by calling destroy_workqueue,
-> so there is no need to flush it explicitly.
-> 
-> 
+Upstream version of the nandc driver totally dropped this and the result
+is that if someone try to read data from these partition a CRC warning
+is printed and if someone try to write that (if for example someone
+wants to replace the bootloader) result is a broken system as the data
+is badly written.
 
-Applied to 5.19/scsi-queue, thanks!
+This series comes to fix this.
 
-[1/1] scsi: bfa: remove unneeded flush_workqueue
-      https://git.kernel.org/mkp/scsi/c/4c0df601e150
+A user can declare offset and size of these special partition using the
+qcom,boot-pages binding.
+
+An initial implementation of this assumed that the boot-pages started
+from the start of the nand but we discover that some device have backup
+of these special partition and we can have situation where we have this
+partition scheme
+- APPSBL (require special mode)
+- APPSBLENV (doesn't require special mode)
+- ART
+- APPSBLBK (back of APPSBL require special mode)
+- APPSBLENVBK (back of APPSBLENV doesn't require special mode)
+With this configuration we need to declare sparse boot page and we can't
+assume boot-pages always starts from the start of the nand.
+
+A user can use this form to declare sparse boot pages
+qcom,boot-pages = <0x0 0x0c80000 0x0c80000 0x0500000>;
+
+The driver internally will parse this array, convert it to nand pages
+and check internally on every read/write if this special configuration
+should used for that page or the normal one.
+
+The reason for all of this is that qcom FOR SOME REASON, disable ECC for
+spare data only for these boot partition and we need to reflect this
+special configuration to mute these warning and to permit actually
+writing to these pages.
+
+v2:
+- Add fixes from Krzysztof in Documentation
+
+Ansuel Smith (2):
+  mtd: nand: raw: qcom_nandc: add support for unprotected spare data
+    pages
+  dt-bindings: mtd: qcom_nandc: document qcom,boot-pages binding
+
+ .../devicetree/bindings/mtd/qcom,nandc.yaml   |  22 +++
+ drivers/mtd/nand/raw/qcom_nandc.c             | 148 +++++++++++++++++-
+ 2 files changed, 165 insertions(+), 5 deletions(-)
 
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+2.34.1
+
