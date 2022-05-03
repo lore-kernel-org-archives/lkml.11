@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51F92C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:02:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 108B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:02:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229741AbiECGGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 02:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51694 "EHLO
+        id S229752AbiECGGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 02:06:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbiECGFs (ORCPT
+        with ESMTP id S229615AbiECGFx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 02:05:48 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC683388B
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:02:16 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id 15-20020aa7920f000000b0050cf449957fso9037563pfo.9
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 23:02:16 -0700 (PDT)
+        Tue, 3 May 2022 02:05:53 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3699033A35
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:02:20 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id j187-20020a638bc4000000b003c1922b0f1bso5927761pge.3
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 23:02:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=szYmrqPYm2+NRRnt6PLMcdW9lpIQNg8jUIBDaOx8F6c=;
-        b=V0Ff2JHN/1ixKrZ4eXGKn+a1zJeLIYlGYLahoOCZr8dElnZtvoleLd1AUljKq2Go9d
-         rH4xnD+d0QINZ8krn4kU/t4Al1gAUsxZeaOoqF4H59F5jNmYCo6PfQ/j996ln7nA7iu8
-         pcY1n42K41AdqbRiqGlMilri6fmVwnRuNxSSChGk4LLAFC+zWHSxjezK72kFqeIKYTCR
-         qEjEjFBkaHLm853u2Nu+XOemUA5hy7bvcgJzwKdVriGETjug41pMjNR07Ya9twKoO51H
-         4xtYqUYCWtZr+UavK1Se7ZAlRTGAHQ3RkVEeWKw8se1PuhyA07Pf+d7OgRKMC7GNtttW
-         Ntug==
+        bh=lyIfp9262fAQLqy8qC0Pz4SUM4FAzF4N7A6nbmSHB2c=;
+        b=NTvfdy6F18lFgUV8clR+0g6Lw3bcq5UgO40+92jzBn0iZGYe3Xw9MVeBL3+fvWQw5N
+         LB3zzRWSU4HLPPJXB/Dyw7ffCQbjT5/AAfQ9WdrD5WumB7wAGc8Ii16bK1GqoyShUxFT
+         T3kMr/bzKtBbctXnCXxWSUOFUbNsLWTvcedPoBzLgEc0OoGSRyBn6HFbR1QI6Sxm0ib1
+         LETkvqwaLmlU1m3vcCJyPISK9GXof6Kzpm1nbZPFsnyvcGewnf1XII3NShtf5PlhixsL
+         o+7dDUpiE1S+Xes0LqAZedN1LJOIxguMZTGVLGJBoZivv+psCSQs/f/P1ED6jOuNtCkh
+         UBAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=szYmrqPYm2+NRRnt6PLMcdW9lpIQNg8jUIBDaOx8F6c=;
-        b=OWp6oLXYZda9+Dq6h4TUqz6/cNv755/JMEwVvTtPcrQ7pTX2OfMI1WJvay3Zwi0xZ/
-         zREu6zpl2iYiSJ8gc6+uugsgLzK0Q5pLL0gl1ILvD6Drc5nvd7uXeGCJlwLKsjPcr1FI
-         IBFdw6D5Wjg26kenhP5Ce5j4i0sSIHwYfhv/ENxLPNU97g54R6iA6mfll7bRiA1i4KHD
-         PE8zV1nF4ODuIgRd48DI/JAdSSws+1wHcm6OgttrxI3qD7noJbg31EUrqvpOaI9S+vS4
-         G2v6RpFsxCZMO4odMcQmGQf8DU9SZMxDX5aZLVm82qkEGCNvXI5M/IC5x6fI2a9e11Qw
-         Q4CQ==
-X-Gm-Message-State: AOAM5329wez4moyXOBGYlpvKVXHKAB3MzVYNvfWN6nCml7e3l9uaAfLL
-        7xeF5PK/sfacF4J+3GHbArB+MXr8jXg=
-X-Google-Smtp-Source: ABdhPJzb2TkawwG87rw4pGRJ8PwWuWWZ0LiwEjnIjgPb3w5iW4PoKAlHdEQUIZdxC52BhyeVWcl2kMFzdMo=
+        bh=lyIfp9262fAQLqy8qC0Pz4SUM4FAzF4N7A6nbmSHB2c=;
+        b=uTwMnMp48pczwWUcX5KKLzkjTxOM237nOSKKaCH1OqtKa66FVfH1/FMdelSU3fRRW2
+         dG6Cehdy/CmB5kbov7274+ORdfN3qkLVvxeMNm56x4tTW6bXOZBTuviPXTai4NC57MDr
+         HwOJ8UiKKNd0Ixh7cTLnJnm+AIdInJe7t+H2n0y3jOYn2FWFa2KKIYY2UWJPZ8b60IzR
+         FKymj8GelhtgOwql7S9nxY7G/gmawWEt9NB/pPID6GYXwRWQ1oDP45JC1+Bv8QoSnA3y
+         xIRnfZnep/BH9LeOuJ2ZOCIqFWV8eW0HL6oCyRH/QCURvlwUnr0Hic/0j3MMWXV6EbeR
+         VxLg==
+X-Gm-Message-State: AOAM533jlRmciu5NHvchLct5xa0xOjX+Yx+nVmaOtUTXgiMtnkgAj04i
+        GIKxgJYSnM97iCtLyUvZ1UBsbqexE4g=
+X-Google-Smtp-Source: ABdhPJySoUR5II5RZFESdkmpRUNaWMWZc4db9m57Xb50n4CBJPr51KRBblc9PtMJAUv+qFnKQOynLlQ7TLQ=
 X-Received: from oupton3.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:21eb])
- (user=oupton job=sendgmr) by 2002:a05:6a00:1496:b0:50d:9f76:ec7b with SMTP id
- v22-20020a056a00149600b0050d9f76ec7bmr14700869pfu.58.1651557736423; Mon, 02
- May 2022 23:02:16 -0700 (PDT)
-Date:   Tue,  3 May 2022 06:02:03 +0000
+ (user=oupton job=sendgmr) by 2002:a17:90b:e89:b0:1dc:18dc:26a0 with SMTP id
+ fv9-20020a17090b0e8900b001dc18dc26a0mr2986517pjb.188.1651557739605; Mon, 02
+ May 2022 23:02:19 -0700 (PDT)
+Date:   Tue,  3 May 2022 06:02:05 +0000
 In-Reply-To: <20220503060205.2823727-1-oupton@google.com>
-Message-Id: <20220503060205.2823727-6-oupton@google.com>
+Message-Id: <20220503060205.2823727-8-oupton@google.com>
 Mime-Version: 1.0
 References: <20220503060205.2823727-1-oupton@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v4 5/7] KVM: arm64: Start trapping ID registers for 32 bit guests
+Subject: [PATCH v4 7/7] Revert "KVM/arm64: Don't emulate a PMU for 32-bit
+ guests if feature not set"
 From:   Oliver Upton <oupton@google.com>
 To:     kvmarm@lists.cs.columbia.edu
 Cc:     kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
@@ -65,60 +66,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To date KVM has not trapped ID register accesses from AArch32, meaning
-that guests get an unconstrained view of what hardware supports. This
-can be a serious problem because we try to base the guest's feature
-registers on values that are safe system-wide. Furthermore, KVM does not
-implement the latest ISA in the PMU and Debug architecture, so we
-constrain these fields to supported values.
+This reverts commit 8f6379e207e7d834065a080f407a60d67349d961.
 
-Since KVM now correctly handles CP15 and CP10 register traps, we no
-longer need to clear HCR_EL2.TID3 for 32 bit guests and will instead
-emulate reads with their safe values.
+The original change was not problematic but chose nonarchitected PMU
+register behavior over a NULL deref as KVM failed to hide the PMU in the
+ID_DFR0.
+
+Since KVM now provides a sane value for ID_DFR0 and UNDEFs the guest for
+unsupported accesses, drop the unneeded checks in PMU register handlers.
 
 Signed-off-by: Oliver Upton <oupton@google.com>
-Reviewed-by: Reiji Watanabe <reijiw@google.com>
 ---
- arch/arm64/include/asm/kvm_arm.h     | 3 ++-
- arch/arm64/include/asm/kvm_emulate.h | 7 -------
- 2 files changed, 2 insertions(+), 8 deletions(-)
+ arch/arm64/kvm/pmu-emul.c | 23 +----------------------
+ 1 file changed, 1 insertion(+), 22 deletions(-)
 
-diff --git a/arch/arm64/include/asm/kvm_arm.h b/arch/arm64/include/asm/kvm_arm.h
-index 1767ded83888..b5de102928d8 100644
---- a/arch/arm64/include/asm/kvm_arm.h
-+++ b/arch/arm64/include/asm/kvm_arm.h
-@@ -80,11 +80,12 @@
-  * FMO:		Override CPSR.F and enable signaling with VF
-  * SWIO:	Turn set/way invalidates into set/way clean+invalidate
-  * PTW:		Take a stage2 fault if a stage1 walk steps in device memory
-+ * TID3:	Trap EL1 reads of group 3 ID registers
-  */
- #define HCR_GUEST_FLAGS (HCR_TSC | HCR_TSW | HCR_TWE | HCR_TWI | HCR_VM | \
- 			 HCR_BSU_IS | HCR_FB | HCR_TACR | \
- 			 HCR_AMO | HCR_SWIO | HCR_TIDCP | HCR_RW | HCR_TLOR | \
--			 HCR_FMO | HCR_IMO | HCR_PTW )
-+			 HCR_FMO | HCR_IMO | HCR_PTW | HCR_TID3 )
- #define HCR_VIRT_EXCP_MASK (HCR_VSE | HCR_VI | HCR_VF)
- #define HCR_HOST_NVHE_FLAGS (HCR_RW | HCR_API | HCR_APK | HCR_ATA)
- #define HCR_HOST_NVHE_PROTECTED_FLAGS (HCR_HOST_NVHE_FLAGS | HCR_TSC)
-diff --git a/arch/arm64/include/asm/kvm_emulate.h b/arch/arm64/include/asm/kvm_emulate.h
-index f71358271b71..07812680fcaf 100644
---- a/arch/arm64/include/asm/kvm_emulate.h
-+++ b/arch/arm64/include/asm/kvm_emulate.h
-@@ -87,13 +87,6 @@ static inline void vcpu_reset_hcr(struct kvm_vcpu *vcpu)
+diff --git a/arch/arm64/kvm/pmu-emul.c b/arch/arm64/kvm/pmu-emul.c
+index 3dc990ac4f44..78fdc443adc7 100644
+--- a/arch/arm64/kvm/pmu-emul.c
++++ b/arch/arm64/kvm/pmu-emul.c
+@@ -177,9 +177,6 @@ u64 kvm_pmu_get_counter_value(struct kvm_vcpu *vcpu, u64 select_idx)
+ 	struct kvm_pmu *pmu = &vcpu->arch.pmu;
+ 	struct kvm_pmc *pmc = &pmu->pmc[select_idx];
  
- 	if (vcpu_el1_is_32bit(vcpu))
- 		vcpu->arch.hcr_el2 &= ~HCR_RW;
--	else
--		/*
--		 * TID3: trap feature register accesses that we virtualise.
--		 * For now this is conditional, since no AArch32 feature regs
--		 * are currently virtualised.
--		 */
--		vcpu->arch.hcr_el2 |= HCR_TID3;
+-	if (!kvm_vcpu_has_pmu(vcpu))
+-		return 0;
+-
+ 	counter = kvm_pmu_get_pair_counter_value(vcpu, pmc);
  
- 	if (cpus_have_const_cap(ARM64_MISMATCHED_CACHE_TYPE) ||
- 	    vcpu_el1_is_32bit(vcpu))
+ 	if (kvm_pmu_pmc_is_chained(pmc) &&
+@@ -201,9 +198,6 @@ void kvm_pmu_set_counter_value(struct kvm_vcpu *vcpu, u64 select_idx, u64 val)
+ {
+ 	u64 reg;
+ 
+-	if (!kvm_vcpu_has_pmu(vcpu))
+-		return;
+-
+ 	reg = (select_idx == ARMV8_PMU_CYCLE_IDX)
+ 	      ? PMCCNTR_EL0 : PMEVCNTR0_EL0 + select_idx;
+ 	__vcpu_sys_reg(vcpu, reg) += (s64)val - kvm_pmu_get_counter_value(vcpu, select_idx);
+@@ -328,9 +322,6 @@ void kvm_pmu_enable_counter_mask(struct kvm_vcpu *vcpu, u64 val)
+ 	struct kvm_pmu *pmu = &vcpu->arch.pmu;
+ 	struct kvm_pmc *pmc;
+ 
+-	if (!kvm_vcpu_has_pmu(vcpu))
+-		return;
+-
+ 	if (!(__vcpu_sys_reg(vcpu, PMCR_EL0) & ARMV8_PMU_PMCR_E) || !val)
+ 		return;
+ 
+@@ -366,7 +357,7 @@ void kvm_pmu_disable_counter_mask(struct kvm_vcpu *vcpu, u64 val)
+ 	struct kvm_pmu *pmu = &vcpu->arch.pmu;
+ 	struct kvm_pmc *pmc;
+ 
+-	if (!kvm_vcpu_has_pmu(vcpu) || !val)
++	if (!val)
+ 		return;
+ 
+ 	for (i = 0; i < ARMV8_PMU_MAX_COUNTERS; i++) {
+@@ -536,9 +527,6 @@ void kvm_pmu_software_increment(struct kvm_vcpu *vcpu, u64 val)
+ 	struct kvm_pmu *pmu = &vcpu->arch.pmu;
+ 	int i;
+ 
+-	if (!kvm_vcpu_has_pmu(vcpu))
+-		return;
+-
+ 	if (!(__vcpu_sys_reg(vcpu, PMCR_EL0) & ARMV8_PMU_PMCR_E))
+ 		return;
+ 
+@@ -588,9 +576,6 @@ void kvm_pmu_handle_pmcr(struct kvm_vcpu *vcpu, u64 val)
+ {
+ 	int i;
+ 
+-	if (!kvm_vcpu_has_pmu(vcpu))
+-		return;
+-
+ 	if (val & ARMV8_PMU_PMCR_E) {
+ 		kvm_pmu_enable_counter_mask(vcpu,
+ 		       __vcpu_sys_reg(vcpu, PMCNTENSET_EL0));
+@@ -754,9 +739,6 @@ void kvm_pmu_set_counter_event_type(struct kvm_vcpu *vcpu, u64 data,
+ {
+ 	u64 reg, mask;
+ 
+-	if (!kvm_vcpu_has_pmu(vcpu))
+-		return;
+-
+ 	mask  =  ARMV8_PMU_EVTYPE_MASK;
+ 	mask &= ~ARMV8_PMU_EVTYPE_EVENT;
+ 	mask |= kvm_pmu_event_mask(vcpu->kvm);
+@@ -845,9 +827,6 @@ u64 kvm_pmu_get_pmceid(struct kvm_vcpu *vcpu, bool pmceid1)
+ 	u64 val, mask = 0;
+ 	int base, i, nr_events;
+ 
+-	if (!kvm_vcpu_has_pmu(vcpu))
+-		return 0;
+-
+ 	if (!pmceid1) {
+ 		val = read_sysreg(pmceid0_el0);
+ 		base = 0;
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
