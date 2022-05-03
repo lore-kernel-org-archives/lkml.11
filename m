@@ -2,122 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E11C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 08:08:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF9C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 08:08:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232747AbiECIML (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 04:12:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46476 "EHLO
+        id S232440AbiECIMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 04:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232440AbiECILq (ORCPT
+        with ESMTP id S232709AbiECIMK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 04:11:46 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6629920F7E;
-        Tue,  3 May 2022 01:08:12 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 1FEED1F750;
-        Tue,  3 May 2022 08:08:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1651565291; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UO147EkrcD8s2C3iZ2gPdiFE1wRQPBc2PLaQ9zYEfvk=;
-        b=t8xKe070RT0yUWutZROHx4pSUEU/hc9BhQwVFTlJOd1Qe1LYjpNJ5h0bdMmLDAoosBBfOn
-        tvOakU2dXn9CO4PVCmiWGy0LZs88Q/de5ZRRXpD39pu4GBW2yl9OjpPqhdFI9OaHR4NyLy
-        iyXnTa0CWKyMPD72TIoP40zSU7aBrls=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1651565291;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UO147EkrcD8s2C3iZ2gPdiFE1wRQPBc2PLaQ9zYEfvk=;
-        b=fFg8s/ilMSS0Z5/iwZcHCMoZH11+EduYu11v5iaOCvs9Xxi7JjvaTF5UFTZgh+b4WTma8u
-        P/+rQlUdY5odrjBg==
-Received: from localhost.localdomain (unknown [10.100.208.98])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id EB3612C149;
-        Tue,  3 May 2022 08:08:10 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 7/7] serial: pch: inline pop_tx() into handle_tx()
-Date:   Tue,  3 May 2022 10:08:08 +0200
-Message-Id: <20220503080808.28332-6-jslaby@suse.cz>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220503080808.28332-1-jslaby@suse.cz>
-References: <20220503080613.27601-1-jslaby@suse.cz>
- <20220503080808.28332-1-jslaby@suse.cz>
+        Tue, 3 May 2022 04:12:10 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA10821242
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 01:08:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651565309; x=1683101309;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=pQRJIMSHRWoXWkBHaCg0thUW9BPcCDhLqp+vI0JQ3ec=;
+  b=F/5KdSUJlbEORkIBF1pCYRsEphx6t/xOhbxoAiwd7/0EZfBdb2NSjWT9
+   9suNXhkG3m5hOGGAU1cTxlkd6fNmaragRfN0+JtOIsZ0K54JQq/Q8FMzb
+   OGfzaSUU++D/C0EW+KeI97jzPckV9tlhEYswvm3C9W6lwuiadZPWY4sX5
+   lBDDjZY1H1xbMYV1jVEjEvtk4LYGa0hGQl18doz6wEGtEsYSJjn4oLQfB
+   YC7Y16WexCJsqx7QRONnpAyj+OGlFM7feERZTNJJVfluCoUWDUIpxEASp
+   EIaFNcW9sPqezFuaNQ28+28v/nRpndT9m4qZfnyPkKXXnQkj1DHwFsQY3
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="353865258"
+X-IronPort-AV: E=Sophos;i="5.91,194,1647327600"; 
+   d="scan'208";a="353865258"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 01:08:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,194,1647327600"; 
+   d="scan'208";a="631422988"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 03 May 2022 01:08:28 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nlna7-000AGp-OE;
+        Tue, 03 May 2022 08:08:27 +0000
+Date:   Tue, 3 May 2022 16:07:43 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [asahilinux:bits/080-wifi 20/28]
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1087:28: sparse:
+ sparse: incorrect type in assignment (different base types)
+Message-ID: <202205031618.zjvgzw7q-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Given pop_tx() is a simple loop, inline it directly into handle_tx().
+tree:   https://github.com/AsahiLinux/linux bits/080-wifi
+head:   a61fbffc5fad05fe49dfd9a09b3c2482ac250d46
+commit: 3535383eee14ca31f15355d05d4bcec4ae9ae09b [20/28] brcmfmac: cfg80211: Add support for scan params v2
+config: mips-randconfig-s032-20220501 (https://download.01.org/0day-ci/archive/20220503/202205031618.zjvgzw7q-lkp@intel.com/config)
+compiler: mipsel-linux-gcc (GCC) 11.3.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/AsahiLinux/linux/commit/3535383eee14ca31f15355d05d4bcec4ae9ae09b
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/080-wifi
+        git checkout 3535383eee14ca31f15355d05d4bcec4ae9ae09b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=mips SHELL=/bin/bash drivers/net/wireless/broadcom/brcm80211/brcmfmac/
 
-The code in handle_tx() looks much saner and straightforward now.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/tty/serial/pch_uart.c | 25 +++++++------------------
- 1 file changed, 7 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index e1eadf519089..3b26524d48e3 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -757,23 +757,6 @@ static void pch_dma_tx_complete(void *arg)
- 	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_TX_INT);
- }
- 
--static bool pop_tx(struct eg20t_port *priv, unsigned int size)
--{
--	struct uart_port *port = &priv->port;
--	struct circ_buf *xmit = &port->state->xmit;
--	bool ret = false;
--
--	while (!uart_tx_stopped(port) && !uart_circ_empty(xmit) && size) {
--		iowrite8(xmit->buf[xmit->tail], priv->membase + PCH_UART_THR);
--		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
--		port->icount.tx++;
--		size--;
--		ret = true;
--	}
--
--	return ret;
--}
--
- static int handle_rx_to(struct eg20t_port *priv)
- {
- 	struct pch_uart_buffer *buf;
-@@ -837,6 +820,7 @@ static int dma_handle_rx(struct eg20t_port *priv)
- static unsigned int handle_tx(struct eg20t_port *priv)
- {
- 	struct uart_port *port = &priv->port;
-+	struct circ_buf *xmit = &port->state->xmit;
- 	int fifo_size;
- 	int tx_empty;
- 
-@@ -858,8 +842,13 @@ static unsigned int handle_tx(struct eg20t_port *priv)
- 		fifo_size--;
- 	}
- 
--	if (fifo_size && pop_tx(priv, fifo_size))
-+	while (!uart_tx_stopped(port) && !uart_circ_empty(xmit) && fifo_size) {
-+		iowrite8(xmit->buf[xmit->tail], priv->membase + PCH_UART_THR);
-+		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-+		port->icount.tx++;
-+		fifo_size--;
- 		tx_empty = 0;
-+	}
- 
- 	priv->tx_empty = tx_empty;
- 
+sparse warnings: (new ones prefixed by >>)
+   command-line: note: in included file:
+   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQUIRE redefined
+   builtin:0:0: sparse: this was the original definition
+   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_SEQ_CST redefined
+   builtin:0:0: sparse: this was the original definition
+   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQ_REL redefined
+   builtin:0:0: sparse: this was the original definition
+   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_RELEASE redefined
+   builtin:0:0: sparse: this was the original definition
+>> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1087:28: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __le16 [usertype] version @@     got int @@
+   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1087:28: sparse:     expected restricted __le16 [usertype] version
+   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1087:28: sparse:     got int
+>> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1149:38: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __le32 [usertype] scan_type @@     got int @@
+   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1149:38: sparse:     expected restricted __le32 [usertype] scan_type
+   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1149:38: sparse:     got int
+>> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:790:30: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned char [usertype] scan_type @@     got restricted __le32 [usertype] scan_type @@
+   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:790:30: sparse:     expected unsigned char [usertype] scan_type
+   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:790:30: sparse:     got restricted __le32 [usertype] scan_type
+
+vim +1087 drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+
+  1069	
+  1070	static void brcmf_escan_prep(struct brcmf_cfg80211_info *cfg,
+  1071				     struct brcmf_scan_params_v2_le *params_le,
+  1072				     struct cfg80211_scan_request *request)
+  1073	{
+  1074		u32 n_ssids;
+  1075		u32 n_channels;
+  1076		s32 i;
+  1077		s32 offset;
+  1078		u16 chanspec;
+  1079		char *ptr;
+  1080		int length;
+  1081		struct brcmf_ssid_le ssid_le;
+  1082	
+  1083		eth_broadcast_addr(params_le->bssid);
+  1084	
+  1085		length = BRCMF_SCAN_PARAMS_V2_FIXED_SIZE;
+  1086	
+> 1087		params_le->version = BRCMF_SCAN_PARAMS_VERSION_V2;
+  1088		params_le->bss_type = DOT11_BSSTYPE_ANY;
+  1089		params_le->scan_type = BRCMF_SCANTYPE_ACTIVE;
+  1090		params_le->channel_num = 0;
+  1091		params_le->nprobes = cpu_to_le32(-1);
+  1092		params_le->active_time = cpu_to_le32(-1);
+  1093		params_le->passive_time = cpu_to_le32(-1);
+  1094		params_le->home_time = cpu_to_le32(-1);
+  1095		memset(&params_le->ssid_le, 0, sizeof(params_le->ssid_le));
+  1096	
+  1097		/* Scan abort */
+  1098		if (!request) {
+  1099			length += sizeof(u16);
+  1100			params_le->channel_num = cpu_to_le32(1);
+  1101			params_le->channel_list[0] = cpu_to_le16(-1);
+  1102			params_le->length = cpu_to_le16(length);
+  1103			return;
+  1104		}
+  1105	
+  1106		n_ssids = request->n_ssids;
+  1107		n_channels = request->n_channels;
+  1108	
+  1109		/* Copy channel array if applicable */
+  1110		brcmf_dbg(SCAN, "### List of channelspecs to scan ### %d\n",
+  1111			  n_channels);
+  1112		if (n_channels > 0) {
+  1113			length += roundup(sizeof(u16) * n_channels, sizeof(u32));
+  1114			for (i = 0; i < n_channels; i++) {
+  1115				chanspec = channel_to_chanspec(&cfg->d11inf,
+  1116							       request->channels[i]);
+  1117				brcmf_dbg(SCAN, "Chan : %d, Channel spec: %x\n",
+  1118					  request->channels[i]->hw_value, chanspec);
+  1119				params_le->channel_list[i] = cpu_to_le16(chanspec);
+  1120			}
+  1121		} else {
+  1122			brcmf_dbg(SCAN, "Scanning all channels\n");
+  1123		}
+  1124	
+  1125		/* Copy ssid array if applicable */
+  1126		brcmf_dbg(SCAN, "### List of SSIDs to scan ### %d\n", n_ssids);
+  1127		if (n_ssids > 0) {
+  1128			offset = offsetof(struct brcmf_scan_params_v2_le, channel_list) +
+  1129					n_channels * sizeof(u16);
+  1130			offset = roundup(offset, sizeof(u32));
+  1131			length += sizeof(ssid_le) * n_ssids,
+  1132			ptr = (char *)params_le + offset;
+  1133			for (i = 0; i < n_ssids; i++) {
+  1134				memset(&ssid_le, 0, sizeof(ssid_le));
+  1135				ssid_le.SSID_len =
+  1136						cpu_to_le32(request->ssids[i].ssid_len);
+  1137				memcpy(ssid_le.SSID, request->ssids[i].ssid,
+  1138				       request->ssids[i].ssid_len);
+  1139				if (!ssid_le.SSID_len)
+  1140					brcmf_dbg(SCAN, "%d: Broadcast scan\n", i);
+  1141				else
+  1142					brcmf_dbg(SCAN, "%d: scan for  %.32s size=%d\n",
+  1143						  i, ssid_le.SSID, ssid_le.SSID_len);
+  1144				memcpy(ptr, &ssid_le, sizeof(ssid_le));
+  1145				ptr += sizeof(ssid_le);
+  1146			}
+  1147		} else {
+  1148			brcmf_dbg(SCAN, "Performing passive scan\n");
+> 1149			params_le->scan_type = BRCMF_SCANTYPE_PASSIVE;
+  1150		}
+  1151		params_le->length = cpu_to_le16(length);
+  1152		/* Adding mask to channel numbers */
+  1153		params_le->channel_num =
+  1154			cpu_to_le32((n_ssids << BRCMF_SCAN_PARAMS_NSSID_SHIFT) |
+  1155				(n_channels & BRCMF_SCAN_PARAMS_COUNT_MASK));
+  1156	}
+  1157	
+
 -- 
-2.36.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
