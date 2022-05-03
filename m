@@ -2,171 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED886C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 22:03:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3008BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 22:04:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243464AbiECWHA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 18:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48856 "EHLO
+        id S243475AbiECWHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 18:07:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238803AbiECWG5 (ORCPT
+        with ESMTP id S234803AbiECWHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 18:06:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 62C70424AA
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 15:03:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651615402;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iQi/ZFhqTl+9HgfZab97oEqJSaMHvbvR0mYRqBC6N6U=;
-        b=cbmCz1/23gXu5CJhxe9LU6KLoBDYlTRZycdZULh6hxDuDOUPJeiyvxHQjkI5Xyc1vKmuUn
-        o4d9F9jApcD8haJBLeu9z2MzzmtW6K1cR/o1Eb9rkPLTOkJVvS4UxDMSj6Vo2uCAjkC526
-        ssiW07bCXuEZh47d9pd4tNkkrH0NBfI=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-658-lIaRym7YPzKF4a_BwWfWKA-1; Tue, 03 May 2022 18:02:54 -0400
-X-MC-Unique: lIaRym7YPzKF4a_BwWfWKA-1
-Received: by mail-qv1-f72.google.com with SMTP id 11-20020a0562140d0b00b0045aac32023fso1712546qvh.19
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 15:02:49 -0700 (PDT)
+        Tue, 3 May 2022 18:07:53 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85FB9424B5
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 15:04:19 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-e2fa360f6dso18598641fac.2
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 15:04:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=czLZHU7MG6H1spBLHXY5jaZbzV59tXkMuN+Ck8Z7wc4=;
+        b=hhWjsHnmVba6J3iaRJaO09nZL4LxjIq8C9W91LOfNC4XgTIwgTHymewopsSR7xhrbE
+         wJfMPDofFT9Orm5X1Xmnq6csdeG70AmAjQHsJ6oidSvnu+c5NqT0zTpfwvGt6c7imJaY
+         Yx4JIofQGY7s+yKOtcqFuF1p2zpjcELmsl0YE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iQi/ZFhqTl+9HgfZab97oEqJSaMHvbvR0mYRqBC6N6U=;
-        b=EbnbTMQgf1CV5KKarIhODuDbHT703KgVnmBb/vf9KOVEl212NI4zR1yEtoLrAp2P7f
-         075hRPkHB73up8po3o6iNlft64Y92zTF+6UACz+Rlk59yImZyfSDQrNaF6DFo6vcOXzn
-         zVVQWtRNljl42tAJRZchlcrQpZ4iuqC8bZg6oZ50MFUjJ3IAWPx7AR6uUT33ljzpFSHg
-         eWYIfZurrNPduSi99pQB51KfD7GT+HFO55Vi3SQpXTv6cI1b3+QKObnzkzyQcz4gVwOH
-         jdADLCviKYLeXHIYoF3oxrwrHjKwBs9tbsn91BL/NMAaC2Oqw+JBR3k56JcEVSY5Tap9
-         Urhw==
-X-Gm-Message-State: AOAM530JSSW7zK2tOX7NshByE0nCOyPDMklv/Khxcy3pxJ81w/rAAHq8
-        HareVZx96UiIdYqApCZrdAY95LLfheKk54z6UHdb90sukDYAUyirTpo4Z9YXyrIgBJbJZ18beM/
-        xE3IC6+CReuLeJ3Gek9TZlWqK
-X-Received: by 2002:a05:622a:14c6:b0:2e2:3f:f938 with SMTP id u6-20020a05622a14c600b002e2003ff938mr17023692qtx.358.1651615368204;
-        Tue, 03 May 2022 15:02:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwNF2sJ5o4DN+JrRmRygt7UKrDDbMq9i8YT91xl2y+++ROlpmPF7tbsKPQmSRRLgCZKXv2wOQ==
-X-Received: by 2002:a05:622a:14c6:b0:2e2:3f:f938 with SMTP id u6-20020a05622a14c600b002e2003ff938mr17023656qtx.358.1651615367925;
-        Tue, 03 May 2022 15:02:47 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::a])
-        by smtp.gmail.com with ESMTPSA id 141-20020a370693000000b0069ff862c84esm2671595qkg.3.2022.05.03.15.02.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 15:02:47 -0700 (PDT)
-Date:   Tue, 3 May 2022 15:02:44 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Joao Moreira <joao@overdrivepizza.com>
-Cc:     linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        peterz@infradead.org, andrew.cooper3@citrix.com,
-        keescook@chromium.org, samitolvanen@google.com,
-        mark.rutland@arm.com, hjl.tools@gmail.com,
-        alyssa.milburn@linux.intel.com, ndesaulniers@google.com,
-        gabriel.gomes@linux.intel.com, rick.p.edgecombe@intel.com
-Subject: Re: [RFC PATCH 01/11] x86: kernel FineIBT
-Message-ID: <20220503220244.vyz5flk3gg3y6rbw@treble>
-References: <20220420004241.2093-1-joao@overdrivepizza.com>
- <20220420004241.2093-2-joao@overdrivepizza.com>
- <20220429013704.4n4lmadpstdioe7a@treble>
- <d82459b887bcaf9181ad836051e2d16b@overdrivepizza.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=czLZHU7MG6H1spBLHXY5jaZbzV59tXkMuN+Ck8Z7wc4=;
+        b=wQRguaFNdmzFsqJ2OgQd9uSHQYMqJu/+kp2fFKGqum10vQjkTnzWwGpp8VYOqWjFdb
+         0ZLQ90qLVMQZwJ17/8JslDxi6dYObyOg3LKuMakH3NmktoI1Jp1p1KI6h7qGgjgtkH5v
+         bIqM0/njMSa5kam3ZVjo0TJPC9cyVYyYzUXpKSdqj2refYtzb6Y+0vmLHoaR4bGAqxcb
+         cWOi8QzxvqX1dW+YmDCzy67BC8uGGWJtrVF/ksfu4Bs5wTlKpBEgcNWQIPNbYiZWDvPb
+         SJ8fNIeOXelPr+47BwDppjKJQWRQavAV2eG8KhZZjFUgFaD8+yIxhFvh8PBc+GYneZxQ
+         VQFg==
+X-Gm-Message-State: AOAM532oEsiBoZI2xEVgK+NTxvVzwdMVxOUeSiMeWXbiNRFlrBy5eu54
+        6RAbdkJGBAjo7LGf+oXrOuHEhZXTJ3mzYCcE
+X-Google-Smtp-Source: ABdhPJwOb/qzyuR68vReISWKevDz751vc+wAhgknWNITAbyuZCNR/h2mpSfAhuhY63iZtN/pnXaQgA==
+X-Received: by 2002:a05:6870:d68e:b0:e2:af08:6cc3 with SMTP id z14-20020a056870d68e00b000e2af086cc3mr2682022oap.189.1651615458636;
+        Tue, 03 May 2022 15:04:18 -0700 (PDT)
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com. [209.85.167.175])
+        by smtp.gmail.com with ESMTPSA id r4-20020a056830120400b0060603221240sm4405948otp.16.2022.05.03.15.04.18
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 15:04:18 -0700 (PDT)
+Received: by mail-oi1-f175.google.com with SMTP id m11so19573516oib.11
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 15:04:18 -0700 (PDT)
+X-Received: by 2002:a05:6808:219a:b0:325:93fc:e0fd with SMTP id
+ be26-20020a056808219a00b0032593fce0fdmr2775646oib.241.1651615054192; Tue, 03
+ May 2022 14:57:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <d82459b887bcaf9181ad836051e2d16b@overdrivepizza.com>
+References: <20220427224924.592546-1-gpiccoli@igalia.com> <20220427224924.592546-5-gpiccoli@igalia.com>
+ <CAE=gft5Pq25L4KFoPWbftkPF-JN1ex2yws77mMJ4GQnn9W0L2g@mail.gmail.com> <adcf6d0e-c37c-6ede-479e-29959d03d8c0@igalia.com>
+In-Reply-To: <adcf6d0e-c37c-6ede-479e-29959d03d8c0@igalia.com>
+From:   Evan Green <evgreen@chromium.org>
+Date:   Tue, 3 May 2022 14:56:58 -0700
+X-Gmail-Original-Message-ID: <CAE=gft623NxqetRssrZnaRmJLSP4BT5=-sVVwtYoHuspO_gULQ@mail.gmail.com>
+Message-ID: <CAE=gft623NxqetRssrZnaRmJLSP4BT5=-sVVwtYoHuspO_gULQ@mail.gmail.com>
+Subject: Re: [PATCH 04/30] firmware: google: Convert regular spinlock into
+ trylock on panic path
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
+        pmladek@suse.com, kexec@lists.infradead.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de,
+        Kees Cook <keescook@chromium.org>, luto@kernel.org,
+        mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org,
+        peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, Alan Stern <stern@rowland.harvard.edu>,
+        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
+        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        David Gow <davidgow@google.com>,
+        Julius Werner <jwerner@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 10:17:42AM -0700, Joao Moreira wrote:
-> > > +	asm("\t movq 0x90(%%rsp),%0" : "=r"(ret));
-> > > +	asm("\t movq 0x98(%%rsp),%0" : "=r"(caller));
-> > 
-> > This is making some questionable assumptions about the stack layout.
-> > 
-> > I assume this function is still in the prototype stage ;-)
-> 
-> Yeah, this is just a messy instrumentation to get reports about mismatching
-> prototypes (as the ones reported further down the series).
-> 
-> The issue with having the call is that it bloats the binary, so the ud2 is
-> 3-bytes-per-function better. Yet, we may consider a FINEIBT_DEBUG config,
-> which can then enable a handler. This would be useful together with a fuzzer
-> or a stress tool to cover possible control-flow paths within the kernel and
-> map mismatching prototypes more properly I guess.
+Hi Guilherme,
 
-It should be possible to have a non-fatal #UD2 handler.
+On Tue, May 3, 2022 at 12:12 PM Guilherme G. Piccoli
+<gpiccoli@igalia.com> wrote:
+>
+> On 03/05/2022 15:03, Evan Green wrote:
+> > [...]
+> > gsmi_shutdown_reason() is a common function called in other scenarios
+> > as well, like reboot and thermal trip, where it may still make sense
+> > to wait to acquire a spinlock. Maybe we should add a parameter to
+> > gsmi_shutdown_reason() so that you can get your change on panic, but
+> > we don't convert other callbacks into try-fail scenarios causing us to
+> > miss logs.
+> >
+>
+> Hi Evan, thanks for your feedback, much appreciated!
+> What I've done in other cases like this was to have a helper checking
+> the spinlock in the panic notifier - if we can acquire that, go ahead
+> but if not, bail out. For a proper example of an implementation, check
+> patch 13 of the series:
+> https://lore.kernel.org/lkml/20220427224924.592546-14-gpiccoli@igalia.com/ .
+>
+> Do you agree with that, or prefer really a parameter in
+> gsmi_shutdown_reason() ? I'll follow your choice =)
 
-See for example how WARN() is implemented with __WARN_FLAGS in
-arch/x86/include/asm/bug.h .
+I'm fine with either, thanks for the link. Mostly I want to make sure
+other paths to gsmi_shutdown_reason() aren't also converted to a try.
 
-So hopefully we can just get rid of the need for the "call handler"
-thing altogether.
+>
+>
+> > Though thinking more about it, is this really a Good Change (TM)? The
+> > spinlock itself already disables interrupts, meaning the only case
+> > where this change makes a difference is if the panic happens from
+> > within the function that grabbed the spinlock (in which case the
+> > callback is also likely to panic), or in an NMI that panics within
+> > that window. The downside of this change is that if one core was
+> > politely working through an event with the lock held, and another core
+> > panics, we now might lose the panic log, even though it probably would
+> > have gone through fine assuming the other core has a chance to
+> > continue.
+>
+> My feeling is that this is a good change, indeed - a lot of places are
+> getting changed like this, in this series.
+>
+> Reasoning: the problem with your example is that, by default, secondary
+> CPUs are disabled in the panic path, through an IPI mechanism. IPIs take
+> precedence and interrupt the work in these CPUs, effectively
+> interrupting the "polite work" with the lock held heh
 
-> > Not sure what would happen for "ibt=off"?  Maybe apply_ibt_endbr() could
-> > NOP out all the FineIBT stuff.
-> 
-> Either that, or...
-> 
-> I'm thinking about a way to have FineIBT interchangeable with KCFI.
-> Currently KCFI adds a 4 byte hash + 2 byte nops before function entry, to
-> allow for proper prototype checking. After that, there should be an ENDBR of
-> 4 bytes. This gives us 10 bytes in total. Then, my yet to be properly
-> thought idea would be patch these 10 bytes with:
-> 
-> endbr
-> call fineibt_handler_<$HASH>
-> nop
-> 
-> and then, on the caller side, patch the "cmp <$HASH>, -0x6(%r11); je; ud2;
-> call" sequence with a "sub 0x6, r11; mov $HASH, %r10; call %r11, add 0x6
-> %r11". This would then allow the kernel to verify if the CPU is IBT capable
-> on boot time and only then setting the proper scheme.
-> 
-> The downsides of having something like this would be that this sub r11/add
-> r11 sequence is kinda meh. We can avoid that by having two padding nops
-> after the original ENDBR, which will be skipped when the function is reached
-> directly by the linker optimization I'm working on, and that we can convert
-> into a JMP -offset that makes control flow reach the padding area before the
-> prologue and from where we can call the fineibt_handler function. The
-> resulting instrumentation would be something like:
-> 
-> 1:
-> call fineibt_handler_<$HASH>
-> jmp 2f
-> <foo>
-> endbr
-> jmp 1b
-> 2:
-> 
-> Also, it would prevent a paranoid user to have both schemes simultaneously
-> (there are reasons why people could want that).
-> 
-> Any thoughts?
+The IPI can only interrupt a CPU with irqs disabled if the IPI is an
+NMI. I haven't looked before to see if we use NMI IPIs to corral the
+other CPUs on panic. On x86, I grepped my way down to
+native_stop_other_cpus(), which looks like it does a normal IPI, waits
+1 second, then does an NMI IPI. So, if a secondary CPU has the lock
+held, on x86 it has roughly 1s to finish what it's doing and re-enable
+interrupts before smp_send_stop() brings the NMI hammer down. I think
+this should be more than enough time for the secondary CPU to get out
+and release the lock.
 
-I'm not really qualified to comment on this too directly since I haven't
-looked very much at the variations on FineIBT/CFI/KCFI, and what the
-protections and drawbacks are for each approach, and when it might even
-make sense to combine them for a "paranoid user".
+So then it makes sense to me that you're fixing cases where we
+panicked with the lock held, or hung with the lock held. Given the 1
+second grace period x86 gives us, I'm on board, as that helps mitigate
+the risk that we bailed out early with the try and should have spun a
+bit longer instead. Thanks.
 
-Since we have multiple similar and possibly competing technologies being
-discussed, one thing I do want to warn against is that we as kernel
-developers tend to err on the side of giving people too many choices and
-combinations which *never* get used.
+-Evan
 
-All those unused options can confuse the user and significantly add to
-complexity and maintenance overhead for us.  Especially for invasive
-features like these.
-
-(Just to be clear, I'm not saying that's happening here, but it's
-something we need to be careful about.)
-
-Here, documentation is going to be crucial, for both reviewers and
-users.  Something that describes when/why I should use X or Y or X+Y.
-
-If we truly want to add more options/combos for different use cases then
-we'll also need clear and concise documentation about which
-options/combos would be used under what circumstances.
-
--- 
-Josh
-
+>
+> Then, such CPU is put to sleep and we finally reach the panic notifier
+> hereby discussed, in the main CPU. If the other CPU was shut-off *with
+> the lock held*, it's never finishing such work, so the lock is never to
+> be released. Conclusion: the spinlock can't be acquired, hence we broke
+> the machine (which is already broken, given it's panic) in the path of
+> this notifier.
+> This should be really rare, but..possible. So I think we should protect
+> against this scenario.
+>
+> We can grab others' feedback if you prefer, and of course you have the
+> rights to refuse this change in the gsmi code, but from my
+> point-of-view, I don't see any advantage in just assume the risk,
+> specially since the change is very very simple.
+>
+> Cheers,
+>
+>
+> Guilherme
