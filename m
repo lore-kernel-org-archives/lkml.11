@@ -2,107 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFF9BC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 14:47:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AEE4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 14:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237359AbiECOuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 10:50:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45440 "EHLO
+        id S237381AbiECOwV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 10:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbiECOuc (ORCPT
+        with ESMTP id S237321AbiECOwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 10:50:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4949835A9B
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 07:46:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651589217;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=83wy3D5dt5Ummd3Bx/sB0t7+Cs+0z1iy7in3UM+60Qw=;
-        b=LSD4YEz5FYf16kJAPdJ19vXP+nfSHMDV5360DBImXCSCRj50tpGKnQLr061vFBHju3rKOy
-        Jb6ng1ZJXlNZSaAqDTHmOqBbP09ciaPRb5AIuSNG5sNdhGbyqnFEClSa7FmoPDQn5IKee5
-        eQ+UOGAmxA6cUfoulQFiYVch9PGoq0U=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-299-jgjTXxaaPv6ib_ZxI4jnfg-1; Tue, 03 May 2022 10:46:06 -0400
-X-MC-Unique: jgjTXxaaPv6ib_ZxI4jnfg-1
-Received: by mail-wm1-f72.google.com with SMTP id q6-20020a1cf306000000b0038c5726365aso850065wmq.3
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 07:46:05 -0700 (PDT)
+        Tue, 3 May 2022 10:52:17 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A079763EA
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 07:48:44 -0700 (PDT)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-e656032735so17444830fac.0
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 07:48:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=vanguardiasur-com-ar.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BV1kdgg88h2dApOYl3eT3CssciiSPlxmubonwKG/mW4=;
+        b=Vx/Eytelo3ZiPPIy6BcMf32X6UZdSEmR2nLRg7aKVjYWa7pjN6x+UjOE23jnBGqj9p
+         FfpfY/XBM2izLWMN0zBVjzfA1nOFDXyofVQlbQQJPYLs37IFoQgPFvTmSB5CDRmtClm1
+         pOUI23aiupAropgM3Gl6CubKEvmi+klBwX9WT/1/4FpSMSSeWyGTYO6Y335hCKOvxLWz
+         Ez5GYoCEp90H2hIEn7+7gw1w8Dg9eqdYPK0LCWpq4IL2h7oK67NZMxxVCeLPWyvBBtmE
+         L0+ootPlnamYUz5j9A//vbWoR2OGnh8whYJOFapzsjAQsN52HkmzMegDRaB4xKM6qZee
+         2uPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=83wy3D5dt5Ummd3Bx/sB0t7+Cs+0z1iy7in3UM+60Qw=;
-        b=ouu6jKU67XfdGgCkLYApUmw5D6nmGphRVfbkXU8qkuZBx9T3duXeP++MH62bKVL15g
-         llW1cai/tHRw7npjX7mMGCBQBT+OMOqgNizNgYxLIYusquTA5KlRIc8H+NF+FNvzY819
-         u90M9jYj9L9ne65ZlUufP8ISW+9lmkUI6wKU4vlqfgOAMDSr5RjSSXNVPiJ5OpxhUnC4
-         ox99Vre68DgzMD9fqUtZ9lzAnyzfvIexMpVxHPYlj6a2SKBoielyKdUhrLc833l2FFbv
-         qH2vqrd/COnGtTLDFbC2Bkuu1S77ugfZmVGyIR13CPNeN3uH0oCTgcLGS3OYUkr9FyK6
-         8oeQ==
-X-Gm-Message-State: AOAM532iJrH81CkKHTsl9gOYfhnEUDTabe5JG8UQdzlLsDFk8uP97PKb
-        dIUILod+1KkRQQol4v6z05f9qeB9ddv4WkqEXxrgQrdM6A9VcZFTokHjCEgXy6ZVsuF5zt6e+gt
-        Fs/VkTLciAn5qwWkrNxw72cPR
-X-Received: by 2002:a17:907:1623:b0:6e8:8678:640d with SMTP id hb35-20020a170907162300b006e88678640dmr15141677ejc.189.1651578613924;
-        Tue, 03 May 2022 04:50:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwgDSCmimGS4eep27PTOqrwdW6NzkICeJYxvlFa/x2oEMAH8qT4xJYqw/QzH9kG9LMxlrJyzA==
-X-Received: by 2002:a17:907:1623:b0:6e8:8678:640d with SMTP id hb35-20020a170907162300b006e88678640dmr15141658ejc.189.1651578613740;
-        Tue, 03 May 2022 04:50:13 -0700 (PDT)
-Received: from localhost.localdomain ([2a02:8308:b106:e300:32b0:6ebb:8ca4:d4d3])
-        by smtp.gmail.com with ESMTPSA id m21-20020aa7c2d5000000b0042617ba6395sm7740445edp.31.2022.05.03.04.50.12
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BV1kdgg88h2dApOYl3eT3CssciiSPlxmubonwKG/mW4=;
+        b=vKOrpgL87JBv/0NubTHogc0+r+GE2i3FZBMDREQxsNwBg20riYRA/PqPgmL40saPdq
+         weAMQVDfJ4IbUisvmFPrmOZOUnnhk02D31iEdl7yKh9ShAaQvWXXHrFKDI464oqLHXjh
+         JPKlhcPSIQvqRe+S/Fjftgij8q4yko6JIheZDkoQU5cPn9Yvaix/SUPHCZnB6y2f2dnA
+         xlplK8jezIJj7PcHB7Ji8cuiqZ084Us1j6+nmiJ5YfRd264vzfdkbeIZP/spU/x/wdRT
+         pF7CacKiKW23EEDqZCjt9WGOrMtZiHXMbSGRQVgPMZlJda5s7Q+6cjCH53rJIa0yQv7P
+         TyTQ==
+X-Gm-Message-State: AOAM5314ocLM1/ViAaWp4HQ7wwcufHgWdqm/1XR74gtObgvcO1NUr8TN
+        0SJQ59/+G8vtzX6/Z6kWh/feeFb+2pVDqg==
+X-Google-Smtp-Source: ABdhPJygheLeJdTY7mT0oFr+XZcbBbO/9r9tZYoCSHRNY4qLm/p0Vf9K92aaEDaOY9HSjhTd/4OnKA==
+X-Received: by 2002:a05:6870:d186:b0:ed:a737:8ae4 with SMTP id a6-20020a056870d18600b000eda7378ae4mr1832370oac.25.1651589324016;
+        Tue, 03 May 2022 07:48:44 -0700 (PDT)
+Received: from eze-laptop ([2803:9800:98c2:8470:9f4:8e2a:88e5:ec01])
+        by smtp.gmail.com with ESMTPSA id d11-20020a0568301b6b00b0060603221265sm4045559ote.53.2022.05.03.07.48.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 04:50:12 -0700 (PDT)
-From:   Ondrej Mosnacek <omosnace@redhat.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Brian Masney <bmasney@redhat.com>,
-        linux-arm-msm@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: [PATCH] crypto: qcom-rng - fix infinite loop on requests not multiple of WORD_SZ
-Date:   Tue,  3 May 2022 13:50:10 +0200
-Message-Id: <20220503115010.1750296-1-omosnace@redhat.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 03 May 2022 07:48:43 -0700 (PDT)
+Date:   Tue, 3 May 2022 11:48:37 -0300
+From:   Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc:     p.zabel@pengutronix.de, mchehab@kernel.org,
+        gregkh@linuxfoundation.org, linux-media@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, jon@nanocrew.net, aford173@gmail.com,
+        kernel@collabora.com
+Subject: Re: [PATCH v3] media: hantro: HEVC: unconditionnaly set
+ pps_{cb/cr}_qp_offset values
+Message-ID: <YnFAxRFWXT6oHywm@eze-laptop>
+References: <20220503135529.683474-1-benjamin.gaignard@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220503135529.683474-1-benjamin.gaignard@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The commit referenced in the Fixes tag removed the 'break' from the else
-branch in qcom_rng_read(), causing an infinite loop whenever 'max' is
-not a multiple of WORD_SZ. This can be reproduced e.g. by running:
+On Tue, May 03, 2022 at 03:55:29PM +0200, Benjamin Gaignard wrote:
+> Always set pps_cb_qp_offset and pps_cr_qp_offset values in Hantro/G2
+> register whatever is V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT
+> flag value.
+> The vendor code does the case to set these values.
 
-    kcapi-rng -b 67 >/dev/null
+s/case/same
 
-There are many ways to fix this without adding back the 'break', but
-they all seem more awkward than simply adding it back, so do just that.
+> This fix conformance test CAINIT_G_SHARP_3.
+> 
+> Fluster HEVC score is increase by one with this patch.
+> 
 
-Tested on a machine with Qualcomm Amberwing processor.
+Saying "score is increased by one" is not all that useful.
 
-Fixes: a680b1832ced ("crypto: qcom-rng - ensure buffer for generate is completely filled")
-Cc: stable@vger.kernel.org
-Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
----
- drivers/crypto/qcom-rng.c | 1 +
- 1 file changed, 1 insertion(+)
+I still believe seeing the Fluster score would be adding real
+information.
 
-diff --git a/drivers/crypto/qcom-rng.c b/drivers/crypto/qcom-rng.c
-index 11f30fd48c141..031b5f701a0a3 100644
---- a/drivers/crypto/qcom-rng.c
-+++ b/drivers/crypto/qcom-rng.c
-@@ -65,6 +65,7 @@ static int qcom_rng_read(struct qcom_rng *rng, u8 *data, unsigned int max)
- 		} else {
- 			/* copy only remaining bytes */
- 			memcpy(data, &val, max - currsize);
-+			break;
- 		}
- 	} while (currsize < max);
- 
--- 
-2.35.1
+The score you have without this patch, and using upstream GStreamer
+is the "current" score. Then the score you get with the patch applied,
+is the score you get after the fix.
 
+And this is actually good as you would also give more information
+by clarifying the score is the result of GStreamer (commit $sha)
+plus Linux.
+
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+
+Patch looks fine, but I believe you still have some challenges on the commit
+descriptions, and so we iterate a lot on them.
+
+How about you proof-read them first (or you ask colleagues to proof-read
+them)?
+
+A useful tip I've profit from is to let patches sit for a few days,
+then re-read and amend the commit before sending them.
+
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+
+Thanks!
+Ezequiel
+
+> ---
+>  drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 9 ++-------
+>  1 file changed, 2 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+> index 6deb31b7b993..503f4b028bc5 100644
+> --- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+> +++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+> @@ -194,13 +194,8 @@ static void set_params(struct hantro_ctx *ctx)
+>  		hantro_reg_write(vpu, &g2_max_cu_qpd_depth, 0);
+>  	}
+>  
+> -	if (pps->flags & V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT) {
+> -		hantro_reg_write(vpu, &g2_cb_qp_offset, pps->pps_cb_qp_offset);
+> -		hantro_reg_write(vpu, &g2_cr_qp_offset, pps->pps_cr_qp_offset);
+> -	} else {
+> -		hantro_reg_write(vpu, &g2_cb_qp_offset, 0);
+> -		hantro_reg_write(vpu, &g2_cr_qp_offset, 0);
+> -	}
+> +	hantro_reg_write(vpu, &g2_cb_qp_offset, pps->pps_cb_qp_offset);
+> +	hantro_reg_write(vpu, &g2_cr_qp_offset, pps->pps_cr_qp_offset);
+>  
+>  	hantro_reg_write(vpu, &g2_filt_offset_beta, pps->pps_beta_offset_div2);
+>  	hantro_reg_write(vpu, &g2_filt_offset_tc, pps->pps_tc_offset_div2);
+> -- 
+> 2.32.0
+> 
