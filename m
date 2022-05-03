@@ -2,209 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12328C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 01:14:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B1BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 01:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230082AbiECBSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 21:18:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48810 "EHLO
+        id S229555AbiECBTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 21:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230180AbiECBRw (ORCPT
+        with ESMTP id S230337AbiECBTE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 21:17:52 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E777163CF
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 18:14:01 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id r1so16703325oie.4
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 18:14:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=J67hCTMUSeaGPBCalr+a5sKpexZV8EhEsJdHelQjXVI=;
-        b=Wxik6QIgF8vn2rRuO2T+saWcOy6xHdSOM0DOBcaOym6CYXCKFr2W0cdwKLqFBz542M
-         FbTYz9FTStGR+cSQNoQZs38M1hsyPoig2qUqkRGiaglB71l/0yxHgrivIxEy0MbdVBR4
-         UoEWzAP5QCUHNSctCZq0k2KM/R0krl6aEBt9Q=
+        Mon, 2 May 2022 21:19:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 126306545
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 18:15:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651540528;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KPSwa6BO4nhm2D1ATK5m6d1e69zEH/tlPY6FsAWaZCg=;
+        b=bDhWpTGUvc6OPfQzNO0x00g+aE0PY7hTK4UaWlLfsOWDtsCNPBmZ4JWEmOy1BKTiSwZW8E
+        ukZ7DEYioDOIOt+q79Ldxx6UGHB2TFirKyeCGV8m4Jbyj7BHhUyGWYxyJeIaHqryr+9NSg
+        e8C4fBvNve2dpE+oNI+or4ss1kzRbis=
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
+ [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-658-vAllI6uhMz6S3pSAPwOLkQ-1; Mon, 02 May 2022 21:15:27 -0400
+X-MC-Unique: vAllI6uhMz6S3pSAPwOLkQ-1
+Received: by mail-pj1-f69.google.com with SMTP id l2-20020a17090ad10200b001ca56de815aso523920pju.0
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 18:15:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=J67hCTMUSeaGPBCalr+a5sKpexZV8EhEsJdHelQjXVI=;
-        b=c/jcu9a8yU4lH9v/4vfKquFnFIwQF8oOXMNoMmcc6P1dQMCkmT0hRI3V3u/wl4eKGr
-         S7BgHpqfnpV1T4uu877MUTyrvi9oCj03wOVPabKUrcu0IU3/csqciDsPjtEdooqTEWVB
-         va/AMjd+8yl401mN2Lg60t4msbLR6e/DBUmWn63c3LR85Fus5FAw1XBqFpoQTgrG5Ycg
-         6c3YmpUuJ95L25ZzmewAeBGcMPGe2ExzzegO4Iwu8I0nPZeCIg8uQLGeYCaqDb2pS0Jh
-         ubn0mFhGbARnW6HfoYBGd3J1hsLXMBD+PkZk/W9FykW4yzJpCYcJrvPOfJJpN7qL2+GH
-         wKMw==
-X-Gm-Message-State: AOAM531KzbF0xeucQSjpl0qMKTCOHDaefnrx+yo3xd5EuiNzXUevRmw9
-        TlOFxDXlnoTgAxIe60lWtGCxWeryq0Cxcg==
-X-Google-Smtp-Source: ABdhPJzhwaYb+Lw7ewxwO+ThJeqEp0Ndm8o2FfTV+9qwaSeSPak30MukVHhjdKIGtmyV/wnkmw1VRg==
-X-Received: by 2002:a17:90a:4a95:b0:1d8:2918:7065 with SMTP id f21-20020a17090a4a9500b001d829187065mr2010761pjh.117.1651539457581;
-        Mon, 02 May 2022 17:57:37 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:1e1a:955c:a9ca:e550])
-        by smtp.gmail.com with UTF8SMTPSA id n23-20020aa78a57000000b0050dc76281a6sm5289698pfa.128.2022.05.02.17.57.35
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=KPSwa6BO4nhm2D1ATK5m6d1e69zEH/tlPY6FsAWaZCg=;
+        b=SxjJBgxQFYJrHWQ3XJPq4V+kmwhhV0mAZTaDd7TEt3KGwwAlklXnTbQwiRumh4erQe
+         /CQvsZ4dIN8C/MQmQRaHRgyTdtwMlRmA89EU+mZ+Q6uygBUHESs0eZlMDck2onsRqOrf
+         ZsUAK63JP+CeedDBBYZrcpMOFcdQ9xkJYkifWRyJ+r6aS64EdadX+v5Xn1YLCyAj32+S
+         xazPeCbfAlvjCH/VDhlgP6PW2RHyFsQhj/wT8WsmoeNFK6U2XZtbxBjC+N5Mu5voVDaK
+         Dt4IdNYknSAuHSEN+DBL38GcbMQO+L2ZC5BuHoBQvKRY4OR5jdAocauq1JHupnB1RVXN
+         kGOQ==
+X-Gm-Message-State: AOAM532nVxDFW6N2CRhL+mXPpogwn1whfffRGOwFy+tFU+fMyER9v4j/
+        boxtVYvwDUjtffL1MyD/+plt/w0r5i8L47f4GPgvPk38pFoiamgSDhNIuCRKGi638g7Juz+wlB2
+        Qb/zvCvYYl0BZ/qQCSmW0NOd6
+X-Received: by 2002:a17:90b:1b07:b0:1dc:5ec5:56b0 with SMTP id nu7-20020a17090b1b0700b001dc5ec556b0mr2084207pjb.165.1651540526632;
+        Mon, 02 May 2022 18:15:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyYaUKBUmtnpR1yq4t3oy9VkaYKnH/ZmncA1pOMAEMZOY2M85HcjCLicImCLIKUwltXpRVGiA==
+X-Received: by 2002:a17:90b:1b07:b0:1dc:5ec5:56b0 with SMTP id nu7-20020a17090b1b0700b001dc5ec556b0mr2084173pjb.165.1651540526288;
+        Mon, 02 May 2022 18:15:26 -0700 (PDT)
+Received: from [10.10.69.234] ([8.34.116.185])
+        by smtp.gmail.com with ESMTPSA id j5-20020a654d45000000b003c14af50621sm11895993pgt.57.2022.05.02.18.15.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 May 2022 17:57:36 -0700 (PDT)
-Date:   Mon, 2 May 2022 17:57:35 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Pavan Kondeti <quic_pkondeti@quicinc.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "open list:ULTRA-WIDEBAND (UWB) SUBSYSTEM:" 
-        <linux-usb@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        quic_ppratap@quicinc.com, quic_kriskura@quicinc.com,
-        quic_vpulyala@quicinc.com
-Subject: Re: [PATCH v14 2/7] PM / wakeup: Add device_children_wakeup_capable()
-Message-ID: <YnB9/0NbQImdUObf@google.com>
-References: <1650395470-31333-1-git-send-email-quic_c_sanm@quicinc.com>
- <1650395470-31333-3-git-send-email-quic_c_sanm@quicinc.com>
- <CAJZ5v0h2ZKPN6SERPnASPywZfeOWXWncJgNZ1WZa80+=M4DCiQ@mail.gmail.com>
- <YmL3lMaR79wPMEfY@google.com>
- <20220425130303.GA16319@hu-pkondeti-hyd.qualcomm.com>
- <20220429125956.GD16319@hu-pkondeti-hyd.qualcomm.com>
- <Ymw6Og/qhg3D0mx+@google.com>
- <20220430031130.GE16319@hu-pkondeti-hyd.qualcomm.com>
+        Mon, 02 May 2022 18:15:25 -0700 (PDT)
+Message-ID: <08e9855c-395d-f40c-de3d-1ec8b644bfe8@redhat.com>
+Date:   Tue, 3 May 2022 03:15:24 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220430031130.GE16319@hu-pkondeti-hyd.qualcomm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] mm: fix is_pinnable_page against on cma page
+Content-Language: en-US
+To:     Minchan Kim <minchan@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        John Hubbard <jhubbard@nvidia.com>,
+        John Dias <joaodias@google.com>
+References: <20220502173558.2510641-1-minchan@kernel.org>
+ <29d0c1c3-a44e-4573-7e7e-32be07544dbe@redhat.com>
+ <YnAhaRNjmIhtGUjk@google.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <YnAhaRNjmIhtGUjk@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pavan,
 
-On Sat, Apr 30, 2022 at 08:41:30AM +0530, Pavan Kondeti wrote:
-> Hi Matthias,
+>>>> However, I assume we have the same issue right now already with
+>> ZONE_MOVABLE and MIGRATE_CMA when trying to pin a page residing on these
 > 
-> On Fri, Apr 29, 2022 at 12:19:22PM -0700, Matthias Kaehlcke wrote:
-> > Hi Pavan,
-> > 
-> > On Fri, Apr 29, 2022 at 06:29:56PM +0530, Pavan Kondeti wrote:
-> > > Hi Matthias,
-> > > 
-> > > On Mon, Apr 25, 2022 at 06:33:03PM +0530, Pavan Kondeti wrote:
-> > > > Hi Matthias,
-> > > > 
-> > > > On Fri, Apr 22, 2022 at 11:44:36AM -0700, Matthias Kaehlcke wrote:
-> > > > > On Fri, Apr 22, 2022 at 01:57:17PM +0200, Rafael J. Wysocki wrote:
-> > > > > > On Tue, Apr 19, 2022 at 9:11 PM Sandeep Maheswaram
-> > > > > > <quic_c_sanm@quicinc.com> wrote:
-> > > > > > >
-> > > > > > > From: Matthias Kaehlcke <mka@chromium.org>
-> > > > > > >
-> > > > > > > Add device_children_wakeup_capable() which checks whether the device itself
-> > > > > > > or one if its descendants is wakeup capable.
-> > > > > > 
-> > > > > > device_wakeup_path() exists for a very similar purpose.
-> > > > > > 
-> > > > > > Is it not usable for whatever you need the new function introduced here?
-> > > > > 
-> > > > > I wasn't aware of it's function, there are no doc comments and the
-> > > > > name isn't really self explanatory.
-> > > > > 
-> > > > > In a quick test device_wakeup_path() returned inconsistent values for the
-> > > > > root hub, sometimes true, others false when a wakeup capable USB device was
-> > > > > connected.
-> > > > 
-> > > > We will also test the same to double confirm the behavior of
-> > > > device_wakeup_path(). I am assuming that you checked device_wakeup_path()
-> > > > only during system suspend path.
-> > > > 
-> > > > Here is what I understood by looking at __device_suspend(). Please share
-> > > > your thoughts on this.
-> > > > 
-> > > > power.wakeup_path is set to true for the parent *after* a wakeup capable
-> > > > device is suspended. This means when the root hub(s) is suspended, it is
-> > > > propagated to xhci-plat and when xhci-plat is suspended, it is propagated
-> > > > to dwc3. bottom up propgation during system suspend.
-> > > > 
-> > > > I believe we can directly check something like this in the dwc3 driver
-> > > > instead of having another wrapper like device_children_wakeup_capable().
-> > > > 
-> > > > diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-> > > > index 1170b80..a783257 100644
-> > > > --- a/drivers/usb/dwc3/core.c
-> > > > +++ b/drivers/usb/dwc3/core.c
-> > > > @@ -1878,8 +1878,14 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
-> > > >  		break;
-> > > >  	case DWC3_GCTL_PRTCAP_HOST:
-> > > >  		if (!PMSG_IS_AUTO(msg)) {
-> > > > +			/*
-> > > > +			 * Don't kill the host when dwc3 is wakeup capable and
-> > > > +			 * its children needs wakeup.
-> > > > +			 */
-> > > > +			if (device_may_wakeup(dwc->dev) && device_wakeup_path(dwc->dev))
-> > > > +				handle_it();
-> > > > +		} else {
-> > > >  			dwc3_core_exit(dwc);
-> > > > -			break;
-> > > >  		}
-> > > >  
-> > > >  		/* Let controller to suspend HSPHY before PHY driver suspends */
-> > > > 
-> > > 
-> > > device_wakeup_path(dwc->dev) is returning true all the time irrespective of
-> > > the wakeup capability (and enabled status) of the connected USB devices. That
-> > > is because xhci-plat device is configured to wakeup all the time. Since the
-> > > child is wakeup capable, its parent i.e dwc3 has device_wakeup_path() set.
-> > > device_children_wakeup_capable() will also suffer the problem. However,
-> > > 
-> > > device_children_wakeup_capable(&hcd->self.root_hub->dev) is what Sandeep's
-> > > patch is using. That is not correct. we have two root hubs (HS and SS) associated
-> > > with a USB3 controller and calling it on one root hub is incorrect. 
-> > > device_children_wakeup_capable() must be called on xhci-plat so that it covers
-> > > both HS and SS root hubs
-> > 
-> > Thanks for pointing that out!
-> > 
-> > > I am thinking of dynamically enabling/disabling xhci-plat wakeup capability so
-> > > that the wakeup path is correctly propagated to dwc3. something like below.
-> > > Does it make sense to you?
-> > > 
-> > > diff --git a/drivers/usb/host/xhci-plat.c b/drivers/usb/host/xhci-plat.c
-> > > index 649ffd8..be0c55b 100644
-> > > --- a/drivers/usb/host/xhci-plat.c
-> > > +++ b/drivers/usb/host/xhci-plat.c
-> > > @@ -412,6 +412,9 @@ static int __maybe_unused xhci_plat_suspend(struct device *dev)
-> > >  	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
-> > >  	int ret;
-> > >  
-> > > +	if (!device_wakeup_path(dev))
-> > > +		device_wakeup_disable(dev);
-> > > +
-> > >  	if (pm_runtime_suspended(dev))
-> > >  		pm_runtime_resume(dev);
-> > >  
-> > > @@ -443,6 +446,8 @@ static int __maybe_unused xhci_plat_resume(struct device *dev)
-> > >  	pm_runtime_set_active(dev);
-> > >  	pm_runtime_enable(dev);
-> > >  
-> > > +	device_wakeup_enable(dev);
-> > 
-> > I think this also needs to be done conditionally, otherwise it would
-> > create a new wake source on every resume when wakeup is already
-> > enabled.
-> > 
-> Right, this needs to be done conditionally. However, there is a silent
-> warning inside device_wakeup_enable() if it is called during system
-> transition. Not sure if we really need to worry about that or not.
+> ZONE_MOVALBE is also changed dynamically?
+> 
 
-I guess it's up to the maintainers. Removing and adding the wakeup source on
-suspend/resume is a bit of a hack, but it might be acceptable if it addresses
-the issue and doesn't have negative side effects.
+Sorry, with "same issue" I meant failing to pin if having to migrate and
+the page is temporarily unmovable.
+
+>> there are temporarily unmovable and we fail to migrate. But it would now
+>> apply even without ZONE_MOVABLE or MIGRATE_CMA. Hm...
+> 
+> Didn't parse your last mention.
+
+On a system that neither uses ZONE_MOVABLE nor MIGRATE_CMA we might have
+to migrate now when pinning.
+
+-- 
+Thanks,
+
+David / dhildenb
+
