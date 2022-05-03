@@ -2,138 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5012CC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 11:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12CE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 11:46:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234852AbiECLr5 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 07:47:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52402 "EHLO
+        id S234862AbiECLti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 07:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234783AbiECLrz (ORCPT
+        with ESMTP id S234264AbiECLtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 07:47:55 -0400
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64D31F617;
-        Tue,  3 May 2022 04:44:22 -0700 (PDT)
-Received: by mail-ot1-f50.google.com with SMTP id k25-20020a056830169900b00605f215e55dso8123617otr.13;
-        Tue, 03 May 2022 04:44:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=cU3Z6ykdejESNcgy+emYbv3uxVtClhcVte+gZSY0vNY=;
-        b=q+mrMdmWF1qiQScO3xKSXJKVWB0Zh+Cm1A4P7nHU3esX5tKqr1wZqn073cdHQepmfu
-         lb1HvQMe8ZrekrcLcWIuYzTpJhwSHN+cO7dJCDKGnIl/JwuM9507zYyWTzEHyziii/4A
-         HsUPCoD3s+5EyAUrKszKV2h5C/XIiqnLwwNUNnIX5wQtbJ7VtBg+yrL9Mn0eVLi2v4us
-         5BAAoBo75ZmrHHlO2hf80LpbUi99cd+xUftIMkdrqxTuetrKxgXnAAs5CCvNCXAX2vD4
-         l8vnFa76pE3/Y+ztRy0G8xG4zPXqwPj5yFV1eY4Guw6MSjAbMeFaVoW3WOjQqBNr5d0K
-         kVFA==
-X-Gm-Message-State: AOAM532IUQWCYvQrudP38wClQ9Wbpz/aromsLlMhpH6WY0rxQ+2ijKDx
-        8+HwvMJX72DuB9dR7JM1gl6CsTXoPV0GzQ==
-X-Google-Smtp-Source: ABdhPJx9f5FEJqVlsJPj0zsNWKMHxl/aKPrh3i9MhHT6FFHZdudw6RbpQv4Hzan15Xafq4SD0Xy6dw==
-X-Received: by 2002:a9d:34b:0:b0:605:f0f1:e28e with SMTP id 69-20020a9d034b000000b00605f0f1e28emr5558412otv.304.1651578262024;
-        Tue, 03 May 2022 04:44:22 -0700 (PDT)
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com. [209.85.210.54])
-        by smtp.gmail.com with ESMTPSA id bl23-20020a056808309700b00325f4f40f9esm2033390oib.22.2022.05.03.04.44.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 04:44:21 -0700 (PDT)
-Received: by mail-ot1-f54.google.com with SMTP id z5-20020a9d62c5000000b00606041d11f1so5659639otk.2;
-        Tue, 03 May 2022 04:44:21 -0700 (PDT)
-X-Received: by 2002:a25:6157:0:b0:645:8d0e:f782 with SMTP id
- v84-20020a256157000000b006458d0ef782mr14366337ybb.36.1651577879447; Tue, 03
- May 2022 04:37:59 -0700 (PDT)
+        Tue, 3 May 2022 07:49:36 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE95534BA7;
+        Tue,  3 May 2022 04:46:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1651578364;
+  x=1683114364;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=37MI/EE6FV3uuqjHcV4iKuHw8/hQcJzCqhGsyjlBzV4=;
+  b=j5YBHC/3HUmAXy2banMBdXMmSjrBK21wrDlxdXNIOn4MrPzNOAyHklGI
+   e4w3KCeFHeYOYspRyQ/MPYIvg2ZkwSkjaYYwUznQk2OqJN6t8LiKrfUOm
+   xWx1sI1O53yim0wOab6vYvNC/BlxEPetb2AWdjWTKjaZFe4wtlKvmNPAs
+   PdcM+Mucc4iBESBijkATLODZOJ8LyKIB/ep/5/t+ICXml0HnDzTs5TDD0
+   9d6swFvIMxKH0a1+YnBOFOFSeqtkM6sn+5MSx+5sjKkkRDPwRWEAg1VLv
+   PcDk6EZ7w5WJlstPi7NuWcukvX1/zlEg30vMKmt1HQpnUiAHlQRv5tQmj
+   g==;
+Message-ID: <07415a07-58e1-2190-2c8a-be7fb7756400@axis.com>
+Date:   Tue, 3 May 2022 13:46:01 +0200
 MIME-Version: 1.0
-References: <cover.1647904780.git.pisa@cmp.felk.cvut.cz> <4d5c53499bafe7717815f948801bd5aedaa05c12.1647904780.git.pisa@cmp.felk.cvut.cz>
-In-Reply-To: <4d5c53499bafe7717815f948801bd5aedaa05c12.1647904780.git.pisa@cmp.felk.cvut.cz>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 3 May 2022 13:37:46 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXY_sHw4W8_y+r1LMhGM+CF7RQtRFQzEC8wYKYSR98Daw@mail.gmail.com>
-Message-ID: <CAMuHMdXY_sHw4W8_y+r1LMhGM+CF7RQtRFQzEC8wYKYSR98Daw@mail.gmail.com>
-Subject: Re: [PATCH v8 5/7] can: ctucanfd: CTU CAN FD open-source IP core -
- platform/SoC support.
-To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
-Cc:     linux-can@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
-        Drew Fustini <pdp7pdp7@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v3] hwmon: (tmp401) Add OF device ID table
+Content-Language: en-US
+To:     Camel Guo <Camel.Guo@axis.com>, Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>
+CC:     Javier Martinez Canillas <javierm@redhat.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        kernel <kernel@axis.com>
+References: <20220503053350.598031-1-camel.guo@axis.com>
+From:   Camel Guo <camelg@axis.com>
+In-Reply-To: <20220503053350.598031-1-camel.guo@axis.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.0.5.60]
+X-ClientProxiedBy: se-mail07w.axis.com (10.20.40.13) To se-mail03w.axis.com
+ (10.20.40.9)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pavel,
-
-On Tue, Mar 22, 2022 at 1:06 AM Pavel Pisa <pisa@cmp.felk.cvut.cz> wrote:
-> Platform bus adaptation for CTU CAN FD open-source IP core.
->
-> The core has been tested together with OpenCores SJA1000
-> modified to be CAN FD frames tolerant on MicroZed Zynq based
-> MZ_APO education kits designed by Petr Porazil from PiKRON.com
-> company. FPGA design
->
->   https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top.
->
-> The kit description at the Computer Architectures course pages
->
->   https://cw.fel.cvut.cz/wiki/courses/b35apo/documentation/mz_apo/start .
->
-> Kit carrier board and mechanics design source files
->
->   https://gitlab.com/pikron/projects/mz_apo/microzed_apo
->
-> The work is documented in Martin Jeřábek's diploma theses
-> Open-source and Open-hardware CAN FD Protocol Support
->
->   https://dspace.cvut.cz/handle/10467/80366
-> .
->
-> Signed-off-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
-> Signed-off-by: Martin Jerabek <martin.jerabek01@gmail.com>
-> Signed-off-by: Ondrej Ille <ondrej.ille@gmail.com>
-
-Thanks for your patch, which is now commit e8f0c23a2415fa8f ("can:
-ctucanfd: CTU CAN FD open-source IP core - platform/SoC support.") in
-linux-can-next/master.
-
-> --- /dev/null
-> +++ b/drivers/net/can/ctucanfd/ctucanfd_platform.c
-
-> +/* Match table for OF platform binding */
-> +static const struct of_device_id ctucan_of_match[] = {
-> +       { .compatible = "ctu,ctucanfd-2", },
-
-Do you need to match on the above compatible value?
-The driver seems to treat the hardware the same, and the DT
-bindings state the compatible value below should always be present.
-
-> +       { .compatible = "ctu,ctucanfd", },
-> +       { /* end of list */ },
+On 5/3/22 07:33, Camel Guo wrote:
+> The driver doesn't have a struct of_device_id table but supported devices
+> are registered via Device Trees. This is working on the assumption that a
+> I2C device registered via OF will always match a legacy I2C device ID and
+> that the MODALIAS reported will always be of the form i2c:<device>.
+> 
+> But this could change in the future so the correct approach is to have an
+> OF device ID table if the devices are registered via OF.
+> 
+> Fixes: af503716ac14 ("i2c: core: report OF style module alias for 
+> devices registered via OF")
+> Signed-off-by: Camel Guo <camel.guo@axis.com>
+> ---
+> 
+> Notes:
+>      v3:
+>       - Copy commit message from commit 72fc64c68decf119466 ("hwmon: 
+> (tmp103)
+>         Add OF device ID table")
+>       - Add Fixes tag
+>      v2:
+>       - Put evidence and circumstances in commit message
+> 
+>   drivers/hwmon/tmp401.c | 11 +++++++++++
+>   1 file changed, 11 insertions(+)
+> 
+> diff --git a/drivers/hwmon/tmp401.c b/drivers/hwmon/tmp401.c
+> index b86d9df7105d..52c9e7d3f2ae 100644
+> --- a/drivers/hwmon/tmp401.c
+> +++ b/drivers/hwmon/tmp401.c
+> @@ -708,10 +708,21 @@ static int tmp401_probe(struct i2c_client *client)
+>           return 0;
+>   }
+> 
+> +static const struct of_device_id __maybe_unused tmp4xx_of_match[] = {
+> +       { .compatible = "ti,tmp401", },
+> +       { .compatible = "ti,tmp411", },
+> +       { .compatible = "ti,tmp431", },
+> +       { .compatible = "ti,tmp432", },
+> +       { .compatible = "ti,tmp435", },
+> +       { },
 > +};
-> +MODULE_DEVICE_TABLE(of, ctucan_of_match);
+> +MODULE_DEVICE_TABLE(of, tmp4xx_of_match);
+> +
+>   static struct i2c_driver tmp401_driver = {
+>           .class          = I2C_CLASS_HWMON,
+>           .driver = {
+>                   .name   = "tmp401",
+> +               .of_match_table = of_match_ptr(tmp4xx_of_match),
+>           },
+>           .probe_new      = tmp401_probe,
+>           .id_table       = tmp401_id,
+> 
+> base-commit: 38d741cb70b30741c0e802cbed7bd9cf4fd15fa4
+> -- 
+> 2.30.2
+> 
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Sorry for the spam, but after rethinking, I think some description in 
+commit message is improper. Hence I updated it in v4. Please review that 
+one instead.
