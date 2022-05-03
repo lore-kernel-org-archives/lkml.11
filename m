@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 863DCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:17:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84D63C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231864AbiECHUl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 03:20:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54336 "EHLO
+        id S231871AbiECHUz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:20:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231876AbiECHUV (ORCPT
+        with ESMTP id S232030AbiECHU3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 03:20:21 -0400
+        Tue, 3 May 2022 03:20:29 -0400
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B513B32EE5;
-        Tue,  3 May 2022 00:16:28 -0700 (PDT)
-X-UUID: c5cce1b54bba45a5ac135ed80bca9a8d-20220503
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A2D35253;
+        Tue,  3 May 2022 00:16:46 -0700 (PDT)
+X-UUID: 74bdc86cee8a46a28d269a609566d54d-20220503
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:2ec0fc11-1ecd-47e4-a38e-14d1e5555f7f,OB:30,L
-        OB:30,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,
-        ACTION:release,TS:100
-X-CID-INFO: VERSION:1.1.4,REQID:2ec0fc11-1ecd-47e4-a38e-14d1e5555f7f,OB:30,LOB
-        :30,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:100
-X-CID-META: VersionHash:faefae9,CLOUDID:54bb4ac7-85ee-4ac1-ac05-bd3f1e72e732,C
-        OID:641a58b95193,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: c5cce1b54bba45a5ac135ed80bca9a8d-20220503
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.4,REQID:2137b797-dce4-41fa-809e-ce74f33a6fad,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:faefae9,CLOUDID:f7bd4ac7-85ee-4ac1-ac05-bd3f1e72e732,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 74bdc86cee8a46a28d269a609566d54d-20220503
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
         (envelope-from <yong.wu@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 985565606; Tue, 03 May 2022 15:16:23 +0800
+        with ESMTP id 1756795359; Tue, 03 May 2022 15:16:39 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 3 May 2022 15:16:22 +0800
+ Tue, 3 May 2022 15:16:38 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 3 May 2022 15:16:21 +0800
+ Transport; Tue, 3 May 2022 15:16:37 +0800
 From:   Yong Wu <yong.wu@mediatek.com>
 To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
         Will Deacon <will@kernel.org>
 CC:     Robin Murphy <robin.murphy@arm.com>,
         Krzysztof Kozlowski <krzk@kernel.org>,
@@ -52,13 +48,13 @@ CC:     Robin Murphy <robin.murphy@arm.com>,
         Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
         <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
         <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
-        "AngeloGioacchino Del Regno" 
+        AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>,
         <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
         <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v7 11/36] iommu/mediatek: Add a flag DCM_DISABLE
-Date:   Tue, 3 May 2022 15:14:02 +0800
-Message-ID: <20220503071427.2285-12-yong.wu@mediatek.com>
+Subject: [PATCH v7 13/36] iommu/mediatek: Remove the granule in the tlb flush
+Date:   Tue, 3 May 2022 15:14:04 +0800
+Message-ID: <20220503071427.2285-14-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220503071427.2285-1-yong.wu@mediatek.com>
 References: <20220503071427.2285-1-yong.wu@mediatek.com>
@@ -69,48 +65,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the infra iommu, we should disable DCM. add a new flag for this.
+The MediaTek IOMMU doesn't care about granule when tlb flushing.
+Remove this variable.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/iommu/mtk_iommu.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/iommu/mtk_iommu.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index d91a0c138536..92f172a772d1 100644
+index 22e2b104e3ee..ca77e7f1ce5d 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -51,6 +51,8 @@
- #define F_MMU_STANDARD_AXI_MODE_MASK		(BIT(3) | BIT(19))
+@@ -219,7 +219,6 @@ static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
+ }
  
- #define REG_MMU_DCM_DIS				0x050
-+#define F_MMU_DCM				BIT(8)
-+
- #define REG_MMU_WR_LEN_CTRL			0x054
- #define F_MMU_WR_THROT_DIS_MASK			(BIT(5) | BIT(21))
+ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+-					   size_t granule,
+ 					   struct mtk_iommu_data *data)
+ {
+ 	struct list_head *head = data->hw_list;
+@@ -541,8 +540,7 @@ static void mtk_iommu_iotlb_sync(struct iommu_domain *domain,
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 	size_t length = gather->end - gather->start + 1;
  
-@@ -119,6 +121,7 @@
- #define HAS_LEGACY_IVRP_PADDR		BIT(7)
- #define IOVA_34_EN			BIT(8)
- #define SHARE_PGTABLE			BIT(9) /* 2 HW share pgtable */
-+#define DCM_DISABLE			BIT(10)
+-	mtk_iommu_tlb_flush_range_sync(gather->start, length, gather->pgsize,
+-				       dom->data);
++	mtk_iommu_tlb_flush_range_sync(gather->start, length, dom->data);
+ }
  
- #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
- 		((((pdata)->flags) & (_x)) == (_x))
-@@ -765,7 +768,11 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 		regval = F_MMU_VLD_PA_RNG(7, 4);
- 		writel_relaxed(regval, data->base + REG_MMU_VLD_PA_RNG);
- 	}
--	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, DCM_DISABLE))
-+		writel_relaxed(F_MMU_DCM, data->base + REG_MMU_DCM_DIS);
-+	else
-+		writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
-+
- 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, WR_THROT_EN)) {
- 		/* write command throttling mode */
- 		regval = readl_relaxed(data->base + REG_MMU_WR_LEN_CTRL);
+ static void mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
+@@ -550,7 +548,7 @@ static void mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
+ {
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 
+-	mtk_iommu_tlb_flush_range_sync(iova, size, size, dom->data);
++	mtk_iommu_tlb_flush_range_sync(iova, size, dom->data);
+ }
+ 
+ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
 -- 
 2.18.0
 
