@@ -2,99 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 10:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77A86C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 10:34:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234190AbiECKgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 06:36:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53090 "EHLO
+        id S234199AbiECKh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 06:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232986AbiECKgq (ORCPT
+        with ESMTP id S232986AbiECKhw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 06:36:46 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC461FA67;
-        Tue,  3 May 2022 03:33:14 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id i62so13710238pgd.6;
-        Tue, 03 May 2022 03:33:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=muzTKDXHxre739JwDPLn6W0CCP4JY3KIRqvskM6X8vM=;
-        b=FBWGNVXMbpvfke8TdnuLjHwzsu+ynQgTTlyROkGSap+8QLTHjZDJmK7cIafOr0Hi1O
-         dNfRvuICGuXh508Kxf5D7N5kCiO6jBN9sS350BoHpyImp/N6U4z23xV8lhdZFaSlWag3
-         XmoX5yRmhNkyuPOoe4dXf1JBavuVMDXdVFPdQEQpBvVbtXcS7zsPGWvfUw8FhaAWzC9f
-         jBEfZlDqtye3UEMHwLOEbV21LJZCx/hRQSDxC4vZej9r6w4K09H/NO/klSYZMw1+C69q
-         RYUsPpmJf1SDLOzUJI7b+lBvPpvzuQrfslR4Y2RsaYBGfY+bkehb4ELqBCijWTEjjS2S
-         FK3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=muzTKDXHxre739JwDPLn6W0CCP4JY3KIRqvskM6X8vM=;
-        b=gUE95QbD2yRvUg9M74ik3I4Pyn7v+OSrRkzclLzYcyZBPkaIsFH8U8Rc/UZ1knYFOJ
-         xb1MhlTcuDi8UfZyo04b488vHe/QjoJ97vx1k2L5KTdnBnmeiPH70QoaGCQjgwh72Fso
-         JCr4TtH4eWWvJtmigWB0/zrb87RZtlePKIhiH/APM1us7ioyr+u6qfmC6vfPp0bGXYSG
-         EaXfQCgOS0uRofKL9luDSQKtmW9P7Yb6BoiBWNXa2TBC+BQgiB/VeIC5lyPUUGm3pId3
-         RlO5TsR+gkqhR1c4BdPF3VBmj4BelpeEyQCJRB1D4hKvKiQnuiMSs4M5NFwRU7AZsz5y
-         I52A==
-X-Gm-Message-State: AOAM530IhtYbjiTKVxy58lQg2ysY8f0IWkEz1JMWArsAxxqToO91S9MG
-        Eziz/B4yxKulnSs2U9XXYwzNzmiLZkU=
-X-Google-Smtp-Source: ABdhPJxDy7q//uBK9EK/lcQ9h4a/dMMi9ej11sgl909BEOF+gp398rwtS4myrfXHQPjKOxB/CPx7TA==
-X-Received: by 2002:a63:d2:0:b0:3c2:57a7:a11f with SMTP id 201-20020a6300d2000000b003c257a7a11fmr4966660pga.583.1651573993801;
-        Tue, 03 May 2022 03:33:13 -0700 (PDT)
-Received: from localhost.localdomain (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id j2-20020a17090a734200b001d0ec9c93fesm1101476pjs.12.2022.05.03.03.33.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 03:33:13 -0700 (PDT)
-From:   Akira Yokosawa <akiyks@gmail.com>
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/5] docs/ja_JP/SubmittingPatches: Trace changes in English docs, take 1
-Date:   Tue,  3 May 2022 19:24:30 +0900
-Message-Id: <20220503102429.48304-1-akiyks@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 3 May 2022 06:37:52 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1DBC20F6D
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 03:34:19 -0700 (PDT)
+Received: from mail-yw1-f181.google.com ([209.85.128.181]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1N3KDM-1nvQc403O6-010OMa for <linux-kernel@vger.kernel.org>; Tue, 03 May
+ 2022 12:34:18 +0200
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-2f7d19cac0bso174490657b3.13
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 03:34:17 -0700 (PDT)
+X-Gm-Message-State: AOAM530/H8duqrlsNjG2ggiQv49PuEvPiaPyouL5rCVB0JLFXGtDcBAf
+        kfwap7fDUtcS+pCUtH0Ptp5wdC2o+zM8L6Atvc4=
+X-Google-Smtp-Source: ABdhPJzUhd/SRVeuLHKrdLGjDxrwdOOO1gscgt/p427vKURvKahU6VmLi/hh2DlrSJ/efTw+kpU2KUf0BD/9dSUwBjk=
+X-Received: by 2002:a81:5594:0:b0:2f8:f39c:4cfc with SMTP id
+ j142-20020a815594000000b002f8f39c4cfcmr11730580ywb.495.1651574056880; Tue, 03
+ May 2022 03:34:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220502204050.88316-1-nick.hawkins@hpe.com> <20220502204050.88316-4-nick.hawkins@hpe.com>
+In-Reply-To: <20220502204050.88316-4-nick.hawkins@hpe.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 3 May 2022 12:34:00 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a19pe=ehX1CR9RQz6MH=4YmTN9s7aW5LGFOPypDYjckbg@mail.gmail.com>
+Message-ID: <CAK8P3a19pe=ehX1CR9RQz6MH=4YmTN9s7aW5LGFOPypDYjckbg@mail.gmail.com>
+Subject: Re: [PATCH v6 4/8] clocksource/drivers/timer-gxp: Add HPE GXP Timer
+To:     "Hawkins, Nick" <nick.hawkins@hpe.com>
+Cc:     "Verdun, Jean-Marie" <verdun@hpe.com>, nick@hpe.com,
+        Joel Stanley <joel@jms.id.au>, Arnd Bergmann <arnd@arndb.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:QxOKCPXCF4ZeVm8KcSaZ0o3DY4KlpjC3PXU121O6TGMGC1e7iwD
+ HnUcUZSFpTKE2ycjw6ptLUA5C8meOfiGPZVPnnMhIO4Qr7b3GMpYa6aQZC/RebaabPGEx4j
+ NlKQbh8VZmmX/BSJKDcKOrq/ru55XVqtB2BCp9ommga21PGBk7MZxu3fHNHoNS1N8JULEt6
+ ztx+oCUMnM+6YuMKU4Sdg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:4sBHvXa30Wc=:uhDU3lOCbuXV5GL/KOWCJm
+ T00MPZYnCmmiUttgU2XdZ/CNXJSRdCMQacO7EVurdg++0vndMJnBwxrO/R0PjrpxPGXSqIKxB
+ oOuysm/Vz4Kboyg+xpXmfSQHrr/z9hyG7Oim8zqCT3qz0e7NBhQi3MQz5Zy6hxB6YQxw0Fffb
+ L++gq7ZdpTQ6B0qt1Wvr1kfs7KvDjyBdRWcTqYW6KBAcKqfQ74DTZBjQw2GtlotCvn/DpKt3q
+ +V9OnMPEqhXDPSkRtV6whOZvT5Bqu7vUqV46MiMeTjZ9hLbFtZjgt1m5RUtsJ+waO/MNmphbj
+ zJSF0rdtWADU+H4LgGHV4BR6IriAARFbkZXrZp6+MiAjKGHl28afly3Jhn67iQ5EhEsBuhCw+
+ xeiYMp/qMBZjcOG00b8E/7T5bYOrEMrG22q6J2ZxmNL2gwpVRatqNHP4rSH5ujA6Rmz5q+VHv
+ M0KfILhDyemygWRQO4Awj3togfse5lZZ69q+oMVLvGobJzWl1sGuSasC/7gGF1o9+5kYZqYPo
+ LWcxNHEDKomZo7FcLikaKx1+1PPjU51V/Va6jE0Qat5MA7rSAD69xvtwH8+2EmmgWXqwczjGd
+ fO91RniBps5iVqJCBhVLerxFTvIrnZQJFq5IyC1aa6URhOyIr+4ZyFtmM0osfHtyHL0dcIMwy
+ eX3D3v3L7ZMWOnIEspwo7+6GrH6tN7j6uo50xEIgtbvKt/tHgCRwZYYDcIcwkiV/Kc4Y=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Mon, May 2, 2022 at 10:40 PM <nick.hawkins@hpe.com> wrote:
+>
+> +config GXP_TIMER
+> +       bool "GXP timer driver" if COMPILE_TEST
+> +       depends on ARCH_HPE
+> +       default y
 
-This is the first batch of updates attempting to modernize Japanese
-SubmittingPatches.  Conversion to ReST will be done later when the
-corresponding commit doing the conversion is reached.  Pending list
-of commits is quite long (about 90) and this effort is expected to
-produce dozens of series.
+I don't think this does what you intended: with the COMPILE_TEST option,
+you make it possible to disable the driver when ARCH_HPE is set,
+but you don't allow enabling it on other platforms, which is actually the
+point of compile testing.
 
-List of commits for English (then) SubmittingPatches:
+Maybe instead use
 
- - f5039935ac68 ("Documentation: update GregKH links")
- - e52d2e1f25f0 ("Documentation/SubmittingPatches: suggested the use of scripts/get_maintainer.pl")
- - 755727b7fb1e ("Randy has moved")
- - 8543ae1296f6 ("checkpatch: add Suggested-by as a standard signature")
- - 0af5270324cc ("Documentation/SubmittingPatches: Request summaries for commit references")
+config GXP_TIMER
+       bool "GXP timer driver" if COMPILE_TEST && !ARCH_HPE
+       default ARCH_HPE
 
-Note: Commit db12fb833a88 ("Documentation: fix spelling error in
-SubmittingPatches") does not affect Japanese translation.
+Also change the prompt to be more specific and mention HPE,
+as the 'GXP timer' is not a particularly obvious name for random
+users.
 
-        Thanks, Akira
---
-Akira Yokosawa (5):
-  docs/ja_JP/SubmittingPatches: Update GregKH links
-  docs/ja_JP/SubmittingPatches: Suggest the use of
-    scripts/get_maintainer.pl
-  docs/ja_JP/SubmittingPatches: Randy has moved
-  docs/ja_JP/SubmittingPatches: Add Suggested-by as a standard signature
-  docs/ja_JP/SubmittingPatches: Request summaries for commit references
+You probably also need
 
- .../translations/ja_JP/SubmittingPatches      | 36 ++++++++++++++-----
- 1 file changed, 27 insertions(+), 9 deletions(-)
+        select TIMER_OF if OF
 
 
-base-commit: 81c653659d34ec253fba7f5d0f430813fe0f643d
--- 
-2.25.1
+> +/*
+> + * This probe gets called after the timer is already up and running. This will create
+> + * the watchdog device as a child since the registers are shared.
+> + */
+> +
+> +static int gxp_timer_probe(struct platform_device *pdev)
+> +{
+> +       struct platform_device *gxp_watchdog_device;
+> +       struct device *dev = &pdev->dev;
+> +
+> +       if (!gxp_timer) {
+> +               pr_err("Gxp Timer not initialized, cannot create watchdog");
+> +               return -ENOMEM;
+> +       }
+> +
+> +       gxp_watchdog_device = platform_device_alloc("gxp-wdt", -1);
+> +       if (!gxp_watchdog_device) {
+> +               pr_err("Timer failed to allocate gxp-wdt");
+> +               return -ENOMEM;
+> +       }
+> +
+> +       /* Pass the base address (counter) as platform data and nothing else */
+> +       gxp_watchdog_device->dev.platform_data = gxp_timer->counter;
+> +       gxp_watchdog_device->dev.parent = dev;
+> +
+> +       return platform_device_add(gxp_watchdog_device);
+> +}
 
+This looks good to me now.
+
+        Arnd
