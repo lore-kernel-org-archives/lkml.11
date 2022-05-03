@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE0BC41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:10:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 389BAC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:10:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242423AbiECUOI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 16:14:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48618 "EHLO
+        id S242259AbiECUON (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 16:14:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235353AbiECUNm (ORCPT
+        with ESMTP id S236380AbiECUNm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 3 May 2022 16:13:42 -0400
 Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2168140922;
-        Tue,  3 May 2022 13:10:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6EE5D27143;
+        Tue,  3 May 2022 13:10:07 -0700 (PDT)
 Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 9251816D7;
-        Tue,  3 May 2022 23:10:35 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 9251816D7
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 9A53B16DA;
+        Tue,  3 May 2022 23:10:37 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 9A53B16DA
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1651608635;
-        bh=zLhukAHC2GoB4OyffhzcxrjjCB9eEsqKuyWm1zWzpKo=;
+        d=baikalelectronics.ru; s=mail; t=1651608637;
+        bh=zHaHwKz/yCVMvZJtPXeZzX7KArDCiwAc5Mq+USo7pmc=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=RUcU3XG8AypmuaBysNk004Mw3w4uVIiAYvMsRaF5MmCEDuH73CJJs73aToP5Wem7i
-         4+n5mjyBjnjy8yn/ordeo/qSs+YKKOokMvITFOGaLncR8Ua1brUoBvKr+MvDe1Q/4T
-         2yQaGdIWcVRAC6acnjU+RtKlggr85DafPKKPx+NM=
+        b=e4NJ0gWE0usDCwyFRiDo57cUnOpQT5zW9B6KhDrD/VXkUAJyCV9vKUs+qnMqq2Qch
+         5Nnj4LSt9kJMFc/ZBv7fOniNyWfK9Tu20JL9YGcMhU+FbGf7BU05OgnGn7ZaAVc0j0
+         nCxeypGD+OBUzHZcS7NWM/Ke7cASfaykBx3zud60=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 May 2022 23:10:01 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 May 2022 23:10:03 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+        Jens Axboe <axboe@kernel.dk>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-Subject: [PATCH v2 03/23] dt-bindings: ata: ahci-platform: Clarify common AHCI props constraints
-Date:   Tue, 3 May 2022 23:09:18 +0300
-Message-ID: <20220503200938.18027-4-Sergey.Semin@baikalelectronics.ru>
+        Rob Herring <robh+dt@kernel.org>, <linux-ide@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: [PATCH v2 05/23] ata: libahci_platform: Explicitly set rc on devres_alloc failure
+Date:   Tue, 3 May 2022 23:09:20 +0300
+Message-ID: <20220503200938.18027-6-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -52,73 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Indeed in accordance with what is imeplemtned in the AHCI paltform driver
-and the way the AHCI DT nodes are defined in the DT files we can add the
-next AHCI DT properties constraints: AHCI CSR ID is fixed to 'ahci', PHY
-name is fixed to 'sata-phy', AHCI controller can't have more than 32 ports
-by design.
+It's better for readability and maintainability to explicitly assign an
+error number to the variable used then as a return value from the method
+on the cleanup-on-error path. So adding new code in the method we won't
+have to think whether the overridden rc-variable is set afterward in case
+of an error. Saving one line of code doesn't worth it especially seeing
+the rest of the ahci_platform_get_resources() function errors handling
+blocks do explicitly write errno to rc.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-Changelog v2:
-- This is a new patch created after rebasing v1 onto the 5.18-rc3 kernel.
 ---
- .../devicetree/bindings/ata/ahci-common.yaml      | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/ata/ahci-common.yaml b/Documentation/devicetree/bindings/ata/ahci-common.yaml
-index 72e24b246040..70f915748270 100644
---- a/Documentation/devicetree/bindings/ata/ahci-common.yaml
-+++ b/Documentation/devicetree/bindings/ata/ahci-common.yaml
-@@ -31,6 +31,8 @@ properties:
+Changelog v2:
+- Drop rc variable initialization (@Damien)
+---
+ drivers/ata/libahci_platform.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
+index 32495ae96567..f7f9bfcfc164 100644
+--- a/drivers/ata/libahci_platform.c
++++ b/drivers/ata/libahci_platform.c
+@@ -389,7 +389,7 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
+ 	struct ahci_host_priv *hpriv;
+ 	struct clk *clk;
+ 	struct device_node *child;
+-	int i, enabled_ports = 0, rc = -ENOMEM, child_nodes;
++	int i, enabled_ports = 0, rc, child_nodes;
+ 	u32 mask_port_map = 0;
  
-   reg-names:
-     description: CSR space IDs
-+    contains:
-+      const: ahci
+ 	if (!devres_open_group(dev, NULL, GFP_KERNEL))
+@@ -397,8 +397,10 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
  
-   interrupts:
-     description:
-@@ -71,14 +73,13 @@ properties:
-     maxItems: 1
+ 	hpriv = devres_alloc(ahci_platform_put_resources, sizeof(*hpriv),
+ 			     GFP_KERNEL);
+-	if (!hpriv)
++	if (!hpriv) {
++		rc = -ENOMEM;
+ 		goto err_out;
++	}
  
-   phy-names:
--    maxItems: 1
-+    const: sata-phy
+ 	devres_add(dev, hpriv);
  
-   ports-implemented:
-     $ref: '/schemas/types.yaml#/definitions/uint32'
-     description:
-       Mask that indicates which ports the HBA supports. Useful if PI is not
-       programmed by the BIOS, which is true for some embedded SoC's.
--    maximum: 0x1f
- 
- patternProperties:
-   "^sata-port@[0-9a-f]+$":
-@@ -89,8 +90,12 @@ patternProperties:
- 
-     properties:
-       reg:
--        description: AHCI SATA port identifier
--        maxItems: 1
-+        description:
-+          AHCI SATA port identifier. By design AHCI controller can't have
-+          more than 32 ports due to the CAP.NP fields and PI register size
-+          constraints.
-+        minimum: 0
-+        maximum: 31
- 
-       phys:
-         description: Individual AHCI SATA port PHY
-@@ -98,7 +103,7 @@ patternProperties:
- 
-       phy-names:
-         description: AHCI SATA port PHY ID
--        maxItems: 1
-+        const: sata-phy
- 
-       target-supply:
-         description: Power regulator for SATA port target device
 -- 
 2.35.1
 
