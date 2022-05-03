@@ -2,85 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A043C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22AF3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232181AbiECH0U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 03:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39298 "EHLO
+        id S232191AbiECH0u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232186AbiECHZ4 (ORCPT
+        with ESMTP id S232249AbiECH0h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 03:25:56 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1AB127164;
-        Tue,  3 May 2022 00:22:08 -0700 (PDT)
-Received: from mail-yw1-f172.google.com ([209.85.128.172]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1N3KgE-1nuy3Y2gPy-010Hes; Tue, 03 May 2022 09:22:06 +0200
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-2f7b815ac06so171033297b3.3;
-        Tue, 03 May 2022 00:22:06 -0700 (PDT)
-X-Gm-Message-State: AOAM531PW4WfhALUGYWaRQ5GaiKb8wrevqIqQOC+ZkhwdWF101mrKAUN
-        NcsF1AfuAVCwXUZFnINvuZDKarmyUMKW3uFURD8=
-X-Google-Smtp-Source: ABdhPJwPr9q0sZe+e8UxYUbigcUnaa5Xa3a0oSwktBFYt4HYrPBnPD483wlKn2ZH53xnNpxMcJ15XBtdVqESN+RJUXQ=
-X-Received: by 2002:a81:9213:0:b0:2f6:eaae:d22f with SMTP id
- j19-20020a819213000000b002f6eaaed22fmr14551172ywg.249.1651562525321; Tue, 03
- May 2022 00:22:05 -0700 (PDT)
+        Tue, 3 May 2022 03:26:37 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715A6393DB;
+        Tue,  3 May 2022 00:23:05 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Ksryr41Q6z4xR7;
+        Tue,  3 May 2022 17:23:00 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1651562580;
+        bh=sZTsM1OSLdaRyALwSuPxkejmgWLuY/kECFE+3QS64h0=;
+        h=Date:From:To:Cc:Subject:From;
+        b=n1WbPR5u4rggkNOm7EX8bgnju+SIn5G32iYp5uFWcSwsLqCkp1x38Jkv7OPKl6eHU
+         gfHWV3ZfFGzignyqg2isnNevqVa8iXJURavtXNGM27v21DuExxaQAhIaAHEaZzG1Ly
+         kqcCTjtjRHjT7s687zHLh9eNDbo9YxOcQXLD1K+cMsn3PNSTP5V1XWfVZMVATCOmiS
+         NbTdIlTBfG1Ws8iDrZIh6NHQ8+MQPgZ6f46dm803IjiR7xsiv+hm8LZn+zk5dYK6Px
+         YnwolPg9pA2cmfMNIhHO49yMPGuEC3FsxGcucp8bZBuHz9ArQwYMq6W4r3AMD+JZ3q
+         cEWNGlQIK6gOA==
+Date:   Tue, 3 May 2022 17:22:59 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Michael Walle <michael@walle.cc>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warning after merge of the hwmon-staging tree
+Message-ID: <20220503172259.294a15a1@canb.auug.org.au>
 MIME-Version: 1.0
-References: <202205031017.4TwMan3l-lkp@intel.com> <YnCXTPrbLhvfRVDm@e3a974050dc4>
-In-Reply-To: <YnCXTPrbLhvfRVDm@e3a974050dc4>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 3 May 2022 09:21:49 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1xMeLa72YKMufdej6KguDwiSXtZmMqRxOt5B05x_fx3A@mail.gmail.com>
-Message-ID: <CAK8P3a1xMeLa72YKMufdej6KguDwiSXtZmMqRxOt5B05x_fx3A@mail.gmail.com>
-Subject: Re: [PATCH] ARM: dove: fix returnvar.cocci warnings
-To:     kernel test robot <lkp@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-omap <linux-omap@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:KBcmf8L+L6p/whd/P8ba85SiL61sT4pvbWzzB3TTUwYaT4iudsB
- WX/5N7nENNe1TewNk5ab96T2a9ZlV/gizqjJ9QQyArl0Ny9oVqGJjLM7ZdsPGz83iTqbMEK
- U/cpyXVLIYuCJ6RyNjiXW0Tl5XZ8Q5R5l8hAXPQEXjmEvFdWveY2fCBNVS2SNYBihl7CtJD
- iHzLJjA2j+Nbp489PmINg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:iQd+zec01aY=:f5iMHfS5U4pzqZdIp0fqY+
- Y6WdcyOJiGWgqe5lilgTB6y+MjEmPnP3StTreSrVA9T2YpZIECmh458DX0kBTl4q81hpk96o+
- FWiMlQuzHuW/S10Tv4J58XhjJF9sDWMWBvm8jSjlua0u8PLsI7hwobUjarNdYR4QCPLgTnSkd
- Q7kzR8XFq/JOVAQCN4Ku45efxA0a0/bvW/sK0j5+A81JjlMmrQi5u4wjbJkzBVlFnZsIV/wyT
- f3GznbdHwPK2uQluAhYZdaA+sB3VdSpyi82B6Hjf7Nbh2LP/vL+mFg1EgcOGbserp5yh3up/d
- nySq3oe4UgbGGZqpCxXJ832K/7X5E4YSerp1RST6luT34WW8aVvTNyK3Ct8iFFCkbarqx2WoD
- dmlrc7ytFixkTldf5SHuXOYA0VHglBTh9jhgzaRfouD7Z5BbKFjG326u8QEhRK87fD2+Z5Bs0
- 0lCWQSRFnvxv+cGeIC20Z7HEz9YJNA3EPKr36Rkm1EdU9nphzme9rXziHTFbU0/8mkDiidUWV
- 3tv66vAZcx+glMLTEfikIZkHVk+Km50LVUFwqLq8oD8AFyIDUNVe4tP1w/olWO5wVFBLxszFT
- 6QvMuexZfPY7461Lgio7/z/TFMbibgm4P59QsIDeAWO4dWThu9gOPgtqJVjIl0G9VNiRu24H9
- 493j/8AY7FVwu+p9GAk2lnrPgTrOxJJOsByvegxi4ivAxh3dxcPMNuQmoatMQ3K6ZWd4/h+j6
- v3GrlMubPjaqlY19vOFldHutSHblVU61DSGtmePtuSkvf/EBauo2W2HqnMb2fA5HyKoJX20Cs
- wcKaynjoYaT997ZXvxeiqVn3v9fVPBNGJXchUeg7QpewbrQ7nM=
+Content-Type: multipart/signed; boundary="Sig_/UpC=4M6k7ZxZlDU5S/d88Ah";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 3, 2022 at 4:45 AM kernel test robot <lkp@intel.com> wrote:
->
-> From: kernel test robot <lkp@intel.com>
->
-> arch/arm/mach-omap2/dma.c:82:10-16: Unneeded variable: "errata". Return "0" on line 161
->
->
->  Remove unneeded variable used to store return value.
->
-> Generated by: scripts/coccinelle/misc/returnvar.cocci
->
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: kernel test robot <lkp@intel.com>
+--Sig_/UpC=4M6k7ZxZlDU5S/d88Ah
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-I checked the patch, and unfortunately it is wrong, the current code
-needs to stay.
-The problem is the SET_DMA_ERRATA() macro that accesses the
-local 'errata' variable.
+Hi all,
 
-         Arnd
+After merging the hwmon-staging tree, today's linux-next build (htmldocs)
+produced this warning:
+
+Documentation/hwmon/lan966x.rst: WARNING: document isn't included in any to=
+ctree
+
+Introduced by commit
+
+  14ed2cdb02e0 ("hwmon: add driver for the Microchip LAN966x SoC")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/UpC=4M6k7ZxZlDU5S/d88Ah
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJw2FMACgkQAVBC80lX
+0GxF4Qf9GFSUQb29U0npMfBYc5RjDlEBeC6Pfw+zyZBcabk6imkPkv4SB0fNSc7P
+aiUV1ADf89wq/DkWgRkHjIt2bLC8taovG66N6DPlQeqBYWV6sZJr06SNJ8Xrt91e
+dUaltTDxLG0Ggz1vfjIyMjRzDsSJbTmQBEVD6qHBIPXWBamCK+coZy69ukCqx3xW
+FBPlaMFaWX/PLDNzRwl2Dzexo1vy8RIJy1dOrgY1JY1S20eStOi/G0OGsCc1qYi8
+QbuUr+SGjexBPymq6v7U5Pb13ZjmvzMY/phTQomKZ77oxiDnOAbKEDIi9GwOqcDK
+KsyIwvrCkki+EEzc7DTFE7a0xdu2Eg==
+=vwzR
+-----END PGP SIGNATURE-----
+
+--Sig_/UpC=4M6k7ZxZlDU5S/d88Ah--
