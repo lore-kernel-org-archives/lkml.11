@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E03C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 21:47:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16973C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 21:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243256AbiECVuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 17:50:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60876 "EHLO
+        id S243209AbiECVu7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 17:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243153AbiECVui (ORCPT
+        with ESMTP id S243212AbiECVuw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 17:50:38 -0400
+        Tue, 3 May 2022 17:50:52 -0400
 Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A77541983;
-        Tue,  3 May 2022 14:47:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 38F2141F86;
+        Tue,  3 May 2022 14:47:09 -0700 (PDT)
 Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 0DE8816D8;
-        Wed,  4 May 2022 00:47:37 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 0DE8816D8
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 1671916D7;
+        Wed,  4 May 2022 00:47:42 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 1671916D7
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1651614457;
-        bh=NSgZcpitLmUnD3E5qXO0gXVlsROtkgB0JwN8aNPPuX8=;
+        d=baikalelectronics.ru; s=mail; t=1651614462;
+        bh=Pxrs7DK7vxqECv2QPErmbU18NhNkQAvSL78XxW7WIrM=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=VFoZZ/k3kXAIrfwpw0hQdUM09VeIXo/RQDDSubzvtr30ZdORyfQ8UyhR4VZJ3Yku8
-         hyYVPvTt6QtB/q+ow23w5pfiO4wRKVJ1uhZXfQGPkm8pjuX51Nbxwtib0f9cTyFoWQ
-         3NBpCGillrqiC40U8GURKD0DS4gcYPWE5mWNzvg4=
+        b=cBCneDm+zv4ZX2+Gk9JXehXRrao5umUSeVdBdMNJbsehYLUrRsCHqOneJ6FubKgfV
+         Avet4YReaOONtUqokc36CindxKmCZbq4T3mUh7AKGlfrliYpXYbQxNlCMFbrtryJSK
+         yeL1oklS930P8HKF6OSzHKxPv2Hekh0mwDxMlwIA=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 4 May 2022 00:47:03 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 4 May 2022 00:47:08 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Jingoo Han <jingoohan1@gmail.com>,
         Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
@@ -43,9 +43,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
         Rob Herring <robh+dt@kernel.org>, <linux-pci@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 04/17] PCI: dwc: Detect iATU settings after getting "addr_space" resource
-Date:   Wed, 4 May 2022 00:46:25 +0300
-Message-ID: <20220503214638.1895-5-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH v2 08/17] PCI: dwc: Add host de-initialization callback
+Date:   Wed, 4 May 2022 00:46:29 +0300
+Message-ID: <20220503214638.1895-9-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220503214638.1895-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220503214638.1895-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -56,50 +56,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The iATU detection procedure was introduced in the commit 281f1f99cf3a
-("PCI: dwc: Detect number of iATU windows"). A bit later the procedure
-execution was moved to Host/EP-specific methods in the framework of commit
-8bcca2658558 ("PCI: dwc: Move iATU detection earlier"). The later
-modification wasn't done in the most optimal way since the "addr_space"
-CSR region resource doesn't depend on anything detected in the
-dw_pcie_iatu_detect() method. Thus the detection can be postponed to be
-executed after the resource request which can fail and make the detection
-pointless. It will be also helpful for the dw_pcie_ep_init() method
-readability since we are about to add the IP-core version and eDMA module
-(a bit later) detection procedures.
+Seeing the platform-specific DW PCIe host-initialization is performed from
+within the generic dw_pcie_host_init() method by means of the dedicated
+dw_pcie_ops.host_init() callback, there must be declared an antagonist
+which would perform the corresponding cleanups. Let's add such callback
+then. It will be called in the dw_pcie_host_deinit() method and in the
+cleanup-on-error path in the dw_pcie_host_init() function.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-
 ---
+ .../pci/controller/dwc/pcie-designware-host.c | 21 ++++++++++++++-----
+ drivers/pci/controller/dwc/pcie-designware.h  |  1 +
+ 2 files changed, 17 insertions(+), 5 deletions(-)
 
-Changelog v2:
-- This is a new patch added on v2 iteration of the series.
----
- drivers/pci/controller/dwc/pcie-designware-ep.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/pci/controller/dwc/pcie-designware-ep.c b/drivers/pci/controller/dwc/pcie-designware-ep.c
-index 7ad349c32082..c152021d0bf6 100644
---- a/drivers/pci/controller/dwc/pcie-designware-ep.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-ep.c
-@@ -708,8 +708,6 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+index c74b4587b236..bb1c25c32f2d 100644
+--- a/drivers/pci/controller/dwc/pcie-designware-host.c
++++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+@@ -354,13 +354,14 @@ int dw_pcie_host_init(struct pcie_port *pp)
+ 			pp->num_vectors = MSI_DEF_NUM_VECTORS;
+ 		} else if (pp->num_vectors > MAX_MSI_IRQS) {
+ 			dev_err(dev, "Invalid number of vectors\n");
+-			return -EINVAL;
++			ret = -EINVAL;
++			goto err_deinit_host;
  		}
- 	}
  
--	dw_pcie_iatu_detect(pci);
--
- 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "addr_space");
- 	if (!res)
- 		return -EINVAL;
-@@ -717,6 +715,8 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
- 	ep->phys_base = res->start;
- 	ep->addr_size = resource_size(res);
+ 		if (pp->ops->msi_host_init) {
+ 			ret = pp->ops->msi_host_init(pp);
+ 			if (ret < 0)
+-				return ret;
++				goto err_deinit_host;
+ 		} else if (pp->has_msi_ctrl) {
+ 			u32 ctrl, num_ctrls;
  
-+	dw_pcie_iatu_detect(pci);
+@@ -372,8 +373,10 @@ int dw_pcie_host_init(struct pcie_port *pp)
+ 				pp->msi_irq = platform_get_irq_byname_optional(pdev, "msi");
+ 				if (pp->msi_irq < 0) {
+ 					pp->msi_irq = platform_get_irq(pdev, 0);
+-					if (pp->msi_irq < 0)
+-						return pp->msi_irq;
++					if (pp->msi_irq < 0) {
++						ret = pp->msi_irq;
++						goto err_deinit_host;
++					}
+ 				}
+ 			}
+ 
+@@ -381,7 +384,7 @@ int dw_pcie_host_init(struct pcie_port *pp)
+ 
+ 			ret = dw_pcie_allocate_domains(pp);
+ 			if (ret)
+-				return ret;
++				goto err_deinit_host;
+ 
+ 			if (pp->msi_irq > 0)
+ 				irq_set_chained_handler_and_data(pp->msi_irq,
+@@ -434,6 +437,11 @@ int dw_pcie_host_init(struct pcie_port *pp)
+ err_free_msi:
+ 	if (pp->has_msi_ctrl)
+ 		dw_pcie_free_msi(pp);
 +
- 	ep->ib_window_map = devm_kcalloc(dev,
- 					 BITS_TO_LONGS(pci->num_ib_windows),
- 					 sizeof(long),
++err_deinit_host:
++	if (pp->ops->host_deinit)
++		pp->ops->host_deinit(pp);
++
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(dw_pcie_host_init);
+@@ -450,6 +458,9 @@ void dw_pcie_host_deinit(struct pcie_port *pp)
+ 
+ 	if (pp->has_msi_ctrl)
+ 		dw_pcie_free_msi(pp);
++
++	if (pp->ops->host_deinit)
++		pp->ops->host_deinit(pp);
+ }
+ EXPORT_SYMBOL_GPL(dw_pcie_host_deinit);
+ 
+diff --git a/drivers/pci/controller/dwc/pcie-designware.h b/drivers/pci/controller/dwc/pcie-designware.h
+index 1868773ecb91..bca1d3e83636 100644
+--- a/drivers/pci/controller/dwc/pcie-designware.h
++++ b/drivers/pci/controller/dwc/pcie-designware.h
+@@ -200,6 +200,7 @@ enum dw_pcie_device_mode {
+ 
+ struct dw_pcie_host_ops {
+ 	int (*host_init)(struct pcie_port *pp);
++	void (*host_deinit)(struct pcie_port *pp);
+ 	int (*msi_host_init)(struct pcie_port *pp);
+ };
+ 
 -- 
 2.35.1
 
