@@ -2,105 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C43A0C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 02:46:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67AA2C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 02:47:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230194AbiECCtt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 22:49:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35170 "EHLO
+        id S230188AbiECCvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 22:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230179AbiECCts (ORCPT
+        with ESMTP id S229660AbiECCvR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 22:49:48 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB0735864;
-        Mon,  2 May 2022 19:46:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651545976; x=1683081976;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0glE8nzzXqDvLLZUoukgdh79WOnXvu208QqhSBt79JI=;
-  b=MCkwdDBGILoiQtv1lqw67mYoFO6WtWQLt1DmJywFefBOIHH0QcAzywOz
-   ht+93EnKZt8oj6xfE7DZEtsXMt8yUs1T5nuffkIj0CRNAlZSO+r/V8WDc
-   dFER8VobKzu+1hfKPeNkJN0Q2jzFElf6Ez/OkqobFsW34tFk3Lq76aptC
-   H4Cq9PuzQmiss9yq00mUffksX1iIsSTeYGTttqDDRqeD5AEzqGPp0l/UF
-   Tv+FiigvuEmmpRkQkPCfdQ2mgsN5iobY0CCusbIXEY2d9V0kpXjfIuvlF
-   mFm054jKyUDpobGuy0UYeJLkp2n4rpUt7OWj+jTA3vvWMXR9r/CeSrjlm
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="254843575"
-X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
-   d="scan'208";a="254843575"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 19:46:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
-   d="scan'208";a="653090183"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 02 May 2022 19:46:14 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nliYH-000A5V-QF;
-        Tue, 03 May 2022 02:46:13 +0000
-Date:   Tue, 3 May 2022 10:45:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ARM: dove: fix returnvar.cocci warnings
-Message-ID: <YnCXTPrbLhvfRVDm@e3a974050dc4>
-References: <202205031017.4TwMan3l-lkp@intel.com>
+        Mon, 2 May 2022 22:51:17 -0400
+Received: from mail-m975.mail.163.com (mail-m975.mail.163.com [123.126.97.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C330135864;
+        Mon,  2 May 2022 19:47:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=bLBOG
+        DgcmNltK6UF/fMVaVtqnF7C3zMmNOYidlKN9Rk=; b=B1e2Fxc1Zm6MuCdZqEX8F
+        BZFFiFweM51pGDkYTn3vN4Vc62+vzBSRGoMBotMOuhkMtZvUBucXTkbfcz/ADnSU
+        w5nvXLIkUNS0s+aB6UIkl6GrEHZalttD+mFF7cIm99k8XWzHPpVl0bztNoALaGms
+        TRwAE/dMvSD/gtY9TBT4Jo=
+Received: from localhost.localdomain (unknown [112.97.63.58])
+        by smtp5 (Coremail) with SMTP id HdxpCgBX2zgil3BiSChTAg--.9943S2;
+        Tue, 03 May 2022 10:44:52 +0800 (CST)
+From:   Slark Xiao <slark_xiao@163.com>
+To:     mani@kernel.org, quic_hemantk@quicinc.com
+Cc:     gregkh@linuxfoundation.org, loic.poulain@linaro.org,
+        slark_xiao@163.com, bbhatt@codeaurora.org,
+        christophe.jaillet@wanadoo.fr, mhi@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] bus: mhi: host: Add support for Foxconn T99W373 and T99W368
+Date:   Tue,  3 May 2022 10:43:49 +0800
+Message-Id: <20220503024349.4486-1-slark_xiao@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202205031017.4TwMan3l-lkp@intel.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: HdxpCgBX2zgil3BiSChTAg--.9943S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Aw4DWr1ftF4kWF1DKr4xXrb_yoW8Cr4xpF
+        4SvrWjyFWkJF45t3ykA39ruas5uan3Ary3KF1xGw1a9w4qy3yYqrn2gw129FyYv398XFW3
+        tFyDWFyag3WDKFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0p_WlydUUUUU=
+X-Originating-IP: [112.97.63.58]
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBAwb1ZGB0KLK3cgAAsf
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
+Product's enumeration align with previous Foxconn
+SDX55, so T99W373(SDX62)/T99W368(SDX65) would use
+ the same config as Foxconn SDX55.
+Remove fw and edl for this new commit.
 
-arch/arm/mach-omap2/dma.c:82:10-16: Unneeded variable: "errata". Return "0" on line 161
-
-
- Remove unneeded variable used to store return value.
-
-Generated by: scripts/coccinelle/misc/returnvar.cocci
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
 ---
+ drivers/bus/mhi/host/pci_generic.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-head:   9f9b9a2972eb8dcaad09d826c5c6d7488eaca3e6
-commit: 09f6b27d5ddd9ad0ec096d1b0f8decdacc70f0f8 [1066/8035] ARM: dove: multiplatform support
-:::::: branch date: 15 hours ago
-:::::: commit date: 4 weeks ago
+diff --git a/drivers/bus/mhi/host/pci_generic.c b/drivers/bus/mhi/host/pci_generic.c
+index 24c94c23d78b..6fbc5915ea36 100644
+--- a/drivers/bus/mhi/host/pci_generic.c
++++ b/drivers/bus/mhi/host/pci_generic.c
+@@ -371,6 +371,15 @@ static const struct mhi_pci_dev_info mhi_foxconn_sdx55_info = {
+ 	.sideband_wake = false,
+ };
+ 
++static const struct mhi_pci_dev_info mhi_foxconn_sdx65_info = {
++	.name = "foxconn-sdx65",
++	.config = &modem_foxconn_sdx55_config,
++	.bar_num = MHI_PCI_DEFAULT_BAR_NUM,
++	.dma_data_width = 32,
++	.mru_default = 32768,
++	.sideband_wake = false,
++};
++
+ static const struct mhi_channel_config mhi_mv3x_channels[] = {
+ 	MHI_CHANNEL_CONFIG_UL(0, "LOOPBACK", 64, 0),
+ 	MHI_CHANNEL_CONFIG_DL(1, "LOOPBACK", 64, 0),
+@@ -560,6 +569,12 @@ static const struct pci_device_id mhi_pci_id_table[] = {
+ 	/* T99W175 (sdx55), Based on Qualcomm new baseline */
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0bf),
+ 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
++	/* T99W368 (sdx65) */
++	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0d8),
++		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx65_info },
++	/* T99W373 (sdx62) */
++	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0d9),
++		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx65_info },
+ 	/* MV31-W (Cinterion) */
+ 	{ PCI_DEVICE(0x1269, 0x00b3),
+ 		.driver_data = (kernel_ulong_t) &mhi_mv31_info },
+-- 
+2.25.1
 
- arch/arm/mach-omap2/dma.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
---- a/arch/arm/mach-omap2/dma.c
-+++ b/arch/arm/mach-omap2/dma.c
-@@ -79,8 +79,6 @@ static const struct omap_dma_reg reg_map
- 
- static unsigned configure_dma_errata(void)
- {
--	unsigned errata = 0;
--
- 	/*
- 	 * Errata applicable for OMAP2430ES1.0 and all omap2420
- 	 *
-@@ -158,7 +156,7 @@ static unsigned configure_dma_errata(voi
- 	if (cpu_is_omap34xx() && (omap_type() != OMAP2_DEVICE_TYPE_GP))
- 		SET_DMA_ERRATA(DMA_ROMCODE_BUG);
- 
--	return errata;
-+	return 0;
- }
- 
- static const struct dma_slave_map omap24xx_sdma_dt_map[] = {
