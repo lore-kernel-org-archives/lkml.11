@@ -2,118 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 819FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 11:43:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33348C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 11:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234825AbiECLqx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 07:46:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51656 "EHLO
+        id S234835AbiECLr3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 07:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234783AbiECLqw (ORCPT
+        with ESMTP id S234783AbiECLr0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 07:46:52 -0400
-X-Greylist: delayed 400 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 03 May 2022 04:43:17 PDT
-Received: from read.uberspace.de (read.uberspace.de [185.26.156.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68ED91F617
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 04:43:17 -0700 (PDT)
-Received: (qmail 5983 invoked by uid 990); 3 May 2022 11:36:34 -0000
-Authentication-Results: read.uberspace.de;
-        auth=pass (plain)
-From:   Florian Rommel <mail@florommel.de>
-To:     airlied@linux.ie, daniel@ffwll.ch, ray.huang@amd.com,
-        akpm@linux-foundation.org
-Cc:     Felix.Kuehling@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        kernel-janitors@vger.kernel.org, Florian Rommel <mail@florommel.de>
-Subject: [PATCH] mmap locking API: Fix missed mmap_sem references in comments
-Date:   Tue,  3 May 2022 13:33:33 +0200
-Message-Id: <20220503113333.214124-1-mail@florommel.de>
-X-Mailer: git-send-email 2.36.0
+        Tue, 3 May 2022 07:47:26 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CBF19028;
+        Tue,  3 May 2022 04:43:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1651578235;
+  x=1683114235;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ZyYaMPT3VVclWV5fER8SKt1HJ8hGTo2ZrDH3585JNPo=;
+  b=ktxJYlONQ9OiREDch5V/1HXx++AgEunWcbUuoGt6q+6CkepOSFJNtARO
+   u7r3d2/7roNlTDEvbE+YzNW/zcNDzQc4pL70iYQ7fkyi8jrJosFioAacV
+   jIKQ2FV2qaHpZ2/7AcX1gMgkCg8J82XswiZ9xwjMVuBWkALruFeIuM8dc
+   yjN9OlnH9D7lo7IlzSGuw/bVpeyzoiBgolZfzQHHOp4lG/Q3WEKdI7y2l
+   DIwZ/v/ZEeQXkBORNqQ0YQICRa0bgFiRN0GHhf0eaz+UEPB0dZbvMJxG/
+   jsfgpU/7EU6ipLC2Ljn0Ni/pfeSxMDv3ilrkhkoYDtuGTfJrqpyxZ/M0q
+   w==;
+From:   Camel Guo <camel.guo@axis.com>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>
+CC:     Camel Guo <camel.guo@axis.com>, Wolfram Sang <wsa@kernel.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        <linux-hwmon@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@axis.com>
+Subject: [PATCH v4] hwmon: (tmp401) Add OF device ID table
+Date:   Tue, 3 May 2022 13:43:33 +0200
+Message-ID: <20220503114333.456476-1-camel.guo@axis.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Bar: -
-X-Rspamd-Report: R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) BAYES_HAM(-2.999999)
-X-Rspamd-Score: -1.599999
-Received: from unknown (HELO unkown) (::1)
-        by read.uberspace.de (Haraka/2.8.28) with ESMTPSA; Tue, 03 May 2022 13:36:34 +0200
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit c1e8d7c6a7a6 ("mmap locking API: convert mmap_sem comments") missed
-replacing some references of mmap_sem by mmap_lock due to misspelling
-(mm_sem instead of mmap_sem).
+This driver doesn't have of_match_table. This makes the kernel module
+tmp401.ko lack alias patterns (e.g: of:N*T*Cti,tmp411) to match DT node
+of the supported devices hence this kernel module will not be
+automatically loaded.
 
-Signed-off-by: Florian Rommel <mail@florommel.de>
+After adding of_match_table to this driver, the folllowing alias will be
+added into tmp401.ko.
+$ modinfo drivers/hwmon/tmp401.ko
+filename: drivers/hwmon/tmp401.ko
+......
+author:         Hans de Goede <hdegoede@redhat.com>
+alias:          of:N*T*Cti,tmp435C*
+alias:          of:N*T*Cti,tmp435
+alias:          of:N*T*Cti,tmp432C*
+alias:          of:N*T*Cti,tmp432
+alias:          of:N*T*Cti,tmp431C*
+alias:          of:N*T*Cti,tmp431
+alias:          of:N*T*Cti,tmp411C*
+alias:          of:N*T*Cti,tmp411
+alias:          of:N*T*Cti,tmp401C*
+alias:          of:N*T*Cti,tmp401
+......
+
+Fixes: af503716ac14 ("i2c: core: report OF style module alias for devices registered via OF")
+Signed-off-by: Camel Guo <camel.guo@axis.com>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v7.c | 2 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v8.c | 2 +-
- drivers/gpu/drm/ttm/ttm_bo_vm.c                   | 2 +-
- mm/mmap.c                                         | 4 ++--
- 4 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v7.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v7.c
-index 65552bb7d2f2..e83cb1c09610 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v7.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v7.c
-@@ -184,7 +184,7 @@ static int kgd_hqd_load(struct amdgpu_device *adev, void *mqd,
+Notes:
+    v4:
+     - Rewrite commit message due to improper description in old one
+    v3:
+     - Copy commit message from commit 72fc64c68decf119466 ("hwmon: (tmp103)
+       Add OF device ID table")
+     - Add Fixes tag
+    v2:
+     - Put evidence and circumstances in commit message
+
+ drivers/hwmon/tmp401.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/hwmon/tmp401.c b/drivers/hwmon/tmp401.c
+index b86d9df7105d..52c9e7d3f2ae 100644
+--- a/drivers/hwmon/tmp401.c
++++ b/drivers/hwmon/tmp401.c
+@@ -708,10 +708,21 @@ static int tmp401_probe(struct i2c_client *client)
+ 	return 0;
+ }
  
- 	/* read_user_ptr may take the mm->mmap_lock.
- 	 * release srbm_mutex to avoid circular dependency between
--	 * srbm_mutex->mm_sem->reservation_ww_class_mutex->srbm_mutex.
-+	 * srbm_mutex->mmap_lock->reservation_ww_class_mutex->srbm_mutex.
- 	 */
- 	release_queue(adev);
- 	valid_wptr = read_user_wptr(mm, wptr, wptr_val);
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v8.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v8.c
-index 9dc5f2a0cc07..870f352837fc 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v8.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v8.c
-@@ -208,7 +208,7 @@ static int kgd_hqd_load(struct amdgpu_device *adev, void *mqd,
- 
- 	/* read_user_ptr may take the mm->mmap_lock.
- 	 * release srbm_mutex to avoid circular dependency between
--	 * srbm_mutex->mm_sem->reservation_ww_class_mutex->srbm_mutex.
-+	 * srbm_mutex->mmap_lock->reservation_ww_class_mutex->srbm_mutex.
- 	 */
- 	release_queue(adev);
- 	valid_wptr = read_user_wptr(mm, wptr, wptr_val);
-diff --git a/drivers/gpu/drm/ttm/ttm_bo_vm.c b/drivers/gpu/drm/ttm/ttm_bo_vm.c
-index 5b324f245265..38119311284d 100644
---- a/drivers/gpu/drm/ttm/ttm_bo_vm.c
-+++ b/drivers/gpu/drm/ttm/ttm_bo_vm.c
-@@ -102,7 +102,7 @@ static unsigned long ttm_bo_io_mem_pfn(struct ttm_buffer_object *bo,
-  * @bo: The buffer object
-  * @vmf: The fault structure handed to the callback
-  *
-- * vm callbacks like fault() and *_mkwrite() allow for the mm_sem to be dropped
-+ * vm callbacks like fault() and *_mkwrite() allow for the mmap_lock to be dropped
-  * during long waits, and after the wait the callback will be restarted. This
-  * is to allow other threads using the same virtual memory space concurrent
-  * access to map(), unmap() completely unrelated buffer objects. TTM buffer
-diff --git a/mm/mmap.c b/mm/mmap.c
-index d7e120ad5825..7f7d982721b9 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -1285,7 +1285,7 @@ static int anon_vma_compatible(struct vm_area_struct *a, struct vm_area_struct *
-  * the same as 'old', the other will be the new one that is trying
-  * to share the anon_vma.
-  *
-- * NOTE! This runs with mm_sem held for reading, so it is possible that
-+ * NOTE! This runs with mmap_lock held for reading, so it is possible that
-  * the anon_vma of 'old' is concurrently in the process of being set up
-  * by another page fault trying to merge _that_. But that's ok: if it
-  * is being set up, that automatically means that it will be a singleton
-@@ -1299,7 +1299,7 @@ static int anon_vma_compatible(struct vm_area_struct *a, struct vm_area_struct *
-  *
-  * We also make sure that the two vma's are compatible (adjacent,
-  * and with the same memory policies). That's all stable, even with just
-- * a read lock on the mm_sem.
-+ * a read lock on the mmap_lock.
-  */
- static struct anon_vma *reusable_anon_vma(struct vm_area_struct *old, struct vm_area_struct *a, struct vm_area_struct *b)
- {
++static const struct of_device_id __maybe_unused tmp4xx_of_match[] = {
++	{ .compatible = "ti,tmp401", },
++	{ .compatible = "ti,tmp411", },
++	{ .compatible = "ti,tmp431", },
++	{ .compatible = "ti,tmp432", },
++	{ .compatible = "ti,tmp435", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, tmp4xx_of_match);
++
+ static struct i2c_driver tmp401_driver = {
+ 	.class		= I2C_CLASS_HWMON,
+ 	.driver = {
+ 		.name	= "tmp401",
++		.of_match_table = of_match_ptr(tmp4xx_of_match),
+ 	},
+ 	.probe_new	= tmp401_probe,
+ 	.id_table	= tmp401_id,
+
+base-commit: 38d741cb70b30741c0e802cbed7bd9cf4fd15fa4
 -- 
-2.36.0
+2.30.2
 
