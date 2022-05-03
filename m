@@ -2,102 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D926C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 16:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 16:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239870AbiECQzT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 12:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46568 "EHLO
+        id S239887AbiECQ5Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 12:57:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236361AbiECQzR (ORCPT
+        with ESMTP id S233719AbiECQ5N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 12:55:17 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B479B2A260
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 09:51:44 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id m23so22730447ljb.8
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 09:51:44 -0700 (PDT)
+        Tue, 3 May 2022 12:57:13 -0400
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE262C110;
+        Tue,  3 May 2022 09:53:40 -0700 (PDT)
+Received: by mail-ot1-x32b.google.com with SMTP id 31-20020a9d0822000000b00605f1807664so8955857oty.3;
+        Tue, 03 May 2022 09:53:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fQQ4M4gauRgvjGonaZz8I2LViquH62bNFXTFnYfFmTQ=;
-        b=ZZ79PTvSiDix/BT4/4BoV+H6PAAni2xSl2bjFp4DgWFtS9ryzY8pV9lWjf47cE1vt/
-         zhSi0WFHtNS22XehNn4RxeoPYQY4DuLZ5cNGUb+2JAlUhk1DPffdt31zGBUpHubSHe0L
-         lXMbpa2lOnhtnfKl8xwne8VDfa23amnXkKbh4=
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=zA84vWARKvdZGoHpmEmoay8CyFxLOyVVP3HiM+T2sbI=;
+        b=ItRJ32KI75VE8T7AZA/VYalA55l8vdvH2W6aaVZrpfkmjn/yAWta3OnDBGJJUNJHQd
+         jN6vb7IFnXo6tb5GL1M7aWCNRsTcQnicfP7WpyahlayjO/YU9M8G8dskmP8lj95UZVw1
+         hctc672evZrYBx0UgL2o8T2J3T8Qp52y65y1gTtrm5XtoKw7BLqEa6SEChiTo7vOvBR6
+         rOmS7EqK+Is9A0PxCpBzeibY/gr328ZE3zUz9TGGhDsgFIr4IkHqSChIfuI7Nb1PPa1k
+         7+sHniY2fQaNhcMTRCmqU0dXyLaC6khbCf/ieYPIqe0HTb+DD66Zcg+DqVSZdOl0Vf/V
+         EDkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fQQ4M4gauRgvjGonaZz8I2LViquH62bNFXTFnYfFmTQ=;
-        b=ipLP8o+f+PvWOsL6ED+eD5dkPBCL29masgndF5Xa+iwkMNxBoNECmWfHJ8QQwaHcug
-         jiaZaOnbtNUkIGjpArut6d89cXpGGGRdUeWcoTyD6wY/I9oUYjvs9ZSI5k2Bodj4D5sQ
-         TmWDVZd4EkqKxfQVIfUijmHnVqdWimAG8l2d6aQFuIYLTXQzQpxjL4mrhdVOX8QIsQ1X
-         fji+kzqXmdH4fEU7BaLyzA/ndDw/IRMZukGnI2frKHOtaXgSnV0GJyExBPGHXo8Ops46
-         YgKIUF6bEXDC0Qsk3DoRDICEBO0Vh71r2s7/jGloouFSu+k/rjvl+F1n1KcXWX7p8JSB
-         0RIg==
-X-Gm-Message-State: AOAM531RWavb9YM/4cK+Gk6u+7ZgbgfYo1PJofQFz0Vw2z25CvCl2VyR
-        sl2WpP2RpMvml7XXgUwlIrpfJR33PSIwO4iy
-X-Google-Smtp-Source: ABdhPJx/2zHwYD40X2zQgd5C5TWEdPGYtY9kQg+izTqgW1Ly60QEh0DkeJcbuA8+pLMp34iqfWlyvg==
-X-Received: by 2002:a05:651c:b0d:b0:24f:4ff1:6b23 with SMTP id b13-20020a05651c0b0d00b0024f4ff16b23mr8489193ljr.420.1651596703112;
-        Tue, 03 May 2022 09:51:43 -0700 (PDT)
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com. [209.85.167.43])
-        by smtp.gmail.com with ESMTPSA id c26-20020ac244ba000000b0047255d210eesm985375lfm.29.2022.05.03.09.50.45
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=zA84vWARKvdZGoHpmEmoay8CyFxLOyVVP3HiM+T2sbI=;
+        b=CK45Jb/cdEtIlDGw+wE1ZfJFEmo5icf6429J5XnQJj/tepPFxYDbv271tgZb+3nQSb
+         5TiG+Qgjj41TAWfFRAG8bmIE0L102LFBgpIvn5u+2B5sVx4iqIwmNGUooHxhO8fzQPw5
+         DQ21dIrwjhOaqUs1bgE5dqqge7b9jo0p4m05oD4nqp6ld6iAL5xnvwAJPEg/6I5+7222
+         1lg+wjzrOjbIsFn6K9N1IFkfVCSiApdVWemChSwDT2mxxYLGdvDHDStw8ORVG41yYrcU
+         qfKI7joiNQJlLoKvPadFW7L8yMmN5cgqaRaFhhOHUKefbToxHgSJzLtOsktYJOy/SB6Z
+         ulbw==
+X-Gm-Message-State: AOAM533xynR75sLHGMXjZydIJPa47NqMKZz9KAaa+c4borIIrmyoTAgP
+        9/vbwbjwrQo1GvOpkC7g14Q+JRCQgaLIoQ==
+X-Google-Smtp-Source: ABdhPJxZBHwm+TE77pQeUp1Mgc+316/kXgVxtVccMyjZXMe224WqQG6lXJ68YahH61W3HoZTpozTGQ==
+X-Received: by 2002:a9d:129:0:b0:606:1a26:b128 with SMTP id 38-20020a9d0129000000b006061a26b128mr3692590otu.314.1651596819862;
+        Tue, 03 May 2022 09:53:39 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 1-20020a9d0c01000000b006060322127fsm4108965otr.79.2022.05.03.09.53.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 09:51:09 -0700 (PDT)
-Received: by mail-lf1-f43.google.com with SMTP id x17so31284327lfa.10
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 09:50:45 -0700 (PDT)
-X-Received: by 2002:a05:6512:6cb:b0:472:5e24:de05 with SMTP id
- u11-20020a05651206cb00b004725e24de05mr9332378lff.542.1651596636487; Tue, 03
- May 2022 09:50:36 -0700 (PDT)
+        Tue, 03 May 2022 09:53:39 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <d88523a8-a240-915d-9ae7-54b2277e424a@roeck-us.net>
+Date:   Tue, 3 May 2022 09:53:37 -0700
 MIME-Version: 1.0
-References: <20220426145445.2282274-1-agruenba@redhat.com> <CAHk-=wi7o+fHYBTuCQQdHD112YHQtO21Y3+wxNYypjdo8feKFg@mail.gmail.com>
- <CAHc6FU48681X8aUK+g7UUN7q5b6rkVBzTP7h_zbE4XqZYAiw3g@mail.gmail.com>
- <CAHk-=wjMB1-xCOCBtsSMmQuFV9G+vNyCY1O_LsoqOd=0QS4yYg@mail.gmail.com>
- <CAHc6FU5Bag5W2t79+WzUq=NibtEF+7z6=jyNCkLMMp9Yqvpmqw@mail.gmail.com>
- <CAHk-=whaz-g_nOOoo8RRiWNjnv2R+h6_xk2F1J4TuSRxk1MtLw@mail.gmail.com>
- <CAHc6FU5654k7QBU97g_Ubj8cJEWuA_bXPuXOPpBBYoXVPMJG=g@mail.gmail.com>
- <CAHk-=wgSYSNc5sF2EVxhjbSc+c4LTs90aYaK2wavNd_m2bUkGg@mail.gmail.com>
- <CAHc6FU69E4ke4Xg3zQ2MqjLbfM65D9ZajdY5MRDLN0azZOGmVQ@mail.gmail.com>
- <CAHk-=whQxvMvty8SjiGMh+gM4VmCYvqn6EAwmrDXJaHT2Aa+UA@mail.gmail.com>
- <CAHk-=wicJdoCjPLu7FhaErr6Z3UaW820U2b+F-8P4qwSFUZ0mg@mail.gmail.com>
- <CAHc6FU7GkXLkns5PONLvsSi6HB+rjaNSyFeQFS034tKL-JueMw@mail.gmail.com>
- <CAHk-=wg4ypnZUA5BOHAF1miKvOhW2yQSruuBKNXMDR=dTmp+ww@mail.gmail.com>
- <CAHc6FU6VgQDO7HT5f4S_4f=9hczKGRDQ6SbQ5kNHMi4i-6rxVA@mail.gmail.com>
- <CAHk-=whL74iP6v2P+OafGO0H72ag4wt42k+Kc_01boLP8aqUNQ@mail.gmail.com>
- <CAHc6FU77KGn76B4ieu9Tn895deK-1yV4y=8ou4gTfUf=7C-4XQ@mail.gmail.com>
- <CAHk-=whfP+m6--NtUeOm5XTuhBGHkyoqd00ypW6v3RkzMFLU8g@mail.gmail.com> <CAHc6FU4JeMHUrJbbTwEsMiPPyinQpX9fW-hz21GdjgVsvYRZkw@mail.gmail.com>
-In-Reply-To: <CAHc6FU4JeMHUrJbbTwEsMiPPyinQpX9fW-hz21GdjgVsvYRZkw@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 3 May 2022 09:50:20 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wipNXcy2qRF5d+oqO-LN+bR7Bmz+Vtvcapo_WigOzLirA@mail.gmail.com>
-Message-ID: <CAHk-=wipNXcy2qRF5d+oqO-LN+bR7Bmz+Vtvcapo_WigOzLirA@mail.gmail.com>
-Subject: Re: [GIT PULL] gfs2 fix
-To:     Andreas Gruenbacher <agruenba@redhat.com>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        cluster-devel <cluster-devel@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Content-Language: en-US
+To:     "Hawkins, Nick" <nick.hawkins@hpe.com>,
+        "Verdun, Jean-Marie" <verdun@hpe.com>,
+        "joel@jms.id.au" <joel@jms.id.au>, "arnd@arndb.de" <arnd@arndb.de>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>
+References: <20220502204050.88316-1-nick.hawkins@hpe.com>
+ <20220502204050.88316-3-nick.hawkins@hpe.com>
+ <c0262cf4-dfeb-c9a9-bcb2-24af006e6d4d@roeck-us.net>
+ <PH0PR84MB1718D28F1846F54DB5766E6D88C09@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v6 3/8] watchdog: hpe-wdt: Introduce HPE GXP Watchdog
+In-Reply-To: <PH0PR84MB1718D28F1846F54DB5766E6D88C09@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 3, 2022 at 9:41 AM Andreas Gruenbacher <agruenba@redhat.com> wrote:
->
-> That's happening in iomap_file_buffered_write() and iomap_iter():
->
->         while ((ret = iomap_iter(&iter, ops)) > 0)
->                 iter.processed = iomap_write_iter(&iter, i);
->
-> Here, iomap_write_iter() returns how much progress it has made, which
-> is stored in iter.processed, and iomap_iter() -> iomap_iter_advance()
-> then updates iter.pos and iter.len based on iter.processed.
+On 5/3/22 09:22, Hawkins, Nick wrote:
+> On 5/2/22 13:40, nick.hawkins@hpe.com wrote:
+>>> +#include <linux/of_address.h>
+>>> +#include <linux/of_platform.h>
+> 
+>> Where are those of_ includes used ?
+> 
+> They were not used anymore with latest changes. Thank you for pointing this out. I will remember to check in the future for each new commit to double check this.
+> 
+>>> +#define WDT_MAX_TIMEOUT_MS	655000
+> 
+>> Shouldn't that be 655350 ?
+> 
+> Yes it should be. I will correct this.
+> 
+>>> +static int gxp_wdt_set_timeout(struct watchdog_device *wdd,
+>>> +			       unsigned int timeout)
+>>> +{
+>>> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
+>>> +	u32 actual;
+>>> +
+>>> +	wdd->timeout = timeout;
+>>> +	actual = min(timeout, wdd->max_hw_heartbeat_ms / 1000);
+>>> +	writew(SECS_TO_WDOG_TICKS(actual), drvdata->base + GXP_WDT_CNT_OFS);
+> 
+>> First, the accuracy of actual is reduced to 1 second, then SECS_TO_WDOG_TICKS() multiplies the result with 100, meaning the actual accuracy is 10ms. Why not just use 10 ms ?
+> 
+>> 	actual = min(timeout * 100, wdd->max_hw_heartbeat_ms / 10);
+>> 	writew(actual, drvdata->base + GXP_WDT_CNT_OFS);
+> 
+> I have replaced the mention code with what you recommended above.
+> 
+>>> +
+>>> +static int gxp_restart(struct watchdog_device *wdd, unsigned long action,
+>>> +		       void *data)
+>>> +{
+>>> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
+>>> +
+>>> +	writew(10, drvdata->base + GXP_WDT_CNT_OFS);
+> 
+>> Doesn't that translate to 100 ms timeout ? Why such a large reboot delay instead of writing 1 ?
+> 
+> This has been changed to 1.
+> 
+>>> +	gxp_wdt_enable_reload(drvdata);
+>>> +	mdelay(100);
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int gxp_wdt_probe(struct platform_device *pdev) {
+>>> +	struct device *dev = &pdev->dev;
+>>> +	struct gxp_wdt *drvdata;
+>>> +	int err;
+>>> +	u8 val;
+>>> +
+>>> +	drvdata = devm_kzalloc(dev, sizeof(struct gxp_wdt), GFP_KERNEL);
+>>> +	if (!drvdata)
+>>> +		return -ENOMEM;
+>>> +
+>>> +	drvdata->base = (void __iomem *)dev->platform_data;
+> 
+>> I'd personaly prefer if the address was passed as resource.
+> 
+> Just to clarify for my understanding are you asking that in the device structure I use the "void *platform_data" to pass "struct *resource"? If I am incorrect here can you elaborate on what you would like to be done? Based on feedback in review for the device tree; the watchdog is being created as a child to the timer. Therefore the conclusion reached was there should not be a gxp-wdt listed in the device tree files. I took this implementation based on what I found in ixp4xx_wdt.c.
+> 
 
-Ahh. I even had that file open in my editor in another window, but missed it.
+One bad deed tends to multiply.
 
-So much for that theory.
+No, I didn't ask to pass a struct resource as platform data.
+That would be no different to the current code. Resources
+can be added to a platform device using
+platform_device_add_resources(), and the platform driver
+can then use platform_get_resource() to use it. This
+would make it independent of a "private" mechanism.
 
-              Linus
+Thanks,
+Guenter
