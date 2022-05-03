@@ -2,109 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 330A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:33:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8180CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:36:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236251AbiECNhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 09:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55188 "EHLO
+        id S236240AbiECNkB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 09:40:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234955AbiECNhD (ORCPT
+        with ESMTP id S230367AbiECNj4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 09:37:03 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35257338BD
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 06:33:31 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E221C1042;
-        Tue,  3 May 2022 06:33:30 -0700 (PDT)
-Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DFC813F774;
-        Tue,  3 May 2022 06:33:28 -0700 (PDT)
-Date:   Tue, 3 May 2022 14:33:22 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Frederic Weisbecker <frederic@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Phil Auld <pauld@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Yu Liao <liaoyu15@huawei.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Uladzislau Rezki <uladzislau.rezki@sony.com>,
-        Joel Fernandes <joel@joelfernandes.org>
-Subject: Re: [PATCH 10/21] context_tracking: Take idle eqs entrypoints over
- RCU
-Message-ID: <YnEvIhNVOEDyS6/A@lakrids>
-References: <20220503100051.2799723-1-frederic@kernel.org>
- <20220503100051.2799723-11-frederic@kernel.org>
- <YnEL23pd9TDOFvYZ@FVFF77S0Q05N>
- <20220503114225.GA2799075@lothringen>
+        Tue, 3 May 2022 09:39:56 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1078A24598;
+        Tue,  3 May 2022 06:36:23 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 86FD492009C; Tue,  3 May 2022 15:36:21 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 8082392009B;
+        Tue,  3 May 2022 14:36:21 +0100 (BST)
+Date:   Tue, 3 May 2022 14:36:21 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Arnd Bergmann <arnd@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        "open list:CAN NETWORK DRIVERS" <linux-can@vger.kernel.org>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        "open list:AX.25 NETWORK LAYER" <linux-hams@vger.kernel.org>
+Subject: Re: [RFC v2 21/39] net: add HAS_IOPORT dependencies
+In-Reply-To: <867e70df01fc938abf93ffa15a3f1989a8fb136b.camel@linux.ibm.com>
+Message-ID: <alpine.DEB.2.21.2205031359490.64520@angie.orcam.me.uk>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>  <20220429135108.2781579-36-schnelle@linux.ibm.com>  <alpine.DEB.2.21.2205012324130.9383@angie.orcam.me.uk> <867e70df01fc938abf93ffa15a3f1989a8fb136b.camel@linux.ibm.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220503114225.GA2799075@lothringen>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 01:42:25PM +0200, Frederic Weisbecker wrote:
-> On Tue, May 03, 2022 at 12:02:51PM +0100, Mark Rutland wrote:
-> > Hi Frederic,
+On Tue, 3 May 2022, Niklas Schnelle wrote:
+
+> >  The driver works just fine with MMIO where available, so if `inb'/`outb' 
+> > do get removed, then only parts that rely on port I/O need to be disabled.  
+> > In fact there's already such provision there in drivers/net/fddi/defxx.c 
+> > for TURBOchannel systems (CONFIG_TC), which have no port I/O space either:
 > > 
-> > On Tue, May 03, 2022 at 12:00:40PM +0200, Frederic Weisbecker wrote:
-> > > The RCU dynticks counter is going to be merged into the context tracking
-> > > subsystem. Start with moving the idle extended quiescent states
-> > > entrypoints to context tracking. For now those are dumb redirections to
-> > > existing RCU calls.
+> > #if defined(CONFIG_EISA) || defined(CONFIG_PCI)
+> > #define dfx_use_mmio bp->mmio
+> > #else
+> > #define dfx_use_mmio true
+> > #endif
 > > 
-> > I was a bit confused looking at this, because that redirection only exists for
-> > CONFIG_CONTEXT_TRACKING, and is empty otherwise.
+> > so I guess it's just the conditional that will have to be changed to:
 > > 
-> > I see this patch makes TREE_RCU select CONTEXT_TRACKING, which means that
-> > works. Since that also means building the rest of the context tracking code, I
-> > think it'd be worth mentioning that in the commit message.
-> 
-> Not exactly, it only builds a minimal version of CONTEXT_TRACKING, which maps
-> to roughly the vanilla RCU-idle code.
-> 
-> The user tracking part (which is the vanilla CONTEXT_TRACKING) now becomes
-> CONFIG_CONTEXT_TRACKING_USER
+> > #ifdef CONFIG_HAS_IOPORT
+> > 
+> > replacing the current explicit bus dependency list.  The compiler will 
+> > then optimise away all the port I/O stuff (though I suspect dummy function 
+> > declarations may be required for `inb'/`outb', etc.).
+[...]
+> With dfx_use_mmio changed as you propose above things compile on s390
+> which previously ran into missing (now __compile_error()) inl() via
+> dfx_port_read_long() -> dfx_inl() ->  inl().
 
-Ah, sorry. That makes sense to me now!
+ Great, thanks for checking!  And I note referring `__compile_error' is 
+roughly equivalent to a dummy declaration, so you've got that part sorted.
 
-> > Do all architectures which can use TREE_RCU today already support context
-> > tracking? If not, do those work by default?
-> 
-> No need to, the old context tracking becomes CONFIG_CONTEXT_TRACKING_USER
-> which is not needed by TREE_RCU.
-> 
-> Ok you're right, this is all very confusing :o)
-> 
-> Let's clarify this, I'm going to do the following on the next version:
-> 
-> * The current CONFIG_CONTEXT_TRACKING becomes CONFIG_CONTEXT_TRACKING_USER.
->   This part needs support from the architecture.
-> 
-> * The RCU-idle functions that have been moved to context tracking will become
->   CONFIG_CONTEXT_TRACKING_IDLE. This part doesn't need support from the
->   architecture and will be set by TREE_RCU.
-> 
-> Would that look clearer?
+> Looking at the other uses of dfx_use_mmio I notice however that in
+> dfx_get_bars(), inb() actually gets called when dfx_use_mmio is true.
+> This happens if dfx_bus_eisa is also true. Now that variable is just
+> the cached result of DFX_BUS_EISA(dev) which is defined to 0 if
+> CONFIG_EISA is unset. I'm not 100% sure if going through a local
+> variable is still considered trivial enough dead code elimination, at
+> least it works for me™. I did also check the GCC docs and they
+> explicitly say that __attribute__(error) is supposed to be used when
+> dead code elimination gets rid of the error paths.
 
-I think so, yes!
+ Yeah, dead code elimination is supposed to handle such cases.  The local
+automatic variable is essentially a syntactic feature not to use the same 
+expression inline over and over throughout a function (for clarity the 
+variable should probably be declared `const', but that is not essential) 
+and it is up to the compiler whether to reuse the value previously 
+calculated or to re-evaluate the expression.
 
-It would also help if the prior commit message could be explicit about
-the end result: After the Kconfig rework both
-CONFIG_CONTEXT_TRACKING_USER and CONFIG_CONTEXT_TRACKING exist, but
-CONFIG_CONTEXT_TRACKING will only used to decide whether to build object
-files with common context tracking logic.
+> I think we also need a "depends on HAS_IOPORT" for "config HAVE_EISA"
+> just as I'm adding for "config ISA".
 
-Thanks,
-Mark.
+ Oh absolutely!  There's the slot-specific port I/O space that is used to 
+identify EISA option cards in device discovery, so no EISA device will 
+ever work without port I/O.  Have a look at `decode_eisa_sig' in 
+drivers/eisa/eisa-bus.c for the very obvious code.  Note that some ISA 
+cards can be configured to appear as EISA devices as well (I have a 3c509B 
+Ethernet NIC set up that way).
+
+  Maciej
