@@ -2,218 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3AC0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 14:03:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B559C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 14:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236589AbiECOHA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 10:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50364 "EHLO
+        id S236615AbiECOHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 10:07:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235030AbiECOG4 (ORCPT
+        with ESMTP id S235030AbiECOHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 10:06:56 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CBB91B79E;
-        Tue,  3 May 2022 07:03:24 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4Kt1rp48Bmz9sT9;
-        Tue,  3 May 2022 16:03:22 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id RhOOOXYqV50a; Tue,  3 May 2022 16:03:22 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4Kt1rp30xWz9sT8;
-        Tue,  3 May 2022 16:03:22 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4DB408B77B;
-        Tue,  3 May 2022 16:03:22 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id VIfoSnOpUyFD; Tue,  3 May 2022 16:03:22 +0200 (CEST)
-Received: from [192.168.202.20] (unknown [192.168.202.20])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 2975E8B763;
-        Tue,  3 May 2022 16:03:21 +0200 (CEST)
-Message-ID: <8e1e4a9c-6ef8-a1a7-ad1f-84b5bf2a0b7d@csgroup.eu>
-Date:   Tue, 3 May 2022 16:03:20 +0200
+        Tue, 3 May 2022 10:07:16 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE1961EAD3
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 07:03:42 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id p4so12895257qtq.12
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 07:03:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rEA/WO8Mvi9mkyG5kqELFWFIRU5FfjNv5FVVN5OBPRg=;
+        b=MDQvYf3gHtS8HMjUwWzCiC1Fxsu4angXku7mUGw6MlSIkca0gx06FMTNx90ziQLTSJ
+         HZ9lhSQHa/EVC5868dkxuWAOvyZvMsoYkrz21ar6/5K54iB4gG3yLII8mizfC5izOGhg
+         klbEw4Uz6lDilG7A1yQKqjoJs5bxmZCVvTYE186FFYeDLqZ0QtGW3vB5k8Q3rJrS+q4f
+         kHyhTreXc46uS3u+ahxQtcx7/4fegW8vGCjGHNhJYSJ33xjwcCwj9jk1OsGlGhKhRVWA
+         F3/o+H3gGosX+5Bds/YwlxtRVNephxXBMJSflC65Dd2DQw10H50pNPKWfwebZDRhySKA
+         zSFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rEA/WO8Mvi9mkyG5kqELFWFIRU5FfjNv5FVVN5OBPRg=;
+        b=rasq2DHTTKpvoAxtYHa7aMumwu8lh+Z1XHWb2YY5gFgQc4AnUUfVu/EU1zL1x0GLOY
+         Mi6adytLJcpfXB4b5gIh2HoEG4GzjD88xqllFshuE5VzswtRCTSqK4PAmcPdgPGVWM9C
+         Oz/FNkKvRWKdwgO47Gh2SkiaodFD6s58AQs21vdkB61EfrQkWKqbGkVp0v7WVd/Ufat+
+         moGi9jsKvrVoCrcIyHNNmOZe9QzeM1JyPh4ZSdVkAsNxK3UjTOAWCSuNRVPnFyhnqeMF
+         z+CIAQl9gT5SvvbQemKh1lJ91ei8kxo1r7i0B4QEARxuPnAmn9R27A8Ir/GMmSVYosBi
+         TVGw==
+X-Gm-Message-State: AOAM530h+IMkQSfjx84q2czkvmeiYHvUAQkBQblyFEJd76sz2OusrRI/
+        sOrb02k6J/oPLY98YtQco0TDhQ==
+X-Google-Smtp-Source: ABdhPJw7Ve6j3sQ7hOzQ1wudzvX76tu9J1CZFDESduQg/nFoUbXy7Wi6oqzqRoi1RsCGOF4EtrRjFQ==
+X-Received: by 2002:ac8:580e:0:b0:2f3:7ff9:39c6 with SMTP id g14-20020ac8580e000000b002f37ff939c6mr14863406qtg.434.1651586621658;
+        Tue, 03 May 2022 07:03:41 -0700 (PDT)
+Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id j6-20020a05620a146600b0069fc13ce217sm5811708qkl.72.2022.05.03.07.03.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 07:03:41 -0700 (PDT)
+Date:   Tue, 3 May 2022 10:03:39 -0400
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Linus Walleij' <linus.walleij@linaro.org>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>
+Subject: Re: [RFC v2 10/39] gpio: add HAS_IOPORT dependencies
+Message-ID: <YnE2OxAsXmXSB87L@fedora>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+ <20220429135108.2781579-19-schnelle@linux.ibm.com>
+ <Ymv3DnS1vPMY8QIg@fedora>
+ <f006229ae056d4cdcf57fc5722a695ad4c257182.camel@linux.ibm.com>
+ <YmwGLrh4U+pVJo0m@fedora>
+ <CACRpkdaha37y-ZNSqYSbf=TvsJNcvbH1Y=N0JkVCewB-Lvf81Q@mail.gmail.com>
+ <c3a3cdd99d4645e2bbbe082808cbb2a5@AcuMS.aculab.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [next] powerpc: multiple definition of `____cacheline_aligned';
- sound/core/oss/pcm_oss.o:(.bss+0x40): first defined here
-Content-Language: fr-FR
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        lkft-triage@lists.linaro.org, Peter Collingbourne <pcc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Baoquan He <bhe@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        aul Mackerras <paulus@samba.org>,
-        Christoph Hellwig <hch@lst.de>
-References: <CA+G9fYvSqtsOMEiL7_kffPKnnO-Snhe2cup6g3qRngiwRO+RfA@mail.gmail.com>
- <e3c8b2bf-b55d-4c2c-a1cf-d5e9941e26b0@csgroup.eu>
-In-Reply-To: <e3c8b2bf-b55d-4c2c-a1cf-d5e9941e26b0@csgroup.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="qkJkToKVV3ZYwUlC"
+Content-Disposition: inline
+In-Reply-To: <c3a3cdd99d4645e2bbbe082808cbb2a5@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+--qkJkToKVV3ZYwUlC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Le 03/05/2022 à 15:10, Christophe Leroy a écrit :
-> 
-> 
-> Le 29/04/2022 à 16:45, Naresh Kamboju a écrit :
->> Following powerpc builds failed on Linux next-20220428 and next-20220429.
->>
->> Regressions found on powerpc:
->>     - gcc-11-ppc64e_defconfig
->>     - gcc-10-ppc64e_defconfig
->>     - gcc-9-ppc64e_defconfig
->>     - gcc-8-ppc64e_defconfig
->>     - clang-14-ppc64e_defconfig
->>     - clang-nightly-ppc64e_defconfig
->>     - clang-13-ppc64e_defconfig
->>
->>
->> Build error:
->> -------------
->> Error: Section .bss not empty in prom_init.c
->> make[3]: *** [arch/powerpc/kernel/Makefile:191:
->> arch/powerpc/kernel/prom_init_check] Error 1
->> make[3]: Target '__build' not remade because of errors.
->> make[2]: *** [scripts/Makefile.build:595: arch/powerpc/kernel] Error 2
->> make[2]: Target '__build' not remade because of errors.
->> make[1]: *** [Makefile:1996: arch/powerpc] Error 2
->> powerpc64le-linux-gnu-ld: sound/core/oss/pcm_plugin.o:(.bss+0x0):
->> multiple definition of `____cacheline_aligned';
->> sound/core/oss/pcm_oss.o:(.bss+0x40): first defined here
->> make[4]: *** [scripts/Makefile.build:530: 
->> sound/core/oss/snd-pcm-oss.o] Error 1
->> make[4]: Target '__build' not remade because of errors.
->> make[3]: *** [scripts/Makefile.build:595: sound/core/oss] Error 2
->> powerpc64le-linux-gnu-ld: sound/core/seq/seq_clientmgr.o:(.bss+0x900):
->> multiple definition of `____cacheline_aligned';
->> sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
->> powerpc64le-linux-gnu-ld: sound/core/seq/seq_memory.o:(.bss+0x0):
->> multiple definition of `____cacheline_aligned';
->> sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
->> powerpc64le-linux-gnu-ld: sound/core/seq/seq_queue.o:(.bss+0x140):
->> multiple definition of `____cacheline_aligned';
->> sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
->> powerpc64le-linux-gnu-ld: sound/core/seq/seq_fifo.o:(.bss+0x0):
->> multiple definition of `____cacheline_aligned';
->> sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
->> powerpc64le-linux-gnu-ld: sound/core/seq/seq_timer.o:(.bss+0x0):
->> multiple definition of `____cacheline_aligned';
->> sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
->> powerpc64le-linux-gnu-ld: sound/core/seq/seq_system.o:(.bss+0x0):
->> multiple definition of `____cacheline_aligned';
->> sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
->> powerpc64le-linux-gnu-ld: sound/core/seq/seq_ports.o:(.bss+0x0):
->> multiple definition of `____cacheline_aligned';
->> sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
->> powerpc64le-linux-gnu-ld: sound/core/seq/seq_info.o:(.bss+0x40):
->> multiple definition of `____cacheline_aligned';
->> sound/core/seq/seq_lock.o:(.bss+0x0): first defined here
->> make[4]: *** [scripts/Makefile.build:530: sound/core/seq/snd-seq.o] 
->> Error 1
->> make[4]: Target '__build' not remade because of errors.
->>
->>
->> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
->>
->>
->> steps to reproduce:
->> -------------------
->> # To install tuxmake on your system globally:
->> # sudo pip3 install -U tuxmake
->>
->> tuxmake --runtime podman --target-arch powerpc --toolchain gcc-11
->> --kconfig ppc64e_defconfig
->>
->> -- 
->> Linaro LKFT
->> https://lkft.linaro.org
->>
->> [1] https://builds.tuxbuild.com/28Sn15hB2la1PweieGMLrUdbFMQ/
-> 
-> Bisected to:
-> 
-> 366e7b61ca1f115d38138236467068d8aacabcbc is the first bad commit
-> commit 366e7b61ca1f115d38138236467068d8aacabcbc
-> Author: Peter Collingbourne <pcc@google.com>
-> Date:   Fri Apr 29 14:42:51 2022 -0700
-> 
->      printk: stop including cache.h from printk.h
-> 
->      An inclusion of cache.h in printk.h was added in 2014 in commit
->      c28aa1f0a847 ("printk/cache: mark printk_once test variable
->      __read_mostly") in order to bring in the definition of 
-> __read_mostly.  The
->      usage of __read_mostly was later removed in commit 3ec25826ae33 
-> ("printk:
->      Tie printk_once / printk_deferred_once into .data.once for reset") 
-> which
->      made the inclusion of cache.h unnecessary, so remove it.
-> 
->      We have a small amount of code that depended on the inclusion of 
-> cache.h
->      from printk.h; fix that code to include the appropriate header.
-> 
->      This fixes a circular inclusion on arm64 (linux/printk.h -> 
-> linux/cache.h
->      -> asm/cache.h -> linux/kasan-enabled.h -> linux/static_key.h ->
->      linux/jump_label.h -> linux/bug.h -> asm/bug.h -> linux/printk.h) that
->      would otherwise be introduced by the next patch.
-> 
->      Build tested using {allyesconfig,defconfig} x {arm64,x86_64}.
-> 
->      Link: 
-> https://linux-review.googlesource.com/id/I8fd51f72c9ef1f2d6afd3b2cbc875aa4792c1fba 
-> 
->      Link: 
-> https://lkml.kernel.org/r/20220427195820.1716975-1-pcc@google.com
->      Signed-off-by: Peter Collingbourne <pcc@google.com>
->      Cc: Alexander Potapenko <glider@google.com>
->      Cc: Andrey Konovalov <andreyknvl@gmail.com>
->      Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
->      Cc: Catalin Marinas <catalin.marinas@arm.com>
->      Cc: David Rientjes <rientjes@google.com>
->      Cc: Dmitry Vyukov <dvyukov@google.com>
->      Cc: Eric W. Biederman <ebiederm@xmission.com>
->      Cc: Herbert Xu <herbert@gondor.apana.org.au>
->      Cc: Hyeonggon Yoo <42.hyeyoo@gmail.com>
->      Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
->      Cc: Kees Cook <keescook@chromium.org>
->      Cc: Pekka Enberg <penberg@kernel.org>
->      Cc: Roman Gushchin <roman.gushchin@linux.dev>
->      Cc: Vlastimil Babka <vbabka@suse.cz>
->      Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-> 
->   arch/arm64/include/asm/mte-kasan.h | 1 +
->   arch/arm64/include/asm/percpu.h    | 1 +
->   arch/csky/include/asm/processor.h  | 2 +-
->   drivers/firmware/smccc/kvm_guest.c | 1 +
->   include/linux/printk.h             | 1 -
->   kernel/bpf/bpf_lru_list.h          | 1 +
->   6 files changed, 5 insertions(+), 2 deletions(-)
+On Tue, May 03, 2022 at 01:08:04PM +0000, David Laight wrote:
+> From: Linus Walleij
+> > Sent: 01 May 2022 22:56
+> >=20
+> > On Fri, Apr 29, 2022 at 5:37 PM William Breathitt Gray
+> > <william.gray@linaro.org> wrote:
+> > > On Fri, Apr 29, 2022 at 04:46:00PM +0200, Niklas Schnelle wrote:
+> >=20
+> > > > Good question. As far as I can see most (all?) of these have "select
+> > > > ISA_BUS_API" which is "def_bool ISA". Now "config ISA" seems to
+> > > > currently be repeated in architectures and doesn't have an explicit
+> > > > HAS_IOPORT dependency (it maybe should have one). But it does only =
+make
+> > > > sense on architectures with HAS_IOPORT set.
+> > >
+> > > There is such a thing as ISA DMA, but you'll still need to initialize
+> > > the device via the IO Port bus first, so perhaps setting HAS_IOPORT f=
+or
+> > > "config ISA" is the right thing to do: all ISA devices are expected to
+> > > communicate in some way via ioport.
+> >=20
+> > Adding that dependency seems like the right solution to me.
+>=20
+> I think it all depends on what HAS_IOPORT is meant to mean and
+> how portable kernel binaries need to be.
+>=20
+> x86 is (probably) the only architecture that actually has 'in'
+> and 'out' instructions - but that doesn't mean that some other
+> cpu (and I mean cpu+pcb not architecture) have the ability to
+> generate 'IO' bus cycles on a specific physical bus.
+>=20
+> While the obvious case is a physical address window that generates
+> PCI(e) IO cycles from normal memory cycles it isn't the only one.
+>=20
+> I've used sparc cpu systems that have pcmcia card slots.
+> These are pretty much ISA and the drivers might expect to
+> access port 0x300 (etc) - certainly that would be right on x86.
+>=20
+> In this case is isn't so much that the ISA_BUS depends on support
+> for in/out but that presence of the ISA bus provides the required
+> in/out support.
 
+That's true, it does seem somewhat backwards to have a depends on line
+when the bus is really just providing the support for devices that want
+to use it rather than requiring it. Do you think a HAVE_IOPORT line
+should be added independently for each driver instead of adding it to
+ISA_BUS?
 
-I think you need to fix all files that use ____cacheline_aligned without 
-including linux/cache.h
+> Now, maybe, the drivers should be using some ioremap variant and
+> then calling ioread8() rather than directly calling inb().
+> But that seems orthogonal to this changeset.
+>=20
+> 	David
+>=20
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1=
+ 1PT, UK
+> Registration No: 1397386 (Wales)
 
-You can locate them with:
+Using ioremap() does have the benefit of making it easier to reuse the
+code for some of these PC104 drivers with their PCI device variants; the
+ioread8() calls and such can stay the same and we just initialize to the
+proper address during probe. I plan to look into this in the future
+then.
 
-	git grep -L linux/cache.h `git grep -l ____cacheline_aligned `
+William Breathitt Gray
 
+--qkJkToKVV3ZYwUlC
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Christophe
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCYnE2NgAKCRC1SFbKvhIj
+K1ziAQC/Gcd4KmfP+1GLpIrE5Gy3ocse41ufgCdCXVkLTjgj2QEA4Mr46B97PGjA
+9gDCAjBNMj+K03gxZel1wfWWyw4bZwQ=
+=cAd7
+-----END PGP SIGNATURE-----
+
+--qkJkToKVV3ZYwUlC--
