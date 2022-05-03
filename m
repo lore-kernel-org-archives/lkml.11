@@ -2,597 +2,327 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68069C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 14:40:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 371CAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 14:40:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237224AbiECOnf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 10:43:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36976 "EHLO
+        id S237245AbiECOoG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 10:44:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237204AbiECOnc (ORCPT
+        with ESMTP id S237204AbiECOoC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 10:43:32 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB13F35A92;
-        Tue,  3 May 2022 07:39:58 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id t16so13525826qtr.9;
-        Tue, 03 May 2022 07:39:58 -0700 (PDT)
+        Tue, 3 May 2022 10:44:02 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419A32F027
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 07:40:28 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id n10so16455350ejk.5
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 07:40:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V0jzBpg9roTe7BBwPN9eMkTB1fJj3skMOYpgRpVlT6g=;
-        b=JNDuk7qDjsdLd6SEP1KNxNh62bY4L86arO13ezzQpCYHPpG+70HO4BmxgZH5sSlCL0
-         CtRFUGiqJoLuIvVnKq83ESD0Op0HTyFUPhOVGO6gZl0gUVm/+Iz6B0dUoNBKiOzmspCk
-         kkgMsyUF9Qrb4Cbix1UyoMQXlKD8MmI4UCjqzmjg4ZaztCEtfuLlz7+QXuqQlHCSBtzJ
-         gMft2L4yPFtgqUirHofQ1Uc3A39gxRU/8WhYVBCJvRfA5Cac/fzPGRHR1/4LIwKrTJpo
-         Y9dl9Ah+mqc1NYqanswcO2IQSE9TCcg6CTFNW8Zj43SOzAq+jIuWztj9njvnMlyNsX12
-         a4Og==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=T7KD58LLGLoFWa1xXxvp0DQeF4I0gKOPKSSTJE1ESIQ=;
+        b=r2joUbDnOfo04iaxwxKpn34xLPcue03BKA2xcR5i6N7cXrYk8Rp+cHm+ylEj63RZ7g
+         YpFFjyP8UeUmqalv1YTMVlSARi5ZFXr9TbF8X8oeR0NBj4Hhs7smfuO81RHuPMnIXYRf
+         zKzq7mrmCVczsefNa6APBEA52mivnPWENS3N5kqDum5p4JCY0nXPDiIUyRzJmYBZXmz6
+         LgCZg2m2o2Gg0SRfSigRTbB2pz5oIU3B5PJ/Tu7u7xq1VjIuTRsSjz6VN4cfe3n6X4lg
+         n9DQ1KzazDTcWYkcmCGvMi0FDb1ckLs3KarUQu2Mo0tpSTajVmZuZtMF8kPXPulH/cXC
+         aTkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V0jzBpg9roTe7BBwPN9eMkTB1fJj3skMOYpgRpVlT6g=;
-        b=zyGK0K1q1YE9uG6yCfcQcV4NcKgD6vlqBLqJXcibhqD0/9ZZdLT40lb5w7mGpmnqU6
-         g0dxa/SyFGkQatw1uXNigSGuuzhv6oFVmFLlQwVW1QbyiQIPRQ7uG2APzauGXROUbH19
-         Qi/TcTkK60H+0QhcmK1MvQVfiSsbdjTD3H00Q4mL6swsN1Z7QKvI4tRsz/P2Q13KsWHe
-         ozXEVs5EzTRAuYckbD9vwqciZt4/rSU9rr5UQsEHpEM9ZcPIS/UW8fHlcbBhQ15912df
-         KQlOIcFXFu+3rU+o9RJvFulgt4+O1cQca8JiYsCRqOzxVvyj/WwqvobxGwFOyJL9ic86
-         N63g==
-X-Gm-Message-State: AOAM533NfT8+XUqRSaA2gZzicuZ6F3rwEsyjauKDkZAbtzR2aXmive8q
-        AoHt3Hi0rdSO/ZfuqisK9ZSyEeOJmDqKXuZnLh187uIDodSkUA==
-X-Google-Smtp-Source: ABdhPJzdt3vCZ36Tw3Wwn3f53hel8lm55FD5zb58pkcTDoCHC8jd0dfsRk3vUwdgQBrUqK0cwQcMkq1ISMx91RJ+ToE=
-X-Received: by 2002:ac8:5cc7:0:b0:2f3:5996:7667 with SMTP id
- s7-20020ac85cc7000000b002f359967667mr14953801qta.2.1651588797601; Tue, 03 May
- 2022 07:39:57 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=T7KD58LLGLoFWa1xXxvp0DQeF4I0gKOPKSSTJE1ESIQ=;
+        b=ioUfjLt5OjFdE+kkmb2OawLi4mEvR/n7yld0IGBJEyRCA7isbSORktwccJ5prlVPQ4
+         B2GUb42sV3RLG9ioiym4hIGE4c1n7V+C9pljD14sEwusjXKykh4WnIyQkn2lwnCMEtNu
+         isj9zS0bjH5737O83kyE3wXNBl+kp82idR1QwckgOF9UTjI6kml7XIFZbe9vCNHLTJQq
+         Sol+SeoddYpzl8q39cMMVGaD+4szPk9tVDW8iuuVlirQesJxCGl8ugY+cpbGX8IKaX3m
+         fAiAwip8YfJnOd40uciWOfd4/ljOzrgDUPeKey/UkbDr33h9UX8BWyJ56BJYwLOBBxDF
+         xYWg==
+X-Gm-Message-State: AOAM530KTzR5+8G8AUByF/LIXgx0Yw+Pq4M1rVD9uYXiMpu9a5m4O0cz
+        6FZfyk6QbpK3OKT4m4m3ZrRUwQ==
+X-Google-Smtp-Source: ABdhPJzUyOBnA5pwtFQm/3gpADNDDdDrjOagJfn2AvJ5rgaqlRv3q7PRI9wdbo+5IzmEMk/kzkE2Rg==
+X-Received: by 2002:a17:907:1c0f:b0:6f3:edd8:85d5 with SMTP id nc15-20020a1709071c0f00b006f3edd885d5mr15468515ejc.397.1651588826696;
+        Tue, 03 May 2022 07:40:26 -0700 (PDT)
+Received: from [192.168.0.203] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id gz19-20020a170907a05300b006f3ef214ddasm4612992ejc.64.2022.05.03.07.40.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 07:40:26 -0700 (PDT)
+Message-ID: <10770ff5-c9b1-7364-4276-05fa0c393d3b@linaro.org>
+Date:   Tue, 3 May 2022 16:40:24 +0200
 MIME-Version: 1.0
-References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
-In-Reply-To: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
-From:   Amir Goldstein <amir73il@gmail.com>
-Date:   Tue, 3 May 2022 17:39:46 +0300
-Message-ID: <CAOQ4uxim+JmFbXPQcasELDEgRDP-spdPtJrLuhvSiyxErSUkvw@mail.gmail.com>
-Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
-To:     Miklos Szeredi <miklos@szeredi.hu>
-Cc:     linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Dave Chinner <david@fromorbit.com>,
-        "Theodore Ts'o" <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Christian Brauner <brauner@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        LSM <linux-security-module@vger.kernel.org>,
-        Ian Kent <raven@themaw.net>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian@brauner.io>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: Aw: Re: [RFC v1] dt-bindings: net: dsa: convert binding for
+ mediatek switches
+Content-Language: en-US
+To:     Frank Wunderlich <frank-w@public-files.de>,
+        Greg Ungerer <gerg@kernel.org>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Cc:     Frank Wunderlich <linux@fw-web.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220502153238.85090-1-linux@fw-web.de>
+ <d29637f8-87ff-b5f0-9604-89b51a2ba7c1@linaro.org>
+ <trinity-cda3b94f-8556-4b83-bc34-d2c215f93bcd-1651587032669@3c-app-gmx-bap25>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <trinity-cda3b94f-8556-4b83-bc34-d2c215f93bcd-1651587032669@3c-app-gmx-bap25>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 3, 2022 at 3:23 PM Miklos Szeredi <miklos@szeredi.hu> wrote:
->
-> This is a simplification of the getvalues(2) prototype and moving it to the
-> getxattr(2) interface, as suggested by Dave.
->
-> The patch itself just adds the possibility to retrieve a single line of
-> /proc/$$/mountinfo (which was the basic requirement from which the fsinfo
-> patchset grew out of).
->
-> But this should be able to serve Amir's per-sb iostats, as well as a host of
-> other cases where some statistic needs to be retrieved from some object.  Note:
-> a filesystem object often represents other kinds of objects (such as processes
-> in /proc) so this is not limited to fs attributes.
->
-> This also opens up the interface to setting attributes via setxattr(2).
->
-> After some pondering I made the namespace so:
->
-> : - root
-> bar - an attribute
-> foo: - a folder (can contain attributes and/or folders)
->
-> The contents of a folder is represented by a null separated list of names.
->
-> Examples:
->
-> $ getfattr -etext -n ":" .
-> # file: .
-> :="mnt:\000mntns:"
->
-> $ getfattr -etext -n ":mnt:" .
-> # file: .
-> :mnt:="info"
->
-> $ getfattr -etext -n ":mnt:info" .
-> # file: .
-> :mnt:info="21 1 254:0 / / rw,relatime - ext4 /dev/root rw\012"
->
-> $ getfattr -etext -n ":mntns:" .
-> # file: .
-> :mntns:="21:\00022:\00024:\00025:\00023:\00026:\00027:\00028:\00029:\00030:\00031:"
->
-> $ getfattr -etext -n ":mntns:28:" .
-> # file: .
-> :mntns:28:="info"
->
-> Comments?
->
+On 03/05/2022 16:10, Frank Wunderlich wrote:
+> Hi,
+> 
+> thank you for first review.
+> 
+>> Gesendet: Dienstag, 03. Mai 2022 um 14:05 Uhr
+>> Von: "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
+>> Betreff: Re: [RFC v1] dt-bindings: net: dsa: convert binding for mediatek switches
+>>
+>> On 02/05/2022 17:32, Frank Wunderlich wrote:
+>>> From: Frank Wunderlich <frank-w@public-files.de>
+>>>
+>>> Convert txt binding to yaml binding for Mediatek switches.
+>>>
+>>> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+>>> ---
+>>>  .../devicetree/bindings/net/dsa/mediatek.yaml | 435 ++++++++++++++++++
+>>>  .../devicetree/bindings/net/dsa/mt7530.txt    | 327 -------------
+>>>  2 files changed, 435 insertions(+), 327 deletions(-)
+>>>  create mode 100644 Documentation/devicetree/bindings/net/dsa/mediatek.yaml
+>>>  delete mode 100644 Documentation/devicetree/bindings/net/dsa/mt7530.txt
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek.yaml
+>>> new file mode 100644
+>>> index 000000000000..c1724809d34e
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek.yaml
+>>
+>> Specific name please, so previous (with vendor prefix) was better:
+>> mediatek,mt7530.yaml
+> 
+> ok, named it mediatek only because mt7530 is only one possible chip and driver handles 3 different "variants".
+> 
+>>> @@ -0,0 +1,435 @@
+>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>>
+>> You should CC previous contributors and get their acks on this. You
+>> copied here a lot of description.
+> 
+> added 3 Persons that made commits to txt before to let them know about this change
+> 
+> and yes, i tried to define at least the phy-mode requirement as yaml-depency, but failed because i cannot match
+> compatible in subnode.
 
-I like that :)
+I don't remember such syntax.
 
-It should be noted that while this API mandates text keys,
-it does not mandate text values, so for example, sb iostats could be
-exported as text or as binary struct, or as individual text/binary records or
-all of the above.
+(...)
 
-We can relive this sort of discussion for every property that we add. Fun!
+> 
+>>> if defined, indicates that either MT7530 is the part
+>>> +      on multi-chip module belong to MT7623A has or the remotely standalone
+>>> +      chip as the function MT7623N reference board provided for.
+>>> +
+>>> +  reset-gpios:
+>>> +    description: |
+>>> +      Should be a gpio specifier for a reset line.
+>>> +    maxItems: 1
+>>> +
+>>> +  reset-names:
+>>> +    description: |
+>>> +      Should be set to "mcm".
+>>> +    const: mcm
+>>> +
+>>> +  resets:
+>>> +    description: |
+>>> +      Phandle pointing to the system reset controller with
+>>> +      line index for the ethsys.
+>>> +    maxItems: 1
+>>> +
+>>> +required:
+>>> +  - compatible
+>>> +  - reg
+>>
+>> What about address/size cells?
+> 
+> you're right even if they are const to a value they need to be set
+> 
+>>> +
+>>> +allOf:
+>>> +  - $ref: "dsa.yaml#"
+>>> +  - if:
+>>> +      required:
+>>> +        - mediatek,mcm
+>>
+>> Original bindings had this reversed.
+> 
+> i know, but i think it is better readable and i will drop the else-part later.
+> Driver supports optional reset ("mediatek,mcm" unset and without reset-gpios)
+> as this is needed if there is a shared reset-line for gmac and switch like on R2 Pro.
+> 
+> i left this as separate commit to be posted later to have a nearly 1:1 conversion here.
 
-Folks interested in this discussion are welcome to join the Zoom
-discussion on LSFMM tomorrow, Wed at 11AM PDT:
-https://zoom.us/j/99394450657?pwd=ZHE2TzdXV2MzWE9yVnpLYzJNZDBuUT09
+Ah, I missed that actually your syntax is better. No need to
+reverse/negate and the changes do not have to be strict 1:1.
 
-Folks who did not get an invite and would like to participate, please
-email me in private.
+> 
+>>> +    then:
+>>> +      required:
+>>> +        - resets
+>>> +        - reset-names
+>>> +    else:
+>>> +      required:
+>>> +        - reset-gpios
+>>> +
+>>> +  - if:
+>>> +      required:
+>>> +        - interrupt-controller
+>>> +    then:
+>>> +      required:
+>>> +        - "#interrupt-cells"
+>>
+>> This should come from dt schema already...
+> 
+> so i should drop (complete block for interrupt controller)?
 
-Thanks,
-Amir.
+The interrupts you need. What I mean, you can skip requirement of cells.
+
+> 
+>>> +        - interrupts
+>>> +
+>>> +  - if:
+>>> +      properties:
+>>> +        compatible:
+>>> +          items:
+>>> +            - const: mediatek,mt7530
+>>> +    then:
+>>> +      required:
+>>> +        - core-supply
+>>> +        - io-supply
+>>> +
+>>> +
+>>> +patternProperties:
+>>> +  "^ports$":
+>>
+>> It''s not a pattern, so put it under properties, like regular property.
+> 
+> can i then make the subnodes match? so the full block will move above required between "mediatek,mcm" and "reset-gpios"
+
+Yes, subnodes stay with patternProperties.
+
+> 
+>   ports:
+>     type: object
+> 
+>     patternProperties:
+>       "^port@[0-9]+$":
+>         type: object
+>         description: Ethernet switch ports
+> 
+>         properties:
+>           reg:
+>             description: |
+>               Port address described must be 5 or 6 for CPU port and from 0 to 5 for user ports.
+> 
+>         unevaluatedProperties: false
+> 
+>         allOf:
+>           - $ref: dsa-port.yaml#
+>           - if:
+> ....
+> 
+> basicly this "ports"-property should be required too, right?
+
+Previous binding did not enforce it, I think, but it is reasonable to
+require ports.
+
+> 
+> 
+>>> +    type: object
+>>> +
+>>> +    patternProperties:
+>>> +      "^port@[0-9]+$":
+>>> +        type: object
+>>> +        description: Ethernet switch ports
+>>> +
+>>> +        $ref: dsa-port.yaml#
+>>
+>> This should go to allOf below.
+> 
+> see above
+> 
+>>> +
+>>> +        properties:
+>>> +          reg:
+>>> +            description: |
+>>> +              Port address described must be 6 for CPU port and from 0 to 5 for user ports.
+>>> +
+>>> +        unevaluatedProperties: false
+>>> +
+>>> +        allOf:
+>>> +          - if:
+>>> +              properties:
+>>> +                label:
+>>> +                  items:
+>>> +                    - const: cpu
+>>> +            then:
+>>> +              required:
+>>> +                - reg
+>>> +                - phy-mode
+>>> +
+>>> +unevaluatedProperties: false
+>>> +
+>>> +examples:
+>>> +  - |
+>>> +    mdio0 {
+>>
+>> Just mdio
+> 
+> ok
+> 
+>>> +        #address-cells = <1>;
+>>> +        #size-cells = <0>;
+>>> +        switch@0 {
+>>> +            compatible = "mediatek,mt7530";
+>>> +            #address-cells = <1>;
+>>> +            #size-cells = <0>;
+>>> +            reg = <0>;
+>>> +
+>>> +            core-supply = <&mt6323_vpa_reg>;
+>>> +            io-supply = <&mt6323_vemc3v3_reg>;
+>>> +            reset-gpios = <&pio 33 0>;
+>>
+>> Use GPIO flag define/constant.
+> 
+> this example seems to be taken from bpi-r2 (i had taken it from the txt). In dts for this board there are no
+> constants too.
+> 
+> i guess
+> include/dt-bindings/gpio/gpio.h:14:#define GPIO_ACTIVE_HIGH 0
+> 
+> for 33 there seem no constant..all other references to pio node are with numbers too and there seem no binding
+> header defining the gpio pins (only functions in include/dt-bindings/pinctrl/mt7623-pinfunc.h)
+
+ok, then my comment
 
 
->
-> ---
->  fs/Makefile            |    2
->  fs/mount.h             |    8 +
->  fs/namespace.c         |   15 ++-
->  fs/pnode.h             |    2
->  fs/proc_namespace.c    |   15 ++-
->  fs/values.c            |  242 +++++++++++++++++++++++++++++++++++++++++++++++++
->  fs/xattr.c             |   16 ++-
->  include/linux/values.h |   11 ++
->  8 files changed, 295 insertions(+), 16 deletions(-)
->
-> --- a/fs/Makefile
-> +++ b/fs/Makefile
-> @@ -16,7 +16,7 @@ obj-y :=      open.o read_write.o file_table.
->                 pnode.o splice.o sync.o utimes.o d_path.o \
->                 stack.o fs_struct.o statfs.o fs_pin.o nsfs.o \
->                 fs_types.o fs_context.o fs_parser.o fsopen.o init.o \
-> -               kernel_read_file.o remap_range.o
-> +               kernel_read_file.o remap_range.o values.o
->
->  ifeq ($(CONFIG_BLOCK),y)
->  obj-y +=       buffer.o direct-io.o mpage.o
-> --- a/fs/mount.h
-> +++ b/fs/mount.h
-> @@ -148,3 +148,11 @@ static inline bool is_anon_ns(struct mnt
->  }
->
->  extern void mnt_cursor_del(struct mnt_namespace *ns, struct mount *cursor);
-> +
-> +struct mount *mnt_list_next(struct mnt_namespace *ns, struct list_head *p);
-> +extern void namespace_lock_read(void);
-> +extern void namespace_unlock_read(void);
-> +extern int show_mountinfo_root(struct seq_file *m, struct vfsmount *mnt,
-> +                              struct path *root);
-> +extern bool is_path_reachable(struct mount *, struct dentry *,
-> +                             const struct path *root);
-> --- a/fs/namespace.c
-> +++ b/fs/namespace.c
-> @@ -1332,9 +1332,7 @@ struct vfsmount *mnt_clone_internal(cons
->         return &p->mnt;
->  }
->
-> -#ifdef CONFIG_PROC_FS
-> -static struct mount *mnt_list_next(struct mnt_namespace *ns,
-> -                                  struct list_head *p)
-> +struct mount *mnt_list_next(struct mnt_namespace *ns, struct list_head *p)
->  {
->         struct mount *mnt, *ret = NULL;
->
-> @@ -1351,6 +1349,7 @@ static struct mount *mnt_list_next(struc
->         return ret;
->  }
->
-> +#ifdef CONFIG_PROC_FS
->  /* iterator; we want it to have access to namespace_sem, thus here... */
->  static void *m_start(struct seq_file *m, loff_t *pos)
->  {
-> @@ -1507,6 +1506,16 @@ static inline void namespace_lock(void)
->         down_write(&namespace_sem);
->  }
->
-> +void namespace_lock_read(void)
-> +{
-> +       down_read(&namespace_sem);
-> +}
-> +
-> +void namespace_unlock_read(void)
-> +{
-> +       up_read(&namespace_sem);
-> +}
-> +
->  enum umount_tree_flags {
->         UMOUNT_SYNC = 1,
->         UMOUNT_PROPAGATE = 2,
-> --- a/fs/pnode.h
-> +++ b/fs/pnode.h
-> @@ -50,7 +50,5 @@ void mnt_set_mountpoint(struct mount *,
->  void mnt_change_mountpoint(struct mount *parent, struct mountpoint *mp,
->                            struct mount *mnt);
->  struct mount *copy_tree(struct mount *, struct dentry *, int);
-> -bool is_path_reachable(struct mount *, struct dentry *,
-> -                        const struct path *root);
->  int count_mounts(struct mnt_namespace *ns, struct mount *mnt);
->  #endif /* _LINUX_PNODE_H */
-> --- a/fs/proc_namespace.c
-> +++ b/fs/proc_namespace.c
-> @@ -132,9 +132,9 @@ static int show_vfsmnt(struct seq_file *
->         return err;
->  }
->
-> -static int show_mountinfo(struct seq_file *m, struct vfsmount *mnt)
-> +int show_mountinfo_root(struct seq_file *m, struct vfsmount *mnt,
-> +                       struct path *root)
->  {
-> -       struct proc_mounts *p = m->private;
->         struct mount *r = real_mount(mnt);
->         struct super_block *sb = mnt->mnt_sb;
->         struct path mnt_path = { .dentry = mnt->mnt_root, .mnt = mnt };
-> @@ -152,7 +152,7 @@ static int show_mountinfo(struct seq_fil
->         seq_putc(m, ' ');
->
->         /* mountpoints outside of chroot jail will give SEQ_SKIP on this */
-> -       err = seq_path_root(m, &mnt_path, &p->root, " \t\n\\");
-> +       err = seq_path_root(m, &mnt_path, root, " \t\n\\");
->         if (err)
->                 goto out;
->
-> @@ -164,7 +164,7 @@ static int show_mountinfo(struct seq_fil
->                 seq_printf(m, " shared:%i", r->mnt_group_id);
->         if (IS_MNT_SLAVE(r)) {
->                 int master = r->mnt_master->mnt_group_id;
-> -               int dom = get_dominating_id(r, &p->root);
-> +               int dom = get_dominating_id(r, root);
->                 seq_printf(m, " master:%i", master);
->                 if (dom && dom != master)
->                         seq_printf(m, " propagate_from:%i", dom);
-> @@ -194,6 +194,13 @@ static int show_mountinfo(struct seq_fil
->         return err;
->  }
->
-> +static int show_mountinfo(struct seq_file *m, struct vfsmount *mnt)
-> +{
-> +       struct proc_mounts *p = m->private;
-> +
-> +       return show_mountinfo_root(m, mnt, &p->root);
-> +}
-> +
->  static int show_vfsstat(struct seq_file *m, struct vfsmount *mnt)
->  {
->         struct proc_mounts *p = m->private;
-> --- /dev/null
-> +++ b/fs/values.c
-> @@ -0,0 +1,242 @@
-> +#include <linux/values.h>
-> +#include <linux/fs_struct.h>
-> +#include <linux/seq_file.h>
-> +#include <linux/nsproxy.h>
-> +#include "../lib/kstrtox.h"
-> +#include "mount.h"
-> +
-> +struct val_string {
-> +       const char *str;
-> +       size_t len;
-> +};
-> +
-> +struct val_iter {
-> +       struct val_string name;
-> +       struct seq_file seq;
-> +       int error;
-> +};
-> +
-> +struct val_desc {
-> +       struct val_string name;
-> +       union {
-> +               u64 idx;
-> +               int (*get)(struct val_iter *vi, const struct path *path);
-> +       };
-> +};
-> +
-> +#define VAL_STRING(x) { .str = x, .len = sizeof(x) - 1 }
-> +#define VD_NAME(x) .name = VAL_STRING(x)
-> +
-> +static int val_err(struct val_iter *vi, int err)
-> +{
-> +       vi->error = err;
-> +       return 0;
-> +}
-> +
-> +static int val_end_seq(struct val_iter *vi)
-> +{
-> +       if (vi->seq.count == vi->seq.size)
-> +               return -EOVERFLOW;
-> +
-> +       return 0;
-> +}
-> +
-> +static inline void val_string_skip(struct val_string *s, size_t count)
-> +{
-> +       WARN_ON(s->len < count);
-> +       s->str += count;
-> +       s->len -= count;
-> +}
-> +
-> +static bool val_string_prefix(const struct val_string *p,
-> +                             const struct val_string *s)
-> +{
-> +       return s->len >= p->len && !memcmp(s->str, p->str, p->len);
-> +}
-> +
-> +static struct val_desc *val_lookup(struct val_iter *vi, struct val_desc *vd)
-> +{
-> +       for (; vd->name.len; vd++) {
-> +               if (val_string_prefix(&vd->name, &vi->name)) {
-> +                       val_string_skip(&vi->name, vd->name.len);
-> +                       break;
-> +               }
-> +       }
-> +       return vd;
-> +}
-> +
-> +static int val_get_group(struct val_iter *vi, struct val_desc *vd)
-> +{
-> +       for (; vd->name.len; vd++)
-> +               seq_write(&vi->seq, vd->name.str, vd->name.len + 1);
-> +
-> +       return val_end_seq(vi);
-> +}
-> +
-> +enum {
-> +       VAL_MNT_INFO,
-> +};
-> +
-> +static struct val_desc val_mnt_group[] = {
-> +       { VD_NAME("info"),              .idx = VAL_MNT_INFO             },
-> +       { }
-> +};
-> +
-> +static int val_mnt_show(struct val_iter *vi, struct vfsmount *mnt)
-> +{
-> +       struct val_desc *vd = val_lookup(vi, val_mnt_group);
-> +       struct path root;
-> +
-> +       if (!vd->name.str)
-> +               return val_err(vi, -ENOENT);
-> +
-> +       switch(vd->idx) {
-> +       case VAL_MNT_INFO:
-> +               get_fs_root(current->fs, &root);
-> +               show_mountinfo_root(&vi->seq, mnt, &root);
-> +               path_put(&root);
-> +               break;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static int val_mnt_get(struct val_iter *vi, const struct path *path)
-> +{
-> +       int err;
-> +
-> +       if (!vi->name.len)
-> +               return val_get_group(vi, val_mnt_group);
-> +
-> +       namespace_lock_read();
-> +       err = val_mnt_show(vi, path->mnt);
-> +       namespace_unlock_read();
-> +
-> +       return err;
-> +}
-> +
-> +/* called with namespace_sem held for read */
-> +static struct vfsmount *mnt_lookup_by_id(struct mnt_namespace *ns,
-> +                                        struct path *root, int id)
-> +{
-> +       struct mount *m;
-> +
-> +       for (m = mnt_list_next(ns, &ns->list); m; m = mnt_list_next(ns, &m->mnt_list)) {
-> +               if (m->mnt_id == id) {
-> +                       if (is_path_reachable(m, m->mnt.mnt_root, root))
-> +                               return mntget(&m->mnt);
-> +                       else
-> +                               return NULL;
-> +               }
-> +       }
-> +       return NULL;
-> +}
-> +
-> +static void seq_mnt_list(struct seq_file *seq, struct mnt_namespace *ns,
-> +                        struct path *root)
-> +{
-> +       struct mount *m;
-> +
-> +       namespace_lock_read();
-> +       for (m = mnt_list_next(ns, &ns->list); m; m = mnt_list_next(ns, &m->mnt_list)) {
-> +               if (is_path_reachable(m, m->mnt.mnt_root, root)) {
-> +                       seq_printf(seq, "%i:", m->mnt_id);
-> +                       seq_putc(seq, '\0');
-> +               }
-> +       }
-> +       namespace_unlock_read();
-> +}
-> +
-> +static int val_mntns_get(struct val_iter *vi, const struct path *path)
-> +{
-> +       struct mnt_namespace *mnt_ns = current->nsproxy->mnt_ns;
-> +       struct vfsmount *mnt;
-> +       struct path root;
-> +       unsigned long long mnt_id;
-> +       unsigned int end;
-> +       int err;
-> +
-> +       if (!vi->name.len) {
-> +               get_fs_root(current->fs, &root);
-> +               seq_mnt_list(&vi->seq, mnt_ns, &root);
-> +               path_put(&root);
-> +               return val_end_seq(vi);
-> +       }
-> +
-> +       end = _parse_integer(vi->name.str, 10, &mnt_id);
-> +       if (end & KSTRTOX_OVERFLOW)
-> +               return val_err(vi, -ENOENT);
-> +       if (vi->name.str[end] != VAL_SEP)
-> +               return val_err(vi, -ENOENT);
-> +       val_string_skip(&vi->name, end + 1);
-> +
-> +       namespace_lock_read();
-> +       get_fs_root(current->fs, &root);
-> +       mnt = mnt_lookup_by_id(mnt_ns, &root, mnt_id);
-> +       path_put(&root);
-> +       if (!mnt) {
-> +               namespace_unlock_read();
-> +               return val_err(vi, -ENOENT);
-> +       }
-> +       if (vi->name.len)
-> +               err = val_mnt_show(vi, mnt);
-> +       else
-> +               err = val_get_group(vi, val_mnt_group);
-> +
-> +       namespace_unlock_read();
-> +       mntput(mnt);
-> +
-> +       return err;
-> +}
-> +
-> +
-> +
-> +static struct val_desc val_toplevel_group[] = {
-> +       { VD_NAME("mnt:"),      .get = val_mnt_get,     },
-> +       { VD_NAME("mntns:"),    .get = val_mntns_get,   },
-> +       { },
-> +};
-> +
-> +static int getvalues(struct val_iter *vi, const struct path *path)
-> +{
-> +       struct val_desc *vd;
-> +       int err;
-> +
-> +       if (!vi->name.len)
-> +               return val_get_group(vi, val_toplevel_group);
-> +
-> +       vd = val_lookup(vi, val_toplevel_group);
-> +       if (!vd->name.len)
-> +               err = val_err(vi, -ENOENT);
-> +       else
-> +               err = vd->get(vi, path);
-> +
-> +       return err ?: vi->error;
-> +}
-> +
-> +ssize_t val_getxattr(struct path *path, const char *name, size_t namelen,
-> +                    void __user *value, size_t size)
-> +{
-> +       int err;
-> +       char val[1024];
-> +       struct val_iter vi = {
-> +               .name = { .str = name, .len = namelen },
-> +               .seq = { .buf = val, .size = min(sizeof(val), size) },
-> +       };
-> +
-> +       if (!size)
-> +               return sizeof(val);
-> +
-> +       val_string_skip(&vi.name, 1);
-> +
-> +       err = getvalues(&vi, path);
-> +       if (err < 0)
-> +               return err;
-> +
-> +       WARN_ON(vi.seq.count > size);
-> +       if (copy_to_user(value, vi.seq.buf, vi.seq.count))
-> +               return -EFAULT;
-> +
-> +       return vi.seq.count;
-> +}
-> +
-> --- a/fs/xattr.c
-> +++ b/fs/xattr.c
-> @@ -22,6 +22,7 @@
->  #include <linux/audit.h>
->  #include <linux/vmalloc.h>
->  #include <linux/posix_acl_xattr.h>
-> +#include <linux/values.h>
->
->  #include <linux/uaccess.h>
->
-> @@ -643,12 +644,13 @@ SYSCALL_DEFINE5(fsetxattr, int, fd, cons
->   * Extended attribute GET operations
->   */
->  static ssize_t
-> -getxattr(struct user_namespace *mnt_userns, struct dentry *d,
-> -        const char __user *name, void __user *value, size_t size)
-> +getxattr(struct path *path, const char __user *name,
-> +        void __user *value, size_t size)
->  {
->         ssize_t error;
->         void *kvalue = NULL;
->         char kname[XATTR_NAME_MAX + 1];
-> +       struct user_namespace *mnt_userns = mnt_user_ns(path->mnt);
->
->         error = strncpy_from_user(kname, name, sizeof(kname));
->         if (error == 0 || error == sizeof(kname))
-> @@ -656,6 +658,9 @@ getxattr(struct user_namespace *mnt_user
->         if (error < 0)
->                 return error;
->
-> +       if (kname[0] == VAL_SEP)
-> +               return val_getxattr(path, kname, error, value, size);
-> +
->         if (size) {
->                 if (size > XATTR_SIZE_MAX)
->                         size = XATTR_SIZE_MAX;
-> @@ -664,7 +669,7 @@ getxattr(struct user_namespace *mnt_user
->                         return -ENOMEM;
->         }
->
-> -       error = vfs_getxattr(mnt_userns, d, kname, kvalue, size);
-> +       error = vfs_getxattr(mnt_userns, path->dentry, kname, kvalue, size);
->         if (error > 0) {
->                 if ((strcmp(kname, XATTR_NAME_POSIX_ACL_ACCESS) == 0) ||
->                     (strcmp(kname, XATTR_NAME_POSIX_ACL_DEFAULT) == 0))
-> @@ -693,7 +698,7 @@ static ssize_t path_getxattr(const char
->         error = user_path_at(AT_FDCWD, pathname, lookup_flags, &path);
->         if (error)
->                 return error;
-> -       error = getxattr(mnt_user_ns(path.mnt), path.dentry, name, value, size);
-> +       error = getxattr(&path, name, value, size);
->         path_put(&path);
->         if (retry_estale(error, lookup_flags)) {
->                 lookup_flags |= LOOKUP_REVAL;
-> @@ -723,8 +728,7 @@ SYSCALL_DEFINE4(fgetxattr, int, fd, cons
->         if (!f.file)
->                 return error;
->         audit_file(f.file);
-> -       error = getxattr(file_mnt_user_ns(f.file), f.file->f_path.dentry,
-> -                        name, value, size);
-> +       error = getxattr(&f.file->f_path, name, value, size);
->         fdput(f);
->         return error;
->  }
-> --- /dev/null
-> +++ b/include/linux/values.h
-> @@ -0,0 +1,11 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +
-> +#include <linux/types.h>
-> +
-> +#define VAL_SEP ':'
-> +
-> +struct path;
-> +
-> +ssize_t val_getxattr(struct path *path, const char *name, size_t namelen,
-> +                    void __user *value, size_t size);
-> +
+Best regards,
+Krzysztof
