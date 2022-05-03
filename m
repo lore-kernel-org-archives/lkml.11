@@ -2,121 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE3EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:55:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A741DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242432AbiECU67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 16:58:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32980 "EHLO
+        id S237032AbiECU7Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 16:59:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242028AbiECU6n (ORCPT
+        with ESMTP id S242174AbiECU6o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 16:58:43 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAFA43B29F
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 13:55:09 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id j70so4010038pge.1
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 13:55:09 -0700 (PDT)
+        Tue, 3 May 2022 16:58:44 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 500363E5E7
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 13:55:10 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id v11so6224189pff.6
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 13:55:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BdPS+6ovNgbIR6W/BvJieSFy4bz2cMdTMxnCOUR1BJQ=;
-        b=bHU4VjAzp8C1M1XvHG68mTOvyMkOTXD8Q8IxxwTh/pA96lQ08ploXyPVuewqneNz7I
-         BTQ66bsHXECQh9Ps4JwaMRw3GdAoyRlyvhHlbP2L7nt77gqS2adyofBziaB45Vm2D4Ez
-         x0zbBoaGMSU5UEzo8IM1GgUfpoiiajG6cYGco=
+        bh=0s2l8L34z34MUkPb/xcNxM9oOQ5pfRGE8+PgPesbjxc=;
+        b=bhVNBEZ+27B/SccXVadaHG1jvpOqXyYJ+hj8GEC9P9p9MQDKaF4BLipZ7tMCTUGtNz
+         PICi0sZeHr7t7kjGGRSBO8mzLluE7LOSWG4BnDKhxnnOuZFtTMVW6xXYTxLuym405lSP
+         B3+FxDhigUqiTNZFl1mYMxRpZfBypDicHUpbM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BdPS+6ovNgbIR6W/BvJieSFy4bz2cMdTMxnCOUR1BJQ=;
-        b=2Oimo/6Hxia98Q1wOc9IuJSfAWda2JIvnU9V298T5AFWnKVGP//UXNsUYRRzpVxt6Q
-         /UqoUEh1uNar3CGfjTUer5QTcbE7iYROQWhLzDpqIVeGj74RdcuNO0NhnAqYqEG0CWdX
-         XLEnUDT1aeI4UAtQY1cADoD7IAYcFbFqZxfZwf6aX6Tawb62p3wwhBck1/oDWfMeJP5y
-         kdo8xZ6qQpfw1Aircez0eXTJ56WeDaidXajNO/Kzz/GSVyDohDLL+YPctQeUnUZo8iT6
-         9dUAqRnht8s/nYouMW9TavJwVDsqoS/fZ3ep8THm5OiSYI33shCdWIMYBRXtGa/vUE2E
-         FLSw==
-X-Gm-Message-State: AOAM530REbSknyj+HU2AZZUFCTXa8AzVEQ8dt7XiKBuQR2EbfPfJpJJ8
-        MMurkpInORj8HijzxawoyxfVBw==
-X-Google-Smtp-Source: ABdhPJy3MRDXrmUhZUJX+fO+Iudo78mE4XAjOuV5u2/RFaENGy2ohzpd4UwzaRV08TDRJgxybO+Kig==
-X-Received: by 2002:a05:6a00:124f:b0:50d:efb8:6afa with SMTP id u15-20020a056a00124f00b0050defb86afamr10587579pfi.14.1651611309415;
+        bh=0s2l8L34z34MUkPb/xcNxM9oOQ5pfRGE8+PgPesbjxc=;
+        b=C5DVAx6iwMu/pVrSbCk4JkmhLhVAmZsLkcKdpL51t9IZTw91/lZDf0aCwE6Usgvo58
+         ByHWiHyHXF+hSIyVR8nwvQ4zW90YpYk+6Jty3MWa9vJEMyxCOgwEXwNjQrA9o8ypGHnJ
+         /CrgHXXaMcEZmTLzsc7ReSTQ5WLqzpW9pqjWXzU/O/IAJ5YrqcDC8tZmPW4MnAp2XX18
+         mDnZMb8Y21IP78SIUNIGfnJSr+f0oxlwKhJ9/Q+p8Kp2/Hng7Fc2TdKD3IJJxANGkANS
+         LwQHGfo39cZNzHzIno6u92i3OG9s0ZYr7HFaeXnrfRdT7khHiXASS+DIQNyI/vq8eJSE
+         Xl8g==
+X-Gm-Message-State: AOAM533EorY+vOVFXssR1b+XnNRlxMX567jzqKnIbrvnvr9lKBdu1rY+
+        Ss4Ps7yB20m6JmxoKXFy0yP+XA==
+X-Google-Smtp-Source: ABdhPJxNh718o6lZcnrjFVdXM6pAZT3sVcEOZcCHQo1I7zTGHYHYdiEGHt2M12oOpzHuik2BFiOqqA==
+X-Received: by 2002:a63:2d46:0:b0:3c1:424a:2a90 with SMTP id t67-20020a632d46000000b003c1424a2a90mr15245588pgt.35.1651611309785;
         Tue, 03 May 2022 13:55:09 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id z20-20020a630a54000000b003c219c0871asm3933040pgk.74.2022.05.03.13.55.07
+        by smtp.gmail.com with ESMTPSA id e24-20020a63f558000000b003c14af50638sm3571630pgk.80.2022.05.03.13.55.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 03 May 2022 13:55:08 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     Bill Wendling <morbo@google.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        David Howells <dhowells@redhat.com>,
-        Jeff Layton <jlayton@kernel.org>,
+Cc:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org,
         Masahiro Yamada <masahiroy@kernel.org>,
         Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-hardening@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH 1/6] netfs: Eliminate Clang randstruct warning
-Date:   Tue,  3 May 2022 13:54:58 -0700
-Message-Id: <20220503205503.3054173-2-keescook@chromium.org>
+        David Howells <dhowells@redhat.com>,
+        Jeff Layton <jlayton@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, llvm@lists.linux.dev
+Subject: [PATCH 4/6] randstruct: Split randstruct Makefile and CFLAGS
+Date:   Tue,  3 May 2022 13:55:01 -0700
+Message-Id: <20220503205503.3054173-5-keescook@chromium.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220503205503.3054173-1-keescook@chromium.org>
 References: <20220503205503.3054173-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1970; h=from:subject; bh=bEl5c+oL0DHs9c0JKOjQVQhGUtntych2+mEKBNpt6+0=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBicZaljMui7HM5C2nUhMVbY5QZL7cXs2WS/tnBqO2w QmtevbyJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYnGWpQAKCRCJcvTf3G3AJj7nD/ 9EN/kMgbEYlp++FHvHW8ma1iM+kP7FMs+DalBiKQfkIeScig0IVM5Q3dbvmXF1a26tX7uVVdilImNn hZvggBQj2ca6FXKUR60ZWvagiS3PrqNy/RdFhO4F29yx6c6gWrFJmsx2c25jJ1sJXp5sx6onOD64Dc eLXJPFVDQrMssMfu9+SQCRfcf3SDsKHcV5PRjOp5aiWqKI9yR6dWUheY3Sa4bsBYn645OAdQI93Z5k kmYosamsbYqGm9Xa2wWXalmB3W9x5Licr6O86aeeCfhuL8q12lrebTGwLo2PwpigLCbIgHrxSqJXIn stPRkOoWqNufv4kkQbewUAitGsMC6vT/2o7MylXDzRnKJujUZQY5wRBekBslXliKHtkxBb6ZGF8RQU fmbUaDHA9aKUMgMVHjzacxPBbJPV7oycgCPiRwbOBOmJNg3sYJQ0Y306ki6v+dOHLcj7wedfcPM0OU uolaHrzpi63qdj96tcn1R6hMdI166zDodVrQQ+NERYFJkdvfL7eSA+a6nfJ1GhI8W7R6HKS7CcJ+Xg Jj+pEWxNzyJ2Ee+WfxBM1qdcLOfVN64qrjDWaK0A6LKoH+NVZUbT5pYEv2eoow+Rll6b+uSLhDaqWX uVOm6X9q1dBcMoZx5a3JgZpzg9B8yHotQF8ovOWc5X15GHixJg4Er4sXOCkg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6703; h=from:subject; bh=ZEmrZ0k2Reix3PKt6lfCkuyHYsw1YqQ5sKxXW11+HTw=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBicZam4zhEqDWTM2MIktnKTuhNVNv/8H6Fea3xejgt HnjQkAKJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYnGWpgAKCRCJcvTf3G3AJq7lEA CuZ+xeZNdVslL1dtCv78SwqgkVF0Irvo2o5Ics+MdKOz0zPRHZP6oMToUFSgisWVwucBw1doPlHwwF zhbFZ5b9Z/mtyEvMqJQMoRsw/4Z7muCHglm3Dv8O47FpzI+yiiO30zPSHWfI74tHx92EWmSpJ/2Gxj R+Q4E8GQUabJY6Jh+dJuOpyF5HHJViaVqL7bdj5/mm5HymCYOEq5Jr71Cw/oyS7FGHAeEqyoaT1KUx srmuQy5RY0pPrL9SMAlO6//qsp85AalH8rgppGOsAl/H2/MkYpbouZtgklux7zpjPVLXrZxWWs3FL8 j0IynPZlYJImwZQlLdXPHm3O1BmKSHCQgQ8932YDoPHTJpTomyOeIjSvUD0FM1CGs4IisY5almpKHa 7mI4Ac0Zq7V2/VjDhtDgt343eONTqXX0hdzLr8CAK/ZlwFgi3TrXwqP7LN+t9Deb3tAzJPl1P4SNPK 09KMgW8IobL0wwL3um45dfvqf4uIvDJyAW1pcWbkWPuanq553xzB0h3RhRqtGB4+2uCCRbl9O1hXrT iBZ1IJYTRPfXawzfDUNGV73thtPTZmvfKZTnocs6/UKcP6sCw3XM8DEYkh/GE0q1u68QlcGu6agRXQ uUIg1L8Hn/FAG0pt19d+14PNYE3uHeKpWoNkw7Dva1Fdd9aWiHHtqQbmnoww==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clang's structure layout randomization feature gets upset when it sees
-struct inode (which is randomized) cast to struct netfs_i_context. This
-is due to seeing the inode pointer as being treated as an array of inodes,
-rather than "something else, following struct inode".
+To enable the new Clang randstruct implementation[1], move
+randstruct into its own Makefile and split the CFLAGS from
+GCC_PLUGINS_CFLAGS into RANDSTRUCT_CFLAGS.
 
-Since netfs can't use container_of() (since it doesn't know what the
-true containing struct is), it uses this direct offset instead. Adjust
-the code to better reflect what is happening: an arbitrary pointer is
-being adjusted and cast to something else: use a "void *" for the math.
-The resulting binary output is the same, but Clang no longer sees an
-unexpected cross-structure cast:
+[1] https://reviews.llvm.org/D121556
 
-In file included from ../fs/nfs/inode.c:50:
-In file included from ../fs/nfs/fscache.h:15:
-In file included from ../include/linux/fscache.h:18:
-../include/linux/netfs.h:298:9: error: casting from randomized structure pointer type 'struct inode *' to 'struct netfs_i_context *'
-        return (struct netfs_i_context *)(inode + 1);
-               ^
-1 error generated.
-
-Cc: David Howells <dhowells@redhat.com>
-Cc: Jeff Layton <jlayton@kernel.org>
+Cc: linux-hardening@vger.kernel.org
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- include/linux/netfs.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Makefile                        |  1 +
+ arch/arm/vdso/Makefile          |  2 +-
+ arch/arm64/kernel/vdso/Makefile |  3 ++-
+ arch/sparc/vdso/Makefile        |  3 ++-
+ arch/x86/entry/vdso/Makefile    |  3 ++-
+ scripts/Makefile.gcc-plugins    |  8 ++------
+ scripts/Makefile.randstruct     | 14 ++++++++++++++
+ 7 files changed, 24 insertions(+), 10 deletions(-)
+ create mode 100644 scripts/Makefile.randstruct
 
-diff --git a/include/linux/netfs.h b/include/linux/netfs.h
-index c7bf1eaf51d5..0c33b715cbfd 100644
---- a/include/linux/netfs.h
-+++ b/include/linux/netfs.h
-@@ -295,7 +295,7 @@ extern void netfs_stats_show(struct seq_file *);
-  */
- static inline struct netfs_i_context *netfs_i_context(struct inode *inode)
- {
--	return (struct netfs_i_context *)(inode + 1);
-+	return (void *)inode + sizeof(*inode);
- }
+diff --git a/Makefile b/Makefile
+index 29e273d3f8cc..91c91fcf3c24 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1011,6 +1011,7 @@ include-$(CONFIG_KASAN)		+= scripts/Makefile.kasan
+ include-$(CONFIG_KCSAN)		+= scripts/Makefile.kcsan
+ include-$(CONFIG_UBSAN)		+= scripts/Makefile.ubsan
+ include-$(CONFIG_KCOV)		+= scripts/Makefile.kcov
++include-$(CONFIG_RANDSTRUCT)	+= scripts/Makefile.randstruct
+ include-$(CONFIG_GCC_PLUGINS)	+= scripts/Makefile.gcc-plugins
  
- /**
-@@ -307,7 +307,7 @@ static inline struct netfs_i_context *netfs_i_context(struct inode *inode)
-  */
- static inline struct inode *netfs_inode(struct netfs_i_context *ctx)
- {
--	return ((struct inode *)ctx) - 1;
-+	return (void *)ctx - sizeof(struct inode);
- }
+ include $(addprefix $(srctree)/, $(include-y))
+diff --git a/arch/arm/vdso/Makefile b/arch/arm/vdso/Makefile
+index ec52b776f926..8ca1c9f262a2 100644
+--- a/arch/arm/vdso/Makefile
++++ b/arch/arm/vdso/Makefile
+@@ -28,7 +28,7 @@ CPPFLAGS_vdso.lds += -P -C -U$(ARCH)
+ CFLAGS_REMOVE_vdso.o = -pg
  
- /**
+ # Force -O2 to avoid libgcc dependencies
+-CFLAGS_REMOVE_vgettimeofday.o = -pg -Os $(GCC_PLUGINS_CFLAGS)
++CFLAGS_REMOVE_vgettimeofday.o = -pg -Os $(RANDSTRUCT_CFLAGS) $(GCC_PLUGINS_CFLAGS)
+ ifeq ($(c-gettimeofday-y),)
+ CFLAGS_vgettimeofday.o = -O2
+ else
+diff --git a/arch/arm64/kernel/vdso/Makefile b/arch/arm64/kernel/vdso/Makefile
+index 172452f79e46..d9147fba1a0b 100644
+--- a/arch/arm64/kernel/vdso/Makefile
++++ b/arch/arm64/kernel/vdso/Makefile
+@@ -32,7 +32,8 @@ ccflags-y += -DDISABLE_BRANCH_PROFILING -DBUILD_VDSO
+ # -Wmissing-prototypes and -Wmissing-declarations are removed from
+ # the CFLAGS of vgettimeofday.c to make possible to build the
+ # kernel with CONFIG_WERROR enabled.
+-CFLAGS_REMOVE_vgettimeofday.o = $(CC_FLAGS_FTRACE) -Os $(CC_FLAGS_SCS) $(GCC_PLUGINS_CFLAGS) \
++CFLAGS_REMOVE_vgettimeofday.o = $(CC_FLAGS_FTRACE) -Os $(CC_FLAGS_SCS) \
++				$(RANDSTRUCT_CFLAGS) $(GCC_PLUGINS_CFLAGS) \
+ 				$(CC_FLAGS_LTO) -Wmissing-prototypes -Wmissing-declarations
+ KASAN_SANITIZE			:= n
+ KCSAN_SANITIZE			:= n
+diff --git a/arch/sparc/vdso/Makefile b/arch/sparc/vdso/Makefile
+index c5e1545bc5cf..77d7b9032158 100644
+--- a/arch/sparc/vdso/Makefile
++++ b/arch/sparc/vdso/Makefile
+@@ -58,7 +58,7 @@ CFL := $(PROFILING) -mcmodel=medlow -fPIC -O2 -fasynchronous-unwind-tables -m64
+ 
+ SPARC_REG_CFLAGS = -ffixed-g4 -ffixed-g5 -fcall-used-g5 -fcall-used-g7
+ 
+-$(vobjs): KBUILD_CFLAGS := $(filter-out $(GCC_PLUGINS_CFLAGS) $(SPARC_REG_CFLAGS),$(KBUILD_CFLAGS)) $(CFL)
++$(vobjs): KBUILD_CFLAGS := $(filter-out $(RANDSTRUCT_CFLAGS) $(GCC_PLUGINS_CFLAGS) $(SPARC_REG_CFLAGS),$(KBUILD_CFLAGS)) $(CFL)
+ 
+ #
+ # vDSO code runs in userspace and -pg doesn't help with profiling anyway.
+@@ -88,6 +88,7 @@ $(obj)/vdso32.so.dbg: asflags-$(CONFIG_SPARC64) += -m32
+ KBUILD_CFLAGS_32 := $(filter-out -m64,$(KBUILD_CFLAGS))
+ KBUILD_CFLAGS_32 := $(filter-out -mcmodel=medlow,$(KBUILD_CFLAGS_32))
+ KBUILD_CFLAGS_32 := $(filter-out -fno-pic,$(KBUILD_CFLAGS_32))
++KBUILD_CFLAGS_32 := $(filter-out $(RANDSTRUCT_CFLAGS),$(KBUILD_CFLAGS_32))
+ KBUILD_CFLAGS_32 := $(filter-out $(GCC_PLUGINS_CFLAGS),$(KBUILD_CFLAGS_32))
+ KBUILD_CFLAGS_32 := $(filter-out $(SPARC_REG_CFLAGS),$(KBUILD_CFLAGS_32))
+ KBUILD_CFLAGS_32 += -m32 -msoft-float -fpic
+diff --git a/arch/x86/entry/vdso/Makefile b/arch/x86/entry/vdso/Makefile
+index 693f8b9031fb..c2a8b76ae0bc 100644
+--- a/arch/x86/entry/vdso/Makefile
++++ b/arch/x86/entry/vdso/Makefile
+@@ -91,7 +91,7 @@ ifneq ($(RETPOLINE_VDSO_CFLAGS),)
+ endif
+ endif
+ 
+-$(vobjs): KBUILD_CFLAGS := $(filter-out $(CC_FLAGS_LTO) $(GCC_PLUGINS_CFLAGS) $(RETPOLINE_CFLAGS),$(KBUILD_CFLAGS)) $(CFL)
++$(vobjs): KBUILD_CFLAGS := $(filter-out $(CC_FLAGS_LTO) $(RANDSTRUCT_CFLAGS) $(GCC_PLUGINS_CFLAGS) $(RETPOLINE_CFLAGS),$(KBUILD_CFLAGS)) $(CFL)
+ 
+ #
+ # vDSO code runs in userspace and -pg doesn't help with profiling anyway.
+@@ -148,6 +148,7 @@ KBUILD_CFLAGS_32 := $(filter-out -m64,$(KBUILD_CFLAGS))
+ KBUILD_CFLAGS_32 := $(filter-out -mcmodel=kernel,$(KBUILD_CFLAGS_32))
+ KBUILD_CFLAGS_32 := $(filter-out -fno-pic,$(KBUILD_CFLAGS_32))
+ KBUILD_CFLAGS_32 := $(filter-out -mfentry,$(KBUILD_CFLAGS_32))
++KBUILD_CFLAGS_32 := $(filter-out $(RANDSTRUCT_CFLAGS),$(KBUILD_CFLAGS_32))
+ KBUILD_CFLAGS_32 := $(filter-out $(GCC_PLUGINS_CFLAGS),$(KBUILD_CFLAGS_32))
+ KBUILD_CFLAGS_32 := $(filter-out $(RETPOLINE_CFLAGS),$(KBUILD_CFLAGS_32))
+ KBUILD_CFLAGS_32 := $(filter-out $(CC_FLAGS_LTO),$(KBUILD_CFLAGS_32))
+diff --git a/scripts/Makefile.gcc-plugins b/scripts/Makefile.gcc-plugins
+index 827c47ce5c73..692d64a70542 100644
+--- a/scripts/Makefile.gcc-plugins
++++ b/scripts/Makefile.gcc-plugins
+@@ -22,12 +22,6 @@ export DISABLE_STRUCTLEAK_PLUGIN
+ gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_STRUCTLEAK)		\
+ 		+= -DSTRUCTLEAK_PLUGIN
+ 
+-gcc-plugin-$(CONFIG_GCC_PLUGIN_RANDSTRUCT)	+= randomize_layout_plugin.so
+-gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_RANDSTRUCT)		\
+-		+= -DRANDSTRUCT
+-gcc-plugin-cflags-$(CONFIG_RANDSTRUCT_PERFORMANCE)		\
+-		+= -fplugin-arg-randomize_layout_plugin-performance-mode
+-
+ gcc-plugin-$(CONFIG_GCC_PLUGIN_STACKLEAK)	+= stackleak_plugin.so
+ gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_STACKLEAK)		\
+ 		+= -DSTACKLEAK_PLUGIN
+@@ -60,6 +54,8 @@ KBUILD_CFLAGS += $(GCC_PLUGINS_CFLAGS)
+ # be included in GCC_PLUGIN so they can get built.
+ gcc-plugin-external-$(CONFIG_GCC_PLUGIN_SANCOV)			\
+ 	+= sancov_plugin.so
++gcc-plugin-external-$(CONFIG_GCC_PLUGIN_RANDSTRUCT)		\
++	+= randomize_layout_plugin.so
+ 
+ # All enabled GCC plugins are collected here for building in
+ # scripts/gcc-scripts/Makefile.
+diff --git a/scripts/Makefile.randstruct b/scripts/Makefile.randstruct
+new file mode 100644
+index 000000000000..4d741e6db554
+--- /dev/null
++++ b/scripts/Makefile.randstruct
+@@ -0,0 +1,14 @@
++# SPDX-License-Identifier: GPL-2.0
++
++randstruct-cflags-y += -DRANDSTRUCT
++
++ifdef CONFIG_GCC_PLUGIN_RANDSTRUCT
++randstruct-cflags-y	\
++	+= -fplugin=$(objtree)/scripts/gcc-plugins/randomize_layout_plugin.so
++randstruct-cflags-$(CONFIG_RANDSTRUCT_PERFORMANCE)		\
++	+= -fplugin-arg-randomize_layout_plugin-performance-mode
++endif
++
++export RANDSTRUCT_CFLAGS := $(randstruct-cflags-y)
++
++KBUILD_CFLAGS	+= $(RANDSTRUCT_CFLAGS)
 -- 
 2.32.0
 
