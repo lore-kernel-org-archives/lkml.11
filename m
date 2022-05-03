@@ -2,89 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F18FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 11:55:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D38DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 11:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234961AbiECL7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 07:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39936 "EHLO
+        id S234993AbiECMCl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 08:02:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231882AbiECL7N (ORCPT
+        with ESMTP id S234570AbiECMCg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 07:59:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F0EB7F1;
-        Tue,  3 May 2022 04:55:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 433176164E;
-        Tue,  3 May 2022 11:55:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 902D0C385A9;
-        Tue,  3 May 2022 11:55:39 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="iwmrY2Q1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651578938;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OmnpymFgrKna+sorYsF9uO7087ZOoY3Nagqmgfgtvyw=;
-        b=iwmrY2Q1Z5D2rGVAA265kMFcIFN0uJku1PhjnGHwvIhDRbrtY5xC0tE8RmF9AHg2cdbv7X
-        w59MpGC2fCz7GMwqv2ef6Sdw1MNYtmmiBTK0+d7veygZHmULjs9O1XX1mOc32pN4ewyMF8
-        YoCyXu/14vRA+o3aNNd5wpIVEN/3Yn8=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8fcc1fbf (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 3 May 2022 11:55:38 +0000 (UTC)
-Date:   Tue, 3 May 2022 13:55:35 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Lennart Poettering <mzxreary@0pointer.de>
-Cc:     Alexander Graf <graf@amazon.com>, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Colm MacCarthaigh <colmmacc@amazon.com>,
-        Torben Hansen <htorben@amazon.co.uk>,
-        Jann Horn <jannh@google.com>
-Subject: Re: [PATCH 2/2] random: add fork_event sysctl for polling VM forks
-Message-ID: <YnEYN+Q3q76NVX3Q@zx2c4.com>
-References: <20220502140602.130373-1-Jason@zx2c4.com>
- <20220502140602.130373-2-Jason@zx2c4.com>
- <Ym/7UlgQ5VjjC76P@gardel-login>
- <YnAC00VtU8MGb7vO@zx2c4.com>
- <YnAMBzhcJhGR5XOK@gardel-login>
- <7a1cfd1c-9f0e-f134-e544-83ee6d3cd9c9@amazon.com>
- <YnDn/d6iB0aUZkWJ@gardel-login>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YnDn/d6iB0aUZkWJ@gardel-login>
+        Tue, 3 May 2022 08:02:36 -0400
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5999C26AF2;
+        Tue,  3 May 2022 04:59:04 -0700 (PDT)
+Received: by mail-ot1-f48.google.com with SMTP id k25-20020a056830169900b00605f215e55dso8144592otr.13;
+        Tue, 03 May 2022 04:59:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=Bn5OzfsrZ6KHsFRAzJ/z2ysuxzu8Eq1fItATtTsfaoE=;
+        b=JuK9mT8vJMWhyDoaIoN3v9vZEE3+GZ3jlp9mA8AX4c0Bi5r6Hgg724A2q0KtkbfDuY
+         cLsky/lLzSE2n2JeuxCQ9GY9Bu+CkWDTPhLuWxgvunytnKTRU95JD9cN7cIb7JWJYc6X
+         TEwue/tB0xGBJ/gdzcz29S+uinR4oiAjaJO87DCtGHMOW52GcuvPb2W8urcfjjbViLEb
+         NDID2FUQejKInxj0wYtYjQPrFBbHFkyu+LOyvK/ZykskTckTsnSZ9cgPt+dF+gW48TO1
+         aASaUWGILrxCEcz4NovFIjxNCrXRENHSY9hhi/rR2jZ9MvmTHh/gbZ905QulgZBlAPMR
+         E0jA==
+X-Gm-Message-State: AOAM530Vzxg4bbtSMuACbJ6At7Xeb2vqC7ImgB6UOKNDThAcJo6hhnFS
+        QNw9Ex85xwxjuRCT+fK/Fw==
+X-Google-Smtp-Source: ABdhPJwoVPo6dI4Nm7MCzkgHnpwplJNwVGViql/65wPitn5rRmkYgum90kPCTbSg6hdaQbF6wP2EqQ==
+X-Received: by 2002:a05:6830:23a6:b0:606:1bc8:b0d3 with SMTP id m6-20020a05683023a600b006061bc8b0d3mr3195067ots.196.1651579143584;
+        Tue, 03 May 2022 04:59:03 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id x21-20020a05687031d500b000e686d13872sm6779423oac.12.2022.05.03.04.59.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 04:59:02 -0700 (PDT)
+Received: (nullmailer pid 3296828 invoked by uid 1000);
+        Tue, 03 May 2022 11:59:00 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     linux-gpio@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-kernel@vger.kernel.org, sean.wang@kernel.org,
+        matthias.bgg@gmail.com, linus.walleij@linaro.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        nfraprado@collabora.com, kernel@collabora.com
+In-Reply-To: <20220503105317.54696-3-angelogioacchino.delregno@collabora.com>
+References: <20220503105317.54696-1-angelogioacchino.delregno@collabora.com> <20220503105317.54696-3-angelogioacchino.delregno@collabora.com>
+Subject: Re: [PATCH 2/2] dt-bindings: pinctrl: Add MediaTek MT6795 pinctrl bindings
+Date:   Tue, 03 May 2022 06:59:00 -0500
+Message-Id: <1651579140.664800.3296827.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 10:29:49AM +0200, Lennart Poettering wrote:
-> As mentioned earlier, I am not convinced sysctl is the right place for
-> this. sysctls are understood by most people as being the place for
-> tweaking kernel settings. This is not a kernel setting, but a
-> notification concept, and the way Jason defined it there's nothing to
-> read nor write, which strongly suggests to move it elsewhere, but not
-> /proc/sys/.
-
-I think I'm coming around to this view that having a sysctl return
--ENODATA is weird. It makes `sysctl -a` always complain to stderr, for
-example, which seems bad.
-
-> > I can see attractiveness in providing the /run/fork-id directly from the
-> > kernel though, to remove the dependency on systemd for poll-less
-> > notification of libraries.
+On Tue, 03 May 2022 12:53:17 +0200, AngeloGioacchino Del Regno wrote:
+> Add devicetree and pinfunc bindings for MediaTek Helio X10 MT6795.
 > 
-> I agree.
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>  .../pinctrl/mediatek,pinctrl-mt6795.yaml      | 224 +++++
+>  include/dt-bindings/pinctrl/mt6795-pinfunc.h  | 908 ++++++++++++++++++
+>  2 files changed, 1132 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pinctrl/mediatek,pinctrl-mt6795.yaml
+>  create mode 100644 include/dt-bindings/pinctrl/mt6795-pinfunc.h
+> 
 
-I'm still not convinced there's value in having a counter or a UUID, but
-if you had to choose, would you prefer a counter or a UUID? It sounds
-like the former, because you see a use for distinguishing between zero
-and non-zero? Or did you finally agree with me that vmgenid isn't
-granular enough for that?
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Jason
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/pinctrl/mediatek,pinctrl-mt6795.yaml:100:14: [error] syntax error: expected <block end>, but found '<block mapping start>' (syntax)
+
+dtschema/dtc warnings/errors:
+make[1]: *** Deleting file 'Documentation/devicetree/bindings/pinctrl/mediatek,pinctrl-mt6795.example.dts'
+Traceback (most recent call last):
+  File "/usr/local/bin/dt-extract-example", line 52, in <module>
+    binding = yaml.load(open(args.yamlfile, encoding='utf-8').read())
+  File "/usr/local/lib/python3.10/dist-packages/ruamel/yaml/main.py", line 434, in load
+    return constructor.get_single_data()
+  File "/usr/local/lib/python3.10/dist-packages/ruamel/yaml/constructor.py", line 119, in get_single_data
+    node = self.composer.get_single_node()
+  File "_ruamel_yaml.pyx", line 706, in _ruamel_yaml.CParser.get_single_node
+  File "_ruamel_yaml.pyx", line 724, in _ruamel_yaml.CParser._compose_document
+  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
+  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
+  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
+  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
+  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
+  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
+  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 891, in _ruamel_yaml.CParser._compose_mapping_node
+  File "_ruamel_yaml.pyx", line 904, in _ruamel_yaml.CParser._parse_next_event
+ruamel.yaml.parser.ParserError: while parsing a block mapping
+  in "<unicode string>", line 96, column 13
+did not find expected key
+  in "<unicode string>", line 100, column 14
+make[1]: *** [Documentation/devicetree/bindings/Makefile:26: Documentation/devicetree/bindings/pinctrl/mediatek,pinctrl-mt6795.example.dts] Error 1
+make[1]: *** Waiting for unfinished jobs....
+./Documentation/devicetree/bindings/pinctrl/mediatek,pinctrl-mt6795.yaml:  while parsing a block mapping
+  in "<unicode string>", line 96, column 13
+did not find expected key
+  in "<unicode string>", line 100, column 14
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/pinctrl/mediatek,pinctrl-mt6795.yaml: ignoring, error parsing file
+make: *** [Makefile:1401: dt_binding_check] Error 2
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
