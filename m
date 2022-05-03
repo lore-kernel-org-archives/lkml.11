@@ -2,88 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3327C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B04C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:57:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348417AbiEDLAM (ORCPT
+        id S1345860AbiEDLA5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 07:00:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35722 "EHLO
+        Wed, 4 May 2022 07:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234997AbiEDLAG (ORCPT
+        with ESMTP id S234997AbiEDLAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 07:00:06 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F021AF3B;
-        Wed,  4 May 2022 03:56:30 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KtYfh4ZKWz4ySb;
-        Wed,  4 May 2022 20:56:28 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1651661788;
-        bh=lXu2HNZ90XM9MtwLxcDurCN/fphBhFKr1mu8Gt2/XFM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Jvtk47eOlE5Mumk6IsTk81+sOamWXYTU+Zg6YIQhd5iVimSkuqF6WaPP2WjOB5qnL
-         EZ4WuWggHKDFrr9jN4L29OJGn8k0cGDZGC5FmaCVFaDQAJuMJ2tEVu+rK8PsfMFgia
-         hVPSE9eGS8pBjKIpUSoUdqiAsIbk8SOEIAZTciitqVcdfdUgMes7BAxfvJrdxjj5LG
-         RS5aZ3PwPwtDl+uyT+fAagAYng838C6+K8JLiq9xi2fGr9IPpRuhFMCrNIMKs/bOKe
-         qNpOG2+GRApy6Jfa9hV3CgXkwHRdFgi1bgCle4PMCDE07sX/Zed24FQfMvqoRNoYZD
-         eFV+3BSLFUO9A==
-Date:   Wed, 4 May 2022 20:56:27 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Christoffer Dall <cdall@cs.columbia.edu>,
-        Marc Zyngier <maz@kernel.org>
-Cc:     Raghavendra Rao Ananta <rananta@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build warning after merge of the kvm-arm tree
-Message-ID: <20220504205627.18f46380@canb.auug.org.au>
+        Wed, 4 May 2022 07:00:53 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B1A1C13F;
+        Wed,  4 May 2022 03:57:18 -0700 (PDT)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242KZ9w6019152;
+        Tue, 3 May 2022 00:52:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=ZJ54LSEgX3njKu4hd3Ax1MbhaPmxQOdsn4N1D9vqEz8=;
+ b=xP9nKxMFCLtCV+0Xz8C9DcLaZx+RkqoY8jIISJEc2UAWfnyWcMuBopQhjJBBexG8ZbAM
+ 6fKlGmFQPcgV6bCYXwXnSvN73ccbuPt9MKREmxVi/qWWV6+yJeB91Fpg8lCeWmizyIEl
+ WkgUG+ysZumnQadiLuCNXOndLwdH6rlHu3sCax9vU3QuFeBTWHmbRKM9qRc1i21y62Pg
+ ccsFIP8IYPthyQ9M4ZV+/WJZ/lB55ag5PDPvDdG4s1awU2MqMYqea9OyKE/HLVryC+ip
+ yotFhtf6SCeFBRXZCEXAa8Qu5aSif7YsceWA+XonALSsmWko3JK+DLvfoTtWgLH1XQA0 0A== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frw0amhjp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:52:07 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430oouA008900;
+        Tue, 3 May 2022 00:52:06 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83xc4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:52:06 +0000
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430plk2010389;
+        Tue, 3 May 2022 00:52:05 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-33;
+        Tue, 03 May 2022 00:52:05 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        linux-kernel@vger.kernel.org, Avri Altman <avri.altman@wdc.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Daejun Park <daejun7.park@samsung.com>,
+        Can Guo <cang@codeaurora.org>,
+        Asutosh Das <asutoshd@codeaurora.org>,
+        Bean Huo <beanhuo@micron.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-scsi@vger.kernel.org
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>
+Subject: Re: [PATCH] scsi: ufs: Remove duplicate include in ufshcd
+Date:   Mon,  2 May 2022 20:51:43 -0400
+Message-Id: <165153836362.24053.10505996788821361568.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220426104509.621394-1-wanjiabing@vivo.com>
+References: <20220426104509.621394-1-wanjiabing@vivo.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/sUm06JZ/MHsTthJ71DRZcsE";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: wsZ9qXf90RI_NRzkpvJm-14JBBO3tq9s
+X-Proofpoint-ORIG-GUID: wsZ9qXf90RI_NRzkpvJm-14JBBO3tq9s
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/sUm06JZ/MHsTthJ71DRZcsE
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, 26 Apr 2022 18:45:07 +0800, Wan Jiabing wrote:
 
-Hi all,
+> Fix following checkincludes warning:
+> drivers/scsi/ufs/ufshcd.c: linux/nls.h is included more than once.
+> 
+> The include is in line 14. Remove the duplicated here.
+> 
+> 
 
-After merging the kvm-arm tree, today's linux-next build (htmldocs)
-produced this warning:
+Applied to 5.19/scsi-queue, thanks!
 
-Documentation/virt/kvm/arm/index.rst:7: WARNING: toctree contains reference=
- to nonexisting document 'virt/kvm/arm/psci'
-Documentation/virt/kvm/arm/hypercalls.rst: WARNING: document isn't included=
- in any toctree
+[1/1] scsi: ufs: Remove duplicate include in ufshcd
+      https://git.kernel.org/mkp/scsi/c/8ad8edd2fbae
 
-Introduced by commit
-
-  f1ced23a9be5 ("Docs: KVM: Rename psci.rst to hypercalls.rst")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/sUm06JZ/MHsTthJ71DRZcsE
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJyW9sACgkQAVBC80lX
-0Gxmugf/Rli2WvwZo8sssLZm2HPuV7j8DoZ3MIDKSNkZBb1g5b/b6fCfLdxUbKQj
-DDIwkABCQYdTNr3YQOeM6Ab6NPfMwnUtrDpY+465TA/ztPPqVOWQIc/dnEmWP1az
-Fh1JLi6nRrqSII3yz1NTrnCbEN5kb4PRr7qR6RTuBGyqkPTxc3Zy0+aWzemNAnSb
-OG8amLyhQKGtHhpWuKaMCi3U/Dx+Pwtx38rvPfQ8R6wnEC/TiJa6VePEHnzsQFXH
-6vOxK6R8j7zBFG++dI8ZK7Qb5uaIBXPFfj/1/W8OCPhgzCmmDx79pIFyqy/dXQtS
-pdcDwS0bnHs4VkHLnt/SUPp6gZefzA==
-=PS4x
------END PGP SIGNATURE-----
-
---Sig_/sUm06JZ/MHsTthJ71DRZcsE--
+-- 
+Martin K. Petersen	Oracle Linux Engineering
