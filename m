@@ -2,53 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DBB2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:02:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F99EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:02:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229595AbiECGFx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 02:05:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51590 "EHLO
+        id S229646AbiECGF5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 02:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbiECGFm (ORCPT
+        with ESMTP id S229553AbiECGFo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 02:05:42 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35CF33334F
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:02:09 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id 64-20020a630843000000b0039d909676d5so7974907pgi.16
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 23:02:09 -0700 (PDT)
+        Tue, 3 May 2022 02:05:44 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC5503334C
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:02:12 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2f83cc145edso152415157b3.11
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 23:02:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=kTAg03mTTCXeCcuJ04g4+/5QXg1dJs7XUUQ18YoBJb4=;
-        b=rYqaf7w+n9R8fMyETNl8zks1oz19oMgwwIZFfSNhYFA2UP8u5AzxkwgHYcSPkBooid
-         p+G9GcN5huLi7FPuX4EGni+svFvcJv16TOswggp82WXCVi9Eq/Ldj9PhDQxyIFba+VAF
-         1cPMhaUJZ1KNjVL1I0dJQamZV5GPFbe9gHtBUloFbWxpJGKBsP9tjFzDKI8pYho5i1bP
-         bLvoa5N6qESOumCtzSx2A3GHpXLNQ8uD2Hjx1yGC2LUWMosQW/bjTcStClrRuu1u7YeH
-         952Svo9e0nL45s/DKWKHkm8/KzZj/+7M/RXUnSqcy080vsTzroFDfMi+Az3NuzVBU8Jv
-         l7DA==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=XfyYlyiUJYzy5P/tDVrVjfvZblAQAF1Q2S7Fvl/b6ww=;
+        b=pYELEqhevmMMRFuo6qeYvGhQHMgyHNM/ESphHsgQXBuoLUhwPjQueCU9NdIhTEYN8N
+         8W8v0dnP2cnMGt/b+WnLn01n5KQq42//Qvk2HBXynA1bEfwIQfS8Qkhj2p4dkqNoXfQH
+         wqrylyW+j6Gl8pjO68sPlrX7IiHYeSqO175EJk/57UAcuf5T+HYmABQVaLjL9lqd5qtm
+         pKPwShW6lKIAhihNqdN0tn2BSgEHWvGNuXgBIUwL6Pem5qetdQuitxp7jG4ma9Ofk8fA
+         PW7Hcuy1Jty7yE2xNwjGi9tuQNAgir2JRejlGnd/xz0VkWs0glMJFZD4f4dDTBW+XQzw
+         nR6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=kTAg03mTTCXeCcuJ04g4+/5QXg1dJs7XUUQ18YoBJb4=;
-        b=DFirq44PA7R78HLBlf5EQjUFnpLbppHU2nHgF278XuXb67j5s9+DEuK+xg+5s7NeyA
-         nvkX6AZvDxoqYVQnqNVdnGleTswilFH5sk9Ei+7iV7L+ppxY/Jhz0+FFOsLAv7uaEk1v
-         iFYIsRuDNGwLJ4JDFMztQ7PAiZmd1GGeLTLGiFV8+tU2NzPNAqSUClGBUmCSD9CoihcH
-         eUjdTVSuagEF22DwByqwMAcG0tmR7nIQGb1QEm7DzNjYdk+ITfQLcaNNuGhsKW+rMR/3
-         si9V5vz/6BwoM8z7/JkNbQSHvsXkFrlT/PMEtpgLs35kgmCMQriNaDMldMEVwcBB9LHP
-         +teA==
-X-Gm-Message-State: AOAM5326Ecekc8BN49FiQMTQSNCSZScNsFVj70e9dsGqiCLG0WgWLB1H
-        a+od8AA9xjKvA0tXyc+oC3zwwIctbcY=
-X-Google-Smtp-Source: ABdhPJzUW8Zgn8Un8J9KldDH91O2q0lgCYaxF4H1EN1LSeVf5TqYyQZd5GZhdrxDdg37sAXbWxGDWZSODGs=
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=XfyYlyiUJYzy5P/tDVrVjfvZblAQAF1Q2S7Fvl/b6ww=;
+        b=C3lF36CoZheDq1S0THh5aO2i+VH7T2i0eXWSiDSvuSzpPT6GYW3aZsymelVyCLSH5Q
+         CeuDERet0U1n7+1dBQrffze+rC8LxoZy4249/loFftiMzGm3D8vzGoCOwPGbH31n3N6H
+         0orGy4HZ4GuWfyie+40HfhgJRjJ54BC4MVLGqCkifJ1pxEKz7cpD0n9eR1TdabTWYaSC
+         CFUGZaaawWf1RsUZ2eyw3Okgu5frV01+LWMbB3ZXtVgR1CDlCwO/jVzDsM/w9i7Gpitt
+         RbTncMNLjznvyqXhmpyeRvMUGMVc5reQ9ZVXf9adkwE5NU6IzkLLLt7W7SPRYqUB0qlg
+         yCLQ==
+X-Gm-Message-State: AOAM531CyRvcVJ+Pi3/bp06IKmTyuy5tJaLS8Ib+GIAaDsKG8v0nJdJM
+        uzNEu6Oih34/G7IJC+TMsjgA77nomxE=
+X-Google-Smtp-Source: ABdhPJzWMTJ9eoHCayt8gdpKf+kTy89PEfM2q9IK/XBP9Olgr+AMTdtkI9bHjeCPHU8wQk/OhYk/vEOyRCc=
 X-Received: from oupton3.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:21eb])
- (user=oupton job=sendgmr) by 2002:aa7:91c8:0:b0:50c:d1d5:3525 with SMTP id
- z8-20020aa791c8000000b0050cd1d53525mr14936138pfa.50.1651557728500; Mon, 02
- May 2022 23:02:08 -0700 (PDT)
-Date:   Tue,  3 May 2022 06:01:58 +0000
-Message-Id: <20220503060205.2823727-1-oupton@google.com>
+ (user=oupton job=sendgmr) by 2002:a25:74d4:0:b0:646:cfd6:daa3 with SMTP id
+ p203-20020a2574d4000000b00646cfd6daa3mr12728747ybc.235.1651557731765; Mon, 02
+ May 2022 23:02:11 -0700 (PDT)
+Date:   Tue,  3 May 2022 06:02:00 +0000
+In-Reply-To: <20220503060205.2823727-1-oupton@google.com>
+Message-Id: <20220503060205.2823727-3-oupton@google.com>
 Mime-Version: 1.0
+References: <20220503060205.2823727-1-oupton@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v4 0/7] KVM: arm64: Limit feature register reads from AArch32
+Subject: [PATCH v4 2/7] KVM: arm64: Don't write to Rt unless sys_reg emulation succeeds
 From:   Oliver Upton <oupton@google.com>
 To:     kvmarm@lists.cs.columbia.edu
 Cc:     kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
@@ -61,104 +65,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KVM/arm64 does not restrict the guest's view of the AArch32 feature
-registers when read from AArch32. HCR_EL2.TID3 is cleared for AArch32
-guests, meaning that register reads come straight from hardware. This is
-problematic as KVM relies on read_sanitised_ftr_reg() to expose a set of
-features consistent for a particular system.
+emulate_sys_reg() returns 1 unconditionally, even though a a system
+register access can fail. Furthermore, kvm_handle_sys_reg() writes to Rt
+for every register read, regardless of if it actually succeeded.
 
-Appropriate handlers must first be put in place for CP10 and CP15 ID
-register accesses before setting TID3. Rather than exhaustively
-enumerating each of the encodings for CP10 and CP15 registers, take the
-lazy route and aim the register accesses at the AArch64 system register
-table.
+Though this pattern is safe (as params.regval is initialized with the
+current value of Rt) it is a bit ugly. Indicate failure if the register
+access could not be emulated and only write to Rt on success.
 
-Patches 1-2 are small cleanups to how we handle register emulation
-failure. No functional change for current KVM, but required to do
-register emulation correctly in this series.
+Signed-off-by: Oliver Upton <oupton@google.com>
+---
+ arch/arm64/kvm/sys_regs.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
-Patch 3 reroutes the CP15 registers into the AArch64 table, taking care
-to immediately RAZ undefined ranges of registers. This is done to avoid
-possibly conflicting with encodings for future AArch64 registers.
-
-Patch 4 installs an exit handler for the CP10 ID registers and also
-relies on the general AArch64 register handler to implement reads.
-
-Patch 5 actually sets TID3 for AArch32 guests, providing known-safe
-values for feature register accesses.
-
-Patch 6 makes KVM UNDEF the guest on an unsupported PMU reg access.
-Finally, patch 7 drops the intermediate fix of returning early from
-register accesses if the PMU is disabled.
-
-There is an argument that the series is in fact a bug fix for running
-AArch32 VMs on heterogeneous systems. To that end, it could be
-blamed/backported to when we first knew better:
-
-  93390c0a1b20 ("arm64: KVM: Hide unsupported AArch64 CPU features from
-  guests")
-
-But I left that tag off as in the aforementioned change skipping
-AArch32 was intentional. Up to you, Marc, if you want to call it a
-bugfix ;-)
-
-Applies cleanly to 5.18-rc5.
-
-Tested with AArch32 kvm-unit-tests and booting an AArch32 debian guest
-on a Raspberry Pi 4. Additionally, I tested AArch32 kvm-unit-tests w/
-pmu={on,off} and saw no splat, as Alex had discovered [1]. The test
-correctly skips with the PMU feature bit disabled now.
-
-Furthermore, I hacked up the test even more to ignore ID_DFR0.PerfMon to
-verify that the guest UNDEFs when the PMU is disabled (and doesn't blow
-up the host kernel).
-
-[1]: https://lore.kernel.org/r/20220425145530.723858-1-alexandru.elisei@arm.com
-
-v1: https://lore.kernel.org/kvmarm/20220329011301.1166265-1-oupton@google.com/
-v2: https://lore.kernel.org/r/20220401010832.3425787-1-oupton@google.com
-v3: https://lore.kernel.org/kvmarm/20220425235342.3210912-1-oupton@google.com
-
-v3 -> v4:
-  - Grab Alex's patch for using pmu_visibility() to hide PMU regs
-  - Revert Alex's intermediate fix of silently sinking PMU reg
-    read/writes
-
-v2 -> v3:
-  - Collect R-b from Reiji (thanks!)
-  - Adopt Marc's suggestion for CP15 register handling
-  - Avoid writing to Rt when emulation fails (Marc)
-  - Print some debug info on an unexpected CP10 register access (Reiji)
-
-v1 -> v2:
-  - Actually set TID3! Oops.
-  - Refactor kvm_emulate_cp15_id_reg() to check preconditions before
-    proceeding to emulation (Reiji)
-  - Tighten up comment on kvm_is_cp15_id_reg() to indicate that the only
-    other trapped ID register (CTR) is already handled in the cp15
-
-Alexandru Elisei (1):
-  KVM/arm64: Hide AArch32 PMU registers when not available
-
-Oliver Upton (6):
-  KVM: arm64: Return a bool from emulate_cp()
-  KVM: arm64: Don't write to Rt unless sys_reg emulation succeeds
-  KVM: arm64: Wire up CP15 feature registers to their AArch64
-    equivalents
-  KVM: arm64: Plumb cp10 ID traps through the AArch64 sysreg handler
-  KVM: arm64: Start trapping ID registers for 32 bit guests
-  Revert "KVM/arm64: Don't emulate a PMU for 32-bit guests if feature
-    not set"
-
- arch/arm64/include/asm/kvm_arm.h     |   3 +-
- arch/arm64/include/asm/kvm_emulate.h |   7 -
- arch/arm64/include/asm/kvm_host.h    |   1 +
- arch/arm64/kvm/handle_exit.c         |   1 +
- arch/arm64/kvm/pmu-emul.c            |  23 +--
- arch/arm64/kvm/sys_regs.c            | 257 +++++++++++++++++++++------
- arch/arm64/kvm/sys_regs.h            |   9 +-
- 7 files changed, 211 insertions(+), 90 deletions(-)
-
+diff --git a/arch/arm64/kvm/sys_regs.c b/arch/arm64/kvm/sys_regs.c
+index 36895c163eae..f0a076e5cc1c 100644
+--- a/arch/arm64/kvm/sys_regs.c
++++ b/arch/arm64/kvm/sys_regs.c
+@@ -2401,7 +2401,14 @@ static bool is_imp_def_sys_reg(struct sys_reg_params *params)
+ 	return params->Op0 == 3 && (params->CRn & 0b1011) == 0b1011;
+ }
+ 
+-static int emulate_sys_reg(struct kvm_vcpu *vcpu,
++/**
++ * emulate_sys_reg - Emulate a guest access to an AArch64 system register
++ * @vcpu: The VCPU pointer
++ * @params: Decoded system register parameters
++ *
++ * Return: true if the system register access was successful, false otherwise.
++ */
++static bool emulate_sys_reg(struct kvm_vcpu *vcpu,
+ 			   struct sys_reg_params *params)
+ {
+ 	const struct sys_reg_desc *r;
+@@ -2410,7 +2417,10 @@ static int emulate_sys_reg(struct kvm_vcpu *vcpu,
+ 
+ 	if (likely(r)) {
+ 		perform_access(vcpu, params, r);
+-	} else if (is_imp_def_sys_reg(params)) {
++		return true;
++	}
++
++	if (is_imp_def_sys_reg(params)) {
+ 		kvm_inject_undefined(vcpu);
+ 	} else {
+ 		print_sys_reg_msg(params,
+@@ -2418,7 +2428,7 @@ static int emulate_sys_reg(struct kvm_vcpu *vcpu,
+ 				  *vcpu_pc(vcpu), *vcpu_cpsr(vcpu));
+ 		kvm_inject_undefined(vcpu);
+ 	}
+-	return 1;
++	return false;
+ }
+ 
+ /**
+@@ -2446,18 +2456,18 @@ int kvm_handle_sys_reg(struct kvm_vcpu *vcpu)
+ 	struct sys_reg_params params;
+ 	unsigned long esr = kvm_vcpu_get_esr(vcpu);
+ 	int Rt = kvm_vcpu_sys_get_rt(vcpu);
+-	int ret;
+ 
+ 	trace_kvm_handle_sys_reg(esr);
+ 
+ 	params = esr_sys64_to_params(esr);
+ 	params.regval = vcpu_get_reg(vcpu, Rt);
+ 
+-	ret = emulate_sys_reg(vcpu, &params);
++	if (!emulate_sys_reg(vcpu, &params))
++		return 1;
+ 
+ 	if (!params.is_write)
+ 		vcpu_set_reg(vcpu, Rt, params.regval);
+-	return ret;
++	return 1;
+ }
+ 
+ /******************************************************************************
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
