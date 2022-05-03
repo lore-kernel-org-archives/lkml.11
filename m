@@ -2,115 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E7FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 11:22:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10F0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 11:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234455AbiECLZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 07:25:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34510 "EHLO
+        id S234658AbiECLbB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 07:31:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233389AbiECLZh (ORCPT
+        with ESMTP id S233393AbiECLa6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 07:25:37 -0400
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5137417AA4;
-        Tue,  3 May 2022 04:22:05 -0700 (PDT)
-Received: by mail-wm1-f51.google.com with SMTP id l62-20020a1c2541000000b0038e4570af2fso1084986wml.5;
-        Tue, 03 May 2022 04:22:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YiY0dGoIC8096MJoLsSBb1qNLHmagfKwvPsd98SImSg=;
-        b=a0vixKdvtLv2O3//vtKss4jlgL8e/Gv+Cnvveuw82Z2bXYk08ZfM099wL9y9cdDOM0
-         qohzpZu3t2pXzdNDrE/Sk1JXEi/vfWL7RTkGunyeM/pZubjD/8j+9REc2IeCwaZx+juU
-         tYXbu5uzWQDa3tcawBAmwO44VXB8yv7/o0CHfh36DYTwnCbZ1UF8ZGYNyf1Z+uI6OVID
-         ymqxlTw0vaVej9AqdE8j8wZqpB7MgGSPcVryknFcPV0DnM3UFefg9lO6pZMMaQePFIJf
-         IwehEKrWXlbpxtreo8yksbrzjY+Htc6/hFX6YmfsbKi20Jo1jOcCxob1FIpIc1oZlVF4
-         NBjQ==
-X-Gm-Message-State: AOAM533K9wdI6sTRcRPnfjNINXNE9RMNENXvqu3ViL2fIgpRpu36KkBv
-        L0mUck9gGVL5+M8Z3HzAhwI=
-X-Google-Smtp-Source: ABdhPJxm1zYhvfWARYcqdPYfX+WBZx31HBYYbX9BTSG4b89PfKyAhJee2ZJz/esokNnR95scu5noYQ==
-X-Received: by 2002:a05:600c:3b14:b0:394:1f06:37eb with SMTP id m20-20020a05600c3b1400b003941f0637ebmr2920891wms.193.1651576923857;
-        Tue, 03 May 2022 04:22:03 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id bd10-20020a05600c1f0a00b003942a244ec6sm1465936wmb.11.2022.05.03.04.22.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 04:22:03 -0700 (PDT)
-Date:   Tue, 3 May 2022 11:22:01 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Michael Kelley <mikelley@microsoft.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, vkuznets@redhat.com,
-        decui@microsoft.com, drawat.floss@gmail.com, airlied@linux.ie,
-        daniel@ffwll.ch, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        deller@gmx.de, dri-devel@lists.freedesktop.org,
-        linux-scsi@vger.kernel.org, linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH 0/4] Remove support for Hyper-V 2008 and 2008R2/Win7
-Message-ID: <20220503112201.hwzenitojimrgz3f@liuwe-devbox-debian-v2>
-References: <1651509391-2058-1-git-send-email-mikelley@microsoft.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1651509391-2058-1-git-send-email-mikelley@microsoft.com>
+        Tue, 3 May 2022 07:30:58 -0400
+Received: from mail.schwermer.no (mail.schwermer.no [49.12.228.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB25B27B03;
+        Tue,  3 May 2022 04:27:25 -0700 (PDT)
+X-Virus-Scanned: Yes
+From:   Sven Schwermer <sven@svenschwermer.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=svenschwermer.de;
+        s=mail; t=1651577243;
+        bh=d8ER+kGznK/svT0YX/8SOUfQKwEh0SoW3+nU3n0R0iQ=;
+        h=From:To:Cc:Subject:In-Reply-To:References;
+        b=ldu/MxdDCgWaGzqMGeqCOYDb32L+lBLFO0bwvbw3WNkr9kcvlFHuf790dMy4raw+t
+         bVn6qYYuRcCuol0alaXOhzyryVWx1tDhngq3ztnq6HEw8KFkpefxv5IkkCJRjR6h5E
+         V/k7yYnjFMyhG3B46jZ9sFjWyTlIGVMK0crEYsptTChnK8pO22m4YxZsjPC83RWrXu
+         o9WdxnFU8Q88TUpIHUmal70aij33YdNysi8TslaQpD/YgG/41iC9mbdcoYNIB2ITnh
+         CxqXUlAGe6M1uNVxILWatKWzz0x/BydL3l3Vhx2ePHI/Tl+O7Mm4jzTgurL+l6Uuu0
+         UUiSwRxag+aqg==
+To:     linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pavel@ucw.cz, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, dmurphy@ti.com,
+        devicetree@vger.kernel.org
+Cc:     Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+Subject: [PATCH v2 2/2] leds: multicolor: Read default-intensities property
+Date:   Tue,  3 May 2022 13:27:07 +0200
+Message-Id: <980857efbf41b77667b0e0b5044f06409295d7d0.1651577132.git.sven.schwermer@disruptive-technologies.com>
+In-Reply-To: <364df52a196fa0ae5db07e599995fcf8dfafb43e.1651577132.git.sven.schwermer@disruptive-technologies.com>
+References: <364df52a196fa0ae5db07e599995fcf8dfafb43e.1651577132.git.sven.schwermer@disruptive-technologies.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 09:36:27AM -0700, Michael Kelley wrote:
-> Linux code for running as a Hyper-V guest includes special cases for the
-> first released versions of Hyper-V: 2008 and 2008R2/Windows 7. These
-> versions were very thinly used for running Linux guests when first
-> released more than 12 years ago, and they are now out of support
-> (except for extended security updates). As initial versions, they
-> lack the performance features needed for effective production usage
-> of Linux guests. In total, there's no need to continue to support
-> the latest Linux kernels on these versions of Hyper-V.
-> 
-> Simplify the code for running on Hyper-V by removing the special
-> cases. This includes removing the negotiation of the VMbus protocol
-> versions for 2008 and 2008R2, and the special case code based on
-> those VMbus protocol versions. Changes are in the core VMbus code and
-> several drivers for synthetic VMbus devices.
-> 
-> Some drivers have driver-specific protocols with the Hyper-V host and
-> may have versions of those protocols that are limited to 2008 and
-> 2008R2. This patch set does the clean-up only for the top-level
-> VMbus protocol versions, and not the driver-specific protocols.
-> Cleaning up the driver-specific protocols can be done with
-> follow-on patches.
-> 
-> There's no specific urgency to removing the special case code for
-> 2008 and 2008R2, so if the broader Linux kernel community surfaces
-> a reason why this clean-up should not be done now, we can wait.
-> But I think we want to eventually stop carrying around this extra
-> baggage, and based on discussions with the Hyper-V team within
-> Microsoft, we're already past the point that it has any value.
-> 
+From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
 
-I will wait for a week for people to voice their opinions. If I hear no
-objection I will apply this series to hyperv-next.
+This allows to assign intensity values taken from the firmware interface
+(if available) to the indivisual sub LEDs (colors) at driver probe time,
+i.e. most commonly at kernel boot time. This is crucial for setting a
+specific color and early in the boot process. While it would be possible
+to set a static color in the bootloader, this mechanism allows setting a
+pattern (e.g. blinking) at a specific color.
 
-Thanks,
-Wei.
+Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+---
 
-> Michael Kelley (4):
->   Drivers: hv: vmbus: Remove support for Hyper-V 2008 and Hyper-V
->     2008R2/Win7
->   scsi: storvsc: Remove support for Hyper-V 2008 and 2008R2/Win7
->   video: hyperv_fb: Remove support for Hyper-V 2008 and 2008R2/Win7
->   drm/hyperv: Remove support for Hyper-V 2008 and 2008R2/Win7
-> 
->  drivers/gpu/drm/hyperv/hyperv_drm_proto.c | 23 ++++--------
->  drivers/hv/channel_mgmt.c                 | 29 ++++++---------
->  drivers/hv/connection.c                   |  6 ++--
->  drivers/hv/vmbus_drv.c                    | 60 +++++++------------------------
->  drivers/scsi/storvsc_drv.c                | 36 +++++--------------
->  drivers/video/fbdev/hyperv_fb.c           | 23 ++----------
->  include/linux/hyperv.h                    | 10 ++++--
->  7 files changed, 52 insertions(+), 135 deletions(-)
-> 
-> -- 
-> 1.8.3.1
-> 
+Notes:
+    V1->V2: Fix mixup
+
+ drivers/leds/led-class-multicolor.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/drivers/leds/led-class-multicolor.c b/drivers/leds/led-class-multicolor.c
+index e317408583df..84f237784246 100644
+--- a/drivers/leds/led-class-multicolor.c
++++ b/drivers/leds/led-class-multicolor.c
+@@ -9,6 +9,7 @@
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/uaccess.h>
++#include <linux/property.h>
+ 
+ #include "leds.h"
+ 
+@@ -116,6 +117,26 @@ static struct attribute *led_multicolor_attrs[] = {
+ };
+ ATTRIBUTE_GROUPS(led_multicolor);
+ 
++static void multi_load_default_intensities(struct device *parent,
++					   struct led_classdev_mc *mcled_cdev,
++					   struct fwnode_handle *fwnode)
++{
++	u32 intensities[LED_COLOR_ID_MAX];
++	unsigned int i;
++	int ret;
++
++	ret = fwnode_property_read_u32_array(fwnode, "default-intensities",
++					     intensities, mcled_cdev->num_colors);
++	if (ret < 0) {
++		if (ret != -ENODATA)
++			dev_warn(parent, "failed to read default-intensities property: %d", ret);
++		return;
++	}
++
++	for (i = 0; i < mcled_cdev->num_colors; i++)
++		mcled_cdev->subled_info[i].intensity = intensities[i];
++}
++
+ int led_classdev_multicolor_register_ext(struct device *parent,
+ 				     struct led_classdev_mc *mcled_cdev,
+ 				     struct led_init_data *init_data)
+@@ -134,6 +155,9 @@ int led_classdev_multicolor_register_ext(struct device *parent,
+ 	led_cdev = &mcled_cdev->led_cdev;
+ 	mcled_cdev->led_cdev.groups = led_multicolor_groups;
+ 
++	if (init_data && init_data->fwnode)
++		multi_load_default_intensities(parent, mcled_cdev, init_data->fwnode);
++
+ 	return led_classdev_register_ext(parent, led_cdev, init_data);
+ }
+ EXPORT_SYMBOL_GPL(led_classdev_multicolor_register_ext);
+-- 
+2.36.0
+
