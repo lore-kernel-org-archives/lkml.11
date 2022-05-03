@@ -2,85 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7CD3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:21:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1D26C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:22:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238287AbiECPZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57464 "EHLO
+        id S238304AbiECPZm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:25:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238422AbiECPZL (ORCPT
+        with ESMTP id S238042AbiECPZj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:25:11 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C0A15722
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:21:30 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id ba17so183248edb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 08:21:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6SRegSipmA3f+livG8EQAkZ1mqxGwmQV1biD+cfEfPU=;
-        b=RV+7/9pLq3i5ZHClYS5+MqYa/4jK7RKH1HWKMNKtvJlr5kZmv9VPR0V9bgm01ojljT
-         Iosn5fuOzndhYmU4bTFc0bEwwVQ9kxKScTVZ6dKw2LdkHEuAZsd4mwnnAE+rAF16Cy3n
-         EjgHLW/Dq+40EnZScCRz/+cekYydcOWDrLOLMK8qyMaWSgabbiJ9FrXQqXaAC8yX37Mq
-         SQ4YQH2v/DvCy6Nl3IQ7Lilh8nYTW0IpQe5Ecw8Kg2xecZMFe9e2r3Gw2ZYdWnfvxz2I
-         FUVc8/JFg/YeqT0AnXqoxwH+pcSLVYkwTrgUdi89L0VqNm48aQJIRoUcQWawvk0ZBqOW
-         zeQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6SRegSipmA3f+livG8EQAkZ1mqxGwmQV1biD+cfEfPU=;
-        b=0+Ea/jjsP2jqLWjgCJNuGey0iyqTbt4T4Zi86j3kt4D5VWcF41zAz7clFDoYkpR9Tm
-         4O29IcwhQqjNK3zHm1TS/nzhDuJPBd5I/MTm5o96526/wNvdPhwxYx88g/HetmaEfIjT
-         sq7JSvS/ZUqoblglhuvxsKliWGJuPsWUdyax3Z2sc9voZGISPwHSYGS7Tb6ysTzBQBkv
-         yo7wVRaIJatuXFdEOKbralAdTKDzt9yGQ8vyxfZH5htfpRschvUJTWzLhVNwFNWwlEEq
-         Li7J0G9Q3kMhlpD7Vk8+FGdKj1QKHjFXNiCDAEYGCEyBrKlS23bEWpHGxbvnU9ZDm9gZ
-         H2Fg==
-X-Gm-Message-State: AOAM533wIY/v8y9UpNqPRoElPTlEvG+KpgYj4e8inWr1rVhSsHflHCz2
-        ZCgLb6ttYLN9kO8MsX9TkLdAcA==
-X-Google-Smtp-Source: ABdhPJxm36UHhUz/BRpusNOZ88zhVJ7lJutFJ0FQWwv3HyIR5yNeFXEwhQWqRpQHOsa2kqQKCBovDA==
-X-Received: by 2002:aa7:c49a:0:b0:425:d526:98ad with SMTP id m26-20020aa7c49a000000b00425d52698admr18232526edq.352.1651591288681;
-        Tue, 03 May 2022 08:21:28 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id hf27-20020a1709072c5b00b006f3ef214e2fsm4794460ejc.149.2022.05.03.08.21.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 08:21:28 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>
-Cc:     Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH] ARM: dts: exynos: add atmel,24c128 fallback to Samsung EEPROM
-Date:   Tue,  3 May 2022 17:21:26 +0200
-Message-Id: <165159127802.229291.2960326490699633014.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220426183443.243113-1-krzysztof.kozlowski@linaro.org>
-References: <20220426183443.243113-1-krzysztof.kozlowski@linaro.org>
+        Tue, 3 May 2022 11:25:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BD80C24
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:22:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651591326;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jUYy8b+KeqsrmdeQpON3aR0duOx1u2ctuvoiS753EAk=;
+        b=WavCwDAH7afkOYue23K6nUg2BmTw9EIvR+2g9te8nA8U29tnU/ZPt9FGV6+EeMFIVZtAoU
+        Rab+/t3KDMMAIE+ZdWdenRG/6u8lOHbcX48WVLHffSOC5FKafisWx92sev1YgZo+zBWxzX
+        MecMFXYExaJRPIW0oRpqn3rn7eJRF0E=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-611-wGa7T4S7MCuxQUmvbAlhTg-1; Tue, 03 May 2022 11:21:21 -0400
+X-MC-Unique: wGa7T4S7MCuxQUmvbAlhTg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C7AE6952760;
+        Tue,  3 May 2022 15:12:13 +0000 (UTC)
+Received: from starship (unknown [10.40.192.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 680D92024CDC;
+        Tue,  3 May 2022 15:12:11 +0000 (UTC)
+Message-ID: <cbd4709bb499874c60986083489e17c93b48d003.camel@redhat.com>
+Subject: Re: [PATCH] KVM: x86/mmu: Do not create SPTEs for GFNs that exceed
+ host.MAXPHYADDR
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ben Gardon <bgardon@google.com>,
+        David Matlack <dmatlack@google.com>
+Date:   Tue, 03 May 2022 18:12:10 +0300
+In-Reply-To: <e11c21e99e7c4ac758b4417e0ae66d3a2f1fe663.camel@redhat.com>
+References: <337332ca-835c-087c-c99b-92c35ea8dcd3@redhat.com>
+         <Ymv1I5ixX1+k8Nst@google.com>
+         <20e1e7b1-ece7-e9e7-9085-999f7a916ac2@redhat.com>
+         <Ymv5TR76RNvFBQhz@google.com>
+         <e5864cb4-cce8-bd32-04b0-ecb60c058d0b@redhat.com>
+         <YmwL87h6klEC4UKV@google.com>
+         <ac2001e66957edc8a3af2413b78478c15898f86c.camel@redhat.com>
+         <f3ffad3aa8476156f369ff1d4c33f3e127b47d0c.camel@redhat.com>
+         <82d1a5364f1cc479da3762b046d22f136db167e3.camel@redhat.com>
+         <af15fd31f73e8a956da50db6104e690f9d308dad.camel@redhat.com>
+         <YnAMKtfAeoydHr3x@google.com>
+         <e11c21e99e7c4ac758b4417e0ae66d3a2f1fe663.camel@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 26 Apr 2022 20:34:43 +0200, Krzysztof Kozlowski wrote:
-> The Samsung s524ad0xd1 EEPROM should use atmel,24c128 fallback,
-> according to the AT24 EEPROM bindings.
+On Tue, 2022-05-03 at 12:12 +0300, Maxim Levitsky wrote:
+> On Mon, 2022-05-02 at 16:51 +0000, Sean Christopherson wrote:
+> > On Mon, May 02, 2022, Maxim Levitsky wrote:
+> > > On Mon, 2022-05-02 at 10:59 +0300, Maxim Levitsky wrote:
+> > > > > > Also I can reproduce it all the way to 5.14 kernel (last kernel I have installed in this VM).
+> > > > > > 
+> > > > > > I tested kvm/queue as of today, sadly I still see the warning.
+> > > > > 
+> > > > > Due to a race, the above statements are out of order ;-)
+> > > > 
+> > > > So futher investigation shows that the trigger for this *is* cpu_pm=on :(
+> > > > 
+> > > > So this is enough to trigger the warning when run in the guest:
+> > > > 
+> > > > qemu-system-x86_64  -nodefaults  -vnc none -serial stdio -machine accel=kvm
+> > > > -kernel x86/dummy.flat -machine kernel-irqchip=on -smp 8 -m 1g -cpu host
+> > > > -overcommit cpu-pm=on
+> > > > 
+> > > > 
+> > > > '-smp 8' is needed, and the more vCPUs the more often the warning appears.
+> > > > 
+> > > > 
+> > > > Due to non atomic memslot update bug, I use patched qemu version, with an
+> > > > attached hack, to pause/resume vcpus around the memslot update it does, but
+> > > > even without this hack, you can just ctrl+c the test after it gets the KVM
+> > > > internal error, and then tdp mmu memory leak warning shows up (not always
+> > > > but very often).
+> > > > 
+> > > > 
+> > > > Oh, and if I run the above command on the bare metal, it  never terminates.
+> > > > Must be due to preemption, qemu shows beeing stuck in kvm_vcpu_block. AVIC
+> > > > disabled, kvm/queue.  Bugs, bugs, and features :)
+> > > 
+> > > All right, at least that was because I removed the '-device isa-debug-exit,iobase=0xf4,iosize=0x4',
+> > > which is apparently used by KVM unit tests to signal exit from the VM.
+> > 
+> > Can you provide your QEMU command line for running your L1 VM?  And your L0 and L1
+> > Kconfigs too?  I've tried both the dummy and ipi_stress tests on a variety of hardware,
+> > kernels, QEMUs, etc..., with no luck.
+> > 
 > 
+> So now both L0 and L1 run almost pure kvm/queue)
+> (commit 2764011106d0436cb44702cfb0981339d68c3509)
 > 
+> I have some local patches but they are not relevant to KVM at all, more
+> like various tweaks to sensors, a sad hack for yet another regression
+> in AMDGPU, etc.
+> 
+> The config and qemu command line attached.
+> 
+> AVIC disabled in L0, L0 qemu is from master upstream.
+> Bug reproduces too well IMHO, almost always.
+> 
+> For reference the warning is printed in L1's dmesg.
 
-Applied, thanks!
-
-[1/1] ARM: dts: exynos: add atmel,24c128 fallback to Samsung EEPROM
-      commit: f038e8186fbc5723d7d38c6fa1d342945107347e
+Tested this without any preemption in L0 and L1 - bug still reproduces just fine.
+(kvm/queue)
 
 Best regards,
--- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+	Maxim Levitsky
+
+> 
+> 
+> 
+> Best regards,
+> 	Maxim Levitsky
+
+
