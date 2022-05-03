@@ -2,226 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F4BDC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6513C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:32:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238565AbiECPgA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48912 "EHLO
+        id S238584AbiECPg0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:36:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238563AbiECPfz (ORCPT
+        with ESMTP id S238563AbiECPgY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:35:55 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987E42CC85;
-        Tue,  3 May 2022 08:32:20 -0700 (PDT)
-Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Kt3mJ5dKcz67lKG;
-        Tue,  3 May 2022 23:29:36 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 3 May 2022 17:32:17 +0200
-Received: from localhost (10.122.247.231) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 3 May
- 2022 16:32:17 +0100
-Date:   Tue, 3 May 2022 16:32:15 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To:     Ira Weiny <ira.weiny@intel.com>
-CC:     Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        "Vishal Verma" <vishal.l.verma@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH V8 04/10] cxl/pci: Create auxiliary devices for each DOE
- mailbox
-Message-ID: <20220503163215.00000246@huawei.com>
-In-Reply-To: <YmwedkzLrsOmsQt/@iweiny-desk3>
-References: <20220414203237.2198665-1-ira.weiny@intel.com>
-        <20220414203237.2198665-5-ira.weiny@intel.com>
-        <20220429165502.00000d01@huawei.com>
-        <YmwedkzLrsOmsQt/@iweiny-desk3>
-Organization: Huawei Technologies R&D (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; x86_64-w64-mingw32)
+        Tue, 3 May 2022 11:36:24 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6996C2CE1A
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:32:51 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id q8so18111255oif.13
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 08:32:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=XnQmOhsCZK19KFsjaZWzKreHbtLS7E4MAuj6me5xfA4=;
+        b=e93gker8XSUGtP9FNQzNbA3o8jNHWWcEose726ZqruHmgrvDB6XNDCXe7pZbHRDROa
+         qYb/NaGqpYxL4Z8sTqsoPbLPcLSrje8PJNt043evZevPWI3kIrBFYKul4LicV+pvUZrA
+         jjRtIlggoU+i0AyhjtBiCCEXSo1/wpZADFzanrftOTBWJG6Q+DUQyuNmTve/RNnbBAIH
+         1HvGNirA6jfGl0osjYrSghaU6VKQtnqGP4RIVWaM3typQ2AbuUkNl5i4UzbJrkBz5uZ7
+         BwOKF7idQCqwcT6+PnX/vwDFwMW2xnU3c5VClxep6rw5EeZKnA1M7pWl5yI6ZsMRBwQs
+         nDoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=XnQmOhsCZK19KFsjaZWzKreHbtLS7E4MAuj6me5xfA4=;
+        b=aVFBbBu/+kFfwLBuQwrGM85xZv90+hZUqrqFDtm9yQl9Vy1/iye7Dfq9YkxbR7pFMC
+         qea3UkRJVkk48n2KWvePhnfxwRiisxiKszPhCUBQJeC+iIEzUtgcyXJQd8djqf4uB+7e
+         4Q8fZG57e3WWZSMRU5aSPDLPSVIbxSwenVoeIHc9c4uqlvwOQOHrfqDw1PUrsxmc5gul
+         MnAyVywGSbCfGztafGnPYaqjPxIriQ+xIcHNko7YFYEHKVi/xwZ+EhddDJ59uoNy3LFZ
+         GYw5UgUFRVM4U1tec0EpAB8ekgLOHRzZvcY2Q/6r1bRoYkjppgrmHj8CkFfvf8J4eK4Z
+         3t0g==
+X-Gm-Message-State: AOAM532PxPikcOPkBexqd/gAgq95a3vOTLdyf3KvA5tn0hI2/FtqC2CO
+        7F6wdD/L1iZxso9hQqfAv5bIgw==
+X-Google-Smtp-Source: ABdhPJxHKuxC9rmkYi2NQblFYNBfCKjkd4iYQI+D1hZPwuCjICezisBZiLi1dY6rZjY6TScVwvLZ5Q==
+X-Received: by 2002:a05:6808:f8d:b0:325:1e81:ffe5 with SMTP id o13-20020a0568080f8d00b003251e81ffe5mr2084792oiw.253.1651591970783;
+        Tue, 03 May 2022 08:32:50 -0700 (PDT)
+Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id s4-20020a4adb84000000b00333220959b9sm4955736oou.1.2022.05.03.08.32.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 08:32:50 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2] dt-bindings: thermal: tsens: Add sc8280xp compatible
+Date:   Tue,  3 May 2022 08:34:36 -0700
+Message-Id: <20220503153436.960184-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220408225037.627432-1-bjorn.andersson@linaro.org>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.122.247.231]
-X-ClientProxiedBy: lhreml724-chm.china.huawei.com (10.201.108.75) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Apr 2022 10:20:54 -0700
-Ira Weiny <ira.weiny@intel.com> wrote:
+The Qualcomm SC8280XP platform has three instances of the tsens block,
+add a compatible for these instances.
 
-> On Fri, Apr 29, 2022 at 04:55:02PM +0100, Jonathan Cameron wrote:
-> > On Thu, 14 Apr 2022 13:32:31 -0700
-> > ira.weiny@intel.com wrote:
-> >   
-> > > From: Ira Weiny <ira.weiny@intel.com>
-> > >   
-> 
-> [snip]
-> 
-> > > +
-> > > +/**
-> > > + * cxl_pci_create_doe_devices - Create auxiliary bus DOE devices for all DOE
-> > > + *				mailboxes found
-> > > + *
-> > > + * @pci_dev: The PCI device to scan for DOE mailboxes
-> > > + *
-> > > + * There is no coresponding destroy of these devices.  This function associates
-> > > + * the DOE auxiliary devices created with the pci_dev passed in.  That
-> > > + * association is device managed (devm_*) such that the DOE auxiliary device
-> > > + * lifetime is always less than or equal to the lifetime of the pci_dev.
-> > > + *
-> > > + * RETURNS: 0 on success -ERRNO on failure.
-> > > + */
-> > > +static int cxl_pci_create_doe_devices(struct pci_dev *pdev)
-> > > +{
-> > > +	struct device *dev = &pdev->dev;
-> > > +	bool use_irq = true;
-> > > +	int irqs = 0;
-> > > +	u16 off = 0;
-> > > +	int rc;
-> > > +
-> > > +	pci_doe_for_each_off(pdev, off)
-> > > +		irqs++;  
-> > I believe this is insufficient because there may be other irqs in use
-> > on the device.  
-> 
-> I did not think that was true for any current CXL device.  From what I could
-> tell all CXL devices would be covered by this simple calculation.  I left it to
-> the reader to determine if a new CXL device came along which needed other irq's
-> to lift this somewhere to cover those allocations.  I probably should have made
-> some comment.  Sorry.
-> 
-> > In a similar fashion to that done in pcie/portdrv_core.c
-> > I think we need to instead find the maximum msi/msix vector number
-> > by reading the config space.  
-> 
-> I was not aware I could do that...
-> 
-> > Then we request one more vector
-> > than that max value to ensure the vector we need has been requested.  
-> 
-> Yea at some point I figured this would be lifted out of here as part of a
-> larger 'allocate all the vectors for the device' function.
-> 
-> But for now this is the only place that needs irqs so I punted.  I can lift
-> this into something like
-> 
-> cxl_pci_alloc_irq_vectors(...) and then pass use_irq here.
-> 
-> But to move this series forward I would propose that
-> cxl_pci_alloc_irq_vectors() do what I'm doing here for now.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
 
-Handling this right is pretty simple code e.g. equivalent of
-https://elixir.bootlin.com/linux/latest/source/drivers/pci/pcie/portdrv_core.c#L62
-So my inclination would be to fix it now rather than leaving chance
-of some odd failures later.
+I apprently missed the '2' in the compatible. Retaining Krzysztof's ack under
+the assumption that he's even more okay with the patch now that it's content is
+correct.
 
-Jonathan
+Changes since v1:
+- Fix compatible to say 8280, instead of 8180
 
-> 
-> Ira
-> 
-> > 
-> > Jonathan
-> >   
-> > > +	pci_info(pdev, "Found %d DOE mailbox's\n", irqs);
-> > > +
-> > > +	/*
-> > > +	 * Allocate enough vectors for the DOE's
-> > > +	 */
-> > > +	rc = pci_alloc_irq_vectors(pdev, irqs, irqs, PCI_IRQ_MSI |
-> > > +						     PCI_IRQ_MSIX);
-> > > +	if (rc != irqs) {
-> > > +		pci_err(pdev,
-> > > +			"Not enough interrupts for all the DOEs; use polling\n");
-> > > +		use_irq = false;
-> > > +		/* Some got allocated; clean them up */
-> > > +		if (rc > 0)
-> > > +			cxl_pci_free_irq_vectors(pdev);
-> > > +	} else {
-> > > +		/*
-> > > +		 * Enabling bus mastering is require for MSI/MSIx.  It could be
-> > > +		 * done later within the DOE initialization, but as it
-> > > +		 * potentially has other impacts keep it here when setting up
-> > > +		 * the IRQ's.
-> > > +		 */
-> > > +		pci_set_master(pdev);
-> > > +		rc = devm_add_action_or_reset(dev,
-> > > +					      cxl_pci_free_irq_vectors,
-> > > +					      pdev);
-> > > +		if (rc)
-> > > +			return rc;
-> > > +	}
-> > > +
-> > > +	pci_doe_for_each_off(pdev, off) {
-> > > +		struct auxiliary_device *adev;
-> > > +		struct cxl_doe_dev *new_dev;
-> > > +		int id;
-> > > +
-> > > +		new_dev = kzalloc(sizeof(*new_dev), GFP_KERNEL);
-> > > +		if (!new_dev)
-> > > +			return -ENOMEM;
-> > > +
-> > > +		new_dev->pdev = pdev;
-> > > +		new_dev->cap_offset = off;
-> > > +		new_dev->use_irq = use_irq;
-> > > +
-> > > +		/* Set up struct auxiliary_device */
-> > > +		adev = &new_dev->adev;
-> > > +		id = ida_alloc(&pci_doe_adev_ida, GFP_KERNEL);
-> > > +		if (id < 0) {
-> > > +			kfree(new_dev);
-> > > +			return -ENOMEM;
-> > > +		}
-> > > +
-> > > +		adev->id = id;
-> > > +		adev->name = DOE_DEV_NAME;
-> > > +		adev->dev.release = cxl_pci_doe_dev_release;
-> > > +		adev->dev.parent = dev;
-> > > +
-> > > +		if (auxiliary_device_init(adev)) {
-> > > +			cxl_pci_doe_dev_release(&adev->dev);
-> > > +			return -EIO;
-> > > +		}
-> > > +
-> > > +		if (auxiliary_device_add(adev)) {
-> > > +			auxiliary_device_uninit(adev);
-> > > +			return -EIO;
-> > > +		}
-> > > +
-> > > +		rc = devm_add_action_or_reset(dev, cxl_pci_doe_destroy_device,
-> > > +					      adev);
-> > > +		if (rc)
-> > > +			return rc;
-> > > +	}
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > >  static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-> > >  {
-> > >  	struct cxl_register_map map;
-> > > @@ -630,6 +753,10 @@ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-> > >  	if (rc)
-> > >  		return rc;
-> > >  
-> > > +	rc = cxl_pci_create_doe_devices(pdev);
-> > > +	if (rc)
-> > > +		return rc;
-> > > +
-> > >  	cxl_dvsec_ranges(cxlds);
-> > >  
-> > >  	cxlmd = devm_cxl_add_memdev(cxlds);  
-> >   
+ Documentation/devicetree/bindings/thermal/qcom-tsens.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml b/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
+index d72122bbaf3d..038d81338fcf 100644
+--- a/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
++++ b/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
+@@ -50,6 +50,7 @@ properties:
+               - qcom,sc7180-tsens
+               - qcom,sc7280-tsens
+               - qcom,sc8180x-tsens
++              - qcom,sc8280xp-tsens
+               - qcom,sdm630-tsens
+               - qcom,sdm845-tsens
+               - qcom,sm6350-tsens
+-- 
+2.35.1
 
