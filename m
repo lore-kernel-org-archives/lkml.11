@@ -2,82 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A7DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B9CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:08:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238009AbiECPLy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:11:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37800 "EHLO
+        id S237989AbiECPL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:11:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237914AbiECPLm (ORCPT
+        with ESMTP id S237957AbiECPLx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:11:42 -0400
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4D53A5EB;
-        Tue,  3 May 2022 08:08:10 -0700 (PDT)
-Received: by mail-wr1-f54.google.com with SMTP id i5so23759914wrc.13;
-        Tue, 03 May 2022 08:08:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OFDYOtaeBYWdI/VdYgSv21m5XBBjgU/ODz2WZHmBn3Q=;
-        b=v/IhySNd6YcyBWVPAJtPlG6svioReVtcopsRuRY4B++F0yOS8zFCjbJriymv90zE1K
-         RPBvBVl3eg7fjCYKRRJSFFRy9CWyyUPrt2hRs+oORJg8DZIipB2RZFqGubvbVIhY9xNj
-         3ANpybjIjSIsrFeo9CiloyOauZxWMH1pstne0RVvlVG4VvFilpvVFNZmIy+tK0dq/o0C
-         lhW+3Lzn/c/dRmsMJ67bJQSP4JVzC8TpghjKD6hxDmoQW3FLz+PqWF9cTzQRis32dXZx
-         dWnKgzXg4QBg5Au/It48ni12rLM/TvGongRXls6DwZQTcnaxVmmx3MG1FhBuOxxJ8j4U
-         vPUg==
-X-Gm-Message-State: AOAM533T1GLgy/nFj9IUg3XjMHF6tbVCzTONkdGPshts75yC9Ce7cQdY
-        eyk2E9Lld0jQuGFb+r496Ss=
-X-Google-Smtp-Source: ABdhPJxUHgC+z861mLwWBsRMd0+WqwbQOXHy1VunvJ23KhKxVuDMs2AqWeh+/Td2z8ZSYIVytBegWQ==
-X-Received: by 2002:a05:6000:1acd:b0:20c:726a:3840 with SMTP id i13-20020a0560001acd00b0020c726a3840mr3707076wry.507.1651590489041;
-        Tue, 03 May 2022 08:08:09 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id g17-20020adfbc91000000b0020c5253d8f3sm11729850wrh.63.2022.05.03.08.08.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 08:08:08 -0700 (PDT)
-Date:   Tue, 3 May 2022 15:08:06 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Saurabh Singh Sengar <ssengar@linux.microsoft.com>
-Cc:     Dexuan Cui <decui@microsoft.com>,
-        Saurabh Singh Sengar <ssengar@microsoft.com>,
-        "drawat.floss@gmail.com" <drawat.floss@gmail.com>,
-        "airlied@linux.ie" <airlied@linux.ie>,
-        "daniel@ffwll.ch" <daniel@ffwll.ch>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>
-Subject: Re: [PATCH v4] drm/hyperv: Add error message for fb size greater
- than allocated
-Message-ID: <20220503150806.neeemkwlexmyqsnd@liuwe-devbox-debian-v2>
-References: <1649737739-10113-1-git-send-email-ssengar@linux.microsoft.com>
- <BYAPR21MB127064CAEA28FBBFB34672C3BFED9@BYAPR21MB1270.namprd21.prod.outlook.com>
- <20220503145016.GA25079@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+        Tue, 3 May 2022 11:11:53 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC423B003
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:08:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651590499; x=1683126499;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=HIV7+BriOVIHhbMS5XwJ9TB/Dt1Tpi6juyaLYsRlF8Y=;
+  b=AVaPUnNlfHHKmmcs0nVahxKgoIA1oxPRN/bhsE4BPy2nVSyen8sC0php
+   ow/wQMvDZYyKci8V45vfvIIbeoP/7HjQbvXTDmiIs/+HDjZrrWW0FrZZ0
+   LM76ohgZNQvpvx9ndGTUKT30K4bnzrWn2bhR3a8hncPB78ahGuZCpDVzj
+   vkrfXXfhh6HpvBeT6XIoJ2owiDOtfqcf0sI5i8feo8bFcrHPijjYdHxPs
+   K6VCQaeEFBX0bcp1JklJ3fyuAu4gg26g5RqnBKryzwRu2GqpoBvmDKBwp
+   VfgFaTiz3fosu7PuexJqMzZMpsc9Kr/oJej43oX5yuZo/h1zwJYygxy9G
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="249478606"
+X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
+   d="scan'208";a="249478606"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 08:07:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
+   d="scan'208";a="547626049"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 03 May 2022 08:07:53 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nlu80-000AYm-PI;
+        Tue, 03 May 2022 15:07:52 +0000
+Date:   Tue, 3 May 2022 23:06:56 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [asahilinux:bits/110-smc 13/14]
+ drivers/input/misc/macsmc-hid.c:59:37: error: implicit declaration of
+ function 'kernel_can_power_off'; did you mean 'kernel_power_off'?
+Message-ID: <202205032215.0V3jamj1-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220503145016.GA25079@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 07:50:16AM -0700, Saurabh Singh Sengar wrote:
-> On Tue, Apr 12, 2022 at 05:06:07AM +0000, Dexuan Cui wrote:
-> > > From: Saurabh Sengar <ssengar@linux.microsoft.com>
-> > > Sent: Monday, April 11, 2022 9:29 PM
-> > >  ...
-> > > Add error message when the size of requested framebuffer is more than
-> > > the allocated size by vmbus mmio region for framebuffer
-> > 
-> > The line lacks a period, but I guess the maintainer may help fix it for you :-)
-> >  
-> > > Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
-> > 
-> > Reviewed-by: Dexuan Cui <decui@microsoft.com>
-> 
-> Can this be queued for next ? please let me know in case any clarification required.
+tree:   https://github.com/AsahiLinux/linux bits/110-smc
+head:   dc3db43287ff1d44b447fff8ed6386b28b339f1c
+commit: 0f263115481acb56629afae7ff2bda87b8aef659 [13/14] Input: macsmc-hid: New driver to handle the Apple Mac SMC buttons/lid
+config: arm64-randconfig-c003-20220501 (https://download.01.org/0day-ci/archive/20220503/202205032215.0V3jamj1-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/0f263115481acb56629afae7ff2bda87b8aef659
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/110-smc
+        git checkout 0f263115481acb56629afae7ff2bda87b8aef659
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-Applied to hyperv-next. Thanks.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/input/misc/macsmc-hid.c: In function 'macsmc_hid_event':
+>> drivers/input/misc/macsmc-hid.c:59:37: error: implicit declaration of function 'kernel_can_power_off'; did you mean 'kernel_power_off'? [-Werror=implicit-function-declaration]
+      59 |                                 if (kernel_can_power_off())
+         |                                     ^~~~~~~~~~~~~~~~~~~~
+         |                                     kernel_power_off
+   cc1: some warnings being treated as errors
+
+
+vim +59 drivers/input/misc/macsmc-hid.c
+
+    29	
+    30	static int macsmc_hid_event(struct notifier_block *nb, unsigned long event, void *data)
+    31	{
+    32		struct macsmc_hid *smchid = container_of(nb, struct macsmc_hid, nb);
+    33		u16 type = event >> 16;
+    34		u8 d1 = (event >> 8) & 0xff;
+    35		u8 d2 = event & 0xff;
+    36	
+    37		switch (type) {
+    38		case SMC_EV_BTN:
+    39			switch (d1) {
+    40			case BTN_POWER:
+    41				input_report_key(smchid->input, KEY_POWER, d2);
+    42				input_sync(smchid->input);
+    43				break;
+    44			case BTN_POWER_HELD1:
+    45				/*
+    46				 * TODO: is this pre-warning useful?
+    47				 */
+    48				if (d2)
+    49					dev_warn(smchid->dev, "Power button held down\n");
+    50				break;
+    51			case BTN_POWER_HELD2:
+    52				/*
+    53				 * If we get here, we have about 4 seconds before forced shutdown.
+    54				 * Try to do an emergency shutdown to make sure the NVMe cache is
+    55				 * flushed. macOS actually does this by panicing (!)...
+    56				 */
+    57				if (d2) {
+    58					dev_crit(smchid->dev, "Triggering forced shutdown!\n");
+  > 59					if (kernel_can_power_off())
+    60						kernel_power_off();
+    61					else /* Missing macsmc-reboot driver? */
+    62						kernel_restart("SMC power button triggered restart");
+    63				}
+    64				break;
+    65			default:
+    66				dev_info(smchid->dev, "Unknown SMC button event: %02x %02x\n", d1, d2);
+    67				break;
+    68			}
+    69			return NOTIFY_OK;
+    70		case SMC_EV_LID:
+    71			input_report_switch(smchid->input, SW_LID, d1);
+    72			input_sync(smchid->input);
+    73			return NOTIFY_OK;
+    74		}
+    75	
+    76		return NOTIFY_DONE;
+    77	}
+    78	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
