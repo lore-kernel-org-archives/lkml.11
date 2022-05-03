@@ -2,157 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E925EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 14:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A868C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 14:45:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237333AbiECOso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 10:48:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42360 "EHLO
+        id S237340AbiECOtJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 10:49:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237302AbiECOsd (ORCPT
+        with ESMTP id S233888AbiECOsi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 10:48:33 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AEDE3916D
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 07:44:59 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id p6so15533199pjm.1
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 07:44:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e8AVZNz1T1fbKBPaS1jbLfs2nSYwxCJeZrFfZY3AuXg=;
-        b=YgIR+HSs5Fl2nL+1avLDSIxzGwgrqQZg4BiwSjU0cu9k2bxpynzPGC6wvWGoMkvHfv
-         yMI9a0zmrILdE4gbdtT/4db5hjs7b+NxgPwkibcXWrjxuWgC0hV/jH5qF4vcbryjtJi/
-         KvzOXe86/hQ0c/8QofStHRq2f0dDshoXPcr9I=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e8AVZNz1T1fbKBPaS1jbLfs2nSYwxCJeZrFfZY3AuXg=;
-        b=nRAXsp93MQg/cPmPNQ1JH+nlACWQcJJPzuLFc+3FnGd9N+FTan3MBL7KRbvQfVBnSF
-         BSaFS1S1AkQx4Iqp08h+6mo25O/IUIvqTisGevShMkhKr/4ChO3Kh4C5te/+flLLFgwX
-         WURIlseMADzAgw080XysifQmXoy7HXYT43ohIogycMA4Qy6wNg7pR1K2RGnNt4WSYg7Y
-         Hn6bzmWKoeoSkV/92VsVYdgaaoVNyK+S+SGWHFi53nHEjelnOQwMfUjAPANmr0KurWxg
-         FXVmajM7Gl7cinqGjXPxmFyWpj9fUnQJZ54wKe5BxPs3Gi7QFrighkfAPma7ovHD4eHf
-         a1SA==
-X-Gm-Message-State: AOAM533UDWxvIkNCDm5hPexVFTqmOjpXmWuA6lMGEL+REhHPqh0ENTcb
-        3BCri1tFFSi0+9p0wGnxGjVLVg==
-X-Google-Smtp-Source: ABdhPJxpqQbtuAURmpaH45+EofYX7rkQQIunIhDE2JG2HBB7V2ZaoSOsrzkTFHzKRa1O/qRfMqbtMA==
-X-Received: by 2002:a17:90a:b106:b0:1d9:7cde:7914 with SMTP id z6-20020a17090ab10600b001d97cde7914mr5052946pjq.56.1651589098978;
-        Tue, 03 May 2022 07:44:58 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id k4-20020a170902ba8400b0015e8d4eb230sm6387973pls.122.2022.05.03.07.44.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 07:44:58 -0700 (PDT)
-From:   Kees Cook <keescook@chromium.org>
-To:     Raju Rangoju <rajur@chelsio.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        kernel test robot <lkp@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: [PATCH] net: chelsio: cxgb4: Avoid potential negative array offset
-Date:   Tue,  3 May 2022 07:44:25 -0700
-Message-Id: <20220503144425.2858110-1-keescook@chromium.org>
-X-Mailer: git-send-email 2.32.0
+        Tue, 3 May 2022 10:48:38 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B8B39145;
+        Tue,  3 May 2022 07:45:05 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: shreeya)
+        with ESMTPSA id 0F2731F44139
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651589104;
+        bh=/I6H16hNm7gAwn16uNo8eZZIr/zboi499kJmx5/AwaY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=A7p49alo4NdNI69oba+CLXyPIxJ9Qd+YH+Pc2VXdCWsTu2haLmoCeniyXwGn1s4fu
+         4yKuRds7WX5SNROuuUXvGoxMgU2QMkiyEFXrHvNrFmgMpmbgkqBm0eugmP3/g8SPgU
+         PVjFg2KeUyGTKxHwVYQGhsDfmfh8lSRUSvSMF+uEXFdPxSiljj977s7LooJafelYsB
+         0ExY00/Uf4pfAHd0YsbTbw9UoatAvinHOJHPnN9YZoGLzX3RJIMaHoE6S1kyp/h2wG
+         AQ4rbbhzyy3cgtF9sbgmVze+lh5nnqzhCuBqJ6gwQ1SzLaETJ5Q0qcE33FZuHaUkvZ
+         ocKoAqkwuog6Q==
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        Zhigang.Shi@liteon.com, krzk@kernel.org, krisman@collabora.com
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com,
+        alvaro.soliverez@collabora.com,
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 2/3] dt-bindings: Document ltrf216a light sensor bindings
+Date:   Tue,  3 May 2022 20:13:53 +0530
+Message-Id: <20220503144354.75438-3-shreeya.patel@collabora.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220503144354.75438-1-shreeya.patel@collabora.com>
+References: <20220503144354.75438-1-shreeya.patel@collabora.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4431; h=from:subject; bh=+8uAMoqqS0Bcfw8fZYr6KoQkcNcm36Imb2FI1uAd3hw=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBicT/Jv8v/feIVKVuIyt5mmkMRPZzdczQGAeIED/S7 Sue6QWmJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYnE/yQAKCRCJcvTf3G3AJnSlD/ 9g7H+DltIHtP9cfNn3f84D/otBGRybV39ENgfcteZPAekvVAxWbzFXVXjV1DCl2HYb6XH94aYgCCvl VjgPLaI2AgI1z6oeSF4FXEZ8Oj+pmwDMBZOwIXpViXgs7UbPQWvC88ax1BUlLCHKdz1cUtZoY/SohH lRdgXNPqyqFjAUyvop6yPb1TyhHTn6DgIzfF92/c/VwB0rgIci9AuoyQ6xSrrse11Q4Q9IVBGgsUSv IcJThpwqDXdsRe0KtlJf6dRV0aB9v9RX6kEvKrx5T4ovBu6XqgSgW5Kjj1XubGyevRDDyU0k/ttLPh Hpzhx+t9n/UC5k+gCFS3q+e1tGbaVF1LOASAs1nhCw7RnSCT/mekDTlJSKwLN+WxfPvQPjCMCF8wh9 Ra3Gb0Uezm2UiXIkAZ4FbQZPP5MR5zARIfUGmT4ChTTw84uORVP9rRBuv1xxBpuNg3HDmfYzu4/UJM ZDJit+SFwwho3EK2zZlweact3kjnuUzcR+v11rY52Ejxl/H/wf0BVWzmJS7nO3tjeIBLn9E86n5uP+ 3iInLzOk4swgV/dqvq/xjSvecKICXVVtvOgnP1pkYAkguEdt46US/lUJhZI/FMIH7uAcCTbH9ARg/A jTjJNdk3gEUCPfhSDLdbzKvYzfYIr95z2fYT1LAc6hfj/RdtVBlXjY9EhL7g==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using min_t(int, ...) as a potential array index implies to the compiler
-that negative offsets should be allowed. This is not the case, though.
-Replace min_t() with clamp_t(). Fixes the following warning exposed
-under future CONFIG_FORTIFY_SOURCE improvements:
+Add devicetree bindings for ltrf216a ambient light sensor.
 
-In file included from include/linux/string.h:253,
-                 from include/linux/bitmap.h:11,
-                 from include/linux/cpumask.h:12,
-                 from include/linux/smp.h:13,
-                 from include/linux/lockdep.h:14,
-                 from include/linux/rcupdate.h:29,
-                 from include/linux/rculist.h:11,
-                 from include/linux/pid.h:5,
-                 from include/linux/sched.h:14,
-                 from include/linux/delay.h:23,
-                 from drivers/net/ethernet/chelsio/cxgb4/t4_hw.c:35:
-drivers/net/ethernet/chelsio/cxgb4/t4_hw.c: In function 't4_get_raw_vpd_params':
-include/linux/fortify-string.h:46:33: warning: '__builtin_memcpy' pointer overflow between offset 29 and size [2147483648, 4294967295] [-Warray-bounds]
-   46 | #define __underlying_memcpy     __builtin_memcpy
-      |                                 ^
-include/linux/fortify-string.h:388:9: note: in expansion of macro '__underlying_memcpy'
-  388 |         __underlying_##op(p, q, __fortify_size);                        \
-      |         ^~~~~~~~~~~~~
-include/linux/fortify-string.h:433:26: note: in expansion of macro '__fortify_memcpy_chk'
-  433 | #define memcpy(p, q, s)  __fortify_memcpy_chk(p, q, s,                  \
-      |                          ^~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/chelsio/cxgb4/t4_hw.c:2796:9: note: in expansion of macro 'memcpy'
- 2796 |         memcpy(p->id, vpd + id, min_t(int, id_len, ID_LEN));
-      |         ^~~~~~
-include/linux/fortify-string.h:46:33: warning: '__builtin_memcpy' pointer overflow between offset 0 and size [2147483648, 4294967295] [-Warray-bounds]
-   46 | #define __underlying_memcpy     __builtin_memcpy
-      |                                 ^
-include/linux/fortify-string.h:388:9: note: in expansion of macro '__underlying_memcpy'
-  388 |         __underlying_##op(p, q, __fortify_size);                        \
-      |         ^~~~~~~~~~~~~
-include/linux/fortify-string.h:433:26: note: in expansion of macro '__fortify_memcpy_chk'
-  433 | #define memcpy(p, q, s)  __fortify_memcpy_chk(p, q, s,                  \
-      |                          ^~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/chelsio/cxgb4/t4_hw.c:2798:9: note: in expansion of macro 'memcpy'
- 2798 |         memcpy(p->sn, vpd + sn, min_t(int, sn_len, SERNUM_LEN));
-      |         ^~~~~~
-
-Additionally remove needless cast from u8[] to char * in last strim()
-call.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/lkml/202205031926.FVP7epJM-lkp@intel.com
-Fixes: fc9279298e3a ("cxgb4: Search VPD with pci_vpd_find_ro_info_keyword()")
-Fixes: 24c521f81c30 ("cxgb4: Use pci_vpd_find_id_string() to find VPD ID string")
-Cc: Raju Rangoju <rajur@chelsio.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
 ---
- drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-index e7b4e3ed056c..f119ec7323e5 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-@@ -2793,14 +2793,14 @@ int t4_get_raw_vpd_params(struct adapter *adapter, struct vpd_params *p)
- 		goto out;
- 	na = ret;
- 
--	memcpy(p->id, vpd + id, min_t(int, id_len, ID_LEN));
-+	memcpy(p->id, vpd + id, clamp_t(int, id_len, 0, ID_LEN));
- 	strim(p->id);
--	memcpy(p->sn, vpd + sn, min_t(int, sn_len, SERNUM_LEN));
-+	memcpy(p->sn, vpd + sn, clamp_t(int, sn_len, 0, SERNUM_LEN));
- 	strim(p->sn);
--	memcpy(p->pn, vpd + pn, min_t(int, pn_len, PN_LEN));
-+	memcpy(p->pn, vpd + pn, clamp_t(int, pn_len, 0, PN_LEN));
- 	strim(p->pn);
--	memcpy(p->na, vpd + na, min_t(int, na_len, MACADDR_LEN));
--	strim((char *)p->na);
-+	memcpy(p->na, vpd + na, clamp_t(int, na_len, 0, MACADDR_LEN));
-+	strim(p->na);
- 
- out:
- 	vfree(vpd);
+Changes in v3
+  - Fix indentation in the example section
+
+Changes in v2
+  - Take over the maintainership for the bindings
+  - Add interrupt and power supply property in DT bindings
+
+ .../bindings/iio/light/liteon,ltrf216a.yaml   | 51 +++++++++++++++++++
+ 1 file changed, 51 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
+
+diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
+new file mode 100644
+index 000000000000..1389639cd7fd
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
+@@ -0,0 +1,51 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/liteon,ltrf216a.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: LTRF216A Ambient Light Sensor
++
++maintainers:
++  - Shreeya Patel <shreeya.patel@collabora.com>
++
++description:
++  Ambient light sensing with an i2c interface.
++
++properties:
++  compatible:
++    oneOf:
++      - const: liteon,ltrf216a
++      - const: ltr,ltrf216a
++        deprecated: true
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  vdd-supply:
++    description: Regulator that provides power to the sensor.
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        light-sensor@53 {
++            compatible = "liteon,ltrf216a";
++            reg = <0x53>;
++            vdd-supply = <&vdd_regulator>;
++            interrupt-parent = <&gpio0>;
++            interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
++        };
++    };
 -- 
-2.32.0
+2.30.2
 
