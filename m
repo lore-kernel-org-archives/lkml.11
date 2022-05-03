@@ -2,127 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F23C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB058C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237760AbiECPHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:07:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
+        id S237758AbiECPHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:07:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232613AbiECPG6 (ORCPT
+        with ESMTP id S232613AbiECPHl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:06:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 116C739813
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:03:25 -0700 (PDT)
+        Tue, 3 May 2022 11:07:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F71C3A1A6
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:04:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651590205;
+        s=mimecast20190719; t=1651590247;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6NUbQ9yWtqpo0VvAgqEBwOM8q51whPE1UMGmRuUeo40=;
-        b=INlnCTuHxRTdp8TtK5Qb5/NhVYEOFKGapLgkNia7qaQa6QKrcG+7cmrfm2q4XHN4I5BNsR
-        jak+mFhz47rjfcGN3jT36LBqzTRTHt/QK7oCeq+zZezzMpic/mSQ156c/IAWTfwv60KGBM
-        N9UzVtLI4nfyBDpOgl0xqgSPI/ETpDg=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=jtQ9B5IdhnfCEt2aG9WPbx5ZitVQKl3Yo50OcP90VbM=;
+        b=CvSgwHjrnoRN6dIV+2wFF12eqGkQxVelZhTwq9YeLuYKfcyIf6azqawWqz+jEn1OtRiTKq
+        VIM3jmmRZEufd8H7nNntpg+PlRaAeRbooEysbFaZTuf/VQYyQucuTtEGZJIKOPEpVGtFgZ
+        tjlaRgM1acR51cBLoTPE4z9YNB/WD8c=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-655-zEHQQnAcNR6pb4Y0hVmM_A-1; Tue, 03 May 2022 11:02:36 -0400
-X-MC-Unique: zEHQQnAcNR6pb4Y0hVmM_A-1
-Received: by mail-lf1-f72.google.com with SMTP id h12-20020a05651211cc00b00471af04ec12so8131629lfr.15
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 08:02:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6NUbQ9yWtqpo0VvAgqEBwOM8q51whPE1UMGmRuUeo40=;
-        b=EQZRIkt6VLN4QV77l+sefMBPrRKrTU6v6YynpOKKMg/1hJKCnjQXpZxDoPUEyR3QjT
-         CEIrbKAt8Sq2h11/tOPcPBg9MxZ4d8NC9Ob8eOQj42R9IQb2lTHO98rqjt1SEV6SNACR
-         QbbyBAInHHh25yp85JakBr1IbN/P4RpvyDsyY7DneJvZYiiNWfpfSSoJSAsm3kL2CMCl
-         XdS3Bdg+GtD5rP52z6saBNwOaiAsppf8fJEdYiaaNL5I6+30i+52AmO8UF0hSlUQ2x2G
-         //sO78gfb0/TWfQfhqVMzbGssOoW1N2lLx5XfuJ4ZQnzewCbBfxZkrULPsNMxaEHDJbK
-         XgEg==
-X-Gm-Message-State: AOAM532HXyVhMpVzwA/QyBLnJfNkqxXxV5xf6qf3aT5PYIS/oisZ3UC4
-        C7atDo4Kj1fmldoXZSXRlPNohPCg9gPWmlR8VeKrfYRO529mIx5LEV9v5DG1e+z8HYfKYFscCiV
-        AQAZS7Y7ytsi/x4R1JFuFx0b6
-X-Received: by 2002:a5d:554a:0:b0:20a:d511:c514 with SMTP id g10-20020a5d554a000000b0020ad511c514mr12301995wrw.347.1651579447286;
-        Tue, 03 May 2022 05:04:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyE9ZcONNlXgG46lfEm8iYAXKm9tIfYloMqtc6BAlvfRCOkFt0SEGeMTdmBS0sIb9y7I0J6XA==
-X-Received: by 2002:a5d:554a:0:b0:20a:d511:c514 with SMTP id g10-20020a5d554a000000b0020ad511c514mr12301971wrw.347.1651579447072;
-        Tue, 03 May 2022 05:04:07 -0700 (PDT)
-Received: from [10.32.181.74] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id a25-20020adfb519000000b0020c5253d920sm11988545wrd.108.2022.05.03.05.04.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 05:04:06 -0700 (PDT)
-Message-ID: <68a3c5b5-cb02-a22b-d05b-a141c41a9cad@redhat.com>
-Date:   Tue, 3 May 2022 14:04:04 +0200
+ us-mta-616-T_k4BQPuPx2pU21-jOK9CA-1; Tue, 03 May 2022 09:42:59 -0400
+X-MC-Unique: T_k4BQPuPx2pU21-jOK9CA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9BCEF3D36FE7;
+        Tue,  3 May 2022 13:41:58 +0000 (UTC)
+Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.194.243])
+        by smtp.corp.redhat.com (Postfix) with SMTP id AD5E915376BB;
+        Tue,  3 May 2022 13:41:53 +0000 (UTC)
+Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
+        oleg@redhat.com; Tue,  3 May 2022 15:41:56 +0200 (CEST)
+Date:   Tue, 3 May 2022 15:41:50 +0200
+From:   Oleg Nesterov <oleg@redhat.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
+Subject: Re: [PATCH v2 07/12] ptrace: Don't change __state
+Message-ID: <20220503134149.GA22999@redhat.com>
+References: <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
+ <20220429214837.386518-7-ebiederm@xmission.com>
+ <20220502153934.GD17276@redhat.com>
+ <87levjrixl.fsf@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v4 7/7] kvm: x86/cpuid: Fix CPUID leaf 0xA
-Content-Language: en-US
-To:     Jim Mattson <jmattson@google.com>,
-        Sandipan Das <sandipan.das@amd.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        x86@kernel.org, peterz@infradead.org, bp@alien8.de,
-        dave.hansen@linux.intel.com, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, namhyung@kernel.org,
-        jolsa@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        like.xu.linux@gmail.com, eranian@google.com, puwen@hygon.cn,
-        ananth.narayan@amd.com, ravi.bangoria@amd.com,
-        santosh.shukla@amd.com
-References: <cover.1651058600.git.sandipan.das@amd.com>
- <3fef83d9c2b2f7516e8ff50d60851f29a4bcb716.1651058600.git.sandipan.das@amd.com>
- <CALMp9eSdUW6et2Us1if-j2Do6cv9ssyT4C2KPiyomFd7i_Dc1Q@mail.gmail.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <CALMp9eSdUW6et2Us1if-j2Do6cv9ssyT4C2KPiyomFd7i_Dc1Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87levjrixl.fsf@email.froward.int.ebiederm.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/3/22 01:50, Jim Mattson wrote:
-> On Wed, Apr 27, 2022 at 4:34 AM Sandipan Das <sandipan.das@amd.com> wrote:
->>
->> On some x86 processors, CPUID leaf 0xA provides information
->> on Architectural Performance Monitoring features. It
->> advertises a PMU version which Qemu uses to determine the
->> availability of additional MSRs to manage the PMCs.
->>
->> Upon receiving a KVM_GET_SUPPORTED_CPUID ioctl request for
->> the same, the kernel constructs return values based on the
->> x86_pmu_capability irrespective of the vendor.
->>
->> This leaf and the additional MSRs are not supported on AMD
->> and Hygon processors. If AMD PerfMonV2 is detected, the PMU
->> version is set to 2 and guest startup breaks because of an
->> attempt to access a non-existent MSR. Return zeros to avoid
->> this.
->>
->> Fixes: a6c06ed1a60a ("KVM: Expose the architectural performance monitoring CPUID leaf")
->> Reported-by: Vasant Hegde <vasant.hegde@amd.com>
->> Signed-off-by: Sandipan Das <sandipan.das@amd.com>
->> ---
->>   arch/x86/kvm/cpuid.c | 5 +++++
->>   1 file changed, 5 insertions(+)
->>
->> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
->> index 4b62d80bb22f..e66ebb747084 100644
->> --- a/arch/x86/kvm/cpuid.c
->> +++ b/arch/x86/kvm/cpuid.c
->> @@ -872,6 +872,11 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
->>                  union cpuid10_eax eax;
->>                  union cpuid10_edx edx;
->>
->> +               if (!static_cpu_has(X86_FEATURE_ARCH_PERFMON)) {
-> 
-> Should this be checking kvm_cpu_cap_has(X86_FEATURE_ARCH_PERFMON) instead?
+On 05/02, Eric W. Biederman wrote:
+>
+> Oleg Nesterov <oleg@redhat.com> writes:
+>
+> >>  #define TASK_KILLABLE			(TASK_WAKEKILL | TASK_UNINTERRUPTIBLE)
+> >>  #define TASK_STOPPED			(TASK_WAKEKILL | __TASK_STOPPED)
+> >> -#define TASK_TRACED			(TASK_WAKEKILL | __TASK_TRACED)
+> >> +#define TASK_TRACED			__TASK_TRACED
+> > ...
+> >>  static inline void signal_wake_up(struct task_struct *t, bool resume)
+> >>  {
+> >> -	signal_wake_up_state(t, resume ? TASK_WAKEKILL : 0);
+> >> +	unsigned int state = 0;
+> >> +	if (resume) {
+> >> +		state = TASK_WAKEKILL;
+> >> +		if (!(t->jobctl & JOBCTL_PTRACE_FROZEN))
+> >> +			state |= __TASK_TRACED;
+> >> +	}
+> >> +	signal_wake_up_state(t, state);
+> >
+> > Can't understand why is this better than the previous version which removed
+> > TASK_WAKEKILL if resume... Looks a bit strange to me. But again, I didn't
+> > look at the next patches yet.
+>
+> The goal is to replace the existing mechanism with an equivalent one,
+> so that we don't have to be clever and deal with it being slightly
+> different in one case.
+>
+> The difference is how does signal_pending_state affect how schedule will
+> sleep in ptrace_stop.
 
-Ah, it cannot because X86_FEATURE_ARCH_PERFMON is a synthetic feature. 
-kvm_cpu_cap_has only works with features that are backed by CPUID bits.
+But why is it bad if the tracee doesn't sleep in schedule ? If it races
+with SIGKILL. I still can't understand this.
 
-Paolo
+Yes, wait_task_inactive() can fail, so you need to remove WARN_ON_ONCE()
+in 11/12.
+
+Why is removing TASK_WAKEKILL from TASK_TRACED and complicating
+*signal_wake_up() better?
+
+And even if we need to ensure the tracee will always block after
+ptrace_freeze_traced(), we can change signal_pending_state() to
+return false if JOBCTL_PTRACE_FROZEN. Much simpler, imo. But still
+looks unnecessary to me.
+
+
+
+> Peter's plans to fix PREEMPT_RT or the freezer wait_task_inactive needs
+> to cope with the final being changed by something else. (TASK_FROZEN in
+> the freezer case).  I can only see that happening by removing the
+> dependency on the final state in wait_task_inactive.  Which we can't do
+> if we depend on wait_task_inactive failing if the process is in the
+> wrong state.
+
+OK, I guess this is what I do not understand. Could you spell please?
+
+And speaking of RT, wait_task_inactive() still can fail because
+cgroup_enter_frozen() takes css_set_lock? And it is called under
+preempt_disable() ? I don't understand the plan :/
+
+> At a practical level I think it also has an impact on patch:
+> "10/12 ptrace: Only return signr from ptrace_stop if it was provided".
+
+I didn't look at JOBCTL_PTRACE_SIGNR yet. But this looks minor to me,
+I mean, I am not sure it worth the trouble.
+
+Oleg.
 
