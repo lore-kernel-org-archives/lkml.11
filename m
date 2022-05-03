@@ -2,177 +2,324 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 831A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:09:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94EDDC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:10:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237068AbiECUMv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 16:12:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46826 "EHLO
+        id S241159AbiECUNo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 16:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238208AbiECUMU (ORCPT
+        with ESMTP id S231937AbiECUNm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 16:12:20 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652634092D;
-        Tue,  3 May 2022 13:08:21 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id gh6so35562419ejb.0;
-        Tue, 03 May 2022 13:08:21 -0700 (PDT)
+        Tue, 3 May 2022 16:13:42 -0400
+Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20F72403EA;
+        Tue,  3 May 2022 13:10:01 -0700 (PDT)
+Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 8DE3616D6;
+        Tue,  3 May 2022 23:10:34 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 8DE3616D6
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LFkwqeNMXvWSRmicZbw5B/Ot0aDTRBEW7BnChVj7xEc=;
-        b=fDmPwdLW1T+6OUcDyB7vVjMS6/hjXVkhZIyaIq6tv5Cq8rCeMJnyg7W4gKaYWIkA/o
-         640jziVpXAQ3myiaXG9VsiyOM1XB3XznXF+CL1qYTJepz10AqxavkqIMQh7w+2+9rWE3
-         iJT2lMa2bCcimtw+WMKe+o5tb/mIugs40kPJPlxTUVvzdck7FntCCm5VyDX1CC7DTKqh
-         Ay0Z8Rcg8M3UwV3Yw6w8GiQtT0eOUVGfQseQDfRkc07/M+eUnGNLd6CbjaiLfEODBTaO
-         xizD5yY9iwFRF+fc5FjxWbkySEaFOgmr8wnaJg/2mg8V4nd61Q6lIaUWwe6SDwbO/3cN
-         RimQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LFkwqeNMXvWSRmicZbw5B/Ot0aDTRBEW7BnChVj7xEc=;
-        b=m204n5HjE8gCTTE4mnTV2QtddfVyjtHowHQB+E0byVAQzRwikb2gDbjm5Ud1lFDnX3
-         qQ5WFeg3Rud2TuwpVwmzjLwDzZUtMu3xuI2dBrEvWdaLsY4ujJDPwrB3Vm7Qa5P/aznG
-         hikw2oS7bMd1WtnZOP9XEVzVBEMFUWbY8QSJkW0LPqou5114XTfx3ZleSt4KMUNIvmrI
-         QKjKm00msdIzoUn1WPgXHdPiGjzVNO7fJKaNhSNI51F4T0zZclTJWfifkNtrx3Df9elm
-         11njYo28dr4DUdy0XdtkOkf3qW9TTXFVx5nry/oIeEko0bdQTbcVi7t5tLiVtpe4d5z5
-         jcNw==
-X-Gm-Message-State: AOAM530Ex6NIy+HX+j0ur4BY9oARWS4wr2yYDSUUhGQmoUYmFZHIc2LR
-        qLHLZQKS+J/Sm1l/UsqKaSac5n3//oeOxA==
-X-Google-Smtp-Source: ABdhPJz4EXklKvCfbO8c19iCYHJhew6+DjIfiJdh2Ufi84jYtpY4Z3xg0MR3BJk+jSpmXWn2q9MOmQ==
-X-Received: by 2002:a17:907:1b26:b0:6ef:eaca:d2d8 with SMTP id mp38-20020a1709071b2600b006efeacad2d8mr17607322ejc.604.1651608499949;
-        Tue, 03 May 2022 13:08:19 -0700 (PDT)
-Received: from fedora.robimarko.hr (dh207-96-149.xnet.hr. [88.207.96.149])
-        by smtp.googlemail.com with ESMTPSA id ml11-20020a170906cc0b00b006f3ef214e59sm4967466ejb.191.2022.05.03.13.08.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 13:08:19 -0700 (PDT)
-From:   Robert Marko <robimarko@gmail.com>
-To:     amitk@kernel.org, thara.gopinath@linaro.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, rafael@kernel.org,
-        daniel.lezcano@linaro.org, rui.zhang@intel.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-pm@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH v4 3/5] drivers: thermal: tsens: allow configuring min and max trips
-Date:   Tue,  3 May 2022 22:08:11 +0200
-Message-Id: <20220503200813.4020698-3-robimarko@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220503200813.4020698-1-robimarko@gmail.com>
-References: <20220503200813.4020698-1-robimarko@gmail.com>
+        d=baikalelectronics.ru; s=mail; t=1651608634;
+        bh=6/S6VEzKvH8TW9AMi9YN/4HI8ctvdYhCP7Lpu5MwfW8=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=aBNelTNji0cPnRAo2ZharhYi6S5vjqsNC2xDAFaOWlbKDNTHw8QGW7CJ6YOrGmlh5
+         Lk8YtQ9p9V5NaNcEoOwW/m7uZq7pwllCl0Xrg/Oknvg0b+kJHiPm7mflYE4yFH651v
+         y5NNVbnEB3ws9G6xG7uBjlczHhNZnIQP6LoP9gd4=
+Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 May 2022 23:10:00 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+Subject: [PATCH v2 02/23] dt-bindings: ata: ahci-platform: Detach common AHCI bindings
+Date:   Tue, 3 May 2022 23:09:17 +0300
+Message-ID: <20220503200938.18027-3-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-IPQ8074 and IPQ6018 dont support negative trip temperatures and support
-up to 204 degrees C as the max trip temperature.
+In order to create a more sophisticated AHCI controller DT bindings let's
+divide the already available generic AHCI platform YAML schema into the
+platform part and a set of the common AHCI properties. The former part
+will be used to evaluate the AHCI DT nodes mainly compatible with the
+generic AHCI controller while the later schema will be used for more
+thorough AHCI DT nodes description. For instance such YAML schemas design
+will be useful for our DW AHCI SATA controller derivative with four clock
+sources, two reset lines, one system controller reference and specific
+max Rx/Tx DMA xfers size constraints.
 
-So, instead of always setting the -40 as min and 120 degrees C as max
-allow it to be configured as part of the features.
+Note the phys and target-supply property requirement is preserved in the
+generic AHCI platform bindings because some platforms can lack of the
+explicitly specified PHYs or target device power regulators.
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+
 ---
- drivers/thermal/qcom/tsens-8960.c | 2 ++
- drivers/thermal/qcom/tsens-v0_1.c | 2 ++
- drivers/thermal/qcom/tsens-v1.c   | 2 ++
- drivers/thermal/qcom/tsens-v2.c   | 2 ++
- drivers/thermal/qcom/tsens.c      | 4 ++--
- drivers/thermal/qcom/tsens.h      | 4 ++++
- 6 files changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/thermal/qcom/tsens-8960.c b/drivers/thermal/qcom/tsens-8960.c
-index ee584e5b07e5..4585904fb380 100644
---- a/drivers/thermal/qcom/tsens-8960.c
-+++ b/drivers/thermal/qcom/tsens-8960.c
-@@ -273,6 +273,8 @@ static struct tsens_features tsens_8960_feat = {
- 	.adc		= 1,
- 	.srot_split	= 0,
- 	.max_sensors	= 11,
-+	.trip_min_temp	= -40000,
-+	.trip_max_temp	= 120000,
- };
+Folks, I don't really see why the phys/target-supply requirement has been
+added to the generic AHCI DT schema in the first place. Probably just to
+imply some meaning for the sub-nodes definition. Anyway in one of the
+further patches I am adding the DW AHCI SATA controller DT bindings which
+won't require having these properties specified in the sub-nodes, but will
+describe additional port-specific properties. That's why I get to keep the
+constraints in the ahci-platform.yaml schema instead of moving them to the
+common schema.
+
+Changelog v2:
+- This is a new patch created after rebasing v1 onto the 5.18-rc3 kernel.
+---
+ .../devicetree/bindings/ata/ahci-common.yaml  | 117 ++++++++++++++++++
+ .../bindings/ata/ahci-platform.yaml           |  68 +---------
+ 2 files changed, 123 insertions(+), 62 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/ata/ahci-common.yaml
+
+diff --git a/Documentation/devicetree/bindings/ata/ahci-common.yaml b/Documentation/devicetree/bindings/ata/ahci-common.yaml
+new file mode 100644
+index 000000000000..72e24b246040
+--- /dev/null
++++ b/Documentation/devicetree/bindings/ata/ahci-common.yaml
+@@ -0,0 +1,117 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/ata/ahci-common.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Common Properties for Serial ATA AHCI controllers
++
++maintainers:
++  - Hans de Goede <hdegoede@redhat.com>
++  - Jens Axboe <axboe@kernel.dk>
++
++description:
++  This document defines device tree properties for a common AHCI SATA
++  controller implementation. It's hardware interface is supposed to
++  conform to the technical standard defined by Intel (see Serial ATA
++  Advanced Host Controller Interface specification for details). The
++  document doesn't constitute a DT-node binding by itself but merely
++  defines a set of common properties for the AHCI-compatible devices.
++
++select: false
++
++allOf:
++  - $ref: sata-common.yaml#
++
++properties:
++  reg:
++    description:
++      Generic AHCI registers space conforming to the Serial ATA AHCI
++      specification.
++
++  reg-names:
++    description: CSR space IDs
++
++  interrupts:
++    description:
++      Generic AHCI state change interrupt. Can be implemented either as a
++      single line attached to the controller as a set of the dedicated signals
++      for the global and particular port events.
++
++  clocks:
++    description:
++      List of all the reference clocks connected to the controller.
++
++  clock-names:
++    description: Reference clocks IDs
++
++  resets:
++    description:
++      List of the reset control lines to reset the controller clock
++      domains.
++
++  reset-names:
++    description: Reset line IDs
++
++  power-domains:
++    description:
++      List of the power domain the AHCI controller being a part of.
++
++  ahci-supply:
++    description: Power regulator for AHCI controller
++
++  target-supply:
++    description: Power regulator for SATA target device
++
++  phy-supply:
++    description: Power regulator for SATA PHY
++
++  phys:
++    description: Reference to the SATA PHY node
++    maxItems: 1
++
++  phy-names:
++    maxItems: 1
++
++  ports-implemented:
++    $ref: '/schemas/types.yaml#/definitions/uint32'
++    description:
++      Mask that indicates which ports the HBA supports. Useful if PI is not
++      programmed by the BIOS, which is true for some embedded SoC's.
++    maximum: 0x1f
++
++patternProperties:
++  "^sata-port@[0-9a-f]+$":
++    type: object
++    description:
++      It is optionally possible to describe the ports as sub-nodes so
++      to enable each port independently when dealing with multiple PHYs.
++
++    properties:
++      reg:
++        description: AHCI SATA port identifier
++        maxItems: 1
++
++      phys:
++        description: Individual AHCI SATA port PHY
++        maxItems: 1
++
++      phy-names:
++        description: AHCI SATA port PHY ID
++        maxItems: 1
++
++      target-supply:
++        description: Power regulator for SATA port target device
++
++    required:
++      - reg
++
++    additionalProperties: true
++
++required:
++  - reg
++  - interrupts
++
++additionalProperties: true
++
++...
+diff --git a/Documentation/devicetree/bindings/ata/ahci-platform.yaml b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
+index 9304e4731965..76075d3c8987 100644
+--- a/Documentation/devicetree/bindings/ata/ahci-platform.yaml
++++ b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
+@@ -36,8 +36,7 @@ select:
+     - compatible
  
- struct tsens_plat_data data_8960 = {
-diff --git a/drivers/thermal/qcom/tsens-v0_1.c b/drivers/thermal/qcom/tsens-v0_1.c
-index 6effb822bf3c..2c203ff374e6 100644
---- a/drivers/thermal/qcom/tsens-v0_1.c
-+++ b/drivers/thermal/qcom/tsens-v0_1.c
-@@ -543,6 +543,8 @@ static struct tsens_features tsens_v0_1_feat = {
- 	.adc		= 1,
- 	.srot_split	= 1,
- 	.max_sensors	= 11,
-+	.trip_min_temp	= -40000,
-+	.trip_max_temp	= 120000,
- };
+ allOf:
+-  - $ref: "sata-common.yaml#"
+-
++  - $ref: "ahci-common.yaml#"
  
- static const struct reg_field tsens_v0_1_regfields[MAX_REGFIELDS] = {
-diff --git a/drivers/thermal/qcom/tsens-v1.c b/drivers/thermal/qcom/tsens-v1.c
-index a4f561a6e582..1d7f8a80bd13 100644
---- a/drivers/thermal/qcom/tsens-v1.c
-+++ b/drivers/thermal/qcom/tsens-v1.c
-@@ -306,6 +306,8 @@ static struct tsens_features tsens_v1_feat = {
- 	.adc		= 1,
- 	.srot_split	= 1,
- 	.max_sensors	= 11,
-+	.trip_min_temp	= -40000,
-+	.trip_max_temp	= 120000,
- };
+ properties:
+   compatible:
+@@ -69,90 +68,35 @@ properties:
+     maxItems: 1
  
- static const struct reg_field tsens_v1_regfields[MAX_REGFIELDS] = {
-diff --git a/drivers/thermal/qcom/tsens-v2.c b/drivers/thermal/qcom/tsens-v2.c
-index 129cdb247381..9babc69bfd22 100644
---- a/drivers/thermal/qcom/tsens-v2.c
-+++ b/drivers/thermal/qcom/tsens-v2.c
-@@ -35,6 +35,8 @@ static struct tsens_features tsens_v2_feat = {
- 	.adc		= 0,
- 	.srot_split	= 1,
- 	.max_sensors	= 16,
-+	.trip_min_temp	= -40000,
-+	.trip_max_temp	= 120000,
- };
+   clocks:
+-    description:
+-      Clock IDs array as required by the controller.
+     minItems: 1
+     maxItems: 3
  
- static const struct reg_field tsens_v2_regfields[MAX_REGFIELDS] = {
-diff --git a/drivers/thermal/qcom/tsens.c b/drivers/thermal/qcom/tsens.c
-index 69b6f7b97e9e..b7701d5efdfc 100644
---- a/drivers/thermal/qcom/tsens.c
-+++ b/drivers/thermal/qcom/tsens.c
-@@ -572,8 +572,8 @@ static int tsens_set_trips(void *_sensor, int low, int high)
- 	dev_dbg(dev, "[%u] %s: proposed thresholds: (%d:%d)\n",
- 		hw_id, __func__, low, high);
+   clock-names:
+-    description:
+-      Names of clocks corresponding to IDs in the clock property.
+     minItems: 1
+     maxItems: 3
  
--	cl_high = clamp_val(high, -40000, 120000);
--	cl_low  = clamp_val(low, -40000, 120000);
-+	cl_high = clamp_val(high, priv->feat->trip_min_temp, priv->feat->trip_max_temp);
-+	cl_low  = clamp_val(low, priv->feat->trip_min_temp, priv->feat->trip_max_temp);
+   interrupts:
+     maxItems: 1
  
- 	high_val = tsens_mC_to_hw(s, cl_high);
- 	low_val  = tsens_mC_to_hw(s, cl_low);
-diff --git a/drivers/thermal/qcom/tsens.h b/drivers/thermal/qcom/tsens.h
-index 4614177944d6..747004476347 100644
---- a/drivers/thermal/qcom/tsens.h
-+++ b/drivers/thermal/qcom/tsens.h
-@@ -501,6 +501,8 @@ enum regfield_ids {
-  *              with SROT only being available to secure boot firmware?
-  * @has_watchdog: does this IP support watchdog functionality?
-  * @max_sensors: maximum sensors supported by this version of the IP
-+ * @trip_min_temp: minimum trip temperature supported by this version of the IP
-+ * @trip_max_temp: maximum trip temperature supported by this version of the IP
-  */
- struct tsens_features {
- 	unsigned int ver_major;
-@@ -510,6 +512,8 @@ struct tsens_features {
- 	unsigned int srot_split:1;
- 	unsigned int has_watchdog:1;
- 	unsigned int max_sensors;
-+	int trip_min_temp;
-+	int trip_max_temp;
- };
+-  ahci-supply:
+-    description:
+-      regulator for AHCI controller
+-
+-  phy-supply:
+-    description:
+-      regulator for PHY power
+-
+-  phys:
+-    description:
+-      List of all PHYs on this controller
+-    maxItems: 1
+-
+-  phy-names:
+-    description:
+-      Name specifier for the PHYs
+-    maxItems: 1
+-
+-  ports-implemented:
+-    $ref: '/schemas/types.yaml#/definitions/uint32'
+-    description: |
+-      Mask that indicates which ports that the HBA supports
+-      are available for software to use. Useful if PORTS_IMPL
+-      is not programmed by the BIOS, which is true with
+-      some embedded SoCs.
+-    maximum: 0x1f
+-
+   power-domains:
+     maxItems: 1
  
- /**
+   resets:
+     maxItems: 1
+ 
+-  target-supply:
+-    description:
+-      regulator for SATA target power
+-
+-required:
+-  - compatible
+-  - reg
+-  - interrupts
+-
+ patternProperties:
+   "^sata-port@[0-9a-f]+$":
+     type: object
+-    additionalProperties: false
+-    description:
+-      Subnode with configuration of the Ports.
+-
+-    properties:
+-      reg:
+-        maxItems: 1
+-
+-      phys:
+-        maxItems: 1
+-
+-      phy-names:
+-        maxItems: 1
+-
+-      target-supply:
+-        description:
+-          regulator for SATA target power
+-
+-    required:
+-      - reg
+ 
+     anyOf:
+       - required: [ phys ]
+       - required: [ target-supply ]
+ 
++required:
++  - compatible
++  - reg
++  - interrupts
++
+ unevaluatedProperties: false
+ 
+ examples:
 -- 
 2.35.1
 
