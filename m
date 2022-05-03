@@ -2,91 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11537C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:08:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15632C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:09:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237978AbiECPMA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:12:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37990 "EHLO
+        id S237998AbiECPM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:12:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237928AbiECPLz (ORCPT
+        with ESMTP id S237813AbiECPMw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:11:55 -0400
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C30D37A8D
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:08:22 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-453-75oE-M6RP7eBPNBNfwRyUg-1; Tue, 03 May 2022 11:05:38 -0400
-X-MC-Unique: 75oE-M6RP7eBPNBNfwRyUg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0F29F3D32CC7;
-        Tue,  3 May 2022 13:40:18 +0000 (UTC)
-Received: from comp-core-i7-2640m-0182e6.redhat.com (unknown [10.36.110.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D9EF19E60;
-        Tue,  3 May 2022 13:40:09 +0000 (UTC)
-From:   Alexey Gladkov <legion@kernel.org>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Daniel Walsh <dwalsh@redhat.com>,
-        Davidlohr Bueso <dbueso@suse.de>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Linux Containers <containers@lists.linux.dev>,
-        Manfred Spraul <manfred@colorfullife.com>,
-        Serge Hallyn <serge@hallyn.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Vasily Averin <vvs@virtuozzo.com>
-Subject: Re: [PATCH v1 2/4] ipc: Use proper ipc namespace 
-Date:   Tue,  3 May 2022 15:39:53 +0200
-Message-Id: <cover.1651584847.git.legion@kernel.org>
-In-Reply-To: <87sfprudal.fsf@email.froward.int.ebiederm.org>
-References: <87sfprudal.fsf@email.froward.int.ebiederm.org>
+        Tue, 3 May 2022 11:12:52 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285F13A72B
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:09:20 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id bv19so34038148ejb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 08:09:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7tccEYmP1Up3dLXDN+1M0rIsKvh0911h46EMldmvN7I=;
+        b=b9ShGJ5SZTplKe0QbTIy+x0O2zCSuwbYR2O/20m2BPYhSQDrLmIGDywLO0FRQQrwcH
+         Ly89HKMYQuR7uMZPvGFDet7K7qr1mGKyVs/NixIsXhg6ywD3joeB7yiiDXuwPkVn61HR
+         yH5tjEQ+qoNKZohYEhk8radCiM3/+7F2b2k8U=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7tccEYmP1Up3dLXDN+1M0rIsKvh0911h46EMldmvN7I=;
+        b=2HQPf9t0vSaKGWQ3d+fAYv3dQIgWNI2MPME9j9lsKB8+Fn+1h2x2KI7QFotTZ8n5es
+         c7f62Sy/hFiGiiFrHVF1D96GcOm1R0aHVG9afT4tSUiBeNGLP3EmviW77U9o2xOYIjn1
+         IAdqwmKTEPaa9GSHUkjuivFBkee75gdlBf04nUZyg0oOhGPZFkvW4RkMaisyftzeMARC
+         4fWZgMKSGL5DjVXcvl2Q+Oa1sswRt/guGjxVAsKaZh2hHWDg90HkI0KgqKKqdplH9Dsh
+         U39eD1JWiAEb8sybefx2LoHGwBaevpf+FG0iRXVISwXQoxOx43VHipac6ia1A9kySuXs
+         7ycw==
+X-Gm-Message-State: AOAM5335khuteu3Iwa7cuynasC55cN1kH6YbQzahzkto08mFtUR8ltFh
+        0Z+dQa0lqhbEIcwkQatJp30W5ZVa0lJPRDbn
+X-Google-Smtp-Source: ABdhPJxXMDKgwKQ6uTlV9nu3o6uiBiqfEpDVdouJqY4k11plqd9lF0JjBIyO/koW3eeLFrvXvwPV6g==
+X-Received: by 2002:a17:906:5d0c:b0:6f3:dce6:a69a with SMTP id g12-20020a1709065d0c00b006f3dce6a69amr16635542ejt.23.1651590558508;
+        Tue, 03 May 2022 08:09:18 -0700 (PDT)
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com. [209.85.128.54])
+        by smtp.gmail.com with ESMTPSA id og31-20020a1709071ddf00b006f3ef214da2sm4703586ejc.8.2022.05.03.08.09.17
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 08:09:17 -0700 (PDT)
+Received: by mail-wm1-f54.google.com with SMTP id az27-20020a05600c601b00b0039431ba4905so1205656wmb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 08:09:17 -0700 (PDT)
+X-Received: by 2002:a7b:c4c8:0:b0:394:26c5:b79e with SMTP id
+ g8-20020a7bc4c8000000b0039426c5b79emr3744035wmk.15.1651590556954; Tue, 03 May
+ 2022 08:09:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+References: <20220503042242.3597561-1-swboyd@chromium.org> <20220503042242.3597561-2-swboyd@chromium.org>
+In-Reply-To: <20220503042242.3597561-2-swboyd@chromium.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 3 May 2022 08:09:04 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=V8kfRYidvQRmx_XmGm8X3XHR_GxTkKvxkqUHdqJ5CMNg@mail.gmail.com>
+Message-ID: <CAD=FV=V8kfRYidvQRmx_XmGm8X3XHR_GxTkKvxkqUHdqJ5CMNg@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] dt-bindings: google,cros-ec-keyb: Introduce
+ switches only compatible
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
+        chrome-platform@lists.linux.dev,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        "Joseph S. Barrera III" <joebar@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 11:09:22AM -0500, Eric W. Biederman wrote:
-> Alexey Gladkov <legion@kernel.org> writes:
-> 
-> > As Eric Biederman pointed out, changing the namespace broke checkpoint
-> > restore. I have reverted my previous changes.
-> 
-> Can you remind me the bug that is being fixed here?
-> 
-> I am probably just going to fast to see it, but it would be good to have
-> it described in the commit comment.
+Hi,
 
-It was preparation for the "ipc: Check permissions for checkpoint_restart
-sysctls at open time". I wanted to split the commit and make it more readable,
-but it looks like I just confused everyone. This change should be part of the
-next commit.
+On Mon, May 2, 2022 at 9:22 PM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> @@ -113,3 +135,56 @@ examples:
+>              /* UP      LEFT    */
+>              0x070b0067 0x070c0069>;
+>      };
+> +
+> +  - |
+> +    keyboard-controller {
+> +        compatible = "google,cros-ec-keyb-switches", "google,cros-ec-keyb";
+> +        /* Matrix keymap properties are allowed but ignored */
 
-Here is a new version of the patchset where I moved the bugfix to a separate
-commit as you requested in the next email.
+nit: s/allowed/required/
 
-Does that look better?
+This now looks reasonable and well explained to me.
 
---
-
-Alexey Gladkov (4):
-  ipc: Use the same namespace to modify and validate
-  ipc: Remove extra1 field abuse to pass ipc namespace
-  ipc: Check permissions for checkpoint_restart sysctls at open time
-  ipc: Remove extra braces
-
- ipc/ipc_sysctl.c | 108 +++++++++++++++++++++--------------------------
- 1 file changed, 49 insertions(+), 59 deletions(-)
-
--- 
-2.33.3
-
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
