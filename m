@@ -2,115 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD67EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 21:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D793C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 21:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243357AbiECVxa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 17:53:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33146 "EHLO
+        id S241054AbiECVzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 17:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243446AbiECVxU (ORCPT
+        with ESMTP id S235750AbiECVzM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 17:53:20 -0400
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FCF427D0;
-        Tue,  3 May 2022 14:49:03 -0700 (PDT)
-Received: by mail-oi1-f178.google.com with SMTP id m25so5663555oih.2;
-        Tue, 03 May 2022 14:49:03 -0700 (PDT)
+        Tue, 3 May 2022 17:55:12 -0400
+Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AF12F387;
+        Tue,  3 May 2022 14:51:39 -0700 (PDT)
+Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-e5e433d66dso18525465fac.5;
+        Tue, 03 May 2022 14:51:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PMK6sujVThrZqgCpTOHtQZPh22N0TVlCzqEoQCk6YC0=;
-        b=JHW3csXLqbFSyqinMtKbj44SSUhmh1W7ne5E9qgOCQexSwgEVGmSfhwYdSdyDBhwhk
-         QSpDXB0xgrHEy3JERB3T+qXFohjGEAgCNhwbpfnUuOtXxA7NQdUVVkf9QojjwdU6oj70
-         2cSg9ynHd8W0MMko1D7ejB5srEFO8NHrtuul4xe8pTI2vQ3+sgEXpOMcafghhqydjHuJ
-         Bf1B1NErLR3iMP6Vu60FtS9+h4mIsPMbwJhgeg5jprJRFD4/AtwMggZE/xbPURXtMDrz
-         R9O3wBLPHbGJwb1FaFXzoiy8OhqNpDE/38MlQgWbDVoaWXE3ALgineJtJzoF5G+lnIEo
-         Da4Q==
-X-Gm-Message-State: AOAM532C/RIDK2l6ELNJKuH+HGuVkie2TFSpGxYv2ZGEbPMP+jVDWpL9
-        TIp103/c0W9RocJ12cHvz7zQRgbIvA==
-X-Google-Smtp-Source: ABdhPJyXG3Qb+wCY6PcVesYD78Lvr1fJPRxuDGrnHOap6UmNMid5rtVdvpuNP3xxFfMNVRKy3LDlTQ==
-X-Received: by 2002:aca:2403:0:b0:325:6dae:a63b with SMTP id n3-20020aca2403000000b003256daea63bmr2595593oic.230.1651614538887;
-        Tue, 03 May 2022 14:48:58 -0700 (PDT)
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=mufD53y5m93auFkRsBYFt8Hu8B8QkCw7tadNt8CTlQ0=;
+        b=3LaYWsz6BMIS8djNYlGDd3yQkCTaTpRi8dqj+Q1tXtga4aytIjaBjeFTixZw/XkTif
+         G+0RUn95u41IQGeDybWdB8g6t6YHRZCuVys7tqvr7uJhNatVSmxeW40HBfM3aZ6dHifx
+         AGtqYWK/DtzAise/vdV4EP4icbxV6gD5m1Rl+sbNuV66mWBPZLVunzO5/a5oswrMtXQS
+         mxh+iBg0YCFQsJhCFuhKKRd/c4mAgziJB9dbP5/G48/ximn2GItXiBywiTBPCKSRl1IH
+         NgXRcIAcAz0fd5qhniNarS0yk7E8xsZHlhH+2YJb6jP0n9Pb4tuiHKhfjXAxPhPsVLbr
+         JZRQ==
+X-Gm-Message-State: AOAM5319hnwnq6zco8mNduizY84YCKibkwdKCihY4HML2v0mAQ1Zr84C
+        QJ6GL/srorKscUbOXoG+hGIxsBfgVQ==
+X-Google-Smtp-Source: ABdhPJySBesfmCadidVN9N5StqxUW+dbQBwVygP33ZdYIZmO3wRh0veTKXl7gczZh4GqgzYI/r5Big==
+X-Received: by 2002:a05:6870:8920:b0:e5:e38e:fd7c with SMTP id i32-20020a056870892000b000e5e38efd7cmr2563616oao.202.1651614698844;
+        Tue, 03 May 2022 14:51:38 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id a11-20020a4a9b0b000000b0035ec65ac944sm4941869ook.16.2022.05.03.14.48.57
+        by smtp.gmail.com with ESMTPSA id i13-20020a54408d000000b00325cda1ffb9sm3707611oii.56.2022.05.03.14.51.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 14:48:58 -0700 (PDT)
-Received: (nullmailer pid 91855 invoked by uid 1000);
-        Tue, 03 May 2022 21:48:57 -0000
-Date:   Tue, 3 May 2022 16:48:57 -0500
+        Tue, 03 May 2022 14:51:38 -0700 (PDT)
+Received: (nullmailer pid 95414 invoked by uid 1000);
+        Tue, 03 May 2022 21:51:37 -0000
+Date:   Tue, 3 May 2022 16:51:37 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     matthias.bgg@kernel.org
-Cc:     mturquette@baylibre.com, sboyd@kernel.org,
-        allen-kh.cheng@mediatek.com, weiyi.lu@mediatek.com,
-        chun-jie.chen@mediatek.com, linux-kernel@vger.kernel.org,
-        ikjn@chromium.org, miles.chen@mediatek.com,
-        linux-mediatek@lists.infradead.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        angelogioacchino.delregno@collabora.com,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: ARM: Mediatek: Remove msdc binding
- of MT8192 clock
-Message-ID: <YnGjScfQA9axBYBO@robh.at.kernel.org>
-References: <20220429123133.28869-1-matthias.bgg@kernel.org>
- <20220429123133.28869-2-matthias.bgg@kernel.org>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: watchdog: max63xx: Add GPIO binding
+Message-ID: <YnGj6eZGx+8gVKGW@robh.at.kernel.org>
+References: <20220429131349.21229-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220429123133.28869-2-matthias.bgg@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220429131349.21229-1-pali@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 02:31:31PM +0200, matthias.bgg@kernel.org wrote:
-> From: Matthias Brugger <matthias.bgg@gmail.com>
-> 
-> The msdc gate is part of the MMC driver. Delete the binding description
-> of this node.
+On Fri, Apr 29, 2022 at 03:13:48PM +0200, Pali Rohár wrote:
+> GPIO is optional and used for WDI logic.
 
-An ABI break is okay because ...?
+Nowhere is WDI defined.
 
-> Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
 > 
+> Signed-off-by: Pali Rohár <pali@kernel.org>
 > ---
+>  Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> Changes in v2:
-> - Delete compatible in binding descprition as well
-> 
->  .../bindings/arm/mediatek/mediatek,mt8192-clock.yaml      | 8 --------
->  1 file changed, 8 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-clock.yaml
-> index c8c67c033f8c..b57cc2e69efb 100644
-> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-clock.yaml
-> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-clock.yaml
-> @@ -24,7 +24,6 @@ properties:
->            - mediatek,mt8192-imp_iic_wrap_w
->            - mediatek,mt8192-imp_iic_wrap_n
->            - mediatek,mt8192-msdc_top
-> -          - mediatek,mt8192-msdc
->            - mediatek,mt8192-mfgcfg
->            - mediatek,mt8192-imgsys
->            - mediatek,mt8192-imgsys2
-> @@ -107,13 +106,6 @@ examples:
->          #clock-cells = <1>;
->      };
+> diff --git a/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml b/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml
+> index ab9641e845db..a97aa0135ef9 100644
+> --- a/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml
+> +++ b/Documentation/devicetree/bindings/watchdog/maxim,max63xx.yaml
+> @@ -27,6 +27,10 @@ properties:
+>      description: This is a 1-byte memory-mapped address
+>      maxItems: 1
 >  
-> -  - |
-> -    msdc: clock-controller@11f60000 {
-> -        compatible = "mediatek,mt8192-msdc";
-> -        reg = <0x11f60000 0x1000>;
-> -        #clock-cells = <1>;
-> -    };
-> -
->    - |
->      mfgcfg: clock-controller@13fbf000 {
->          compatible = "mediatek,mt8192-mfgcfg";
+> +  gpios:
+
+Usually, we want a name here. Maybe wdi-gpios, but I don't know what WDI 
+is nor have I read the pin name in the datasheet for inspiration.
+
+> +    description: Optional GPIO used for controlling WDI when WDI bit is not mapped to memory
+> +    maxItems: 1
+> +
+>  required:
+>    - compatible
+>    - reg
 > -- 
-> 2.34.1
+> 2.20.1
 > 
 > 
