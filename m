@@ -2,489 +2,294 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C938C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:21:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE3FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:22:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241294AbiECSZ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 14:25:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44224 "EHLO
+        id S241301AbiECS0C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 14:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241234AbiECSZ0 (ORCPT
+        with ESMTP id S241259AbiECSZ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 14:25:26 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50AFA3EF1B;
-        Tue,  3 May 2022 11:21:52 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id hh4so14175793qtb.10;
-        Tue, 03 May 2022 11:21:52 -0700 (PDT)
+        Tue, 3 May 2022 14:25:59 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F110A3EF2A
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 11:22:25 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso1901951wma.0
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 11:22:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version:content-disposition;
-        bh=A89bvHB9/skk71qzGzTfssrjF18Iiz/7j6n3+qkIBy8=;
-        b=iU+3Zhhd/DrAcxiHzEY43mr4ru/G+LZtwZwhjSKkifli96ucX9lTtI5zTADMC9FObB
-         U1X/iJJTgBNA3fLlTlF/Rnfn/h95T9IamuSivAIKAZSYCz0cHNNyp7gXOPg8bq9DaALY
-         5KSHepbeaWP3EnQm4XJBf2nmabZsA7u+5uYhGZc/xJSh8Z33UOoz8KQKcn54wcVbHj1F
-         czahJGUmn0EMLWAkbPVNvp683k+52XCI4NC2retrM0LB0s3aXfVCgmj2t308d42/aXzT
-         4tN3UHTZqhnNIOnslAoigaw1RQI/okjnUQxVNB8vQJr/Qn9ifPiXohXvkqjnheiSc8R0
-         qSjg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=i0V2Vyl4bDKVL0HjXFNOtxsvt4FGworOE/C722VAmi8=;
+        b=M7CMGC+LWjgzKt8+YtTXmZLOGYj6UefbuPujXupr9SKG3rroSirbV54A+oGvsuShYn
+         lp/HMS+oaVuiTLXRgxmu+MaIjyWFnwQTBi+Ab7T65vnYQN36ltVuez2rUzDxRyXc4kmZ
+         3ChAusx59CX1+rROBTkZEdQ8YYe2KC7ffE1tqxoFhGyXKkPugRcNGPjo2ma3AmCgFdCn
+         wsiB8vOTK+Gt+KT4Hq7SLJSipEMd+l+cHaHr7gZfV06HbvWa4t0c/upRC3JQGWO+uuMz
+         jgZON1tvaw6nBcyxXu+uGaYeVtR71/TFkLZiuiUtIzcu6nMMggX0G7vFFrjXPyjcRL7L
+         vSIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=A89bvHB9/skk71qzGzTfssrjF18Iiz/7j6n3+qkIBy8=;
-        b=gHs81Qcx2wsvOvKDj20YH3OH1jNNp/hN/rIvhXJ9JhNXKz6fRnk7DZI6sHTwuUqMtp
-         cCIFRFA6PDgqISnecWPL1pWvBOW80r78hMWe72IqO/hH7FpaP30HQfa+k/2MYbJ0NmCn
-         y+OjkPZlcsWDS+ec38gZgHBrJlqApn8dRxxAqNnGvYtjiavqiIVr63UstE1I8hapEyhV
-         GiFpLAD/0T5qRmnfwTV7DY73/0HIj2tQzhBw045eVvQ0pBxfgEVYKOaJAuse3dd4uz8f
-         3kzcy2M4nyMELakWqUh0v5vseRPcLG7hSq3GtywZqj0as+XzHPYJXDkkQeHUyjA+xb0f
-         xJ+A==
-X-Gm-Message-State: AOAM532h9CJQMkS6m3EJ90JcHP66MxUeOENoSqqeCi9DDP1o48ccrrBy
-        nwjYTrPWKHt/Vn3jPjYoQy4=
-X-Google-Smtp-Source: ABdhPJzx6kc4UQEFMO5pSI4M/TK1mqo0S11x3lgerW4bJUKLmXQcu/ZgSHxqOhqOozBG7MJfZGJe2Q==
-X-Received: by 2002:ac8:7d01:0:b0:2f3:a7b1:586f with SMTP id g1-20020ac87d01000000b002f3a7b1586fmr8072489qtb.23.1651602111278;
-        Tue, 03 May 2022 11:21:51 -0700 (PDT)
-Received: from jaehee-ThinkPad-X1-Extreme ([4.34.18.218])
-        by smtp.gmail.com with ESMTPSA id z13-20020ac875cd000000b002f39b99f6a1sm6155166qtq.59.2022.05.03.11.21.50
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=i0V2Vyl4bDKVL0HjXFNOtxsvt4FGworOE/C722VAmi8=;
+        b=5GjwLQcn74L/4Dgk16LX++PLfGV1okxFnv1jEIpWpkBpGKO5uHs7/E3Bl4Su2TKPhw
+         eEyf8djL+OshX4vnrWNzHL2HfTz5RZXP2qLLVAIUwQVm1DHjnNvFTYuqK+BO9jiTUgz4
+         4tcgz0lgo0HSd21qLAUKhkWULsQkHcUcgvFfAq7ZbVetOSSYghC4a8ow7Hk0hLHdCqtY
+         5VJqgi/NOWAgTq6BW9NwtgdEGi9yzBWmN4cRTTYJuMYxWSNAWyCBnvYtthkg2RYWwFpS
+         2Af8WlEHZIDQH2/6JhT7f8aiuxVX5+i4cjoT82CMIVvN0dYfNpMp9BTAZXiA8V5i58ZJ
+         w3cg==
+X-Gm-Message-State: AOAM531NhpFmzHgh/Dvo/IsBUEI2nrmwrkRBZWPBsGzPGzBJvWpTjphd
+        adxalyHWWeRFUZ83b3ZmM3SIdcZFat7r8BAW0B8=
+X-Google-Smtp-Source: ABdhPJzGqjK6O9NC2TRoxIq/n+y46goRU1n2lantDNUaD7rwgviPOYeLTVYP24eimpvDPofFR9iz1g==
+X-Received: by 2002:a1c:770b:0:b0:394:3fae:ab79 with SMTP id t11-20020a1c770b000000b003943faeab79mr4424991wmi.200.1651602144310;
+        Tue, 03 May 2022 11:22:24 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id v13-20020adfa1cd000000b0020c5253d8b9sm9622540wrv.5.2022.05.03.11.21.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 11:21:50 -0700 (PDT)
-Date:   Tue, 3 May 2022 14:21:46 -0400
-From:   Jaehee Park <jhpark1013@gmail.com>
-To:     =?iso-8859-1?B?Suly9G1l?= Pouiller <jerome.pouiller@silabs.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        outreachy@lists.linux.dev, Jaehee Park <jhpark1013@gmail.com>,
-        Stefano Brivio <sbrivio@redhat.com>
-Subject: [PATCH v5] wfx: use container_of() to get vif
-Message-ID: <20220503182146.GA886740@jaehee-ThinkPad-X1-Extreme>
+        Tue, 03 May 2022 11:21:45 -0700 (PDT)
+Date:   Tue, 3 May 2022 19:20:36 +0100
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 10/12] iommu: Prepare IOMMU domain for IOPF
+Message-ID: <YnFydE8j8l7Q4m+b@myrica>
+References: <20220502014842.991097-1-baolu.lu@linux.intel.com>
+ <20220502014842.991097-11-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220502014842.991097-11-baolu.lu@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, upon virtual interface creation, wfx_add_interface() stores
-a reference to the corresponding struct ieee80211_vif in private data,
-for later usage. This is not needed when using the container_of
-construct. This construct already has all the info it needs to retrieve
-the reference to the corresponding struct from the offset that is
-already available, inherent in container_of(), between its type and
-member inputs (struct ieee80211_vif and drv_priv, respectively).
-Remove vif (which was previously storing the reference to the struct
-ieee80211_vif) from the struct wfx_vif, define a function
-wvif_to_vif(wvif) for container_of(), and replace all wvif->vif with
-the newly defined container_of construct.
+On Mon, May 02, 2022 at 09:48:40AM +0800, Lu Baolu wrote:
+> This adds some mechanisms around the iommu_domain so that the I/O page
+> fault handling framework could route a page fault to the domain and
+> call the fault handler from it.
+> 
+> Add pointers to the page fault handler and its private data in struct
+> iommu_domain. The fault handler will be called with the private data
+> as a parameter once a page fault is routed to the domain. Any kernel
+> component which owns an iommu domain could install handler and its
+> private parameter so that the page fault could be further routed and
+> handled.
+> 
+> A new helper iommu_get_domain_for_dev_pasid() which retrieves attached
+> domain for a {device, PASID} is added. It will be used by the page fault
+> handling framework which knows {device, PASID} reported from the iommu
+> driver. We have a guarantee that the SVA domain doesn't go away during
+> IOPF handling, because unbind() waits for pending faults with
+> iopf_queue_flush_dev() before freeing the domain. Hence, there's no need
+> to synchronize life cycle of the iommu domains between the unbind() and
+> the interrupt threads.
+> 
+> This also prepares the SVA implementation to be the first consumer of
+> the per-domain page fault handling model.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  include/linux/iommu.h         | 12 +++++++
+>  drivers/iommu/iommu-sva-lib.c | 65 +++++++++++++++++++++++++++++++++++
+>  drivers/iommu/iommu.c         | 21 +++++++++++
+>  3 files changed, 98 insertions(+)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 19718939d9df..1164524814cb 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -102,6 +102,9 @@ struct iommu_domain {
+>  	struct iommu_domain_geometry geometry;
+>  	struct iommu_dma_cookie *iova_cookie;
+>  	struct iommu_sva_ioas *sva_ioas;
+> +	enum iommu_page_response_code (*iopf_handler)(struct iommu_fault *fault,
+> +						      void *data);
+> +	void *fault_data;
+>  };
+>  
+>  static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
+> @@ -686,6 +689,9 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+>  			      struct device *dev, ioasid_t pasid);
+>  void iommu_detach_device_pasid(struct iommu_domain *domain,
+>  			       struct device *dev, ioasid_t pasid);
+> +struct iommu_domain *
+> +iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid);
+> +
+>  #else /* CONFIG_IOMMU_API */
+>  
+>  struct iommu_ops {};
+> @@ -1055,6 +1061,12 @@ static inline void iommu_detach_device_pasid(struct iommu_domain *domain,
+>  					     struct device *dev, ioasid_t pasid)
+>  {
+>  }
+> +
+> +static inline struct iommu_domain *
+> +iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid)
+> +{
+> +	return NULL;
+> +}
+>  #endif /* CONFIG_IOMMU_API */
+>  
+>  #ifdef CONFIG_IOMMU_SVA
+> diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
+> index 992388106da0..05a7d2f0e46f 100644
+> --- a/drivers/iommu/iommu-sva-lib.c
+> +++ b/drivers/iommu/iommu-sva-lib.c
+> @@ -135,6 +135,69 @@ static void iommu_sva_ioas_put(struct iommu_sva_ioas *ioas)
+>  	}
+>  }
+>  
+> +/*
+> + * I/O page fault handler for SVA
+> + *
+> + * Copied from io-pgfault.c with mmget_not_zero() added before
+> + * mmap_read_lock().
+> + */
+> +static enum iommu_page_response_code
+> +iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
+> +{
+> +	vm_fault_t ret;
+> +	struct mm_struct *mm;
+> +	struct vm_area_struct *vma;
+> +	unsigned int access_flags = 0;
+> +	struct iommu_domain *domain = data;
+> +	unsigned int fault_flags = FAULT_FLAG_REMOTE;
+> +	struct iommu_fault_page_request *prm = &fault->prm;
+> +	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
+> +
+> +	if (!(prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID))
+> +		return status;
+> +
+> +	mm = iommu_sva_domain_mm(domain);
+> +	if (IS_ERR_OR_NULL(mm) || !mmget_not_zero(mm))
+> +		return status;
+> +
+> +	mmap_read_lock(mm);
+> +
+> +	vma = find_extend_vma(mm, prm->addr);
+> +	if (!vma)
+> +		/* Unmapped area */
+> +		goto out_put_mm;
+> +
+> +	if (prm->perm & IOMMU_FAULT_PERM_READ)
+> +		access_flags |= VM_READ;
+> +
+> +	if (prm->perm & IOMMU_FAULT_PERM_WRITE) {
+> +		access_flags |= VM_WRITE;
+> +		fault_flags |= FAULT_FLAG_WRITE;
+> +	}
+> +
+> +	if (prm->perm & IOMMU_FAULT_PERM_EXEC) {
+> +		access_flags |= VM_EXEC;
+> +		fault_flags |= FAULT_FLAG_INSTRUCTION;
+> +	}
+> +
+> +	if (!(prm->perm & IOMMU_FAULT_PERM_PRIV))
+> +		fault_flags |= FAULT_FLAG_USER;
+> +
+> +	if (access_flags & ~vma->vm_flags)
+> +		/* Access fault */
+> +		goto out_put_mm;
+> +
+> +	ret = handle_mm_fault(vma, prm->addr, fault_flags, NULL);
+> +	status = ret & VM_FAULT_ERROR ? IOMMU_PAGE_RESP_INVALID :
+> +		IOMMU_PAGE_RESP_SUCCESS;
+> +
+> +out_put_mm:
+> +	mmap_read_unlock(mm);
+> +	mmput(mm);
+> +
+> +	return status;
+> +}
+> +
+>  /*
+>   * IOMMU SVA driver-oriented interfaces
+>   */
+> @@ -154,6 +217,8 @@ iommu_sva_alloc_domain(struct device *dev, struct iommu_sva_ioas *ioas)
+>  	/* The caller must hold a reference to ioas. */
+>  	domain->sva_ioas = ioas;
+>  	domain->type = IOMMU_DOMAIN_SVA;
+> +	domain->iopf_handler = iommu_sva_handle_iopf;
+> +	domain->fault_data = domain;
+>  
+>  	return domain;
+>  }
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 7cae631c1baa..33449523afbe 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -3174,3 +3174,24 @@ void iommu_detach_device_pasid(struct iommu_domain *domain,
+>  
+>  	iommu_group_put(group);
+>  }
+> +
+> +struct iommu_domain *iommu_get_domain_for_dev_pasid(struct device *dev,
+> +						    ioasid_t pasid)
+> +{
+> +	struct iommu_domain *domain;
+> +	struct iommu_group *group;
+> +
+> +	if (!pasid_valid(pasid))
+> +		return NULL;
+> +
+> +	group = iommu_group_get(dev);
+> +	if (!group)
+> +		return NULL;
+> +
+> +	mutex_lock(&group->mutex);
 
-Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
----
-v2
-- Sequenced the wfx.h file (with the new defines) to show up first on 
-the diff, which makes the ordering of the diff more logical.
- 
-v3
-- Made edits to the commit message.
-- Shortened the macro name from wvif_to_vif to to_vif.
-- For functions that had more than one instance of vif, defined one
-reference vif at the beginning of the function and used that instead.
-- Broke the if-statements that ran long into two lines.
+Unfortunately this still causes the deadlock when unbind() flushes the
+IOPF queue while holding the group mutex.
 
-v4
-- Changed macro into function and named it back to wvif_to_vif
-- Fit all lines in patch to 80 columns
-- Decared a reference to vif at the beginning of all the functions
-where it's being used
+If we make this function private to IOPF, then we can get rid of this
+mutex_lock(). It's OK because:
 
-v5
-- Placed longest declarations first 
+* xarray protects its internal state with RCU, so we can call
+  xa_load() outside the lock.
 
+* The domain obtained from xa_load is finalized. Its content is valid
+  because xarray stores the domain using rcu_assign_pointer(), which has a
+  release memory barrier, which pairs with data dependencies in IOPF
+  (domain->sva_ioas etc).
 
- drivers/net/wireless/silabs/wfx/wfx.h     |  6 +-
- drivers/net/wireless/silabs/wfx/data_rx.c |  5 +-
- drivers/net/wireless/silabs/wfx/data_tx.c |  3 +-
- drivers/net/wireless/silabs/wfx/key.c     |  4 +-
- drivers/net/wireless/silabs/wfx/queue.c   |  3 +-
- drivers/net/wireless/silabs/wfx/scan.c    | 11 ++--
- drivers/net/wireless/silabs/wfx/sta.c     | 71 ++++++++++++++---------
- 7 files changed, 65 insertions(+), 38 deletions(-)
+  We'll need to be careful about this when allowing other users to install
+  a fault handler. Should be fine as long as the handler and data are
+  installed before the domain is added to pasid_array.
 
-diff --git a/drivers/net/wireless/silabs/wfx/wfx.h b/drivers/net/wireless/silabs/wfx/wfx.h
-index 6594cc647c2f..718693a4273d 100644
---- a/drivers/net/wireless/silabs/wfx/wfx.h
-+++ b/drivers/net/wireless/silabs/wfx/wfx.h
-@@ -61,7 +61,6 @@ struct wfx_dev {
- 
- struct wfx_vif {
- 	struct wfx_dev             *wdev;
--	struct ieee80211_vif       *vif;
- 	struct ieee80211_channel   *channel;
- 	int                        id;
- 
-@@ -91,6 +90,11 @@ struct wfx_vif {
- 	struct completion          set_pm_mode_complete;
- };
- 
-+static inline struct ieee80211_vif *wvif_to_vif(struct wfx_vif *wvif)
-+{
-+	return container_of((void *)wvif, struct ieee80211_vif, drv_priv);
-+}
-+
- static inline struct wfx_vif *wdev_to_wvif(struct wfx_dev *wdev, int vif_id)
- {
- 	if (vif_id >= ARRAY_SIZE(wdev->vif)) {
-diff --git a/drivers/net/wireless/silabs/wfx/data_rx.c b/drivers/net/wireless/silabs/wfx/data_rx.c
-index a4b5ffe158e4..e099a9e65bae 100644
---- a/drivers/net/wireless/silabs/wfx/data_rx.c
-+++ b/drivers/net/wireless/silabs/wfx/data_rx.c
-@@ -15,6 +15,7 @@
- 
- static void wfx_rx_handle_ba(struct wfx_vif *wvif, struct ieee80211_mgmt *mgmt)
- {
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	int params, tid;
- 
- 	if (wfx_api_older_than(wvif->wdev, 3, 6))
-@@ -24,12 +25,12 @@ static void wfx_rx_handle_ba(struct wfx_vif *wvif, struct ieee80211_mgmt *mgmt)
- 	case WLAN_ACTION_ADDBA_REQ:
- 		params = le16_to_cpu(mgmt->u.action.u.addba_req.capab);
- 		tid = (params & IEEE80211_ADDBA_PARAM_TID_MASK) >> 2;
--		ieee80211_start_rx_ba_session_offl(wvif->vif, mgmt->sa, tid);
-+		ieee80211_start_rx_ba_session_offl(vif, mgmt->sa, tid);
- 		break;
- 	case WLAN_ACTION_DELBA:
- 		params = le16_to_cpu(mgmt->u.action.u.delba.params);
- 		tid = (params &  IEEE80211_DELBA_PARAM_TID_MASK) >> 12;
--		ieee80211_stop_rx_ba_session_offl(wvif->vif, mgmt->sa, tid);
-+		ieee80211_stop_rx_ba_session_offl(vif, mgmt->sa, tid);
- 		break;
- 	}
- }
-diff --git a/drivers/net/wireless/silabs/wfx/data_tx.c b/drivers/net/wireless/silabs/wfx/data_tx.c
-index e07381b2ff4d..6a5e52a96d18 100644
---- a/drivers/net/wireless/silabs/wfx/data_tx.c
-+++ b/drivers/net/wireless/silabs/wfx/data_tx.c
-@@ -212,11 +212,12 @@ static u8 wfx_tx_get_link_id(struct wfx_vif *wvif, struct ieee80211_sta *sta,
- 			     struct ieee80211_hdr *hdr)
- {
- 	struct wfx_sta_priv *sta_priv = sta ? (struct wfx_sta_priv *)&sta->drv_priv : NULL;
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	const u8 *da = ieee80211_get_DA(hdr);
- 
- 	if (sta_priv && sta_priv->link_id)
- 		return sta_priv->link_id;
--	if (wvif->vif->type != NL80211_IFTYPE_AP)
-+	if (vif->type != NL80211_IFTYPE_AP)
- 		return 0;
- 	if (is_multicast_ether_addr(da))
- 		return 0;
-diff --git a/drivers/net/wireless/silabs/wfx/key.c b/drivers/net/wireless/silabs/wfx/key.c
-index 8f23e8d42bd4..196d64ef68f3 100644
---- a/drivers/net/wireless/silabs/wfx/key.c
-+++ b/drivers/net/wireless/silabs/wfx/key.c
-@@ -156,6 +156,7 @@ static int wfx_add_key(struct wfx_vif *wvif, struct ieee80211_sta *sta,
- 	struct wfx_dev *wdev = wvif->wdev;
- 	int idx = wfx_alloc_key(wvif->wdev);
- 	bool pairwise = key->flags & IEEE80211_KEY_FLAG_PAIRWISE;
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 
- 	WARN(key->flags & IEEE80211_KEY_FLAG_PAIRWISE && !sta, "inconsistent data");
- 	ieee80211_get_key_rx_seq(key, 0, &seq);
-@@ -174,7 +175,7 @@ static int wfx_add_key(struct wfx_vif *wvif, struct ieee80211_sta *sta,
- 			k.type = fill_tkip_pair(&k.key.tkip_pairwise_key, key, sta->addr);
- 		else
- 			k.type = fill_tkip_group(&k.key.tkip_group_key, key, &seq,
--						 wvif->vif->type);
-+						 vif->type);
- 	} else if (key->cipher == WLAN_CIPHER_SUITE_CCMP) {
- 		if (pairwise)
- 			k.type = fill_ccmp_pair(&k.key.aes_pairwise_key, key, sta->addr);
-@@ -224,4 +225,3 @@ int wfx_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd, struct ieee80211_
- 	mutex_unlock(&wvif->wdev->conf_mutex);
- 	return ret;
- }
--
-diff --git a/drivers/net/wireless/silabs/wfx/queue.c b/drivers/net/wireless/silabs/wfx/queue.c
-index 729825230db2..37f492e5d3be 100644
---- a/drivers/net/wireless/silabs/wfx/queue.c
-+++ b/drivers/net/wireless/silabs/wfx/queue.c
-@@ -205,9 +205,10 @@ unsigned int wfx_pending_get_pkt_us_delay(struct wfx_dev *wdev, struct sk_buff *
- 
- bool wfx_tx_queues_has_cab(struct wfx_vif *wvif)
- {
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	int i;
- 
--	if (wvif->vif->type != NL80211_IFTYPE_AP)
-+	if (vif->type != NL80211_IFTYPE_AP)
- 		return false;
- 	for (i = 0; i < IEEE80211_NUM_ACS; ++i)
- 		/* Note: since only AP can have mcast frames in queue and only one vif can be AP,
-diff --git a/drivers/net/wireless/silabs/wfx/scan.c b/drivers/net/wireless/silabs/wfx/scan.c
-index 7f34f0d322f9..16f619ed22e0 100644
---- a/drivers/net/wireless/silabs/wfx/scan.c
-+++ b/drivers/net/wireless/silabs/wfx/scan.c
-@@ -23,9 +23,11 @@ static void wfx_ieee80211_scan_completed_compat(struct ieee80211_hw *hw, bool ab
- 
- static int update_probe_tmpl(struct wfx_vif *wvif, struct cfg80211_scan_request *req)
- {
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	struct sk_buff *skb;
- 
--	skb = ieee80211_probereq_get(wvif->wdev->hw, wvif->vif->addr, NULL, 0, req->ie_len);
-+	skb = ieee80211_probereq_get(wvif->wdev->hw, vif->addr, NULL, 0,
-+				     req->ie_len);
- 	if (!skb)
- 		return -ENOMEM;
- 
-@@ -37,8 +39,9 @@ static int update_probe_tmpl(struct wfx_vif *wvif, struct cfg80211_scan_request
- 
- static int send_scan_req(struct wfx_vif *wvif, struct cfg80211_scan_request *req, int start_idx)
- {
--	int i, ret;
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	struct ieee80211_channel *ch_start, *ch_cur;
-+	int i, ret;
- 
- 	for (i = start_idx; i < req->n_channels; i++) {
- 		ch_start = req->channels[start_idx];
-@@ -75,8 +78,8 @@ static int send_scan_req(struct wfx_vif *wvif, struct cfg80211_scan_request *req
- 	} else {
- 		ret = wvif->scan_nb_chan_done;
- 	}
--	if (req->channels[start_idx]->max_power != wvif->vif->bss_conf.txpower)
--		wfx_hif_set_output_power(wvif, wvif->vif->bss_conf.txpower);
-+	if (req->channels[start_idx]->max_power != vif->bss_conf.txpower)
-+		wfx_hif_set_output_power(wvif, vif->bss_conf.txpower);
- 	wfx_tx_unlock(wvif->wdev);
- 	return ret;
- }
-diff --git a/drivers/net/wireless/silabs/wfx/sta.c b/drivers/net/wireless/silabs/wfx/sta.c
-index 3297d73c327a..040d1f9fb03a 100644
---- a/drivers/net/wireless/silabs/wfx/sta.c
-+++ b/drivers/net/wireless/silabs/wfx/sta.c
-@@ -101,6 +101,7 @@ void wfx_configure_filter(struct ieee80211_hw *hw, unsigned int changed_flags,
- 	struct wfx_vif *wvif = NULL;
- 	struct wfx_dev *wdev = hw->priv;
- 	bool filter_bssid, filter_prbreq, filter_beacon;
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 
- 	/* Notes:
- 	 *   - Probe responses (FIF_BCN_PRBRESP_PROMISC) are never filtered
-@@ -132,7 +133,7 @@ void wfx_configure_filter(struct ieee80211_hw *hw, unsigned int changed_flags,
- 			filter_bssid = true;
- 
- 		/* In AP mode, chip can reply to probe request itself */
--		if (*total_flags & FIF_PROBE_REQ && wvif->vif->type == NL80211_IFTYPE_AP) {
-+		if (*total_flags & FIF_PROBE_REQ && vif->type == NL80211_IFTYPE_AP) {
- 			dev_dbg(wdev->dev, "do not forward probe request in AP mode\n");
- 			*total_flags &= ~FIF_PROBE_REQ;
- 		}
-@@ -152,19 +153,28 @@ static int wfx_get_ps_timeout(struct wfx_vif *wvif, bool *enable_ps)
- {
- 	struct ieee80211_channel *chan0 = NULL, *chan1 = NULL;
- 	struct ieee80211_conf *conf = &wvif->wdev->hw->conf;
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 
--	WARN(!wvif->vif->bss_conf.assoc && enable_ps,
-+	WARN(!vif->bss_conf.assoc && enable_ps,
- 	     "enable_ps is reliable only if associated");
--	if (wdev_to_wvif(wvif->wdev, 0))
--		chan0 = wdev_to_wvif(wvif->wdev, 0)->vif->bss_conf.chandef.chan;
--	if (wdev_to_wvif(wvif->wdev, 1))
--		chan1 = wdev_to_wvif(wvif->wdev, 1)->vif->bss_conf.chandef.chan;
--	if (chan0 && chan1 && wvif->vif->type != NL80211_IFTYPE_AP) {
-+	if (wdev_to_wvif(wvif->wdev, 0)) {
-+		struct wfx_vif *wvif_ch0 = wdev_to_wvif(wvif->wdev, 0);
-+		struct ieee80211_vif *vif_ch0 = wvif_to_vif(wvif_ch0);
-+
-+		chan0 = vif_ch0->bss_conf.chandef.chan;
-+	}
-+	if (wdev_to_wvif(wvif->wdev, 1)) {
-+		struct wfx_vif *wvif_ch1 = wdev_to_wvif(wvif->wdev, 1);
-+		struct ieee80211_vif *vif_ch1 = wvif_to_vif(wvif_ch1);
-+
-+		chan1 = vif_ch1->bss_conf.chandef.chan;
-+	}
-+	if (chan0 && chan1 && vif->type != NL80211_IFTYPE_AP) {
- 		if (chan0->hw_value == chan1->hw_value) {
- 			/* It is useless to enable PS if channels are the same. */
- 			if (enable_ps)
- 				*enable_ps = false;
--			if (wvif->vif->bss_conf.assoc && wvif->vif->bss_conf.ps)
-+			if (vif->bss_conf.assoc && vif->bss_conf.ps)
- 				dev_info(wvif->wdev->dev, "ignoring requested PS mode");
- 			return -1;
- 		}
-@@ -177,8 +187,8 @@ static int wfx_get_ps_timeout(struct wfx_vif *wvif, bool *enable_ps)
- 			return 30;
- 	}
- 	if (enable_ps)
--		*enable_ps = wvif->vif->bss_conf.ps;
--	if (wvif->vif->bss_conf.assoc && wvif->vif->bss_conf.ps)
-+		*enable_ps = vif->bss_conf.ps;
-+	if (vif->bss_conf.assoc && vif->bss_conf.ps)
- 		return conf->dynamic_ps_timeout;
- 	else
- 		return -1;
-@@ -186,10 +196,11 @@ static int wfx_get_ps_timeout(struct wfx_vif *wvif, bool *enable_ps)
- 
- int wfx_update_pm(struct wfx_vif *wvif)
- {
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	int ps_timeout;
- 	bool ps;
- 
--	if (!wvif->vif->bss_conf.assoc)
-+	if (!vif->bss_conf.assoc)
- 		return 0;
- 	ps_timeout = wfx_get_ps_timeout(wvif, &ps);
- 	if (!ps)
-@@ -215,7 +226,8 @@ int wfx_conf_tx(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
- 	mutex_lock(&wdev->conf_mutex);
- 	assign_bit(queue, &wvif->uapsd_mask, params->uapsd);
- 	wfx_hif_set_edca_queue_params(wvif, queue, params);
--	if (wvif->vif->type == NL80211_IFTYPE_STATION && old_uapsd != wvif->uapsd_mask) {
-+	if (vif->type == NL80211_IFTYPE_STATION &&
-+	    old_uapsd != wvif->uapsd_mask) {
- 		wfx_hif_set_uapsd_info(wvif, wvif->uapsd_mask);
- 		wfx_update_pm(wvif);
- 	}
-@@ -238,24 +250,26 @@ void wfx_event_report_rssi(struct wfx_vif *wvif, u8 raw_rcpi_rssi)
- 	/* RSSI: signed Q8.0, RCPI: unsigned Q7.1
- 	 * RSSI = RCPI / 2 - 110
- 	 */
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	int rcpi_rssi;
- 	int cqm_evt;
- 
- 	rcpi_rssi = raw_rcpi_rssi / 2 - 110;
--	if (rcpi_rssi <= wvif->vif->bss_conf.cqm_rssi_thold)
-+	if (rcpi_rssi <= vif->bss_conf.cqm_rssi_thold)
- 		cqm_evt = NL80211_CQM_RSSI_THRESHOLD_EVENT_LOW;
- 	else
- 		cqm_evt = NL80211_CQM_RSSI_THRESHOLD_EVENT_HIGH;
--	ieee80211_cqm_rssi_notify(wvif->vif, cqm_evt, rcpi_rssi, GFP_KERNEL);
-+	ieee80211_cqm_rssi_notify(vif, cqm_evt, rcpi_rssi, GFP_KERNEL);
- }
- 
- static void wfx_beacon_loss_work(struct work_struct *work)
- {
- 	struct wfx_vif *wvif = container_of(to_delayed_work(work), struct wfx_vif,
- 					    beacon_loss_work);
--	struct ieee80211_bss_conf *bss_conf = &wvif->vif->bss_conf;
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
-+	struct ieee80211_bss_conf *bss_conf = &vif->bss_conf;
- 
--	ieee80211_beacon_loss(wvif->vif);
-+	ieee80211_beacon_loss(vif);
- 	schedule_delayed_work(to_delayed_work(work), msecs_to_jiffies(bss_conf->beacon_int));
- }
- 
-@@ -321,15 +335,16 @@ int wfx_sta_remove(struct ieee80211_hw *hw, struct ieee80211_vif *vif, struct ie
- 
- static int wfx_upload_ap_templates(struct wfx_vif *wvif)
- {
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	struct sk_buff *skb;
- 
--	skb = ieee80211_beacon_get(wvif->wdev->hw, wvif->vif);
-+	skb = ieee80211_beacon_get(wvif->wdev->hw, vif);
- 	if (!skb)
- 		return -ENOMEM;
- 	wfx_hif_set_template_frame(wvif, skb, HIF_TMPLT_BCN, API_RATE_INDEX_B_1MBPS);
- 	dev_kfree_skb(skb);
- 
--	skb = ieee80211_proberesp_get(wvif->wdev->hw, wvif->vif);
-+	skb = ieee80211_proberesp_get(wvif->wdev->hw, vif);
- 	if (!skb)
- 		return -ENOMEM;
- 	wfx_hif_set_template_frame(wvif, skb, HIF_TMPLT_PRBRES, API_RATE_INDEX_B_1MBPS);
-@@ -339,7 +354,8 @@ static int wfx_upload_ap_templates(struct wfx_vif *wvif)
- 
- static void wfx_set_mfp_ap(struct wfx_vif *wvif)
- {
--	struct sk_buff *skb = ieee80211_beacon_get(wvif->wdev->hw, wvif->vif);
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
-+	struct sk_buff *skb = ieee80211_beacon_get(wvif->wdev->hw, vif);
- 	const int ieoffset = offsetof(struct ieee80211_mgmt, u.beacon.variable);
- 	const u16 *ptr = (u16 *)cfg80211_find_ie(WLAN_EID_RSN, skb->data + ieoffset,
- 						 skb->len - ieoffset);
-@@ -388,12 +404,13 @@ void wfx_stop_ap(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
- 
- static void wfx_join(struct wfx_vif *wvif)
- {
--	int ret;
--	struct ieee80211_bss_conf *conf = &wvif->vif->bss_conf;
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
-+	struct ieee80211_bss_conf *conf = &vif->bss_conf;
- 	struct cfg80211_bss *bss = NULL;
- 	u8 ssid[IEEE80211_MAX_SSID_LEN];
- 	const u8 *ssidie = NULL;
- 	int ssidlen = 0;
-+	int ret;
- 
- 	wfx_tx_lock_flush(wvif->wdev);
- 
-@@ -420,7 +437,7 @@ static void wfx_join(struct wfx_vif *wvif)
- 	wvif->join_in_progress = true;
- 	ret = wfx_hif_join(wvif, conf, wvif->channel, ssid, ssidlen);
- 	if (ret) {
--		ieee80211_connection_loss(wvif->vif);
-+		ieee80211_connection_loss(vif);
- 		wfx_reset(wvif);
- 	} else {
- 		/* Due to beacon filtering it is possible that the AP's beacon is not known for the
-@@ -434,13 +451,14 @@ static void wfx_join(struct wfx_vif *wvif)
- 
- static void wfx_join_finalize(struct wfx_vif *wvif, struct ieee80211_bss_conf *info)
- {
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	struct ieee80211_sta *sta = NULL;
- 	int ampdu_density = 0;
- 	bool greenfield = false;
- 
- 	rcu_read_lock(); /* protect sta */
- 	if (info->bssid && !info->ibss_joined)
--		sta = ieee80211_find_sta(wvif->vif, info->bssid);
-+		sta = ieee80211_find_sta(vif, info->bssid);
- 	if (sta && sta->deflink.ht_cap.ht_supported)
- 		ampdu_density = sta->deflink.ht_cap.ampdu_density;
- 	if (sta && sta->deflink.ht_cap.ht_supported &&
-@@ -561,11 +579,13 @@ void wfx_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
- 
- static int wfx_update_tim(struct wfx_vif *wvif)
- {
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	struct sk_buff *skb;
- 	u16 tim_offset, tim_length;
- 	u8 *tim_ptr;
- 
--	skb = ieee80211_beacon_get_tim(wvif->wdev->hw, wvif->vif, &tim_offset, &tim_length);
-+	skb = ieee80211_beacon_get_tim(wvif->wdev->hw, vif, &tim_offset,
-+				       &tim_length);
- 	if (!skb)
- 		return -ENOENT;
- 	tim_ptr = skb->data + tim_offset;
-@@ -707,8 +727,6 @@ int wfx_add_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
- 		return -EOPNOTSUPP;
- 	}
- 
--	/* FIXME: prefer use of container_of() to get vif */
--	wvif->vif = vif;
- 	wvif->wdev = wdev;
- 
- 	wvif->link_id_map = 1; /* link-id 0 is reserved for multicast */
-@@ -767,7 +785,6 @@ void wfx_remove_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
- 
- 	cancel_delayed_work_sync(&wvif->beacon_loss_work);
- 	wdev->vif[wvif->id] = NULL;
--	wvif->vif = NULL;
- 
- 	mutex_unlock(&wdev->conf_mutex);
- 
--- 
-2.25.1
+* We know the domain is valid the whole time IOPF is using it, because
+  unbind() waits for pending faults.
 
+We just need a comment explaining the last point, something like:
+
+       /*
+	* Safe to fetch outside the group mutex because:
+        * - xarray protects its internal state with RCU
+        * - the domain obtained is either NULL or fully formed
+	* - the IOPF work is the only caller and is flushed before the
+	*   domain is freed.
+        */
+
+Thanks,
+Jean
+
+> +	domain = xa_load(&group->pasid_array, pasid);
+> +	mutex_unlock(&group->mutex);
+> +	iommu_group_put(group);
+> +
+> +	return domain;
+> +}
+> -- 
+> 2.25.1
+> 
