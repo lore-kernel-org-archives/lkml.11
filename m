@@ -2,139 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D80D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE865C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241511AbiECSiS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 14:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56208 "EHLO
+        id S241550AbiECSkG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 14:40:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232043AbiECSiL (ORCPT
+        with ESMTP id S230299AbiECSkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 14:38:11 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2065.outbound.protection.outlook.com [40.107.244.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7551EAC4;
-        Tue,  3 May 2022 11:34:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ewm9n3AZ+4tk+uzmyABPc8qqoySF7c5HZCujLv0l9oaJNXnD2EfnwwwTfi6NEDiioKLNR4ZuadphbdSwF/sSErdXxSqbI0lkk4v26UYEhxvsAMqAZaYAcmFFspEndrBur1KCAUzESn0wXJO0JcBfjYu/l5e0ncSHJ0jNMi+TpQBh3IxtmapysnAwHRWPe9pnndRYYFFEMpTm50rV1Ka3MzmZy8fhxdFDhLcDwsdKAbHoJ6dP41lBHfc8DZLRuqCDv7RMorXH5Fw6ZXzibbWaMLs7eN25HW7vdsYgw4tMBOUGRNoAIn0YbkVyQ4dn+4AmSqrUNgoUlwHgmQ9A6LEgPQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4RwVV8+iphMKJpY9VBQjS5Z6HMTjRGMQ1gHlrtQKHkI=;
- b=HId9rICao/ZZmtbQ//I2wOupKyTJtr3iBxs+6t7lfqbun8ZN7NHfU35kdTzDRpV7EMBCrvOCqWPs6TdeT8ZEShJAE0MuV1uqgImgxjXPpQ+3D0/JoE1HHkA/3yZkyuWxgZoM7OEVcbSEa7lVMM3pCm3FAbjOAA9ajNkLjCHPUgsUuqF5hOZqCRja4AQUbKJkaT21iEGRaHuj0zHLybbighIkeyP08IESdrPmp/Hrdu2i8tHw650rk/pi/SQYKUA+W4XcZDzCfy73uoweOScAdf8zCGI3SSZEN/FI3kfM9YIVWbg+TWT9W2wpMOl0mLCzVU3PfDUiZIcitta+pc34zQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4RwVV8+iphMKJpY9VBQjS5Z6HMTjRGMQ1gHlrtQKHkI=;
- b=R+3IM9oRGJq2nXHmASouSmpQnGtXEri2N/WrRCzq4ZVlJrTUI99lk5WZuwABhb/UKhEkccxLwoZzR2phl/cIQQelJ7LF1XG4PyIAAaHO486Khpom9XyuavfRo3F69OJDDVtw7sXDF3VZkRjcq6MOLbqYKE2CWKCig2MTupymhS4=
-Received: from BN9PR03CA0797.namprd03.prod.outlook.com (2603:10b6:408:13f::22)
- by LV2PR12MB5992.namprd12.prod.outlook.com (2603:10b6:408:14e::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Tue, 3 May
- 2022 18:34:35 +0000
-Received: from BN8NAM11FT005.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:13f:cafe::a8) by BN9PR03CA0797.outlook.office365.com
- (2603:10b6:408:13f::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15 via Frontend
- Transport; Tue, 3 May 2022 18:34:35 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT005.mail.protection.outlook.com (10.13.176.69) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5206.12 via Frontend Transport; Tue, 3 May 2022 18:34:35 +0000
-Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 3 May
- 2022 13:34:33 -0500
-From:   Mario Limonciello <mario.limonciello@amd.com>
-To:     Hans de Goede <hdegoede@redhat.com>,
-        Mark Pearson <markpearson@lenovo.com>
-CC:     Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
-        Mark Gross <mgross@linux.intel.com>,
-        "open list:THINKPAD ACPI EXTRAS DRIVER" 
-        <ibm-acpi-devel@lists.sourceforge.net>,
-        "open list:THINKPAD ACPI EXTRAS DRIVER" 
-        <platform-driver-x86@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH] platform/x86: thinkpad_acpi: Add a few more models to s2idle quirk list
-Date:   Tue, 3 May 2022 13:34:20 -0500
-Message-ID: <20220503183420.348-1-mario.limonciello@amd.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 3 May 2022 14:40:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C2D5120196
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 11:36:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651602988;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fJCjU8JdJDMoZ6JiGS8DoI4ltHKw0EEf1II2eYjKnuM=;
+        b=VUeZ1SZofInT1q0dLGGDtkcAkotSp4Iei+MH2B+v9hvBD6Ei03h0DfMMdsMAH2e8FSdfwT
+        DEI2MZI3+jctgYF6ctKENX6fEhj/zpRuDrc+6ceUHZNrN8kWpk8AW0KO96yAWIzaYF+Ofq
+        m+OriQXW9GyEU/vrVjArrwgj8qFHnf0=
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
+ [209.85.215.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-376-7GJHkCB8PiiCOySsqTHU0Q-1; Tue, 03 May 2022 14:36:17 -0400
+X-MC-Unique: 7GJHkCB8PiiCOySsqTHU0Q-1
+Received: by mail-pg1-f197.google.com with SMTP id q13-20020a638c4d000000b003821725ad66so8791907pgn.23
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 11:36:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=fJCjU8JdJDMoZ6JiGS8DoI4ltHKw0EEf1II2eYjKnuM=;
+        b=CzYSs0SckeggglbHa0vJLze89JF2KbVXecCFEUAL01DwkziyUhn/JiM+G4PFd3Bo+c
+         Tiuc/QzboRhe4IoWZysCC+pnNoSRiJTnUs2FRpHmrWdi4Kr99f0cEER0w12N9Gb66iqc
+         W630UqdDwbZwOlIHmwD3TIrhd4er4YPJ9JV7zQSghIbKqK9JHpjeQf/SOPFLyDvDYcc8
+         OTG24hjRofIC8XDZtvqvQoprEqqlNaaQAUtcRDXkmDn4cCwIrez3tlejwnSgcNCgHFSi
+         eXRrrOswPyEzm7C0zkm/bx03x1loR06Y9Jtv9PjpXkVNw+z1jTeue2YCz+pTLlnApV6e
+         XK8g==
+X-Gm-Message-State: AOAM531CQusU2kJ5PpGW/mhuHBkiZ7UpyheWuO16x3S13vRhdr+yx5oA
+        JW6adnECiWxzlBFz0coNHep/ZqZ7ns8Z2ptrFpI513cSYyGKWivJrFZbYnkV8KkcjFxXqsuUBFg
+        csOr6dasq5+LR3CMdZTSyKYgp
+X-Received: by 2002:a17:902:e78e:b0:15d:29ba:77fe with SMTP id cp14-20020a170902e78e00b0015d29ba77femr17951896plb.119.1651602967843;
+        Tue, 03 May 2022 11:36:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy4nv0IKW7HMA4MKhMR91C6X0V3KPHdcvIk0GGNMCBLpb+uvHfY05+UexIai2OiC1Zhd4hVfg==
+X-Received: by 2002:a17:902:e78e:b0:15d:29ba:77fe with SMTP id cp14-20020a170902e78e00b0015d29ba77femr17951880plb.119.1651602967566;
+        Tue, 03 May 2022 11:36:07 -0700 (PDT)
+Received: from [10.10.69.234] ([8.34.116.185])
+        by smtp.gmail.com with ESMTPSA id k15-20020aa790cf000000b0050dc7628174sm6623027pfk.78.2022.05.03.11.36.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 11:36:06 -0700 (PDT)
+Message-ID: <0fa49d1f-a05d-bdb1-df60-800ff5999d8e@redhat.com>
+Date:   Tue, 3 May 2022 20:35:59 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 91621de0-8bfa-443a-a4df-08da2d3392db
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5992:EE_
-X-Microsoft-Antispam-PRVS: <LV2PR12MB5992F1641B8792F7CE17F7EAE2C09@LV2PR12MB5992.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fBU2oL6SYic7anlp2VfCnIrtCEhcwosUymgt/263qkAyaRfZPRIF8YTwPaKNBSCosdDABp9tfiFSq5COPibjY0Xj+5X35sVWPXhsNbrKDG9np6bDILATVpuuDfXQOoZz5jZgbDunbUyO7raZc+zmzgh4P4NcjRB5fKz1D33HTTrSyAjata5VuVKD/Yy9/KH+XqVQmLcPL2vatknX8b+bNODfvS8wiYS6s7R3a60oB9qbLTB8bultMDCrpe3G40v7VTMlppv+Va3negXXRbby59tJboXWvdaoaZG0HSpq3X2TNzYyvBW86V6sWobpnLvgpcV4WHfpZuTzPB+HHvS7YOqj3i1AXxsoI9SMLRNuBZY93y8CVA0Ii7WzENj1Y5F6nhgWEFee8VV4Wd5hrgHGolOzs1CO735KWcJThDVDt6dg8bER82JNlrHKlryTG5JBGteNcRXR+jdwVqRQLGkJfcuMXXeJASPBm3vc5I4lAXjjGRoeE+PeYuaHzWYUPe1uEGV6wg//AajcCfF5XoWzZzZmDKke5Mt8+ATNsVumLjGgtGHaAZc4LTyYW31eLwehG6Ti+1IEH/ayu1vRaSZO5b6xbQ3HOi5hDGFqQXi6KzX7584ZQ4CjimH79dWRR3Au8kNC7MZGmFkMz6fFnrmoiebn19guzSBWziGkIu4eDxqXszH9O2OMYgpmuGniZOhnT2PNcXzh4FeBNYY3cM+4lA==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(8676002)(110136005)(508600001)(54906003)(4326008)(70206006)(70586007)(316002)(86362001)(81166007)(36756003)(356005)(7696005)(426003)(336012)(186003)(36860700001)(1076003)(40460700003)(26005)(6666004)(8936002)(5660300002)(44832011)(82310400005)(2616005)(16526019)(47076005)(2906002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2022 18:34:35.6015
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 91621de0-8bfa-443a-a4df-08da2d3392db
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT005.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5992
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] mm/mprotect: reduce Committed_AS if memory protection is
+ changed to PROT_NONE
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        liusongtang <liusongtang@huawei.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        nixiaoming@huawei.com, young.liuyang@huawei.com,
+        wangkefeng@huawei.com
+References: <20220426112705.3323-1-liusongtang@huawei.com>
+ <20220426133401.9404190c5a5c6ff58b694c59@linux-foundation.org>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220426133401.9404190c5a5c6ff58b694c59@linux-foundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Users have reported that there are a few other DMI strings that T14 can
-go by, and so these models should also pick up the quirk to avoid the s2idle
-firmware bug.
+On 26.04.22 22:34, Andrew Morton wrote:
+> On Tue, 26 Apr 2022 19:27:05 +0800 liusongtang <liusongtang@huawei.com> wrote:
+> 
+>> If PROT_WRITE is set, the size of vm area will be added to Committed_AS.
+>> However, if memory protection is changed to PROT_NONE,
+>> the corresponding physical memory will not be used, but Committed_AS still
+>> count the size of the PROT_NONE memory.
+>>
+>> This patch reduce Committed_AS and free the corresponding memory if
+>> memory protection is changed to PROT_NONE.
+>>
+>> ...
+>>
+>> --- a/mm/mprotect.c
+>> +++ b/mm/mprotect.c
+>> @@ -497,6 +497,12 @@ mprotect_fixup(struct vm_area_struct *vma, struct vm_area_struct **pprev,
+>>  	}
+>>  
+>>  success:
+>> +	if ((newflags & (VM_READ | VM_WRITE | VM_EXEC | VM_LOCKED | VM_ACCOUNT)) == VM_ACCOUNT) {
+>> +		zap_page_range(vma, start, end - start);
+>> +		newflags &= ~VM_ACCOUNT;
+>> +		vm_unacct_memory((end - start) >> PAGE_SHIFT);
+>> +	}
+>> +
+>>  	/*
+>>  	 * vm_flags and vm_page_prot are protected by the mmap_lock
+>>  	 * held in write mode.
+> 
+> Surprised.  If userspace does mprotect(addr, len.  PROT_NONE) then
+> mprotect(addr, len.  PROT_READ), what is now at *addr?  Zeroes?
+> 
 
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
----
- drivers/platform/x86/thinkpad_acpi.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+I don't think so. I don't see any pages getting zapped at my quick test
+(unless it's wrong) shows that data is maintained. Further, it could
+violate POSIX semantics.
 
-diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-index 2833609fade7..f3554068dd1e 100644
---- a/drivers/platform/x86/thinkpad_acpi.c
-+++ b/drivers/platform/x86/thinkpad_acpi.c
-@@ -4463,6 +4463,22 @@ static const struct dmi_system_id fwbug_list[] __initconst = {
- 			DMI_MATCH(DMI_PRODUCT_NAME, "20UD"),
- 		}
- 	},
-+	{
-+		.ident = "T14 Gen1 AMD",
-+		.driver_data = &quirk_s2idle_bug,
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "20UE"),
-+		}
-+	},
-+	{
-+		.ident = "T14s Gen1 AMD",
-+		.driver_data = &quirk_s2idle_bug,
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "20UH"),
-+		}
-+	},
- 	{
- 		.ident = "P14s Gen1 AMD",
- 		.driver_data = &quirk_s2idle_bug,
+So this patch is wrong, there might have been anonymous pages populated.
+
 -- 
-2.34.1
+Thanks,
+
+David / dhildenb
 
