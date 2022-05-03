@@ -2,136 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D43C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 01:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F596C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 01:10:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229909AbiECBNx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 21:13:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59876 "EHLO
+        id S229827AbiECBOL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 21:14:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229830AbiECBNu (ORCPT
+        with ESMTP id S229626AbiECBOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 21:13:50 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC82C4F9F3
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 18:10:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651540209; x=1683076209;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=qln1eOE7PtXZLf4DXtjUFRxKja508JnuDh98umy/EyE=;
-  b=MQOSovXN//ZZvc60zGDM2aCv0MGEf5K69zUb+cU4BBN4qrsvgvqk7AXD
-   ZQ7Smgy2zs+w+o17ZkdtyJ0lVv50lf2iFwivTqgeOP6nULESdCQ2fry1K
-   znutvgLmb+toumVCos8s0tn/h+fzBmMSpV6Vcu0mCrVrZZQUhLERyiwS4
-   W81gJOMmKWnlgyU5TD7k5zr0vIu6VMmgd3NJaIAb+dFOhgZNDsT2YWv/q
-   q/8dWK9LVSQMv3zflf1brmX9BrkeJFQQkQ7c+Cnz9d9QD5xYaa5VKjoCA
-   bsuytDZ2emK06rJ1LDLjlVeLtAHHnGyEUR5GM/sw81XgpS2aEvAvVoSgu
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="249350482"
-X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
-   d="scan'208";a="249350482"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 18:06:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
-   d="scan'208";a="631315663"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 02 May 2022 18:06:09 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nlgzQ-000A1v-L1;
-        Tue, 03 May 2022 01:06:08 +0000
-Date:   Tue, 3 May 2022 09:05:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Steve French <stfrench@microsoft.com>
-Subject: [samba-ksmbd:for-next 26/26] fs/cifs/fscache.c:112:67: warning:
- passing argument 2 of 'bset_mem_set_bit' makes pointer from integer without
- a cast
-Message-ID: <202205030951.b4tycp85-lkp@intel.com>
+        Mon, 2 May 2022 21:14:09 -0400
+Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71223E0A4;
+        Mon,  2 May 2022 18:10:33 -0700 (PDT)
+Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-e93bbb54f9so15897641fac.12;
+        Mon, 02 May 2022 18:10:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=afJH5iqVo2x/jW5TxtB/M5xtYzbdyfHarrJP9AysXw8=;
+        b=1Ny4089S5DjjUNE1ZVTRGUL/E5tKMHwYyyV0/r9p5t1pVe3EflCXu9htOQQJ/rt4ns
+         ZOKO9/z0+GPPPQYAiiMCK5sqnjLR2FnvyQ3QZVxAAbNXq5XexPVujeuzfHK9BTBfDqS4
+         7cehOAVkWQFShEOfZnCM7ym2gxgdeTw2jfkCLHjLZDP89eLOGoHPBlTEi+OXvOwso/tb
+         80eZNx15Iq66X0+1LNkm1tKpTg8/SldYekpf51Qfbz/XBQvqZsrDDApJREzNZHgh+E5a
+         3BDfXS7dZsISRrt0laYXspw/01/98GzaPAj49QFux+2bN7beMYo27XdZGeaRdvDFkDT4
+         V6Fw==
+X-Gm-Message-State: AOAM530P5TSVtyOxyqUQk17lMfBca3xQ5evxV/QmSnSiOj2TzMRruYOk
+        cczAj7qLXB3V/6LdP4FxdIcNmVTcaQ==
+X-Google-Smtp-Source: ABdhPJzR818A8CrYdsHAQej2SNyjak3oYeBZa1Ms4RsgS3KU8wDyZcQ7abCf4os2SaukIA4qGBANFg==
+X-Received: by 2002:a05:6870:d587:b0:e1:e7f1:5d48 with SMTP id u7-20020a056870d58700b000e1e7f15d48mr826708oao.275.1651539492367;
+        Mon, 02 May 2022 17:58:12 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id q21-20020a4ad555000000b0035eb4e5a6d5sm4410995oos.43.2022.05.02.17.58.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 17:58:11 -0700 (PDT)
+Received: (nullmailer pid 2157914 invoked by uid 1000);
+        Tue, 03 May 2022 00:58:11 -0000
+Date:   Mon, 2 May 2022 19:58:11 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     frowand.list@gmail.com
+Cc:     pantelis.antoniou@konsulko.com,
+        Slawomir Stepien <slawomir.stepien@nokia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Slawomir Stepien <sst@poczta.fm>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH v2 2/3] of: overlay: unittest: add tests for overlay
+ notifiers
+Message-ID: <YnB+I9q7pjdx2Rtq@robh.at.kernel.org>
+References: <20220502181742.1402826-1-frowand.list@gmail.com>
+ <20220502181742.1402826-3-frowand.list@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220502181742.1402826-3-frowand.list@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.samba.org/ksmbd.git for-next
-head:   422ce10d22e2de32427ff611478747dd27af50f8
-commit: 422ce10d22e2de32427ff611478747dd27af50f8 [26/26] mm, netfs, fscache: Stop read optimisation when folio removed from pagecache
-config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220503/202205030951.b4tycp85-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add samba-ksmbd git://git.samba.org/ksmbd.git
-        git fetch --no-tags samba-ksmbd for-next
-        git checkout 422ce10d22e2de32427ff611478747dd27af50f8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash fs/cifs/
+On Mon, May 02, 2022 at 01:17:41PM -0500, frowand.list@gmail.com wrote:
+> From: Frank Rowand <frank.rowand@sony.com>
+> 
+> Add tests for overlay apply and remove notifiers.  Trigger errors
+> for each of the notifier actions.
+> 
+> These tests will reveal a memory leak problem when a notifier returns
+> an error for action OF_OVERLAY_POST_APPLY.  The pr_err() message is:
+> 
+>    OF: ERROR: memory leak, expected refcount 1 instead of 3,
+>    of_node_get()/of_node_put() unbalanced - destroy cset entry: attach
+>    overlay node /testcase-data/overlay-node/test-bus/test-unittest17
+> 
+> Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+> ---
+> Changes since version 1:
+>   - patch 1/1 v1 did not apply on Rob's dt/next branch, rebase on top of
+>     5f756a2eaa44 of: overlay: do not break notify on NOTIFY_{OK|STOP}
+> 
+> Output of the new overlay notifier unittests, as filtered by
+> scripts/dtc/of_unittest_expect:
+> 
+>    ### dt-test ### pass of_unittest_overlay_notify():2825
+> ok OF: overlay: overlay changeset pre-apply notifier error -16, target: /testcase-data/overlay-node/test-bus
+>    ### dt-test ### pass of_unittest_overlay_notify():2846
+>    ### dt-test ### pass of_unittest_overlay_notify():2851
+> ok OF: overlay: overlay changeset post-apply notifier error -17, target: /testcase-data/overlay-node/test-bus
+>    OF: ERROR: memory leak, expected refcount 1 instead of 3, of_node_get()/of_node_put() unbalanced - destroy cset entry: attach overlay node /testcase-data/overlay-node/test-bus/test-unittest17
+>    ### dt-test ### pass of_unittest_overlay_notify():2857
+>    ### dt-test ### pass of_unittest_overlay_notify():2862
+>    ### dt-test ### pass of_unittest_overlay_notify():2866
+>    ### dt-test ### pass of_unittest_overlay_notify():2869
+> ok OF: overlay: overlay changeset pre-remove notifier error -18, target: /testcase-data/overlay-node/test-bus
+>    ### dt-test ### pass of_unittest_overlay_notify():2880
+>    ### dt-test ### pass of_unittest_overlay_notify():2888
+>    ### dt-test ### pass of_unittest_overlay_notify():2892
+>    ### dt-test ### pass of_unittest_overlay_notify():2895
+> ok OF: overlay: overlay changeset post-remove notifier error -19, target: /testcase-data/overlay-node/test-bus
+>    ### dt-test ### pass of_unittest_overlay_notify():2902
+>    ### dt-test ### pass of_unittest_overlay_notify():2909
+>    ### dt-test ### pass of_unittest_overlay_notify():2914
+>    ### dt-test ### pass of_unittest_overlay_notify():2926
+> 
+> Note that four new kernel error messages are triggered by the new
+> tests, and of_unittest_expect labels them as expected errors with
+> the string 'ok ' in the first three columns.
+> 
+> A fifth new kernel error message is a real bug, which will be fixed
+> in patch 3/3:
+> 
+>    OF: ERROR: memory leak, expected refcount 1 instead of 3, of_node_get()/of_node_put() unbalanced - destroy cset entry: attach overlay node /testcase-data/overlay-node/test-bus/test-unittest17
+> 
+> 
+>  drivers/of/unittest-data/Makefile       |  10 ++
+>  drivers/of/unittest-data/overlay_16.dts |  15 ++
+>  drivers/of/unittest-data/overlay_17.dts |  15 ++
+>  drivers/of/unittest-data/overlay_18.dts |  15 ++
+>  drivers/of/unittest-data/overlay_19.dts |  15 ++
+>  drivers/of/unittest-data/overlay_20.dts |  15 ++
+>  drivers/of/unittest.c                   | 198 ++++++++++++++++++++++++
+>  7 files changed, 283 insertions(+)
+>  create mode 100644 drivers/of/unittest-data/overlay_16.dts
+>  create mode 100644 drivers/of/unittest-data/overlay_17.dts
+>  create mode 100644 drivers/of/unittest-data/overlay_18.dts
+>  create mode 100644 drivers/of/unittest-data/overlay_19.dts
+>  create mode 100644 drivers/of/unittest-data/overlay_20.dts
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from include/linux/bitops.h:33,
-                    from include/linux/thread_info.h:27,
-                    from include/asm-generic/preempt.h:5,
-                    from ./arch/m68k/include/generated/asm/preempt.h:1,
-                    from include/linux/preempt.h:78,
-                    from include/linux/spinlock.h:55,
-                    from include/linux/swap.h:5,
-                    from fs/cifs/fscache.h:12,
-                    from fs/cifs/fscache.c:9:
-   fs/cifs/fscache.c: In function 'cifs_fscache_get_inode_cookie':
->> fs/cifs/fscache.c:112:67: warning: passing argument 2 of 'bset_mem_set_bit' makes pointer from integer without a cast [-Wint-conversion]
-     112 |                 set_bit(AS_NOTIFY_REMOVING_FOLIO, inode->i_mapping->flags);
-         |                                                   ~~~~~~~~~~~~~~~~^~~~~~~
-         |                                                                   |
-         |                                                                   long unsigned int
-   arch/m68k/include/asm/bitops.h:64:54: note: in definition of macro 'set_bit'
-      64 |                                 bset_mem_set_bit(nr, vaddr) : \
-         |                                                      ^~~~~
-   arch/m68k/include/asm/bitops.h:41:69: note: expected 'volatile long unsigned int *' but argument is of type 'long unsigned int'
-      41 | static inline void bset_mem_set_bit(int nr, volatile unsigned long *vaddr)
-         |                                             ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
->> fs/cifs/fscache.c:112:67: warning: passing argument 2 of 'bfset_mem_set_bit' makes pointer from integer without a cast [-Wint-conversion]
-     112 |                 set_bit(AS_NOTIFY_REMOVING_FOLIO, inode->i_mapping->flags);
-         |                                                   ~~~~~~~~~~~~~~~~^~~~~~~
-         |                                                                   |
-         |                                                                   long unsigned int
-   arch/m68k/include/asm/bitops.h:65:55: note: in definition of macro 'set_bit'
-      65 |                                 bfset_mem_set_bit(nr, vaddr))
-         |                                                       ^~~~~
-   arch/m68k/include/asm/bitops.h:50:70: note: expected 'volatile long unsigned int *' but argument is of type 'long unsigned int'
-      50 | static inline void bfset_mem_set_bit(int nr, volatile unsigned long *vaddr)
-         |                                              ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
-
-
-vim +/bset_mem_set_bit +112 fs/cifs/fscache.c
-
-    96	
-    97	void cifs_fscache_get_inode_cookie(struct inode *inode)
-    98	{
-    99		struct cifs_fscache_inode_coherency_data cd;
-   100		struct cifsInodeInfo *cifsi = CIFS_I(inode);
-   101		struct cifs_sb_info *cifs_sb = CIFS_SB(inode->i_sb);
-   102		struct cifs_tcon *tcon = cifs_sb_master_tcon(cifs_sb);
-   103	
-   104		cifs_fscache_fill_coherency(&cifsi->vfs_inode, &cd);
-   105	
-   106		cifsi->netfs_ctx.cache =
-   107			fscache_acquire_cookie(tcon->fscache, 0,
-   108					       &cifsi->uniqueid, sizeof(cifsi->uniqueid),
-   109					       &cd, sizeof(cd),
-   110					       i_size_read(&cifsi->vfs_inode));
-   111		if (cifsi->netfs_ctx.cache)
- > 112			set_bit(AS_NOTIFY_REMOVING_FOLIO, inode->i_mapping->flags);
-   113	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Applied, thanks!
