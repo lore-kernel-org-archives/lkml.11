@@ -2,149 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 243EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 16:48:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46E0AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 16:50:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239869AbiECQvg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 12:51:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42918 "EHLO
+        id S239840AbiECQyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 12:54:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239852AbiECQve (ORCPT
+        with ESMTP id S239924AbiECQyP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 12:51:34 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2323F3969F;
-        Tue,  3 May 2022 09:48:01 -0700 (PDT)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 243GjgMr003403;
-        Tue, 3 May 2022 16:47:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=CxVsWtTvFkYal173lcotmZNmg84/NZG0ajF0yqrAyQI=;
- b=ExADnrR2O80MeWVSBUVg7ZXHTnl8hCtGbKukI3kGivcX2jh/x+uMavdFMMidyhKCVVgy
- xWy0rp0d0DScy1EUhwZ1BCktg0HvzGUMdn/v9iB18nVjcXiUx2GddwEC4RdCfmXRaU31
- 23OKu2z8ia+20KkERevScWLbeuGNR1j4KCT4dLGFg6gvNhG5ap2mdVRHSDxhznr4Ony3
- 23tYg6Ggee6UPsVYlIP+zLJ0xpRGMPei0TzUAZwsP+09PvCho416WY+VA/E47kA1xtD+
- 5H/MyjkNKLxJq63/dXZRjES5C50VSW2DRV2z3afe8yzaZoSAmsmtac89NtCvhMiWoQ+m 0w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fu86v80s1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 03 May 2022 16:47:54 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 243GlsdR011678;
-        Tue, 3 May 2022 16:47:54 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fu86v80rd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 03 May 2022 16:47:54 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 243GWLkc020534;
-        Tue, 3 May 2022 16:47:51 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma03fra.de.ibm.com with ESMTP id 3fscdk2xhf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 03 May 2022 16:47:51 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 243Glnaw55378326
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 3 May 2022 16:47:49 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E7593A4051;
-        Tue,  3 May 2022 16:47:48 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A5ADCA404D;
-        Tue,  3 May 2022 16:47:48 +0000 (GMT)
-Received: from [9.145.187.31] (unknown [9.145.187.31])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  3 May 2022 16:47:48 +0000 (GMT)
-Message-ID: <60195753-93fc-ced7-c250-da65c05508af@linux.ibm.com>
-Date:   Tue, 3 May 2022 18:47:48 +0200
+        Tue, 3 May 2022 12:54:15 -0400
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8292A260;
+        Tue,  3 May 2022 09:50:42 -0700 (PDT)
+Received: by mail-oi1-f175.google.com with SMTP id s131so18777979oie.1;
+        Tue, 03 May 2022 09:50:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=XGyhawv5lvAz+jR7b+4J1tPg3EThTh3JtzLNgN/2cvM=;
+        b=kmchxS1T8EtElDIuBlgG6CRTtdgaC80Ea3sZUIkx0Y9hrvMuae2gTkvupbJf5ed/Vy
+         2pmSLvxLXkO1VxSMLsPD+fRPV4YKRX5ggfYrCQObD/yLNh7diR+79l1zPUR8r/oOMqbL
+         6TY+TqKqM3gIDg80qJ6Q3EigDCDmj2SCaxWCGHac6uciYaRzo0dmBbMAHUx/bl1Z2FMN
+         JNK75FN4FOn/e8ICY0hpIY8M2ry0lrWQVXVYvjXoLQAblErtDBVcntEPAQAy9/y7DqtS
+         qkk8LOj8cBKa8XVwFL3s4NgO1gjJ8iMXF1vXhcUC0bkJKKRFxj3zToA9Pcs95gF3TTey
+         FGZA==
+X-Gm-Message-State: AOAM530t+lbhqj3y8RFKAwBKjgrH/CSmQXIZS1nGCfC/iubfypE/pf/e
+        kfkrlmW3L3+U3I7yFhvMzKc=
+X-Google-Smtp-Source: ABdhPJy1OCeyAd/qiMByFFTTxHMId2iF4W5yKbLjTMlEc1yur0rFxDRZF7LK/3VXrAqw2kuZPRsPmQ==
+X-Received: by 2002:a05:6808:2126:b0:325:c9f5:46e1 with SMTP id r38-20020a056808212600b00325c9f546e1mr2356270oiw.239.1651596641690;
+        Tue, 03 May 2022 09:50:41 -0700 (PDT)
+Received: from [10.10.69.251] ([8.34.116.185])
+        by smtp.gmail.com with ESMTPSA id v15-20020a4ae6cf000000b0035eb4e5a6cdsm5044278oot.35.2022.05.03.09.50.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 09:50:40 -0700 (PDT)
+Message-ID: <1e3afa38-0652-0a6a-045c-79a0b9c19f30@acm.org>
+Date:   Tue, 3 May 2022 09:50:37 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.1
-Subject: Re: [PATCH v2] powerpc/rtas: Keep MSR[RI] set when calling RTAS
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 05/16] nvme: zns: Allow ZNS drives that have
+ non-power_of_2 zone size
 Content-Language: en-US
-To:     Fabiano Rosas <farosas@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>
-References: <20220401140634.65726-1-ldufour@linux.ibm.com>
- <87r15aveny.fsf@mpe.ellerman.id.au> <87levia8wy.fsf@linux.ibm.com>
-From:   Laurent Dufour <ldufour@linux.ibm.com>
-In-Reply-To: <87levia8wy.fsf@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Pankaj Raghav <p.raghav@samsung.com>, jaegeuk@kernel.org,
+        axboe@kernel.dk, snitzer@kernel.org, hch@lst.de, mcgrof@kernel.org,
+        naohiro.aota@wdc.com, sagi@grimberg.me,
+        damien.lemoal@opensource.wdc.com, dsterba@suse.com,
+        johannes.thumshirn@wdc.com
+Cc:     linux-kernel@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        clm@fb.com, gost.dev@samsung.com, chao@kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, josef@toxicpanda.com,
+        jonathan.derrick@linux.dev, agk@redhat.com, kbusch@kernel.org,
+        kch@nvidia.com, linux-nvme@lists.infradead.org,
+        dm-devel@redhat.com, jiangbo.365@bytedance.com,
+        linux-fsdevel@vger.kernel.org, matias.bjorling@wdc.com,
+        linux-block@vger.kernel.org
+References: <20220427160255.300418-1-p.raghav@samsung.com>
+ <CGME20220427160301eucas1p147d0dced70946e20dd2dd046b94b8224@eucas1p1.samsung.com>
+ <20220427160255.300418-6-p.raghav@samsung.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220427160255.300418-6-p.raghav@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: HEqTFP_YAgNxXj63s2ag0XDrOL6IrJ-2
-X-Proofpoint-ORIG-GUID: 8UGGQGk9pWhzfZpD1bl5k9xjZx7Y_Ib_
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-03_07,2022-05-02_03,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
- mlxlogscore=999 mlxscore=0 clxscore=1015 lowpriorityscore=0
- priorityscore=1501 bulkscore=0 spamscore=0 impostorscore=0 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205030110
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/05/2022, 18:16:29, Fabiano Rosas wrote:
-> Michael Ellerman <mpe@ellerman.id.au> writes:
-> 
->>> diff --git a/arch/powerpc/kernel/entry_64.S b/arch/powerpc/kernel/entry_64.S
->>> index 9581906b5ee9..65cb14b56f8d 100644
->>> --- a/arch/powerpc/kernel/entry_64.S
->>> +++ b/arch/powerpc/kernel/entry_64.S
->>> @@ -330,22 +330,18 @@ _GLOBAL(enter_rtas)
->>>  	clrldi	r4,r4,2			/* convert to realmode address */
->>>         	mtlr	r4
->>>  
->>> -	li	r0,0
->>> -	ori	r0,r0,MSR_EE|MSR_SE|MSR_BE|MSR_RI
->>> -	andc	r0,r6,r0
->>> -	
->>> -        li      r9,1
->>> -        rldicr  r9,r9,MSR_SF_LG,(63-MSR_SF_LG)
->>> -	ori	r9,r9,MSR_IR|MSR_DR|MSR_FE0|MSR_FE1|MSR_FP|MSR_RI|MSR_LE
->>> -	andc	r6,r0,r9
->>  
->> One advantage of the old method is it can adapt to new MSR bits being
->> set by the kernel.
->>
->> For example we used to use RTAS on powernv, and this code didn't need
->> updating to cater to MSR_HV being set. We will probably never use RTAS
->> on bare-metal again, so that's OK.
->>
->> But your change might break secure virtual machines, because it clears
->> MSR_S whereas the old code didn't. I think SVMs did use RTAS, but I
->> don't know whether it matters if it's called with MSR_S set or not?
->>
->> Not sure if anyone will remember, or has a working setup they can test.
->> Maybe for now we just copy MSR_S from the kernel MSR the way the
->> current code does.
-> 
-> Would the kernel even be able to change the bit? I think only urfid can
-> clear MSR_S.
+On 4/27/22 09:02, Pankaj Raghav wrote:
+> -	sector &= ~(ns->zsze - 1);
+> +	sector = rounddown(sector, ns->zsze);
 
-That's a good point, thanks Fabiano!
+The above change breaks 32-bit builds since ns->zsze is 64 bits wide and 
+since rounddown() uses the C division operator instead of div64_u64().
 
-The POWER ISA programming note about MSR[S] is explicit:
-"MSR[S] can be set to 1 only by the System Call instruction and some
-interrupts. It can be set to 0 only by urfid."
+Thanks,
 
-Since RTAS is entered using rfid, MSR[S] should remain whatever is the
-value in SRR1.
-
-And that's what POWER ISA is saying about the rfid instruction, in the
-synopsis of the instruction the bit 41 of the resulting MSR (aka MSR[S]) is
-not impacted.
-
-So there is no need to take care of this MSR bit in our code, but for sure,
-this should be well commented.
-
-Michael, do you agree?
-
-Cheers,
-Laurent.
+Bart.
