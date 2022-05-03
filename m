@@ -2,171 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE352C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 319FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238464AbiECPa5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:30:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41498 "EHLO
+        id S238484AbiECPbD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:31:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238439AbiECPay (ORCPT
+        with ESMTP id S238451AbiECPaz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:30:54 -0400
-Received: from skyrocket.fabmicro.ru (skyrocket.fabmicro.ru [217.116.57.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2347D24587
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:27:20 -0700 (PDT)
-Received: from mail.fabmicro.ru (skyrocket.fabmicro.ru [217.116.57.130])
-        by skyrocket.fabmicro.ru (8.14.9/8.14.9) with ESMTP id 243FQIbs075026;
-        Tue, 3 May 2022 15:26:18 GMT
-        (envelope-from rz@fabmicro.ru)
+        Tue, 3 May 2022 11:30:55 -0400
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3540825E94;
+        Tue,  3 May 2022 08:27:22 -0700 (PDT)
+Received: by mail-qt1-f182.google.com with SMTP id fu47so13671858qtb.5;
+        Tue, 03 May 2022 08:27:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KTaY5qW8ijHItpwiQrjyZtLK9UVGGZLKbTPeV/f2e4M=;
+        b=F4d8PlZ9kUChsFbwuWexjT/w/DdnxBgrR2gWlzi3utzaOtq6VTOmoQzZFVmEqUA4ZG
+         cxmDt9p5pNl/aQ0J6hxPMJneuOkW2iFrDRsyPAOhEVMcoAvaP5dB4pMUk4BTU8i88W04
+         v/Ipn5A147XE1vMj9ccc0u5y7kWDQ4W8OcECeht47PtBrqwQOlfhfTZBC802NYcAOGe7
+         eEja4/9jEFmaZBJ88/1eTaqR3SOrmb3eM2kfptUpfSivmcOvQHsPnA8W4lEGxj7sF3Ax
+         0QxEnmdm2peGONQgsAzwVX5nVjSO7SnPswb043feJ44RlFo/elYnS+MZrclSiZNWciIv
+         XiGA==
+X-Gm-Message-State: AOAM531KevaRegLSwwig3TM5+WkMLIbiIlHU2vh8omTfbcRUomlOVQcj
+        rr1kgUq60BZne6ZNpsmsf2Rjig8N3yFrDw==
+X-Google-Smtp-Source: ABdhPJywZDspUpMkDpLIbuzbvXowmG5FZup/eYZbKcDpA8hFFb+YUkPADY0H8vLVccId5DDtAgRflw==
+X-Received: by 2002:a05:622a:1c9:b0:2f3:a2cc:b7d6 with SMTP id t9-20020a05622a01c900b002f3a2ccb7d6mr10263209qtw.101.1651591641129;
+        Tue, 03 May 2022 08:27:21 -0700 (PDT)
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com. [209.85.128.170])
+        by smtp.gmail.com with ESMTPSA id h81-20020a379e54000000b0069fe1fc72e7sm3673370qke.90.2022.05.03.08.27.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 08:27:20 -0700 (PDT)
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-2f83983782fso183713207b3.6;
+        Tue, 03 May 2022 08:27:20 -0700 (PDT)
+X-Received: by 2002:a81:6588:0:b0:2f8:b75e:1e1a with SMTP id
+ z130-20020a816588000000b002f8b75e1e1amr16065257ywb.358.1651591640492; Tue, 03
+ May 2022 08:27:20 -0700 (PDT)
 MIME-Version: 1.0
-Date:   Tue, 03 May 2022 20:26:18 +0500
-From:   Ruslan Zalata <rz@fabmicro.ru>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Maxime Ripard <maxime@cerno.tech>, Icenowy Zheng <icenowy@aosc.io>,
-        Jean Delvare <jdelvare@suse.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH v2] hwmon: (sun4i-lradc) Add driver for LRADC found on
- Allwinner A13/A20 SoC
-In-Reply-To: <4aabfd63-18e2-65c5-d1c2-d7600afc1c40@roeck-us.net>
-References: <20220428210906.29527-1-rz@fabmicro.ru>
- <20220502110010.q7vvdkdpaiz5acjl@houat>
- <7433B295-D896-4BF8-87DF-87EB89D7A550@aosc.io>
- <20220502112112.3ne7zy4b6gggxzoo@houat>
- <4aabfd63-18e2-65c5-d1c2-d7600afc1c40@roeck-us.net>
-User-Agent: Roundcube Webmail/1.4.3
-Message-ID: <97e3af18e947492b1ac968c058ba509f@fabmicro.ru>
-X-Sender: rz@fabmicro.ru
-Organization: Fabmicro, LLC.
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
+References: <YjeEbHL8ITkW692W@rowland.harvard.edu> <YmKt3kH+85kjzdbL@kroah.com>
+ <YmSc29YZvxgT5fEJ@rowland.harvard.edu> <YmSo6fU1FlNq8cOZ@rowland.harvard.edu>
+ <YmSpKpnWR8WWEk/p@rowland.harvard.edu> <YmSpdxaDNeC2BBOf@rowland.harvard.edu>
+ <alpine.DEB.2.22.394.2205031209030.681336@ramsan.of.borg> <YnFCEn45XwDWM/9Y@rowland.harvard.edu>
+In-Reply-To: <YnFCEn45XwDWM/9Y@rowland.harvard.edu>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 3 May 2022 17:27:08 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVDK0W0T3=+2c1E6wtwy5JTUemTGYyj3PFuVUhK++AzrA@mail.gmail.com>
+Message-ID: <CAMuHMdVDK0W0T3=+2c1E6wtwy5JTUemTGYyj3PFuVUhK++AzrA@mail.gmail.com>
+Subject: Re: [PATCH 4/4] USB: gadget: Add a new bus for gadgets
+To:     Alan Stern <stern@rowland.harvard.edu>
+Cc:     Felipe Balbi <balbi@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        USB mailing list <linux-usb@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Guenter,
+Hi Alan,
 
-LRADC does generate continuous interrupts as long as input voltage is 
-below LevelB threshold. The max possible LevelB is 0x3C which in case of 
-A20 SoC is close to 1.90V and that's what my driver sets LevelB to. 
-Perhaps this needs to be documented more thoroughly.
+On Tue, May 3, 2022 at 5:14 PM Alan Stern <stern@rowland.harvard.edu> wrote:
+> On Tue, May 03, 2022 at 12:14:30PM +0200, Geert Uytterhoeven wrote:
+> > On Sat, 23 Apr 2022, Alan Stern wrote:
+> > > This patch adds a "gadget" bus and uses it for registering gadgets and
+> > > their drivers.  From now on, bindings will be managed by the driver
+> > > core rather than through ad-hoc manipulations in the UDC core.
+> > >
+> > > As part of this change, the driver_pending_list is removed.  The UDC
+> > > core won't need to keep track of unbound drivers for later binding,
+> > > because the driver core handles all of that for us.
+> > >
+> > > However, we do need one new feature: a way to prevent gadget drivers
+> > > from being bound to more than one gadget at a time.  The existing code
+> > > does this automatically, but the driver core doesn't -- it's perfectly
+> > > happy to bind a single driver to all the matching devices on the bus.
+> > > The patch adds a new bitflag to the usb_gadget_driver structure for
+> > > this purpose.
+> > >
+> > > A nice side effect of this change is a reduction in the total lines of
+> > > code, since now the driver core will do part of the work that the UDC
+> > > used to do.
+> > >
+> > > A possible future patch could add udc devices to the gadget bus, say
+> > > as a separate device type.
+> > >
+> > > Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+> >
+> > Thanks for your patch, which is now commit fc274c1e997314bf ("USB:
+> > gadget: Add a new bus for gadgets") in usb-next.
+> >
+> > This patch cause a regression on the Renesas Salvator-XS development
+> > board, as R-Car H3 has multiple USB gadget devices:
+>
+> Then these gadgets ought to have distinct names in order to avoid the
+> conflict below:
+>
+> >     sysfs: cannot create duplicate filename '/bus/gadget/devices/gadget'
+> >     CPU: 2 PID: 1 Comm: swapper/0 Not tainted 5.18.0-rc1-arm64-renesas-00074-gfc274c1e9973 #1587
+> >     Hardware name: Renesas Salvator-X 2nd version board based on r8a77951 (DT)
+> >     Call trace:
+> >      dump_backtrace+0xcc/0xd8
+> >      show_stack+0x14/0x30
+> >      dump_stack_lvl+0x88/0xb0
+> >      dump_stack+0x14/0x2c
+> >      sysfs_warn_dup+0x60/0x78
+> >      sysfs_do_create_link_sd.isra.0+0xe4/0xf0
+> >      sysfs_create_link+0x20/0x40
+> >      bus_add_device+0x64/0x110
+> >      device_add+0x31c/0x850
+> >      usb_add_gadget+0x124/0x1a0
+> >      usb_add_gadget_udc_release+0x1c/0x50
+> >      usb_add_gadget_udc+0x10/0x18
+> >      renesas_usb3_probe+0x450/0x728
+> ...
+>
+> Having three gadget devices, all named "gadget", doesn't seem like a
+> good idea.
 
-It is possible to implement this same driver for IIO subsystem, but I 
-would prefer to keep it in hwmon along with many other simple ADC 
-drivers used for temp and battery status monitoring.
+I'm not so sure where these names are coming from.
+`git grep '"gadget"'` points to the following likely targets:
 
-If we talk about IIO, it will be necessary to implement serialization of 
-reads and updates which brings up some complexity I would try to avoid 
-at the moment. :)
+drivers/usb/gadget/udc/core.c:  dev_set_name(&gadget->dev, "gadget");
+drivers/usb/renesas_usbhs/mod_gadget.c: gpriv->mod.name         = "gadget";
 
----
-Regards,
-Ruslan.
+Changing both names reveals the problem is actually caused by
+the former ;-)
 
-Fabmicro, LLC.
+> This doesn't seem like it should be too hard to fix, although I'm not
+> at all familiar with the renesas-usb3 driver.  Do you know who maintains
+> that driver?  Is it you?
 
-On 2022-05-03 07:02, Guenter Roeck wrote:
-> On 5/2/22 04:21, Maxime Ripard wrote:
->> On Mon, May 02, 2022 at 07:15:01PM +0800, Icenowy Zheng wrote:
->>> 
->>> 
->>> 于 2022年5月2日 GMT+08:00 下午7:00:10, Maxime Ripard <maxime@cerno.tech> 
->>> 写到:
->>>> Hi,
->>>> 
->>>> On Thu, Apr 28, 2022 at 09:09:03PM +0000, Ruslan Zalata wrote:
->>>>> Some Allwinner SoCs like A13, A20 or T2 are equipped with 
->>>>> two-channel
->>>>> low rate (6 bit) ADC that is often used for extra keys. There's a 
->>>>> driver
->>>>> for that already implementing standard input device, but it has 
->>>>> these
->>>>> limitations: 1) it cannot be used for general ADC data equisition, 
->>>>> and
->>>>> 2) it uses only one LRADC channel of two available.
->>>>> 
->>>>> This driver provides basic hwmon interface to both channels of 
->>>>> LRADC on
->>>>> such Allwinner SoCs.
->>>>> 
->>>>> Signed-off-by: Ruslan Zalata <rz@fabmicro.ru>
->>>>> ---
->>>>>   MAINTAINERS                       |   6 +
->>>>>   drivers/hwmon/Kconfig             |  13 ++
->>>>>   drivers/hwmon/Makefile            |   1 +
->>>>>   drivers/hwmon/sun4i-lradc-hwmon.c | 280 
->>>>> ++++++++++++++++++++++++++++++
->>>>>   4 files changed, 300 insertions(+)
->>>>>   create mode 100644 drivers/hwmon/sun4i-lradc-hwmon.c
->>>>> 
->>>>> diff --git a/MAINTAINERS b/MAINTAINERS
->>>>> index 5e8c2f61176..d9c71e94133 100644
->>>>> --- a/MAINTAINERS
->>>>> +++ b/MAINTAINERS
->>>>> @@ -18861,6 +18861,12 @@ S:	Maintained
->>>>>   
->>>>> F:	Documentation/devicetree/bindings/input/allwinner,sun4i-a10-lradc-keys.yaml
->>>>>   F:	drivers/input/keyboard/sun4i-lradc-keys.c
->>>>>   +SUN4I LOW RES ADC HWMON DRIVER
->>>>> +M:	Ruslan Zalata <rz@fabmicro.ru>
->>>>> +L:	linux-hwmon@vger.kernel.org
->>>>> +S:	Maintained
->>>>> +F:	drivers/hwmon/sun4i-lradc-hwmon.c
->>>>> +
->>>>>   SUNDANCE NETWORK DRIVER
->>>>>   M:	Denis Kirjanov <kda@linux-powerpc.org>
->>>>>   L:	netdev@vger.kernel.org
->>>>> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
->>>>> index 68a8a27ab3b..86776488a81 100644
->>>>> --- a/drivers/hwmon/Kconfig
->>>>> +++ b/drivers/hwmon/Kconfig
->>>>> @@ -1691,6 +1691,19 @@ config SENSORS_SIS5595
->>>>>   	  This driver can also be built as a module. If so, the module
->>>>>   	  will be called sis5595.
->>>>>   +config SENSORS_SUN4I_LRADC
->>>>> +	tristate "Allwinner A13/A20 LRADC hwmon"
->>>>> +	depends on ARCH_SUNXI && !KEYBOARD_SUN4I_LRADC
->>>>> +	help
->>>>> +	  Say y here to support the LRADC found in Allwinner A13/A20 
->>>>> SoCs.
->>>>> +	  Both channels are supported.
->>>>> +
->>>>> +	  This driver can also be built as module. If so, the module
->>>>> +	  will be called sun4i-lradc-hwmon.
->>>>> +
->>>>> +	  This option is not compatible with KEYBOARD_SUN4I_LRADC, one
->>>>> +	  of these must be used at a time.
->>>> 
->>>> How do you plan on enforcing that?
->>>> 
->>>> I guess a better path forward would be to either register an hwmon
->>>> device in the original driver, or convert that driver to iio and use
->>>> iio-hwmon.
->>> 
->>> I think this driver should be use IIO, and then try to probe an IIO 
->>> input
->>> if possible.
->> 
->> It's been a while, but if I remember well we couldn't use IIO for that
->> driver because it's not generating interrupts all the time but only 
->> when
->> it goes over a given threshold:
->> 
->> https://lore.kernel.org/all/52C5E9F1.9010700@redhat.com/
->> 
->> I'm not sure if it's still relevant, so we might just need to add an
->> hwmon driver to the existing driver
->> 
-> 
-> So now we have conflicting claims that the hwmon driver would need
-> to implement continuous interrupts because the chip otherwise doesn't
-> continuously measure ADC input, and that implementing an IIO driver
-> isn't possible or doesn't make sense because the chip would not support
-> generating continuous interrupts. Which one is it ? Am I missing 
-> something ?
-> 
-> Guenter
+Adding Shimoda-san to CC (but he's enjoying Golden Week).
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
