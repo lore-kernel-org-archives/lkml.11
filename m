@@ -2,126 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F13B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 14:51:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF5F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 14:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237416AbiECOzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 10:55:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50100 "EHLO
+        id S237431AbiECOzm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 10:55:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbiECOzA (ORCPT
+        with ESMTP id S237424AbiECOzk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 10:55:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D6CB28E15
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 07:51:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651589486;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MOZQR3NgpnivklRl2WE+IkvBWljH5ijZ+KhrlyE76Oo=;
-        b=JulomJUYvjPu6FoQlmk9RI+7bwf8urduy5LBvhyzl65EA0vSlFkStxLVUIHFK6JdqK9w2v
-        lhfIBA5MmxucknJdFwT1ZMib64wsCtQHSW/+4HnSNjhLBqLPSPwnBUBVn3DRsJVUBs3Lko
-        SboApF4C5FAxxhoqS1BGkys3A/ynuGk=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-342-Pbs9yc4aNGeMWmaXlMgvRg-1; Tue, 03 May 2022 10:51:15 -0400
-X-MC-Unique: Pbs9yc4aNGeMWmaXlMgvRg-1
-Received: by mail-qv1-f69.google.com with SMTP id kl11-20020a056214518b00b0045a9af67efbso2625368qvb.18
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 07:51:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=MOZQR3NgpnivklRl2WE+IkvBWljH5ijZ+KhrlyE76Oo=;
-        b=PGg/t0fIrTk8Z4HVML4BM35VMiQY3FS1OiHvh2p6WfZc04rM/za4UBDYq/5J2JtU5r
-         pztA2TuCfAQOfn0H8RZkHimMVLPqut+46rAXHAIMfapb8IsKtrLb+8oxdKNiuRwNJCGb
-         eng54a/0U6AWwQOTSJka4ouP7nzGyApwXdE0t1WAB/gQImJa/5mBBmAUg050UesgQGsF
-         G8OfgKeODzOljrKx2TM+IKlK5CNneWqYZqRjKhliNloDHkm9UaIDkaXnHxGVfAh93Q8/
-         JGfJJiFV1xLaqAmxHyjxX1Jmpio2zu3o/O00WMcVfQ5SHorCgXeEfEJVVQmJt7bb2M0L
-         Rsuw==
-X-Gm-Message-State: AOAM530QjCE6CyCMTP0aGsD686s1te9lyhq0czc5QpHUN1ELM+fews13
-        3a/1Bf4Lw2rClVMeCXxLbHBMWyQWjFMEh036HV3LDy35vXVZ/HwsGZ4QS6HTJvjOdji+dioLd9B
-        qVLdr3Z9aDJudXegKLW9yPPxv
-X-Received: by 2002:a05:620a:1a04:b0:69f:e7f3:187 with SMTP id bk4-20020a05620a1a0400b0069fe7f30187mr5880477qkb.184.1651579284440;
-        Tue, 03 May 2022 05:01:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzC/8kQQ52ivaf4XcEzs5fZ/zZdcgmA1eHs6x4CXVw9nobVuQf45WCIWHqdlFql/e8rZ8Fe2A==
-X-Received: by 2002:a05:620a:1a04:b0:69f:e7f3:187 with SMTP id bk4-20020a05620a1a0400b0069fe7f30187mr5880433qkb.184.1651579284037;
-        Tue, 03 May 2022 05:01:24 -0700 (PDT)
-Received: from [10.32.181.74] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id b9-20020a05620a04e900b0069fc13ce20bsm5788682qkh.60.2022.05.03.05.01.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 05:01:22 -0700 (PDT)
-Message-ID: <f97cb2e3-9b53-6206-4523-8b15b0ee83e4@redhat.com>
-Date:   Tue, 3 May 2022 14:01:18 +0200
+        Tue, 3 May 2022 10:55:40 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E4A2529C;
+        Tue,  3 May 2022 07:52:05 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 243A1AJQ000434;
+        Tue, 3 May 2022 16:51:44 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=1U+jXKnIsS7rQlKgrVn1pp4mv3sRe9hTsUCKKNCqfto=;
+ b=GmEUOW+Omwl9ECrQ4aSWCN+wUS1ns/MiHuUtTxn1vi6+s7j4SO5dteDkZVaVFHAaOI7D
+ 9DBmZjMSn7e04juYoU10HjwBfAPcTJe0HFSIyYEB1ArCrq92VWmCBQJ2CbQo6bz5K4hV
+ 5gMMz+lTJ380vvbmiJLEQjEGm7a7jizPEjV4NBCTHNgUnXHpzG4DggZ+Qp5LbLCfhbxa
+ KrQmGDFJPDfFQetLwbOKq1UmLF39XqORx7JwcyY3prHeB+S5oYc/+7qNdWXImOKb9wV8
+ M2ZbHl7Vp1u3f/vwTM1EIIFiL4HCf8FW7G/7KDM1e02OFGJMwZDT8RwzuuEB1FqQ+31q 7Q== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3frt88r2ah-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 03 May 2022 16:51:44 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 2FC2910002A;
+        Tue,  3 May 2022 16:51:40 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C54BE2248D5;
+        Tue,  3 May 2022 16:51:40 +0200 (CEST)
+Received: from [10.201.21.93] (10.75.127.47) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 3 May
+ 2022 16:51:39 +0200
+Message-ID: <25ed3a16-c277-5170-3feb-51484f744de1@foss.st.com>
+Date:   Tue, 3 May 2022 16:51:38 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v4 7/7] kvm: x86/cpuid: Fix CPUID leaf 0xA
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 0/8] Add SCMI version of ST boards
 Content-Language: en-US
-To:     Jim Mattson <jmattson@google.com>,
-        Sandipan Das <sandipan.das@amd.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        x86@kernel.org, peterz@infradead.org, bp@alien8.de,
-        dave.hansen@linux.intel.com, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, namhyung@kernel.org,
-        jolsa@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        like.xu.linux@gmail.com, eranian@google.com, puwen@hygon.cn,
-        ananth.narayan@amd.com, ravi.bangoria@amd.com,
-        santosh.shukla@amd.com
-References: <cover.1651058600.git.sandipan.das@amd.com>
- <3fef83d9c2b2f7516e8ff50d60851f29a4bcb716.1651058600.git.sandipan.das@amd.com>
- <CALMp9eSdUW6et2Us1if-j2Do6cv9ssyT4C2KPiyomFd7i_Dc1Q@mail.gmail.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <CALMp9eSdUW6et2Us1if-j2Do6cv9ssyT4C2KPiyomFd7i_Dc1Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     <arnd@arndb.de>, <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>, <soc@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-kernel@vger.kernel.org>, Marek Vasut <marex@denx.de>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        <etienne.carriere@st.com>
+References: <20220422150952.20587-1-alexandre.torgue@foss.st.com>
+From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
+In-Reply-To: <20220422150952.20587-1-alexandre.torgue@foss.st.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.47]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-03_06,2022-05-02_03,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/3/22 01:50, Jim Mattson wrote:
-> On Wed, Apr 27, 2022 at 4:34 AM Sandipan Das <sandipan.das@amd.com> wrote:
->>
->> On some x86 processors, CPUID leaf 0xA provides information
->> on Architectural Performance Monitoring features. It
->> advertises a PMU version which Qemu uses to determine the
->> availability of additional MSRs to manage the PMCs.
->>
->> Upon receiving a KVM_GET_SUPPORTED_CPUID ioctl request for
->> the same, the kernel constructs return values based on the
->> x86_pmu_capability irrespective of the vendor.
->>
->> This leaf and the additional MSRs are not supported on AMD
->> and Hygon processors. If AMD PerfMonV2 is detected, the PMU
->> version is set to 2 and guest startup breaks because of an
->> attempt to access a non-existent MSR. Return zeros to avoid
->> this.
->>
->> Fixes: a6c06ed1a60a ("KVM: Expose the architectural performance monitoring CPUID leaf")
->> Reported-by: Vasant Hegde <vasant.hegde@amd.com>
->> Signed-off-by: Sandipan Das <sandipan.das@amd.com>
->> ---
->>   arch/x86/kvm/cpuid.c | 5 +++++
->>   1 file changed, 5 insertions(+)
->>
->> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
->> index 4b62d80bb22f..e66ebb747084 100644
->> --- a/arch/x86/kvm/cpuid.c
->> +++ b/arch/x86/kvm/cpuid.c
->> @@ -872,6 +872,11 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
->>                  union cpuid10_eax eax;
->>                  union cpuid10_edx edx;
->>
->> +               if (!static_cpu_has(X86_FEATURE_ARCH_PERFMON)) {
+On 4/22/22 17:09, Alexandre Torgue wrote:
+> The aim of this series is to add OPTEE and SCMI support for STM32 boards in
+> order to enable secure services for clocks and resets. New boards have been added
+> to enable this support in order to not break boot of current STM32 boards users.
 > 
-> Should this be checking kvm_cpu_cap_has(X86_FEATURE_ARCH_PERFMON) instead?
+> This series targets only boards provided by ST which are:
+> -STM32MP157A-DK1
+> -STM32MP157C-DK2
+> -STM32MP157C-ED1
+> -STM32MP157C-EV1
+> 
+> Some modifications in bindings files (yaml and .h) was needed and OPTEE/TEE
+> configs are now enabled by default for ARCH_STM32 architecture.
+> 
+> Note that patch [1] "dt-bindings: rcc: Add optional external ethernet RX clock
+> properties" done by Marek has been already merged in Rob tree.
+> 
+> Thanks
+> Alex
+> 
+> Alexandre Torgue (7):
+>    dt-bindings: clock: stm32mp1: describes clocks if
+>      "st,stm32mp1-rcc-secure"
+>    dt-bindings: clock: stm32mp15: rename CK_SCMI define
+>    dt-bindings: reset: stm32mp15: rename RST_SCMI define
+>    ARM: stm32: select OPTEE on MPU family
+>    ARM: dts: stm32: enable optee firmware and SCMI support on STM32MP15
+>    dt-bindings: arm: stm32: Add SCMI version of STM32 boards
+>      (DK1/DK2/ED1/EV1)
+>    ARM: dts: stm32: Add SCMI version of STM32 boards (DK1/DK2/ED1/EV1)
+> 
+> Marek Vasut (1):
+>    dt-bindings: rcc: Add optional external ethernet RX clock properties
+> 
+>   .../devicetree/bindings/arm/stm32/stm32.yaml  |  17 +++
+>   .../bindings/clock/st,stm32mp1-rcc.yaml       |  34 ++++++
+>   arch/arm/boot/dts/Makefile                    |   4 +
+>   arch/arm/boot/dts/stm32mp151.dtsi             |  41 +++++++
+>   arch/arm/boot/dts/stm32mp157a-dk1-scmi.dts    |  86 +++++++++++++++
+>   arch/arm/boot/dts/stm32mp157c-dk2-scmi.dts    |  95 +++++++++++++++++
+>   arch/arm/boot/dts/stm32mp157c-ed1-scmi.dts    |  91 ++++++++++++++++
+>   arch/arm/boot/dts/stm32mp157c-ev1-scmi.dts    | 100 ++++++++++++++++++
+>   arch/arm/mach-stm32/Kconfig                   |   2 +
+>   include/dt-bindings/clock/stm32mp1-clks.h     |  46 ++++----
+>   include/dt-bindings/reset/stm32mp1-resets.h   |  24 ++---
+>   11 files changed, 503 insertions(+), 37 deletions(-)
+>   create mode 100644 arch/arm/boot/dts/stm32mp157a-dk1-scmi.dts
+>   create mode 100644 arch/arm/boot/dts/stm32mp157c-dk2-scmi.dts
+>   create mode 100644 arch/arm/boot/dts/stm32mp157c-ed1-scmi.dts
+>   create mode 100644 arch/arm/boot/dts/stm32mp157c-ev1-scmi.dts
+> 
 
-Yes, it should.  I have queued this patch for 5.18.
+Series applied on stm32-next. Patch[5] has been dropped.
 
-Paolo
-
+Alex
