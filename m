@@ -2,126 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0D94C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:07:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE9CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237939AbiECPLO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:11:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36800 "EHLO
+        id S237882AbiECPLR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:11:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237895AbiECPLD (ORCPT
+        with ESMTP id S237911AbiECPLE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:11:03 -0400
-Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD193A5D1;
-        Tue,  3 May 2022 08:07:25 -0700 (PDT)
-Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id DCEF030B294B;
-        Tue,  3 May 2022 17:07:22 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
-        :content-type:date:from:from:in-reply-to:message-id:mime-version
-        :references:reply-to:subject:subject:to:to; s=felkmail; bh=4P1L2
-        McRFcrXjxO7ZhfB8SkAYy+Wz107djIKnsuzQ8w=; b=ibNg1fvSzVenJE8mislPb
-        mMPjFDuTppdbFCVkq5SqvzUxfxh3nXotqpYokniv+99dvuPRFqJBzvA7neVzVfrn
-        Bjlzi4nb+0saXR5a2AzqiomQ14doe9ux5rZRz4PF4D65KRHmvMlMkHPbqOCItMe3
-        Ed19miLuYU6vezl5HAWpiK9CB7kKLg/jHaBRqzmWemFeZ13ECejslwvRPR2ZtXbf
-        wzr1GTYDnG9BfDZP0IARyjpvPKXB6IiIUor7CHY7borZA6g3wChYOgOZtFmRMB/w
-        xcDM5DG+xIR+o3EeqwJIAqyA+I066ZIMnAkH5+H1OiM5qLwxpcpS1DL4+QR7CTlc
-        A==
-Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 6555E30ADE4B;
-        Tue,  3 May 2022 17:07:22 +0200 (CEST)
-Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 243F7M6l003342;
-        Tue, 3 May 2022 17:07:22 +0200
-Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 243F7LcQ003341;
-        Tue, 3 May 2022 17:07:21 +0200
-X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v8 5/7] can: ctucanfd: CTU CAN FD open-source IP core - platform/SoC support.
-Date:   Tue, 3 May 2022 17:07:21 +0200
-User-Agent: KMail/1.9.10
-Cc:     linux-can@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "Marc Kleine-Budde" <mkl@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
-        Drew Fustini <pdp7pdp7@gmail.com>
-References: <cover.1647904780.git.pisa@cmp.felk.cvut.cz> <4d5c53499bafe7717815f948801bd5aedaa05c12.1647904780.git.pisa@cmp.felk.cvut.cz> <CAMuHMdXY_sHw4W8_y+r1LMhGM+CF7RQtRFQzEC8wYKYSR98Daw@mail.gmail.com>
-In-Reply-To: <CAMuHMdXY_sHw4W8_y+r1LMhGM+CF7RQtRFQzEC8wYKYSR98Daw@mail.gmail.com>
-X-KMail-QuotePrefix: > 
+        Tue, 3 May 2022 11:11:04 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AAE53969F;
+        Tue,  3 May 2022 08:07:31 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id t13so14233938pgn.8;
+        Tue, 03 May 2022 08:07:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=EZO0FfzGaND0LPzWqKkRZ01ZZcZI/mFzJ/gCyTl0eyA=;
+        b=VO9ukxRL5ymaVr8gWWqs8jhW3T2lT41YAoRfa3txuvPz4Iyl26FO5m0ix9+2tHEJQV
+         9Fh/Ebtyj9sqqZk/lTDCLVNTRq1OUsty5lEyFBOrNY4E/aLflt1JdAS6QVYq/hXkvHqN
+         3ryV9ybn+xkP9km/w8qrk+VYzmNnRPxcH1+BeNLiYc2Jqp2dpsPh1dQ2Ux6p7fPgwJgT
+         SauEQX4w9cTuuceJb3MjQA3jYYbXv3usbLem3YHgyXBFanTT70+T0X1pOWpE1PUBZA8Q
+         yMAOPqNqEbBMhQDuxahEKsLQJmidKcLKJ+JEanzFTRHQqypwrMmGT08LyXaj8oqkNOUC
+         YzpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=EZO0FfzGaND0LPzWqKkRZ01ZZcZI/mFzJ/gCyTl0eyA=;
+        b=zaSMLRfBoVmkBeuh0czkM19tLQmX7UfkbwV5SGXwq1CWsYOKe3mjpq8h5Hxxw1h7Gl
+         NG1Jn0UWh7CX65hg+64PO8f759cP2xmk2PmeltrCnnZC9nRckva65MP2hUtbTLAd+QN/
+         O1LSHjf2+Av+OM/KsNykjjjWQvIM2A6SqGH2/+VKM410BgKCXmJuc58eRfqXDSg2+htb
+         gW7wU38D3/45ThdZf10/tiJoJXOQ4WDTfSmqxPZzdfVM5NPfjCmfzf18UpFPTYMopKPD
+         Qo6dGnkKC9j1q1A5q10tI/mzPFlF/JOS7hfbIeagWBjPM+bGumupxf/e87gci27muis/
+         IYUQ==
+X-Gm-Message-State: AOAM531W/Rk7NyDu5/mzZ8zPc7ypkq5rv57qn+Z+Md/dWqzi6sepbUr8
+        +zdbdQ5yTr2w3MoBV+7VNuVcEwyO9Qw=
+X-Google-Smtp-Source: ABdhPJyVG47HE6rJDbmU53GOQw3j2KiQwxvve94OB5hT/Z04wpQwhvSMGEa6DZGc/MsJkbLf6i7fkA==
+X-Received: by 2002:a63:4:0:b0:3ab:17c6:e0ce with SMTP id 4-20020a630004000000b003ab17c6e0cemr14143744pga.511.1651590450750;
+        Tue, 03 May 2022 08:07:30 -0700 (PDT)
+Received: from localhost ([47.251.4.198])
+        by smtp.gmail.com with ESMTPSA id y1-20020a636401000000b003c1424a25a9sm13436698pgb.2.2022.05.03.08.07.29
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 03 May 2022 08:07:30 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: [PATCH V2 5/7] KVM: X86/MMU: Remove the check of the return value of to_shadow_page()
+Date:   Tue,  3 May 2022 23:07:33 +0800
+Message-Id: <20220503150735.32723-6-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
+In-Reply-To: <20220503150735.32723-1-jiangshanlai@gmail.com>
+References: <20220503150735.32723-1-jiangshanlai@gmail.com>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <202205031707.21405.pisa@cmp.felk.cvut.cz>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Geert,
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-On Tuesday 03 of May 2022 13:37:46 Geert Uytterhoeven wrote:
-> Hi Pavel,
-> > --- /dev/null
-> > +++ b/drivers/net/can/ctucanfd/ctucanfd_platform.c
-> >
-> > +/* Match table for OF platform binding */
-> > +static const struct of_device_id ctucan_of_match[] = {
-> > +       { .compatible = "ctu,ctucanfd-2", },
->
-> Do you need to match on the above compatible value?
-> The driver seems to treat the hardware the same, and the DT
-> bindings state the compatible value below should always be present.
+Remove the check of the return value of to_shadow_page() in
+mmu_free_root_page(), kvm_mmu_free_guest_mode_roots(), is_unsync_root()
+and is_tdp_mmu() because it can not return NULL.
 
-I would keep it because there will be newer revisions and releases
-of the core and I consider "ctu,ctucanfd" as the match to generic
-one with maximal attempt to adjust to the version from provided
-info registers but identification with the fixed version
-"ctu,ctucanfd-2" ensures that some old hardware which is
-in the wild is directly recognized even at /sys level
-and if we need to do some workarounds for autodetection
-etc. it can be recognized.
+Remove the check of the return value of to_shadow_page() in
+is_page_fault_stale() and is_obsolete_root() because it can not return
+NULL and the obsoleting for special shadow page is already handled by
+a different way.
 
-I understand that in ideal world that should never be required
-if we keep compatability right and if there is really new major
-completely incompatible revision we would need to use new
-identifier anyway. But we and the world is not perfect, so
-I would keep that safety option.
+When the obsoleting process is done, all the obsoleted shadow pages are
+already unlinked from the special pages by the help of the parent rmap
+of the children and the special pages become theoretically valid again.
+The special shadow page can be freed if is_obsolete_sp() return true,
+or be reused if is_obsolete_sp() return false.
 
-May it be there are designs with 5 years old IP core version
-in the wild and may it be even with this ID.... May be they
-need some version specific adjustment... Yes version should be
-readable from IP, hopefully, but that was experimental version
-and I am not sure how much register map changed from that days
-(can be analyzed from GIT if support request appears).
-You know how it works with feebacks when chain of subcontracted
-companies does integration for carmaker etc...
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+---
+ arch/x86/kvm/mmu/mmu.c     | 44 +++-----------------------------------
+ arch/x86/kvm/mmu/tdp_mmu.h |  7 +-----
+ 2 files changed, 4 insertions(+), 47 deletions(-)
 
-For example there appears questions and interest to update it to actual
-Debian for LinCAN after ten or 15 years of silence because that
-or origina CAN drivers solution works somewhere...
-
-So I am personally more inclined to keep versionned ID.
-
-Best wishes,
-
-Pavel
-
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 6f626d7e8ebb..bcb3e2730277 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3318,8 +3318,6 @@ static void mmu_free_root_page(struct kvm *kvm, hpa_t *root_hpa,
+ 		return;
+ 
+ 	sp = to_shadow_page(*root_hpa & PT64_BASE_ADDR_MASK);
+-	if (WARN_ON(!sp))
+-		return;
+ 
+ 	if (is_tdp_mmu_page(sp))
+ 		kvm_tdp_mmu_put_root(kvm, sp, false);
+@@ -3422,8 +3420,7 @@ void kvm_mmu_free_guest_mode_roots(struct kvm *kvm, struct kvm_mmu *mmu)
+ 		if (!VALID_PAGE(root_hpa))
+ 			continue;
+ 
+-		if (!to_shadow_page(root_hpa) ||
+-			to_shadow_page(root_hpa)->role.guest_mode)
++		if (to_shadow_page(root_hpa)->role.guest_mode)
+ 			roots_to_free |= KVM_MMU_ROOT_PREVIOUS(i);
+ 	}
+ 
+@@ -3673,13 +3670,6 @@ static bool is_unsync_root(hpa_t root)
+ 	smp_rmb();
+ 	sp = to_shadow_page(root);
+ 
+-	/*
+-	 * PAE roots (somewhat arbitrarily) aren't backed by shadow pages, the
+-	 * PDPTEs for a given PAE root need to be synchronized individually.
+-	 */
+-	if (WARN_ON_ONCE(!sp))
+-		return false;
+-
+ 	if (sp->unsync || sp->unsync_children)
+ 		return true;
+ 
+@@ -3975,21 +3965,7 @@ static bool kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
+ static bool is_page_fault_stale(struct kvm_vcpu *vcpu,
+ 				struct kvm_page_fault *fault, int mmu_seq)
+ {
+-	struct kvm_mmu_page *sp = to_shadow_page(vcpu->arch.mmu->root.hpa);
+-
+-	/* Special roots, e.g. pae_root, are not backed by shadow pages. */
+-	if (sp && is_obsolete_sp(vcpu->kvm, sp))
+-		return true;
+-
+-	/*
+-	 * Roots without an associated shadow page are considered invalid if
+-	 * there is a pending request to free obsolete roots.  The request is
+-	 * only a hint that the current root _may_ be obsolete and needs to be
+-	 * reloaded, e.g. if the guest frees a PGD that KVM is tracking as a
+-	 * previous root, then __kvm_mmu_prepare_zap_page() signals all vCPUs
+-	 * to reload even if no vCPU is actively using the root.
+-	 */
+-	if (!sp && kvm_test_request(KVM_REQ_MMU_FREE_OBSOLETE_ROOTS, vcpu))
++	if (is_obsolete_sp(vcpu->kvm, to_shadow_page(vcpu->arch.mmu->root.hpa)))
+ 		return true;
+ 
+ 	return fault->slot &&
+@@ -5094,24 +5070,10 @@ void kvm_mmu_unload(struct kvm_vcpu *vcpu)
+ 
+ static bool is_obsolete_root(struct kvm *kvm, hpa_t root_hpa)
+ {
+-	struct kvm_mmu_page *sp;
+-
+ 	if (!VALID_PAGE(root_hpa))
+ 		return false;
+ 
+-	/*
+-	 * When freeing obsolete roots, treat roots as obsolete if they don't
+-	 * have an associated shadow page.  This does mean KVM will get false
+-	 * positives and free roots that don't strictly need to be freed, but
+-	 * such false positives are relatively rare:
+-	 *
+-	 *  (a) only PAE paging and nested NPT has roots without shadow pages
+-	 *  (b) remote reloads due to a memslot update obsoletes _all_ roots
+-	 *  (c) KVM doesn't track previous roots for PAE paging, and the guest
+-	 *      is unlikely to zap an in-use PGD.
+-	 */
+-	sp = to_shadow_page(root_hpa);
+-	return !sp || is_obsolete_sp(kvm, sp);
++	return is_obsolete_sp(kvm, to_shadow_page(root_hpa));
+ }
+ 
+ static void __kvm_mmu_free_obsolete_roots(struct kvm *kvm, struct kvm_mmu *mmu)
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.h b/arch/x86/kvm/mmu/tdp_mmu.h
+index c163f7cc23ca..5779a2a7161e 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.h
++++ b/arch/x86/kvm/mmu/tdp_mmu.h
+@@ -78,13 +78,8 @@ static inline bool is_tdp_mmu(struct kvm_mmu *mmu)
+ 	if (WARN_ON(!VALID_PAGE(hpa)))
+ 		return false;
+ 
+-	/*
+-	 * A NULL shadow page is legal when shadowing a non-paging guest with
+-	 * PAE paging, as the MMU will be direct with root_hpa pointing at the
+-	 * pae_root page, not a shadow page.
+-	 */
+ 	sp = to_shadow_page(hpa);
+-	return sp && is_tdp_mmu_page(sp) && sp->root_count;
++	return is_tdp_mmu_page(sp) && sp->root_count;
+ }
+ #else
+ static inline int kvm_mmu_init_tdp_mmu(struct kvm *kvm) { return 0; }
+-- 
+2.19.1.6.gb485710b
 
