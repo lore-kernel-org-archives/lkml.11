@@ -2,451 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D80AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 10:03:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DC87C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 10:05:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234172AbiECKHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 06:07:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51994 "EHLO
+        id S234136AbiECKIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 06:08:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234007AbiECKF5 (ORCPT
+        with ESMTP id S232077AbiECKIk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 06:05:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E1838DB3
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 03:01:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E95546152A
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 10:01:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4446BC385A4;
-        Tue,  3 May 2022 10:01:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651572113;
-        bh=KzZMflvNTePfVDdtCeGLwMrCmi4gutfxLVwPBqOuL9Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cke63GAuogAL7SGltXPJpAPosIIydpQwsva2lBP5kxiGee58UA/+5snApOeTgV223
-         Q+ayJMc48K8TzGXQPw7tE2qHO5JJY8y+VqZFppYXpJjwwAUQyEm/l5eCZI/QyHSx/8
-         8QjULxct0nQ/IF1MyrYuOtK95hvbV6tlLv4SLTxY/bJpyqJ0AupKjzTUrJ9AbSdyaX
-         6eVIO8VgZrWSRNRJfdpiCzPj+eH0RmUJOZbLPTAT6tw5QIjXiJtnXiHFL3RiN2TJPK
-         5Iv+sKtxOb/OMqo3d3rQvnJlwhpUOlvrXgo5ImiNAhjQ3YVIaBlCttx+Oy8mL0AjJH
-         CRnAM/wKd1kyQ==
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Frederic Weisbecker <frederic@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Phil Auld <pauld@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Yu Liao <liaoyu15@huawei.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Uladzislau Rezki <uladzislau.rezki@sony.com>,
-        Joel Fernandes <joel@joelfernandes.org>
-Subject: [PATCH 14/21] rcu/context_tracking: Move dynticks counter to context tracking
-Date:   Tue,  3 May 2022 12:00:44 +0200
-Message-Id: <20220503100051.2799723-15-frederic@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220503100051.2799723-1-frederic@kernel.org>
-References: <20220503100051.2799723-1-frederic@kernel.org>
+        Tue, 3 May 2022 06:08:40 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A382337A14;
+        Tue,  3 May 2022 03:05:07 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2439Huei015493;
+        Tue, 3 May 2022 10:03:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=HjtbuUEJ0/ZOlcQ3ufnF7LffEr7p00FRRLGE0m3GQmI=;
+ b=bCNiQRVYJ0UtJ/P6wwlt+FxTWqgWKs/XNm3CA1W/s3Fj9VvL8Q4WSDIP+68Sa969QX1W
+ yW7FRxTEsNiKJwAN9JFJG2YDdhch7vIfoB1daQ0D1iW4v4zxe2TjCu6lipYVkySJWUMU
+ I+fPcPK3B7o9kboRbYNrfEWIxo2AYtBHQhPdZPnBeTCKtFP7Aibqvn3LGllXmJwv4E3u
+ HkUl1qh9qoP3kc6/6MF3SkUgO0AorSuTurSD097OWTyD+88Rs1GK6y+CTL/mKiEjTxm2
+ lxrvPDCsi4kz/ZqWslXBDo2B0ICLy7AhnLngCvsSn3DJnn8cp4c2rYiKYvA7H/jNO7lc Ag== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fu1mx8nf7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 03 May 2022 10:03:52 +0000
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 243A0EYM002520;
+        Tue, 3 May 2022 10:03:51 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fu1mx8nek-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 03 May 2022 10:03:51 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2439wHgD022505;
+        Tue, 3 May 2022 10:03:49 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma02fra.de.ibm.com with ESMTP id 3frvr8u79v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 03 May 2022 10:03:49 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 243A3k3X26411316
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 3 May 2022 10:03:46 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6C36DAE057;
+        Tue,  3 May 2022 10:03:46 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 25EF4AE053;
+        Tue,  3 May 2022 10:03:45 +0000 (GMT)
+Received: from thinkpad (unknown [9.171.25.226])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with SMTP;
+        Tue,  3 May 2022 10:03:45 +0000 (GMT)
+Date:   Tue, 3 May 2022 12:03:43 +0200
+From:   Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>
+Cc:     akpm@linux-foundation.org, mike.kravetz@oracle.com,
+        catalin.marinas@arm.com, will@kernel.org,
+        tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com,
+        deller@gmx.de, mpe@ellerman.id.au, benh@kernel.crashing.org,
+        paulus@samba.org, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org,
+        davem@davemloft.net, arnd@arndb.de,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH 3/3] mm: rmap: Fix CONT-PTE/PMD size hugetlb issue when
+ unmapping
+Message-ID: <20220503120343.6264e126@thinkpad>
+In-Reply-To: <48a05075-a323-e7f1-9e99-6c0d106eb2cb@linux.alibaba.com>
+References: <cover.1651216964.git.baolin.wang@linux.alibaba.com>
+        <c91e04ebb792ef7b72966edea8bd6fa2dfa5bfa7.1651216964.git.baolin.wang@linux.alibaba.com>
+        <20220429220214.4cfc5539@thinkpad>
+        <bcb4a3b0-4fcd-af3a-2a2c-fd662d9eaba9@linux.alibaba.com>
+        <20220502160232.589a6111@thinkpad>
+        <48a05075-a323-e7f1-9e99-6c0d106eb2cb@linux.alibaba.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Vqe6Y27bbncJ_7Ur6Jm01zeitq883Jn7
+X-Proofpoint-ORIG-GUID: UMZQHcP4UgI5USN1f2T3MDEwggwnF1jW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-03_03,2022-05-02_03,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
+ suspectscore=0 adultscore=0 bulkscore=0 lowpriorityscore=0 mlxlogscore=999
+ clxscore=1015 phishscore=0 priorityscore=1501 malwarescore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205030076
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to prepare for merging RCU dynticks counter into the context
-tracking state, move the rcu_data's dynticks field to the context
-tracking structure. It will later be mixed within the context tracking
-state itself.
+On Tue, 3 May 2022 10:19:46 +0800
+Baolin Wang <baolin.wang@linux.alibaba.com> wrote:
 
-Acked-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Boqun Feng <boqun.feng@gmail.com>
-Cc: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Cc: Marcelo Tosatti <mtosatti@redhat.com>
-Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Cc: Yu Liao<liaoyu15@huawei.com>
-Cc: Phil Auld <pauld@redhat.com>
-Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
-Cc: Alex Belits <abelits@marvell.com>
----
- include/linux/context_tracking_state.h | 27 ++++++++++++-
- kernel/context_tracking.c              |  9 +++--
- kernel/rcu/tree.c                      | 56 +++++++++++++-------------
- kernel/rcu/tree.h                      |  1 -
- kernel/rcu/tree_exp.h                  |  2 +-
- kernel/rcu/tree_stall.h                |  4 +-
- 6 files changed, 61 insertions(+), 38 deletions(-)
+> 
+> 
+> On 5/2/2022 10:02 PM, Gerald Schaefer wrote:
+> > On Sat, 30 Apr 2022 11:22:33 +0800
+> > Baolin Wang <baolin.wang@linux.alibaba.com> wrote:
+> > 
+> >>
+> >>
+> >> On 4/30/2022 4:02 AM, Gerald Schaefer wrote:
+> >>> On Fri, 29 Apr 2022 16:14:43 +0800
+> >>> Baolin Wang <baolin.wang@linux.alibaba.com> wrote:
+> >>>
+> >>>> On some architectures (like ARM64), it can support CONT-PTE/PMD size
+> >>>> hugetlb, which means it can support not only PMD/PUD size hugetlb:
+> >>>> 2M and 1G, but also CONT-PTE/PMD size: 64K and 32M if a 4K page
+> >>>> size specified.
+> >>>>
+> >>>> When unmapping a hugetlb page, we will get the relevant page table
+> >>>> entry by huge_pte_offset() only once to nuke it. This is correct
+> >>>> for PMD or PUD size hugetlb, since they always contain only one
+> >>>> pmd entry or pud entry in the page table.
+> >>>>
+> >>>> However this is incorrect for CONT-PTE and CONT-PMD size hugetlb,
+> >>>> since they can contain several continuous pte or pmd entry with
+> >>>> same page table attributes, so we will nuke only one pte or pmd
+> >>>> entry for this CONT-PTE/PMD size hugetlb page.
+> >>>>
+> >>>> And now we only use try_to_unmap() to unmap a poisoned hugetlb page,
+> >>>> which means now we will unmap only one pte entry for a CONT-PTE or
+> >>>> CONT-PMD size poisoned hugetlb page, and we can still access other
+> >>>> subpages of a CONT-PTE or CONT-PMD size poisoned hugetlb page,
+> >>>> which will cause serious issues possibly.
+> >>>>
+> >>>> So we should change to use huge_ptep_clear_flush() to nuke the
+> >>>> hugetlb page table to fix this issue, which already considered
+> >>>> CONT-PTE and CONT-PMD size hugetlb.
+> >>>>
+> >>>> Note we've already used set_huge_swap_pte_at() to set a poisoned
+> >>>> swap entry for a poisoned hugetlb page.
+> >>>>
+> >>>> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> >>>> ---
+> >>>>    mm/rmap.c | 34 +++++++++++++++++-----------------
+> >>>>    1 file changed, 17 insertions(+), 17 deletions(-)
+> >>>>
+> >>>> diff --git a/mm/rmap.c b/mm/rmap.c
+> >>>> index 7cf2408..1e168d7 100644
+> >>>> --- a/mm/rmap.c
+> >>>> +++ b/mm/rmap.c
+> >>>> @@ -1564,28 +1564,28 @@ static bool try_to_unmap_one(struct folio *folio, struct vm_area_struct *vma,
+> >>>>    					break;
+> >>>>    				}
+> >>>>    			}
+> >>>> +			pteval = huge_ptep_clear_flush(vma, address, pvmw.pte);
+> >>>
+> >>> Unlike in your patch 2/3, I do not see that this (huge) pteval would later
+> >>> be used again with set_huge_pte_at() instead of set_pte_at(). Not sure if
+> >>> this (huge) pteval could end up at a set_pte_at() later, but if yes, then
+> >>> this would be broken on s390, and you'd need to use set_huge_pte_at()
+> >>> instead of set_pte_at() like in your patch 2/3.
+> >>
+> >> IIUC, As I said in the commit message, we will only unmap a poisoned
+> >> hugetlb page by try_to_unmap(), and the poisoned hugetlb page will be
+> >> remapped with a poisoned entry by set_huge_swap_pte_at() in
+> >> try_to_unmap_one(). So I think no need change to use set_huge_pte_at()
+> >> instead of set_pte_at() for other cases, since the hugetlb page will not
+> >> hit other cases.
+> >>
+> >> if (PageHWPoison(subpage) && !(flags & TTU_IGNORE_HWPOISON)) {
+> >> 	pteval = swp_entry_to_pte(make_hwpoison_entry(subpage));
+> >> 	if (folio_test_hugetlb(folio)) {
+> >> 		hugetlb_count_sub(folio_nr_pages(folio), mm);
+> >> 		set_huge_swap_pte_at(mm, address, pvmw.pte, pteval,
+> >> 				     vma_mmu_pagesize(vma));
+> >> 	} else {
+> >> 		dec_mm_counter(mm, mm_counter(&folio->page));
+> >> 		set_pte_at(mm, address, pvmw.pte, pteval);
+> >> 	}
+> >>
+> >> }
+> > 
+> > OK, but wouldn't the pteval be overwritten here with
+> > pteval = swp_entry_to_pte(make_hwpoison_entry(subpage))?
+> > IOW, what sense does it make to save the returned pteval from
+> > huge_ptep_clear_flush(), when it is never being used anywhere?
+> 
+> Please see previous code, we'll use the original pte value to check if 
+> it is uffd-wp armed, and if need to mark it dirty though the hugetlbfs 
+> is set noop_dirty_folio().
+> 
+> pte_install_uffd_wp_if_needed(vma, address, pvmw.pte, pteval);
 
-diff --git a/include/linux/context_tracking_state.h b/include/linux/context_tracking_state.h
-index 7b46b43b8c98..014dc431521b 100644
---- a/include/linux/context_tracking_state.h
-+++ b/include/linux/context_tracking_state.h
-@@ -7,6 +7,7 @@
- #include <linux/context_tracking_irq.h>
- 
- struct context_tracking {
-+#ifdef CONFIG_CONTEXT_TRACKING_USER
- 	/*
- 	 * When active is false, probes are unset in order
- 	 * to minimize overhead: TIF flags are cleared
-@@ -21,12 +22,34 @@ struct context_tracking {
- 		CONTEXT_USER,
- 		CONTEXT_GUEST,
- 	} state;
-+#endif
-+	atomic_t dynticks;		/* Even value for idle, else odd. */
- };
- 
--#ifdef CONFIG_CONTEXT_TRACKING_USER
--extern struct static_key_false context_tracking_key;
-+#ifdef CONFIG_CONTEXT_TRACKING
- DECLARE_PER_CPU(struct context_tracking, context_tracking);
- 
-+static __always_inline int ct_dynticks(void)
-+{
-+	return atomic_read(this_cpu_ptr(&context_tracking.dynticks));
-+}
-+
-+static __always_inline int ct_dynticks_cpu(int cpu)
-+{
-+	struct context_tracking *ct = per_cpu_ptr(&context_tracking, cpu);
-+	return atomic_read(&ct->dynticks);
-+}
-+
-+static __always_inline int ct_dynticks_cpu_acquire(int cpu)
-+{
-+	struct context_tracking *ct = per_cpu_ptr(&context_tracking, cpu);
-+	return atomic_read_acquire(&ct->state);
-+}
-+#endif
-+
-+#ifdef CONFIG_CONTEXT_TRACKING_USER
-+extern struct static_key_false context_tracking_key;
-+
- static __always_inline bool context_tracking_enabled(void)
- {
- 	return static_branch_unlikely(&context_tracking_key);
-diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
-index a9570365c7f3..20be30c24723 100644
---- a/kernel/context_tracking.c
-+++ b/kernel/context_tracking.c
-@@ -30,9 +30,6 @@
- DEFINE_STATIC_KEY_FALSE(context_tracking_key);
- EXPORT_SYMBOL_GPL(context_tracking_key);
- 
--DEFINE_PER_CPU(struct context_tracking, context_tracking);
--EXPORT_SYMBOL_GPL(context_tracking);
--
- static noinstr bool context_tracking_recursion_enter(void)
- {
- 	int recursion;
-@@ -252,6 +249,12 @@ void __init context_tracking_init(void)
- 
- #endif /* #ifdef CONFIG_CONTEXT_TRACKING_USER */
- 
-+DEFINE_PER_CPU(struct context_tracking, context_tracking) = {
-+		.dynticks = ATOMIC_INIT(1),
-+};
-+EXPORT_SYMBOL_GPL(context_tracking);
-+
-+
- noinstr void ct_idle_enter(void)
- {
- 	rcu_idle_enter();
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index 38c23229103f..7667186731e3 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -77,7 +77,6 @@
- static DEFINE_PER_CPU_SHARED_ALIGNED(struct rcu_data, rcu_data) = {
- 	.dynticks_nesting = 1,
- 	.dynticks_nmi_nesting = DYNTICK_IRQ_NONIDLE,
--	.dynticks = ATOMIC_INIT(1),
- #ifdef CONFIG_RCU_NOCB_CPU
- 	.cblist.flags = SEGCBLIST_RCU_CORE,
- #endif
-@@ -268,7 +267,7 @@ void rcu_softirq_qs(void)
-  */
- static noinline noinstr unsigned long rcu_dynticks_inc(int incby)
- {
--	return arch_atomic_add_return(incby, this_cpu_ptr(&rcu_data.dynticks));
-+	return arch_atomic_add_return(incby, this_cpu_ptr(&context_tracking.dynticks));
- }
- 
- /*
-@@ -324,9 +323,7 @@ static noinstr void rcu_dynticks_eqs_exit(void)
-  */
- static void rcu_dynticks_eqs_online(void)
- {
--	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
--
--	if (atomic_read(&rdp->dynticks) & 0x1)
-+	if (ct_dynticks() & 0x1)
- 		return;
- 	rcu_dynticks_inc(1);
- }
-@@ -338,17 +335,17 @@ static void rcu_dynticks_eqs_online(void)
-  */
- static __always_inline bool rcu_dynticks_curr_cpu_in_eqs(void)
- {
--	return !(arch_atomic_read(this_cpu_ptr(&rcu_data.dynticks)) & 0x1);
-+	return !(arch_atomic_read(this_cpu_ptr(&context_tracking.dynticks)) & 0x1);
- }
- 
- /*
-  * Snapshot the ->dynticks counter with full ordering so as to allow
-  * stable comparison of this counter with past and future snapshots.
-  */
--static int rcu_dynticks_snap(struct rcu_data *rdp)
-+static int rcu_dynticks_snap(int cpu)
- {
- 	smp_mb();  // Fundamental RCU ordering guarantee.
--	return atomic_read_acquire(&rdp->dynticks);
-+	return ct_dynticks_cpu_acquire(cpu);
- }
- 
- /*
-@@ -363,9 +360,7 @@ static bool rcu_dynticks_in_eqs(int snap)
- /* Return true if the specified CPU is currently idle from an RCU viewpoint.  */
- bool rcu_is_idle_cpu(int cpu)
- {
--	struct rcu_data *rdp = per_cpu_ptr(&rcu_data, cpu);
--
--	return rcu_dynticks_in_eqs(rcu_dynticks_snap(rdp));
-+	return rcu_dynticks_in_eqs(rcu_dynticks_snap(cpu));
- }
- 
- /*
-@@ -375,7 +370,7 @@ bool rcu_is_idle_cpu(int cpu)
-  */
- static bool rcu_dynticks_in_eqs_since(struct rcu_data *rdp, int snap)
- {
--	return snap != rcu_dynticks_snap(rdp);
-+	return snap != rcu_dynticks_snap(rdp->cpu);
- }
- 
- /*
-@@ -384,11 +379,10 @@ static bool rcu_dynticks_in_eqs_since(struct rcu_data *rdp, int snap)
-  */
- bool rcu_dynticks_zero_in_eqs(int cpu, int *vp)
- {
--	struct rcu_data *rdp = per_cpu_ptr(&rcu_data, cpu);
- 	int snap;
- 
- 	// If not quiescent, force back to earlier extended quiescent state.
--	snap = atomic_read(&rdp->dynticks) & ~0x1;
-+	snap = ct_dynticks_cpu(cpu) & ~0x1;
- 
- 	smp_rmb(); // Order ->dynticks and *vp reads.
- 	if (READ_ONCE(*vp))
-@@ -396,7 +390,7 @@ bool rcu_dynticks_zero_in_eqs(int cpu, int *vp)
- 	smp_rmb(); // Order *vp read and ->dynticks re-read.
- 
- 	// If still in the same extended quiescent state, we are good!
--	return snap == atomic_read(&rdp->dynticks);
-+	return snap == ct_dynticks_cpu(cpu);
- }
- 
- /*
-@@ -620,6 +614,7 @@ EXPORT_SYMBOL_GPL(rcutorture_get_gp_data);
- static noinstr void rcu_eqs_enter(bool user)
- {
- 	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
-+	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
- 
- 	WARN_ON_ONCE(rdp->dynticks_nmi_nesting != DYNTICK_IRQ_NONIDLE);
- 	WRITE_ONCE(rdp->dynticks_nmi_nesting, 0);
-@@ -633,12 +628,12 @@ static noinstr void rcu_eqs_enter(bool user)
- 
- 	lockdep_assert_irqs_disabled();
- 	instrumentation_begin();
--	trace_rcu_dyntick(TPS("Start"), rdp->dynticks_nesting, 0, atomic_read(&rdp->dynticks));
-+	trace_rcu_dyntick(TPS("Start"), rdp->dynticks_nesting, 0, ct_dynticks());
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !user && !is_idle_task(current));
- 	rcu_preempt_deferred_qs(current);
- 
- 	// instrumentation for the noinstr rcu_dynticks_eqs_enter()
--	instrument_atomic_write(&rdp->dynticks, sizeof(rdp->dynticks));
-+	instrument_atomic_write(&ct->dynticks, sizeof(ct->dynticks));
- 
- 	instrumentation_end();
- 	WRITE_ONCE(rdp->dynticks_nesting, 0); /* Avoid irq-access tearing. */
-@@ -740,7 +735,7 @@ noinstr void rcu_user_enter(void)
-  * rcu_nmi_exit - inform RCU of exit from NMI context
-  *
-  * If we are returning from the outermost NMI handler that interrupted an
-- * RCU-idle period, update rdp->dynticks and rdp->dynticks_nmi_nesting
-+ * RCU-idle period, update ct->dynticks and rdp->dynticks_nmi_nesting
-  * to let the RCU grace-period handling know that the CPU is back to
-  * being RCU-idle.
-  *
-@@ -749,6 +744,7 @@ noinstr void rcu_user_enter(void)
-  */
- noinstr void rcu_nmi_exit(void)
- {
-+	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
- 	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
- 
- 	instrumentation_begin();
-@@ -766,7 +762,7 @@ noinstr void rcu_nmi_exit(void)
- 	 */
- 	if (rdp->dynticks_nmi_nesting != 1) {
- 		trace_rcu_dyntick(TPS("--="), rdp->dynticks_nmi_nesting, rdp->dynticks_nmi_nesting - 2,
--				  atomic_read(&rdp->dynticks));
-+				  ct_dynticks());
- 		WRITE_ONCE(rdp->dynticks_nmi_nesting, /* No store tearing. */
- 			   rdp->dynticks_nmi_nesting - 2);
- 		instrumentation_end();
-@@ -774,11 +770,11 @@ noinstr void rcu_nmi_exit(void)
- 	}
- 
- 	/* This NMI interrupted an RCU-idle CPU, restore RCU-idleness. */
--	trace_rcu_dyntick(TPS("Startirq"), rdp->dynticks_nmi_nesting, 0, atomic_read(&rdp->dynticks));
-+	trace_rcu_dyntick(TPS("Startirq"), rdp->dynticks_nmi_nesting, 0, ct_dynticks());
- 	WRITE_ONCE(rdp->dynticks_nmi_nesting, 0); /* Avoid store tearing. */
- 
- 	// instrumentation for the noinstr rcu_dynticks_eqs_enter()
--	instrument_atomic_write(&rdp->dynticks, sizeof(rdp->dynticks));
-+	instrument_atomic_write(&ct->dynticks, sizeof(ct->dynticks));
- 	instrumentation_end();
- 
- 	// RCU is watching here ...
-@@ -817,6 +813,7 @@ void rcu_irq_exit_check_preempt(void)
-  */
- static void noinstr rcu_eqs_exit(bool user)
- {
-+	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
- 	struct rcu_data *rdp;
- 	long oldval;
- 
-@@ -836,9 +833,9 @@ static void noinstr rcu_eqs_exit(bool user)
- 	instrumentation_begin();
- 
- 	// instrumentation for the noinstr rcu_dynticks_eqs_exit()
--	instrument_atomic_write(&rdp->dynticks, sizeof(rdp->dynticks));
-+	instrument_atomic_write(&ct->dynticks, sizeof(ct->dynticks));
- 
--	trace_rcu_dyntick(TPS("End"), rdp->dynticks_nesting, 1, atomic_read(&rdp->dynticks));
-+	trace_rcu_dyntick(TPS("End"), rdp->dynticks_nesting, 1, ct_dynticks());
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !user && !is_idle_task(current));
- 	WRITE_ONCE(rdp->dynticks_nesting, 1);
- 	WARN_ON_ONCE(rdp->dynticks_nmi_nesting);
-@@ -948,7 +945,7 @@ void __rcu_irq_enter_check_tick(void)
- /**
-  * rcu_nmi_enter - inform RCU of entry to NMI context
-  *
-- * If the CPU was idle from RCU's viewpoint, update rdp->dynticks and
-+ * If the CPU was idle from RCU's viewpoint, update ct->dynticks and
-  * rdp->dynticks_nmi_nesting to let the RCU grace-period handling know
-  * that the CPU is active.  This implementation permits nested NMIs, as
-  * long as the nesting level does not overflow an int.  (You will probably
-@@ -961,6 +958,7 @@ noinstr void rcu_nmi_enter(void)
- {
- 	long incby = 2;
- 	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
-+	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
- 
- 	/* Complain about underflow. */
- 	WARN_ON_ONCE(rdp->dynticks_nmi_nesting < 0);
-@@ -984,9 +982,9 @@ noinstr void rcu_nmi_enter(void)
- 
- 		instrumentation_begin();
- 		// instrumentation for the noinstr rcu_dynticks_curr_cpu_in_eqs()
--		instrument_atomic_read(&rdp->dynticks, sizeof(rdp->dynticks));
-+		instrument_atomic_read(&ct->dynticks, sizeof(ct->dynticks));
- 		// instrumentation for the noinstr rcu_dynticks_eqs_exit()
--		instrument_atomic_write(&rdp->dynticks, sizeof(rdp->dynticks));
-+		instrument_atomic_write(&ct->dynticks, sizeof(ct->dynticks));
- 
- 		incby = 1;
- 	} else if (!in_nmi()) {
-@@ -998,7 +996,7 @@ noinstr void rcu_nmi_enter(void)
- 
- 	trace_rcu_dyntick(incby == 1 ? TPS("Endirq") : TPS("++="),
- 			  rdp->dynticks_nmi_nesting,
--			  rdp->dynticks_nmi_nesting + incby, atomic_read(&rdp->dynticks));
-+			  rdp->dynticks_nmi_nesting + incby, ct_dynticks());
- 	instrumentation_end();
- 	WRITE_ONCE(rdp->dynticks_nmi_nesting, /* Prevent store tearing. */
- 		   rdp->dynticks_nmi_nesting + incby);
-@@ -1142,7 +1140,7 @@ static void rcu_gpnum_ovf(struct rcu_node *rnp, struct rcu_data *rdp)
-  */
- static int dyntick_save_progress_counter(struct rcu_data *rdp)
- {
--	rdp->dynticks_snap = rcu_dynticks_snap(rdp);
-+	rdp->dynticks_snap = rcu_dynticks_snap(rdp->cpu);
- 	if (rcu_dynticks_in_eqs(rdp->dynticks_snap)) {
- 		trace_rcu_fqs(rcu_state.name, rdp->gp_seq, rdp->cpu, TPS("dti"));
- 		rcu_gpnum_ovf(rdp->mynode, rdp);
-@@ -4237,7 +4235,7 @@ rcu_boot_init_percpu_data(int cpu)
- 	rdp->grpmask = leaf_node_cpu_bit(rdp->mynode, cpu);
- 	INIT_WORK(&rdp->strict_work, strict_work_handler);
- 	WARN_ON_ONCE(rdp->dynticks_nesting != 1);
--	WARN_ON_ONCE(rcu_dynticks_in_eqs(rcu_dynticks_snap(rdp)));
-+	WARN_ON_ONCE(rcu_dynticks_in_eqs(rcu_dynticks_snap(cpu)));
- 	rdp->barrier_seq_snap = rcu_state.barrier_sequence;
- 	rdp->rcu_ofl_gp_seq = rcu_state.gp_seq;
- 	rdp->rcu_ofl_gp_flags = RCU_GP_CLEANED;
-diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
-index 996387962de3..55a6b2191d26 100644
---- a/kernel/rcu/tree.h
-+++ b/kernel/rcu/tree.h
-@@ -193,7 +193,6 @@ struct rcu_data {
- 	int dynticks_snap;		/* Per-GP tracking for dynticks. */
- 	long dynticks_nesting;		/* Track process nesting level. */
- 	long dynticks_nmi_nesting;	/* Track irq/NMI nesting level. */
--	atomic_t dynticks;		/* Even value for idle, else odd. */
- 	bool rcu_need_heavy_qs;		/* GP old, so heavy quiescent state! */
- 	bool rcu_urgent_qs;		/* GP old need light quiescent state. */
- 	bool rcu_forced_tick;		/* Forced tick to provide QS. */
-diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
-index f05a15b11fa0..0374bc15ae99 100644
---- a/kernel/rcu/tree_exp.h
-+++ b/kernel/rcu/tree_exp.h
-@@ -358,7 +358,7 @@ static void __sync_rcu_exp_select_node_cpus(struct rcu_exp_work *rewp)
- 		    !(rnp->qsmaskinitnext & mask)) {
- 			mask_ofl_test |= mask;
- 		} else {
--			snap = rcu_dynticks_snap(rdp);
-+			snap = rcu_dynticks_snap(cpu);
- 			if (rcu_dynticks_in_eqs(snap))
- 				mask_ofl_test |= mask;
- 			else
-diff --git a/kernel/rcu/tree_stall.h b/kernel/rcu/tree_stall.h
-index 0a25a4ea6eef..05f5d7e820d0 100644
---- a/kernel/rcu/tree_stall.h
-+++ b/kernel/rcu/tree_stall.h
-@@ -463,7 +463,7 @@ static void print_cpu_stall_info(int cpu)
- 	}
- 	delta = rcu_seq_ctr(rdp->mynode->gp_seq - rdp->rcu_iw_gp_seq);
- 	falsepositive = rcu_is_gp_kthread_starving(NULL) &&
--			rcu_dynticks_in_eqs(rcu_dynticks_snap(rdp));
-+			rcu_dynticks_in_eqs(rcu_dynticks_snap(cpu));
- 	rcuc_starved = rcu_is_rcuc_kthread_starving(rdp, &j);
- 	if (rcuc_starved)
- 		sprintf(buf, " rcuc=%ld jiffies(starved)", j);
-@@ -476,7 +476,7 @@ static void print_cpu_stall_info(int cpu)
- 			rdp->rcu_iw_pending ? (int)min(delta, 9UL) + '0' :
- 				"!."[!delta],
- 	       ticks_value, ticks_title,
--	       rcu_dynticks_snap(rdp) & 0xfff,
-+	       rcu_dynticks_snap(cpu) & 0xfff,
- 	       rdp->dynticks_nesting, rdp->dynticks_nmi_nesting,
- 	       rdp->softirq_snap, kstat_softirqs_cpu(RCU_SOFTIRQ, cpu),
- 	       data_race(rcu_state.n_force_qs) - rcu_state.n_force_qs_gpstart,
--- 
-2.25.1
+Uh, ok, that wouldn't work on s390, but we also don't have
+CONFIG_PTE_MARKER_UFFD_WP / HAVE_ARCH_USERFAULTFD_WP set, so
+I guess we will be fine (for now).
 
+Still, I find it a bit unsettling that pte_install_uffd_wp_if_needed()
+would work on a potential hugetlb *pte, directly de-referencing it
+instead of using huge_ptep_get().
+
+The !pte_none(*pte) check at the beginning would be broken in the
+hugetlb case for s390 (not sure about other archs, but I think s390
+might be the only exception strictly requiring huge_ptep_get()
+for de-referencing hugetlb *pte pointers).
+
+> 
+> /* Set the dirty flag on the folio now the pte is gone. */
+> if (pte_dirty(pteval))
+> 	folio_mark_dirty(folio);
+
+Ok, that should work fine, huge_ptep_clear_flush() will return
+a pteval properly de-referenced and converted with huge_ptep_get(),
+and that would contain the hugetlb pmd/pud dirty information.
