@@ -2,55 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52BE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:08:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A381C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:08:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235617AbiECNMD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 09:12:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59538 "EHLO
+        id S235863AbiECNMK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 09:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234220AbiECNL7 (ORCPT
+        with ESMTP id S233216AbiECNL7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 3 May 2022 09:11:59 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4372B251
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 06:08:22 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 243D7sYr051311;
-        Tue, 3 May 2022 08:07:54 -0500
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382962B254
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 06:08:23 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 243D8A9H042407;
+        Tue, 3 May 2022 08:08:10 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651583274;
-        bh=+BPTMJnXCFZY1AvrKO5syPBndSeHvxlUjNoLLHha8yQ=;
+        s=ti-com-17Q1; t=1651583290;
+        bh=+PjDdN/NWid9naOrdEqrBg84dmGSmnwHbEYyAYI+SOc=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=qyEjcGiqnAtQFn93+C3EGVVxDM8cm4vKdosF+9baFu6NIho3AgM7NFVUzVKb8WxbT
-         j+h8iWdlxnU2yEtIwymEDlXZvuO6VA9aQ1RKezacoiwMnxo3xvDqoVEw1jkxqNJsxr
-         MskQO1Brg+Dzt5Opf1JIr/BZOUftALb88ANd/Mz8=
-Received: from DFLE107.ent.ti.com (dfle107.ent.ti.com [10.64.6.28])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 243D7sgG081310
+        b=vxyqyrHs+Bd7MQCyq/cmxXbIC+/gEKwDjDT2BfsC0j3DwNeGFwNEf17S4eGGh9L5E
+         zrd5LNI9mJpfATLnCOOPvtLg2IibuDKMGNJV4EBsrDwh4Nn3m72jMxr6EUJqPGyHmd
+         p7YSxkrt4kEIiHYcg90aUal1mroYQRuZ2M1QJ6aU=
+Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 243D8AUa083789
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 3 May 2022 08:07:54 -0500
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+        Tue, 3 May 2022 08:08:10 -0500
+Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 3
- May 2022 08:07:54 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ May 2022 08:08:10 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 3 May 2022 08:07:54 -0500
+ Frontend Transport; Tue, 3 May 2022 08:08:10 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 243D7sgB003767;
-        Tue, 3 May 2022 08:07:54 -0500
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 243D8A2Z010119;
+        Tue, 3 May 2022 08:08:10 -0500
 From:   Nishanth Menon <nm@ti.com>
-To:     <kristo@kernel.org>, Dave Gerlach <d-gerlach@ti.com>,
-        <ssantosh@kernel.org>
-CC:     Nishanth Menon <nm@ti.com>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [RESEND PATCH v2] firmware: ti_sci: Switch transport to polled mode during system suspend
-Date:   Tue, 3 May 2022 08:07:54 -0500
-Message-ID: <165158326360.6155.2361452626116386271.b4-ty@ti.com>
+To:     <cgel.zte@gmail.com>
+CC:     Nishanth Menon <nm@ti.com>, Zeal Robot <zealci@zte.com.cn>,
+        <linux-kernel@vger.kernel.org>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        <linux-arm-kernel@lists.infradead.org>, <ssantosh@kernel.org>
+Subject: Re: [PATCH] soc: ti: pm33xx: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Tue, 3 May 2022 08:08:09 -0500
+Message-ID: <165158328285.6255.11257896409414961807.b4-ty@ti.com>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220412192138.31189-1-d-gerlach@ti.com>
-References: <20220412192138.31189-1-d-gerlach@ti.com>
+In-Reply-To: <20220418063059.2558074-1-chi.minghao@zte.com.cn>
+References: <20220418063059.2558074-1-chi.minghao@zte.com.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -59,23 +60,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dave Gerlach,
+Hi cgel.zte@gmail.com,
 
-On Tue, 12 Apr 2022 14:21:38 -0500, Dave Gerlach wrote:
-> During system suspend it is completely valid for devices to invoke TISCI
-> commands during the noirq phase of the suspend path. Specifically this
-> will always be seen for devices that define a power-domains DT property
-> and make use of the ti_sci_pm_domains genpd implementation.
-> The genpd_finish_suspend call will power off devices during the noirq
-> phase, which will invoke TISCI.
+On Mon, 18 Apr 2022 06:30:59 +0000, cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
 > 
-> [...]
+> Using pm_runtime_resume_and_get is more appropriate
+> for simplifing code
+> 
+> 
 
 I have applied the following to branch ti-drivers-soc-next on [1].
 Thank you!
 
-[1/1] firmware: ti_sci: Switch transport to polled mode during system suspend
-      commit: b9e8a7d950ffed4cdd81e6457cfb8049227da2d1
+[1/1] soc: ti: pm33xx: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+      commit: 2b7042500cab7952bdbf4fe4a84de8712b418c36
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent up the chain during
