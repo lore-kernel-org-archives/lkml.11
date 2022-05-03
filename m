@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:11:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 650DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:11:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242439AbiECUOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 16:14:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48992 "EHLO
+        id S242445AbiECUO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 16:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242262AbiECUNs (ORCPT
+        with ESMTP id S242346AbiECUN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 16:13:48 -0400
+        Tue, 3 May 2022 16:13:59 -0400
 Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8C21D38D;
-        Tue,  3 May 2022 13:10:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C40E1031;
+        Tue,  3 May 2022 13:10:16 -0700 (PDT)
 Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id CB411BC2;
-        Tue,  3 May 2022 23:10:47 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru CB411BC2
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id DE794BC4;
+        Tue,  3 May 2022 23:10:49 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru DE794BC4
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1651608647;
-        bh=jCdYikKW5d7lD5eqc9AjF8QycAGAXvdMRkyDuad2vIQ=;
+        d=baikalelectronics.ru; s=mail; t=1651608649;
+        bh=uSCjkMj4dYFheq+/FSKGiwDai6D+f5d7WfzOKA5SOcI=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=KeyjznIt6Wfs29n8CGlxuCGXESIgXDahjFeEo3sFQ98FCfmVMewxRD+37Qji3aqhR
-         qOdDtZpDVRsKP+e0PSkGQQtFw+2TyhL+ZFBveRZlkJwshfWzqbqGQjPE5LFM/jYoKQ
-         R8Y0SchDZKIHIKwsYOfS8UCBLqWXpdW5WA3240gc=
+        b=RnMux7JW7Wut0lQXqcFdmwDPAUAUhSLlms5pL4hm/jK2VaoYPx/ymSeiDM3td05LY
+         s7CO1RMWnIdGTZA14lRL/+ynORBxkWWLU2CRxxA8C4ItVsHmGx9Di5xawr+XtevCLv
+         Fvl47otQAj4vrp/cLrG2qw7KamBUZI5VKxb1vlEQ=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 May 2022 23:10:13 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 May 2022 23:10:15 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Hans de Goede <hdegoede@redhat.com>,
@@ -38,9 +38,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
         Rob Herring <robh+dt@kernel.org>, <linux-ide@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH v2 14/23] ata: libahci: Discard redundant force_port_map parameter
-Date:   Tue, 3 May 2022 23:09:29 +0300
-Message-ID: <20220503200938.18027-15-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH v2 16/23] ata: ahci: Convert __ahci_port_base to accepting hpriv as arguments
+Date:   Tue, 3 May 2022 23:09:31 +0300
+Message-ID: <20220503200938.18027-17-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -51,104 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently there are four port-map-related fields declared in the
-ahci_host_priv structure and used to setup the HBA ports mapping. First
-the ports-mapping is read from the PI register and immediately stored in
-the saved_port_map field. If forced_port_map is initialized with non-zero
-value then its value will have greater priority over the value read from
-PI, thus it will override the saved_port_map field. That value will be
-then masked by a non-zero mask_port_map field and after some sanity checks
-it will be stored in the ahci_host_priv.port_map field as a final port
-mapping.
-
-As you can see the logic is a bit too complicated for such a simple task.
-We can freely get rid from at least one of the fields with no change to
-the implemented semantic. The force_port_map field can be replaced with
-taking non-zero saved_port_map value into account. So if saved_port_map is
-pre-initialized by the low level drivers (platform drivers) then it will
-have greater priority over the value read from PI register and will be
-used as actual HBA ports mapping later on. Thus the ports map forcing task
-will be just transferred from the force_port_map to saved_port_map field.
-
-This modification will perfectly fit into the feature of having OF-based
-initialization of the HW-init HBA CSR fields we are about to introduce in
-the next commit.
+It may get required to retrieve the port-base address even before the
+ata_host instance is initialized and activated, for instance in the
+ahci_save_initial_config() method which we about to update (consider this
+modification as a preparation for that one). Seeing the __ahci_port_base()
+function isn't used much it's the best candidate to provide the required
+functionality. So let's convert it to accepting the ahci_host_priv
+structure pointer.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- drivers/ata/ahci.c             |  2 +-
- drivers/ata/ahci.h             |  1 -
- drivers/ata/libahci.c          | 10 ++++++----
- drivers/ata/libahci_platform.c |  2 +-
- 4 files changed, 8 insertions(+), 7 deletions(-)
+ drivers/ata/ahci.c | 2 +-
+ drivers/ata/ahci.h | 7 ++++---
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
-index 397dfd27c90d..9bc8fa77e92f 100644
+index 9bc8fa77e92f..d14d74649e0e 100644
 --- a/drivers/ata/ahci.c
 +++ b/drivers/ata/ahci.c
-@@ -656,7 +656,7 @@ static void ahci_pci_save_initial_config(struct pci_dev *pdev,
- {
- 	if (pdev->vendor == PCI_VENDOR_ID_JMICRON && pdev->device == 0x2361) {
- 		dev_info(&pdev->dev, "JMB361 has only one port\n");
--		hpriv->force_port_map = 1;
-+		hpriv->saved_port_map = 1;
- 	}
+@@ -689,7 +689,7 @@ static void ahci_pci_init_controller(struct ata_host *host)
+ 			mv = 2;
+ 		else
+ 			mv = 4;
+-		port_mmio = __ahci_port_base(host, mv);
++		port_mmio = __ahci_port_base(hpriv, mv);
  
- 	/*
+ 		writel(0, port_mmio + PORT_IRQ_MASK);
+ 
 diff --git a/drivers/ata/ahci.h b/drivers/ata/ahci.h
-index f501531bd1b3..0e66446a5883 100644
+index 0e66446a5883..8b9826533ae5 100644
 --- a/drivers/ata/ahci.h
 +++ b/drivers/ata/ahci.h
-@@ -327,7 +327,6 @@ struct ahci_port_priv {
- struct ahci_host_priv {
- 	/* Input fields */
- 	unsigned int		flags;		/* AHCI_HFLAG_* */
--	u32			force_port_map;	/* force port map */
- 	u32			mask_port_map;	/* mask out particular bits */
+@@ -431,10 +431,9 @@ int ahci_host_activate(struct ata_host *host, struct scsi_host_template *sht);
+ void ahci_error_handler(struct ata_port *ap);
+ u32 ahci_handle_port_intr(struct ata_host *host, u32 irq_masked);
  
- 	void __iomem *		mmio;		/* bus-independent mem map */
-diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index cf8c7fd59ada..000a7072614f 100644
---- a/drivers/ata/libahci.c
-+++ b/drivers/ata/libahci.c
-@@ -453,7 +453,6 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
- 	 * reset.  Values without are used for driver operation.
- 	 */
- 	hpriv->saved_cap = cap = readl(mmio + HOST_CAP);
--	hpriv->saved_port_map = port_map = readl(mmio + HOST_PORTS_IMPL);
+-static inline void __iomem *__ahci_port_base(struct ata_host *host,
++static inline void __iomem *__ahci_port_base(struct ahci_host_priv *hpriv,
+ 					     unsigned int port_no)
+ {
+-	struct ahci_host_priv *hpriv = host->private_data;
+ 	void __iomem *mmio = hpriv->mmio;
  
- 	/* CAP2 register is only defined for AHCI 1.2 and later */
- 	vers = readl(mmio + HOST_VERSION);
-@@ -517,10 +516,13 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
- 		cap &= ~HOST_CAP_SXS;
- 	}
+ 	return mmio + 0x100 + (port_no * 0x80);
+@@ -442,7 +441,9 @@ static inline void __iomem *__ahci_port_base(struct ata_host *host,
  
--	if (hpriv->force_port_map && port_map != hpriv->force_port_map) {
-+	/* Override the HBA ports mapping if the platform needs it */
-+	port_map = readl(mmio + HOST_PORTS_IMPL);
-+	if (hpriv->saved_port_map && port_map != hpriv->saved_port_map) {
- 		dev_info(dev, "forcing port_map 0x%x -> 0x%x\n",
--			 port_map, hpriv->force_port_map);
--		port_map = hpriv->force_port_map;
-+			 port_map, hpriv->saved_port_map);
-+		port_map = hpriv->saved_port_map;
-+	} else {
- 		hpriv->saved_port_map = port_map;
- 	}
+ static inline void __iomem *ahci_port_base(struct ata_port *ap)
+ {
+-	return __ahci_port_base(ap->host, ap->port_no);
++	struct ahci_host_priv *hpriv = ap->host->private_data;
++
++	return __ahci_port_base(hpriv, ap->port_no);
+ }
  
-diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
-index f5ee2f9d014b..56aced7a76cd 100644
---- a/drivers/ata/libahci_platform.c
-+++ b/drivers/ata/libahci_platform.c
-@@ -553,7 +553,7 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
- 	}
- 
- 	of_property_read_u32(dev->of_node,
--			     "ports-implemented", &hpriv->force_port_map);
-+			     "ports-implemented", &hpriv->saved_port_map);
- 
- 	if (child_nodes) {
- 		for_each_child_of_node(dev->of_node, child) {
+ static inline int ahci_nr_ports(u32 cap)
 -- 
 2.35.1
 
