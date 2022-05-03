@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E07C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:31:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4765C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:31:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241500AbiECSfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 14:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51440 "EHLO
+        id S241501AbiECSfF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 14:35:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241440AbiECSel (ORCPT
+        with ESMTP id S241382AbiECSep (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 14:34:41 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C41E3F880
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 11:30:58 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id l72-20020a63914b000000b003c1ac4355f5so5609966pge.4
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 11:30:58 -0700 (PDT)
+        Tue, 3 May 2022 14:34:45 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8865A3F89D
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 11:31:03 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id u18-20020a170902e21200b0015e5e660618so6841929plb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 11:31:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=ZYsDGkjzJMEUY489cF/q4E8fpSxjDZsZ+buXTqonbtQ=;
-        b=MemcUGAjEMah/ZaTJ/CJrMnizulS8u5+PqEXQAS6VyPYkayFha1FMan+n2ae2uoLk5
-         fBHZc6QmURA/9x+oypg7YqEEUi1jD62/oG0C/s5ogIPykDI+huJJ5UpKeLAd4vadYnjC
-         Rpg4PxLWuKbECt/bIXRK4g0iIix5yL1ISqZxZBX2jA3EFUlXwPU6pbaqsS7j2iIT6nbG
-         Td0LdiymwsJzvaE2tmNM1bXeNyezjeLDo6Q7QAuqDvxmUcKC5Ew5JUVpoAP7/m/fr0+n
-         yVXP0ZcIfPR8jyKkRpjeaTWKzu9sl67ljXhAYlMJ7Fmn6RI3FbgW4jV7w7ZEuYlP9Kmr
-         WXPQ==
+        bh=UI0i04LOeDv306YCyysgbmYsjYLKqLtrpgIp2tMXlhg=;
+        b=BaTAJBbtgdle1GlFYIxOKqwCwV9qPPsN0DN3CdhUWT+UQKmDWmL5/2GR7zcx9m227i
+         /iD+cqmiMcA3jCvEQSuHz1e6ySu0Xin2ah6AuoRg3nHzO6M6LLj0W7FUxZOgksKTkUCg
+         4pkYK+VFcAclXZ5/crt9hNnrdM1KW4irzX3r+yZd0zjOWe6/I8bKUmWmIQXc7yQXBiNn
+         vJS8rXZzzxdn8DMNwi9QLz7vmoM2mpvaRXlzA/EmSTeZAbp7QbI1+TnQj6aupPRYdPSZ
+         n+60zANuUT3WGGIVyGYIv9lUBJ6JcDRhgWSwWmW1A1wAjb1OD92dhRjcLy5uqfgaXo2d
+         VOPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=ZYsDGkjzJMEUY489cF/q4E8fpSxjDZsZ+buXTqonbtQ=;
-        b=msqM7Wv0IH1T3RAyC1zefM+gOexqf5yxbJr1vzVQAFhoNbIIgpG1VdHCPDqpHuqSJZ
-         mFEFmv58qGsRsh2BUBcQRXW6AYvXIISjPodcMBriYqctgogXCOXtxL8uOSibroxPKXRz
-         h00zbUvF3ZSA5e2Xa9a6EnQ+Mwj1b4oAOAFlQURqDGbfZy9gusz9KaSvNEJVD8psnRNJ
-         i008FIwPLqQJngwAO/MMePk4oD3BP/cPWK8un0K38EGpsTWiFLlkeMw7+5FrKW1Kx2Oh
-         oDbvyB/iNpHEFjOhlaM52shnDrLCOOjGJ6bAgMjhhRglu3+Ykzey1YVQaEtXRpOU62uC
-         SXxQ==
-X-Gm-Message-State: AOAM530aAFPITdhmrJAEgbz930gUIESEM1MPIU5trX/fSWUZN6a8ottK
-        z5M8jhnIPtut2Ra2hIR9j3eLVK/ro7jxoV0uH6ml0Eue1Pn8medNnsm0Aqpce2QqZB2TR21TMiO
-        c2B7H7i6Org79Tj19g5QefK0mjm8V851S+uJ9w1NQjoOqL09rDCAxvhAMlGnr3Z41waanErHr
-X-Google-Smtp-Source: ABdhPJyTHHW1fKXQc0wpqNze6EuL/2Uice8+pEklKwuKfKFb5+O/Kd+Ze6OcTmTVNTB6pHOd4KUzK/cWTGbB
+        bh=UI0i04LOeDv306YCyysgbmYsjYLKqLtrpgIp2tMXlhg=;
+        b=2dBpbLNnnCVMK1c1oZYjgl6BgHgBF+C9cp6DHciOVTph2wvpVCQyTLNb3DZIEfN0u6
+         IZ/QSTHF3HyF4kIDXApxot7OePLnBVCDI1HeNJzOjKWbxB99dOmtqfpygZKUJKi1EQ4Y
+         NCWm85rnGF9kRJ4FUpMjo6XZoT8fcJz1aHgl9gzslNOeb+de3WrPwGw6f4QZQt5LDFw0
+         ULTCQMPfVt71zNS07jamzCcPoy5xKyDJCtGc42b0ZaKrT/wG5Js+Be/wLDvKgYtFRePr
+         7jVJv/H/DxmDIgChHVazmF0kiKUnPfRbgpfWDek9b06r7uBqG+NEvkhAJQ6IhM6EvJtU
+         gTaQ==
+X-Gm-Message-State: AOAM531DnKtoC9Zid4PKL6n15+T1tuXPTJld3JR0vYfeLm3mfU0Yq8Ky
+        KkvQn6hLcf84GLkaOh7CZ1ex6dB94vMAiy/kqKpp4zZFjnIs9q9Yj0Vs9SGcIJJ5v4ke/0jPzDB
+        qva/gW1gdUVDbNwCrFHY1ScNuiwBp8HL6uPppEukLJBPSbwqPFnlzfvoH+8y5hKbLx4jfVpis
+X-Google-Smtp-Source: ABdhPJyF8hUdbSgAbutlP4Dw9VQ1NedW9z01ve5CYxvBWcspa31Ucxue0zxi7oN5C5UCCbsMRv4ytdlUb4vO
 X-Received: from sweer.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:e45])
- (user=bgardon job=sendgmr) by 2002:a05:6a00:2348:b0:50d:9be4:4c02 with SMTP
- id j8-20020a056a00234800b0050d9be44c02mr17572857pfj.5.1651602658269; Tue, 03
- May 2022 11:30:58 -0700 (PDT)
-Date:   Tue,  3 May 2022 18:30:40 +0000
+ (user=bgardon job=sendgmr) by 2002:a17:90a:e510:b0:1d9:ee23:9fa1 with SMTP id
+ t16-20020a17090ae51000b001d9ee239fa1mr95259pjy.0.1651602662631; Tue, 03 May
+ 2022 11:31:02 -0700 (PDT)
+Date:   Tue,  3 May 2022 18:30:43 +0000
 In-Reply-To: <20220503183045.978509-1-bgardon@google.com>
-Message-Id: <20220503183045.978509-7-bgardon@google.com>
+Message-Id: <20220503183045.978509-10-bgardon@google.com>
 Mime-Version: 1.0
 References: <20220503183045.978509-1-bgardon@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v7 06/11] KVM: selftests: Add NX huge pages test
+Subject: [PATCH v7 09/11] KVM: selftests: Factor out calculation of pages
+ needed for a VM
 From:   Ben Gardon <bgardon@google.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
@@ -69,392 +70,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There's currently no test coverage of NX hugepages in KVM selftests, so
-add a basic test to ensure that the feature works as intended.
+Factor out the calculation of the number of pages needed for a VM to
+make it easier to separate creating the VM and adding vCPUs.
 
 Reviewed-by: David Matlack <dmatlack@google.com>
+Reviewed-by: Peter Xu <peterx@redhat.com>
 Signed-off-by: Ben Gardon <bgardon@google.com>
 ---
- tools/testing/selftests/kvm/Makefile          |  10 +
- .../selftests/kvm/include/kvm_util_base.h     |   1 +
- tools/testing/selftests/kvm/lib/kvm_util.c    |  80 ++++++++
- .../selftests/kvm/x86_64/nx_huge_pages_test.c | 180 ++++++++++++++++++
- .../kvm/x86_64/nx_huge_pages_test.sh          |  36 ++++
- 5 files changed, 307 insertions(+)
- create mode 100644 tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
- create mode 100755 tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
+ .../selftests/kvm/include/kvm_util_base.h     |  4 ++
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 59 ++++++++++++++-----
+ 2 files changed, 47 insertions(+), 16 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-index af582d168621..9bb9bce4df37 100644
---- a/tools/testing/selftests/kvm/Makefile
-+++ b/tools/testing/selftests/kvm/Makefile
-@@ -43,6 +43,10 @@ LIBKVM_aarch64 = lib/aarch64/processor.c lib/aarch64/ucall.c lib/aarch64/handler
- LIBKVM_s390x = lib/s390x/processor.c lib/s390x/ucall.c lib/s390x/diag318_test_handler.c
- LIBKVM_riscv = lib/riscv/processor.c lib/riscv/ucall.c
- 
-+# Non-compiled test targets
-+TEST_PROGS_x86_64 += x86_64/nx_huge_pages_test.sh
-+
-+# Compiled test targets
- TEST_GEN_PROGS_x86_64 = x86_64/cpuid_test
- TEST_GEN_PROGS_x86_64 += x86_64/cr4_cpuid_sync_test
- TEST_GEN_PROGS_x86_64 += x86_64/get_msr_index_features
-@@ -104,6 +108,9 @@ TEST_GEN_PROGS_x86_64 += steal_time
- TEST_GEN_PROGS_x86_64 += kvm_binary_stats_test
- TEST_GEN_PROGS_x86_64 += system_counter_offset_test
- 
-+# Compiled outputs used by test targets
-+TEST_GEN_PROGS_EXTENDED_x86_64 += x86_64/nx_huge_pages_test
-+
- TEST_GEN_PROGS_aarch64 += aarch64/arch_timer
- TEST_GEN_PROGS_aarch64 += aarch64/debug-exceptions
- TEST_GEN_PROGS_aarch64 += aarch64/get-reg-list
-@@ -142,7 +149,9 @@ TEST_GEN_PROGS_riscv += kvm_page_table_test
- TEST_GEN_PROGS_riscv += set_memory_region_test
- TEST_GEN_PROGS_riscv += kvm_binary_stats_test
- 
-+TEST_PROGS += $(TEST_PROGS_$(UNAME_M))
- TEST_GEN_PROGS += $(TEST_GEN_PROGS_$(UNAME_M))
-+TEST_GEN_PROGS_EXTENDED += $(TEST_GEN_PROGS_EXTENDED_$(UNAME_M))
- LIBKVM += $(LIBKVM_$(UNAME_M))
- 
- INSTALL_HDR_PATH = $(top_srcdir)/usr
-@@ -193,6 +202,7 @@ $(OUTPUT)/libkvm.a: $(LIBKVM_OBJS)
- x := $(shell mkdir -p $(sort $(dir $(TEST_GEN_PROGS))))
- all: $(STATIC_LIBS)
- $(TEST_GEN_PROGS): $(STATIC_LIBS)
-+$(TEST_GEN_PROGS_EXTENDED): $(STATIC_LIBS)
- 
- cscope: include_paths = $(LINUX_TOOL_INCLUDE) $(LINUX_HDR_PATH) include lib ..
- cscope:
 diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 2a3a4d9ed8e3..001b55ae25f8 100644
+index 001b55ae25f8..1dac3c6607f1 100644
 --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
 +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -406,6 +406,7 @@ struct kvm_stats_desc *read_stats_desc(int stats_fd,
- int read_stat_data(int stats_fd, struct kvm_stats_header *header,
- 		   struct kvm_stats_desc *desc, uint64_t *data,
- 		   ssize_t max_elements);
-+uint64_t vm_get_stat(struct kvm_vm *vm, const char *stat_name);
+@@ -312,6 +312,10 @@ vm_paddr_t vm_phy_pages_alloc(struct kvm_vm *vm, size_t num,
+ 			      vm_paddr_t paddr_min, uint32_t memslot);
+ vm_paddr_t vm_alloc_page_table(struct kvm_vm *vm);
  
- uint32_t guest_get_vcpuid(void);
- 
++uint64_t vm_pages_needed(enum vm_guest_mode mode, uint32_t nr_vcpus,
++			 uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
++			 uint32_t num_percpu_pages);
++
+ /*
+  * Create a VM with reasonable defaults
+  *
 diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index ea4ab64e5997..6930ba298170 100644
+index 6930ba298170..27ffd2537df6 100644
 --- a/tools/testing/selftests/kvm/lib/kvm_util.c
 +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -2651,3 +2651,83 @@ int read_stat_data(int stats_fd, struct kvm_stats_header *header,
- 
- 	return ret;
+@@ -377,7 +377,7 @@ struct kvm_vm *vm_create_without_vcpus(enum vm_guest_mode mode, uint64_t pages)
  }
+ 
+ /*
+- * VM Create with customized parameters
++ * Get the number of pages needed for a VM
+  *
+  * Input Args:
+  *   mode - VM Mode (e.g. VM_MODE_P52V48_4K)
+@@ -385,27 +385,17 @@ struct kvm_vm *vm_create_without_vcpus(enum vm_guest_mode mode, uint64_t pages)
+  *   slot0_mem_pages - Slot0 physical memory size
+  *   extra_mem_pages - Non-slot0 physical memory total size
+  *   num_percpu_pages - Per-cpu physical memory pages
+- *   guest_code - Guest entry point
+- *   vcpuids - VCPU IDs
+  *
+  * Output Args: None
+  *
+  * Return:
+- *   Pointer to opaque structure that describes the created VM.
+- *
+- * Creates a VM with the mode specified by mode (e.g. VM_MODE_P52V48_4K),
+- * with customized slot0 memory size, at least 512 pages currently.
+- * extra_mem_pages is only used to calculate the maximum page table size,
+- * no real memory allocation for non-slot0 memory in this function.
++ *   The number of pages needed for the VM.
+  */
+-struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
+-				    uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
+-				    uint32_t num_percpu_pages, void *guest_code,
+-				    uint32_t vcpuids[])
++uint64_t vm_pages_needed(enum vm_guest_mode mode, uint32_t nr_vcpus,
++			 uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
++			 uint32_t num_percpu_pages)
+ {
+ 	uint64_t vcpu_pages, extra_pg_pages, pages;
+-	struct kvm_vm *vm;
+-	int i;
+ 
+ 	/* Force slot0 memory size not small than DEFAULT_GUEST_PHY_PAGES */
+ 	if (slot0_mem_pages < DEFAULT_GUEST_PHY_PAGES)
+@@ -421,11 +411,48 @@ struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
+ 	extra_pg_pages = (slot0_mem_pages + extra_mem_pages + vcpu_pages) / PTES_PER_MIN_PAGE * 2;
+ 	pages = slot0_mem_pages + vcpu_pages + extra_pg_pages;
+ 
++	pages = vm_adjust_num_guest_pages(mode, pages);
 +
-+/*
-+ * Read the data of the named stat
-+ *
-+ * Input Args:
-+ *   vm - the VM for which the stat should be read
-+ *   stat_name - the name of the stat to read
-+ *   max_elements - the maximum number of 8-byte values to read into data
-+ *
-+ * Output Args:
-+ *   data - the buffer into which stat data should be read
-+ *
-+ * Return:
-+ *   The number of data elements read into data or -ERRNO on error.
-+ *
-+ * Read the data values of a specified stat from the binary stats interface.
-+ */
-+static int __vm_get_stat(struct kvm_vm *vm, const char *stat_name,
-+			 uint64_t *data, ssize_t max_elements)
-+{
-+	struct kvm_stats_desc *stats_desc;
-+	struct kvm_stats_header header;
-+	struct kvm_stats_desc *desc;
-+	size_t size_desc;
-+	int stats_fd;
-+	int ret = -EINVAL;
-+	int i;
-+
-+	stats_fd = vm_get_stats_fd(vm);
-+
-+	read_stats_header(stats_fd, &header);
-+
-+	stats_desc = read_stats_desc(stats_fd, &header);
-+
-+	size_desc = sizeof(struct kvm_stats_desc) + header.name_size;
-+
-+	/* Read kvm stats data one by one */
-+	for (i = 0; i < header.num_desc; ++i) {
-+		desc = (void *)stats_desc + (i * size_desc);
-+
-+		if (strcmp(desc->name, stat_name))
-+			continue;
-+
-+		ret = read_stat_data(stats_fd, &header, desc, data,
-+				     max_elements);
-+
-+		break;
-+	}
-+
-+	free(stats_desc);
-+	close(stats_fd);
-+	return ret;
++	return pages;
 +}
 +
 +/*
-+ * Read the value of the named stat
++ * VM Create with customized parameters
 + *
 + * Input Args:
-+ *   vm - the VM for which the stat should be read
-+ *   stat_name - the name of the stat to read
++ *   mode - VM Mode (e.g. VM_MODE_P52V48_4K)
++ *   nr_vcpus - VCPU count
++ *   slot0_mem_pages - Slot0 physical memory size
++ *   extra_mem_pages - Non-slot0 physical memory total size
++ *   num_percpu_pages - Per-cpu physical memory pages
++ *   guest_code - Guest entry point
++ *   vcpuids - VCPU IDs
 + *
 + * Output Args: None
 + *
 + * Return:
-+ *   The value of the stat
++ *   Pointer to opaque structure that describes the created VM.
 + *
-+ * Reads the value of the named stat through the binary stat interface. If
-+ * the named stat has multiple data elements, only the first will be returned.
++ * Creates a VM with the mode specified by mode (e.g. VM_MODE_P52V48_4K),
++ * with customized slot0 memory size, at least 512 pages currently.
++ * extra_mem_pages is only used to calculate the maximum page table size,
++ * no real memory allocation for non-slot0 memory in this function.
 + */
-+uint64_t vm_get_stat(struct kvm_vm *vm, const char *stat_name)
++struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
++				    uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
++				    uint32_t num_percpu_pages, void *guest_code,
++				    uint32_t vcpuids[])
 +{
-+	uint64_t data;
-+	int ret;
-+
-+	ret = __vm_get_stat(vm, stat_name, &data, 1);
-+	TEST_ASSERT(ret == 1,
-+		    "Stat %s expected to have 1 element, but %d returned",
-+		    stat_name, ret);
-+	return data;
-+}
-diff --git a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
-new file mode 100644
-index 000000000000..238a6047791c
---- /dev/null
-+++ b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
-@@ -0,0 +1,180 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * tools/testing/selftests/kvm/nx_huge_page_test.c
-+ *
-+ * Usage: to be run via nx_huge_page_test.sh, which does the necessary
-+ * environment setup and teardown
-+ *
-+ * Copyright (C) 2022, Google LLC.
-+ */
-+
-+#define _GNU_SOURCE
-+
-+#include <fcntl.h>
-+#include <stdint.h>
-+#include <time.h>
-+
-+#include <test_util.h>
-+#include "kvm_util.h"
-+
-+#define HPAGE_SLOT		10
-+#define HPAGE_GVA		(23*1024*1024)
-+#define HPAGE_GPA		(10*1024*1024)
-+#define HPAGE_SLOT_NPAGES	(512 * 3)
-+#define PAGE_SIZE		4096
-+
-+/*
-+ * Passed by nx_huge_pages_test.sh to provide an easy warning if this test is
-+ * being run without it.
-+ */
-+#define MAGIC_TOKEN 887563923
-+
-+/*
-+ * x86 opcode for the return instruction. Used to call into, and then
-+ * immediately return from, memory backed with hugepages.
-+ */
-+#define RETURN_OPCODE 0xC3
-+
-+/*
-+ * Exit the VM after each memory access so that the userspace component of the
-+ * test can make assertions about the pages backing the VM.
-+ *
-+ * See the below for an explanation of how each access should affect the
-+ * backing mappings.
-+ */
-+void guest_code(void)
-+{
-+	uint64_t hpage_1 = HPAGE_GVA;
-+	uint64_t hpage_2 = hpage_1 + (PAGE_SIZE * 512);
-+	uint64_t hpage_3 = hpage_2 + (PAGE_SIZE * 512);
-+
-+	READ_ONCE(*(uint64_t *)hpage_1);
-+	GUEST_SYNC(1);
-+
-+	READ_ONCE(*(uint64_t *)hpage_2);
-+	GUEST_SYNC(2);
-+
-+	((void (*)(void)) hpage_1)();
-+	GUEST_SYNC(3);
-+
-+	((void (*)(void)) hpage_3)();
-+	GUEST_SYNC(4);
-+
-+	READ_ONCE(*(uint64_t *)hpage_1);
-+	GUEST_SYNC(5);
-+
-+	READ_ONCE(*(uint64_t *)hpage_3);
-+	GUEST_SYNC(6);
-+}
-+
-+static void check_2m_page_count(struct kvm_vm *vm, int expected_pages_2m)
-+{
-+	int actual_pages_2m;
-+
-+	actual_pages_2m = vm_get_stat(vm, "pages_2m");
-+
-+	TEST_ASSERT(actual_pages_2m == expected_pages_2m,
-+		    "Unexpected 2m page count. Expected %d, got %d",
-+		    expected_pages_2m, actual_pages_2m);
-+}
-+
-+static void check_split_count(struct kvm_vm *vm, int expected_splits)
-+{
-+	int actual_splits;
-+
-+	actual_splits = vm_get_stat(vm, "nx_lpage_splits");
-+
-+	TEST_ASSERT(actual_splits == expected_splits,
-+		    "Unexpected NX huge page split count. Expected %d, got %d",
-+		    expected_splits, actual_splits);
-+}
-+
-+int main(int argc, char **argv)
-+{
++	uint64_t pages;
 +	struct kvm_vm *vm;
-+	struct timespec ts;
-+	void *hva;
++	int i;
 +
-+	if (argc != 2 || strtol(argv[1], NULL, 0) != MAGIC_TOKEN) {
-+		printf("This test must be run through nx_huge_pages_test.sh");
-+		return KSFT_SKIP;
-+	}
-+
-+	vm = vm_create_default(0, 0, guest_code);
-+
-+	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS_HUGETLB,
-+				    HPAGE_GPA, HPAGE_SLOT,
-+				    HPAGE_SLOT_NPAGES, 0);
-+
-+	virt_map(vm, HPAGE_GVA, HPAGE_GPA, HPAGE_SLOT_NPAGES);
-+
-+	hva = addr_gpa2hva(vm, HPAGE_GPA);
-+	memset(hva, RETURN_OPCODE, HPAGE_SLOT_NPAGES * PAGE_SIZE);
-+
-+	check_2m_page_count(vm, 0);
-+	check_split_count(vm, 0);
-+
-+	/*
-+	 * The guest code will first read from the first hugepage, resulting
-+	 * in a huge page mapping being created.
-+	 */
-+	vcpu_run(vm, 0);
-+	check_2m_page_count(vm, 1);
-+	check_split_count(vm, 0);
-+
-+	/*
-+	 * Then the guest code will read from the second hugepage, resulting
-+	 * in another huge page mapping being created.
-+	 */
-+	vcpu_run(vm, 0);
-+	check_2m_page_count(vm, 2);
-+	check_split_count(vm, 0);
-+
-+	/*
-+	 * Next, the guest will execute from the first huge page, causing it
-+	 * to be remapped at 4k.
-+	 */
-+	vcpu_run(vm, 0);
-+	check_2m_page_count(vm, 1);
-+	check_split_count(vm, 1);
-+
-+	/*
-+	 * Executing from the third huge page (previously unaccessed) will
-+	 * cause part to be mapped at 4k.
-+	 */
-+	vcpu_run(vm, 0);
-+	check_2m_page_count(vm, 1);
-+	check_split_count(vm, 2);
-+
-+	/* Reading from the first huge page again should have no effect. */
-+	vcpu_run(vm, 0);
-+	check_2m_page_count(vm, 1);
-+	check_split_count(vm, 2);
-+
-+	/*
-+	 * Give recovery thread time to run. The wrapper script sets
-+	 * recovery_period_ms to 100, so wait 5x that.
-+	 */
-+	ts.tv_sec = 0;
-+	ts.tv_nsec = 500000000;
-+	nanosleep(&ts, NULL);
-+
-+	/*
-+	 * Now that the reclaimer has run, all the split pages should be gone.
-+	 */
-+	check_2m_page_count(vm, 1);
-+	check_split_count(vm, 0);
-+
-+	/*
-+	 * The 4k mapping on hpage 3 should have been removed, so check that
-+	 * reading from it causes a huge page mapping to be installed.
-+	 */
-+	vcpu_run(vm, 0);
-+	check_2m_page_count(vm, 2);
-+	check_split_count(vm, 0);
-+
-+	kvm_vm_free(vm);
-+
-+	return 0;
-+}
-+
-diff --git a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
-new file mode 100755
-index 000000000000..60bfed8181b9
---- /dev/null
-+++ b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
-@@ -0,0 +1,36 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0-only */
-+#
-+# Wrapper script which performs setup and cleanup for nx_huge_pages_test.
-+# Makes use of root privileges to set up huge pages and KVM module parameters.
-+#
-+# tools/testing/selftests/kvm/nx_huge_page_test.sh
-+# Copyright (C) 2022, Google LLC.
-+
-+set -e
-+
-+NX_HUGE_PAGES=$(sudo cat /sys/module/kvm/parameters/nx_huge_pages)
-+NX_HUGE_PAGES_RECOVERY_RATIO=$(sudo cat /sys/module/kvm/parameters/nx_huge_pages_recovery_ratio)
-+NX_HUGE_PAGES_RECOVERY_PERIOD=$(sudo cat /sys/module/kvm/parameters/nx_huge_pages_recovery_period_ms)
-+HUGE_PAGES=$(sudo cat /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages)
-+
-+set +e
-+
-+(
-+	set -e
-+
-+	sudo echo 1 > /sys/module/kvm/parameters/nx_huge_pages
-+	sudo echo 1 > /sys/module/kvm/parameters/nx_huge_pages_recovery_ratio
-+	sudo echo 100 > /sys/module/kvm/parameters/nx_huge_pages_recovery_period_ms
-+	sudo echo 3 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
-+
-+	"$(dirname $0)"/nx_huge_pages_test 887563923
-+)
-+RET=$?
-+
-+sudo echo $NX_HUGE_PAGES > /sys/module/kvm/parameters/nx_huge_pages
-+sudo echo $NX_HUGE_PAGES_RECOVERY_RATIO > /sys/module/kvm/parameters/nx_huge_pages_recovery_ratio
-+sudo echo $NX_HUGE_PAGES_RECOVERY_PERIOD > /sys/module/kvm/parameters/nx_huge_pages_recovery_period_ms
-+sudo echo $HUGE_PAGES > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
-+
-+exit $RET
+ 	TEST_ASSERT(nr_vcpus <= kvm_check_cap(KVM_CAP_MAX_VCPUS),
+ 		    "nr_vcpus = %d too large for host, max-vcpus = %d",
+ 		    nr_vcpus, kvm_check_cap(KVM_CAP_MAX_VCPUS));
+ 
+-	pages = vm_adjust_num_guest_pages(mode, pages);
++	pages = vm_pages_needed(mode, nr_vcpus, slot0_mem_pages,
++				extra_mem_pages, num_percpu_pages);
+ 
+ 	vm = vm_create_without_vcpus(mode, pages);
+ 
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
