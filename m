@@ -2,196 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB64BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 12:47:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6543C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 12:51:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235575AbiECMvO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 08:51:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59248 "EHLO
+        id S235578AbiECMzV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 08:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235553AbiECMvK (ORCPT
+        with ESMTP id S230339AbiECMzS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 08:51:10 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8473337A3C;
-        Tue,  3 May 2022 05:47:37 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4Kt09M6wzyz9sSq;
-        Tue,  3 May 2022 14:47:35 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id ejinAxCPstkj; Tue,  3 May 2022 14:47:35 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4Kt09M63lXz9sSn;
-        Tue,  3 May 2022 14:47:35 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id BCFA08B77B;
-        Tue,  3 May 2022 14:47:35 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id PPSTBfDhbT_i; Tue,  3 May 2022 14:47:35 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.20])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 71D648B763;
-        Tue,  3 May 2022 14:47:35 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 243ClKsA260150
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 3 May 2022 14:47:20 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 243ClJsP260148;
-        Tue, 3 May 2022 14:47:19 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     gregkh@linuxfoundation.org, stable@vger.kernel.org
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Steve Capper <steve.capper@arm.com>,
-        Will Deacon <will.deacon@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH] [Rebased for 5.4] mm, hugetlb: allow for "high" userspace addresses
-Date:   Tue,  3 May 2022 14:47:11 +0200
-Message-Id: <9367809ff3091ff451f9ab6fc029cef553c758fa.1651581958.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
+        Tue, 3 May 2022 08:55:18 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 421081EEE1;
+        Tue,  3 May 2022 05:51:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651582306; x=1683118306;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WX6XFwDnmHmpDEaYBGqBQvPfcxBsdxudi3zrPKmjFJA=;
+  b=V9bUy+jLpOu/0KEJoTsYzW5ZssELHirqG4IPT4Ys+CWgE3iqJ9he3QYU
+   NB4kiGmMus94gDaXposepCDE6kMU8w4ZUyMAdZA/MjwV5az0vIs1umPrV
+   OucaNw95Zo0xRgycFr5kOauBLP0td47UCqGP2tZhmfORpjUk+nEuxlT+r
+   YUfmPJsxwmUtTCUzvvb0Owhr/GbzIEHWwsN2sGlTvVKzx6czGUYLpGw2J
+   slbWYyz+sbcBT308h0PnbhAk5z+w3vXXg0bfSHtOnmHV7BYCheZhMTHVt
+   yS+miw1YMvY9sNRwA2xztE2lihxirm0DrcEusQB6tlNl+38r6BSiP8VG/
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="267060710"
+X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
+   d="scan'208";a="267060710"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 05:51:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
+   d="scan'208";a="547492780"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 03 May 2022 05:51:43 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nls0E-000ATS-7R;
+        Tue, 03 May 2022 12:51:42 +0000
+Date:   Tue, 3 May 2022 20:51:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Daniel Lezcano <daniel.lezcano@linexp.org>, rafael@kernel.org,
+        daniel.lezcano@linaro.org
+Cc:     kbuild-all@lists.01.org, khilman@baylibre.com,
+        abailon@baylibre.com, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 01/15] thermal/core: Rename thermal_zone_device to
+ thermal_zone
+Message-ID: <202205032051.rSqUYbp8-lkp@intel.com>
+References: <20220426221523.3056696-2-daniel.lezcano@linexp.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1651582029; l=5089; s=20211009; h=from:subject:message-id; bh=ogEzEMBMkC2QXqa8vvpCE+RIFMurxIeQopO0YRX/1m8=; b=3s8YOQ5x6Ii/KDTsS52yKt5YsqtLHjwaSOFwU0sCrRqFZ7RP75/DEfYHa1IyPTgNvLBhB4sBDHsr R340SXK9CgQGwOPujyNH3CN9eFKDrb82aC8HkibpWpBXgVKPiBES
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220426221523.3056696-2-daniel.lezcano@linexp.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is backport for linux 5.4
+Hi Daniel,
 
-commit 5f24d5a579d1eace79d505b148808a850b417d4c upstream.
+I love your patch! Yet something to improve:
 
-This is a fix for commit f6795053dac8 ("mm: mmap: Allow for "high"
-userspace addresses") for hugetlb.
+[auto build test ERROR on tegra/for-next]
+[also build test ERROR on sre-power-supply/for-next linus/master v5.18-rc5]
+[cannot apply to rafael-pm/thermal next-20220503]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-This patch adds support for "high" userspace addresses that are
-optionally supported on the system and have to be requested via a hint
-mechanism ("high" addr parameter to mmap).
+url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Lezcano/thermal-OF-rework/20220427-061937
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tegra/linux.git for-next
+config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20220503/202205032051.rSqUYbp8-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/72a43d27b527d58caee73e164c22f25afe773669
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Daniel-Lezcano/thermal-OF-rework/20220427-061937
+        git checkout 72a43d27b527d58caee73e164c22f25afe773669
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-Architectures such as powerpc and x86 achieve this by making changes to
-their architectural versions of hugetlb_get_unmapped_area() function.
-However, arm64 uses the generic version of that function.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-So take into account arch_get_mmap_base() and arch_get_mmap_end() in
-hugetlb_get_unmapped_area().  To allow that, move those two macros out
-of mm/mmap.c into include/linux/sched/mm.h
+All errors (new ones prefixed by >>):
 
-If these macros are not defined in architectural code then they default
-to (TASK_SIZE) and (base) so should not introduce any behavioural
-changes to architectures that do not define them.
+   drivers/power/supply/ab8500_btemp.c: In function 'ab8500_btemp_periodic_work':
+>> drivers/power/supply/ab8500_btemp.c:288:39: error: passing argument 1 of 'thermal_zone_get_temp' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     288 |         ret = thermal_zone_get_temp(di->tz, &bat_temp);
+         |                                     ~~^~~~
+         |                                       |
+         |                                       struct thermal_zone_device *
+   In file included from drivers/power/supply/ab8500_btemp.c:29:
+   include/linux/thermal.h:389:48: note: expected 'struct thermal_zone *' but argument is of type 'struct thermal_zone_device *'
+     389 | int thermal_zone_get_temp(struct thermal_zone *tz, int *temp);
+         |                           ~~~~~~~~~~~~~~~~~~~~~^~
+   drivers/power/supply/ab8500_btemp.c: In function 'ab8500_btemp_probe':
+>> drivers/power/supply/ab8500_btemp.c:727:16: error: assignment to 'struct thermal_zone_device *' from incompatible pointer type 'struct thermal_zone *' [-Werror=incompatible-pointer-types]
+     727 |         di->tz = thermal_zone_get_zone_by_name("battery-thermal");
+         |                ^
+   cc1: some warnings being treated as errors
 
-For the time being, only ARM64 is affected by this change.
 
-Catalin (ARM64) said
- "We should have fixed hugetlb_get_unmapped_area() as well when we added
-  support for 52-bit VA. The reason for commit f6795053dac8 was to
-  prevent normal mmap() from returning addresses above 48-bit by default
-  as some user-space had hard assumptions about this.
+vim +/thermal_zone_get_temp +288 drivers/power/supply/ab8500_btemp.c
 
-  It's a slight ABI change if you do this for hugetlb_get_unmapped_area()
-  but I doubt anyone would notice. It's more likely that the current
-  behaviour would cause issues, so I'd rather have them consistent.
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  264  
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  265  /**
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  266   * ab8500_btemp_periodic_work() - Measuring the temperature periodically
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  267   * @work:	pointer to the work_struct structure
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  268   *
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  269   * Work function for measuring the temperature periodically
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  270   */
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  271  static void ab8500_btemp_periodic_work(struct work_struct *work)
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  272  {
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  273  	int interval;
+908fe8d6a575e2 drivers/power/ab8500_btemp.c        Hakan Berg          2012-07-17  274  	int bat_temp;
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  275  	struct ab8500_btemp *di = container_of(work,
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  276  		struct ab8500_btemp, btemp_periodic_work.work);
+2b0e7ac0841b39 drivers/power/supply/ab8500_btemp.c Linus Walleij       2022-01-29  277  	/* Assume 25 degrees celsius as start temperature */
+2b0e7ac0841b39 drivers/power/supply/ab8500_btemp.c Linus Walleij       2022-01-29  278  	static int prev = 25;
+2b0e7ac0841b39 drivers/power/supply/ab8500_btemp.c Linus Walleij       2022-01-29  279  	int ret;
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  280  
+f6271b4fb1d5ce drivers/power/ab8500_btemp.c        Jonas Aaberg        2012-02-27  281  	if (!di->initialized) {
+f6271b4fb1d5ce drivers/power/ab8500_btemp.c        Jonas Aaberg        2012-02-27  282  		/* Identify the battery */
+f6271b4fb1d5ce drivers/power/ab8500_btemp.c        Jonas Aaberg        2012-02-27  283  		if (ab8500_btemp_id(di) < 0)
+f6271b4fb1d5ce drivers/power/ab8500_btemp.c        Jonas Aaberg        2012-02-27  284  			dev_warn(di->dev, "failed to identify the battery\n");
+f6271b4fb1d5ce drivers/power/ab8500_btemp.c        Jonas Aaberg        2012-02-27  285  	}
+f6271b4fb1d5ce drivers/power/ab8500_btemp.c        Jonas Aaberg        2012-02-27  286  
+2b0e7ac0841b39 drivers/power/supply/ab8500_btemp.c Linus Walleij       2022-01-29  287  	/* Failover if a reading is erroneous, use last meausurement */
+2b0e7ac0841b39 drivers/power/supply/ab8500_btemp.c Linus Walleij       2022-01-29 @288  	ret = thermal_zone_get_temp(di->tz, &bat_temp);
+2b0e7ac0841b39 drivers/power/supply/ab8500_btemp.c Linus Walleij       2022-01-29  289  	if (ret) {
+2b0e7ac0841b39 drivers/power/supply/ab8500_btemp.c Linus Walleij       2022-01-29  290  		dev_err(di->dev, "error reading temperature\n");
+2b0e7ac0841b39 drivers/power/supply/ab8500_btemp.c Linus Walleij       2022-01-29  291  		bat_temp = prev;
+2b0e7ac0841b39 drivers/power/supply/ab8500_btemp.c Linus Walleij       2022-01-29  292  	} else {
+2b0e7ac0841b39 drivers/power/supply/ab8500_btemp.c Linus Walleij       2022-01-29  293  		/* Convert from millicentigrades to centigrades */
+2b0e7ac0841b39 drivers/power/supply/ab8500_btemp.c Linus Walleij       2022-01-29  294  		bat_temp /= 1000;
+2b0e7ac0841b39 drivers/power/supply/ab8500_btemp.c Linus Walleij       2022-01-29  295  		prev = bat_temp;
+2b0e7ac0841b39 drivers/power/supply/ab8500_btemp.c Linus Walleij       2022-01-29  296  	}
+2b0e7ac0841b39 drivers/power/supply/ab8500_btemp.c Linus Walleij       2022-01-29  297  
+908fe8d6a575e2 drivers/power/ab8500_btemp.c        Hakan Berg          2012-07-17  298  	/*
+908fe8d6a575e2 drivers/power/ab8500_btemp.c        Hakan Berg          2012-07-17  299  	 * Filter battery temperature.
+908fe8d6a575e2 drivers/power/ab8500_btemp.c        Hakan Berg          2012-07-17  300  	 * Allow direct updates on temperature only if two samples result in
+908fe8d6a575e2 drivers/power/ab8500_btemp.c        Hakan Berg          2012-07-17  301  	 * same temperature. Else only allow 1 degree change from previous
+908fe8d6a575e2 drivers/power/ab8500_btemp.c        Hakan Berg          2012-07-17  302  	 * reported value in the direction of the new measurement.
+908fe8d6a575e2 drivers/power/ab8500_btemp.c        Hakan Berg          2012-07-17  303  	 */
+2c4c40ac0052ea drivers/power/ab8500_btemp.c        Rupesh Kumar        2012-08-22  304  	if ((bat_temp == di->prev_bat_temp) || !di->initialized) {
+2c4c40ac0052ea drivers/power/ab8500_btemp.c        Rupesh Kumar        2012-08-22  305  		if ((di->bat_temp != di->prev_bat_temp) || !di->initialized) {
+2c4c40ac0052ea drivers/power/ab8500_btemp.c        Rupesh Kumar        2012-08-22  306  			di->initialized = true;
+908fe8d6a575e2 drivers/power/ab8500_btemp.c        Hakan Berg          2012-07-17  307  			di->bat_temp = bat_temp;
+297d716f6260cc drivers/power/ab8500_btemp.c        Krzysztof Kozlowski 2015-03-12  308  			power_supply_changed(di->btemp_psy);
+908fe8d6a575e2 drivers/power/ab8500_btemp.c        Hakan Berg          2012-07-17  309  		}
+908fe8d6a575e2 drivers/power/ab8500_btemp.c        Hakan Berg          2012-07-17  310  	} else if (bat_temp < di->prev_bat_temp) {
+908fe8d6a575e2 drivers/power/ab8500_btemp.c        Hakan Berg          2012-07-17  311  		di->bat_temp--;
+297d716f6260cc drivers/power/ab8500_btemp.c        Krzysztof Kozlowski 2015-03-12  312  		power_supply_changed(di->btemp_psy);
+908fe8d6a575e2 drivers/power/ab8500_btemp.c        Hakan Berg          2012-07-17  313  	} else if (bat_temp > di->prev_bat_temp) {
+908fe8d6a575e2 drivers/power/ab8500_btemp.c        Hakan Berg          2012-07-17  314  		di->bat_temp++;
+297d716f6260cc drivers/power/ab8500_btemp.c        Krzysztof Kozlowski 2015-03-12  315  		power_supply_changed(di->btemp_psy);
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  316  	}
+908fe8d6a575e2 drivers/power/ab8500_btemp.c        Hakan Berg          2012-07-17  317  	di->prev_bat_temp = bat_temp;
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  318  
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  319  	if (di->events.ac_conn || di->events.usb_conn)
+b0284de05e07d5 drivers/power/ab8500_btemp.c        Lee Jones           2012-11-30  320  		interval = di->bm->temp_interval_chg;
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  321  	else
+b0284de05e07d5 drivers/power/ab8500_btemp.c        Lee Jones           2012-11-30  322  		interval = di->bm->temp_interval_nochg;
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  323  
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  324  	/* Schedule a new measurement */
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  325  	queue_delayed_work(di->btemp_wq,
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  326  		&di->btemp_periodic_work,
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  327  		round_jiffies(interval * HZ));
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  328  }
+1f855824757efa drivers/power/ab8500_btemp.c        Arun Murthy         2012-02-29  329  
 
-  Basically when arm64 gained support for 52-bit addresses we did not
-  want user-space calling mmap() to suddenly get such high addresses,
-  otherwise we could have inadvertently broken some programs (similar
-  behaviour to x86 here). Hence we added commit f6795053dac8. But we
-  missed hugetlbfs which could still get such high mmap() addresses. So
-  in theory that's a potential regression that should have bee addressed
-  at the same time as commit f6795053dac8 (and before arm64 enabled
-  52-bit addresses)"
-
-Link: https://lkml.kernel.org/r/ab847b6edb197bffdfe189e70fb4ac76bfe79e0d.1650033747.git.christophe.leroy@csgroup.eu
-Fixes: f6795053dac8 ("mm: mmap: Allow for "high" userspace addresses")
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Steve Capper <steve.capper@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>
-Cc: <stable@vger.kernel.org>	[5.0.x]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/hugetlbfs/inode.c     | 5 +++--
- include/linux/sched/mm.h | 8 ++++++++
- mm/mmap.c                | 8 --------
- 3 files changed, 11 insertions(+), 10 deletions(-)
-
-diff --git a/fs/hugetlbfs/inode.c b/fs/hugetlbfs/inode.c
-index 358398b1fe0c..ca74ae4c0ad3 100644
---- a/fs/hugetlbfs/inode.c
-+++ b/fs/hugetlbfs/inode.c
-@@ -208,6 +208,7 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
- 	struct vm_area_struct *vma;
- 	struct hstate *h = hstate_file(file);
- 	struct vm_unmapped_area_info info;
-+	const unsigned long mmap_end = arch_get_mmap_end(addr);
- 
- 	if (len & ~huge_page_mask(h))
- 		return -EINVAL;
-@@ -223,7 +224,7 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
- 	if (addr) {
- 		addr = ALIGN(addr, huge_page_size(h));
- 		vma = find_vma(mm, addr);
--		if (TASK_SIZE - len >= addr &&
-+		if (mmap_end - len >= addr &&
- 		    (!vma || addr + len <= vm_start_gap(vma)))
- 			return addr;
- 	}
-@@ -231,7 +232,7 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
- 	info.flags = 0;
- 	info.length = len;
- 	info.low_limit = TASK_UNMAPPED_BASE;
--	info.high_limit = TASK_SIZE;
-+	info.high_limit = arch_get_mmap_end(addr);
- 	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
- 	info.align_offset = 0;
- 	return vm_unmapped_area(&info);
-diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
-index 3a1d899019af..ab0da04ac9ee 100644
---- a/include/linux/sched/mm.h
-+++ b/include/linux/sched/mm.h
-@@ -133,6 +133,14 @@ static inline void mm_update_next_owner(struct mm_struct *mm)
- #endif /* CONFIG_MEMCG */
- 
- #ifdef CONFIG_MMU
-+#ifndef arch_get_mmap_end
-+#define arch_get_mmap_end(addr)	(TASK_SIZE)
-+#endif
-+
-+#ifndef arch_get_mmap_base
-+#define arch_get_mmap_base(addr, base) (base)
-+#endif
-+
- extern void arch_pick_mmap_layout(struct mm_struct *mm,
- 				  struct rlimit *rlim_stack);
- extern unsigned long
-diff --git a/mm/mmap.c b/mm/mmap.c
-index ba78f1f1b1bd..d69a50a541f8 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -2077,14 +2077,6 @@ unsigned long unmapped_area_topdown(struct vm_unmapped_area_info *info)
- }
- 
- 
--#ifndef arch_get_mmap_end
--#define arch_get_mmap_end(addr)	(TASK_SIZE)
--#endif
--
--#ifndef arch_get_mmap_base
--#define arch_get_mmap_base(addr, base) (base)
--#endif
--
- /* Get an address range which is currently unmapped.
-  * For shmat() with addr=0.
-  *
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
