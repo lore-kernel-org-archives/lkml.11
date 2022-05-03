@@ -2,86 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E5BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:52:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 322BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:52:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232466AbiECHzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 03:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60496 "EHLO
+        id S232509AbiECHzu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232493AbiECHxp (ORCPT
+        with ESMTP id S232473AbiECHzp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 03:53:45 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2C9B1;
-        Tue,  3 May 2022 00:50:11 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2430TJqj004092;
-        Tue, 3 May 2022 00:52:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=rMhmyDAWAAQBe/N24LM8za9MtKczC9UpeK3Jvgs3Gsc=;
- b=Y6kbJsVuY4A1HZIad0JCerTR5spbyya6N3GL14AXgAX0+DZQum4Z6rNmqKgs1/+XuktY
- GtNmHwV8jWHLN6IHYjX+6qtkxcTXusp1AKB2U9Vahg89rLjccSjF/Dtw+nlVQpPTEg3n
- 5Agjw1CoODs+IFqj+TtVaVkTq/hveb+aRs6lDwt3jpKlq2+MwbgD4y7mDP9VHgPOYmj0
- MnLdyGhepKcBnsrB1WYxZCL4kI3vvPXK+PJkHvGLr7k1cwtwmoU+6L1L/XNH+7T9GuVx
- tmDAPo4WOVwFrAD4CYQfhQ69d+Q9imU0IS8Nd6w9TEYAub/EXfQvorNALPQlxAmCy6T+ Xg== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frw0amhjq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:52:08 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430op0H008959;
-        Tue, 3 May 2022 00:52:07 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83xcj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:52:07 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430plk6010389;
-        Tue, 3 May 2022 00:52:06 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-35;
-        Tue, 03 May 2022 00:52:06 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     jejb@linux.ibm.com, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        dc395x@twibble.org, aliakc@web.de, lenehan@twibble.org,
-        oliver@neukum.org
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org
-Subject: Re: [RESEND][PATCH] scsi: dc395x: fix a missing check on list iterator
-Date:   Mon,  2 May 2022 20:51:45 -0400
-Message-Id: <165153836363.24053.2716522783006312499.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414040231.2662-1-xiam0nd.tong@gmail.com>
-References: <20220414040231.2662-1-xiam0nd.tong@gmail.com>
+        Tue, 3 May 2022 03:55:45 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8571FCE0
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 00:52:13 -0700 (PDT)
+Received: from mail-yw1-f176.google.com ([209.85.128.176]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MxmFk-1o2bcz2H6s-00zHBi for <linux-kernel@vger.kernel.org>; Tue, 03 May
+ 2022 09:52:11 +0200
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2ebf4b91212so171465817b3.8;
+        Tue, 03 May 2022 00:52:11 -0700 (PDT)
+X-Gm-Message-State: AOAM530lAbT0p7sa+dRpcU4mzLt0WgSB7SLjEWtlCytqcbpiuk2RmdSp
+        191B0DlXqa66UB9/Ox5EHPquTWlK8DLeMQnyFZE=
+X-Google-Smtp-Source: ABdhPJy9R7zCTI6Aw7C6jGQ+pq3KbkGI+32nQsK+YuLq9Y0CUx+axnAMLXKfzAkG+VRohcKoFtwX2TBaxszBE6C0NQU=
+X-Received: by 2002:a81:1697:0:b0:2fa:32f9:78c8 with SMTP id
+ 145-20020a811697000000b002fa32f978c8mr3738925yww.135.1651564330419; Tue, 03
+ May 2022 00:52:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: a7lEWuHbrGWRMaXgoBhaOwyPP_XH7bL1
-X-Proofpoint-ORIG-GUID: a7lEWuHbrGWRMaXgoBhaOwyPP_XH7bL1
+References: <FA654A0D-29B7-4B6B-B613-73598A92ADA8@goldelico.com>
+ <YmkBAsa+fKlp/GcV@atomide.com> <CAK8P3a3N9WBWC_ECB0pSRHUCT4iz=tdT+Dt9Cyd5Wh3qEaVqqA@mail.gmail.com>
+ <4CE23DC3-B3E5-45C1-91F3-B88E5444AE7C@goldelico.com> <CAK8P3a3EFfF0gr5kFkboRfJifrY-D+NgHFekBfSePWuY2c8PMA@mail.gmail.com>
+ <11504A17-6B50-4D6C-A9E1-CA943C157C93@goldelico.com> <CAK8P3a2RN77ajZD4xRhKsqozPizneLcLYhm0rTE6qX25-4cJsw@mail.gmail.com>
+ <CAMj1kXHqHCt9G+HEawsWmba2Z=WVbp6wRrivAQvQCn2iph9kXg@mail.gmail.com>
+In-Reply-To: <CAMj1kXHqHCt9G+HEawsWmba2Z=WVbp6wRrivAQvQCn2iph9kXg@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 3 May 2022 09:51:54 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2gxnrY=gnv+e2Ey4bPE30wYtMkqC--Z0X-ZjZT=B9VaA@mail.gmail.com>
+Message-ID: <CAK8P3a2gxnrY=gnv+e2Ey4bPE30wYtMkqC--Z0X-ZjZT=B9VaA@mail.gmail.com>
+Subject: Re: kernel panic with v5.18-rc1 on OpenPandora (only)
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Discussions about the Letux Kernel 
+        <letux-kernel@openphoenux.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-OMAP <linux-omap@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:q4596kitnW8xbAvjo4GnHPeAh23Okl2WjFqcrkXALunK3DID6wz
+ UUrYKX0jt0azzdGSCC0jdLoT8TaDY8Yf9mVx3ocnSo8I1Gdx5rKc7I+Ck9lZt4UJoc0RanZ
+ 6lt0thg2ElufEfvcyY5uHpcz5Yb6RLoxnCA9f62ZYTlzHRvuVU6qXfHrdqcMq2LASYu7t/0
+ IVckQQ6L9hdEAB6NiCi6g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:GE9Dm6wwpqs=:OWjpCq3J6+sTPQGL0MRZMs
+ zDaGimHnlybx01b1lGP7vw7vGpSfWjwhJPCMUd3XCKICIbQGKKQg0aZmduJCdKVAiFEd9b1PD
+ uAOKWY/FGUNECi1Uv8IrKnOZNFJnePMUgeC1+206xRoQbdnisA+Ozww/J7znYx2MK0JQC7l/9
+ TJWqAJL8wn7c6vydqAKLOeQsFuZK6R0KGLTzPUJRDreKTrheLw9Lo64xmAvYaeQIKGsUMtRNM
+ d8xejuKv/A/eeY7gPgPsrDGoksdDwoi6PJqDiftSgcpHN3x3VkNTOFQsZUNnon8Nre1KIpcrA
+ ubmES5Z4f+HOV0ogNDft/6DAgzR/+tElHPBqhZgBM4gjlw5JrUDr6YLPrzG5qn//HfC/qYzIH
+ KWXKu7T8cUqzx1Payrc/wOsEG3GFIFM7xgNSvHQTBzh6ZndrAt6+7xCqlx3R32pB/OAodUfo9
+ yk4gJQoct/RhZDqgg5ZHOPbjH9UryaLZ8aLxGxbAOMaiNSFyO3CIYyLi2nB3F6qQlEF9WjLdc
+ Da+zF1OIpxzAUXW0OaUqY2H2Ycv9A07IzE8bqvQ11ghwFH6C7iiUPd57sO6W7PsLTmiTFLQJp
+ 9FDxuq61kiw6Oa7NgElsHw/p6GeqJ3Qe6n5BHabIyBFqiyAkueMQ8jDyqlf9mfUusdkH2lSyQ
+ Hhf4giXlX7VWxNKS5sNUiT/X6wChvFOpE87nJJC6n4pO8/dtr7jX0/J7S3Mxc6/OLzp5aKZQl
+ c5iu+VWVxHwVZCBEntCtfWht8/KTQpBShOqe/gEPm0rq+fGZKEwfnO6QQdTbehXz5Sep70Cus
+ mMFGlcBY5bDi6pDFyYTmg8IcADlNCqEQvWurXlm69+j8hXiiGQ=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 12:02:31 +0800, Xiaomeng Tong wrote:
+On Tue, May 3, 2022 at 9:28 AM Ard Biesheuvel <ardb@kernel.org> wrote:
+> On Sat, 30 Apr 2022 at 20:48, Arnd Bergmann <arnd@arndb.de> wrote:
+> >
+> > I think what is going on here is that your platform is able to detect
+> > the broken DMA because of the l3 interrupt handler telling the kernel
+> > about it, when on other platforms we would see either silent data corruption
+> > or a DMA that never reaches its target.
+> >
+>
+> I wonder if we could narrow this down by adding the possibility to use
+> IRQ stacks in the linear map, while using vmap'ed task stacks.
 
-> The bug is here:
-> 	p->target_id, p->target_lun);
-> 
-> The list iterator 'p' will point to a bogus position containing
-> HEAD if the list is empty or no element is found. This case must
-> be checked before any use of the iterator, otherwise it will
-> lead to a invalid memory access.
-> 
-> [...]
+I don't think we have actual DMA attempts to the IRQ stack, so this should
+not make a difference. What might help is to print some more information
+in omap3_l3_app_irq() that is likely provided by the hardware. The BUG_ON()
+happens for any timeout error, and that is most of the possible errors.
 
-Applied to 5.19/scsi-queue, thanks!
+Simply dumping the L3 registers should at least show the exact type of
+timeout, and maybe the DMA master ID and physical address that can
+be traced back into a virtual address.
+Setting CONFIG_DMA_API_DEBUG=y should get the same information
+I think, but it can't hurt to do both.
 
-[1/1] scsi: dc395x: fix a missing check on list iterator
-      https://git.kernel.org/mkp/scsi/c/036a45aa587a
-
--- 
-Martin K. Petersen	Oracle Linux Engineering
+        Arnd
