@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1541C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:18:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0797BC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:18:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236400AbiECPWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50848 "EHLO
+        id S238290AbiECPWU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:22:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238111AbiECPVx (ORCPT
+        with ESMTP id S238127AbiECPVz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:21:53 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C72B3A5D1;
-        Tue,  3 May 2022 08:18:20 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id g20so20216732edw.6;
-        Tue, 03 May 2022 08:18:20 -0700 (PDT)
+        Tue, 3 May 2022 11:21:55 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B68223AA6C;
+        Tue,  3 May 2022 08:18:22 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id b24so20232982edu.10;
+        Tue, 03 May 2022 08:18:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=z8UQ0gwVo42S8MFd7E26z2Xx0d1KX8rCgVDlpW4ge0U=;
-        b=I15PSPUtz97s9sbyUeXPtBKIvBTxCVYMz3hilzJiVMtt9pAjOemVHYQ8Uis0XtxfOT
-         TN8W9PnnD29qFCawu3etc/tM2JeNRofYFyqtdEtK9Kikn+90FV0gdxlkInUFheBLagE7
-         nvYR3EygB0DclsZmbC+JfPoF07juG9YKo+EgIRF19zudPBsg4VOnr6F2cVF/Hsgxzs50
-         cMlurb7UAGobryt3LOLpepKlrz8Id6Pi3kr8ZDe0MwzBI71q7t5mfKhyvRJ56WxtJH0L
-         mBIh7q/Wd95tSrP0nHc4lfE3Hklm1jdbRBd6r5k+sjlAde0MvSXMxxeL7HaR92QIqv2D
-         1skg==
+        bh=vZu+dgzlKwppLB3egL+X7UEd+cjxbmEGUvyruw8gqlQ=;
+        b=W6jUVBwWlR6/s9Tqy/8aDQnEZF+1Qw/bTsfTkGk/OCJ6UISFtZOWsm0WLfB6HOutcA
+         wZsP5rCuwEArTcvj+KqPT84LsKegMo9r7mXBz18zn2uN4bLEKEtd17k8hyYkfrQtiCsE
+         A/kbA4vG0AM2d41v/tyBVvToOsjBBbx58qXZn31PUJs+A/rakuB/hs9JGylDlzkUA+N7
+         9nyF0HPbH/vbuGZXlUGPzNM5UwBVPCKKStpJd+xL3Ey/bp9BYEb94ALlGDokeeijk8cg
+         GhAUdoKlB9H2gclMKblqV0tmbx/LRjOwrjm0JH2XrIl4cAkJ8nUl29Dw7vNE5kT/Vpo8
+         Srng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=z8UQ0gwVo42S8MFd7E26z2Xx0d1KX8rCgVDlpW4ge0U=;
-        b=kWXVe5WTzVn96ePfmryFLiz+mn+OoTG1ykd8iCHeN2E138mdGOp8/9pElgzDUrVA7g
-         rXVFdEBE/3MXEVBGA6r3ExAafo0zG25B/n7dq85cYLNZw/3dcJqzhiVj2W+n2ZoNBYt3
-         ltB1ba2sKDQq0RdA7Hd0sNqisV+8BXqTSLmQkHm4ZSOGXcuXS1nB6R21vWdPCGxZQBch
-         IpPyB627CxxkriobEMUsMvTnVEpUTrL0i5YLz5DetegIlo+owIgl1eo81acEvMmXyY59
-         tmFEpimjC9uM7rHj/U0S59N59s9u7xtvjj9J4yzjo+ozqYq3pT5jrHgGGg3Gkspebw/8
-         HWow==
-X-Gm-Message-State: AOAM5318fOiUl8g5gzV5LKjHXDhD9ZWK0kF9QDMP07dOH50Tiacamgc/
-        xbM++S20SRoz9Gtazola2Ng=
-X-Google-Smtp-Source: ABdhPJw8PYctsl15p4W9Mjn4kajId/tHVHaGiczNq0Ue9zw8EBCPNN4e2YoBTjoG/vc7j1Q7uWlm9A==
-X-Received: by 2002:a05:6402:2204:b0:426:34f1:1d2d with SMTP id cq4-20020a056402220400b0042634f11d2dmr18401032edb.335.1651591098520;
-        Tue, 03 May 2022 08:18:18 -0700 (PDT)
+        bh=vZu+dgzlKwppLB3egL+X7UEd+cjxbmEGUvyruw8gqlQ=;
+        b=i4ZpOMaXfFhYe0qZiVQExU4WWWTqEfk6pOtrSE1XWaFB3MGNHwgfGg580bniTxAkRS
+         sKHe+K8/rX8ffwq/nl8lNKuyA1Ogny5qsMYh4yFNxb+I6LNwO7hMu9vtyn/MpaGQ7FpK
+         2nM8BUHaX2uL09NMpwvTKSXKifBTBu9n0FWl09Aum/55ToB/grM76fFaHDqeOPgeWCYy
+         +bHNZTpbtf4TWS940REFDOvg+02tXMCrGul/g9Ih9ln79ZiavozdkePdDLqnuaQed/DI
+         tPZaIFTqcglOfK5R+gT1/AscWSUh+3h/VKX0KwhmVpmEki6krrgrL5ml1h3y/srVZpzY
+         H2Mw==
+X-Gm-Message-State: AOAM533yE4oyI1IUYoBYTXjpc+QsJr+cES3EHt693MbrtBuQXXg1uJbe
+        8Wtt4d50aDUiQXLFDNVr3ec=
+X-Google-Smtp-Source: ABdhPJwHfusILH15MfLZeKkPb5tq2Grc5B4Y5QkVzE7S9wkdLcNfzJCCSNXZLbw24BRVN84FlcrRCw==
+X-Received: by 2002:a05:6402:1254:b0:426:2439:ceb7 with SMTP id l20-20020a056402125400b004262439ceb7mr18461553edw.47.1651591101100;
+        Tue, 03 May 2022 08:18:21 -0700 (PDT)
 Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id v3-20020aa7d9c3000000b0042617ba63cesm7947507eds.88.2022.05.03.08.18.17
+        by smtp.googlemail.com with ESMTPSA id v3-20020aa7d9c3000000b0042617ba63cesm7947507eds.88.2022.05.03.08.18.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 08:18:18 -0700 (PDT)
+        Tue, 03 May 2022 08:18:20 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -63,9 +63,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: [RFC PATCH v6 03/11] leds: trigger: netdev: drop NETDEV_LED_MODE_LINKUP from mode
-Date:   Tue,  3 May 2022 17:16:25 +0200
-Message-Id: <20220503151633.18760-4-ansuelsmth@gmail.com>
+Subject: [RFC PATCH v6 05/11] leds: trigger: netdev: convert device attr to macro
+Date:   Tue,  3 May 2022 17:16:27 +0200
+Message-Id: <20220503151633.18760-6-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220503151633.18760-1-ansuelsmth@gmail.com>
 References: <20220503151633.18760-1-ansuelsmth@gmail.com>
@@ -75,75 +75,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop NETDEV_LED_MODE_LINKUP from mode list and convert to a simple bool
-that will be true or false based on the carrier link. No functional
-change intended.
+Convert link tx and rx device attr to a common macro to reduce common
+code and in preparation for additional attr.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/leds/trigger/ledtrig-netdev.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ drivers/leds/trigger/ledtrig-netdev.c | 57 ++++++++-------------------
+ 1 file changed, 16 insertions(+), 41 deletions(-)
 
 diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
-index d5e774d83021..66a81cc9b64d 100644
+index 6872da08676b..dd63cadb896e 100644
 --- a/drivers/leds/trigger/ledtrig-netdev.c
 +++ b/drivers/leds/trigger/ledtrig-netdev.c
-@@ -50,10 +50,10 @@ struct led_netdev_data {
- 	unsigned int last_activity;
+@@ -189,47 +189,22 @@ static ssize_t netdev_led_attr_store(struct device *dev, const char *buf,
+ 	return size;
+ }
  
- 	unsigned long mode;
-+	bool carrier_link_up;
- #define NETDEV_LED_LINK	0
- #define NETDEV_LED_TX	1
- #define NETDEV_LED_RX	2
--#define NETDEV_LED_MODE_LINKUP	3
- };
+-static ssize_t link_show(struct device *dev,
+-	struct device_attribute *attr, char *buf)
+-{
+-	return netdev_led_attr_show(dev, buf, NETDEV_ATTR_LINK);
+-}
+-
+-static ssize_t link_store(struct device *dev,
+-	struct device_attribute *attr, const char *buf, size_t size)
+-{
+-	return netdev_led_attr_store(dev, buf, size, NETDEV_ATTR_LINK);
+-}
+-
+-static DEVICE_ATTR_RW(link);
+-
+-static ssize_t tx_show(struct device *dev,
+-	struct device_attribute *attr, char *buf)
+-{
+-	return netdev_led_attr_show(dev, buf, NETDEV_ATTR_TX);
+-}
+-
+-static ssize_t tx_store(struct device *dev,
+-	struct device_attribute *attr, const char *buf, size_t size)
+-{
+-	return netdev_led_attr_store(dev, buf, size, NETDEV_ATTR_TX);
+-}
+-
+-static DEVICE_ATTR_RW(tx);
+-
+-static ssize_t rx_show(struct device *dev,
+-	struct device_attribute *attr, char *buf)
+-{
+-	return netdev_led_attr_show(dev, buf, NETDEV_ATTR_RX);
+-}
+-
+-static ssize_t rx_store(struct device *dev,
+-	struct device_attribute *attr, const char *buf, size_t size)
+-{
+-	return netdev_led_attr_store(dev, buf, size, NETDEV_ATTR_RX);
+-}
+-
+-static DEVICE_ATTR_RW(rx);
++#define DEFINE_NETDEV_TRIGGER(trigger_name, trigger) \
++	static ssize_t trigger_name##_show(struct device *dev, \
++		struct device_attribute *attr, char *buf) \
++	{ \
++		return netdev_led_attr_show(dev, buf, trigger); \
++	} \
++	static ssize_t trigger_name##_store(struct device *dev, \
++		struct device_attribute *attr, const char *buf, size_t size) \
++	{ \
++		return netdev_led_attr_store(dev, buf, size, trigger); \
++	} \
++	static DEVICE_ATTR_RW(trigger_name)
++
++DEFINE_NETDEV_TRIGGER(link, TRIGGER_NETDEV_LINK);
++DEFINE_NETDEV_TRIGGER(tx, TRIGGER_NETDEV_TX);
++DEFINE_NETDEV_TRIGGER(rx, TRIGGER_NETDEV_RX);
  
- enum netdev_led_attr {
-@@ -73,9 +73,9 @@ static void set_baseline_state(struct led_netdev_data *trigger_data)
- 	if (!led_cdev->blink_brightness)
- 		led_cdev->blink_brightness = led_cdev->max_brightness;
- 
--	if (!test_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode))
-+	if (!trigger_data->carrier_link_up) {
- 		led_set_brightness(led_cdev, LED_OFF);
--	else {
-+	} else {
- 		if (test_bit(NETDEV_LED_LINK, &trigger_data->mode))
- 			led_set_brightness(led_cdev,
- 					   led_cdev->blink_brightness);
-@@ -131,10 +131,9 @@ static ssize_t device_name_store(struct device *dev,
- 		trigger_data->net_dev =
- 		    dev_get_by_name(&init_net, trigger_data->device_name);
- 
--	clear_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode);
-+	trigger_data->carrier_link_up = false;
- 	if (trigger_data->net_dev != NULL)
--		if (netif_carrier_ok(trigger_data->net_dev))
--			set_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode);
-+		trigger_data->carrier_link_up = netif_carrier_ok(trigger_data->net_dev);
- 
- 	trigger_data->last_activity = 0;
- 
-@@ -315,7 +314,7 @@ static int netdev_trig_notify(struct notifier_block *nb,
- 
- 	spin_lock_bh(&trigger_data->lock);
- 
--	clear_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode);
-+	trigger_data->carrier_link_up = false;
- 	switch (evt) {
- 	case NETDEV_CHANGENAME:
- 	case NETDEV_REGISTER:
-@@ -330,8 +329,7 @@ static int netdev_trig_notify(struct notifier_block *nb,
- 		break;
- 	case NETDEV_UP:
- 	case NETDEV_CHANGE:
--		if (netif_carrier_ok(dev))
--			set_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode);
-+		trigger_data->carrier_link_up = netif_carrier_ok(dev);
- 		break;
- 	}
- 
+ static ssize_t interval_show(struct device *dev,
+ 			     struct device_attribute *attr, char *buf)
 -- 
 2.34.1
 
