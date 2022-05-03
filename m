@@ -2,199 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EBC4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:20:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 458E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232106AbiECHX2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 03:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59514 "EHLO
+        id S232137AbiECHXf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:23:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232132AbiECHWl (ORCPT
+        with ESMTP id S231147AbiECHXQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 03:22:41 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911FD38BE6;
-        Tue,  3 May 2022 00:19:09 -0700 (PDT)
-X-UUID: c0573a7574784d43bf1c7d02733ca8d2-20220503
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:14ab56a5-59bf-42da-ad5f-f33d9136c21d,OB:80,L
-        OB:60,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ha
-        m,ACTION:release,TS:80
-X-CID-INFO: VERSION:1.1.4,REQID:14ab56a5-59bf-42da-ad5f-f33d9136c21d,OB:80,LOB
-        :60,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3
-        D,ACTION:quarantine,TS:80
-X-CID-META: VersionHash:faefae9,CLOUDID:12c7822f-6199-437e-8ab4-9920b4bc5b76,C
-        OID:ce3dc85b9863,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: c0573a7574784d43bf1c7d02733ca8d2-20220503
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 68280327; Tue, 03 May 2022 15:19:03 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 3 May 2022 15:19:02 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 3 May 2022 15:19:00 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>
-CC:     Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Tomasz Figa <tfiga@chromium.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux-foundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
-        "AngeloGioacchino Del Regno" 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v7 32/36] iommu/mediatek: Get the proper bankid for multi banks
-Date:   Tue, 3 May 2022 15:14:23 +0800
-Message-ID: <20220503071427.2285-33-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220503071427.2285-1-yong.wu@mediatek.com>
-References: <20220503071427.2285-1-yong.wu@mediatek.com>
+        Tue, 3 May 2022 03:23:16 -0400
+Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091AE39808
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 00:19:15 -0700 (PDT)
+Received: by mail-ua1-x936.google.com with SMTP id v3so6092121uau.4
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 00:19:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4NDjuQ75ayo0y02VvOvQTGtjArT2BL7D/bx+PGGT5og=;
+        b=BAEtmxzOwz8J5Up8A7N9UjC8/PEWOjYhRZxZhABtmKjxQIM7YjG963YwAqUMWwEYJi
+         4Ip6kb5BTStei89FlRkKpH4+xzSBuO2i3AvS6iR+t5srxfldrknGIZ4NQJNBvm5DIk/P
+         2kP/RoSqIS86DXQbBG90pNJ61ay9msF0mTf0Mi1vEuiyB5cFf4AeGx66kz3gaRXKRLob
+         dZbgvurwSJo569DlzQmsJoQgCUojS0IWFtjm2XIjNIi6b2H+eOCURe1UjVGtXvaxECQr
+         mKYA56F+lfX4Msi8OjHvb9wD8BVRq+TWPwbgLWKGESOCWIHi8AFI47HGl2oO81jHNqSK
+         9PfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4NDjuQ75ayo0y02VvOvQTGtjArT2BL7D/bx+PGGT5og=;
+        b=wB/SXGDiR/2SuArcdLoLfkfsde0HNsIkRmY9e5LmsRx8UmjBzaYBLZCmq4YMcdbsUC
+         fhFKBwo2e43/Jq71/D2ynbZZD4DhS5bTeOkCKGdztZzBpd7SWFqJDJ0hTc2DiIzWa2sw
+         huSq8OtUaLp2+3hKlFZ8Cp8iyx7weajMESbawimE6+2CxPPvXg9YOSwZuswwKAuVf0Cg
+         acMYdK9d5qBIm03IhBprr/EnLoN6bwgeaPa3IOMFME4BB79cicNB4aKEAWL8/7InCM6F
+         fW4sc9/8qdVsRQZjt7YWSd8LCGyIoI0OfNnksCr/qvRMoiSnUPrM7akMgn2J+C3LGSJI
+         jvuw==
+X-Gm-Message-State: AOAM531sUKFYANU8mIRoQhOXLxAwBki7jEoevF5hx7gFNUhnYZNrM2WO
+        Ee1ruDQstJ1tmZFS1zmsh1u43/0HYvkxuRe1A3EGUw==
+X-Google-Smtp-Source: ABdhPJwav71/tsV6N6y5R9/irAJ+th9eFU4wcvvMvfs7CEykh6R5/wDjP1I4Fg+aKRpI/oPJ3c3k6C4QpqHPDZ1sBEo=
+X-Received: by 2002:ab0:e14:0:b0:360:e13:e5d7 with SMTP id g20-20020ab00e14000000b003600e13e5d7mr4320904uak.95.1651562352788;
+ Tue, 03 May 2022 00:19:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
+ <c18e273b-f30c-da5c-581b-0cc4672f4481@intel.com>
+In-Reply-To: <c18e273b-f30c-da5c-581b-0cc4672f4481@intel.com>
+From:   Wei Xu <weixugc@google.com>
+Date:   Tue, 3 May 2022 00:19:01 -0700
+Message-ID: <CAAPL-u8TtNoonOBDU1HZ-XPA31zsDvDAnO2xDigApypX-+jTYA@mail.gmail.com>
+Subject: Re: RFC: Memory Tiering Kernel Interfaces
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Yang Shi <shy828301@gmail.com>, Linux MM <linux-mm@kvack.org>,
+        Greg Thelen <gthelen@google.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alistair Popple <apopple@nvidia.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michal Hocko <mhocko@kernel.org>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We preassign some ports in a special bank via the new defined
-banks_portmsk. Put it in the plat_data means it is not expected to be
-adjusted dynamically.
+On Mon, May 2, 2022 at 8:20 AM Dave Hansen <dave.hansen@intel.com> wrote:
+>
+> > The current memory tiering interface needs to be improved to address
+> > several important use cases:
+>
+> FWIW, I totally agree.  We knew when that code went in that the default
+> ordering was feeble.  There were patches to export the demotion order
+> and allow it to be modified from userspace, but they were jettisoned at
+> some point.
+>
+> > Memory tiering hierarchy is rebuilt upon hot-add or hot-remove of a
+> > memory node, but is NOT rebuilt upon hot-add or hot-remove of a CPU
+> > node.
+>
+> Yeah, this would be a welcome improvement if we can get there.
+>
+> > * /sys/devices/system/node/memory_tiers
+> >
+> >   Format: node list (one tier per line, in the tier order)
+> >
+> >   When read, list memory nodes by tiers.
+>
+> Nit: this would seems to violate the one-value-per-file sysfs guideline.
+>  It can be fixed by making tiers actual objects, which would have some
+> other nice benefits too.
+>
 
-If the iommu id in the iommu consumer's dtsi node is inside this
-banks_portmsk, then we switch it to this special iommu bank, and
-initialise the IOMMU bank HW.
-
-Each bank has the independent pgtable(4GB iova range). Each bank
-is a independent iommu domain/group. Currently we don't separate different
-iova ranges inside a bank.
-
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/iommu/mtk_iommu.c | 55 ++++++++++++++++++++++++++++++++++-----
- 1 file changed, 48 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 023bb7d3ffb2..5f3e88c44514 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -191,6 +191,7 @@ struct mtk_iommu_plat_data {
- 
- 	u8                  banks_num;
- 	bool                banks_enable[MTK_IOMMU_BANK_MAX];
-+	unsigned int        banks_portmsk[MTK_IOMMU_BANK_MAX];
- 	unsigned char       larbid_remap[MTK_LARB_COM_MAX][MTK_LARB_SUBCOM_MAX];
- };
- 
-@@ -467,6 +468,30 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
-+static unsigned int mtk_iommu_get_bank_id(struct device *dev,
-+					  const struct mtk_iommu_plat_data *plat_data)
-+{
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	unsigned int i, portmsk = 0, bankid = 0;
-+
-+	if (plat_data->banks_num == 1)
-+		return bankid;
-+
-+	for (i = 0; i < fwspec->num_ids; i++)
-+		portmsk |= BIT(MTK_M4U_TO_PORT(fwspec->ids[i]));
-+
-+	for (i = 0; i < plat_data->banks_num && i < MTK_IOMMU_BANK_MAX; i++) {
-+		if (!plat_data->banks_enable[i])
-+			continue;
-+
-+		if (portmsk & plat_data->banks_portmsk[i]) {
-+			bankid = i;
-+			break;
-+		}
-+	}
-+	return bankid; /* default is 0 */
-+}
-+
- static int mtk_iommu_get_iova_region_id(struct device *dev,
- 					const struct mtk_iommu_plat_data *plat_data)
- {
-@@ -619,13 +644,14 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 	struct list_head *hw_list = data->hw_list;
- 	struct device *m4udev = data->dev;
- 	struct mtk_iommu_bank_data *bank;
--	unsigned int bankid = 0;
-+	unsigned int bankid;
- 	int ret, region_id;
- 
- 	region_id = mtk_iommu_get_iova_region_id(dev, data->plat_data);
- 	if (region_id < 0)
- 		return region_id;
- 
-+	bankid = mtk_iommu_get_bank_id(dev, data->plat_data);
- 	mutex_lock(&dom->mutex);
- 	if (!dom->bank) {
- 		/* Data is in the frstdata in sharing pgtable case. */
-@@ -797,27 +823,42 @@ static void mtk_iommu_release_device(struct device *dev)
- 	iommu_fwspec_free(dev);
- }
- 
-+static int mtk_iommu_get_group_id(struct device *dev, const struct mtk_iommu_plat_data *plat_data)
-+{
-+	unsigned int bankid;
-+
-+	/*
-+	 * If the bank function is enabled, each bank is a iommu group/domain.
-+	 * Otherwise, each iova region is a iommu group/domain.
-+	 */
-+	bankid = mtk_iommu_get_bank_id(dev, plat_data);
-+	if (bankid)
-+		return bankid;
-+
-+	return mtk_iommu_get_iova_region_id(dev, plat_data);
-+}
-+
- static struct iommu_group *mtk_iommu_device_group(struct device *dev)
- {
- 	struct mtk_iommu_data *c_data = dev_iommu_priv_get(dev), *data;
- 	struct list_head *hw_list = c_data->hw_list;
- 	struct iommu_group *group;
--	int regionid;
-+	int groupid;
- 
- 	data = mtk_iommu_get_frst_data(hw_list);
- 	if (!data)
- 		return ERR_PTR(-ENODEV);
- 
--	regionid = mtk_iommu_get_iova_region_id(dev, data->plat_data);
--	if (regionid < 0)
--		return ERR_PTR(regionid);
-+	groupid = mtk_iommu_get_group_id(dev, data->plat_data);
-+	if (groupid < 0)
-+		return ERR_PTR(groupid);
- 
- 	mutex_lock(&data->mutex);
--	group = data->m4u_group[regionid];
-+	group = data->m4u_group[groupid];
- 	if (!group) {
- 		group = iommu_group_alloc();
- 		if (!IS_ERR(group))
--			data->m4u_group[regionid] = group;
-+			data->m4u_group[groupid] = group;
- 	} else {
- 		iommu_group_ref_get(group);
- 	}
--- 
-2.18.0
-
+Good point.  One tier per file should work as well.  It can be even
+better to have a separate tier sub-tree.
