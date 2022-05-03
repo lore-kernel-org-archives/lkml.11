@@ -2,154 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8519FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 03:21:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D15CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 03:21:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230353AbiECDYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 23:24:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33074 "EHLO
+        id S230371AbiECDYk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 23:24:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230338AbiECDY3 (ORCPT
+        with ESMTP id S230340AbiECDY3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 2 May 2022 23:24:29 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18AF35255
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 20:20:58 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id j8-20020a17090a060800b001cd4fb60dccso974162pjj.2
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 20:20:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xotWSQoi2wlC3vMI8lQ8RpO96nR6JNjKt6GYA46wjrE=;
-        b=j2TkGrSUFai8FQ8ertrRrE8Ty6ZPlVq1zCXtVp+22pyjlvLpM7dE7qX6I+rdhB8I32
-         Z4T+adbpQ3dtQJMCuFGFf4Oig+WmhCOI//Se09Q4L4fmiTimRII7dclbz0/haNaYHlsE
-         NMHlx1+8ORo0wu/APD+tMPNoVXaaAqJh+cXCSdcAOLiTAp5OoY76FJ8f4jjljHuDB/ML
-         yjHJ8ZuEYlLhvaEeVwDkrWyp9TnGmcBQMOgRv1FQGGxUit7cGzXx+QsqgDAyaBHHAJ36
-         Ic3ubzDoUpyX8c1mjUV13OUdwMj4jfC5Hr4ZckXWAl6kyZ0QyIsqRrUyhXGJsv2KHAiW
-         1XCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xotWSQoi2wlC3vMI8lQ8RpO96nR6JNjKt6GYA46wjrE=;
-        b=nL/7bp4Wd62cLEyQ9NGfjWhmxqX0jVrZa58JA6I3sxknVREOuh/Wlr45IMSXeV/jXO
-         DOdTBOx8f2jUBKeOn0k/us1krZyidsfLFOFrhgTzPHWAYZ13bP+QnoOdNI7+PAbvdokt
-         E8FGMHoNuLdeXWl958CGc4wKWT7bS9KLmvYlHZWsrrlxu89M59V781geVekhwehJVogt
-         5NRnvxujLUlcW8xd75WwPUCsKpixEDO4L+ONGGtIT1+FNN+dRDkyM/VyfjIDXX1jMc4m
-         r6fpPG7llje9ZP0dKvALSDmVfBPp0nNNzYUZT8X4slOgd2N7WjmUSfiFO9FEzNWGmxGA
-         AcAA==
-X-Gm-Message-State: AOAM530i1nLhNnjEQzEMI94muhVkJdiYqQPBJr/5BjmH6GlcDp6mHFkn
-        /NjUawmJdthmLCfVRrirWLN/RcoFTdo=
-X-Google-Smtp-Source: ABdhPJzmp6UBaLfASoGK81unwVdXeaJ+Sk4uU9HjWwtSBuFgFdJH66RGjL9tXeLPF7LkY2H8y7aMkw==
-X-Received: by 2002:a17:902:f684:b0:15e:8c4a:c54b with SMTP id l4-20020a170902f68400b0015e8c4ac54bmr14463764plg.21.1651548058099;
-        Mon, 02 May 2022 20:20:58 -0700 (PDT)
-Received: from localhost ([47.251.4.198])
-        by smtp.gmail.com with ESMTPSA id n5-20020a170902f60500b0015e8d4eb206sm5392698plg.80.2022.05.02.20.20.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 02 May 2022 20:20:57 -0700 (PDT)
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Juergen Gross <jgross@suse.com>, x86@kernel.org,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: [PATCH V7 4/6] x86/entry: Move cld to the start of idtentry macro
-Date:   Tue,  3 May 2022 11:21:05 +0800
-Message-Id: <20220503032107.680190-5-jiangshanlai@gmail.com>
-X-Mailer: git-send-email 2.19.1.6.gb485710b
-In-Reply-To: <20220503032107.680190-1-jiangshanlai@gmail.com>
-References: <20220503032107.680190-1-jiangshanlai@gmail.com>
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2128F29836;
+        Mon,  2 May 2022 20:20:55 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 539AB41DF4;
+        Tue,  3 May 2022 03:20:51 +0000 (UTC)
+Message-ID: <2615501d-7569-41cb-7039-46e690689f1f@marcan.st>
+Date:   Tue, 3 May 2022 12:20:48 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: es-ES
+From:   Hector Martin <marcan@marcan.st>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Sven Peter <sven@svenpeter.dev>,
+        PCI <linux-pci@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220502093832.32778-1-marcan@marcan.st>
+ <20220502093832.32778-4-marcan@marcan.st>
+ <CAL_Jsq+_cWZUXtJVXC_cwhmADj0NQc95v1sqgFioMsfEX6OqGg@mail.gmail.com>
+ <0ccc44cd-21aa-3670-24b3-4ee051dd3c12@marcan.st>
+Subject: Re: [PATCH 3/3] PCI: apple: Add support for optional PWREN GPIO
+In-Reply-To: <0ccc44cd-21aa-3670-24b3-4ee051dd3c12@marcan.st>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+On 03/05/2022 00.32, Hector Martin wrote:
+> On 03/05/2022 00.14, Rob Herring wrote:
+>> On Mon, May 2, 2022 at 4:39 AM Hector Martin <marcan@marcan.st> wrote:
+>>>
+>>> WiFi and SD card devices on M1 Macs have a separate power enable GPIO.
+>>> Add support for this to the PCIe controller. This is modeled after how
+>>> pcie-fu740 does it.
+>>
+>> It did, but it's not ideal really. The problem is the GPIO is really
+>> associated with the device (WiFi/SD) rather than the PCI host and
+>> therefore should be part of a WiFi or SD node. You probably don't have
+>> one (yet), but I would suspect that SD will need one for all the
+>> standard MMC/SD DT properties. The secondary issue is we'll end up
+>> adding more power sequencing properties to control ordering and timing
+>> for different devices. The exception here is standard PCI slot
+>> properties like perst#, clkreq, and standard voltage rails can go in
+>> the host bridge (and for new bindings, those should really be in the
+>> root port node). For a complicated example, see Hikey960 or 970.
+>>
+>> Of course with power control related properties there's a chicken or
+>> egg issue that the PCI device is not discoverable until the device is
+>> powered on. This issue comes up over and over with various hacky
+>> solutions in the bindings. The PCI subsystem needs to solve this. My
+>> suggestion is that if the firmware says there is a device on the bus
+>> and it wasn't probed, then we should force probing (or add a pre-probe
+>> hook for drivers). That is what MDIO bus does for example.
+>>
+> 
+> I agree with the premise. Right now macOS does not actually power down
+> these devices as far as I know (except maybe sleep mode? not sure what
+> goes on then yet), but I think the hardware actually has an SD card
+> detect GPIO hookup that would allow us to entirely power down the SD
+> controller when no card is inserted. That would obviously be ideal.
+> 
+> FWIW, we do have the device nodes downstream [1]. I did in fact have to
+> add the SD one for the CD/WP inversion flags (and had to add driver
+> support for that too).
+> 
+> That said, as for how to make this happen in the PCI subsystem
+> properly... I think I'll defer to the maintainers' opinion there before
+> trying to hack something up ;)
+> 
+> Meanwhile, I guess I better get PCIe hotplug working, since doing it in
+> the driver isn't going to work without that first...
+> 
+> [1]
+> https://github.com/AsahiLinux/linux/blob/bits/000-devicetree/arch/arm64/boot/dts/apple/t600x-j314-j316.dtsi#L222
 
-Make it next to CLAC
+Thinking about this some more, I think it still makes sense to have the
+power enable GPIO in the PCI root port node. A generic power enable GPIO
+still makes sense there (think "slot power"). The PCI core could handle
+it properly by default, including turning it on prior to initial probing
+and shutting it down when the device should go into whatever the PCI
+core's idea of D3cold is. AIUI this already happens on some platforms
+via firmware, right? Since D3cold is supposed to be a state where the
+device receives no power after all.
 
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
----
- arch/x86/entry/entry_64.S | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+Obviously this can't handle funky power sequencing requirements, but we
+don't have any of those here and we don't know if we ever will (at least
+Apple seems to be a fan of throwing little CPLDs on their boards for
+fine grained power sequencing, driven by a single IO). If we do, then
+that would be the time to have GPIOs in the device node.
 
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index b1cef3b0a7ab..ab6ab6d3dab5 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -371,6 +371,7 @@ SYM_CODE_START(\asmsym)
- 	UNWIND_HINT_IRET_REGS offset=\has_error_code*8
- 	ENDBR
- 	ASM_CLAC
-+	cld
- 
- 	.if \has_error_code == 0
- 		pushq	$-1			/* ORIG_RAX: no syscall to restart */
-@@ -439,6 +440,7 @@ SYM_CODE_START(\asmsym)
- 	UNWIND_HINT_IRET_REGS
- 	ENDBR
- 	ASM_CLAC
-+	cld
- 
- 	pushq	$-1			/* ORIG_RAX: no syscall to restart */
- 
-@@ -495,6 +497,7 @@ SYM_CODE_START(\asmsym)
- 	UNWIND_HINT_IRET_REGS
- 	ENDBR
- 	ASM_CLAC
-+	cld
- 
- 	/*
- 	 * If the entry is from userspace, switch stacks and treat it as
-@@ -557,6 +560,7 @@ SYM_CODE_START(\asmsym)
- 	UNWIND_HINT_IRET_REGS offset=8
- 	ENDBR
- 	ASM_CLAC
-+	cld
- 
- 	/* paranoid_entry returns GS information for paranoid_exit in EBX. */
- 	call	paranoid_entry
-@@ -882,7 +886,6 @@ SYM_CODE_END(xen_failsafe_callback)
-  */
- SYM_CODE_START_LOCAL(paranoid_entry)
- 	UNWIND_HINT_FUNC
--	cld
- 	PUSH_AND_CLEAR_REGS save_ret=1
- 	ENCODE_FRAME_POINTER 8
- 
-@@ -1000,7 +1003,6 @@ SYM_CODE_END(paranoid_exit)
-  */
- SYM_CODE_START_LOCAL(error_entry)
- 	UNWIND_HINT_FUNC
--	cld
- 	testb	$3, CS+8(%rsp)
- 	jz	.Lerror_kernelspace
- 
-@@ -1134,6 +1136,7 @@ SYM_CODE_START(asm_exc_nmi)
- 	 */
- 
- 	ASM_CLAC
-+	cld
- 
- 	/* Use %rdx as our temp variable throughout */
- 	pushq	%rdx
-@@ -1153,7 +1156,6 @@ SYM_CODE_START(asm_exc_nmi)
- 	 */
- 
- 	swapgs
--	cld
- 	FENCE_SWAPGS_USER_ENTRY
- 	SWITCH_TO_KERNEL_CR3 scratch_reg=%rdx
- 	movq	%rsp, %rdx
+In addition, sometimes a single power enable is shared between multiple
+functions of one device. This is the case with WiFi/BT, which is a combo
+chip with two functions. Coordinating GPIO usage between both drivers
+would be problematic if they both try to own it.
+
+The individual device drivers still need to have some kind of API to be
+able to put devices into a low-power state. For example, the WiFi driver
+could outright power down the device when it is wholly unused and the
+interface is down (same for BT, and the PCI core should only put the
+slot GPIO into powerdown if both functions say they should be off).
+Similarly, the SD driver needs to support an external SD detect GPIO,
+and have a mode where it tells the PCI core to shut down the device when
+no SD is inserted, and power it back up on insertion. This all allows
+the devices to behave a users might expect, with the device nodes
+existing and the PCI devices "visible" even when they are powered down
+behind the scenes, until they are needed. AIUI this is already how e.g.
+hybrid graphics power management works, where power is outright yanked
+from the secondary card when it is not needed even though it is still
+visible from the userspace point of view (and it is automatically
+powered and reinitialized on use).
+
+I'm not super familiar with PCI device power states (making brcmfmac
+sleep work properly on these platforms is on my TODO list...) so I'd
+love to get some feedback from the PCI folks on what they think about
+this whole issue.
+
 -- 
-2.19.1.6.gb485710b
-
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
