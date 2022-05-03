@@ -2,232 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62DE4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E6AFC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:01:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240865AbiECSEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 14:04:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55380 "EHLO
+        id S240869AbiECSF2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 14:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239160AbiECSEq (ORCPT
+        with ESMTP id S237720AbiECSFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 14:04:46 -0400
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632173EA90;
-        Tue,  3 May 2022 11:01:13 -0700 (PDT)
-Received: by mail-oi1-f173.google.com with SMTP id l16so11713628oil.6;
-        Tue, 03 May 2022 11:01:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wtOAnbA8fkSXPrsuDbMwBLZHEfeDloEVKX5x1RNzDgc=;
-        b=b60pVajw53QsN70qcZtm4Ht6o/UEjTkrzbpWF3ez8rQJAONFLf9+yQPHfpCjsUvNAV
-         fOPdUN7raVd0sZsogHnbr8+R2GcGtL6DPuO3fyerPWsN+llJU9Nq1Hh+5adRD3k6nZXm
-         kbwd7wex0+GJGnknwYLjxav6sx4S760B4DOOol5b8v7LCZi9mcfykWjmOLxBj3/R4qwf
-         pJzn+cT8VuiJX/yJ3I707ZHICACMrVxSxgDpll+qJFylByy3ludQFll90CwLbbxQK3Er
-         BAmA5z5RNlW+QPkhruH18zO/2h4hZtAMFuTa17K7c65QAS5NYHfcS7vrJw58s28iJWCf
-         GG3g==
-X-Gm-Message-State: AOAM530U8MONv95cr46e4OOyqBWMSqFt58nt9cpZ9p3z9RzWSG4G8mbd
-        VtUrXrvWeO85UhSXDzbX3A==
-X-Google-Smtp-Source: ABdhPJyuMn1wVby2Ptl5y6qzq4nj/qnQt9eEtshKOwKTxA77wwD9xsuYV6p0wZw6QNCUIQz0ccdnLg==
-X-Received: by 2002:a05:6808:2119:b0:325:e8f4:9278 with SMTP id r25-20020a056808211900b00325e8f49278mr2461181oiw.82.1651600872244;
-        Tue, 03 May 2022 11:01:12 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id x21-20020a05687031d500b000e686d13872sm7114191oac.12.2022.05.03.11.01.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 11:01:11 -0700 (PDT)
-Received: (nullmailer pid 3963995 invoked by uid 1000);
-        Tue, 03 May 2022 18:01:10 -0000
-Date:   Tue, 3 May 2022 13:01:10 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
-Cc:     krzysztof.kozlowski+dt@linaro.org, chunkuang.hu@kernel.org,
-        p.zabel@pengutronix.de, airlied@linux.ie, daniel@ffwll.ch,
-        matthias.bgg@gmail.com, jitao.shi@mediatek.com,
-        xinlei.lee@mediatek.com, dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v5 1/4] dt-bindings: display: mediatek: dsi: Convert
- dsi_dtbinding to .yaml
-Message-ID: <YnFt5vL+6uVioqsf@robh.at.kernel.org>
-References: <20220428133753.8348-1-rex-bc.chen@mediatek.com>
- <20220428133753.8348-2-rex-bc.chen@mediatek.com>
+        Tue, 3 May 2022 14:05:22 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A6DDEBE;
+        Tue,  3 May 2022 11:01:48 -0700 (PDT)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242Nnl5g025194;
+        Tue, 3 May 2022 00:51:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=BTvTUXunvVd80zWADpV28r/DalfnHZxRR5fejc1lQI8=;
+ b=tf2aCXpC5Jjg91gWkismN1NCwvuE2k1wv6DD4gZbMaz2xWSBJx9EBVB37FrV/17dIKec
+ /iAaXQtgonYMTBm5GywKJCMhMXRpnRuSk0etN/knTVX+LF+8E14RC66yFGz00Pkd9QoZ
+ QlgL/tWk0tZRYfr2qRbRgD5R/iE3Qw40k4O0XoFIsRNzQiDy85I97MkdVQGbnRpRTf4D
+ 81xvjTxtGElKnWaRapqyCaJZdvXkxQqpvXv0sq7JSELogCLRKZng4JFXfD54Ox0g0BSn
+ mN0fPAJpncTH5HGgrmLivNCR2N+I2NI1jsHY5jwjU17x3nqqgf46T4Z41WW0QUYv8whf eg== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fruw2cnx4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:51:48 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430oobn008895;
+        Tue, 3 May 2022 00:51:48 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x54-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:51:48 +0000
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430plj0010389;
+        Tue, 3 May 2022 00:51:48 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-2;
+        Tue, 03 May 2022 00:51:47 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     Haowen Bai <baihaowen@meizu.com>, jejb@linux.ibm.com
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
+Subject: Re: [PATCH] scsi: aha1542: remove unneeded semicolon
+Date:   Mon,  2 May 2022 20:51:12 -0400
+Message-Id: <165153836360.24053.6220453924870674457.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <1647309865-15620-1-git-send-email-baihaowen@meizu.com>
+References: <1647309865-15620-1-git-send-email-baihaowen@meizu.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220428133753.8348-2-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: o7E5SKF6TLd2mToeyjBoZy5oLq8HHcmN
+X-Proofpoint-ORIG-GUID: o7E5SKF6TLd2mToeyjBoZy5oLq8HHcmN
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 09:37:50PM +0800, Rex-BC Chen wrote:
-> From: Xinlei Lee <xinlei.lee@mediatek.com>
+On Tue, 15 Mar 2022 10:04:25 +0800, Haowen Bai wrote:
+
+> Fixes coccicheck warning:
+> drivers/scsi/aha1542.c:553:2-3: Unneeded semicolon
+> drivers/scsi/aha1542.c:582:2-3: Unneeded semicolon
+> drivers/scsi/aha1542.c:605:2-3: Unneeded semicolon
+> drivers/scsi/aha1542.c:306:2-3: Unneeded semicolon
+> drivers/scsi/aha1542.c:348:3-4: Unneeded semicolon
+> drivers/scsi/aha1542.c:412:2-3: Unneeded semicolon
+> drivers/scsi/aha1542.c:640:2-3: Unneeded semicolon
+> drivers/scsi/aha1542.c:658:2-3: Unneeded semicolon
+> drivers/scsi/aha1542.c:677:2-3: Unneeded semicolon
+> drivers/scsi/aha1542.c:538:2-3: Unneeded semicolon
 > 
-> Convert mediatek,dsi.txt to mediatek,dsi.yaml format
-> 
-> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> ---
->  .../display/mediatek/mediatek,dsi.txt         |  62 ---------
->  .../display/mediatek/mediatek,dsi.yaml        | 122 ++++++++++++++++++
->  2 files changed, 122 insertions(+), 62 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
->  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
-> deleted file mode 100644
-> index 36b01458f45c..000000000000
-> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
-> +++ /dev/null
-> @@ -1,62 +0,0 @@
-> -Mediatek DSI Device
-> -===================
-> -
-> -The Mediatek DSI function block is a sink of the display subsystem and can
-> -drive up to 4-lane MIPI DSI output. Two DSIs can be synchronized for dual-
-> -channel output.
-> -
-> -Required properties:
-> -- compatible: "mediatek,<chip>-dsi"
-> -- the supported chips are mt2701, mt7623, mt8167, mt8173 and mt8183.
-> -- reg: Physical base address and length of the controller's registers
-> -- interrupts: The interrupt signal from the function block.
-> -- clocks: device clocks
-> -  See Documentation/devicetree/bindings/clock/clock-bindings.txt for details.
-> -- clock-names: must contain "engine", "digital", and "hs"
-> -- phys: phandle link to the MIPI D-PHY controller.
-> -- phy-names: must contain "dphy"
-> -- port: Output port node with endpoint definitions as described in
-> -  Documentation/devicetree/bindings/graph.txt. This port should be connected
-> -  to the input port of an attached DSI panel or DSI-to-eDP encoder chip.
-> -
-> -Optional properties:
-> -- resets: list of phandle + reset specifier pair, as described in [1].
-> -
-> -[1] Documentation/devicetree/bindings/reset/reset.txt
-> -
-> -MIPI TX Configuration Module
-> -============================
-> -
-> -See phy/mediatek,dsi-phy.yaml
-> -
-> -Example:
-> -
-> -mipi_tx0: mipi-dphy@10215000 {
-> -	compatible = "mediatek,mt8173-mipi-tx";
-> -	reg = <0 0x10215000 0 0x1000>;
-> -	clocks = <&clk26m>;
-> -	clock-output-names = "mipi_tx0_pll";
-> -	#clock-cells = <0>;
-> -	#phy-cells = <0>;
-> -	drive-strength-microamp = <4600>;
-> -	nvmem-cells= <&mipi_tx_calibration>;
-> -	nvmem-cell-names = "calibration-data";
-> -};
-> -
-> -dsi0: dsi@1401b000 {
-> -	compatible = "mediatek,mt8173-dsi";
-> -	reg = <0 0x1401b000 0 0x1000>;
-> -	interrupts = <GIC_SPI 192 IRQ_TYPE_LEVEL_LOW>;
-> -	clocks = <&mmsys MM_DSI0_ENGINE>, <&mmsys MM_DSI0_DIGITAL>,
-> -		 <&mipi_tx0>;
-> -	clock-names = "engine", "digital", "hs";
-> -	resets = <&mmsys MT8173_MMSYS_SW0_RST_B_DISP_DSI0>;
-> -	phys = <&mipi_tx0>;
-> -	phy-names = "dphy";
-> -
-> -	port {
-> -		dsi0_out: endpoint {
-> -			remote-endpoint = <&panel_in>;
-> -		};
-> -	};
-> -};
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-> new file mode 100644
-> index 000000000000..2ca9229ef69e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-> @@ -0,0 +1,122 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/display/mediatek/mediatek,dsi.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: MediaTek DSI Controller Device Tree Bindings
-> +
-> +maintainers:
-> +  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
-> +  - Philipp Zabel <p.zabel@pengutronix.de>
-> +  - Jitao Shi <jitao.shi@mediatek.com>
-> +  - Xinlei Lee <xinlei.lee@mediatek.com>
-> +
-> +description: |
-> +  The MediaTek DSI function block is a sink of the display subsystem and can
-> +  drive up to 4-lane MIPI DSI output. Two DSIs can be synchronized for dual-
-> +  channel output.
-> +
-> +allOf:
-> +  - $ref: /schemas/display/dsi-controller.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - mediatek,mt2701-dsi
-> +      - mediatek,mt7623-dsi
-> +      - mediatek,mt8167-dsi
-> +      - mediatek,mt8173-dsi
-> +      - mediatek,mt8183-dsi
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  power-domains:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    items:
-> +      - description: Engine Clock
-> +      - description: Digital Clock
-> +      - description: HS Clock
-> +
-> +  clock-names:
-> +    items:
-> +      - const: engine
-> +      - const: digital
-> +      - const: hs
-> +
-> +  resets:
-> +    maxItems: 1
-> +
-> +  phys:
-> +    maxItems: 1
-> +
-> +  phy-names:
-> +    items:
-> +      - const: dphy
-> +
-> +  port:
-> +    $ref: /schemas/graph.yaml#/properties/port
-> +    description:
-> +      Output port node. This port should be connected to the input
-> +      port of an attached DSI panel or DSI-to-eDP encoder chip.
-> +
-> +
+> [...]
 
-1 blank line
+Applied to 5.19/scsi-queue, thanks!
 
-> +  "#address-cells":
-> +    const: 2
-> +
-> +  "#size-cells":
-> +    const: 2
+[1/1] scsi: aha1542: remove unneeded semicolon
+      https://git.kernel.org/mkp/scsi/c/8c36b054df01
 
-Did you try adding these? Because they are wrong and will contradict 
-dsi-controller.yaml.
-
-Rob
+-- 
+Martin K. Petersen	Oracle Linux Engineering
