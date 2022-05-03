@@ -2,84 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74BACC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:15:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8589FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238078AbiECPT3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:19:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47316 "EHLO
+        id S238092AbiECPVc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:21:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238090AbiECPS7 (ORCPT
+        with ESMTP id S237990AbiECPV1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:18:59 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6675D1FCEA;
-        Tue,  3 May 2022 08:15:26 -0700 (PDT)
+        Tue, 3 May 2022 11:21:27 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37BC93A5D1
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:17:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651590926; x=1683126926;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=SAvtnj8H2V8n6qwqUBlvJTEgN+vKWN6fJ/OR2VQoynY=;
-  b=QREXGvjHfPMvML/M5vaSawgOjLL9/hJ655OYL9eU9gBqR+SDu62Cytiv
-   /fz9lzzCO0ivciMiTnyOpQTTVU2ZOKE68z4tuXGIBbVtST9HHZGUbewHc
-   49BJK5f9ZlJOss6O9KsRsBeKnv7I+z54hUJ7btIsru3JXzadbTfU0IYED
-   LilBhcvNkISRUMCpxZKtVV/M3O33zrD0vEiXH06Kkp6iqxIpfyH/yba26
-   E9PRe3rHRJdgzwlNZsj+OFoIZ2zJk1fcEjGMIhfGNFiC9HvEsPA8rKif+
-   q2r86FwUX33vk1SogE8vmCMrKdlo0fzP3/5FqxhkZk0nfHhTLFHP870K+
+  t=1651591075; x=1683127075;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+Xz6Ln5q443Z2ALPSncn4/b7gf6beXhMjiot51vykZg=;
+  b=iWOoYLEju16jjDvfRCJJEBaAxSXq8cYiySZOBJ1Gxpi1uulLe3xA+ECr
+   +9kcC+bTAgpXryIXd7vKZFlWmOJbwpFy/iDmiPtpDpYq+r+gttrTjVp5b
+   a1JLgG3b77pn4uGut7bFxbEVQtZbW7xIlSItMtADgpndgU+fChm+PuYsj
+   0nht4Aeut0sUFhWpv4jAV6oI8VTPaRfcePxisOp4+SlXfOG9mq5Tr6Hp8
+   82hzDfhQ2kxOQGoAJS6me2k/OsVZRy6ZRylHNjYVCl4uWLFA8VE24EoFt
+   h2ZiDwT0Koquqhi4dF6bWF/YQFSLzEzFZPRKwjHgjkSKywk8wyNR8/KQo
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="328042678"
+X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="267380539"
 X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="328042678"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 08:15:25 -0700
+   d="scan'208";a="267380539"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 08:17:54 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="567677331"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 03 May 2022 08:15:18 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id DDB46179; Tue,  3 May 2022 18:15:19 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Michael Walle <michael@walle.cc>,
-        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] pinctrl: microchip-sgpio: Switch to use fwnode instead of of_node
-Date:   Tue,  3 May 2022 18:15:17 +0300
-Message-Id: <20220503151517.59115-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+   d="scan'208";a="733951527"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 03 May 2022 08:17:53 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nluHg-000AYx-SM;
+        Tue, 03 May 2022 15:17:52 +0000
+Date:   Tue, 3 May 2022 23:17:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Janne Grunau <j@jannau.net>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Hector Martin <marcan@marcan.st>
+Subject: [asahilinux:bits/090-spi-hid 11/11]
+ drivers/hid/spi-hid/spi-hid-apple-core.c:259:22: warning: no previous
+ prototype for 'spihid_get_data'
+Message-ID: <202205032332.JmX0xZHq-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GPIO library now accepts fwnode as a firmware node, so
-switch the driver to use it.
+tree:   https://github.com/AsahiLinux/linux bits/090-spi-hid
+head:   11b586fd5cff82ad72e9a281c0deb27959d16857
+commit: 11b586fd5cff82ad72e9a281c0deb27959d16857 [11/11] WIP: HID: transport: spi: add Apple SPI transport
+config: h8300-allmodconfig (https://download.01.org/0day-ci/archive/20220503/202205032332.JmX0xZHq-lkp@intel.com/config)
+compiler: h8300-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/11b586fd5cff82ad72e9a281c0deb27959d16857
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/090-spi-hid
+        git checkout 11b586fd5cff82ad72e9a281c0deb27959d16857
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=h8300 SHELL=/bin/bash drivers/hid/spi-hid/ drivers/platform/
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/pinctrl/pinctrl-microchip-sgpio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/pinctrl/pinctrl-microchip-sgpio.c b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-index 80a8939ad0c0..71367ed04082 100644
---- a/drivers/pinctrl/pinctrl-microchip-sgpio.c
-+++ b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-@@ -840,7 +840,7 @@ static int microchip_sgpio_register_bank(struct device *dev,
- 	gc			= &bank->gpio;
- 	gc->label		= pctl_desc->name;
- 	gc->parent		= dev;
--	gc->of_node		= to_of_node(fwnode);
-+	gc->fwnode		= fwnode;
- 	gc->owner		= THIS_MODULE;
- 	gc->get_direction	= microchip_sgpio_get_direction;
- 	gc->direction_input	= microchip_sgpio_direction_input;
+All warnings (new ones prefixed by >>):
+
+   In file included from include/uapi/linux/swab.h:6,
+                    from include/linux/swab.h:5,
+                    from include/uapi/linux/byteorder/big_endian.h:14,
+                    from include/linux/byteorder/big_endian.h:5,
+                    from arch/h8300/include/asm/byteorder.h:5,
+                    from include/asm-generic/unaligned.h:10,
+                    from ./arch/h8300/include/generated/asm/unaligned.h:1,
+                    from drivers/hid/spi-hid/spi-hid-apple-core.c:19:
+   include/linux/scatterlist.h: In function 'sg_set_buf':
+   include/asm-generic/page.h:89:51: warning: ordered comparison of pointer with null pointer [-Wextra]
+      89 | #define virt_addr_valid(kaddr)  (((void *)(kaddr) >= (void *)PAGE_OFFSET) && \
+         |                                                   ^~
+   include/linux/compiler.h:78:45: note: in definition of macro 'unlikely'
+      78 | # define unlikely(x)    __builtin_expect(!!(x), 0)
+         |                                             ^
+   include/linux/scatterlist.h:160:9: note: in expansion of macro 'BUG_ON'
+     160 |         BUG_ON(!virt_addr_valid(buf));
+         |         ^~~~~~
+   include/linux/scatterlist.h:160:17: note: in expansion of macro 'virt_addr_valid'
+     160 |         BUG_ON(!virt_addr_valid(buf));
+         |                 ^~~~~~~~~~~~~~~
+   drivers/hid/spi-hid/spi-hid-apple-core.c: At top level:
+>> drivers/hid/spi-hid/spi-hid-apple-core.c:259:22: warning: no previous prototype for 'spihid_get_data' [-Wmissing-prototypes]
+     259 | struct spihid_apple *spihid_get_data(struct spihid_interface *idev)
+         |                      ^~~~~~~~~~~~~~~
+--
+   In file included from include/asm-generic/div64.h:27,
+                    from ./arch/h8300/include/generated/asm/div64.h:1,
+                    from include/linux/math.h:6,
+                    from include/linux/delay.h:22,
+                    from drivers/hid/spi-hid/spi-hid-apple-of.c:9:
+   include/linux/scatterlist.h: In function 'sg_set_buf':
+   include/asm-generic/page.h:89:51: warning: ordered comparison of pointer with null pointer [-Wextra]
+      89 | #define virt_addr_valid(kaddr)  (((void *)(kaddr) >= (void *)PAGE_OFFSET) && \
+         |                                                   ^~
+   include/linux/compiler.h:78:45: note: in definition of macro 'unlikely'
+      78 | # define unlikely(x)    __builtin_expect(!!(x), 0)
+         |                                             ^
+   include/linux/scatterlist.h:160:9: note: in expansion of macro 'BUG_ON'
+     160 |         BUG_ON(!virt_addr_valid(buf));
+         |         ^~~~~~
+   include/linux/scatterlist.h:160:17: note: in expansion of macro 'virt_addr_valid'
+     160 |         BUG_ON(!virt_addr_valid(buf));
+         |                 ^~~~~~~~~~~~~~~
+   drivers/hid/spi-hid/spi-hid-apple-of.c: At top level:
+>> drivers/hid/spi-hid/spi-hid-apple-of.c:24:5: warning: no previous prototype for 'spihid_apple_of_power_on' [-Wmissing-prototypes]
+      24 | int spihid_apple_of_power_on(struct spihid_apple_ops *ops)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/hid/spi-hid/spi-hid-apple-of.c:40:5: warning: no previous prototype for 'spihid_apple_of_power_off' [-Wmissing-prototypes]
+      40 | int spihid_apple_of_power_off(struct spihid_apple_ops *ops)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/hid/spi-hid/spi-hid-apple-of.c:50:5: warning: no previous prototype for 'spihid_apple_of_enable_irq' [-Wmissing-prototypes]
+      50 | int spihid_apple_of_enable_irq(struct spihid_apple_ops *ops)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/hid/spi-hid/spi-hid-apple-of.c:59:5: warning: no previous prototype for 'spihid_apple_of_disable_irq' [-Wmissing-prototypes]
+      59 | int spihid_apple_of_disable_irq(struct spihid_apple_ops *ops)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/spihid_get_data +259 drivers/hid/spi-hid/spi-hid-apple-core.c
+
+   258	
+ > 259	struct spihid_apple *spihid_get_data(struct spihid_interface *idev)
+   260	{
+   261		switch (idev->id) {
+   262		case SPIHID_DEVICE_ID_KBD:
+   263			return container_of(idev, struct spihid_apple, kbd);
+   264		case SPIHID_DEVICE_ID_TP:
+   265			return container_of(idev, struct spihid_apple, tp);
+   266		default:
+   267			return NULL;
+   268		}
+   269	}
+   270	
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
