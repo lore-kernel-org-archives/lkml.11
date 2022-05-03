@@ -2,100 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E5E7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:22:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A043C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:22:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232206AbiECHZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 03:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59948 "EHLO
+        id S232181AbiECH0U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:26:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232237AbiECHXg (ORCPT
+        with ESMTP id S232186AbiECHZ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 03:23:36 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E573A73C;
-        Tue,  3 May 2022 00:19:32 -0700 (PDT)
-X-UUID: 32ccaa4e2bb249408792196356cb7ca1-20220503
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:4230d0d4-ebea-4af8-84f7-23a7ddae13f5,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:-20
-X-CID-META: VersionHash:faefae9,CLOUDID:c5d74ac7-85ee-4ac1-ac05-bd3f1e72e732,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 32ccaa4e2bb249408792196356cb7ca1-20220503
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 257811393; Tue, 03 May 2022 15:19:27 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 3 May 2022 15:19:26 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 3 May 2022 15:19:25 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 3 May 2022 15:19:24 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>
-CC:     Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Tomasz Figa <tfiga@chromium.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux-foundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
-        "AngeloGioacchino Del Regno" 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v7 35/36] iommu/mediatek: mt8195: Enable multi banks for infra iommu
-Date:   Tue, 3 May 2022 15:14:26 +0800
-Message-ID: <20220503071427.2285-36-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220503071427.2285-1-yong.wu@mediatek.com>
-References: <20220503071427.2285-1-yong.wu@mediatek.com>
+        Tue, 3 May 2022 03:25:56 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1AB127164;
+        Tue,  3 May 2022 00:22:08 -0700 (PDT)
+Received: from mail-yw1-f172.google.com ([209.85.128.172]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1N3KgE-1nuy3Y2gPy-010Hes; Tue, 03 May 2022 09:22:06 +0200
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-2f7b815ac06so171033297b3.3;
+        Tue, 03 May 2022 00:22:06 -0700 (PDT)
+X-Gm-Message-State: AOAM531PW4WfhALUGYWaRQ5GaiKb8wrevqIqQOC+ZkhwdWF101mrKAUN
+        NcsF1AfuAVCwXUZFnINvuZDKarmyUMKW3uFURD8=
+X-Google-Smtp-Source: ABdhPJwPr9q0sZe+e8UxYUbigcUnaa5Xa3a0oSwktBFYt4HYrPBnPD483wlKn2ZH53xnNpxMcJ15XBtdVqESN+RJUXQ=
+X-Received: by 2002:a81:9213:0:b0:2f6:eaae:d22f with SMTP id
+ j19-20020a819213000000b002f6eaaed22fmr14551172ywg.249.1651562525321; Tue, 03
+ May 2022 00:22:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <202205031017.4TwMan3l-lkp@intel.com> <YnCXTPrbLhvfRVDm@e3a974050dc4>
+In-Reply-To: <YnCXTPrbLhvfRVDm@e3a974050dc4>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 3 May 2022 09:21:49 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1xMeLa72YKMufdej6KguDwiSXtZmMqRxOt5B05x_fx3A@mail.gmail.com>
+Message-ID: <CAK8P3a1xMeLa72YKMufdej6KguDwiSXtZmMqRxOt5B05x_fx3A@mail.gmail.com>
+Subject: Re: [PATCH] ARM: dove: fix returnvar.cocci warnings
+To:     kernel test robot <lkp@intel.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-omap <linux-omap@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:KBcmf8L+L6p/whd/P8ba85SiL61sT4pvbWzzB3TTUwYaT4iudsB
+ WX/5N7nENNe1TewNk5ab96T2a9ZlV/gizqjJ9QQyArl0Ny9oVqGJjLM7ZdsPGz83iTqbMEK
+ U/cpyXVLIYuCJ6RyNjiXW0Tl5XZ8Q5R5l8hAXPQEXjmEvFdWveY2fCBNVS2SNYBihl7CtJD
+ iHzLJjA2j+Nbp489PmINg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:iQd+zec01aY=:f5iMHfS5U4pzqZdIp0fqY+
+ Y6WdcyOJiGWgqe5lilgTB6y+MjEmPnP3StTreSrVA9T2YpZIECmh458DX0kBTl4q81hpk96o+
+ FWiMlQuzHuW/S10Tv4J58XhjJF9sDWMWBvm8jSjlua0u8PLsI7hwobUjarNdYR4QCPLgTnSkd
+ Q7kzR8XFq/JOVAQCN4Ku45efxA0a0/bvW/sK0j5+A81JjlMmrQi5u4wjbJkzBVlFnZsIV/wyT
+ f3GznbdHwPK2uQluAhYZdaA+sB3VdSpyi82B6Hjf7Nbh2LP/vL+mFg1EgcOGbserp5yh3up/d
+ nySq3oe4UgbGGZqpCxXJ832K/7X5E4YSerp1RST6luT34WW8aVvTNyK3Ct8iFFCkbarqx2WoD
+ dmlrc7ytFixkTldf5SHuXOYA0VHglBTh9jhgzaRfouD7Z5BbKFjG326u8QEhRK87fD2+Z5Bs0
+ 0lCWQSRFnvxv+cGeIC20Z7HEz9YJNA3EPKr36Rkm1EdU9nphzme9rXziHTFbU0/8mkDiidUWV
+ 3tv66vAZcx+glMLTEfikIZkHVk+Km50LVUFwqLq8oD8AFyIDUNVe4tP1w/olWO5wVFBLxszFT
+ 6QvMuexZfPY7461Lgio7/z/TFMbibgm4P59QsIDeAWO4dWThu9gOPgtqJVjIl0G9VNiRu24H9
+ 493j/8AY7FVwu+p9GAk2lnrPgTrOxJJOsByvegxi4ivAxh3dxcPMNuQmoatMQ3K6ZWd4/h+j6
+ v3GrlMubPjaqlY19vOFldHutSHblVU61DSGtmePtuSkvf/EBauo2W2HqnMb2fA5HyKoJX20Cs
+ wcKaynjoYaT997ZXvxeiqVn3v9fVPBNGJXchUeg7QpewbrQ7nM=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable the multi-bank functions for infra-iommu. We put PCIE in bank0
-and USB in the last bank(bank4). and we don't use the other banks
-currently, disable them.
+On Tue, May 3, 2022 at 4:45 AM kernel test robot <lkp@intel.com> wrote:
+>
+> From: kernel test robot <lkp@intel.com>
+>
+> arch/arm/mach-omap2/dma.c:82:10-16: Unneeded variable: "errata". Return "0" on line 161
+>
+>
+>  Remove unneeded variable used to store return value.
+>
+> Generated by: scripts/coccinelle/misc/returnvar.cocci
+>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/iommu/mtk_iommu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+I checked the patch, and unfortunately it is wrong, the current code
+needs to stay.
+The problem is the SET_DMA_ERRATA() macro that accesses the
+local 'errata' variable.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index d3e8773b4c47..0fa1d5240ac6 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1456,8 +1456,11 @@ static const struct mtk_iommu_plat_data mt8195_data_infra = {
- 			    MTK_IOMMU_TYPE_INFRA | IFA_IOMMU_PCIE_SUPPORT,
- 	.pericfg_comp_str = "mediatek,mt8195-pericfg_ao",
- 	.inv_sel_reg      = REG_MMU_INV_SEL_GEN2,
--	.banks_num        = 1,
--	.banks_enable     = {true},
-+	.banks_num	  = 5,
-+	.banks_enable     = {true, false, false, false, true},
-+	.banks_portmsk    = {[0] = GENMASK(19, 16),     /* PCIe */
-+			     [4] = GENMASK(31, 20),     /* USB */
-+			    },
- 	.iova_region      = single_domain,
- 	.iova_region_nr   = ARRAY_SIZE(single_domain),
- };
--- 
-2.18.0
-
+         Arnd
