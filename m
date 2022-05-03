@@ -2,143 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D15CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 03:21:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DAC8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 03:21:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230371AbiECDYk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 23:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33114 "EHLO
+        id S230384AbiECDYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 23:24:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230340AbiECDY3 (ORCPT
+        with ESMTP id S230355AbiECDYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 23:24:29 -0400
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2128F29836;
-        Mon,  2 May 2022 20:20:55 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 539AB41DF4;
-        Tue,  3 May 2022 03:20:51 +0000 (UTC)
-Message-ID: <2615501d-7569-41cb-7039-46e690689f1f@marcan.st>
-Date:   Tue, 3 May 2022 12:20:48 +0900
+        Mon, 2 May 2022 23:24:36 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 689E03B283
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 20:21:05 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id s14so13970935plk.8
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 20:21:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=VgGgMxYprzA3l/xL3EqCp11c0RZBUqA2IVp2y5zwqwA=;
+        b=S+Zz45MWXks4nx4ynNsiBuY3M56T6z4EiXW0WpmvNvAkBcDnPi8B/Nxm2oX3Z21Nlh
+         o9DHs790/56cgU/3G6nNFMfyqo94VMk0tay8JMcYI3+N971ZUh3amcaL689ltG6XmDuY
+         IK2GaVJXyrqdi7LJ+/F3TB5iEgSQiq7w5IUtDss4ocWgJxoLIwITm2xPzG8440Bo0dDT
+         yBXkbyKCNdx8kCSIqKduqeO3rZB/PqYVuTCEx5wvgUwqMP5HX6nW8rFauA1sRdEDHGQ7
+         oPQPH2ApTrqLUkj+keH1EdMrx4W7pEAFHOyQzYwcTHI8fptOHu6Ny+CLiOemC2rKRET6
+         KkDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=VgGgMxYprzA3l/xL3EqCp11c0RZBUqA2IVp2y5zwqwA=;
+        b=BJnx5WT/kNBZ4FR7nLW7S7t3v/fsXQ/AMF9/nh7DfG5dNXBfe8yvSUbW4uGchtRBWZ
+         p9UAvK/B7oseieUVEOvum3ZxPKu1mgclD2CZHB2jstnHpRuC8MmYe56/xoDJe6ZxJAL2
+         z3pwTZDeJtryZVL8WH6hBTlQwG8KiqHgdif86nMCHiWRmaZy0B8tEuJ8cSeOQciCEkuZ
+         PiaOMr9Tg9P6F+6+29P1BVWsyVJ/h6CbonbVXVB5koYfaB4y69lb7SgFFl9tIXDImpFu
+         T1Wjr1zZcaZsNNDSDsX6UQMt/obKhI7JEbVIvpx82geDqhZEVM81u6MTO7DHJy+u/Srz
+         ofmA==
+X-Gm-Message-State: AOAM530wUoIWTo7CHeJRH0oFjtG3DU5iYYa9/0MLDwnwK6POkGsqmVnf
+        4YtnnrYO8FXE2VlRR+qrjOcNrEz4nGo=
+X-Google-Smtp-Source: ABdhPJzCceSsy+gBasYlsMUGbi/7N68x5v0EIJSpy2AZTAAtMRoJOfWLebTQyavueQvCLGEv1Mc4Xw==
+X-Received: by 2002:a17:90a:488c:b0:1c7:b62e:8e8c with SMTP id b12-20020a17090a488c00b001c7b62e8e8cmr2477589pjh.157.1651548064578;
+        Mon, 02 May 2022 20:21:04 -0700 (PDT)
+Received: from localhost ([47.251.4.198])
+        by smtp.gmail.com with ESMTPSA id a17-20020a631a51000000b003c14af5060fsm11896873pgm.39.2022.05.02.20.21.03
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 02 May 2022 20:21:04 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Juergen Gross <jgross@suse.com>, x86@kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: [PATCH V7 5/6] x86/entry: Don't call error_entry() for XENPV
+Date:   Tue,  3 May 2022 11:21:06 +0800
+Message-Id: <20220503032107.680190-6-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
+In-Reply-To: <20220503032107.680190-1-jiangshanlai@gmail.com>
+References: <20220503032107.680190-1-jiangshanlai@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: es-ES
-From:   Hector Martin <marcan@marcan.st>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Sven Peter <sven@svenpeter.dev>,
-        PCI <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220502093832.32778-1-marcan@marcan.st>
- <20220502093832.32778-4-marcan@marcan.st>
- <CAL_Jsq+_cWZUXtJVXC_cwhmADj0NQc95v1sqgFioMsfEX6OqGg@mail.gmail.com>
- <0ccc44cd-21aa-3670-24b3-4ee051dd3c12@marcan.st>
-Subject: Re: [PATCH 3/3] PCI: apple: Add support for optional PWREN GPIO
-In-Reply-To: <0ccc44cd-21aa-3670-24b3-4ee051dd3c12@marcan.st>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/05/2022 00.32, Hector Martin wrote:
-> On 03/05/2022 00.14, Rob Herring wrote:
->> On Mon, May 2, 2022 at 4:39 AM Hector Martin <marcan@marcan.st> wrote:
->>>
->>> WiFi and SD card devices on M1 Macs have a separate power enable GPIO.
->>> Add support for this to the PCIe controller. This is modeled after how
->>> pcie-fu740 does it.
->>
->> It did, but it's not ideal really. The problem is the GPIO is really
->> associated with the device (WiFi/SD) rather than the PCI host and
->> therefore should be part of a WiFi or SD node. You probably don't have
->> one (yet), but I would suspect that SD will need one for all the
->> standard MMC/SD DT properties. The secondary issue is we'll end up
->> adding more power sequencing properties to control ordering and timing
->> for different devices. The exception here is standard PCI slot
->> properties like perst#, clkreq, and standard voltage rails can go in
->> the host bridge (and for new bindings, those should really be in the
->> root port node). For a complicated example, see Hikey960 or 970.
->>
->> Of course with power control related properties there's a chicken or
->> egg issue that the PCI device is not discoverable until the device is
->> powered on. This issue comes up over and over with various hacky
->> solutions in the bindings. The PCI subsystem needs to solve this. My
->> suggestion is that if the firmware says there is a device on the bus
->> and it wasn't probed, then we should force probing (or add a pre-probe
->> hook for drivers). That is what MDIO bus does for example.
->>
-> 
-> I agree with the premise. Right now macOS does not actually power down
-> these devices as far as I know (except maybe sleep mode? not sure what
-> goes on then yet), but I think the hardware actually has an SD card
-> detect GPIO hookup that would allow us to entirely power down the SD
-> controller when no card is inserted. That would obviously be ideal.
-> 
-> FWIW, we do have the device nodes downstream [1]. I did in fact have to
-> add the SD one for the CD/WP inversion flags (and had to add driver
-> support for that too).
-> 
-> That said, as for how to make this happen in the PCI subsystem
-> properly... I think I'll defer to the maintainers' opinion there before
-> trying to hack something up ;)
-> 
-> Meanwhile, I guess I better get PCIe hotplug working, since doing it in
-> the driver isn't going to work without that first...
-> 
-> [1]
-> https://github.com/AsahiLinux/linux/blob/bits/000-devicetree/arch/arm64/boot/dts/apple/t600x-j314-j316.dtsi#L222
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-Thinking about this some more, I think it still makes sense to have the
-power enable GPIO in the PCI root port node. A generic power enable GPIO
-still makes sense there (think "slot power"). The PCI core could handle
-it properly by default, including turning it on prior to initial probing
-and shutting it down when the device should go into whatever the PCI
-core's idea of D3cold is. AIUI this already happens on some platforms
-via firmware, right? Since D3cold is supposed to be a state where the
-device receives no power after all.
+When in XENPV, it is already in the task stack, and it can't fault for
+native_iret() nor native_load_gs_index() since XENPV uses its own pvops
+for IRET and load_gs_index().  And it doesn't need to switch the CR3.
 
-Obviously this can't handle funky power sequencing requirements, but we
-don't have any of those here and we don't know if we ever will (at least
-Apple seems to be a fan of throwing little CPLDs on their boards for
-fine grained power sequencing, driven by a single IO). If we do, then
-that would be the time to have GPIOs in the device node.
+So there is no reason to call error_entry() in XENPV.
 
-In addition, sometimes a single power enable is shared between multiple
-functions of one device. This is the case with WiFi/BT, which is a combo
-chip with two functions. Coordinating GPIO usage between both drivers
-would be problematic if they both try to own it.
+Cc: Juergen Gross <jgross@suse.com>
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+---
+ arch/x86/entry/entry_64.S | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-The individual device drivers still need to have some kind of API to be
-able to put devices into a low-power state. For example, the WiFi driver
-could outright power down the device when it is wholly unused and the
-interface is down (same for BT, and the PCI core should only put the
-slot GPIO into powerdown if both functions say they should be off).
-Similarly, the SD driver needs to support an external SD detect GPIO,
-and have a mode where it tells the PCI core to shut down the device when
-no SD is inserted, and power it back up on insertion. This all allows
-the devices to behave a users might expect, with the device nodes
-existing and the PCI devices "visible" even when they are powered down
-behind the scenes, until they are needed. AIUI this is already how e.g.
-hybrid graphics power management works, where power is outright yanked
-from the secondary card when it is not needed even though it is still
-visible from the userspace point of view (and it is automatically
-powered and reinitialized on use).
-
-I'm not super familiar with PCI device power states (making brcmfmac
-sleep work properly on these platforms is on my TODO list...) so I'd
-love to get some feedback from the PCI folks on what they think about
-this whole issue.
-
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index ab6ab6d3dab5..062aa9d95961 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -336,8 +336,17 @@ SYM_CODE_END(push_and_clear_regs)
+ 	call push_and_clear_regs
+ 	UNWIND_HINT_REGS
+ 
+-	call	error_entry
+-	movq	%rax, %rsp			/* switch to the task stack if from userspace */
++	/*
++	 * Call error_entry() and switch to the task stack if from userspace.
++	 *
++	 * When in XENPV, it is already in the task stack, and it can't fault
++	 * for native_iret() nor native_load_gs_index() since XENPV uses its
++	 * own pvops for IRET and load_gs_index().  And it doesn't need to
++	 * switch the CR3.  So it can skip invoking error_entry().
++	 */
++	ALTERNATIVE "call error_entry; movq %rax, %rsp", \
++		"", X86_FEATURE_XENPV
++
+ 	ENCODE_FRAME_POINTER
+ 	UNWIND_HINT_REGS
+ 
 -- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+2.19.1.6.gb485710b
+
