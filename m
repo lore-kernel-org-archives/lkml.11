@@ -2,176 +2,310 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D41D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:23:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75798C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:25:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238403AbiECP1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
+        id S238412AbiECP2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:28:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238362AbiECP1R (ORCPT
+        with ESMTP id S237485AbiECP22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:27:17 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2083.outbound.protection.outlook.com [40.107.243.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F158915A0D
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:23:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ctw2YqGJK83wErW1q6R59ZqYa0mpVR+kCbStKTjmIbi942xsvfT5FAt1sRZOWfljlyr5fNXHnEV4z3B5LhTmqO0HyKnGAllEtrvEC38oCyYYk7kkPNp61MTVbRC1O1Q+0vdmca1uZWR1cqlM23ndA+lO9dKpvTIZJneM/tOId53awcLJUY0qCV1klG4p6x5x/bTeQP6xY/ikuh72cQltB2dRKjGwrqnsJUH3pfRwB92LYjktskn0JQTPCF0E3LKwGKI4qKzB911lWcaBfpjHk9HQ1ZeS4YBfJKqE4DgNpMistILx0AYSRdR8LXJ5PPibefOXZb8QjxNLNVmkmdaRTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hVAG/dRMevZf3+AqrtKZpsHhjOmY69wWJqRZ32vFYbI=;
- b=YHr//f4pZhbkYaz54NWdiw/8CGC33fkFSqIQTUSZ3vi6aPyiHLL0gfhdMF0yQWjOHZxUoDW9EL/JGngc+fK6vTz6yvRucIY83symGUkObTJ0bgRdbs9z8anBHHXS3/QbDabtbSBi0281RB0oH4CKxwVxXw4GJm1mqaxGjJeLPcG9rMil4NwV2Q76XYzX1aYkc6RC9VLfK5nhh57GwIuOYptbIcojJhlNcSz9b6GzyltUkZOC3KZUdcH5nyRDNvhbU6S/T4ruyWSP2/k8rEKS3Glvxatd72dn8rWytrxH7MXNUMOi9VxYeNMycU5192R38qvB0cPxnDY0AYisIsT7aA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hVAG/dRMevZf3+AqrtKZpsHhjOmY69wWJqRZ32vFYbI=;
- b=VkCOYNpGLCdagJk9gLMQBx2gqJDFWt1batgai/QjoNOgyiRCuBiwmI4YUrGhaHX6gAUaoDcS6u+WoRfKyGTR5QweK9CsAx784yGH9sCeTeaYaP1XutlUtP1lNtEQgdf5Rjl3c3JjY/z5uvwid7vEJtgCIotB5ZTXXif65wxNl+eqBAnWahRk1E8vvtEl5oNhL1IRXmfcxpekBrYSAgZpuZ61RML8HG/9DAOtboHPRhS6xlQpsWD05ECPDRh7DF4yMEbAB9ORA6Yx4dmHFdQwSxlaohb2f2/Yg7SzJmkL3+9hEBzpiJaGc5pKjelyfGKaxuHx59sBmNGzXNQHdHOG7w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DM6PR12MB2618.namprd12.prod.outlook.com (2603:10b6:5:49::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Tue, 3 May
- 2022 15:23:43 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2%6]) with mapi id 15.20.5206.024; Tue, 3 May 2022
- 15:23:43 +0000
-Date:   Tue, 3 May 2022 12:23:36 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Qian Cai <quic_qiancai@quicinc.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [RESEND PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
-Message-ID: <20220503152336.GA3939@nvidia.com>
-References: <20220418005000.897664-1-baolu.lu@linux.intel.com>
- <20220502161204.GA22@qian>
- <20220502164216.GP8364@nvidia.com>
- <8b3d31ef-caf7-da92-fa95-0df378d5b091@arm.com>
+        Tue, 3 May 2022 11:28:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E91C63BBED
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:24:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651591495;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=d3hGKvDjDhA3A5CPaQDCX7CfmyhvahBgWk3Z2qwaPMg=;
+        b=gehLCKNaXnXVs3Qm+5wF9MhvfCjI/49QD73gXuRpCo3eUY3tvXyWhF5b+YBYmq9TtO+Lkv
+        iHy+XAW/jSlSrTFXCb6zKtzbk/SFaKXZTn5k1VIelKptQLpwOgvcZl1oYS33pQ2p7FbcwR
+        x1m/u1W1jKV3CFp60O/GocbdLDTTFG4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-622-5WN2CR5QOB-ZMM7mWcgrSQ-1; Tue, 03 May 2022 11:24:45 -0400
+X-MC-Unique: 5WN2CR5QOB-ZMM7mWcgrSQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4D32FA97710;
+        Tue,  3 May 2022 12:43:01 +0000 (UTC)
+Received: from horse.redhat.com (unknown [10.18.25.210])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3977340D2820;
+        Tue,  3 May 2022 12:43:01 +0000 (UTC)
+Received: by horse.redhat.com (Postfix, from userid 10451)
+        id E979B22570F; Tue,  3 May 2022 08:43:00 -0400 (EDT)
+Date:   Tue, 3 May 2022 08:43:00 -0400
+From:   Vivek Goyal <vgoyal@redhat.com>
+To:     Dharmendra Singh <dharamhans87@gmail.com>
+Cc:     miklos@szeredi.hu, linux-fsdevel@vger.kernel.org,
+        fuse-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        bschubert@ddn.com, Dharmendra Singh <dsingh@ddn.com>
+Subject: Re: [PATCH v4 1/3] FUSE: Implement atomic lookup + create
+Message-ID: <YnEjVMTYVd8S1Zbs@redhat.com>
+References: <20220502102521.22875-1-dharamhans87@gmail.com>
+ <20220502102521.22875-2-dharamhans87@gmail.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8b3d31ef-caf7-da92-fa95-0df378d5b091@arm.com>
-X-ClientProxiedBy: BLAPR03CA0079.namprd03.prod.outlook.com
- (2603:10b6:208:329::24) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1ca92f86-2cd1-4828-bd67-08da2d18e8a1
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2618:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB26184321C03FCBC4B87A85DFC2C09@DM6PR12MB2618.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XD1vbqLFIp9fF2TXXnCu8AqXaCTBn7RS58o4+fiPLLofKqZiET5SQ1muDFJc214gp14OwhCVpMCXUkGVHB+1TbFZJ8GB9xqtW2px2lNftdCXZW3iitbEUjPJVFgt7M3YYnhm3DGcRO/V7aTRRrYw9Y3Y8cBrh6bUaI8bZmHs6p3VDVoW2FFBIKCp/cYQaDRgpCoW/Yf3d8nKSxk+uJrJkT//UYwlFLgn4o9Bi1HOTrCNQw65Xj2raXi8xS1FzK1+y3uUCwguo/BQzMvsOY9aOa4CEmNQYYESQT1QIf1KQwjcU/HBkqYLvLaMXtj5XROUQuI1cUX++WLdXtg+FijVikN9syWH/II9axls7gDRPK/bsjtD+U0EqDdD+DXtsf/8WSWh7cM+tbVrImbmCy2NKqZ2Y16yoCkvcS6KLetIpfeSq0pdYQm37MrE5dTW1LpYr/LIY5Ml+CfUjIGHbv5D7R2f4nmo2sCq6JoUoOFNYzgY87Cth4meD7amzd4eiaFyaB374hYeypOEoZTSv80wd91NRR6o+4HQv9Kh1IqOhljt3FyyUetl/GaArescjMRL5RA3kzsmptlRjz7nh03zlCrbO0lwsxeX4etOnvJTV1jeAUHe3wqEHFynj6USKYIqX5mh7+uO0P53ezWLuG0M2g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(5660300002)(8936002)(508600001)(86362001)(2616005)(6512007)(26005)(6666004)(2906002)(186003)(1076003)(33656002)(4326008)(38100700002)(8676002)(6506007)(66556008)(66946007)(66476007)(54906003)(6916009)(316002)(36756003)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Xkm5AxQyMmPh4uy85yXXaHLwUhDo+QztFEw8vvrHZIaTfp0K4rm6NT4EEDEs?=
- =?us-ascii?Q?VbJi0oMhNZjQ/ZZAbaWQkSsbwhYif1xRyn8quRWUWJxoMiudg90n29AnlArP?=
- =?us-ascii?Q?4+RbTcbyAwBsbKkb5dVngWz1jolPStU58FOrs/ixz2HPSZNU+EOnH4HRCm5E?=
- =?us-ascii?Q?M/BS3rtxRNYKDlpIi4BilULjFBQyFhr9XF1/PHABgiJ9dIjDF2VJLlLALgVO?=
- =?us-ascii?Q?m/l27hqWFuEUKZHn9XxePPwSe4amPmG7h/G5qqBKHCt6HuNpYhhVwFKEatwX?=
- =?us-ascii?Q?Xgal/D0L1SRj1xACjSEnoWyLOHSUpuub4sya9V5JjEIp+4SFbh2ZFtve+9HQ?=
- =?us-ascii?Q?qLl/2uY/QMfIPdb6QkxfQFJIcwO9E+CPCoPY002p05yNVL59FFW7790OodpK?=
- =?us-ascii?Q?SjAUCtFo+xjTkeoYAYk4TiYFVt1VtZ9pJW2nIC1EYYdVKn35JjeNNkazPtTo?=
- =?us-ascii?Q?GX6FnIyWQR7x6Xd4Fq/akaNgJxmkgpnSZPvZC6RsHeSqt00CuV5duXpq4KQs?=
- =?us-ascii?Q?ET+b1PTwLDZYXKS42rUwFv8Vu89MW7CfR7DbdQ3i+t1IW7TF96yzfryIPoEF?=
- =?us-ascii?Q?Kl2PuYlvV1izGSJyTJp06YGHMZMQWMlFFsC9sNzgArlxb5F+GPZ1e9NeBDt7?=
- =?us-ascii?Q?M5XiSdAjoMTHm91FMcn0EVlrsYfsYc0QX/iId7lWmnrbRBC/iozbTqETVaGa?=
- =?us-ascii?Q?zFrH5wvlSwH+a3QSLg2lW1leltMrsiJO9Z0L9vvtQ/Yy9qqj4wDNN5AI+Xv0?=
- =?us-ascii?Q?HaaB0KzrbvyhTzW5M+vzeufDkArradspvhgm83F4s7pnX4CqBSTRwKeDjj59?=
- =?us-ascii?Q?j+ACRrKp9IJNHPYqRxmbkpZx7Jkd4uIGvNPtXISFm/zlSZ7ovnnJD/hLkpGI?=
- =?us-ascii?Q?FYZnQVZ+CA5VdTTE7LzkQC7qfyinCUR1m5B6zEZC/P9BuN5GPxwtRY7KSPPR?=
- =?us-ascii?Q?c01WrscAGkmw+kVuGbLz14v2jmlDaqlWkWO2icRy/7oNZXEmwWLZJ6RMC2S3?=
- =?us-ascii?Q?eijz5+S77OykGldIoPW8m+auqwYPK/X8QaZt25v+iu+AG5mxnLtaLJFftVrz?=
- =?us-ascii?Q?v9ZOsqxCMCAOnVnE3crKkN1x60zKikvqf8xHsg0kw8D7YeHidDwQh2L017Fu?=
- =?us-ascii?Q?RZZO0Qabt6HcBzTvLZUL6bcAGOcrgPUUFuxlN/uAD9gOKhJyU67byt5QeeAO?=
- =?us-ascii?Q?RfD5tI1JKtcc765oU/RiBV13RbPwvCG33LGfgYecSUhkyCoRkuYShlWlJz8y?=
- =?us-ascii?Q?1taerPnFM2HuyxF4trDvKB7dInDGoc10edDFJYrAhE/nlni8DuvC5x0nKD8P?=
- =?us-ascii?Q?Sa/7f/qACzCxQHJmMhDiY0ZC0GwUHpg/f+747jwFhHVcFNBisNfnw7EVDt22?=
- =?us-ascii?Q?Xxyf64y/GieXc1ovgB0L2whYnxicw2Y3Ek95sn0qIPWonwk24AQFrSNYEWid?=
- =?us-ascii?Q?Y4dNF32eHvjQtG2K19i3Wm9nZV8vZsA3GTHWVYuMvTQm8QxCMpU+a+VsTNiN?=
- =?us-ascii?Q?Dbe5ppIQkCQCi/XaAHMAnuRJ6AF18kCowI2CfL3iPnjL60lm6sywrRIpz6Y5?=
- =?us-ascii?Q?gcBpyTFeG5/pnjty72Hm4ctS6qMPrNoedvtbF98WW42HkzC/YB8qH5lN9ksZ?=
- =?us-ascii?Q?1kTrknB2lPRBpKp7Vo01DBUMkXSvO55ImrS/X20SVu4Txl9fBlbr9UlclcG+?=
- =?us-ascii?Q?F/nETt4xopzcO5rhtVDhw9NDzegVtv4YZ3YJ/R2RXE7/ooYOkuqzl4DJ5uvV?=
- =?us-ascii?Q?VL1Sk5t9MA=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ca92f86-2cd1-4828-bd67-08da2d18e8a1
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2022 15:23:43.2975
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: twom0PjHl0PpfSc55Ghn2NEzA3m0BEjuBp6yvsofUZrpJOduwv4QWd0ixuywi6j1
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2618
+In-Reply-To: <20220502102521.22875-2-dharamhans87@gmail.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 02:04:37PM +0100, Robin Murphy wrote:
-
-> > I'm guessing SMMU3 needs to call it's arm_smmu_detach_dev(master) from
-> > the detach_dev op and null it's cached copy of the domain, but I don't
-> > know this driver.. Robin?
+On Mon, May 02, 2022 at 03:55:19PM +0530, Dharmendra Singh wrote:
+> From: Dharmendra Singh <dsingh@ddn.com>
 > 
-> The original intent was that .detach_dev is deprecated in favour of default
-> domains, and when the latter are in use, a device is always attached
-> *somewhere* once probed (i.e. group->domain is never NULL). At face value,
-> the neatest fix IMO would probably be for SMMUv3's .domain_free to handle
-> smmu_domain->devices being non-empty and detach them at that point. However
-> that wouldn't be viable for virtio-iommu or anyone else keeping an internal
-> one-way association of devices to their current domains.
+> When we go for creating a file (O_CREAT), we trigger
+> a lookup to FUSE USER SPACE. It is very  much likely
+> that file does not exist yet as O_CREAT is passed to
+> open(). This lookup can be avoided and can be performed
+> as part of create call into libfuse.
+> 
+> This lookup + create in single call to libfuse and finally
+> to USER SPACE has been named as atomic create.
 
-Oh wow that is not obvious
+Looking at it and trying to understand if lookup can be avoided. But
+before that this naming of calling it atomic create seems confusing.
 
-Actually, I think it is much worse than this because
-iommu_group_claim_dma_owner() does a __iommu_detach_group() with the
-expecation that this would actually result in DMA being blocked,
-immediately. The idea that __iomuu_detatch_group() is a NOP is kind of
-scary.
+We already have fuse_create_open() which we are calling it as 
+"Atomic create+open operation". Now looks like this is extension
+to this operation where we are doing "Atomic lookup + create + open".
+Do I understand it correctly?
 
-Leaving the group attached to the kernel DMA domain will allow
-userspace to DMA to all kernel memory :\
+Thanks
+Vivek
 
-So one approach could be to block use of iommu_group_claim_dma_owner()
-if no detatch_dev op is present and then go through and put them back
-or do something else. This could be short-term OK if we add an op to
-SMMUv3, but long term everything would have to be fixed
+> It is expected
+> that USER SPACE create the file, open it and fills in the
+> attributes which are then used to make inode stand/revalidate
+> in the kernel cache. Also if file was newly created(does not
+> exist yet by this time) in USER SPACE then it should be indicated
+> in `struct fuse_file_info` by setting a bit which is again used by
+> libfuse to send some flags back to fuse kernel to indicate that
+> that file was newly created. These flags are used by kernel to
+> indicate changes in parent directory.
+> 
+> Fuse kernel automatically detects if atomic create is implemented
+> by libfuse/USER SPACE or not. And depending upon the outcome of
+> this check all further creates are decided to be atomic or non-atomic
+> creates.
+> 
+> If libfuse/USER SPACE has not implemented the atomic create operation
+> then by default behaviour remains same i.e we do not optimize lookup
+> calls which are triggered before create calls into libfuse.
+> 
+> Signed-off-by: Dharmendra Singh <dsingh@ddn.com>
+> ---
+>  fs/fuse/dir.c             | 82 +++++++++++++++++++++++++++++++++++----
+>  fs/fuse/fuse_i.h          |  3 ++
+>  include/uapi/linux/fuse.h |  3 ++
+>  3 files changed, 81 insertions(+), 7 deletions(-)
+> 
+> diff --git a/fs/fuse/dir.c b/fs/fuse/dir.c
+> index 656e921f3506..cad3322a007f 100644
+> --- a/fs/fuse/dir.c
+> +++ b/fs/fuse/dir.c
+> @@ -523,7 +523,7 @@ static int get_security_context(struct dentry *entry, umode_t mode,
+>   */
+>  static int fuse_create_open(struct inode *dir, struct dentry *entry,
+>  			    struct file *file, unsigned int flags,
+> -			    umode_t mode)
+> +			    umode_t mode, uint32_t opcode)
+>  {
+>  	int err;
+>  	struct inode *inode;
+> @@ -535,8 +535,10 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
+>  	struct fuse_entry_out outentry;
+>  	struct fuse_inode *fi;
+>  	struct fuse_file *ff;
+> +	struct dentry *res = NULL;
+>  	void *security_ctx = NULL;
+>  	u32 security_ctxlen;
+> +	bool atomic_create = (opcode == FUSE_ATOMIC_CREATE ? true : false);
+>  
+>  	/* Userspace expects S_IFREG in create mode */
+>  	BUG_ON((mode & S_IFMT) != S_IFREG);
+> @@ -566,7 +568,7 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
+>  		inarg.open_flags |= FUSE_OPEN_KILL_SUIDGID;
+>  	}
+>  
+> -	args.opcode = FUSE_CREATE;
+> +	args.opcode = opcode;
+>  	args.nodeid = get_node_id(dir);
+>  	args.in_numargs = 2;
+>  	args.in_args[0].size = sizeof(inarg);
+> @@ -613,9 +615,44 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
+>  		goto out_err;
+>  	}
+>  	kfree(forget);
+> -	d_instantiate(entry, inode);
+> +	/*
+> +	 * In atomic create, we skipped lookup and it is very much likely that
+> +	 * dentry has DCACHE_PAR_LOOKUP flag set on it so call d_splice_alias().
+> +	 * Note: Only REG file is allowed under create/atomic create.
+> +	 */
+> +	/* There is special case when at very first call where we check if
+> +	 * atomic create is implemented by USER SPACE/libfuse or not, we
+> +	 * skipped lookup. Now, in case where atomic create is not implemented
+> +	 * underlying, we fall back to FUSE_CREATE. here we are required to handle
+> +	 * DCACHE_PAR_LOOKUP flag.
+> +	 */
+> +	if (!atomic_create && !d_in_lookup(entry) && fm->fc->no_atomic_create)
+> +		d_instantiate(entry, inode);
+> +	else {
+> +		res = d_splice_alias(inode, entry);
+> +		if (res) {
+> +			 /* Close the file in user space, but do not unlink it,
+> +			  * if it was created - with network file systems other
+> +			  * clients might have already accessed it.
+> +			  */
+> +			if (IS_ERR(res)) {
+> +				fi = get_fuse_inode(inode);
+> +				fuse_sync_release(fi, ff, flags);
+> +				fuse_queue_forget(fm->fc, forget, outentry.nodeid, 1);
+> +				err = PTR_ERR(res);
+> +				goto out_err;
+> +			}
+> +			/* res is expected to be NULL since its REG file */
+> +			WARN_ON(res);
+> +		}
+> +	}
+>  	fuse_change_entry_timeout(entry, &outentry);
+> -	fuse_dir_changed(dir);
+> +	/*
+> +	 * In case of atomic create, we want to indicate directory change
+> +	 * only if USER SPACE actually created the file.
+> +	 */
+> +	if (!atomic_create || (outopen.open_flags & FOPEN_FILE_CREATED))
+> +		fuse_dir_changed(dir);
+>  	err = finish_open(file, entry, generic_file_open);
+>  	if (err) {
+>  		fi = get_fuse_inode(inode);
+> @@ -634,6 +671,29 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
+>  	return err;
+>  }
+>  
+> +static int fuse_atomic_create(struct inode *dir, struct dentry *entry,
+> +			      struct file *file, unsigned int flags,
+> +			      umode_t mode)
+> +{
+> +	int err;
+> +	struct fuse_conn *fc = get_fuse_conn(dir);
+> +
+> +	if (fc->no_atomic_create)
+> +		return -ENOSYS;
+> +
+> +	err = fuse_create_open(dir, entry, file, flags, mode,
+> +			       FUSE_ATOMIC_CREATE);
+> +	/* If atomic create is not implemented then indicate in fc so that next
+> +	 * request falls back to normal create instead of going into libufse and
+> +	 * returning with -ENOSYS.
+> +	 */
+> +	if (err == -ENOSYS) {
+> +		if (!fc->no_atomic_create)
+> +			fc->no_atomic_create = 1;
+> +	}
+> +	return err;
+> +}
+> +
+>  static int fuse_mknod(struct user_namespace *, struct inode *, struct dentry *,
+>  		      umode_t, dev_t);
+>  static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
+> @@ -643,11 +703,12 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
+>  	int err;
+>  	struct fuse_conn *fc = get_fuse_conn(dir);
+>  	struct dentry *res = NULL;
+> +	bool create = flags & O_CREAT ? true : false;
+>  
+>  	if (fuse_is_bad(dir))
+>  		return -EIO;
+>  
+> -	if (d_in_lookup(entry)) {
+> +	if ((!create || fc->no_atomic_create) && d_in_lookup(entry)) {
+>  		res = fuse_lookup(dir, entry, 0);
+>  		if (IS_ERR(res))
+>  			return PTR_ERR(res);
+> @@ -656,7 +717,7 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
+>  			entry = res;
+>  	}
+>  
+> -	if (!(flags & O_CREAT) || d_really_is_positive(entry))
+> +	if (!create || d_really_is_positive(entry))
+>  		goto no_open;
+>  
+>  	/* Only creates */
+> @@ -665,7 +726,13 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
+>  	if (fc->no_create)
+>  		goto mknod;
+>  
+> -	err = fuse_create_open(dir, entry, file, flags, mode);
+> +	err = fuse_atomic_create(dir, entry, file, flags, mode);
+> +	/* Libfuse/user space has not implemented atomic create, therefore
+> +	 * fall back to normal create.
+> +	 */
+> +	if (err == -ENOSYS)
+> +		err = fuse_create_open(dir, entry, file, flags, mode,
+> +				       FUSE_CREATE);
+>  	if (err == -ENOSYS) {
+>  		fc->no_create = 1;
+>  		goto mknod;
+> @@ -683,6 +750,7 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
+>  }
+>  
+>  /*
+> +
+>   * Code shared between mknod, mkdir, symlink and link
+>   */
+>  static int create_new_entry(struct fuse_mount *fm, struct fuse_args *args,
+> diff --git a/fs/fuse/fuse_i.h b/fs/fuse/fuse_i.h
+> index e8e59fbdefeb..d577a591ab16 100644
+> --- a/fs/fuse/fuse_i.h
+> +++ b/fs/fuse/fuse_i.h
+> @@ -669,6 +669,9 @@ struct fuse_conn {
+>  	/** Is open/release not implemented by fs? */
+>  	unsigned no_open:1;
+>  
+> +	/** Is atomic create not implemented by fs? */
+> +	unsigned no_atomic_create:1;
+> +
+>  	/** Is opendir/releasedir not implemented by fs? */
+>  	unsigned no_opendir:1;
+>  
+> diff --git a/include/uapi/linux/fuse.h b/include/uapi/linux/fuse.h
+> index d6ccee961891..e4b56004b148 100644
+> --- a/include/uapi/linux/fuse.h
+> +++ b/include/uapi/linux/fuse.h
+> @@ -301,6 +301,7 @@ struct fuse_file_lock {
+>   * FOPEN_CACHE_DIR: allow caching this directory
+>   * FOPEN_STREAM: the file is stream-like (no file position at all)
+>   * FOPEN_NOFLUSH: don't flush data cache on close (unless FUSE_WRITEBACK_CACHE)
+> + * FOPEN_FILE_CREATED: the file was actually created
+>   */
+>  #define FOPEN_DIRECT_IO		(1 << 0)
+>  #define FOPEN_KEEP_CACHE	(1 << 1)
+> @@ -308,6 +309,7 @@ struct fuse_file_lock {
+>  #define FOPEN_CACHE_DIR		(1 << 3)
+>  #define FOPEN_STREAM		(1 << 4)
+>  #define FOPEN_NOFLUSH		(1 << 5)
+> +#define FOPEN_FILE_CREATED	(1 << 6)
+>  
+>  /**
+>   * INIT request/reply flags
+> @@ -537,6 +539,7 @@ enum fuse_opcode {
+>  	FUSE_SETUPMAPPING	= 48,
+>  	FUSE_REMOVEMAPPING	= 49,
+>  	FUSE_SYNCFS		= 50,
+> +	FUSE_ATOMIC_CREATE	= 51,
+>  
+>  	/* CUSE specific operations */
+>  	CUSE_INIT		= 4096,
+> -- 
+> 2.17.1
+> 
 
-Or we can allocate a dummy empty/blocked domain during
-iommu_group_claim_dma_owner() and attach it whenever.
-
-The really ugly trick is that detatch cannot fail, so attach to this
-blocking domain must also not fail - IMHO this is a very complicated
-API to expect for the driver to implement correctly... I see there is
-already a WARN_ON that attaching to the default domain cannot
-fail. Maybe this warrants an actual no-fail attach op so the driver
-can be more aware of this..
-
-And some of these internal APIs could stand some adjusting if we
-really never want a true "detatch" it is always some kind of
-replace/swap type operation, either to the default domain or to the
-blocking domain.
-
-> We *could* stay true to the original paradigm by introducing some real usage
-> of IOMMU_DOMAIN_BLOCKED, such that we could keep one or more of those around
-> to actively attach to instead of having groups in this unattached limbo
-> state, but that's a bigger job involving adding support to drivers as well;
-> too much for a quick fix now...
-
-I suspect for the short term we can get by with an empty mapping
-domain - using DOMAIN_BLOCKED is a bit of a refinement.
-
-Thanks,
-Jason
