@@ -2,111 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE7FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 02:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C43A0C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 02:46:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230168AbiECCsh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 22:48:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60362 "EHLO
+        id S230194AbiECCtt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 22:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbiECCse (ORCPT
+        with ESMTP id S230179AbiECCts (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 22:48:34 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65624369FB;
-        Mon,  2 May 2022 19:45:04 -0700 (PDT)
+        Mon, 2 May 2022 22:49:48 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB0735864;
+        Mon,  2 May 2022 19:46:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651545904; x=1683081904;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=/bNB+zpgktSurx6RJChgfpna9Tyajeuzw4/vl6QYpPw=;
-  b=TG+cNY6+i7y/I06nmNHCGPOefEvbtG/Dap6aT0FrKhvuCFLE+T1ueAL1
-   ZljzBvHbDFBOCthr/WPlRBk3ICZTVAKw7XeoLlQSYZIcuJA3N9goWsU+6
-   DDgg2ItbmS573ylI+wTXPXrIJt7ENnweIGw9XHN43O9eNCe5oQzFAIhbl
-   S3FQSwJoONK63FbVHPBuGhrRZHCh6hUC7WwAGRtrik170E402ckTeXvG8
-   THQP39Vtbqm+wXkAfufjhczHM6SJVx10Yn5auWHMxqcatefTh9pqFCuC8
-   o2nmMAAQcPz9iNPZ5LuRCEQUsbIcY+7RgZcnMFDVDWAd2rUQ9F6kCjtg+
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="292568132"
+  t=1651545976; x=1683081976;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0glE8nzzXqDvLLZUoukgdh79WOnXvu208QqhSBt79JI=;
+  b=MCkwdDBGILoiQtv1lqw67mYoFO6WtWQLt1DmJywFefBOIHH0QcAzywOz
+   ht+93EnKZt8oj6xfE7DZEtsXMt8yUs1T5nuffkIj0CRNAlZSO+r/V8WDc
+   dFER8VobKzu+1hfKPeNkJN0Q2jzFElf6Ez/OkqobFsW34tFk3Lq76aptC
+   H4Cq9PuzQmiss9yq00mUffksX1iIsSTeYGTttqDDRqeD5AEzqGPp0l/UF
+   Tv+FiigvuEmmpRkQkPCfdQ2mgsN5iobY0CCusbIXEY2d9V0kpXjfIuvlF
+   mFm054jKyUDpobGuy0UYeJLkp2n4rpUt7OWj+jTA3vvWMXR9r/CeSrjlm
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="254843575"
 X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
-   d="scan'208";a="292568132"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 19:45:04 -0700
+   d="scan'208";a="254843575"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 19:46:16 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
-   d="scan'208";a="584008817"
-Received: from zengguan-mobl1.ccr.corp.intel.com (HELO [10.252.188.134]) ([10.252.188.134])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 19:44:58 -0700
-Message-ID: <ad1ede19-3b48-818a-5c6e-bab37e5c5539@intel.com>
-Date:   Tue, 3 May 2022 10:44:50 +0800
+   d="scan'208";a="653090183"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 02 May 2022 19:46:14 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nliYH-000A5V-QF;
+        Tue, 03 May 2022 02:46:13 +0000
+Date:   Tue, 3 May 2022 10:45:32 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ARM: dove: fix returnvar.cocci warnings
+Message-ID: <YnCXTPrbLhvfRVDm@e3a974050dc4>
+References: <202205031017.4TwMan3l-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v9 9/9] KVM: VMX: enable IPI virtualization
-Content-Language: en-US
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "Huang, Kai" <kai.huang@intel.com>
-Cc:     "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Hu, Robert" <robert.hu@intel.com>,
-        "Gao, Chao" <chao.gao@intel.com>
-References: <20220419154510.11938-1-guang.zeng@intel.com>
- <bcb2a90f-a2ed-94fa-985e-d7b9efe52ae4@redhat.com>
-From:   Zeng Guang <guang.zeng@intel.com>
-In-Reply-To: <bcb2a90f-a2ed-94fa-985e-d7b9efe52ae4@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202205031017.4TwMan3l-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: kernel test robot <lkp@intel.com>
 
-On 5/3/2022 12:16 AM, Paolo Bonzini wrote:
-> On 4/19/22 17:45, Zeng Guang wrote:
->> +static bool vmx_can_use_pi_wakeup(struct kvm_vcpu *vcpu)
->> +{
->> +	/*
->> +	 * If a blocked vCPU can be the target of posted interrupts,
->> +	 * switching notification vector is needed so that kernel can
->> +	 * be informed when an interrupt is posted and get the chance
->> +	 * to wake up the blocked vCPU. For now, using posted interrupt
->> +	 * for vCPU wakeup when IPI virtualization or VT-d PI can be
->> +	 * enabled.
->> +	 */
->> +	return vmx_can_use_ipiv(vcpu) || vmx_can_use_vtd_pi(vcpu->kvm);
->> +}
-> Slightly more accurate name and comment:
->
-> static bool vmx_needs_pi_wakeup(struct kvm_vcpu *vcpu)
-> {
->           /*
->            * The default posted interrupt vector does nothing when
->            * invoked outside guest mode.   Return whether a blocked vCPU
->            * can be the target of posted interrupts, as is the case when
->            * using either IPI virtualization or VT-d PI, so that the
->            * notification vector is switched to the one that calls
->            * back to the pi_wakeup_handler() function.
->            */
->           return vmx_can_use_ipiv(vcpu) || vmx_can_use_vtd_pi(vcpu->kvm);
-> }
->
->
-> Paolo
-Thanks. It's much accurate and better to describe the functionality of 
-this API.
-I will change it.
+arch/arm/mach-omap2/dma.c:82:10-16: Unneeded variable: "errata". Return "0" on line 161
+
+
+ Remove unneeded variable used to store return value.
+
+Generated by: scripts/coccinelle/misc/returnvar.cocci
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
+---
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+head:   9f9b9a2972eb8dcaad09d826c5c6d7488eaca3e6
+commit: 09f6b27d5ddd9ad0ec096d1b0f8decdacc70f0f8 [1066/8035] ARM: dove: multiplatform support
+:::::: branch date: 15 hours ago
+:::::: commit date: 4 weeks ago
+
+ arch/arm/mach-omap2/dma.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+--- a/arch/arm/mach-omap2/dma.c
++++ b/arch/arm/mach-omap2/dma.c
+@@ -79,8 +79,6 @@ static const struct omap_dma_reg reg_map
+ 
+ static unsigned configure_dma_errata(void)
+ {
+-	unsigned errata = 0;
+-
+ 	/*
+ 	 * Errata applicable for OMAP2430ES1.0 and all omap2420
+ 	 *
+@@ -158,7 +156,7 @@ static unsigned configure_dma_errata(voi
+ 	if (cpu_is_omap34xx() && (omap_type() != OMAP2_DEVICE_TYPE_GP))
+ 		SET_DMA_ERRATA(DMA_ROMCODE_BUG);
+ 
+-	return errata;
++	return 0;
+ }
+ 
+ static const struct dma_slave_map omap24xx_sdma_dt_map[] = {
