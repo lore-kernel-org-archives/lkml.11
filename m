@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E62BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:54:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46869C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231179AbiECG5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 02:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47006 "EHLO
+        id S231396AbiECG5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 02:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230483AbiECG43 (ORCPT
+        with ESMTP id S230453AbiECG40 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 02:56:29 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457351A82C
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:52:14 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id g6so31692344ejw.1
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 23:52:14 -0700 (PDT)
+        Tue, 3 May 2022 02:56:26 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E221A069
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:52:10 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id k23so31673069ejd.3
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 23:52:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZIGxwKJ/Xe8wH7s0ybpa7g9C2aeLAWID2un0fZf5uMo=;
-        b=qj15gElKMaakF51ZR6R/CMfWiS7bMRdDHn53Xm88wnJrmDD++GYBIPmydqnNRA5sD5
-         6+q6gyCxnIfGShTyNjNrNj5Ds8tSDvl1G7xzFO8Sa9NeFCavVvpy1806aXw2URxPPB61
-         EHJ4V0FdhSvjd2FnxDJ9ogUmjEcnBE23UEoq8IM34cNjyuZ9xu2DjapPKyfEgCiZwqqh
-         PvpBCdJmD8sYo8DFsFXoh/T0/buwS41KxpGKKSlow6gzLIOizZUa14Vd/YJXk+qzdxgB
-         E3MC/F13GmWYzBtkP+mDt13rlyMnx/QUtrOlg86EOuYEEme2flVtNf20kKYomzlh3XbY
-         HROg==
+        bh=e/Q3zfGtgiMHzbjJMnG2PTBdvq5LVXiuIrva5mDt1sI=;
+        b=V1SsVkPhuDxv+i24Hg4azo6Fj3jkJpm/dIAlQxE3zYW/SBc1gHsMU2myuVkI6Q9f0c
+         qCvvaNyZ4TRHQiAaTZWOeWnyik/ln/GslJFLL9yu8xtAzBMzLnsIUbcivktyassSWOTC
+         ezcSbpV/rSPbV0WuDwT5My6T6h/jDhyFDfCz5XLfuqbbAceai1eCkFZLrNCZZ6I7zJ5N
+         zszJv6PPiV/+z0eCJcd2tvL+EsRDyvBljOXjq7ASJg3ckrYvEnjgWYkL153vTwBp1ePA
+         fa0ez0XiZ++ekSNmfgl5nry1FiB774ZZscJxBPMFTqwNLzUzn9IutrktCCw/QCCNwuSe
+         S8fQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZIGxwKJ/Xe8wH7s0ybpa7g9C2aeLAWID2un0fZf5uMo=;
-        b=Ixu/yxdSfQ5UtZ3m2Sd9m/nno/pMxpKMtls18rD34YQwujW6xxkef7ykpitR0B+CaN
-         k7xJDSsu2i965SzqQC724CjkJ8OrFI5PHJeWvXQGMkUptJyv3Pi0kszIrho1M3HTfYdG
-         WjbIKjqzG8pur74jEm9Ardk2IXarNgJSF0FZdtzqTTYPyEVpfOMnVLhc+/uZLnkDxFRN
-         kigyyY/FYeZfkJ2mP/ZD9k9GdBA5sbPrFgFn9tmxhzJrtKx+r9g3uzLG0Dk+e2/t6eG5
-         xU3J1pNVb7aeO51vjPtWngKR+Y5p9w9jum0/Bg/wl1WjqvbQmiRMEgcUkXh/sZZFCacr
-         zf9w==
-X-Gm-Message-State: AOAM533q4YqP98Ou+4Zelb0BTz9Fo6YEI/GeZu7fc4gMvGmYiRYPg1V9
-        ptXAszDep2OLCBXQ5oz3BIRnTw==
-X-Google-Smtp-Source: ABdhPJx3GV6N9roneIKzcY/dVCXCn9yS7etjaOFVuf7IhAKvkRpb5Z/aaFPh+B4A4fuSZ7UHH9cApw==
-X-Received: by 2002:a17:906:9749:b0:6ef:bc52:1f94 with SMTP id o9-20020a170906974900b006efbc521f94mr14192498ejy.666.1651560732570;
-        Mon, 02 May 2022 23:52:12 -0700 (PDT)
+        bh=e/Q3zfGtgiMHzbjJMnG2PTBdvq5LVXiuIrva5mDt1sI=;
+        b=CI9wFsVudWsXrM3O3psuST2aRkV83CXLVsNLSDIvggbHLkBWxTpNLj+I22CPl+eMU1
+         x0QHRWci/llOuanrocT0QHdAF/a/hF7RxbqavTU52MiV24MiJGck0By81M7YTrR1TL7T
+         EgANkyDMcJLiygQ0/kFS7b8OwXXOh9l65JFuBQN4ag8v5YzvhLLQ3kzl0l/MjM0uGbye
+         qoOfg1OU9QCqJWy/98g+8WXo6IwvbNm6wR/3EnrgsNj5eO9h8V2//33FrtGauAAXS3QE
+         Y8t2sVVATz9w/pc3EiPNtSDdBMeFDQcFHLZnsFNU9L7aMF/+hzstQtzMFQPXBuHY1rbA
+         WN7g==
+X-Gm-Message-State: AOAM5304YeFTzOInHYJFNWbmrhusp5ZL3ay/i2eK5pE2vYHrQVkXYoZ9
+        AtkqIkE1EnO5wciLZhtHZx1vEw==
+X-Google-Smtp-Source: ABdhPJyQwRdpiF3Jb/6B4GvAdOz4XZNf3S/CRRMWr5NkJARVW4yJ+uqpZsPaR3UnFWYen80b2NKh/Q==
+X-Received: by 2002:a17:907:9482:b0:6da:8ad6:c8b5 with SMTP id dm2-20020a170907948200b006da8ad6c8b5mr14137005ejc.372.1651560729585;
+        Mon, 02 May 2022 23:52:09 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id hf27-20020a1709072c5b00b006f3ef214e2fsm4382915ejc.149.2022.05.02.23.52.11
+        by smtp.gmail.com with ESMTPSA id hf27-20020a1709072c5b00b006f3ef214e2fsm4382915ejc.149.2022.05.02.23.52.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 23:52:11 -0700 (PDT)
+        Mon, 02 May 2022 23:52:09 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -60,9 +60,9 @@ To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         dmaengine@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v3 5/6] ARM: dts: da850: use new 'dma-channels' property
-Date:   Tue,  3 May 2022 08:52:00 +0200
-Message-Id: <20220503065201.51818-6-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 3/6] dmaengine: ti: deprecate '#dma-channels'
+Date:   Tue,  3 May 2022 08:51:58 +0200
+Message-Id: <20220503065201.51818-4-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220503065201.51818-1-krzysztof.kozlowski@linaro.org>
 References: <20220503065201.51818-1-krzysztof.kozlowski@linaro.org>
@@ -72,29 +72,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The '#dma-channels' property was deprecated in favor of one defined by
-generic dma-common DT bindings.  Add new property while keeping old one
-for backwards compatibility.
+The generic property, used in most of the drivers and defined in generic
+dma-common DT bindings, is 'dma-channels'.  Switch to new property while
+keeping backward compatibility.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Tony Lindgren <tony@atomide.com>
 ---
- arch/arm/boot/dts/da850.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/dma/ti/cppi41.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/da850.dtsi b/arch/arm/boot/dts/da850.dtsi
-index c3942b4e82ad..0386376fa486 100644
---- a/arch/arm/boot/dts/da850.dtsi
-+++ b/arch/arm/boot/dts/da850.dtsi
-@@ -679,7 +679,9 @@ cppi41dma: dma-controller@201000 {
- 					    "scheduler", "queuemgr";
- 				interrupts = <58>;
- 				#dma-cells = <2>;
-+				/* For backwards compatibility: */
- 				#dma-channels = <4>;
-+				dma-channels = <4>;
- 				power-domains = <&psc1 1>;
- 				status = "okay";
- 			};
+diff --git a/drivers/dma/ti/cppi41.c b/drivers/dma/ti/cppi41.c
+index 062bd9bd4de0..695915dba707 100644
+--- a/drivers/dma/ti/cppi41.c
++++ b/drivers/dma/ti/cppi41.c
+@@ -1105,8 +1105,12 @@ static int cppi41_dma_probe(struct platform_device *pdev)
+ 	cdd->qmgr_num_pend = glue_info->qmgr_num_pend;
+ 	cdd->first_completion_queue = glue_info->first_completion_queue;
+ 
++	/* Parse new and deprecated dma-channels properties */
+ 	ret = of_property_read_u32(dev->of_node,
+-				   "#dma-channels", &cdd->n_chans);
++				   "dma-channels", &cdd->n_chans);
++	if (ret)
++		ret = of_property_read_u32(dev->of_node,
++					   "#dma-channels", &cdd->n_chans);
+ 	if (ret)
+ 		goto err_get_n_chans;
+ 
 -- 
 2.32.0
 
