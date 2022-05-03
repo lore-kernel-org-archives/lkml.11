@@ -2,100 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4511C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 22:22:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC496C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 22:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243699AbiECWZj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 18:25:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
+        id S243651AbiECW1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 18:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243649AbiECWZa (ORCPT
+        with ESMTP id S236979AbiECW1U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 18:25:30 -0400
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A4F640A26;
-        Tue,  3 May 2022 15:21:57 -0700 (PDT)
-Received: by mail-oi1-f175.google.com with SMTP id v65so19617920oig.10;
-        Tue, 03 May 2022 15:21:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=OSLTDCz5wo2JoJLvzX6uS8zgmzcMDJX9Q7s2zJJuaxA=;
-        b=IK7+9NrERJiwVThbT5W4NKGMf3QL62lRTf7TRLZChOjBhl30usCNIGSi4vCeR61+jh
-         EDgMG7OLSk7nnGa+a8R4gaN3BPU0GpqTsoMTMcbBBSrn2NMlz1RT9w70Kp5o1U+LXk2N
-         ES31TLwoDi64166alXcaNYgV1MaGRl8M7i2efKNMQnnJiOSY2+/DgPwbZGbBw7rN2wPB
-         8JrMdz9GqVxeO7kWuC5Gng3SVogVQcipM3XoayZvxroDpgkw9uHWlE4DAtswlbTrodDA
-         8vUQ/pImX+38YT+ie6KpIgd9VALZvHQU6fzXEwz/gYl296N8dGrI7/MLCBGIgqpYiXpV
-         PJBg==
-X-Gm-Message-State: AOAM5315xf6PH57r8hWhVMMebxJmBQDc7pTpVPYtyEVT0g27BWxIVwZD
-        kK6KBDv5cnyzCg8BiWgp9dZwS4yB4w==
-X-Google-Smtp-Source: ABdhPJx5INNn38v4TDM5wD8bxSFNca1P0/aa3o058Xc7kDhuig9wsXCfl69wBBxg+VrUV1x9E+mPfQ==
-X-Received: by 2002:a05:6808:1441:b0:325:7604:4ec1 with SMTP id x1-20020a056808144100b0032576044ec1mr2746356oiv.1.1651616516541;
-        Tue, 03 May 2022 15:21:56 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id z17-20020a05683020d100b0060603221244sm4497062otq.20.2022.05.03.15.21.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 15:21:56 -0700 (PDT)
-Received: (nullmailer pid 139792 invoked by uid 1000);
-        Tue, 03 May 2022 22:21:51 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Quentin Schulz <foss+kernel@0leil.net>
-Cc:     linux-kernel@vger.kernel.org, mchehab@kernel.org,
-        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
-        robh+dt@kernel.org, linux-media@vger.kernel.org,
-        shawnx.tu@intel.com
-In-Reply-To: <20220503154259.1166203-1-foss+kernel@0leil.net>
-References: <20220503154259.1166203-1-foss+kernel@0leil.net>
-Subject: Re: [PATCH 1/3] media: dt-bindings: ov5675: document YAML binding
-Date:   Tue, 03 May 2022 17:21:51 -0500
-Message-Id: <1651616511.172886.139791.nullmailer@robh.at.kernel.org>
+        Tue, 3 May 2022 18:27:20 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11F542484
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 15:23:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651616626; x=1683152626;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=9zdbw4LKyv8n+MHXZDAhivyjG4ISyB+mlaJTfVNezJw=;
+  b=VDV20spyUSiqTOcfk+LdJ7CfAGRwe6m123wtCg0PvlILaAJyvTfJaQb0
+   hCNzH/iX4zE8DhagIaL4QSNIA3oAADxQ2vqtsVACG7AJu+xVmeClceVIL
+   Jjj+6NjlihORox6S2YynaejrE2nGnSChygbwhZBvqa39G+bqL6EitZBAl
+   RySuHX83WoMpNNCnrjo8RPBV4Zkb10knLebXbtd7iGZa+clYJ1we3yE8f
+   GfAzn8W9SNRruaLPiMS9XiTYeZJAkxVJyecmEgsrllKkD8hhM91K0ZONz
+   HFK8d1AzuCagfB+CmnEt91GvaEWKvflBJaUrpOpQPaCrA9z5ApyxXZEFP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="247512028"
+X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
+   d="scan'208";a="247512028"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 15:23:46 -0700
+X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
+   d="scan'208";a="664175189"
+Received: from dbandax-mobl2.amr.corp.intel.com (HELO [10.209.188.251]) ([10.209.188.251])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 15:23:45 -0700
+Message-ID: <58d07b2d-cef5-17ed-9c57-e12fe5665e04@intel.com>
+Date:   Tue, 3 May 2022 15:24:05 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v5 3/3] x86/tdx: Add Quote generation support
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Kai Huang <kai.huang@intel.com>
+Cc:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+References: <20220501183500.2242828-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220501183500.2242828-4-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <243e918c523320ba3d216cbe22d24fe5ce33f370.camel@intel.com>
+ <20220503012721.ok7fbvxmnvsr6qny@box.shutemov.name>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220503012721.ok7fbvxmnvsr6qny@box.shutemov.name>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 03 May 2022 17:42:57 +0200, Quentin Schulz wrote:
-> From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
-> 
-> This patch adds documentation of device tree in YAML schema for the
-> OV5675 CMOS image sensor from Omnivision.
-> 
-> Cc: Quentin Schulz <foss+kernel@0leil.net>
-> Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
-> ---
->  .../bindings/media/i2c/ovti,ov5675.yaml       | 137 ++++++++++++++++++
->  MAINTAINERS                                   |   1 +
->  2 files changed, 138 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/media/i2c/ovti,ov5675.yaml
-> 
+On 5/2/22 18:27, Kirill A. Shutemov wrote:
+>> Again, Dave and Andi already commented you should use vmap() to avoid breaking
+>> up the direct-mapping.  Please use vmap() instead.
+>>
+>> https://lore.kernel.org/all/ce0feeec-a949-35f8-3010-b0d69acbbc2e@linux.intel.com/
+>>
+>> Will review the rest later.
+> I would rather convert it to use DMA API for memory allocation. It will
+> tap into swiotlb buffer that already converted and there's no need to
+> touch direct mapping. Both allocation and freeing such memory is cheaper
+> because of that.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Sathya, I don't quite understand why you are so forcefully declining to
+incorporate review feedback on this point.  I gave very specific
+feedback about the kind of mapping you need and that you should avoid
+fragmenting the direct map if at all possible.
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-./Documentation/devicetree/bindings/media/i2c/ovti,ov5675.yaml: $id: relative path/filename doesn't match actual path or filename
-	expected: http://devicetree.org/schemas/media/i2c/ovti,ov5675.yaml#
-Error: Documentation/devicetree/bindings/media/i2c/ovti,ov5675.example.dts:30.39-40 syntax error
-FATAL ERROR: Unable to parse input tree
-make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/media/i2c/ovti,ov5675.example.dtb] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1401: dt_binding_check] Error 2
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Why is this code still fragmenting the direct map?
