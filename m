@@ -2,157 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8589FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 151FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:18:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238092AbiECPVc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:21:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50636 "EHLO
+        id S238109AbiECPVw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:21:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237990AbiECPV1 (ORCPT
+        with ESMTP id S236468AbiECPVs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:21:27 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37BC93A5D1
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:17:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651591075; x=1683127075;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=+Xz6Ln5q443Z2ALPSncn4/b7gf6beXhMjiot51vykZg=;
-  b=iWOoYLEju16jjDvfRCJJEBaAxSXq8cYiySZOBJ1Gxpi1uulLe3xA+ECr
-   +9kcC+bTAgpXryIXd7vKZFlWmOJbwpFy/iDmiPtpDpYq+r+gttrTjVp5b
-   a1JLgG3b77pn4uGut7bFxbEVQtZbW7xIlSItMtADgpndgU+fChm+PuYsj
-   0nht4Aeut0sUFhWpv4jAV6oI8VTPaRfcePxisOp4+SlXfOG9mq5Tr6Hp8
-   82hzDfhQ2kxOQGoAJS6me2k/OsVZRy6ZRylHNjYVCl4uWLFA8VE24EoFt
-   h2ZiDwT0Koquqhi4dF6bWF/YQFSLzEzFZPRKwjHgjkSKywk8wyNR8/KQo
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="267380539"
-X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="267380539"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 08:17:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="733951527"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 03 May 2022 08:17:53 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nluHg-000AYx-SM;
-        Tue, 03 May 2022 15:17:52 +0000
-Date:   Tue, 3 May 2022 23:17:24 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Janne Grunau <j@jannau.net>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Hector Martin <marcan@marcan.st>
-Subject: [asahilinux:bits/090-spi-hid 11/11]
- drivers/hid/spi-hid/spi-hid-apple-core.c:259:22: warning: no previous
- prototype for 'spihid_get_data'
-Message-ID: <202205032332.JmX0xZHq-lkp@intel.com>
+        Tue, 3 May 2022 11:21:48 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2D93A5D1;
+        Tue,  3 May 2022 08:18:15 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id y3so34028170ejo.12;
+        Tue, 03 May 2022 08:18:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Hj7+Fx1qxFXAGhjgQivL/sZ1+3IRshoKUQbn1Xsv+rU=;
+        b=Q4Bu/xaeAW7QHdICsdR2KdPYwNBknQR7tNCxpLoYMBpN4KyHtVolYB4G0tdYsD4l7z
+         664uGqmw5el2cIlMHtss7Kmr5R4jXC5gDkG9knDlCx9MSIzWvSTbO5LaE5LCDoLQ6npe
+         oKRl5c2LCdrsiB6KtKW/W/pGhLHYkOP+b0EoBqrI7WIPpN6ba8RNASkEVpsSuEZPmNeC
+         VJTvSGiloRuMQRZ9S9XnwWmPCqjucvRydzQO0E22Htsyt7G1cZujuoV20GwGfggEwuwn
+         42FnisUQj1O/0kMiWhvzKmIPxIyTO8MTPy2dPqvghEWD1WIjexRgFbBcF+iNKJeb9Ady
+         SHEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Hj7+Fx1qxFXAGhjgQivL/sZ1+3IRshoKUQbn1Xsv+rU=;
+        b=qIWL7Gtq3Z9on0+Ea9cQcuO/rF7GK8V0yDbMBpM60oFVf9DQuBZq+6TZJ9gv5oNG9D
+         5+KCCZVytFxDw3ZTYMHr/BnZ5IhsjnOyDkcHozF5/YAjdeQTJ2/oRWoQAFCS/U2d/Ki3
+         z67Y65/AlnNCeqrvRwcHhiRe9bcxZMSWBQcnNOjDtvz5nZ24KN24SMvLh8bUP/k1DPu2
+         cU9Df+u2gKhBPwJHBNVIcSR/8fPCZKDvMF4tBE25YulLcAFlZs+CXfeYp6ITD1WQU7ri
+         500AskUSMFqphDSROU0qr7aon4XhPQoMn4S+kYjrXi4rNGHJYIZw/HticIxhFhpH2wyf
+         ADOw==
+X-Gm-Message-State: AOAM531L2tgRp39KHTeOayzslqhR5bFfrZe6IaTxyHI1YgeN7kSGtn40
+        3ljxw1r2aAEarlAsfdNuAFQ=
+X-Google-Smtp-Source: ABdhPJzH3b5YFoLRjN/TbKqgEL7PdxZKBAYL6uF9i/AsCy6jvvLTRvFjFBl7zx++ua4Nl9hhT96STQ==
+X-Received: by 2002:a17:906:1c12:b0:6f3:9eed:e0 with SMTP id k18-20020a1709061c1200b006f39eed00e0mr16550294ejg.656.1651591093976;
+        Tue, 03 May 2022 08:18:13 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id v3-20020aa7d9c3000000b0042617ba63cesm7947507eds.88.2022.05.03.08.18.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 08:18:13 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: [RFC PATCH v6 00/11] Adds support for PHY LEDs with offload triggers
+Date:   Tue,  3 May 2022 17:16:22 +0200
+Message-Id: <20220503151633.18760-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux bits/090-spi-hid
-head:   11b586fd5cff82ad72e9a281c0deb27959d16857
-commit: 11b586fd5cff82ad72e9a281c0deb27959d16857 [11/11] WIP: HID: transport: spi: add Apple SPI transport
-config: h8300-allmodconfig (https://download.01.org/0day-ci/archive/20220503/202205032332.JmX0xZHq-lkp@intel.com/config)
-compiler: h8300-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/AsahiLinux/linux/commit/11b586fd5cff82ad72e9a281c0deb27959d16857
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux bits/090-spi-hid
-        git checkout 11b586fd5cff82ad72e9a281c0deb27959d16857
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=h8300 SHELL=/bin/bash drivers/hid/spi-hid/ drivers/platform/
+This is another attempt on adding this feature on LEDs.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Most of the times Switch/PHY have connected multiple LEDs that are
+controlled by HW based on some rules/event. Currently we lack any
+support for a generic way to control the HW part and normally we
+either never implement the feature or only add control for brightness
+or hw blink.
 
-All warnings (new ones prefixed by >>):
+This is based on Marek idea of providing some API to cled but use a
+different implementation that in theory should be more generilized.
 
-   In file included from include/uapi/linux/swab.h:6,
-                    from include/linux/swab.h:5,
-                    from include/uapi/linux/byteorder/big_endian.h:14,
-                    from include/linux/byteorder/big_endian.h:5,
-                    from arch/h8300/include/asm/byteorder.h:5,
-                    from include/asm-generic/unaligned.h:10,
-                    from ./arch/h8300/include/generated/asm/unaligned.h:1,
-                    from drivers/hid/spi-hid/spi-hid-apple-core.c:19:
-   include/linux/scatterlist.h: In function 'sg_set_buf':
-   include/asm-generic/page.h:89:51: warning: ordered comparison of pointer with null pointer [-Wextra]
-      89 | #define virt_addr_valid(kaddr)  (((void *)(kaddr) >= (void *)PAGE_OFFSET) && \
-         |                                                   ^~
-   include/linux/compiler.h:78:45: note: in definition of macro 'unlikely'
-      78 | # define unlikely(x)    __builtin_expect(!!(x), 0)
-         |                                             ^
-   include/linux/scatterlist.h:160:9: note: in expansion of macro 'BUG_ON'
-     160 |         BUG_ON(!virt_addr_valid(buf));
-         |         ^~~~~~
-   include/linux/scatterlist.h:160:17: note: in expansion of macro 'virt_addr_valid'
-     160 |         BUG_ON(!virt_addr_valid(buf));
-         |                 ^~~~~~~~~~~~~~~
-   drivers/hid/spi-hid/spi-hid-apple-core.c: At top level:
->> drivers/hid/spi-hid/spi-hid-apple-core.c:259:22: warning: no previous prototype for 'spihid_get_data' [-Wmissing-prototypes]
-     259 | struct spihid_apple *spihid_get_data(struct spihid_interface *idev)
-         |                      ^~~~~~~~~~~~~~~
---
-   In file included from include/asm-generic/div64.h:27,
-                    from ./arch/h8300/include/generated/asm/div64.h:1,
-                    from include/linux/math.h:6,
-                    from include/linux/delay.h:22,
-                    from drivers/hid/spi-hid/spi-hid-apple-of.c:9:
-   include/linux/scatterlist.h: In function 'sg_set_buf':
-   include/asm-generic/page.h:89:51: warning: ordered comparison of pointer with null pointer [-Wextra]
-      89 | #define virt_addr_valid(kaddr)  (((void *)(kaddr) >= (void *)PAGE_OFFSET) && \
-         |                                                   ^~
-   include/linux/compiler.h:78:45: note: in definition of macro 'unlikely'
-      78 | # define unlikely(x)    __builtin_expect(!!(x), 0)
-         |                                             ^
-   include/linux/scatterlist.h:160:9: note: in expansion of macro 'BUG_ON'
-     160 |         BUG_ON(!virt_addr_valid(buf));
-         |         ^~~~~~
-   include/linux/scatterlist.h:160:17: note: in expansion of macro 'virt_addr_valid'
-     160 |         BUG_ON(!virt_addr_valid(buf));
-         |                 ^~~~~~~~~~~~~~~
-   drivers/hid/spi-hid/spi-hid-apple-of.c: At top level:
->> drivers/hid/spi-hid/spi-hid-apple-of.c:24:5: warning: no previous prototype for 'spihid_apple_of_power_on' [-Wmissing-prototypes]
-      24 | int spihid_apple_of_power_on(struct spihid_apple_ops *ops)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/hid/spi-hid/spi-hid-apple-of.c:40:5: warning: no previous prototype for 'spihid_apple_of_power_off' [-Wmissing-prototypes]
-      40 | int spihid_apple_of_power_off(struct spihid_apple_ops *ops)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/hid/spi-hid/spi-hid-apple-of.c:50:5: warning: no previous prototype for 'spihid_apple_of_enable_irq' [-Wmissing-prototypes]
-      50 | int spihid_apple_of_enable_irq(struct spihid_apple_ops *ops)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/hid/spi-hid/spi-hid-apple-of.c:59:5: warning: no previous prototype for 'spihid_apple_of_disable_irq' [-Wmissing-prototypes]
-      59 | int spihid_apple_of_disable_irq(struct spihid_apple_ops *ops)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+The current idea is:
+- LED driver implement 3 API (hw_control_status/start/stop).
+  They are used to put the LED in hardware mode and to configure the
+  various trigger.
+- We have hardware triggers that are used to expose to userspace the
+  supported hardware mode and set the hardware mode on trigger
+  activation.
+- We can also have triggers that both support hardware and software mode.
+- The LED driver will declare each supported hardware blink mode and
+  communicate with the trigger all the supported blink modes that will
+  be available by sysfs.
+- A trigger will use blink_set to configure the blink mode to active
+  in hardware mode.
+- On hardware trigger activation, only the hardware mode is enabled but
+  the blink modes are not configured. The LED driver should reset any
+  link mode active by default.
 
+Each LED driver will have to declare explicit support for the offload
+trigger (or return not supported error code) as we the trigger_data that
+the LED driver will elaborate and understand what is referring to (based
+on the current active trigger).
 
-vim +/spihid_get_data +259 drivers/hid/spi-hid/spi-hid-apple-core.c
+I posted a user for this new implementation that will benefit from this
+and will add a big feature to it. Currently qca8k can have up to 3 LEDs
+connected to each PHY port and we have some device that have only one of
+them connected and the default configuration won't work for that.
 
-   258	
- > 259	struct spihid_apple *spihid_get_data(struct spihid_interface *idev)
-   260	{
-   261		switch (idev->id) {
-   262		case SPIHID_DEVICE_ID_KBD:
-   263			return container_of(idev, struct spihid_apple, kbd);
-   264		case SPIHID_DEVICE_ID_TP:
-   265			return container_of(idev, struct spihid_apple, tp);
-   266		default:
-   267			return NULL;
-   268		}
-   269	}
-   270	
+The netdev trigger is expanded and it does now support hardware only
+triggers.
+The idea is to use hardware mode when a device_name is not defined.
+An additional sysfs entry is added to give some info about the available
+trigger modes supported in the current configuration.
+
+More polish is required but this is just to understand if I'm taking
+the correct path with this implementation hoping we find a correct
+implementation and we start working on the ""small details""
+
+v6:
+- Back to RFC.
+- Drop additional trigger
+- Rework netdev trigger to support common modes used by switch and
+  hardware only triggers
+- Refresh qca8k leds logic and driver
+v5:
+- Move out of RFC. (no comments from Andrew this is the right path?)
+- Fix more spelling mistake (thx Randy)
+- Fix error reported by kernel test bot
+- Drop the additional HW_CONTROL flag. It does simplify CONFIG
+  handling and hw control should be available anyway to support
+  triggers as module.
+v4:
+- Rework implementation and drop hw_configure logic.
+  We now expand blink_set.
+- Address even more spelling mistake. (thx a lot Randy)
+- Drop blink option and use blink_set delay.
+- Rework phy-activity trigger to actually make the groups dynamic.
+v3:
+- Rework start/stop as Andrew asked.
+- Introduce more logic to permit a trigger to run in hardware mode.
+- Add additional patch with netdev hardware support.
+- Use test_bit API to check flag passed to hw_control_configure.
+- Added a new cmd to hw_control_configure to reset any active blink_mode.
+- Refactor all the patches to follow this new implementation.
+v2:
+- Fix spelling mistake (sorry)
+- Drop patch 02 "permit to declare supported offload triggers".
+  Change the logic, now the LED driver declare support for them
+  using the configure_offload with the cmd TRIGGER_SUPPORTED.
+- Rework code to follow this new implementation.
+- Update Documentation to better describe how this offload
+  implementation work.
+
+Ansuel Smith (11):
+  leds: add support for hardware driven LEDs
+  leds: add function to configure hardware controlled LED
+  leds: trigger: netdev: drop NETDEV_LED_MODE_LINKUP from mode
+  leds: trigger: netdev: rename and expose NETDEV trigger enum modes
+  leds: trigger: netdev: convert device attr to macro
+  leds: trigger: netdev: add hardware control support
+  leds: trigger: netdev: use mutex instead of spinlocks
+  leds: trigger: netdev: add available mode sysfs attr
+  leds: trigger: netdev: add additional hardware only triggers
+  net: dsa: qca8k: add LEDs support
+  dt-bindings: net: dsa: qca8k: add LEDs definition example
+
+ .../devicetree/bindings/net/dsa/qca8k.yaml    |  20 +
+ Documentation/leds/leds-class.rst             |  53 +++
+ drivers/leds/Kconfig                          |  11 +
+ drivers/leds/led-class.c                      |  27 ++
+ drivers/leds/led-triggers.c                   |  29 ++
+ drivers/leds/trigger/ledtrig-netdev.c         | 385 ++++++++++++-----
+ drivers/net/dsa/Kconfig                       |   9 +
+ drivers/net/dsa/Makefile                      |   1 +
+ drivers/net/dsa/qca8k-leds.c                  | 408 ++++++++++++++++++
+ drivers/net/dsa/qca8k.c                       |   4 +
+ drivers/net/dsa/qca8k.h                       |  61 +++
+ include/linux/leds.h                          | 103 ++++-
+ 12 files changed, 1012 insertions(+), 99 deletions(-)
+ create mode 100644 drivers/net/dsa/qca8k-leds.c
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
