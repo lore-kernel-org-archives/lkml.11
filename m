@@ -2,227 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62CFDC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:21:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA59C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:22:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236307AbiECUYn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 16:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
+        id S236013AbiECU0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 16:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239056AbiECUYI (ORCPT
+        with ESMTP id S233066AbiECU0J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 16:24:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 17F641408A
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 13:20:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651609233;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=4u7Yt2vppAECuc7ylXyyx3S/PHhKr3Xvb+IjIhWLrAo=;
-        b=FhLmMyV1WBQboPwip3KlzRAaEABBe1ATn9lrOCBSYMMdkVMN1wWUcedIrlg4oNvUm0ZLKI
-        ohmhEwd9TrnbJLNQSQHDhZNVSkd6+lUdY8Yi7Ycj+S4uroV+1X7p4g9h+FHfBUl/3trTcA
-        Xkr8Zqvg8/tnoZtLqQ+XdHS3/IFU0R8=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-5-ajHRT_1ZPYCbIILGBGTXpw-1; Tue, 03 May 2022 16:19:48 -0400
-X-MC-Unique: ajHRT_1ZPYCbIILGBGTXpw-1
-Received: by mail-wm1-f69.google.com with SMTP id k41-20020a05600c1ca900b0039415d40dbbso4772143wms.5
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 13:19:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4u7Yt2vppAECuc7ylXyyx3S/PHhKr3Xvb+IjIhWLrAo=;
-        b=OhpXlQuq95jEXdDuxYIjDuVBHBTYvjnXRov8gGY6b89t6flD8z1yozkPYk5KTEvtYr
-         VfLzz19ccMiPjvED71iFaOerLY8eyEp8JlG0pXynZYSDKapqEl2ME2jGT4Op0UEgy03/
-         72t+aLunQavtniW5sbClvn2j0tjp15DtLhC8LOor8GtaEy24jjnD4MVTxYHlcPxLreDP
-         Nc4WsOQpZEkXvOGIBzQiIYgUfwVFE98d4j+ca1UlG7Pa5Z0VjtM5fp8Er6ThV0TS7Rcp
-         ksZD3MpqwPcyZRHuT4/DEA+Mci8q3r46OSjtodpGWH9bKNQ19HyZEKifKBTjylzegu06
-         GJYg==
-X-Gm-Message-State: AOAM532rwyIJibvH0TKjAhXCgsc9pvqTrpBb137IRx+boMp+GfPJVEZ5
-        esElHwmQ724Ut4t9REs89fA7rVryhuDsD78kzpdnpRqzm4JUUm4KeOp5BZMzHDqfbizSi0j4gc1
-        4Umb49qku0TmR21ndlX+7PgUcKDi060ymOxrzx8YuPp91flZkBjSV631oQ0/yY0rP3fX+kcZVeQ
-        U=
-X-Received: by 2002:a5d:5544:0:b0:20a:819d:5249 with SMTP id g4-20020a5d5544000000b0020a819d5249mr14052890wrw.461.1651609186810;
-        Tue, 03 May 2022 13:19:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwp0vPLBY+J8oEzOKXdDGOAxOZWvF7aZWpw1WW7Zeo9NRiqINypGhS10lmOL0oOQYpZY8f19A==
-X-Received: by 2002:a5d:5544:0:b0:20a:819d:5249 with SMTP id g4-20020a5d5544000000b0020a819d5249mr14052865wrw.461.1651609186511;
-        Tue, 03 May 2022 13:19:46 -0700 (PDT)
-Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id m6-20020adfc586000000b0020c5253d908sm10737994wrg.84.2022.05.03.13.19.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 13:19:45 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Sam Ravnborg <sam@ravnborg.org>, Maxime Ripard <maxime@cerno.tech>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Junxiao Chang <junxiao.chang@intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
-Subject: [PATCH v2] fbdev: Use helper to get fb_info in all file operations
-Date:   Tue,  3 May 2022 22:19:34 +0200
-Message-Id: <20220503201934.681276-1-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 3 May 2022 16:26:09 -0400
+Received: from mail1.bemta35.messagelabs.com (mail1.bemta35.messagelabs.com [67.219.250.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FFE52DAAA;
+        Tue,  3 May 2022 13:22:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=motorola.com;
+        s=Selector; t=1651609354; i=@motorola.com;
+        bh=DckmQ8AS5uSG1WiLGCJHbdizSuuEX/2IoBc9bfkGBww=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:
+         Content-Transfer-Encoding;
+        b=iL6Ej8AeSJHUYuceJu5Lf+jiYl0/TqMxNkjo9+CTXFza8+RGt6rHGar8AIZE2DPUF
+         SGkoZI9EpcfyhRA3K2NcndTJdij/WGylaVy0ai6gj6RJVLtPPrTN0fG3+c+BEpe78w
+         yIXSqvlpOoE/EhTat7lCd74fUSICJisOKgDtYpZnGoXfLD4eqDJgJ7yGLe8HZQIcbh
+         oi6RwH4aajw9uzKRQFO8IqUAiQrKg6FFL7BBkyulNL2Ip97DejvDXjRIhRVEW2mds5
+         /8pzoDrgAmfhAz2PA1EhSAZzw5px2kirjOYt+BB3/8SjzD0Cr/GAsa1NK9mblLi7ns
+         7p7EayxyXVPVA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrHIsWRWlGSWpSXmKPExsUyYU+Dsy5nf2G
+  SwaWFRhbH2p6wWzQvXs9m0TlxCbvF5V1z2CwWLWtldmD1mN0xk9Vj06pONo/9c9ewe3zeJBfA
+  EsWamZeUX5HAmrG4/wRTQaN2RdvCF6wNjCtUuxg5OYQEpjFJ/F7q1cXIBWQvYZLYcrWBGSTBJ
+  qAmseD1KjBbREBW4vCV32A2s8A5RokHU0VBbGEBf4kbe++zdTFycLAIqEqsPlYHEuYVsJBou/
+  GNCcSWEJCXOLXsIBNEXFDi5MwnLBBj5CWat85mnsDIPQtJahaS1AJGplWMVklFmekZJbmJmTm
+  6hgYGuoaGJrqWlrrGhnqJVbqJeqXFuuWpxSW6RnqJ5cV6qcXFesWVuck5KXp5qSWbGIFBl1KU
+  LL+Dsb//p94hRkkOJiVR3o9thUlCfEn5KZUZicUZ8UWlOanFhxhlODiUJHj/9gLlBItS01Mr0
+  jJzgBEAk5bg4FES4Z3dBZTmLS5IzC3OTIdInWLU5bh06MpeZiGWvPy8VClxXsU+oCIBkKKM0j
+  y4EbBovMQoKyXMy8jAwCDEU5BalJtZgir/ilGcg1FJmPcUyCU8mXklcJteAR3BBHTEsXiwI0o
+  SEVJSDUzpSRu9ps6u43gy00g7o6r4MPtSr1UfNPw3FHpqTZ8xf7sO19m/dxJ6owvTC10XBAnO
+  nvLxGf9v3fZZt/uyFPg1Qi4snOi03/j/o/97fh5LimnSYzU1m3KoofdQhjZfjX289rXAn9yvz
+  bZY3EpZO7HHnEPaw3/HwXkHQ6YcsY9c/0yy9vUR8+j5oQmC4vMN1CZGrz9o8j3i3k3HG6/qpq
+  b150+bXC29Q/HaxFd+h/JX/S/3Ku9kM3BZWvXSOObapFcmlv8WSnY9t9rAz/lSfn1J/jSxzTU
+  Hnx+PWPsxRo41YLPGp/ni/AU8WgIHglRuZ5plvIv7vX7/PZeHrZsWn1kdkui2YM08gdnTO1YY
+  +79VYinOSDTUYi4qTgQAIQn2gEEDAAA=
+X-Env-Sender: w36195@motorola.com
+X-Msg-Ref: server-3.tower-636.messagelabs.com!1651609353!30361!1
+X-Originating-IP: [144.188.128.67]
+X-SYMC-ESS-Client-Auth: outbound-route-from=pass
+X-StarScan-Received: 
+X-StarScan-Version: 9.86.4; banners=-,-,-
+X-VirusChecked: Checked
+Received: (qmail 19944 invoked from network); 3 May 2022 20:22:33 -0000
+Received: from unknown (HELO ilclpfpp01.lenovo.com) (144.188.128.67)
+  by server-3.tower-636.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP; 3 May 2022 20:22:33 -0000
+Received: from va32lmmrp01.lenovo.com (va32lmmrp01.mot.com [10.62.177.113])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by ilclpfpp01.lenovo.com (Postfix) with ESMTPS id 4KtBGJ740YzfBZq;
+        Tue,  3 May 2022 20:22:32 +0000 (UTC)
+Received: from p1g3.. (unknown [10.45.5.51])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: w36195)
+        by va32lmmrp01.lenovo.com (Postfix) with ESMTPSA id 4KtBGJ44Lczf6f0;
+        Tue,  3 May 2022 20:22:32 +0000 (UTC)
+From:   Dan Vacura <w36195@motorola.com>
+To:     linux-usb@vger.kernel.org
+Cc:     Dan Vacura <w36195@motorola.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] usb: gadget: uvc: allow for application to cleanly shutdown
+Date:   Tue,  3 May 2022 15:10:38 -0500
+Message-Id: <20220503201039.71720-1-w36195@motorola.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A reference to the framebuffer device struct fb_info is stored in the file
-private data, but this reference could no longer be valid and must not be
-accessed directly. Instead, the file_fb_info() accessor function must be
-used since it does sanity checking to make sure that the fb_info is valid.
+Several types of kernel panics can occur due to timing during the uvc
+gadget removal. This appears to be a problem with gadget resources being
+managed by both the client application's v4l2 open/close and the UDC
+gadget bind/unbind. Since the concept of USB_GADGET_DELAYED_STATUS
+doesn't exist for unbind, add a wait to allow for the application to
+close out.
 
-This can happen for example if the registered framebuffer device is for a
-driver that just uses a framebuffer provided by the system firmware. In
-that case, the fbdev core would unregister the framebuffer device when a
-real video driver is probed and ask to remove conflicting framebuffers.
+Some examples of the panics that can occur are:
 
-Most fbdev file operations already use the helper to get the fb_info but
-get_fb_unmapped_area() and fb_deferred_io_fsync() don't. Fix those two.
+<1>[ 1147.652313] Unable to handle kernel NULL pointer dereference at
+virtual address 0000000000000028
+<4>[ 1147.652510] Call trace:
+<4>[ 1147.652514]  usb_gadget_disconnect+0x74/0x1f0
+<4>[ 1147.652516]  usb_gadget_deactivate+0x38/0x168
+<4>[ 1147.652520]  usb_function_deactivate+0x54/0x90
+<4>[ 1147.652524]  uvc_function_disconnect+0x14/0x38
+<4>[ 1147.652527]  uvc_v4l2_release+0x34/0xa0
+<4>[ 1147.652537]  __fput+0xdc/0x2c0
+<4>[ 1147.652540]  ____fput+0x10/0x1c
+<4>[ 1147.652545]  task_work_run+0xe4/0x12c
+<4>[ 1147.652549]  do_notify_resume+0x108/0x168
 
-Since fb_deferred_io_fsync() is not in fbmem.o, the helper has to be
-exported. Rename it and add a fb_ prefix to denote that is public now.
+<1>[  282.950561][ T1472] Unable to handle kernel NULL pointer
+dereference at virtual address 00000000000005b8
+<6>[  282.953111][ T1472] Call trace:
+<6>[  282.953121][ T1472]  usb_function_deactivate+0x54/0xd4
+<6>[  282.953134][ T1472]  uvc_v4l2_release+0xac/0x1e4
+<6>[  282.953145][ T1472]  v4l2_release+0x134/0x1f0
+<6>[  282.953167][ T1472]  __fput+0xf4/0x428
+<6>[  282.953178][ T1472]  ____fput+0x14/0x24
+<6>[  282.953193][ T1472]  task_work_run+0xac/0x130
 
-Reported-by: Junxiao Chang <junxiao.chang@intel.com>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+<3>[  213.410077][   T29] configfs-gadget gadget: uvc: Failed to queue
+request (-108).
+<1>[  213.410116][   T29] Unable to handle kernel NULL pointer
+dereference at virtual address 0000000000000003
+<6>[  213.413460][   T29] Call trace:
+<6>[  213.413474][   T29]  uvcg_video_pump+0x1f0/0x384
+<6>[  213.413489][   T29]  process_one_work+0x2a4/0x544
+<6>[  213.413502][   T29]  worker_thread+0x350/0x784
+<6>[  213.413515][   T29]  kthread+0x2ac/0x320
+<6>[  213.413528][   T29]  ret_from_fork+0x10/0x30
+
+Signed-off-by: Dan Vacura <w36195@motorola.com>
 ---
+V1 -> V2:
+- change some logging from uvcg_info to uvcg_dbg (calls dev_dbg)
+- update wait_ret type from int to long to match return type
 
-Changes in v2:
-- Fix copy & paste error passing file->private_data instead of file
-  to fb_file_fb_info() function (Sam Ravnborg).
+ drivers/usb/gadget/function/f_uvc.c    | 25 +++++++++++++++++++++++++
+ drivers/usb/gadget/function/uvc.h      |  2 ++
+ drivers/usb/gadget/function/uvc_v4l2.c |  3 ++-
+ 3 files changed, 29 insertions(+), 1 deletion(-)
 
- drivers/video/fbdev/core/fb_defio.c |  5 ++++-
- drivers/video/fbdev/core/fbmem.c    | 24 +++++++++++++++---------
- include/linux/fb.h                  |  1 +
- 3 files changed, 20 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/video/fbdev/core/fb_defio.c b/drivers/video/fbdev/core/fb_defio.c
-index 842c66b3e33d..ccdf903c48bd 100644
---- a/drivers/video/fbdev/core/fb_defio.c
-+++ b/drivers/video/fbdev/core/fb_defio.c
-@@ -68,12 +68,15 @@ static vm_fault_t fb_deferred_io_fault(struct vm_fault *vmf)
- 
- int fb_deferred_io_fsync(struct file *file, loff_t start, loff_t end, int datasync)
+diff --git a/drivers/usb/gadget/function/f_uvc.c b/drivers/usb/gadget/function/f_uvc.c
+index 50e6e7a58b41..a3cf470b3ec5 100644
+--- a/drivers/usb/gadget/function/f_uvc.c
++++ b/drivers/usb/gadget/function/f_uvc.c
+@@ -892,13 +892,37 @@ static void uvc_function_unbind(struct usb_configuration *c,
  {
--	struct fb_info *info = file->private_data;
-+	struct fb_info *info = fb_file_fb_info(file);
- 	struct inode *inode = file_inode(file);
- 	int err = file_write_and_wait_range(file, start, end);
- 	if (err)
- 		return err;
+ 	struct usb_composite_dev *cdev = c->cdev;
+ 	struct uvc_device *uvc = to_uvc(f);
++	long wait_ret = 1;
  
-+	if (!info)
-+		return -ENODEV;
+ 	uvcg_info(f, "%s()\n", __func__);
+ 
++	/* If we know we're connected via v4l2, then there should be a cleanup
++	 * of the device from userspace either via UVC_EVENT_DISCONNECT or
++	 * though the video device removal uevent. Allow some time for the
++	 * application to close out before things get deleted.
++	 */
++	if (uvc->func_connected) {
++		uvcg_dbg(f, "waiting for clean disconnect\n");
++		wait_ret = wait_event_interruptible_timeout(uvc->func_connected_queue,
++				uvc->func_connected == false, msecs_to_jiffies(500));
++		uvcg_dbg(f, "done waiting with ret: %ld\n", wait_ret);
++	}
 +
- 	/* Skip if deferred io is compiled-in but disabled on this fbdev */
- 	if (!info->fbdefio)
- 		return 0;
-diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
-index 97eb0dee411c..ba2c14a1087d 100644
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -745,7 +745,7 @@ static const struct seq_operations __maybe_unused proc_fb_seq_ops = {
-  * So look up the fb_info using the inode minor number,
-  * and just verify it against the reference we have.
-  */
--static struct fb_info *file_fb_info(struct file *file)
-+struct fb_info *fb_file_fb_info(struct file *file)
+ 	device_remove_file(&uvc->vdev.dev, &dev_attr_function_name);
+ 	video_unregister_device(&uvc->vdev);
+ 	v4l2_device_unregister(&uvc->v4l2_dev);
+ 
++	if (uvc->func_connected) {
++		/* Wait for the release to occur to ensure there are no longer any
++		 * pending operations that may cause panics when resources are cleaned
++		 * up.
++		 */
++		uvcg_warn(f, "%s no clean disconnect, wait for release\n", __func__);
++		wait_ret = wait_event_interruptible_timeout(uvc->func_connected_queue,
++				uvc->func_connected == false, msecs_to_jiffies(1000));
++		uvcg_dbg(f, "done waiting for release with ret: %ld\n", wait_ret);
++	}
++
+ 	usb_ep_free_request(cdev->gadget->ep0, uvc->control_req);
+ 	kfree(uvc->control_buf);
+ 
+@@ -917,6 +941,7 @@ static struct usb_function *uvc_alloc(struct usb_function_instance *fi)
+ 
+ 	mutex_init(&uvc->video.mutex);
+ 	uvc->state = UVC_STATE_DISCONNECTED;
++	init_waitqueue_head(&uvc->func_connected_queue);
+ 	opts = fi_to_f_uvc_opts(fi);
+ 
+ 	mutex_lock(&opts->lock);
+diff --git a/drivers/usb/gadget/function/uvc.h b/drivers/usb/gadget/function/uvc.h
+index 9eec104b3666..58e383afdd44 100644
+--- a/drivers/usb/gadget/function/uvc.h
++++ b/drivers/usb/gadget/function/uvc.h
+@@ -14,6 +14,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/usb/composite.h>
+ #include <linux/videodev2.h>
++#include <linux/wait.h>
+ 
+ #include <media/v4l2-device.h>
+ #include <media/v4l2-dev.h>
+@@ -130,6 +131,7 @@ struct uvc_device {
+ 	struct usb_function func;
+ 	struct uvc_video video;
+ 	bool func_connected;
++	wait_queue_head_t func_connected_queue;
+ 
+ 	/* Descriptors */
+ 	struct {
+diff --git a/drivers/usb/gadget/function/uvc_v4l2.c b/drivers/usb/gadget/function/uvc_v4l2.c
+index a2c78690c5c2..fd8f73bb726d 100644
+--- a/drivers/usb/gadget/function/uvc_v4l2.c
++++ b/drivers/usb/gadget/function/uvc_v4l2.c
+@@ -253,10 +253,11 @@ uvc_v4l2_subscribe_event(struct v4l2_fh *fh,
+ 
+ static void uvc_v4l2_disable(struct uvc_device *uvc)
  {
- 	struct inode *inode = file_inode(file);
- 	int fbidx = iminor(inode);
-@@ -755,12 +755,13 @@ static struct fb_info *file_fb_info(struct file *file)
- 		info = NULL;
- 	return info;
+-	uvc->func_connected = false;
+ 	uvc_function_disconnect(uvc);
+ 	uvcg_video_enable(&uvc->video, 0);
+ 	uvcg_free_buffers(&uvc->video.queue);
++	uvc->func_connected = false;
++	wake_up_interruptible(&uvc->func_connected_queue);
  }
-+EXPORT_SYMBOL(fb_file_fb_info);
  
- static ssize_t
- fb_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
- {
- 	unsigned long p = *ppos;
--	struct fb_info *info = file_fb_info(file);
-+	struct fb_info *info = fb_file_fb_info(file);
- 	u8 *buffer, *dst;
- 	u8 __iomem *src;
- 	int c, cnt = 0, err = 0;
-@@ -825,7 +826,7 @@ static ssize_t
- fb_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
- {
- 	unsigned long p = *ppos;
--	struct fb_info *info = file_fb_info(file);
-+	struct fb_info *info = fb_file_fb_info(file);
- 	u8 *buffer, *src;
- 	u8 __iomem *dst;
- 	int c, cnt = 0, err = 0;
-@@ -1181,7 +1182,7 @@ static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
- 
- static long fb_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
- {
--	struct fb_info *info = file_fb_info(file);
-+	struct fb_info *info = fb_file_fb_info(file);
- 
- 	if (!info)
- 		return -ENODEV;
-@@ -1293,7 +1294,7 @@ static int fb_get_fscreeninfo(struct fb_info *info, unsigned int cmd,
- static long fb_compat_ioctl(struct file *file, unsigned int cmd,
- 			    unsigned long arg)
- {
--	struct fb_info *info = file_fb_info(file);
-+	struct fb_info *info = fb_file_fb_info(file);
- 	const struct fb_ops *fb;
- 	long ret = -ENOIOCTLCMD;
- 
-@@ -1333,7 +1334,7 @@ static long fb_compat_ioctl(struct file *file, unsigned int cmd,
  static int
- fb_mmap(struct file *file, struct vm_area_struct * vma)
- {
--	struct fb_info *info = file_fb_info(file);
-+	struct fb_info *info = fb_file_fb_info(file);
- 	int (*fb_mmap_fn)(struct fb_info *info, struct vm_area_struct *vma);
- 	unsigned long mmio_pgoff;
- 	unsigned long start;
-@@ -1434,7 +1435,7 @@ fb_release(struct inode *inode, struct file *file)
- __acquires(&info->lock)
- __releases(&info->lock)
- {
--	struct fb_info * const info = file_fb_info(file);
-+	struct fb_info * const info = fb_file_fb_info(file);
- 
- 	if (!info)
- 		return -ENODEV;
-@@ -1453,8 +1454,13 @@ unsigned long get_fb_unmapped_area(struct file *filp,
- 				   unsigned long addr, unsigned long len,
- 				   unsigned long pgoff, unsigned long flags)
- {
--	struct fb_info * const info = filp->private_data;
--	unsigned long fb_size = PAGE_ALIGN(info->fix.smem_len);
-+	struct fb_info * const info = fb_file_fb_info(filp);
-+	unsigned long fb_size;
-+
-+	if (!info)
-+		return -ENODEV;
-+
-+	fb_size = PAGE_ALIGN(info->fix.smem_len);
- 
- 	if (pgoff > fb_size || len > fb_size - pgoff)
- 		return -EINVAL;
-diff --git a/include/linux/fb.h b/include/linux/fb.h
-index 9a77ab615c36..3004b8b8c5c2 100644
---- a/include/linux/fb.h
-+++ b/include/linux/fb.h
-@@ -624,6 +624,7 @@ extern int fb_get_color_depth(struct fb_var_screeninfo *var,
- 			      struct fb_fix_screeninfo *fix);
- extern int fb_get_options(const char *name, char **option);
- extern int fb_new_modelist(struct fb_info *info);
-+extern struct fb_info *fb_file_fb_info(struct file *file);
- 
- extern struct fb_info *registered_fb[FB_MAX];
- extern int num_registered_fb;
 -- 
-2.35.1
+2.32.0
 
