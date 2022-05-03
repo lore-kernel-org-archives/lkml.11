@@ -2,136 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8FC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2412C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:42:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238668AbiECPn3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56330 "EHLO
+        id S238695AbiECPqS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233778AbiECPnX (ORCPT
+        with ESMTP id S238471AbiECPqP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:43:23 -0400
-X-Greylist: delayed 88183 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 03 May 2022 08:39:49 PDT
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E795C30F6B;
-        Tue,  3 May 2022 08:39:49 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 1D34F240006;
-        Tue,  3 May 2022 15:39:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651592387;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xz1Onj7oTzb7D6aAvbG4r11OnN521cFiAkj6GER4WiE=;
-        b=LxgLUU7r+6dNTNlLCt/mvNOBNzYV0wZpnTA5aEZnxmn43lh7u2e2fy0yGqmGJSTwCK0kGU
-        TBszHcN6rHiu9l9LY2Loq7WXRWU50xR6XgdXPtZlZV22kJajQFKE0rXSHoAHnxUUrAt/Sx
-        AMNemus8fnSqLQfRaZCtT4ZahNNyIaDq3944Pyhx0Ps9/4vgg/w8IXbWkZJsAqt2dt+Bb+
-        bEJnv41x2928cW9SrKenfh32Yvw32Wy66wQY/31QIBJiBGUdlEirVXcXePGvleupp0tcN5
-        uOcWXCbNQc50Kjh5yy3X1/8MkeIWNT7Nwukih1ocMlyqSBTJe6IO4w1CWr0uww==
-Date:   Tue, 3 May 2022 17:38:29 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Frank Rowand <frowand.list@gmail.com>,
-        Pantelis Antoniou <pantelis.antoniou@konsulko.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Thomas Petazzoni <thomas.petazonni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
-Subject: Re: [PATCH 1/3] of: always populate a root node
-Message-ID: <20220503173829.7ef7418d@fixe.home>
-In-Reply-To: <YnEx5/ni1ddIFCj9@robh.at.kernel.org>
-References: <20220427094502.456111-1-clement.leger@bootlin.com>
-        <20220427094502.456111-2-clement.leger@bootlin.com>
-        <YnEx5/ni1ddIFCj9@robh.at.kernel.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Tue, 3 May 2022 11:46:15 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3368A2CE02
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:42:43 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id dk23so34221842ejb.8
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 08:42:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=11jXtpnvRUPC/KRRG8tH2eowrbQgqPMtLwttUsKdEBs=;
+        b=l0UWrpYiK6HwDKRByqNJ3y2uZFFdvaV8ANIW3JNVAItsVDKpa35XU0bfLvkTASkMBv
+         +OYfZwDZEyVjpC/rnG1E3dCdtsJ6zJWvIaU0QLAnRYlpGYiWBnv2HGA3bsT55oCtJ8j+
+         si18E5OWo0BZ5uAJgB2CIAbB7q9eW9rt7IrK8WmwCeyf+uhQw8rU1BfsSAVEAvmqSACZ
+         n/jivP9CyFypRShQX6hr40Kcj2DOzb9bcGMYJgqD+hWAq7Jx/zOVyavrysS920ixUVSs
+         cnuasOnTDWOLizp4EDGrpvpTtfKHYNzcFvMk62KyA1/QE0bJJbiGLbg/gNkO/Q4NtPqz
+         KH1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=11jXtpnvRUPC/KRRG8tH2eowrbQgqPMtLwttUsKdEBs=;
+        b=G/F+BbYWlhuyy2Oq2gh3iJucdcDtiFFSlYk+vEmsBO981Ww6yL4oH++cGEE/z8BQyI
+         5aLUqK5YwQmZ4SC+rDvL2C1ZpjAf+KwHQwfMe7FwcUb0GQJtFMjnXMURk27d3R95xapH
+         dOWISSCJq/XsxwKl7+PGT6NxXmnvVv7WIOXFjMckb1RDYm2a8qEScNqKUqhwwX/2aebh
+         6sVFH9irz4yeT8tWzZEdpr1O20nh+Y8IBc5qfvTHBQPEW7JSrmF/syZ2TfxmEhzS5ZEm
+         ssDb56NFzAPuZ2XVGbn7Ua+gBxjhUgqlG3ZhCZVdKStpMoquq20R7x2VRUKRbhKBEZnV
+         RkNg==
+X-Gm-Message-State: AOAM530EqAf5J8AmRLFjUbexOSp5crgrNjBaPUWnGWyXKp+YrIIDPgIG
+        KfUl54/lVrR98eecweSqn9qbww==
+X-Google-Smtp-Source: ABdhPJymi4qyD/go6KagiE9Q2ldpmJnc1Ds2F8U9KW18H1QHIbUQ3tb99imrNDebapNF2Qgl/+X0Ig==
+X-Received: by 2002:a17:907:3da2:b0:6f4:78d8:7c23 with SMTP id he34-20020a1709073da200b006f478d87c23mr5396961ejc.233.1651592561803;
+        Tue, 03 May 2022 08:42:41 -0700 (PDT)
+Received: from [192.168.0.205] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id jl26-20020a17090775da00b006f3ef214dbdsm4701696ejc.35.2022.05.03.08.42.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 08:42:40 -0700 (PDT)
+Message-ID: <2280875f-fbd8-0dfd-5a0a-1d7fceb856e4@linaro.org>
+Date:   Tue, 3 May 2022 17:42:39 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 1/2] dt-bindings: google,cros-ec-keyb: Introduce
+ switches only compatible
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        chrome-platform@lists.linux.dev,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        "Joseph S. Barrera III" <joebar@chromium.org>
+References: <20220503042242.3597561-1-swboyd@chromium.org>
+ <20220503042242.3597561-2-swboyd@chromium.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220503042242.3597561-2-swboyd@chromium.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Tue, 3 May 2022 08:45:11 -0500,
-Rob Herring <robh@kernel.org> a =C3=A9crit :
+On 03/05/2022 06:22, Stephen Boyd wrote:
+> If the ChromeOS board is a detachable, this cros-ec-keyb device won't
+> have a matrix keyboard but it may have some button switches, e.g. volume
+> buttons and power buttons. The driver still registers a keyboard though
+> and that leads to userspace confusion around where the keyboard is.
 
-> On Wed, Apr 27, 2022 at 11:45:00AM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
-> > When enabling CONFIG_OF on a platform where of_root is not populated by
-> > firmware, we end up without a root node. In order to apply overlays and
-> > create subnodes of the root node, we need one. This commit creates an
-> > empty root node if not present. =20
->=20
-> The existing unittest essentially does the same thing for running the=20
-> tests on non-DT systems. It should be modified to use this support=20
-> instead. Maybe that's just removing the unittest code that set of_root.
+(...)
 
-Acked, I'll try the unit test on my system.
+>  
+> +if:
+> +  properties:
+> +    compatible:
+> +      contains:
+> +        const: google,cros-ec-keyb
+> +then:
+> +  allOf:
+> +    - $ref: "/schemas/input/matrix-keymap.yaml#"
+> +  required:
+> +    - keypad,num-rows
+> +    - keypad,num-columns
+> +    - linux,keymap
 
->=20
-> I expect Frank will have some comments.
->=20
-> > Co-developed-by: Rob Herring <robh@kernel.org>
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
-> > ---
-> >  drivers/of/base.c | 16 ++++++++++++++--
-> >  1 file changed, 14 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/drivers/of/base.c b/drivers/of/base.c
-> > index e7d92b67cb8a..6b8584c39f73 100644
-> > --- a/drivers/of/base.c
-> > +++ b/drivers/of/base.c
-> > @@ -177,6 +177,19 @@ void __init of_core_init(void)
-> >  		pr_err("failed to register existing nodes\n");
-> >  		return;
-> >  	}
-> > +
-> > +	if (!of_root) {
-> > +		of_root =3D kzalloc(sizeof(*of_root), GFP_KERNEL);
-> > +		if (!of_root) {
-> > +			mutex_unlock(&of_mutex);
-> > +			pr_err("failed to create root node\n");
-> > +			return;
-> > +		}
-> > +
-> > +		of_root->full_name =3D "/";
-> > +		of_node_init(of_root);
-> > +	}
-> > +
-> >  	for_each_of_allnodes(np) {
-> >  		__of_attach_node_sysfs(np);
-> >  		if (np->phandle && !phandle_cache[of_phandle_cache_hash(np->phandle)=
-])
-> > @@ -185,8 +198,7 @@ void __init of_core_init(void)
-> >  	mutex_unlock(&of_mutex);
-> > =20
-> >  	/* Symlink in /proc as required by userspace ABI */
-> > -	if (of_root)
-> > -		proc_symlink("device-tree", NULL, "/sys/firmware/devicetree/base");
-> > +	proc_symlink("device-tree", NULL, "/sys/firmware/devicetree/base");
-> >  }
-> > =20
-> >  static struct property *__of_find_property(const struct device_node *n=
-p,
-> > --=20
-> > 2.34.1
-> >=20
-> >  =20
+else:
+  properties:
+    function-row-phsymap: false
+    google,needs-ghost-filter: false
 
+Because these are not valid for the non-matrix-keyboard case, right?
 
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Best regards,
+Krzysztof
