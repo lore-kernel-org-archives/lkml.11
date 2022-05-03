@@ -2,195 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3BCCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B901C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:46:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238940AbiECUtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 16:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55276 "EHLO
+        id S241572AbiECUt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 16:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240649AbiECUtA (ORCPT
+        with ESMTP id S234244AbiECUtx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 16:49:00 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA16D1F63C;
-        Tue,  3 May 2022 13:45:26 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:52522)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nlzOb-001SXn-HG; Tue, 03 May 2022 14:45:21 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:36806 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nlzOa-007kUJ-7I; Tue, 03 May 2022 14:45:21 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
-References: <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
-        <20220429214837.386518-7-ebiederm@xmission.com>
-        <20220502153934.GD17276@redhat.com>
-        <87levjrixl.fsf@email.froward.int.ebiederm.org>
-        <20220503134149.GA22999@redhat.com>
-Date:   Tue, 03 May 2022 15:45:12 -0500
-In-Reply-To: <20220503134149.GA22999@redhat.com> (Oleg Nesterov's message of
-        "Tue, 3 May 2022 15:41:50 +0200")
-Message-ID: <877d72l50n.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 3 May 2022 16:49:53 -0400
+X-Greylist: delayed 561 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 03 May 2022 13:46:19 PDT
+Received: from winds.org (winds.org [68.75.195.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 84E2722B1D;
+        Tue,  3 May 2022 13:46:19 -0700 (PDT)
+Received: by winds.org (Postfix, from userid 100)
+        id 095E81DE7BDF; Tue,  3 May 2022 16:36:57 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by winds.org (Postfix) with ESMTP id 0732E1DE75E1;
+        Tue,  3 May 2022 16:36:57 -0400 (EDT)
+Date:   Tue, 3 May 2022 16:36:57 -0400 (EDT)
+From:   Byron Stanoszek <gandalf@winds.org>
+To:     Steve French <sfrench@samba.org>
+cc:     linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: CIFS regression mounting vers=1.0 NTLMSSP when hostname is too
+ long
+Message-ID: <e6837098-15d9-acb6-7e34-1923cf8c6fe1@winds.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nlzOa-007kUJ-7I;;;mid=<877d72l50n.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+K90jOThekRaxBKv8mFsc3iJu9WxQHMpU=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v2 07/12] ptrace: Don't change __state
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; format=flowed; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Oleg Nesterov <oleg@redhat.com> writes:
+I would like to report a regression in the CIFS fs. Sometime between Linux 4.14
+and 5.16, mounting CIFS with option vers=1.0 (and
+CONFIG_CIFS_ALLOW_INSECURE_LEGACY=y set appropriately) with security type
+NTLMSSP stopped working for me. The server side is a Windows 2003 Server.
 
-> On 05/02, Eric W. Biederman wrote:
->>
->> Oleg Nesterov <oleg@redhat.com> writes:
->>
->> >>  #define TASK_KILLABLE			(TASK_WAKEKILL | TASK_UNINTERRUPTIBLE)
->> >>  #define TASK_STOPPED			(TASK_WAKEKILL | __TASK_STOPPED)
->> >> -#define TASK_TRACED			(TASK_WAKEKILL | __TASK_TRACED)
->> >> +#define TASK_TRACED			__TASK_TRACED
->> > ...
->> >>  static inline void signal_wake_up(struct task_struct *t, bool resume)
->> >>  {
->> >> -	signal_wake_up_state(t, resume ? TASK_WAKEKILL : 0);
->> >> +	unsigned int state = 0;
->> >> +	if (resume) {
->> >> +		state = TASK_WAKEKILL;
->> >> +		if (!(t->jobctl & JOBCTL_PTRACE_FROZEN))
->> >> +			state |= __TASK_TRACED;
->> >> +	}
->> >> +	signal_wake_up_state(t, state);
->> >
->> > Can't understand why is this better than the previous version which removed
->> > TASK_WAKEKILL if resume... Looks a bit strange to me. But again, I didn't
->> > look at the next patches yet.
->>
->> The goal is to replace the existing mechanism with an equivalent one,
->> so that we don't have to be clever and deal with it being slightly
->> different in one case.
->>
->> The difference is how does signal_pending_state affect how schedule will
->> sleep in ptrace_stop.
->
-> But why is it bad if the tracee doesn't sleep in schedule ? If it races
-> with SIGKILL. I still can't understand this.
->
-> Yes, wait_task_inactive() can fail, so you need to remove WARN_ON_ONCE()
-> in 11/12.
+I found that this behavior depends on the length of the Linux client's
+host+domain name (e.g. utsname()->nodename), where the mount works as long as
+the name is 16 characters or less. Anything 17 or above returns -EIO, per the
+following example:
 
+/etc/fstab entry:
 
->
-> Why is removing TASK_WAKEKILL from TASK_TRACED and complicating
-> *signal_wake_up() better?
+//10.0.0.12/xxxxxxxxx /ext0     cifs    vers=1.0,user=xxxxx,pass=xxxxxxxxxxx,dom=xxxxxxxxxxx,dir_mode=0755,file_mode=0644,noauto 0 0
 
-Not changing __state is better because it removes special cases
-from the scheduler that only apply to ptrace.
+# hostname 12345678901234567;mount /ext0
+mount error(5): Input/output error
+Refer to the mount.cifs(8) manual page (e.g. man mount.cifs) and kernel log messages (dmesg)
+# hostname 1234567890123456;mount /ext0
+#
 
+I implemented a workaround using the following patch:
 
-> And even if we need to ensure the tracee will always block after
-> ptrace_freeze_traced(), we can change signal_pending_state() to
-> return false if JOBCTL_PTRACE_FROZEN. Much simpler, imo. But still
-> looks unnecessary to me.
+Signed-off-by: Byron Stanoszek <gandalf@winds.org>
+---
+--- a/fs/cifs/cifsglob.h
++++ b/fs/cifs/cifsglob.h
+@@ -101,7 +101,7 @@
+  #define XATTR_DOS_ATTRIB "user.DOSATTRIB"
+  #endif
 
-We still need to change signal_wake_up in that case.  Possibly
-signal_wake_up_state.  The choice is for fatal signals is TASK_WAKEKILL
-suppressed or is TASK_TRACED added.
+-#define CIFS_MAX_WORKSTATION_LEN  (__NEW_UTS_LEN + 1)  /* reasonable max for client */
++#define CIFS_MAX_WORKSTATION_LEN 16
 
-With removing TASK_WAKEKILL the resulting code behaves in a very obvious
-minimally special case way.  Yes there is a special case in
-signal_wake_up but that is the entirety of the special case and it is
-easy to read and see what it does.
+  /*
+   * CIFS vfs client Status information (based on what we know.)
 
->> Peter's plans to fix PREEMPT_RT or the freezer wait_task_inactive needs
->> to cope with the final being changed by something else. (TASK_FROZEN in
->> the freezer case).  I can only see that happening by removing the
->> dependency on the final state in wait_task_inactive.  Which we can't do
->> if we depend on wait_task_inactive failing if the process is in the
->> wrong state.
->
-> OK, I guess this is what I do not understand. Could you spell please?
->
-> And speaking of RT, wait_task_inactive() still can fail because
-> cgroup_enter_frozen() takes css_set_lock? And it is called under
-> preempt_disable() ? I don't understand the plan :/
+I don't know if this patch is correct or will have any real effect outside of
+the NTLMSSP session connect sequence, but it worked in my case.
 
-Let me describe his freezer change as that is much easier to get to the
-final result.  RT has more problems as it turns all spin locks into
-sleeping locks.  When a task is frozen it turns it's sleeping state into
-TASK_FROZEN.  That is TASK_STOPPED and TASK_TRACED become TASK_FROZEN.
-If this races with ptrace_check_attach the wait_task_inactive fail as
-the process state has changed.  This makes the freezer userspace
-visible.
+I appended a transcript of the CIFS debug log from Linux 5.17.5 showing this
+behavior. Server names are X'd out, and I highlighted the hostname as
+"12345678901234567890".
 
-For ordinary tasks the freezer thaws them just by giving them a spurious
-wake-up.  After which they check their conditions and go back to sleep
-on their on.  For TASK_STOPPED and TASK_TRACED (which can't handle
-spurious wake-ups) the __state value is recovered from task->jobctl.
+Thanks,
+  -Byron
 
-For RT cgroup_enter_frozen needs fixes that no one has proposed yet.
-The problem is that for "preempt_disable()" before
-"read_unlock(&tasklist_lock)" is not something that can reasonably be
-removed.  It would cause a performance regression.
+  - - -
 
-So my plan is to get the things as far as the Peter's freezer change
-working.  That cleans up the code and makes it much closer for
-ptrace working in PTREMPT_RT.  That makes the problems left for
-the PREEMPT_RT folks much smaller.
+CIFS: fs/cifs/fs_context.c: CIFS: parsing cifs mount option 'source'
+CIFS: fs/cifs/fs_context.c: CIFS: parsing cifs mount option 'ip'
+CIFS: address conversion returned 1 for 10.0.0.12
+CIFS: fs/cifs/fs_context.c: CIFS: parsing cifs mount option 'unc'
+CIFS: fs/cifs/fs_context.c: CIFS: parsing cifs mount option 'vers'
+Use of the less secure dialect vers=1.0 is not recommended unless required for access to very old servers
 
-
->> At a practical level I think it also has an impact on patch:
->> "10/12 ptrace: Only return signr from ptrace_stop if it was provided".
->
-> I didn't look at JOBCTL_PTRACE_SIGNR yet. But this looks minor to me,
-> I mean, I am not sure it worth the trouble.
-
-The immediate problem the JOBCTL_PTRACE_SIGNR patch solves is:
-- stopping in ptrace_report_syscall.
-- Not having PT_TRACESYSGOOD set.
-- The tracee being killed with a fatal signal
-- The tracee sending SIGTRAP to itself.
-
-The larger problem solved by the JOBCTL_PTRACE_SIGNR patch is that
-it removes the need for current->ptrace test from ptrace_stop.  Which
-in turn is part of what is needed for wait_task_inactive to be
-guaranteed a stop in ptrace_stop.
-
-
-Thinking about it.  I think a reasonable case can be made that it
-is weird if not dangerous to play with the task fields (ptrace_message,
-last_siginfo, and exit_code) without task_is_traced being true.
-So I will adjust my patch to check that.  The difference in behavior
-is explicit enough we can think about it easily.
-
-Eric
-
-
-
-
-
-
-
-
+CIFS: VFS: Use of the less secure dialect vers=1.0 is not recommended unless required for access to very old servers
+CIFS: fs/cifs/fs_context.c: CIFS: parsing cifs mount option 'user'
+CIFS: fs/cifs/fs_context.c: CIFS: parsing cifs mount option 'pass'
+CIFS: fs/cifs/fs_context.c: CIFS: parsing cifs mount option 'dom'
+CIFS: fs/cifs/fs_context.c: Domain name set
+CIFS: fs/cifs/fs_context.c: CIFS: parsing cifs mount option 'dir_mode'
+CIFS: fs/cifs/fs_context.c: CIFS: parsing cifs mount option 'file_mode'
+CIFS: fs/cifs/fs_context.c: CIFS: parsing cifs mount option 'netbiosname'
+CIFS: fs/cifs/cifsfs.c: Devname: \\10.0.0.12\xxxxxxxxx flags: 0
+CIFS: fs/cifs/connect.c: Username: xxxxx
+CIFS: fs/cifs/connect.c: file mode: 0644  dir mode: 0755
+CIFS: fs/cifs/connect.c: VFS: in mount_get_conns as Xid: 104 with uid: 0
+CIFS: fs/cifs/connect.c: UNC: \\10.0.0.12\xxxxxxxxx
+CIFS: fs/cifs/connect.c: generic_ip_connect: connecting to 10.0.0.12:445
+CIFS: fs/cifs/connect.c: Socket created
+CIFS: fs/cifs/connect.c: sndbuf 16384 rcvbuf 131072 rcvtimeo 0x1b58
+CIFS: fs/cifs/connect.c: cifs_get_tcp_session: next dns resolution scheduled for 600 seconds in the future
+CIFS: fs/cifs/connect.c: VFS: in cifs_get_smb_ses as Xid: 105 with uid: 0
+CIFS: fs/cifs/connect.c: Existing smb sess not found
+CIFS: fs/cifs/cifssmb.c: Requesting extended security
+CIFS: fs/cifs/connect.c: Demultiplex PID: 6581
+CIFS: fs/cifs/transport.c: wait_for_free_credits: remove 1 credits total=0
+CIFS: fs/cifs/transport.c: For smb_command 114
+CIFS: fs/cifs/transport.c: Sending smb: smb_len=51
+0000 2f00                                .../
+53ff 424d 0072 0000 0000 c801 0000 0000  .SMBr...........
+0000 0000 0000 0000 0000 19b3 0000 0001  ................
+00 0c 00 02 4e 54 20 4c 4d 20 30 2e 31 32 00     ....NT LM 0.12.
+CIFS: fs/cifs/connect.c: RFC1002 header 0xb2
+0000 b200 53ff 424d 0072 0000 9800 8001  .....SMBr.......
+0000 0000 0000 0000 0000 0000 0000 19b3  ................
+0000 0001 0011 0300 00fd 0001 8104 0000  ................
+0000 0001 e4e2 692b d3fd 8000 79be a08c  ......+i.....y..
+5f1b 01d8 012c 6d00 1500 0000 4200 e8c1  ._..,..m.....B..
+3625 c892 1069 2669 6056 065b 2b06 0106  %6..i.i&V`[..+..
+0505 a002 3051 a04f 3024 0622 2a09 4886  ....Q0O.$0"..*.H
+f782 0112 0202 0906 862a 8648 12f7 0201  ........*.H.....
+0602 2b0a 0106 0104 3782 0202 a30a 3027  ...+.....7....'0
+a025 1b23 xx21 xxxx xxxx xxxx xxxx xxxx  %.#.!xxxxxxxxxxx
+4024 xxxx xxxx xxxx xxxx xxxx xxxx xxxx  $@xxxxxxxxxxxxxx
+xxxx xxxx xxxx                           xxxxxx
+CIFS: fs/cifs/misc.c: checkSMB Length: 0xb6, smb_buf_length: 0xb2
+CIFS: fs/cifs/transport.c: cifs_sync_mid_result: cmd=114 mid=1 state=4
+0000 b200 53ff 424d 0072 0000 9800 8001  .....SMBr.......
+0000 0000 0000 0000 0000 0000 0000 19b3  ................
+0000 0001 0011 0300 00fd 0001 8104 0000  ................
+0000 0001 e4e2 692b d3fd 8000 79be a08c  ......+i.....y..
+5f1b 01d8 012c 6d00 1500 0000 4200 e8c1  ._..,..m.....B..
+3625 c892 1069 2669 6056 065b            %6..i.i&V`[.
+CIFS: fs/cifs/cifssmb.c: Dialect: 0
+CIFS: Max buf = 33028
+CIFS: fs/cifs/cifssmb.c: negprot rc 0
+CIFS: fs/cifs/connect.c: Security Mode: 0x3 Capabilities: 0x8000d3fd TimeAdjust: 18000
+CIFS: fs/cifs/sess.c: sess setup type 2
+CIFS: fs/cifs/sess.c: rawntlmssp session setup negotiate phase
+CIFS: fs/cifs/transport.c: wait_for_free_credits: remove 1 credits total=252
+CIFS: fs/cifs/transport.c: For smb_command 115
+CIFS: fs/cifs/transport.c: Sending smb: smb_len=194
+0000 be00                                ....
+53ff 424d 0073 0000 0000 d801 0000 0000  .SMBs...........
+0000 0000 0000 0000 0000 19b3 0000 0002  ................
+ff0c 0000 5400 fd40 0100 0000 0000 2400  .....T@........$
+00 00 00 00 00 dc d0 00 80 83 00                 ...........
+544e 4d4c 5353 0050 0001 0000 8235 e008  NTLMSSP.....5...
+0000 0000 0020 0000 0000 0000 0022 0000  .... ......."...
+0000 0000                                ....
+4c00 6900 6e00 7500 7800 2000 7600 6500  .L.i.n.u.x. .v.e
+7200 7300 6900 6f00 6e00 2000 3500 2e00  .r.s.i.o.n. .5..
+3100 3700 2e00 3500 0000 4300 4900 4600  .1.7...5...C.I.F
+5300 2000 5600 4600 5300 2000 4300 6c00  .S. .V.F.S. .C.l
+6900 6500 6e00 7400 2000 6600 6f00 7200  .i.e.n.t. .f.o.r
+00 20 00 4c 00 69 00 6e 00 75 00 78 00 00 00     . .L.i.n.u.x...
+CIFS: fs/cifs/connect.c: RFC1002 header 0x154
+0000 5401 53ff 424d 1673 0000 98c0 c807  ...T.SMBs.......
+0000 0000 0000 0000 0000 0000 0000 19b3  ................
+0800 0002 ff04 0000 0000 de00 2900 4e01  .............).N
+4c54 534d 5053 0200 0000 0e00 0e00 3000  TLMSSP.........0
+0000 0500 8982 6560 8fb0 4b2d 8980 002a  ......`e..-K..*.
+0000 0000 0000 a000 a000 3e00 0000 XX00  ...........>...X
+XX00 XX00 XX00 XX00 XX00 XX00 0200 0e00  .X.X.X.X.X.X....
+XX00 XX00 XX00 XX00 XX00 XX00 XX00 0100  .X.X.X.X.X.X.X..
+1600 XX00 XX00 XX00 XX00 XX00 XX00 XX00  ...X.X.X.X.X.X.X
+XX00 XX00 XX00 XX00 0400 XX00 XX00 XX00  .X.X.X.X...X.X.X
+XX00 XX00 XX00 XX00 XX00 XX00 XX00 XX00  .X.X.X.X.X.X.X.X
+XX00 XX00 XX00 XX00 XX00 XX00 XX00 XX00  .X.X.X.X.X.X.X.X
+XX00 XX00 0300 XX00 XX00 XX00 XX00 XX00  .X.X...X.X.X.X.X
+XX00 XX00 XX00 XX00 XX00 XX00 XX00 XX00  .X.X.X.X.X.X.X.X
+XX00 XX00 XX00 XX00 XX00 XX00 XX00 XX00  .X.X.X.X.X.X.X.X
+XX00 XX00 XX00 XX00 XX00 XX00 XX00 XX00  .X.X.X.X.X.X.X.X
+XX00 XX00 XX00 XX00 0000 0000 0000 0057  .X.X.X.X......W.
+0069 006e 0064 006f 0077 0073 0020 0035  i.n.d.o.w.s. .5.
+002e 0030 0000 0057 0069 006e 0064 006f  ..0...W.i.n.d.o.
+0077 0073 0020 0032 0030 0030 0030 0020  w.s. .2.0.0.0. .
+004c 0041 004e 0020 004d 0061 006e 0061  L.A.N. .M.a.n.a.
+0067 0065 0072 0000                      g.e.r...
+CIFS: fs/cifs/misc.c: checkSMB Length: 0x158, smb_buf_length: 0x154
+CIFS: fs/cifs/transport.c: cifs_sync_mid_result: cmd=115 mid=2 state=4
+0000 5401 53ff 424d 1673 0000 98c0 c807  ...T.SMBs.......
+0000 0000 0000 0000 0000 0000 0000 19b3  ................
+0800 0002 ff04 0000 0000 de00 2900 4e01  .............).N
+4c54 534d 5053 0200 0000 0e00 0e00 3000  TLMSSP.........0
+0000 0500 8982 6560 8fb0 4b2d 8980 002a  ......`e..-K..*.
+0000 0000 0000 a000 a000 3e00            ...........>
+CIFS: Status code returned 0xc0000016 NT_STATUS_MORE_PROCESSING_REQUIRED
+CIFS: fs/cifs/netmisc.c: Mapping smb error code 0xc0000016 to POSIX err -5
+CIFS: fs/cifs/misc.c: Null buffer passed to cifs_small_buf_release
+CIFS: fs/cifs/sess.c: rawntlmssp session setup challenge phase
+CIFS: fs/cifs/sess.c: UID = 2048
+CIFS: fs/cifs/sess.c: decode_ntlmssp_challenge: negotiate=0xe0088235 challenge=0x60898205
+CIFS: fs/cifs/sess.c: rawntlmssp session setup authenticate phase
+CIFS: fs/cifs/transport.c: wait_for_free_credits: remove 1 credits total=252
+CIFS: fs/cifs/transport.c: For smb_command 115
+CIFS: fs/cifs/transport.c: Sending smb: smb_len=514
+0000 fe01                                ....
+53ff 424d 0073 0000 0000 d801 0000 0000  .SMBs...........
+0000 0000 0000 0000 0000 19b3 0800 0003  ................
+ff0c 0000 5400 fd40 0100 0000 0000 6400  .....T@........d
+01 00 00 00 00 dc d0 00 80 c3 01                 ...........
+544e 4d4c 5353 0050 0003 0000 0000 0000  NTLMSSP.........
+0040 0000 00cc 00cc 0040 0000 0016 0016  @.......@.......
+010c 0000 000a 000a 0122 0000 0028 0028  ........"...(.(.
+012c 0000 0010 0010 0154 0000 a205 6089  ,.......T......`
+277e 10f2 c522 1143 c4d3 2343 28f2 5b32  ~'..".C...C#.(2[
+0101 0000 0000 0000 2278 bb86 5f1b 01d8  ........x"..._..
+66a8 9bd0 c591 0e07 0000 0000 0002 000e  .f..............
+00XX 00XX 00XX 00XX 00XX 00XX 00XX 0001  X.X.X.X.X.X.X...
+0016 00XX 00XX 00XX 00XX 00XX 00XX 00XX  ..X.X.X.X.X.X.X.
+00XX 00XX 00XX 00XX 0004 00XX 00XX 00XX  X.X.X.X...X.X.X.
+00XX 00XX 00XX 00XX 00XX 00XX 00XX 00XX  X.X.X.X.X.X.X.X.
+00XX 00XX 00XX 00XX 00XX 00XX 00XX 00XX  X.X.X.X.X.X.X.X.
+00XX 00XX 0003 00XX 00XX 00XX 00XX 00XX  X.X...@.X.X.X.X.
+00XX 00XX 00XX 00XX 00XX 00XX 00XX 00XX  X.X.X.X.X.X.X.X.
+00XX 00XX 00XX 00XX 00XX 00XX 00XX 00XX  X.X.X.X.X.X.X.X.
+00XX 00XX 00XX 00XX 00XX 00XX 00XX 00XX  X.X.X.X.X.X.X.X.
+00XX 00XX 00XX 00XX 0000 0000 00XX 00XX  X.X.X.X.....X.X.
+00XX 00XX 00XX 00XX 00XX 00XX 00XX 00XX  X.X.X.X.X.X.X.X.
+00XX 00XX 00XX 00XX 00XX 00XX 0031 0032  X.X.X.X.X.X.1.2.
+0033 0034 0035 0036 0037 0038 0039 0030  3.4.5.6.7.8.9.0.
+0031 0032 0033 0034 0035 0036 0037 0038  1.2.3.4.5.6.7.8.
+0039 0030 3063 e7c2 9bea b237 7fe3 a91f  9.0.c0....7.....
+ac5f e633                                _.3.
+4c00 6900 6e00 7500 7800 2000 7600 6500  .L.i.n.u.x. .v.e
+7200 7300 6900 6f00 6e00 2000 3500 2e00  .r.s.i.o.n. .5..
+3100 3700 2e00 3500 0000 4300 4900 4600  .1.7...5...C.I.F
+5300 2000 5600 4600 5300 2000 4300 6c00  .S. .V.F.S. .C.l
+6900 6500 6e00 7400 2000 6600 6f00 7200  .i.e.n.t. .f.o.r
+00 20 00 4c 00 69 00 6e 00 75 00 78 00 00 00     . .L.i.n.u.x...
+CIFS: fs/cifs/connect.c: RFC1002 header 0x23
+0000 2300 53ff 424d 1673 0000 88c0 c001  ...#.SMBs.......
+0000 0000 0000 0000 0000 0000 0000 19b3  ................
+00 00 03 00 00 00 00                             .......
+CIFS: fs/cifs/misc.c: checkSMB Length: 0x27, smb_buf_length: 0x23
+CIFS: fs/cifs/transport.c: cifs_sync_mid_result: cmd=115 mid=3 state=4
+0000 2300 53ff 424d 1673 0000 88c0 c001  ...#.SMBs.......
+0000 0000 0000 0000 0000 0000 0000 19b3  ................
+00 00 03 00 00 00 00                             .......
+CIFS: Status code returned 0xc0000016 NT_STATUS_MORE_PROCESSING_REQUIRED
+CIFS: fs/cifs/netmisc.c: Mapping smb error code 0xc0000016 to POSIX err -5
+CIFS: fs/cifs/misc.c: Null buffer passed to cifs_small_buf_release
+CIFS: VFS: \\10.0.0.12 Send error in SessSetup = -5
+CIFS: fs/cifs/connect.c: VFS: leaving cifs_get_smb_ses (xid = 105) rc = -5
+CIFS: fs/cifs/connect.c: VFS: leaving mount_put_conns (xid = 104) rc = 0
+CIFS: VFS: cifs_mount failed w/return code = -5
