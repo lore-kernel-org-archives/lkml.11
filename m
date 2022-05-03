@@ -2,104 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CB38C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 09:58:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F975C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 09:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233857AbiECKBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 06:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46514 "EHLO
+        id S233887AbiECKCR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 06:02:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233698AbiECKBl (ORCPT
+        with ESMTP id S233871AbiECKCN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 06:01:41 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998BB35DE2
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 02:58:09 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id n10so15017230ejk.5
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 02:58:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Z6vn8RV+oPJamH1qeu3cvsWts9bI2+OweL8gu7X/8vA=;
-        b=W5JJnAcNeGAKsYC8o/kXmqVrceo6nc9cLrogb7rhvZowJ++q8nOgznj84QF0gXE7Mc
-         yXmO4c/FMcATY9A4k85VMp7syj0DQr3gsBahcDzOQXnY2MYEIq0t+vijqxtiPm96qITE
-         BIkDpJOzuk2KlC8GCAHNKuyePjcaztOEFoWQBKIfSRK4e2lRZhaHcScIwyb9hHh2ulce
-         JSfWqc5W8mRzDUFe4XPug9NC0BGjhCDNBFaqstW9W7/zN6bUAL7yD8SSQ/op15J3U7GZ
-         027Nlw6egZcFlnhvTqIQANwxyt6GZhTKWMz5wL7nwnoDnW1vjkSiQ6477jQCsRPfG8Xc
-         HeLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Z6vn8RV+oPJamH1qeu3cvsWts9bI2+OweL8gu7X/8vA=;
-        b=zz/zdHlJEySjii3wqfTY00QEEVoplP3NG6XA2eBu1SwcVKNxpCJtgvwJHhjvZJ+AOx
-         Eye0YLp6KX0RqQ9+xV1dubmPAbEamjwl1k0CiYygT4q/lhbqgAevmGRMu/yx77MoIHAl
-         w3Sg9elK9nUq6VQId5YlMNQZyDDqRyNsMuF27mgUeqM59g/AsUHC2719PaYEqxagQ7V6
-         wcHBULNSMbuhNbtP8rJsRHbhGTa6iyX3jDSkVRVdkKWmPYCW2mRAQ/VRVtJq/D/6OCtf
-         GR8v3x42EVRtB2Pzfl8j0IJGLwcL5pg1YPJVezrEOaSQE5dDZNQGeUleEVHC1ikHNkky
-         eLyw==
-X-Gm-Message-State: AOAM532RyxjYQ1X1Lx4OJBUPB1qHaWpMkiI381JqbylDQ4k5k1zgj3hJ
-        MH7q6uG0yNZ9AGuoFhqd2nk3oA==
-X-Google-Smtp-Source: ABdhPJwg5UlqU1Tyo9LaWEKwvdRYNzgjscMYLGM93oxn2dLEJvVzs39lGK1JLxztUdkGt39ON9n8tQ==
-X-Received: by 2002:a17:907:62a1:b0:6da:7952:d4d2 with SMTP id nd33-20020a17090762a100b006da7952d4d2mr14759958ejc.260.1651571888174;
-        Tue, 03 May 2022 02:58:08 -0700 (PDT)
-Received: from [192.168.0.201] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id jl22-20020a17090775d600b006f3ef214d9esm4452253ejc.4.2022.05.03.02.58.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 02:58:07 -0700 (PDT)
-Message-ID: <dc005fa0-fee7-1ca8-11ea-b984b1ab3365@linaro.org>
-Date:   Tue, 3 May 2022 11:58:06 +0200
+        Tue, 3 May 2022 06:02:13 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E3F36144;
+        Tue,  3 May 2022 02:58:41 -0700 (PDT)
+Received: from [192.168.0.2] (ip5f5aed95.dynamic.kabel-deutschland.de [95.90.237.149])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id E8DB461EA193F;
+        Tue,  3 May 2022 11:58:38 +0200 (CEST)
+Message-ID: <d09f0131-65e2-d382-27b9-29ded4f47d84@molgen.mpg.de>
+Date:   Tue, 3 May 2022 11:58:38 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v6 5/8] dt-bindings: timer: hpe,gxp-timer: Creation
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v8 3/3] EDAC: nuvoton: Add NPCM memory controller driver
 Content-Language: en-US
-To:     nick.hawkins@hpe.com, verdun@hpe.com, nick@hpe.com, joel@jms.id.au,
-        arnd@arndb.de, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org
-References: <20220502204050.88316-1-nick.hawkins@hpe.com>
- <20220502204050.88316-5-nick.hawkins@hpe.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220502204050.88316-5-nick.hawkins@hpe.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Medad CChien <medadyoung@gmail.com>
+Cc:     rric@kernel.org, james.morse@arm.com, tony.luck@intel.com,
+        mchehab@kernel.org, bp@alien8.de, robh+dt@kernel.org,
+        benjaminfair@google.com, yuenn@google.com, venture@google.com,
+        KWLIU@nuvoton.com, YSCHU@nuvoton.com, JJLIU0@nuvoton.com,
+        KFTING@nuvoton.com, avifishman70@gmail.com, tmaimon77@gmail.com,
+        tali.perry1@gmail.com, ctcchien@nuvoton.com,
+        devicetree@vger.kernel.org, openbmc@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org
+References: <20220503094728.926-1-ctcchien@nuvoton.com>
+ <20220503094728.926-4-ctcchien@nuvoton.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20220503094728.926-4-ctcchien@nuvoton.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/05/2022 22:40, nick.hawkins@hpe.com wrote:
-> From: Nick Hawkins <nick.hawkins@hpe.com>
+Dear Medad,
+
+
+Thank you for v8.
+
+Am 03.05.22 um 11:47 schrieb Medad CChien:
+> Add memory controller support for Nuvoton NPCM SoC.
 > 
-> Add support for the HPE GXP Timer and Watchdog. There are multiple
-> timers on the SoC but only one is enabled at this time.
+> Signed-off-by: Medad CChien <ctcchien@nuvoton.com>
+> Reviewed-by: Borislav Petkov <bp@alien8.de>
+> Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+> Reported-by: kernel test robot <lkp@intel.com>
+
+This line is confusing.
+
+> error:
+>     macro "edac_printk" requires 4 arguments, but only 2 given
 > 
-> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+> warnings:
+>     performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>     logical not is only applied to the left hand side of this bitwise operator [-Wlogical-not-parentheses]
+>     mixing declarations and code is a C99 extension [-Wdeclaration-after-statement]
 > 
+> Note:
+>     you can force an ecc event by writing a string to edac sysfs node
+>     and remember to define CONFIG_EDAC_DEBUG to enable this feature
+>     example: force a correctable event on checkcode bit 0
+>     echo "CE checkcode 0" > /sys/devices/system/edac/mc/mc0/forced_ecc_error
+
+Shouldn’t this go above all the tags?
+
 > ---
-> v6:
-> * Removed simple-mfd compatible, timer will create watchdog without
->   watchdog node.
-> * Removed timer0 label
-> * Changed title from HPE GXP TIMER to HPE GXP Timer
-> * Changed clock name iopclk to iop
-> * Set additionalProperties to false
-> * Added space after ',' in the compatible list
-> * Changed subject to match the log better
+>   drivers/edac/Kconfig     |   9 +
+>   drivers/edac/Makefile    |   1 +
+>   drivers/edac/npcm_edac.c | 680 +++++++++++++++++++++++++++++++++++++++
+>   3 files changed, 690 insertions(+)
+>   create mode 100644 drivers/edac/npcm_edac.c
+> 
+> diff --git a/drivers/edac/Kconfig b/drivers/edac/Kconfig
+> index 58ab63642e72..64149b524f98 100644
+> --- a/drivers/edac/Kconfig
+> +++ b/drivers/edac/Kconfig
+> @@ -539,4 +539,13 @@ config EDAC_DMC520
+>   	  Support for error detection and correction on the
+>   	  SoCs with ARM DMC-520 DRAM controller.
+>   
+> +config EDAC_NPCM
+> +	tristate "Nuvoton NPCM DDR Memory Controller"
+> +	depends on (ARCH_NPCM || COMPILE_TEST)
+> +	help
+> +	  Support for error detection and correction on the Nuvoton NPCM DDR
+> +	  memory controller.
 
-The subject after prefixes does not match it better. What is "creation"?
-"Add HPE GXP Timer and Watchdog"
+Please add a blank line below.
 
-Rest is okay, so this could be fixed while applying (if you are going to
-resend, don't loose that comment and don't loose the tag):
+> +	  First, ECC must be configured in the BootBlock header. Then, this driver
+> +	  will expose error counters via the EDAC kernel framework.
+> +
+>   endif # EDAC
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+[…]
+> +module_platform_driver(npcm_edac_mc_driver);
+> +
+> +MODULE_AUTHOR("Medad CChien<ctcchien@nuvoton.com>");
 
-Best regards,
-Krzysztof
+Please add a space before the <.
+
+> +MODULE_DESCRIPTION("Nuvoton NPCM EDAC Driver");
+> +MODULE_LICENSE("GPL v2");
+
+
+Kind regards,
+
+Paul
