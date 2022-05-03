@@ -2,219 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A855C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 08:24:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C2FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 08:24:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232762AbiECI2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 04:28:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35818 "EHLO
+        id S232778AbiECI2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 04:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232756AbiECI2C (ORCPT
+        with ESMTP id S232773AbiECI2I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 04:28:02 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D4082980A
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 01:24:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651566270; x=1683102270;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=3ABJnAVg2L4eBLYL/Z4R29d+29BblvQXHFIuUoPejQw=;
-  b=j3cvRk+kD5uy6V5fZr1wemRadznYQvROHGKQmVEAD8KBdNrQ/CnQ+whl
-   Hka8hDSdM5QHOB7ZxWHHICzjnfwpyv2IF1BCdcMKm/GWKyalfSXdQCBiw
-   dCMxxE/FMOAdnDqzYLK82hjLV6WGEb7gQN28YXJ7zmiKxH9mSmPd8PvUT
-   nZw12eKu/X8CVq9HvAXixKBZ8GtIkSKpSkJdI2xTVmENve7HjA5i8k7zy
-   ljSKoVi1oZBaSvdAZDCNx31nkPRt/Dqm76QaT9js7XyxqdlZUbZbRmBQv
-   d1W0TgeY64hd+IGjCDRFKSu9XcwpFcNctkBCvJKi+UIYnsbK3WFd/4ZD6
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="247334858"
-X-IronPort-AV: E=Sophos;i="5.91,194,1647327600"; 
-   d="scan'208";a="247334858"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 01:24:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,194,1647327600"; 
-   d="scan'208";a="707953720"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 03 May 2022 01:24:28 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nlnpc-000AHX-6N;
-        Tue, 03 May 2022 08:24:28 +0000
-Date:   Tue, 03 May 2022 16:23:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:irq/urgent] BUILD SUCCESS
- 9b83d81acad9d29234b336dc57c84d87a617d358
-Message-ID: <6270e686.FFlJWVeaMkMozpF1%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 3 May 2022 04:28:08 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 351DD29800
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 01:24:36 -0700 (PDT)
+Received: from mail-ot1-f47.google.com ([209.85.210.47]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1Md66H-1oLgcC1DYR-00aADF; Tue, 03 May 2022 10:24:35 +0200
+Received: by mail-ot1-f47.google.com with SMTP id 31-20020a9d0822000000b00605f1807664so8152468oty.3;
+        Tue, 03 May 2022 01:24:34 -0700 (PDT)
+X-Gm-Message-State: AOAM53074jkgLK+v5S2QeAd1nHKqbiNBsFoPaeAmpveEG9ztG5S9Fbbn
+        +xAKNUreKB60yNmbly/v3+td1gGxEsM+b2flrwQ=
+X-Google-Smtp-Source: ABdhPJwrDtRFKbzWyx5Thvx9iv9ah7eyFBtB8lxLn/zZfAdnxobNy3HzZif7KpemB7VbxNVkIL6z9jSMtRXvIKtqCl4=
+X-Received: by 2002:a81:9213:0:b0:2f6:eaae:d22f with SMTP id
+ j19-20020a819213000000b002f6eaaed22fmr14611680ywg.249.1651564406792; Tue, 03
+ May 2022 00:53:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <202205031017.4TwMan3l-lkp@intel.com> <YnCXTPrbLhvfRVDm@e3a974050dc4>
+ <CAK8P3a1xMeLa72YKMufdej6KguDwiSXtZmMqRxOt5B05x_fx3A@mail.gmail.com> <YnDaINQbVtoJz1T3@atomide.com>
+In-Reply-To: <YnDaINQbVtoJz1T3@atomide.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 3 May 2022 09:53:10 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2NOfu52tADw30e6Bfik56_+PbUv6_+ADs=PUE-6NSrbQ@mail.gmail.com>
+Message-ID: <CAK8P3a2NOfu52tADw30e6Bfik56_+PbUv6_+ADs=PUE-6NSrbQ@mail.gmail.com>
+Subject: Re: [PATCH] ARM: dove: fix returnvar.cocci warnings
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
+        kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-omap <linux-omap@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:74Mgwc2DUG5mMwrZ6MNsmoljzN6pyJ9yjLycxRNFA3NqtnvQWvr
+ +XXc1CwiRNmjo/CHNnk9+yENODqvKGuJ7B71HiOOTee+ifhGGaplPvstsZEDQr8Co3QMA6p
+ 5Uk5Xn1+YkJ0lZaorHRMpaPbP4yJtzAU0rnEvz1bCxIg7lyZqZnBc1HbBjBZzINP2n/BLLF
+ TzMmA22OUqRjjhUusxGIw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:IhXJ72qjzsg=:ai2zbYV0s3CvosNkOJkCC+
+ I+UKncQ/z1HuV8EVlSldc2dCNSQCKSO1i9E9aHk3mlczCjBGOs2UCooQuUI+2+EB+ncRlQmkD
+ lM9NSrQqPjnr16wmBNq/Dl7w/7rWUv4OlOMbaHKnrfdu9Yw773DwIZZEsqBjl3n+kFQaeg/F9
+ EE+xs1+Z39JkpiYG5jyxZHgcGlWtssL1hcQZ8wFEl3m03TzMiwryMU1+kPdidX77wPQQknbhZ
+ aJcNJX45pIYuRGCA8pfir82kO9n/D720A4/ctf6g0Pi3z+s/Zh3G7GBZhvO8AOxJiFK6SfI0U
+ qSHfw5qGeoOmxVtOezVW6jjZ8vdY7TTrpbpju+dzrUrjsN9dg4Jf/2Z9ZebtNc5TRGdsIlPlA
+ my5ECci3ACDC90RZFupwgbXMOzQC0Ojf3RHTq9Q4I4jAD6f2Kk8zu1WkhbWbxO3kVYRxTIBsT
+ 6fguHE6+FBeCSQS0MJnFENq7JLiVcauVdzmm1erigXqhe8V74klZKSifl4BNOkh787CKlLKAz
+ DConUfj9JOKeIJUBAC7C+/ZcYjG6wmX7s7e/8aSrWSrKNMn3KE175Ur3Mt+HfaTUakXpIAH5Z
+ 4XinPKuY/XHoXTHZbyaMaKoKirw0gCJCiwHz0BsQwQG5H3gJL9hnW/1AHCAgvd/8qfvu1NIjl
+ PpJkP1tX5RGRanNWo30aZ2Zi4xtK/ZX+mHiUHwc6IxrvpLGxkwk7iu5Quc8kAteA5wrc2ST+t
+ kQhE44+lwERrfvNwLS+rBUd7SFUc1iydKzdJP3C2RMSndS41VNZiFp5a9wpP99loOEZfPOszf
+ JyPYr2AqPiGhxeJbm/BtHkpQghoB3/AnkBOsGSj5GNXyHhiSi8=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/urgent
-branch HEAD: 9b83d81acad9d29234b336dc57c84d87a617d358  genirq: Synchronize interrupt thread startup
+On Tue, May 3, 2022 at 9:30 AM Tony Lindgren <tony@atomide.com> wrote:
+> * Arnd Bergmann <arnd@arndb.de> [220503 07:18]:
+> > On Tue, May 3, 2022 at 4:45 AM kernel test robot <lkp@intel.com> wrote:
+> > >
+> > > From: kernel test robot <lkp@intel.com>
+> > >
+> > > arch/arm/mach-omap2/dma.c:82:10-16: Unneeded variable: "errata". Return "0" on line 161
+> > >
+> > >
+> > >  Remove unneeded variable used to store return value.
+> > >
+> > > Generated by: scripts/coccinelle/misc/returnvar.cocci
+> > >
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > > Signed-off-by: kernel test robot <lkp@intel.com>
+> >
+> > I checked the patch, and unfortunately it is wrong, the current code
+> > needs to stay.
+> > The problem is the SET_DMA_ERRATA() macro that accesses the
+> > local 'errata' variable.
+>
+> Yeah this one keeps popping up. Maybe we can make SET_DMA_ERRATA
+> into a function or have it at least change it to set the errata
+> value.
 
-i386-tinyconfig vmlinux size:
+I would just remove the macro and open-code the assignment, which
+I think makes it more readable to both people and tools.
 
-=================================================================================================================
- TOTAL  TEXT  wake_up_and_wait_for_irq_thread_ready()                                                            
-=================================================================================================================
-  +120  +118                                      +90  9b83d81acad9 genirq: Synchronize interrupt thread startup 
-  +120  +118                                      +90  672c0c517342..9b83d81acad9 (ALL COMMITS)                  
-=================================================================================================================
-
-elapsed time: 773m
-
-configs tested: 134
-configs skipped: 5
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-mips                         tb0226_defconfig
-powerpc                         ps3_defconfig
-powerpc                      cm5200_defconfig
-powerpc                       holly_defconfig
-h8300                               defconfig
-sh                          rsk7264_defconfig
-sparc                            alldefconfig
-sh                           se7619_defconfig
-powerpc                      ep88xc_defconfig
-arm                           imxrt_defconfig
-arm                       multi_v4t_defconfig
-arc                          axs103_defconfig
-mips                  maltasmvp_eva_defconfig
-sh                            migor_defconfig
-sh                           sh2007_defconfig
-powerpc                     mpc83xx_defconfig
-sparc                       sparc64_defconfig
-s390                          debug_defconfig
-powerpc                     asp8347_defconfig
-mips                       bmips_be_defconfig
-sh                           se7721_defconfig
-sh                           se7705_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220501
-ia64                                defconfig
-ia64                             allmodconfig
-ia64                             allyesconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-i386                 randconfig-a003-20220502
-i386                 randconfig-a002-20220502
-i386                 randconfig-a001-20220502
-i386                 randconfig-a004-20220502
-i386                 randconfig-a006-20220502
-i386                 randconfig-a005-20220502
-x86_64                        randconfig-a011
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220501
-arc                  randconfig-r043-20220502
-s390                 randconfig-r044-20220501
-riscv                randconfig-r042-20220501
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                    rhel-8.3-kselftests
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
-
-clang tested configs:
-arm                         lpc32xx_defconfig
-mips                     cu1830-neo_defconfig
-arm                  colibri_pxa270_defconfig
-powerpc                 mpc8315_rdb_defconfig
-powerpc                      ppc44x_defconfig
-powerpc                     powernv_defconfig
-x86_64                        randconfig-a005
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-x86_64               randconfig-a015-20220502
-x86_64               randconfig-a012-20220502
-x86_64               randconfig-a016-20220502
-x86_64               randconfig-a014-20220502
-x86_64               randconfig-a013-20220502
-x86_64               randconfig-a011-20220502
-i386                 randconfig-a011-20220502
-i386                 randconfig-a013-20220502
-i386                 randconfig-a016-20220502
-i386                 randconfig-a015-20220502
-i386                 randconfig-a014-20220502
-i386                 randconfig-a012-20220502
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-hexagon              randconfig-r045-20220502
-riscv                randconfig-r042-20220502
-hexagon              randconfig-r041-20220502
-hexagon              randconfig-r045-20220501
-hexagon              randconfig-r041-20220501
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+     Arnd
