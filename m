@@ -2,192 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08494C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 02:56:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 409D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 03:08:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230241AbiECDAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 23:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43820 "EHLO
+        id S230252AbiECDLz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 23:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230217AbiECDAC (ORCPT
+        with ESMTP id S230217AbiECDLt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 23:00:02 -0400
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A6F938796;
-        Mon,  2 May 2022 19:56:31 -0700 (PDT)
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 2432uH6U011152;
-        Tue, 3 May 2022 11:56:18 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 2432uH6U011152
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1651546578;
-        bh=VwNM2W8hTeAPyUymgN9LUFlugNghegTT9oPZA7kVbPw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=b7rcSdV7mz/JZOyvIov8Ywq2FD+dsBcn3UMqYkJIP1gOLdkWdlBYmOdv4TrzG4kbY
-         VjYuYP+MtvbDaOyo4z1qm7F/RB0z6RHKHI7Frk/tGi5YYPtGDgFUDb88FXf3NtqCHV
-         nazTTdACqhaUC8YsZVDDsPWJ+wxUPck8/rNIwb2GVm6hR9T67Z2aQFnVGGc5sMYJPb
-         lA6Nstjq6kSFCxstllx4T8P73vkawuyzDA/Mcx8LCSe3FVJ9c1SZBqSj5yUKet+K0y
-         q7si4slZ+OK3Hz6PiZD4w5nU0wrSIajoTdDYkQLLoUSQasl8tlhcqIYDZNp8DYCjqZ
-         CzaFgqaf0HjFA==
-X-Nifty-SrcIP: [209.85.214.175]
-Received: by mail-pl1-f175.google.com with SMTP id d15so13954621plh.2;
-        Mon, 02 May 2022 19:56:18 -0700 (PDT)
-X-Gm-Message-State: AOAM530xukct0glWTF7DbgChOy4bC6MKR/dMLd2cqmd3SpQ3gHiPFBSV
-        oXR/jOxauaAykjnuLDzAPhs1kogaw9Zu+djvUgQ=
-X-Google-Smtp-Source: ABdhPJzZYa6S1jTp9537Jw6pSz/ivM6fvC6WKnXzu7KP/iqWkJk5Uae3t1lDZwuLeSS6FtfGZY+1F1fh1HqbefqZiXI=
-X-Received: by 2002:a17:90a:e517:b0:1d7:5bbd:f9f0 with SMTP id
- t23-20020a17090ae51700b001d75bbdf9f0mr2411545pjy.77.1651546577266; Mon, 02
- May 2022 19:56:17 -0700 (PDT)
+        Mon, 2 May 2022 23:11:49 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905A4387AE
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 20:08:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651547298; x=1683083298;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=QhCZIg9TqfRkZJDSFzHBxZAoXeT7GzvUzfL6hRZHXoc=;
+  b=bLvaBn6Epi9U+KZ/TAdpiDajqoQVjvffnnoaauBVl1joNIWhAF9aBRLe
+   AlS3t5A6G/+xQ9kjQ3jnqWHVHaN+eH2v4D52VAyqkvdL+r4eS1cN2tjTF
+   P3jsmwuZdRG5dTpaW4FLByR0VUQM2zUkpqfaKpz8wnG8vYsEAkLJ+/z14
+   dP2EKj9zrmpOhc9BDrHG3CBieVAOMGNUeOa2Lrn2yjZslH2H99tJ18YJy
+   T1kVuyGN2N8YY58y9qrF5ZkOr7iwgSqfJVjPt77LDV4DYl59L7L7ZK0cV
+   xMMxzQ6xcqKFetlwkVhryhLnNcWiqNOgboROaeuf/j4yFsi1mX5kZGEAP
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="264976244"
+X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
+   d="scan'208";a="264976244"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 20:08:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
+   d="scan'208";a="733744061"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 02 May 2022 20:08:15 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nlita-000A6W-Gk;
+        Tue, 03 May 2022 03:08:14 +0000
+Date:   Tue, 3 May 2022 11:07:38 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tom Rix <trix@redhat.com>, nsaenz@kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, gregkh@linuxfoundation.org,
+        stefan.wahren@i2se.com, gascoar@gmail.com, ojaswin98@gmail.com
+Cc:     kbuild-all@lists.01.org, linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: Re: [PATCH v2] staging: vchiq_arm: change vchiq_platform_init from
+ global to static
+Message-ID: <202205031150.FRdwOUbC-lkp@intel.com>
+References: <20220419133616.544255-1-trix@redhat.com>
 MIME-Version: 1.0
-References: <20220501084032.1025918-1-masahiroy@kernel.org> <20220501084032.1025918-20-masahiroy@kernel.org>
-In-Reply-To: <20220501084032.1025918-20-masahiroy@kernel.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 3 May 2022 11:55:11 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASzBse=oPA2u4dMJoF9VSJ492K+s=d5Yyn4Aw0dJgu03A@mail.gmail.com>
-Message-ID: <CAK7LNASzBse=oPA2u4dMJoF9VSJ492K+s=d5Yyn4Aw0dJgu03A@mail.gmail.com>
-Subject: Re: [PATCH v2 19/26] kbuild: embed symbol versions at final link of
- vmlinux or modules
-To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419133616.544255-1-trix@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 1, 2022 at 5:42 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Do not update objects with version CRCs while the directory descending.
->
-> Do it at the final link stage.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Hi Tom,
+
+I love your patch! Perhaps something to improve:
+
+[auto build test WARNING on staging/staging-testing]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Tom-Rix/staging-vchiq_arm-change-vchiq_platform_init-from-global-to-static/20220419-213849
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git bed6d200f8ca38e1ecbdd8fb7e0564884002abd1
+config: openrisc-buildonly-randconfig-r003-20220501 (https://download.01.org/0day-ci/archive/20220503/202205031150.FRdwOUbC-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/36525447e8cdf4a25d5217bffc548768c0f7cec1
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Tom-Rix/staging-vchiq_arm-change-vchiq_platform_init-from-global-to-static/20220419-213849
+        git checkout 36525447e8cdf4a25d5217bffc548768c0f7cec1
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/staging/vc04_services/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:16:
+   In function 'memcpy_to_page',
+       inlined from 'free_pagelist' at drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:434:4:
+>> include/linux/highmem.h:353:9: warning: argument 2 null where non-null expected [-Wnonnull]
+     353 |         memcpy(to + offset, from, len);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/string.h:20,
+                    from include/linux/bitmap.h:11,
+                    from include/linux/cpumask.h:12,
+                    from include/linux/mm_types_task.h:14,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/module.h:14,
+                    from drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:8:
+   drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c: In function 'free_pagelist':
+   arch/openrisc/include/asm/string.h:9:14: note: in a call to function 'memcpy' declared 'nonnull'
+       9 | extern void *memcpy(void *dest, __const void *src, __kernel_size_t n);
+         |              ^~~~~~
+   In file included from drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:16:
+   In function 'memcpy_to_page',
+       inlined from 'free_pagelist' at drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:441:4:
+>> include/linux/highmem.h:353:9: warning: 'memcpy' offset 0 is out of the bounds [0, 0] [-Warray-bounds]
+     353 |         memcpy(to + offset, from, len);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-As 0-day bot reported, this does not work for CONFIG_MODULE_REL_CRCS.
+vim +353 include/linux/highmem.h
 
-I will send v3.
-
-
-> ---
->
-> (no changes since v1)
->
->  scripts/Makefile.build    | 22 +++-------------------
->  scripts/Makefile.modfinal |  3 ++-
->  scripts/link-vmlinux.sh   |  4 +++-
->  3 files changed, 8 insertions(+), 21 deletions(-)
->
-> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> index a1023868775f..cec17b28de42 100644
-> --- a/scripts/Makefile.build
-> +++ b/scripts/Makefile.build
-> @@ -162,15 +162,9 @@ ifdef CONFIG_MODVERSIONS
->  # o if <file>.o doesn't contain a __ksymtab version, i.e. does
->  #   not export symbols, it's done.
->  # o otherwise, we calculate symbol versions using the good old
-> -#   genksyms on the preprocessed source and postprocess them in a way
-> -#   that they are usable as a linker script
-> -# o generate .tmp_<file>.o from <file>.o using the linker to
-> -#   replace the unresolved symbols __crc_exported_symbol with
-> -#   the actual value of the checksum generated by genksyms
-> -# o remove .tmp_<file>.o to <file>.o
-> -
-> -# Generate .o.symversions files for each .o with exported symbols, and link these
-> -# to the kernel and/or modules at the end.
-> +#   genksyms on the preprocessed source and dump them into the .cmd file.
-> +# o modpost will extract versions from the .cmd file and create linker
-> +#   scripts used to link the kernel and/or modules.
->
->  genksyms_format_rel_crc := [^_]*__crc_\([^ ]*\) = \.; LONG(\([^)]*\)).*
->  genksyms_format_normal := __crc_\(.*\) = \(.*\);
-> @@ -188,12 +182,6 @@ gen_symversions =                                                          \
->
->  cmd_gen_symversions_c =        $(call gen_symversions,c)
->
-> -cmd_modversions =                                                              \
-> -       if [ -r $@.symversions ]; then                                          \
-> -               $(LD) $(KBUILD_LDFLAGS) -r -o $(@D)/.tmp_$(@F) $@               \
-> -                       -T $@.symversions;                                      \
-> -               mv -f $(@D)/.tmp_$(@F) $@;                                      \
-> -       fi
->  endif
->
->  ifdef CONFIG_FTRACE_MCOUNT_USE_RECORDMCOUNT
-> @@ -273,7 +261,6 @@ define rule_cc_o_c
->         $(call cmd,checkdoc)
->         $(call cmd,gen_objtooldep)
->         $(call cmd,gen_symversions_c)
-> -       $(if $(CONFIG_LTO_CLANG),,$(call cmd,modversions))
->         $(call cmd,record_mcount)
->  endef
->
-> @@ -282,7 +269,6 @@ define rule_as_o_S
->         $(call cmd,gen_ksymdeps)
->         $(call cmd,gen_objtooldep)
->         $(call cmd,gen_symversions_S)
-> -       $(call cmd,modversions)
->  endef
->
->  # Built-in and composite module parts
-> @@ -296,8 +282,6 @@ ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
->  quiet_cmd_cc_prelink_modules = LD [M]  $@
->        cmd_cc_prelink_modules =                                         \
->         $(LD) $(ld_flags) -r -o $@                                      \
-> -               $(shell [ -s $(@:.prelink.o=.o.symversions) ] &&                \
-> -                       echo -T $(@:.prelink.o=.o.symversions))         \
->                 --whole-archive $(filter-out FORCE,$^)                  \
->                 $(cmd_objtool)
->
-> diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
-> index 7f39599e9fae..d429e3f9ae1d 100644
-> --- a/scripts/Makefile.modfinal
-> +++ b/scripts/Makefile.modfinal
-> @@ -34,6 +34,7 @@ quiet_cmd_ld_ko_o = LD [M]  $@
->        cmd_ld_ko_o +=                                                   \
->         $(LD) -r $(KBUILD_LDFLAGS)                                      \
->                 $(KBUILD_LDFLAGS_MODULE) $(LDFLAGS_MODULE)              \
-> +               $(addprefix -T, $(filter %.symver.lds, $(real-prereqs)))\
->                 -T scripts/module.lds -o $@ $(filter %.o, $^);          \
->         $(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) $@, true)
->
-> @@ -56,7 +57,7 @@ if_changed_except = $(if $(call newer_prereqs_except,$(2))$(cmd-check),      \
->
->
->  # Re-generate module BTFs if either module's .ko or vmlinux changed
-> -$(modules): %.ko: %$(mod-prelink-ext).o %.mod.o scripts/module.lds $(if $(KBUILD_BUILTIN),vmlinux) FORCE
-> +$(modules): %.ko: %$(mod-prelink-ext).o %.mod.o $(if $(CONFIG_MODVERSIONS), %.symver.lds) scripts/module.lds $(if $(KBUILD_BUILTIN),vmlinux) FORCE
->         +$(call if_changed_except,ld_ko_o,vmlinux)
->  ifdef CONFIG_DEBUG_INFO_BTF_MODULES
->         +$(if $(newer-prereqs),$(call cmd,btf_ko))
-> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-> index eceb3ee7ec06..8da5c0182665 100755
-> --- a/scripts/link-vmlinux.sh
-> +++ b/scripts/link-vmlinux.sh
-> @@ -90,7 +90,6 @@ modpost_link()
->
->                 if is_enabled CONFIG_MODVERSIONS; then
->                         gen_symversions
-> -                       lds="${lds} -T .tmp_symversions.lds"
->                 fi
->
->                 # This might take a while, so indicate that we're doing
-> @@ -196,6 +195,9 @@ vmlinux_link()
->         fi
->
->         ldflags="${ldflags} ${wl}--script=${objtree}/${KBUILD_LDS}"
-> +       if is_enabled CONFIG_MODVERSIONS; then
-> +               ldflags="${ldflags} ${wl}--script=vmlinux.symver.lds"
-> +       fi
->
->         # The kallsyms linking does not need debug symbols included.
->         if [ "$output" != "${output#.tmp_vmlinux.kallsyms}" ] ; then
-> --
-> 2.32.0
->
-
+bb90d4bc7b6a53 Ira Weiny         2021-02-09  346  
+bb90d4bc7b6a53 Ira Weiny         2021-02-09  347  static inline void memcpy_to_page(struct page *page, size_t offset,
+bb90d4bc7b6a53 Ira Weiny         2021-02-09  348  				  const char *from, size_t len)
+bb90d4bc7b6a53 Ira Weiny         2021-02-09  349  {
+61b205f579911a Ira Weiny         2021-02-09  350  	char *to = kmap_local_page(page);
+bb90d4bc7b6a53 Ira Weiny         2021-02-09  351  
+ca18f6ea012bf3 Ira Weiny         2021-02-10  352  	VM_BUG_ON(offset + len > PAGE_SIZE);
+bb90d4bc7b6a53 Ira Weiny         2021-02-09 @353  	memcpy(to + offset, from, len);
+8dad53a11f8d94 Christoph Hellwig 2021-07-23  354  	flush_dcache_page(page);
+61b205f579911a Ira Weiny         2021-02-09  355  	kunmap_local(to);
+bb90d4bc7b6a53 Ira Weiny         2021-02-09  356  }
+bb90d4bc7b6a53 Ira Weiny         2021-02-09  357  
 
 -- 
-Best Regards
-Masahiro Yamada
+0-DAY CI Kernel Test Service
+https://01.org/lkp
