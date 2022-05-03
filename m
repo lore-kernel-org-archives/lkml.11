@@ -2,105 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF42C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:50:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E5BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232503AbiECHxz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 03:53:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32786 "EHLO
+        id S232466AbiECHzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:55:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232519AbiECHxw (ORCPT
+        with ESMTP id S232493AbiECHxp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 03:53:52 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E16B2BF3
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 00:50:20 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id t5so8318636edw.11
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 00:50:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wp+HuhCzVQcbpzvT/sQrzmDjeIdh00lZI9oDxB6WyTs=;
-        b=MaRFzGoMD1a278grMU14/yYlEhePHu15Lav8QNQrQHkccVbXPqgmvM1VFUtuC9Fjf4
-         uJ3Rgbif7K6L8Ar8zRmKbftuhHKSa1UQ3SwebB9FJsDSmAGIbAM/w9B4Pma+MsXx73Av
-         tBlw/wqeYyPZWnubeZzUsmbpdMPm/M0Fs/b6h3BmrufAJfacj89ELyGunz7ZfLR4dbcQ
-         8fzP9L7Ut+fKZrCPOpNjXsoKndESVxRp91TmVHnheF4t6Z5QCcAfvoUrYdJaBATgzHK4
-         L7wiHAO+Kbyg/3nyOqSVZr5kgTn+lepmUGIj3npYWsgp9O3lwfGl0Qx957ysvk/ZK+xQ
-         ksgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wp+HuhCzVQcbpzvT/sQrzmDjeIdh00lZI9oDxB6WyTs=;
-        b=WLv+2Y9PrPJ2x0Cbl/1fSdPwz3JbysVBu82OX/slK4bLzLDX/hWkk3leSFOf+G/F4d
-         SATsKcEBVwydJXX7LpN/UCZic9fEmfHkYWsjRitDLkh9vstZ2lmo2wBwXGJvrCf8sH5+
-         6G+d0oRKhs7F7bdbw2idQSrod7LQLH/G8ZzbXHA/mRGD/+3rgNSGW6u/yk55ILMrSLDX
-         QyrHCe/wCc0HYHqYiPCXRKl7jvKHx0vhFTLNkO/CB69AAV335gHlFdljWcsZgGZJzuoC
-         4TbasBliQ2DLo5heBJYskzWC/qtYfVMScoCmDHItsIfUP//o0rMzWGWWhjbg5PclRLtH
-         0tSA==
-X-Gm-Message-State: AOAM531XnncA5nZA2OlmOH439+Y83c+ICUpUrYQGaohE1AUFF+fstIrH
-        YH8k35TkQtQezyXRimlM2loZxw==
-X-Google-Smtp-Source: ABdhPJyVyq4b/kVlB63u3UarpBNZnJKtF6IDLyaW7pS64uWqHVVg2cH/YhsdXpfIKhYgli0kY9qkQw==
-X-Received: by 2002:a50:f1c5:0:b0:425:dd04:b7a9 with SMTP id y5-20020a50f1c5000000b00425dd04b7a9mr16790672edl.388.1651564218903;
-        Tue, 03 May 2022 00:50:18 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id cw27-20020a056402229b00b0042617ba6387sm7464883edb.17.2022.05.03.00.50.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 00:50:18 -0700 (PDT)
-Date:   Tue, 3 May 2022 08:49:52 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Baolu Lu <baolu.lu@linux.intel.com>
-Cc:     Fenghua Yu <fenghua.yu@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>, robin.murphy@arm.com,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        iommu <iommu@lists.linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, zhangfei.gao@linaro.org,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Message-ID: <YnDeoGjv/dZnu+YQ@myrica>
-References: <YmbO/l5IwfBCHrl8@myrica>
- <8c044e49-74bb-df56-8a60-663013c0910e@intel.com>
- <YmgiQZZyFxsJ+9um@myrica>
- <63582490-a794-fd11-0380-44b27cc660b7@intel.com>
- <YmpSv48aPIbVXqGi@myrica>
- <044595e6-e5d0-26c2-af8e-fc9d06906179@linux.intel.com>
- <YmvtVRlwVJjStXc0@fyu1.sc.intel.com>
- <Ymv3fC4xXqe+oMRK@myrica>
- <Ymxke+ihgwNy3BCE@fyu1.sc.intel.com>
- <3ea91623-97ea-f318-70db-55f08922d7ce@linux.intel.com>
+        Tue, 3 May 2022 03:53:45 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2C9B1;
+        Tue,  3 May 2022 00:50:11 -0700 (PDT)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2430TJqj004092;
+        Tue, 3 May 2022 00:52:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=rMhmyDAWAAQBe/N24LM8za9MtKczC9UpeK3Jvgs3Gsc=;
+ b=Y6kbJsVuY4A1HZIad0JCerTR5spbyya6N3GL14AXgAX0+DZQum4Z6rNmqKgs1/+XuktY
+ GtNmHwV8jWHLN6IHYjX+6qtkxcTXusp1AKB2U9Vahg89rLjccSjF/Dtw+nlVQpPTEg3n
+ 5Agjw1CoODs+IFqj+TtVaVkTq/hveb+aRs6lDwt3jpKlq2+MwbgD4y7mDP9VHgPOYmj0
+ MnLdyGhepKcBnsrB1WYxZCL4kI3vvPXK+PJkHvGLr7k1cwtwmoU+6L1L/XNH+7T9GuVx
+ tmDAPo4WOVwFrAD4CYQfhQ69d+Q9imU0IS8Nd6w9TEYAub/EXfQvorNALPQlxAmCy6T+ Xg== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frw0amhjq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:52:08 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430op0H008959;
+        Tue, 3 May 2022 00:52:07 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83xcj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:52:07 +0000
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430plk6010389;
+        Tue, 3 May 2022 00:52:06 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-35;
+        Tue, 03 May 2022 00:52:06 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     jejb@linux.ibm.com, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        dc395x@twibble.org, aliakc@web.de, lenehan@twibble.org,
+        oliver@neukum.org
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org
+Subject: Re: [RESEND][PATCH] scsi: dc395x: fix a missing check on list iterator
+Date:   Mon,  2 May 2022 20:51:45 -0400
+Message-Id: <165153836363.24053.2716522783006312499.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414040231.2662-1-xiam0nd.tong@gmail.com>
+References: <20220414040231.2662-1-xiam0nd.tong@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3ea91623-97ea-f318-70db-55f08922d7ce@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: a7lEWuHbrGWRMaXgoBhaOwyPP_XH7bL1
+X-Proofpoint-ORIG-GUID: a7lEWuHbrGWRMaXgoBhaOwyPP_XH7bL1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 30, 2022 at 03:33:17PM +0800, Baolu Lu wrote:
-> Jean, another quick question about the iommu_sva_bind_device()
+On Thu, 14 Apr 2022 12:02:31 +0800, Xiaomeng Tong wrote:
+
+> The bug is here:
+> 	p->target_id, p->target_lun);
 > 
-> /**
->  * iommu_sva_bind_device() - Bind a process address space to a device
->  * @dev: the device
->  * @mm: the mm to bind, caller must hold a reference to it
->  * @drvdata: opaque data pointer to pass to bind callback
+> The list iterator 'p' will point to a bogus position containing
+> HEAD if the list is empty or no element is found. This case must
+> be checked before any use of the iterator, otherwise it will
+> lead to a invalid memory access.
 > 
-> This interface requires the caller to take a reference to mm. Which
-> reference should it take, mm->mm_count or mm->mm_users? It's better to
-> make it explicit in this comment.
+> [...]
 
-Agreed, it's mm_users as required by mmu_notifier_register()
+Applied to 5.19/scsi-queue, thanks!
 
-Thanks,
-Jean
+[1/1] scsi: dc395x: fix a missing check on list iterator
+      https://git.kernel.org/mkp/scsi/c/036a45aa587a
 
+-- 
+Martin K. Petersen	Oracle Linux Engineering
