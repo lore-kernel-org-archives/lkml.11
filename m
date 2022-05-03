@@ -2,181 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C9DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 23:21:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D42C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 23:27:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244258AbiECXZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 19:25:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36414 "EHLO
+        id S244243AbiECXae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 19:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244230AbiECXZW (ORCPT
+        with ESMTP id S234168AbiECXaa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 19:25:22 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95EF942ECD;
-        Tue,  3 May 2022 16:21:44 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nm1pd-0004Xd-6L; Wed, 04 May 2022 01:21:25 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv@lists.infradead.org
-Cc:     Atish Patra <atishp@rivosinc.com>,
-        Anup Patel <anup@brainfault.org>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>, linux-mm@kvack.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-api@vger.kernel.org,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        linux-man@vger.kernel.org, Jiatai He <jiatai2021@iscas.ac.cn>,
-        "Hongren (Zenithal) Zheng" <i@zenithal.me>
-Subject: Re: [PATCH 1/3] RISC-V: add Bitmanip/Scalar Crypto parsing from DT
-Date:   Wed, 04 May 2022 01:21:23 +0200
-Message-ID: <4734719.31r3eYUQgx@phil>
-In-Reply-To: <Ym0+nr9KZBO118Dx@Sun>
-References: <Ym0+Erz5DEnB78vu@Sun> <Ym0+nr9KZBO118Dx@Sun>
+        Tue, 3 May 2022 19:30:30 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A5D23DDF6
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 16:26:55 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id ba17so1459110edb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 16:26:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gmRfPAr6JZvSMMEYps49l7OQt2BG72EiV04cQ5yBwG8=;
+        b=Qp6K9wf6dlpNyoy939Dn6hh5itEXUXpYYLAyjFahUWzal31jv7FTaHbho8tYaKYLZj
+         cODleYspomtiXLDJM25z+o9AzVGfXqevKn2foOvcnS1mn5lJVk9Xhebs8kWBJP1FmBc0
+         kOJP9tqSPF9DOLEoXKPHYw2BfTgwksMKucSwk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gmRfPAr6JZvSMMEYps49l7OQt2BG72EiV04cQ5yBwG8=;
+        b=61ZGw3K3XWYgg0uxq/fMOsv26vpJ2gIWR+amv0+kh2J+Dwk9ekCgQNomqpMLTwtAna
+         nQaTCcUl1W1oqzFVHnclcd0+ekXNhw1fNDwUipiOuO1DpjRmYrB5B2rK3nlpBQk2UF23
+         qoxSDthfuZe89p2sSAz9iJUj/YSqX8XgEWbH86y3WvksnH2YloEAZWoUo2p651/gyYdD
+         2PgHaYWZBVEB4efZxgkhXnmLOqP6qXNVFuat+n/qR3vcdi1WvqH/PBZ6q0i9bqk55bVD
+         f3QpU3eTcbWn9O7o0JHo2l5kCzaLqPvwOsV7u6rVyCui2QvM7oYmw4ndmT0sB3va2vdv
+         Yqhw==
+X-Gm-Message-State: AOAM532pa3wldxBh8bVUgzssNHLg9vMKLWceuogbQZFjm6F6pdUcBwgX
+        WrsvBTVSWIa+aj/XQDqpI5lLa+9KdQXrKLmI
+X-Google-Smtp-Source: ABdhPJxtE2xnqCQ/1x4Rw3XJ9W80xJeSgBQdFuO1oVQlKn8AYc/C0tv4YolmRgzRQ+4FsrTKGlEBMw==
+X-Received: by 2002:a05:6402:c9c:b0:425:d5e0:b69 with SMTP id cm28-20020a0564020c9c00b00425d5e00b69mr20361960edb.271.1651620413658;
+        Tue, 03 May 2022 16:26:53 -0700 (PDT)
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com. [209.85.128.42])
+        by smtp.gmail.com with ESMTPSA id ml13-20020a170906cc0d00b006f3ef214e08sm5030217ejb.110.2022.05.03.16.26.53
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 16:26:53 -0700 (PDT)
+Received: by mail-wm1-f42.google.com with SMTP id m62so10672690wme.5
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 16:26:53 -0700 (PDT)
+X-Received: by 2002:a7b:c4c8:0:b0:394:26c5:b79e with SMTP id
+ g8-20020a7bc4c8000000b0039426c5b79emr5256168wmk.15.1651620401765; Tue, 03 May
+ 2022 16:26:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+References: <20220418171757.2282651-1-dianders@chromium.org>
+In-Reply-To: <20220418171757.2282651-1-dianders@chromium.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 3 May 2022 16:26:29 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XBwkSSKHd+EorS54gEtiqpZLbCmmoXW3X7duFvo77Bog@mail.gmail.com>
+Message-ID: <CAD=FV=XBwkSSKHd+EorS54gEtiqpZLbCmmoXW3X7duFvo77Bog@mail.gmail.com>
+Subject: Re: [PATCH v3 0/4] drm/dp: Introduce wait_hpd_asserted() for the DP
+ AUX bus
+To:     dri-devel <dri-devel@lists.freedesktop.org>
+Cc:     Hsin-Yi Wang <hsinyi@chromium.org>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        Philip Chen <philipchen@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Kees Cook <keescook@chromium.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Lyude Paul <lyude@redhat.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Samstag, 30. April 2022, 15:50:22 CEST schrieb Hongren (Zenithal) Zheng:
-> This commit parses Zb/Zk related string from DT and
-> output them in cpuinfo
-> 
-> One thing worth noting is that if DT provides zk,
-> all zbkb, zbkc, zbkx and zkn, zkr, zkt would be enabled.
-> 
-> Note that zk is a valid extension name and the current
-> DT binding spec allows this.
-> 
-> There currently lacks a mechanism to merge them when
-> producing cpuinfo. Namely if you provide a riscv,isa
-> "rv64imafdc_zk_zks", the cpuinfo output would be
-> "rv64imafdc_zbkb_zbkc_zbkx_zknd_zkne_zknh_zkr_zksed
-> _zksh_zkt"
-> 
-> Tested-by: Jiatai He <jiatai2021@iscas.ac.cn>
-> Signed-off-by: Hongren (Zenithal) Zheng <i@zenithal.me>
-> ---
->  arch/riscv/include/asm/hwcap.h | 14 ++++++++++++++
->  arch/riscv/kernel/cpu.c        | 14 ++++++++++++++
->  arch/riscv/kernel/cpufeature.c | 33 +++++++++++++++++++++++++++++++++
->  3 files changed, 61 insertions(+)
-> 
-> diff --git a/arch/riscv/include/asm/hwcap.h b/arch/riscv/include/asm/hwcap.h
-> index 0734e42f74f2..199eda39e0b8 100644
-> --- a/arch/riscv/include/asm/hwcap.h
-> +++ b/arch/riscv/include/asm/hwcap.h
-> @@ -52,6 +52,20 @@ extern unsigned long elf_hwcap;
->   */
->  enum riscv_isa_ext_id {
->  	RISCV_ISA_EXT_SSCOFPMF = RISCV_ISA_EXT_BASE,
-> +	RISCV_ISA_EXT_ZBA,
-> +	RISCV_ISA_EXT_ZBB,
-> +	RISCV_ISA_EXT_ZBC,
-> +	RISCV_ISA_EXT_ZBS,
-> +	RISCV_ISA_EXT_ZBKB,
-> +	RISCV_ISA_EXT_ZBKC,
-> +	RISCV_ISA_EXT_ZBKX,
-> +	RISCV_ISA_EXT_ZKNE,
-> +	RISCV_ISA_EXT_ZKND,
-> +	RISCV_ISA_EXT_ZKNH,
-> +	RISCV_ISA_EXT_ZKSED,
-> +	RISCV_ISA_EXT_ZKSH,
-> +	RISCV_ISA_EXT_ZKR,
-> +	RISCV_ISA_EXT_ZKT,
->  	RISCV_ISA_EXT_ID_MAX = RISCV_ISA_EXT_MAX,
->  };
->  
-> diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
-> index ccb617791e56..7251336969c1 100644
-> --- a/arch/riscv/kernel/cpu.c
-> +++ b/arch/riscv/kernel/cpu.c
-> @@ -87,6 +87,20 @@ int riscv_of_parent_hartid(struct device_node *node)
->   *    extensions by an underscore.
->   */
->  static struct riscv_isa_ext_data isa_ext_arr[] = {
-> +	__RISCV_ISA_EXT_DATA(zba, RISCV_ISA_EXT_ZBA),
-> +	__RISCV_ISA_EXT_DATA(zbb, RISCV_ISA_EXT_ZBB),
-> +	__RISCV_ISA_EXT_DATA(zbc, RISCV_ISA_EXT_ZBC),
-> +	__RISCV_ISA_EXT_DATA(zbkb, RISCV_ISA_EXT_ZBKB),
-> +	__RISCV_ISA_EXT_DATA(zbkc, RISCV_ISA_EXT_ZBKC),
-> +	__RISCV_ISA_EXT_DATA(zbkx, RISCV_ISA_EXT_ZBKX),
-> +	__RISCV_ISA_EXT_DATA(zbs, RISCV_ISA_EXT_ZBS),
-> +	__RISCV_ISA_EXT_DATA(zknd, RISCV_ISA_EXT_ZKND),
-> +	__RISCV_ISA_EXT_DATA(zkne, RISCV_ISA_EXT_ZKNE),
-> +	__RISCV_ISA_EXT_DATA(zknh, RISCV_ISA_EXT_ZKNH),
-> +	__RISCV_ISA_EXT_DATA(zkr, RISCV_ISA_EXT_ZKR),
-> +	__RISCV_ISA_EXT_DATA(zksed, RISCV_ISA_EXT_ZKSED),
-> +	__RISCV_ISA_EXT_DATA(zksh, RISCV_ISA_EXT_ZKSH),
-> +	__RISCV_ISA_EXT_DATA(zkt, RISCV_ISA_EXT_ZKT),
->  	__RISCV_ISA_EXT_DATA(sscofpmf, RISCV_ISA_EXT_SSCOFPMF),
+Hi,
 
-I guess a bit of sorting rule might be helpful, here it's the additions
-above sscofpmf while in the enum it's the other way around.
+On Mon, Apr 18, 2022 at 10:18 AM Douglas Anderson <dianders@chromium.org> wrote:
+>
+> This is the 2nd four patches from my RFC series ("drm/dp: Improvements
+> for DP AUX channel") [1]. I've broken the series in two so we can make
+> progress on the two halves separately.
+>
+> v2 of this series changes to add wait_hpd_asserted() instead of
+> is_hpd_asserted(). This allows us to move the extra delay needed for
+> ps8640 into the ps8640 driver itself.
+>
+> The idea for this series came up during the review process of
+> Sankeerth's series trying to add eDP for Qualcomm SoCs [2].
+>
+> This _doesn't_ attempt to fix the Analogix driver. If this works out,
+> ideally someone can post a patch up to do that.
+>
+> [1] https://lore.kernel.org/r/20220409023628.2104952-1-dianders@chromium.org/
+> [2] https://lore.kernel.org/r/1648656179-10347-2-git-send-email-quic_sbillaka@quicinc.com/
+>
+> Changes in v3:
+> - Don't check "hpd_asserted" boolean when unset.
+> - Handle errors from gpiod_get_value_cansleep() properly.
+>
+> Changes in v2:
+> - Change is_hpd_asserted() to wait_hpd_asserted()
+>
+> Douglas Anderson (4):
+>   drm/dp: Add wait_hpd_asserted() callback to struct drm_dp_aux
+>   drm/panel-edp: Take advantage of wait_hpd_asserted() in struct
+>     drm_dp_aux
+>   drm/panel: atna33xc20: Take advantage of wait_hpd_asserted() in struct
+>     drm_dp_aux
+>   drm/bridge: parade-ps8640: Provide wait_hpd_asserted() in struct
+>     drm_dp_aux
+>
+>  drivers/gpu/drm/bridge/parade-ps8640.c        | 34 +++++++++------
+>  drivers/gpu/drm/panel/panel-edp.c             | 33 ++++++++++-----
+>  .../gpu/drm/panel/panel-samsung-atna33xc20.c  | 41 +++++++++++++------
+>  include/drm/dp/drm_dp_helper.h                | 26 ++++++++++++
+>  4 files changed, 98 insertions(+), 36 deletions(-)
 
-As the list will get a long longer over time, I guess consistency
-might improve readability.
+It's been about 2 weeks and I haven't seen any review. Dmitry: since
+this came up due to your feedback, any chance you'd be willing to
+review at least the drm-framework pieces? Philip is no longer on the
+Chrome OS team, so I suspect he won't be reviewing the ps8640 patches.
+Stephen: maybe you'd be willing to?
 
->  	__RISCV_ISA_EXT_DATA("", RISCV_ISA_EXT_MAX),
->  };
-> diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
-> index 1b2d42d7f589..10f9daf3734e 100644
-> --- a/arch/riscv/kernel/cpufeature.c
-> +++ b/arch/riscv/kernel/cpufeature.c
-> @@ -192,6 +192,39 @@ void __init riscv_fill_hwcap(void)
->  				set_bit(*ext - 'a', this_isa);
->  			} else {
->  				SET_ISA_EXT_MAP("sscofpmf", RISCV_ISA_EXT_SSCOFPMF);
-> +				SET_ISA_EXT_MAP("zba"     , RISCV_ISA_EXT_ZBA     );
+Thanks!
 
-not sure if the additional whitespaces are really necessary? [especially the ones at the end]
-What did checkpatch have to say about them?
-
-> +				SET_ISA_EXT_MAP("zbb"     , RISCV_ISA_EXT_ZBB     );
-> +				SET_ISA_EXT_MAP("zbc"     , RISCV_ISA_EXT_ZBC     );
-> +				SET_ISA_EXT_MAP("zbs"     , RISCV_ISA_EXT_ZBS     );
-> +				SET_ISA_EXT_MAP("zbkb"    , RISCV_ISA_EXT_ZBKB    );
-> +				SET_ISA_EXT_MAP("zbkc"    , RISCV_ISA_EXT_ZBKC    );
-> +				SET_ISA_EXT_MAP("zbks"    , RISCV_ISA_EXT_ZBKX    );
-> +				SET_ISA_EXT_MAP("zknd"    , RISCV_ISA_EXT_ZKND    );
-> +				SET_ISA_EXT_MAP("zkne"    , RISCV_ISA_EXT_ZKNE    );
-> +				SET_ISA_EXT_MAP("zknh"    , RISCV_ISA_EXT_ZKNH    );
-> +				SET_ISA_EXT_MAP("zksed"   , RISCV_ISA_EXT_ZKSED   );
-> +				SET_ISA_EXT_MAP("zksh"    , RISCV_ISA_EXT_ZKSH    );
-> +				SET_ISA_EXT_MAP("zkr"     , RISCV_ISA_EXT_ZKR     );
-> +				SET_ISA_EXT_MAP("zkt"     , RISCV_ISA_EXT_ZKT     );
-> +				SET_ISA_EXT_MAP("zkn"     , RISCV_ISA_EXT_ZBKB    );
-> +				SET_ISA_EXT_MAP("zkn"     , RISCV_ISA_EXT_ZBKC    );
-> +				SET_ISA_EXT_MAP("zkn"     , RISCV_ISA_EXT_ZBKX    );
-> +				SET_ISA_EXT_MAP("zkn"     , RISCV_ISA_EXT_ZKND    );
-> +				SET_ISA_EXT_MAP("zkn"     , RISCV_ISA_EXT_ZKNE    );
-> +				SET_ISA_EXT_MAP("zkn"     , RISCV_ISA_EXT_ZKNH    );
-> +				SET_ISA_EXT_MAP("zks"     , RISCV_ISA_EXT_ZBKB    );
-> +				SET_ISA_EXT_MAP("zks"     , RISCV_ISA_EXT_ZBKC    );
-> +				SET_ISA_EXT_MAP("zks"     , RISCV_ISA_EXT_ZBKX    );
-> +				SET_ISA_EXT_MAP("zks"     , RISCV_ISA_EXT_ZKSED   );
-> +				SET_ISA_EXT_MAP("zks"     , RISCV_ISA_EXT_ZKSH    );
-> +				SET_ISA_EXT_MAP("zk"      , RISCV_ISA_EXT_ZBKB    );
-> +				SET_ISA_EXT_MAP("zk"      , RISCV_ISA_EXT_ZBKC    );
-> +				SET_ISA_EXT_MAP("zk"      , RISCV_ISA_EXT_ZBKX    );
-> +				SET_ISA_EXT_MAP("zk"      , RISCV_ISA_EXT_ZKND    );
-> +				SET_ISA_EXT_MAP("zk"      , RISCV_ISA_EXT_ZKNE    );
-> +				SET_ISA_EXT_MAP("zk"      , RISCV_ISA_EXT_ZKNH    );
-> +				SET_ISA_EXT_MAP("zk"      , RISCV_ISA_EXT_ZKR     );
-> +				SET_ISA_EXT_MAP("zk"      , RISCV_ISA_EXT_ZKT     );
->  			}
->  #undef SET_ISA_EXT_MAP
->  		}
-> 
-
-
-
-
+-Doug
