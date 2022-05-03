@@ -2,87 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9837BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 16:20:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A35C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 16:22:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239341AbiECQX7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 12:23:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34198 "EHLO
+        id S239383AbiECQ0X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 12:26:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239338AbiECQXj (ORCPT
+        with ESMTP id S239268AbiECQ0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 12:23:39 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71D82C64D
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 09:20:06 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id c5-20020a9d75c5000000b00605ff3b9997so6768845otl.0
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 09:20:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pfrAvdzMCVZFNr1VGcMbw6Nne+rB0bgZkaiibREqMIU=;
-        b=bjX47vSczG1UpwH3woF/YW1tOq4qwOigdHqC8RnYt8ontvKStM/OyGy6Fg4gb/gOBd
-         aiqht5tAc9gdlWq600yIp3edBd36547azxQvtgNA//tbrO39YIcdPwAtKWqmNcOB71Sg
-         8xVeZ834lbX3e90FUK3DATi0XMfR8tTasux+j/T1OjkSaPOIh9yTlvfWWSkfwDaLPCPE
-         Lny6fgHDdw84kBu5jCnf5esY0y48lkdDrHJ6NMY5HaDrUWobWG0hltWpfBzeIwJ786x7
-         FdCvX6IxoV6MYoZKZeaBBU9DR6N7LnUB6mARk+X39bCaaLlwQGfOZuDU7Lgx9LHAt1cy
-         7SUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pfrAvdzMCVZFNr1VGcMbw6Nne+rB0bgZkaiibREqMIU=;
-        b=KhCjM4tMek5W8qmrr+OMhOdrZ965pR+vVpNPgskNLvrt3nJ5+g3vqi24r2J2IkP62f
-         z8zH8r2rki23k0vh6mBxSZZX3+9UdY0R1tLaXGb6VXqCwLgvvLzTbxPJ4eefnWSq/oF3
-         8jSgnuz9jSScTKl7FUCMEvg1Rd/DzGdWQ9c0NNrnWblh/ArrQtzMLRXBMLF/YAFMqXvO
-         qOwUmVykcJgE41UnqZz8P5AIEB9wyMPZut5uihYaPxJPa7k04iSRgGw9ChsEg21+w70p
-         B/rsqKmkvfd8Ia7b2gI2f4AiXYQFxDsvJgoQM0XbGAsJomSC32uq6VlmFhrFIAdK+3pn
-         rY6g==
-X-Gm-Message-State: AOAM532/HEzbAEkxa3r1Dw2nMDNxsA/qqj36DhabHtTAsGzuYBSFtWfv
-        2XBZNQgKjybNe/e7fkJaOKuhdg==
-X-Google-Smtp-Source: ABdhPJyf1vYXk/t1rih2OFKGuCF7QinnVRCE8lSe9hdTQjKHj2zYLNKr5Rv67OSeKwElMSDqc07dVg==
-X-Received: by 2002:a05:6830:1183:b0:606:698:717e with SMTP id u3-20020a056830118300b006060698717emr5424639otq.309.1651594806311;
-        Tue, 03 May 2022 09:20:06 -0700 (PDT)
-Received: from localhost ([8.34.116.185])
-        by smtp.gmail.com with ESMTPSA id k18-20020a9d7612000000b0060603221254sm4044642otl.36.2022.05.03.09.20.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 09:20:05 -0700 (PDT)
-Date:   Tue, 3 May 2022 09:19:16 -0700
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Wonhyuk Yang <vvghjk1234@gmail.com>
-Cc:     Mel Gorman <mgorman@suse.de>,
+        Tue, 3 May 2022 12:26:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4A3439810
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 09:22:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651594962;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LdXD9yJFaOeo2pHNThXvtRNDE3czSMc0peQhxLvTF7o=;
+        b=Hj+F8k0m+7t76NrKG5lTl26EyzIjolyZRPb8HBkpk0Rc1pJIykRj0GhuFVXHlJOvbkmWvT
+        Fg4mFvMH9kSsV/PuES+JltQAjPeM4cr0uUiMGF34KxLMA1At7WBVOPnTrpatoQb2LyQLG9
+        Eyad/qeALs0LCLZC3mOiMha+t9z+Tfo=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-36-9DcLVbBoNNGK7qbA7j_JgA-1; Tue, 03 May 2022 12:22:38 -0400
+X-MC-Unique: 9DcLVbBoNNGK7qbA7j_JgA-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9774AD99F81;
+        Tue,  3 May 2022 16:22:37 +0000 (UTC)
+Received: from llong.com (dhcp-17-215.bos.redhat.com [10.18.17.215])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 26D30403373;
+        Tue,  3 May 2022 16:22:37 +0000 (UTC)
+From:   Waiman Long <longman@redhat.com>
+To:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>, Shuah Khan <shuah@kernel.org>
+Cc:     cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>,
-        Ohhoon Kwon <ohkwon1043@gmail.com>,
-        JaeSang Yoo <jsyoo5b@gmail.com>,
-        Jiyoup Kim <lakroforce@gmail.com>,
-        Donghyeok Kim <dthex5d@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/page_alloc: cache the result of node_dirty_ok()
-Message-ID: <YnFWBLKJyl27NvyO@cmpxchg.org>
-References: <20220430011032.64071-1-vvghjk1234@gmail.com>
+        Roman Gushchin <guro@fb.com>, Phil Auld <pauld@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Waiman Long <longman@redhat.com>
+Subject: [PATCH v10 1/8] cgroup/cpuset: Add top_cpuset check in update_tasks_cpumask()
+Date:   Tue,  3 May 2022 12:21:42 -0400
+Message-Id: <20220503162149.1764245-2-longman@redhat.com>
+In-Reply-To: <20220503162149.1764245-1-longman@redhat.com>
+References: <20220503162149.1764245-1-longman@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220430011032.64071-1-vvghjk1234@gmail.com>
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 30, 2022 at 10:10:32AM +0900, Wonhyuk Yang wrote:
-> To spread dirty page, nodes are checked whether
-> it reached the dirty limit using the expensive
-> node_dirty_ok(). To reduce the number of calling
-> node_dirty_ok(), last node that hit the dirty
-> limit is cached.
-> 
-> Instead of caching the node, caching both node
-> and it's result of node_dirty_ok() can reduce
-> the number of calling node_dirty_ok() more than
-> before.
-> 
-> Signed-off-by: Wonhyuk Yang <vvghjk1234@gmail.com>
+Right now, update_tasks_cpumask() is not supposed to be called with top
+cpuset.  With cpuset partition that takes CPUs away from the top cpuset,
+we may want to consider adjusting the cpu_allows mask of the tasks in
+the top cpuset as well. However, we need more investigation to figure
+out a way to do that without breaking non-cgroup aware applications in
+the top cpuset. So move the top_cpuset check into update_tasks_cpumask()
+and add a comment about possible future work.
 
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+Signed-off-by: Waiman Long <longman@redhat.com>
+---
+ kernel/cgroup/cpuset.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-Looks good to me. I like Andrew's naming fixlet as well.
+diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
+index 9390bfd9f1cd..d90f33b068a3 100644
+--- a/kernel/cgroup/cpuset.c
++++ b/kernel/cgroup/cpuset.c
+@@ -1128,6 +1128,14 @@ static void update_tasks_cpumask(struct cpuset *cs)
+ 	struct css_task_iter it;
+ 	struct task_struct *task;
+ 
++	/*
++	 * TODO: With cpuset partition that takes CPUs away from the top
++	 * cpuset, we may want to properly adjust the cpus_allowed mask of
++	 * tasks in the top cpuset as well.
++	 */
++	if (cs == &top_cpuset)
++		return;
++
+ 	css_task_iter_start(&cs->css, 0, &it);
+ 	while ((task = css_task_iter_next(&it)))
+ 		set_cpus_allowed_ptr(task, cs->effective_cpus);
+@@ -2092,12 +2100,7 @@ static int update_prstate(struct cpuset *cs, int new_prs)
+ 		update_flag(CS_CPU_EXCLUSIVE, cs, 0);
+ 	}
+ 
+-	/*
+-	 * Update cpumask of parent's tasks except when it is the top
+-	 * cpuset as some system daemons cannot be mapped to other CPUs.
+-	 */
+-	if (parent != &top_cpuset)
+-		update_tasks_cpumask(parent);
++	update_tasks_cpumask(parent);
+ 
+ 	if (parent->child_ecpus_count)
+ 		update_sibling_cpumasks(parent, cs, &tmpmask);
+-- 
+2.27.0
+
