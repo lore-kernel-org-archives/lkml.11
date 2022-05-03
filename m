@@ -2,89 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47EC5C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 00:50:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 526C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 00:53:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232252AbiEDAyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 20:54:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60122 "EHLO
+        id S244820AbiEDA5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 20:57:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243242AbiEDAyS (ORCPT
+        with ESMTP id S232925AbiEDA5L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 20:54:18 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18542403F3
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 17:50:44 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id l7so146571ejn.2
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 17:50:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kylehuey.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cP9uWnOWqzXPA2lSzLL1mbAFP/+AM6E6742CRb8OAEg=;
-        b=Yjw/EnmWU+rVL+X/0xSJrIE/iLh0U6od8A1TLwfTPacJSqDXwPZV94B4OounqLhXTt
-         XEbie7CO8XsBLCGnT2GSkQSDhMY33fcdoRzml/OfqeCHeu3S7+V0lk1hsLS+q2Nbl0kW
-         tdrUbCUFVyLpTgrhfnNqZgd9O1HVEbe+61uNUkEqa2Q2OzlagZasK+g2d0oKPBCx2Xza
-         Q+szFBap2PoKIYJsspidTqqNg9KTzo7s2d5rgheyL6nybU7lGaDXZXyQhkumBnP2Y6Ww
-         gpZ5gLnurnrHBsM4HsCx174BIGZdwfhwPg+xA0zWW10Vt0iE+Xo1HB5u4kbu8vp7l2a+
-         uRJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cP9uWnOWqzXPA2lSzLL1mbAFP/+AM6E6742CRb8OAEg=;
-        b=qkyYpYO9CFMvPMA31E+wkAoSpkR3KL2yIRf6b27uJ/keSkGHCoJBpu/NT/G1L+hgUl
-         zYNNl9gdDxIsj9iuPeyRJ8Dz2rAxoEL8wPVS6iH3/9zOOxPFJWn3syBE3FqGTVxVxnmy
-         iUL9YQGn+1nDq2/am/AI8fVSkanwc4XT15zuNDsNwOQlz/PjtnYKp1tnD1yOH25vKOS4
-         PQZskGCkTKSEzxeBz0NMlZc1786LsrUdR7TN4wz/Q4yFXxNnsls1T1Fb3R9D+cAyNeRu
-         VUREeMmKVY6cmtW4Zzp41NxGxcLURRARZcEp6Xwu1dhxbJnmgJD9d3HQ3AFvy9PGcVCC
-         I2lA==
-X-Gm-Message-State: AOAM530mHSaZapzspK9swZNvGS4Zsxy24JdUDWMvwFpYrGtUG4jQuB5h
-        9wRXx9jEFGGD+6w4RJk6vqHWU/VxX4SnHVlSh+cS8Q==
-X-Google-Smtp-Source: ABdhPJzxBsJ/lYcetbRrFJrg1HY5oPGvYeGqgVLu+BDtIgj1hsWIaG4NifJBOTiuYK2RioMqP80W8mL6G+tB3UzytlU=
-X-Received: by 2002:a17:907:7f90:b0:6f3:ee68:d332 with SMTP id
- qk16-20020a1709077f9000b006f3ee68d332mr17124127ejc.114.1651625442639; Tue, 03
- May 2022 17:50:42 -0700 (PDT)
+        Tue, 3 May 2022 20:57:11 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F3F41311;
+        Tue,  3 May 2022 17:53:37 -0700 (PDT)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2430TJqf004092;
+        Tue, 3 May 2022 00:51:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=wGPwHFOuOMksl22q2e5/lQBbzLvpT1VTH3Q5N00n7y0=;
+ b=vDar8Q+O6tSVr1tdAcZv3smoox0GW0NwZAF50e2EAiOeLKGIsdzZ1QkybO3imZVA3H6t
+ ycMw4tW++zZB+r5vY14lPk50sPb09+vMqS5d7YL4KuFe+SNe8KyUa6UtPr/sI0WGIUF8
+ 1eriDwj6lCGfmQKtNCbTZA2UgH7y68/oxjJbr7Xq4Dc32DjhPRqa9YnDYdNYfQta1Urb
+ zPu1UX1ib1B16d0onxrrdraaoU5C+/n6qFNteT3cuxFchCN6Qjqhst5oFWm7Jtqh3EUy
+ rbHKWq4fa4PJXyO0EaHUbHHfRPt5qQ1LhYSFFdVqSJiqm10rqsSqgpalQjP2Hzqlo/il Yg== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frw0amhj6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:51:57 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430orC5009030;
+        Tue, 3 May 2022 00:51:55 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x85-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:51:55 +0000
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430pljQ010389;
+        Tue, 3 May 2022 00:51:55 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-15;
+        Tue, 03 May 2022 00:51:55 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     cgel.zte@gmail.com, satishkh@cisco.com
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        ran jianping <ran.jianping@zte.com.cn>,
+        linux-kernel@vger.kernel.org, jejb@linux.ibm.com,
+        sebaddel@cisco.com, Zeal Robot <zealci@zte.com.cn>,
+        kartilak@cisco.com, linux-scsi@vger.kernel.org
+Subject: Re: [PATCH] scsi:fnic: remove unneeded flush_workqueue
+Date:   Mon,  2 May 2022 20:51:25 -0400
+Message-Id: <165153836361.24053.14382998267717469278.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220424065406.3228528-1-ran.jianping@zte.com.cn>
+References: <20220424065406.3228528-1-ran.jianping@zte.com.cn>
 MIME-Version: 1.0
-References: <20220503050136.86298-1-khuey@kylehuey.com> <20220503094631.1070921-1-pbonzini@redhat.com>
- <CALMp9eTCY3tMGL4=g4UfxGJoVhVB6KGu+vbwL-aDr+HJyaBBcQ@mail.gmail.com> <9085a08b-cbf8-8c79-f75d-61ae03bd92c5@redhat.com>
-In-Reply-To: <9085a08b-cbf8-8c79-f75d-61ae03bd92c5@redhat.com>
-From:   Kyle Huey <me@kylehuey.com>
-Date:   Tue, 3 May 2022 17:50:31 -0700
-Message-ID: <CAP045ApTz4K3QR=CezU2qnO4UfW-x6DTmivQ8xk5euqOAaVNXA@mail.gmail.com>
-Subject: Re: [PATCH] KVM: x86/svm: Account for family 17h event renumberings
- in amd_pmc_perf_hw_id
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Jim Mattson <jmattson@google.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>, kvm list <kvm@vger.kernel.org>,
-        "Robert O'Callahan" <robert@ocallahan.org>,
-        Keno Fischer <keno@juliacomputing.com>,
-        Like Xu <like.xu.linux@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: vpW7iZTdvALMR9FDI0opJ6JsqCa_KD6H
+X-Proofpoint-ORIG-GUID: vpW7iZTdvALMR9FDI0opJ6JsqCa_KD6H
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 3, 2022 at 4:50 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
->
-> On 5/3/22 12:00, Jim Mattson wrote:
-> >> Queued, thanks.
-> > Isn't it better to just drop this entirely, as in
-> > https://lore.kernel.org/kvm/20220411093537.11558-12-likexu@tencent.com/?
->
-> I plan to do that on top, this patch is good enough for stable.
->
-> Paolo
+On Sun, 24 Apr 2022 06:54:06 +0000, cgel.zte@gmail.com wrote:
 
-Yeah, rr will want this on stable, though this patch won't apply cleanly.
+> From: ran jianping <ran.jianping@zte.com.cn>
+> 
+> All work currently pending will be done first by calling destroy_workqueue,
+> so there is no need to flush it explicitly.
+> 
+> 
 
-- Kyle
+Applied to 5.19/scsi-queue, thanks!
+
+[1/1] scsi:fnic: remove unneeded flush_workqueue
+      https://git.kernel.org/mkp/scsi/c/671a52f2aeaf
+
+-- 
+Martin K. Petersen	Oracle Linux Engineering
