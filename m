@@ -2,100 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EAB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 10:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 10:33:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234173AbiECKeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 06:34:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51008 "EHLO
+        id S234190AbiECKgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 06:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232488AbiECKen (ORCPT
+        with ESMTP id S232986AbiECKgq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 06:34:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA1981FA67;
-        Tue,  3 May 2022 03:31:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6840FB81D6B;
-        Tue,  3 May 2022 10:31:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F31DC385A9;
-        Tue,  3 May 2022 10:31:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651573869;
-        bh=hdMtNCaYZb86oM3x0a1mVVawEaUeAE4STWQUnxJJi7c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pyOU36JoQjIY3f3xcV03lOxBlmovJ70oM98C7WYLtygXDq8nSkLE9m8Qd1vnAT05u
-         FnbS2lrnrvrmoWjfW4TiY6oOT1S8yU7fMTzJen/TfnuVbYuFSSKQLWgY2Q5RNwLQp9
-         IrTSDPwn1pVX5LTYZiryHhDhXUwUsCMkMTYMsObJXnWV703f4h8QKe7zNbdpY9q1KW
-         EDq0pS8TMBX5CpQzIxL1kNTU9XFV3K22C8McPEnVMufYq94kPXxY5iU1n9rTuAcTnK
-         nZEHV4SN9CSag2DBiq68Yo3FGI+9WQeF91CvA521w9XXcfW4FP8usQu9WKJDw6aYBt
-         SXtVOKGmzU9Qw==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=hot-poop.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nlpoA-008cWg-Mt; Tue, 03 May 2022 11:31:06 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     kvmarm@lists.cs.columbia.edu, Oliver Upton <oupton@google.com>
-Cc:     suzuki.poulose@arm.com, ricarkol@google.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        james.morse@arm.com, reijiw@google.com, alexandru.elisei@arm.com
-Subject: Re: [PATCH v4 0/7] KVM: arm64: Limit feature register reads from AArch32
-Date:   Tue,  3 May 2022 11:31:02 +0100
-Message-Id: <165157375706.3129182.12268321822257676050.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220503060205.2823727-1-oupton@google.com>
-References: <20220503060205.2823727-1-oupton@google.com>
+        Tue, 3 May 2022 06:36:46 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC461FA67;
+        Tue,  3 May 2022 03:33:14 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id i62so13710238pgd.6;
+        Tue, 03 May 2022 03:33:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=muzTKDXHxre739JwDPLn6W0CCP4JY3KIRqvskM6X8vM=;
+        b=FBWGNVXMbpvfke8TdnuLjHwzsu+ynQgTTlyROkGSap+8QLTHjZDJmK7cIafOr0Hi1O
+         dNfRvuICGuXh508Kxf5D7N5kCiO6jBN9sS350BoHpyImp/N6U4z23xV8lhdZFaSlWag3
+         XmoX5yRmhNkyuPOoe4dXf1JBavuVMDXdVFPdQEQpBvVbtXcS7zsPGWvfUw8FhaAWzC9f
+         jBEfZlDqtye3UEMHwLOEbV21LJZCx/hRQSDxC4vZej9r6w4K09H/NO/klSYZMw1+C69q
+         RYUsPpmJf1SDLOzUJI7b+lBvPpvzuQrfslR4Y2RsaYBGfY+bkehb4ELqBCijWTEjjS2S
+         FK3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=muzTKDXHxre739JwDPLn6W0CCP4JY3KIRqvskM6X8vM=;
+        b=gUE95QbD2yRvUg9M74ik3I4Pyn7v+OSrRkzclLzYcyZBPkaIsFH8U8Rc/UZ1knYFOJ
+         xb1MhlTcuDi8UfZyo04b488vHe/QjoJ97vx1k2L5KTdnBnmeiPH70QoaGCQjgwh72Fso
+         JCr4TtH4eWWvJtmigWB0/zrb87RZtlePKIhiH/APM1us7ioyr+u6qfmC6vfPp0bGXYSG
+         EaXfQCgOS0uRofKL9luDSQKtmW9P7Yb6BoiBWNXa2TBC+BQgiB/VeIC5lyPUUGm3pId3
+         RlO5TsR+gkqhR1c4BdPF3VBmj4BelpeEyQCJRB1D4hKvKiQnuiMSs4M5NFwRU7AZsz5y
+         I52A==
+X-Gm-Message-State: AOAM530IhtYbjiTKVxy58lQg2ysY8f0IWkEz1JMWArsAxxqToO91S9MG
+        Eziz/B4yxKulnSs2U9XXYwzNzmiLZkU=
+X-Google-Smtp-Source: ABdhPJxDy7q//uBK9EK/lcQ9h4a/dMMi9ej11sgl909BEOF+gp398rwtS4myrfXHQPjKOxB/CPx7TA==
+X-Received: by 2002:a63:d2:0:b0:3c2:57a7:a11f with SMTP id 201-20020a6300d2000000b003c257a7a11fmr4966660pga.583.1651573993801;
+        Tue, 03 May 2022 03:33:13 -0700 (PDT)
+Received: from localhost.localdomain (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id j2-20020a17090a734200b001d0ec9c93fesm1101476pjs.12.2022.05.03.03.33.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 03:33:13 -0700 (PDT)
+From:   Akira Yokosawa <akiyks@gmail.com>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/5] docs/ja_JP/SubmittingPatches: Trace changes in English docs, take 1
+Date:   Tue,  3 May 2022 19:24:30 +0900
+Message-Id: <20220503102429.48304-1-akiyks@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: kvmarm@lists.cs.columbia.edu, oupton@google.com, suzuki.poulose@arm.com, ricarkol@google.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, james.morse@arm.com, reijiw@google.com, alexandru.elisei@arm.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 3 May 2022 06:01:58 +0000, Oliver Upton wrote:
-> KVM/arm64 does not restrict the guest's view of the AArch32 feature
-> registers when read from AArch32. HCR_EL2.TID3 is cleared for AArch32
-> guests, meaning that register reads come straight from hardware. This is
-> problematic as KVM relies on read_sanitised_ftr_reg() to expose a set of
-> features consistent for a particular system.
-> 
-> Appropriate handlers must first be put in place for CP10 and CP15 ID
-> register accesses before setting TID3. Rather than exhaustively
-> enumerating each of the encodings for CP10 and CP15 registers, take the
-> lazy route and aim the register accesses at the AArch64 system register
-> table.
-> 
-> [...]
+Hi,
 
-Applied to next, thanks!
+This is the first batch of updates attempting to modernize Japanese
+SubmittingPatches.  Conversion to ReST will be done later when the
+corresponding commit doing the conversion is reached.  Pending list
+of commits is quite long (about 90) and this effort is expected to
+produce dozens of series.
 
-Note that I have dropped the revert for now, as the original patch
-lives in a separate branch. I'll clean things up at -rc1.
+List of commits for English (then) SubmittingPatches:
 
-[1/7] KVM: arm64: Return a bool from emulate_cp()
-      commit: 001bb819994cd1bd037b6aefdb233f1720ee2126
-[2/7] KVM: arm64: Don't write to Rt unless sys_reg emulation succeeds
-      commit: 28eda7b5e82489b9dcffc630af68c207552b4f4d
-[3/7] KVM: arm64: Wire up CP15 feature registers to their AArch64 equivalents
-      commit: e65197666773f39e4378161925e5a1c7771cff29
-[4/7] KVM: arm64: Plumb cp10 ID traps through the AArch64 sysreg handler
-      commit: 9369bc5c5e35985f38d04bd98c6d28a032e84b17
-[5/7] KVM: arm64: Start trapping ID registers for 32 bit guests
-      commit: fd1264c4ca610a99d52c35a37e5551eec442723d
-[6/7] KVM/arm64: Hide AArch32 PMU registers when not available
-      commit: a9e192cd4fc738469448803693c9dc730898b8f1
+ - f5039935ac68 ("Documentation: update GregKH links")
+ - e52d2e1f25f0 ("Documentation/SubmittingPatches: suggested the use of scripts/get_maintainer.pl")
+ - 755727b7fb1e ("Randy has moved")
+ - 8543ae1296f6 ("checkpatch: add Suggested-by as a standard signature")
+ - 0af5270324cc ("Documentation/SubmittingPatches: Request summaries for commit references")
 
-Cheers,
+Note: Commit db12fb833a88 ("Documentation: fix spelling error in
+SubmittingPatches") does not affect Japanese translation.
 
-	M.
+        Thanks, Akira
+--
+Akira Yokosawa (5):
+  docs/ja_JP/SubmittingPatches: Update GregKH links
+  docs/ja_JP/SubmittingPatches: Suggest the use of
+    scripts/get_maintainer.pl
+  docs/ja_JP/SubmittingPatches: Randy has moved
+  docs/ja_JP/SubmittingPatches: Add Suggested-by as a standard signature
+  docs/ja_JP/SubmittingPatches: Request summaries for commit references
+
+ .../translations/ja_JP/SubmittingPatches      | 36 ++++++++++++++-----
+ 1 file changed, 27 insertions(+), 9 deletions(-)
+
+
+base-commit: 81c653659d34ec253fba7f5d0f430813fe0f643d
 -- 
-Without deviation from the norm, progress is not possible.
-
+2.25.1
 
