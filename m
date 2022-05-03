@@ -2,93 +2,327 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AE91C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:09:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F0FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:12:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232281AbiECPN1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:13:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39634 "EHLO
+        id S238030AbiECPPz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:15:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238109AbiECPNU (ORCPT
+        with ESMTP id S236394AbiECPPv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:13:20 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115AE3B56C
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:09:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651590588; x=1683126588;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=IACxIDHwXqlTIFLmAExQlUxosyzk99ozoP6vJrNh0dU=;
-  b=WjpduO+YShmTaznUL0ZYjYUVAbqfnvzptbOyVKmEm9cFK9zBUKKJrpzS
-   sjWORaWDIwm8SSSWA8/dmYEJYihxlT6NO8hEdGIV3EiUfukaYjX4RSzd5
-   agMltmycERc+Fi71o9XdxfgmlZ4TYDwx2P5yZpH0pODtcmhaX/wCfg6m6
-   y8TaRgzCMLIoDYLrvhjiO3IAk3St/Ziw5foWRFqKmM/rPiqjnU5sCm2s8
-   n88cZ4N/meTx3wbnf+JEVMkuk7U8lnLYALGB7dCuLoPN2hCoW6ElvRHzz
-   UuVG47FdbiJtRlb++vDDnvs/vOH7PjN3Pi2Vr2GNGCzcKA6RRmSE8w4E9
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="267654839"
-X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="267654839"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 08:09:47 -0700
-X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="562240918"
-Received: from kputnam-mobl1.amr.corp.intel.com (HELO [10.209.19.155]) ([10.209.19.155])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 08:09:46 -0700
-Message-ID: <cd48825b-7197-fc04-51e6-04bd8502d286@linux.intel.com>
-Date:   Tue, 3 May 2022 08:09:45 -0700
+        Tue, 3 May 2022 11:15:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6E173A5DE
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:12:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651590737;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xALRK9R5AWNZ7LG4kj2LfKpnduFxzArKbMxNGs4Fs8s=;
+        b=Sk4dMElve6D7vlsHzFPeA5PYF4i3bgNzY3S6URnD+hir5AVMMkRmCbQNUpV3VyznRUuK4V
+        5MoU52Y+N6AFvZZnSbRtMzChJdO2IDg+ZQuo/u4z+nr0VGSu8LSSED197JRGl5ACzomR8f
+        Vbfc0k+WkGhz+dyniOxgJSsciE3wbhE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-171-_aljzM8yOpyzI6l71FA7hw-1; Tue, 03 May 2022 11:11:48 -0400
+X-MC-Unique: _aljzM8yOpyzI6l71FA7hw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 23946B777E9;
+        Tue,  3 May 2022 14:13:03 +0000 (UTC)
+Received: from horse.redhat.com (unknown [10.18.25.210])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E5FEC40CFD32;
+        Tue,  3 May 2022 14:13:02 +0000 (UTC)
+Received: by horse.redhat.com (Postfix, from userid 10451)
+        id A22E7220463; Tue,  3 May 2022 10:13:02 -0400 (EDT)
+Date:   Tue, 3 May 2022 10:13:02 -0400
+From:   Vivek Goyal <vgoyal@redhat.com>
+To:     Dharmendra Singh <dharamhans87@gmail.com>
+Cc:     miklos@szeredi.hu, linux-fsdevel@vger.kernel.org,
+        fuse-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        bschubert@ddn.com, Dharmendra Singh <dsingh@ddn.com>
+Subject: Re: [PATCH v4 1/3] FUSE: Implement atomic lookup + create
+Message-ID: <YnE4bqYoUJsJR3tV@redhat.com>
+References: <20220502102521.22875-1-dharamhans87@gmail.com>
+ <20220502102521.22875-2-dharamhans87@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.7.0
-Subject: Re: [PATCH v5 1/3] x86/tdx: Add TDX Guest attestation interface
- driver
-Content-Language: en-US
-To:     Wander Costa <wander@redhat.com>
-Cc:     Kai Huang <kai.huang@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Isaku Yamahata <isaku.yamahata@gmail.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220501183500.2242828-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20220501183500.2242828-2-sathyanarayanan.kuppuswamy@linux.intel.com>
- <5473f606bd8e60dd7b8d58a540285d126a1361bd.camel@intel.com>
- <e5aed619-20ce-7eb3-22a3-64b51de9cce3@linux.intel.com>
- <b8eadd3079101a2cf93ee87d36dbedf93d8a2725.camel@intel.com>
- <e673ea3d-ae4f-39ed-33a5-c6480e58c6d8@linux.intel.com>
- <CAAq0SU=TPHQ4q8Dj583m0yfVytygN81BTEe8vU5GCOoFau+LWw@mail.gmail.com>
-From:   Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <CAAq0SU=TPHQ4q8Dj583m0yfVytygN81BTEe8vU5GCOoFau+LWw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220502102521.22875-2-dharamhans87@gmail.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, May 02, 2022 at 03:55:19PM +0530, Dharmendra Singh wrote:
+> From: Dharmendra Singh <dsingh@ddn.com>
+> 
+> When we go for creating a file (O_CREAT), we trigger
+> a lookup to FUSE USER SPACE. It is very  much likely
+> that file does not exist yet as O_CREAT is passed to
+> open(). This lookup can be avoided and can be performed
+> as part of create call into libfuse.
+> 
+> This lookup + create in single call to libfuse and finally
+> to USER SPACE has been named as atomic create. It is expected
+> that USER SPACE create the file, open it and fills in the
+> attributes which are then used to make inode stand/revalidate
+> in the kernel cache. Also if file was newly created(does not
+> exist yet by this time) in USER SPACE then it should be indicated
+> in `struct fuse_file_info` by setting a bit which is again used by
+> libfuse to send some flags back to fuse kernel to indicate that
+> that file was newly created. These flags are used by kernel to
+> indicate changes in parent directory.
+> 
+> Fuse kernel automatically detects if atomic create is implemented
+> by libfuse/USER SPACE or not. And depending upon the outcome of
+> this check all further creates are decided to be atomic or non-atomic
+> creates.
+> 
+> If libfuse/USER SPACE has not implemented the atomic create operation
+> then by default behaviour remains same i.e we do not optimize lookup
+> calls which are triggered before create calls into libfuse.
+> 
+> Signed-off-by: Dharmendra Singh <dsingh@ddn.com>
+> ---
+>  fs/fuse/dir.c             | 82 +++++++++++++++++++++++++++++++++++----
+>  fs/fuse/fuse_i.h          |  3 ++
+>  include/uapi/linux/fuse.h |  3 ++
+>  3 files changed, 81 insertions(+), 7 deletions(-)
+> 
+> diff --git a/fs/fuse/dir.c b/fs/fuse/dir.c
+> index 656e921f3506..cad3322a007f 100644
+> --- a/fs/fuse/dir.c
+> +++ b/fs/fuse/dir.c
+> @@ -523,7 +523,7 @@ static int get_security_context(struct dentry *entry, umode_t mode,
+>   */
+>  static int fuse_create_open(struct inode *dir, struct dentry *entry,
+>  			    struct file *file, unsigned int flags,
+> -			    umode_t mode)
+> +			    umode_t mode, uint32_t opcode)
+>  {
+>  	int err;
+>  	struct inode *inode;
+> @@ -535,8 +535,10 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
+>  	struct fuse_entry_out outentry;
+>  	struct fuse_inode *fi;
+>  	struct fuse_file *ff;
+> +	struct dentry *res = NULL;
+>  	void *security_ctx = NULL;
+>  	u32 security_ctxlen;
+> +	bool atomic_create = (opcode == FUSE_ATOMIC_CREATE ? true : false);
+>  
+>  	/* Userspace expects S_IFREG in create mode */
+>  	BUG_ON((mode & S_IFMT) != S_IFREG);
+> @@ -566,7 +568,7 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
+>  		inarg.open_flags |= FUSE_OPEN_KILL_SUIDGID;
+>  	}
+>  
+> -	args.opcode = FUSE_CREATE;
+> +	args.opcode = opcode;
+>  	args.nodeid = get_node_id(dir);
+>  	args.in_numargs = 2;
+>  	args.in_args[0].size = sizeof(inarg);
+> @@ -613,9 +615,44 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
+>  		goto out_err;
+>  	}
+>  	kfree(forget);
+> -	d_instantiate(entry, inode);
+> +	/*
+> +	 * In atomic create, we skipped lookup and it is very much likely that
+> +	 * dentry has DCACHE_PAR_LOOKUP flag set on it so call d_splice_alias().
+
+Can you please help me understand what does DCACHE_PAR_LOOKUP flag mean.
+Also how d_splice_alias() helps in that case.
 
 
-On 5/3/22 7:38 AM, Wander Costa wrote:
->> I don't want to pollute the dmesg logs if possible. For IOCTL use case,
->> the return value can be used to understand the failure reason from user
->> code. But for initcall failure, pr_err message is required to understand
->> the failure reason.
-> How often is this call expected to fail?
+> +	 * Note: Only REG file is allowed under create/atomic create.
+> +	 */
+> +	/* There is special case when at very first call where we check if
+> +	 * atomic create is implemented by USER SPACE/libfuse or not, we
+> +	 * skipped lookup. Now, in case where atomic create is not implemented
+> +	 * underlying, we fall back to FUSE_CREATE. here we are required to handle
+> +	 * DCACHE_PAR_LOOKUP flag.
+> +	 */
+> +	if (!atomic_create && !d_in_lookup(entry) && fm->fc->no_atomic_create)
+> +		d_instantiate(entry, inode);
 
-In general, it should not fail (so very low fail frequency). But the
-point is, we can easily understand this failure from user end. So we
-don't need to print more in non-debug environment.
+So if we are trying to do atomic_create first time, then we skipped lookup
+in fuse_atomic_open() (assuming DCACHE_PAR_LOOKUP flag is set). If server
+does not support, atomic_create, then we will set
+fm->fc->no_atomic_create=1 and non-atomic create will be tried and we will
+come here. And given we skipped lookup (even for non-atomic-create) case,
+we are going to call d_splice_alias(). Right?
 
+IOW, even without non-atomic-create, you are skipping lookup() and be
+able to handle file creation and use d_splice_alias(). If this is
+correct, I am wondering why do I need atomic create to begin with.
+
+If this is not correct, then fuse_atomic_open() probably should handle
+error from fuse_create_open(FUSE_ATOMIC_CREATE) first, retry lookup
+and then retry fuse_create_open(FUSE_CREATE).
+
+What am I missing?
+
+Thanks
+Vivek
+
+
+
+> +	else {
+> +		res = d_splice_alias(inode, entry);
+> +		if (res) {
+> +			 /* Close the file in user space, but do not unlink it,
+> +			  * if it was created - with network file systems other
+> +			  * clients might have already accessed it.
+> +			  */
+> +			if (IS_ERR(res)) {
+> +				fi = get_fuse_inode(inode);
+> +				fuse_sync_release(fi, ff, flags);
+> +				fuse_queue_forget(fm->fc, forget, outentry.nodeid, 1);
+> +				err = PTR_ERR(res);
+> +				goto out_err;
+> +			}
+> +			/* res is expected to be NULL since its REG file */
+> +			WARN_ON(res);
+> +		}
+> +	}
+
+
+>  	fuse_change_entry_timeout(entry, &outentry);
+> -	fuse_dir_changed(dir);
+> +	/*
+> +	 * In case of atomic create, we want to indicate directory change
+> +	 * only if USER SPACE actually created the file.
+> +	 */
+> +	if (!atomic_create || (outopen.open_flags & FOPEN_FILE_CREATED))
+> +		fuse_dir_changed(dir);
+>  	err = finish_open(file, entry, generic_file_open);
+>  	if (err) {
+>  		fi = get_fuse_inode(inode);
+> @@ -634,6 +671,29 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
+>  	return err;
+>  }
+>  
+> +static int fuse_atomic_create(struct inode *dir, struct dentry *entry,
+> +			      struct file *file, unsigned int flags,
+> +			      umode_t mode)
+> +{
+> +	int err;
+> +	struct fuse_conn *fc = get_fuse_conn(dir);
+> +
+> +	if (fc->no_atomic_create)
+> +		return -ENOSYS;
+> +
+> +	err = fuse_create_open(dir, entry, file, flags, mode,
+> +			       FUSE_ATOMIC_CREATE);
+> +	/* If atomic create is not implemented then indicate in fc so that next
+> +	 * request falls back to normal create instead of going into libufse and
+> +	 * returning with -ENOSYS.
+> +	 */
+> +	if (err == -ENOSYS) {
+> +		if (!fc->no_atomic_create)
+> +			fc->no_atomic_create = 1;
+> +	}
+> +	return err;
+> +}
+> +
+>  static int fuse_mknod(struct user_namespace *, struct inode *, struct dentry *,
+>  		      umode_t, dev_t);
+>  static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
+> @@ -643,11 +703,12 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
+>  	int err;
+>  	struct fuse_conn *fc = get_fuse_conn(dir);
+>  	struct dentry *res = NULL;
+> +	bool create = flags & O_CREAT ? true : false;
+>  
+>  	if (fuse_is_bad(dir))
+>  		return -EIO;
+>  
+> -	if (d_in_lookup(entry)) {
+> +	if ((!create || fc->no_atomic_create) && d_in_lookup(entry)) {
+>  		res = fuse_lookup(dir, entry, 0);
+>  		if (IS_ERR(res))
+>  			return PTR_ERR(res);
+> @@ -656,7 +717,7 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
+>  			entry = res;
+>  	}
+>  
+> -	if (!(flags & O_CREAT) || d_really_is_positive(entry))
+> +	if (!create || d_really_is_positive(entry))
+>  		goto no_open;
+>  
+>  	/* Only creates */
+> @@ -665,7 +726,13 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
+>  	if (fc->no_create)
+>  		goto mknod;
+>  
+> -	err = fuse_create_open(dir, entry, file, flags, mode);
+> +	err = fuse_atomic_create(dir, entry, file, flags, mode);
+> +	/* Libfuse/user space has not implemented atomic create, therefore
+> +	 * fall back to normal create.
+> +	 */
+> +	if (err == -ENOSYS)
+> +		err = fuse_create_open(dir, entry, file, flags, mode,
+> +				       FUSE_CREATE);
+>  	if (err == -ENOSYS) {
+>  		fc->no_create = 1;
+>  		goto mknod;
+> @@ -683,6 +750,7 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
+>  }
+>  
+>  /*
+> +
+>   * Code shared between mknod, mkdir, symlink and link
+>   */
+>  static int create_new_entry(struct fuse_mount *fm, struct fuse_args *args,
+> diff --git a/fs/fuse/fuse_i.h b/fs/fuse/fuse_i.h
+> index e8e59fbdefeb..d577a591ab16 100644
+> --- a/fs/fuse/fuse_i.h
+> +++ b/fs/fuse/fuse_i.h
+> @@ -669,6 +669,9 @@ struct fuse_conn {
+>  	/** Is open/release not implemented by fs? */
+>  	unsigned no_open:1;
+>  
+> +	/** Is atomic create not implemented by fs? */
+> +	unsigned no_atomic_create:1;
+> +
+>  	/** Is opendir/releasedir not implemented by fs? */
+>  	unsigned no_opendir:1;
+>  
+> diff --git a/include/uapi/linux/fuse.h b/include/uapi/linux/fuse.h
+> index d6ccee961891..e4b56004b148 100644
+> --- a/include/uapi/linux/fuse.h
+> +++ b/include/uapi/linux/fuse.h
+> @@ -301,6 +301,7 @@ struct fuse_file_lock {
+>   * FOPEN_CACHE_DIR: allow caching this directory
+>   * FOPEN_STREAM: the file is stream-like (no file position at all)
+>   * FOPEN_NOFLUSH: don't flush data cache on close (unless FUSE_WRITEBACK_CACHE)
+> + * FOPEN_FILE_CREATED: the file was actually created
+>   */
+>  #define FOPEN_DIRECT_IO		(1 << 0)
+>  #define FOPEN_KEEP_CACHE	(1 << 1)
+> @@ -308,6 +309,7 @@ struct fuse_file_lock {
+>  #define FOPEN_CACHE_DIR		(1 << 3)
+>  #define FOPEN_STREAM		(1 << 4)
+>  #define FOPEN_NOFLUSH		(1 << 5)
+> +#define FOPEN_FILE_CREATED	(1 << 6)
+>  
+>  /**
+>   * INIT request/reply flags
+> @@ -537,6 +539,7 @@ enum fuse_opcode {
+>  	FUSE_SETUPMAPPING	= 48,
+>  	FUSE_REMOVEMAPPING	= 49,
+>  	FUSE_SYNCFS		= 50,
+> +	FUSE_ATOMIC_CREATE	= 51,
+>  
+>  	/* CUSE specific operations */
+>  	CUSE_INIT		= 4096,
+> -- 
+> 2.17.1
 > 
 
--- 
-Sathyanarayanan Kuppuswamy
-Linux Kernel Developer
