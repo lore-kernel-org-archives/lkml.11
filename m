@@ -2,107 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CB08C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 11:42:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 819FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 11:43:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234811AbiECLqC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 07:46:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51204 "EHLO
+        id S234825AbiECLqx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 07:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234783AbiECLqB (ORCPT
+        with ESMTP id S234783AbiECLqw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 07:46:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A42E33
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 04:42:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2137F61615
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 11:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27C84C385A9;
-        Tue,  3 May 2022 11:42:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651578148;
-        bh=hGA2Groz7gQQ/kmnt+I9Tr5rbZd9MlrRBpWEWxGepXA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KpGxvh0d20K/6UtArbCuUzhFAq7fYvm+TbmiBKBTpGEict/if0lxkTx8lzAVqO4H6
-         bLNQ7Y7NQprxCAEaY4NxExedCdhS9uEWeyvJpIevEVbKfmeaaPGIre1LFfy65rY51c
-         T5PGdtroK63XI2Y32FfK8XsuUHIlcJGsU18i/qD3NsLGT1KpknOI4jGC3bkyrAHq6A
-         pX4bxTU0DQBefHSl3PaVz8VYy4rcYVsz29kegmPJWe8zu7ZbfGGOGnpOWjQOBvjBU4
-         I9t/N6xkADnRRG5mEDTXe2WP605jTVs+Ot1Ic3/oPCk3WoLMS1urUdBT8TnJ93kMjM
-         3CRv9m0gejEOw==
-Date:   Tue, 3 May 2022 13:42:25 +0200
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Phil Auld <pauld@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Yu Liao <liaoyu15@huawei.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Uladzislau Rezki <uladzislau.rezki@sony.com>,
-        Joel Fernandes <joel@joelfernandes.org>
-Subject: Re: [PATCH 10/21] context_tracking: Take idle eqs entrypoints over
- RCU
-Message-ID: <20220503114225.GA2799075@lothringen>
-References: <20220503100051.2799723-1-frederic@kernel.org>
- <20220503100051.2799723-11-frederic@kernel.org>
- <YnEL23pd9TDOFvYZ@FVFF77S0Q05N>
+        Tue, 3 May 2022 07:46:52 -0400
+X-Greylist: delayed 400 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 03 May 2022 04:43:17 PDT
+Received: from read.uberspace.de (read.uberspace.de [185.26.156.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68ED91F617
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 04:43:17 -0700 (PDT)
+Received: (qmail 5983 invoked by uid 990); 3 May 2022 11:36:34 -0000
+Authentication-Results: read.uberspace.de;
+        auth=pass (plain)
+From:   Florian Rommel <mail@florommel.de>
+To:     airlied@linux.ie, daniel@ffwll.ch, ray.huang@amd.com,
+        akpm@linux-foundation.org
+Cc:     Felix.Kuehling@amd.com, alexander.deucher@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        kernel-janitors@vger.kernel.org, Florian Rommel <mail@florommel.de>
+Subject: [PATCH] mmap locking API: Fix missed mmap_sem references in comments
+Date:   Tue,  3 May 2022 13:33:33 +0200
+Message-Id: <20220503113333.214124-1-mail@florommel.de>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnEL23pd9TDOFvYZ@FVFF77S0Q05N>
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Bar: -
+X-Rspamd-Report: R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) BAYES_HAM(-2.999999)
+X-Rspamd-Score: -1.599999
+Received: from unknown (HELO unkown) (::1)
+        by read.uberspace.de (Haraka/2.8.28) with ESMTPSA; Tue, 03 May 2022 13:36:34 +0200
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 12:02:51PM +0100, Mark Rutland wrote:
-> Hi Frederic,
-> 
-> On Tue, May 03, 2022 at 12:00:40PM +0200, Frederic Weisbecker wrote:
-> > The RCU dynticks counter is going to be merged into the context tracking
-> > subsystem. Start with moving the idle extended quiescent states
-> > entrypoints to context tracking. For now those are dumb redirections to
-> > existing RCU calls.
-> 
-> I was a bit confused looking at this, because that redirection only exists for
-> CONFIG_CONTEXT_TRACKING, and is empty otherwise.
-> 
-> I see this patch makes TREE_RCU select CONTEXT_TRACKING, which means that
-> works. Since that also means building the rest of the context tracking code, I
-> think it'd be worth mentioning that in the commit message.
+Commit c1e8d7c6a7a6 ("mmap locking API: convert mmap_sem comments") missed
+replacing some references of mmap_sem by mmap_lock due to misspelling
+(mm_sem instead of mmap_sem).
 
-Not exactly, it only builds a minimal version of CONTEXT_TRACKING, which maps
-to roughly the vanilla RCU-idle code.
+Signed-off-by: Florian Rommel <mail@florommel.de>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v7.c | 2 +-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v8.c | 2 +-
+ drivers/gpu/drm/ttm/ttm_bo_vm.c                   | 2 +-
+ mm/mmap.c                                         | 4 ++--
+ 4 files changed, 5 insertions(+), 5 deletions(-)
 
-The user tracking part (which is the vanilla CONTEXT_TRACKING) now becomes
-CONFIG_CONTEXT_TRACKING_USER
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v7.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v7.c
+index 65552bb7d2f2..e83cb1c09610 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v7.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v7.c
+@@ -184,7 +184,7 @@ static int kgd_hqd_load(struct amdgpu_device *adev, void *mqd,
+ 
+ 	/* read_user_ptr may take the mm->mmap_lock.
+ 	 * release srbm_mutex to avoid circular dependency between
+-	 * srbm_mutex->mm_sem->reservation_ww_class_mutex->srbm_mutex.
++	 * srbm_mutex->mmap_lock->reservation_ww_class_mutex->srbm_mutex.
+ 	 */
+ 	release_queue(adev);
+ 	valid_wptr = read_user_wptr(mm, wptr, wptr_val);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v8.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v8.c
+index 9dc5f2a0cc07..870f352837fc 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v8.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v8.c
+@@ -208,7 +208,7 @@ static int kgd_hqd_load(struct amdgpu_device *adev, void *mqd,
+ 
+ 	/* read_user_ptr may take the mm->mmap_lock.
+ 	 * release srbm_mutex to avoid circular dependency between
+-	 * srbm_mutex->mm_sem->reservation_ww_class_mutex->srbm_mutex.
++	 * srbm_mutex->mmap_lock->reservation_ww_class_mutex->srbm_mutex.
+ 	 */
+ 	release_queue(adev);
+ 	valid_wptr = read_user_wptr(mm, wptr, wptr_val);
+diff --git a/drivers/gpu/drm/ttm/ttm_bo_vm.c b/drivers/gpu/drm/ttm/ttm_bo_vm.c
+index 5b324f245265..38119311284d 100644
+--- a/drivers/gpu/drm/ttm/ttm_bo_vm.c
++++ b/drivers/gpu/drm/ttm/ttm_bo_vm.c
+@@ -102,7 +102,7 @@ static unsigned long ttm_bo_io_mem_pfn(struct ttm_buffer_object *bo,
+  * @bo: The buffer object
+  * @vmf: The fault structure handed to the callback
+  *
+- * vm callbacks like fault() and *_mkwrite() allow for the mm_sem to be dropped
++ * vm callbacks like fault() and *_mkwrite() allow for the mmap_lock to be dropped
+  * during long waits, and after the wait the callback will be restarted. This
+  * is to allow other threads using the same virtual memory space concurrent
+  * access to map(), unmap() completely unrelated buffer objects. TTM buffer
+diff --git a/mm/mmap.c b/mm/mmap.c
+index d7e120ad5825..7f7d982721b9 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -1285,7 +1285,7 @@ static int anon_vma_compatible(struct vm_area_struct *a, struct vm_area_struct *
+  * the same as 'old', the other will be the new one that is trying
+  * to share the anon_vma.
+  *
+- * NOTE! This runs with mm_sem held for reading, so it is possible that
++ * NOTE! This runs with mmap_lock held for reading, so it is possible that
+  * the anon_vma of 'old' is concurrently in the process of being set up
+  * by another page fault trying to merge _that_. But that's ok: if it
+  * is being set up, that automatically means that it will be a singleton
+@@ -1299,7 +1299,7 @@ static int anon_vma_compatible(struct vm_area_struct *a, struct vm_area_struct *
+  *
+  * We also make sure that the two vma's are compatible (adjacent,
+  * and with the same memory policies). That's all stable, even with just
+- * a read lock on the mm_sem.
++ * a read lock on the mmap_lock.
+  */
+ static struct anon_vma *reusable_anon_vma(struct vm_area_struct *old, struct vm_area_struct *a, struct vm_area_struct *b)
+ {
+-- 
+2.36.0
 
-> Do all architectures which can use TREE_RCU today already support context
-> tracking? If not, do those work by default?
-
-No need to, the old context tracking becomes CONFIG_CONTEXT_TRACKING_USER
-which is not needed by TREE_RCU.
-
-Ok you're right, this is all very confusing :o)
-
-Let's clarify this, I'm going to do the following on the next version:
-
-* The current CONFIG_CONTEXT_TRACKING becomes CONFIG_CONTEXT_TRACKING_USER.
-  This part needs support from the architecture.
-
-* The RCU-idle functions that have been moved to context tracking will become
-  CONFIG_CONTEXT_TRACKING_IDLE. This part doesn't need support from the
-  architecture and will be set by TREE_RCU.
-
-Would that look clearer?
-
-Thanks.
