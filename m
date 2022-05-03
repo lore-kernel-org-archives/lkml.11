@@ -2,294 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3CBBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:44:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30240C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236413AbiECNrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 09:47:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35372 "EHLO
+        id S236422AbiECNrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 09:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236415AbiECNrV (ORCPT
+        with ESMTP id S236414AbiECNrl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 09:47:21 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452BC1D337
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 06:43:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651585426; x=1683121426;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=I+ad57DTlQ5+StAlR5dBr8SiSEVqSPWh3Rd1URMec+k=;
-  b=YYDYvzRh1az1W1+eND6oYeXPyFSE3EwaM09vz42l7ZJgJqRAfQoxW5CL
-   SIMhEv2VJ0MylWnhL2MPIqANflCyopHRvJ06gZpH0iHQhf4QWkmZ/QnHR
-   Bt4ioXTfbt0OeUWNUEC3XQMgN9JQ6FOteze0WoIJsx7ePL7ZvmXsKqupY
-   UsR4zB0/g85eX+489nkViLPhsTtD6GvI9FeHcTZCodaX26+lJs2XX4EuH
-   Ekwrn/ZJmFrf5i4jml63qfexX9Ybrt5u/h6dnnraa5Fo5wU40KHwTVt8J
-   zGRLJAgKD59xsxI5ExyweHN/gQdKL5iVHjrZS3HaeBImGJbz0QZh75JA8
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="292664340"
-X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="292664340"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 06:43:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="620345606"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 03 May 2022 06:43:44 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nlsoa-000AVR-0J;
-        Tue, 03 May 2022 13:43:44 +0000
-Date:   Tue, 3 May 2022 21:42:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [asahilinux:bits/110-smc 11/14]
- drivers/power/reset/macsmc-reboot.c:54:25: error: field has incomplete type
- 'struct sys_off_handler'
-Message-ID: <202205032150.wuq5sqcq-lkp@intel.com>
+        Tue, 3 May 2022 09:47:41 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132591D30A;
+        Tue,  3 May 2022 06:44:08 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id i25-20020a9d6259000000b00605df9afea7so11332075otk.1;
+        Tue, 03 May 2022 06:44:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ekpWvS+anWeQlrfaKFCOj8G7h2lMxD37gWeltGp8A3Y=;
+        b=B9CokLn1GX1NrOT++Z880iU//nFlWlXXo2tNl30LjEVcwWHziZUoAUVc94Lcg6+t+Y
+         Bxxa0s1V44+ZQdZjvgKe1IrEEr0bdT/2jLe/R8LLSvfg2OZFNNPhul5LaF3i7jlGyeso
+         Zv6v9le40JUjZIlPNdWHgtz4Jbl2KPrbOhGhvFBE4m5pCyWjEGhfR6N/iFEvZ0enz+Wu
+         QArbtal9F9MmErL4LtXcwv9nUDOB+rQKANBKz98tVfIpnCxaP4KpQ5LpeoRlitb34oLX
+         AU+pFdcPfN5wkUMAEnnAzqtZPnK6v9Fi6JglZvF6A6f1sruFEdLtVplJkpC2A8ZiT8wQ
+         bC0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=ekpWvS+anWeQlrfaKFCOj8G7h2lMxD37gWeltGp8A3Y=;
+        b=sk6BU/XEta3Q7CCXjX47hXwrhJuUXRZFqYN9Wz8xFKXqdgOeyhH/AA/bFffsLveMNH
+         VHlVj+z9ZACXqUVIQArMY3ArBqiO5sYM43nPrUmR8k+B6/vqwsNEjbxLF9vAfkcmVA/2
+         7Yj5EF7NqrrlD/6sx9jJmXsSbx2ifo5VMs6OXH/pxp085kGcyP7W3C3rnlvqBDkRrisY
+         Ipf6yq/X8uSpylaqOjNhJW9wdT8rgQMDTqcRDIkBJG9QsKBSHMhdM3Sc7eiPVeV+f8NK
+         MUsXcGUzQgACK5P4ynf93+wMk0fD1qpsI/9P8jcskrbP6OY8XMny5ZFz9pdrbyY/PJVx
+         n1FA==
+X-Gm-Message-State: AOAM532q2Dnoxgt4kbXPpTuskSssSJ+MjPYg4Hr+Rk1KtAT7nESXqZLJ
+        X5qOc3vkIoqX4hejrSNl21M=
+X-Google-Smtp-Source: ABdhPJzaXApsk6xgltsIrs7WaOqrd8bF+onKCwGjUKGxWnOlJRJN4qz1KpS5vVV7UWo2NCYk7m/ubQ==
+X-Received: by 2002:a05:6830:25cd:b0:605:c92c:967a with SMTP id d13-20020a05683025cd00b00605c92c967amr5949673otu.306.1651585447382;
+        Tue, 03 May 2022 06:44:07 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 8-20020a056870124800b000e686d13888sm7213907oao.34.2022.05.03.06.44.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 06:44:06 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Tue, 3 May 2022 06:44:05 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Camel Guo <camel.guo@axis.com>
+Cc:     Jean Delvare <jdelvare@suse.com>, Wolfram Sang <wsa@kernel.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@axis.com
+Subject: Re: [PATCH v4] hwmon: (tmp401) Add OF device ID table
+Message-ID: <20220503134405.GA3208573@roeck-us.net>
+References: <20220503114333.456476-1-camel.guo@axis.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220503114333.456476-1-camel.guo@axis.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux bits/110-smc
-head:   dc3db43287ff1d44b447fff8ed6386b28b339f1c
-commit: c65d40d51ad43c1cb61a2e8658005340a622b826 [11/14] power: reset: macsmc-reboot: Add driver for rebooting via Apple SMC
-config: arm64-randconfig-r034-20220501 (https://download.01.org/0day-ci/archive/20220503/202205032150.wuq5sqcq-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 363b3a645a1e30011cc8da624f13dac5fd915628)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/AsahiLinux/linux/commit/c65d40d51ad43c1cb61a2e8658005340a622b826
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux bits/110-smc
-        git checkout c65d40d51ad43c1cb61a2e8658005340a622b826
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
+On Tue, May 03, 2022 at 01:43:33PM +0200, Camel Guo wrote:
+> This driver doesn't have of_match_table. This makes the kernel module
+> tmp401.ko lack alias patterns (e.g: of:N*T*Cti,tmp411) to match DT node
+> of the supported devices hence this kernel module will not be
+> automatically loaded.
+> 
+> After adding of_match_table to this driver, the folllowing alias will be
+> added into tmp401.ko.
+> $ modinfo drivers/hwmon/tmp401.ko
+> filename: drivers/hwmon/tmp401.ko
+> ......
+> author:         Hans de Goede <hdegoede@redhat.com>
+> alias:          of:N*T*Cti,tmp435C*
+> alias:          of:N*T*Cti,tmp435
+> alias:          of:N*T*Cti,tmp432C*
+> alias:          of:N*T*Cti,tmp432
+> alias:          of:N*T*Cti,tmp431C*
+> alias:          of:N*T*Cti,tmp431
+> alias:          of:N*T*Cti,tmp411C*
+> alias:          of:N*T*Cti,tmp411
+> alias:          of:N*T*Cti,tmp401C*
+> alias:          of:N*T*Cti,tmp401
+> ......
+> 
+> Fixes: af503716ac14 ("i2c: core: report OF style module alias for devices registered via OF")
+> Signed-off-by: Camel Guo <camel.guo@axis.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Applied.
 
-All errors (new ones prefixed by >>):
+Thanks,
+Guenter
 
->> drivers/power/reset/macsmc-reboot.c:54:25: error: field has incomplete type 'struct sys_off_handler'
-           struct sys_off_handler sys_off;
-                                  ^
-   drivers/power/reset/macsmc-reboot.c:54:9: note: forward declaration of 'struct sys_off_handler'
-           struct sys_off_handler sys_off;
-                  ^
-   drivers/power/reset/macsmc-reboot.c:142:37: warning: declaration of 'struct power_off_data' will not be visible outside of this function [-Wvisibility]
-   static void macsmc_power_off(struct power_off_data *data)
-                                       ^
->> drivers/power/reset/macsmc-reboot.c:144:37: error: incomplete definition of type 'struct power_off_data'
-           struct macsmc_reboot *reboot = data->cb_data;
-                                          ~~~~^
-   drivers/power/reset/macsmc-reboot.c:142:37: note: forward declaration of 'struct power_off_data'
-   static void macsmc_power_off(struct power_off_data *data)
-                                       ^
-   drivers/power/reset/macsmc-reboot.c:156:35: warning: declaration of 'struct restart_data' will not be visible outside of this function [-Wvisibility]
-   static void macsmc_restart(struct restart_data *data)
-                                     ^
->> drivers/power/reset/macsmc-reboot.c:158:37: error: incomplete definition of type 'struct restart_data'
-           struct macsmc_reboot *reboot = data->cb_data;
-                                          ~~~~^
-   drivers/power/reset/macsmc-reboot.c:156:35: note: forward declaration of 'struct restart_data'
-   static void macsmc_restart(struct restart_data *data)
-                                     ^
-   drivers/power/reset/macsmc-reboot.c:170:42: warning: declaration of 'struct reboot_prep_data' will not be visible outside of this function [-Wvisibility]
-   static void macsmc_reboot_prepare(struct reboot_prep_data *data)
-                                            ^
->> drivers/power/reset/macsmc-reboot.c:172:37: error: incomplete definition of type 'struct reboot_prep_data'
-           struct macsmc_reboot *reboot = data->cb_data;
-                                          ~~~~^
-   drivers/power/reset/macsmc-reboot.c:170:42: note: forward declaration of 'struct reboot_prep_data'
-   static void macsmc_reboot_prepare(struct reboot_prep_data *data)
-                                            ^
-   drivers/power/reset/macsmc-reboot.c:176:14: error: incomplete definition of type 'struct reboot_prep_data'
-           switch (data->mode) {
-                   ~~~~^
-   drivers/power/reset/macsmc-reboot.c:170:42: note: forward declaration of 'struct reboot_prep_data'
-   static void macsmc_reboot_prepare(struct reboot_prep_data *data)
-                                            ^
->> drivers/power/reset/macsmc-reboot.c:289:37: error: use of undeclared identifier 'RESTART_PRIO_HIGH'
-           reboot->sys_off.restart_priority = RESTART_PRIO_HIGH;
-                                              ^
->> drivers/power/reset/macsmc-reboot.c:292:8: error: call to undeclared function 'devm_register_sys_off_handler'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           ret = devm_register_sys_off_handler(&pdev->dev, &reboot->sys_off);
-                 ^
-   3 warnings and 7 errors generated.
-
-
-vim +54 drivers/power/reset/macsmc-reboot.c
-
-    50	
-    51	struct macsmc_reboot {
-    52		struct device *dev;
-    53		struct apple_smc *smc;
-  > 54		struct sys_off_handler sys_off;
-    55	
-    56		union {
-    57			struct macsmc_reboot_nvmem nvm;
-    58			struct nvmem_cell *nvm_cells[ARRAY_SIZE(nvmem_names)];
-    59		};
-    60	};
-    61	
-    62	/* Helpers to read/write a u8 given a struct nvmem_cell */
-    63	static int nvmem_cell_get_u8(struct nvmem_cell *cell)
-    64	{
-    65		size_t len;
-    66		u8 val;
-    67		void *ret = nvmem_cell_read(cell, &len);
-    68	
-    69		if (IS_ERR(ret))
-    70			return PTR_ERR(ret);
-    71	
-    72		if (len < 1) {
-    73			kfree(ret);
-    74			return -EINVAL;
-    75		}
-    76	
-    77		val = *(u8 *)ret;
-    78		kfree(ret);
-    79		return val;
-    80	}
-    81	
-    82	static int nvmem_cell_set_u8(struct nvmem_cell *cell, u8 val)
-    83	{
-    84		return nvmem_cell_write(cell, &val, sizeof(val));
-    85	}
-    86	
-    87	static ssize_t macsmc_ac_power_mode_store(struct device *dev, struct device_attribute *attr,
-    88						  const char *buf, size_t n)
-    89	{
-    90		struct macsmc_reboot *reboot = dev_get_drvdata(dev);
-    91		int mode;
-    92		int ret;
-    93	
-    94		mode = sysfs_match_string(ac_power_modes, buf);
-    95		if (mode < 0)
-    96			return mode;
-    97	
-    98		ret = nvmem_cell_set_u8(reboot->nvm.pm_setting, ac_power_mode_map[mode]);
-    99		if (ret < 0)
-   100			return ret;
-   101	
-   102		return n;
-   103	}
-   104	
-   105	static ssize_t macsmc_ac_power_mode_show(struct device *dev,
-   106						 struct device_attribute *attr, char *buf)
-   107	{
-   108		struct macsmc_reboot *reboot = dev_get_drvdata(dev);
-   109		int len = 0;
-   110		int i;
-   111		int mode = nvmem_cell_get_u8(reboot->nvm.pm_setting);
-   112	
-   113		if (mode < 0)
-   114			return mode;
-   115	
-   116		for (i = 0; i < ARRAY_SIZE(ac_power_mode_map); i++)
-   117			if (mode == ac_power_mode_map[i])
-   118				len += scnprintf(buf+len, PAGE_SIZE-len,
-   119						 "[%s] ", ac_power_modes[i]);
-   120			else
-   121				len += scnprintf(buf+len, PAGE_SIZE-len,
-   122						 "%s ", ac_power_modes[i]);
-   123		buf[len-1] = '\n';
-   124		return len;
-   125	}
-   126	static DEVICE_ATTR(ac_power_mode, 0644, macsmc_ac_power_mode_show,
-   127			   macsmc_ac_power_mode_store);
-   128	
-   129	/*
-   130	 * SMC 'MBSE' key actions:
-   131	 *
-   132	 * 'offw' - shutdown warning
-   133	 * 'slpw' - sleep warning
-   134	 * 'rest' - restart warning
-   135	 * 'off1' - shutdown (needs PMU bit set to stay on)
-   136	 * 'susp' - suspend
-   137	 * 'phra' - restart ("PE Halt Restart Action"?)
-   138	 * 'panb' - panic beginning
-   139	 * 'pane' - panic end
-   140	 */
-   141	
-   142	static void macsmc_power_off(struct power_off_data *data)
-   143	{
- > 144		struct macsmc_reboot *reboot = data->cb_data;
-   145	
-   146		dev_info(reboot->dev, "Issuing power off (off1)\n");
-   147	
-   148		if (apple_smc_write_u32_atomic(reboot->smc, SMC_KEY(MBSE), SMC_KEY(off1)) < 0) {
-   149			dev_err(reboot->dev, "Failed to issue MBSE = off1 (power_off)\n");
-   150		} else {
-   151			mdelay(100);
-   152			WARN_ON(1);
-   153		}
-   154	}
-   155	
-   156	static void macsmc_restart(struct restart_data *data)
-   157	{
- > 158		struct macsmc_reboot *reboot = data->cb_data;
-   159	
-   160		dev_info(reboot->dev, "Issuing restart (phra)\n");
-   161	
-   162		if (apple_smc_write_u32_atomic(reboot->smc, SMC_KEY(MBSE), SMC_KEY(phra)) < 0) {
-   163			dev_err(reboot->dev, "Failed to issue MBSE = phra (restart)\n");
-   164		} else {
-   165			mdelay(100);
-   166			WARN_ON(1);
-   167		}
-   168	}
-   169	
-   170	static void macsmc_reboot_prepare(struct reboot_prep_data *data)
-   171	{
- > 172		struct macsmc_reboot *reboot = data->cb_data;
-   173		u32 val;
-   174		u8 shutdown_flag;
-   175	
-   176		switch (data->mode) {
-   177			case SYS_RESTART:
-   178				val = SMC_KEY(rest);
-   179				shutdown_flag = 0;
-   180				break;
-   181			case SYS_POWER_OFF:
-   182				val = SMC_KEY(offw);
-   183				shutdown_flag = 1;
-   184				break;
-   185			default:
-   186				return;
-   187		}
-   188	
-   189		dev_info(reboot->dev, "Preparing for reboot (%p4ch)\n", &val);
-   190	
-   191		/* On the Mac Mini, this will turn off the LED for power off */
-   192		if (apple_smc_write_u32(reboot->smc, SMC_KEY(MBSE), val) < 0)
-   193			dev_err(reboot->dev, "Failed to issue MBSE = %p4ch (reboot_prepare)\n", &val);
-   194	
-   195		/* Set the boot_stage to 0, which means we're doing a clean shutdown/reboot. */
-   196		if (reboot->nvm.boot_stage &&
-   197		    nvmem_cell_set_u8(reboot->nvm.boot_stage, BOOT_STAGE_SHUTDOWN) < 0)
-   198			dev_err(reboot->dev, "Failed to write boot_stage\n");
-   199	
-   200		/*
-   201		 * Set the PMU flag to actually reboot into the off state.
-   202		 * Without this, the device will just reboot. We make it optional in case it is no longer
-   203		 * necessary on newer hardware.
-   204		 */
-   205		if (reboot->nvm.shutdown_flag &&
-   206		    nvmem_cell_set_u8(reboot->nvm.shutdown_flag, shutdown_flag) < 0)
-   207			dev_err(reboot->dev, "Failed to write shutdown_flag\n");
-   208	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> ---
+> 
+> Notes:
+>     v4:
+>      - Rewrite commit message due to improper description in old one
+>     v3:
+>      - Copy commit message from commit 72fc64c68decf119466 ("hwmon: (tmp103)
+>        Add OF device ID table")
+>      - Add Fixes tag
+>     v2:
+>      - Put evidence and circumstances in commit message
+> 
+>  drivers/hwmon/tmp401.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> 
+> base-commit: 38d741cb70b30741c0e802cbed7bd9cf4fd15fa4
+> 
+> diff --git a/drivers/hwmon/tmp401.c b/drivers/hwmon/tmp401.c
+> index b86d9df7105d..52c9e7d3f2ae 100644
+> --- a/drivers/hwmon/tmp401.c
+> +++ b/drivers/hwmon/tmp401.c
+> @@ -708,10 +708,21 @@ static int tmp401_probe(struct i2c_client *client)
+>  	return 0;
+>  }
+>  
+> +static const struct of_device_id __maybe_unused tmp4xx_of_match[] = {
+> +	{ .compatible = "ti,tmp401", },
+> +	{ .compatible = "ti,tmp411", },
+> +	{ .compatible = "ti,tmp431", },
+> +	{ .compatible = "ti,tmp432", },
+> +	{ .compatible = "ti,tmp435", },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(of, tmp4xx_of_match);
+> +
+>  static struct i2c_driver tmp401_driver = {
+>  	.class		= I2C_CLASS_HWMON,
+>  	.driver = {
+>  		.name	= "tmp401",
+> +		.of_match_table = of_match_ptr(tmp4xx_of_match),
+>  	},
+>  	.probe_new	= tmp401_probe,
+>  	.id_table	= tmp401_id,
