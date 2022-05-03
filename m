@@ -2,58 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17013C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A41C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229617AbiECGGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 02:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51660 "EHLO
+        id S229828AbiECGGK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 02:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbiECGFq (ORCPT
+        with ESMTP id S229587AbiECGFv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 02:05:46 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BEBA3334C
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:02:15 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id y17-20020a637d11000000b003ab06870074so7989087pgc.15
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 23:02:15 -0700 (PDT)
+        Tue, 3 May 2022 02:05:51 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE38D3336C
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:02:18 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id o16-20020a17090ab89000b001d84104fc2cso554927pjr.1
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 23:02:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=kNIvmW+UQg4kyqFomsH3U0dCsHh4hH7Ihe0URim/gjs=;
-        b=b8rMBUdg4rhRlWUVQAGU8hwTTgclcE+ZuT0I+HoyfNsYte5xd4WZREks7dSJU2hZMi
-         W4nw4EmMJxc4L57f/GjA40yADNMoW/qKH/AkbNYA8gLS+qld7+pQcxsef2BeWecupjTd
-         dXe+QrmXQEaFf793D6cRph4IQPhYTGEWOXVq3xNVWZ0yP1wcpHCOQsKJ04G2wiWyPbCt
-         gX7KU4MCAOaZjeajKEHSt+YZNLVh2LTypdUfaeGYcMiBoSE7k+/dupBHNZWtdPPoxICl
-         gj5s/tyxhC4ZfQMYwMtfRP+bfcTXubHDdnOnOc0Z2il9yqGfAj+XikS3UMysgF9YCBTx
-         rsgw==
+        bh=5RbTqRjyv/JGe841RHBUI3rQBooiZTqU97QWl3obRNA=;
+        b=LCqHjMuYeDAd9/HrWXhkaqhxAgmYnzAuMgkj2Skj7h2SVOy0DF41l5Iqb+PY2WRmwu
+         m+n6uOOBJgZyUInQJ4py5riUdNHa0nn8xgeNtILhpUryktuSVRGJ5JWMGD3fUs3s05ZF
+         eidKTP9Y6yPGJ/3T6Z7hu2xHyLNXkhtuLUSPxj3qBai+hso8oDsUW7GjZGRucZ2mA+zl
+         7N0B8e8XsfgINQj1L+Kwnv1FD3StEbxqTdzlq0G6dBfip7l7PHECQLf9LW/DrmYoRdQT
+         kNk0NZCEoYH0RIWykEz2ffT7JFt1rgKi6DcxoM+Zep2U9/NwzDbhS33cuSlaZDQO4zBa
+         ccLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=kNIvmW+UQg4kyqFomsH3U0dCsHh4hH7Ihe0URim/gjs=;
-        b=6g9AfavbbX1m2kQzItV9DSqulcf0yeEOrIIp1txL9X0V6jPWyj7a5qmlfBDf5+B0/J
-         N7zPsbXRuOI8EE8x7DE5UQbFfapMPO1oeQL3KLy0HdmWwyZshhHUbjHX5cNU55KBSOJ4
-         wsd7pw3hcV9424KHR9l1EmVJ34TPyveaDR8Xu7lOMpSsOMwllXYps92diXE1WtHIBDPl
-         GP3f3BIUSs1+sD2g99Wih/HR6uqZDukYmj10mA86wmAOgjxYnIuN32z7n4iqmDMvHcaE
-         Gpt63lOnmiGLEeQoMmiY3LaiArrhrWQpmE+9C5HKY8w4+9owrmGeC7DtURHbdFltr6zB
-         g/Lg==
-X-Gm-Message-State: AOAM530k0A2lxusAK3swcHu6e/spLbG4dBGWAoefYNGwQX8vP6Ee2Bam
-        TtGvCYQQFYgPh0B+fv8MOUS8SynjW14=
-X-Google-Smtp-Source: ABdhPJwhlUbmJ/c+5cel5YbXwoabm+ZFEQDGUQzmk+0Grk7pE6oPCjZRhL0uNrGXFbrQzfvJ7uRjCYQnx/8=
+        bh=5RbTqRjyv/JGe841RHBUI3rQBooiZTqU97QWl3obRNA=;
+        b=evqzDfxFQaE3vjpFmhJA/ELYw9fE+nKKPMKJFIH0p0xPEUKbly8pRIavwP/7O+i76E
+         wC0NLt9EGO2DCucflAlFtAQow0wlzIJ8aS4qVvDFGTuNw8ldEHTB2hMlYXCxyappWFk2
+         YM7X0coTYHkp+mD/a/E/Ha8YrE5yGY2lgoaPjM4J4k/ddnA+MyYajGIWYVyNdeATVPk3
+         fua/P4tTQiRJB9yr/52LLm2fKP0tQ1w5APwN8pfCadfzaJLko+apTQsITi2rb8thXGPy
+         sZhRyGu/hCzZHgrF/lSIAYzfdKFh1PwA7AhJ/JCsReRMyt+3O1/fMSzO94ZT/AdhOvJj
+         KTGA==
+X-Gm-Message-State: AOAM533MpJTTbwrS6Gr0SahpWwhAZXVjxd1QylQECNx+5cCPWU65zi+N
+        7DjIouwfRg8lQf3lAP/1vyr4sp08wCQ=
+X-Google-Smtp-Source: ABdhPJyl27YQ6XmJQ9Fqp+P9ujgfURU/vv3w3Cp1SKq9Raj855FY/fiPv+W655fr40c2jGqj3G2V5IfUTNU=
 X-Received: from oupton3.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:21eb])
- (user=oupton job=sendgmr) by 2002:a17:90a:5407:b0:1bf:43ce:f11b with SMTP id
- z7-20020a17090a540700b001bf43cef11bmr3031142pjh.31.1651557734948; Mon, 02 May
- 2022 23:02:14 -0700 (PDT)
-Date:   Tue,  3 May 2022 06:02:02 +0000
+ (user=oupton job=sendgmr) by 2002:a05:6a00:1a01:b0:505:b3e5:b5fc with SMTP id
+ g1-20020a056a001a0100b00505b3e5b5fcmr14320992pfv.53.1651557737935; Mon, 02
+ May 2022 23:02:17 -0700 (PDT)
+Date:   Tue,  3 May 2022 06:02:04 +0000
 In-Reply-To: <20220503060205.2823727-1-oupton@google.com>
-Message-Id: <20220503060205.2823727-5-oupton@google.com>
+Message-Id: <20220503060205.2823727-7-oupton@google.com>
 Mime-Version: 1.0
 References: <20220503060205.2823727-1-oupton@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v4 4/7] KVM: arm64: Plumb cp10 ID traps through the AArch64
- sysreg handler
+Subject: [PATCH v4 6/7] KVM/arm64: Hide AArch32 PMU registers when not available
 From:   Oliver Upton <oupton@google.com>
 To:     kvmarm@lists.cs.columbia.edu
 Cc:     kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
@@ -66,130 +65,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to enable HCR_EL2.TID3 for AArch32 guests KVM needs to handle
-traps where ESR_EL2.EC=0x8, which corresponds to an attempted VMRS
-access from an ID group register. Specifically, the MVFR{0-2} registers
-are accessed this way from AArch32. Conveniently, these registers are
-architecturally mapped to MVFR{0-2}_EL1 in AArch64. Furthermore, KVM
-already handles reads to these aliases in AArch64.
+From: Alexandru Elisei <alexandru.elisei@arm.com>
 
-Plumb VMRS read traps through to the general AArch64 system register
-handler.
+commit 11663111cd49 ("KVM: arm64: Hide PMU registers from userspace when
+not available") hid the AArch64 PMU registers from userspace and guest
+when the PMU VCPU feature was not set. Do the same when the PMU
+registers are accessed by an AArch32 guest. While we're at it, rename
+the previously unused AA32_ZEROHIGH to AA32_DIRECT to match the behavior
+of get_access_mask().
 
+Now that KVM emulates ID_DFR0 and hides the PMU from the guest when the
+feature is not set, it is safe to inject to inject an undefined exception
+when the PMU is not present, as that corresponds to the architected
+behaviour.
+
+Signed-off-by: Alexandru Elisei <alexandru.elisei@arm.com>
+[Oliver - Add AA32_DIRECT to match the zero value of the enum]
 Signed-off-by: Oliver Upton <oupton@google.com>
-Reviewed-by: Reiji Watanabe <reijiw@google.com>
 ---
- arch/arm64/include/asm/kvm_host.h |  1 +
- arch/arm64/kvm/handle_exit.c      |  1 +
- arch/arm64/kvm/sys_regs.c         | 71 +++++++++++++++++++++++++++++++
- 3 files changed, 73 insertions(+)
+ arch/arm64/kvm/sys_regs.c | 60 ++++++++++++++++++++-------------------
+ arch/arm64/kvm/sys_regs.h |  2 +-
+ 2 files changed, 32 insertions(+), 30 deletions(-)
 
-diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
-index 94a27a7520f4..05081b9b7369 100644
---- a/arch/arm64/include/asm/kvm_host.h
-+++ b/arch/arm64/include/asm/kvm_host.h
-@@ -683,6 +683,7 @@ int kvm_handle_cp14_64(struct kvm_vcpu *vcpu);
- int kvm_handle_cp15_32(struct kvm_vcpu *vcpu);
- int kvm_handle_cp15_64(struct kvm_vcpu *vcpu);
- int kvm_handle_sys_reg(struct kvm_vcpu *vcpu);
-+int kvm_handle_cp10_id(struct kvm_vcpu *vcpu);
- 
- void kvm_reset_sys_regs(struct kvm_vcpu *vcpu);
- 
-diff --git a/arch/arm64/kvm/handle_exit.c b/arch/arm64/kvm/handle_exit.c
-index 97fe14aab1a3..5088a86ace5b 100644
---- a/arch/arm64/kvm/handle_exit.c
-+++ b/arch/arm64/kvm/handle_exit.c
-@@ -167,6 +167,7 @@ static exit_handle_fn arm_exit_handlers[] = {
- 	[ESR_ELx_EC_CP15_64]	= kvm_handle_cp15_64,
- 	[ESR_ELx_EC_CP14_MR]	= kvm_handle_cp14_32,
- 	[ESR_ELx_EC_CP14_LS]	= kvm_handle_cp14_load_store,
-+	[ESR_ELx_EC_CP10_ID]	= kvm_handle_cp10_id,
- 	[ESR_ELx_EC_CP14_64]	= kvm_handle_cp14_64,
- 	[ESR_ELx_EC_HVC32]	= handle_hvc,
- 	[ESR_ELx_EC_SMC32]	= handle_smc,
 diff --git a/arch/arm64/kvm/sys_regs.c b/arch/arm64/kvm/sys_regs.c
-index f403ea47b8a3..586b292ca94f 100644
+index 586b292ca94f..f3235eafdadc 100644
 --- a/arch/arm64/kvm/sys_regs.c
 +++ b/arch/arm64/kvm/sys_regs.c
-@@ -2346,6 +2346,77 @@ static int kvm_handle_cp_64(struct kvm_vcpu *vcpu,
+@@ -2014,20 +2014,22 @@ static const struct sys_reg_desc cp14_64_regs[] = {
+ 	{ Op1( 0), CRm( 2), .access = trap_raz_wi },
+ };
  
- static bool emulate_sys_reg(struct kvm_vcpu *vcpu, struct sys_reg_params *params);
++#define CP15_PMU_SYS_REG(_map, _Op1, _CRn, _CRm, _Op2)			\
++	AA32(_map),							\
++	Op1(_Op1), CRn(_CRn), CRm(_CRm), Op2(_Op2),			\
++	.visibility = pmu_visibility
++
+ /* Macro to expand the PMEVCNTRn register */
+ #define PMU_PMEVCNTR(n)							\
+-	/* PMEVCNTRn */							\
+-	{ Op1(0), CRn(0b1110),						\
+-	  CRm((0b1000 | (((n) >> 3) & 0x3))), Op2(((n) & 0x7)),		\
+-	  access_pmu_evcntr }
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 0b1110,				\
++	  (0b1000 | (((n) >> 3) & 0x3)), ((n) & 0x7)),			\
++	  .access = access_pmu_evcntr }
  
-+/*
-+ * The CP10 ID registers are architecturally mapped to AArch64 feature
-+ * registers. Abuse that fact so we can rely on the AArch64 handler for accesses
-+ * from AArch32.
-+ */
-+static bool kvm_esr_cp10_id_to_sys64(u32 esr, struct sys_reg_params *params)
-+{
-+	u8 reg_id = (esr >> 10) & 0xf;
-+	bool valid;
-+
-+	params->is_write = ((esr & 1) == 0);
-+	params->Op0 = 3;
-+	params->Op1 = 0;
-+	params->CRn = 0;
-+	params->CRm = 3;
-+
-+	/* CP10 ID registers are read-only */
-+	valid = !params->is_write;
-+
-+	switch (reg_id) {
-+	/* MVFR0 */
-+	case 0b0111:
-+		params->Op2 = 0;
-+		break;
-+	/* MVFR1 */
-+	case 0b0110:
-+		params->Op2 = 1;
-+		break;
-+	/* MVFR2 */
-+	case 0b0101:
-+		params->Op2 = 2;
-+		break;
-+	default:
-+		valid = false;
-+	}
-+
-+	if (valid)
-+		return true;
-+
-+	kvm_pr_unimpl("Unhandled cp10 register %s: %u\n",
-+		      params->is_write ? "write" : "read", reg_id);
-+	return false;
-+}
-+
-+/**
-+ * kvm_handle_cp10_id() - Handles a VMRS trap on guest access to a 'Media and
-+ *			  VFP Register' from AArch32.
-+ * @vcpu: The vCPU pointer
-+ *
-+ * MVFR{0-2} are architecturally mapped to the AArch64 MVFR{0-2}_EL1 registers.
-+ * Work out the correct AArch64 system register encoding and reroute to the
-+ * AArch64 system register emulation.
-+ */
-+int kvm_handle_cp10_id(struct kvm_vcpu *vcpu)
-+{
-+	int Rt = kvm_vcpu_sys_get_rt(vcpu);
-+	u32 esr = kvm_vcpu_get_esr(vcpu);
-+	struct sys_reg_params params;
-+
-+	/* UNDEF on any unhandled register access */
-+	if (!kvm_esr_cp10_id_to_sys64(esr, &params)) {
-+		kvm_inject_undefined(vcpu);
-+		return 1;
-+	}
-+
-+	if (emulate_sys_reg(vcpu, &params))
-+		vcpu_set_reg(vcpu, Rt, params.regval);
-+
-+	return 1;
-+}
-+
- /**
-  * kvm_emulate_cp15_id_reg() - Handles an MRC trap on a guest CP15 access where
-  *			       CRn=0, which corresponds to the AArch32 feature
+ /* Macro to expand the PMEVTYPERn register */
+ #define PMU_PMEVTYPER(n)						\
+-	/* PMEVTYPERn */						\
+-	{ Op1(0), CRn(0b1110),						\
+-	  CRm((0b1100 | (((n) >> 3) & 0x3))), Op2(((n) & 0x7)),		\
+-	  access_pmu_evtyper }
+-
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 0b1110,				\
++	  (0b1100 | (((n) >> 3) & 0x3)), ((n) & 0x7)),			\
++	  .access = access_pmu_evtyper }
+ /*
+  * Trapped cp15 registers. TTBR0/TTBR1 get a double encoding,
+  * depending on the way they are accessed (as a 32bit or a 64bit
+@@ -2067,25 +2069,25 @@ static const struct sys_reg_desc cp15_regs[] = {
+ 	{ Op1( 0), CRn( 7), CRm(14), Op2( 2), access_dcsw },
+ 
+ 	/* PMU */
+-	{ Op1( 0), CRn( 9), CRm(12), Op2( 0), access_pmcr },
+-	{ Op1( 0), CRn( 9), CRm(12), Op2( 1), access_pmcnten },
+-	{ Op1( 0), CRn( 9), CRm(12), Op2( 2), access_pmcnten },
+-	{ Op1( 0), CRn( 9), CRm(12), Op2( 3), access_pmovs },
+-	{ Op1( 0), CRn( 9), CRm(12), Op2( 4), access_pmswinc },
+-	{ Op1( 0), CRn( 9), CRm(12), Op2( 5), access_pmselr },
+-	{ AA32(LO), Op1( 0), CRn( 9), CRm(12), Op2( 6), access_pmceid },
+-	{ AA32(LO), Op1( 0), CRn( 9), CRm(12), Op2( 7), access_pmceid },
+-	{ Op1( 0), CRn( 9), CRm(13), Op2( 0), access_pmu_evcntr },
+-	{ Op1( 0), CRn( 9), CRm(13), Op2( 1), access_pmu_evtyper },
+-	{ Op1( 0), CRn( 9), CRm(13), Op2( 2), access_pmu_evcntr },
+-	{ Op1( 0), CRn( 9), CRm(14), Op2( 0), access_pmuserenr },
+-	{ Op1( 0), CRn( 9), CRm(14), Op2( 1), access_pminten },
+-	{ Op1( 0), CRn( 9), CRm(14), Op2( 2), access_pminten },
+-	{ Op1( 0), CRn( 9), CRm(14), Op2( 3), access_pmovs },
+-	{ AA32(HI), Op1( 0), CRn( 9), CRm(14), Op2( 4), access_pmceid },
+-	{ AA32(HI), Op1( 0), CRn( 9), CRm(14), Op2( 5), access_pmceid },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 9, 12, 0), .access = access_pmcr },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 9, 12, 1), .access = access_pmcnten },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 9, 12, 2), .access = access_pmcnten },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 9, 12, 3), .access = access_pmovs },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 9, 12, 4), .access = access_pmswinc },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 9, 12, 5), .access = access_pmselr },
++	{ CP15_PMU_SYS_REG(LO,     0, 9, 12, 6), .access = access_pmceid },
++	{ CP15_PMU_SYS_REG(LO,     0, 9, 12, 7), .access = access_pmceid },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 9, 13, 0), .access = access_pmu_evcntr },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 9, 13, 1), .access = access_pmu_evtyper },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 9, 13, 2), .access = access_pmu_evcntr },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 9, 14, 0), .access = access_pmuserenr },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 9, 14, 1), .access = access_pminten },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 9, 14, 2), .access = access_pminten },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 9, 14, 3), .access = access_pmovs },
++	{ CP15_PMU_SYS_REG(HI,     0, 9, 14, 4), .access = access_pmceid },
++	{ CP15_PMU_SYS_REG(HI,     0, 9, 14, 5), .access = access_pmceid },
+ 	/* PMMIR */
+-	{ Op1( 0), CRn( 9), CRm(14), Op2( 6), trap_raz_wi },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 9, 14, 6), .access = trap_raz_wi },
+ 
+ 	/* PRRR/MAIR0 */
+ 	{ AA32(LO), Op1( 0), CRn(10), CRm( 2), Op2( 0), access_vm_reg, NULL, MAIR_EL1 },
+@@ -2170,7 +2172,7 @@ static const struct sys_reg_desc cp15_regs[] = {
+ 	PMU_PMEVTYPER(29),
+ 	PMU_PMEVTYPER(30),
+ 	/* PMCCFILTR */
+-	{ Op1(0), CRn(14), CRm(15), Op2(7), access_pmu_evtyper },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 14, 15, 7), .access = access_pmu_evtyper },
+ 
+ 	{ Op1(1), CRn( 0), CRm( 0), Op2(0), access_ccsidr },
+ 	{ Op1(1), CRn( 0), CRm( 0), Op2(1), access_clidr },
+@@ -2179,7 +2181,7 @@ static const struct sys_reg_desc cp15_regs[] = {
+ 
+ static const struct sys_reg_desc cp15_64_regs[] = {
+ 	{ Op1( 0), CRn( 0), CRm( 2), Op2( 0), access_vm_reg, NULL, TTBR0_EL1 },
+-	{ Op1( 0), CRn( 0), CRm( 9), Op2( 0), access_pmu_evcntr },
++	{ CP15_PMU_SYS_REG(DIRECT, 0, 0, 9, 0), .access = access_pmu_evcntr },
+ 	{ Op1( 0), CRn( 0), CRm(12), Op2( 0), access_gic_sgi }, /* ICC_SGI1R */
+ 	{ Op1( 1), CRn( 0), CRm( 2), Op2( 0), access_vm_reg, NULL, TTBR1_EL1 },
+ 	{ Op1( 1), CRn( 0), CRm(12), Op2( 0), access_gic_sgi }, /* ICC_ASGI1R */
+diff --git a/arch/arm64/kvm/sys_regs.h b/arch/arm64/kvm/sys_regs.h
+index 0d31a12b640c..aee8ea054f0d 100644
+--- a/arch/arm64/kvm/sys_regs.h
++++ b/arch/arm64/kvm/sys_regs.h
+@@ -47,7 +47,7 @@ struct sys_reg_desc {
+ 	const char *name;
+ 
+ 	enum {
+-		AA32_ZEROHIGH,
++		AA32_DIRECT,
+ 		AA32_LO,
+ 		AA32_HI,
+ 	} aarch32_map;
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
