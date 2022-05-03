@@ -2,155 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F0DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 16:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B9B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 16:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239887AbiECQ5Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 12:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
+        id S239901AbiECQ5z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 12:57:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233719AbiECQ5N (ORCPT
+        with ESMTP id S233719AbiECQ5u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 12:57:13 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE262C110;
-        Tue,  3 May 2022 09:53:40 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id 31-20020a9d0822000000b00605f1807664so8955857oty.3;
-        Tue, 03 May 2022 09:53:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:content-language:to
-         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=zA84vWARKvdZGoHpmEmoay8CyFxLOyVVP3HiM+T2sbI=;
-        b=ItRJ32KI75VE8T7AZA/VYalA55l8vdvH2W6aaVZrpfkmjn/yAWta3OnDBGJJUNJHQd
-         jN6vb7IFnXo6tb5GL1M7aWCNRsTcQnicfP7WpyahlayjO/YU9M8G8dskmP8lj95UZVw1
-         hctc672evZrYBx0UgL2o8T2J3T8Qp52y65y1gTtrm5XtoKw7BLqEa6SEChiTo7vOvBR6
-         rOmS7EqK+Is9A0PxCpBzeibY/gr328ZE3zUz9TGGhDsgFIr4IkHqSChIfuI7Nb1PPa1k
-         7+sHniY2fQaNhcMTRCmqU0dXyLaC6khbCf/ieYPIqe0HTb+DD66Zcg+DqVSZdOl0Vf/V
-         EDkQ==
+        Tue, 3 May 2022 12:57:50 -0400
+Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA082C124;
+        Tue,  3 May 2022 09:54:18 -0700 (PDT)
+Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-e2442907a1so17750488fac.8;
+        Tue, 03 May 2022 09:54:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=zA84vWARKvdZGoHpmEmoay8CyFxLOyVVP3HiM+T2sbI=;
-        b=CK45Jb/cdEtIlDGw+wE1ZfJFEmo5icf6429J5XnQJj/tepPFxYDbv271tgZb+3nQSb
-         5TiG+Qgjj41TAWfFRAG8bmIE0L102LFBgpIvn5u+2B5sVx4iqIwmNGUooHxhO8fzQPw5
-         DQ21dIrwjhOaqUs1bgE5dqqge7b9jo0p4m05oD4nqp6ld6iAL5xnvwAJPEg/6I5+7222
-         1lg+wjzrOjbIsFn6K9N1IFkfVCSiApdVWemChSwDT2mxxYLGdvDHDStw8ORVG41yYrcU
-         qfKI7joiNQJlLoKvPadFW7L8yMmN5cgqaRaFhhOHUKefbToxHgSJzLtOsktYJOy/SB6Z
-         ulbw==
-X-Gm-Message-State: AOAM533xynR75sLHGMXjZydIJPa47NqMKZz9KAaa+c4borIIrmyoTAgP
-        9/vbwbjwrQo1GvOpkC7g14Q+JRCQgaLIoQ==
-X-Google-Smtp-Source: ABdhPJxZBHwm+TE77pQeUp1Mgc+316/kXgVxtVccMyjZXMe224WqQG6lXJ68YahH61W3HoZTpozTGQ==
-X-Received: by 2002:a9d:129:0:b0:606:1a26:b128 with SMTP id 38-20020a9d0129000000b006061a26b128mr3692590otu.314.1651596819862;
-        Tue, 03 May 2022 09:53:39 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id 1-20020a9d0c01000000b006060322127fsm4108965otr.79.2022.05.03.09.53.38
+        bh=1eh4gXcwKDJaVq28NyDGAP5u0RiukLhIIz4+qOM8ls8=;
+        b=eBE/MIc/urfwsUyHWM/SS/WAID/KF8tIPcmeNSLdP9Em1tn51M75iLWcUnR/VklFgD
+         EEdE1kq4NcFsnG4VBg+UNtLsw8ZnF9ZbiBtwKPf7lmPbPAAmZCYuSjETsKnIfnHIyKbv
+         bwaxCyUG1oQGLtdEAN0q7v3KboKfBG9Lw3UqJ+b1gRKwnyVrp5f9oQ2gcbr9Z9JHFIXo
+         SsI5IqnnyYO6pcBhtAJOWNtMzNHqFFJ5yZz8XQDW4vJ5k5bDbnMVL8wuS+pZcrMxeMGa
+         DNDYkE3AsBp2HZYVxPl7hTu/1OMASOr7x6Ppk1IuTgYbN3GfurEIsO1kYfcoaptG4Ryi
+         jGFA==
+X-Gm-Message-State: AOAM533CVB8q60npEKO2xcIUl759sCCe822Ffjn0T84q43Xi1oJIw4oL
+        4MAwwqhKntVFyq0kktHpKuI=
+X-Google-Smtp-Source: ABdhPJwIYsdQ5p1P5Q1mznCaYxjTnd/hJJG6oVZ/Lc+drskzCLzSd9wtxgyiNOjNc1Eeeh2wyOvvEw==
+X-Received: by 2002:a05:6870:b693:b0:de:7356:a3a3 with SMTP id cy19-20020a056870b69300b000de7356a3a3mr2077698oab.24.1651596857587;
+        Tue, 03 May 2022 09:54:17 -0700 (PDT)
+Received: from [10.10.69.251] ([8.34.116.185])
+        by smtp.gmail.com with ESMTPSA id v186-20020aca61c3000000b00325cda1ffa1sm3506854oib.32.2022.05.03.09.54.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 09:53:39 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <d88523a8-a240-915d-9ae7-54b2277e424a@roeck-us.net>
-Date:   Tue, 3 May 2022 09:53:37 -0700
+        Tue, 03 May 2022 09:54:16 -0700 (PDT)
+Message-ID: <78730bd4-a184-e0f0-4634-d09dbaf59958@acm.org>
+Date:   Tue, 3 May 2022 09:54:13 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 06/16] nvmet: use blk_queue_zone_no()
 Content-Language: en-US
-To:     "Hawkins, Nick" <nick.hawkins@hpe.com>,
-        "Verdun, Jean-Marie" <verdun@hpe.com>,
-        "joel@jms.id.au" <joel@jms.id.au>, "arnd@arndb.de" <arnd@arndb.de>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>
-References: <20220502204050.88316-1-nick.hawkins@hpe.com>
- <20220502204050.88316-3-nick.hawkins@hpe.com>
- <c0262cf4-dfeb-c9a9-bcb2-24af006e6d4d@roeck-us.net>
- <PH0PR84MB1718D28F1846F54DB5766E6D88C09@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v6 3/8] watchdog: hpe-wdt: Introduce HPE GXP Watchdog
-In-Reply-To: <PH0PR84MB1718D28F1846F54DB5766E6D88C09@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+To:     Pankaj Raghav <p.raghav@samsung.com>, jaegeuk@kernel.org,
+        axboe@kernel.dk, snitzer@kernel.org, hch@lst.de, mcgrof@kernel.org,
+        naohiro.aota@wdc.com, sagi@grimberg.me,
+        damien.lemoal@opensource.wdc.com, dsterba@suse.com,
+        johannes.thumshirn@wdc.com
+Cc:     linux-kernel@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        clm@fb.com, gost.dev@samsung.com, chao@kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, josef@toxicpanda.com,
+        jonathan.derrick@linux.dev, agk@redhat.com, kbusch@kernel.org,
+        kch@nvidia.com, linux-nvme@lists.infradead.org,
+        dm-devel@redhat.com, jiangbo.365@bytedance.com,
+        linux-fsdevel@vger.kernel.org, matias.bjorling@wdc.com,
+        linux-block@vger.kernel.org
+References: <20220427160255.300418-1-p.raghav@samsung.com>
+ <CGME20220427160302eucas1p1aaba7a309778d3440c3315ad899e4035@eucas1p1.samsung.com>
+ <20220427160255.300418-7-p.raghav@samsung.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220427160255.300418-7-p.raghav@samsung.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/3/22 09:22, Hawkins, Nick wrote:
-> On 5/2/22 13:40, nick.hawkins@hpe.com wrote:
->>> +#include <linux/of_address.h>
->>> +#include <linux/of_platform.h>
+On 4/27/22 09:02, Pankaj Raghav wrote:
+> From: Luis Chamberlain <mcgrof@kernel.org>
 > 
->> Where are those of_ includes used ?
-> 
-> They were not used anymore with latest changes. Thank you for pointing this out. I will remember to check in the future for each new commit to double check this.
-> 
->>> +#define WDT_MAX_TIMEOUT_MS	655000
-> 
->> Shouldn't that be 655350 ?
-> 
-> Yes it should be. I will correct this.
-> 
->>> +static int gxp_wdt_set_timeout(struct watchdog_device *wdd,
->>> +			       unsigned int timeout)
->>> +{
->>> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
->>> +	u32 actual;
->>> +
->>> +	wdd->timeout = timeout;
->>> +	actual = min(timeout, wdd->max_hw_heartbeat_ms / 1000);
->>> +	writew(SECS_TO_WDOG_TICKS(actual), drvdata->base + GXP_WDT_CNT_OFS);
-> 
->> First, the accuracy of actual is reduced to 1 second, then SECS_TO_WDOG_TICKS() multiplies the result with 100, meaning the actual accuracy is 10ms. Why not just use 10 ms ?
-> 
->> 	actual = min(timeout * 100, wdd->max_hw_heartbeat_ms / 10);
->> 	writew(actual, drvdata->base + GXP_WDT_CNT_OFS);
-> 
-> I have replaced the mention code with what you recommended above.
-> 
->>> +
->>> +static int gxp_restart(struct watchdog_device *wdd, unsigned long action,
->>> +		       void *data)
->>> +{
->>> +	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
->>> +
->>> +	writew(10, drvdata->base + GXP_WDT_CNT_OFS);
-> 
->> Doesn't that translate to 100 ms timeout ? Why such a large reboot delay instead of writing 1 ?
-> 
-> This has been changed to 1.
-> 
->>> +	gxp_wdt_enable_reload(drvdata);
->>> +	mdelay(100);
->>> +	return 0;
->>> +}
->>> +
->>> +static int gxp_wdt_probe(struct platform_device *pdev) {
->>> +	struct device *dev = &pdev->dev;
->>> +	struct gxp_wdt *drvdata;
->>> +	int err;
->>> +	u8 val;
->>> +
->>> +	drvdata = devm_kzalloc(dev, sizeof(struct gxp_wdt), GFP_KERNEL);
->>> +	if (!drvdata)
->>> +		return -ENOMEM;
->>> +
->>> +	drvdata->base = (void __iomem *)dev->platform_data;
-> 
->> I'd personaly prefer if the address was passed as resource.
-> 
-> Just to clarify for my understanding are you asking that in the device structure I use the "void *platform_data" to pass "struct *resource"? If I am incorrect here can you elaborate on what you would like to be done? Based on feedback in review for the device tree; the watchdog is being created as a child to the timer. Therefore the conclusion reached was there should not be a gxp-wdt listed in the device tree files. I took this implementation based on what I found in ixp4xx_wdt.c.
-> 
+> Instead of open coding the number of zones given a sector, use the helper
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+I can't parse this. Please rephrase this.
 
-One bad deed tends to multiply.
+> blk_queue_zone_no(). This let's us make modifications to the math if
+> needed in one place and adds now support for npo2 zone devices.
 
-No, I didn't ask to pass a struct resource as platform data.
-That would be no different to the current code. Resources
-can be added to a platform device using
-platform_device_add_resources(), and the platform driver
-can then use platform_get_resource() to use it. This
-would make it independent of a "private" mechanism.
+But since the code looks fine:
 
-Thanks,
-Guenter
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
