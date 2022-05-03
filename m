@@ -2,102 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C2CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 16:54:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6621DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 16:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239935AbiECQ6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 12:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47800 "EHLO
+        id S239944AbiECQ6g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 12:58:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239915AbiECQ6H (ORCPT
+        with ESMTP id S239913AbiECQ6f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 12:58:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2053A735;
-        Tue,  3 May 2022 09:54:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04738B81F77;
-        Tue,  3 May 2022 16:54:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7148AC385A4;
-        Tue,  3 May 2022 16:54:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651596871;
-        bh=ytgntH0O/XbW8+1fR6Md9tL+ex4msLbEc4nV5PiKs1k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oSd/lUGqJGSI3Aru/ScbE5nSf8QCpZOfA+/k9fDh+sazrcp49byG0adp8zTqWNHZM
-         nWXVQgz7KK7l9iJvVMYB6Jmi91ePINmm7iDqLV4ImcFNGDGo6qyLCI3qu4fUE+fPI5
-         zoeHKmX1CgE9y4LY5N2yzU88o0wPCdxcPymmulSA=
-Date:   Tue, 3 May 2022 18:54:29 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Miklos Szeredi <miklos@szeredi.hu>
-Cc:     Amir Goldstein <amir73il@gmail.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Dave Chinner <david@fromorbit.com>,
-        Theodore Ts'o <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        LSM <linux-security-module@vger.kernel.org>,
-        Ian Kent <raven@themaw.net>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian@brauner.io>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>
-Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
-Message-ID: <YnFeRe02RqclvZ87@kroah.com>
-References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
- <CAOQ4uxim+JmFbXPQcasELDEgRDP-spdPtJrLuhvSiyxErSUkvw@mail.gmail.com>
- <YnFB/ct2Q/yYBnm8@kroah.com>
- <CAJfpegtZjRca5QPm2QgPtPG0-BJ=15Vtd48OTnRnr5G7ggAtmA@mail.gmail.com>
+        Tue, 3 May 2022 12:58:35 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A2937BD5;
+        Tue,  3 May 2022 09:55:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651596902; x=1683132902;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=2tJavwEtKWe6GCBkRLZmvzB9DBNg1v7NNp2CLVvT7d8=;
+  b=vJIYQgt5RUeIAIohpnyIDyEhBXdTULMrMGp27dE3GOcvjkG7DiA/lSpj
+   IhHMTuJw3t2uhGqpF+LvPJAqWdZ3sGipTs1IAXXCaQNSVqqn1y1rm7CzK
+   4vGIJb0m+c6VdId14Zg+SPHq/ld8AUgI+1S/gbsJdVAHW9EE4gZmc6ug4
+   c=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 03 May 2022 09:55:02 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 09:55:02 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 3 May 2022 09:54:21 -0700
+Received: from hu-tdas-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 3 May 2022 09:54:18 -0700
+From:   Taniya Das <quic_tdas@quicinc.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     Douglas Anderson <dianders@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Andy Gross <agross@kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Taniya Das <quic_tdas@quicinc.com>
+Subject: [PATCH v1] arm64: dts: qcom: sc7280: Add the reset reg for lpass on SC7280
+Date:   Tue, 3 May 2022 22:24:05 +0530
+Message-ID: <20220503165405.25698-1-quic_tdas@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJfpegtZjRca5QPm2QgPtPG0-BJ=15Vtd48OTnRnr5G7ggAtmA@mail.gmail.com>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 05:04:06PM +0200, Miklos Szeredi wrote:
-> On Tue, 3 May 2022 at 16:53, Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Tue, May 03, 2022 at 05:39:46PM +0300, Amir Goldstein wrote:
-> 
-> > > It should be noted that while this API mandates text keys,
-> > > it does not mandate text values, so for example, sb iostats could be
-> > > exported as text or as binary struct, or as individual text/binary records or
-> > > all of the above.
-> >
-> > Ugh, no, that would be a total mess.  Don't go exporting random binary
-> > structs depending on the file, that's going to be completely
-> > unmaintainable.  As it is, this is going to be hard enough with random
-> > text fields.
-> >
-> > As for this format, it needs to be required to be documented in
-> > Documentation/ABI/ for each entry and key type so that we have a chance
-> > of knowing what is going on and tracking how things are working and
-> > validating stuff.
-> 
-> My preference would be a single text value for each key.
+Add the reset register offset for clock gating.
 
-Yes!  That's the only sane way to maintain apis, and is why we do that
-for sysfs.
+Fixes: a3afe2a969cd ("arm64: dts: qcom: sc7280: Add lpasscore & lpassaudio clock controllers").
+Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
+---
+[v1]
+ * This patch has a dependency on the patch under review:
+  https://lore.kernel.org/lkml/20220503113246.13857-1-quic_tdas@quicinc.com/T/#u
+  https://lore.kernel.org/lkml/20220503164635.23876-1-quic_tdas@quicinc.com/T/#t
 
-If the key isn't present, there's no value, so userspace "knows" this
-automatically and parsing this is trivial.
+ arch/arm64/boot/dts/qcom/sc7280.dtsi | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-> Contents of ":mnt:info" contradicts that, but mountinfo has a long
-> established, well documented format, and nothing prevents exporting
-> individual attributes with separate names as well (the getvalues(2)
-> patch did exactly that).
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index 477a754741a1..d5c4ffcf6546 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -1985,13 +1985,15 @@
 
-I understand, for "legacy" things like this, that's fine, but don't add
-new fields or change them over time please, that way just gets us back
-to the nightmare of preserving /proc/ file apis.
+ 		lpass_audiocc: clock-controller@3300000 {
+ 			compatible = "qcom,sc7280-lpassaudiocc";
+-			reg = <0 0x03300000 0 0x30000>;
++			reg = <0 0x03300000 0 0x30000>,
++			      <0 0x032a9000 0 0x1000>;
+ 			clocks = <&rpmhcc RPMH_CXO_CLK>,
+ 			       <&lpass_aon LPASS_AON_CC_MAIN_RCG_CLK_SRC>;
+ 			clock-names = "bi_tcxo", "lpass_aon_cc_main_rcg_clk_src";
+ 			power-domains = <&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
+ 			#clock-cells = <1>;
+ 			#power-domain-cells = <1>;
++			#reset-cells = <1>;
+ 		};
 
-thanks,
+ 		lpass_aon: clock-controller@3380000 {
+--
+2.17.1
 
-greg k-h
