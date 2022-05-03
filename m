@@ -2,75 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E592C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 10:54:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C753BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 10:55:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234448AbiECK6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 06:58:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57844 "EHLO
+        id S234515AbiECK6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 06:58:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234411AbiECK6A (ORCPT
+        with ESMTP id S234517AbiECK6f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 06:58:00 -0400
+        Tue, 3 May 2022 06:58:35 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADCC38183;
-        Tue,  3 May 2022 03:54:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B669B387BA;
+        Tue,  3 May 2022 03:54:56 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 639F41F43E28
+        with ESMTPSA id 75BBB1F43E42
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1651575252;
-        bh=8SQUMn7/rW2ARSTN1rfGHqVZlZic7Iz6w4XuPwEGq+g=;
+        s=mail; t=1651575284;
+        bh=Vzt5rJ5w7RADVz/xg7c0ik/5e8mPzC+52IMY2R0fGcU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XHgq1XW164qqqodKIoQVx4LNEUC3DuvrjCnn5OuM4qU3AV9g6gUPmgUaCFTRcLtjx
-         VbFX6xg8y3af8biyZlM5zlCmY2BPXHcp36EN6x9uBZ3O0FIiOWxxw8WTlj+HP9Pg9R
-         7Wa/YDZ4z9XwFRbvL46sPwdbfSg7UwVi1W9sCvFmJtm0Abl8ow/0g0+mhJA7/PcpZR
-         ZXS2sfGOeGAVji0QK9Kvilew5NyJ7vPikTCv9XfqT1HSHz4LmuWZkjYwwYs1TrOoks
-         STteOLz+60eqlKSnG/WWEvoh7JMwxWnS7DtAxJvDSRLIn0WwRXMGvNEzPukfgtYOup
-         nQqNsRDUVqopg==
+        b=AXAvYxaJ2WqoLiScU2zK8GtNyfvNOCc0H86ip/W7ijj6NBN0iT939GlVAah0ZYQJI
+         U26VT4lIyEGKJ9VUNRvp1niEdNeY7wqj1NW9hyh0F+W5U5tEx6biJDA0bD1Ekq6Upr
+         8/MgV1J2CATa4EWfJCu9Qm4u+EI5J7uY0H8TtQ4RCSZn46XfIGSbKCYBl0QVNYX0AS
+         0ARqd2bjFYN1iSf7iZcWdrBpQf1XP6nvmSK9zSR0n5p4VU5cdFxeptzSFElJVSeNOi
+         LHhgSYZEs6lUIfyXTwksuTR6SuzuEC0E2UArhM3kgzpd8e73MpysVLwui+/pXOtWBA
+         0TguOZty6Cgpg==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-To:     thierry.reding@gmail.com
-Cc:     u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        matthias.bgg@gmail.com, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
+To:     robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        chun-jie.chen@mediatek.com,
+        angelogioacchino.delregno@collabora.com, weiyi.lu@mediatek.com,
+        mbrugger@suse.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, kernel@collabora.com,
-        nfraprado@collabora.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH 2/2] dt-bindings: pwm: pwm-mediatek: Add documentation for MT6795 SoC
-Date:   Tue,  3 May 2022 12:54:05 +0200
-Message-Id: <20220503105405.54832-3-angelogioacchino.delregno@collabora.com>
+        nfraprado@collabora.com
+Subject: [PATCH 2/2] soc: mediatek: pm-domains: Add support for Helio X10 MT6795
+Date:   Tue,  3 May 2022 12:54:36 +0200
+Message-Id: <20220503105436.54901-3-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220503105405.54832-1-angelogioacchino.delregno@collabora.com>
-References: <20220503105405.54832-1-angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220503105436.54901-1-angelogioacchino.delregno@collabora.com>
+References: <20220503105436.54901-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add binding documentation for the MT6795 Helio X10 SoC.
+Add pm-domains (mtcmos) data for MediaTek Helio X10 MT6795 SoC.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/soc/mediatek/mt6795-pm-domains.h | 112 +++++++++++++++++++++++
+ drivers/soc/mediatek/mtk-pm-domains.c    |   5 +
+ 2 files changed, 117 insertions(+)
+ create mode 100644 drivers/soc/mediatek/mt6795-pm-domains.h
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-index 25ed214473d7..033d1fc0f405 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-@@ -3,6 +3,7 @@ MediaTek PWM controller
- Required properties:
-  - compatible: should be "mediatek,<name>-pwm":
-    - "mediatek,mt2712-pwm": found on mt2712 SoC.
-+   - "mediatek,mt6795-pwm": found on mt6795 SoC.
-    - "mediatek,mt7622-pwm": found on mt7622 SoC.
-    - "mediatek,mt7623-pwm": found on mt7623 SoC.
-    - "mediatek,mt7628-pwm": found on mt7628 SoC.
+diff --git a/drivers/soc/mediatek/mt6795-pm-domains.h b/drivers/soc/mediatek/mt6795-pm-domains.h
+new file mode 100644
+index 000000000000..ef07c9dfdd9b
+--- /dev/null
++++ b/drivers/soc/mediatek/mt6795-pm-domains.h
+@@ -0,0 +1,112 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++
++#ifndef __SOC_MEDIATEK_MT6795_PM_DOMAINS_H
++#define __SOC_MEDIATEK_MT6795_PM_DOMAINS_H
++
++#include "mtk-pm-domains.h"
++#include <dt-bindings/power/mt6795-power.h>
++
++/*
++ * MT6795 power domain support
++ */
++
++static const struct scpsys_domain_data scpsys_domain_data_mt6795[] = {
++	[MT6795_POWER_DOMAIN_VDEC] = {
++		.name = "vdec",
++		.sta_mask = PWR_STATUS_VDEC,
++		.ctl_offs = SPM_VDE_PWR_CON,
++		.pwr_sta_offs = SPM_PWR_STATUS,
++		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND,
++		.sram_pdn_bits = GENMASK(11, 8),
++		.sram_pdn_ack_bits = GENMASK(12, 12),
++	},
++	[MT6795_POWER_DOMAIN_VENC] = {
++		.name = "venc",
++		.sta_mask = PWR_STATUS_VENC,
++		.ctl_offs = SPM_VEN_PWR_CON,
++		.pwr_sta_offs = SPM_PWR_STATUS,
++		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND,
++		.sram_pdn_bits = GENMASK(11, 8),
++		.sram_pdn_ack_bits = GENMASK(15, 12),
++	},
++	[MT6795_POWER_DOMAIN_ISP] = {
++		.name = "isp",
++		.sta_mask = PWR_STATUS_ISP,
++		.ctl_offs = SPM_ISP_PWR_CON,
++		.pwr_sta_offs = SPM_PWR_STATUS,
++		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND,
++		.sram_pdn_bits = GENMASK(11, 8),
++		.sram_pdn_ack_bits = GENMASK(13, 12),
++	},
++	[MT6795_POWER_DOMAIN_MM] = {
++		.name = "mm",
++		.sta_mask = PWR_STATUS_DISP,
++		.ctl_offs = SPM_DIS_PWR_CON,
++		.pwr_sta_offs = SPM_PWR_STATUS,
++		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND,
++		.sram_pdn_bits = GENMASK(11, 8),
++		.sram_pdn_ack_bits = GENMASK(12, 12),
++		.bp_infracfg = {
++			BUS_PROT_UPDATE_TOPAXI(MT8173_TOP_AXI_PROT_EN_MM_M0 |
++					       MT8173_TOP_AXI_PROT_EN_MM_M1),
++		},
++	},
++	[MT6795_POWER_DOMAIN_MJC] = {
++		.name = "mjc",
++		.sta_mask = BIT(20),
++		.ctl_offs = 0x298,
++		.pwr_sta_offs = SPM_PWR_STATUS,
++		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND,
++		.sram_pdn_bits = GENMASK(11, 8),
++		.sram_pdn_ack_bits = GENMASK(15, 12),
++	},
++	[MT6795_POWER_DOMAIN_AUDIO] = {
++		.name = "audio",
++		.sta_mask = PWR_STATUS_AUDIO,
++		.ctl_offs = SPM_AUDIO_PWR_CON,
++		.pwr_sta_offs = SPM_PWR_STATUS,
++		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND,
++		.sram_pdn_bits = GENMASK(11, 8),
++		.sram_pdn_ack_bits = GENMASK(15, 12),
++	},
++	[MT6795_POWER_DOMAIN_MFG_ASYNC] = {
++		.name = "mfg_async",
++		.sta_mask = PWR_STATUS_MFG_ASYNC,
++		.ctl_offs = SPM_MFG_ASYNC_PWR_CON,
++		.pwr_sta_offs = SPM_PWR_STATUS,
++		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND,
++		.sram_pdn_bits = GENMASK(11, 8),
++		.sram_pdn_ack_bits = 0,
++	},
++	[MT6795_POWER_DOMAIN_MFG_2D] = {
++		.name = "mfg_2d",
++		.sta_mask = PWR_STATUS_MFG_2D,
++		.ctl_offs = SPM_MFG_2D_PWR_CON,
++		.pwr_sta_offs = SPM_PWR_STATUS,
++		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND,
++		.sram_pdn_bits = GENMASK(11, 8),
++		.sram_pdn_ack_bits = GENMASK(13, 12),
++	},
++	[MT6795_POWER_DOMAIN_MFG] = {
++		.name = "mfg",
++		.sta_mask = PWR_STATUS_MFG,
++		.ctl_offs = SPM_MFG_PWR_CON,
++		.pwr_sta_offs = SPM_PWR_STATUS,
++		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND,
++		.sram_pdn_bits = GENMASK(13, 8),
++		.sram_pdn_ack_bits = GENMASK(21, 16),
++		.bp_infracfg = {
++			BUS_PROT_UPDATE_TOPAXI(MT8173_TOP_AXI_PROT_EN_MFG_S |
++					       MT8173_TOP_AXI_PROT_EN_MFG_M0 |
++					       MT8173_TOP_AXI_PROT_EN_MFG_M1 |
++					       MT8173_TOP_AXI_PROT_EN_MFG_SNOOP_OUT),
++		},
++	},
++};
++
++static const struct scpsys_soc_data mt6795_scpsys_data = {
++	.domains_data = scpsys_domain_data_mt6795,
++	.num_domains = ARRAY_SIZE(scpsys_domain_data_mt6795),
++};
++
++#endif /* __SOC_MEDIATEK_MT6795_PM_DOMAINS_H */
+diff --git a/drivers/soc/mediatek/mtk-pm-domains.c b/drivers/soc/mediatek/mtk-pm-domains.c
+index 5ced254b082b..4da53488c381 100644
+--- a/drivers/soc/mediatek/mtk-pm-domains.c
++++ b/drivers/soc/mediatek/mtk-pm-domains.c
+@@ -16,6 +16,7 @@
+ #include <linux/regulator/consumer.h>
+ #include <linux/soc/mediatek/infracfg.h>
+ 
++#include "mt6795-pm-domains.h"
+ #include "mt8167-pm-domains.h"
+ #include "mt8173-pm-domains.h"
+ #include "mt8183-pm-domains.h"
+@@ -555,6 +556,10 @@ static void scpsys_domain_cleanup(struct scpsys *scpsys)
+ }
+ 
+ static const struct of_device_id scpsys_of_match[] = {
++	{
++		.compatible = "mediatek,mt6795-power-controller",
++		.data = &mt6795_scpsys_data,
++	},
+ 	{
+ 		.compatible = "mediatek,mt8167-power-controller",
+ 		.data = &mt8167_scpsys_data,
 -- 
 2.35.1
 
