@@ -2,156 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B09DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:06:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83420C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:06:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229469AbiECGKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 02:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32982 "EHLO
+        id S229485AbiECGKZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 02:10:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiECGKJ (ORCPT
+        with ESMTP id S229476AbiECGKW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 02:10:09 -0400
-Received: from mail-vk1-xa2d.google.com (mail-vk1-xa2d.google.com [IPv6:2607:f8b0:4864:20::a2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70773336F
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:06:37 -0700 (PDT)
-Received: by mail-vk1-xa2d.google.com with SMTP id h144so7115979vkh.3
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 23:06:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=7N4xc/wMzuulecI04es1Ttu3ntRturBloFa549S0Y3Q=;
-        b=NEVrVzg9Pe7LgLukiVkco8UDTV6L59oHrngUV4vIQi1UdW9T5lIL78M4V4Q8qQKIFJ
-         DLHLChcTxDhzAcdGXIh5iSm1rZ7eJRQXd9My+REEAGmqWRKjHa2lyUXfN3+2N4UVX8Fq
-         GeujgEZzSMb6mfbE2Wf/objpyHuRUunvrk/NmpQq9qySmCUdy7VVudW3tWxLPdB4zlwo
-         S8V+p2TevVjqVcURU/nIg9m8fDH7xx7B/vg+nv5XR7UFULjcv7aWGiBl8oGFuVc1ZkqL
-         voxnEbtK36gSGYTkwYM92/5J0q9xcferwd12sIh4tg08NKsnaQ2SoD7+ougi/LEF3T59
-         56yQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=7N4xc/wMzuulecI04es1Ttu3ntRturBloFa549S0Y3Q=;
-        b=7PeyhJm2FyfB75edlLnpbMEu49zudWv+GWWuAczH0GG75R/PHl8d2DtOsUB9vPAHbt
-         0SeX5K4Ca61ec7nIbtDiV+bdFPX3r1hxfeDSKg9HaSknn1jtdpNtnajW/oXG8P6M2S1j
-         TUIrD+Wk20F+NVRwFGQcKvHpwPtWGNCTNHyWVis24toos4zodDmr4ZFkBJAhWdISeNT0
-         z2BjJIufDYWVgbnikHSkBcMJ02qYbB9YuNqrD6x4JHyPTk+plQukx3MMBKVLg23lecdX
-         rfDYcBziRC0VF7LKy8Z1o93p7twSNKnzsISUhnSAw4iUvd8/TcrQb5HLpzS+wB9A6fkp
-         DXGQ==
-X-Gm-Message-State: AOAM531eHHOvEfh5YN069ns8/GPW/vcjx1hyS6ZmnZjrdXruLmLZM39V
-        fyyWlRlVJ3H1400J6pPMt2AJ76Bh7YyNBFU3O8rRGg==
-X-Google-Smtp-Source: ABdhPJybo+d0kbBuduaYftUo3seNL4tZkqegmoofOoOd+SP9ml8MIN+ga2yGL+UEog18KotV0y6a+Lszzi+VSenrjx0=
-X-Received: by 2002:a1f:9b85:0:b0:32d:4d56:cf64 with SMTP id
- d127-20020a1f9b85000000b0032d4d56cf64mr4410925vke.31.1651557996716; Mon, 02
- May 2022 23:06:36 -0700 (PDT)
+        Tue, 3 May 2022 02:10:22 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEFC933377;
+        Mon,  2 May 2022 23:06:49 -0700 (PDT)
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by gandalf.ozlabs.org (Postfix) with ESMTP id 4KsqGv54y2z4ySb;
+        Tue,  3 May 2022 16:06:47 +1000 (AEST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KsqGm1blwz4xbw;
+        Tue,  3 May 2022 16:06:39 +1000 (AEST)
+From:   =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
+To:     linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org
+Cc:     Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-aspeed@lists.ozlabs.org, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
+Subject: [PATCH v6 00/11] spi: spi-mem: Convert Aspeed SMC driver to spi-mem
+Date:   Tue,  3 May 2022 08:06:23 +0200
+Message-Id: <20220503060634.122722-1-clg@kaod.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
- <20220501175813.tvytoosygtqlh3nn@offworld>
-In-Reply-To: <20220501175813.tvytoosygtqlh3nn@offworld>
-From:   Wei Xu <weixugc@google.com>
-Date:   Mon, 2 May 2022 23:06:25 -0700
-Message-ID: <CAAPL-u8i_wc15iJzU9s9V1YuuS+FQL2zdw3o7MqNnSFao3u4KA@mail.gmail.com>
-Subject: Re: RFC: Memory Tiering Kernel Interfaces
-To:     Wei Xu <weixugc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Yang Shi <shy828301@gmail.com>, Linux MM <linux-mm@kvack.org>,
-        Greg Thelen <gthelen@google.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Feng Tang <feng.tang@intel.com>, Jonathan.Cameron@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 1, 2022 at 11:09 AM Davidlohr Bueso <dave@stgolabs.net> wrote:
->
-> Nice summary, thanks. I don't know who of the interested parties will be
-> at lsfmm, but fyi we have a couple of sessions on memory tiering Tuesday
-> at 14:00 and 15:00.
->
-> On Fri, 29 Apr 2022, Wei Xu wrote:
->
-> >The current kernel has the basic memory tiering support: Inactive
-> >pages on a higher tier NUMA node can be migrated (demoted) to a lower
-> >tier NUMA node to make room for new allocations on the higher tier
-> >NUMA node.  Frequently accessed pages on a lower tier NUMA node can be
-> >migrated (promoted) to a higher tier NUMA node to improve the
-> >performance.
->
-> Regardless of the promotion algorithm, at some point I see the NUMA hinting
-> fault mechanism being in the way of performance. It would be nice if hardware
-> began giving us page "heatmaps" instead of having to rely on faulting or
-> sampling based ways to identify hot memory.
+Hi,
 
-I agree with your comments on both NUMA hinting faults and
-hardware-assisted "heatmaps".
+This series adds a new SPI driver using the spi-mem interface for the
+Aspeed static memory controllers of the AST2600, AST2500 and AST2400
+SoCs.
 
+ * AST2600 Firmware SPI Memory Controller (FMC)
+ * AST2600 SPI Flash Controller (SPI1 and SPI2)
+ * AST2500 Firmware SPI Memory Controller (FMC)
+ * AST2500 SPI Flash Controller (SPI1 and SPI2)
+ * AST2400 New Static Memory Controller (also referred as FMC)
+ * AST2400 SPI Flash Controller (SPI)
 
-> >A tiering relationship between NUMA nodes in the form of demotion path
-> >is created during the kernel initialization and updated when a NUMA
-> >node is hot-added or hot-removed.  The current implementation puts all
-> >nodes with CPU into the top tier, and then builds the tiering hierarchy
-> >tier-by-tier by establishing the per-node demotion targets based on
-> >the distances between nodes.
-> >
-> >The current memory tiering interface needs to be improved to address
-> >several important use cases:
-> >
-> >* The current tiering initialization code always initializes
-> >  each memory-only NUMA node into a lower tier.  But a memory-only
-> >  NUMA node may have a high performance memory device (e.g. a DRAM
-> >  device attached via CXL.mem or a DRAM-backed memory-only node on
-> >  a virtual machine) and should be put into the top tier.
->
-> At least the CXL memory (volatile or not) will still be slower than
-> regular DRAM, so I think that we'd not want this to be top-tier. But
-> in general, yes I agree that defining top tier as whether or not the
-> node has a CPU a bit limiting, as you've detailed here.
->
-> >Tiering Hierarchy Initialization
-> >================================
-> >
-> >By default, all memory nodes are in the top tier (N_TOPTIER_MEMORY).
-> >
-> >A device driver can remove its memory nodes from the top tier, e.g.
-> >a dax driver can remove PMEM nodes from the top tier.
-> >
-> >The kernel builds the memory tiering hierarchy and per-node demotion
-> >order tier-by-tier starting from N_TOPTIER_MEMORY.  For a node N, the
-> >best distance nodes in the next lower tier are assigned to
-> >node_demotion[N].preferred and all the nodes in the next lower tier
-> >are assigned to node_demotion[N].allowed.
-> >
-> >node_demotion[N].preferred can be empty if no preferred demotion node
-> >is available for node N.
->
-> Upon cases where there more than one possible demotion node (with equal
-> cost), I'm wondering if we want to do something better than choosing
-> randomly, like we do now - perhaps round robin? Of course anything
-> like this will require actual performance data, something I have seen
-> very little of.
+It is based on the current OpenBMC kernel driver [1], using directly
+the MTD SPI-NOR interface and on a patchset [2] previously proposed
+adding support for the AST2600 only. This driver takes a slightly
+different approach to cover all 6 controllers.
 
-I'd prefer that the demotion node selection follows the way how the
-kernel selects the node/zone for normal allocations.  If we want to
-group several demotion nodes with equal cost together (e.g. to better
-utilize the bandwidth from these nodes), we'd better to improve such
-an optimization in __alloc_pages_nodemask() to benefit normal
-allocations as well.
+It does not make use of the controller register disabling Address and
+Data byte lanes because is not available on the AST2400 SoC. We could
+introduce a specific handler for new features available on recent SoCs
+if needed. As there is not much difference on performance, the driver
+chooses the common denominator: "User mode" which has been heavily
+tested in [1]. "User mode" is also used as a fall back method when
+flash device mapping window is too small.
 
-> >Memory tiering hierarchy is rebuilt upon hot-add or hot-remove of a
-> >memory node, but is NOT rebuilt upon hot-add or hot-remove of a CPU
-> >node.
->
-> I think this makes sense.
->
-> Thanks,
-> Davidlohr
+Problems to address with spi-mem were the configuration of the mapping
+windows and the calibration of the read timings. The driver handles
+them in the direct mapping handler when some knowledge on the size of
+the flash device is know. It is not perfect but not incorrect either.
+The algorithm is one from [1] because it doesn't require the DMA
+registers which are not available on all controllers.
+
+Direct mapping for writes is not supported (yet). I have seen some
+corruption with writes and I preferred to use the safer and proven
+method of the initial driver [1]. We can improve that later.
+
+The driver supports Quad SPI RX transfers on the AST2600 SoC but it
+didn't have the expected results. Therefore it is not activated yet.
+There are some issues on the pinctrl to investigate first. 
+
+Tested on:
+ 
+ * OpenPOWER Palmetto (AST2400)
+ * Facebook Wedge 100 BMC (AST2400) by Tao Ren <rentao.bupt@gmail.com>
+ * Evaluation board (AST2500) 
+ * Inspur FP5280G2 BMC (AST2500) by John Wang <wangzq.jn@gmail.com>
+ * Facebook Backpack CMM BMC (AST2500) by Tao Ren <rentao.bupt@gmail.com>
+ * OpenPOWER Witherspoon (AST2500)
+ * Evaluation board (AST2600 A0 and A3)
+ * Rainier board (AST2600)
+ 
+[1] https://github.com/openbmc/linux/blob/dev-5.15/drivers/mtd/spi-nor/controllers/aspeed-smc.c
+[2] https://patchwork.ozlabs.org/project/linux-aspeed/list/?series=212394
+
+Thanks,
+
+C. 
+
+Changes in v6:
+
+  - Removed tabs for aspeed,ast2600-fmc.yaml
+
+Changes in v5:
+
+  - Rebased on 5.18-rc5
+  - More AST2600 tests from Jae Hyun Yoo
+  - Cleanups of aspeed,ast2600-fmc.yaml
+  - Modified aspeed_spi_send_cmd_addr() routine to return an error  
+  - Simplified conditions in exec_op() handler when computing
+    the controller setting
+  - Dropped the use of memcpy_fromio for the SFDP address space
+
+Changes in v4:
+
+  - Rebased on 5.18 
+  - Removal of the SPI-NOR base driver (we had enough tests)
+  - Fix for small size flash devices on AST2600 (Potin)
+
+Changes in v3:
+
+ - Fixed compile warning on aspeed_spi_dirmap_read() prototype reported
+   by kernel test robot 
+ - Removed unnecessary entry in ast2600-fmc.yaml
+ - New patch from Tao to set spi-max-frequency on all FMC devices
+
+Changes in v2:
+
+ - Fixed dt_binding_check warnings (Rob)
+ - New entry in MAINTAINERS 
+ - Addressed Lukas comments regarding the SPI controller registration
+   and device removal. Checked with driver bind/unbind   
+ - Introduced setup and cleanup handlers and removed routine looping
+   on the DT children properties (Pratyush)
+ - Clarified in commit log requirements for training.
+ - Removed defconfig changes of patch 1 since they were reverted in
+   the last patch (Joel)
+
+Cédric Le Goater (9):
+  ARM: dts: aspeed: Adjust "reg" property of FMC/SPI controllers
+  dt-bindings: spi: Add Aspeed SMC controllers device tree binding
+  spi: spi-mem: Convert Aspeed SMC driver to spi-mem
+  spi: aspeed: Add support for direct mapping
+  spi: aspeed: Adjust direct mapping to device size
+  spi: aspeed: Workaround AST2500 limitations
+  spi: aspeed: Add support for the AST2400 SPI controller
+  spi: aspeed: Calibrate read timings
+  ARM: dts: aspeed: Enable Dual SPI RX transfers
+
+Potin Lai (1):
+  mtd: spi-nor: aspeed: set the decoding size to at least 2MB for
+    AST2600
+
+Tao Ren (1):
+  ARM: dts: aspeed-g4: Set spi-max-frequency for all flashes
+
+ drivers/mtd/spi-nor/controllers/aspeed-smc.c  |  921 -------------
+ drivers/spi/spi-aspeed-smc.c                  | 1210 +++++++++++++++++
+ .../devicetree/bindings/mtd/aspeed-smc.txt    |   51 -
+ .../bindings/spi/aspeed,ast2600-fmc.yaml      |   82 ++
+ MAINTAINERS                                   |   10 +
+ arch/arm/boot/dts/aspeed-g4.dtsi              |   16 +-
+ arch/arm/boot/dts/aspeed-g5.dtsi              |   16 +-
+ arch/arm/boot/dts/aspeed-g6.dtsi              |   17 +-
+ drivers/mtd/spi-nor/controllers/Kconfig       |   10 -
+ drivers/mtd/spi-nor/controllers/Makefile      |    1 -
+ drivers/spi/Kconfig                           |   11 +
+ drivers/spi/Makefile                          |    1 +
+ 12 files changed, 1347 insertions(+), 999 deletions(-)
+ delete mode 100644 drivers/mtd/spi-nor/controllers/aspeed-smc.c
+ create mode 100644 drivers/spi/spi-aspeed-smc.c
+ delete mode 100644 Documentation/devicetree/bindings/mtd/aspeed-smc.txt
+ create mode 100644 Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml
+
+-- 
+2.35.1
+
