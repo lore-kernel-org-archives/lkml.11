@@ -2,116 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84AAAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:41:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D761CC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:43:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236321AbiECNow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 09:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33830 "EHLO
+        id S236402AbiECNrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 09:47:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236296AbiECNos (ORCPT
+        with ESMTP id S236380AbiECNrL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 09:44:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8AC1D30C;
-        Tue,  3 May 2022 06:41:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 3 May 2022 09:47:11 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD53C1D32C;
+        Tue,  3 May 2022 06:43:38 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84C73B81EAE;
-        Tue,  3 May 2022 13:41:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92CFCC385A4;
-        Tue,  3 May 2022 13:41:12 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="JhhZhcKF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651585270;
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 8A86022239;
+        Tue,  3 May 2022 15:43:36 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1651585417;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=p7mWXnm8GbdgjRIQ9Al0yBRSBRXht2MCYEZpE7Y9jd4=;
-        b=JhhZhcKFUNrhyY6TMHw4gMhygQ/MvjkoWAnfLWjpzVaqcn5fYzdgQqtfm6LxG0EfKaF2ij
-        Fz7cI5Bh2M3sJ5dT8USFeNye/mUf0QjpNJ2Z8cNg4dBSXu33P/SQ3Vbwz+17yP+YkK6xyF
-        Ax1jRH497v4VR8v5LWWXWN/SqnpdDi4=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id b2825271 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 3 May 2022 13:41:10 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ard Biesheuvel <ardb@kernel.org>
-Subject: [PATCH RFC v1] random: use static branch for crng_ready()
-Date:   Tue,  3 May 2022 15:40:52 +0200
-Message-Id: <20220503134052.646325-1-Jason@zx2c4.com>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wUhybUQ9wgcQ0ISiRM6y/Kbz55BvTsWvkuDWu8QOB7M=;
+        b=Dv8DNuDpkZlRXdB8+UQL7pAMGq6Ylo/o0fqe612D1mvZYd7KMbJxTD0T5JbYdVTKO4qUgH
+        paYRsNapZPvIwbnXJSxiRDkTtDmrM+PjG+Iqj5+BaaLNL5z/abkqDFrDCggDL3B23DMT3b
+        O3vk8rO8LsEASepsME/hAtxrZKgEEYw=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 03 May 2022 15:43:36 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc:     Sean Anderson <sean.anderson@seco.com>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Li Yang <leoyang.li@nxp.com>, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH v3 0/9] nvmem: sfp: binding updates and additions
+In-Reply-To: <7aa5d553-04ad-5198-153c-39a9375a6a12@linaro.org>
+References: <20220428181703.2194171-1-sean.anderson@seco.com>
+ <7aa5d553-04ad-5198-153c-39a9375a6a12@linaro.org>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <3b8fc56f64508f7604f3b9e14b048568@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since crng_ready() is only false briefly during initialization and then
-forever after becomes true, we don't need to evaluate it after, making
-it a prime candidate for a static branch.
+Am 2022-04-29 17:56, schrieb Srinivas Kandagatla:
+> On 28/04/2022 19:16, Sean Anderson wrote:
+>> This adds several properties to the Layerscape Security Fuse Processor
+>> (SFP) necessary for writing. Although the Linux driver does not use
+>> these bindings, I plan to use them in U-Boot [1]. It also adds a new
+>> compatibles for Trust Architecture (TA) 2.1 devices. In addition, it
+>> also adds an SFP binding for all TA 2.1 and 3.0 devices.
+>> 
+>> I would like to get this series merged for 5.18. As noted in patch 2,
+>> making the clock property mandatory is not an ABI break, but if this 
+>> is
+>> not applied then it would become an ABI break. The absolute minimum
+>> patches to apply for this would be patches 2 and 5. The rest 
+>> (including
+>> the regmap changes) could be deferred if necessary.
+>> 
+>> [1] 
+>> https://lore.kernel.org/u-boot/7c8e206a-cd40-2a77-6282-7f4bead2b13a@seco.com/T/#m591f8425b6f096ab3d54e6f7bd258e41cfa4c43b
+>> 
+>> Changes in v3:
+>> - Update commit message to note that this binding has not yet been
+>>    present in a relase, so it is OK to make otherwise breaking 
+>> changes.
+>> 
+>> Changes in v2:
+>> - Mention "regulator" in the description for ta-prog-sfp-supply
+>> - Convert sfp driver to use regmap
+>> - Fix various typos in commit messages
+>> 
+>> Sean Anderson (9):
+>>    dt-bindings: nvmem: sfp: Fix typo
+>>    dt-bindings: nvmem: sfp: Add clock properties
+>>    dt-bindings: nvmem: sfp: Add TA_PROG_SFP supply
+>>    dt-bindings: nvmem: sfp: Add compatible binding for TA 2.1 SFPs
+>>    arm64: dts: ls1028a: Update SFP binding to include clock
+>>    ARM: dts: layerscape: Add SFP binding for TA 2.1 devices
+>>    ARM: dts: Add SFP binding for TA 3.0 devices
+>>    nvmem: sfp: Use regmap
+>>    nvmem: sfp: Add support for TA 2.1 devices
+>> 
+> 
+> I have applied all the patches except 5/9, 6/9, and 7/9 dts patches
+> which need to go via dts maintainer tree.
 
-One complication, however, is that it changes state in a particular call
-to credit_entropy_bits(), which might be made from atomic context. So
-rather than changing it then, we keep around the same state variable we
-had before, but the next time it's used from non-atomic context, we
-change it lazily then.
+Ahh. At least the device tree binding change (and the device tree
+changes itself) should be applied as fixes for the 5.18 release,
+so we don't have any conflicting descriptions. My fixes tag was never
+picked up, unfortunately:
+https://lore.kernel.org/linux-devicetree/4a45db184fbadc278624571dfbeb5004@walle.cc/
 
-This is an RFC for now because it seems a bit complicated and fiddly,
-and potentially not worth the complexity. I'm interested to hear if
-people have opinions about this or if there's a better way to do it.
+Srinivas, I've seen you picked it up into your for-next branch.
+Can we fix that?
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+I'd guess the layerscape device tree change also need a Fixes: tag.
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 845f610b6611..977093022430 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -75,12 +75,13 @@
-  * crng_init =  0 --> Uninitialized
-  *		1 --> Initialized
-  *		2 --> Initialized from input_pool
-+ *		3 --> Initialized from input_pool and static key set
-  *
-  * crng_init is protected by base_crng->lock, and only increases
-- * its value (from 0->1->2).
-+ * its value (from 0->1->2->3).
-  */
- static int crng_init = 0;
--#define crng_ready() (likely(crng_init > 1))
-+static DEFINE_STATIC_KEY_FALSE(crng_ready_static);
- /* Various types of waiters for crng_init->2 transition. */
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- static struct fasync_struct *fasync;
-@@ -96,6 +97,17 @@ static int ratelimit_disable __read_mostly;
- module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
- MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
- 
-+static bool crng_ready_slowpath(void)
-+{
-+	if (crng_init <= 1)
-+		return false;
-+	if (in_atomic() || irqs_disabled() || cmpxchg(&crng_init, 2, 3) != 2)
-+		return true;
-+	static_branch_enable(&crng_ready_static);
-+	return true;
-+}
-+#define crng_ready() (static_branch_likely(&crng_ready_static) || unlikely(crng_ready_slowpath()))
-+
- /*
-  * Returns whether or not the input pool has been seeded and thus guaranteed
-  * to supply cryptographically secure random numbers. This applies to: the
--- 
-2.35.1
-
+-michael
