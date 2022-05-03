@@ -2,253 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B26CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 22:53:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 22:54:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244110AbiECW4z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 18:56:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41796 "EHLO
+        id S232455AbiECW6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 18:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244200AbiECWzr (ORCPT
+        with ESMTP id S244272AbiECW6D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 18:55:47 -0400
-Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DE82543ACA;
-        Tue,  3 May 2022 15:51:39 -0700 (PDT)
-Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id CC1C9C0D;
-        Wed,  4 May 2022 01:52:12 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru CC1C9C0D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1651618332;
-        bh=Rn3qRaOQPZj8s+wlKxCUQb+RVz0erO/Tc5KHt3cNz0s=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=WkD51AEWXM8aWlFZsICk+Db4KR/+PC0GVeXEKfBlHgrB56tRHomlcZh4tdXXzeXob
-         LG1wbzcQI/fMFvgOZQ8pUfZtQgipH5mlhqL/Qx9iE+dlbnH74Ek2U+dwMCmN4oFYq+
-         ppkXndKNe4V4EIZmSTIQ877X63mmPs2YRd3Fti9I=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 4 May 2022 01:51:38 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
+        Tue, 3 May 2022 18:58:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CAC443D0;
+        Tue,  3 May 2022 15:54:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83725B821F1;
+        Tue,  3 May 2022 22:53:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE4D7C385A9;
+        Tue,  3 May 2022 22:53:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651618436;
+        bh=MjVuCNNcWZXYf57iNg2O+Xmc5CIZbqZZo07gCpHDjes=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=gWRC7yU7yRQRDEtiNwaZ28IaQGxNmAxNwQoEaWdR1Q/imm6XlU15T3pHmqaeKz4s6
+         maM6tRjOaX4Qu48zV7nO2lHJEuA9xOuTwnje4MDNIIC6Ioh3EhelWkfhddNKwUi59B
+         VWaIZaRk+d0Gt0nPB2b0/1ff0Fe5eUe+Jc20C+8Ki8h9+1F1hYSithwXIyNCZt5NHL
+         JtmU6zqC2wEaZQzCGbYCLULw2DqdPVVu+mQpXLJh4mwEA/7fC3Fju9uf6yxEH62m8S
+         Gpgg75q9S/nuy0a+1I+xyMkyQ1ee/YS9OxU+r4OfKyazjbj5J0+CMqxXQ4ujNP80AT
+         dBbfO1vq3tEfQ==
+Date:   Tue, 3 May 2022 17:53:53 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Pantelis Antoniou <pantelis.antoniou@konsulko.com>,
         Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        <linux-pci@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 25/26] PCI: dwc: Add generic iATU/eDMA CSRs space detection method
-Date:   Wed, 4 May 2022 01:51:03 +0300
-Message-ID: <20220503225104.12108-26-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220503225104.12108-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220503225104.12108-1-Sergey.Semin@baikalelectronics.ru>
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Thomas Petazzoni <thomas.petazonni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 2/3] PCI: of: create DT nodes for PCI devices if they do
+ not exists
+Message-ID: <20220503225353.GA415393@bhelgaas>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+In-Reply-To: <20220427094502.456111-3-clement.leger@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The iATU and eDMA are accessible over the same AXI/DBI interface and have
-the same access mode (viewport-based or unrolled). Due to that it will be
-more suitable to perform the iATU and eDMA CSRs space detection in the
-same coherent function. Since the iATU CSRs space and access mode
-detection procedure is already available in the driver let's move it into
-the dedicated method. The eDMA CSRs space detection will be added there in
-the next commit. This change is a preparation before adding the eDMA
-support to the DW PCIe controller driver.
+In subject:
 
-Note the new dw_pcie_map_detect() method fails if the iATU MMIO region
-IO-remapping fails. It should have been done in the first place since the
-failed remapping of the detected reg-space is certainly the erroneous
-situation.
+  PCI: of: Create DT nodes ... if they do not exist
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+The subject could be read as saying that you're going to create DT
+nodes before the PCI devices exist, but I think you mean that when we
+enumerate a PCI devices, we're *always* going to create a DT node for
+it, even if the DT didn't mention it.
 
----
+Maybe something like:
 
-Changelog v2:
-- This is a new patch added in v2. (@Manivannan)
----
- .../pci/controller/dwc/pcie-designware-ep.c   |  4 +
- .../pci/controller/dwc/pcie-designware-host.c |  4 +
- drivers/pci/controller/dwc/pcie-designware.c  | 76 +++++++++----------
- drivers/pci/controller/dwc/pcie-designware.h  |  3 +-
- 4 files changed, 48 insertions(+), 39 deletions(-)
+  PCI: of: Create DT node for every PCI device
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-ep.c b/drivers/pci/controller/dwc/pcie-designware-ep.c
-index 9b0540cfa9e8..6cfcfa34e587 100644
---- a/drivers/pci/controller/dwc/pcie-designware-ep.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-ep.c
-@@ -717,6 +717,10 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
- 
- 	dw_pcie_version_detect(pci);
- 
-+	ret = dw_pcie_map_detect(pci);
-+	if (ret)
-+		return ret;
-+
- 	dw_pcie_iatu_detect(pci);
- 
- 	ep->ib_window_map = devm_kcalloc(dev,
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index 9cb406f5c185..3cd5b096a427 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -409,6 +409,10 @@ int dw_pcie_host_init(struct pcie_port *pp)
- 
- 	dw_pcie_version_detect(pci);
- 
-+	ret = dw_pcie_map_detect(pci);
-+	if (ret)
-+		goto err_free_msi;
-+
- 	dw_pcie_iatu_detect(pci);
- 
- 	ret = dw_pcie_setup_rc(pp);
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index 33718ed6c511..68bd3fc66fd7 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -213,7 +213,7 @@ static inline void __iomem *dw_pcie_select_atu(struct dw_pcie *pci, u32 dir,
- {
- 	void __iomem *base = pci->atu_base;
- 
--	if (pci->iatu_unroll_enabled)
-+	if (pci->iatu_dma_unrolled)
- 		base += PCIE_ATU_UNROLL_BASE(dir, index);
- 	else
- 		dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, dir | index);
-@@ -579,24 +579,56 @@ static void dw_pcie_link_set_max_speed(struct dw_pcie *pci, u32 link_gen)
- 
- }
- 
--static bool dw_pcie_iatu_unroll_enabled(struct dw_pcie *pci)
-+int dw_pcie_map_detect(struct dw_pcie *pci)
- {
-+	struct platform_device *pdev = to_platform_device(pci->dev);
-+	struct resource *res;
- 	u32 val;
- 
- 	val = dw_pcie_readl_dbi(pci, PCIE_ATU_VIEWPORT);
- 	if (val == 0xffffffff)
--		return true;
-+		pci->iatu_dma_unrolled = true;
-+	else
-+		pci->iatu_dma_unrolled = false;
-+
-+	if (!pci->iatu_dma_unrolled) {
-+		pci->atu_base = pci->dbi_base + PCIE_ATU_VIEWPORT_BASE;
-+		pci->atu_size = PCIE_ATU_VIEWPORT_SIZE;
-+
-+		dev_info(pci->dev, "iATU/DMA unroll: disabled\n");
-+
-+		return 0;
-+	}
- 
--	return false;
-+	if (!pci->atu_base) {
-+		res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "atu");
-+		if (res) {
-+			pci->atu_base = devm_ioremap_resource(pci->dev, res);
-+			if (IS_ERR(pci->atu_base))
-+				return PTR_ERR(pci->atu_base);
-+
-+			pci->atu_size = resource_size(res);
-+		} else {
-+			pci->atu_base = pci->dbi_base + DEFAULT_DBI_ATU_OFFSET;
-+		}
-+	}
-+
-+	/* Pick a minimal default, enough for 8 in and 8 out windows */
-+	if (!pci->atu_size)
-+		pci->atu_size = SZ_4K;
-+
-+	dev_info(pci->dev, "iATU/DMA unroll: enabled\n");
-+
-+	return 0;
- }
- 
--static void dw_pcie_iatu_detect_regions(struct dw_pcie *pci)
-+void dw_pcie_iatu_detect(struct dw_pcie *pci)
- {
- 	int max_region, ob, ib;
- 	u32 val, min, dir;
- 	u64 max;
- 
--	if (pci->iatu_unroll_enabled) {
-+	if (pci->iatu_dma_unrolled) {
- 		max_region = min((int)pci->atu_size / 512, 256);
- 	} else {
- 		dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, 0xFF);
-@@ -640,38 +672,6 @@ static void dw_pcie_iatu_detect_regions(struct dw_pcie *pci)
- 	pci->num_ib_windows = ib;
- 	pci->region_align = 1 << fls(min);
- 	pci->region_limit = (max << 32) | (SZ_4G - 1);
--}
--
--void dw_pcie_iatu_detect(struct dw_pcie *pci)
--{
--	struct device *dev = pci->dev;
--	struct platform_device *pdev = to_platform_device(dev);
--
--	pci->iatu_unroll_enabled = dw_pcie_iatu_unroll_enabled(pci);
--	if (pci->iatu_unroll_enabled) {
--		if (!pci->atu_base) {
--			struct resource *res =
--				platform_get_resource_byname(pdev, IORESOURCE_MEM, "atu");
--			if (res) {
--				pci->atu_size = resource_size(res);
--				pci->atu_base = devm_ioremap_resource(dev, res);
--			}
--			if (!pci->atu_base || IS_ERR(pci->atu_base))
--				pci->atu_base = pci->dbi_base + DEFAULT_DBI_ATU_OFFSET;
--		}
--
--		if (!pci->atu_size)
--			/* Pick a minimal default, enough for 8 in and 8 out windows */
--			pci->atu_size = SZ_4K;
--	} else {
--		pci->atu_base = pci->dbi_base + PCIE_ATU_VIEWPORT_BASE;
--		pci->atu_size = PCIE_ATU_VIEWPORT_SIZE;
--	}
--
--	dw_pcie_iatu_detect_regions(pci);
--
--	dev_info(pci->dev, "iATU unroll: %s\n", pci->iatu_unroll_enabled ?
--		"enabled" : "disabled");
- 
- 	dev_info(pci->dev, "iATU regions: %u ob, %u ib, align %uK, limit %lluG\n",
- 		 pci->num_ob_windows, pci->num_ib_windows,
-diff --git a/drivers/pci/controller/dwc/pcie-designware.h b/drivers/pci/controller/dwc/pcie-designware.h
-index 765d99d5bfaa..e10647b96c68 100644
---- a/drivers/pci/controller/dwc/pcie-designware.h
-+++ b/drivers/pci/controller/dwc/pcie-designware.h
-@@ -310,7 +310,7 @@ struct dw_pcie {
- 	int			num_lanes;
- 	int			link_gen;
- 	u8			n_fts[2];
--	bool			iatu_unroll_enabled: 1;
-+	bool			iatu_dma_unrolled: 1;
- 	bool			io_cfg_atu_shared: 1;
- };
- 
-@@ -343,6 +343,7 @@ int dw_pcie_prog_ep_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
- 				int type, u64 cpu_addr, u8 bar);
- void dw_pcie_disable_atu(struct dw_pcie *pci, u32 dir, int index);
- void dw_pcie_setup(struct dw_pcie *pci);
-+int dw_pcie_map_detect(struct dw_pcie *pci);
- void dw_pcie_iatu_detect(struct dw_pcie *pci);
- 
- static inline void dw_pcie_writel_dbi(struct dw_pcie *pci, u32 reg, u32 val)
--- 
-2.35.1
+although I see Rob thinks this should be done on demand instead of
+doing it for every device, which sounds sensible to me.
 
+On Wed, Apr 27, 2022 at 11:45:01AM +0200, Clément Léger wrote:
+> In order to apply overlays to PCI device nodes, the nodes must first
+> exist. This commit add support to populate a skeleton tree for PCI bus
+> and devices. These nodes can then be used by drivers to apply overlays.
+
+s/This commit add support/Add support/
+
+Bjorn
