@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 650DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67EC7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:11:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242445AbiECUO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 16:14:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49550 "EHLO
+        id S242461AbiECUPB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 16:15:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242346AbiECUN7 (ORCPT
+        with ESMTP id S242371AbiECUOC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 16:13:59 -0400
+        Tue, 3 May 2022 16:14:02 -0400
 Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C40E1031;
-        Tue,  3 May 2022 13:10:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B18782AD;
+        Tue,  3 May 2022 13:10:19 -0700 (PDT)
 Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id DE794BC4;
-        Tue,  3 May 2022 23:10:49 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru DE794BC4
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 68D24BC6;
+        Tue,  3 May 2022 23:10:52 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 68D24BC6
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1651608649;
-        bh=uSCjkMj4dYFheq+/FSKGiwDai6D+f5d7WfzOKA5SOcI=;
+        d=baikalelectronics.ru; s=mail; t=1651608652;
+        bh=k8cGUNjY7XyJ80Mg7Uf7jZc5L2zf5Ytxc+KTj9sq8c8=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=RnMux7JW7Wut0lQXqcFdmwDPAUAUhSLlms5pL4hm/jK2VaoYPx/ymSeiDM3td05LY
-         s7CO1RMWnIdGTZA14lRL/+ynORBxkWWLU2CRxxA8C4ItVsHmGx9Di5xawr+XtevCLv
-         Fvl47otQAj4vrp/cLrG2qw7KamBUZI5VKxb1vlEQ=
+        b=X9foXJ7CiH7lNecw3GyJvRBmeBnBmBhSmjM1U7LPwcfcWZmbgKOj12RATHIQ1LB/A
+         dDJBeoyUSntJi+WDMKqOM+MOdf2AoBwzkHrVxGAr1PYNSu/lHyNcFUmlcIi4rgkb8u
+         WEKX9SMKzEkH0sAlu26VUIzSjFeDC6ZUyffZjHTA=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 May 2022 23:10:15 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 May 2022 23:10:18 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>
+        Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Serge Semin <fancer.lancer@gmail.com>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, <linux-ide@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH v2 16/23] ata: ahci: Convert __ahci_port_base to accepting hpriv as arguments
-Date:   Tue, 3 May 2022 23:09:31 +0300
-Message-ID: <20220503200938.18027-17-Sergey.Semin@baikalelectronics.ru>
+        <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+Subject: [PATCH v2 18/23] dt-bindings: ata: ahci: Add DWC AHCI SATA controller DT schema
+Date:   Tue, 3 May 2022 23:09:33 +0300
+Message-ID: <20220503200938.18027-19-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -51,60 +52,194 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It may get required to retrieve the port-base address even before the
-ata_host instance is initialized and activated, for instance in the
-ahci_save_initial_config() method which we about to update (consider this
-modification as a preparation for that one). Seeing the __ahci_port_base()
-function isn't used much it's the best candidate to provide the required
-functionality. So let's convert it to accepting the ahci_host_priv
-structure pointer.
+Synopsys AHCI SATA controller is mainly compatible with the generic AHCI
+SATA controller except a few peculiarities and the platform environment
+requirements. In particular it can have one or two reference clocks to
+feed up its AXI/AHB interface and SATA PHYs domain and at least one reset
+control for the application clock domain. In addition to that the DMA
+interface of each port can be tuned up to work with the predefined maximum
+data chunk size. Note unlike generic AHCI controller DWC AHCI can't have
+more than 8 ports. All of that is reflected in the new DWC AHCI SATA
+device DT binding.
+
+Note the DWC AHCI SATA controller DT-schema has been created in a way so
+to be reused for the vendor-specific DT-schemas (see for example the
+"snps,dwc-ahci" compatible string binding). One of which we are about to
+introduce.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
----
- drivers/ata/ahci.c | 2 +-
- drivers/ata/ahci.h | 7 ++++---
- 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
-index 9bc8fa77e92f..d14d74649e0e 100644
---- a/drivers/ata/ahci.c
-+++ b/drivers/ata/ahci.c
-@@ -689,7 +689,7 @@ static void ahci_pci_init_controller(struct ata_host *host)
- 			mv = 2;
- 		else
- 			mv = 4;
--		port_mmio = __ahci_port_base(host, mv);
-+		port_mmio = __ahci_port_base(hpriv, mv);
+---
+
+Changelog v2:
+- Replace min/max constraints of the snps,{tx,rx}-ts-max property with
+  enum [ 1, 2, 4, ..., 1024 ]. (@Rob)
+---
+ .../bindings/ata/ahci-platform.yaml           |   8 --
+ .../bindings/ata/snps,dwc-ahci.yaml           | 123 ++++++++++++++++++
+ 2 files changed, 123 insertions(+), 8 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/ata/snps,dwc-ahci.yaml
+
+diff --git a/Documentation/devicetree/bindings/ata/ahci-platform.yaml b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
+index 6cad7e86f3bb..4b65966ec23b 100644
+--- a/Documentation/devicetree/bindings/ata/ahci-platform.yaml
++++ b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
+@@ -30,8 +30,6 @@ select:
+           - marvell,armada-3700-ahci
+           - marvell,armada-8k-ahci
+           - marvell,berlin2q-ahci
+-          - snps,dwc-ahci
+-          - snps,spear-ahci
+   required:
+     - compatible
  
- 		writel(0, port_mmio + PORT_IRQ_MASK);
+@@ -48,17 +46,11 @@ properties:
+               - marvell,berlin2-ahci
+               - marvell,berlin2q-ahci
+           - const: generic-ahci
+-      - items:
+-          - enum:
+-              - rockchip,rk3568-dwc-ahci
+-          - const: snps,dwc-ahci
+       - enum:
+           - cavium,octeon-7130-ahci
+           - hisilicon,hisi-ahci
+           - ibm,476gtr-ahci
+           - marvell,armada-3700-ahci
+-          - snps,dwc-ahci
+-          - snps,spear-ahci
  
-diff --git a/drivers/ata/ahci.h b/drivers/ata/ahci.h
-index 0e66446a5883..8b9826533ae5 100644
---- a/drivers/ata/ahci.h
-+++ b/drivers/ata/ahci.h
-@@ -431,10 +431,9 @@ int ahci_host_activate(struct ata_host *host, struct scsi_host_template *sht);
- void ahci_error_handler(struct ata_port *ap);
- u32 ahci_handle_port_intr(struct ata_host *host, u32 irq_masked);
- 
--static inline void __iomem *__ahci_port_base(struct ata_host *host,
-+static inline void __iomem *__ahci_port_base(struct ahci_host_priv *hpriv,
- 					     unsigned int port_no)
- {
--	struct ahci_host_priv *hpriv = host->private_data;
- 	void __iomem *mmio = hpriv->mmio;
- 
- 	return mmio + 0x100 + (port_no * 0x80);
-@@ -442,7 +441,9 @@ static inline void __iomem *__ahci_port_base(struct ata_host *host,
- 
- static inline void __iomem *ahci_port_base(struct ata_port *ap)
- {
--	return __ahci_port_base(ap->host, ap->port_no);
-+	struct ahci_host_priv *hpriv = ap->host->private_data;
+   reg:
+     minItems: 1
+diff --git a/Documentation/devicetree/bindings/ata/snps,dwc-ahci.yaml b/Documentation/devicetree/bindings/ata/snps,dwc-ahci.yaml
+new file mode 100644
+index 000000000000..a13fd77a451f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/ata/snps,dwc-ahci.yaml
+@@ -0,0 +1,123 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/ata/snps,dwc-ahci.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	return __ahci_port_base(hpriv, ap->port_no);
- }
- 
- static inline int ahci_nr_ports(u32 cap)
++title: Synopsys DWC AHCI SATA controller
++
++maintainers:
++  - Serge Semin <fancer.lancer@gmail.com>
++
++description:
++  This document defines device tree bindings for the Synopsys DWC
++  implementation of the AHCI SATA controller.
++
++allOf:
++  - $ref: ahci-common.yaml#
++
++properties:
++  compatible:
++    oneOf:
++      - description: Synopsys AHCI SATA-compatible devices
++        contains:
++          const: snps,dwc-ahci
++      - description: SPEAr1340 AHCI SATA device
++        const: snps,spear-ahci
++      - description: Rockhip RK3568 ahci controller
++        const: rockchip,rk3568-dwc-ahci
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    description:
++      Basic DWC AHCI SATA clock sources like application AXI/AHB BIU clock
++      and embedded PHYs reference clock together with vendor-specific set
++      of clocks.
++    minItems: 1
++    maxItems: 4
++
++  clock-names:
++    contains:
++      anyOf:
++        - description: Application AXI/AHB BIU clock source
++          enum:
++            - aclk
++            - sata
++        - description: SATA Ports reference clock
++          enum:
++            - ref
++            - sata_ref
++
++  resets:
++    description:
++      At least basic core and application clock domains reset is normally
++      supported by the DWC AHCI SATA controller. Some platform specific
++      clocks can be also specified though.
++
++  reset-names:
++    contains:
++      description: Core and application clock domains reset control
++      const: arst
++
++patternProperties:
++  "^sata-port@[0-9a-e]$":
++    type: object
++
++    properties:
++      reg:
++        minimum: 0
++        maximum: 7
++
++      snps,tx-ts-max:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description: Maximal size of Tx DMA transactions in FIFO words
++        enum: [ 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 ]
++
++      snps,rx-ts-max:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description: Maximal size of Rx DMA transactions in FIFO words
++        enum: [ 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 ]
++
++      additionalProperties: true
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    sata@122f0000 {
++      compatible = "snps,dwc-ahci";
++      reg = <0x122F0000 0x1ff>;
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
++
++      clocks = <&clock1>, <&clock2>;
++      clock-names = "aclk", "ref";
++
++      phys = <&sata_phy>;
++      phy-names = "sata-phy";
++
++      ports-implemented = <0x1>;
++
++      sata-port@0 {
++        reg = <0>;
++
++        hba-fbscp;
++        snps,tx-ts-max = <512>;
++        snps,rx-ts-max = <512>;
++      };
++    };
++...
 -- 
 2.35.1
 
