@@ -2,60 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C340C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:09:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C587C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:09:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235923AbiECNNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 09:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33430 "EHLO
+        id S233606AbiECNN3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 09:13:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232644AbiECNNO (ORCPT
+        with ESMTP id S235935AbiECNN1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 09:13:14 -0400
+        Tue, 3 May 2022 09:13:27 -0400
 Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8A42B259;
-        Tue,  3 May 2022 06:09:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 338D72B259
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 06:09:55 -0700 (PDT)
 Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 243D8ux6043001;
-        Tue, 3 May 2022 08:08:56 -0500
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 243D9oah043839;
+        Tue, 3 May 2022 08:09:50 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651583336;
-        bh=3vIShAAoNpZLtMZtd0E1uDb7nunSsqnUnysIieloaUw=;
+        s=ti-com-17Q1; t=1651583390;
+        bh=f4HPcsRiI8vom0RSmgtniIM5Igr6j2cgcKBbgGgg70E=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=FawXVzieqpKrR+PRu9xRSx1l1CLani8PFnfCochOQXzdHQrC/eZZGn/5NOQBImvES
-         VRis9xQZ5doy/zqNikcekh/Fez4L1AkSur1urCHCthQ/PLvUe9TGjZgSgKSzbqso0x
-         BSJ5vcKbpQQ1Eqe51rrovkVvIT2e5aA+AVFbtRXk=
-Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 243D8ueH082277
+        b=IMfdVdJM9JGnAS0GbdneUzas6WVtg6A5AG8fQfHEYidXxWPNmE1387uS64vzDcWWV
+         CSQhIQsuOnu1LMY5RJgd84m8bK0QCeZye8vP20Vl3ZHJgzUKWoqvPabWdAZEGtrqZY
+         YgMaAngOa3kqRfp5NAQUd02CVKClMiDiBLuKbQjg=
+Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 243D9oFX082944
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 3 May 2022 08:08:56 -0500
-Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+        Tue, 3 May 2022 08:09:50 -0500
+Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 3
- May 2022 08:08:55 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ May 2022 08:09:50 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 3 May 2022 08:08:55 -0500
+ Frontend Transport; Tue, 3 May 2022 08:09:49 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 243D8tUN096341;
-        Tue, 3 May 2022 08:08:55 -0500
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 243D9nOo011626;
+        Tue, 3 May 2022 08:09:49 -0500
 From:   Nishanth Menon <nm@ti.com>
-To:     Santosh Shilimkar <ssantosh@kernel.org>,
-        Dave Gerlach <d-gerlach@ti.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Drew Fustini <dfustini@baylibre.com>
+To:     Drew Fustini <dfustini@baylibre.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>
 CC:     Nishanth Menon <nm@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>
-Subject: Re: (subset) [PATCH v3 0/2] soc: ti: wkup_m3_ipc: Add support for IO Isolation
-Date:   Tue, 3 May 2022 08:08:54 -0500
-Message-ID: <165158332118.6421.15725754853562188300.b4-ty@ti.com>
+        Dave Gerlach <d-gerlach@ti.com>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] soc: ti: wkup_m3_ipc: Add debug option to halt m3 in suspend
+Date:   Tue, 3 May 2022 08:09:48 -0500
+Message-ID: <165158335751.6631.17627635090230319149.b4-ty@ti.com>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220414192722.2978837-1-dfustini@baylibre.com>
-References: <20220414192722.2978837-1-dfustini@baylibre.com>
+In-Reply-To: <20220502033211.1383158-1-dfustini@baylibre.com>
+References: <20220502033211.1383158-1-dfustini@baylibre.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -66,24 +62,24 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi Drew Fustini,
 
-On Thu, 14 Apr 2022 12:27:22 -0700, Drew Fustini wrote:
-> TI AM437x SoCs support isolation of the IOs so that control is taken
-> from the peripheral they are connected to and overridden by values
-> present in the control register for that pad. This series documents a
-> new property 'ti,set-io-isolation' and updates the wkup_m3_ipc driver to
-> inform the CM3 firmware when that property is set.
+On Sun, 1 May 2022 20:32:12 -0700, Drew Fustini wrote:
+> From: Dave Gerlach <d-gerlach@ti.com>
 > 
-> A prerequisite for this series is:
-> [PATCH v2 0/2] soc: ti: wkup_m3_ipc: support vtt toggle
-> https://lore.kernel.org/lkml/20220409211215.2529387-1-dfustini@baylibre.com/T/
+> Add a debugfs option to allow configurable halting of the wkup_m3
+> during suspend at the last possible point before low power mode entry.
+> This condition can only be resolved through JTAG and advancing beyond
+> the while loop in a8_lp_ds0_handler [1]. Although this hangs the system
+> it forces the system to remain active once it has been entirely
+> configured for low power mode entry, allowing for register inspection
+> through JTAG to help in debugging transition errors.
 > 
 > [...]
 
 I have applied the following to branch ti-drivers-soc-next on [1].
 Thank you!
 
-[2/2] soc: ti: wkup_m3_ipc: Add support for IO Isolation
-      commit: 1dcbae86ee669bdb0338954cd0136863f5c96c0a
+[1/1] soc: ti: wkup_m3_ipc: Add debug option to halt m3 in suspend
+      commit: 2a21f9e6d9a408dbd09a01caf5fff42c2f70fa82
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent up the chain during
