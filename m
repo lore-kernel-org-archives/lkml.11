@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94EDDC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:10:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F07C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:10:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241159AbiECUNo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 16:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48606 "EHLO
+        id S242241AbiECUNs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 16:13:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231937AbiECUNm (ORCPT
+        with ESMTP id S235157AbiECUNm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 3 May 2022 16:13:42 -0400
 Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20F72403EA;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2DAFD403EC;
         Tue,  3 May 2022 13:10:01 -0700 (PDT)
 Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 8DE3616D6;
-        Tue,  3 May 2022 23:10:34 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 8DE3616D6
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 74FA316A9;
+        Tue,  3 May 2022 23:10:32 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 74FA316A9
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1651608634;
-        bh=6/S6VEzKvH8TW9AMi9YN/4HI8ctvdYhCP7Lpu5MwfW8=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=aBNelTNji0cPnRAo2ZharhYi6S5vjqsNC2xDAFaOWlbKDNTHw8QGW7CJ6YOrGmlh5
-         Lk8YtQ9p9V5NaNcEoOwW/m7uZq7pwllCl0Xrg/Oknvg0b+kJHiPm7mflYE4yFH651v
-         y5NNVbnEB3ws9G6xG7uBjlczHhNZnIQP6LoP9gd4=
+        d=baikalelectronics.ru; s=mail; t=1651608632;
+        bh=SI1UGIEHr2dWnfOJ45khNRnRyk+pcEawFDodCwwGz9g=;
+        h=From:To:CC:Subject:Date:From;
+        b=KNYBrFovjOF7P/5PgcS29gSLuC4P3y6TLyHQDzEG4Obrgnu2N62IsD1Of0Ku2GsDa
+         QBpo+zrNsY84corPOSi5iFxe/xVUjZSPybF2hJHhd1VdpQyVUndZfairnVqAqhMetR
+         IjyOXzpGMoUQbiYv3xmS2gHBvu4LABfcrV5kHjO8=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 May 2022 23:10:00 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 May 2022 23:09:58 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+        Jens Axboe <axboe@kernel.dk>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-Subject: [PATCH v2 02/23] dt-bindings: ata: ahci-platform: Detach common AHCI bindings
-Date:   Tue, 3 May 2022 23:09:17 +0300
-Message-ID: <20220503200938.18027-3-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
+        Rob Herring <robh+dt@kernel.org>, <linux-ide@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: [PATCH v2 00/23] ata: ahci: Add DWC/Baikal-T1 AHCI SATA support
+Date:   Tue, 3 May 2022 23:09:15 +0300
+Message-ID: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -52,274 +49,193 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to create a more sophisticated AHCI controller DT bindings let's
-divide the already available generic AHCI platform YAML schema into the
-platform part and a set of the common AHCI properties. The former part
-will be used to evaluate the AHCI DT nodes mainly compatible with the
-generic AHCI controller while the later schema will be used for more
-thorough AHCI DT nodes description. For instance such YAML schemas design
-will be useful for our DW AHCI SATA controller derivative with four clock
-sources, two reset lines, one system controller reference and specific
-max Rx/Tx DMA xfers size constraints.
+The main goal of this patchset was to add Baikal-T1 AHCI SATA specifics
+support into the kernel AHCI subsystem. On the way of doing that we
+figured out that mainly these specifics are actually DWC AHCI SATA
+controller features, but still there were some Baikal-T1 SoC platform
+peculiarities which we had to take into account. So the patchset
+introduces two AHCI SATA controllers support and one AHCI SATA driver
+with a series of preparation, optimization and cleanup patches.
 
-Note the phys and target-supply property requirement is preserved in the
-generic AHCI platform bindings because some platforms can lack of the
-explicitly specified PHYs or target device power regulators.
+The series starts used to start with converting the legacy AHCI SATA
+controllers text-based DT-bindings to the DT-schema. But turned out that
+has already been done in kernel v5.17. So instead we suggest to improve
+the bindings usability by splitting up the AHCI DT bindings into two
+schemas: one common AHCI SATA controller yaml-file, which can be reused by
+any AHCI-compatible controller utilizing the kernel AHCI library
+functions, and DT-bindings for the generic AHCI SATA devices indicated by
+the "generic-ahci" compatible string and implemented in the
+ahci_platform.c driver. Note after doing that we had to fix the
+sata-common.yaml file SATA port IDs constraint.
+
+Then a series of generic preparations-cleanups goes. First of all it
+concerns the device-managed methods usage in the framework of the CSR
+space remapping and the clocks requesting and enabling. Note since the
+clocks handlers are requested and kept in the generic AHCI library it
+seemed a good idea to add an AHCI-platform generic method to find and get
+a particular clock handler from the pool of the requested ones. It was
+used later in the series in the DWC/Baikal-T1-specific code. Secondly we
+suggested to at least sanity check the number of SATA ports DT-sub-nodes
+before using it further.  Thirdly the ports-implemented DT-property
+parsing was moved from the AHCI platform-driver to the AHCI-library so to
+be used by the non-generic AHCI drivers if required (DT-schema is
+accordingly fixed too). Finally due to having the shared-reset control
+support we had to add a new AHCI-resource getter flag -
+AHCI_PLATFORM_RST_TRIGGER, which indicated using a trigger-like reset
+control. For such platforms the controller reset will be performed by
+means of the reset_control_reset() and reset_control_rearm() methods.
+AHCI-library reset functions encapsulating the way the reset procedure is
+performed have been also added.
+
+After that goes a patches series with the platform-specific
+AHCI-capabilities initialization. The suggested functionality will be
+useful for the platforms with no BIOS, comprehensive bootloader/firmware
+installed. In that case the AHCI-related platform-specifics like drive
+staggered spin-up, mechanical presence switch attached or FIS-based
+switching capability usage, etc will be left uninitialized with no generic
+way to be indicated as available if required. We suggested to use the AHCI
+device tree node and its ports sub-nodes for that. AHCI-platform library
+will be responsible fo the corresponding DT-properties parsing and
+pre-initialization of the internal capability registers cache, which will
+be then flashed back to the corresponding CSR after HBA reset. Thus a
+supposed to be firmware-work will be done by means of the AHCI-library and
+the DT-data. A set of the preparations/cleanups required to be done before
+introducing the feature.  First the DT-properties indicating the
+corresponding capability availability were described in the common AHCI
+DT-binding schema. Second we needed to add the enum items with the AHCI
+Port CMD fields, which hadn't been added so far. Thirdly we suggested to
+discard one of the port-map internal storage (force_port_map) in favor of
+re-using another one (save_port_map) in order to simplify the port-map
+initialization interface a bit by getting rid from a redundant variable.
+Finally after discarding the double AHCI-version read procedure and
+changing the __ahci_port_base() method prototype the platform
+firmware-specific caps initialization functionality was introduced.
+
+The main part of the series goes afterwards. A dedicated DWC AHCI SATA
+controller driver was introduced together with the corresponding
+DT-binding schema pre-patch. Note the driver built mode is activated
+synchronously with the generic AHCI-platform driver by default so
+automatically to be integrated into the kernel for the DWC AHCI-based
+platforms which relied on activating the generic AHCI SATA controller
+driver. Aside with the generic resources getting and AHCI-host
+initialization, the driver implements the DWC-specific setups. In
+particular it checks whether the platform capabilities activated by the
+firmware (see the functionality described above) are actually supported by
+the controller. It's done by means of the vendor-specific registers. Then
+it makes sure that the embedded 1ms timer interval, which is used for the
+DevSleep and CCC features, is correctly initialized based on the
+application clock rate.  The last but not least the driver provides a way
+to tune the DMA-interface performance up by setting the Tx/Rx transactions
+maximum size up. The required values are specified by means of the
+"snps,tx-ts-max" and snps,rx-ts-max" DT-properties.
+
+Finally we suggest to extend the DWC AHCI SATA controller driver
+functionality with a way to add the DWC-AHCI-based platform-specific
+quirks. Indeed there are many DWC AHCI-based controllers and just a few of
+them are diverged too much to be handled by a dedicated AHCI-driver. The
+rest of them most likely can work well either with a generic version of
+the driver or require a simple normally platform-specific quirk to get up
+and running. Such platforms can define a platform-data in the DWC AHCI
+driver with a set of the controller-specific flags and initialization
+functions. Those functions will be called at the corresponding stages of
+the device probe/resume/remove procedures so to be performing the platform
+setups/cleanups.
+
+After the denoted above functionality is added we can finally introduce
+the Baikal-T1 AHCI SATA controller support into the DWC AHCI SATA driver.
+The controller is based on the DWC AHCI SATA IP-core v4.10a and can work
+well with the generic DWC AHCI driver. The only peculiarity of it is
+connected with the SATA Ports reference clock source. It can be supplied
+either from the internal SoC PLL or from the chip pads. Currently we have
+to prefer selecting the signal coming from the pads if the corresponding
+clock source is specified because the link doesn't get stably established
+when the internal clock signal is activated. In addition the platform has
+trigger-based reset signals so the corresponding flag must be passed to
+the generic AHCI-resource getter.
+
+Link: https://lore.kernel.org/linux-ide/20220324001628.13028-1-Sergey.Semin@baikalelectronics.ru/
+Changelog v2:
+- Rebase from kernel v5.17 to v5.18-rc3. (@Rob)
+- Rebase onto the already available AHCI DT schema. As a result two more
+  patches have been added. (@Rob)
+- Rename 'syscon' property to 'baikal,bt1-syscon'. (@Rob)
+- Replace min/max constraints of the snps,{tx,rx}-ts-max property with
+  enum [ 1, 2, 4, ..., 1024 ]. (@Rob)
+- Use dlemoal/libata.git git tree for the LIBATA SATA AHCI SYNOPSYS
+  DWC driver (@Damien).
+- Change the local objects prefix from 'dwc_ahci_' to 'ahci_dwc_',
+  from 'bt1_ahci_' to 'ahci_bt1_'. (@Damien)
+- Use LLDD term in place of 'glue-driver'. (@Damien)
+- Convert the ahci_platform_assert_rsts() method to returning int status
+  (@Damien).
+- Drop the else word from the DT child_nodes value checking if-else-if
+  statement (@Damien) and convert the after-else part into the ternary
+  operator-based statement.
+- Convert to checking the error-case first in the devm_clk_bulk_get_all()
+  method invocation. (@Damien)
+- Drop the rc variable initialization in the ahci_platform_get_resources()
+  method. (@Damien)
+- Add comma and replace "channel" with "SATA port" in the reg property
+  description of the sata-common.yaml schema. (@Damien)
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
+Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: linux-ide@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: devicetree@vger.kernel.org
 
----
+Serge Semin (23):
+  dt-bindings: ata: ahci-platform: Drop dma-coherent property
+    declaration
+  dt-bindings: ata: ahci-platform: Detach common AHCI bindings
+  dt-bindings: ata: ahci-platform: Clarify common AHCI props constraints
+  dt-bindings: ata: sata: Extend number of SATA ports
+  ata: libahci_platform: Explicitly set rc on devres_alloc failure
+  ata: libahci_platform: Convert to using platform devm-ioremap methods
+  ata: libahci_platform: Convert to using devm bulk clocks API
+  ata: libahci_platform: Add function returning a clock-handle by id
+  ata: libahci_platform: Sanity check the DT child nodes number
+  ata: libahci_platform: Parse ports-implemented property in resources
+    getter
+  ata: libahci_platform: Introduce reset assertion/deassertion methods
+  dt-bindings: ata: ahci: Add platform capability properties
+  ata: libahci: Extend port-cmd flags set with port capabilities
+  ata: libahci: Discard redundant force_port_map parameter
+  ata: libahci: Don't read AHCI version twice in the save-config method
+  ata: ahci: Convert __ahci_port_base to accepting hpriv as arguments
+  ata: ahci: Introduce firmware-specific caps initialization
+  dt-bindings: ata: ahci: Add DWC AHCI SATA controller DT schema
+  ata: ahci: Add DWC AHCI SATA controller support
+  dt-bindings: ata: ahci: Add Baikal-T1 AHCI SATA controller DT schema
+  ata: ahci-dwc: Add platform-specific quirks support
+  ata: ahci-dwc: Add Baikal-T1 AHCI SATA interface support
+  MAINTAINERS: Add maintainers for DWC AHCI SATA driver
 
-Folks, I don't really see why the phys/target-supply requirement has been
-added to the generic AHCI DT schema in the first place. Probably just to
-imply some meaning for the sub-nodes definition. Anyway in one of the
-further patches I am adding the DW AHCI SATA controller DT bindings which
-won't require having these properties specified in the sub-nodes, but will
-describe additional port-specific properties. That's why I get to keep the
-constraints in the ahci-platform.yaml schema instead of moving them to the
-common schema.
-
-Changelog v2:
-- This is a new patch created after rebasing v1 onto the 5.18-rc3 kernel.
----
- .../devicetree/bindings/ata/ahci-common.yaml  | 117 ++++++++++++++++++
- .../bindings/ata/ahci-platform.yaml           |  68 +---------
- 2 files changed, 123 insertions(+), 62 deletions(-)
+ .../devicetree/bindings/ata/ahci-common.yaml  | 188 +++++++
+ .../bindings/ata/ahci-platform.yaml           |  89 +--
+ .../bindings/ata/baikal,bt1-ahci.yaml         | 127 +++++
+ .../devicetree/bindings/ata/sata-common.yaml  |   7 +-
+ .../bindings/ata/snps,dwc-ahci.yaml           | 123 ++++
+ MAINTAINERS                                   |   9 +
+ drivers/ata/Kconfig                           |  11 +
+ drivers/ata/Makefile                          |   1 +
+ drivers/ata/ahci.c                            |   4 +-
+ drivers/ata/ahci.h                            |  21 +-
+ drivers/ata/ahci_dwc.c                        | 526 ++++++++++++++++++
+ drivers/ata/ahci_mtk.c                        |   2 -
+ drivers/ata/ahci_platform.c                   |   5 -
+ drivers/ata/ahci_st.c                         |   3 -
+ drivers/ata/libahci.c                         |  63 ++-
+ drivers/ata/libahci_platform.c                | 236 ++++++--
+ include/linux/ahci_platform.h                 |   8 +-
+ 17 files changed, 1258 insertions(+), 165 deletions(-)
  create mode 100644 Documentation/devicetree/bindings/ata/ahci-common.yaml
+ create mode 100644 Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml
+ create mode 100644 Documentation/devicetree/bindings/ata/snps,dwc-ahci.yaml
+ create mode 100644 drivers/ata/ahci_dwc.c
 
-diff --git a/Documentation/devicetree/bindings/ata/ahci-common.yaml b/Documentation/devicetree/bindings/ata/ahci-common.yaml
-new file mode 100644
-index 000000000000..72e24b246040
---- /dev/null
-+++ b/Documentation/devicetree/bindings/ata/ahci-common.yaml
-@@ -0,0 +1,117 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/ata/ahci-common.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Common Properties for Serial ATA AHCI controllers
-+
-+maintainers:
-+  - Hans de Goede <hdegoede@redhat.com>
-+  - Jens Axboe <axboe@kernel.dk>
-+
-+description:
-+  This document defines device tree properties for a common AHCI SATA
-+  controller implementation. It's hardware interface is supposed to
-+  conform to the technical standard defined by Intel (see Serial ATA
-+  Advanced Host Controller Interface specification for details). The
-+  document doesn't constitute a DT-node binding by itself but merely
-+  defines a set of common properties for the AHCI-compatible devices.
-+
-+select: false
-+
-+allOf:
-+  - $ref: sata-common.yaml#
-+
-+properties:
-+  reg:
-+    description:
-+      Generic AHCI registers space conforming to the Serial ATA AHCI
-+      specification.
-+
-+  reg-names:
-+    description: CSR space IDs
-+
-+  interrupts:
-+    description:
-+      Generic AHCI state change interrupt. Can be implemented either as a
-+      single line attached to the controller as a set of the dedicated signals
-+      for the global and particular port events.
-+
-+  clocks:
-+    description:
-+      List of all the reference clocks connected to the controller.
-+
-+  clock-names:
-+    description: Reference clocks IDs
-+
-+  resets:
-+    description:
-+      List of the reset control lines to reset the controller clock
-+      domains.
-+
-+  reset-names:
-+    description: Reset line IDs
-+
-+  power-domains:
-+    description:
-+      List of the power domain the AHCI controller being a part of.
-+
-+  ahci-supply:
-+    description: Power regulator for AHCI controller
-+
-+  target-supply:
-+    description: Power regulator for SATA target device
-+
-+  phy-supply:
-+    description: Power regulator for SATA PHY
-+
-+  phys:
-+    description: Reference to the SATA PHY node
-+    maxItems: 1
-+
-+  phy-names:
-+    maxItems: 1
-+
-+  ports-implemented:
-+    $ref: '/schemas/types.yaml#/definitions/uint32'
-+    description:
-+      Mask that indicates which ports the HBA supports. Useful if PI is not
-+      programmed by the BIOS, which is true for some embedded SoC's.
-+    maximum: 0x1f
-+
-+patternProperties:
-+  "^sata-port@[0-9a-f]+$":
-+    type: object
-+    description:
-+      It is optionally possible to describe the ports as sub-nodes so
-+      to enable each port independently when dealing with multiple PHYs.
-+
-+    properties:
-+      reg:
-+        description: AHCI SATA port identifier
-+        maxItems: 1
-+
-+      phys:
-+        description: Individual AHCI SATA port PHY
-+        maxItems: 1
-+
-+      phy-names:
-+        description: AHCI SATA port PHY ID
-+        maxItems: 1
-+
-+      target-supply:
-+        description: Power regulator for SATA port target device
-+
-+    required:
-+      - reg
-+
-+    additionalProperties: true
-+
-+required:
-+  - reg
-+  - interrupts
-+
-+additionalProperties: true
-+
-+...
-diff --git a/Documentation/devicetree/bindings/ata/ahci-platform.yaml b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
-index 9304e4731965..76075d3c8987 100644
---- a/Documentation/devicetree/bindings/ata/ahci-platform.yaml
-+++ b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
-@@ -36,8 +36,7 @@ select:
-     - compatible
- 
- allOf:
--  - $ref: "sata-common.yaml#"
--
-+  - $ref: "ahci-common.yaml#"
- 
- properties:
-   compatible:
-@@ -69,90 +68,35 @@ properties:
-     maxItems: 1
- 
-   clocks:
--    description:
--      Clock IDs array as required by the controller.
-     minItems: 1
-     maxItems: 3
- 
-   clock-names:
--    description:
--      Names of clocks corresponding to IDs in the clock property.
-     minItems: 1
-     maxItems: 3
- 
-   interrupts:
-     maxItems: 1
- 
--  ahci-supply:
--    description:
--      regulator for AHCI controller
--
--  phy-supply:
--    description:
--      regulator for PHY power
--
--  phys:
--    description:
--      List of all PHYs on this controller
--    maxItems: 1
--
--  phy-names:
--    description:
--      Name specifier for the PHYs
--    maxItems: 1
--
--  ports-implemented:
--    $ref: '/schemas/types.yaml#/definitions/uint32'
--    description: |
--      Mask that indicates which ports that the HBA supports
--      are available for software to use. Useful if PORTS_IMPL
--      is not programmed by the BIOS, which is true with
--      some embedded SoCs.
--    maximum: 0x1f
--
-   power-domains:
-     maxItems: 1
- 
-   resets:
-     maxItems: 1
- 
--  target-supply:
--    description:
--      regulator for SATA target power
--
--required:
--  - compatible
--  - reg
--  - interrupts
--
- patternProperties:
-   "^sata-port@[0-9a-f]+$":
-     type: object
--    additionalProperties: false
--    description:
--      Subnode with configuration of the Ports.
--
--    properties:
--      reg:
--        maxItems: 1
--
--      phys:
--        maxItems: 1
--
--      phy-names:
--        maxItems: 1
--
--      target-supply:
--        description:
--          regulator for SATA target power
--
--    required:
--      - reg
- 
-     anyOf:
-       - required: [ phys ]
-       - required: [ target-supply ]
- 
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
- unevaluatedProperties: false
- 
- examples:
 -- 
 2.35.1
 
