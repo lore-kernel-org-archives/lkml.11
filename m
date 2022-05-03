@@ -2,141 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97686C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:22:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 065DAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232097AbiECHZ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 03:25:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
+        id S232829AbiECHYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230427AbiECHZZ (ORCPT
+        with ESMTP id S232251AbiECHXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 03:25:25 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4010825FF
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 00:21:54 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id k23so31785439ejd.3
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 00:21:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=motec-com-au.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=P3A8Z9h48LHoWnbNOATmNx+a3MlcnNsYt2DmelJVVqo=;
-        b=V7Kx2nSrdZ8JWnUtxCBgvmoNKpccnrSHr1ZOyqcFp2M4rn6TVgeF8KgMEh9zH3kOa/
-         Gc7/SSBQ43sVdJwQhS6s7aupe2d0QZ+p58kBF7L3dcKeFJvOq7M+wkPTum6GturxTn8/
-         0VIF9HvauWy3+PQSMjahdfBjzEXwpXSx1gojmki6odu88nBYc1prETkLaaCjsfJ36zRg
-         dpm9ohWAB8OuD/E3eMguF0docXPBxeOoMVmVBG7/8utucxW1B3xE/j+tAG5T2eLDyfHU
-         mLhw6L950pjMco5cB8Yv86tsOMYRJfx8wPL+91eu6GRMKCA1RwgvowsB/IbWbfop1nQl
-         UB3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=P3A8Z9h48LHoWnbNOATmNx+a3MlcnNsYt2DmelJVVqo=;
-        b=U41JIluGnciBkIGiwBqG6aOPUEg76KosMXAa19xv2kCt4lQLg2QYmzsEl2DvSUWpfZ
-         rneZnJWprOC50vGWAkiBPD6Sd+u+QXap9dOAFYDgqIwqqHiUfYC6WnuEMbKur1hes559
-         lDaxa7L4xNza7wtUwXvp/+jkglyGsCyJrq/rMKxhnhFdQAFL09fT2JdU1sItT8UfRvnP
-         SQsx7Ax957awapSL6a3eBXKDs3ul3NHESoKFE5xYHR8dx+3cKiX7O1TOxerPetX/JjEW
-         OJAI5dvb0XHZBlFYFWVeRxqjGAcABnmwRHVd+pE3s462dn6Bcv0ouXHwydNKAopwFT2J
-         p4iA==
-X-Gm-Message-State: AOAM532CRpYbGL1w/T303+Tv1Qrcb6hT5v+Yawj8zRiIh4gMPacagrhF
-        nnZoycB700HPHWIAznbjvVhik8KyeYMcC1zM12vdrg==
-X-Google-Smtp-Source: ABdhPJzJwFrwxew97oJI1ixgKOy32RNNNtdrIT+fCNH29G0FXa2NYPnSXqHJpXnwqV8904G8Qg9EWUHMNpR3I5ml2kg=
-X-Received: by 2002:a17:907:3f25:b0:6b0:5e9a:83 with SMTP id
- hq37-20020a1709073f2500b006b05e9a0083mr14749489ejc.659.1651562512804; Tue, 03
- May 2022 00:21:52 -0700 (PDT)
+        Tue, 3 May 2022 03:23:46 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A9023B012;
+        Tue,  3 May 2022 00:19:40 -0700 (PDT)
+X-UUID: 9a9ff156d4cd4b99bf15c2ff5e2909ff-20220503
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:41b97459-c66c-420c-a2b5-a55ef473fc31,OB:100,
+        LOB:90,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_H
+        am,ACTION:release,TS:80
+X-CID-INFO: VERSION:1.1.4,REQID:41b97459-c66c-420c-a2b5-a55ef473fc31,OB:100,LO
+        B:90,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B
+        3D,ACTION:quarantine,TS:80
+X-CID-META: VersionHash:faefae9,CLOUDID:d0ca822f-6199-437e-8ab4-9920b4bc5b76,C
+        OID:81ae93af5fc3,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 9a9ff156d4cd4b99bf15c2ff5e2909ff-20220503
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1948023288; Tue, 03 May 2022 15:19:35 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 3 May 2022 15:19:33 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 3 May 2022 15:19:32 +0800
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+CC:     Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
+        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
+        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
+        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
+Subject: [PATCH v7 36/36] iommu/mediatek: Add mt8186 iommu support
+Date:   Tue, 3 May 2022 15:14:27 +0800
+Message-ID: <20220503071427.2285-37-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220503071427.2285-1-yong.wu@mediatek.com>
+References: <20220503071427.2285-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-References: <cover.1650816929.git.pisa@cmp.felk.cvut.cz> <20220428072239.kfgtu2bfcud6tetc@pengutronix.de>
- <202204292331.28980.pisa@cmp.felk.cvut.cz> <20220502072151.j6nx5kddqxeyfy3h@pengutronix.de>
- <CAHQrW0_bxDyTf7pNHgXwcO=-0YRWtsxscOSWWU4fDmNYo8d-9Q@mail.gmail.com> <20220503064626.lcc7nl3rze5txive@pengutronix.de>
-In-Reply-To: <20220503064626.lcc7nl3rze5txive@pengutronix.de>
-From:   Andrew Dennison <andrew.dennison@motec.com.au>
-Date:   Tue, 3 May 2022 17:21:16 +1000
-Message-ID: <CAHQrW09Ajvm_xs2ThBp8xwR6sPj3Q74_kPtMC9oSE7JDmtaEpQ@mail.gmail.com>
-Subject: Re: [PATCH v1 0/4] can: ctucanfd: clenup acoording to the actual
- rules and documentation linking
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
-        Carsten Emde <c.emde@osadl.org>,
-        Drew Fustini <pdp7pdp7@gmail.com>,
-        Matej Vasilevski <matej.vasilevski@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-plain text this time...
+Add mt8186 iommu supports.
 
-On Tue, 3 May 2022 at 16:46, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->
-> On 03.05.2022 16:32:32, Andrew Dennison wrote:
-> > > > When value is configurable then for (uncommon) number
-> > > > of buffers which is not power of two, there will be likely
-> > > > a problem with way how buffers queue is implemented
-> > >
-> >
-> > Only power of 2 makes sense to me: I didn't consider those corner
-> > cases but the driver could just round down to the next power of 2 and
-> > warn about a misconfiguration of the IP core.
->
-> +1
->
-> > I added the dynamic detection because the IP core default had changed
-> > to 2 TX buffers and this broke some hard coded assumptions in the
-> > driver in a rather obscure way that had me debugging for a bit...
->
-> The mainline driver uses a hard coded default of 4 still... Can you
-> provide that patch soonish?
+Signed-off-by: Anan Sun <anan.sun@mediatek.com>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/iommu/mtk_iommu.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-I was using the out of tree driver but can have a look at this, unless
-Pavel wants to merge this in his tree and submit?
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 0fa1d5240ac6..71b2ace74cd6 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -160,6 +160,7 @@ enum mtk_iommu_plat {
+ 	M4U_MT8167,
+ 	M4U_MT8173,
+ 	M4U_MT8183,
++	M4U_MT8186,
+ 	M4U_MT8192,
+ 	M4U_MT8195,
+ };
+@@ -1437,6 +1438,20 @@ static const struct mtk_iommu_plat_data mt8183_data = {
+ 	.larbid_remap = {{0}, {4}, {5}, {6}, {7}, {2}, {3}, {1}},
+ };
+ 
++static const struct mtk_iommu_plat_data mt8186_data_mm = {
++	.m4u_plat       = M4U_MT8186,
++	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
++			  WR_THROT_EN | IOVA_34_EN | MTK_IOMMU_TYPE_MM,
++	.larbid_remap   = {{0}, {1, MTK_INVALID_LARBID, 8}, {4}, {7}, {2}, {9, 11, 19, 20},
++			   {MTK_INVALID_LARBID, 14, 16},
++			   {MTK_INVALID_LARBID, 13, MTK_INVALID_LARBID, 17}},
++	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
++	.banks_num      = 1,
++	.banks_enable   = {true},
++	.iova_region    = mt8192_multi_dom,
++	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
++};
++
+ static const struct mtk_iommu_plat_data mt8192_data = {
+ 	.m4u_plat       = M4U_MT8192,
+ 	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
+@@ -1503,6 +1518,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
+ 	{ .compatible = "mediatek,mt8167-m4u", .data = &mt8167_data},
+ 	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
+ 	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
++	{ .compatible = "mediatek,mt8186-iommu-mm",    .data = &mt8186_data_mm}, /* mm: m4u */
+ 	{ .compatible = "mediatek,mt8192-m4u", .data = &mt8192_data},
+ 	{ .compatible = "mediatek,mt8195-iommu-infra", .data = &mt8195_data_infra},
+ 	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data = &mt8195_data_vdo},
+-- 
+2.18.0
 
->
-> > > You can make use of more TX buffers, if you implement (fully
-> > > hardware based) TX IRQ coalescing (== handle more than one TX
-> > > complete interrupt at a time) like in the mcp251xfd driver, or BQL
-> > > support (== send more than one TX CAN frame at a time). I've played
-> > > a bit with BQL support on the mcp251xfd driver (which is attached by
-> > > SPI), but with mixed results. Probably an issue with proper
-> > > configuration.
-> >
-> > Reducing CAN IRQ load would be good.
->
-> IRQ coalescing comes at the price of increased latency, but if you have
-> a timeout in hardware you can configure the latencies precisely.
->
-> > > > We need 2 * priv->ntxbufs range to distinguish empty and full
-> > > > queue... But modulo is not nice either so I probably come with
-> > > > some other solution in a longer term. In the long term, I want to
-> > > > implement virtual queues to allow multiqueue to use dynamic Tx
-> > > > priority of up to 8 the buffers...
-> > >
-> > > ACK, multiqueue TX support would be nice for things like the
-> > > Earliest TX Time First scheduler (ETF). 1 TX queue for ETF, the
-> > > other for bulk messages.
-> >
-> > Would be nice, I have multi-queue in the CAN layer I wrote for a
-> > little RTOS (predates socketcan) and have used for a while.
->
-> Out of interest:
-> What are the use cases? How did you decide which queue to use?
-
-I had a queue per fd, with queues sorted by id of the next message,
-then sent the lowest ID next for hardware with a single queue. For
-hardware with lots of buffers there was a hw buffer per queue. I
-didn't have to deal with the generic cases that would need to be
-handled in linux. I must say ctucanfd has a much nicer interface than
-the other can hardware I've used.
-
-Kind regards,
-
-Andrew
