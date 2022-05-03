@@ -2,87 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E6AFC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:01:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B3AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:02:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240869AbiECSF2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 14:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
+        id S240898AbiECSFb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 14:05:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237720AbiECSFW (ORCPT
+        with ESMTP id S239160AbiECSFX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 14:05:22 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A6DDEBE;
-        Tue,  3 May 2022 11:01:48 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242Nnl5g025194;
-        Tue, 3 May 2022 00:51:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=BTvTUXunvVd80zWADpV28r/DalfnHZxRR5fejc1lQI8=;
- b=tf2aCXpC5Jjg91gWkismN1NCwvuE2k1wv6DD4gZbMaz2xWSBJx9EBVB37FrV/17dIKec
- /iAaXQtgonYMTBm5GywKJCMhMXRpnRuSk0etN/knTVX+LF+8E14RC66yFGz00Pkd9QoZ
- QlgL/tWk0tZRYfr2qRbRgD5R/iE3Qw40k4O0XoFIsRNzQiDy85I97MkdVQGbnRpRTf4D
- 81xvjTxtGElKnWaRapqyCaJZdvXkxQqpvXv0sq7JSELogCLRKZng4JFXfD54Ox0g0BSn
- mN0fPAJpncTH5HGgrmLivNCR2N+I2NI1jsHY5jwjU17x3nqqgf46T4Z41WW0QUYv8whf eg== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fruw2cnx4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:48 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430oobn008895;
-        Tue, 3 May 2022 00:51:48 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x54-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:48 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430plj0010389;
-        Tue, 3 May 2022 00:51:48 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-2;
-        Tue, 03 May 2022 00:51:47 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     Haowen Bai <baihaowen@meizu.com>, jejb@linux.ibm.com
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: Re: [PATCH] scsi: aha1542: remove unneeded semicolon
-Date:   Mon,  2 May 2022 20:51:12 -0400
-Message-Id: <165153836360.24053.6220453924870674457.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <1647309865-15620-1-git-send-email-baihaowen@meizu.com>
-References: <1647309865-15620-1-git-send-email-baihaowen@meizu.com>
+        Tue, 3 May 2022 14:05:23 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002893E5FB
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 11:01:49 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id q23so24431980wra.1
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 11:01:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=6I56eRd5y2rFRWielfkZ72wjiNM/15nuDK8Xp9LuUiA=;
+        b=LeUrUBx3+db/PS5S8Zl9a/7ysiWTMWnx2IFEV8j1tYja232PRSz2YRlblgMUrGvB/W
+         0FEWQG7JQEqqf/ukzbvoKaNlsNhncgc1BtQVUD+1EVyP7P5SieqGYzMQn04cDVxyGw3g
+         NTIQmL4vdlbY7bOF8v88M79mO1iCIa2jQ+SNb04C7a5wJfuXZzZKLx12Sniyd1T9Hals
+         Lu8e6Hh8NW0GTd+x6o8zjhxACENigwkDFGChAto5x4L98s3SfaMjOp8fskfcx8fN05QM
+         HX+XQ73d20GyNcZ2qI08juIxFkkSmi3cVpfiqLfDoRGiq6CFuKdbNNODLmAlvFFtk3+p
+         pUKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=6I56eRd5y2rFRWielfkZ72wjiNM/15nuDK8Xp9LuUiA=;
+        b=uQhNbs3swBQzzDGdgRslYFufZtUKXDPA0M2KUzD/4Oi0CD92Kb9WNyQMzBHwSJw6BP
+         lncEQxyjBRmaRF8BMTmL49QuaLmU72dgN93eC9ox7lrFxdke9ZdMvIbYxiaGTaLQNhSS
+         gonGL6OZgxewtAJscvUd0oz2kjBJMVJ2qeyBy7x2Qum2cxQ+MBopsVZejVdR2x0GOCJE
+         kz9yb6gmeO5uTht4bNruni7wdhkWEgJUMy6w1qdJ8pO1Z8hCcl0EX+DbOEQzvhTn2+Cl
+         hKaSpVH4YzCAhOZLt4s1Vp88R0lptuW3BmD3PKrZv67LNeFe5S+rpWk9OgQHVEOB8xAw
+         t2jQ==
+X-Gm-Message-State: AOAM530X9+UsOmYAcGO7h01MLhjld+p3T6yueTUgiqswz5R7e2GFuoBK
+        zfxIWchHx3D902Ae3oOqRRtH67P+/nUcvdrQ00Rk
+X-Google-Smtp-Source: ABdhPJzOYaIKJriOfQ51PZIzy/4t+eFQw20nyazLGGtO0jsTxUXlAPL2qurCkEYSbki5xSMZuC2hUQuj5/QaNLkYRq4=
+X-Received: by 2002:a5d:4e05:0:b0:20a:d4a6:32b1 with SMTP id
+ p5-20020a5d4e05000000b0020ad4a632b1mr13335404wrt.174.1651600908421; Tue, 03
+ May 2022 11:01:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: o7E5SKF6TLd2mToeyjBoZy5oLq8HHcmN
-X-Proofpoint-ORIG-GUID: o7E5SKF6TLd2mToeyjBoZy5oLq8HHcmN
+References: <20220502134850.28372-1-cgzones@googlemail.com>
+In-Reply-To: <20220502134850.28372-1-cgzones@googlemail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 3 May 2022 14:01:37 -0400
+Message-ID: <CAHC9VhRkDsCR2gyVamYktvx_8LoPKox__YOv+-F4cYZjitCbdw@mail.gmail.com>
+Subject: Re: [PATCH] selinux: resolve checkpatch errors
+To:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
+Cc:     selinux@vger.kernel.org,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Xiu Jianfeng <xiujianfeng@huawei.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Mar 2022 10:04:25 +0800, Haowen Bai wrote:
+On Mon, May 2, 2022 at 9:49 AM Christian G=C3=B6ttsche
+<cgzones@googlemail.com> wrote:
+>
+> Reported by checkpatch:
+>
+>     security/selinux/nlmsgtab.c
+>     ---------------------------
+>     ERROR: that open brace { should be on the previous line
+>     #29: FILE: security/selinux/nlmsgtab.c:29:
+>     +static const struct nlmsg_perm nlmsg_route_perms[] =3D
+>     +{
+>
+>     ERROR: that open brace { should be on the previous line
+>     #97: FILE: security/selinux/nlmsgtab.c:97:
+>     +static const struct nlmsg_perm nlmsg_tcpdiag_perms[] =3D
+>     +{
+>
+>     ERROR: that open brace { should be on the previous line
+>     #105: FILE: security/selinux/nlmsgtab.c:105:
+>     +static const struct nlmsg_perm nlmsg_xfrm_perms[] =3D
+>     +{
+>
+>     ERROR: that open brace { should be on the previous line
+>     #134: FILE: security/selinux/nlmsgtab.c:134:
+>     +static const struct nlmsg_perm nlmsg_audit_perms[] =3D
+>     +{
+>
+>     security/selinux/ss/policydb.c
+>     ------------------------------
+>     ERROR: that open brace { should be on the previous line
+>     #318: FILE: security/selinux/ss/policydb.c:318:
+>     +static int (*destroy_f[SYM_NUM]) (void *key, void *datum, void *data=
+p) =3D
+>     +{
+>
+>     ERROR: that open brace { should be on the previous line
+>     #674: FILE: security/selinux/ss/policydb.c:674:
+>     +static int (*index_f[SYM_NUM]) (void *key, void *datum, void *datap)=
+ =3D
+>     +{
+>
+>     ERROR: that open brace { should be on the previous line
+>     #1643: FILE: security/selinux/ss/policydb.c:1643:
+>     +static int (*read_f[SYM_NUM]) (struct policydb *p, struct symtab *s,=
+ void *fp) =3D
+>     +{
+>
+>     ERROR: that open brace { should be on the previous line
+>     #3246: FILE: security/selinux/ss/policydb.c:3246:
+>     +                               void *datap) =3D
+>     +{
+>
+> Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
+> ---
+>  security/selinux/include/initial_sid_to_string.h |  3 +--
+>  security/selinux/nlmsgtab.c                      | 12 ++++--------
+>  security/selinux/ss/policydb.c                   | 12 ++++--------
+>  3 files changed, 9 insertions(+), 18 deletions(-)
 
-> Fixes coccicheck warning:
-> drivers/scsi/aha1542.c:553:2-3: Unneeded semicolon
-> drivers/scsi/aha1542.c:582:2-3: Unneeded semicolon
-> drivers/scsi/aha1542.c:605:2-3: Unneeded semicolon
-> drivers/scsi/aha1542.c:306:2-3: Unneeded semicolon
-> drivers/scsi/aha1542.c:348:3-4: Unneeded semicolon
-> drivers/scsi/aha1542.c:412:2-3: Unneeded semicolon
-> drivers/scsi/aha1542.c:640:2-3: Unneeded semicolon
-> drivers/scsi/aha1542.c:658:2-3: Unneeded semicolon
-> drivers/scsi/aha1542.c:677:2-3: Unneeded semicolon
-> drivers/scsi/aha1542.c:538:2-3: Unneeded semicolon
-> 
-> [...]
+I generally dislike checkpatch-only patches, but you've been fixing a
+lot of other things so I'll go ahead and merge this into selinux/next.
 
-Applied to 5.19/scsi-queue, thanks!
-
-[1/1] scsi: aha1542: remove unneeded semicolon
-      https://git.kernel.org/mkp/scsi/c/8c36b054df01
-
--- 
-Martin K. Petersen	Oracle Linux Engineering
+--=20
+paul-moore.com
