@@ -2,53 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 081EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 04:18:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0CAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 04:18:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230495AbiECEVh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 00:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58890 "EHLO
+        id S231127AbiECEVp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 00:21:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230354AbiECEVe (ORCPT
+        with ESMTP id S230502AbiECEVi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 00:21:34 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6C838BFC
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 21:18:03 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id l35-20020a25b323000000b00649eb57cc67so359562ybj.12
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 21:18:03 -0700 (PDT)
+        Tue, 3 May 2022 00:21:38 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27AB038BFC
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 21:18:08 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2f8d487f575so79397687b3.5
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 21:18:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=ee22ixTfu/Bo012jZkIOZL6TsTz0iHERQm9vZ3yNsWA=;
-        b=c8+KF+puppDi7Lwvw69cneahhD++zr4NEDsXpTi/mbLS2AKKBkP449Kc0H39TfyusD
-         rGS7nYvVmd0IO++AvCmX3pwBA21d4FbnMDE+VHfCtJDbnWAzYuehEE/jD28a+rtTw1WS
-         ux/R151hvTK6KMNEpsZMRByIeNXPleMidgeoi1A26GnIOX77Jrfjr+7cAmoaykr/XiGb
-         hCCw7mEmiFsufy129uTPQh49ZFjArF4+VwTzMUBr3swQ7kiyI1lU+H6YmfdN+Q1dH0TX
-         iaEeKu8mDoIgeZXpn8zCMLnup4qF04jTxjPmo/dPc/jwWPFaEaMHkx9CJXsKFdbdgtkt
-         Hcvg==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=qM0CcLJJrKpW2Wkspbw9oc4+0PMtIaoOGCh2yb1+c8Y=;
+        b=iT5xdA/rg8+MNsb785W3GH63t4eHf4o2ufE9t16Fodq6V8dmlCaFTXp1amgu76yDEd
+         hdCCSc0RvrUoAMypdlByXDbeqohAw1BOVSCMyhQiHLq91rulRu5aw/8bkvnic86sCoru
+         i5j6EZzVYStAni8Geao/E6QSYanLC7VaQwNXNwatg0idyTvuXkKNP6vbPHjghWo2iu4A
+         lqhgzQQcqlP7yadi40ymLoJ4Lj9uIOynVAwTNYZda9t0LCRTWDtruwtfzL0ekTcrHJ5X
+         fZhqw04Nf/CKLEkFaoF+ExsdgV2pd36WDimqIsL8lyepqPuLBqnFjdfhQqECSZQxjyFV
+         THTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=ee22ixTfu/Bo012jZkIOZL6TsTz0iHERQm9vZ3yNsWA=;
-        b=S4olcj/Ul5CUJ9TAJ50Yoh4MF8l9zCN24ThXTgtbAs1lk8ms1aND4EvhAfvwc2tUy8
-         5fbJLKt2Wsr0+1UuWQgpI+NWwDcfM223kLsCw6Gd8UnSiIR64Jqu75NWc2S3n7yePOjY
-         xzpM4Rnn3Nt9NPD8bSkJyBUiAaHm1xV+mi3mPYJDpxBfSX7kc5RLLcx2qCAR+cvA3oIf
-         2eCFivgrQRL14sFFmAO+9t1Wp96mlwIXbz8yYZhmDdzRVfPjgOfYj3OPOODd6dggOYoK
-         32XWM4KB5icuwxf5VFL9qGymK29G3y0uNNkq5kofY9e7td4XusKkaObOS/ZFjdjbCswk
-         T5pg==
-X-Gm-Message-State: AOAM530CRJPeseXjQ7B4HsgOza3IwW9uJLlzkKJVHnO1BwelVNDU1KYt
-        wCRSAx/OzT55P9geB5657yAwPgLgsRlM
-X-Google-Smtp-Source: ABdhPJxBNoT4Bgk+Mh2KRGQMD1T6e9TCCImbP6hv4oF9fx/eapszNDXOvROriMl8LV1gxKC/gKQTBSZfJQws
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=qM0CcLJJrKpW2Wkspbw9oc4+0PMtIaoOGCh2yb1+c8Y=;
+        b=Or6eWBx+FZGRkAIsQmWRYlcrkyAzMg6lw/bt46r5bNGGloOMX+yKM7MsqIl8z9sibU
+         upZbTY4lECNpq5KhwhL7iiT8/pDBnCQ/b5eg0iokEMK0JhJqWy+cX8xPia+EaM9k3MJu
+         ftqtE4651WDyiRfMFsIV7FHQDj8EjE/ovfmVbgT0SAYQ/PN/VQsylxeipfBox3YJS2dM
+         GqGC0ZKxY1msZd92JrSnYeHXtzPD+os+ikjAVQ6Hj7CYWc5MMfsSVC4asw3dewNtllt1
+         iABIf9xGA1qhUKjK8o4Nf0RAoGGqAdrlw+xThbjc8cVl8GEqD6NmZjkyKD/AOz7NAylX
+         I69w==
+X-Gm-Message-State: AOAM530QRrS3SCO47NyBh5DPZtn39V1n0CrInx5jj1345JAOU484Fkom
+        +207HcKq9OmJNkfuJnwUl/WrZI1HwG73
+X-Google-Smtp-Source: ABdhPJxiPnCbA7/Eppx8fhZ4RJy6qiG1Go1/53a0D2Iw71MIcgee3dcMxSVJ2GFtTvoQRpF4s/3zJG32pHul
 X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:dd4b:52bb:771d:7bb4])
- (user=irogers job=sendgmr) by 2002:a25:4944:0:b0:648:a796:a2 with SMTP id
- w65-20020a254944000000b00648a79600a2mr13187740yba.123.1651551482390; Mon, 02
- May 2022 21:18:02 -0700 (PDT)
-Date:   Mon,  2 May 2022 21:17:51 -0700
-Message-Id: <20220503041757.2365696-1-irogers@google.com>
+ (user=irogers job=sendgmr) by 2002:a81:6cc1:0:b0:2f8:bb31:143b with SMTP id
+ h184-20020a816cc1000000b002f8bb31143bmr13489355ywc.64.1651551487238; Mon, 02
+ May 2022 21:18:07 -0700 (PDT)
+Date:   Mon,  2 May 2022 21:17:53 -0700
+In-Reply-To: <20220503041757.2365696-1-irogers@google.com>
+Message-Id: <20220503041757.2365696-3-irogers@google.com>
 Mime-Version: 1.0
+References: <20220503041757.2365696-1-irogers@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v5 0/6] Make evlist CPUs more accurate
+Subject: [PATCH v5 2/6] perf evlist: Clear all_cpus before propagating
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -86,43 +90,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Based on the thread:
-https://lore.kernel.org/linux-perf-users/CAP-5=fVMHzTfKdpWMXtbtx7t14u2f4WzNak+F0Q93cQ7CZfhbg@mail.gmail.com/
+all_cpus is merged into during propagation. Initially all_cpus is set
+from PMU sysfs. perf_evlist__set_maps will recompute it and change
+evsel->cpus to user_requested_cpus if they are given. If all_cpus isn't
+cleared then the union of the user_requested_cpus and PMU sysfs values
+is set to all_cpus, whereas just user_requested_cpus is necessary. To
+avoid this make all_cpus empty prior to propagation.
 
-First patch is a cherry-pick to avoid a conflict of:
-https://lore.kernel.org/linux-perf-users/20220414014642.3308206-2-irogers@google.com/
-Second patch makes all_cpus more accurate when there are command line CPUs.
-The third patch fixes perf stat metric-only output for uncore metrics.
-The fourth patch makes cleans up merging of dummy CPU maps.
-The fifth and sixth patch try to make user_requested_cpus and all_cpus
-clearer with documentation and by renaming all_cpus.
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/lib/perf/evlist.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-The code no longer needs to add an intersect function and so the API
-is removed and the merged API left unchanged.
-
-v5. Fixes the 1st patch as pointed out by Namhyung Kim
-    <namhyung@kernel.org>, adds some further clean-up to it and adds
-    reviewed-by Adrian Hunter <adrian.hunter@intel.com> to patch 3.
-
-Ian Rogers (6):
-  perf cpumap: Switch to using perf_cpu_map API
-  perf evlist: Clear all_cpus before propagating
-  perf stat: Avoid printing cpus with no counters
-  perf cpumap: Handle dummy maps as empty in subset
-  perf evlist: Add to user_requested_cpus documentation
-  perf evlist: Rename all_cpus
-
- tools/lib/perf/cpumap.c                  |  4 +--
- tools/lib/perf/evlist.c                  | 14 +++++---
- tools/lib/perf/include/internal/evlist.h |  5 +--
- tools/perf/builtin-record.c              | 13 +++----
- tools/perf/tests/cpumap.c                | 10 +++++-
- tools/perf/util/bpf_counter_cgroup.c     | 46 +++++++++++-------------
- tools/perf/util/evlist.c                 |  6 ++--
- tools/perf/util/evlist.h                 |  4 +--
- tools/perf/util/stat-display.c           |  7 ++--
- 9 files changed, 60 insertions(+), 49 deletions(-)
-
+diff --git a/tools/lib/perf/evlist.c b/tools/lib/perf/evlist.c
+index a09315538a30..974b4585f93e 100644
+--- a/tools/lib/perf/evlist.c
++++ b/tools/lib/perf/evlist.c
+@@ -59,6 +59,10 @@ static void perf_evlist__propagate_maps(struct perf_evlist *evlist)
+ {
+ 	struct perf_evsel *evsel;
+ 
++	/* Recomputing all_cpus, so start with a blank slate. */
++	perf_cpu_map__put(evlist->all_cpus);
++	evlist->all_cpus = NULL;
++
+ 	perf_evlist__for_each_evsel(evlist, evsel)
+ 		__perf_evlist__propagate_maps(evlist, evsel);
+ }
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
