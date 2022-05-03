@@ -2,129 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 341D2C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:18:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDFC9C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:18:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231923AbiECHV4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 03:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52536 "EHLO
+        id S231728AbiECHWD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:22:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231847AbiECHVW (ORCPT
+        with ESMTP id S231893AbiECHVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 03:21:22 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76FEA393D4;
-        Tue,  3 May 2022 00:17:40 -0700 (PDT)
-Received: from mail-yb1-f181.google.com ([209.85.219.181]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MwQGj-1o4Y5v28NZ-00sKu1; Tue, 03 May 2022 09:17:38 +0200
-Received: by mail-yb1-f181.google.com with SMTP id m128so29711496ybm.5;
-        Tue, 03 May 2022 00:17:37 -0700 (PDT)
-X-Gm-Message-State: AOAM530ac8FQ+e8bk0f0/Xn4zgo2T5XODBgBL4nzIrlzyyER6M7QCQsf
-        9N54883iJJ+z0CX6Go0spAlXoXPyuvUPt15MEZ0=
-X-Google-Smtp-Source: ABdhPJxCVe3OWFLSxYuaWnZW2jE5tiG+RIFx0DlFR531d1DfX2PVw0Rn1+OoRgTZrm5UkwICv0JqKul27jNY+A9f6J8=
-X-Received: by 2002:a25:c604:0:b0:645:d969:97a7 with SMTP id
- k4-20020a25c604000000b00645d96997a7mr12300750ybf.134.1651562256127; Tue, 03
- May 2022 00:17:36 -0700 (PDT)
+        Tue, 3 May 2022 03:21:24 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878FE2559E;
+        Tue,  3 May 2022 00:17:50 -0700 (PDT)
+X-UUID: f51f16b8bbae4285a023de54ba7952fb-20220503
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:9b5c8d9a-b600-4507-88e4-5718607d84b7,OB:0,LO
+        B:0,IP:0,URL:8,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:-12
+X-CID-META: VersionHash:faefae9,CLOUDID:8cba822f-6199-437e-8ab4-9920b4bc5b76,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: f51f16b8bbae4285a023de54ba7952fb-20220503
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 583513074; Tue, 03 May 2022 15:17:46 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 3 May 2022 15:17:44 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 3 May 2022 15:17:43 +0800
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+CC:     Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
+        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
+        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
+        "AngeloGioacchino Del Regno" 
+        <angelogioacchino.delregno@collabora.com>,
+        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
+        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
+Subject: [PATCH v7 22/36] iommu/mediatek: Add PCIe support
+Date:   Tue, 3 May 2022 15:14:13 +0800
+Message-ID: <20220503071427.2285-23-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220503071427.2285-1-yong.wu@mediatek.com>
+References: <20220503071427.2285-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-References: <20220419163810.2118169-1-arnd@kernel.org> <3df135a2-17f5-d6c6-b4a8-e1a60e254297@roeck-us.net>
- <CAK8P3a2EHMQPN4ny9sXXuReFG0jN0hyRV7h9v_AR_0pqpOU41w@mail.gmail.com>
- <CAK8P3a09+nFS3g1rgvTW9da3tMiAhHjkjZVs1QOJOj8TJ-9MDg@mail.gmail.com>
- <6f1b27fa-96d1-4be7-ac6a-762610314f2a@roeck-us.net> <8d6d453a-e6fc-439b-2f34-e60c22fc9e98@roeck-us.net>
- <CAK8P3a2Ekvis1YcrJZtuga+XQdbeTC98PkOszCpS2DiZri7VMQ@mail.gmail.com>
- <149509dd-f43d-1b27-4395-81eab4ff3455@roeck-us.net> <CAK8P3a05vFdBnXXAMPVS82xX29+uinvWPcWxAgvj0TfoOk+1kg@mail.gmail.com>
- <b13783aa-9225-d52a-3800-c97ad772688b@roeck-us.net> <CAK8P3a3S5OjkKq_u5FpnwzYv+0+typya6Z4MzTez5ZH+do00xQ@mail.gmail.com>
- <CAK8P3a3jiqf_zpBsZyvAb5ZtkwDa7KkqExqDAdpY_pYqkr_NgQ@mail.gmail.com>
- <4dcdbfe2-9edf-320b-d123-3b62c8b5e28e@roeck-us.net> <CAK8P3a0ogn1wgPBDHkT=Fb8ufA+y8Ax1Qov2-vRXfC08QqnrQA@mail.gmail.com>
- <c001d58e-9a78-6338-a533-d0f215b3dfd1@roeck-us.net> <CAK8P3a1X3YH0RqqmqgqFAaY94yreD-PfY-pvyMf+xU3nGeqvsg@mail.gmail.com>
- <04840b4f-5b9d-b29a-62f7-e5148d415313@roeck-us.net>
-In-Reply-To: <04840b4f-5b9d-b29a-62f7-e5148d415313@roeck-us.net>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 3 May 2022 09:17:20 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a39oiWyDwp=BHuCsBVwfzyZ802-NwL9G9r-t6X8KSr6nA@mail.gmail.com>
-Message-ID: <CAK8P3a39oiWyDwp=BHuCsBVwfzyZ802-NwL9G9r-t6X8KSr6nA@mail.gmail.com>
-Subject: Re: [PATCH v2 00/48] ARM: PXA multiplatform support
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Marek Vasut <marek.vasut@gmail.com>,
-        Philipp Zabel <philipp.zabel@gmail.com>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Paul Parsons <lost.distance@yahoo.com>,
-        Sergey Lapin <slapin@ossfans.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Helge Deller <deller@gmx.de>, Mark Brown <broonie@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        IDE-ML <linux-ide@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        patches@opensource.cirrus.com, linux-leds@vger.kernel.org,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        linux-mtd <linux-mtd@lists.infradead.org>,
-        linux-rtc@vger.kernel.org, USB list <linux-usb@vger.kernel.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:FMzsgWqwV+5A3vF2F+NmVabemxm0c086701qqBK1iJ49eZSURqN
- xPj+RXTf/Nz3+i8FvbYCQB7Db9uIAh7dxjHjWVdHRRJM+n8I9VNfLTNvK29tc3dMS3XwFlP
- edT5+EpDEG6xeXgx6SauaFl7Oy/uDeARG+6oyhCC77qymUOA3Ei/UWMpfCv+p1j4n7vrv+G
- vzNhtWmjBIFpRl/q+pJMw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:y9+PRathUfw=:P04xd6FUI2drJc7Dg5HxSc
- lUH5LqPZ9ERWB2UaEVoYmELLlK8A6+EFJ56CaFrd/okMBOn6EApJ7kVPHG1LOI0A5sPh4MAkb
- JzyTcjsl4WuDSs8AxbSmABltJc0aUAD5oRFet3fhBhAjotbJdxYz71HIJy7mFzE2eXVu2sofg
- PideLortlpfnbgtbtv8PHebkan8dJ17/XKbUYiHfO7C55KSTkuqtILldaRJ3busyU1qlGrAvL
- nidJZDzJEHCzM7u/BXOU+rnRj6HcA1TpGIRT4deDZEvTLpbMZU5BiHvHvkL72vDMWohTPHkCd
- OXzJWLF5S4jHfRzNw4HfvWvctaDGIqdP1wFfvcZAOakn3j0cb4QLeWP/jjhRT0shu9q665A+d
- lt1s9fpVlN04IXzy9aa/xJzOGMEPtLzSadBpJfPkKv4drlTSPqL4Y3vLk/RKwT88Gzx6wumQc
- ne0c1bB5v9Eopo0tOQCa1VAgR9GMq7J74EoPW30/foU0ivvQ2hbrzTpAXARJXz42j7zNBj1UZ
- qA2m/hjrhp7SmxUgbDqkgovHF532o9oGCK6Qa9msalFg4xauk7dYzhXcUXdGtndSA5hf4Aapd
- e1/pV+yt2OP6pLmGhLs2U7sj4LfWD2cbugX2q74y15Q+FVbQ9bq2H9RmMPhSkA7HAuVGWba7A
- 2RT0ZZS6t6OTA26S6RDG3vIChw5KGbHow/pvZzMIgYYNPSen3r+Ez7DFAqNfcYp0f6WSkIggw
- bAjsGJM+Du4B8Y5SNq5OlQCv2s4j+m8AFlUngHiCAEplNCptnYwnCC7NcXlcuf25xZfA4Qx1N
- 5+ZOKQArg0Fst6clEov4EcNI4HoFtoDtT0IOR06O2rYjE1YNW4=
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 3, 2022 at 4:55 AM Guenter Roeck <linux@roeck-us.net> wrote:
-> On 5/2/22 14:03, Arnd Bergmann wrote:
-> > On Mon, May 2, 2022 at 10:35 PM Guenter Roeck <linux@roeck-us.net> wrote:
-> >> On 5/2/22 12:21, Arnd Bergmann wrote:
->
-> qemu puts initrd in the middle of available memory. With the image size
-> being ~1MB larger than with v5.18-rc, this is too much, and the kernel
-> overwrites part of initrd. This causes it to be corrupted.
->
-> It looks like that would have happened eventually, your patch series just
-> made it happen now. The kernel is just getting too large to run on such small
-> systems. I worked around the problem in my version of qemu by loading initrd
-> at the end of the (small) RAM. With that, I no longer see the boot failure.
+Currently the code for of_iommu_configure_dev_id is like this:
 
-Ok, thanks for confirming. If it's just the image size that changed,
-then I think
-we can live with it. Having the kernel image grow by 1MB seems excessive
-though, I'd like to understand better where that increase comes from.
+static int of_iommu_configure_dev_id(struct device_node *master_np,
+                                     struct device *dev,
+                                     const u32 *id)
+{
+       struct of_phandle_args iommu_spec = { .args_count = 1 };
 
-Starting out from pxa_defconfig, I see a 40KB increase from the final patch
-that moves to multiplatform support, which I think is fine.
+       err = of_map_id(master_np, *id, "iommu-map",
+                       "iommu-map-mask", &iommu_spec.np,
+                       iommu_spec.args);
+...
+}
 
-If you have a z2 specific config, that would probably not enable CONFIG_OF,
-which is always turned on for multiplatform, but again that only adds around
-250KB in my builds (using gcc-11). This is more than I'd like it to be, but
-still much less than 1MB.
+It supports only one id output. BUT our PCIe HW has two ID(one is for
+writing, the other is for reading). I'm not sure if we should change
+of_map_id to support output MAX_PHANDLE_ARGS.
 
-        Arnd
+Here add the solution in ourselve drivers. If it's pcie case, enable one
+more bit.
+
+Not all infra iommu support PCIe, thus add a PCIe support flag here.
+
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/iommu/mtk_iommu.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index ff48506b480c..d63fe28c1403 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -20,6 +20,7 @@
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+ #include <linux/of_platform.h>
++#include <linux/pci.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+@@ -134,6 +135,7 @@
+ #define MTK_IOMMU_TYPE_MASK		(0x3 << 13)
+ /* PM and clock always on. e.g. infra iommu */
+ #define PM_CLK_AO			BIT(15)
++#define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
+ 
+ #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
+ 				((((pdata)->flags) & (mask)) == (_x))
+@@ -420,8 +422,11 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
+ 				larb_mmu->mmu &= ~MTK_SMI_MMU_EN(portid);
+ 		} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA)) {
+ 			peri_mmuen_msk = BIT(portid);
+-			peri_mmuen = enable ? peri_mmuen_msk : 0;
++			/* PCI dev has only one output id, enable the next writing bit for PCIe */
++			if (dev_is_pci(dev))
++				peri_mmuen_msk |= BIT(portid + 1);
+ 
++			peri_mmuen = enable ? peri_mmuen_msk : 0;
+ 			ret = regmap_update_bits(data->pericfg, PERICFG_IOMMU_1,
+ 						 peri_mmuen_msk, peri_mmuen);
+ 			if (ret)
+@@ -1054,6 +1059,15 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 		ret = component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
+ 		if (ret)
+ 			goto out_bus_set_null;
++	} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA) &&
++		   MTK_IOMMU_HAS_FLAG(data->plat_data, IFA_IOMMU_PCIE_SUPPORT)) {
++#ifdef CONFIG_PCI
++		if (!iommu_present(&pci_bus_type)) {
++			ret = bus_set_iommu(&pci_bus_type, &mtk_iommu_ops);
++			if (ret) /* PCIe fail don't affect platform_bus. */
++				goto out_list_del;
++		}
++#endif
+ 	}
+ 	return ret;
+ 
+@@ -1084,6 +1098,11 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+ 	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
+ 		device_link_remove(data->smicomm_dev, &pdev->dev);
+ 		component_master_del(&pdev->dev, &mtk_iommu_com_ops);
++	} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA) &&
++		   MTK_IOMMU_HAS_FLAG(data->plat_data, IFA_IOMMU_PCIE_SUPPORT)) {
++#ifdef CONFIG_PCI
++		bus_set_iommu(&pci_bus_type, NULL);
++#endif
+ 	}
+ 	pm_runtime_disable(&pdev->dev);
+ 	devm_free_irq(&pdev->dev, data->irq, data);
+-- 
+2.18.0
+
