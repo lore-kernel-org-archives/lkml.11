@@ -2,75 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C2BC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 22:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6316C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 22:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243643AbiECWZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 18:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
+        id S243686AbiECWZf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 18:25:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243612AbiECWZ2 (ORCPT
+        with ESMTP id S243635AbiECWZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 18:25:28 -0400
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8A0040A11;
-        Tue,  3 May 2022 15:21:54 -0700 (PDT)
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-ed9a75c453so8059592fac.11;
-        Tue, 03 May 2022 15:21:54 -0700 (PDT)
+        Tue, 3 May 2022 18:25:29 -0400
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B3640A26;
+        Tue,  3 May 2022 15:21:55 -0700 (PDT)
+Received: by mail-oi1-f178.google.com with SMTP id m25so5735699oih.2;
+        Tue, 03 May 2022 15:21:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=ZMswsRgrr4czkPyiix2hW0UdLC5GFg9ChlTcl/aPVqU=;
-        b=SFtaZ5pzie94h/ZfDNUkstZc1Z2YZk0VVsvQhYKbtAE7IgElRzRvpAia7e2MUEmrNj
-         V5y5cbsSyB7XUSix6nXh+SsbRko7Kcc6t50Zc/cmxg8qmYt0cPrfcMBMR1QJUPY+flV/
-         lp/Bl0skmcndWpjqbsCELYj5pvlCS7or6NkILbLcGf6/yISIIvKBgZBP21Nwzxgii70A
-         C7hyar+n/VdKfTn4ewgd68Iw4ef/ajrGAZC3W8OQnwGRtjPRrr9t8Dh1/77alktq0ViP
-         A83yGBL87Hpm/4mfxmlu2StvY/34iu5ZMajR9fqmvREB3i9/lq/dqiK1aHygY4Y6ruyY
-         6O9Q==
-X-Gm-Message-State: AOAM5302ESmefcJQhcxy0TTaJHoWujSGMVqH6Y3eMhp0EwXOZJ4Svj0m
-        KWAPP6Otw+aD3klzUhX/j5Kc+1b36g==
-X-Google-Smtp-Source: ABdhPJzUvGB897gw3KLizpqR/iiVh0AJ0DdpO0bZX5lsEQV+PSslsUA9UPO5GCcLtWc4xs2G6+i+ug==
-X-Received: by 2002:a05:6870:6301:b0:e9:17b2:2e12 with SMTP id s1-20020a056870630100b000e917b22e12mr2655540oao.96.1651616513982;
-        Tue, 03 May 2022 15:21:53 -0700 (PDT)
+        bh=AYzqDCKsTIUNQSFUA88IsjM5tVXZRYkNm2IzoI0SdEc=;
+        b=IucN/UOZSpOm2ygS0mq5PjnbWocrETUqkgf7AAsw0VrRt6Odo0mH5NOTe7EX44mo5G
+         uImRt1r6/t2L/bvc+XV/2vxKhvgXsrDju30r+RQKUMzKCUAVfx7K+3r3tko619HJunQw
+         7jhebPK1WsZkdno3UJOZhcOYeoVouukv8D1D49YzNUeDvUlHapnYCusFlTDUEPQv/aZg
+         WE2+UQB8qXICVyWakr3DVff6N2rC2pZ0vc/5VyvPUdRoEL5fEhRZYsMJpxAgbClhwmpJ
+         itT44f/ZkqT7KgQWWpEghxS1it9OdRJTfR5xZowpYjcK9sOq3FyLeWIuCMRkpTUDZgto
+         6Zgw==
+X-Gm-Message-State: AOAM532A+h6NVcP/yYoJrIJoDzZUhHH9H25TWFPvw+jr7+6APwBbt/S9
+        QVcyh1lHPnefYjaTEdkFBA==
+X-Google-Smtp-Source: ABdhPJzn/rfeIWO5DHbfNPeuF8m9ikdAA2XqhXdqzdxa0Z5LXZ/l9fkqrmw7YUHe4HECh0PvVs466Q==
+X-Received: by 2002:a05:6808:d4c:b0:322:e7de:fffe with SMTP id w12-20020a0568080d4c00b00322e7defffemr2726225oik.107.1651616515316;
+        Tue, 03 May 2022 15:21:55 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 23-20020a4ae1b7000000b0035eb4e5a6d8sm5456884ooy.46.2022.05.03.15.21.52
+        by smtp.gmail.com with ESMTPSA id n7-20020a9d64c7000000b006060322125csm4564785otl.44.2022.05.03.15.21.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 15:21:53 -0700 (PDT)
-Received: (nullmailer pid 139790 invoked by uid 1000);
+        Tue, 03 May 2022 15:21:54 -0700 (PDT)
+Received: (nullmailer pid 139788 invoked by uid 1000);
         Tue, 03 May 2022 22:21:51 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-leds@vger.kernel.org, John Crispin <john@phrozen.org>,
-        devicetree@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>
-In-Reply-To: <20220503151633.18760-12-ansuelsmth@gmail.com>
-References: <20220503151633.18760-1-ansuelsmth@gmail.com> <20220503151633.18760-12-ansuelsmth@gmail.com>
-Subject: Re: [RFC PATCH v6 11/11] dt-bindings: net: dsa: qca8k: add LEDs definition example
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
+        kernel@collabora.com, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, sean.wang@kernel.org,
+        linus.walleij@linaro.org, linux-gpio@vger.kernel.org,
+        nfraprado@collabora.com, matthias.bgg@gmail.com,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org
+In-Reply-To: <20220503142537.152499-2-angelogioacchino.delregno@collabora.com>
+References: <20220503142537.152499-1-angelogioacchino.delregno@collabora.com> <20220503142537.152499-2-angelogioacchino.delregno@collabora.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: pinctrl: Add MediaTek MT6795 pinctrl bindings
 Date:   Tue, 03 May 2022 17:21:51 -0500
-Message-Id: <1651616511.165627.139789.nullmailer@robh.at.kernel.org>
+Message-Id: <1651616511.157901.139787.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 03 May 2022 17:16:33 +0200, Ansuel Smith wrote:
-> Add LEDs definition example for qca8k using the offload trigger as the
-> default trigger and add all the supported offload triggers by the
-> switch.
+On Tue, 03 May 2022 16:25:36 +0200, AngeloGioacchino Del Regno wrote:
+> Add devicetree and pinfunc bindings for MediaTek Helio X10 MT6795.
 > 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > ---
->  .../devicetree/bindings/net/dsa/qca8k.yaml    | 20 +++++++++++++++++++
->  1 file changed, 20 insertions(+)
+>  .../pinctrl/mediatek,pinctrl-mt6795.yaml      | 224 +++++
+>  include/dt-bindings/pinctrl/mt6795-pinfunc.h  | 908 ++++++++++++++++++
+>  2 files changed, 1132 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pinctrl/mediatek,pinctrl-mt6795.yaml
+>  create mode 100644 include/dt-bindings/pinctrl/mt6795-pinfunc.h
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
@@ -79,11 +75,8 @@ on your patch (DT_CHECKER_FLAGS is new in v5.13):
 yamllint warnings/errors:
 
 dtschema/dtc warnings/errors:
-Error: Documentation/devicetree/bindings/net/dsa/qca8k.example.dts:209.42-43 syntax error
-FATAL ERROR: Unable to parse input tree
-make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/net/dsa/qca8k.example.dtb] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1401: dt_binding_check] Error 2
+./Documentation/devicetree/bindings/pinctrl/mediatek,pinctrl-mt6795.yaml: $id: relative path/filename doesn't match actual path or filename
+	expected: http://devicetree.org/schemas/pinctrl/mediatek,pinctrl-mt6795.yaml#
 
 doc reference errors (make refcheckdocs):
 
