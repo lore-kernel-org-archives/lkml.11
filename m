@@ -2,134 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 409D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 03:08:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D32AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 03:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230252AbiECDLz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 23:11:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50486 "EHLO
+        id S230311AbiECDYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 23:24:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230217AbiECDLt (ORCPT
+        with ESMTP id S230267AbiECDYC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 23:11:49 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905A4387AE
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 20:08:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651547298; x=1683083298;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QhCZIg9TqfRkZJDSFzHBxZAoXeT7GzvUzfL6hRZHXoc=;
-  b=bLvaBn6Epi9U+KZ/TAdpiDajqoQVjvffnnoaauBVl1joNIWhAF9aBRLe
-   AlS3t5A6G/+xQ9kjQ3jnqWHVHaN+eH2v4D52VAyqkvdL+r4eS1cN2tjTF
-   P3jsmwuZdRG5dTpaW4FLByR0VUQM2zUkpqfaKpz8wnG8vYsEAkLJ+/z14
-   dP2EKj9zrmpOhc9BDrHG3CBieVAOMGNUeOa2Lrn2yjZslH2H99tJ18YJy
-   T1kVuyGN2N8YY58y9qrF5ZkOr7iwgSqfJVjPt77LDV4DYl59L7L7ZK0cV
-   xMMxzQ6xcqKFetlwkVhryhLnNcWiqNOgboROaeuf/j4yFsi1mX5kZGEAP
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="264976244"
-X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
-   d="scan'208";a="264976244"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 20:08:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
-   d="scan'208";a="733744061"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 02 May 2022 20:08:15 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nlita-000A6W-Gk;
-        Tue, 03 May 2022 03:08:14 +0000
-Date:   Tue, 3 May 2022 11:07:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tom Rix <trix@redhat.com>, nsaenz@kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, gregkh@linuxfoundation.org,
-        stefan.wahren@i2se.com, gascoar@gmail.com, ojaswin98@gmail.com
-Cc:     kbuild-all@lists.01.org, linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: Re: [PATCH v2] staging: vchiq_arm: change vchiq_platform_init from
- global to static
-Message-ID: <202205031150.FRdwOUbC-lkp@intel.com>
-References: <20220419133616.544255-1-trix@redhat.com>
+        Mon, 2 May 2022 23:24:02 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9352F10FD8
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 20:20:28 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id iq2-20020a17090afb4200b001d93cf33ae9so1094453pjb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 20:20:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=h50XDSyKixSxM+z0LW5l4U/wJvmofE6DIDaRFzdf6Ag=;
+        b=TcyGN4xpYSuKm3q0wZOEg+HeSREDfAnufCFQNhVFSWhXs94V5KYhHXeTUKxksz1U66
+         0ngEAjWO0uP/V9MLW1RZ4Ws73T6nudcrpJtckG6I0SIQV4wkyc+Nq4e6rr+0oYIUuZV8
+         ins6WCIjSEFo+4CyzxjLyBrPeAynz3puz8iIBaNDOE8bYjGa9j5wa0nBKka6vfuRctNb
+         JhaL4KfEMdb5iWeyOxUsLJegogB7JQbR4BwVBoID+iHzq0zrpsjT5MfT18BPBlupzmOq
+         YMxLSWm90/7oL+P88aZJz2IExiGwl6yrANB4R6SWVPkXT4/gQh6RreqlfkXbQKXk6Iov
+         imiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=h50XDSyKixSxM+z0LW5l4U/wJvmofE6DIDaRFzdf6Ag=;
+        b=nQk3Q/wNR4/FgPYs/FIq6Kfh47X4L6ey35ZEYoop6z4y25OZqRqVYdgiH81EqoQLYU
+         RcIJaLhQBfZNg8zpck78LPkqZzkPYj1pGgVP4HTIXGJ5meSFneWQJWn9TNng5GPgBi/w
+         tf8vPMXXKqiAPC9GgTKAkuBYyEgmIfiwoZf/QiHgH06e5vODixin3T8j0RibUFrrWpAV
+         ah31p7pW8H8veLb4IqLXOyCkNl6hhTq2MfEcNT1MWsDuu+6qOc142PTYW+amlS1GNK7u
+         2iXtfs94pinBNZInC3WZilt+Dtcd8hqWk746OI2IJfrBCWWz2HIxTleDCWiwQMDwUTYj
+         Yg7w==
+X-Gm-Message-State: AOAM533juDZLlcPPmza9SzrLHTA29ZSRUJSKT9wgSHyRmAZZ432uTkMR
+        BcZH2j79CIA1PKBFY+Lh0PgEtYzeh4k=
+X-Google-Smtp-Source: ABdhPJwPfhJOlINjCLaBHIOYM70opmaVw9A2E1c0+iVw5s+ao5qlt2gDM7aX/za+klXta6RgcDcWyw==
+X-Received: by 2002:a17:902:778a:b0:158:da0f:f299 with SMTP id o10-20020a170902778a00b00158da0ff299mr14692035pll.29.1651548027881;
+        Mon, 02 May 2022 20:20:27 -0700 (PDT)
+Received: from localhost ([47.251.4.198])
+        by smtp.gmail.com with ESMTPSA id n19-20020a6563d3000000b003c14af5063dsm12047310pgv.85.2022.05.02.20.20.26
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 02 May 2022 20:20:27 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Juergen Gross <jgross@suse.com>, x86@kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Subject: [PATCH V7 0/6] x86/entry: Clean up entry code
+Date:   Tue,  3 May 2022 11:21:01 +0800
+Message-Id: <20220503032107.680190-1-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220419133616.544255-1-trix@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tom,
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-I love your patch! Perhaps something to improve:
+This patchset moves the stack-switch code to the place where
+error_entry() return, unravels error_entry() from XENpv and makes
+entry_INT80_compat() uses idtentry macro.
 
-[auto build test WARNING on staging/staging-testing]
+This patchset is highly related to XENpv, because it does the extra
+cleanup to convert SWAPGS to swapgs after major cleanup is done.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Tom-Rix/staging-vchiq_arm-change-vchiq_platform_init-from-global-to-static/20220419-213849
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git bed6d200f8ca38e1ecbdd8fb7e0564884002abd1
-config: openrisc-buildonly-randconfig-r003-20220501 (https://download.01.org/0day-ci/archive/20220503/202205031150.FRdwOUbC-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/36525447e8cdf4a25d5217bffc548768c0f7cec1
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Tom-Rix/staging-vchiq_arm-change-vchiq_platform_init-from-global-to-static/20220419-213849
-        git checkout 36525447e8cdf4a25d5217bffc548768c0f7cec1
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/staging/vc04_services/
+The patches are the 7th version to pick patches from the patchset
+https://lore.kernel.org/lkml/20211126101209.8613-1-jiangshanlai@gmail.com/
+which converts ASM code to C code.  These patches are prepared for that
+purpose.  But this patchset has it own value: it simplifies the stack
+switch, avoids leaving the old stack inside a function call, and
+separates XENpv code with native code without adding new code.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Peter said in V3:
+>	So AFAICT these patches are indeed correct.
+>
+>	I'd love for some of the other x86 people to also look at this,
+>	but a tentative ACK on this.
 
-All warnings (new ones prefixed by >>):
-
-   In file included from drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:16:
-   In function 'memcpy_to_page',
-       inlined from 'free_pagelist' at drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:434:4:
->> include/linux/highmem.h:353:9: warning: argument 2 null where non-null expected [-Wnonnull]
-     353 |         memcpy(to + offset, from, len);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from include/linux/string.h:20,
-                    from include/linux/bitmap.h:11,
-                    from include/linux/cpumask.h:12,
-                    from include/linux/mm_types_task.h:14,
-                    from include/linux/mm_types.h:5,
-                    from include/linux/buildid.h:5,
-                    from include/linux/module.h:14,
-                    from drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:8:
-   drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c: In function 'free_pagelist':
-   arch/openrisc/include/asm/string.h:9:14: note: in a call to function 'memcpy' declared 'nonnull'
-       9 | extern void *memcpy(void *dest, __const void *src, __kernel_size_t n);
-         |              ^~~~~~
-   In file included from drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:16:
-   In function 'memcpy_to_page',
-       inlined from 'free_pagelist' at drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:441:4:
->> include/linux/highmem.h:353:9: warning: 'memcpy' offset 0 is out of the bounds [0, 0] [-Warray-bounds]
-     353 |         memcpy(to + offset, from, len);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[V6]: https://lore.kernel.org/lkml/20220421141055.316239-1-jiangshanlai@gmail.com/
+[V5]: https://lore.kernel.org/lkml/20220412121541.4595-1-jiangshanlai@gmail.com/
+[V4]: https://lore.kernel.org/lkml/20220318143016.124387-1-jiangshanlai@gmail.com/
+[V3]: https://lore.kernel.org/lkml/20220315073949.7541-1-jiangshanlai@gmail.com/
+[V2]: https://lore.kernel.org/lkml/20220303035434.20471-1-jiangshanlai@gmail.com/
+[V1]: https://lore.kernel.org/lkml/20211208110833.65366-1-jiangshanlai@gmail.com/
 
 
-vim +353 include/linux/highmem.h
+Changed from V6:
+	(no code changed)
 
-bb90d4bc7b6a53 Ira Weiny         2021-02-09  346  
-bb90d4bc7b6a53 Ira Weiny         2021-02-09  347  static inline void memcpy_to_page(struct page *page, size_t offset,
-bb90d4bc7b6a53 Ira Weiny         2021-02-09  348  				  const char *from, size_t len)
-bb90d4bc7b6a53 Ira Weiny         2021-02-09  349  {
-61b205f579911a Ira Weiny         2021-02-09  350  	char *to = kmap_local_page(page);
-bb90d4bc7b6a53 Ira Weiny         2021-02-09  351  
-ca18f6ea012bf3 Ira Weiny         2021-02-10  352  	VM_BUG_ON(offset + len > PAGE_SIZE);
-bb90d4bc7b6a53 Ira Weiny         2021-02-09 @353  	memcpy(to + offset, from, len);
-8dad53a11f8d94 Christoph Hellwig 2021-07-23  354  	flush_dcache_page(page);
-61b205f579911a Ira Weiny         2021-02-09  355  	kunmap_local(to);
-bb90d4bc7b6a53 Ira Weiny         2021-02-09  356  }
-bb90d4bc7b6a53 Ira Weiny         2021-02-09  357  
+	Update the changelog of patch3 and patch6
+
+	Drop patch7 and patch8 of the V6.  The patch7/8 are nice cleanup
+	patches but they are not required to convert error_entry() to C.
+	The changelog of patch8 is also updated locally to avoid ambiguity
+	that tglx questioned, and it will be sent separately after PeterZ's
+	change to entry_INT80_compat() merged to avoid confliction.
+
+Changed from V5:
+	Add a new ASM function to wrap PUSH_AND_CLEAR_REGS rather than
+	inline it in the marco idtentry to reduce text size.
+
+	Remove the branch in sync_regs() (pick it from V1 and update
+	the changelog a little)
+
+Changed from V4:
+	Update changelog largely of patch 1 and patch 2
+	Update changelog slightly of other patches
+	Unbreak the line of fixup_bad_iret() in patch1
+
+	Add Reviewed-by from Juergen Gross <jgross@suse.com> in patch 6
+	since he gave the Reviewed-by in one of the squashed patches.
+
+Changed from V3:
+	Only reorder the int80 thing as the last patch to make patches
+	ordering more natural. (Both orders are correct)
+
+Other interactions in V3:
+	Peter raised several questions and I think I answered them and I
+	don't think the code need to be updated unless I missed some
+	points. (Except reordering the patches)
+
+	Josh asked to remove UNWIND_HINT_REGS in patch5, but I think
+	UNWIND_HINT_REGS is old code before this patchset and I don't
+	want to do a cleanup that is not relate to preparing converting
+	ASM code C code in this patchset.  He also asked to remove
+	ENCODE_FRAME_POINTER in xenpv case, and I think it just
+	complicates the code for just optimizing out a single assignment
+	to %rbp.  I would not always stick to these reasons of mine,
+	but I just keep the code unchanged since he hasn't emphasized it
+	again nor other people has requested it.
+
+Changed from V2:
+	Make the patch of folding int80 thing as the first patch
+	Add more changelog in "Switch the stack after error_entry() returns"
+
+Changed from V1
+	Squash cleanup patches converting SWAPGS to swapgs into one patch
+
+	Use my official email address (Ant Group).  The work is backed
+	by my company and I was incorrectly misunderstood that
+	XXX@linux.alibaba.com is the only portal for opensource work
+	in the corporate group.
+
+
+Lai Jiangshan (6):
+  x86/traps: Move pt_regs only in fixup_bad_iret()
+  x86/entry: Switch the stack after error_entry() returns
+  x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()
+  x86/entry: Move cld to the start of idtentry macro
+  x86/entry: Don't call error_entry() for XENPV
+  x86/entry: Convert SWAPGS to swapgs and remove the definition of
+    SWAPGS
+
+ arch/x86/entry/entry_64.S        | 53 ++++++++++++++++++++++----------
+ arch/x86/entry/entry_64_compat.S |  2 +-
+ arch/x86/include/asm/irqflags.h  |  8 -----
+ arch/x86/include/asm/traps.h     |  2 +-
+ arch/x86/kernel/traps.c          | 18 ++++-------
+ 5 files changed, 44 insertions(+), 39 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.19.1.6.gb485710b
+
