@@ -2,96 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 971EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 21:10:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9668C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 21:11:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242673AbiECVOI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 17:14:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
+        id S242668AbiECVPD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 17:15:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235960AbiECVOD (ORCPT
+        with ESMTP id S229766AbiECVPA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 17:14:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 174B111165
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 14:10:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651612229;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rOtTfklybxzZCSEMsPzUimB8kRcfo61buiS4NtgbKGM=;
-        b=SYG/P+vCtjrZ/P1ww1wKfNISZBAtW1TNJdPHvJpN9RARjCZg3EIiaBYuArDY5L5ifttRuM
-        rzGqKMLmxM1Kx3B/eHUmPY7FrSrtKLuBpRY8f3Lj8mP/vDppmYOpaw+NR6kw3FSk6/VrQd
-        2E7qvL4rXBCZDFjutD8D5EC5bC/Sqeg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-175-ZIA2uvX2Nb-hQEsTeqkgaA-1; Tue, 03 May 2022 17:10:18 -0400
-X-MC-Unique: ZIA2uvX2Nb-hQEsTeqkgaA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 613271C05EAB;
-        Tue,  3 May 2022 21:07:42 +0000 (UTC)
-Received: from madcap2.tricolour.ca (unknown [10.22.48.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 462655523FB;
-        Tue,  3 May 2022 21:07:41 +0000 (UTC)
-Date:   Tue, 3 May 2022 17:07:39 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Linux-Audit Mailing List <linux-audit@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        Steve Grubb <sgrubb@redhat.com>, Jan Kara <jack@suse.cz>
-Subject: Re: [PATCH v2 1/3] fanotify: Ensure consistent variable type for
- response
-Message-ID: <YnGZmw8yuD+6ON29@madcap2.tricolour.ca>
-References: <cover.1651174324.git.rgb@redhat.com>
- <aa98a3ad00666a6fc0ce411755de4a1a60f5c0cd.1651174324.git.rgb@redhat.com>
- <CAHC9VhSFOx1d_7-XnbobjZXjps_mXq3S33T_5E=PmNAeyqAsdw@mail.gmail.com>
+        Tue, 3 May 2022 17:15:00 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E0D3587E;
+        Tue,  3 May 2022 14:11:27 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id 613F91F41693
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651612286;
+        bh=b6/DfUMzFN0FDTboudtmnTW/K0RtsVzlnmRHB0NutEY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HP96vztyI0eC4J/ls+gpZ/TFO5BN2+VM6gebHlvDI371amS3BySvEreWV+QMIc6yd
+         b2NtPVywkw3RJRFgZdAH5JvlOMI8eCXw5hWdt1Z+yKh3Ee3TJu/gxjeDipTMz48oHO
+         GV1R6cR4urofebnSpAjOORHVzAZsX1pDslrY/J3CbXcwHU8fgYirWmloCSi3y6YceQ
+         KrqgaMuI3N5n+7T3tebwLGrwLm85gx/kt4JEEKWOGpzJJpvOOJMsXjnvj4y/lniGNJ
+         xm1EVbZLC9d0lC7pCGlbn5ugFtv7+DxnCPIq71J0JfgHL7dRUKZWznYz2R5v1RyCgS
+         1URLtOiA07FQw==
+From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-remoteproc@vger.kernel.org
+Subject: [PATCH v3 0/2] Mediatek SCP dt-binding tweaks
+Date:   Tue,  3 May 2022 17:11:12 -0400
+Message-Id: <20220503211114.2656099-1-nfraprado@collabora.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhSFOx1d_7-XnbobjZXjps_mXq3S33T_5E=PmNAeyqAsdw@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-05-02 20:16, Paul Moore wrote:
-> On Thu, Apr 28, 2022 at 8:45 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> >
-> > The user space API for the response variable is __u32. This patch makes
-> > sure that the whole path through the kernel uses __u32 so that there is
-> > no sign extension or truncation of the user space response.
-> >
-> > Suggested-by: Steve Grubb <sgrubb@redhat.com>
-> > Link: https://lore.kernel.org/r/12617626.uLZWGnKmhe@x2
-> > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> > Link: https://lore.kernel.org/r/aa98a3ad00666a6fc0ce411755de4a1a60f5c0cd.1651174324.git.rgb@redhat.com
-> > ---
-> >  fs/notify/fanotify/fanotify.h      | 2 +-
-> >  fs/notify/fanotify/fanotify_user.c | 6 +++---
-> >  2 files changed, 4 insertions(+), 4 deletions(-)
-> 
-> It seems like audit_fanotify()/__audit_fanotify() should also be
-> changed, yes?  Granted, in this case it's an unsigned int to u32
-> conversion so not really all that critical, but if you are going to
-> update the fanotify code you might as well update the audit code as
-> well for the sake of completeness.
 
-Yes, that was somewhere in the back of my mind but forgot to come back
-to it.  Thanks for catching that.
+Two simple patches for the Mediatek SCP dt-binding. The first fixes the
+reg/reg-names property while the second adds a new optional
+memory-region property.
 
-> paul-moore.com
+v2: https://lore.kernel.org/all/20220502192420.2548512-1-nfraprado@collabora.com
+v1: https://lore.kernel.org/all/20220429211111.2214119-1-nfraprado@collabora.com
 
-- RGB
+Changes in v3:
+- Made the cfg reg required again. After looking again into the mtk-scp
+  driver, only l1tcm is optional.
 
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
+Changes in v2:
+- Dropped type and description from memory-region since it's a
+  well-known property
+- Set memory-region maxItems to 1
+
+Nícolas F. R. A. Prado (2):
+  dt-bindings: remoteproc: mediatek: Make l1tcm reg optional for mtk,scp
+  dt-bindings: remoteproc: mediatek: Add optional memory-region to
+    mtk,scp
+
+ .../devicetree/bindings/remoteproc/mtk,scp.yaml          | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+-- 
+2.36.0
 
