@@ -2,176 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B92D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:16:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D092C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:16:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230270AbiECHUD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 03:20:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50370 "EHLO
+        id S231793AbiECHUH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:20:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231788AbiECHTb (ORCPT
+        with ESMTP id S231764AbiECHTm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 03:19:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90A4B2D1D6
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 00:15:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651562155;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=p7Xo+XfuxpwgRvmh+x+4llEf06yjZT56T0kzU1GhsAM=;
-        b=gGzpUKbEHv6eL/NhtrlFojh6SQwqzJd9sSNxI1qe027y2Yhzg/3oCNI7psBV31AyErzrCf
-        rh/QZzF0zEJdwfyf0h9UdpMWroASfwLuZ6KEorFaNm0nmGqznJMvIJuvtM9VLtcCnAogAq
-        Ho0ubciKo8DGf29nV0dYqOfbQdIwiXc=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-5-g89Av_XDM76u8LCGAQDmxw-1; Tue, 03 May 2022 03:15:54 -0400
-X-MC-Unique: g89Av_XDM76u8LCGAQDmxw-1
-Received: by mail-wr1-f70.google.com with SMTP id g7-20020adfbc87000000b0020ac76d254bso6066057wrh.6
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 00:15:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=p7Xo+XfuxpwgRvmh+x+4llEf06yjZT56T0kzU1GhsAM=;
-        b=sybjwLb5ofPSfJMUwVO2606MIA1fX3S3n527ascG7L9KuZDNU1UUgsXoc/OqowZZkI
-         /gplsviFeqtCJAmZ/vZDNf8k7iPJnWfVsh/xq4rYDmZPBEWu+YOcbWumIMse7Jlw9UhG
-         qG7Mu+vMcnX+tjxl/8W0wDpJBvHq9sJJlG8/kwjgFPUy0hZcLS/V+yDEsENohegs155M
-         wpm5QTtYfrZC/Dw6uFWUJSm3a9CD9E8Sx+w2w0MG58QijQ2bHXJagPyrVZDccOGNy+UN
-         mLRrBba4AdYDXq2AjlhDA8OlUG1CtTA8o9NqXZ7+GV5+WOlvDpZCvWqlsuOdb3hGteiU
-         EeOg==
-X-Gm-Message-State: AOAM532IP2XW2LvpwLSftnGOCBBhacuc5Zn7+3IGUHzUcM1ueOz2bffT
-        L92PIo/S63ZJzObAH8jxzK2BA0W3KBYXGY8Azos0OcxCCgIqQFJCShaBmMTkrze5xuMz6D2Uhnk
-        P4V6Yc4mF/g0PbGJWqZgZ3r+B1YSSjV0udjH+9tVCq7MMzAM8PZpFJPIxhR6yaCkSBeNY79woOQ
-        w=
-X-Received: by 2002:a05:6000:156a:b0:20c:64e3:948f with SMTP id 10-20020a056000156a00b0020c64e3948fmr5556154wrz.436.1651562153611;
-        Tue, 03 May 2022 00:15:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJynU4A8UAMBzp9HgBNoyG2MT4qKn8ajICWkatc7Q4nPkcU1AC0+1p+2JSCGZAIYuxarLlCg5w==
-X-Received: by 2002:a05:6000:156a:b0:20c:64e3:948f with SMTP id 10-20020a056000156a00b0020c64e3948fmr5556139wrz.436.1651562153365;
-        Tue, 03 May 2022 00:15:53 -0700 (PDT)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id o20-20020a05600c339400b003942a244f33sm1035387wmp.12.2022.05.03.00.15.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 00:15:52 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH v3 3/3] drm: Allow simpledrm to setup its emulated FB as firmware provided
-Date:   Tue,  3 May 2022 09:15:40 +0200
-Message-Id: <20220503071540.471667-4-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220503071540.471667-1-javierm@redhat.com>
-References: <20220503071540.471667-1-javierm@redhat.com>
+        Tue, 3 May 2022 03:19:42 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A66182AE0A;
+        Tue,  3 May 2022 00:16:09 -0700 (PDT)
+X-UUID: 0c9cc13a19684b3d8a9e08b78b295a20-20220503
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:44594440-b02f-4022-bd29-f16c4c6e8793,OB:20,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:100
+X-CID-INFO: VERSION:1.1.4,REQID:44594440-b02f-4022-bd29-f16c4c6e8793,OB:20,LOB
+        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:100
+X-CID-META: VersionHash:faefae9,CLOUDID:84a9822f-6199-437e-8ab4-9920b4bc5b76,C
+        OID:d2f05428c351,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 0c9cc13a19684b3d8a9e08b78b295a20-20220503
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1840840645; Tue, 03 May 2022 15:15:55 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 3 May 2022 15:15:53 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 3 May 2022 15:15:52 +0800
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+CC:     Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
+        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
+        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
+        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
+Subject: [PATCH v7 08/36] iommu/mediatek: Add mutex for data in the mtk_iommu_domain
+Date:   Tue, 3 May 2022 15:13:59 +0800
+Message-ID: <20220503071427.2285-9-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220503071427.2285-1-yong.wu@mediatek.com>
+References: <20220503071427.2285-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Indicate to fbdev subsystem that the registered framebuffer is provided by
-the system firmware, so that it can handle accordingly. For example, would
-unregister the FB devices if asked to remove the conflicting framebuffers.
+Same with the previous patch, add a mutex for the "data" in the
+mtk_iommu_domain. Just improve the safety for multi devices
+enter attach_device at the same time. We don't get the real issue
+for this.
 
-Add a new DRM_FB_FW field to drm_fbdev_generic_setup() options parameter.
-Drivers can use this to indicate the FB helper initialization that the FB
-registered is provided by the firmware, so it can be configured as such.
-
-Suggested-by: Thomas Zimmermann <tzimmermann@suse.de>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
+ drivers/iommu/mtk_iommu.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-Changes in v3:
-- Drop the firmware local variable (Laurent Pinchart).
-- Use DRM_FB_OPTION() since DRM_FB_SET_OPTION() got renamed (kernel test robot).
-
- drivers/gpu/drm/drm_fb_helper.c  |  8 ++++++++
- drivers/gpu/drm/tiny/simpledrm.c |  2 +-
- include/drm/drm_fb_helper.h      | 10 ++++++++++
- 3 files changed, 19 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
-index 52042ba1e4cf..28b21858b726 100644
---- a/drivers/gpu/drm/drm_fb_helper.c
-+++ b/drivers/gpu/drm/drm_fb_helper.c
-@@ -1891,6 +1891,10 @@ __drm_fb_helper_initial_config_and_unlock(struct drm_fb_helper *fb_helper,
- 		/* don't leak any physical addresses to userspace */
- 		info->flags |= FBINFO_HIDE_SMEM_START;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 3413cc98e57e..ecdce5d3e8cf 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -128,6 +128,8 @@ struct mtk_iommu_domain {
  
-+	/* Indicate that the framebuffer is provided by the firmware */
-+	if (fb_helper->firmware)
-+		info->flags |= FBINFO_MISC_FIRMWARE;
+ 	struct mtk_iommu_data		*data;
+ 	struct iommu_domain		domain;
 +
- 	/* Need to drop locks to avoid recursive deadlock in
- 	 * register_framebuffer. This is ok because the only thing left to do is
- 	 * register the fbdev emulation instance in kernel_fb_helper_list. */
-@@ -2512,6 +2516,8 @@ static const struct drm_client_funcs drm_fbdev_client_funcs = {
-  *
-  * * DRM_FB_BPP: bits per pixel for the device. If the field is not set,
-  *   @dev->mode_config.preferred_depth is used instead.
-+ * * DRM_FB_FW: if the framebuffer for the device is provided by the
-+ *   system firmware.
-  *
-  * This function sets up generic fbdev emulation for drivers that supports
-  * dumb buffers with a virtual address and that can be mmap'ed.
-@@ -2569,6 +2575,8 @@ void drm_fbdev_generic_setup(struct drm_device *dev, const unsigned int options)
- 	if (!fb_helper->preferred_bpp)
- 		fb_helper->preferred_bpp = 32;
++	struct mutex			mutex; /* Protect "data" in this structure */
+ };
  
-+	fb_helper->firmware = DRM_FB_GET_OPTION(DRM_FB_FW, options);
-+
- 	ret = drm_fbdev_client_hotplug(&fb_helper->client);
- 	if (ret)
- 		drm_dbg_kms(dev, "client hotplug ret=%d\n", ret);
-diff --git a/drivers/gpu/drm/tiny/simpledrm.c b/drivers/gpu/drm/tiny/simpledrm.c
-index f5b8e864a5cd..f6f1c5e108b2 100644
---- a/drivers/gpu/drm/tiny/simpledrm.c
-+++ b/drivers/gpu/drm/tiny/simpledrm.c
-@@ -901,7 +901,7 @@ static int simpledrm_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
+ static const struct iommu_ops mtk_iommu_ops;
+@@ -434,6 +436,7 @@ static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
+ 	dom = kzalloc(sizeof(*dom), GFP_KERNEL);
+ 	if (!dom)
+ 		return NULL;
++	mutex_init(&dom->mutex);
  
--	drm_fbdev_generic_setup(dev, 0);
-+	drm_fbdev_generic_setup(dev, DRM_FB_OPTION(DRM_FB_FW, 1));
- 
- 	return 0;
+ 	return &dom->domain;
  }
-diff --git a/include/drm/drm_fb_helper.h b/include/drm/drm_fb_helper.h
-index 5fc41cf0c987..5a17af423944 100644
---- a/include/drm/drm_fb_helper.h
-+++ b/include/drm/drm_fb_helper.h
-@@ -44,6 +44,7 @@ enum mode_set_atomic {
- };
+@@ -455,14 +458,19 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 	if (domid < 0)
+ 		return domid;
  
- #define DRM_FB_BPP_MASK GENMASK(7, 0)
-+#define DRM_FB_FW_MASK GENMASK(8, 8)
++	mutex_lock(&dom->mutex);
+ 	if (!dom->data) {
+ 		/* Data is in the frstdata in sharing pgtable case. */
+ 		frstdata = mtk_iommu_get_m4u_data();
  
- /* Using the GNU statement expression extension */
- #define DRM_FB_OPTION(option, value)				\
-@@ -197,6 +198,15 @@ struct drm_fb_helper {
- 	 * See also: @deferred_setup
- 	 */
- 	int preferred_bpp;
-+
-+	/**
-+	 * @firmware:
-+	 *
-+	 * Set if the driver indicates to the FB helper initialization that the
-+	 * framebuffer for the device being registered is provided by firmware,
-+	 * so that it can pass this on when registering the framebuffer device.
-+	 */
-+	bool firmware;
- };
+-		if (mtk_iommu_domain_finalise(dom, frstdata, domid))
++		ret = mtk_iommu_domain_finalise(dom, frstdata, domid);
++		if (ret) {
++			mutex_unlock(&dom->mutex);
+ 			return -ENODEV;
++		}
+ 		dom->data = data;
+ 	}
++	mutex_unlock(&dom->mutex);
  
- static inline struct drm_fb_helper *
+ 	mutex_lock(&data->mutex);
+ 	if (!data->m4u_dom) { /* Initialize the M4U HW */
 -- 
-2.35.1
+2.18.0
 
