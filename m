@@ -2,93 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D6C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 04:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B52C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 04:35:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242796AbiEEEgJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 00:36:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
+        id S242841AbiEEEjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 00:39:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242747AbiEEEgG (ORCPT
+        with ESMTP id S238391AbiEEEjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 00:36:06 -0400
-Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [71.19.156.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC33428E19
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 21:32:28 -0700 (PDT)
-Received: from hatter.bewilderbeest.net (174-21-163-222.tukw.qwest.net [174.21.163.222])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 5A1D027B;
-        Wed,  4 May 2022 21:32:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1651725148;
-        bh=zEIuM0KnEuUErvwb/KL9ofxsEOyGFhOYXvbg9P4LPFg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=VMTcg25Hjyon2Pr4qxk9q+6OB23okdgRe7hpgz8PNdMjUMnUyc/YPyugDUGgg0+k2
-         hli+3PFvSD0/qsy+q5yqekcb2Jr+QWm6FHwTyoiX0gRF0XDHNxdSvOCTr8Myv0/Ywu
-         lkiFXnr+EULqbRaG9jBKUzMAg4C5OqrzhGM6okIA=
-From:   Zev Weiss <zev@bewilderbeest.net>
-To:     Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Cc:     Zev Weiss <zev@bewilderbeest.net>, linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>
-Subject: [PATCH] regulator: core: Fix enable_count imbalance with EXCLUSIVE_GET
-Date:   Wed,  4 May 2022 21:31:52 -0700
-Message-Id: <20220505043152.12933-1-zev@bewilderbeest.net>
-X-Mailer: git-send-email 2.36.0
+        Thu, 5 May 2022 00:39:01 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547D4A197;
+        Wed,  4 May 2022 21:35:22 -0700 (PDT)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242LrpKC032436;
+        Tue, 3 May 2022 00:52:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=9xNo423aYGgAB4qTUyVVdnVwr+pI0bOJaK6nPJshNoA=;
+ b=nzc8Hy3+L5KAPGE4WtUOvutlKRqzYZ0Gi+OUBr0ZiFlXyPbdYmvA8aHkp/dH4z3TW58n
+ MhThLMJsbt922q5LJJj8QkyxdjKU3fi7VMFVNXIRZuTQoVj85Zhn5uedpfbDOdveZ9kh
+ BcLD6EdGQvN63W9LebIM9SW/b+K4EuDiUd8SqfmD6szRMSZY/AmvZtqulgZZ/cUUAa3t
+ VJQGbXFU+bBra4FcYS+sGMveXCuIor1uZLoo0Q8spOB0Pnfs2TSqQiql0BiCMfJW/58Z
+ Ybyq2Kz3/uRGj22bkN06//XlmiKaZ2bJGIjcxuStYwi1TNhYzwExJLl8kKNqHWyY5sE2 OA== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frw0amhjm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:52:06 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430oqBu009009;
+        Tue, 3 May 2022 00:52:05 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83xbt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:52:05 +0000
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430plk0010389;
+        Tue, 3 May 2022 00:52:04 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-32;
+        Tue, 03 May 2022 00:52:04 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Ram Vegesna <ram.vegesna@broadcom.com>,
+        linux-kernel@vger.kernel.org,
+        James Smart <james.smart@broadcom.com>,
+        target-devel@vger.kernel.org, Daniel Wagner <dwagner@suse.de>,
+        linux-scsi@vger.kernel.org
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>
+Subject: Re: [PATCH] scsi: elx: efct: remove unnecessary memset in efct_io
+Date:   Mon,  2 May 2022 20:51:42 -0400
+Message-Id: <165153836360.24053.3746670237732598405.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220318145230.1031-1-wanjiabing@vivo.com>
+References: <20220318145230.1031-1-wanjiabing@vivo.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: Lse0w1_Z39HX8YrFSdYEa8iScjtGN_Rv
+X-Proofpoint-ORIG-GUID: Lse0w1_Z39HX8YrFSdYEa8iScjtGN_Rv
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the introduction of regulator->enable_count, a driver that did
-an exclusive get on an already-enabled regulator would end up with
-enable_count initialized to 0 but rdev->use_count initialized to 1.
-With that starting point the regulator is effectively stuck enabled,
-because if the driver attempted to disable it it would fail the
-enable_count underflow check in _regulator_handle_consumer_disable().
+On Fri, 18 Mar 2022 22:52:20 +0800, Wan Jiabing wrote:
 
-The EXCLUSIVE_GET path in _regulator_get() now initializes
-enable_count along with rdev->use_count so that the regulator can be
-disabled without underflowing the former.
+> io->sgl is allocated by kzalloc(). The memory is set to zero.
+> It is unnecessary to call memset again.
+> 
+> 
 
-Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
-Fixes: 5451781dadf85 ("regulator: core: Only count load for enabled consumers")
----
+Applied to 5.19/scsi-queue, thanks!
 
-I tripped on this problem a bit in some recent experimentation with
-the regulator API -- at first I figured I was misusing something, but
-after looking a bit closer I *think* it's a bug (perhaps unnoticed
-until now because EXCLUSIVE_GET doesn't seem to be very widely used),
-but I'm not real knowledgeable about the regulator subsystem so
-apologies if I've misdiagnosed.
+[1/1] scsi: elx: efct: remove unnecessary memset in efct_io
+      https://git.kernel.org/mkp/scsi/c/507bd398a056
 
- drivers/regulator/core.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index d2553970a67b..c4d844ffad7a 100644
---- a/drivers/regulator/core.c
-+++ b/drivers/regulator/core.c
-@@ -2133,10 +2133,13 @@ struct regulator *_regulator_get(struct device *dev, const char *id,
- 		rdev->exclusive = 1;
- 
- 		ret = _regulator_is_enabled(rdev);
--		if (ret > 0)
-+		if (ret > 0) {
- 			rdev->use_count = 1;
--		else
-+			regulator->enable_count = 1;
-+		} else {
- 			rdev->use_count = 0;
-+			regulator->enable_count = 0;
-+		}
- 	}
- 
- 	link = device_link_add(dev, &rdev->dev, DL_FLAG_STATELESS);
 -- 
-2.36.0
-
+Martin K. Petersen	Oracle Linux Engineering
