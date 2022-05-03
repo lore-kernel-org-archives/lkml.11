@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7158C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 21:43:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B69C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 21:45:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243119AbiECVrX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 17:47:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57962 "EHLO
+        id S243123AbiECVtV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 17:49:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243100AbiECVrS (ORCPT
+        with ESMTP id S243167AbiECVtS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 17:47:18 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 601984162E
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 14:43:40 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id j4so32467038lfh.8
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 14:43:40 -0700 (PDT)
+        Tue, 3 May 2022 17:49:18 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909B2205E5
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 14:45:44 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id 16so23623532lju.13
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 14:45:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=C756m5N+PAgQRKxR49lEWlxtJ+9ZyoDvXSPO8NFP/os=;
-        b=e0s9a83f4XxcDt4qv0Yq1NGegacSoMfk1kUMm4iSF83ip1Tf+H2yXLO9VDCeKV7C4c
-         /8Fmu1KMTzgp6siIjz8JWGnr3cdCc8kiVoE5MzTOiLMNsIhmDYLoE5F97ElfwQKZOrcW
-         OEhiqQJIZE73f1Aiyi7UfXo/aixlTJlwy22uL5drkN77lnAKcv8aBj1f8PWsKA0vcKKn
-         RcBS9VX50JEaj+xuhLkaBUifaAVgRauwnUb4L3k2gBQukgd93q3BQ/3OdSnKWPkanfqn
-         mgpAkATGRsyCTEZkwnyUNdbSJetOKwkzvx95wVmWpYQqq6YyZYOAQmE1eJR+hTcPA08/
-         lSVQ==
+        bh=mPFz6JxMBLrDOa8D8OvJc8dRpCCIxU0sDb/p3YNgE60=;
+        b=lmPiQyXLF7vDL/rgmpglf9WWSO+z8kznYxL91ts50a6w+mEqSpNfpVYvPX8NhQp8Uv
+         X/du124xd2sLK0hN37As8gjODZqB7+nEa5Ojw3fsU4ghWG9MqhONk4p4S2AkSdAha+Q4
+         nWjHv2JCjU2r4NjrukyVVGh7mDMF25GwNYEFEKLsgEe4mgQN1LKchq6QXfyMHZME69Oi
+         sVMu4O2eJBkRxwhAzCYqr8XwFvwXy/+6QPunVx27zQ1GfcOiAlWuF6IlWhkEaVxMrZUu
+         DOmAJN7R6iQZ2c42KgptDBVAwUuvkS8PAXWIx9U276yeW8HnL3nL3ONiLS18MpqSu50D
+         Yq3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=C756m5N+PAgQRKxR49lEWlxtJ+9ZyoDvXSPO8NFP/os=;
-        b=QfKfO8b9F+1yz2eJieoxnOgfBxhvdTFt+6rQc69pxU4bnXscOC4014FBnlge1mQQ4t
-         cTRhdkV2AzD61deDIhIRG+07kQZsgKly2M6/9bPbIvajbDteug0uaYySCd83FzAK8WJR
-         qxf8ig8oWJ8+13SHLpA9TSmX9uXLXoa7e7Q5YRJ1JepjboZHY6U+1tngP/0p+ZSEP/zn
-         lRcOms1A7N5aVORJp9HGhNtrqPkPtZtRfwM19SR4R8jZoYeR+seC4isLQweZ+eeuxSxT
-         RTWw+55+tG8JeuI9wP1B4Z7wjwD1UelnRz7sJeii0gK/vy7ZByn4LsosP1vnfbyKEGuS
-         LBzA==
-X-Gm-Message-State: AOAM5325OK5cLcHDwxMuAlpxE3P2r30/iu5TJP6G7Vc4++A/x+pOql/e
-        zGrc4O2dVn0I4JGNk+DrqVCXqMCS7yf0uVCfWD1fzuNtO10=
-X-Google-Smtp-Source: ABdhPJxlgenGdZiH7n9vBibI6qkAxNk/xO71M6pNC8Y64omRpD6gBOoI9tnHyN+y+6OlRQe66kztnErFQ3ZDPAGTT9I=
-X-Received: by 2002:a05:6512:1150:b0:473:bdf0:6267 with SMTP id
- m16-20020a056512115000b00473bdf06267mr179381lfg.87.1651614218457; Tue, 03 May
- 2022 14:43:38 -0700 (PDT)
+        bh=mPFz6JxMBLrDOa8D8OvJc8dRpCCIxU0sDb/p3YNgE60=;
+        b=MAyJM1/U6JOk/UUPKUaMVsFFk/HZBvYu72CCpigPooDZImXuQS5lKI9jvovbBIwjnt
+         K8N151N00tS2+VpBQaRvnEkOpjf0iaUf97b35quBGmVXQFhcQKxCjWEN4ksnHpna7AQT
+         MGste02OelNw0QMtOAQLFggavITygY4Wt5Sq/xvVL0nMVnvdYlHHBnqiKYfzkYeB6epf
+         d7ix/9VRwMyFGkLvb9qS/NAQ481AN82aQccvLivVaXQBxvW2JlYSxxaiRRvyykcaO4Za
+         F0hUmQVMYKJyRSlAHInnOQL0yp9d0iFQBl3GH7WN4eoThpg4H3EldeUdRt9MDa6yN6/2
+         a9Ww==
+X-Gm-Message-State: AOAM533YIzvLND3PRcWeZ1VxjWGei3v62qQf4mn5DIecvfQ/F74rO5qg
+        5R//tDzUf1QhZ6BgfeK9AROaDk7StEG7dKWRsdLKVg==
+X-Google-Smtp-Source: ABdhPJySjBL1p+N3hj3DHEA588S062n0PV+2+6ZoihOmBkqZCW7zz/wum4v3Gn3+fGZHg/XBX9ucA4JJGD0APRkVECY=
+X-Received: by 2002:a05:651c:1a09:b0:250:5bd1:6daf with SMTP id
+ by9-20020a05651c1a0900b002505bd16dafmr5522087ljb.468.1651614342672; Tue, 03
+ May 2022 14:45:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220501084032.1025918-1-masahiroy@kernel.org> <20220501084032.1025918-2-masahiroy@kernel.org>
-In-Reply-To: <20220501084032.1025918-2-masahiroy@kernel.org>
+References: <20220501084032.1025918-1-masahiroy@kernel.org> <20220501084032.1025918-3-masahiroy@kernel.org>
+In-Reply-To: <20220501084032.1025918-3-masahiroy@kernel.org>
 From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 3 May 2022 14:43:26 -0700
-Message-ID: <CAKwvOdkuWSBShjA2uQEYj5Puyn0bJLdK1JE9Y-P+q9uxNk1A5w@mail.gmail.com>
-Subject: Re: [PATCH v2 01/26] modpost: use bool type where appropriate
+Date:   Tue, 3 May 2022 14:45:31 -0700
+Message-ID: <CAKwvOdnB=vb=jF0e6rnB21SAinTpnN+AxdPeR87qXGY0Hn2edw@mail.gmail.com>
+Subject: Re: [PATCH v2 02/26] modpost: change mod->gpl_compatible to bool type
 To:     Masahiro Yamada <masahiroy@kernel.org>
 Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
         Michal Marek <michal.lkml@markovi.net>
@@ -62,31 +62,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Sun, May 1, 2022 at 1:42 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
 >
-> diff --git a/scripts/mod/modpost.h b/scripts/mod/modpost.h
-> index 96d6b3a16ca2..7ccfcc8899c1 100644
-> --- a/scripts/mod/modpost.h
-> +++ b/scripts/mod/modpost.h
-> @@ -1,4 +1,5 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
-> +#include <stdbool.h>
->  #include <stdio.h>
->  #include <stdlib.h>
->  #include <stdarg.h>
-> @@ -111,11 +112,10 @@ struct module {
->         struct module *next;
->         int gpl_compatible;
->         struct symbol *unres;
-> -       int from_dump;  /* 1 if module was loaded from *.symvers */
-> -       int is_vmlinux;
-> -       int seen;
-> -       int has_init;
-> -       int has_cleanup;
-> +       bool from_dump;         /* true if module was loaded from *.symvers */
-> +       bool is_vmlinux;
-> +       bool seen;
-> +       bool has_init, has_cleanup;
+> Currently, mod->gpl_compatible is tristate; it is set to -1 by default,
+> then to 1 or 0 when MODULE_LICENSE() is found.
+>
+> Maybe, -1 was chosen to represent the 'unknown' license, but it is not
+> useful.
+>
+> The current code:
+>
+>     if (!mod->gpl_compatible)
+>             check_for_gpl_usage(exp->export, basename, exp->name);
+>
+> ... only cares whether gpl_compatible is zero or not.
+>
+> Change it to a bool type with the initial value 'true', which has no
+> functional change.
+>
+> The default value should be 'true' instead of 'false'.
+>
+> Since commit 1d6cd3929360 ("modpost: turn missing MODULE_LICENSE() into
+> error"), unknown module license is an error.
+>
+> The error message, "missing MODULE_LICENSE()" is enough to explain the
+> issue. It is not sensible to show another message, "GPL-incompatible
+> module ... uses GPL-only symbol".
+>
+> Add comments to explain this.
+>
+> While I was here, I renamed gpl_compatible to is_gpl_compatible for
+> clarification, and also slightly refactored the code.
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-Consider keeping these on separate lines. Either way:
+Thanks for the patch!
 Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
 -- 
