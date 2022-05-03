@@ -2,118 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D983DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 17:54:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FAE8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 17:55:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240756AbiECR6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 13:58:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48724 "EHLO
+        id S240770AbiECR6q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 13:58:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240745AbiECR6L (ORCPT
+        with ESMTP id S240758AbiECR6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 13:58:11 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B891B2BB1A;
-        Tue,  3 May 2022 10:54:37 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id ba17so659288edb.5;
-        Tue, 03 May 2022 10:54:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DYnWSimLii7XmldXmtY2L01MclTrGLMilzsrbNwgPjk=;
-        b=Z7OEEo6j2fNdaFTwVE47DarXux+705QL5n+yJ8Pfvm5DWGEz59nbOyDURUpT9QPHz5
-         PNmaG2PCWtkrV1hfpLE5MSTik9c4YHZVObdY1ILBwRldIhLqnEhZvTqYBGWOv1ih49hx
-         vYU9jochiOKhn5tin10fSHl0v8sszkDykyhDkmB6OHTGZlp3LdMjSkn3/78BVSBdSGuq
-         xOe9zOBlFMrjBGR3rpBndsRjFwJwHY1G+VGjPNFITYgRB7DjnT9WFApeCi6EvRdAYELL
-         cCaDNjb/ZlEyMQcQav41fHzmqqzFKM8xWqbJoqC3OmqZfaFLXq3SzzKuheCs9K/wAWQe
-         nq+g==
+        Tue, 3 May 2022 13:58:39 -0400
+Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4AD3B29F;
+        Tue,  3 May 2022 10:55:06 -0700 (PDT)
+Received: by mail-ot1-f49.google.com with SMTP id z5-20020a9d62c5000000b00606041d11f1so6326194otk.2;
+        Tue, 03 May 2022 10:55:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DYnWSimLii7XmldXmtY2L01MclTrGLMilzsrbNwgPjk=;
-        b=oqrssnKxk0Neu0J7+2v/ib85pAYiOMntViOXuzkakncnzWBXtWutpiRl2tibXZ2brp
-         xPPg7YDdGXlkHJm/yAiHFnGSuXpJaG2jW9lNQL+oVCd4gFILj+X2xfhzQSWK3n4aYOW/
-         dBNanatnthIT9x8JAlTWnJUUqDttKwETBHKlsI8uk+7vK6iTcH7F6+RcUwjsSxxnZk7S
-         7wTk3yYqcOBHLLc7ALKL2cf04DVUkYI+TqBRiFVGGzh59grxOwydNeyYTXf5SWYZ3FZj
-         iiAZuYAzMNt6nGhrt7thqXMISR61zyMA3Wbv3AzX4CSRcVNx3cGgAuW/QKTSBeJFCZw+
-         3PhQ==
-X-Gm-Message-State: AOAM5316E2Vwu8UHTDOUCUpX2D7nGmsTlwtdC8eIEiEsOkYA8+FwSbTp
-        JHnehys+1Yb91CGeORqTRmUEt5/d1gg=
-X-Google-Smtp-Source: ABdhPJxuZO00Q1eHmTZPmNGW7ManjOSzRlW8AwOypcs2vrYzGgOspXEleSxteXoztBVce5zDqER1zA==
-X-Received: by 2002:aa7:c790:0:b0:41d:7e0f:f15c with SMTP id n16-20020aa7c790000000b0041d7e0ff15cmr18965786eds.129.1651600476354;
-        Tue, 03 May 2022 10:54:36 -0700 (PDT)
-Received: from kista.localnet (cpe1-3-76.cable.triera.net. [213.161.3.76])
-        by smtp.gmail.com with ESMTPSA id bm13-20020a0564020b0d00b0042617ba63cfsm8234900edb.89.2022.05.03.10.54.34
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ZZo2FBQdHNqH/5Ul07nNend7TJWI/BleYJWuwRpwI2E=;
+        b=g57sxiLYIcwv8taAMGFQnzhlyluZeFsgK8DSRNAv+3rW/G38elIghDej4iWLPu6huo
+         +9K9qSPtfkrePjahJbuQ4mqgPZwkhKB/jfzj2afdAUUTO/Bm+IUSSHjBFzKx69JSQGeR
+         hzNIqAKeMbPb8VvL6M2a9JI6qhhoAHUz9180eTh3kxpfpfLBuFUAvqJvVHEYl7oF+QgQ
+         Ad8aQSFdSN/fZEEtUYXcVp4F4Bb3L9pqdxbxhuYV6QJMAaxsxuT6mhE+tbn1/TjuCoMj
+         B654KbaWcPqCJWq/anYmW8FXSMKnWCoZqANnsVSwFjaTooMYf1HzOVyW5PGV+mVFE1O1
+         hHvA==
+X-Gm-Message-State: AOAM533Vp/GdsdXRMrmpooEnQWjBsqsVufkFAw2Og6oI1EvQX57foEnS
+        yUVDVOm2eoKmlicJ11crtA==
+X-Google-Smtp-Source: ABdhPJwdaRnHFUgHPlJemaTsR7uzxfoyu0Qkat2ke0I3c1OwbntDBxhxcWdOIlhaLbPBYWN8g4E+xg==
+X-Received: by 2002:a9d:6c93:0:b0:605:d7a8:7930 with SMTP id c19-20020a9d6c93000000b00605d7a87930mr6294448otr.254.1651600505622;
+        Tue, 03 May 2022 10:55:05 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id y3-20020a056870e50300b000e686d13884sm130797oag.30.2022.05.03.10.55.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 10:54:35 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Chen-Yu Tsai <wens@csie.org>, Chukun Pan <amadeus@jmu.edu.cn>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Tue, 03 May 2022 10:55:05 -0700 (PDT)
+Received: (nullmailer pid 3955241 invoked by uid 1000);
+        Tue, 03 May 2022 17:55:04 -0000
+Date:   Tue, 3 May 2022 12:55:04 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     =?iso-8859-1?Q?C=E9dric?= Le Goater <clg@kaod.org>
+Cc:     linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org,
+        Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-aspeed@lists.ozlabs.org, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Chukun Pan <amadeus@jmu.edu.cn>
-Subject: Re: [PATCH] arm64: dts: allwinner: define USB3 Ethernet on NanoPi R1S H5
-Date:   Tue, 03 May 2022 19:54:34 +0200
-Message-ID: <4393725.LvFx2qVVIh@kista>
-In-Reply-To: <20220502144009.44575-1-amadeus@jmu.edu.cn>
-References: <20220502144009.44575-1-amadeus@jmu.edu.cn>
+        linux-kernel@vger.kernel.org, Tao Ren <rentao.bupt@gmail.com>,
+        Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+Subject: Re: [PATCH v6 03/11] spi: spi-mem: Convert Aspeed SMC driver to
+ spi-mem
+Message-ID: <YnFseFBfe5eaIqg0@robh.at.kernel.org>
+References: <20220503060634.122722-1-clg@kaod.org>
+ <20220503060634.122722-4-clg@kaod.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220503060634.122722-4-clg@kaod.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne ponedeljek, 02. maj 2022 ob 16:40:09 CEST je Chukun Pan napisal(a):
-> The NanoPi R1S H5 has a Realtek RTL8153B USB 3.0 Ethernet chip
-> connected to the USB 2.0 port of the Allwinner H5 SoC.
+On Tue, May 03, 2022 at 08:06:26AM +0200, Cédric Le Goater wrote:
+> This SPI driver adds support for the Aspeed static memory controllers
+> of the AST2600, AST2500 and AST2400 SoCs using the spi-mem interface.
 > 
-> Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
+>  * AST2600 Firmware SPI Memory Controller (FMC)
+>    . BMC firmware
+>    . 3 chip select pins (CE0 ~ CE2)
+>    . Only supports SPI type flash memory
+>    . different segment register interface
+>    . single, dual and quad mode.
+> 
+>  * AST2600 SPI Flash Controller (SPI1 and SPI2)
+>    . host firmware
+>    . 2 chip select pins (CE0 ~ CE1)
+>    . different segment register interface
+>    . single, dual and quad mode.
+> 
+>  * AST2500 Firmware SPI Memory Controller (FMC)
+>    . BMC firmware
+>    . 3 chip select pins (CE0 ~ CE2)
+>    . supports SPI type flash memory (CE0-CE1)
+>    . CE2 can be of NOR type flash but this is not supported by the driver
+>    . single, dual mode.
+> 
+>  * AST2500 SPI Flash Controller (SPI1 and SPI2)
+>    . host firmware
+>    . 2 chip select pins (CE0 ~ CE1)
+>    . single, dual mode.
+> 
+>  * AST2400 New Static Memory Controller (also referred as FMC)
+>    . BMC firmware
+>    . New register set
+>    . 5 chip select pins (CE0 ∼ CE4)
+>    . supports NOR flash, NAND flash and SPI flash memory.
+>    . single, dual and quad mode.
+> 
+> Each controller has a memory range on which flash devices contents are
+> mapped. Each device is assigned a window that can be changed at bootime
+> with the Segment Address Registers.
+> 
+> Each SPI flash device can then be accessed in two modes: Command and
+> User. When in User mode, SPI transfers are initiated with accesses to
+> the memory segment of a device. When in Command mode, memory
+> operations on the memory segment of a device generate SPI commands
+> automatically using a Control Register for the settings.
+> 
+> This initial patch adds support for User mode. Command mode needs a little
+> more work to check that the memory window on the AHB bus fits the device
+> size. It will come later when support for direct mapping is added.
+> 
+> Single and dual mode RX transfers are supported. Other types than SPI
+> are not supported.
+> 
+> Reviewed-by: Joel Stanley <joel@jms.id.au>
+> Tested-by: Joel Stanley <joel@jms.id.au>
+> Tested-by: Tao Ren <rentao.bupt@gmail.com>
+> Tested-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+> Signed-off-by: Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
+> Signed-off-by: Cédric Le Goater <clg@kaod.org>
 > ---
->  arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts b/
-arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts
-> index 55b369534a08..dd655a491549 100644
-> --- a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts
-> +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts
-> @@ -21,7 +21,8 @@ / {
->  
->  	aliases {
->  		ethernet0 = &emac;
-> -		ethernet1 = &rtl8189etv;
-> +		ethernet1 = &rtl8153;
-> +		ethernet2 = &rtl8189etv;
->  		serial0 = &uart0;
->  	};
->  
-> @@ -116,6 +117,11 @@ &cpu0 {
->  
->  &ehci1 {
->  	status = "okay";
+>  drivers/mtd/spi-nor/controllers/aspeed-smc.c  | 921 ------------------
+>  drivers/spi/spi-aspeed-smc.c                  | 717 ++++++++++++++
+>  .../devicetree/bindings/mtd/aspeed-smc.txt    |  51 -
 
-You need to add #address-cells and #size-cells properties, otherwise "make 
-dtbs_check W=1" generates warnings.
+This belongs with the binding patch. But then it is converting rather 
+than adding a binding. You should be converting the binding and then 
+adding to it (like adding 2600 support).
 
-Best regards,
-Jernej
-
-> +
-> +	rtl8153: device@1 {
-> +		compatible = "usbbda,8153";
-> +		reg = <1>;
-> +	};
->  };
->  
->  &ehci2 {
-> -- 
-> 2.25.1
-> 
-> 
-
-
+>  MAINTAINERS                                   |   1 +
+>  drivers/mtd/spi-nor/controllers/Kconfig       |  10 -
+>  drivers/mtd/spi-nor/controllers/Makefile      |   1 -
+>  drivers/spi/Kconfig                           |  11 +
+>  drivers/spi/Makefile                          |   1 +
+>  8 files changed, 730 insertions(+), 983 deletions(-)
+>  delete mode 100644 drivers/mtd/spi-nor/controllers/aspeed-smc.c
+>  create mode 100644 drivers/spi/spi-aspeed-smc.c
+>  delete mode 100644 Documentation/devicetree/bindings/mtd/aspeed-smc.txt
