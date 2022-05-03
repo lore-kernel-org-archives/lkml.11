@@ -2,93 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA6AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:19:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B77FC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:20:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238409AbiECPX2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52542 "EHLO
+        id S238273AbiECPWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238464AbiECPXR (ORCPT
+        with ESMTP id S238118AbiECPVy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:23:17 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667933DDF6;
-        Tue,  3 May 2022 08:19:36 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: benjamin.gaignard)
-        with ESMTPSA id A99681F43FFB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1651591175;
-        bh=Lzclz0U3PP1cu2Zk2o7bgbp4dAMVqW5utV/LmtxRt/8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=No+GYtV7o4MzLGjC8LKJubPV8clRjS7feBQujvJ4NGgRzHhV+lf68pxiYSotIiQbh
-         4qz6KfqEnD4DoCvAQg66QA2ysWV2wWaYMyzyv/Do+3SfucSYp7G4U1bZNBOqI6bC7O
-         ABgqCgJuOA/+0tSxLTUNhMGOcZaEtpxBiBGMEnxkGSFAd+XzFhxGGHrL/w8gfl2IDh
-         7GqLB81jS6KJO/dZKrnauPLzmG+pf9z61YcuQHgdVgJv0MpKYFSOfS+2XjrB7jj5ZR
-         g8DX4a1zeh4eGdD336KDNAhixfR6gBKCJzQIJH4q7jX47PYvqrZFavOVbxbYvd9Onf
-         8MgcZuAeSB40g==
-From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
-To:     ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
-        mchehab@kernel.org, gregkh@linuxfoundation.org
-Cc:     linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        jon@nanocrew.net, aford173@gmail.com, kernel@collabora.com,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: [PATCH v4] media: hantro: HEVC: unconditionnaly set pps_{cb/cr}_qp_offset values
-Date:   Tue,  3 May 2022 17:19:20 +0200
-Message-Id: <20220503151920.802417-1-benjamin.gaignard@collabora.com>
-X-Mailer: git-send-email 2.32.0
+        Tue, 3 May 2022 11:21:54 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E6C3AA5F;
+        Tue,  3 May 2022 08:18:21 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id l18so34050820ejc.7;
+        Tue, 03 May 2022 08:18:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=YkFrQ4/wi+cqyLXOlhLD4aOJANtZ19orl1Mof8QAy1Y=;
+        b=lGGZDd9wSGMI1R1F9bB93M23m5dMXI46oaQiR62pm0dEOCTJQ5IPsD1vxO9d/emI2q
+         1KzXBJpqwHYWNKONDA+gsVQ+LP/pE9GBem/IGTFjdgMRgvoE3CjvM3D0Ap9XBvmgormi
+         rvfpnNeeXQSQ2QFkfodCEEzlrbScfBnlE7W2Vy1t5V1yAdeqcj2kOgk8zc3o2Uz0+fMi
+         3xirS/sVKiWig9rnskwhrpQ0l7UHs8B0LqBHgpArha2mGq6WAfyRaQVlSXd+a4Yarj8g
+         N4OxVhlAmLJeVQxy6p0RPYLB9pbcfCifrIa4kb+BGXlbJjrEJ/ToCJvBZkysE+41CltC
+         HSGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=YkFrQ4/wi+cqyLXOlhLD4aOJANtZ19orl1Mof8QAy1Y=;
+        b=eVHla7FeAsup/MKpZkhUDYTGLoe4nWuus2Ffv8Ef5bbGF/seQhwYyd2vQPmBNza5PN
+         wfMViapztqRTfuu1AMQsik3mD2hrhVFU3QAuMvUGbxwUM4nF6Rf4JClU3MhfGdLwr0gL
+         DRDYvkF+Du4k/R5zp0LQlUzv2wlRWv0+DHIj57FQE2BzEDM9V39fXONky0btqY+dDzHK
+         UFQ5uKgMy6ILQgxoRRqaMXU5UfWjLKeeomwxWpqKhmCDryP/+Zr73c7mHvL0xc7igukM
+         11plqU6330KHewYHoHrnrTfQvovMYAoHqVmBd0TAZRkqxOqT9xlvv3ETVyoNE6ntLEmW
+         j2xw==
+X-Gm-Message-State: AOAM533u3+bSp/t372O9CAFsXej2E5hySddXfVej8a2vUTz544ul45AP
+        jcQIGA00GWqmDwJiNFpdxDE=
+X-Google-Smtp-Source: ABdhPJzJs0qkledNmUPM0IohTua8MkFilLH+VBdbuPdbxSmAgFDeHm7Y+dwgF1ovBN670OAHoLZrZw==
+X-Received: by 2002:a17:906:b286:b0:6f3:b3e4:5f67 with SMTP id q6-20020a170906b28600b006f3b3e45f67mr16067213ejz.148.1651591099814;
+        Tue, 03 May 2022 08:18:19 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id v3-20020aa7d9c3000000b0042617ba63cesm7947507eds.88.2022.05.03.08.18.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 08:18:19 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: [RFC PATCH v6 04/11] leds: trigger: netdev: rename and expose NETDEV trigger enum modes
+Date:   Tue,  3 May 2022 17:16:26 +0200
+Message-Id: <20220503151633.18760-5-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220503151633.18760-1-ansuelsmth@gmail.com>
+References: <20220503151633.18760-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Always set pps_cb_qp_offset and pps_cr_qp_offset values in Hantro/G2
-register whatever is V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT
-flag value.
-The vendor code does the same to set these values.
-This fixes conformance test CAINIT_G_SHARP_3.
+Rename NETDEV trigger enum modes to a more simbolic name and move them
+in leds.h to make them accessible by any user.
 
-Fluster HEVC score is increase by one with this patch.
-
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
-This patch has been tested with these branches:
-- GStreamer: https://gitlab.freedesktop.org/benjamin.gaignard1/gstreamer/-/tree/HEVC_aligned_with_kernel_5.15
-- Linux: https://gitlab.collabora.com/benjamin.gaignard/for-upstream/-/tree/WIP_HEVC_UAPI_V6
+ drivers/leds/trigger/ledtrig-netdev.c | 53 +++++++++------------------
+ include/linux/leds.h                  |  7 ++++
+ 2 files changed, 25 insertions(+), 35 deletions(-)
 
-It is the setup used to prepare version 6 of the patches to move HEVC
-uAPI to stable.
-
-Fluster score was 77/147 before these series of patches and is now
-124/147.
-
- drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-index 6deb31b7b993..503f4b028bc5 100644
---- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-+++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-@@ -194,13 +194,8 @@ static void set_params(struct hantro_ctx *ctx)
- 		hantro_reg_write(vpu, &g2_max_cu_qpd_depth, 0);
+diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
+index 66a81cc9b64d..6872da08676b 100644
+--- a/drivers/leds/trigger/ledtrig-netdev.c
++++ b/drivers/leds/trigger/ledtrig-netdev.c
+@@ -51,15 +51,6 @@ struct led_netdev_data {
+ 
+ 	unsigned long mode;
+ 	bool carrier_link_up;
+-#define NETDEV_LED_LINK	0
+-#define NETDEV_LED_TX	1
+-#define NETDEV_LED_RX	2
+-};
+-
+-enum netdev_led_attr {
+-	NETDEV_ATTR_LINK,
+-	NETDEV_ATTR_TX,
+-	NETDEV_ATTR_RX
+ };
+ 
+ static void set_baseline_state(struct led_netdev_data *trigger_data)
+@@ -76,7 +67,7 @@ static void set_baseline_state(struct led_netdev_data *trigger_data)
+ 	if (!trigger_data->carrier_link_up) {
+ 		led_set_brightness(led_cdev, LED_OFF);
+ 	} else {
+-		if (test_bit(NETDEV_LED_LINK, &trigger_data->mode))
++		if (test_bit(TRIGGER_NETDEV_LINK, &trigger_data->mode))
+ 			led_set_brightness(led_cdev,
+ 					   led_cdev->blink_brightness);
+ 		else
+@@ -85,8 +76,8 @@ static void set_baseline_state(struct led_netdev_data *trigger_data)
+ 		/* If we are looking for RX/TX start periodically
+ 		 * checking stats
+ 		 */
+-		if (test_bit(NETDEV_LED_TX, &trigger_data->mode) ||
+-		    test_bit(NETDEV_LED_RX, &trigger_data->mode))
++		if (test_bit(TRIGGER_NETDEV_TX, &trigger_data->mode) ||
++		    test_bit(TRIGGER_NETDEV_RX, &trigger_data->mode))
+ 			schedule_delayed_work(&trigger_data->work, 0);
+ 	}
+ }
+@@ -146,20 +137,16 @@ static ssize_t device_name_store(struct device *dev,
+ static DEVICE_ATTR_RW(device_name);
+ 
+ static ssize_t netdev_led_attr_show(struct device *dev, char *buf,
+-	enum netdev_led_attr attr)
++				    enum led_trigger_netdev_modes attr)
+ {
+ 	struct led_netdev_data *trigger_data = led_trigger_get_drvdata(dev);
+ 	int bit;
+ 
+ 	switch (attr) {
+-	case NETDEV_ATTR_LINK:
+-		bit = NETDEV_LED_LINK;
+-		break;
+-	case NETDEV_ATTR_TX:
+-		bit = NETDEV_LED_TX;
+-		break;
+-	case NETDEV_ATTR_RX:
+-		bit = NETDEV_LED_RX;
++	case TRIGGER_NETDEV_LINK:
++	case TRIGGER_NETDEV_TX:
++	case TRIGGER_NETDEV_RX:
++		bit = attr;
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -169,7 +156,7 @@ static ssize_t netdev_led_attr_show(struct device *dev, char *buf,
+ }
+ 
+ static ssize_t netdev_led_attr_store(struct device *dev, const char *buf,
+-	size_t size, enum netdev_led_attr attr)
++				     size_t size, enum led_trigger_netdev_modes attr)
+ {
+ 	struct led_netdev_data *trigger_data = led_trigger_get_drvdata(dev);
+ 	unsigned long state;
+@@ -181,14 +168,10 @@ static ssize_t netdev_led_attr_store(struct device *dev, const char *buf,
+ 		return ret;
+ 
+ 	switch (attr) {
+-	case NETDEV_ATTR_LINK:
+-		bit = NETDEV_LED_LINK;
+-		break;
+-	case NETDEV_ATTR_TX:
+-		bit = NETDEV_LED_TX;
+-		break;
+-	case NETDEV_ATTR_RX:
+-		bit = NETDEV_LED_RX;
++	case TRIGGER_NETDEV_LINK:
++	case TRIGGER_NETDEV_TX:
++	case TRIGGER_NETDEV_RX:
++		bit = attr;
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -358,21 +341,21 @@ static void netdev_trig_work(struct work_struct *work)
  	}
  
--	if (pps->flags & V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT) {
--		hantro_reg_write(vpu, &g2_cb_qp_offset, pps->pps_cb_qp_offset);
--		hantro_reg_write(vpu, &g2_cr_qp_offset, pps->pps_cr_qp_offset);
--	} else {
--		hantro_reg_write(vpu, &g2_cb_qp_offset, 0);
--		hantro_reg_write(vpu, &g2_cr_qp_offset, 0);
--	}
-+	hantro_reg_write(vpu, &g2_cb_qp_offset, pps->pps_cb_qp_offset);
-+	hantro_reg_write(vpu, &g2_cr_qp_offset, pps->pps_cr_qp_offset);
+ 	/* If we are not looking for RX/TX then return  */
+-	if (!test_bit(NETDEV_LED_TX, &trigger_data->mode) &&
+-	    !test_bit(NETDEV_LED_RX, &trigger_data->mode))
++	if (!test_bit(TRIGGER_NETDEV_TX, &trigger_data->mode) &&
++	    !test_bit(TRIGGER_NETDEV_RX, &trigger_data->mode))
+ 		return;
  
- 	hantro_reg_write(vpu, &g2_filt_offset_beta, pps->pps_beta_offset_div2);
- 	hantro_reg_write(vpu, &g2_filt_offset_tc, pps->pps_tc_offset_div2);
+ 	dev_stats = dev_get_stats(trigger_data->net_dev, &temp);
+ 	new_activity =
+-	    (test_bit(NETDEV_LED_TX, &trigger_data->mode) ?
++	    (test_bit(TRIGGER_NETDEV_TX, &trigger_data->mode) ?
+ 		dev_stats->tx_packets : 0) +
+-	    (test_bit(NETDEV_LED_RX, &trigger_data->mode) ?
++	    (test_bit(TRIGGER_NETDEV_RX, &trigger_data->mode) ?
+ 		dev_stats->rx_packets : 0);
+ 
+ 	if (trigger_data->last_activity != new_activity) {
+ 		led_stop_software_blink(trigger_data->led_cdev);
+ 
+-		invert = test_bit(NETDEV_LED_LINK, &trigger_data->mode);
++		invert = test_bit(TRIGGER_NETDEV_LINK, &trigger_data->mode);
+ 		interval = jiffies_to_msecs(
+ 				atomic_read(&trigger_data->interval));
+ 		/* base state is ON (link present) */
+diff --git a/include/linux/leds.h b/include/linux/leds.h
+index b5aad67fecfb..13862f8b1e07 100644
+--- a/include/linux/leds.h
++++ b/include/linux/leds.h
+@@ -548,6 +548,13 @@ static inline void *led_get_trigger_data(struct led_classdev *led_cdev)
+ 
+ #endif /* CONFIG_LEDS_TRIGGERS */
+ 
++/* Trigger specific enum */
++enum led_trigger_netdev_modes {
++	TRIGGER_NETDEV_LINK = 1,
++	TRIGGER_NETDEV_TX,
++	TRIGGER_NETDEV_RX,
++};
++
+ /* Trigger specific functions */
+ #ifdef CONFIG_LEDS_TRIGGER_DISK
+ void ledtrig_disk_activity(bool write);
 -- 
-2.32.0
+2.34.1
 
