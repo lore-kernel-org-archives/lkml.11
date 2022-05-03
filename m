@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE99BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 17:50:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47A65C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 17:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240727AbiECRxs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 13:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42842 "EHLO
+        id S240738AbiECR5d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 13:57:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240643AbiECRxh (ORCPT
+        with ESMTP id S240643AbiECR5b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 13:53:37 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA6C3B3F8
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 10:50:04 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id r17so10207962iln.9
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 10:50:04 -0700 (PDT)
+        Tue, 3 May 2022 13:57:31 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B2A2B186
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 10:53:58 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id o190so1465162iof.10
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 10:53:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=digitalocean.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gw+un10uJqUNP/SbL+e25B/lzjHm7kiGfOYsGY9F7XM=;
-        b=IQ5l1Tw0QCU5PbCxVcnsc+tTDYVs0hkTHeCetz8NmOg+tc+WmC7hJ9Db1EH0ffn3vt
-         lWg5GdxzYnone+VZISJSZcdXLdgw+/rkq0ScHAzuDlP8aaHL8YJrpDCusQSa2CwLTYVQ
-         5kiLmnnxp6CBthc47Q1I3FP1g2FAl3KmjJcy0=
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=SVhjOiW58CpvHdw8quBjHckuBkf97wIVcsnDQs7q8QU=;
+        b=WhnMhXBei59t1jNzijf4GwhnGdkGwN7ffbcmzUwyQYhduCWf8Qeo3tk24P9gnYmmgi
+         0HHEZS5CQADa0mC0uxaTLt0esAR/BsI/iTYa5GUg0KlqM6jg6U/Pw3lo40TTPlA6Bdkf
+         Wa7bD2wxX0/u5RLDworIKuwVz75s9nO1i4Nzg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gw+un10uJqUNP/SbL+e25B/lzjHm7kiGfOYsGY9F7XM=;
-        b=HCy3pL/DA0n+6MyldMtpRt7CWfd8FtRoBnRPuckYSFFxmdGzUsNKU+CtOJrbrd9Fzh
-         9MEsL9m7mtdh/HR4cP2b9jC+n38BUe2EWnyI5JebObBv4X2zyJCIOYSuJ9po6c+48J5m
-         biodR+eENRmPZDMi2L8uKc4EwRd9RWnONL49qrJKAa3quBK+jpP6t8FK99o+7oRSxcWb
-         RDjkLqh9O2fNjdhUADr4A/EZMexrbN4O0sLAz1hpxtq5ucBMaMItRa+cttIRui8Egawe
-         LGxtABS28A36THLk3iisxs98i15oZXutKNXfhnfKrSLYEjw5o4/Pw9MUHCXIcJ7DZp/i
-         O1tQ==
-X-Gm-Message-State: AOAM530c9ZdqiVNI7W2yjhJxWXaAFtOyozZqwM5yI077yC3D9zPJ3E+1
-        NC15enmiBpZXJqa8zyS1zxBkyw==
-X-Google-Smtp-Source: ABdhPJzh+zb6aoHIl3yp5z+2hS5YP62Z1ngPLTw5+X3w+daEd6SSNy6hBReYVKdBs4/XoKgoLBqttA==
-X-Received: by 2002:a05:6e02:20e4:b0:2cc:4535:9d22 with SMTP id q4-20020a056e0220e400b002cc45359d22mr7443763ilv.195.1651600203864;
-        Tue, 03 May 2022 10:50:03 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SVhjOiW58CpvHdw8quBjHckuBkf97wIVcsnDQs7q8QU=;
+        b=7U4LRJTfYTCCPaxHHveF5R6cfTgwBHLNhMCGb4nLV8YMTJGMtBSMvSiUA+hfYWp6nH
+         aRRUhpE48sbgQ2uWWhBzEniTRJp6Nyix2fUad9boog3fJaejMpm30zXLFaaSx5KsjWRR
+         nNjR7SF1plHdSM6PO20BPCbaTjlh5GG0inozzMy/hAApvGfv5wZepaeZ7H00keIYJTq0
+         i7u6BcskAXoMVbVwT4sBO8TaLsvwELK27kaHoz6UW9gbbKiauzJ93VzwfT4Yr5VL1voT
+         wQFTrANey9yawcwRnTJqb06GBcjQzHRI+xGcF6DCo/QGSU6Ad5KFCvd6ovHmlRQfUMmt
+         a9ow==
+X-Gm-Message-State: AOAM531hrcWCMVMM3gjOsQfcVS9+5gI0eSEpsRwBzVGZCxVCIT2qeMaf
+        B05vCXrMQ57Uch0vSKzstIWmTw==
+X-Google-Smtp-Source: ABdhPJy0OSUvbC7ByJK8FyKfREM7VamZ4yekW+hdrBnj5rlTwAOTmC0Twkj41WY2MeZnllF6AOEr6Q==
+X-Received: by 2002:a05:6638:2588:b0:32a:beec:a5cc with SMTP id s8-20020a056638258800b0032abeeca5ccmr7850035jat.191.1651600437949;
+        Tue, 03 May 2022 10:53:57 -0700 (PDT)
 Received: from localhost ([2605:a601:ac0f:820:80d8:f53c:c84d:deaa])
-        by smtp.gmail.com with ESMTPSA id u6-20020a02aa86000000b0032b3a78176dsm4049997jai.49.2022.05.03.10.49.39
+        by smtp.gmail.com with ESMTPSA id y4-20020a02ce84000000b0032b3a7817b1sm4055949jaq.117.2022.05.03.10.53.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 10:49:48 -0700 (PDT)
+        Tue, 03 May 2022 10:53:57 -0700 (PDT)
+Date:   Tue, 3 May 2022 12:53:56 -0500
 From:   Seth Forshee <sforshee@digitalocean.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Peter Zijlstra <peterz@infradead.org>,
@@ -57,76 +58,38 @@ Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
         Sean Christopherson <seanjc@google.com>,
         linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
         kvm@vger.kernel.org
-Subject: [PATCH v2] entry/kvm: Make vCPU tasks exit to userspace when a livepatch is pending
-Date:   Tue,  3 May 2022 12:49:34 -0500
-Message-Id: <20220503174934.2641605-1-sforshee@digitalocean.com>
-X-Mailer: git-send-email 2.32.0
+Subject: Re: [PATCH v2] entry/kvm: Make vCPU tasks exit to userspace when a
+ livepatch is pending
+Message-ID: <YnFsNB9Ppvd0cTFS@do-x1extreme>
+References: <20220503174934.2641605-1-sforshee@digitalocean.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220503174934.2641605-1-sforshee@digitalocean.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A task can be livepatched only when it is sleeping or it exits to
-userspace. This may happen infrequently for a heavily loaded vCPU task,
-leading to livepatch transition failures.
+On Tue, May 03, 2022 at 12:49:34PM -0500, Seth Forshee wrote:
+> A task can be livepatched only when it is sleeping or it exits to
+> userspace. This may happen infrequently for a heavily loaded vCPU task,
+> leading to livepatch transition failures.
+> 
+> Fake signals will be sent to tasks which fail patching via stack
+> checking. This will cause running vCPU tasks to exit guest mode, but
+> since no signal is pending they return to guest execution without
+> exiting to userspace. Fix this by treating a pending livepatch migration
+> like a pending signal, exiting to userspace with EINTR. This allows the
+> task to be patched, and userspace should re-excecute KVM_RUN to resume
+> guest execution.
+> 
+> In my testing, systems where livepatching would timeout after 60 seconds
+> were able to load livepatches within a couple of seconds with this
+> change.
+> 
+> Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
+> ---
+> Changes in v2:
+>  - Added _TIF_SIGPENDING to XFER_TO_GUEST_MODE_WORK
 
-Fake signals will be sent to tasks which fail patching via stack
-checking. This will cause running vCPU tasks to exit guest mode, but
-since no signal is pending they return to guest execution without
-exiting to userspace. Fix this by treating a pending livepatch migration
-like a pending signal, exiting to userspace with EINTR. This allows the
-task to be patched, and userspace should re-excecute KVM_RUN to resume
-guest execution.
-
-In my testing, systems where livepatching would timeout after 60 seconds
-were able to load livepatches within a couple of seconds with this
-change.
-
-Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
----
-Changes in v2:
- - Added _TIF_SIGPENDING to XFER_TO_GUEST_MODE_WORK
- - Reworded commit message and comments to avoid confusion around the
-   term "migrate"
-
- include/linux/entry-kvm.h | 4 ++--
- kernel/entry/kvm.c        | 7 ++++++-
- 2 files changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/entry-kvm.h b/include/linux/entry-kvm.h
-index 6813171afccb..bf79e4cbb5a2 100644
---- a/include/linux/entry-kvm.h
-+++ b/include/linux/entry-kvm.h
-@@ -17,8 +17,8 @@
- #endif
- 
- #define XFER_TO_GUEST_MODE_WORK						\
--	(_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL |	\
--	 _TIF_NOTIFY_RESUME | ARCH_XFER_TO_GUEST_MODE_WORK)
-+	(_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_PATCH_PENDING |	\
-+	 _TIF_NOTIFY_SIGNAL | _TIF_NOTIFY_RESUME | ARCH_XFER_TO_GUEST_MODE_WORK)
- 
- struct kvm_vcpu;
- 
-diff --git a/kernel/entry/kvm.c b/kernel/entry/kvm.c
-index 9d09f489b60e..98439dfaa1a0 100644
---- a/kernel/entry/kvm.c
-+++ b/kernel/entry/kvm.c
-@@ -14,7 +14,12 @@ static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
- 				task_work_run();
- 		}
- 
--		if (ti_work & _TIF_SIGPENDING) {
-+		/*
-+		 * When a livepatch is pending, force an exit to userspace
-+		 * as though a signal is pending to allow the task to be
-+		 * patched.
-+		 */
-+		if (ti_work & (_TIF_SIGPENDING | _TIF_PATCH_PENDING)) {
- 			kvm_handle_signal_exit(vcpu);
- 			return -EINTR;
- 		}
--- 
-2.32.0
-
+Clearly I meant _TIF_PATCH_PENDING here and not _TIF_SIGPENDING.
