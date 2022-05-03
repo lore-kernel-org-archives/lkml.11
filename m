@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C5B5C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 321D9C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242323AbiECUNx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 16:13:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48608 "EHLO
+        id S242368AbiECUOC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 16:14:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234092AbiECUNm (ORCPT
+        with ESMTP id S232953AbiECUNm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 3 May 2022 16:13:42 -0400
 Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3DB14403F4;
-        Tue,  3 May 2022 13:10:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DE20740924;
+        Tue,  3 May 2022 13:10:03 -0700 (PDT)
 Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 5DCE816D1;
-        Tue,  3 May 2022 23:10:33 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 5DCE816D1
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 9C11916D8;
+        Tue,  3 May 2022 23:10:36 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 9C11916D8
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1651608633;
-        bh=4LJQQ+flJun0UygUXRUKxHXx7rdadvvKQYRSaah2pvM=;
+        d=baikalelectronics.ru; s=mail; t=1651608636;
+        bh=ckfaK5irrS7Tron+bv7kr4WMcSYdpEv5KvtAmATvlro=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=pwPVwEjAoL4fUnf46GzG8WEgfF9JpBHkITFbRMqJdrIPjWAQROCZb0zAHmyOpRz2W
-         dAlQcD8p+SSTJg01AR0QnUdW9stfJ/Yei7ewk9lExh05nC0csiwI24kAjLzPMIbUu8
-         o02qv4H8NhRjJX6CNdji7t4NpIAnZZhDnlCeSbKg=
+        b=JeIJ3wPl0LTc+Mpjheb7xrYFDpIYHu/+PAz/x0B2Qtz9ondIoalrtgDU68ZA+sfsT
+         ORTbk4iRoPzzrAha2sZC+/DrL2VPijmlMJ4oO2S1gAl95VBeBiqsqAkhR2hbyomr1X
+         vUt8T38eEOJ/1TLG7XITDGWypD+Jvci4e/7dhcVA=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 May 2022 23:09:59 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 May 2022 23:10:02 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Hans de Goede <hdegoede@redhat.com>,
         Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
         <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>
-Subject: [PATCH v2 01/23] dt-bindings: ata: ahci-platform: Drop dma-coherent property declaration
-Date:   Tue, 3 May 2022 23:09:16 +0300
-Message-ID: <20220503200938.18027-2-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH v2 04/23] dt-bindings: ata: sata: Extend number of SATA ports
+Date:   Tue, 3 May 2022 23:09:19 +0300
+Message-ID: <20220503200938.18027-5-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -52,33 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's redundant to have the 'dma-coherent' property explicitly specified in
-the DT schema because it's a generic property described in the core
-DT-schema by which the property is always evaluated.
+The denoted in the description upper limit only concerns the Port
+Multipliers, but not the actual SATA ports. It's an external device
+attached to a SATA port in order to access more than one SATA-drive. So
+when it's attached to a SATA port it just extends the port capability
+while the number of actual SATA ports stays the same. For instance on AHCI
+controllers the number of actual ports is determined by the CAP.NP field
+and the PI (Ports Implemented) register. AFAICS in general the maximum
+number of SATA ports depends on the particular controller implementation.
+Generic AHCI controller can't have more than 32 ports (since CAP.NP is of
+5 bits wide and PI register is 32-bits size), while DWC AHCI SATA
+controller can't be configured with more than 8 ports activated. So let's
+discard the SATA ports reg-property restrictions and just make sure that
+it consists of a single reg-item.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
 ---
 
 Changelog v2:
-- This is a new patch created after rebasing v1 onto the 5.18-rc3 kernel.
+- Add comma and replace "channel" with "SATA port" in the reg property
+  description (@Damien).
 ---
- Documentation/devicetree/bindings/ata/ahci-platform.yaml | 2 --
- 1 file changed, 2 deletions(-)
+ Documentation/devicetree/bindings/ata/sata-common.yaml | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/ata/ahci-platform.yaml b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
-index c146ab8e14e5..9304e4731965 100644
---- a/Documentation/devicetree/bindings/ata/ahci-platform.yaml
-+++ b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
-@@ -87,8 +87,6 @@ properties:
-     description:
-       regulator for AHCI controller
+diff --git a/Documentation/devicetree/bindings/ata/sata-common.yaml b/Documentation/devicetree/bindings/ata/sata-common.yaml
+index 7ac77b1c5850..9c9c621761ca 100644
+--- a/Documentation/devicetree/bindings/ata/sata-common.yaml
++++ b/Documentation/devicetree/bindings/ata/sata-common.yaml
+@@ -41,11 +41,10 @@ patternProperties:
+     properties:
+       reg:
+         minimum: 0
+-        maximum: 14
+         description:
+-          The ID number of the drive port SATA can potentially use a port
+-          multiplier making it possible to connect up to 15 disks to a single
+-          SATA port.
++          The ID number of the SATA port. Aside with being directly used,
++          each port can have a Port Multiplier attached thus allowing to
++          access more than one drive by means of a single SATA port.
  
--  dma-coherent: true
--
-   phy-supply:
-     description:
-       regulator for PHY power
+ additionalProperties: true
+ 
 -- 
 2.35.1
 
