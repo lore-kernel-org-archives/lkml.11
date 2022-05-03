@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3485C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 03:28:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B3DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 03:28:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230397AbiECDcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 23:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41068 "EHLO
+        id S230411AbiECDcO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 23:32:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230316AbiECDcH (ORCPT
+        with ESMTP id S230375AbiECDcI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 23:32:07 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2050.outbound.protection.outlook.com [40.107.93.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C2D11CFD7;
-        Mon,  2 May 2022 20:28:34 -0700 (PDT)
+        Mon, 2 May 2022 23:32:08 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2076.outbound.protection.outlook.com [40.107.223.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282401CFDD;
+        Mon,  2 May 2022 20:28:37 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PC4oYDd7uDN8W5OUKiUKCu2ecWhx1wf0ijJ3fvoaa6nVV1RG7QglqW5e8UZ5rDkIVOkoCAtZTeSRgc1OuCCE42Rr658S0c+YlkEUn0WZSHVH6LYk5N8BbvzUMIFH4NB+EuBivnPQ5sVnDElccPOLhn0NBf/ub8CFi4GtJa7Zfb6nAi23FGoHkyucAqTOfWyBZYj+2+yGCvjpgeNPIbbsqz8HVKszUqrbvxwd5L39l2JqOyrLuVskYyd2KKAbkAFQN5aoralDgqMmsLJI4LyFGwdUbBjG7Z2QiV7T5wRRFRqoWCORRZluND5pmEP3iqWh1lqD9u1nKGuBXHgHFsZu5w==
+ b=Q4oPObwVW4qxPHJQk1Iy3nfW0t/XdfzQ9ATFnkbm2765jkL5+fpOQOFuiJeQllYDbjp7CLv1CWrzsspk7GRlJCxObFV0aFCX6ylC+RRY3WgqtJ8sdBj4sUYp2GD9auD/RhdU9fvKBO08ey8cMx9NVGFHVdhOW3jr+d3n2lHn4ky3xfLwLreZjHAyhmXrGMOZhynj52iPf4uZ4PjZ3KpZ/MS6kRfX7nBUc1qS+2poUn16q9eOYd+3rA6vKzh4H5xKmYG0SZQwjv/r/YhUQ733OHX8twxstNLkkycESUxnXc/z/MVSfPL1k5y2FXTUx0IeYE11rrqLByc+V/xKOrJdow==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yxx9Zv68qRRmYY4S50T1G2GEMLZz76QUh+dPUB7NwZE=;
- b=TGZj92nV0B9JDWW75ng+7xd7vlWbFe0mwnRdoufGhWpKSRKSFwBUaa8TbWnvMnxImAGXy0kYzmG+tso3pgsyekQG9VXKII47wWZAAMhiV5iViij+t/A5aOdcxPsRZoM8mDpL8Sedbda+45W4fJRMmQtpBXOTy7DRlNbyjC+5PdG1PC5NG53AY5qAB09OkqQ5hnJgQ17a2U+IW4eJPvrvbbDa793JsMTYIaXnYFrRwhQ2qYVnE971S4DAN+VDqSmKwHModfz7c+yAJP0wuD56ybtl+jPpIZ0n4VpXyvh9FGHwV5XRmV57nI+etAmI5fPeGy1ZjpLTOGgA7FmVPl6Low==
+ bh=VuXLU5yLJ0gmiIr00Sxe5RW0ouoQ0lTISqt4R9oYeoU=;
+ b=Nh20awRRF0biyMrtxk1BVVCsePLitKI+nbSWoHK5eAtYViF7BVvkCbyCCe76F8F6iSxoj620bPJBfP2pGpMB0JYcPyxm/DVOQf0aW39hUHMkJOvoaDjXCWDQuYRq05L17Qrv2BxGxVKts1kwyLFFnpllNSytxtgm1Iowy4bWacAuQejkwlwI6b03pceY+SybrJmayzmw9JzvDebeC4bW0aZrspp1sp20bVeUN+Fv0z1wW9Q0dw2gDJN49kuoIO59Qv5QwAFF6gHiyHXixXlpVjtOcF+CAacS+UiL6doC35n+93zWBmlBw8xFzLHWzbiLFjXQzLmsgcwXh5YP+LhjDQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yxx9Zv68qRRmYY4S50T1G2GEMLZz76QUh+dPUB7NwZE=;
- b=rX3ja036TaKua3visY7b6I+yMLaaKg3lDJREN/ps6y+B18K0EpRUntsB3TPLCyYRmHR0d5H/zHlJSyeXcaXBB8EggHUIVGcjp7vTnYnGvFZPnOoam2JmIHQyHk1yn/nCPQYm9YSnRM4FZNUV4XUu/NbgZVdMLQZeCw7J4RyManM=
-Received: from BN0PR04CA0175.namprd04.prod.outlook.com (2603:10b6:408:eb::30)
- by MW4PR12MB5627.namprd12.prod.outlook.com (2603:10b6:303:16a::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Tue, 3 May
- 2022 03:28:32 +0000
-Received: from BN8NAM11FT065.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:eb:cafe::3e) by BN0PR04CA0175.outlook.office365.com
- (2603:10b6:408:eb::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13 via Frontend
- Transport; Tue, 3 May 2022 03:28:32 +0000
+ bh=VuXLU5yLJ0gmiIr00Sxe5RW0ouoQ0lTISqt4R9oYeoU=;
+ b=5XeFtRol6zkq6ucr6nc/RvV5cfIx5YTbsVn+CPXZ1/qOx7CqTzIlrG9HaVTEJQID14FZ7f7rRZ3wCtttF2X9lg5mUQoP5ljVWpD2DLqQGLwFTBWE4lB4Re7L3MVg5TCVjC0jEKJCAiafKVuQmyV14aXMeLmODhkRDDw2Lbn24x8=
+Received: from BN9PR03CA0369.namprd03.prod.outlook.com (2603:10b6:408:f7::14)
+ by DM4PR12MB6012.namprd12.prod.outlook.com (2603:10b6:8:6c::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5206.13; Tue, 3 May 2022 03:28:35 +0000
+Received: from BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f7:cafe::a4) by BN9PR03CA0369.outlook.office365.com
+ (2603:10b6:408:f7::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.12 via Frontend
+ Transport; Tue, 3 May 2022 03:28:35 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -47,13 +46,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT065.mail.protection.outlook.com (10.13.177.63) with Microsoft SMTP
+ BN8NAM11FT054.mail.protection.outlook.com (10.13.177.102) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5206.12 via Frontend Transport; Tue, 3 May 2022 03:28:32 +0000
+ 15.20.5206.12 via Frontend Transport; Tue, 3 May 2022 03:28:35 +0000
 Received: from ethanolx50f7host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 2 May
- 2022 22:28:31 -0500
+ 2022 22:28:34 -0500
 From:   Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
 To:     <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <x86@kernel.org>
@@ -61,10 +60,12 @@ CC:     Tony Luck <tony.luck@intel.com>,
         Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>,
         <hpa@zytor.com>, Yazen Ghannam <yazen.ghannam@amd.com>,
         Dave Hansen <dave.hansen@linux.intel.com>
-Subject: [PATCH v5 0/3] x86/mce: Handle error injection failure in mce-inject module
-Date:   Mon, 2 May 2022 22:28:16 -0500
-Message-ID: <20220503032820.61667-1-Smita.KoralahalliChannabasappa@amd.com>
+Subject: [PATCH v5 2/3] x86/mce: Check for writes ignored in MCA_STATUS register
+Date:   Mon, 2 May 2022 22:28:18 -0500
+Message-ID: <20220503032820.61667-3-Smita.KoralahalliChannabasappa@amd.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220503032820.61667-1-Smita.KoralahalliChannabasappa@amd.com>
+References: <20220503032820.61667-1-Smita.KoralahalliChannabasappa@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.180.168.240]
@@ -72,51 +73,137 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: be2d4c4c-9905-45f5-0426-08da2cb4ffdd
-X-MS-TrafficTypeDiagnostic: MW4PR12MB5627:EE_
-X-Microsoft-Antispam-PRVS: <MW4PR12MB5627A1FB1D0F5C6692F49E1590C09@MW4PR12MB5627.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 61088f95-61e0-4d10-4443-08da2cb501b8
+X-MS-TrafficTypeDiagnostic: DM4PR12MB6012:EE_
+X-Microsoft-Antispam-PRVS: <DM4PR12MB60121F40E1914933CA499FD990C09@DM4PR12MB6012.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WNmDyqCuoDH16V0JlS2L9oHZLj2tVvWrbcWHNF6HzXtBtcW7qQOSbSDVdqVBHUwG45xYybT1lw50u9j3u2SIAA7aeaoA8RDkGVE3OGhXFUfeorULC6dw46xqNjYXa4jOVJaUT7Y8/iYXnhwxD3mFDMo6o96EmJJJUIF85fZj8S4QoQu+3MUXTlH3JBqazAq3mN4toG5OJn/bspr/Ihkm37fWBJhOjBqN+u9Q8YRhDAvwh5j6Y9E9RmCuw5SK4C/yCzQDyVFxt06JOQr2L2vwmZAwMOwZtE2CkfW8Zj8MF/bvs0bdplqEkD/2eJp47/8qDdyAbAcg17TXtSLhyQmIHl6XW268e0njeNoJEHUEsGgzE4/cTJrHsaKF+M5UCF7DFp6ydUS1TbDJaQZ5GNpkG+Yr8uBdVoJR8soW4gJ9PDLM753762ARaNJBhg/PfqIRCyeUhjVs+ggiqp8xYhi2If8aUTPpYmLd57/4oljGmt9LBsMsSSJbag8rVaMR+Z5jNxJS3gfI8LUa/xnKtHMsk6oeCbcJtFcBLIwSw3dYOS1HzYA9yuCfOG3s45uhMwIvYKzlL1u5gwJodIpvN0Wfqdn8XdlqV2TVYuDhU6rjpXRwH5eVvMq76WCZqbt2eeF67G95x9puP0O8t2Nvymh65xt93XaKUdmVt9Wk/cRy9Pr5DHjQvll/KakTEbwftTJczT008CQYFspLxuSbL0VZ5Q==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(5660300002)(4744005)(70586007)(6666004)(8936002)(70206006)(508600001)(86362001)(8676002)(4326008)(110136005)(40460700003)(316002)(82310400005)(36860700001)(54906003)(2906002)(356005)(47076005)(36756003)(16526019)(26005)(186003)(336012)(1076003)(426003)(2616005)(83380400001)(81166007)(7696005)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: nzNCCIS9IDLFYoXyCnnIAC6EDC5UcPmCfKwGoK7/eYnmYGOC/Va0Ov10cPyazZibVHWaIcZtHbDPbT123ioRluTdx1Gh4BtlZc6puU9HM/aoBJH2onK+2cbWCrJKfioeEUgO+NcS57/VyBi0x+BiZGbthddQlMMYbqqstC+aikciiVLZq26RRGOY+NpWFqouHjcwNb4Na0FEJ4RAQyVn3Mp2UhXomGa5Mtr9F3a6XyOqQ4+o6SPHh0ZUqaUuDgcjHnStSQY5z99zceXgthddegJ4OhtQd4AYf6X5eNzEk2CiAb656t7KFa6rMym9TCzgimZvznNbusaV8XHgXZtUamQpaylYWL+JEGiCAOz/V/L3yBM7x4XVu2rK7OK9RYUu3P7jfAphCx42S/kDeDT0kk15I0Z+W6tnjYSsRZYlh3lzVo5xGOgA5JfULlki+v9OACdhWvPXKuGRy3cIoNxKC3FEGK2B64eTrW7VcfIqZuQdy8o964t/APXxxxOHxg/klwwJAPIrSXR3tGVJRaQRLYccj6w3ZY+kL4Q4dKJTwi6WAdrMNwWYsY7EVWkuZ0sdRoPq0FrOT+JgTItGCKt3nMAuFIei89LtVRej35ghUdsPxvbVe1+wfIMd3qIrYRGDGR+uTcSZjNbHXLgwoNy1ur4aQl4+PWxOQmEpJ8SRRpVF7j1retsytzt+dhBztF8ET3fbhg+sQ1fwmLdjAvosPLqSMgBKoHMzJ615bOc770vsU1B71FSKl8Nhb2LvDomjewCgwM6al2KS0KNFRRniZHXOGAMb+4h0h5nQbE/qOyj8BL4kIXND3daZNKhdEg/bzJwTyuyvsjEX+p2kDzpgwnehpuPha9wsJFJK4mVrFtQ=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(47076005)(186003)(16526019)(316002)(1076003)(6666004)(508600001)(36860700001)(966005)(426003)(36756003)(8936002)(86362001)(336012)(110136005)(54906003)(82310400005)(7696005)(356005)(81166007)(40460700003)(83380400001)(5660300002)(26005)(70586007)(8676002)(2906002)(4326008)(70206006)(2616005)(21314003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2022 03:28:32.3975
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2022 03:28:35.5121
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: be2d4c4c-9905-45f5-0426-08da2cb4ffdd
+X-MS-Exchange-CrossTenant-Network-Message-Id: 61088f95-61e0-4d10-4443-08da2cb501b8
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT065.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB5627
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6012
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This set of patches handles a scenario of silent hw error injection
-failure on mce-inject module and returns appropriate error code to
-userspace.
+According to Section 2.1.16.3 under HWCR[McStatusWrEn] in "PPR for AMD
+Family 19h, Model 01h, Revision B1 Processors - 55898 Rev 0.35 - Feb 5,
+2021", the status register may sometimes enforce write ignored behavior
+independent of the value of HWCR[McStatusWrEn] depending on the platform
+settings.
 
-Error injection fails if the platform enforces write ignored behavior on
-status registers and the second patch checks for writes ignored from
-MCA_STATUS register and returns appropriate error code to user.
+Hence, evaluate for writes ignored for MCA_STATUS before doing hw error
+injection. If true, return the appropriate error code to userspace.
 
-The first patch does some cleanup by replacing existing struct i_mce
-with inject_desc and including error field as its member.
+Introduce "hw_injection_possible" flag to return early on subsequent
+hw error injections.
 
-The last patch assigns and returns the error code to userspace when none
-of the CPUs are online.
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=206537
+Signed-off-by: Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
+---
+Link:
+https://lkml.kernel.org/r/20220214233640.70510-2-Smita.KoralahalliChannabasappa@amd.com
 
-Smita Koralahalli (3):
-  x86/mce/mce-inject: Replace struct i_mce with struct inject_desc
-  x86/mce: Check for writes ignored in MCA_STATUS register
-  x86/mce/mce-inject: Return appropriate error code if CPUs are offline
+v2:
+	msr_ops -> mca_msr_reg().
+	simulation -> injection.
+	pr_info() -> pr_err().
+	Aligned on ",".
+v3:
+	Removed "x86/mce: Use mca_msr_reg() in prepare_msrs()" patch.
+	and made changes on the existing MCx_{STATUS, ADDR, MISC} macros.
+v4:
+	Simplified the code by just checking for writes ignored behavior in
+	MCA_STATUS register.
+	Introduced prepare_mca_status() and performed writes ignored checks
+	inside the function.
+	Rephrased error message.
+v5:
+	Replaced i_mce with inject_desc.
+	Introduction of hw_injection_possible flag to return early if HW
+	error injections are not possible.
+---
+ arch/x86/kernel/cpu/mce/inject.c   | 25 +++++++++++++++++++++++++
+ arch/x86/kernel/cpu/mce/internal.h |  2 +-
+ 2 files changed, 26 insertions(+), 1 deletion(-)
 
- arch/x86/kernel/cpu/mce/inject.c   | 124 +++++++++++++++++++----------
- arch/x86/kernel/cpu/mce/internal.h |   2 +-
- 2 files changed, 82 insertions(+), 44 deletions(-)
-
+diff --git a/arch/x86/kernel/cpu/mce/inject.c b/arch/x86/kernel/cpu/mce/inject.c
+index 05581b718529..cce068a4478c 100644
+--- a/arch/x86/kernel/cpu/mce/inject.c
++++ b/arch/x86/kernel/cpu/mce/inject.c
+@@ -33,6 +33,8 @@
+ 
+ #include "internal.h"
+ 
++static bool hw_injection_possible = true;
++
+ /* Collect all the MCi_XXX settings */
+ static struct inject_desc {
+ 	struct mce m;
+@@ -474,11 +476,29 @@ static void toggle_nb_mca_mst_cpu(u16 nid)
+ 		       __func__, PCI_FUNC(F3->devfn), NBCFG);
+ }
+ 
++static bool prepare_mca_status(void)
++{
++	u32 status_reg = mca_msr_reg(inj_desc.m.bank, MCA_STATUS);
++	u64 status_val = inj_desc.m.status;
++
++	wrmsrl(status_reg, status_val);
++	rdmsrl(status_reg, status_val);
++
++	return status_val == inj_desc.m.status;
++}
++
+ static void prepare_msrs(void *unused)
+ {
+ 	struct mce *m = &inj_desc.m;
+ 	u8 b = inj_desc.m.bank;
+ 
++	if (!prepare_mca_status()) {
++		pr_err("Platform does not allow error injection, try using APEI EINJ instead.\n");
++		inj_desc.err = -EINVAL;
++		hw_injection_possible = false;
++		return;
++	}
++
+ 	wrmsrl(MSR_IA32_MCG_STATUS, m->mcgstatus);
+ 
+ 	if (boot_cpu_has(X86_FEATURE_SMCA)) {
+@@ -521,6 +541,11 @@ static int do_inject(void)
+ 		return 0;
+ 	}
+ 
++	if (!hw_injection_possible) {
++		pr_err("SW-only injection possible on this platform");
++		return -EINVAL;
++	}
++
+ 	/* prep MCE global settings for the injection */
+ 	mcg_status = MCG_STATUS_MCIP | MCG_STATUS_EIPV;
+ 
+diff --git a/arch/x86/kernel/cpu/mce/internal.h b/arch/x86/kernel/cpu/mce/internal.h
+index 4ae0e603f7fa..7e03f5b7f6bd 100644
+--- a/arch/x86/kernel/cpu/mce/internal.h
++++ b/arch/x86/kernel/cpu/mce/internal.h
+@@ -211,7 +211,7 @@ noinstr u64 mce_rdmsrl(u32 msr);
+ 
+ static __always_inline u32 mca_msr_reg(int bank, enum mca_msr reg)
+ {
+-	if (mce_flags.smca) {
++	if (cpu_feature_enabled(X86_FEATURE_SMCA)) {
+ 		switch (reg) {
+ 		case MCA_CTL:	 return MSR_AMD64_SMCA_MCx_CTL(bank);
+ 		case MCA_ADDR:	 return MSR_AMD64_SMCA_MCx_ADDR(bank);
 -- 
 2.17.1
 
