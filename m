@@ -2,38 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABBC9C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:15:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC26C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:16:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231717AbiECHT1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 03:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48500 "EHLO
+        id S231772AbiECHTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:19:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231773AbiECHTI (ORCPT
+        with ESMTP id S231661AbiECHSl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 03:19:08 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A209B186FC;
-        Tue,  3 May 2022 00:15:36 -0700 (PDT)
-X-UUID: 64464b7eb79242ea9b02281a137c1df0-20220503
+        Tue, 3 May 2022 03:18:41 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E95437031;
+        Tue,  3 May 2022 00:15:06 -0700 (PDT)
+X-UUID: 54b803bd331945b1a7b0bf9d176817c9-20220503
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:2aa6db3f-5e30-491f-84ee-de8d59f5a4a3,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:-20
-X-CID-META: VersionHash:faefae9,CLOUDID:fea5822f-6199-437e-8ab4-9920b4bc5b76,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 64464b7eb79242ea9b02281a137c1df0-20220503
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw02.mediatek.com
+X-CID-O-INFO: VERSION:1.1.4,REQID:f3ad91a8-27f2-4aa6-95a8-99996b61ebc0,OB:10,L
+        OB:10,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ha
+        m,ACTION:release,TS:80
+X-CID-INFO: VERSION:1.1.4,REQID:f3ad91a8-27f2-4aa6-95a8-99996b61ebc0,OB:10,LOB
+        :10,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3
+        D,ACTION:quarantine,TS:80
+X-CID-META: VersionHash:faefae9,CLOUDID:29a2822f-6199-437e-8ab4-9920b4bc5b76,C
+        OID:641a58b95193,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 54b803bd331945b1a7b0bf9d176817c9-20220503
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
         (envelope-from <yong.wu@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1801800832; Tue, 03 May 2022 15:15:30 +0800
+        with ESMTP id 1110697514; Tue, 03 May 2022 15:15:01 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
  mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 3 May 2022 15:15:28 +0800
+ 15.2.792.15; Tue, 3 May 2022 15:15:00 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 3 May 2022 15:15:27 +0800
+ Transport; Tue, 3 May 2022 15:14:58 +0800
 From:   Yong Wu <yong.wu@mediatek.com>
 To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
         "Matthias Brugger" <matthias.bgg@gmail.com>,
@@ -52,9 +56,9 @@ CC:     Robin Murphy <robin.murphy@arm.com>,
         <angelogioacchino.delregno@collabora.com>,
         <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
         <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v7 05/36] iommu/mediatek: Add list_del in mtk_iommu_remove
-Date:   Tue, 3 May 2022 15:13:56 +0800
-Message-ID: <20220503071427.2285-6-yong.wu@mediatek.com>
+Subject: [PATCH v7 02/36] dt-bindings: mediatek: mt8195: Add binding for infra IOMMU
+Date:   Tue, 3 May 2022 15:13:53 +0800
+Message-ID: <20220503071427.2285-3-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220503071427.2285-1-yong.wu@mediatek.com>
 References: <20220503071427.2285-1-yong.wu@mediatek.com>
@@ -65,33 +69,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Lack the list_del in the mtk_iommu_remove, and remove
-bus_set_iommu(*, NULL) since there may be several iommu HWs.
-we can not bus_set_iommu null when one iommu driver unbind.
+In mt8195, we have a new IOMMU that is for INFRA IOMMU. its masters
+mainly are PCIe and USB. Different with MM IOMMU, all these masters
+connect with IOMMU directly, there is no mediatek,larbs property for
+infra IOMMU.
 
-This could be a fix for mt2712 which support 2 M4U HW and list them.
+Another thing is about PCIe ports. currently the function
+"of_iommu_configure_dev_id" only support the id number is 1, But our
+PCIe have two ports, one is for reading and the other is for writing.
+see more about the PCIe patch in this patchset. Thus, I only list
+the reading id here and add the other id in our driver.
 
-Fixes: 7c3a2ec02806 ("iommu/mediatek: Merge 2 M4U HWs into one iommu domain")
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/iommu/mtk_iommu.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ .../bindings/iommu/mediatek,iommu.yaml         | 13 ++++++++++++-
+ .../dt-bindings/memory/mt8195-memory-port.h    | 18 ++++++++++++++++++
+ include/dt-bindings/memory/mtk-memory-port.h   |  2 ++
+ 3 files changed, 32 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 95c82b8bcc35..e4b4ebbcb73f 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -955,8 +955,7 @@ static int mtk_iommu_remove(struct platform_device *pdev)
- 	iommu_device_sysfs_remove(&data->iommu);
- 	iommu_device_unregister(&data->iommu);
+diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+index 2223408e91a9..eed59ec00e78 100644
+--- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
++++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+@@ -79,6 +79,7 @@ properties:
+           - mediatek,mt8192-m4u  # generation two
+           - mediatek,mt8195-iommu-vdo        # generation two
+           - mediatek,mt8195-iommu-vpp        # generation two
++          - mediatek,mt8195-iommu-infra      # generation two
  
--	if (iommu_present(&platform_bus_type))
--		bus_set_iommu(&platform_bus_type, NULL);
-+	list_del(&data->list);
+       - description: mt7623 generation one
+         items:
+@@ -131,7 +132,6 @@ required:
+   - compatible
+   - reg
+   - interrupts
+-  - mediatek,larbs
+   - '#iommu-cells'
  
- 	clk_disable_unprepare(data->bclk);
- 	device_link_remove(data->smicomm_dev, &pdev->dev);
+ allOf:
+@@ -163,6 +163,17 @@ allOf:
+       required:
+         - power-domains
+ 
++  - if: # The IOMMUs don't have larbs.
++      not:
++        properties:
++          compatible:
++            contains:
++              const: mediatek,mt8195-iommu-infra
++
++    then:
++      required:
++        - mediatek,larbs
++
+ additionalProperties: false
+ 
+ examples:
+diff --git a/include/dt-bindings/memory/mt8195-memory-port.h b/include/dt-bindings/memory/mt8195-memory-port.h
+index c10e8b61f1e8..70ba9f498eeb 100644
+--- a/include/dt-bindings/memory/mt8195-memory-port.h
++++ b/include/dt-bindings/memory/mt8195-memory-port.h
+@@ -387,4 +387,22 @@
+ #define M4U_PORT_L28_CAM_DRZS4NO_R1		MTK_M4U_ID(28, 5)
+ #define M4U_PORT_L28_CAM_TNCSO_R1		MTK_M4U_ID(28, 6)
+ 
++/* Infra iommu ports */
++/* PCIe1: read: BIT16; write BIT17. */
++#define IOMMU_PORT_INFRA_PCIE1			MTK_IFAIOMMU_PERI_ID(16)
++/* PCIe0: read: BIT18; write BIT19. */
++#define IOMMU_PORT_INFRA_PCIE0			MTK_IFAIOMMU_PERI_ID(18)
++#define IOMMU_PORT_INFRA_SSUSB_P3_R		MTK_IFAIOMMU_PERI_ID(20)
++#define IOMMU_PORT_INFRA_SSUSB_P3_W		MTK_IFAIOMMU_PERI_ID(21)
++#define IOMMU_PORT_INFRA_SSUSB_P2_R		MTK_IFAIOMMU_PERI_ID(22)
++#define IOMMU_PORT_INFRA_SSUSB_P2_W		MTK_IFAIOMMU_PERI_ID(23)
++#define IOMMU_PORT_INFRA_SSUSB_P1_1_R		MTK_IFAIOMMU_PERI_ID(24)
++#define IOMMU_PORT_INFRA_SSUSB_P1_1_W		MTK_IFAIOMMU_PERI_ID(25)
++#define IOMMU_PORT_INFRA_SSUSB_P1_0_R		MTK_IFAIOMMU_PERI_ID(26)
++#define IOMMU_PORT_INFRA_SSUSB_P1_0_W		MTK_IFAIOMMU_PERI_ID(27)
++#define IOMMU_PORT_INFRA_SSUSB2_R		MTK_IFAIOMMU_PERI_ID(28)
++#define IOMMU_PORT_INFRA_SSUSB2_W		MTK_IFAIOMMU_PERI_ID(29)
++#define IOMMU_PORT_INFRA_SSUSB_R		MTK_IFAIOMMU_PERI_ID(30)
++#define IOMMU_PORT_INFRA_SSUSB_W		MTK_IFAIOMMU_PERI_ID(31)
++
+ #endif
+diff --git a/include/dt-bindings/memory/mtk-memory-port.h b/include/dt-bindings/memory/mtk-memory-port.h
+index 7d64103209af..2f68a0511a25 100644
+--- a/include/dt-bindings/memory/mtk-memory-port.h
++++ b/include/dt-bindings/memory/mtk-memory-port.h
+@@ -12,4 +12,6 @@
+ #define MTK_M4U_TO_LARB(id)		(((id) >> 5) & 0x1f)
+ #define MTK_M4U_TO_PORT(id)		((id) & 0x1f)
+ 
++#define MTK_IFAIOMMU_PERI_ID(port)	MTK_M4U_ID(0, port)
++
+ #endif
 -- 
 2.18.0
 
