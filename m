@@ -2,140 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D3BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 16:18:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64DE9C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 16:19:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239322AbiECQVj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 12:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
+        id S239335AbiECQXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 12:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239196AbiECQVh (ORCPT
+        with ESMTP id S239196AbiECQXS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 12:21:37 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B29752F3AF
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 09:18:04 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id a10so18645688oif.9
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 09:18:04 -0700 (PDT)
+        Tue, 3 May 2022 12:23:18 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D714B2CE3F
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 09:19:44 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id t25so31166417lfg.7
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 09:19:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=digitalocean.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Q51Ia3tetkXHUbkcfKD8S+gdtewHxa7+IUzoOiuzmQM=;
-        b=DXNemHdAsSJnzRfAFmFJDu7rxBi3j2CgdmhDiTTYFUQVZd81cb6Uc+goqkxzhoaGaE
-         rc1WCcIRmRkCpMkO0bJFB3uqZkeysudG4ESGLjj/ionJPTbCH6O/8VdViXZbrD2f4QEs
-         3SJHX2OkoKRviER0B91sBk/C0juHWnWJQLLHU=
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6JG3HzoSawUya4Ff5hOskiwsDPqB8IOURZiJ3WxkT7I=;
+        b=XyTHbO/T17RhX6KeTaQRsyWHKfUZUjRIcfF2dxzjhwrNQCTLyaHdRtlVu0D3ZMfUOr
+         yLARl+3w/sPGEBVgTRp4sRNYGbtxaOSoBGfOkj0VKZT+OwDCqmOkbOxZ5/UxuREnKMBZ
+         5rlI886BqT1O89jxNYWRi10yebcu9Avcp57aA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Q51Ia3tetkXHUbkcfKD8S+gdtewHxa7+IUzoOiuzmQM=;
-        b=vSoprdLYWHUkA+URUmUy7/nIaWEReZIPFWjsB1g/eu/eWnpkTUypBLzPIrsb/WhyTz
-         vnmO7DWH5uGtWB7Mvs84mPP5nUcP7Yp08geOnRMSSG00EBaLFyPk/kYvjY7wnMB6Qc3A
-         amjzx9KdN7EdiYAoOKXsW67UQMRWHL4gAjQIIlWYVFb93rfFEuntBxogu1FxdQbBHatM
-         ZMsE0sPN7tCIkpbn4kS5OGWE/GsIHQB8wksIC/YI1FCPjlIbgnC3O4E/QciCxkJkjFdH
-         MtEmjnkFvNWOFavBWyNF+1tFebzw2LcRf2fD5gABu30+ClOO8CtEOK3E6w/ysX/vDNE/
-         nOcA==
-X-Gm-Message-State: AOAM530loEwqlBoZGWzaXNBi1ZxJsgR60VtaYdVfEtPP9dBxIgzfEzGX
-        punen2SR8Jb3JZzaeLP7vAxh0w==
-X-Google-Smtp-Source: ABdhPJzaqQPI/1igl+iB0OUCnACAJFry6dBnUhBprcHogtJiHS4VmyVxX1E5pHmdYanKyutyiI/1rA==
-X-Received: by 2002:a05:6808:1202:b0:322:dc37:2c3b with SMTP id a2-20020a056808120200b00322dc372c3bmr2217794oil.298.1651594683941;
-        Tue, 03 May 2022 09:18:03 -0700 (PDT)
-Received: from localhost ([2605:a601:ac0f:820:80d8:f53c:c84d:deaa])
-        by smtp.gmail.com with ESMTPSA id 8-20020a056870124800b000e686d13888sm7369543oao.34.2022.05.03.09.18.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 09:18:03 -0700 (PDT)
-Date:   Tue, 3 May 2022 11:18:02 -0500
-From:   Seth Forshee <sforshee@digitalocean.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: Re: [PATCH] entry/kvm: Make vCPU tasks exit to userspace when a
- livepatch is pending
-Message-ID: <YnFVugyU8+XBVRqL@do-x1extreme>
-References: <20220503125729.2556498-1-sforshee@digitalocean.com>
- <YnE5kTeGmzKkDTWx@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6JG3HzoSawUya4Ff5hOskiwsDPqB8IOURZiJ3WxkT7I=;
+        b=wUzT7loSnEY/RLipltB7wASy8GF/Gazs8SdPVpTimiZS+eDrhJBUifg5Ke7W0qYAYt
+         UDG30o1gmS9rnGDioU4PUHgH4UgarVv7qBUBDb0cgUn7klAwX3eLPBwDNTfSHSb3wKlz
+         dt3JcAhbIk62B3abMHAsSptAnuMq7cVHfUcwKtqHpZMpk9gv67mBDt9RS4RXP513hLHC
+         wGYTmrNzUOsYw3MomIzpPtuhieF42L+NvruCpqVGVtpkWVmG/Tkmju6D6b3/z5O8JNny
+         LTpwWm2Tg+ngIHTIV3MeYfbwGsw/uZVRgxEPJOLGS5HLF7j+ARDfaeD0gEllt/I4m9w/
+         d2hw==
+X-Gm-Message-State: AOAM531d0w3UJT5FrYtrCXW3WaSqqqeTdJ83yTOO2k594iufuJK0Ly1M
+        X/F+cxCpE5LyRkt1xUoY4+E6gR2QGjwgmOPG
+X-Google-Smtp-Source: ABdhPJzk0b3QFAyhFMow4te3Pl8C2/a+mMrZgvOfpWRXqyR0qI9RH2HMm5YxItPpMtqbM2NK8ZzxSw==
+X-Received: by 2002:a05:6512:3191:b0:472:5e00:1bee with SMTP id i17-20020a056512319100b004725e001beemr9500683lfe.129.1651594782450;
+        Tue, 03 May 2022 09:19:42 -0700 (PDT)
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com. [209.85.208.174])
+        by smtp.gmail.com with ESMTPSA id f12-20020a2eb5ac000000b0024f3d1daea1sm1385006ljn.41.2022.05.03.09.19.41
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 09:19:41 -0700 (PDT)
+Received: by mail-lj1-f174.google.com with SMTP id q14so22619401ljc.12
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 09:19:41 -0700 (PDT)
+X-Received: by 2002:a2e:934b:0:b0:24f:cce:5501 with SMTP id
+ m11-20020a2e934b000000b0024f0cce5501mr10518058ljh.443.1651594781101; Tue, 03
+ May 2022 09:19:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnE5kTeGmzKkDTWx@google.com>
+References: <20220426145445.2282274-1-agruenba@redhat.com> <CAHk-=wi7o+fHYBTuCQQdHD112YHQtO21Y3+wxNYypjdo8feKFg@mail.gmail.com>
+ <CAHc6FU48681X8aUK+g7UUN7q5b6rkVBzTP7h_zbE4XqZYAiw3g@mail.gmail.com>
+ <CAHk-=wjMB1-xCOCBtsSMmQuFV9G+vNyCY1O_LsoqOd=0QS4yYg@mail.gmail.com>
+ <CAHc6FU5Bag5W2t79+WzUq=NibtEF+7z6=jyNCkLMMp9Yqvpmqw@mail.gmail.com>
+ <CAHk-=whaz-g_nOOoo8RRiWNjnv2R+h6_xk2F1J4TuSRxk1MtLw@mail.gmail.com>
+ <CAHc6FU5654k7QBU97g_Ubj8cJEWuA_bXPuXOPpBBYoXVPMJG=g@mail.gmail.com>
+ <CAHk-=wgSYSNc5sF2EVxhjbSc+c4LTs90aYaK2wavNd_m2bUkGg@mail.gmail.com>
+ <CAHc6FU69E4ke4Xg3zQ2MqjLbfM65D9ZajdY5MRDLN0azZOGmVQ@mail.gmail.com>
+ <CAHk-=whQxvMvty8SjiGMh+gM4VmCYvqn6EAwmrDXJaHT2Aa+UA@mail.gmail.com>
+ <CAHk-=wicJdoCjPLu7FhaErr6Z3UaW820U2b+F-8P4qwSFUZ0mg@mail.gmail.com>
+ <CAHc6FU7GkXLkns5PONLvsSi6HB+rjaNSyFeQFS034tKL-JueMw@mail.gmail.com>
+ <CAHk-=wg4ypnZUA5BOHAF1miKvOhW2yQSruuBKNXMDR=dTmp+ww@mail.gmail.com>
+ <CAHc6FU6VgQDO7HT5f4S_4f=9hczKGRDQ6SbQ5kNHMi4i-6rxVA@mail.gmail.com>
+ <CAHk-=whL74iP6v2P+OafGO0H72ag4wt42k+Kc_01boLP8aqUNQ@mail.gmail.com> <CAHc6FU77KGn76B4ieu9Tn895deK-1yV4y=8ou4gTfUf=7C-4XQ@mail.gmail.com>
+In-Reply-To: <CAHc6FU77KGn76B4ieu9Tn895deK-1yV4y=8ou4gTfUf=7C-4XQ@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 3 May 2022 09:19:24 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whfP+m6--NtUeOm5XTuhBGHkyoqd00ypW6v3RkzMFLU8g@mail.gmail.com>
+Message-ID: <CAHk-=whfP+m6--NtUeOm5XTuhBGHkyoqd00ypW6v3RkzMFLU8g@mail.gmail.com>
+Subject: Re: [GIT PULL] gfs2 fix
+To:     Andreas Gruenbacher <agruenba@redhat.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Dave Chinner <dchinner@redhat.com>,
+        cluster-devel <cluster-devel@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 02:17:53PM +0000, Sean Christopherson wrote:
-> On Tue, May 03, 2022, Seth Forshee wrote:
-> > A livepatch migration for a task can only happen when the task is
-> > sleeping or it exits to userspace. This may happen infrequently for a
-> > heavily loaded vCPU task, leading to livepatch transition failures.
-> > 
-> > Fake signals will be sent to tasks which fail to migrate via stack
-> > checking. This will cause running vCPU tasks to exit guest mode, but
-> > since no signal is pending they return to guest execution without
-> > exiting to userspace. Fix this by treating a pending livepatch migration
-> > like a pending signal, exiting to userspace with EINTR. This allows the
-> > migration to complete, and userspace should re-excecute KVM_RUN to
-> > resume guest execution.
-> > 
-> > In my testing, systems where livepatching would timeout after 60 seconds
-> > were able to load livepatches within a couple of seconds with this
-> > change.
-> > 
-> > Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
-> > ---
-> >  kernel/entry/kvm.c | 7 ++++++-
-> >  1 file changed, 6 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/kernel/entry/kvm.c b/kernel/entry/kvm.c
-> > index 9d09f489b60e..efe4b791c253 100644
-> > --- a/kernel/entry/kvm.c
-> > +++ b/kernel/entry/kvm.c
-> > @@ -14,7 +14,12 @@ static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
-> >  				task_work_run();
-> >  		}
-> >  
-> > -		if (ti_work & _TIF_SIGPENDING) {
-> > +		/*
-> > +		 * When a livepatch migration is pending, force an exit to
-> 
-> Can the changelog and comment use terminology other than migration?  Maybe "transition"?
-> That seems to be prevelant through the livepatch code and docs.  There are already
-> too many meanings for "migration" in KVM, e.g. live migration, page migration, task/vCPU
-> migration, etc...
+On Tue, May 3, 2022 at 1:56 AM Andreas Gruenbacher <agruenba@redhat.com> wrote:
+>
+> We still get data corruption with the patch applied. The
+> WARN_ON_ONCE(!bytes) doesn't trigger.
 
-"Transition" is used a lot, but afaict it refers to the overall state of
-the livepatch. "Migrate" is used a lot less, but it always seems to
-refer to patching a single task, which is why I used that term. But I
-can see the opportunity for confusion, so I'll reword it.
+Oh well. I was so sure that I'd finally found something.. That partial
+write case has had bugs before.
 
-> 
-> > +		 * userspace as though a signal is pending to allow the
-> > +		 * migration to complete.
-> > +		 */
-> > +		if (ti_work & (_TIF_SIGPENDING | _TIF_PATCH_PENDING)) {
-> 
-> _TIF_PATCH_PENDING needs to be in XFER_TO_GUEST_MODE_WORK too, otherwise there's
-> no guarantee KVM will see the flag and invoke xfer_to_guest_mode_handle_work().
+> As an additional experiment, I've added code to check the iterator
+> position that iomap_file_buffered_write() returns, and it's all
+> looking good as well: an iov_iter_advance(orig_from, written) from the
+> original position always gets us to the same iterator.
 
-Yes, you are right. I was relying on the livepatch code setting
-_TIF_NOTIFY_SIGNAL for vCPU tasks which were running, but it would be
-better to have _TIF_PATCH_PENDING in XFER_TO_GUEST_MODE_WORK too.
+Yeah, I've looked at the iterator parts (and iov_iter_revert() in
+particular) multiple times, because that too is an area where we've
+had bugs before.
 
-Thanks,
-Seth
+That too may be easy to get wrong, but I couldn't for the life of me
+see any issues there.
 
-> 
-> >  			kvm_handle_signal_exit(vcpu);
-> >  			return -EINTR;
-> >  		}
-> > -- 
-> > 2.32.0
-> > 
+> This points at gfs2 getting things wrong after a short write, for
+> example, marking a page / folio uptodate that isn't. But the uptodate
+> handling happens at the iomap layer, so this doesn't leave me with an
+> immediate suspect.
+
+Yeah, the uptodate setting looked safe, particularly with that "if we
+copied less than we thought we would, and it wasn't uptodate, just
+claim we didn't do anything at all".
+
+That said, I now have a *new* suspect: the 'iter->pos' handling in
+iomap_write_iter().
+
+In particular, let's look at iomap_file_buffered_write(), which does:
+
+        while ((ret = iomap_iter(&iter, ops)) > 0)
+                iter.processed = iomap_write_iter(&iter, i);
+
+and then look at what happens to iter.pos here.
+
+iomap_write_iter() does this:
+
+        loff_t pos = iter->pos;
+        ...
+                pos += status;
+
+but it never seems to write the updated position back to the iterator.
+
+So what happens next time iomap_write_iter() gets called?
+
+This looks like such a huge bug that I'm probably missing something,
+but I wonder if this is normally hidden by the fact that usually
+iomap_write_iter() consumes the whole 'iter', so despite the 'while()'
+loop, it's actually effectively only called once.
+
+Except if it gets a short write due to an unhandled page fault..
+
+Am I entirely blind, and that 'iter.pos' is updated somewhere and I
+just missed it?
+
+Or is this maybe the reason for it all?
+
+                Linus
