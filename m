@@ -2,167 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F4F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 06:13:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51B59C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 06:20:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344838AbiEDGQb (ORCPT
+        id S1344873AbiEDGYN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 02:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44570 "EHLO
+        Wed, 4 May 2022 02:24:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233453AbiEDGQ3 (ORCPT
+        with ESMTP id S233453AbiEDGYL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 02:16:29 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FDF17051
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 23:12:54 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id j4so614840lfh.8
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 23:12:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=2tuqEYU8OdIQxZ+rdModr4KYTKneYsLdEMUMbVDbBTk=;
-        b=BWUeIlVpukCSflMHB1tgYceEosqVc9oe/jVXzIYsrusbl87pNjhYnDjv9qEL0oLhwn
-         aa5UjM1m72/z0Hga1RJHxiWZAKJqXW7wF3rMzST8CqwYHbsHDVJmbnoWbRlJOuZlx6tU
-         ySVvgdDG7ZICzvh3u7mvZrki7RSf7Jlvyp9n+9KOD688mckez/KQg0eVURkS5L/boK+e
-         IbT0Ut7YD4VLvL2Hh6VnoxQu4td6H/Fr3wJXIwAUC0p64RQorCh9AzQc5A4aFkxjWj4X
-         zV3ANrN2TxFoRJ8c3bWK+NaiHY6YqPwSlTVWKpnmiPXr/oEYIm7X6CGb+/md6PS/104Z
-         VzNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=2tuqEYU8OdIQxZ+rdModr4KYTKneYsLdEMUMbVDbBTk=;
-        b=hec23Veh5TMteIfzo8ujr22kPo4KB6zdAFBayb0rc9cDjy/FreGv/WMH9ahxLa8liM
-         NN3Dv6VPYhlqF7divpwAZIF2LBLcc5iRmBoLC08136MwEBKZOtaLNYqfaqVhhNDzR1Qe
-         LFxf58EIM8yDOumGXsUTNvpo4lmaPgCTHN7gdzU+aYOS8hsCg89WCfeaZufl4+2QyhYY
-         Zqq3v3fGoW1F73zLQntdusRyJ4/hIhCbNy3OCQ1Oah73Zn3oq0TiIfBX6nVGrbD+pjjS
-         3iMQuFnxvQqAbGkh0biJu7ZiJNtOpn9djvgTbqyV4c2l4nApJl0uc+PBWiKPabaMf1d2
-         sDkg==
-X-Gm-Message-State: AOAM532ZOxxiIXOoXZmJuT0zHXXBcNk329Q5lPnHOr2Q/UBkWxmtgq1j
-        SQ50P0+GBm2D1TXuyi+QbRIn5g==
-X-Google-Smtp-Source: ABdhPJwS/7njQpo3DbfyMqUKtFd3wGDymfnni39lsDf6ApW3pU5xpDjIEk2egMPRoKYUqDcviFdi4w==
-X-Received: by 2002:a05:6512:118b:b0:46b:a9ae:3a3b with SMTP id g11-20020a056512118b00b0046ba9ae3a3bmr13477930lfr.188.1651644772957;
-        Tue, 03 May 2022 23:12:52 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id c3-20020ac25303000000b0047255d210f9sm1119231lfh.40.2022.05.03.23.12.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 23:12:52 -0700 (PDT)
-Message-ID: <031fccd7-0082-8284-967d-285525a64394@linaro.org>
-Date:   Wed, 4 May 2022 09:12:51 +0300
+        Wed, 4 May 2022 02:24:11 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1911C22;
+        Tue,  3 May 2022 23:20:36 -0700 (PDT)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2430a43t003197;
+        Tue, 3 May 2022 00:51:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=io17PxlLCWimwV2Nh2lqxTdERfa0awsdAaQIC6rX2zo=;
+ b=Bc96s/qLHag9Wl9Wge9dxA7V7fTYnF77594mCEq0YiGKkNNbr/VgU27KGHtUxWORzJew
+ wBYlybVVwKLNMRcPtvzjkO7cy2O6tCFYUXOpvm84r7M9hNs+xx/SYlPYjTMCTRMv9vkb
+ 8CUfYaOyZJ6n0V5GO9jK+3tIuD1eeYzNF7IxCWKtsulHUnrLamoPCEN+LXrcrd2YlSqg
+ khnRBnyXTrnUjet1mqOFr2bUAJu62QqOocMio1bvz7KN+D9V0fNd7H+9NrmHfPKIR455
+ 5CIOFRCiioqnrmh6l+mrs0XHSiXI3wsoqWWMuN0k8tcf8ez6ANO+3yYeTgsUA9RNc//u Og== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frw0amhj8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:51:58 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430oobs008895;
+        Tue, 3 May 2022 00:51:57 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x8r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:51:57 +0000
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430pljU010389;
+        Tue, 3 May 2022 00:51:56 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-17;
+        Tue, 03 May 2022 00:51:56 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     njavali@marvell.com, cgel.zte@gmail.com
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        ran jianping <ran.jianping@zte.com.cn>,
+        GR-QLogic-Storage-Upstream@marvell.com,
+        linux-kernel@vger.kernel.org, jejb@linux.ibm.com,
+        Zeal Robot <zealci@zte.com.cn>, linux-scsi@vger.kernel.org
+Subject: Re: [PATCH] scsi: qla2xxx: remove unneeded flush_workqueue
+Date:   Mon,  2 May 2022 20:51:27 -0400
+Message-Id: <165153836361.24053.8662932109576640463.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220424062413.3220315-1-ran.jianping@zte.com.cn>
+References: <20220424062413.3220315-1-ran.jianping@zte.com.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] drm: Document that power requirements for DP AUX
- transfers
-Content-Language: en-GB
-To:     Douglas Anderson <dianders@chromium.org>,
-        dri-devel@lists.freedesktop.org
-Cc:     Lyude Paul <lyude@redhat.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Maxime Ripard <maxime@cerno.tech>,
-        linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
-        Stephen Boyd <swboyd@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Imre Deak <imre.deak@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
-        linux-kernel@vger.kernel.org
-References: <20220503162033.1.Ia8651894026707e4fa61267da944ff739610d180@changeid>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220503162033.1.Ia8651894026707e4fa61267da944ff739610d180@changeid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: ixOQLF1ALJOdan8beO89ZFIi_DIT5pH8
+X-Proofpoint-ORIG-GUID: ixOQLF1ALJOdan8beO89ZFIi_DIT5pH8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/05/2022 02:21, Douglas Anderson wrote:
-> When doing DP AUX transfers there are two actors that need to be
-> powered in order for the DP AUX transfer to work: the DP source and
-> the DP sync.
+On Sun, 24 Apr 2022 06:24:13 +0000, cgel.zte@gmail.com wrote:
 
-Nit: sink
+> From: ran jianping <ran.jianping@zte.com.cn>
+> 
+> All work currently pending will be done first by calling destroy_workqueue,
+> so there is no need to flush it explicitly.
+> 
+> 
 
-> Commit bacbab58f09d ("drm: Mention the power state
-> requirement on side-channel operations") added some documentation
-> saying that the DP source is required to power itself up (if needed)
-> to do AUX transfers. However, that commit doesn't talk anything about
-> the DP sink.
-> 
-> For full fledged DP the sink isn't really a problem. It's expected
-> that if an external DP monitor isn't plugged in that attempting to do
-> AUX transfers won't work. It's also expected that if a DP monitor is
-> plugged in (and thus asserting HPD) that it AUX transfers will work.
+Applied to 5.19/scsi-queue, thanks!
 
-then
-
-> 
-> When we're looking at eDP, however, things are less obvious. Let's add
-> some documentation about expectations. Here's what we'll say:
-> 
-> 1. We don't expect the DP AUX transfer function to power on an eDP
-> panel. If an eDP panel is physically connected but powered off then it
-> makes sense for the transfer to fail.
-> 
-> 2. We'll document that the official way to power on a panel is via the
-> bridge chain, specifically by making sure that the panel's prepare
-> function has been called (which is called by
-> panel_bridge_pre_enable()). It's already specified in the kernel doc
-> of drm_panel_prepare() that this is the way to power the panel on and
-> also that after this call "it is possible to communicate with any
-> integrated circuitry via a command bus."
-> 
-> 3. We'll also document that for code running in the panel driver
-> itself that it is legal for the panel driver to power itself up
-> however it wants (it doesn't need to officially call
-> drm_panel_pre_enable()) and then it can do AUX bus transfers. This is
-> currently the way that edp-panel works when it's running atop the DP
-> AUX bus.
-> 
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-
-> ---
-> 
->   include/drm/display/drm_dp_helper.h | 14 +++++++++++---
->   1 file changed, 11 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/drm/display/drm_dp_helper.h b/include/drm/display/drm_dp_helper.h
-> index dca40a045dd6..e5165b708a40 100644
-> --- a/include/drm/display/drm_dp_helper.h
-> +++ b/include/drm/display/drm_dp_helper.h
-> @@ -370,9 +370,17 @@ struct drm_dp_aux {
->   	 * helpers assume this is the case.
->   	 *
->   	 * Also note that this callback can be called no matter the
-> -	 * state @dev is in. Drivers that need that device to be powered
-> -	 * to perform this operation will first need to make sure it's
-> -	 * been properly enabled.
-> +	 * state @dev is in and also no matter what state the panel is
-> +	 * in. It's expected:
-> +	 * - If the @dev providing the AUX bus is currently unpowered then
-> +	 *   it will power itself up for the transfer.
-> +	 * - If we're on eDP and the panel is not in a state where it can
-> +	 *   respond (it's not powered or it's in a low power state) then this
-> +	 *   function will return an error (but not crash). Note that if a
-> +	 *   panel driver is initiating a DP AUX transfer it may power itself
-> +	 *   up however it wants. All other code should ensure that the
-> +	 *   pre_enable() bridge chain (which eventually calls the panel
-> +	 *   prepare function) has powered the panel.
->   	 */
->   	ssize_t (*transfer)(struct drm_dp_aux *aux,
->   			    struct drm_dp_aux_msg *msg);
-
+[1/1] scsi: qla2xxx: remove unneeded flush_workqueue
+      https://git.kernel.org/mkp/scsi/c/cf97628fe1a1
 
 -- 
-With best wishes
-Dmitry
+Martin K. Petersen	Oracle Linux Engineering
