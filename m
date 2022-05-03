@@ -2,105 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 01:16:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FBB6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 01:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229555AbiECBTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 21:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48830 "EHLO
+        id S229625AbiECB2T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 21:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230337AbiECBTE (ORCPT
+        with ESMTP id S229560AbiECB2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 21:19:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 126306545
-        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 18:15:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651540528;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KPSwa6BO4nhm2D1ATK5m6d1e69zEH/tlPY6FsAWaZCg=;
-        b=bDhWpTGUvc6OPfQzNO0x00g+aE0PY7hTK4UaWlLfsOWDtsCNPBmZ4JWEmOy1BKTiSwZW8E
-        ukZ7DEYioDOIOt+q79Ldxx6UGHB2TFirKyeCGV8m4Jbyj7BHhUyGWYxyJeIaHqryr+9NSg
-        e8C4fBvNve2dpE+oNI+or4ss1kzRbis=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-658-vAllI6uhMz6S3pSAPwOLkQ-1; Mon, 02 May 2022 21:15:27 -0400
-X-MC-Unique: vAllI6uhMz6S3pSAPwOLkQ-1
-Received: by mail-pj1-f69.google.com with SMTP id l2-20020a17090ad10200b001ca56de815aso523920pju.0
-        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 18:15:27 -0700 (PDT)
+        Mon, 2 May 2022 21:28:18 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096B210B3
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 18:24:47 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id p8so13609675pfh.8
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 18:24:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=khN4bSzgSmeJrIrtbbdzuHfsBE5dtKb/D17YqTGzfL8=;
+        b=XCO8kH0F5C04LPnTIDtteEB5GrIymqMB+WvOR2GPxPFQ9xKWdXuAju9Fd8Lteah3LV
+         f4YfbhntC1qJBBlU9kdX42V0YIP5/HGfJ2LUXkT71UWH2KPOJ+367UujuCuMBbsjcgtv
+         +nDQnnE36Rcv9LCYU9FRCyil9/jnvSBcMW9jY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=KPSwa6BO4nhm2D1ATK5m6d1e69zEH/tlPY6FsAWaZCg=;
-        b=SxjJBgxQFYJrHWQ3XJPq4V+kmwhhV0mAZTaDd7TEt3KGwwAlklXnTbQwiRumh4erQe
-         /CQvsZ4dIN8C/MQmQRaHRgyTdtwMlRmA89EU+mZ+Q6uygBUHESs0eZlMDck2onsRqOrf
-         ZsUAK63JP+CeedDBBYZrcpMOFcdQ9xkJYkifWRyJ+r6aS64EdadX+v5Xn1YLCyAj32+S
-         xazPeCbfAlvjCH/VDhlgP6PW2RHyFsQhj/wT8WsmoeNFK6U2XZtbxBjC+N5Mu5voVDaK
-         Dt4IdNYknSAuHSEN+DBL38GcbMQO+L2ZC5BuHoBQvKRY4OR5jdAocauq1JHupnB1RVXN
-         kGOQ==
-X-Gm-Message-State: AOAM532nVxDFW6N2CRhL+mXPpogwn1whfffRGOwFy+tFU+fMyER9v4j/
-        boxtVYvwDUjtffL1MyD/+plt/w0r5i8L47f4GPgvPk38pFoiamgSDhNIuCRKGi638g7Juz+wlB2
-        Qb/zvCvYYl0BZ/qQCSmW0NOd6
-X-Received: by 2002:a17:90b:1b07:b0:1dc:5ec5:56b0 with SMTP id nu7-20020a17090b1b0700b001dc5ec556b0mr2084207pjb.165.1651540526632;
-        Mon, 02 May 2022 18:15:26 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyYaUKBUmtnpR1yq4t3oy9VkaYKnH/ZmncA1pOMAEMZOY2M85HcjCLicImCLIKUwltXpRVGiA==
-X-Received: by 2002:a17:90b:1b07:b0:1dc:5ec5:56b0 with SMTP id nu7-20020a17090b1b0700b001dc5ec556b0mr2084173pjb.165.1651540526288;
-        Mon, 02 May 2022 18:15:26 -0700 (PDT)
-Received: from [10.10.69.234] ([8.34.116.185])
-        by smtp.gmail.com with ESMTPSA id j5-20020a654d45000000b003c14af50621sm11895993pgt.57.2022.05.02.18.15.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 May 2022 18:15:25 -0700 (PDT)
-Message-ID: <08e9855c-395d-f40c-de3d-1ec8b644bfe8@redhat.com>
-Date:   Tue, 3 May 2022 03:15:24 +0200
+        bh=khN4bSzgSmeJrIrtbbdzuHfsBE5dtKb/D17YqTGzfL8=;
+        b=ABP0LhMyl1tISR0qktB0p/5Uq8vFxGN+B3+Fx0Xg/0hRJf9SIN7iReyQ2HL8R+0nt7
+         OgqCcFRnb7hXhHGyTcPTB2VtdwcCkJU8zZEI5k10pWwXrBgtpi/z7TqT4agFAa49XM4w
+         dO0k3Achbz6sCo6+bBupiQpYX7abebs+OWNnmzcpR0NjyKAXLddGUHuh6fRcb6gYD8Pe
+         u3hVXF4cnn2f2mCr8w+6KONOwavZqpT37mWuiPjZ2b83p9Xj3Wr9Bap88pniYs8Y8hgt
+         PGYy3uQ/fwM5pHhiVI9/aOaZOsC1jbU8eAT0sMZcVkqJhjyRECThq6SDgtnxpenyCalu
+         u4Sg==
+X-Gm-Message-State: AOAM531PxEFKqQp/A6ZmHjd4cmTtVqDy+I00qeTWbzgZto50ysOJIC3G
+        1kyLqbnQSfee4FoKzMLsIt8vhDDFGqFGGQ==
+X-Google-Smtp-Source: ABdhPJzAgd+FaWOrobdXhjw9IxyYdko+Q1do11+CtCUhF7Ks1+/BdcIulft8Pi2z2X4LZbdJBn53uw==
+X-Received: by 2002:a65:6aa3:0:b0:3ab:23fb:adae with SMTP id x3-20020a656aa3000000b003ab23fbadaemr11772254pgu.278.1651538518337;
+        Mon, 02 May 2022 17:41:58 -0700 (PDT)
+Received: from smtp.gmail.com ([2620:15c:202:201:15e:c760:9a04:7fbe])
+        by smtp.gmail.com with ESMTPSA id i10-20020aa78b4a000000b0050dc7628177sm5258794pfd.81.2022.05.02.17.41.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 17:41:57 -0700 (PDT)
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Subject: [PATCH 0/2] iio: sx9324: Support CS idle mode
+Date:   Mon,  2 May 2022 17:41:54 -0700
+Message-Id: <20220503004156.3559940-1-swboyd@chromium.org>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] mm: fix is_pinnable_page against on cma page
-Content-Language: en-US
-To:     Minchan Kim <minchan@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>,
-        John Dias <joaodias@google.com>
-References: <20220502173558.2510641-1-minchan@kernel.org>
- <29d0c1c3-a44e-4573-7e7e-32be07544dbe@redhat.com>
- <YnAhaRNjmIhtGUjk@google.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <YnAhaRNjmIhtGUjk@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+I need one more property to set another regsiter field for 
+how to configure the CS pins during idle and sleep modes. This is based
+on the latest patch series from Gwendal[1]
 
->>>> However, I assume we have the same issue right now already with
->> ZONE_MOVABLE and MIGRATE_CMA when trying to pin a page residing on these
-> 
-> ZONE_MOVALBE is also changed dynamically?
-> 
+Stephen Boyd (2):
+  dt-bindings: iio: sx9324: Add CS idle/sleep mode
+  iio: sx9324: Add setting for CS idle mode
 
-Sorry, with "same issue" I meant failing to pin if having to migrate and
-the page is temporarily unmovable.
+ .../bindings/iio/proximity/semtech,sx9324.yaml   |  8 ++++++++
+ drivers/iio/proximity/sx9324.c                   | 16 ++++++++++++++++
+ 2 files changed, 24 insertions(+)
 
->> there are temporarily unmovable and we fail to migrate. But it would now
->> apply even without ZONE_MOVABLE or MIGRATE_CMA. Hm...
-> 
-> Didn't parse your last mention.
+[1] https://lore.kernel.org/all/20220429220144.1476049-1-gwendal@chromium.org/
 
-On a system that neither uses ZONE_MOVABLE nor MIGRATE_CMA we might have
-to migrate now when pinning.
-
+base-commit: d79478a79cfa393cde46bccb05d52fc7d875d2e2
+prerequisite-patch-id: 05986765e921df4c9725d10a3f51e68b0b5cc211
+prerequisite-patch-id: 5e47b28af046dce1eb7d7ca492c466df0f30e07c
+prerequisite-patch-id: adb59d1a14b74ddfe02c442da8bcca04765e7d15
+prerequisite-patch-id: ec6069ee00463db27826962537ff880e69522f70
+prerequisite-patch-id: e40f2a3048da2ff28bb426b85e41d277f29f18ef
+prerequisite-patch-id: 82077662b97c09014c5b291fe5a42938a29ddbcd
+prerequisite-patch-id: d02f0ec3be1fa9cdbf02a22c700982008d0550bd
+prerequisite-patch-id: a02a8faefc5b7b68b99c0cc326973948c9356b60
+prerequisite-patch-id: 522c808e4b8bf99b8404c01d495526a685e5b97a
 -- 
-Thanks,
-
-David / dhildenb
+https://chromeos.dev
 
