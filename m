@@ -2,114 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C2FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1DFC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 09:40:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233987AbiECJoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 05:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52822 "EHLO
+        id S233918AbiECJn7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 05:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233558AbiECJmq (ORCPT
+        with ESMTP id S233552AbiECJmq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 3 May 2022 05:42:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1DB836E02
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 02:39:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651570749;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3Vl3zBaptlkLi2pN2YFgVBOvYXnkT8yd21wK9z5rSdc=;
-        b=RoD2LUvWVjLcJ+TxPOMiJJusK8sAf3o6xv1wnJ33KxJADIssOKnJjxc3tg+J59Wo4u/Np7
-        ilhNOK+r8E0zvbTG+2nYx07QiTmrDA3excn+dNTxtx1de5/XIqAfVohwNCNdP1wZiEQ3/f
-        VRi1AAn+aNIoAlK7GcayDbl2JloZem0=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-67-bTHVz4OzOEij_FIPh_Qdbg-1; Tue, 03 May 2022 05:39:08 -0400
-X-MC-Unique: bTHVz4OzOEij_FIPh_Qdbg-1
-Received: by mail-wm1-f70.google.com with SMTP id 26-20020a05600c021a00b003940660c053so5482896wmi.2
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 02:39:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=3Vl3zBaptlkLi2pN2YFgVBOvYXnkT8yd21wK9z5rSdc=;
-        b=4IazLuhhCPipEDLRdLhdkCNxbum2sbyS3BVwKp6OPl/eLIu+XYtR1cDjZJBjwJF7Cv
-         F+9k75L8cH2zoXzAjZ/syhxOok1o6vtzRoE/+HhzFVMq5HmmfQGLHP63pZgcwJ6mXsBo
-         /qRVm3YELggxBG7KwpQrctLZ8dxgqZbytBikzM7s+r0jJZ5Q2Erxfdp+65tUBA+PHld1
-         0hwCSCqvtZDTs3so+D2yYaM3ChJQEoIlyVmft2mnsTAA/V/pvi6rHTfOVEWmECblv1gS
-         pTlsMb8jMqHL8Z16FS+qGTqq5Z0CUkOipO1YqSUE3jDzWyJ5Ipg27pI9CZps7dMpq+ie
-         dQGw==
-X-Gm-Message-State: AOAM530vtPfvLl1OMqPU/HmuxG/z35ngxEnKe4sD+RPU9h2wR51cNAyD
-        flvdEukphqM2d9wMgOKOxZwG01igUJqdGqHST8b5f5fqrQ2FU4xFlvaTHDeRy4RCh3ILNWkokTo
-        DATiBYIcteavuhZjC/GVL8hwC
-X-Received: by 2002:a05:6000:2a5:b0:20c:520a:a12e with SMTP id l5-20020a05600002a500b0020c520aa12emr11875129wry.629.1651570747248;
-        Tue, 03 May 2022 02:39:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxA6L/WATVBozXOB3fYrHpsCfnZqDpiLrJbyUtPkvN0RR1QELlYfoMEoyThVwbkvsuFsTfwJw==
-X-Received: by 2002:a05:6000:2a5:b0:20c:520a:a12e with SMTP id l5-20020a05600002a500b0020c520aa12emr11875112wry.629.1651570747058;
-        Tue, 03 May 2022 02:39:07 -0700 (PDT)
-Received: from [10.32.181.74] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id u2-20020adfa182000000b0020c5253d915sm8918771wru.97.2022.05.03.02.39.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 02:39:06 -0700 (PDT)
-Message-ID: <f0e633b3-38ea-f288-c74d-487387cefddc@redhat.com>
-Date:   Tue, 3 May 2022 11:39:04 +0200
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391E636B71;
+        Tue,  3 May 2022 02:39:10 -0700 (PDT)
+X-UUID: 1d87f5ead9e74adb845d33bb8f2e423d-20220503
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:25d5136d-9c16-442b-ac5f-489fc1d1e912,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:75
+X-CID-INFO: VERSION:1.1.4,REQID:25d5136d-9c16-442b-ac5f-489fc1d1e912,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:75
+X-CID-META: VersionHash:faefae9,CLOUDID:9df44fc7-85ee-4ac1-ac05-bd3f1e72e732,C
+        OID:331cd8d20061,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 1d87f5ead9e74adb845d33bb8f2e423d-20220503
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1330871078; Tue, 03 May 2022 17:39:00 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 3 May 2022 17:38:59 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 3 May 2022 17:38:58 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Tue, 3 May 2022 17:38:58 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <mturquette@baylibre.com>, <sboyd@kernel.org>,
+        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <p.zabel@pengutronix.de>,
+        <angelogioacchino.delregno@collabora.com>,
+        <chun-jie.chen@mediatek.com>, <wenst@chromium.org>,
+        <runyang.chen@mediatek.com>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v6 03/16] clk: mediatek: reset: Refine and reorder functions in reset.c
+Date:   Tue, 3 May 2022 17:38:43 +0800
+Message-ID: <20220503093856.22250-4-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220503093856.22250-1-rex-bc.chen@mediatek.com>
+References: <20220503093856.22250-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v9 0/9] IPI virtualization support for VM
-Content-Language: en-US
-To:     Zeng Guang <guang.zeng@intel.com>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "Huang, Kai" <kai.huang@intel.com>
-Cc:     "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Hu, Robert" <robert.hu@intel.com>,
-        "Gao, Chao" <chao.gao@intel.com>
-References: <20220419153155.11504-1-guang.zeng@intel.com>
- <2d33b71a-13e5-d377-abc2-c20958526497@redhat.com>
- <cf178428-8c98-e7b3-4317-8282938976fd@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <cf178428-8c98-e7b3-4317-8282938976fd@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/3/22 09:32, Zeng Guang wrote:
-> 
-> I don't see "[PATCH v9 4/9] KVM: VMX: Report tertiary_exec_control field in
-> dump_vmcs()" in kvm/queue. Does it not need ?
+To make drivers more readable, we modify the indentation of the drivers
+and reorder the location of functions.
 
-Added now (somehow the patches were not threaded, so I had to catch them 
-one by one from lore).
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/clk/mediatek/reset.c | 68 +++++++++++++++++++-----------------
+ 1 file changed, 36 insertions(+), 32 deletions(-)
 
-> Selftests for KVM_CAP_MAX_VCPU_ID is posted in V2 which is revised on top of
-> kvm/queue.
-> ([PATCH v2] kvm: selftests: Add KVM_CAP_MAX_VCPU_ID cap test - Zeng 
-> Guang (kernel.org) 
-> <https://lore.kernel.org/lkml/20220503064037.10822-1-guang.zeng@intel.com/>)
-
-Queued, thanks.
-
-Paolo
+diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
+index 5191becb45dd..5cbbcc22a4fc 100644
+--- a/drivers/clk/mediatek/reset.c
++++ b/drivers/clk/mediatek/reset.c
+@@ -12,56 +12,59 @@
+ 
+ #include "reset.h"
+ 
+-static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
+-	unsigned long id)
++static int mtk_reset_assert(struct reset_controller_dev *rcdev,
++			    unsigned long id)
+ {
+ 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
+-	unsigned int reg = data->regofs + ((id / 32) << 4);
+ 
+-	return regmap_write(data->regmap, reg, BIT(id % 32));
++	return regmap_update_bits(data->regmap,
++				  data->regofs + ((id / 32) << 2),
++				  BIT(id % 32), ~0);
+ }
+ 
+-static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
+-	unsigned long id)
++static int mtk_reset_deassert(struct reset_controller_dev *rcdev,
++			      unsigned long id)
+ {
+ 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
+-	unsigned int reg = data->regofs + ((id / 32) << 4) + 0x4;
+ 
+-	return regmap_write(data->regmap, reg, BIT(id % 32));
++	return regmap_update_bits(data->regmap,
++				  data->regofs + ((id / 32) << 2),
++				  BIT(id % 32), 0);
+ }
+ 
+-static int mtk_reset_assert(struct reset_controller_dev *rcdev,
+-			      unsigned long id)
++static int mtk_reset(struct reset_controller_dev *rcdev, unsigned long id)
+ {
+-	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
++	int ret;
++
++	ret = mtk_reset_assert(rcdev, id);
++	if (ret)
++		return ret;
+ 
+-	return regmap_update_bits(data->regmap, data->regofs + ((id / 32) << 2),
+-			BIT(id % 32), ~0);
++	return mtk_reset_deassert(rcdev, id);
+ }
+ 
+-static int mtk_reset_deassert(struct reset_controller_dev *rcdev,
+-				unsigned long id)
++static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
++				    unsigned long id)
+ {
+ 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
+ 
+-	return regmap_update_bits(data->regmap, data->regofs + ((id / 32) << 2),
+-			BIT(id % 32), 0);
++	return regmap_write(data->regmap,
++			    data->regofs + ((id / 32) << 4),
++			    BIT(id % 32));
+ }
+ 
+-static int mtk_reset(struct reset_controller_dev *rcdev,
+-			      unsigned long id)
++static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
++				      unsigned long id)
+ {
+-	int ret;
+-
+-	ret = mtk_reset_assert(rcdev, id);
+-	if (ret)
+-		return ret;
++	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
+ 
+-	return mtk_reset_deassert(rcdev, id);
++	return regmap_write(data->regmap,
++			    data->regofs + ((id / 32) << 4) + 0x4,
++			    BIT(id % 32));
+ }
+ 
+ static int mtk_reset_set_clr(struct reset_controller_dev *rcdev,
+-	unsigned long id)
++			     unsigned long id)
+ {
+ 	int ret;
+ 
+@@ -84,8 +87,9 @@ static const struct reset_control_ops mtk_reset_ops_set_clr = {
+ };
+ 
+ static void mtk_register_reset_controller_common(struct device_node *np,
+-			unsigned int num_regs, int regofs,
+-			const struct reset_control_ops *reset_ops)
++						 unsigned int num_regs,
++						 int regofs,
++						 const struct reset_control_ops *reset_ops)
+ {
+ 	struct mtk_reset *data;
+ 	int ret;
+@@ -117,17 +121,17 @@ static void mtk_register_reset_controller_common(struct device_node *np,
+ }
+ 
+ void mtk_register_reset_controller(struct device_node *np,
+-	unsigned int num_regs, int regofs)
++				   unsigned int num_regs, int regofs)
+ {
+ 	mtk_register_reset_controller_common(np, num_regs, regofs,
+-		&mtk_reset_ops);
++					     &mtk_reset_ops);
+ }
+ 
+ void mtk_register_reset_controller_set_clr(struct device_node *np,
+-	unsigned int num_regs, int regofs)
++					   unsigned int num_regs, int regofs)
+ {
+ 	mtk_register_reset_controller_common(np, num_regs, regofs,
+-		&mtk_reset_ops_set_clr);
++					     &mtk_reset_ops_set_clr);
+ }
+ 
+ MODULE_LICENSE("GPL");
+-- 
+2.18.0
 
