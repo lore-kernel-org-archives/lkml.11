@@ -2,140 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77FA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 19:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25AA4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 19:02:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240823AbiECTFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 15:05:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33396 "EHLO
+        id S241510AbiECTF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 15:05:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241415AbiECTEn (ORCPT
+        with ESMTP id S240160AbiECTF4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 15:04:43 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27D772C139;
-        Tue,  3 May 2022 12:01:08 -0700 (PDT)
-Date:   Tue, 03 May 2022 19:01:05 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651604466;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OumlaU28lzkih11meghn2+Sg/F9ZBPslQJhsTtBhFXY=;
-        b=TXXHGX4HF05N8nkBrzYv4JMU9bHq9GFhCfrlxqF5lUDaXgxNEyiuX1+D+KWxyAGXthz39h
-        K8cJ/zAzTYzaOcS5GY9wz/Mce5hDlBQPxFHEYpA0dooHBUcTK8hW4CxeWdMXYLRSguLxhC
-        tMgjX1KM7p0Z3PmyiJpbGQpmOLmTIe/EFSnebFbD7gb1OPEIpoSpxTBnlHfPTn6whyI6LV
-        tBeLTQmLWyFsBZaD5tsEZClQHXerWhC2bKwpqkglbE+D7J1x9z/xj+R4JF8q7Zh1+qtqRF
-        1tSIuE2lTjfAmaMyTzfHqRL/P28HGb7Dfws9XzmBP+j3nV0j1kDlW8LwhXiS6g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651604466;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OumlaU28lzkih11meghn2+Sg/F9ZBPslQJhsTtBhFXY=;
-        b=TKCs3fGHx57/zv2qVQP3kKnkGNWlm4KuUqorB9YoIaZQ8q6Y+u9Ao33rYlQbVvi3nYoJlQ
-        3s1FEPgEzt63E4Cw==
-From:   "tip-bot2 for Lai Jiangshan" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/asm] x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()
-Cc:     Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Borislav Petkov <bp@suse.de>, Juergen Gross <jgross@suse.com>,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220503032107.680190-4-jiangshanlai@gmail.com>
-References: <20220503032107.680190-4-jiangshanlai@gmail.com>
+        Tue, 3 May 2022 15:05:56 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE7DF2B269
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 12:02:22 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id a21so20917238edb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 12:02:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=GhPVwEXFQlelT1ahoVdVsco/ScoxIkg+GwxOC7eOaEc=;
+        b=fDLZyyRvAVx2uEW7lTQEdGpwpsEEMgifXHx1C9/rgxLbrANjCct8AdZwl/Qu6HnS3c
+         ST8BJSWUC4PeNzfvHcS4SzTosKYkqRVV1q/PLeQU6ZYP/i0TluoWpLUJ/nAwZpga0VP+
+         9I9oRIM1y0bq1B+ykLn4cCL2mgQgsLWbYCjCBe1R5ka08KFb6H/k8fk60AiINMewytvH
+         5yFp0efCueZ7dSZ+hlAwfjSB/l3TM0CR9eT6GQXZXsPdUe0cKH47Dt7A50+5JbBCt00h
+         VX0JrvhM8HjEG4VrxQVhkuMOVjnLP+JYM6dE1qSgWF473zICXaZud9XySu3acZ+v6yQ+
+         k8UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=GhPVwEXFQlelT1ahoVdVsco/ScoxIkg+GwxOC7eOaEc=;
+        b=q8831mHPqjxEw4OFYQCzZE5OKP4kp+mX8iEGgndK71YwNDRLICWdpsgXDlD6bBd/LZ
+         GR+FmsF8W/Z8UyXsam0aGaigq6QpC8wexEx+g6ITNeF+SkVDeenD72/ch0t/myIFbRTY
+         CnVG4d7TCX3KZmXV+JpUZLj3vggJxehkj3KSzix843bQWJCRNnqQMhK4BjV+pKhz4bMJ
+         cO/Dsed7MnZ8jA/UQiSuxOrLAZP2bBE9N0vAFo8Owm2HsjiMFPnYQuhM4y+hWIHyTG3Z
+         WzH2qPggFYm7UaiTsixqJQbXbBgLKFpa3RMwkeZmd2KXgxSPGl9cUm3noO0MfrBOcCv7
+         /Afw==
+X-Gm-Message-State: AOAM530JVK+nxy9UeQsd+UpyYpfLgZ2MK7CchzDchMP/dNA57M8aoUUa
+        muMwXOw4UdyCrOIws7bRekJFqw==
+X-Google-Smtp-Source: ABdhPJyUSOv9kitRm7ExswRN8j6l5yHt0jx+r/ntr8DNAq2Hp2E0qOX+pl3n3b+8w7WVKhKXNuKfVg==
+X-Received: by 2002:a05:6402:2714:b0:427:b9bb:a179 with SMTP id y20-20020a056402271400b00427b9bba179mr14199065edd.102.1651604541458;
+        Tue, 03 May 2022 12:02:21 -0700 (PDT)
+Received: from [192.168.0.207] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id ig11-20020a1709072e0b00b006f3ef214e2dsm5061552ejc.147.2022.05.03.12.02.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 12:02:21 -0700 (PDT)
+Message-ID: <ee8416a3-64da-bd03-6a88-978fb095cbea@linaro.org>
+Date:   Tue, 3 May 2022 21:02:19 +0200
 MIME-Version: 1.0
-Message-ID: <165160446526.4207.9233904078820341765.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 1/2] dt-bindings: google,cros-ec-keyb: Introduce
+ switches only compatible
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        chrome-platform@lists.linux.dev,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        "Joseph S. Barrera III" <joebar@chromium.org>
+References: <20220503042242.3597561-1-swboyd@chromium.org>
+ <20220503042242.3597561-2-swboyd@chromium.org>
+ <2280875f-fbd8-0dfd-5a0a-1d7fceb856e4@linaro.org>
+ <CAE-0n50oGX8jBzfNjYFj01nZkuYbk6ZPsqDj89-zqxHhib=vaw@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAE-0n50oGX8jBzfNjYFj01nZkuYbk6ZPsqDj89-zqxHhib=vaw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/asm branch of tip:
+On 03/05/2022 21:00, Stephen Boyd wrote:
+>> else:
+>>   properties:
+>>     function-row-phsymap: false
+>>     google,needs-ghost-filter: false
+>>
+>> Because these are not valid for the non-matrix-keyboard case, right?
+>>
+> 
+> Yes, but they also depend on linux,keymap so they're not possible to
+> set because the matrix-keymap.yaml schema defines linux,keymap and that
+> is only included if google,cros-ec-keyb is present.
 
-Commit-ID:     ee774dac0da1543376a69fd90840af6aa86879b3
-Gitweb:        https://git.kernel.org/tip/ee774dac0da1543376a69fd90840af6aa86879b3
-Author:        Lai Jiangshan <jiangshan.ljs@antgroup.com>
-AuthorDate:    Thu, 21 Apr 2022 22:10:50 +08:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Tue, 03 May 2022 11:42:59 +02:00
+Ah, right, I missed that one.
 
-x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-The macro idtentry() (through idtentry_body()) calls error_entry()
-unconditionally even on XENPV. But XENPV needs to only push and clear
-regs.
 
-PUSH_AND_CLEAR_REGS in error_entry() makes the stack not return to its
-original place when the function returns, which means it is not possible
-to convert it to a C function.
-
-Carve out PUSH_AND_CLEAR_REGS out of error_entry() and into a separate
-function and call it before error_entry() in order to avoid calling
-error_entry() on XENPV.
-
-It will also allow for error_entry() to be converted to C code that can
-use inlined sync_regs() and save a function call.
-
-  [ bp: Massage commit message. ]
-
-Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Link: https://lore.kernel.org/r/20220503032107.680190-4-jiangshanlai@gmail.com
----
- arch/x86/entry/entry_64.S | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
-
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index ca3e99e..b1cef3b 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -318,6 +318,14 @@ SYM_CODE_END(ret_from_fork)
- #endif
- .endm
- 
-+/* Save all registers in pt_regs */
-+SYM_CODE_START_LOCAL(push_and_clear_regs)
-+	UNWIND_HINT_FUNC
-+	PUSH_AND_CLEAR_REGS save_ret=1
-+	ENCODE_FRAME_POINTER 8
-+	RET
-+SYM_CODE_END(push_and_clear_regs)
-+
- /**
-  * idtentry_body - Macro to emit code calling the C function
-  * @cfunc:		C function to be called
-@@ -325,6 +333,9 @@ SYM_CODE_END(ret_from_fork)
-  */
- .macro idtentry_body cfunc has_error_code:req
- 
-+	call push_and_clear_regs
-+	UNWIND_HINT_REGS
-+
- 	call	error_entry
- 	movq	%rax, %rsp			/* switch to the task stack if from userspace */
- 	ENCODE_FRAME_POINTER
-@@ -985,13 +996,11 @@ SYM_CODE_START_LOCAL(paranoid_exit)
- SYM_CODE_END(paranoid_exit)
- 
- /*
-- * Save all registers in pt_regs, and switch GS if needed.
-+ * Switch GS and CR3 if needed.
-  */
- SYM_CODE_START_LOCAL(error_entry)
- 	UNWIND_HINT_FUNC
- 	cld
--	PUSH_AND_CLEAR_REGS save_ret=1
--	ENCODE_FRAME_POINTER 8
- 	testb	$3, CS+8(%rsp)
- 	jz	.Lerror_kernelspace
- 
+Best regards,
+Krzysztof
