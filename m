@@ -2,69 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8561BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 19:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B984C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 19:26:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384167AbiEET0b (ORCPT
+        id S1384992AbiEET3y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 15:26:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42188 "EHLO
+        Thu, 5 May 2022 15:29:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232129AbiEET00 (ORCPT
+        with ESMTP id S232129AbiEET3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 15:26:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 117B4532F3;
-        Thu,  5 May 2022 12:22:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8648D61DF1;
-        Thu,  5 May 2022 19:22:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C6DCC385A4;
-        Thu,  5 May 2022 19:22:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651778564;
-        bh=tWQ8CO8sNpym6aLYcW6ACSrmqfae5zZqQkH9KrnLkvo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=tSvoBWO/5Y9tgXuoNKCCJG/o5hG46dkoR3GapdlxbPfFG4v/+uRCtrd9Jj+gjWAfR
-         mA0mQqQK5tTB8dcJgTa5ajElvTQD2Z5v7i1VlLl9+vSEHAGnQiX/oW7sAtsI4WySNg
-         cRzFI/mwlneW6Nv38957g0Wpl4EwLTlK/kWHB226EJ5Lt/HSUoKbKIM5wlIdhVaEK5
-         Su8iDXFPOQY5X1U9L+eZ2U+rIwffDDY3shegztW36ut13/TOFhwCyhopB2xnGQrEqe
-         j6KcywUJC+bdOUYJcAsLqy3QNYSRZH2Bv3yXM1cn8a/1zx0KLTRuqg4Gj5ziBVM2br
-         j5Giyrh+hogTw==
-Date:   Thu, 5 May 2022 14:22:41 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Linux PCI <linux-pci@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH v1 00/11] PCI/PM: Rework powering up PCI devices
-Message-ID: <20220505192241.GA508163@bhelgaas>
+        Thu, 5 May 2022 15:29:48 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1F741F614;
+        Thu,  5 May 2022 12:26:07 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242MEVYs026258;
+        Tue, 3 May 2022 00:51:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=d6ct1UaLVba3yw63uAkNVfq9np3/Rqs6yhb3xK0+OpM=;
+ b=x2opaEy79OWCROeSa1n03EBsLrLvExky2JzpiJkzaYj1Y74T2aGMG5DGjjGrlID+pldb
+ t94tdMR2dVdHiXmvBWbmbUmQn5LGvjd+tgi7sYL2yroIvSEn4XYWZ+4sj7LGgfhs6KOE
+ mas05oz+PqBDq/BdUe0XDvl58UScciUgSKzda86lbSLfjjJ8gNcG5OSgI3jiGf0JtuLB
+ whIzqlFS0o0i2vbwuzHoObry1x2ArioNQpSEO512YmMAvE0MKbAf3WkNvB/9BxDuEhOJ
+ 6NRvnVHGrOADQGxsEJSui9faj1HzivLAo5N6AyeivI0UZn4NznYuc3yEX1K40m9OGPvV DA== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fruhc4m4u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:51:51 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430oou6008900;
+        Tue, 3 May 2022 00:51:50 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x61-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 May 2022 00:51:50 +0000
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430plj8010389;
+        Tue, 3 May 2022 00:51:50 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-6;
+        Tue, 03 May 2022 00:51:50 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     Haowen Bai <baihaowen@meizu.com>, jejb@linux.ibm.com
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
+Subject: Re: [PATCH] scsi: mac53c94: fix warning comparing pointer to 0
+Date:   Mon,  2 May 2022 20:51:16 -0400
+Message-Id: <165153836359.24053.3311971754935367894.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <1647244711-31575-1-git-send-email-baihaowen@meizu.com>
+References: <1647244711-31575-1-git-send-email-baihaowen@meizu.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4738492.GXAFRqVoOG@kreacher>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: nxzsRVDO7-q06fkTPZkhIg9eMB_E2sBQ
+X-Proofpoint-ORIG-GUID: nxzsRVDO7-q06fkTPZkhIg9eMB_E2sBQ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[+cc Krzysztof, just FYI]
+On Mon, 14 Mar 2022 15:58:31 +0800, Haowen Bai wrote:
 
-On Thu, May 05, 2022 at 07:57:15PM +0200, Rafael J. Wysocki wrote:
-> Hi All,
+> Fix the following coccicheck warning:
+> drivers/scsi/mac53c94.c:237:12-13: WARNING comparing pointer to 0
 > 
-> This patch set replaces patches [4-9/9] from the series at
 > 
-> https://lore.kernel.org/linux-pm/4419002.LvFx2qVVIh@kreacher/T/#mf7ed30e7cf114b131e6067e4e10c28e59d661cb4
 
-I applied this to pci/pm, thanks!
+Applied to 5.19/scsi-queue, thanks!
 
-I reordered the branch so Krzysztof's "pci_restore_standard_config()
-defined but not used" fix is first, followed by your changes, Rafael.
+[1/1] scsi: mac53c94: fix warning comparing pointer to 0
+      https://git.kernel.org/mkp/scsi/c/93de8df20537
 
-Bjorn
+-- 
+Martin K. Petersen	Oracle Linux Engineering
