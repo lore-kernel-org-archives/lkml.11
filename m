@@ -2,138 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 962A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 16:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BB90C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 16:13:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239209AbiECQQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 12:16:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56308 "EHLO
+        id S239221AbiECQQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 12:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239103AbiECQQI (ORCPT
+        with ESMTP id S239216AbiECQQi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 12:16:08 -0400
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E98AF1EAD4
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 09:12:35 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-636-ACE-lopCPbagO-0vhgpgGA-1; Tue, 03 May 2022 12:12:11 -0400
-X-MC-Unique: ACE-lopCPbagO-0vhgpgGA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E18CCB15AA6;
-        Tue,  3 May 2022 13:40:23 +0000 (UTC)
-Received: from comp-core-i7-2640m-0182e6.redhat.com (unknown [10.36.110.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4D8539E89;
-        Tue,  3 May 2022 13:40:21 +0000 (UTC)
-From:   Alexey Gladkov <legion@kernel.org>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Daniel Walsh <dwalsh@redhat.com>,
-        Davidlohr Bueso <dbueso@suse.de>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Linux Containers <containers@lists.linux.dev>,
-        Manfred Spraul <manfred@colorfullife.com>,
-        Serge Hallyn <serge@hallyn.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH v2 2/4] ipc: Remove extra1 field abuse to pass ipc namespace
-Date:   Tue,  3 May 2022 15:39:55 +0200
-Message-Id: <93df64a8fe93ba20ebbe1d9f8eda484b2f325426.1651584847.git.legion@kernel.org>
-In-Reply-To: <cover.1651584847.git.legion@kernel.org>
-References: <87sfprudal.fsf@email.froward.int.ebiederm.org> <cover.1651584847.git.legion@kernel.org>
+        Tue, 3 May 2022 12:16:38 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A895327164;
+        Tue,  3 May 2022 09:13:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651594384; x=1683130384;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=9FGMVgF8GLGaAcGv/yGifqNyiG6ez9qf2269SDYd8Uc=;
+  b=D331LDeqrGr8UuZKYQcxcTDV272NmmudzC3lKV+OGrAlOWrOHd6mLrHy
+   zDqM8XMZsnIyzkmoNLtXghUJa4AFAoTHtR9oqKauDFa67Yx8qJwop00mm
+   Qvf4R0HmrVZnwG617m/ZHrBgsk2Gif9VwoAqeb6adh0PW0lNATJvTH/Qk
+   k=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 03 May 2022 09:13:04 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 09:13:03 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 3 May 2022 09:13:03 -0700
+Received: from [10.134.70.75] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 3 May 2022
+ 09:13:02 -0700
+Message-ID: <b96858a9-c38f-6576-e61c-9a94b0ee53f1@quicinc.com>
+Date:   Tue, 3 May 2022 09:13:02 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2] drm/msm/dp: fix event thread stuck in wait_event after
+ kthread_stop()
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
+        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
+        <daniel@ffwll.ch>, <dianders@chromium.org>,
+        <dmitry.baryshkov@linaro.org>, <robdclark@gmail.com>,
+        <sean@poorly.run>, <vkoul@kernel.org>
+CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1651532668-18873-1-git-send-email-quic_khsieh@quicinc.com>
+ <CAE-0n51TjqYKzPbP7JHKi+ostwM7Q8FX64eC3Gufuz846mLA3g@mail.gmail.com>
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+In-Reply-To: <CAE-0n51TjqYKzPbP7JHKi+ostwM7Q8FX64eC3Gufuz846mLA3g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Eric Biederman pointed out that using .extra1 to pass ipc namespace
-looks like an ugly hack and there is a better solution. We can get the
-ipc_namespace using the .data field.
 
-Link: https://lore.kernel.org/lkml/87czib9g38.fsf@email.froward.int.ebiederm.org/
-Fixes: 1f5c135ee509 ("ipc: Store ipc sysctls in the ipc namespace")
-Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
-Signed-off-by: Alexey Gladkov <legion@kernel.org>
----
- ipc/ipc_sysctl.c | 24 +++++++-----------------
- 1 file changed, 7 insertions(+), 17 deletions(-)
+On 5/2/2022 6:13 PM, Stephen Boyd wrote:
+> Quoting Kuogee Hsieh (2022-05-02 16:04:28)
+>> Event thread supposed to exit from its while loop after kthread_stop().
+>> However there may has possibility that event thread is pending in the
+>> middle of wait_event due to condition checking never become true.
+>> To make sure event thread exit its loop after kthread_stop(), this
+>> patch OR kthread_should_stop() into wait_event's condition checking
+>> so that event thread will exit its loop after kernal_stop().
+>>
+>> Changes in v2:
+>> --  correct spelling error at commit title
+>>
+>> Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+>> Fixes: 570d3e5d28db ("drm/msm/dp: stop event kernel thread when DP unbind")
+>> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+>> ---
+>>   drivers/gpu/drm/msm/dp/dp_display.c | 11 ++++++++---
+>>   1 file changed, 8 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+>> index c388323..5200a58 100644
+>> --- a/drivers/gpu/drm/msm/dp/dp_display.c
+>> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
+>> @@ -1106,12 +1106,17 @@ static int hpd_event_thread(void *data)
+>>          while (!kthread_should_stop()) {
+>>                  if (timeout_mode) {
+>>                          wait_event_timeout(dp_priv->event_q,
+>> -                               (dp_priv->event_pndx == dp_priv->event_gndx),
+>> -                                               EVENT_TIMEOUT);
+>> +                               ((dp_priv->event_pndx == dp_priv->event_gndx) ||
+> Why the parenthesis (before and after)?
+>
+>> +                                       kthread_should_stop()), EVENT_TIMEOUT);
+>>                  } else {
+>>                          wait_event_interruptible(dp_priv->event_q,
+>> -                               (dp_priv->event_pndx != dp_priv->event_gndx));
+>> +                               ((dp_priv->event_pndx != dp_priv->event_gndx) ||
+> Why the parenthesis (before and after)?
+>
+>> +                                       kthread_should_stop()));
+>>                  }
+>> +
+>> +               if(kthread_should_stop())
+> Missing space after if
+>
+>> +                       break;
+> Is it possible to move the wait_event to the end of the loop and always
+> run the loop initially? That way we don't have to check for
+> kthread_should_stop() again.
 
-diff --git a/ipc/ipc_sysctl.c b/ipc/ipc_sysctl.c
-index d1d5204cf589..eb7ba8e0a355 100644
---- a/ipc/ipc_sysctl.c
-+++ b/ipc/ipc_sysctl.c
-@@ -19,16 +19,11 @@
- static int proc_ipc_dointvec_minmax_orphans(struct ctl_table *table, int write,
- 		void *buffer, size_t *lenp, loff_t *ppos)
- {
--	struct ipc_namespace *ns = table->extra1;
--	struct ctl_table ipc_table;
-+	struct ipc_namespace *ns =
-+		container_of(table->data, struct ipc_namespace, shm_rmid_forced);
- 	int err;
- 
--	memcpy(&ipc_table, table, sizeof(ipc_table));
--
--	ipc_table.extra1 = SYSCTL_ZERO;
--	ipc_table.extra2 = SYSCTL_ONE;
--
--	err = proc_dointvec_minmax(&ipc_table, write, buffer, lenp, ppos);
-+	err = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
- 
- 	if (err < 0)
- 		return err;
-@@ -55,15 +50,10 @@ static int proc_ipc_auto_msgmni(struct ctl_table *table, int write,
- static int proc_ipc_sem_dointvec(struct ctl_table *table, int write,
- 	void *buffer, size_t *lenp, loff_t *ppos)
- {
--	struct ipc_namespace *ns = table->extra1;
--	struct ctl_table ipc_table;
-+	struct ipc_namespace *ns =
-+		container_of(table->data, struct ipc_namespace, sem_ctls);
- 	int ret, semmni;
- 
--	memcpy(&ipc_table, table, sizeof(ipc_table));
--
--	ipc_table.extra1 = NULL;
--	ipc_table.extra2 = NULL;
--
- 	semmni = ns->sem_ctls[3];
- 	ret = proc_dointvec(table, write, buffer, lenp, ppos);
- 
-@@ -131,6 +121,8 @@ static struct ctl_table ipc_sysctls[] = {
- 		.maxlen		= sizeof(init_ipc_ns.shm_rmid_forced),
- 		.mode		= 0644,
- 		.proc_handler	= proc_ipc_dointvec_minmax_orphans,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE,
- 	},
- 	{
- 		.procname	= "msgmax",
-@@ -237,7 +229,6 @@ bool setup_ipc_sysctls(struct ipc_namespace *ns)
- 
- 			} else if (tbl[i].data == &init_ipc_ns.shm_rmid_forced) {
- 				tbl[i].data = &ns->shm_rmid_forced;
--				tbl[i].extra1 = ns;
- 
- 			} else if (tbl[i].data == &init_ipc_ns.msg_ctlmax) {
- 				tbl[i].data = &ns->msg_ctlmax;
-@@ -250,7 +241,6 @@ bool setup_ipc_sysctls(struct ipc_namespace *ns)
- 
- 			} else if (tbl[i].data == &init_ipc_ns.sem_ctls) {
- 				tbl[i].data = &ns->sem_ctls;
--				tbl[i].extra1 = ns;
- #ifdef CONFIG_CHECKPOINT_RESTORE
- 			} else if (tbl[i].data == &init_ipc_ns.ids[IPC_SEM_IDS].next_id) {
- 				tbl[i].data = &ns->ids[IPC_SEM_IDS].next_id;
--- 
-2.33.3
+no, since we have to make sure q is not empty so that we can proceed to 
+service events.
+
+bu ti thin we can use while (1) instead of while 
+(!kthread_should_stop()) since we have add kthread_should_stop() into 
+wait_event condition checking.
 
