@@ -2,55 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFFB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:11:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5063C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:13:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231563AbiECHPC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 03:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42762 "EHLO
+        id S231580AbiECHQk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:16:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231561AbiECHO5 (ORCPT
+        with ESMTP id S230209AbiECHQh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 03:14:57 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A2FC12FFF9;
-        Tue,  3 May 2022 00:11:22 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 18B37807E;
-        Tue,  3 May 2022 07:08:06 +0000 (UTC)
-Date:   Tue, 3 May 2022 10:11:20 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
-        Sekhar Nori <nsekhar@ti.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Vinod Koul <vkoul@kernel.org>, linux-usb@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        dmaengine@vger.kernel.org
-Subject: Re: [PATCH v3 6/6] ARM: dts: dm81xx: use new 'dma-channels/requests'
- properties
-Message-ID: <YnDVmPXYiILP+qSa@atomide.com>
-References: <20220503065201.51818-1-krzysztof.kozlowski@linaro.org>
- <20220503065201.51818-7-krzysztof.kozlowski@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220503065201.51818-7-krzysztof.kozlowski@linaro.org>
+        Tue, 3 May 2022 03:16:37 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617D931DF2;
+        Tue,  3 May 2022 00:13:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651561986; x=1683097986;
+  h=from:to:cc:subject:date:message-id;
+  bh=2CV86QC3Dw6WLOp/M+dDMYXWwCmN0sjD5K0oCUyw3DI=;
+  b=HRxISd6OLsEb6nQO72Lh5Ex8LZA3LJb9hc1JZtRDS/8vCuOHlgKFAAhi
+   713AI+phH7rTU3FzC/RvPXR0GUkG5TGoDurWbn0g45hvLiGylW2YNr5X/
+   Ev9BA8VYGDrqzAWo/WQNHgR57cWLr4aU4hSv57w1aMW5/lxh36t97WSdV
+   hmZUpopq/e7/iCJV0Meyg72Z+GtNsp0wBtZnF8AEGKiut+9Gq/DfFUGbD
+   r+5yKargyaZyBFixDK7v1guwPqFUtRhdKhk7lmrxX8+T5T4LBG+DlJNOG
+   q37kXP1ozeRXOoFVcFvB5Dx4pRcgU3AZKvBtQuXc1hnAdHHzNCs3kx/Xw
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="327959061"
+X-IronPort-AV: E=Sophos;i="5.91,194,1647327600"; 
+   d="scan'208";a="327959061"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 00:12:34 -0700
+X-IronPort-AV: E=Sophos;i="5.91,194,1647327600"; 
+   d="scan'208";a="562107283"
+Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 00:12:28 -0700
+From:   Zeng Guang <guang.zeng@intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
+        Zeng Guang <guang.zeng@intel.com>
+Subject: [PATCH v2] kvm: selftests: Add KVM_CAP_MAX_VCPU_ID cap test
+Date:   Tue,  3 May 2022 14:40:37 +0800
+Message-Id: <20220503064037.10822-1-guang.zeng@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> [220503 06:48]:
-> The '#dma-channels' and '#dma-requests' properties were deprecated in
-> favor of these defined by generic dma-common DT bindings.  Add new
-> properties while keeping old ones for backwards compatibility.
+Basic test coverage of KVM_CAP_MAX_VCPU_ID cap.
 
-I'm picking up this patch into omap-for-v5.19/dt thanks.
+This capability can be enabled before vCPU creation and only allowed
+to set once. if assigned vcpu id is beyond KVM_CAP_MAX_VCPU_ID
+capability, vCPU creation will fail.
 
-Regards,
+Signed-off-by: Zeng Guang <guang.zeng@intel.com>
+---
+ tools/testing/selftests/kvm/.gitignore        |  1 +
+ tools/testing/selftests/kvm/Makefile          |  1 +
+ .../kvm/x86_64/max_vcpuid_cap_test.c          | 59 +++++++++++++++++++
+ 3 files changed, 61 insertions(+)
+ create mode 100644 tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c
 
-Tony
+diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
+index d1e8f5237469..b860dcfee920 100644
+--- a/tools/testing/selftests/kvm/.gitignore
++++ b/tools/testing/selftests/kvm/.gitignore
+@@ -22,6 +22,7 @@
+ /x86_64/hyperv_cpuid
+ /x86_64/hyperv_features
+ /x86_64/hyperv_svm_test
++/x86_64/max_vcpuid_cap_test
+ /x86_64/mmio_warning_test
+ /x86_64/mmu_role_test
+ /x86_64/platform_info_test
+diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+index 21c2dbd21a81..e92dc78de4d0 100644
+--- a/tools/testing/selftests/kvm/Makefile
++++ b/tools/testing/selftests/kvm/Makefile
+@@ -86,6 +86,7 @@ TEST_GEN_PROGS_x86_64 += x86_64/xen_shinfo_test
+ TEST_GEN_PROGS_x86_64 += x86_64/xen_vmcall_test
+ TEST_GEN_PROGS_x86_64 += x86_64/sev_migrate_tests
+ TEST_GEN_PROGS_x86_64 += x86_64/amx_test
++TEST_GEN_PROGS_x86_64 += x86_64/max_vcpuid_cap_test
+ TEST_GEN_PROGS_x86_64 += access_tracking_perf_test
+ TEST_GEN_PROGS_x86_64 += demand_paging_test
+ TEST_GEN_PROGS_x86_64 += dirty_log_test
+diff --git a/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c b/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c
+new file mode 100644
+index 000000000000..2e3d1d236ef0
+--- /dev/null
++++ b/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c
+@@ -0,0 +1,59 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * maximum APIC ID capability tests
++ *
++ * Copyright (C) 2022, Intel, Inc.
++ *
++ * Tests for getting/setting maximum APIC ID capability
++ */
++
++#include "kvm_util.h"
++#include "../lib/kvm_util_internal.h"
++
++#define MAX_VCPU_ID	2
++
++int main(int argc, char *argv[])
++{
++	struct kvm_vm *vm;
++	struct kvm_enable_cap cap = { 0 };
++	int ret;
++
++	vm = vm_create(VM_MODE_DEFAULT, 0, O_RDWR);
++
++	/* Get KVM_CAP_MAX_VCPU_ID cap supported in KVM */
++	ret = vm_check_cap(vm, KVM_CAP_MAX_VCPU_ID);
++
++	/* Check failure if set KVM_CAP_MAX_VCPU_ID beyond KVM cap */
++	cap.cap = KVM_CAP_MAX_VCPU_ID;
++	cap.args[0] = ret + 1;
++	ret = ioctl(vm->fd, KVM_ENABLE_CAP, &cap);
++	TEST_ASSERT(ret < 0,
++		    "Unexpected success to enable KVM_CAP_MAX_VCPU_ID"
++		    "beyond KVM cap!\n");
++
++	/* Check success if set KVM_CAP_MAX_VCPU_ID */
++	cap.args[0] = MAX_VCPU_ID;
++	ret = ioctl(vm->fd, KVM_ENABLE_CAP, &cap);
++	TEST_ASSERT(ret == 0,
++		    "Unexpected failure to enable KVM_CAP_MAX_VCPU_ID!\n");
++
++	/* Check success if set KVM_CAP_MAX_VCPU_ID same value */
++	ret = ioctl(vm->fd, KVM_ENABLE_CAP, &cap);
++	TEST_ASSERT(ret == 0,
++		    "Unexpected failure to set KVM_CAP_MAX_VCPU_ID same value\n");
++
++	/* Check failure if set KVM_CAP_MAX_VCPU_ID different value again */
++	cap.args[0] = MAX_VCPU_ID + 1;
++	ret = ioctl(vm->fd, KVM_ENABLE_CAP, &cap);
++	TEST_ASSERT(ret < 0,
++		    "Unexpected success to enable KVM_CAP_MAX_VCPU_ID with"
++		    "different value again\n");
++
++	/* Check failure if create vCPU with id beyond KVM_CAP_MAX_VCPU_ID cap*/
++	ret = ioctl(vm->fd, KVM_CREATE_VCPU, MAX_VCPU_ID);
++	TEST_ASSERT(ret < 0,
++		    "Unexpected success in creating a vCPU with VCPU ID out of range\n");
++
++	kvm_vm_free(vm);
++	return 0;
++}
+-- 
+2.27.0
+
