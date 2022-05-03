@@ -2,102 +2,377 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94CEEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:04:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E430DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:05:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237779AbiECPIS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33362 "EHLO
+        id S237875AbiECPJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237762AbiECPIP (ORCPT
+        with ESMTP id S237919AbiECPJK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:08:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7FDCD3A1BD
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:04:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651590282;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=q8KRyeOIJowwgq1LjuL92i0OyzQpFO6OlQ5jrqBwiaQ=;
-        b=GsN2aHEwmnBSqzAAnCWcw7/CJDPv9Fb4L16x/+QNOcdLl9DQOTNve0c9FT4xDsQVSfgIwr
-        aM9cVdd3W5HKV1WkonLjRzAHci+BYJSoVIYTI+HQpiEHA8hy//YAeUNr+HrZ7XRw03fE8e
-        jrjEEt+cw4VBBg8OqyKWAeg+XDx+JJ8=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-515-El3JyjaEMFiFqjRBhvUOMQ-1; Tue, 03 May 2022 11:01:22 -0400
-X-MC-Unique: El3JyjaEMFiFqjRBhvUOMQ-1
-Received: by mail-wm1-f71.google.com with SMTP id c62-20020a1c3541000000b0038ec265155fso1475155wma.6
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 08:01:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=q8KRyeOIJowwgq1LjuL92i0OyzQpFO6OlQ5jrqBwiaQ=;
-        b=MPxtVmU9TXCzlfICfpo5fW0/37rd+l5l7O/mDsoAC6Jv9Y3Z/5PVgn9urVFa0yc2Al
-         NOKAvLBXd2EVVGM/khMdDa4B4vmQDLfKlCc6an41shsbTvD0CPk6lj5bs4ImE7FnAr7/
-         w3uvh64g22XbA0nWegFks4D07rEZ5dc31AdLno7I1ewC7SC40/xLh1KxZ1b6oumijOMk
-         O+BykDk1yN0G8aQi+O6acyHqEACdMcz0MR2/hwYDM6H41YKaUgu4DfOhdMctvLYmtgWR
-         /PFMZNZF5FCtbZ2QqP8SQPifJGAR8x+wQ2UxoxnSvzsXe+YMZEFKlorD5tLpK6Gqo3bp
-         A8uQ==
-X-Gm-Message-State: AOAM533I3K+67H9wyFL6p5QXHn6R43su/g9wAowd9U7xhDLTaXnQBTl2
-        PD52IVmtG6BIGQ7EsFwyiLiDXXYYLXvU6qJXmWzbtjpHLwXPuKYg86hWNkXR09t5+2h/mbwzWCk
-        bNjN9BSMHKGA2ioPnnTwJRha5ugZ61nOrQYnRwcex3Z9AyH5Xwfntde0V7Vs8npnBeDqQVdcJIv
-        j4
-X-Received: by 2002:a5d:64c1:0:b0:20c:6ff9:3a61 with SMTP id f1-20020a5d64c1000000b0020c6ff93a61mr4770689wri.709.1651590080963;
-        Tue, 03 May 2022 08:01:20 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyFddadb0RhMqbED3cKhIrdL1UAliMUxLFrwK6VNOQYuEXW0q5ELPbxKJShs+8DVKmBmOBFgQ==
-X-Received: by 2002:a5d:64c1:0:b0:20c:6ff9:3a61 with SMTP id f1-20020a5d64c1000000b0020c6ff93a61mr4770661wri.709.1651590080743;
-        Tue, 03 May 2022 08:01:20 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id t1-20020adfba41000000b0020c6fa5a797sm3344358wrg.91.2022.05.03.08.01.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 08:01:20 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 00/34] KVM: x86: hyper-v: Fine-grained TLB flush + L2
- TLB flush feature
-In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
-Date:   Tue, 03 May 2022 17:01:19 +0200
-Message-ID: <87bkwe3bk0.fsf@redhat.com>
+        Tue, 3 May 2022 11:09:10 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F79C2A265;
+        Tue,  3 May 2022 08:05:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1651590197;
+        bh=OcpafLIt0jbneUh+lh/+Hat5tB4rpXqh9esglhCE1PA=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=J+keRjufRwAUUf2PcbgLNwiW6Tczw23s5ydI8twe+7t3Mv59Ff6aSzKs9u07oxywi
+         Wk6ZesMMLwLbGHLKaxKQcEO3xbbnQOkAAWWAqyLeoKc4BgJa2uyq4unTIvuXPVb/gp
+         783cO9vUh9S4925R1yr4Im5fSD4PSBBq1AyF9Tkw=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [80.245.79.168] ([80.245.79.168]) by web-mail.gmx.net
+ (3c-app-gmx-bap25.server.lan [172.19.172.95]) (via HTTP); Tue, 3 May 2022
+ 17:03:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+Message-ID: <trinity-213ab6b1-ccff-4429-b76c-623c529f6f73-1651590197578@3c-app-gmx-bap25>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Greg Ungerer <gerg@kernel.org>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Frank Wunderlich <linux@fw-web.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Aw: Re:  Re: [RFC v1] dt-bindings: net: dsa: convert binding for
+ mediatek switches
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 3 May 2022 17:03:17 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <10770ff5-c9b1-7364-4276-05fa0c393d3b@linaro.org>
+References: <20220502153238.85090-1-linux@fw-web.de>
+ <d29637f8-87ff-b5f0-9604-89b51a2ba7c1@linaro.org>
+ <trinity-cda3b94f-8556-4b83-bc34-d2c215f93bcd-1651587032669@3c-app-gmx-bap25>
+ <10770ff5-c9b1-7364-4276-05fa0c393d3b@linaro.org>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:412/kqjZIklGXFr8Vb2bmPU4hB0IuTBE1tkzXvY79SrJpQxz416SoaFKK9pphNaVQjsGu
+ +NYzxSyHxPy7LiC3qq3uB3vzyIBI/nY/NfEzZyMlGIwwT90CqICKvGnqSx2s6zIXRIiOJ8QI2/e1
+ 0AVFBKhNZu99fXfWQjowWBjl5KXHacNsn4d+6nRmUVcNxmQVnhQDg/5UXTyyTknC7Z8NEcXChH58
+ z+P1lQU2p3e+hftjX6Fgx1aFIdzbOG8cw/GnDmhl74bqbMwBQIzuxngEO2+m7vQk8+u+o8ZBDfrs
+ fY=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:G5iULIMJIC8=:XNcQJK0m65jKrYRh25eIDF
+ vOw5QoWubiN+Zt1sI06nKCoJpcZhNCUK481x7/qfN/hGPMMlVdQaT86tx9UfubYPZie4vGvtv
+ wnZ5Mms/fLO6JJniRxh2Pu7jpf9eGUNf95XWtaRTX7X4PonWaQO8iHAv01/PtNRpeRO29Dh0L
+ vIZ44nsJemkhKfLEjqtKnV4us0ziwZT5QPrXsND3oxu4CFCDG3yphLmvc1RiwaAlDU+oo8tSA
+ BJMiZ7q1m84x1JwU50qkDWneljoJNkVWFFLCxalfYvRByUaIU5pEfUUKLgn1XGNic+Gc9Ee+l
+ 1Oxa0Nbn6kJtpCAuo92BVrUFJbdOQr++ObLshQMJjmWwvXCMyWwiInfaouS0/eknxAtskf0y8
+ 25Bn1anR2lzhSHYyNgyIlSP3meNQGALOoUzI3rs0ytYL+wfsKZefI2uHFuHh0I8D31X+ba2TH
+ TADCSQMPc/yOoD+I6Ph2LgtQTbMvzWl3GChFNAAglSzimsUjrnFjljKsEx/kj2IjJH3whV8Xs
+ RxSqenpWcSt49bOg6VOYhNWfYmTYGzhTDDFJjgCrPBGrTa8JCEHpnjN6Tyj5RIR4jga/pDbp8
+ p8h5dBGmbNZ3xZ3VL02DCQ4e4ayNke/7dBgMeS1fQ+T/w/Fz3ZMNQanfLH5xd5XOiosneuxBC
+ BPtn6fm4McxhXhaFmvfLxzZvuB71tW8n507yRlYeqDHUOhMOFstIl0a3X8HQAx24v4FJJ0qMM
+ oRM99ONN3VmdVN3VrQmNlF9yL+eBwKeTHHOfw0sDOBC9h3MoMxv5XNfjhJu4N9G0EOXTyP0c2
+ /+xbhxqNS5NfALhHs01R7/gvKbOl3G5A7u4HAy1oLEDUYsCwVPt7ZmImJatya7TizhSbZ9UuV
+ lzs4ytH07TRehx8rDqiw==
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Vitaly Kuznetsov <vkuznets@redhat.com> writes:
+Hi,
 
-> Changes since v1:
-
-This should've beed 'since v2', obviously.
-
-...
-
+> Gesendet: Dienstag, 03. Mai 2022 um 16:40 Uhr
+> Von: "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
+> Betreff: Re: Aw: Re: [RFC v1] dt-bindings: net: dsa: convert binding for=
+ mediatek switches
 >
-> Currently, KVM handles HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} requests
-> by flushing the whole VPID and this is sub-optimal. This series introduces
-> the required mechanism to make handling of these requests more 
-> fine-grained by flushing individual GVAs only (when requested). On this
-> foundation, "Direct Virtual Flush" Hyper-V feature is implemented. The 
-> feature allows L0 to handle Hyper-V TLB flush hypercalls directly at
-> L0 without the need to reflect the exit to L1. This has at least two
-> benefits: reflecting vmexit and the consequent vmenter are avoided + L0
-> has precise information whether the target vCPU is actually running (and
-> thus requires a kick).
+> On 03/05/2022 16:10, Frank Wunderlich wrote:
+> > Hi,
+> >
+> > thank you for first review.
+> >
+> >> Gesendet: Dienstag, 03. Mai 2022 um 14:05 Uhr
+> >> Von: "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
+> >> Betreff: Re: [RFC v1] dt-bindings: net: dsa: convert binding for medi=
+atek switches
+> >>
+> >> On 02/05/2022 17:32, Frank Wunderlich wrote:
+> >>> From: Frank Wunderlich <frank-w@public-files.de>
+> >>>
+> >>> Convert txt binding to yaml binding for Mediatek switches.
+> >>>
+> >>> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+> >>> ---
+> >>>  .../devicetree/bindings/net/dsa/mediatek.yaml | 435 +++++++++++++++=
++++
+> >>>  .../devicetree/bindings/net/dsa/mt7530.txt    | 327 -------------
+> >>>  2 files changed, 435 insertions(+), 327 deletions(-)
+> >>>  create mode 100644 Documentation/devicetree/bindings/net/dsa/mediat=
+ek.yaml
+> >>>  delete mode 100644 Documentation/devicetree/bindings/net/dsa/mt7530=
+.txt
+> >>>
+> >>> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek.yaml=
+ b/Documentation/devicetree/bindings/net/dsa/mediatek.yaml
+> >>> new file mode 100644
+> >>> index 000000000000..c1724809d34e
+> >>> --- /dev/null
+> >>> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek.yaml
+> >>
+> >> Specific name please, so previous (with vendor prefix) was better:
+> >> mediatek,mt7530.yaml
+> >
+> > ok, named it mediatek only because mt7530 is only one possible chip an=
+d driver handles 3 different "variants".
+> >
+> >>> @@ -0,0 +1,435 @@
+> >>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> >>
+> >> You should CC previous contributors and get their acks on this. You
+> >> copied here a lot of description.
+> >
+> > added 3 Persons that made commits to txt before to let them know about=
+ this change
+> >
+> > and yes, i tried to define at least the phy-mode requirement as yaml-d=
+epency, but failed because i cannot match
+> > compatible in subnode.
+>
+> I don't remember such syntax.
+>
+> (...)
 
-FWIW, patches still apply cleanly to kvm/queue so probably there's no
-need to resend.
+have not posted this version as it was failing in dtbs_check, this was how=
+ i tried:
 
--- 
-Vitaly
+https://github.com/frank-w/BPI-R2-4.14/blob/8f2033eb6fcae273580263c3f0b31f=
+0d48821740/Documentation/devicetree/bindings/net/dsa/mediatek.yaml#L177
+
+
+> >>> if defined, indicates that either MT7530 is the part
+> >>> +      on multi-chip module belong to MT7623A has or the remotely st=
+andalone
+> >>> +      chip as the function MT7623N reference board provided for.
+> >>> +
+> >>> +  reset-gpios:
+> >>> +    description: |
+> >>> +      Should be a gpio specifier for a reset line.
+> >>> +    maxItems: 1
+> >>> +
+> >>> +  reset-names:
+> >>> +    description: |
+> >>> +      Should be set to "mcm".
+> >>> +    const: mcm
+> >>> +
+> >>> +  resets:
+> >>> +    description: |
+> >>> +      Phandle pointing to the system reset controller with
+> >>> +      line index for the ethsys.
+> >>> +    maxItems: 1
+> >>> +
+> >>> +required:
+> >>> +  - compatible
+> >>> +  - reg
+> >>
+> >> What about address/size cells?
+> >
+> > you're right even if they are const to a value they need to be set
+> >
+> >>> +
+> >>> +allOf:
+> >>> +  - $ref: "dsa.yaml#"
+> >>> +  - if:
+> >>> +      required:
+> >>> +        - mediatek,mcm
+> >>
+> >> Original bindings had this reversed.
+> >
+> > i know, but i think it is better readable and i will drop the else-par=
+t later.
+> > Driver supports optional reset ("mediatek,mcm" unset and without reset=
+-gpios)
+> > as this is needed if there is a shared reset-line for gmac and switch =
+like on R2 Pro.
+> >
+> > i left this as separate commit to be posted later to have a nearly 1:1=
+ conversion here.
+>
+> Ah, I missed that actually your syntax is better. No need to
+> reverse/negate and the changes do not have to be strict 1:1.
+
+yes, but a conversion implies same meaning, so changing things later ;)
+
+> >>> +    then:
+> >>> +      required:
+> >>> +        - resets
+> >>> +        - reset-names
+> >>> +    else:
+> >>> +      required:
+> >>> +        - reset-gpios
+> >>> +
+> >>> +  - if:
+> >>> +      required:
+> >>> +        - interrupt-controller
+> >>> +    then:
+> >>> +      required:
+> >>> +        - "#interrupt-cells"
+> >>
+> >> This should come from dt schema already...
+> >
+> > so i should drop (complete block for interrupt controller)?
+>
+> The interrupts you need. What I mean, you can skip requirement of cells.
+
+ok, i drop only the #interrupt-cells
+
+> >>> +        - interrupts
+> >>> +
+> >>> +  - if:
+> >>> +      properties:
+> >>> +        compatible:
+> >>> +          items:
+> >>> +            - const: mediatek,mt7530
+> >>> +    then:
+> >>> +      required:
+> >>> +        - core-supply
+> >>> +        - io-supply
+> >>> +
+> >>> +
+> >>> +patternProperties:
+> >>> +  "^ports$":
+> >>
+> >> It''s not a pattern, so put it under properties, like regular propert=
+y.
+> >
+> > can i then make the subnodes match? so the full block will move above =
+required between "mediatek,mcm" and "reset-gpios"
+>
+> Yes, subnodes stay with patternProperties.
+>
+> >
+> >   ports:
+> >     type: object
+> >
+> >     patternProperties:
+> >       "^port@[0-9]+$":
+> >         type: object
+> >         description: Ethernet switch ports
+> >
+> >         properties:
+> >           reg:
+> >             description: |
+> >               Port address described must be 5 or 6 for CPU port and f=
+rom 0 to 5 for user ports.
+> >
+> >         unevaluatedProperties: false
+> >
+> >         allOf:
+> >           - $ref: dsa-port.yaml#
+> >           - if:
+> > ....
+> >
+> > basicly this "ports"-property should be required too, right?
+>
+> Previous binding did not enforce it, I think, but it is reasonable to
+> require ports.
+
+basicly it is required in dsa.yaml, so it will be redundant here
+
+https://elixir.bootlin.com/linux/v5.18-rc5/source/Documentation/devicetree=
+/bindings/net/dsa/dsa.yaml#L55
+
+this defines it as pattern "^(ethernet-)?ports$" and should be processed b=
+y dsa-core. so maybe changing it to same pattern instead of moving up as n=
+ormal property?
+
+> >>> +    type: object
+> >>> +
+> >>> +    patternProperties:
+> >>> +      "^port@[0-9]+$":
+> >>> +        type: object
+> >>> +        description: Ethernet switch ports
+> >>> +
+> >>> +        $ref: dsa-port.yaml#
+> >>
+> >> This should go to allOf below.
+> >
+> > see above
+> >
+> >>> +
+> >>> +        properties:
+> >>> +          reg:
+> >>> +            description: |
+> >>> +              Port address described must be 6 for CPU port and fro=
+m 0 to 5 for user ports.
+> >>> +
+> >>> +        unevaluatedProperties: false
+> >>> +
+> >>> +        allOf:
+> >>> +          - if:
+> >>> +              properties:
+> >>> +                label:
+> >>> +                  items:
+> >>> +                    - const: cpu
+> >>> +            then:
+> >>> +              required:
+> >>> +                - reg
+> >>> +                - phy-mode
+> >>> +
+> >>> +unevaluatedProperties: false
+> >>> +
+> >>> +examples:
+> >>> +  - |
+> >>> +    mdio0 {
+> >>
+> >> Just mdio
+> >
+> > ok
+> >
+> >>> +        #address-cells =3D <1>;
+> >>> +        #size-cells =3D <0>;
+> >>> +        switch@0 {
+> >>> +            compatible =3D "mediatek,mt7530";
+> >>> +            #address-cells =3D <1>;
+> >>> +            #size-cells =3D <0>;
+> >>> +            reg =3D <0>;
+> >>> +
+> >>> +            core-supply =3D <&mt6323_vpa_reg>;
+> >>> +            io-supply =3D <&mt6323_vemc3v3_reg>;
+> >>> +            reset-gpios =3D <&pio 33 0>;
+> >>
+> >> Use GPIO flag define/constant.
+> >
+> > this example seems to be taken from bpi-r2 (i had taken it from the tx=
+t). In dts for this board there are no
+> > constants too.
+> >
+> > i guess
+> > include/dt-bindings/gpio/gpio.h:14:#define GPIO_ACTIVE_HIGH 0
+> >
+> > for 33 there seem no constant..all other references to pio node are wi=
+th numbers too and there seem no binding
+> > header defining the gpio pins (only functions in include/dt-bindings/p=
+inctrl/mt7623-pinfunc.h)
+>
+> ok, then my comment
+
+you mean adding a comment to the example that GPIO-flags/constants should =
+be used instead of magic numbers?
+
+> Best regards,
+> Krzysztof
+
+this is how it looks like without the port-property-change:
+https://github.com/frank-w/BPI-R2-4.14/blob/5.18-mt7531-mainline/Documenta=
+tion/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+
+regards Frank
 
