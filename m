@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4765C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E8EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241501AbiECSfF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 14:35:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51854 "EHLO
+        id S241526AbiECSfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 14:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241382AbiECSep (ORCPT
+        with ESMTP id S241486AbiECSev (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 14:34:45 -0400
+        Tue, 3 May 2022 14:34:51 -0400
 Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8865A3F89D
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 11:31:03 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id u18-20020a170902e21200b0015e5e660618so6841929plb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 11:31:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290663F8AB
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 11:31:06 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id a11-20020a170902900b00b0015ebbae6dd9so809139plp.6
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 11:31:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=UI0i04LOeDv306YCyysgbmYsjYLKqLtrpgIp2tMXlhg=;
-        b=BaTAJBbtgdle1GlFYIxOKqwCwV9qPPsN0DN3CdhUWT+UQKmDWmL5/2GR7zcx9m227i
-         /iD+cqmiMcA3jCvEQSuHz1e6ySu0Xin2ah6AuoRg3nHzO6M6LLj0W7FUxZOgksKTkUCg
-         4pkYK+VFcAclXZ5/crt9hNnrdM1KW4irzX3r+yZd0zjOWe6/I8bKUmWmIQXc7yQXBiNn
-         vJS8rXZzzxdn8DMNwi9QLz7vmoM2mpvaRXlzA/EmSTeZAbp7QbI1+TnQj6aupPRYdPSZ
-         n+60zANuUT3WGGIVyGYIv9lUBJ6JcDRhgWSwWmW1A1wAjb1OD92dhRjcLy5uqfgaXo2d
-         VOPQ==
+        bh=kdhiU9fwdUmCUThSgoTZng+IDRrmraex/lfG5pPhseg=;
+        b=c8DzY+1F+9gWJxr1pR9f+htywCO1jkCNviVAvOHO019VMJ2e5OILY0r5nmZJBc+l7A
+         Gwt3R7gK6uP809S23n7mTj2sgBSIPR59yCQy0r3V03W5Kyh72v1VMdFmDEwjqOCwLeT5
+         9n/jwpwUnGU8eZkJ9HWCY4Ww2OWYkhmWA3tvEhAP0C/WHoLMx+3pzECx/tMk5vBeGk5i
+         rZ6a863DDoqtaEOcMTei0/unIGLeuiEvCwGE8q0A/g32UcWogIeTDuN2S1E43Krcs8j7
+         ww0TAtnJkRFeVMuSHwWqVeZKn3v09y7dGsMGEArk3MMiOVlFjRKt0no3x73rE70wh00N
+         2IrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=UI0i04LOeDv306YCyysgbmYsjYLKqLtrpgIp2tMXlhg=;
-        b=2dBpbLNnnCVMK1c1oZYjgl6BgHgBF+C9cp6DHciOVTph2wvpVCQyTLNb3DZIEfN0u6
-         IZ/QSTHF3HyF4kIDXApxot7OePLnBVCDI1HeNJzOjKWbxB99dOmtqfpygZKUJKi1EQ4Y
-         NCWm85rnGF9kRJ4FUpMjo6XZoT8fcJz1aHgl9gzslNOeb+de3WrPwGw6f4QZQt5LDFw0
-         ULTCQMPfVt71zNS07jamzCcPoy5xKyDJCtGc42b0ZaKrT/wG5Js+Be/wLDvKgYtFRePr
-         7jVJv/H/DxmDIgChHVazmF0kiKUnPfRbgpfWDek9b06r7uBqG+NEvkhAJQ6IhM6EvJtU
-         gTaQ==
-X-Gm-Message-State: AOAM531DnKtoC9Zid4PKL6n15+T1tuXPTJld3JR0vYfeLm3mfU0Yq8Ky
-        KkvQn6hLcf84GLkaOh7CZ1ex6dB94vMAiy/kqKpp4zZFjnIs9q9Yj0Vs9SGcIJJ5v4ke/0jPzDB
-        qva/gW1gdUVDbNwCrFHY1ScNuiwBp8HL6uPppEukLJBPSbwqPFnlzfvoH+8y5hKbLx4jfVpis
-X-Google-Smtp-Source: ABdhPJyF8hUdbSgAbutlP4Dw9VQ1NedW9z01ve5CYxvBWcspa31Ucxue0zxi7oN5C5UCCbsMRv4ytdlUb4vO
+        bh=kdhiU9fwdUmCUThSgoTZng+IDRrmraex/lfG5pPhseg=;
+        b=y+xgrDeZVcXgvAECO/HhkPmcYw4RFI7F3lF5MC/K3Q4+qbXxBJHLolUpfOR0upLe2T
+         2S8PoDeJADKpuM87l9Ze2dXj5Wn49GPMPA/i1x5ElC+IoZD647jOIWVmsUkreEfH8cJv
+         r8b0b2IyvJEveYnWmpf3xVRXulsPZwbXG8nVripViCq5QR0sxYBMi5F+7PG6EKCBAcvm
+         TtRfW/C6hkVXFFtx8OcQ9qwlJcXZ/tMbBzpcStUmCfKrDYdMJxbCrZX/Y9+36sEJCEt2
+         8GVZ7J3ma4LrnTWvfuu2AOL442RFs8O26Ryl8PmVjad+2IaFSSlnzDgZ131XmHRhwrGF
+         ebWg==
+X-Gm-Message-State: AOAM531mRaZbaxa9lCpicgowP8QJ9szyI9mcuHM0HKNfRD6RZQDD1sjO
+        qsgDLzZcuyN/OC25xCp8rbFEPTBhdXyULh3rh6ztxYSKQ9DvQyTrWgT1u6PWB+zY4pmD/c1CNAj
+        /O8w+QGC4uVihC3kl0Sgdriff5mju0ygPxzmCSwDtp9Sjj6MXrx59EegcdeljI6LKI+P3Uhy1
+X-Google-Smtp-Source: ABdhPJxlCSSj5oS9+YkkTe2pxdKzfgfB0SGrTOFE9i3HpygSw76Igjy+5YIFfuGMaV2X+WJZag9fF/HyoIhX
 X-Received: from sweer.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:e45])
- (user=bgardon job=sendgmr) by 2002:a17:90a:e510:b0:1d9:ee23:9fa1 with SMTP id
- t16-20020a17090ae51000b001d9ee239fa1mr95259pjy.0.1651602662631; Tue, 03 May
- 2022 11:31:02 -0700 (PDT)
-Date:   Tue,  3 May 2022 18:30:43 +0000
+ (user=bgardon job=sendgmr) by 2002:a17:90b:f03:b0:1d9:a8e9:9e35 with SMTP id
+ br3-20020a17090b0f0300b001d9a8e99e35mr6253446pjb.48.1651602665962; Tue, 03
+ May 2022 11:31:05 -0700 (PDT)
+Date:   Tue,  3 May 2022 18:30:45 +0000
 In-Reply-To: <20220503183045.978509-1-bgardon@google.com>
-Message-Id: <20220503183045.978509-10-bgardon@google.com>
+Message-Id: <20220503183045.978509-12-bgardon@google.com>
 Mime-Version: 1.0
 References: <20220503183045.978509-1-bgardon@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH v7 09/11] KVM: selftests: Factor out calculation of pages
- needed for a VM
+Subject: [PATCH v7 11/11] KVM: selftests: Cache binary stats metadata for
+ duration of test
 From:   Ben Gardon <bgardon@google.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
@@ -70,127 +70,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Factor out the calculation of the number of pages needed for a VM to
-make it easier to separate creating the VM and adding vCPUs.
+In order to improve performance across multiple reads of VM stats, cache
+the stats metadata in the VM struct.
 
-Reviewed-by: David Matlack <dmatlack@google.com>
-Reviewed-by: Peter Xu <peterx@redhat.com>
 Signed-off-by: Ben Gardon <bgardon@google.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h     |  4 ++
- tools/testing/selftests/kvm/lib/kvm_util.c    | 59 ++++++++++++++-----
- 2 files changed, 47 insertions(+), 16 deletions(-)
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 31 ++++++++++---------
+ .../selftests/kvm/lib/kvm_util_internal.h     |  5 +++
+ 2 files changed, 21 insertions(+), 15 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 001b55ae25f8..1dac3c6607f1 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -312,6 +312,10 @@ vm_paddr_t vm_phy_pages_alloc(struct kvm_vm *vm, size_t num,
- 			      vm_paddr_t paddr_min, uint32_t memslot);
- vm_paddr_t vm_alloc_page_table(struct kvm_vm *vm);
- 
-+uint64_t vm_pages_needed(enum vm_guest_mode mode, uint32_t nr_vcpus,
-+			 uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
-+			 uint32_t num_percpu_pages);
-+
- /*
-  * Create a VM with reasonable defaults
-  *
 diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 6930ba298170..27ffd2537df6 100644
+index 0ec7efc2900d..4bb012efcc88 100644
 --- a/tools/testing/selftests/kvm/lib/kvm_util.c
 +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -377,7 +377,7 @@ struct kvm_vm *vm_create_without_vcpus(enum vm_guest_mode mode, uint64_t pages)
+@@ -736,6 +736,12 @@ void kvm_vm_free(struct kvm_vm *vmp)
+ 	if (vmp == NULL)
+ 		return;
+ 
++	/* Free cached stats metadata and close FD */
++	if (vmp->stats_fd) {
++		free(vmp->stats_desc);
++		close(vmp->stats_fd);
++	}
++
+ 	/* Free userspace_mem_regions. */
+ 	hash_for_each_safe(vmp->regions.slot_hash, ctr, node, region, slot_node)
+ 		__vm_mem_region_delete(vmp, region, false);
+@@ -2703,37 +2709,32 @@ int read_stat_data(int stats_fd, struct kvm_stats_header *header,
+ static int __vm_get_stat(struct kvm_vm *vm, const char *stat_name,
+ 			 uint64_t *data, ssize_t max_elements)
+ {
+-	struct kvm_stats_desc *stats_desc;
+-	struct kvm_stats_header header;
+ 	struct kvm_stats_desc *desc;
+ 	size_t size_desc;
+-	int stats_fd;
+ 	int ret = -EINVAL;
+ 	int i;
+ 
+-	stats_fd = vm_get_stats_fd(vm);
+-
+-	read_stats_header(stats_fd, &header);
+-
+-	stats_desc = read_stats_desc(stats_fd, &header);
++	if (!vm->stats_fd) {
++		vm->stats_fd = vm_get_stats_fd(vm);
++		read_stats_header(vm->stats_fd, &vm->stats_header);
++		vm->stats_desc = read_stats_desc(vm->stats_fd, &vm->stats_header);
++	}
+ 
+-	size_desc = sizeof(struct kvm_stats_desc) + header.name_size;
++	size_desc = sizeof(struct kvm_stats_desc) + vm->stats_header.name_size;
+ 
+ 	/* Read kvm stats data one by one */
+-	for (i = 0; i < header.num_desc; ++i) {
+-		desc = (void *)stats_desc + (i * size_desc);
++	for (i = 0; i < vm->stats_header.num_desc; ++i) {
++		desc = (void *)vm->stats_desc + (i * size_desc);
+ 
+ 		if (strcmp(desc->name, stat_name))
+ 			continue;
+ 
+-		ret = read_stat_data(stats_fd, &header, desc, data,
+-				     max_elements);
++		ret = read_stat_data(vm->stats_fd, &vm->stats_header, desc,
++				     data, max_elements);
+ 
+ 		break;
+ 	}
+ 
+-	free(stats_desc);
+-	close(stats_fd);
+ 	return ret;
  }
  
- /*
-- * VM Create with customized parameters
-+ * Get the number of pages needed for a VM
-  *
-  * Input Args:
-  *   mode - VM Mode (e.g. VM_MODE_P52V48_4K)
-@@ -385,27 +385,17 @@ struct kvm_vm *vm_create_without_vcpus(enum vm_guest_mode mode, uint64_t pages)
-  *   slot0_mem_pages - Slot0 physical memory size
-  *   extra_mem_pages - Non-slot0 physical memory total size
-  *   num_percpu_pages - Per-cpu physical memory pages
-- *   guest_code - Guest entry point
-- *   vcpuids - VCPU IDs
-  *
-  * Output Args: None
-  *
-  * Return:
-- *   Pointer to opaque structure that describes the created VM.
-- *
-- * Creates a VM with the mode specified by mode (e.g. VM_MODE_P52V48_4K),
-- * with customized slot0 memory size, at least 512 pages currently.
-- * extra_mem_pages is only used to calculate the maximum page table size,
-- * no real memory allocation for non-slot0 memory in this function.
-+ *   The number of pages needed for the VM.
-  */
--struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
--				    uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
--				    uint32_t num_percpu_pages, void *guest_code,
--				    uint32_t vcpuids[])
-+uint64_t vm_pages_needed(enum vm_guest_mode mode, uint32_t nr_vcpus,
-+			 uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
-+			 uint32_t num_percpu_pages)
- {
- 	uint64_t vcpu_pages, extra_pg_pages, pages;
--	struct kvm_vm *vm;
--	int i;
- 
- 	/* Force slot0 memory size not small than DEFAULT_GUEST_PHY_PAGES */
- 	if (slot0_mem_pages < DEFAULT_GUEST_PHY_PAGES)
-@@ -421,11 +411,48 @@ struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
- 	extra_pg_pages = (slot0_mem_pages + extra_mem_pages + vcpu_pages) / PTES_PER_MIN_PAGE * 2;
- 	pages = slot0_mem_pages + vcpu_pages + extra_pg_pages;
- 
-+	pages = vm_adjust_num_guest_pages(mode, pages);
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util_internal.h b/tools/testing/selftests/kvm/lib/kvm_util_internal.h
+index a03febc24ba6..e753edd7b8d3 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util_internal.h
++++ b/tools/testing/selftests/kvm/lib/kvm_util_internal.h
+@@ -67,6 +67,11 @@ struct kvm_vm {
+ 	vm_vaddr_t idt;
+ 	vm_vaddr_t handlers;
+ 	uint32_t dirty_ring_size;
 +
-+	return pages;
-+}
-+
-+/*
-+ * VM Create with customized parameters
-+ *
-+ * Input Args:
-+ *   mode - VM Mode (e.g. VM_MODE_P52V48_4K)
-+ *   nr_vcpus - VCPU count
-+ *   slot0_mem_pages - Slot0 physical memory size
-+ *   extra_mem_pages - Non-slot0 physical memory total size
-+ *   num_percpu_pages - Per-cpu physical memory pages
-+ *   guest_code - Guest entry point
-+ *   vcpuids - VCPU IDs
-+ *
-+ * Output Args: None
-+ *
-+ * Return:
-+ *   Pointer to opaque structure that describes the created VM.
-+ *
-+ * Creates a VM with the mode specified by mode (e.g. VM_MODE_P52V48_4K),
-+ * with customized slot0 memory size, at least 512 pages currently.
-+ * extra_mem_pages is only used to calculate the maximum page table size,
-+ * no real memory allocation for non-slot0 memory in this function.
-+ */
-+struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
-+				    uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
-+				    uint32_t num_percpu_pages, void *guest_code,
-+				    uint32_t vcpuids[])
-+{
-+	uint64_t pages;
-+	struct kvm_vm *vm;
-+	int i;
-+
- 	TEST_ASSERT(nr_vcpus <= kvm_check_cap(KVM_CAP_MAX_VCPUS),
- 		    "nr_vcpus = %d too large for host, max-vcpus = %d",
- 		    nr_vcpus, kvm_check_cap(KVM_CAP_MAX_VCPUS));
++	/* Cache of information for binary stats interface */
++	int stats_fd;
++	struct kvm_stats_header stats_header;
++	struct kvm_stats_desc *stats_desc;
+ };
  
--	pages = vm_adjust_num_guest_pages(mode, pages);
-+	pages = vm_pages_needed(mode, nr_vcpus, slot0_mem_pages,
-+				extra_mem_pages, num_percpu_pages);
- 
- 	vm = vm_create_without_vcpus(mode, pages);
- 
+ struct vcpu *vcpu_find(struct kvm_vm *vm, uint32_t vcpuid);
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
