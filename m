@@ -2,108 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F916C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 14:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78F1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:01:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237645AbiECPDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:03:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55832 "EHLO
+        id S237716AbiECPFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:05:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237619AbiECPDT (ORCPT
+        with ESMTP id S237690AbiECPFA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:03:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 50F8E39801
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 07:59:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651589986;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XyarcUrf0R465efktdUAleuyj6ZDMyzyVobCRnMSWN8=;
-        b=NZEMNqQyHoUtZ7ZxJZorjtj/VytvWaInuumxBz0JR99oTUVfEDgP+6BV3JUCCXsoafZ9g6
-        TcvEXdEvpPnk0h0INmsIQy+/gOcB+hk1gqo7CYgZ+i1Fk0F0USgYiqOxZ2dZP3N0BubmuR
-        ZhEDhxLAdRyINFRdCnIklz7MVwrG0/M=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-340-59-kKbrXPAOVc7ZAM1zFeA-1; Tue, 03 May 2022 10:59:33 -0400
-X-MC-Unique: 59-kKbrXPAOVc7ZAM1zFeA-1
-Received: by mail-wm1-f70.google.com with SMTP id 26-20020a05600c021a00b003940660c053so5774693wmi.2
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 07:59:32 -0700 (PDT)
+        Tue, 3 May 2022 11:05:00 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68143981D
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:01:26 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-ed9a75c453so6885708fac.11
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 08:01:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UfIE70xQm2YU+6K/Ttf9zAPKZ0PU7B5HIydVLGsmlJ4=;
+        b=l36uMbuQkvZDIyOcKxfb1sUiQtpNr89zAPwIB+/FfSpDvk2QOQj529Ex0mPdSgw7IU
+         rCjzODxW+uxMBPDpc9AgPJLDCTSKoVbUCjiNYeom6XP9kYt4ThUNE3hc8XS8SjbJkDZ+
+         P1qM7f94z3bBMJvftCiayATqDJXFPqhkQsMw3zIflRX/uDB3q1la63xCJZIEdw6UgKx1
+         Ly1XLi1d2PrqnoDAjtSNsarad16am9qhT78Vah99PZJXqhWFw1QPIJZd/MeSHe/MwELq
+         VmqWJEN9mbG0jTK5/YlHCKItVBqDF1DIUl0U7JtKysKQxFfnqZO3xwwc7yx5nfT+Km+i
+         XxWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=XyarcUrf0R465efktdUAleuyj6ZDMyzyVobCRnMSWN8=;
-        b=6IPW8hiDAUv+REXFZjXZ0vfKKJb62byRe7VuueU58ihxpuZIQhKvoq/zPwN6RkxhNk
-         0L+b9k/ojKbB/jIVgWjBnf6IV/a1Zdwo9MyiUsMKut85GJ0Q7xKF8FKe3ZZoO+Amut+4
-         uGWpKA8ci39Gl5uN7Ewq4gWqUxDy3eC97a06i1WEkG6Blhs59rU4aShKT0VyVJJ14aOM
-         zuIANyG4sDqvda+GbH834LpxmJyoM1sI3Sgw8wua/bNATpTDpPxrz1Pu7oQdz2qi/MHu
-         ccQHbdPI26jA8Z1Fl/SI+OOm2+MQvq1RCxmKDUnM+nIhIDkTUJhcrMlXe/fComuo7+34
-         Wo1w==
-X-Gm-Message-State: AOAM533xqnVTLY6P3dMPLheIOq/egYlPxPfxpOuJW+/Sec6bZBuJm97U
-        R9T5k2d56xiCrgJ3CZgvtlMd3ugqUBtnf0QjPt0UNmbJrTgBBqpWJ/kQpyRL5wQFaXo4de0fVMA
-        IIp2hpRI7fOtudGvaytA6qUNN
-X-Received: by 2002:a05:600c:3b1f:b0:394:5399:a34 with SMTP id m31-20020a05600c3b1f00b0039453990a34mr1536988wms.40.1651589954226;
-        Tue, 03 May 2022 07:59:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyd0dxa95Pj2U+hA9w5BwXWjBAHcElOoTebVuZFbPFkRANcckEwJxnP4Vwxmt5ZItX1z0AydQ==
-X-Received: by 2002:a05:600c:3b1f:b0:394:5399:a34 with SMTP id m31-20020a05600c3b1f00b0039453990a34mr1536968wms.40.1651589954045;
-        Tue, 03 May 2022 07:59:14 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id j28-20020a05600c1c1c00b003942a244f39sm1828183wms.18.2022.05.03.07.59.13
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UfIE70xQm2YU+6K/Ttf9zAPKZ0PU7B5HIydVLGsmlJ4=;
+        b=2aaWRBJ87moUy3iYjG4AeYsdgIN1m+CWoO4YyWFzt9s05X6/V/v0t3pLRk7RnsJGqn
+         Jccj1QBJzE/X0mTdoghhMHFdCFdpX/dvudJRK3+8c3cUm54iR0t2S3YXvgW+IpyySGBz
+         ZJSSGbUhxiXHKFfuNHmS4V7r3BADBM91qITtRBHJzq1kPwqf3em9snQNVe8KyFEX8fks
+         Wxn1NQbwMHmfyu6Trh8uiBx0n7iGPLJuhw0WIxhiYXJia0pCxvIc34wOobPXxRiN/VD7
+         EDOwdRH0Xl++Ta+r/0IamiL1XL9nE6FRwE+6Bxkw+uw5LjJMYCvw3KuDlBM8XT2nTecw
+         6YnQ==
+X-Gm-Message-State: AOAM533KpGJQG+/kXUvExcDjC+7WIwm2MMeg7AOG8Cs/kD40+MqhLVof
+        0xE4HoZwq0sQs+kIYJPnomUKpw==
+X-Google-Smtp-Source: ABdhPJx8w+yhm4KptfWPxu2XUQshHWFWOqOuN/CC7q0vNKFoXdHftEkryd18W19JwhYmh96Qw36GmA==
+X-Received: by 2002:a05:6870:581b:b0:e5:9baf:cd2a with SMTP id r27-20020a056870581b00b000e59bafcd2amr1810418oap.233.1651590085861;
+        Tue, 03 May 2022 08:01:25 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id o13-20020a9d404d000000b0060603221271sm3976053oti.65.2022.05.03.08.01.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 07:59:13 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH v3 07/34] x86/hyperv: Introduce
- HV_MAX_SPARSE_VCPU_BANKS/HV_VCPUS_PER_SPARSE_BANK constants
-In-Reply-To: <19a812b3-73b4-7e5a-8885-ec652598a5ce@wanadoo.fr>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
- <20220414132013.1588929-8-vkuznets@redhat.com>
- <19a812b3-73b4-7e5a-8885-ec652598a5ce@wanadoo.fr>
-Date:   Tue, 03 May 2022 16:59:12 +0200
-Message-ID: <87ee1a3bnj.fsf@redhat.com>
+        Tue, 03 May 2022 08:01:25 -0700 (PDT)
+Date:   Tue, 3 May 2022 10:01:21 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Robert Foss <robert.foss@linaro.org>
+Cc:     agross@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        robh+dt@kernel.org, krzk+dt@kernel.org, jonathan@marek.ca,
+        tdas@codeaurora.org, anischal@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Steev Klimaszewski <steev@kali.org>
+Subject: Re: [PATCH v2 1/8] clk: qcom: rcg2: Cache rate changes for parked
+ RCGs
+Message-ID: <YnFDwUvFCgrH12zY@builder.lan>
+References: <20220503130448.520470-1-robert.foss@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220503130448.520470-1-robert.foss@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Christophe JAILLET <christophe.jaillet@wanadoo.fr> writes:
+On Tue 03 May 08:04 CDT 2022, Robert Foss wrote:
 
-> Le 14/04/2022 =C3=A0 15:19, Vitaly Kuznetsov a =C3=A9crit=C2=A0:
+> From: Bjorn Andersson <bjorn.andersson@linaro.org>
+> 
+> As GDSCs are turned on and off some associated clocks are momentarily
+> enabled for house keeping purposes. Failure to enable these clocks seems
+> to have been silently ignored in the past, but starting in SM8350 this
+> failure will prevent the GDSC to turn on.
+> 
+> At least on SM8350 this operation will enable the RCG per the
+> configuration in CFG_REG. This means that the current model where the
+> current configuration is written back to CF_REG immediately after
+> parking the RCG doesn't work.
+> 
+> Instead, keep track of the currently requested rate of the clock and
+> upon enabling the clock reapply the configuration per the saved rate.
+> 
+> Fixes: 7ef6f11887bd ("clk: qcom: Configure the RCGs to a safe source as needed")
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Reviewed-by: Vinod Koul <vkoul@kernel.org>
+> Tested-by: Steev Klimaszewski <steev@kali.org>
+> ---
 
-...
+This patch has been iterated since and the latest incarnation can be
+found on below link. A reference to that in the cover letter would be
+sufficient.
 
->> @@ -224,7 +225,7 @@ static inline int __cpumask_to_vpset(struct hv_vpset=
- *vpset,
->>   	 * structs are not cleared between calls, we risk flushing unneeded
->>   	 * vCPUs otherwise.
->>   	 */
->> -	for (vcpu_bank =3D 0; vcpu_bank <=3D hv_max_vp_index / 64; vcpu_bank++)
->> +	for (vcpu_bank =3D 0; vcpu_bank <=3D max_vcpu_bank; vcpu_bank++)
->>   		vpset->bank_contents[vcpu_bank] =3D 0;
->
-> and here:
-> 	bitmap_clear(vpset->bank_contents, 0, hv_max_vp_index);
-> or maybe even if it is safe to do so:
-> 	bitmap_zero(vpset->bank_contents, hv_max_vp_index);
+https://lore.kernel.org/linux-arm-msm/20220426212136.1543984-1-bjorn.andersson@linaro.org/
 
-Both your suggestions (including the one for "PATCH v3 07/34]") look
-good to me, thanks! I'd however want to send them to linux-hyperv@
-separately when this series lands through KVM tree just to not make this
-heavy series even heavier.
+Thanks,
+Bjorn
 
---=20
-Vitaly
-
+>  drivers/clk/qcom/clk-rcg.h  |  2 ++
+>  drivers/clk/qcom/clk-rcg2.c | 32 +++++++++++++++++---------------
+>  2 files changed, 19 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/clk/qcom/clk-rcg.h b/drivers/clk/qcom/clk-rcg.h
+> index 00cea508d49e..8b41244b8dbf 100644
+> --- a/drivers/clk/qcom/clk-rcg.h
+> +++ b/drivers/clk/qcom/clk-rcg.h
+> @@ -140,6 +140,7 @@ extern const struct clk_ops clk_dyn_rcg_ops;
+>   * @freq_tbl: frequency table
+>   * @clkr: regmap clock handle
+>   * @cfg_off: defines the cfg register offset from the CMD_RCGR + CFG_REG
+> + * @current_rate: cached rate for parked RCGs
+>   */
+>  struct clk_rcg2 {
+>  	u32			cmd_rcgr;
+> @@ -150,6 +151,7 @@ struct clk_rcg2 {
+>  	const struct freq_tbl	*freq_tbl;
+>  	struct clk_regmap	clkr;
+>  	u8			cfg_off;
+> +	unsigned long		current_rate;
+>  };
+>  
+>  #define to_clk_rcg2(_hw) container_of(to_clk_regmap(_hw), struct clk_rcg2, clkr)
+> diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+> index f675fd969c4d..81fd3a2db709 100644
+> --- a/drivers/clk/qcom/clk-rcg2.c
+> +++ b/drivers/clk/qcom/clk-rcg2.c
+> @@ -167,6 +167,7 @@ clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
+>  {
+>  	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
+>  	u32 cfg, hid_div, m = 0, n = 0, mode = 0, mask;
+> +	unsigned long rate;
+>  
+>  	regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
+>  
+> @@ -186,7 +187,11 @@ clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
+>  	hid_div = cfg >> CFG_SRC_DIV_SHIFT;
+>  	hid_div &= mask;
+>  
+> -	return calc_rate(parent_rate, m, n, mode, hid_div);
+> +	rate = calc_rate(parent_rate, m, n, mode, hid_div);
+> +	if (!rcg->current_rate)
+> +		rcg->current_rate = rate;
+> +
+> +	return rate;
+>  }
+>  
+>  static int _freq_tbl_determine_rate(struct clk_hw *hw, const struct freq_tbl *f,
+> @@ -978,12 +983,14 @@ static int clk_rcg2_shared_set_rate(struct clk_hw *hw, unsigned long rate,
+>  	if (!f)
+>  		return -EINVAL;
+>  
+> +	rcg->current_rate = rate;
+> +
+>  	/*
+> -	 * In case clock is disabled, update the CFG, M, N and D registers
+> -	 * and don't hit the update bit of CMD register.
+> +	 * In the case that the shared RCG is parked, current_rate will be
+> +	 * applied as the clock is unparked again, so just return here.
+>  	 */
+>  	if (!__clk_is_enabled(hw->clk))
+> -		return __clk_rcg2_configure(rcg, f);
+> +		return 0;
+>  
+>  	return clk_rcg2_shared_force_enable_clear(hw, f);
+>  }
+> @@ -997,8 +1004,13 @@ static int clk_rcg2_shared_set_rate_and_parent(struct clk_hw *hw,
+>  static int clk_rcg2_shared_enable(struct clk_hw *hw)
+>  {
+>  	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
+> +	const struct freq_tbl *f = NULL;
+>  	int ret;
+>  
+> +	f = qcom_find_freq(rcg->freq_tbl, rcg->current_rate);
+> +	if (!f)
+> +		return -EINVAL;
+> +
+>  	/*
+>  	 * Set the update bit because required configuration has already
+>  	 * been written in clk_rcg2_shared_set_rate()
+> @@ -1007,7 +1019,7 @@ static int clk_rcg2_shared_enable(struct clk_hw *hw)
+>  	if (ret)
+>  		return ret;
+>  
+> -	ret = update_config(rcg);
+> +	ret = clk_rcg2_configure(rcg, f);
+>  	if (ret)
+>  		return ret;
+>  
+> @@ -1017,13 +1029,6 @@ static int clk_rcg2_shared_enable(struct clk_hw *hw)
+>  static void clk_rcg2_shared_disable(struct clk_hw *hw)
+>  {
+>  	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
+> -	u32 cfg;
+> -
+> -	/*
+> -	 * Store current configuration as switching to safe source would clear
+> -	 * the SRC and DIV of CFG register
+> -	 */
+> -	regmap_read(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, &cfg);
+>  
+>  	/*
+>  	 * Park the RCG at a safe configuration - sourced off of safe source.
+> @@ -1041,9 +1046,6 @@ static void clk_rcg2_shared_disable(struct clk_hw *hw)
+>  	update_config(rcg);
+>  
+>  	clk_rcg2_clear_force_enable(hw);
+> -
+> -	/* Write back the stored configuration corresponding to current rate */
+> -	regmap_write(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, cfg);
+>  }
+>  
+>  const struct clk_ops clk_rcg2_shared_ops = {
+> -- 
+> 2.34.1
+> 
