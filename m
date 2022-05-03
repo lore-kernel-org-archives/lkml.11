@@ -2,131 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F596C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 01:10:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62912C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 01:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229827AbiECBOL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 21:14:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33696 "EHLO
+        id S229732AbiECBPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 21:15:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbiECBOJ (ORCPT
+        with ESMTP id S229765AbiECBPR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 21:14:09 -0400
-Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71223E0A4;
-        Mon,  2 May 2022 18:10:33 -0700 (PDT)
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-e93bbb54f9so15897641fac.12;
-        Mon, 02 May 2022 18:10:33 -0700 (PDT)
+        Mon, 2 May 2022 21:15:17 -0400
+Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266941122;
+        Mon,  2 May 2022 18:11:36 -0700 (PDT)
+Received: by mail-ot1-f49.google.com with SMTP id h10-20020a056830400a00b00605e92cc450so8843547ots.11;
+        Mon, 02 May 2022 18:11:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=afJH5iqVo2x/jW5TxtB/M5xtYzbdyfHarrJP9AysXw8=;
-        b=1Ny4089S5DjjUNE1ZVTRGUL/E5tKMHwYyyV0/r9p5t1pVe3EflCXu9htOQQJ/rt4ns
-         ZOKO9/z0+GPPPQYAiiMCK5sqnjLR2FnvyQ3QZVxAAbNXq5XexPVujeuzfHK9BTBfDqS4
-         7cehOAVkWQFShEOfZnCM7ym2gxgdeTw2jfkCLHjLZDP89eLOGoHPBlTEi+OXvOwso/tb
-         80eZNx15Iq66X0+1LNkm1tKpTg8/SldYekpf51Qfbz/XBQvqZsrDDApJREzNZHgh+E5a
-         3BDfXS7dZsISRrt0laYXspw/01/98GzaPAj49QFux+2bN7beMYo27XdZGeaRdvDFkDT4
-         V6Fw==
-X-Gm-Message-State: AOAM530P5TSVtyOxyqUQk17lMfBca3xQ5evxV/QmSnSiOj2TzMRruYOk
-        cczAj7qLXB3V/6LdP4FxdIcNmVTcaQ==
-X-Google-Smtp-Source: ABdhPJzR818A8CrYdsHAQej2SNyjak3oYeBZa1Ms4RsgS3KU8wDyZcQ7abCf4os2SaukIA4qGBANFg==
-X-Received: by 2002:a05:6870:d587:b0:e1:e7f1:5d48 with SMTP id u7-20020a056870d58700b000e1e7f15d48mr826708oao.275.1651539492367;
-        Mon, 02 May 2022 17:58:12 -0700 (PDT)
+        bh=6idLREmYEsyr7Qq/r5oT1b0rYJzqTwFyOTejQXnDpus=;
+        b=ORAsLPHNvNfb9KDzg+1r2j+laHOAAPtfRR/51OTPVuFCdwWHTD19CVzvkEzXJvUKs0
+         FtmERSFNoBjUi7GZhznGd9YcFWF2F0Rf7LSFyOfFKwY/ruW3BkbmwGAHi5JvzELDnMD5
+         N6Y7tWj6Cj6zz1nA4VLemCSGq68LhPbiYt/vQe9QZalUGAqhgsAFKMAtlfhXQ32SLL/r
+         xueS0q9vw5mQpL9XT2YLZgOnusZ2ulMlM6ycDKbvjzQYBQ/eFzQcUhfIHRan8iIC/+kc
+         pqa0u/YWMFl/v6u2ARlkXGG52gphCIDQwnfY346xiN6OgxmGqQx8fGwwpThwDzGxQIAF
+         6GGw==
+X-Gm-Message-State: AOAM531yPn62SlxUyQfLszhRIK04VUimSwSR62MtNuxZvBJuLMot/GTG
+        NPJtMJnCrr0HE1H8rqbd0JCGLgEOJQ==
+X-Google-Smtp-Source: ABdhPJzoXPBJOStsJ3h4Yi6gzu9HZl3LfhTobnlthRvr6PEGX/uIzSskFe5uzn/gUSc8Qzho/dtTVA==
+X-Received: by 2002:a05:6830:61c:b0:606:15a7:1619 with SMTP id w28-20020a056830061c00b0060615a71619mr2942781oti.115.1651539400183;
+        Mon, 02 May 2022 17:56:40 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id q21-20020a4ad555000000b0035eb4e5a6d5sm4410995oos.43.2022.05.02.17.58.11
+        by smtp.gmail.com with ESMTPSA id e7-20020a056870944700b000e686d13884sm6412169oal.30.2022.05.02.17.56.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 17:58:11 -0700 (PDT)
-Received: (nullmailer pid 2157914 invoked by uid 1000);
-        Tue, 03 May 2022 00:58:11 -0000
-Date:   Mon, 2 May 2022 19:58:11 -0500
+        Mon, 02 May 2022 17:56:39 -0700 (PDT)
+Received: (nullmailer pid 2155296 invoked by uid 1000);
+        Tue, 03 May 2022 00:56:38 -0000
+Date:   Mon, 2 May 2022 19:56:38 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     frowand.list@gmail.com
-Cc:     pantelis.antoniou@konsulko.com,
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        devicetree@vger.kernel.org, Jan Kiszka <jan.kiszka@siemens.com>,
+        pantelis.antoniou@konsulko.com,
         Slawomir Stepien <slawomir.stepien@nokia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Slawomir Stepien <sst@poczta.fm>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH v2 2/3] of: overlay: unittest: add tests for overlay
- notifiers
-Message-ID: <YnB+I9q7pjdx2Rtq@robh.at.kernel.org>
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Slawomir Stepien <sst@poczta.fm>
+Subject: Re: [PATCH v2 1/3] of: overlay: add entry to of_overlay_action_name[]
+Message-ID: <YnB9xnGT4Vx3ba9X@robh.at.kernel.org>
 References: <20220502181742.1402826-1-frowand.list@gmail.com>
- <20220502181742.1402826-3-frowand.list@gmail.com>
+ <20220502181742.1402826-2-frowand.list@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220502181742.1402826-3-frowand.list@gmail.com>
+In-Reply-To: <20220502181742.1402826-2-frowand.list@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 01:17:41PM -0500, frowand.list@gmail.com wrote:
+On Mon, 02 May 2022 13:17:40 -0500, frowand.list@gmail.com wrote:
 > From: Frank Rowand <frank.rowand@sony.com>
 > 
-> Add tests for overlay apply and remove notifiers.  Trigger errors
-> for each of the notifier actions.
+> The values of enum of_overlay_notify_action are used to index into
+> array of_overlay_action_name.  Add an entry to of_overlay_action_name
+> for the value recently added to of_overlay_notify_action.
 > 
-> These tests will reveal a memory leak problem when a notifier returns
-> an error for action OF_OVERLAY_POST_APPLY.  The pr_err() message is:
+> Array of_overlay_action_name[] is moved into include/linux/of.h
+> adjacent to enum of_overlay_notify_action to make the connection
+> between the two more obvious if either is modified in the future.
 > 
->    OF: ERROR: memory leak, expected refcount 1 instead of 3,
->    of_node_get()/of_node_put() unbalanced - destroy cset entry: attach
->    overlay node /testcase-data/overlay-node/test-bus/test-unittest17
+> The only use of of_overlay_action_name is for error reporting in
+> overlay_notify().  All callers of overlay_notify() report the same
+> error, but with fewer details.  Remove the redundant error reports
+> in the callers.
 > 
+> Fixes: 067c098766c6 ("of: overlay: rework overlay apply and remove kfree()s")
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 > Signed-off-by: Frank Rowand <frank.rowand@sony.com>
 > ---
 > Changes since version 1:
 >   - patch 1/1 v1 did not apply on Rob's dt/next branch, rebase on top of
 >     5f756a2eaa44 of: overlay: do not break notify on NOTIFY_{OK|STOP}
 > 
-> Output of the new overlay notifier unittests, as filtered by
-> scripts/dtc/of_unittest_expect:
+>  drivers/of/overlay.c | 27 +++++----------------------
+>  include/linux/of.h   | 13 +++++++++++++
+>  2 files changed, 18 insertions(+), 22 deletions(-)
 > 
->    ### dt-test ### pass of_unittest_overlay_notify():2825
-> ok OF: overlay: overlay changeset pre-apply notifier error -16, target: /testcase-data/overlay-node/test-bus
->    ### dt-test ### pass of_unittest_overlay_notify():2846
->    ### dt-test ### pass of_unittest_overlay_notify():2851
-> ok OF: overlay: overlay changeset post-apply notifier error -17, target: /testcase-data/overlay-node/test-bus
->    OF: ERROR: memory leak, expected refcount 1 instead of 3, of_node_get()/of_node_put() unbalanced - destroy cset entry: attach overlay node /testcase-data/overlay-node/test-bus/test-unittest17
->    ### dt-test ### pass of_unittest_overlay_notify():2857
->    ### dt-test ### pass of_unittest_overlay_notify():2862
->    ### dt-test ### pass of_unittest_overlay_notify():2866
->    ### dt-test ### pass of_unittest_overlay_notify():2869
-> ok OF: overlay: overlay changeset pre-remove notifier error -18, target: /testcase-data/overlay-node/test-bus
->    ### dt-test ### pass of_unittest_overlay_notify():2880
->    ### dt-test ### pass of_unittest_overlay_notify():2888
->    ### dt-test ### pass of_unittest_overlay_notify():2892
->    ### dt-test ### pass of_unittest_overlay_notify():2895
-> ok OF: overlay: overlay changeset post-remove notifier error -19, target: /testcase-data/overlay-node/test-bus
->    ### dt-test ### pass of_unittest_overlay_notify():2902
->    ### dt-test ### pass of_unittest_overlay_notify():2909
->    ### dt-test ### pass of_unittest_overlay_notify():2914
->    ### dt-test ### pass of_unittest_overlay_notify():2926
-> 
-> Note that four new kernel error messages are triggered by the new
-> tests, and of_unittest_expect labels them as expected errors with
-> the string 'ok ' in the first three columns.
-> 
-> A fifth new kernel error message is a real bug, which will be fixed
-> in patch 3/3:
-> 
->    OF: ERROR: memory leak, expected refcount 1 instead of 3, of_node_get()/of_node_put() unbalanced - destroy cset entry: attach overlay node /testcase-data/overlay-node/test-bus/test-unittest17
-> 
-> 
->  drivers/of/unittest-data/Makefile       |  10 ++
->  drivers/of/unittest-data/overlay_16.dts |  15 ++
->  drivers/of/unittest-data/overlay_17.dts |  15 ++
->  drivers/of/unittest-data/overlay_18.dts |  15 ++
->  drivers/of/unittest-data/overlay_19.dts |  15 ++
->  drivers/of/unittest-data/overlay_20.dts |  15 ++
->  drivers/of/unittest.c                   | 198 ++++++++++++++++++++++++
->  7 files changed, 283 insertions(+)
->  create mode 100644 drivers/of/unittest-data/overlay_16.dts
->  create mode 100644 drivers/of/unittest-data/overlay_17.dts
->  create mode 100644 drivers/of/unittest-data/overlay_18.dts
->  create mode 100644 drivers/of/unittest-data/overlay_19.dts
->  create mode 100644 drivers/of/unittest-data/overlay_20.dts
 
 Applied, thanks!
