@@ -2,118 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 402A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 01:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 823FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 01:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229943AbiECBQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 21:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41004 "EHLO
+        id S230016AbiECBRF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 21:17:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229620AbiECBPy (ORCPT
+        with ESMTP id S229979AbiECBQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 21:15:54 -0400
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 163A6E0B;
-        Mon,  2 May 2022 18:12:22 -0700 (PDT)
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-e5ca5c580fso15924979fac.3;
-        Mon, 02 May 2022 18:12:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5c3nAib//d7xQj9e0trcxqkLomABnHAZMncp89e42Vk=;
-        b=RzPe4mW6UvjsWb8wB2rnP6OM7EFkyN2oIZxAZ9gfvYBnfZ15lH96wxf2oqSwAEojU/
-         1964ARH6fUomxY+udKQ71of4k4aoMceb6J7RPePU++wyYxBCkwIVVmPYwbFPApyDbhxL
-         TkCEqvCUq8QWF2f5QMuXOE29y3FvjOkQbuTk44+AazstrV6i4bKhfMNwXH1a03TGTLMH
-         vS6atRJhUJ9fK7P2f96z8Vd4dGnNr6HxRFUyg0G/7TLwypei+eabQXlD8UGt9SwAM6zP
-         i1RXmMcMpZkzfMcIBeNZHdQZYgJZNXc1czHboiBEjwU8QFvYtj0/9ZAAqzEdVGPrAIgj
-         DUcA==
-X-Gm-Message-State: AOAM5315j+7kt7ke0Es4YdD7QLe+EYgdjO+28pPSLEKjQfYYloMiojfW
-        EMEXLVS/dSSiYZIFmdCItzl5pqcvBw==
-X-Google-Smtp-Source: ABdhPJx+ieV44C6Sc1L8qds7KFaA1+S433NOiO+oyUItpFP/Y6bCudwTRDB/qJEY8XUvWl81tJHDnw==
-X-Received: by 2002:a05:6870:434d:b0:e5:9115:cb15 with SMTP id x13-20020a056870434d00b000e59115cb15mr841105oah.53.1651539548285;
-        Mon, 02 May 2022 17:59:08 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id m63-20020aca5842000000b00325cda1ff9esm2892865oib.29.2022.05.02.17.59.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 17:59:07 -0700 (PDT)
-Received: (nullmailer pid 2159671 invoked by uid 1000);
-        Tue, 03 May 2022 00:59:07 -0000
-Date:   Mon, 2 May 2022 19:59:07 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     frowand.list@gmail.com
-Cc:     Slawomir Stepien <slawomir.stepien@nokia.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        linux-kernel@vger.kernel.org, Slawomir Stepien <sst@poczta.fm>,
-        pantelis.antoniou@konsulko.com, devicetree@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH v2 3/3] of: overlay: do not free changeset when
- of_overlay_apply returns error
-Message-ID: <YnB+W6u5dL44vEBL@robh.at.kernel.org>
-References: <20220502181742.1402826-1-frowand.list@gmail.com>
- <20220502181742.1402826-4-frowand.list@gmail.com>
+        Mon, 2 May 2022 21:16:57 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23F55007E
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 18:13:24 -0700 (PDT)
+Received: from kwepemi500004.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kshly6yS3zhYnw;
+        Tue,  3 May 2022 09:13:02 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500004.china.huawei.com (7.221.188.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 3 May 2022 09:13:22 +0800
+Received: from [10.174.179.234] (10.174.179.234) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 3 May 2022 09:13:21 +0800
+Message-ID: <80f6c347-db5d-8836-bc79-60c7b2a6eed8@huawei.com>
+Date:   Tue, 3 May 2022 09:13:20 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220502181742.1402826-4-frowand.list@gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH -next v6 5/6] arm64/mm: Enable
+ ARCH_SUPPORTS_PAGE_TABLE_CHECK
+To:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-riscv@lists.infradead.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>
+References: <20220426081036.1374452-1-tongtiangen@huawei.com>
+ <20220426081036.1374452-6-tongtiangen@huawei.com>
+ <ae74ea7c-9014-b162-f1e7-a66f402aee49@arm.com>
+From:   Tong Tiangen <tongtiangen@huawei.com>
+In-Reply-To: <ae74ea7c-9014-b162-f1e7-a66f402aee49@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.234]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 02 May 2022 13:17:42 -0500, frowand.list@gmail.com wrote:
-> From: Frank Rowand <frank.rowand@sony.com>
-> 
-> New unittests for overlay notifiers reveal a memory leak in
-> of_overlay_apply() when a notifier returns an error for action
-> OF_OVERLAY_POST_APPLY.  The pr_err() message is:
-> 
->    OF: ERROR: memory leak, expected refcount 1 instead of 3,
->    of_node_get()/of_node_put() unbalanced - destroy cset entry: attach
->    overlay node /testcase-data/overlay-node/test-bus/test-unittest17
-> 
-> Change the error path to no longer call free_overlay_changeset(),
-> and document that the caller of of_overlay_fdt_apply() may choose
-> to remove the overlay.
-> 
-> Update the unittest that triggered the error to expect the changed
-> return values and to call of_overlay_remove().
-> 
-> Signed-off-by: Frank Rowand <frank.rowand@sony.com>
-> ---
-> Changes since version 1:
->   - patch 1/1 v1 did not apply on Rob's dt/next branch, rebase on top of
->     5f756a2eaa44 of: overlay: do not break notify on NOTIFY_{OK|STOP}
-> 
-> Output of the new overlay notifier unittests, as filtered by
-> scripts/dtc/of_unittest_expect:
-> 
->    ### dt-test ### pass of_unittest_overlay_notify():2825
-> ok OF: overlay: overlay changeset pre-apply notifier error -16, target: /testcase-data/overlay-node/test-bus
->    ### dt-test ### pass of_unittest_overlay_notify():2846
->    ### dt-test ### pass of_unittest_overlay_notify():2851
-> ok OF: overlay: overlay changeset post-apply notifier error -17, target: /testcase-data/overlay-node/test-bus
->    ### dt-test ### pass of_unittest_overlay_notify():2857
->    ### dt-test ### pass of_unittest_overlay_notify():2862
->    ### dt-test ### pass of_unittest_overlay_notify():2866
->    ### dt-test ### pass of_unittest_overlay_notify():2872
->    ### dt-test ### pass of_unittest_overlay_notify():2875
-> ok OF: overlay: overlay changeset pre-remove notifier error -18, target: /testcase-data/overlay-node/test-bus
->    ### dt-test ### pass of_unittest_overlay_notify():2886
->    ### dt-test ### pass of_unittest_overlay_notify():2894
->    ### dt-test ### pass of_unittest_overlay_notify():2898
->    ### dt-test ### pass of_unittest_overlay_notify():2901
-> ok OF: overlay: overlay changeset post-remove notifier error -19, target: /testcase-data/overlay-node/test-bus
->    ### dt-test ### pass of_unittest_overlay_notify():2908
->    ### dt-test ### pass of_unittest_overlay_notify():2915
->    ### dt-test ### pass of_unittest_overlay_notify():2920
->    ### dt-test ### pass of_unittest_overlay_notify():2932
-> 
-> 
->  drivers/of/overlay.c  | 29 ++++++++++++++++++++++++++---
->  drivers/of/unittest.c | 10 ++++++++--
->  2 files changed, 34 insertions(+), 5 deletions(-)
-> 
 
-Applied, thanks!
+
+在 2022/4/29 14:18, Anshuman Khandual 写道:
+> 
+> 
+> On 4/26/22 13:40, Tong Tiangen wrote:
+>> From: Kefeng Wang <wangkefeng.wang@huawei.com>
+>>
+>> As commit d283d422c6c4 ("x86: mm: add x86_64 support for page table check")
+>> , enable ARCH_SUPPORTS_PAGE_TABLE_CHECK on arm64.
+>>
+>> Add additional page table check stubs for page table helpers, these stubs
+>> can be used to check the existing page table entries.
+>>
+>> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+>> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+>> Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+>> ---
+>>   arch/arm64/Kconfig               |  1 +
+>>   arch/arm64/include/asm/pgtable.h | 59 +++++++++++++++++++++++++++++---
+>>   2 files changed, 55 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+>> index 18a18a0e855d..c1509525ab8e 100644
+>> --- a/arch/arm64/Kconfig
+>> +++ b/arch/arm64/Kconfig
+>> @@ -92,6 +92,7 @@ config ARM64
+>>   	select ARCH_SUPPORTS_ATOMIC_RMW
+>>   	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128
+>>   	select ARCH_SUPPORTS_NUMA_BALANCING
+>> +	select ARCH_SUPPORTS_PAGE_TABLE_CHECK
+>>   	select ARCH_WANT_COMPAT_IPC_PARSE_VERSION if COMPAT
+>>   	select ARCH_WANT_DEFAULT_BPF_JIT
+>>   	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
+>> diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+>> index ad9b221963d4..fe17788a6885 100644
+>> --- a/arch/arm64/include/asm/pgtable.h
+>> +++ b/arch/arm64/include/asm/pgtable.h
+>> @@ -33,6 +33,7 @@
+>>   #include <linux/mmdebug.h>
+>>   #include <linux/mm_types.h>
+>>   #include <linux/sched.h>
+>> +#include <linux/page_table_check.h>
+>>   
+>>   #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+>>   #define __HAVE_ARCH_FLUSH_PMD_TLB_RANGE
+>> @@ -96,6 +97,7 @@ static inline pteval_t __phys_to_pte_val(phys_addr_t phys)
+>>   #define pte_young(pte)		(!!(pte_val(pte) & PTE_AF))
+>>   #define pte_special(pte)	(!!(pte_val(pte) & PTE_SPECIAL))
+>>   #define pte_write(pte)		(!!(pte_val(pte) & PTE_WRITE))
+>> +#define pte_user(pte)		(!!(pte_val(pte) & PTE_USER))
+>>   #define pte_user_exec(pte)	(!(pte_val(pte) & PTE_UXN))
+>>   #define pte_cont(pte)		(!!(pte_val(pte) & PTE_CONT))
+>>   #define pte_devmap(pte)		(!!(pte_val(pte) & PTE_DEVMAP))
+>> @@ -312,7 +314,7 @@ static inline void __check_racy_pte_update(struct mm_struct *mm, pte_t *ptep,
+>>   		     __func__, pte_val(old_pte), pte_val(pte));
+>>   }
+>>   
+>> -static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
+>> +static inline void __set_pte_at(struct mm_struct *mm, unsigned long addr,
+>>   			      pte_t *ptep, pte_t pte)
+> 
+> A small nit. Subsequent line containing the arguments "pte_t *ptep ..."
+> needs to be aligned properly, after '__' got added into set_pte_at().
+
+OK, missing that, .will fix it next version.
+
+> 
+>>   {
+>>   	if (pte_present(pte) && pte_user_exec(pte) && !pte_special(pte))
+>> @@ -343,6 +345,13 @@ static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
+>>   	set_pte(ptep, pte);
+>>   }
+>>   
+>> +static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
+>> +			      pte_t *ptep, pte_t pte)
+>> +{
+>> +	page_table_check_pte_set(mm, addr, ptep, pte);
+>> +	return __set_pte_at(mm, addr, ptep, pte);
+>> +}
+>> +
+>>   /*
+>>    * Huge pte definitions.
+>>    */
+>> @@ -454,6 +463,8 @@ static inline int pmd_trans_huge(pmd_t pmd)
+>>   #define pmd_dirty(pmd)		pte_dirty(pmd_pte(pmd))
+>>   #define pmd_young(pmd)		pte_young(pmd_pte(pmd))
+>>   #define pmd_valid(pmd)		pte_valid(pmd_pte(pmd))
+>> +#define pmd_user(pmd)		pte_user(pmd_pte(pmd))
+>> +#define pmd_user_exec(pmd)	pte_user_exec(pmd_pte(pmd))
+>>   #define pmd_cont(pmd)		pte_cont(pmd_pte(pmd))
+>>   #define pmd_wrprotect(pmd)	pte_pmd(pte_wrprotect(pmd_pte(pmd)))
+>>   #define pmd_mkold(pmd)		pte_pmd(pte_mkold(pmd_pte(pmd)))
+>> @@ -501,8 +512,19 @@ static inline pmd_t pmd_mkdevmap(pmd_t pmd)
+>>   #define pud_pfn(pud)		((__pud_to_phys(pud) & PUD_MASK) >> PAGE_SHIFT)
+>>   #define pfn_pud(pfn,prot)	__pud(__phys_to_pud_val((phys_addr_t)(pfn) << PAGE_SHIFT) | pgprot_val(prot))
+>>   
+>> -#define set_pmd_at(mm, addr, pmdp, pmd)	set_pte_at(mm, addr, (pte_t *)pmdp, pmd_pte(pmd))
+>> -#define set_pud_at(mm, addr, pudp, pud)	set_pte_at(mm, addr, (pte_t *)pudp, pud_pte(pud))
+>> +static inline void set_pmd_at(struct mm_struct *mm, unsigned long addr,
+>> +			      pmd_t *pmdp, pmd_t pmd)
+>> +{
+>> +	page_table_check_pmd_set(mm, addr, pmdp, pmd);
+>> +	return __set_pte_at(mm, addr, (pte_t *)pmdp, pmd_pte(pmd));
+>> +}
+>> +
+>> +static inline void set_pud_at(struct mm_struct *mm, unsigned long addr,
+>> +			      pud_t *pudp, pud_t pud)
+>> +{
+>> +	page_table_check_pud_set(mm, addr, pudp, pud);
+>> +	return __set_pte_at(mm, addr, (pte_t *)pudp, pud_pte(pud));
+>> +}
+>>   
+>>   #define __p4d_to_phys(p4d)	__pte_to_phys(p4d_pte(p4d))
+>>   #define __phys_to_p4d_val(phys)	__phys_to_pte_val(phys)
+>> @@ -643,6 +665,24 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
+>>   #define pud_present(pud)	pte_present(pud_pte(pud))
+>>   #define pud_leaf(pud)		pud_sect(pud)
+>>   #define pud_valid(pud)		pte_valid(pud_pte(pud))
+>> +#define pud_user(pud)		pte_user(pud_pte(pud))
+>> +
+>> +#ifdef CONFIG_PAGE_TABLE_CHECK
+>> +static inline bool pte_user_accessible_page(pte_t pte)
+>> +{
+>> +	return pte_present(pte) && (pte_user(pte) || pte_user_exec(pte));
+>> +}
+>> +
+>> +static inline bool pmd_user_accessible_page(pmd_t pmd)
+>> +{
+>> +	return pmd_present(pmd) && (pmd_user(pmd) || pmd_user_exec(pmd));
+>> +}
+>> +
+>> +static inline bool pud_user_accessible_page(pud_t pud)
+>> +{
+>> +	return pud_present(pud) && pud_user(pud);
+>> +}
+>> +#endif
+>>   
+>>   static inline void set_pud(pud_t *pudp, pud_t pud)
+>>   {
+>> @@ -876,7 +916,11 @@ static inline int pmdp_test_and_clear_young(struct vm_area_struct *vma,
+>>   static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+>>   				       unsigned long address, pte_t *ptep)
+>>   {
+>> -	return __pte(xchg_relaxed(&pte_val(*ptep), 0));
+>> +	pte_t pte = __pte(xchg_relaxed(&pte_val(*ptep), 0));
+>> +
+>> +	page_table_check_pte_clear(mm, address, pte);
+>> +
+>> +	return pte;
+>>   }
+>>   
+>>   #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+>> @@ -884,7 +928,11 @@ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+>>   static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
+>>   					    unsigned long address, pmd_t *pmdp)
+>>   {
+>> -	return pte_pmd(ptep_get_and_clear(mm, address, (pte_t *)pmdp));
+>> +	pmd_t pmd = pte_pmd(__pte(xchg_relaxed(&pte_val(*(pte_t *)pmdp), 0)));
+> 
+> Why there is any change here ? Why not just the following instead, like what you did
+> in ptep_get_and_clear() above. The page table entry return value here just needs to
+> be preserved for subsequent page table check helpers.
+> 
+> 	pmd_t pmd = pte_pmd(ptep_get_and_clear(mm, address, (pte_t *)pmdp));
+>
+
+Hi Anshuman:
+The purpose of what I do here is to avoid doing 
+page_table_check_pte_clear() in ptep_get_and_clear(). there is no 
+functional change here.
+
+Thanks,
+Tong.
+
+
+>> +
+>> +	page_table_check_pmd_clear(mm, address, pmd);
+>> +
+>> +	return pmd;
+>>   }
+>>   #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+>>   
+>> @@ -918,6 +966,7 @@ static inline void pmdp_set_wrprotect(struct mm_struct *mm,
+>>   static inline pmd_t pmdp_establish(struct vm_area_struct *vma,
+>>   		unsigned long address, pmd_t *pmdp, pmd_t pmd)
+>>   {
+>> +	page_table_check_pmd_set(vma->vm_mm, address, pmdp, pmd);
+>>   	return __pmd(xchg_relaxed(&pmd_val(*pmdp), pmd_val(pmd)));
+>>   }
+>>   #endif
+> .
