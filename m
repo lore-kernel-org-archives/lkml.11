@@ -2,83 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3398CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8B6EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:30:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236759AbiECUdQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 16:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41542 "EHLO
+        id S237105AbiECUdn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 16:33:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232927AbiECUdH (ORCPT
+        with ESMTP id S232927AbiECUdi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 16:33:07 -0400
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E775C32ED9
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 13:29:32 -0700 (PDT)
-Received: by mail-lf1-f53.google.com with SMTP id y32so32216846lfa.6
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 13:29:32 -0700 (PDT)
+        Tue, 3 May 2022 16:33:38 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14DF32EF8
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 13:30:04 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id t11-20020a17090ad50b00b001d95bf21996so3323274pju.2
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 13:30:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UKldj2ojYtyqPeKh4PVtsxyTk7al05BV94PM0wJKBzg=;
+        b=inZcEUwn9WmtrG6/V+Y1CJh3EJ2oEii8LKrVvLLNtn3RstXFUjZyelDbCG2zrAtVS7
+         ZNkv9EcZsIVg0BbtFKLLchaEPVaub+HhD39R8N6T20pSrfsYABGLOFWkpPnapCyOcs0S
+         o7VdKe453Q+oI5GD31jU0HwEcic8IvzmhpiCPEx0QDygqMN98E+l/pu7W3jKk0Fkjw04
+         uZ0WaJU6Fl0Ty0TNzBOb3X/D+RjcCA5pcyvfSDm0BXeBjDWxVCXyFZ3D+YZ+YGIpKAEG
+         r5PTRy1cR8UH+X0CwN4YxFLyUI+jH/PoUZXvu+18hv8sjdd9o6qQtDfMMLGyTdmP1V+H
+         umtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YxrFWVN5VsHJB/otfl+bIpmkStn6Z3bAIZsPOXat8VI=;
-        b=xotO3VRzHxwRoLrR8eTIFe1zwKAoDAmkEYfk+ywPQIbv80SbFtEsRclJWLP7tq3uE1
-         ZC7eNrwyf3RhLgvYCMi8FPExIDKdK0RLM+mYveTotljlk27hQGZyAsBY/MGKRAAicES0
-         GEFXLVg/OQ1Q85+d/axCM4cp4OJss7MsM7CEkWFhaNc9afqJwbPynkmviWQE2iwCN9/H
-         Sy0th97QYit0850LmGrrE907UZndMLhOhsY+cH5TGkGDbDjRAm+S1R8ysPUmwxYnPRHB
-         xZ6V/u+fJUxQO4VbQ54SYOV7/55MUDjCXT4PhqpB3Xq6wgnKvjKv89hjyIOdbMnRj4VX
-         DhKg==
-X-Gm-Message-State: AOAM5327t2PvRCldBp+PdpEsi0fdDza9M1KYsjpwxTa1ePx+vHsPJsX5
-        ikYhV/R3dgLRk0fOEoP1vPJUGf5AFSuv6RAyv1c=
-X-Google-Smtp-Source: ABdhPJzPENNrN4xPEOez8EviAj1u8aHC+cv8rZhQYLdkA/hXETuwFQUtk6xHFjs74JJKyw0hbR/tZAeW+twtdNHmpIk=
-X-Received: by 2002:a05:6512:39d3:b0:472:4920:96d7 with SMTP id
- k19-20020a05651239d300b00472492096d7mr12715203lfu.47.1651609771069; Tue, 03
- May 2022 13:29:31 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UKldj2ojYtyqPeKh4PVtsxyTk7al05BV94PM0wJKBzg=;
+        b=TsJ5XP5BgwRENDBohbytWeuQW/RrWUBcaZ6SPeOXXDAdOwwjWFBgBTqszrMdCaJag4
+         IR5VPJEmhj8Gl1TtMKCH9VoVx6OAT5ZkiHFDuRw/R4h/plhccWx292S5ezT4LArLsUW7
+         nBjgNAVg/qDjxJ9aq7DzXewhHKK0yLqf5NWhjlPZZKFFVyL/amfxwlK26lX8TwM29Mmf
+         0KW2z/+5idLoxVlvrbf5faIv8r6lILLqmi3QqlMM1RWzfuAfxUVh5LAcaFFcsc5w9fEF
+         kk47o6kTMMV/3FqOu9AUsKwrGIf45Hysc7mS92h9WNceLjz5k6ti+HeMQ81dCpdx2BIY
+         u2QQ==
+X-Gm-Message-State: AOAM5311gDUcu1ou5Q21oFGBfQKtsHnQwu5r4XiTDddcuvosE5fKecWp
+        CJCqgSg5xatjcuXQwMmkeOjoAA==
+X-Google-Smtp-Source: ABdhPJwGKBnwB+Tadgfgl2yTv6w4gYUnMXeCRfyU0xKBwq5aYUrNWquV8ygIHmuv325jJ0PEcyVijg==
+X-Received: by 2002:a17:902:82c9:b0:15d:3a76:936f with SMTP id u9-20020a17090282c900b0015d3a76936fmr18113344plz.139.1651609803949;
+        Tue, 03 May 2022 13:30:03 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id g25-20020a62e319000000b0050dc7628168sm6715181pfh.66.2022.05.03.13.30.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 13:30:03 -0700 (PDT)
+Date:   Tue, 3 May 2022 20:30:00 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ben Gardon <bgardon@google.com>,
+        David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH] KVM: x86/mmu: Do not create SPTEs for GFNs that exceed
+ host.MAXPHYADDR
+Message-ID: <YnGQyE60lHD7wusA@google.com>
+References: <Ymv5TR76RNvFBQhz@google.com>
+ <e5864cb4-cce8-bd32-04b0-ecb60c058d0b@redhat.com>
+ <YmwL87h6klEC4UKV@google.com>
+ <ac2001e66957edc8a3af2413b78478c15898f86c.camel@redhat.com>
+ <f3ffad3aa8476156f369ff1d4c33f3e127b47d0c.camel@redhat.com>
+ <82d1a5364f1cc479da3762b046d22f136db167e3.camel@redhat.com>
+ <af15fd31f73e8a956da50db6104e690f9d308dad.camel@redhat.com>
+ <YnAMKtfAeoydHr3x@google.com>
+ <e11c21e99e7c4ac758b4417e0ae66d3a2f1fe663.camel@redhat.com>
+ <cbd4709bb499874c60986083489e17c93b48d003.camel@redhat.com>
 MIME-Version: 1.0
-References: <20220422162402.147958-1-adrian.hunter@intel.com> <20220422162402.147958-19-adrian.hunter@intel.com>
-In-Reply-To: <20220422162402.147958-19-adrian.hunter@intel.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Tue, 3 May 2022 13:29:20 -0700
-Message-ID: <CAM9d7chPX314n6c_V+3c0HF1OKNSL3zS-s3L78oH39Ds7cSpEg@mail.gmail.com>
-Subject: Re: [PATCH RFC 18/21] libperf evlist: Allow mixing per-thread and
- per-cpu mmaps
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cbd4709bb499874c60986083489e17c93b48d003.camel@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 9:25 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> mmap_per_evsel() will skip events that do not match the CPU, so all CPUs
-> can be iterated in any case.
->
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-> ---
-[...]
-> @@ -561,9 +538,12 @@ static int perf_evlist__nr_mmaps(struct perf_evlist *evlist)
->  {
->         int nr_mmaps;
->
-> +       /* One for each CPU */
->         nr_mmaps = perf_cpu_map__nr(evlist->all_cpus);
-> -       if (perf_cpu_map__empty(evlist->all_cpus))
-> -               nr_mmaps = perf_thread_map__nr(evlist->threads);
-> +       /* One for each thread */
-> +       nr_mmaps += perf_thread_map__nr(evlist->threads);
-> +       /* Minus the dummy CPU or dummy thread */
-> +       nr_mmaps -= 1;
+On Tue, May 03, 2022, Maxim Levitsky wrote:
+> On Tue, 2022-05-03 at 12:12 +0300, Maxim Levitsky wrote:
+> > On Mon, 2022-05-02 at 16:51 +0000, Sean Christopherson wrote:
+> > > On Mon, May 02, 2022, Maxim Levitsky wrote:
+> > > > On Mon, 2022-05-02 at 10:59 +0300, Maxim Levitsky wrote:
+> > > > > > > Also I can reproduce it all the way to 5.14 kernel (last kernel I have installed in this VM).
+> > > > > > > 
+> > > > > > > I tested kvm/queue as of today, sadly I still see the warning.
+> > > > > > 
+> > > > > > Due to a race, the above statements are out of order ;-)
+> > > > > 
+> > > > > So futher investigation shows that the trigger for this *is* cpu_pm=on :(
+> > > > > 
+> > > > > So this is enough to trigger the warning when run in the guest:
+> > > > > 
+> > > > > qemu-system-x86_64  -nodefaults  -vnc none -serial stdio -machine accel=kvm
+> > > > > -kernel x86/dummy.flat -machine kernel-irqchip=on -smp 8 -m 1g -cpu host
+> > > > > -overcommit cpu-pm=on
 
-I'm not sure it'd work for per-task events with default-per-cpu mode.
+...
 
-Thanks,
-Namhyung
+> > > > All right, at least that was because I removed the '-device isa-debug-exit,iobase=0xf4,iosize=0x4',
+> > > > which is apparently used by KVM unit tests to signal exit from the VM.
+> > > 
+> > > Can you provide your QEMU command line for running your L1 VM?  And your L0 and L1
+> > > Kconfigs too?  I've tried both the dummy and ipi_stress tests on a variety of hardware,
+> > > kernels, QEMUs, etc..., with no luck.
+> > 
+> > So now both L0 and L1 run almost pure kvm/queue)
+> > (commit 2764011106d0436cb44702cfb0981339d68c3509)
+> > 
+> > I have some local patches but they are not relevant to KVM at all, more
+> > like various tweaks to sensors, a sad hack for yet another regression
+> > in AMDGPU, etc.
+> > 
+> > The config and qemu command line attached.
+> > 
+> > AVIC disabled in L0, L0 qemu is from master upstream.
+> > Bug reproduces too well IMHO, almost always.
+> > 
+> > For reference the warning is printed in L1's dmesg.
+> 
+> Tested this without any preemption in L0 and L1 - bug still reproduces just fine.
+> (kvm/queue)
 
->
->         return nr_mmaps;
->  }
+Well, I officially give up, I'm out of ideas to try and repro this on my end.  To
+try and narrow the search, maybe try processing "all" possible gfns and see if that
+makes the leak go away?
+
+diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
+index 7e258cc94152..a354490939ec 100644
+--- a/arch/x86/kvm/mmu.h
++++ b/arch/x86/kvm/mmu.h
+@@ -84,9 +84,7 @@ static inline gfn_t kvm_mmu_max_gfn(void)
+         * than hardware's real MAXPHYADDR.  Using the host MAXPHYADDR
+         * disallows such SPTEs entirely and simplifies the TDP MMU.
+         */
+-       int max_gpa_bits = likely(tdp_enabled) ? shadow_phys_bits : 52;
+-
+-       return (1ULL << (max_gpa_bits - PAGE_SHIFT)) - 1;
++       return (1ULL << (52 - PAGE_SHIFT)) - 1;
+ }
+
+ static inline u8 kvm_get_shadow_phys_bits(void)
+
