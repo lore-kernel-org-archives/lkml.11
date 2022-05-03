@@ -2,142 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B9CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:08:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11537C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:08:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237989AbiECPL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38064 "EHLO
+        id S237978AbiECPMA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:12:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237957AbiECPLx (ORCPT
+        with ESMTP id S237928AbiECPLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:11:53 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC423B003
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:08:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651590499; x=1683126499;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=HIV7+BriOVIHhbMS5XwJ9TB/Dt1Tpi6juyaLYsRlF8Y=;
-  b=AVaPUnNlfHHKmmcs0nVahxKgoIA1oxPRN/bhsE4BPy2nVSyen8sC0php
-   ow/wQMvDZYyKci8V45vfvIIbeoP/7HjQbvXTDmiIs/+HDjZrrWW0FrZZ0
-   LM76ohgZNQvpvx9ndGTUKT30K4bnzrWn2bhR3a8hncPB78ahGuZCpDVzj
-   vkrfXXfhh6HpvBeT6XIoJ2owiDOtfqcf0sI5i8feo8bFcrHPijjYdHxPs
-   K6VCQaeEFBX0bcp1JklJ3fyuAu4gg26g5RqnBKryzwRu2GqpoBvmDKBwp
-   VfgFaTiz3fosu7PuexJqMzZMpsc9Kr/oJej43oX5yuZo/h1zwJYygxy9G
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="249478606"
-X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="249478606"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 08:07:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="547626049"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 03 May 2022 08:07:53 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nlu80-000AYm-PI;
-        Tue, 03 May 2022 15:07:52 +0000
-Date:   Tue, 3 May 2022 23:06:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [asahilinux:bits/110-smc 13/14]
- drivers/input/misc/macsmc-hid.c:59:37: error: implicit declaration of
- function 'kernel_can_power_off'; did you mean 'kernel_power_off'?
-Message-ID: <202205032215.0V3jamj1-lkp@intel.com>
+        Tue, 3 May 2022 11:11:55 -0400
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C30D37A8D
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:08:22 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-453-75oE-M6RP7eBPNBNfwRyUg-1; Tue, 03 May 2022 11:05:38 -0400
+X-MC-Unique: 75oE-M6RP7eBPNBNfwRyUg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0F29F3D32CC7;
+        Tue,  3 May 2022 13:40:18 +0000 (UTC)
+Received: from comp-core-i7-2640m-0182e6.redhat.com (unknown [10.36.110.3])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D9EF19E60;
+        Tue,  3 May 2022 13:40:09 +0000 (UTC)
+From:   Alexey Gladkov <legion@kernel.org>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Daniel Walsh <dwalsh@redhat.com>,
+        Davidlohr Bueso <dbueso@suse.de>,
+        Kirill Tkhai <ktkhai@virtuozzo.com>,
+        Linux Containers <containers@lists.linux.dev>,
+        Manfred Spraul <manfred@colorfullife.com>,
+        Serge Hallyn <serge@hallyn.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Vasily Averin <vvs@virtuozzo.com>
+Subject: Re: [PATCH v1 2/4] ipc: Use proper ipc namespace 
+Date:   Tue,  3 May 2022 15:39:53 +0200
+Message-Id: <cover.1651584847.git.legion@kernel.org>
+In-Reply-To: <87sfprudal.fsf@email.froward.int.ebiederm.org>
+References: <87sfprudal.fsf@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux bits/110-smc
-head:   dc3db43287ff1d44b447fff8ed6386b28b339f1c
-commit: 0f263115481acb56629afae7ff2bda87b8aef659 [13/14] Input: macsmc-hid: New driver to handle the Apple Mac SMC buttons/lid
-config: arm64-randconfig-c003-20220501 (https://download.01.org/0day-ci/archive/20220503/202205032215.0V3jamj1-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/AsahiLinux/linux/commit/0f263115481acb56629afae7ff2bda87b8aef659
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux bits/110-smc
-        git checkout 0f263115481acb56629afae7ff2bda87b8aef659
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
+On Mon, May 02, 2022 at 11:09:22AM -0500, Eric W. Biederman wrote:
+> Alexey Gladkov <legion@kernel.org> writes:
+> 
+> > As Eric Biederman pointed out, changing the namespace broke checkpoint
+> > restore. I have reverted my previous changes.
+> 
+> Can you remind me the bug that is being fixed here?
+> 
+> I am probably just going to fast to see it, but it would be good to have
+> it described in the commit comment.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+It was preparation for the "ipc: Check permissions for checkpoint_restart
+sysctls at open time". I wanted to split the commit and make it more readable,
+but it looks like I just confused everyone. This change should be part of the
+next commit.
 
-All errors (new ones prefixed by >>):
+Here is a new version of the patchset where I moved the bugfix to a separate
+commit as you requested in the next email.
 
-   drivers/input/misc/macsmc-hid.c: In function 'macsmc_hid_event':
->> drivers/input/misc/macsmc-hid.c:59:37: error: implicit declaration of function 'kernel_can_power_off'; did you mean 'kernel_power_off'? [-Werror=implicit-function-declaration]
-      59 |                                 if (kernel_can_power_off())
-         |                                     ^~~~~~~~~~~~~~~~~~~~
-         |                                     kernel_power_off
-   cc1: some warnings being treated as errors
+Does that look better?
 
+--
 
-vim +59 drivers/input/misc/macsmc-hid.c
+Alexey Gladkov (4):
+  ipc: Use the same namespace to modify and validate
+  ipc: Remove extra1 field abuse to pass ipc namespace
+  ipc: Check permissions for checkpoint_restart sysctls at open time
+  ipc: Remove extra braces
 
-    29	
-    30	static int macsmc_hid_event(struct notifier_block *nb, unsigned long event, void *data)
-    31	{
-    32		struct macsmc_hid *smchid = container_of(nb, struct macsmc_hid, nb);
-    33		u16 type = event >> 16;
-    34		u8 d1 = (event >> 8) & 0xff;
-    35		u8 d2 = event & 0xff;
-    36	
-    37		switch (type) {
-    38		case SMC_EV_BTN:
-    39			switch (d1) {
-    40			case BTN_POWER:
-    41				input_report_key(smchid->input, KEY_POWER, d2);
-    42				input_sync(smchid->input);
-    43				break;
-    44			case BTN_POWER_HELD1:
-    45				/*
-    46				 * TODO: is this pre-warning useful?
-    47				 */
-    48				if (d2)
-    49					dev_warn(smchid->dev, "Power button held down\n");
-    50				break;
-    51			case BTN_POWER_HELD2:
-    52				/*
-    53				 * If we get here, we have about 4 seconds before forced shutdown.
-    54				 * Try to do an emergency shutdown to make sure the NVMe cache is
-    55				 * flushed. macOS actually does this by panicing (!)...
-    56				 */
-    57				if (d2) {
-    58					dev_crit(smchid->dev, "Triggering forced shutdown!\n");
-  > 59					if (kernel_can_power_off())
-    60						kernel_power_off();
-    61					else /* Missing macsmc-reboot driver? */
-    62						kernel_restart("SMC power button triggered restart");
-    63				}
-    64				break;
-    65			default:
-    66				dev_info(smchid->dev, "Unknown SMC button event: %02x %02x\n", d1, d2);
-    67				break;
-    68			}
-    69			return NOTIFY_OK;
-    70		case SMC_EV_LID:
-    71			input_report_switch(smchid->input, SW_LID, d1);
-    72			input_sync(smchid->input);
-    73			return NOTIFY_OK;
-    74		}
-    75	
-    76		return NOTIFY_DONE;
-    77	}
-    78	
+ ipc/ipc_sysctl.c | 108 +++++++++++++++++++++--------------------------
+ 1 file changed, 49 insertions(+), 59 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.33.3
+
