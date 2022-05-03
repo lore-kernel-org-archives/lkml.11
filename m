@@ -2,95 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C2FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 08:24:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A03DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 08:30:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232778AbiECI2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 04:28:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35882 "EHLO
+        id S232842AbiECIdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 04:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232773AbiECI2I (ORCPT
+        with ESMTP id S231897AbiECIdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 04:28:08 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 351DD29800
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 01:24:36 -0700 (PDT)
-Received: from mail-ot1-f47.google.com ([209.85.210.47]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1Md66H-1oLgcC1DYR-00aADF; Tue, 03 May 2022 10:24:35 +0200
-Received: by mail-ot1-f47.google.com with SMTP id 31-20020a9d0822000000b00605f1807664so8152468oty.3;
-        Tue, 03 May 2022 01:24:34 -0700 (PDT)
-X-Gm-Message-State: AOAM53074jkgLK+v5S2QeAd1nHKqbiNBsFoPaeAmpveEG9ztG5S9Fbbn
-        +xAKNUreKB60yNmbly/v3+td1gGxEsM+b2flrwQ=
-X-Google-Smtp-Source: ABdhPJwrDtRFKbzWyx5Thvx9iv9ah7eyFBtB8lxLn/zZfAdnxobNy3HzZif7KpemB7VbxNVkIL6z9jSMtRXvIKtqCl4=
-X-Received: by 2002:a81:9213:0:b0:2f6:eaae:d22f with SMTP id
- j19-20020a819213000000b002f6eaaed22fmr14611680ywg.249.1651564406792; Tue, 03
- May 2022 00:53:26 -0700 (PDT)
+        Tue, 3 May 2022 04:33:25 -0400
+Received: from gardel.0pointer.net (gardel.0pointer.net [IPv6:2a01:238:43ed:c300:10c3:bcf3:3266:da74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A37E532058;
+        Tue,  3 May 2022 01:29:52 -0700 (PDT)
+Received: from gardel-login.0pointer.net (gardel-mail [85.214.157.71])
+        by gardel.0pointer.net (Postfix) with ESMTP id 74F43E804AA;
+        Tue,  3 May 2022 10:29:50 +0200 (CEST)
+Received: by gardel-login.0pointer.net (Postfix, from userid 1000)
+        id 8B74A160011; Tue,  3 May 2022 10:29:49 +0200 (CEST)
+Date:   Tue, 3 May 2022 10:29:49 +0200
+From:   Lennart Poettering <mzxreary@0pointer.de>
+To:     Alexander Graf <graf@amazon.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Colm MacCarthaigh <colmmacc@amazon.com>,
+        Torben Hansen <htorben@amazon.co.uk>,
+        Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 2/2] random: add fork_event sysctl for polling VM forks
+Message-ID: <YnDn/d6iB0aUZkWJ@gardel-login>
+References: <20220502140602.130373-1-Jason@zx2c4.com>
+ <20220502140602.130373-2-Jason@zx2c4.com>
+ <Ym/7UlgQ5VjjC76P@gardel-login>
+ <YnAC00VtU8MGb7vO@zx2c4.com>
+ <YnAMBzhcJhGR5XOK@gardel-login>
+ <7a1cfd1c-9f0e-f134-e544-83ee6d3cd9c9@amazon.com>
 MIME-Version: 1.0
-References: <202205031017.4TwMan3l-lkp@intel.com> <YnCXTPrbLhvfRVDm@e3a974050dc4>
- <CAK8P3a1xMeLa72YKMufdej6KguDwiSXtZmMqRxOt5B05x_fx3A@mail.gmail.com> <YnDaINQbVtoJz1T3@atomide.com>
-In-Reply-To: <YnDaINQbVtoJz1T3@atomide.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 3 May 2022 09:53:10 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2NOfu52tADw30e6Bfik56_+PbUv6_+ADs=PUE-6NSrbQ@mail.gmail.com>
-Message-ID: <CAK8P3a2NOfu52tADw30e6Bfik56_+PbUv6_+ADs=PUE-6NSrbQ@mail.gmail.com>
-Subject: Re: [PATCH] ARM: dove: fix returnvar.cocci warnings
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
-        kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-omap <linux-omap@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:74Mgwc2DUG5mMwrZ6MNsmoljzN6pyJ9yjLycxRNFA3NqtnvQWvr
- +XXc1CwiRNmjo/CHNnk9+yENODqvKGuJ7B71HiOOTee+ifhGGaplPvstsZEDQr8Co3QMA6p
- 5Uk5Xn1+YkJ0lZaorHRMpaPbP4yJtzAU0rnEvz1bCxIg7lyZqZnBc1HbBjBZzINP2n/BLLF
- TzMmA22OUqRjjhUusxGIw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:IhXJ72qjzsg=:ai2zbYV0s3CvosNkOJkCC+
- I+UKncQ/z1HuV8EVlSldc2dCNSQCKSO1i9E9aHk3mlczCjBGOs2UCooQuUI+2+EB+ncRlQmkD
- lM9NSrQqPjnr16wmBNq/Dl7w/7rWUv4OlOMbaHKnrfdu9Yw773DwIZZEsqBjl3n+kFQaeg/F9
- EE+xs1+Z39JkpiYG5jyxZHgcGlWtssL1hcQZ8wFEl3m03TzMiwryMU1+kPdidX77wPQQknbhZ
- aJcNJX45pIYuRGCA8pfir82kO9n/D720A4/ctf6g0Pi3z+s/Zh3G7GBZhvO8AOxJiFK6SfI0U
- qSHfw5qGeoOmxVtOezVW6jjZ8vdY7TTrpbpju+dzrUrjsN9dg4Jf/2Z9ZebtNc5TRGdsIlPlA
- my5ECci3ACDC90RZFupwgbXMOzQC0Ojf3RHTq9Q4I4jAD6f2Kk8zu1WkhbWbxO3kVYRxTIBsT
- 6fguHE6+FBeCSQS0MJnFENq7JLiVcauVdzmm1erigXqhe8V74klZKSifl4BNOkh787CKlLKAz
- DConUfj9JOKeIJUBAC7C+/ZcYjG6wmX7s7e/8aSrWSrKNMn3KE175Ur3Mt+HfaTUakXpIAH5Z
- 4XinPKuY/XHoXTHZbyaMaKoKirw0gCJCiwHz0BsQwQG5H3gJL9hnW/1AHCAgvd/8qfvu1NIjl
- PpJkP1tX5RGRanNWo30aZ2Zi4xtK/ZX+mHiUHwc6IxrvpLGxkwk7iu5Quc8kAteA5wrc2ST+t
- kQhE44+lwERrfvNwLS+rBUd7SFUc1iydKzdJP3C2RMSndS41VNZiFp5a9wpP99loOEZfPOszf
- JyPYr2AqPiGhxeJbm/BtHkpQghoB3/AnkBOsGSj5GNXyHhiSi8=
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7a1cfd1c-9f0e-f134-e544-83ee6d3cd9c9@amazon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 3, 2022 at 9:30 AM Tony Lindgren <tony@atomide.com> wrote:
-> * Arnd Bergmann <arnd@arndb.de> [220503 07:18]:
-> > On Tue, May 3, 2022 at 4:45 AM kernel test robot <lkp@intel.com> wrote:
-> > >
-> > > From: kernel test robot <lkp@intel.com>
-> > >
-> > > arch/arm/mach-omap2/dma.c:82:10-16: Unneeded variable: "errata". Return "0" on line 161
-> > >
-> > >
-> > >  Remove unneeded variable used to store return value.
-> > >
-> > > Generated by: scripts/coccinelle/misc/returnvar.cocci
-> > >
-> > > Reported-by: kernel test robot <lkp@intel.com>
-> > > Signed-off-by: kernel test robot <lkp@intel.com>
-> >
-> > I checked the patch, and unfortunately it is wrong, the current code
-> > needs to stay.
-> > The problem is the SET_DMA_ERRATA() macro that accesses the
-> > local 'errata' variable.
->
-> Yeah this one keeps popping up. Maybe we can make SET_DMA_ERRATA
-> into a function or have it at least change it to set the errata
-> value.
+On Mo, 02.05.22 19:59, Alexander Graf (graf@amazon.com) wrote:
 
-I would just remove the macro and open-code the assignment, which
-I think makes it more readable to both people and tools.
+> Lennart, looking at the current sysctl proposal, systemd could poll() on the
+> fork file. It would then be able to generate a /run/fork-id file which it
+> can use for the flow above, right?
 
-     Arnd
+I am not to keen on making sytemd such a proxy. Sounds like something
+the kernel could do on its own, better and resulting in an ultimately
+simpler system...
+
+If systemd its the proxy this adds in extra raciness. i.e. in a ideal
+world, if we have some form of notification fd, then it would be great
+if that fd is guaranteed to have POLLIN set and its contents updated
+the instant the clone happened. But if we proxy this through
+userspace, there's necessarily a latency involved that it it takes
+userspace to catch up and effect the POLLIN and updated contents
+towards its client apps.
+
+I understand the underlying VM hypervisor APIs currently are designed
+to always imply some notification latency. Which sucks, but I think we
+should be very careful with replicating this design mistake with any
+userspace APIs we add.
+
+i.e. I am pretty sure that even if the underlying VM hypervisor
+primitive isn't as good as we wanted, the Linux kernel→userspace API
+should be built so that if one day a better VM hypervisor interface
+exists it can be plugged behind it without such limitations.
+
+> Overall, it sounds to me like the sysctl poll based kernel interface in this
+> patch in combination with systemd inhibitors gives us an answer to most of
+> the flows above.
+
+As mentioned earlier, I am not convinced sysctl is the right place for
+this. sysctls are understood by most people as being the place for
+tweaking kernel settings. This is not a kernel setting, but a
+notification concept, and the way Jason defined it there's nothing to
+read nor write, which strongly suggests to move it elsewhere, but not
+/proc/sys/.
+
+Use /sys/kernel/ or so. Or maybe O_NOTIFICATION_PIPE or whatever, but
+/proc/sys/ looks really wrong.
+
+> I can see attractiveness in providing the /run/fork-id directly from the
+> kernel though, to remove the dependency on systemd for poll-less
+> notification of libraries.
+
+I agree.
+
+Lennart
+
+--
+Lennart Poettering, Berlin
