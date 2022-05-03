@@ -2,141 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01190C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:03:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F23C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:03:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237749AbiECPGf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60292 "EHLO
+        id S237760AbiECPHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:07:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237740AbiECPGb (ORCPT
+        with ESMTP id S232613AbiECPG6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:06:31 -0400
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4703A193
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:02:58 -0700 (PDT)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-ed9ac77cbbso6849682fac.1
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 08:02:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gQLzkke3mAD6r/LF03DB/YtaShDebAvgN9C8Yr2tvxQ=;
-        b=pEO2gBgz8m+NCeMczhVBvPhu22BV0XIfYT8yEGOwHAJesP6vo4gLVHDPyZENviv8uO
-         FJ9sYwagICWrZOKPqaunpmUbY8Ee3IYIzTb51rhiftaHBQdcWjaXqk1nlhtR10jf77eU
-         tt39+/4E4Y8XA2DfUYMEgG+OlUaNoGa0nIykYox9y2tS/ejplAvlEzLcCI3vGlCoIk26
-         y4+81KlsfpnvLqPlb8YJaWGKd/Ze1j34ZstzmzktulR1thxIu62lKh6t6FUM7xhxM0/t
-         4h7fZV/dfPfiLAZV5iSCkzk5CfKspdvvLhrJnG3n6NmKl3tw97hReYlKP8RvVew9p4Fm
-         pTiQ==
+        Tue, 3 May 2022 11:06:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 116C739813
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:03:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651590205;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6NUbQ9yWtqpo0VvAgqEBwOM8q51whPE1UMGmRuUeo40=;
+        b=INlnCTuHxRTdp8TtK5Qb5/NhVYEOFKGapLgkNia7qaQa6QKrcG+7cmrfm2q4XHN4I5BNsR
+        jak+mFhz47rjfcGN3jT36LBqzTRTHt/QK7oCeq+zZezzMpic/mSQ156c/IAWTfwv60KGBM
+        N9UzVtLI4nfyBDpOgl0xqgSPI/ETpDg=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-655-zEHQQnAcNR6pb4Y0hVmM_A-1; Tue, 03 May 2022 11:02:36 -0400
+X-MC-Unique: zEHQQnAcNR6pb4Y0hVmM_A-1
+Received: by mail-lf1-f72.google.com with SMTP id h12-20020a05651211cc00b00471af04ec12so8131629lfr.15
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 08:02:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gQLzkke3mAD6r/LF03DB/YtaShDebAvgN9C8Yr2tvxQ=;
-        b=YH0A6WCF0cKpTvWK7Vk+sxV8UQxJ3yMzdPcKHYBZjHWAPzgWykd+ekhyRrMby3qBZS
-         erJUjbzxl8aD4jX6oGpfEPZFAkFA32HyGr2ulWe6yPZvhNq9c48984IKA1b08Zxiyw3z
-         85lqFIZfm4yykMmXTlifRpG+y2zOyT4ZhZGe3BT0mimpa7uSzOPoQN2p7FNG1RS8mO2N
-         L5HeiN9tsHtFTsySEFlb/dWql8+ekaCyOoNBQFLownzbdvdo1yDT8Md8jblHQ1yfAXnw
-         dw7cYlCexa5EIx7i3udw0Nw4azu7cfhDink0xQAP5yxrl4c994OWUdylq9WuP7tfaHuw
-         e+bA==
-X-Gm-Message-State: AOAM531tTr/ZpCCGYK7Zt8oIhNlerEcQrxbfa3+Q0hpB2LAwZaoFdNG5
-        BRu8zlPQUebrfvzNXhk5/umBQQ==
-X-Google-Smtp-Source: ABdhPJwVRcQPpPZBizpnHmcx7jLJeBLPtgfMHJLo4IdMsx7TVzgfl0A5BWi8V0xE/3rw2ahHAwYj+w==
-X-Received: by 2002:a05:6870:d1d4:b0:e9:c135:2730 with SMTP id b20-20020a056870d1d400b000e9c1352730mr1947852oac.77.1651590177928;
-        Tue, 03 May 2022 08:02:57 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id j5-20020a9d7685000000b006060322125asm4154673otl.42.2022.05.03.08.02.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 08:02:56 -0700 (PDT)
-Date:   Tue, 3 May 2022 10:02:51 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Robert Foss <robert.foss@linaro.org>
-Cc:     agross@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-        robh+dt@kernel.org, krzk+dt@kernel.org, jonathan@marek.ca,
-        tdas@codeaurora.org, anischal@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: Re: [PATCH v2 2/8] clk: Introduce CLK_ASSUME_ENABLED_WHEN_UNUSED
-Message-ID: <YnFEGzTQMsNpczai@builder.lan>
-References: <20220503130448.520470-1-robert.foss@linaro.org>
- <20220503130448.520470-2-robert.foss@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6NUbQ9yWtqpo0VvAgqEBwOM8q51whPE1UMGmRuUeo40=;
+        b=EQZRIkt6VLN4QV77l+sefMBPrRKrTU6v6YynpOKKMg/1hJKCnjQXpZxDoPUEyR3QjT
+         CEIrbKAt8Sq2h11/tOPcPBg9MxZ4d8NC9Ob8eOQj42R9IQb2lTHO98rqjt1SEV6SNACR
+         QbbyBAInHHh25yp85JakBr1IbN/P4RpvyDsyY7DneJvZYiiNWfpfSSoJSAsm3kL2CMCl
+         XdS3Bdg+GtD5rP52z6saBNwOaiAsppf8fJEdYiaaNL5I6+30i+52AmO8UF0hSlUQ2x2G
+         //sO78gfb0/TWfQfhqVMzbGssOoW1N2lLx5XfuJ4ZQnzewCbBfxZkrULPsNMxaEHDJbK
+         XgEg==
+X-Gm-Message-State: AOAM532HXyVhMpVzwA/QyBLnJfNkqxXxV5xf6qf3aT5PYIS/oisZ3UC4
+        C7atDo4Kj1fmldoXZSXRlPNohPCg9gPWmlR8VeKrfYRO529mIx5LEV9v5DG1e+z8HYfKYFscCiV
+        AQAZS7Y7ytsi/x4R1JFuFx0b6
+X-Received: by 2002:a5d:554a:0:b0:20a:d511:c514 with SMTP id g10-20020a5d554a000000b0020ad511c514mr12301995wrw.347.1651579447286;
+        Tue, 03 May 2022 05:04:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyE9ZcONNlXgG46lfEm8iYAXKm9tIfYloMqtc6BAlvfRCOkFt0SEGeMTdmBS0sIb9y7I0J6XA==
+X-Received: by 2002:a5d:554a:0:b0:20a:d511:c514 with SMTP id g10-20020a5d554a000000b0020ad511c514mr12301971wrw.347.1651579447072;
+        Tue, 03 May 2022 05:04:07 -0700 (PDT)
+Received: from [10.32.181.74] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id a25-20020adfb519000000b0020c5253d920sm11988545wrd.108.2022.05.03.05.04.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 05:04:06 -0700 (PDT)
+Message-ID: <68a3c5b5-cb02-a22b-d05b-a141c41a9cad@redhat.com>
+Date:   Tue, 3 May 2022 14:04:04 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220503130448.520470-2-robert.foss@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v4 7/7] kvm: x86/cpuid: Fix CPUID leaf 0xA
+Content-Language: en-US
+To:     Jim Mattson <jmattson@google.com>,
+        Sandipan Das <sandipan.das@amd.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        x86@kernel.org, peterz@infradead.org, bp@alien8.de,
+        dave.hansen@linux.intel.com, acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, namhyung@kernel.org,
+        jolsa@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        like.xu.linux@gmail.com, eranian@google.com, puwen@hygon.cn,
+        ananth.narayan@amd.com, ravi.bangoria@amd.com,
+        santosh.shukla@amd.com
+References: <cover.1651058600.git.sandipan.das@amd.com>
+ <3fef83d9c2b2f7516e8ff50d60851f29a4bcb716.1651058600.git.sandipan.das@amd.com>
+ <CALMp9eSdUW6et2Us1if-j2Do6cv9ssyT4C2KPiyomFd7i_Dc1Q@mail.gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <CALMp9eSdUW6et2Us1if-j2Do6cv9ssyT4C2KPiyomFd7i_Dc1Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 03 May 08:04 CDT 2022, Robert Foss wrote:
+On 5/3/22 01:50, Jim Mattson wrote:
+> On Wed, Apr 27, 2022 at 4:34 AM Sandipan Das <sandipan.das@amd.com> wrote:
+>>
+>> On some x86 processors, CPUID leaf 0xA provides information
+>> on Architectural Performance Monitoring features. It
+>> advertises a PMU version which Qemu uses to determine the
+>> availability of additional MSRs to manage the PMCs.
+>>
+>> Upon receiving a KVM_GET_SUPPORTED_CPUID ioctl request for
+>> the same, the kernel constructs return values based on the
+>> x86_pmu_capability irrespective of the vendor.
+>>
+>> This leaf and the additional MSRs are not supported on AMD
+>> and Hygon processors. If AMD PerfMonV2 is detected, the PMU
+>> version is set to 2 and guest startup breaks because of an
+>> attempt to access a non-existent MSR. Return zeros to avoid
+>> this.
+>>
+>> Fixes: a6c06ed1a60a ("KVM: Expose the architectural performance monitoring CPUID leaf")
+>> Reported-by: Vasant Hegde <vasant.hegde@amd.com>
+>> Signed-off-by: Sandipan Das <sandipan.das@amd.com>
+>> ---
+>>   arch/x86/kvm/cpuid.c | 5 +++++
+>>   1 file changed, 5 insertions(+)
+>>
+>> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+>> index 4b62d80bb22f..e66ebb747084 100644
+>> --- a/arch/x86/kvm/cpuid.c
+>> +++ b/arch/x86/kvm/cpuid.c
+>> @@ -872,6 +872,11 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
+>>                  union cpuid10_eax eax;
+>>                  union cpuid10_edx edx;
+>>
+>> +               if (!static_cpu_has(X86_FEATURE_ARCH_PERFMON)) {
+> 
+> Should this be checking kvm_cpu_cap_has(X86_FEATURE_ARCH_PERFMON) instead?
 
-> From: Bjorn Andersson <bjorn.andersson@linaro.org>
-> 
-> Some clock implementations doesn't provide means of implementing
-> is_enabled(), but still requires to be explicitly disabled when found
-> unused as part of clk_disable_unused().
-> 
-> One such set of clocks are Qualcomm's display RCGs. These can be enabled
-> and disabled automatically by the hardware, so it's not possible to
-> reliably query their configuration. Further more, these clocks need to
-> be disabled when unused, to allow them to be "parked" onto a safe
-> parent. Failure to disable the RCG results in the hardware locking up as
-> clk_disable_unused() traverses up the tree and turns off its source
-> clocks.
-> 
-> Add a new flag, CLK_ASSUME_ENABLED_BOOT, which clock drivers can use to
-> signal that these clocks should be disabled even if they don't implement
-> the is_enabled() ops.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
-> 
+Ah, it cannot because X86_FEATURE_ARCH_PERFMON is a synthetic feature. 
+kvm_cpu_cap_has only works with features that are backed by CPUID bits.
 
-I discussed this with Stephen a while ago and we agreed that in a
-sufficiently complex system with kernel modules booting without
-clk_ignore_unused simply isn't supported.
+Paolo
 
-We will have to design something better. So please drop this patch from
-the series.
-
-Regards,
-Bjorn
-
-> Changes since v1
->  - Removed Vinods r-b
-> 
-> 
->  drivers/clk/clk.c            | 2 +-
->  include/linux/clk-provider.h | 2 ++
->  2 files changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-> index ed119182aa1b..9789ec137219 100644
-> --- a/drivers/clk/clk.c
-> +++ b/drivers/clk/clk.c
-> @@ -1284,7 +1284,7 @@ static void __init clk_disable_unused_subtree(struct clk_core *core)
->  	 * sequence.  call .disable_unused if available, otherwise fall
->  	 * back to .disable
->  	 */
-> -	if (clk_core_is_enabled(core)) {
-> +	if (clk_core_is_enabled(core) || core->flags & CLK_ASSUME_ENABLED_WHEN_UNUSED) {
->  		trace_clk_disable(core);
->  		if (core->ops->disable_unused)
->  			core->ops->disable_unused(core->hw);
-> diff --git a/include/linux/clk-provider.h b/include/linux/clk-provider.h
-> index c10dc4c659e2..9038022ffebd 100644
-> --- a/include/linux/clk-provider.h
-> +++ b/include/linux/clk-provider.h
-> @@ -32,6 +32,8 @@
->  #define CLK_OPS_PARENT_ENABLE	BIT(12)
->  /* duty cycle call may be forwarded to the parent clock */
->  #define CLK_DUTY_CYCLE_PARENT	BIT(13)
-> +/* assume clock is enabled if found unused in late init */
-> +#define CLK_ASSUME_ENABLED_WHEN_UNUSED	BIT(14)
->  
->  struct clk;
->  struct clk_hw;
-> -- 
-> 2.34.1
-> 
