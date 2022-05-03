@@ -2,206 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D6EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 02:55:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBCA2C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 02:55:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230225AbiECC6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 2 May 2022 22:58:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41264 "EHLO
+        id S230290AbiECC7O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 2 May 2022 22:59:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbiECC6c (ORCPT
+        with ESMTP id S230257AbiECC7K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 2 May 2022 22:58:32 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11CF137ABD;
-        Mon,  2 May 2022 19:55:00 -0700 (PDT)
-X-UUID: 3613982ef258474698a54f63ce922854-20220503
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:a0288b3c-070a-43b7-a047-b4dfd53461f1,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:faefae9,CLOUDID:c7ea792f-6199-437e-8ab4-9920b4bc5b76,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 3613982ef258474698a54f63ce922854-20220503
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1168897835; Tue, 03 May 2022 10:54:15 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 3 May 2022 10:54:13 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 3 May 2022 10:54:13 +0800
-Message-ID: <bb99742f40762d18baa342e7f5ee697fe5a86c09.camel@mediatek.com>
-Subject: Re: [PATCH V5 12/16] dt-bindings: reset: mediatek: Add infra_ao
- reset bit for MT8195
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        Chun-Jie Chen =?UTF-8?Q?=28=E9=99=B3=E6=B5=9A=E6=A1=80=29?= 
-        <Chun-Jie.Chen@mediatek.com>,
-        "wenst@chromium.org" <wenst@chromium.org>,
-        Runyang Chen =?UTF-8?Q?=28=E9=99=88=E6=B6=A6=E6=B4=8B=29?= 
-        <Runyang.Chen@mediatek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        Project_Global_Chrome_Upstream_Group 
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Tue, 3 May 2022 10:54:09 +0800
-In-Reply-To: <c56464d3-d33d-1797-2c98-67bec34df756@collabora.com>
-References: <20220428115620.13512-1-rex-bc.chen@mediatek.com>
-         <20220428115620.13512-13-rex-bc.chen@mediatek.com>
-         <839978c5-c337-7784-a04f-26b9883c703b@linaro.org>
-         <c56464d3-d33d-1797-2c98-67bec34df756@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 2 May 2022 22:59:10 -0400
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3AA2BCB;
+        Mon,  2 May 2022 19:55:39 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id e189so17022318oia.8;
+        Mon, 02 May 2022 19:55:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=ML+ALf4muC9UINFB1D+jUSUaT6Yc1q590//LqncXPBg=;
+        b=i7O9COFXjCPh9mubsfg4ugisxlHT5wiyH0MXCmkS/E9xJKUh9gtudd7mJOdt/lRU5s
+         XviWqp4uUxdnstDiOc3faSUjpvZagNsoavB45X1ONbSZGvYwKqCS3Q4EtrJCw38BFSTy
+         GfNBd7eRD5cCXw35f/BALZfCm/WuBWvrvy8CHiiL2yrOPGPoRYnxiuE92NR59Xn+HZB5
+         KmWN9JXFhIw1dIK45cEVSlCPHBcxANoVGaomRAUVkCZ8j7FysnRmKK/nqDi0QqiAU5qN
+         jRYD07RpfwKLRhTaIOHoyPVauNdPj2DaFQwX8xWbJUP/uVrx5krbwy8PAtKyqKnZh5Fk
+         0gYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=ML+ALf4muC9UINFB1D+jUSUaT6Yc1q590//LqncXPBg=;
+        b=AScAAAfQBs5jsGUnRtMO/HXUdbYQCM4L4yz1STlLCOHqWzq8GhLjJj0QEtr+mHwZzC
+         UR1hGujcZmtfqB50KWZgDd3N8rcbx+rhLdM1Nsax+a7HdWyOaVsSYEmxKSW4ZyIGJlBE
+         1XoW7E5Q+/Ft6MK2sdqL96H0vQTLq9QuhiX4g7Pgh3cx1FPTowE47zfEf8Hh7ycIxROO
+         D9eL5Cs63VjeA/iZfkGd0nMYrMkshj2LXcuI5XeGbWjxVREGgkFBNyafTbeSze4rVa0d
+         qy8Wzda0Yby76G5FfylPPaP2eq00jPzZIMzKC6/DQcZdk5a+Zd0BFk+cEUKojzPgqBLy
+         2Nww==
+X-Gm-Message-State: AOAM5317zaNYQN8hD2cFd2BVU8Nmj/xVpO+LojrlUdYdHny8dK/KzJh9
+        g/g1lqIKcw5nP91qVU3wmT8=
+X-Google-Smtp-Source: ABdhPJznbXpW7jRNt5UM7xwEtyewbcsNlzza6ofH1kXi3NQqMh/99I9VMArk+DRpxcBP+PFc4iZ78A==
+X-Received: by 2002:a05:6808:1115:b0:2ec:e78e:3fc0 with SMTP id e21-20020a056808111500b002ece78e3fc0mr978131oih.207.1651546539238;
+        Mon, 02 May 2022 19:55:39 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id m17-20020a9d7e91000000b006060322126csm1564658otp.60.2022.05.02.19.55.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 May 2022 19:55:38 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <04840b4f-5b9d-b29a-62f7-e5148d415313@roeck-us.net>
+Date:   Mon, 2 May 2022 19:55:34 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Robert Jarzmik <robert.jarzmik@free.fr>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Marek Vasut <marek.vasut@gmail.com>,
+        Philipp Zabel <philipp.zabel@gmail.com>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Paul Parsons <lost.distance@yahoo.com>,
+        Sergey Lapin <slapin@ossfans.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Helge Deller <deller@gmx.de>, Mark Brown <broonie@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        IDE-ML <linux-ide@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        patches@opensource.cirrus.com, linux-leds@vger.kernel.org,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        linux-rtc@vger.kernel.org, USB list <linux-usb@vger.kernel.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>
+References: <20220419163810.2118169-1-arnd@kernel.org>
+ <3df135a2-17f5-d6c6-b4a8-e1a60e254297@roeck-us.net>
+ <CAK8P3a2EHMQPN4ny9sXXuReFG0jN0hyRV7h9v_AR_0pqpOU41w@mail.gmail.com>
+ <CAK8P3a09+nFS3g1rgvTW9da3tMiAhHjkjZVs1QOJOj8TJ-9MDg@mail.gmail.com>
+ <6f1b27fa-96d1-4be7-ac6a-762610314f2a@roeck-us.net>
+ <8d6d453a-e6fc-439b-2f34-e60c22fc9e98@roeck-us.net>
+ <CAK8P3a2Ekvis1YcrJZtuga+XQdbeTC98PkOszCpS2DiZri7VMQ@mail.gmail.com>
+ <149509dd-f43d-1b27-4395-81eab4ff3455@roeck-us.net>
+ <CAK8P3a05vFdBnXXAMPVS82xX29+uinvWPcWxAgvj0TfoOk+1kg@mail.gmail.com>
+ <b13783aa-9225-d52a-3800-c97ad772688b@roeck-us.net>
+ <CAK8P3a3S5OjkKq_u5FpnwzYv+0+typya6Z4MzTez5ZH+do00xQ@mail.gmail.com>
+ <CAK8P3a3jiqf_zpBsZyvAb5ZtkwDa7KkqExqDAdpY_pYqkr_NgQ@mail.gmail.com>
+ <4dcdbfe2-9edf-320b-d123-3b62c8b5e28e@roeck-us.net>
+ <CAK8P3a0ogn1wgPBDHkT=Fb8ufA+y8Ax1Qov2-vRXfC08QqnrQA@mail.gmail.com>
+ <c001d58e-9a78-6338-a533-d0f215b3dfd1@roeck-us.net>
+ <CAK8P3a1X3YH0RqqmqgqFAaY94yreD-PfY-pvyMf+xU3nGeqvsg@mail.gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v2 00/48] ARM: PXA multiplatform support
+In-Reply-To: <CAK8P3a1X3YH0RqqmqgqFAaY94yreD-PfY-pvyMf+xU3nGeqvsg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-02 at 16:54 +0800, AngeloGioacchino Del Regno wrote:
-> Il 29/04/22 23:13, Krzysztof Kozlowski ha scritto:
-> > On 28/04/2022 13:56, Rex-BC Chen wrote:
-> > > To support reset of infra_ao, add the bit definitions for MT8195.
-> > > The infra_ao reset includes 5 banks and 32 bits for each bank.
-> > > 
-> > > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> > > ---
-> > >   include/dt-bindings/reset/mt8195-resets.h | 170
-> > > ++++++++++++++++++++++
-> > >   1 file changed, 170 insertions(+)
-> > > 
-> > > diff --git a/include/dt-bindings/reset/mt8195-resets.h
-> > > b/include/dt-bindings/reset/mt8195-resets.h
-> > > index a26bccc8b957..463114014483 100644
-> > > --- a/include/dt-bindings/reset/mt8195-resets.h
-> > > +++ b/include/dt-bindings/reset/mt8195-resets.h
-> > > @@ -7,6 +7,7 @@
-> > >   #ifndef _DT_BINDINGS_RESET_CONTROLLER_MT8195
-> > >   #define _DT_BINDINGS_RESET_CONTROLLER_MT8195
-> > >   
-> > > +/* TOPRGU resets */
-> > >   #define MT8195_TOPRGU_CONN_MCU_SW_RST          0
-> > >   #define MT8195_TOPRGU_INFRA_GRST_SW_RST        1
-> > >   #define MT8195_TOPRGU_APU_SW_RST               2
-> > > @@ -26,4 +27,173 @@
-> > >   
-> > >   #define MT8195_TOPRGU_SW_RST_NUM               16
-> > >   
-> > > +/* INFRA RST0 */
-> > > +#define MT8195_INFRA_RST0_THERM_CTRL_SWRST	0
-> > > +#define MT8195_INFRA_RST0_RSV0			1
-> > > +#define MT8195_INFRA_RST0_DISP_PWM1_SWRST	2
-> > > +#define MT8195_INFRA_RST0_RSV1			3
-> > > +#define MT8195_INFRA_RST0_MSDC3_SWRST		4
-> > > +#define MT8195_INFRA_RST0_MSDC2_SWRST		5
-> > > +#define MT8195_INFRA_RST0_MSDC1_SWRST		6
-> > > +#define MT8195_INFRA_RST0_MSDC0_SWRST		7
-> > > +#define MT8195_INFRA_RST0_RSV2			8
-> > > +#define MT8195_INFRA_RST0_AP_DMA_SWRST		9
-> > > +#define MT8195_INFRA_RST0_MIPI_D_SWRST		10
-> > > +#define MT8195_INFRA_RST0_RSV3			11
-> > > +#define MT8195_INFRA_RST0_RSV4			12
-> > > +#define MT8195_INFRA_RST0_SSUSB_TOP_SWRST	13
-> > > +#define MT8195_INFRA_RST0_DISP_PWM_SWRST	14
-> > > +#define MT8195_INFRA_RST0_AUXADC_SWRST		15
-> > > +#define MT8195_INFRA_RST0_RSV5			16
-> > > +#define MT8195_INFRA_RST0_RSV6			17
-> > > +#define MT8195_INFRA_RST0_RSV7			18
-> > > +#define MT8195_INFRA_RST0_RSV8			19
-> > > +#define MT8195_INFRA_RST0_RSV9			20
-> > > +#define MT8195_INFRA_RST0_RSV10			21
-> > > +#define MT8195_INFRA_RST0_RSV11			22
-> > > +#define MT8195_INFRA_RST0_RSV12			23
-> > > +#define MT8195_INFRA_RST0_RSV13			24
-> > > +#define MT8195_INFRA_RST0_RSV14			25
-> > > +#define MT8195_INFRA_RST0_RSV15			26
-> > > +#define MT8195_INFRA_RST0_RSV16			27
-> > > +#define MT8195_INFRA_RST0_RSV17			28
-> > > +#define MT8195_INFRA_RST0_RSV18			29
-> > > +#define MT8195_INFRA_RST0_RSV19			30
-> > > +#define MT8195_INFRA_RST0_RSV20			31
-> > 
-> > These are not proper IDs... don't work-around usage of bits with
-> > fake
-> > reserved IDs...
+On 5/2/22 14:03, Arnd Bergmann wrote:
+> On Mon, May 2, 2022 at 10:35 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>> On 5/2/22 12:21, Arnd Bergmann wrote:
+>>>
+>>
+>> To boot from initrd:
+>>
+>> qemu-system-arm -M z2 -kernel \
+>>        arch/arm/boot/zImage -no-reboot -initrd \
+>>        rootfs-armv5.cpio --append \
+>>        "panic=-1 slub_debug=FZPUA rdinit=/sbin/init console=ttyS0" -nographic \
+>>        -monitor null -serial stdio
+>>
+>> where rootfs-armv5.cpio is from my repository at github.com.
+>>
+>> https://github.com/groeck/linux-build-test/blob/master/rootfs/arm/rootfs-armv5.cpio.gz
+>>
 > 
-> Hello Krzysztof,
-> 
-> Actually, I get that it may seem that Rex is trying to cheat with
-> fake
-> reserved numbers... but it's really how the registers are laid out:
-> there
-> really are reserved bits in between used reset bits.
-> 
-> I don't think that the reserved bits are doing anything though, so
-> the
-> best way to proceed is to just remove them and map the dt-bindings
-> IDs to
-> the HW register's bits in the driver instead.
-> Even though the current approach is very simplistic, I agree that
-> this is
-> not how it's supposed to be done (and I'm sort-of sad about that).
-> 
-> Rex, please map these values in the reset driver so that, in this
-> header,
-> you'll get something like:
-> 
-> #define MT8195_INFRA_RST0_THERM_CTRL_SWRST	0
-> #define MT8195_INFRA_RST0_DISP_PWM1_SWRST	1
-> #define MT8195_INFRA_RST0_MSDC3_SWRST		2
-> #define .... (etc)
-> 
-> Cheers,
-> Angelo
-> 
-> > 
-> > Best regards,
-> > Krzysztof
-> 
+> Ok, that works here with any configuration, I don't see a regression.
+> Could this be a problem with the size increase? The machine only has
+> 32MB of RAM, so it's possible that the multiplatform-enabled kernel
+> with DT support etc pushes it over the edge, especially with an initramfs.
 > 
 
-Hello Krzysztof and Angelo,
+qemu puts initrd in the middle of available memory. With the image size
+being ~1MB larger than with v5.18-rc, this is too much, and the kernel
+overwrites part of initrd. This causes it to be corrupted.
 
-Thanks for your advice and review.
-I will modify my driver using index and I will just add some reset we
-curreently use.
+It looks like that would have happened eventually, your patch series just
+made it happen now. The kernel is just getting too large to run on such small
+systems. I worked around the problem in my version of qemu by loading initrd
+at the end of the (small) RAM. With that, I no longer see the boot failure.
 
-reset.h will list like this:
-
-#define MT8195_INFRA_RST0_THERM_CTRL_SWRST	0
-#define MT8195_INFRA_RST3_THERM_CTRL_PTP_SWRST	1
-#define MT8195_INFRA_RST4_THERM_CTRL_MCU_SWRST	2
-
-For this, I will add a new mode for input argument because we alos need
-to be compatible with previous reset drivers.
-For input argument with different mode: 
-enum MTK_RST_CTRL_MODE {
-	MTK_RST_CTRL_BIT_MODE = 0,
-	MTK_RST_CTRL_INDEX_MODE,
-};
-
-If register MTK_RST_CTRL_INDEX_MODE for reset controller, I will
-implent new xlate function to transfer the index to offsets.
-
-BRs,
-Rex
-
+Guenter
