@@ -2,70 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A84AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:20:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 18:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241228AbiECSYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 14:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42200 "EHLO
+        id S241276AbiECSY7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 14:24:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241293AbiECSX5 (ORCPT
+        with ESMTP id S241234AbiECSY4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 14:23:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDCD62C3
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 11:20:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B126161299
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 18:20:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCD95C385A9;
-        Tue,  3 May 2022 18:20:21 +0000 (UTC)
-Date:   Tue, 3 May 2022 19:20:18 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     will@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, vijayb@linux.microsoft.com,
-        f.fainelli@gmail.com
-Subject: Re: [PATCH v3 0/3] arm64: mm: Do not defer reserve_crashkernel()
-Message-ID: <YnFyYm93IVNlCQ4c@arm.com>
-References: <20220411092455.1461-1-wangkefeng.wang@huawei.com>
+        Tue, 3 May 2022 14:24:56 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD6E1B7B9
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 11:21:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651602083; x=1683138083;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=wjJKgzIfGuKA16AOtGpYY81I8GcbNSajMQOiGEreDbA=;
+  b=gkHOqefSCfxjm8ufEvDWuvGkEFRlYLNsGdUlqzvn3zdCFru6zqtXx/H0
+   2ZBC8jFrhP2PU7uTXDvLAJX4H9QcLjLKvNK0Yhz05PgCMS7atI34aGZ3O
+   8CfvvN+X0VCLwB9dCFvRweeonsELWozn1kr4QMPVZdgynUCRPyT9mu1ft
+   Gci283ifqe+VCnhziHTBPh2YzSkT959hwVtnfvUsBWYYxTPxlBd0wV8sv
+   MloPHPL3SyYShV0iKoiSf/H7VKvUaWg5c5vp8jp8obebSrQ0t/u+DDfl4
+   jnRQdklFPJdTdXwR0KQhCj49rY5B7Wh9ABr0zT3zd84z1BOhh+y+JknDq
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="255015504"
+X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
+   d="scan'208";a="255015504"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 11:21:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
+   d="scan'208";a="599178807"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 03 May 2022 11:21:21 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nlx9E-000AhL-H4;
+        Tue, 03 May 2022 18:21:20 +0000
+Date:   Wed, 4 May 2022 02:21:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     kbuild-all@lists.01.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: [RFC PATCH pdx86-platform-drivers-x86] platform/x86: thinkpad_acpi:
+ quirk_s2idle_bug can be static
+Message-ID: <YnFyjKyfnPnfpHgW@74ccfaeec2ea>
+References: <202205040241.QemV1sMH-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220411092455.1461-1-wangkefeng.wang@huawei.com>
+In-Reply-To: <202205040241.QemV1sMH-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 05:24:52PM +0800, Kefeng Wang wrote:
-> Commit 031495635b46 ("arm64: Do not defer reserve_crashkernel() for
-> platforms with no DMA memory zones"), this lets the kernel benifit
-> due to BLOCK_MAPPINGS, we could do more if ZONE_DMA and ZONE_DMA32
-> enabled.
-> 
-> 1) Don't defer reserve_crashkernel() if only ZONE_DMA32
-> 2) Don't defer reserve_crashkernel() if ZONE_DMA with dma_force_32bit
->    kernel parameter(newly added)
+drivers/platform/x86/thinkpad_acpi.c:322:20: warning: symbol 'quirk_s2idle_bug' was not declared. Should it be static?
 
-I'm not really keen on a new kernel parameter for this. But even with
-such parameter, there is another series that allows crashkernel
-reservations above ZONE_DMA32, so that would also need
-NO_BLOCK_MAPPINGS, at least initially. I think there was a proposal to
-do the high reservation first and only defer the low one in ZONE_DMA but
-suggested we get the reservations sorted first and look at optimisations
-later.
+Fixes: a50dfa903391 ("platform/x86: thinkpad_acpi: Add a s2idle resume quirk for a number of laptops")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
+---
+ drivers/platform/x86/thinkpad_acpi.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-If hardware is so bad with page mappings, I think we need to look at
-different ways to enable the block mappings, e.g. some safe break
-before make change of the mappings or maybe switching to another TTBR1
-during boot.
-
-Does FEAT_BBM level 2 allow us to change the block size without a break
-before make? I think that can still trigger a TLB conflict abort, maybe
-we can trap it and invalidate the TLBs (the conflict should be on the
-linear map not where the kernel image is mapped).
-
--- 
-Catalin
+diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
+index f385450af8647..d5431d3d4246f 100644
+--- a/drivers/platform/x86/thinkpad_acpi.c
++++ b/drivers/platform/x86/thinkpad_acpi.c
+@@ -319,7 +319,7 @@ struct quirk_entry quirk_btusb_bug = {
+ 	.btusb_bug = true,
+ };
+ 
+-struct quirk_entry quirk_s2idle_bug = {
++static struct quirk_entry quirk_s2idle_bug = {
+ 	.s2idle_bug_mmio = 0xfed80380,
+ };
+ 
