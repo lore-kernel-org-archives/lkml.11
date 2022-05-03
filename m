@@ -2,86 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66EE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:26:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C692C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232256AbiECH3v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 03:29:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44804 "EHLO
+        id S232237AbiECHcd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:32:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232237AbiECH3t (ORCPT
+        with ESMTP id S231761AbiECHca (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 03:29:49 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37ADB36692;
-        Tue,  3 May 2022 00:26:18 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 3 May 2022 03:32:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E5F36335;
+        Tue,  3 May 2022 00:28:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Kss2c3dT6z4xR7;
-        Tue,  3 May 2022 17:26:16 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1651562776;
-        bh=hhik5NJxEhsqkUYGQ5DJB3BUsR7PKS/ZPUlsKriqvZI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=a6fyuLPS8RL+1q0UJod8RTDQqiq9jU2JEMXHOqkyOtdSwiBcfgEYCVQtl/ksQJemR
-         tGNNX/bAscOva9jiRH3nVAU/3nrJAd0nqghIB61zHJCpPzLyX3cbHkP+oCO5lQA06v
-         gzWNbUmHHctjWHbeMtyP6yyHxmTZj23OllrDSskJnO479O0csmoyvEi8W3+IgPslc9
-         DifY40ulGpxNydCVtfUzhuLTVmzeW+BelUFSuoWeXxfYSJr/oHUnLCD4k+YrA7Q6JD
-         F+42nD1ziSbRk/awXsYlbB3MEttoozAW6QBo0NIiuirhMusc1LUFcn41r6ZSe+kc9T
-         B5p5eLFiRap3g==
-Date:   Tue, 3 May 2022 17:26:15 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build warnings after merge of the folio tree
-Message-ID: <20220503172615.1a5f1c52@canb.auug.org.au>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E7B8B81CA7;
+        Tue,  3 May 2022 07:28:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31E63C385B4;
+        Tue,  3 May 2022 07:28:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651562936;
+        bh=An4l1Y7GJUH5wN5pzbLPaMxdyCEWxfCi8+OSUuFew+Y=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=eOyf0uVjMcK9EXBoXNGlPtOBO9/w14atentNejxZz2Qh2BaUWL+xwrx1XZ0sC4+sS
+         RSSYpdy5sMK3Cylrd3WbuN9jPBQH0RJlsyPxfHcOSfa//EMznMrN1If2Xn2zqekEwg
+         8Y/Agkwnn0lcag+0lBGEhz/r5QGGbVIW5x/RN5VI/ONKJRG2hfXEBFNKjRXmyrcfc5
+         igtm0h6qmvos1FZvHVPb8JKO6Cs3UnTAgL1IE8WyALOhKagSJIwFMwsRX3GCnKXJA4
+         0HngM3H5GwMG3hBEOLXruISHesArZkECfTWkVXW8Nj8q3YPRGDOcFFGelO+lscLWAH
+         kZtqxlP1bdKGA==
+Received: by mail-oi1-f179.google.com with SMTP id q8so16981360oif.13;
+        Tue, 03 May 2022 00:28:56 -0700 (PDT)
+X-Gm-Message-State: AOAM531yL7Hgh1aJiFmMdATZxRKjqjLYrkomvvKUBhCmpQN2JQ4Enqsm
+        wSKZHA7LvzLzN6ci41s6YnALiHn3+XV+trmlHo4=
+X-Google-Smtp-Source: ABdhPJwz8zIqcnZCZlrTwbBgWNwYTu8rDQC1tRxTgPIW3hyqDf8vMF3Z9MVR4qYEOJtB7xs67ZpYrhzx9nYB4zBxmI4=
+X-Received: by 2002:a05:6808:1141:b0:325:cd92:ef8d with SMTP id
+ u1-20020a056808114100b00325cd92ef8dmr1302131oiu.228.1651562935307; Tue, 03
+ May 2022 00:28:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/5qRXg0rnPfbIM_kljiubDeT";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <FA654A0D-29B7-4B6B-B613-73598A92ADA8@goldelico.com>
+ <YmkBAsa+fKlp/GcV@atomide.com> <CAK8P3a3N9WBWC_ECB0pSRHUCT4iz=tdT+Dt9Cyd5Wh3qEaVqqA@mail.gmail.com>
+ <4CE23DC3-B3E5-45C1-91F3-B88E5444AE7C@goldelico.com> <CAK8P3a3EFfF0gr5kFkboRfJifrY-D+NgHFekBfSePWuY2c8PMA@mail.gmail.com>
+ <11504A17-6B50-4D6C-A9E1-CA943C157C93@goldelico.com> <CAK8P3a2RN77ajZD4xRhKsqozPizneLcLYhm0rTE6qX25-4cJsw@mail.gmail.com>
+In-Reply-To: <CAK8P3a2RN77ajZD4xRhKsqozPizneLcLYhm0rTE6qX25-4cJsw@mail.gmail.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Tue, 3 May 2022 09:28:44 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXHqHCt9G+HEawsWmba2Z=WVbp6wRrivAQvQCn2iph9kXg@mail.gmail.com>
+Message-ID: <CAMj1kXHqHCt9G+HEawsWmba2Z=WVbp6wRrivAQvQCn2iph9kXg@mail.gmail.com>
+Subject: Re: kernel panic with v5.18-rc1 on OpenPandora (only)
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Discussions about the Letux Kernel 
+        <letux-kernel@openphoenux.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-OMAP <linux-omap@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/5qRXg0rnPfbIM_kljiubDeT
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Sat, 30 Apr 2022 at 20:48, Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Sat, Apr 30, 2022 at 7:18 PM H. Nikolaus Schaller <hns@goldelico.com> wrote:
+> > > Am 30.04.2022 um 17:36 schrieb Arnd Bergmann <arnd@arndb.de>:
+> > >
+> > >
+> > > I suppose this could be anywhere then. The backtrace seems to point
+> > > to re-enabling interupts in do_work_pending, so something probably
+> > > accessed DMA memory asynchronously.
+> >
+> > Yes. I now (or still) sometimes see the same omap l3 irq issue when plugging in/out the USB/OTG
+> > cable. Not with a kernel panic, but in the same driver omap_l3_smx.c.
+> > This happens even if the wl1251 driver is removed.
+>
+> Is this also a regression, or did it happen before the vmap-stack
+> change? If this only
+> appeared now, then this points to another bug somewhere that you
+> should find using
+> CONFIG_DMA_API_DEBUG.
+>
+> I think what is going on here is that your platform is able to detect
+> the broken DMA
+> because of the l3 interrupt handler telling the kernel about it, when
+> on other platforms
+> we would see either silent data corruption or a DMA that never reaches
+> its target.
+>
 
-Hi all,
-
-After merging the folio tree, today's linux-next build (htmldocs)
-produced these warnings:
-
-fs/jbd2/transaction.c:2149: warning: Function parameter or member 'folio' n=
-ot described in 'jbd2_journal_try_to_free_buffers'
-fs/jbd2/transaction.c:2149: warning: Excess function parameter 'page' descr=
-iption in 'jbd2_journal_try_to_free_buffers'
-
-Introduced by commit
-
-  13e184c175b2 ("jbd2: Convert jbd2_journal_try_to_free_buffers to take a f=
-olio")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/5qRXg0rnPfbIM_kljiubDeT
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJw2RcACgkQAVBC80lX
-0Gxi+wf/RSbzYsrV6vz/nc9cwAJzcKDQDCp376MJixWIaC/f+xJ4heCoCCC4W074
-oKjFsOKPjOwlKwyWZcJv32BxPXad2Oa1gQgz4+WduCVyNDbmEbiQyy2E1hDMfkf6
-9XNXZ/ZfN1xN8nlhD5Cv1Fvm9k6yJnVZDdKnzo8RXjbLWQaFEdB2Tp7/wDlkAEa4
-0WWgfLOyXvgcInG8XGbhGAzyUfSmJSZShmT8GsDSgF4s94UTjCow0fqoObsNB2Bm
-I0a9JAkuRf2hY4zmBgd7u+CEWuMyrLhiKXUza9jXpsKTeuZXRu+hFjPUgfJx1+W9
-zI5VsQGTz9GlR7wgpmIsHZ04BMfgKQ==
-=kqKd
------END PGP SIGNATURE-----
-
---Sig_/5qRXg0rnPfbIM_kljiubDeT--
+I wonder if we could narrow this down by adding the possibility to use
+IRQ stacks in the linear map, while using vmap'ed task stacks.
