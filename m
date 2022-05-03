@@ -2,106 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC728C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 03:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 081EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 04:18:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230473AbiECEBe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 00:01:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48352 "EHLO
+        id S230495AbiECEVh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 00:21:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiECEBb (ORCPT
+        with ESMTP id S230354AbiECEVe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 00:01:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFE636B77;
-        Mon,  2 May 2022 20:58:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 253EBB81BE4;
-        Tue,  3 May 2022 03:57:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 589D6C385A9;
-        Tue,  3 May 2022 03:57:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651550277;
-        bh=Cl5mLzkG+TTdpfzZTrXfX/qXJHGfkfoAd8qQBoaXi2o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YcJ69Mxs/0egoH/KoOxPB3yexeKFIvfqicqjGmBmRqA1j0B0WFCNgHAopqYY+yRQy
-         mzbbT/hsRO8kK+0jXsHqc+Golxqn2efytgtN6PsVYY3FodNNrGRhMd3CxxkuPqTqJL
-         m0KcR1SWkduqZlmLQ8yT5r2X93ZuAvjHcdT7XUs6lKdOGMx38ZRrn7K/JLTY4xH/Id
-         asLXU4pqHu6fV5WS2uf/SipLHO6i8LWMomfFKzTGRWpvazPmiZzCsFcOIuWEt1Vop9
-         DtVgViFpNQ9E9kMYMaHPdzmlvehvI1YqBf4fOAIuXM3aasfbiz0coNItX3TcB+BWWK
-         Cfs51zkdijRGw==
-Date:   Tue, 3 May 2022 11:57:53 +0800
-From:   Tzung-Bi Shih <tzungbi@kernel.org>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] watchdog: max63xx_wdt: Add support for specifying
- WDI logic via GPIO
-Message-ID: <YnCoQUGQsXIfbowQ@google.com>
-References: <20220429131349.21229-1-pali@kernel.org>
- <20220429131349.21229-2-pali@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220429131349.21229-2-pali@kernel.org>
+        Tue, 3 May 2022 00:21:34 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6C838BFC
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 21:18:03 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id l35-20020a25b323000000b00649eb57cc67so359562ybj.12
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 21:18:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=ee22ixTfu/Bo012jZkIOZL6TsTz0iHERQm9vZ3yNsWA=;
+        b=c8+KF+puppDi7Lwvw69cneahhD++zr4NEDsXpTi/mbLS2AKKBkP449Kc0H39TfyusD
+         rGS7nYvVmd0IO++AvCmX3pwBA21d4FbnMDE+VHfCtJDbnWAzYuehEE/jD28a+rtTw1WS
+         ux/R151hvTK6KMNEpsZMRByIeNXPleMidgeoi1A26GnIOX77Jrfjr+7cAmoaykr/XiGb
+         hCCw7mEmiFsufy129uTPQh49ZFjArF4+VwTzMUBr3swQ7kiyI1lU+H6YmfdN+Q1dH0TX
+         iaEeKu8mDoIgeZXpn8zCMLnup4qF04jTxjPmo/dPc/jwWPFaEaMHkx9CJXsKFdbdgtkt
+         Hcvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=ee22ixTfu/Bo012jZkIOZL6TsTz0iHERQm9vZ3yNsWA=;
+        b=S4olcj/Ul5CUJ9TAJ50Yoh4MF8l9zCN24ThXTgtbAs1lk8ms1aND4EvhAfvwc2tUy8
+         5fbJLKt2Wsr0+1UuWQgpI+NWwDcfM223kLsCw6Gd8UnSiIR64Jqu75NWc2S3n7yePOjY
+         xzpM4Rnn3Nt9NPD8bSkJyBUiAaHm1xV+mi3mPYJDpxBfSX7kc5RLLcx2qCAR+cvA3oIf
+         2eCFivgrQRL14sFFmAO+9t1Wp96mlwIXbz8yYZhmDdzRVfPjgOfYj3OPOODd6dggOYoK
+         32XWM4KB5icuwxf5VFL9qGymK29G3y0uNNkq5kofY9e7td4XusKkaObOS/ZFjdjbCswk
+         T5pg==
+X-Gm-Message-State: AOAM530CRJPeseXjQ7B4HsgOza3IwW9uJLlzkKJVHnO1BwelVNDU1KYt
+        wCRSAx/OzT55P9geB5657yAwPgLgsRlM
+X-Google-Smtp-Source: ABdhPJxBNoT4Bgk+Mh2KRGQMD1T6e9TCCImbP6hv4oF9fx/eapszNDXOvROriMl8LV1gxKC/gKQTBSZfJQws
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:dd4b:52bb:771d:7bb4])
+ (user=irogers job=sendgmr) by 2002:a25:4944:0:b0:648:a796:a2 with SMTP id
+ w65-20020a254944000000b00648a79600a2mr13187740yba.123.1651551482390; Mon, 02
+ May 2022 21:18:02 -0700 (PDT)
+Date:   Mon,  2 May 2022 21:17:51 -0700
+Message-Id: <20220503041757.2365696-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+Subject: [PATCH v5 0/6] Make evlist CPUs more accurate
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 03:13:49PM +0200, Pali Rohár wrote:
-> @@ -27,6 +27,7 @@
->  #include <linux/io.h>
->  #include <linux/slab.h>
->  #include <linux/property.h>
-> +#include <linux/gpio/consumer.h>
+Based on the thread:
+https://lore.kernel.org/linux-perf-users/CAP-5=fVMHzTfKdpWMXtbtx7t14u2f4WzNak+F0Q93cQ7CZfhbg@mail.gmail.com/
 
-It would be better to keep them alphabetically.  Anyway, they aren't sorted
-originally...
+First patch is a cherry-pick to avoid a conflict of:
+https://lore.kernel.org/linux-perf-users/20220414014642.3308206-2-irogers@google.com/
+Second patch makes all_cpus more accurate when there are command line CPUs.
+The third patch fixes perf stat metric-only output for uncore metrics.
+The fourth patch makes cleans up merging of dummy CPU maps.
+The fifth and sixth patch try to make user_requested_cpus and all_cpus
+clearer with documentation and by renaming all_cpus.
 
-> +static void max63xx_gpio_ping(struct max63xx_wdt *wdt)
-> +{
-> +	spin_lock(&wdt->lock);
+The code no longer needs to add an intersect function and so the API
+is removed and the merged API left unchanged.
 
-Does it really need to acquire the lock?  It looks like the lock is to prevent
-concurrent accesses to the mmap in max63xx_mmap_ping() and max63xx_mmap_set().
+v5. Fixes the 1st patch as pointed out by Namhyung Kim
+    <namhyung@kernel.org>, adds some further clean-up to it and adds
+    reviewed-by Adrian Hunter <adrian.hunter@intel.com> to patch 3.
 
-> +	gpiod_set_value_cansleep(wdt->gpio_wdi, 1);
-> +	udelay(1);
+Ian Rogers (6):
+  perf cpumap: Switch to using perf_cpu_map API
+  perf evlist: Clear all_cpus before propagating
+  perf stat: Avoid printing cpus with no counters
+  perf cpumap: Handle dummy maps as empty in subset
+  perf evlist: Add to user_requested_cpus documentation
+  perf evlist: Rename all_cpus
 
-Doesn't it need to include <linux/delay.h> for udelay()?
+ tools/lib/perf/cpumap.c                  |  4 +--
+ tools/lib/perf/evlist.c                  | 14 +++++---
+ tools/lib/perf/include/internal/evlist.h |  5 +--
+ tools/perf/builtin-record.c              | 13 +++----
+ tools/perf/tests/cpumap.c                | 10 +++++-
+ tools/perf/util/bpf_counter_cgroup.c     | 46 +++++++++++-------------
+ tools/perf/util/evlist.c                 |  6 ++--
+ tools/perf/util/evlist.h                 |  4 +--
+ tools/perf/util/stat-display.c           |  7 ++--
+ 9 files changed, 60 insertions(+), 49 deletions(-)
 
-> @@ -225,10 +240,19 @@ static int max63xx_wdt_probe(struct platform_device *pdev)
->  		return -EINVAL;
->  	}
->  
-> +	wdt->gpio_wdi = devm_gpiod_get(dev, NULL, GPIOD_FLAGS_BIT_DIR_OUT);
-> +	if (IS_ERR(wdt->gpio_wdi) && PTR_ERR(wdt->gpio_wdi) != -ENOENT)
+-- 
+2.36.0.464.gb9c8b46e94-goog
 
-Use devm_gpiod_get_optional() to make the intent clear.  Also, it gets rid of
-the check for -ENOENT.
-
-> +		return dev_err_probe(dev, PTR_ERR(wdt->gpio_wdi),
-> +				     "unable to request gpio: %ld\n",
-> +				     PTR_ERR(wdt->gpio_wdi));
-
-It doesn't need to again print for PTR_ERR(wdt->gpio_wdi).  dev_err_probe()
-prints the error.
-
->  	err = max63xx_mmap_init(pdev, wdt);
->  	if (err)
->  		return err;
->  
-> +	if (!IS_ERR(wdt->gpio_wdi))
-> +		wdt->ping = max63xx_gpio_ping;
-
-Thus, the max63xx_gpio_ping() overrides max63xx_mmap_ping() if the GPIO was
-provided?  It would be better to mention the behavior in the commit message.
-
-Also, could both the assignments of `wdt->gpio_wdi` and `wdt->ping` happen
-after max63xx_mmap_init()?
