@@ -2,314 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F21BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:32:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99CCAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 06:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230202AbiECGgM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 02:36:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56456 "EHLO
+        id S229789AbiECGkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 02:40:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbiECGfA (ORCPT
+        with ESMTP id S229503AbiECGkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 02:35:00 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C82381AE;
-        Mon,  2 May 2022 23:31:28 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id B99B6210ED;
-        Tue,  3 May 2022 06:31:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1651559486; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UKMK+E1QOVMkS/+uRvdxjLGkgBWRpnWs4hXt5Uwgx3c=;
-        b=Z2fTcPW4dTYMvC1fzMXVCph/bxUKQU+bHPtiMlrUyCvsn3znUe/1yWkhV9TeQJxs746FP6
-        SX1F1PyahdGc1J6sLz4QMvaOki9WFjkveBICRZhesvngWyLgv1JcNe88H7yvDKvTdwN3rG
-        szvJQpDRgfk+noeF2h3CNVmfFxoaa0w=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1651559486;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UKMK+E1QOVMkS/+uRvdxjLGkgBWRpnWs4hXt5Uwgx3c=;
-        b=BV7G0c5/c6RE5e7w1NTcDWdG8/B9vRfEd1ILebOMr/8omMIjAArVfJmQOJ70qkoln/azf4
-        kGtHo5a2ApJ/WDCg==
-Received: from localhost.localdomain (unknown [10.100.208.98])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 7EA2F2C141;
-        Tue,  3 May 2022 06:31:26 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 02/11] serial: pic32: move header content to .c
-Date:   Tue,  3 May 2022 08:31:13 +0200
-Message-Id: <20220503063122.20957-3-jslaby@suse.cz>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220503063122.20957-1-jslaby@suse.cz>
-References: <20220503063122.20957-1-jslaby@suse.cz>
+        Tue, 3 May 2022 02:40:12 -0400
+Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23EE121811
+        for <linux-kernel@vger.kernel.org>; Mon,  2 May 2022 23:36:41 -0700 (PDT)
+Received: by mail-ua1-x935.google.com with SMTP id 63so6052062uaw.10
+        for <linux-kernel@vger.kernel.org>; Mon, 02 May 2022 23:36:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=u86aQVHE0YFRCOAXwD0Lj1Q5WX8rv8Wdn7lFhRDk8T4=;
+        b=EG9OoauTSQf1V/WWgNjp/LVUiVAquxw61d3vyxT5MtCeBtnGc0q/L6g5LqYuU+4GbA
+         vRkrFQnEhxvEnDbPfWpWsuh5VRXTWiv4xWF+qOT976IBFgReJj/Jh1E+dTI4NljfOfex
+         s9Gg7hDl919BI0IDcMKYZGWTn5eUffOtI179wUNipICzAHU/sjgrzbbivNuS6li+jV7y
+         qF0CVWwsQwG424ps5RZN4VmzuP+ZyZ/PPxBgrkqX9hChX+JAvEsPsSGnmuxN6s/lL0Tz
+         ozDLXOFRUM+WfMpf/xin9Un+5oKdGhB2ij/sYIjMMNFJDNQRK2eBClBAvUNJ1t4BxQ5J
+         GDDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=u86aQVHE0YFRCOAXwD0Lj1Q5WX8rv8Wdn7lFhRDk8T4=;
+        b=XeqdSoV7t5EazQEYfI97SNCsITAO2dCmuF4r5Ye1bmpQnZGT7SE9DYGEMSKs85C1g8
+         68Uyjioe23GViHWyz6J2AiqYIbuP2plwnPrLtJjRHbR39Tov5a9goDAd/pOenbepg0pK
+         E3awy2/CH97wgoGXkkxAmVbiTDOIefLMGD8NLCVXRcdBsSA1llPnHUKbT1compuXJS2A
+         NUgPUv6ZOGfl51IuG4YTsibtSZC+mrg6596dGHkX37RXjsf2i0wjZ7ZMUMWhv83MEndB
+         TZCSyDSqs4XNcCdd6j+ziPzgqgP5NCBZec3lFCoKdpV4LxcHmYc8ORbO/0H4qwUMBOKH
+         1Y+g==
+X-Gm-Message-State: AOAM530HGZYSoaNuKkAPn8GfL/p/9JoHfL49tdTsV5k/WPDtVOsSph+/
+        T+/UehuMlcPubS/gEakFavI7rsSSrYM2Kn+Hj43glw==
+X-Google-Smtp-Source: ABdhPJyC+d1398MY/r3CNy5+vr0F03VvuWn3HbON/3UtBav7rsXAW9341lvfNA5RTGpHb5/y0HxGg9FwUbnx1nDLlmQ=
+X-Received: by 2002:a9f:356c:0:b0:359:5bee:d1f8 with SMTP id
+ o99-20020a9f356c000000b003595beed1f8mr4238703uao.60.1651559800098; Mon, 02
+ May 2022 23:36:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
+ <CAHbLzkq1YXXLMiREpGnzhJjPssu4WpSsnkTmrLJ=hAEhZVUr9w@mail.gmail.com> <CAPcyv4g7kyPsSKGT1rR4yy680VD6UJ8V7wzj0OUqN2y2-PjOpQ@mail.gmail.com>
+In-Reply-To: <CAPcyv4g7kyPsSKGT1rR4yy680VD6UJ8V7wzj0OUqN2y2-PjOpQ@mail.gmail.com>
+From:   Wei Xu <weixugc@google.com>
+Date:   Mon, 2 May 2022 23:36:29 -0700
+Message-ID: <CAAPL-u8yLxwJKB=O9eKRP5YMWTdrCR5HG4dy6owYbwpvjs976A@mail.gmail.com>
+Subject: Re: RFC: Memory Tiering Kernel Interfaces
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     Yang Shi <shy828301@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Linux MM <linux-mm@kvack.org>,
+        Greg Thelen <gthelen@google.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alistair Popple <apopple@nvidia.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michal Hocko <mhocko@kernel.org>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no point keeping the header content separated. So move the
-content to the appropriate source file.
+On Sun, May 1, 2022 at 11:35 AM Dan Williams <dan.j.williams@intel.com> wrote:
+>
+> On Fri, Apr 29, 2022 at 8:59 PM Yang Shi <shy828301@gmail.com> wrote:
+> >
+> > Hi Wei,
+> >
+> > Thanks for the nice writing. Please see the below inline comments.
+> >
+> > On Fri, Apr 29, 2022 at 7:10 PM Wei Xu <weixugc@google.com> wrote:
+> > >
+> > > The current kernel has the basic memory tiering support: Inactive
+> > > pages on a higher tier NUMA node can be migrated (demoted) to a lower
+> > > tier NUMA node to make room for new allocations on the higher tier
+> > > NUMA node.  Frequently accessed pages on a lower tier NUMA node can be
+> > > migrated (promoted) to a higher tier NUMA node to improve the
+> > > performance.
+> > >
+> > > A tiering relationship between NUMA nodes in the form of demotion path
+> > > is created during the kernel initialization and updated when a NUMA
+> > > node is hot-added or hot-removed.  The current implementation puts all
+> > > nodes with CPU into the top tier, and then builds the tiering hierarchy
+> > > tier-by-tier by establishing the per-node demotion targets based on
+> > > the distances between nodes.
+> > >
+> > > The current memory tiering interface needs to be improved to address
+> > > several important use cases:
+> > >
+> > > * The current tiering initialization code always initializes
+> > >   each memory-only NUMA node into a lower tier.  But a memory-only
+> > >   NUMA node may have a high performance memory device (e.g. a DRAM
+> > >   device attached via CXL.mem or a DRAM-backed memory-only node on
+> > >   a virtual machine) and should be put into the top tier.
+> > >
+> > > * The current tiering hierarchy always puts CPU nodes into the top
+> > >   tier. But on a system with HBM (e.g. GPU memory) devices, these
+> > >   memory-only HBM NUMA nodes should be in the top tier, and DRAM nodes
+> > >   with CPUs are better to be placed into the next lower tier.
+> > >
+> > > * Also because the current tiering hierarchy always puts CPU nodes
+> > >   into the top tier, when a CPU is hot-added (or hot-removed) and
+> > >   triggers a memory node from CPU-less into a CPU node (or vice
+> > >   versa), the memory tiering hierarchy gets changed, even though no
+> > >   memory node is added or removed.  This can make the tiering
+> > >   hierarchy much less stable.
+> >
+> > I'd prefer the firmware builds up tiers topology then passes it to
+> > kernel so that kernel knows what nodes are in what tiers. No matter
+> > what nodes are hot-removed/hot-added they always stay in their tiers
+> > defined by the firmware. I think this is important information like
+> > numa distances. NUMA distance alone can't satisfy all the usecases
+> > IMHO.
+>
+> Just want to note here that the platform firmware can only describe
+> the tiers of static memory present at boot. CXL hotplug breaks this
+> model and the kernel is left to dynamically determine the device's
+> performance characteristics and the performance of the topology to
+> reach that device. Now, the platform firmware does set expectations
+> for the perfomance class of different memory ranges, but there is no
+> way to know in advance the performance of devices that will be asked
+> to be physically or logically added to the memory configuration. That
+> said, it's probably still too early to define ABI for those
+> exceptional cases where the kernel needs to make a policy decision
+> about a device that does not fit into the firmware's performance
+> expectations, but just note that there are limits to the description
+> that platform firmware can provide.
+>
+> I agree that NUMA distance alone is inadequate and the kernel needs to
+> make better use of data like ACPI HMAT to determine the default
+> tiering order.
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/tty/serial/pic32_uart.c | 104 +++++++++++++++++++++++++++-
- drivers/tty/serial/pic32_uart.h | 116 --------------------------------
- 2 files changed, 103 insertions(+), 117 deletions(-)
- delete mode 100644 drivers/tty/serial/pic32_uart.h
+Very useful clarification. It should be fine for the kernel to
+dynamically determine the memory tier of each node.  I expect that it
+can also be fine even if a node gets attached to a different memory
+device and needs to be assigned into a different tier after another
+round of hot-remove/hot-add.
 
-diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
-index b7a3a1b959b1..a1b8c05f3d46 100644
---- a/drivers/tty/serial/pic32_uart.c
-+++ b/drivers/tty/serial/pic32_uart.c
-@@ -25,13 +25,115 @@
- #include <linux/delay.h>
- 
- #include <asm/mach-pic32/pic32.h>
--#include "pic32_uart.h"
- 
- /* UART name and device definitions */
- #define PIC32_DEV_NAME		"pic32-uart"
- #define PIC32_MAX_UARTS		6
- #define PIC32_SDEV_NAME		"ttyPIC"
- 
-+#define PIC32_UART_DFLT_BRATE		9600
-+#define PIC32_UART_TX_FIFO_DEPTH	8
-+#define PIC32_UART_RX_FIFO_DEPTH	8
-+
-+#define PIC32_UART_MODE		0x00
-+#define PIC32_UART_STA		0x10
-+#define PIC32_UART_TX		0x20
-+#define PIC32_UART_RX		0x30
-+#define PIC32_UART_BRG		0x40
-+
-+/* struct pic32_sport - pic32 serial port descriptor
-+ * @port: uart port descriptor
-+ * @idx: port index
-+ * @irq_fault: virtual fault interrupt number
-+ * @irqflags_fault: flags related to fault irq
-+ * @irq_fault_name: irq fault name
-+ * @irq_rx: virtual rx interrupt number
-+ * @irqflags_rx: flags related to rx irq
-+ * @irq_rx_name: irq rx name
-+ * @irq_tx: virtual tx interrupt number
-+ * @irqflags_tx: : flags related to tx irq
-+ * @irq_tx_name: irq tx name
-+ * @cts_gpio: clear to send gpio
-+ * @dev: device descriptor
-+ **/
-+struct pic32_sport {
-+	struct uart_port port;
-+	int idx;
-+
-+	int irq_fault;
-+	int irqflags_fault;
-+	const char *irq_fault_name;
-+	int irq_rx;
-+	int irqflags_rx;
-+	const char *irq_rx_name;
-+	int irq_tx;
-+	int irqflags_tx;
-+	const char *irq_tx_name;
-+	u8 enable_tx_irq;
-+
-+	bool hw_flow_ctrl;
-+	int cts_gpio;
-+
-+	int ref_clk;
-+	struct clk *clk;
-+
-+	struct device *dev;
-+};
-+#define to_pic32_sport(c) container_of(c, struct pic32_sport, port)
-+#define pic32_get_port(sport) (&sport->port)
-+#define tx_irq_enabled(sport) (sport->enable_tx_irq)
-+
-+static inline void pic32_uart_writel(struct pic32_sport *sport,
-+					u32 reg, u32 val)
-+{
-+	struct uart_port *port = pic32_get_port(sport);
-+
-+	__raw_writel(val, port->membase + reg);
-+}
-+
-+static inline u32 pic32_uart_readl(struct pic32_sport *sport, u32 reg)
-+{
-+	struct uart_port *port = pic32_get_port(sport);
-+
-+	return	__raw_readl(port->membase + reg);
-+}
-+
-+/* pic32 uart mode register bits */
-+#define PIC32_UART_MODE_ON        BIT(15)
-+#define PIC32_UART_MODE_FRZ       BIT(14)
-+#define PIC32_UART_MODE_SIDL      BIT(13)
-+#define PIC32_UART_MODE_IREN      BIT(12)
-+#define PIC32_UART_MODE_RTSMD     BIT(11)
-+#define PIC32_UART_MODE_RESV1     BIT(10)
-+#define PIC32_UART_MODE_UEN1      BIT(9)
-+#define PIC32_UART_MODE_UEN0      BIT(8)
-+#define PIC32_UART_MODE_WAKE      BIT(7)
-+#define PIC32_UART_MODE_LPBK      BIT(6)
-+#define PIC32_UART_MODE_ABAUD     BIT(5)
-+#define PIC32_UART_MODE_RXINV     BIT(4)
-+#define PIC32_UART_MODE_BRGH      BIT(3)
-+#define PIC32_UART_MODE_PDSEL1    BIT(2)
-+#define PIC32_UART_MODE_PDSEL0    BIT(1)
-+#define PIC32_UART_MODE_STSEL     BIT(0)
-+
-+/* pic32 uart status register bits */
-+#define PIC32_UART_STA_UTXISEL1   BIT(15)
-+#define PIC32_UART_STA_UTXISEL0   BIT(14)
-+#define PIC32_UART_STA_UTXINV     BIT(13)
-+#define PIC32_UART_STA_URXEN      BIT(12)
-+#define PIC32_UART_STA_UTXBRK     BIT(11)
-+#define PIC32_UART_STA_UTXEN      BIT(10)
-+#define PIC32_UART_STA_UTXBF      BIT(9)
-+#define PIC32_UART_STA_TRMT       BIT(8)
-+#define PIC32_UART_STA_URXISEL1   BIT(7)
-+#define PIC32_UART_STA_URXISEL0   BIT(6)
-+#define PIC32_UART_STA_ADDEN      BIT(5)
-+#define PIC32_UART_STA_RIDLE      BIT(4)
-+#define PIC32_UART_STA_PERR       BIT(3)
-+#define PIC32_UART_STA_FERR       BIT(2)
-+#define PIC32_UART_STA_OERR       BIT(1)
-+#define PIC32_UART_STA_URXDA      BIT(0)
-+
- /* pic32_sport pointer for console use */
- static struct pic32_sport *pic32_sports[PIC32_MAX_UARTS];
- 
-diff --git a/drivers/tty/serial/pic32_uart.h b/drivers/tty/serial/pic32_uart.h
-deleted file mode 100644
-index a7dba1d57236..000000000000
---- a/drivers/tty/serial/pic32_uart.h
-+++ /dev/null
-@@ -1,116 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0+ */
--/*
-- * PIC32 Integrated Serial Driver.
-- *
-- * Copyright (C) 2015 Microchip Technology, Inc.
-- *
-- * Authors:
-- *   Sorin-Andrei Pistirica <andrei.pistirica@microchip.com>
-- */
--#ifndef __DT_PIC32_UART_H__
--#define __DT_PIC32_UART_H__
--
--#define PIC32_UART_DFLT_BRATE		(9600)
--#define PIC32_UART_TX_FIFO_DEPTH	(8)
--#define PIC32_UART_RX_FIFO_DEPTH	(8)
--
--#define PIC32_UART_MODE		0x00
--#define PIC32_UART_STA		0x10
--#define PIC32_UART_TX		0x20
--#define PIC32_UART_RX		0x30
--#define PIC32_UART_BRG		0x40
--
--/* struct pic32_sport - pic32 serial port descriptor
-- * @port: uart port descriptor
-- * @idx: port index
-- * @irq_fault: virtual fault interrupt number
-- * @irqflags_fault: flags related to fault irq
-- * @irq_fault_name: irq fault name
-- * @irq_rx: virtual rx interrupt number
-- * @irqflags_rx: flags related to rx irq
-- * @irq_rx_name: irq rx name
-- * @irq_tx: virtual tx interrupt number
-- * @irqflags_tx: : flags related to tx irq
-- * @irq_tx_name: irq tx name
-- * @cts_gpio: clear to send gpio
-- * @dev: device descriptor
-- **/
--struct pic32_sport {
--	struct uart_port port;
--	int idx;
--
--	int irq_fault;
--	int irqflags_fault;
--	const char *irq_fault_name;
--	int irq_rx;
--	int irqflags_rx;
--	const char *irq_rx_name;
--	int irq_tx;
--	int irqflags_tx;
--	const char *irq_tx_name;
--	u8 enable_tx_irq;
--
--	bool hw_flow_ctrl;
--	int cts_gpio;
--
--	int ref_clk;
--	struct clk *clk;
--
--	struct device *dev;
--};
--#define to_pic32_sport(c) container_of(c, struct pic32_sport, port)
--#define pic32_get_port(sport) (&sport->port)
--#define tx_irq_enabled(sport) (sport->enable_tx_irq)
--
--static inline void pic32_uart_writel(struct pic32_sport *sport,
--					u32 reg, u32 val)
--{
--	struct uart_port *port = pic32_get_port(sport);
--
--	__raw_writel(val, port->membase + reg);
--}
--
--static inline u32 pic32_uart_readl(struct pic32_sport *sport, u32 reg)
--{
--	struct uart_port *port = pic32_get_port(sport);
--
--	return	__raw_readl(port->membase + reg);
--}
--
--/* pic32 uart mode register bits */
--#define PIC32_UART_MODE_ON        BIT(15)
--#define PIC32_UART_MODE_FRZ       BIT(14)
--#define PIC32_UART_MODE_SIDL      BIT(13)
--#define PIC32_UART_MODE_IREN      BIT(12)
--#define PIC32_UART_MODE_RTSMD     BIT(11)
--#define PIC32_UART_MODE_RESV1     BIT(10)
--#define PIC32_UART_MODE_UEN1      BIT(9)
--#define PIC32_UART_MODE_UEN0      BIT(8)
--#define PIC32_UART_MODE_WAKE      BIT(7)
--#define PIC32_UART_MODE_LPBK      BIT(6)
--#define PIC32_UART_MODE_ABAUD     BIT(5)
--#define PIC32_UART_MODE_RXINV     BIT(4)
--#define PIC32_UART_MODE_BRGH      BIT(3)
--#define PIC32_UART_MODE_PDSEL1    BIT(2)
--#define PIC32_UART_MODE_PDSEL0    BIT(1)
--#define PIC32_UART_MODE_STSEL     BIT(0)
--
--/* pic32 uart status register bits */
--#define PIC32_UART_STA_UTXISEL1   BIT(15)
--#define PIC32_UART_STA_UTXISEL0   BIT(14)
--#define PIC32_UART_STA_UTXINV     BIT(13)
--#define PIC32_UART_STA_URXEN      BIT(12)
--#define PIC32_UART_STA_UTXBRK     BIT(11)
--#define PIC32_UART_STA_UTXEN      BIT(10)
--#define PIC32_UART_STA_UTXBF      BIT(9)
--#define PIC32_UART_STA_TRMT       BIT(8)
--#define PIC32_UART_STA_URXISEL1   BIT(7)
--#define PIC32_UART_STA_URXISEL0   BIT(6)
--#define PIC32_UART_STA_ADDEN      BIT(5)
--#define PIC32_UART_STA_RIDLE      BIT(4)
--#define PIC32_UART_STA_PERR       BIT(3)
--#define PIC32_UART_STA_FERR       BIT(2)
--#define PIC32_UART_STA_OERR       BIT(1)
--#define PIC32_UART_STA_URXDA      BIT(0)
--
--#endif /* __DT_PIC32_UART_H__ */
--- 
-2.36.0
+What can be problematic is that a hot-added node not only changes its
+own iter, but also causes other existing nodes to change their tiers.
+This can mess up any tier-based memory accounting.
 
+One approach to address this is to:
+
+- have tiers being well-defined and stable, e.g. HBM is always in
+tier-0, direct-attached DRAM and high-performance CXL.mem devices are
+always in tier-1, slower CXL.mem devices are always in tier-2, and
+PMEM is always in tier-3.  The tier definition is based on the device
+performance, something similar to the class rating of storage devices
+(e.g. SD cards).
+
+- allow tiers being absent in the system, e.g. a machine may have only
+tier-1 and tier-3, but have neither tier-0 nor tier-2.
+
+- allow demotion to not only the immediate next lower tier, but all
+lower tiers.  The actual selection of demotion order follows the
+allocation fallback order.   This allows tier-1 to directly demote to
+tier-3 without requiring the presence of tier-2.
+
+This approach can ensure that the tiers of existing nodes are stable
+and permit that the tier of a hot-plugged node is determined
+dynamically.
