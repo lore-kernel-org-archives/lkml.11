@@ -2,131 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:32:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A157C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 13:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236195AbiECNfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 09:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53800 "EHLO
+        id S236206AbiECNgT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 09:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232840AbiECNfv (ORCPT
+        with ESMTP id S236198AbiECNgS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 09:35:51 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91AE19009;
-        Tue,  3 May 2022 06:32:15 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: benjamin.gaignard)
-        with ESMTPSA id 35C8E1F443C6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1651584734;
-        bh=Yi4Uy3F9RG9QTJLxf0BYd+sKJm9SOsJsPZxDl2eQp+c=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=YAhIWzoJSCAXq5It7jKfdawVuvvInO28kuCcMsjmB6x+77mzHXZnyHilP2X+kVkxI
-         IG9gajNggO4Y3/UONQQHveTQUWtDnJhYB8QO8n+/AYqw2IShuvKGAChfEE2P/jwF8t
-         3JXnCyn9gdOp9d6Al9wIMsZxvDyjLx5oCRrHIjs49MkoAZFpJ9USC2wMGHoHgRoQ5F
-         ffNYdTmmk3rTfsEZkalCVTIB80UOySDdGfQ9MO0652hUW4fdm0lThUOn2FdBqTL3PS
-         9r5lXAxgJA82p2kER/89vTPTsz2fvGSksqKjzg5G4f5HdRSFzNNvU+X7H/tcuS4WjL
-         /qqESlYcvrGPg==
-Message-ID: <010be970-2463-f65b-dbef-0a2784530981@collabora.com>
-Date:   Tue, 3 May 2022 15:32:11 +0200
+        Tue, 3 May 2022 09:36:18 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0A963388F
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 06:32:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651584766; x=1683120766;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=KOfK7zf5QeWpOtGSjy9RSCuufoPzv9zOHllZZURoFt8=;
+  b=XdF1nshb16ckmN9guVw0NOVrwFuNCiKTkk1mOY819tNjTkCcZZlGYmh0
+   4YZjVtW7eQAXiWb/U0YaBkxj8S5RXGSAV6esSVB9A5Vax8t5TBAC1nM36
+   9aojdjrjihLDRtxp+t1QLwgksCWlLYVG1xQ9hwUh7LISNQnMPfBDyysao
+   tdTS1DA/YXV+xH2TQSXbnN3MQVyHbqovF6ScxDrwtLl8MN/hJJ+BTXpOf
+   JAT/VMlxW/OVBkKP3nPWr40RfncAEnLLpxQJ/wFTm/H/PoXZWY0djU/Vo
+   hQFxl0JZWtH0WtB+JVJhXdA/D/lBn9IgkZog2yN2Hs0WY9jot5OAkQGTI
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="328017527"
+X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
+   d="scan'208";a="328017527"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 06:32:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
+   d="scan'208";a="663976902"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 03 May 2022 06:32:44 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nlsdv-000AUh-Fv;
+        Tue, 03 May 2022 13:32:43 +0000
+Date:   Tue, 3 May 2022 21:32:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sven Schnelle <svens@linux.ibm.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Eric Paris <eparis@redhat.com>
+Cc:     kbuild-all@lists.01.org, linux-audit@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] audit: add call argument to socketcall auditing
+Message-ID: <202205032108.vBdGwIXf-lkp@intel.com>
+References: <20220503090212.1322050-1-svens@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2] media: hantro: HEVC: unconditionnaly set
- pps_{cb/cr}_qp_offset values
-Content-Language: en-US
-To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-media <linux-media@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        jon@nanocrew.net, Adam Ford <aford173@gmail.com>,
-        Collabora Kernel ML <kernel@collabora.com>
-References: <20220426135034.694655-1-benjamin.gaignard@collabora.com>
- <CAAEAJfAvUjtR4w0uaZ5yFueXu8jNbH-gmWUOEZxoJH78771RSA@mail.gmail.com>
-From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <CAAEAJfAvUjtR4w0uaZ5yFueXu8jNbH-gmWUOEZxoJH78771RSA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220503090212.1322050-1-svens@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Sven,
 
-Le 03/05/2022 à 15:12, Ezequiel Garcia a écrit :
-> Hi Benjamin,
->
-> On Tue, Apr 26, 2022 at 10:50 AM Benjamin Gaignard
-> <benjamin.gaignard@collabora.com> wrote:
->> Always set pps_cb_qp_offset and pps_cr_qp_offset values in Hantro/G2
->> register whatever is V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT
->> flag value.
-> I would say we need more justification why this is correct, or at least
-> checking what the reference vendor implementation is doing (and mentioning
-> in the commit description so we can track it in the future).
+I love your patch! Yet something to improve:
 
-Yes that is what the vendor implementation is doing.
+[auto build test ERROR on linus/master]
+[also build test ERROR on pcmoore-audit/next v5.18-rc5 next-20220503]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
->
->> This fix CAINIT_G_SHARP_3 test in fluster.
->>
-> This could sound like a tad a pedantic detail, but I'd say it's
-> important we stop refering to tests
-> as "fluster tests", and instead say something more correct as "HEVC
-> conformance test CAINIT_G_SHARP_3".
+url:    https://github.com/intel-lab-lkp/linux/commits/Sven-Schnelle/audit-add-call-argument-to-socketcall-auditing/20220503-170442
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 9050ba3a61a4b5bd84c2cde092a100404f814f31
+config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220503/202205032108.vBdGwIXf-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/b89caaec1c1bd3382c6cef08d08beadbaf808513
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Sven-Schnelle/audit-add-call-argument-to-socketcall-auditing/20220503-170442
+        git checkout b89caaec1c1bd3382c6cef08d08beadbaf808513
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-As you want.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
->
-> Also, when we are fixing conformance tests, let's please add the
-> Fluster score (in this case, I think it's
-> OK to refer to Fluster).
+All error/warnings (new ones prefixed by >>):
 
-We are fixing bugs in parallel in the driver, the uAPI and GStreamer
-so fluster score evolution reflect that progression and maybe not only
-what this patch is fixing.
-The best I could says here is that patch fix HEVC conformance test
-CAINIT_G_SHARP_3 so fluster score increase by one.
+   net/socket.c: In function '__sys_getsockopt':
+   net/socket.c:2206:13: warning: variable 'max_optlen' set but not used [-Wunused-but-set-variable]
+    2206 |         int max_optlen;
+         |             ^~~~~~~~~~
+   net/socket.c: In function '__do_sys_socketcall':
+>> net/socket.c:2924:50: warning: passing argument 2 of 'audit_socketcall' makes pointer from integer without a cast [-Wint-conversion]
+    2924 |         err = audit_socketcall(call, nargs[call] / sizeof(unsigned long), a);
+         |                                      ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+         |                                                  |
+         |                                                  long unsigned int
+   In file included from net/socket.c:82:
+   include/linux/audit.h:643:62: note: expected 'long unsigned int *' but argument is of type 'long unsigned int'
+     643 | static inline int audit_socketcall(int nargs, unsigned long *args)
+         |                                               ~~~~~~~~~~~~~~~^~~~
+>> net/socket.c:2924:15: error: too many arguments to function 'audit_socketcall'
+    2924 |         err = audit_socketcall(call, nargs[call] / sizeof(unsigned long), a);
+         |               ^~~~~~~~~~~~~~~~
+   In file included from net/socket.c:82:
+   include/linux/audit.h:643:19: note: declared here
+     643 | static inline int audit_socketcall(int nargs, unsigned long *args)
+         |                   ^~~~~~~~~~~~~~~~
 
-Regards,
-Benjamin
 
->
-> PS: Same comments apply to patch "media: hantro: HEVC: Fix reference
-> frames management".
->
-> Thanks,
-> Ezequiel
->
->> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
->> ---
->>   drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 9 ++-------
->>   1 file changed, 2 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
->> index 6deb31b7b993..503f4b028bc5 100644
->> --- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
->> +++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
->> @@ -194,13 +194,8 @@ static void set_params(struct hantro_ctx *ctx)
->>                  hantro_reg_write(vpu, &g2_max_cu_qpd_depth, 0);
->>          }
->>
->> -       if (pps->flags & V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT) {
->> -               hantro_reg_write(vpu, &g2_cb_qp_offset, pps->pps_cb_qp_offset);
->> -               hantro_reg_write(vpu, &g2_cr_qp_offset, pps->pps_cr_qp_offset);
->> -       } else {
->> -               hantro_reg_write(vpu, &g2_cb_qp_offset, 0);
->> -               hantro_reg_write(vpu, &g2_cr_qp_offset, 0);
->> -       }
->> +       hantro_reg_write(vpu, &g2_cb_qp_offset, pps->pps_cb_qp_offset);
->> +       hantro_reg_write(vpu, &g2_cr_qp_offset, pps->pps_cr_qp_offset);
->>
->>          hantro_reg_write(vpu, &g2_filt_offset_beta, pps->pps_beta_offset_div2);
->>          hantro_reg_write(vpu, &g2_filt_offset_tc, pps->pps_tc_offset_div2);
->> --
->> 2.32.0
->>
+vim +/audit_socketcall +2924 net/socket.c
+
+  2896	
+  2897	/*
+  2898	 *	System call vectors.
+  2899	 *
+  2900	 *	Argument checking cleaned up. Saved 20% in size.
+  2901	 *  This function doesn't need to set the kernel lock because
+  2902	 *  it is set by the callees.
+  2903	 */
+  2904	
+  2905	SYSCALL_DEFINE2(socketcall, int, call, unsigned long __user *, args)
+  2906	{
+  2907		unsigned long a[AUDITSC_ARGS];
+  2908		unsigned long a0, a1;
+  2909		int err;
+  2910		unsigned int len;
+  2911	
+  2912		if (call < 1 || call > SYS_SENDMMSG)
+  2913			return -EINVAL;
+  2914		call = array_index_nospec(call, SYS_SENDMMSG + 1);
+  2915	
+  2916		len = nargs[call];
+  2917		if (len > sizeof(a))
+  2918			return -EINVAL;
+  2919	
+  2920		/* copy_from_user should be SMP safe. */
+  2921		if (copy_from_user(a, args, len))
+  2922			return -EFAULT;
+  2923	
+> 2924		err = audit_socketcall(call, nargs[call] / sizeof(unsigned long), a);
+  2925		if (err)
+  2926			return err;
+  2927	
+  2928		a0 = a[0];
+  2929		a1 = a[1];
+  2930	
+  2931		switch (call) {
+  2932		case SYS_SOCKET:
+  2933			err = __sys_socket(a0, a1, a[2]);
+  2934			break;
+  2935		case SYS_BIND:
+  2936			err = __sys_bind(a0, (struct sockaddr __user *)a1, a[2]);
+  2937			break;
+  2938		case SYS_CONNECT:
+  2939			err = __sys_connect(a0, (struct sockaddr __user *)a1, a[2]);
+  2940			break;
+  2941		case SYS_LISTEN:
+  2942			err = __sys_listen(a0, a1);
+  2943			break;
+  2944		case SYS_ACCEPT:
+  2945			err = __sys_accept4(a0, (struct sockaddr __user *)a1,
+  2946					    (int __user *)a[2], 0);
+  2947			break;
+  2948		case SYS_GETSOCKNAME:
+  2949			err =
+  2950			    __sys_getsockname(a0, (struct sockaddr __user *)a1,
+  2951					      (int __user *)a[2]);
+  2952			break;
+  2953		case SYS_GETPEERNAME:
+  2954			err =
+  2955			    __sys_getpeername(a0, (struct sockaddr __user *)a1,
+  2956					      (int __user *)a[2]);
+  2957			break;
+  2958		case SYS_SOCKETPAIR:
+  2959			err = __sys_socketpair(a0, a1, a[2], (int __user *)a[3]);
+  2960			break;
+  2961		case SYS_SEND:
+  2962			err = __sys_sendto(a0, (void __user *)a1, a[2], a[3],
+  2963					   NULL, 0);
+  2964			break;
+  2965		case SYS_SENDTO:
+  2966			err = __sys_sendto(a0, (void __user *)a1, a[2], a[3],
+  2967					   (struct sockaddr __user *)a[4], a[5]);
+  2968			break;
+  2969		case SYS_RECV:
+  2970			err = __sys_recvfrom(a0, (void __user *)a1, a[2], a[3],
+  2971					     NULL, NULL);
+  2972			break;
+  2973		case SYS_RECVFROM:
+  2974			err = __sys_recvfrom(a0, (void __user *)a1, a[2], a[3],
+  2975					     (struct sockaddr __user *)a[4],
+  2976					     (int __user *)a[5]);
+  2977			break;
+  2978		case SYS_SHUTDOWN:
+  2979			err = __sys_shutdown(a0, a1);
+  2980			break;
+  2981		case SYS_SETSOCKOPT:
+  2982			err = __sys_setsockopt(a0, a1, a[2], (char __user *)a[3],
+  2983					       a[4]);
+  2984			break;
+  2985		case SYS_GETSOCKOPT:
+  2986			err =
+  2987			    __sys_getsockopt(a0, a1, a[2], (char __user *)a[3],
+  2988					     (int __user *)a[4]);
+  2989			break;
+  2990		case SYS_SENDMSG:
+  2991			err = __sys_sendmsg(a0, (struct user_msghdr __user *)a1,
+  2992					    a[2], true);
+  2993			break;
+  2994		case SYS_SENDMMSG:
+  2995			err = __sys_sendmmsg(a0, (struct mmsghdr __user *)a1, a[2],
+  2996					     a[3], true);
+  2997			break;
+  2998		case SYS_RECVMSG:
+  2999			err = __sys_recvmsg(a0, (struct user_msghdr __user *)a1,
+  3000					    a[2], true);
+  3001			break;
+  3002		case SYS_RECVMMSG:
+  3003			if (IS_ENABLED(CONFIG_64BIT))
+  3004				err = __sys_recvmmsg(a0, (struct mmsghdr __user *)a1,
+  3005						     a[2], a[3],
+  3006						     (struct __kernel_timespec __user *)a[4],
+  3007						     NULL);
+  3008			else
+  3009				err = __sys_recvmmsg(a0, (struct mmsghdr __user *)a1,
+  3010						     a[2], a[3], NULL,
+  3011						     (struct old_timespec32 __user *)a[4]);
+  3012			break;
+  3013		case SYS_ACCEPT4:
+  3014			err = __sys_accept4(a0, (struct sockaddr __user *)a1,
+  3015					    (int __user *)a[2], a[3]);
+  3016			break;
+  3017		default:
+  3018			err = -EINVAL;
+  3019			break;
+  3020		}
+  3021		return err;
+  3022	}
+  3023	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
