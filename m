@@ -2,74 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC0C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:23:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FED7C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232241AbiECH1E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 03:27:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39838 "EHLO
+        id S232228AbiECH1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232244AbiECH0g (ORCPT
+        with ESMTP id S232133AbiECH0l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 03:26:36 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F97F3917D
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 00:23:01 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id x18so3114041plg.6
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 00:23:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dYOKOnX/ag89Q7FWf4mTvhnDEvPe9ePWto1EYZGs+OQ=;
-        b=kJL+2m3UswGuMwUa2ADnBKx9k7XiM5W2DhfJJnyiYigWx/2+gpJi9pNp+p5CwvOkpJ
-         VUs9E5GM/VNuRj1ZxO3KHDcQDVZ/O7X1IQTsVeiD6MMn+j7VYSU0CRis9H7/hjkkpL4s
-         oXCheS3gL/+nL90EFP4hNrVHEIc+hFzauf2IHKpXBZe1VylWQJRily8n9UdrzAIvTr0H
-         OTZGXUk1E0WqjSRV3FVBRhf8r/mlL4/IMfyAF+5X0eLOyyWaiHrpT/q08sNGvSH5LI4g
-         A/wd7jyOlLmL2UMjYCalSQaZzL2YMi50+eCTCQdcE2A9V8pxHd68kL7swWWc1y6oZvq6
-         Hz0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dYOKOnX/ag89Q7FWf4mTvhnDEvPe9ePWto1EYZGs+OQ=;
-        b=XG6V4WUO8tu+0qKaFjT46uAV5dKLh7D6p5kJlWutEUP31HkRKrjemFwGmGrr95oNWy
-         Qjelw/bQP75dlrNGHyA2exP6pD8lbHfyODc6Js8/PDjsT22DkAPlvVnMBiMoO5SCWYry
-         vUKV2EtoB0Zse4g9h3xOrEBNGX63yJZUy+PSAbxCtAax3oLYRxchNRWKQBRT0rbhPloQ
-         bK/Nb5XvkErEaKAnYu5BTHSajRykPtYZEB5ItVxNfhFlvxJIl9Q8np6wVsrv7zCQ7X7H
-         PX9XUAjpsENqReANqTNNlxwseYYsKu17cqj7zE/b77ROj458NwGD7JE1QfOIy0vXiKwd
-         Ffow==
-X-Gm-Message-State: AOAM531ReYcJxFFyFivHphjtJqi3WPiKapW4gaQ4+EB+VURTPHv2gTRV
-        iTg68lCNgLiJR0s1977U2/uFeHi0ir0pvWW4VOLPcQ==
-X-Google-Smtp-Source: ABdhPJw1s1JswARQvRGebofKaxoOTfTVyYJCUT38LUSf+snPURnEtm8yFrO3id35Fi7bWxmtCBqqpDNYEc7nKS57z0E=
-X-Received: by 2002:a17:902:70cb:b0:158:424e:a657 with SMTP id
- l11-20020a17090270cb00b00158424ea657mr15285007plt.6.1651562580619; Tue, 03
- May 2022 00:23:00 -0700 (PDT)
+        Tue, 3 May 2022 03:26:41 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69FA6E0C6
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 00:23:09 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 2819F1F747;
+        Tue,  3 May 2022 07:23:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1651562588; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=67aAGOTYZat+zahDrYqYhaHD6inTZdcyAfqIDsVyT/A=;
+        b=TfbGSvx0Bxg0s0oLL/ve+Xf8TGbcB6dQPVQ7mi/zY0s4FMh9Xw496dZudSo8txnQKkofv6
+        1sXDlt48EO5tXsoU7S6by7MMX1IQg/t2PtFcVTEtnQoGeieSUy5EgbYL+AWJsE6sP27mk9
+        MY58tUTusqnoR0OMRhnD3uRezaoT6mE=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C479513AA3;
+        Tue,  3 May 2022 07:23:07 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id KRGQLlvYcGL8GgAAMHmgww
+        (envelope-from <jgross@suse.com>); Tue, 03 May 2022 07:23:07 +0000
+Message-ID: <6bef5d16-3e0e-8107-4068-7ffec2b6b282@suse.com>
+Date:   Tue, 3 May 2022 09:23:07 +0200
 MIME-Version: 1.0
-References: <20220503024349.4486-1-slark_xiao@163.com>
-In-Reply-To: <20220503024349.4486-1-slark_xiao@163.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Tue, 3 May 2022 09:22:24 +0200
-Message-ID: <CAMZdPi-F96cLTXjCvVEQ7udpbk7KOBsqpMD3E03bE_A+Pkx8JA@mail.gmail.com>
-Subject: Re: [PATCH v2] bus: mhi: host: Add support for Foxconn T99W373 and T99W368
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     mani@kernel.org, quic_hemantk@quicinc.com,
-        gregkh@linuxfoundation.org, bbhatt@codeaurora.org,
-        christophe.jaillet@wanadoo.fr, mhi@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH V7 3/6] x86/entry: Move PUSH_AND_CLEAR_REGS out of
+ error_entry()
+Content-Language: en-US
+To:     Lai Jiangshan <jiangshanlai@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+References: <20220503032107.680190-1-jiangshanlai@gmail.com>
+ <20220503032107.680190-4-jiangshanlai@gmail.com>
+From:   Juergen Gross <jgross@suse.com>
+In-Reply-To: <20220503032107.680190-4-jiangshanlai@gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------KwRiUTIWkRhKCzpRQZSTzRza"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 3 May 2022 at 05:03, Slark Xiao <slark_xiao@163.com> wrote:
->
-> Product's enumeration align with previous Foxconn
-> SDX55, so T99W373(SDX62)/T99W368(SDX65) would use
->  the same config as Foxconn SDX55.
-> Remove fw and edl for this new commit.
->
-> Signed-off-by: Slark Xiao <slark_xiao@163.com>
-> Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------KwRiUTIWkRhKCzpRQZSTzRza
+Content-Type: multipart/mixed; boundary="------------Em6ASg0TCWU5pwzVxFXaMdAj";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: Lai Jiangshan <jiangshanlai@gmail.com>, linux-kernel@vger.kernel.org
+Cc: Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>,
+ Josh Poimboeuf <jpoimboe@redhat.com>, Andy Lutomirski <luto@kernel.org>,
+ Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+ Lai Jiangshan <jiangshan.ljs@antgroup.com>, Ingo Molnar <mingo@redhat.com>,
+ Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>
+Message-ID: <6bef5d16-3e0e-8107-4068-7ffec2b6b282@suse.com>
+Subject: Re: [PATCH V7 3/6] x86/entry: Move PUSH_AND_CLEAR_REGS out of
+ error_entry()
+References: <20220503032107.680190-1-jiangshanlai@gmail.com>
+ <20220503032107.680190-4-jiangshanlai@gmail.com>
+In-Reply-To: <20220503032107.680190-4-jiangshanlai@gmail.com>
 
-Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+--------------Em6ASg0TCWU5pwzVxFXaMdAj
+Content-Type: multipart/mixed; boundary="------------TgIc1mw3wP3KWyvWQvOIOMYK"
+
+--------------TgIc1mw3wP3KWyvWQvOIOMYK
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
+
+T24gMDMuMDUuMjIgMDU6MjEsIExhaSBKaWFuZ3NoYW4gd3JvdGU6DQo+IEZyb206IExhaSBK
+aWFuZ3NoYW4gPGppYW5nc2hhbi5sanNAYW50Z3JvdXAuY29tPg0KPiANCj4gVGhlIG1hY3Jv
+IGlkdGVudHJ5IGNhbGxzIGVycm9yX2VudHJ5KCkgdW5jb25kaXRpb25hbGx5IGV2ZW4gb24g
+WEVOUFYuDQo+IEJ1dCB0aGUgY29kZSBYRU5QViBuZWVkcyBpbiBlcnJvcl9lbnRyeSgpIGlz
+IFBVU0hfQU5EX0NMRUFSX1JFR1Mgb25seS4NCj4gDQo+IEFuZCBQVVNIX0FORF9DTEVBUl9S
+RUdTIGluIGVycm9yX2VudHJ5KCkgbWFrZXMgdGhlIHN0YWNrIG5vdCByZXR1cm4gdG8NCj4g
+aXRzIG9yaWdpbmFsIHBsYWNlIHdoZW4gdGhlIGZ1bmN0aW9uIHJldHVybnMsIHdoaWNoIG1l
+YW5zIGl0IGlzIG5vdA0KPiBwb3NzaWJsZSB0byBjb252ZXJ0IGl0IHRvIGEgQyBmdW5jdGlv
+bi4NCj4gDQo+IE1vdmUgUFVTSF9BTkRfQ0xFQVJfUkVHUyBvdXQgb2YgZXJyb3JfZW50cnko
+KSwgYWRkIGEgZnVuY3Rpb24gdG8gd3JhcA0KPiBQVVNIX0FORF9DTEVBUl9SRUdTIGFuZCBj
+YWxsIGl0IGJlZm9yZSBlcnJvcl9lbnRyeSgpLg0KPiANCj4gSXQgd2lsbCBhbGxvdyBmb3Ig
+ZXJyb3JfZW50cnkoKSB0byBiZSBub3QgY2FsbGVkIG9uIFhFTlBWIGFuZCBmb3INCj4gZXJy
+b3JfZW50cnkoKSB0byBiZSBjb252ZXJ0ZWQgdG8gQyBjb2RlLg0KPiANCj4gQ2M6IEp1ZXJn
+ZW4gR3Jvc3MgPGpncm9zc0BzdXNlLmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogTGFpIEppYW5n
+c2hhbiA8amlhbmdzaGFuLmxqc0BhbnRncm91cC5jb20+DQoNClJldmlld2VkLWJ5OiBKdWVy
+Z2VuIEdyb3NzIDxqZ3Jvc3NAc3VzZS5jb20+DQoNCg0KSnVlcmdlbg0K
+--------------TgIc1mw3wP3KWyvWQvOIOMYK
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------TgIc1mw3wP3KWyvWQvOIOMYK--
+
+--------------Em6ASg0TCWU5pwzVxFXaMdAj--
+
+--------------KwRiUTIWkRhKCzpRQZSTzRza
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmJw2FsFAwAAAAAACgkQsN6d1ii/Ey9E
+xgf+NCMdVj2Z7sCBaGJEVBROo+/1wSxS/aaNA/QBiF38BfoJZ4YZ67FgVMAzr9KG/Ytq9fBZnIX3
+TQIvxG6R6chtV9BBNwNo3hSdO2sZGey3L3+dLQtzxTSAPfpCaDruvH2m+JdQRbec0X0A/uPnTtel
+/85ZhYWl5p0SrhU2Sr2YZnMbKA7BWUTG9eYqwrcY4U9lSC9evKi9P1sRzS/VJBiGZFIiKKS0iU4/
+4iRS8ikeditSykBU02neQlGpT3C93/0Wfn6I/xzXdSF3ZJH+yPD7V+majybMAa5yBw5PHMgPwCvA
+7A40EDYz9pkrHkG8OhC7uCDOazOpyWC6Wt9jMHtECA==
+=fLgN
+-----END PGP SIGNATURE-----
+
+--------------KwRiUTIWkRhKCzpRQZSTzRza--
