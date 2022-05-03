@@ -2,100 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D311C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:04:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94CEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 15:04:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237783AbiECPH4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 11:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33102 "EHLO
+        id S237779AbiECPIS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 11:08:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237766AbiECPHx (ORCPT
+        with ESMTP id S237762AbiECPIP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 11:07:53 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D6D3A1AC
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:04:20 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id m20so33964994ejj.10
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 08:04:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bmC7DRu7flM3aFzKHb+bDUK/tB+P+W9KDDy98mVSVQ0=;
-        b=oyxVT1gpTaomCxljv6pbFCCpbu4ZgTR/80bvs4ClyThEQsIq3L3UeHcgt4WI2j+7Uf
-         lpG1gBMr5yuIBdD0NvK/i6vwQSr7AUsssXoNfkNqCXxTbcaNwVQ2GkR267bP6zLn5QM0
-         XxEgxNI7Vkbu6Crh8QfSUAvz9q57mPWXd1UGs=
+        Tue, 3 May 2022 11:08:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7FDCD3A1BD
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 08:04:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651590282;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=q8KRyeOIJowwgq1LjuL92i0OyzQpFO6OlQ5jrqBwiaQ=;
+        b=GsN2aHEwmnBSqzAAnCWcw7/CJDPv9Fb4L16x/+QNOcdLl9DQOTNve0c9FT4xDsQVSfgIwr
+        aM9cVdd3W5HKV1WkonLjRzAHci+BYJSoVIYTI+HQpiEHA8hy//YAeUNr+HrZ7XRw03fE8e
+        jrjEEt+cw4VBBg8OqyKWAeg+XDx+JJ8=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-515-El3JyjaEMFiFqjRBhvUOMQ-1; Tue, 03 May 2022 11:01:22 -0400
+X-MC-Unique: El3JyjaEMFiFqjRBhvUOMQ-1
+Received: by mail-wm1-f71.google.com with SMTP id c62-20020a1c3541000000b0038ec265155fso1475155wma.6
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 08:01:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bmC7DRu7flM3aFzKHb+bDUK/tB+P+W9KDDy98mVSVQ0=;
-        b=WJrtCmsME1ULFBXn7+21bZ6Yn+tsKNwxJJgGigK2XTc5s0EuSbdTrzTgKNU88EIggr
-         vqyRen1Oa5llQb5pXSMPzjGR/AO9nEJ2bfXU62v+c5mibqa69hX8JklC9LWuYb+lcna7
-         3TPi1ehuFiYVgTZpWJi6QsSH0yxdXSmInmpYzuIp7aRq4CEKMX/KL7QmyhF2/Tm4nNnG
-         g244JYVCzOIpcgOZpIKcQzV62QbLuCUswlX4tEYb9IBLv+gcFLns2mYyxHd71Yf+8Uvh
-         xDF2vl7XOlwoV7gwihBy5gN0ar4eJpybHQfEPJEZ3M8Dwu/R1nfDWXy5qILkcyXEZFX2
-         AmhA==
-X-Gm-Message-State: AOAM530ixfFG74NVWzv75OLvRSSucK8gKQWw6CATzlfCGP+yGMpkg49a
-        nl1hKN34/4N4FNLLGNcl+CESFhpjF4wOmkcAgcwe5w==
-X-Google-Smtp-Source: ABdhPJxhO8bLjM6wdea3bRux6bogjYO+c6+DWAw0ArELIY5Ox+tfOrkFBk71CkkeK4W0MVxxYnnxxKbq8koDg++bpqU=
-X-Received: by 2002:a17:907:62aa:b0:6e0:f208:b869 with SMTP id
- nd42-20020a17090762aa00b006e0f208b869mr16047649ejc.270.1651590258996; Tue, 03
- May 2022 08:04:18 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=q8KRyeOIJowwgq1LjuL92i0OyzQpFO6OlQ5jrqBwiaQ=;
+        b=MPxtVmU9TXCzlfICfpo5fW0/37rd+l5l7O/mDsoAC6Jv9Y3Z/5PVgn9urVFa0yc2Al
+         NOKAvLBXd2EVVGM/khMdDa4B4vmQDLfKlCc6an41shsbTvD0CPk6lj5bs4ImE7FnAr7/
+         w3uvh64g22XbA0nWegFks4D07rEZ5dc31AdLno7I1ewC7SC40/xLh1KxZ1b6oumijOMk
+         O+BykDk1yN0G8aQi+O6acyHqEACdMcz0MR2/hwYDM6H41YKaUgu4DfOhdMctvLYmtgWR
+         /PFMZNZF5FCtbZ2QqP8SQPifJGAR8x+wQ2UxoxnSvzsXe+YMZEFKlorD5tLpK6Gqo3bp
+         A8uQ==
+X-Gm-Message-State: AOAM533I3K+67H9wyFL6p5QXHn6R43su/g9wAowd9U7xhDLTaXnQBTl2
+        PD52IVmtG6BIGQ7EsFwyiLiDXXYYLXvU6qJXmWzbtjpHLwXPuKYg86hWNkXR09t5+2h/mbwzWCk
+        bNjN9BSMHKGA2ioPnnTwJRha5ugZ61nOrQYnRwcex3Z9AyH5Xwfntde0V7Vs8npnBeDqQVdcJIv
+        j4
+X-Received: by 2002:a5d:64c1:0:b0:20c:6ff9:3a61 with SMTP id f1-20020a5d64c1000000b0020c6ff93a61mr4770689wri.709.1651590080963;
+        Tue, 03 May 2022 08:01:20 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyFddadb0RhMqbED3cKhIrdL1UAliMUxLFrwK6VNOQYuEXW0q5ELPbxKJShs+8DVKmBmOBFgQ==
+X-Received: by 2002:a5d:64c1:0:b0:20c:6ff9:3a61 with SMTP id f1-20020a5d64c1000000b0020c6ff93a61mr4770661wri.709.1651590080743;
+        Tue, 03 May 2022 08:01:20 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id t1-20020adfba41000000b0020c6fa5a797sm3344358wrg.91.2022.05.03.08.01.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 08:01:20 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 00/34] KVM: x86: hyper-v: Fine-grained TLB flush + L2
+ TLB flush feature
+In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
+Date:   Tue, 03 May 2022 17:01:19 +0200
+Message-ID: <87bkwe3bk0.fsf@redhat.com>
 MIME-Version: 1.0
-References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com> <CAOQ4uxim+JmFbXPQcasELDEgRDP-spdPtJrLuhvSiyxErSUkvw@mail.gmail.com>
- <YnFB/ct2Q/yYBnm8@kroah.com>
-In-Reply-To: <YnFB/ct2Q/yYBnm8@kroah.com>
-From:   Miklos Szeredi <miklos@szeredi.hu>
-Date:   Tue, 3 May 2022 17:04:06 +0200
-Message-ID: <CAJfpegtZjRca5QPm2QgPtPG0-BJ=15Vtd48OTnRnr5G7ggAtmA@mail.gmail.com>
-Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Amir Goldstein <amir73il@gmail.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Dave Chinner <david@fromorbit.com>,
-        "Theodore Ts'o" <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        LSM <linux-security-module@vger.kernel.org>,
-        Ian Kent <raven@themaw.net>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian@brauner.io>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 3 May 2022 at 16:53, Greg KH <gregkh@linuxfoundation.org> wrote:
+Vitaly Kuznetsov <vkuznets@redhat.com> writes:
+
+> Changes since v1:
+
+This should've beed 'since v2', obviously.
+
+...
+
 >
-> On Tue, May 03, 2022 at 05:39:46PM +0300, Amir Goldstein wrote:
+> Currently, KVM handles HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} requests
+> by flushing the whole VPID and this is sub-optimal. This series introduces
+> the required mechanism to make handling of these requests more 
+> fine-grained by flushing individual GVAs only (when requested). On this
+> foundation, "Direct Virtual Flush" Hyper-V feature is implemented. The 
+> feature allows L0 to handle Hyper-V TLB flush hypercalls directly at
+> L0 without the need to reflect the exit to L1. This has at least two
+> benefits: reflecting vmexit and the consequent vmenter are avoided + L0
+> has precise information whether the target vCPU is actually running (and
+> thus requires a kick).
 
-> > It should be noted that while this API mandates text keys,
-> > it does not mandate text values, so for example, sb iostats could be
-> > exported as text or as binary struct, or as individual text/binary records or
-> > all of the above.
->
-> Ugh, no, that would be a total mess.  Don't go exporting random binary
-> structs depending on the file, that's going to be completely
-> unmaintainable.  As it is, this is going to be hard enough with random
-> text fields.
->
-> As for this format, it needs to be required to be documented in
-> Documentation/ABI/ for each entry and key type so that we have a chance
-> of knowing what is going on and tracking how things are working and
-> validating stuff.
+FWIW, patches still apply cleanly to kvm/queue so probably there's no
+need to resend.
 
-My preference would be a single text value for each key.
+-- 
+Vitaly
 
-Contents of ":mnt:info" contradicts that, but mountinfo has a long
-established, well documented format, and nothing prevents exporting
-individual attributes with separate names as well (the getvalues(2)
-patch did exactly that).
-
-Thanks,
-Miklos
