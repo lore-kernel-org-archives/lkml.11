@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:19:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C0DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 07:19:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231881AbiECHW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 03:22:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
+        id S231727AbiECHWc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 03:22:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232083AbiECHWQ (ORCPT
+        with ESMTP id S232064AbiECHWP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 03:22:16 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8227431906;
-        Tue,  3 May 2022 00:18:24 -0700 (PDT)
-X-UUID: ddb610ea17494755b61c84a7cc8af99a-20220503
+        Tue, 3 May 2022 03:22:15 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2CF03388E;
+        Tue,  3 May 2022 00:18:23 -0700 (PDT)
+X-UUID: 183e63d698f943feb45c5de74dc4606b-20220503
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:a4699e4d-d7a3-4885-8fb5-7971ee9b9a96,OB:60,L
-        OB:50,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ha
-        m,ACTION:release,TS:80
-X-CID-INFO: VERSION:1.1.4,REQID:a4699e4d-d7a3-4885-8fb5-7971ee9b9a96,OB:60,LOB
-        :50,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3
-        D,ACTION:quarantine,TS:80
-X-CID-META: VersionHash:faefae9,CLOUDID:29cf4ac7-85ee-4ac1-ac05-bd3f1e72e732,C
-        OID:81ae93af5fc3,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+X-CID-O-INFO: VERSION:1.1.4,REQID:3ca376ae-1480-40b2-9912-6ea78ed4c827,OB:60,L
+        OB:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,
+        ACTION:release,TS:100
+X-CID-INFO: VERSION:1.1.4,REQID:3ca376ae-1480-40b2-9912-6ea78ed4c827,OB:60,LOB
+        :10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,
+        ACTION:quarantine,TS:100
+X-CID-META: VersionHash:faefae9,CLOUDID:9acd4ac7-85ee-4ac1-ac05-bd3f1e72e732,C
+        OID:ce3dc85b9863,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
         ,QS:0,BEC:nil
-X-UUID: ddb610ea17494755b61c84a7cc8af99a-20220503
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+X-UUID: 183e63d698f943feb45c5de74dc4606b-20220503
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
         (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 696343394; Tue, 03 May 2022 15:18:20 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 712504389; Tue, 03 May 2022 15:18:07 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
  mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 3 May 2022 15:18:19 +0800
+ Tue, 3 May 2022 15:18:06 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 3 May 2022 15:18:17 +0800
+ Transport; Tue, 3 May 2022 15:18:05 +0800
 From:   Yong Wu <yong.wu@mediatek.com>
 To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
         Matthias Brugger <matthias.bgg@gmail.com>,
@@ -56,9 +56,9 @@ CC:     Robin Murphy <robin.murphy@arm.com>,
         <angelogioacchino.delregno@collabora.com>,
         <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
         <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v7 26/36] iommu/mediatek: Separate mtk_iommu_data for v1 and v2
-Date:   Tue, 3 May 2022 15:14:17 +0800
-Message-ID: <20220503071427.2285-27-yong.wu@mediatek.com>
+Subject: [PATCH v7 24/36] iommu/mediatek: Only adjust code about register base
+Date:   Tue, 3 May 2022 15:14:15 +0800
+Message-ID: <20220503071427.2285-25-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220503071427.2285-1-yong.wu@mediatek.com>
 References: <20220503071427.2285-1-yong.wu@mediatek.com>
@@ -69,281 +69,137 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Prepare for adding the structure "mtk_iommu_bank_data". No functional
-change. The mtk_iommu_domain in v1 and v2 are different, we could not add
-current data as bank[0] in v1 simplistically.
-
-Currently we have no plan to add new SoC for v1, in order to avoid affect
-v1 when we add many new features for v2, I totally separate v1 and v2 in
-this patch, there are many structures only for v2.
+No functional change. Use "base" instead of the data->base. This is
+avoid to touch too many lines in the next patches.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/iommu/mtk_iommu.c    | 82 +++++++++++++++++++++++++++++++++---
- drivers/iommu/mtk_iommu.h    | 81 -----------------------------------
- drivers/iommu/mtk_iommu_v1.c | 29 +++++++++++++
- 3 files changed, 106 insertions(+), 86 deletions(-)
+ drivers/iommu/mtk_iommu.c | 51 +++++++++++++++++++++------------------
+ 1 file changed, 27 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index ac1681858af8..7383a5df6021 100644
+index 47355010502e..de448d056135 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -146,6 +146,69 @@
+@@ -227,12 +227,12 @@ static struct mtk_iommu_domain *to_mtk_domain(struct iommu_domain *dom)
  
- #define MTK_INVALID_LARBID		MTK_LARB_NR_MAX
- 
-+#define MTK_LARB_COM_MAX	8
-+#define MTK_LARB_SUBCOM_MAX	8
-+
-+#define MTK_IOMMU_GROUP_MAX	8
-+
-+enum mtk_iommu_plat {
-+	M4U_MT2712,
-+	M4U_MT6779,
-+	M4U_MT8167,
-+	M4U_MT8173,
-+	M4U_MT8183,
-+	M4U_MT8192,
-+	M4U_MT8195,
-+};
-+
-+struct mtk_iommu_iova_region {
-+	dma_addr_t		iova_base;
-+	unsigned long long	size;
-+};
-+
-+struct mtk_iommu_plat_data {
-+	enum mtk_iommu_plat	m4u_plat;
-+	u32			flags;
-+	u32			inv_sel_reg;
-+
-+	char			*pericfg_comp_str;
-+	struct list_head	*hw_list;
-+	unsigned int		iova_region_nr;
-+	const struct mtk_iommu_iova_region	*iova_region;
-+	unsigned char       larbid_remap[MTK_LARB_COM_MAX][MTK_LARB_SUBCOM_MAX];
-+};
-+
-+struct mtk_iommu_data {
-+	void __iomem			*base;
-+	int				irq;
-+	struct device			*dev;
-+	struct clk			*bclk;
-+	phys_addr_t			protect_base; /* protect memory base */
-+	struct mtk_iommu_suspend_reg	reg;
-+	struct mtk_iommu_domain		*m4u_dom;
-+	struct iommu_group		*m4u_group[MTK_IOMMU_GROUP_MAX];
-+	bool                            enable_4GB;
-+	spinlock_t			tlb_lock; /* lock for tlb range flush */
-+
-+	struct iommu_device		iommu;
-+	const struct mtk_iommu_plat_data *plat_data;
-+	struct device			*smicomm_dev;
-+
-+	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
-+	struct regmap			*pericfg;
-+
-+	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
-+
-+	/*
-+	 * In the sharing pgtable case, list data->list to the global list like m4ulist.
-+	 * In the non-sharing pgtable case, list data->list to the itself hw_list_head.
-+	 */
-+	struct list_head		*hw_list;
-+	struct list_head		hw_list_head;
-+	struct list_head		list;
-+	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
-+};
-+
- struct mtk_iommu_domain {
- 	struct io_pgtable_cfg		cfg;
- 	struct io_pgtable_ops		*iop;
-@@ -156,6 +219,20 @@ struct mtk_iommu_domain {
- 	struct mutex			mutex; /* Protect "data" in this structure */
- };
- 
-+static int mtk_iommu_bind(struct device *dev)
-+{
-+	struct mtk_iommu_data *data = dev_get_drvdata(dev);
-+
-+	return component_bind_all(dev, &data->larb_imu);
-+}
-+
-+static void mtk_iommu_unbind(struct device *dev)
-+{
-+	struct mtk_iommu_data *data = dev_get_drvdata(dev);
-+
-+	component_unbind_all(dev, &data->larb_imu);
-+}
-+
- static const struct iommu_ops mtk_iommu_ops;
- 
- static int mtk_iommu_hw_init(const struct mtk_iommu_data *data);
-@@ -193,11 +270,6 @@ static LIST_HEAD(m4ulist);	/* List all the M4U HWs */
- 
- #define for_each_m4u(data, head)  list_for_each_entry(data, head, list)
- 
--struct mtk_iommu_iova_region {
--	dma_addr_t		iova_base;
--	unsigned long long	size;
--};
--
- static const struct mtk_iommu_iova_region single_domain[] = {
- 	{.iova_base = 0,		.size = SZ_4G},
- };
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index f2ee11cd254a..305243e18aa9 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -7,23 +7,14 @@
- #ifndef _MTK_IOMMU_H_
- #define _MTK_IOMMU_H_
- 
--#include <linux/clk.h>
--#include <linux/component.h>
- #include <linux/device.h>
- #include <linux/io.h>
- #include <linux/io-pgtable.h>
- #include <linux/iommu.h>
--#include <linux/list.h>
- #include <linux/spinlock.h>
--#include <linux/dma-mapping.h>
- #include <soc/mediatek/smi.h>
- #include <dt-bindings/memory/mtk-memory-port.h>
- 
--#define MTK_LARB_COM_MAX	8
--#define MTK_LARB_SUBCOM_MAX	8
--
--#define MTK_IOMMU_GROUP_MAX	8
--
- struct mtk_iommu_suspend_reg {
- 	union {
- 		u32			standard_axi_mode;/* v1 */
-@@ -38,76 +29,4 @@ struct mtk_iommu_suspend_reg {
- 	u32				wr_len_ctrl;
- };
- 
--enum mtk_iommu_plat {
--	M4U_MT2701,
--	M4U_MT2712,
--	M4U_MT6779,
--	M4U_MT8167,
--	M4U_MT8173,
--	M4U_MT8183,
--	M4U_MT8192,
--	M4U_MT8195,
--};
--
--struct mtk_iommu_iova_region;
--
--struct mtk_iommu_plat_data {
--	enum mtk_iommu_plat m4u_plat;
--	u32                 flags;
--	u32                 inv_sel_reg;
--
--	char					*pericfg_comp_str;
--	struct list_head			*hw_list;
--	unsigned int				iova_region_nr;
--	const struct mtk_iommu_iova_region	*iova_region;
--	unsigned char       larbid_remap[MTK_LARB_COM_MAX][MTK_LARB_SUBCOM_MAX];
--};
--
--struct mtk_iommu_domain;
--
--struct mtk_iommu_data {
--	void __iomem			*base;
--	int				irq;
--	struct device			*dev;
--	struct clk			*bclk;
--	phys_addr_t			protect_base; /* protect memory base */
--	struct mtk_iommu_suspend_reg	reg;
--	struct mtk_iommu_domain		*m4u_dom;
--	struct iommu_group		*m4u_group[MTK_IOMMU_GROUP_MAX];
--	bool                            enable_4GB;
--	spinlock_t			tlb_lock; /* lock for tlb range flush */
--
--	struct iommu_device		iommu;
--	const struct mtk_iommu_plat_data *plat_data;
--	struct device			*smicomm_dev;
--
--	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
--	struct regmap			*pericfg;
--
--	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
--
--	/*
--	 * In the sharing pgtable case, list data->list to the global list like m4ulist.
--	 * In the non-sharing pgtable case, list data->list to the itself hw_list_head.
--	 */
--	struct list_head		*hw_list;
--	struct list_head		hw_list_head;
--	struct list_head		list;
--	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
--};
--
--static inline int mtk_iommu_bind(struct device *dev)
--{
--	struct mtk_iommu_data *data = dev_get_drvdata(dev);
--
--	return component_bind_all(dev, &data->larb_imu);
--}
--
--static inline void mtk_iommu_unbind(struct device *dev)
--{
--	struct mtk_iommu_data *data = dev_get_drvdata(dev);
--
--	component_unbind_all(dev, &data->larb_imu);
--}
--
- #endif
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index ecff800656e6..6d1c09c91e1f 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -87,6 +87,21 @@
-  */
- #define M2701_IOMMU_PGT_SIZE			SZ_4M
- 
-+struct mtk_iommu_data {
-+	void __iomem			*base;
-+	int				irq;
-+	struct device			*dev;
-+	struct clk			*bclk;
-+	phys_addr_t			protect_base; /* protect memory base */
-+	struct mtk_iommu_domain		*m4u_dom;
-+
-+	struct iommu_device		iommu;
-+	struct dma_iommu_mapping	*mapping;
-+	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
-+
-+	struct mtk_iommu_suspend_reg	reg;
-+};
-+
- struct mtk_iommu_domain {
- 	spinlock_t			pgtlock; /* lock for page table */
- 	struct iommu_domain		domain;
-@@ -95,6 +110,20 @@ struct mtk_iommu_domain {
- 	struct mtk_iommu_data		*data;
- };
- 
-+static int mtk_iommu_bind(struct device *dev)
-+{
-+	struct mtk_iommu_data *data = dev_get_drvdata(dev);
-+
-+	return component_bind_all(dev, &data->larb_imu);
-+}
-+
-+static void mtk_iommu_unbind(struct device *dev)
-+{
-+	struct mtk_iommu_data *data = dev_get_drvdata(dev);
-+
-+	component_unbind_all(dev, &data->larb_imu);
-+}
-+
- static struct mtk_iommu_domain *to_mtk_domain(struct iommu_domain *dom)
+ static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
  {
- 	return container_of(dom, struct mtk_iommu_domain, domain);
++	void __iomem *base = data->base;
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&data->tlb_lock, flags);
+-	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+-		       data->base + data->plat_data->inv_sel_reg);
+-	writel_relaxed(F_ALL_INVLD, data->base + REG_MMU_INVALIDATE);
++	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0, base + data->plat_data->inv_sel_reg);
++	writel_relaxed(F_ALL_INVLD, base + REG_MMU_INVALIDATE);
+ 	wmb(); /* Make sure the tlb flush all done */
+ 	spin_unlock_irqrestore(&data->tlb_lock, flags);
+ }
+@@ -243,6 +243,7 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+ 	struct list_head *head = data->hw_list;
+ 	bool check_pm_status;
+ 	unsigned long flags;
++	void __iomem *base;
+ 	int ret;
+ 	u32 tmp;
+ 
+@@ -269,23 +270,23 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+ 				continue;
+ 		}
+ 
++		base = data->base;
++
+ 		spin_lock_irqsave(&data->tlb_lock, flags);
+ 		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+-			       data->base + data->plat_data->inv_sel_reg);
++			       base + data->plat_data->inv_sel_reg);
+ 
+-		writel_relaxed(MTK_IOMMU_TLB_ADDR(iova),
+-			       data->base + REG_MMU_INVLD_START_A);
++		writel_relaxed(MTK_IOMMU_TLB_ADDR(iova), base + REG_MMU_INVLD_START_A);
+ 		writel_relaxed(MTK_IOMMU_TLB_ADDR(iova + size - 1),
+-			       data->base + REG_MMU_INVLD_END_A);
+-		writel_relaxed(F_MMU_INV_RANGE,
+-			       data->base + REG_MMU_INVALIDATE);
++			       base + REG_MMU_INVLD_END_A);
++		writel_relaxed(F_MMU_INV_RANGE, base + REG_MMU_INVALIDATE);
+ 
+ 		/* tlb sync */
+-		ret = readl_poll_timeout_atomic(data->base + REG_MMU_CPE_DONE,
++		ret = readl_poll_timeout_atomic(base + REG_MMU_CPE_DONE,
+ 						tmp, tmp != 0, 10, 1000);
+ 
+ 		/* Clear the CPE status */
+-		writel_relaxed(0, data->base + REG_MMU_CPE_DONE);
++		writel_relaxed(0, base + REG_MMU_CPE_DONE);
+ 		spin_unlock_irqrestore(&data->tlb_lock, flags);
+ 
+ 		if (ret) {
+@@ -305,23 +306,25 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 	struct mtk_iommu_domain *dom = data->m4u_dom;
+ 	unsigned int fault_larb = MTK_INVALID_LARBID, fault_port = 0, sub_comm = 0;
+ 	u32 int_state, regval, va34_32, pa34_32;
++	const struct mtk_iommu_plat_data *plat_data = data->plat_data;
++	void __iomem *base = data->base;
+ 	u64 fault_iova, fault_pa;
+ 	bool layer, write;
+ 
+ 	/* Read error info from registers */
+-	int_state = readl_relaxed(data->base + REG_MMU_FAULT_ST1);
++	int_state = readl_relaxed(base + REG_MMU_FAULT_ST1);
+ 	if (int_state & F_REG_MMU0_FAULT_MASK) {
+-		regval = readl_relaxed(data->base + REG_MMU0_INT_ID);
+-		fault_iova = readl_relaxed(data->base + REG_MMU0_FAULT_VA);
+-		fault_pa = readl_relaxed(data->base + REG_MMU0_INVLD_PA);
++		regval = readl_relaxed(base + REG_MMU0_INT_ID);
++		fault_iova = readl_relaxed(base + REG_MMU0_FAULT_VA);
++		fault_pa = readl_relaxed(base + REG_MMU0_INVLD_PA);
+ 	} else {
+-		regval = readl_relaxed(data->base + REG_MMU1_INT_ID);
+-		fault_iova = readl_relaxed(data->base + REG_MMU1_FAULT_VA);
+-		fault_pa = readl_relaxed(data->base + REG_MMU1_INVLD_PA);
++		regval = readl_relaxed(base + REG_MMU1_INT_ID);
++		fault_iova = readl_relaxed(base + REG_MMU1_FAULT_VA);
++		fault_pa = readl_relaxed(base + REG_MMU1_INVLD_PA);
+ 	}
+ 	layer = fault_iova & F_MMU_FAULT_VA_LAYER_BIT;
+ 	write = fault_iova & F_MMU_FAULT_VA_WRITE_BIT;
+-	if (MTK_IOMMU_HAS_FLAG(data->plat_data, IOVA_34_EN)) {
++	if (MTK_IOMMU_HAS_FLAG(plat_data, IOVA_34_EN)) {
+ 		va34_32 = FIELD_GET(F_MMU_INVAL_VA_34_32_MASK, fault_iova);
+ 		fault_iova = fault_iova & F_MMU_INVAL_VA_31_12_MASK;
+ 		fault_iova |= (u64)va34_32 << 32;
+@@ -329,12 +332,12 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 	pa34_32 = FIELD_GET(F_MMU_INVAL_PA_34_32_MASK, fault_iova);
+ 	fault_pa |= (u64)pa34_32 << 32;
+ 
+-	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
++	if (MTK_IOMMU_IS_TYPE(plat_data, MTK_IOMMU_TYPE_MM)) {
+ 		fault_port = F_MMU_INT_ID_PORT_ID(regval);
+-		if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM_2BITS)) {
++		if (MTK_IOMMU_HAS_FLAG(plat_data, HAS_SUB_COMM_2BITS)) {
+ 			fault_larb = F_MMU_INT_ID_COMM_ID(regval);
+ 			sub_comm = F_MMU_INT_ID_SUB_COMM_ID(regval);
+-		} else if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM_3BITS)) {
++		} else if (MTK_IOMMU_HAS_FLAG(plat_data, HAS_SUB_COMM_3BITS)) {
+ 			fault_larb = F_MMU_INT_ID_COMM_ID_EXT(regval);
+ 			sub_comm = F_MMU_INT_ID_SUB_COMM_ID_EXT(regval);
+ 		} else {
+@@ -353,9 +356,9 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 	}
+ 
+ 	/* Interrupt clear */
+-	regval = readl_relaxed(data->base + REG_MMU_INT_CONTROL0);
++	regval = readl_relaxed(base + REG_MMU_INT_CONTROL0);
+ 	regval |= F_INT_CLR_BIT;
+-	writel_relaxed(regval, data->base + REG_MMU_INT_CONTROL0);
++	writel_relaxed(regval, base + REG_MMU_INT_CONTROL0);
+ 
+ 	mtk_iommu_tlb_flush_all(data);
+ 
 -- 
 2.18.0
 
