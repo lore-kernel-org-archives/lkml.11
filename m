@@ -2,210 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DBD0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:12:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13AE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 20:12:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242486AbiECUPn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 16:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50284 "EHLO
+        id S242547AbiECUQB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 16:16:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242414AbiECUOF (ORCPT
+        with ESMTP id S242396AbiECUPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 16:14:05 -0400
-Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D7EFFD2C;
-        Tue,  3 May 2022 13:10:22 -0700 (PDT)
-Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 0FFD2BC8;
-        Tue,  3 May 2022 23:10:55 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 0FFD2BC8
+        Tue, 3 May 2022 16:15:39 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2559D40E52
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 13:10:54 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id m14-20020a17090a34ce00b001d5fe250e23so2916044pjf.3
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 13:10:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1651608655;
-        bh=0MZ3pFwaoAf1KuXrTCdk8j1jnXWBxdE74VDIFr7flf0=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=muVqa5LOcnJYIQdX+RQvvnpV1L5o/X7RFI/pRWD3EfdhMFWfXKMjjQ8m2l7yx7YGc
-         omUkwu7Nr+rysYY2zs2MHvzZ4AhjCPkuQxcQaryzhmYYA3QV90Xn6CsGPi1r8kKWXG
-         8kfUUlW0Z1txPpe63sPLVVpO/62VC/f8mJEdHAZM=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 May 2022 23:10:21 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-Subject: [PATCH v2 20/23] dt-bindings: ata: ahci: Add Baikal-T1 AHCI SATA controller DT schema
-Date:   Tue, 3 May 2022 23:09:35 +0300
-Message-ID: <20220503200938.18027-21-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220503200938.18027-1-Sergey.Semin@baikalelectronics.ru>
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=F1Z4/d6DDe3J/2+a6zGvXw/SwahIrpiTzs4QPSGop1Q=;
+        b=AhDLELavTudJm4Q4HJmBysN8XtrTMfFnCe15RLGV4KJnUqdms/L3RqTK7tRVF4QFVC
+         T6H+NTDqgYEzJEVqsZdpnLa+6ApN4LBlt6glH8keHBix5Y828v4Fwk4F8EAVosiwPEt8
+         hWWFmf4NCVfMVLqHTyCJcaJDHAeQIdUUkXs1dj8yQN4H8MsJ/K+51jHPKxSBqGOP5J3Y
+         it8s9sBRuEku0sppDBxiZN4y2pWV6M1ulo5q+Wc49JUTMJ9GBDpBJ7nJvoNkRAkpQCkP
+         XbCyCFRw74gGN4A95lOX6TXnYvydrTRttTx4839DDBzRNwd443p7jf8iMZ8HrbCcE38S
+         1Tgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=F1Z4/d6DDe3J/2+a6zGvXw/SwahIrpiTzs4QPSGop1Q=;
+        b=mlk0Szsq0qw2zEdbTI928rTgSvNI6y9HgzFhLEdvs/oLnS19TcN8ReZb40IOGLLjAQ
+         mPMo6oS6LXgxpblWje8/PQ7aTlVVvWw8Ibo1oATFymZGUgUqB/oEUGKicUxkAui/GaT1
+         00jQ2DKt4w0r7TN7YnFfqbKghXbTu0zfoFEhPBMJ7efcXH7WikSIMfLEF9PZFjqi1oge
+         VwAWWA6iV97b1/yfZ94EBjNrku1pmcs4IEjydgK1Dr2fyxIeRHka3kus9UiZdLr3ehnN
+         eJaLy7qGHdoYoxCZZvLnpfOMgmz9CD4gmVDCihbG/XAkvBXmq0Bu5b3K9naC8a50YhyO
+         8+Iw==
+X-Gm-Message-State: AOAM532GUDxVqPsCT3DG7NrMGe5Nqr3HyinvbxfR4Db86RN9SkCN6ZqE
+        +n9q1PxLrDOjHMAD3yzCEVglOep7qapQR5PAT9J5
+X-Google-Smtp-Source: ABdhPJzC8uRUEmor5TSiXSaoorAevlrZJXQ06HarNkBGXZKYY+cwiBMvymFFqCd4CEY2Xo2nfn+MwlAPLNc/IT20HvA=
+X-Received: by 2002:a17:902:b094:b0:15c:dee8:74c8 with SMTP id
+ p20-20020a170902b09400b0015cdee874c8mr18100490plr.6.1651608653214; Tue, 03
+ May 2022 13:10:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+References: <20220217143457.75229-1-cgzones@googlemail.com>
+ <20220308170928.58040-1-cgzones@googlemail.com> <CAHC9VhSiqvCbKQHYTGAj3vqECNto6eNm0MyzLd92kcJnvZSw1A@mail.gmail.com>
+ <CAHC9VhR1d2aLKsZOxLb6b1uuTcWOpnJ22S5=mXygvjcv6Sm=xg@mail.gmail.com> <CAJ2a_DeWWoSYwhmbNpSuDhve9KUfEnoPiHdd5s_CpKHRUbi8Bw@mail.gmail.com>
+In-Reply-To: <CAJ2a_DeWWoSYwhmbNpSuDhve9KUfEnoPiHdd5s_CpKHRUbi8Bw@mail.gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 3 May 2022 16:10:42 -0400
+Message-ID: <CAHC9VhQYpo38Bv6tHYh=L-Bkxe=ym97xG8pt1tE6wR+V0Qy+WA@mail.gmail.com>
+Subject: Re: [PATCH v2] selinux: log anon inode class name
+To:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
+Cc:     SElinux list <selinux@vger.kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Richard Guy Briggs <rgb@redhat.com>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        linux-security-module@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Baikal-T1 AHCI controller is based on the DWC AHCI SATA IP-core v4.10a
-with the next specific settings: two SATA ports, cascaded CSR access based
-on two clock domains (APB and AXI), selectable source of the reference
-clock (though stable work is currently available from the external source
-only), two reset lanes for the application and SATA ports domains. Other
-than that the device is fully compatible with the generic DWC AHCI SATA
-bindings.
+On Mon, May 2, 2022 at 9:39 AM Christian G=C3=B6ttsche
+<cgzones@googlemail.com> wrote:
+> On Wed, 27 Apr 2022 at 15:19, Paul Moore <paul@paul-moore.com> wrote:
+> > On Mon, Apr 4, 2022 at 4:18 PM Paul Moore <paul@paul-moore.com> wrote:
+> > > On Tue, Mar 8, 2022 at 12:09 PM Christian G=C3=B6ttsche
+> > > <cgzones@googlemail.com> wrote:
+> > > >
+> > > > Log the anonymous inode class name in the security hook
+> > > > inode_init_security_anon.  This name is the key for name based type
+> > > > transitions on the anon_inode security class on creation.  Example:
+> > > >
+> > > >     type=3DAVC msg=3Daudit(02/16/22 22:02:50.585:216) : avc:  grant=
+ed \
+> > > >         { create } for  pid=3D2136 comm=3Dmariadbd anonclass=3D"[io=
+_uring]" \
+> > > >         scontext=3Dsystem_u:system_r:mysqld_t:s0 \
+> > > >         tcontext=3Dsystem_u:system_r:mysqld_iouring_t:s0 tclass=3Da=
+non_inode
+> > > >
+> > > > Add a new LSM audit data type holding the inode and the class name.
+> > > >
+> > > > Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
+> > > >
+> > > > ---
+> > > > v2:
+> > > >   - drop dev=3D and name=3D output for anonymous inodes, and hence =
+simplify
+> > > >     the common_audit_data union member.
+> > > >   - drop WARN_ON() on empty name passed to inode_init_security_anon=
+ hook
+> > > > ---
+> > > >  include/linux/lsm_audit.h | 2 ++
+> > > >  security/lsm_audit.c      | 4 ++++
+> > > >  security/selinux/hooks.c  | 4 ++--
+> > > >  3 files changed, 8 insertions(+), 2 deletions(-)
+> > > >
+> > > > diff --git a/include/linux/lsm_audit.h b/include/linux/lsm_audit.h
+> > > > index 17d02eda9538..97a8b21eb033 100644
+> > > > --- a/include/linux/lsm_audit.h
+> > > > +++ b/include/linux/lsm_audit.h
+> > > > @@ -76,6 +76,7 @@ struct common_audit_data {
+> > > >  #define LSM_AUDIT_DATA_IBENDPORT 14
+> > > >  #define LSM_AUDIT_DATA_LOCKDOWN 15
+> > > >  #define LSM_AUDIT_DATA_NOTIFICATION 16
+> > > > +#define LSM_AUDIT_DATA_ANONINODE       17
+> > > >         union   {
+> > > >                 struct path path;
+> > > >                 struct dentry *dentry;
+> > > > @@ -96,6 +97,7 @@ struct common_audit_data {
+> > > >                 struct lsm_ibpkey_audit *ibpkey;
+> > > >                 struct lsm_ibendport_audit *ibendport;
+> > > >                 int reason;
+> > > > +               const char *anonclass;
+> > > >         } u;
+> > > >         /* this union contains LSM specific data */
+> > > >         union {
+> > > > diff --git a/security/lsm_audit.c b/security/lsm_audit.c
+> > > > index 1897cbf6fc69..981f6a4e4590 100644
+> > > > --- a/security/lsm_audit.c
+> > > > +++ b/security/lsm_audit.c
+> > > > @@ -433,6 +433,10 @@ static void dump_common_audit_data(struct audi=
+t_buffer *ab,
+> > > >                 audit_log_format(ab, " lockdown_reason=3D\"%s\"",
+> > > >                                  lockdown_reasons[a->u.reason]);
+> > > >                 break;
+> > > > +       case LSM_AUDIT_DATA_ANONINODE:
+> > > > +               audit_log_format(ab, " anonclass=3D");
+> > > > +               audit_log_untrustedstring(ab, a->u.anonclass);
+> > >
+> > > My apologies, I didn't notice this in the previous patch ... I don't
+> > > think we need to log this as an untrusted string as the string value
+> > > is coming from the kernel, not userspace, so we could rewrite the
+> > > above as the following:
+> > >
+> > >   audit_log_format(ab, " anonclass=3D%s", a->u.anonclass);
+> > >
+> > > ... if you are okay with that, I can make the change when I merge the
+> > > patch or you can submit another revision, let me know which you would
+> > > prefer.
+>
+> Feel free to adjust while merging, thanks.
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Adjusted and merged, thanks.
 
----
-
-Changelog v2:
-- Rename 'syscon' property to 'baikal,bt1-syscon'.
-- Drop macro usage from the example node.
----
- .../bindings/ata/baikal,bt1-ahci.yaml         | 127 ++++++++++++++++++
- 1 file changed, 127 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml
-
-diff --git a/Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml b/Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml
-new file mode 100644
-index 000000000000..7c2eae75434f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml
-@@ -0,0 +1,127 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/ata/baikal,bt1-ahci.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Baikal-T1 SoC AHCI SATA controller
-+
-+maintainers:
-+  - Serge Semin <fancer.lancer@gmail.com>
-+
-+description: |
-+  AHCI SATA controller embedded into the Baikal-T1 SoC is based on the
-+  DWC AHCI SATA v4.10a IP-core.
-+
-+allOf:
-+  - $ref: snps,dwc-ahci.yaml#
-+
-+properties:
-+  compatible:
-+    contains:
-+      const: baikal,bt1-ahci
-+
-+  clocks:
-+    items:
-+      - description: Peripheral APB bus clock source
-+      - description: Application AXI BIU clock
-+      - description: Internal SATA Ports reference clock
-+      - description: External SATA Ports reference clock
-+
-+  clock-names:
-+    items:
-+      - const: pclk
-+      - const: aclk
-+      - const: ref_int
-+      - const: ref_ext
-+
-+  resets:
-+    items:
-+      - description: Application AXI BIU domain reset
-+      - description: SATA Ports clock domain reset
-+
-+  reset-names:
-+    items:
-+      - const: arst
-+      - const: ref
-+
-+  baikal,bt1-syscon:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description:
-+      Phandle reference to the CCU system controller. It is required to
-+      switch between internal and external SATA reference clock sources.
-+
-+  ports-implemented:
-+    maximum: 0x3
-+
-+patternProperties:
-+  "^sata-port@[0-9a-e]$":
-+    type: object
-+
-+    properties:
-+      reg:
-+        minimum: 0
-+        maximum: 1
-+
-+      snps,tx-ts-max:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        description:
-+          Due to having AXI3 bus interface utilized the maximum Tx DMA
-+          transaction size can't exceed 16 beats (AxLEN[3:0]).
-+        minimum: 1
-+        maximum: 16
-+
-+      snps,rx-ts-max:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        description:
-+          Due to having AXI3 bus interface utilized the maximum Rx DMA
-+          transaction size can't exceed 16 beats (AxLEN[3:0]).
-+        minimum: 1
-+        maximum: 16
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+  - resets
-+  - baikal,bt1-syscon
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    sata@1f050000 {
-+      compatible = "baikal,bt1-ahci", "snps,dwc-ahci";
-+      reg = <0x1f050000 0x2000>;
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      interrupts = <0 64 4>;
-+
-+      clocks = <&ccu_sys 1>, <&ccu_axi 2>, <&ccu_sys 0>, <&clk_sata>;
-+      clock-names = "pclk", "aclk", "ref_int", "ref_ext";
-+
-+      resets = <&ccu_axi 2>, <&ccu_sys 0>;
-+      reset-names = "arst", "ref";
-+
-+      baikal,bt1-syscon = <&syscon>;
-+
-+      ports-implemented = <0x3>;
-+
-+      sata-port@0 {
-+        reg = <0>;
-+
-+        snps,tx-ts-max = <4>;
-+        snps,rx-ts-max = <4>;
-+      };
-+
-+      sata-port@1 {
-+        reg = <1>;
-+
-+        snps,tx-ts-max = <4>;
-+        snps,rx-ts-max = <4>;
-+      };
-+    };
-+...
--- 
-2.35.1
-
+--=20
+paul-moore.com
