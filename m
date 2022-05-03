@@ -2,84 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFC18C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 19:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F7FC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 19:39:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241903AbiECTmi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 15:42:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36704 "EHLO
+        id S241941AbiECTnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 15:43:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiECTme (ORCPT
+        with ESMTP id S239300AbiECTnN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 15:42:34 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B77F429812;
-        Tue,  3 May 2022 12:39:01 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242N6sYP018740;
-        Tue, 3 May 2022 00:51:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=GDwmhui71kBGYpJFLTpLpsg/uJyruGStrtZbHv68bZU=;
- b=kdzSD4YBWC3VTG2Nmk8tZenewvhx1VhlmL39Fv2/Kjgg96YpvTgRETXUVz/Jv9CJ+tHv
- vnISp6o4ABX398sMXckmqUrF6hHPN1b5jMetMXH8pdrk+E3yIohJYceQjryZyZcxkHpy
- WoZR774pmHFns7dteSTr7bQY+fzdvniTn5Msgwn8tjpwBKBS+LCFmXwtnlRPUFsvp9R/
- Q4l0D0n1MCZIYVp9mkqbZS9yfC30DBG0zEZf0XqdMix5GEpqTFf1X6AgfzpZ930zImya
- pUveYlAhLnzWQvdiLQWj0MiEhczauzTJVxmCcj6N6zSFbSp6CMIT3sWtM1TNBiDpN7pf CQ== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frwnt4kwv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:59 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430oows008899;
-        Tue, 3 May 2022 00:51:57 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x91-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:57 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430pljW010389;
-        Tue, 3 May 2022 00:51:57 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-18;
-        Tue, 03 May 2022 00:51:57 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     alim.akhtar@samsung.com, cgel.zte@gmail.com
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] scsi: ufs: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Mon,  2 May 2022 20:51:28 -0400
-Message-Id: <165153836363.24053.9079302597637883038.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220420090353.2588804-1-chi.minghao@zte.com.cn>
-References: <20220420090353.2588804-1-chi.minghao@zte.com.cn>
+        Tue, 3 May 2022 15:43:13 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A91F82FFE8
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 12:39:40 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id g3so14783169pgg.3
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 12:39:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ppinaPJbJgnZ4lYEqEvTzKJ3KVzhWfLCUNKpobV/uMY=;
+        b=GZDeuBBjdMiuh/0GD4S5Z7CgdVlfhqyeR9pyDRdIelbo2EyhbeprTZG0UPddoltyRe
+         YWfDjfPBAwwodFAHt/hTo5mCvpD+K0h+ojF2FG2IP3+iWe0lLVFg4Zly+NPfk+Ohz7YA
+         lpuB0QfbsIb6ogjiopQIq82iN7cahaV/R2oEo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ppinaPJbJgnZ4lYEqEvTzKJ3KVzhWfLCUNKpobV/uMY=;
+        b=g5mkbkEp2kUMKyHqF/hLM8iZ463tQdVkwf4+MtiToZsOa7eQQSRPLfAJ786IuUX0ls
+         H+upfgnJasoRZztZJGr+cd9rbUSS0On1PxL90/ZLOeLl0TQSW11K3wiUejY2pA2WZpBy
+         2oDWccwQTQVor3QRdSu+fxC5aRnYP1eS6YcUS5uRnEoxi/7ZU7ANgzvhO6+7SRb1hId2
+         IBWpuGkZyOrO/BxpdtNd5tNHGAxIF5n4pQYoltVXryPn+moOwpxVHyy6iJ7ChY4WGSJW
+         tNVFXREDFTShjJtTM6ePRLq/kDM0x4Q0AbNxulbZ9bidszRQxkRYJmT8J9jPQQf9m54e
+         p6yw==
+X-Gm-Message-State: AOAM5320u5cMwZqBMSEU/xsFURRS31LCI8MUd9wfmCRzvisXCOkcCryU
+        vA/NEIujrPW7tyCkLQ4i9sMj04FmGmbSKw==
+X-Google-Smtp-Source: ABdhPJyZI+fpaSs+G3ah33WViC0DquG+m5KKFzchEtRgKTakKTw0bcLyUz7uyKzt4loAHdyoWdKh9A==
+X-Received: by 2002:a63:2a0d:0:b0:3ab:392c:f45c with SMTP id q13-20020a632a0d000000b003ab392cf45cmr15076384pgq.575.1651606780120;
+        Tue, 03 May 2022 12:39:40 -0700 (PDT)
+Received: from smtp.gmail.com ([2620:15c:202:201:15e:c760:9a04:7fbe])
+        by smtp.gmail.com with ESMTPSA id e25-20020aa78c59000000b0050dc7628154sm6680804pfd.46.2022.05.03.12.39.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 12:39:38 -0700 (PDT)
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Subject: [PATCH v2 0/2] iio: sx9324: Support CS idle mode
+Date:   Tue,  3 May 2022 12:39:35 -0700
+Message-Id: <20220503193937.3794477-1-swboyd@chromium.org>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: 821uxx0Y43ZbGMH6V2obdTmChDCvpSKo
-X-Proofpoint-GUID: 821uxx0Y43ZbGMH6V2obdTmChDCvpSKo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Apr 2022 09:03:52 +0000, cgel.zte@gmail.com wrote:
+I need one more property to set another regsiter field for 
+how to configure the CS pins during idle and sleep modes. This is based
+on the latest patch series from Gwendal[1]
 
-> From: Minghao Chi <chi.minghao@zte.com.cn>
-> 
-> Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
-> pm_runtime_put_noidle. This change is just to simplify the code, no
-> actual functional changes.
-> 
-> 
-> [...]
+Changes from v1 (https://lore.kernel.org/r/20220503004156.3559940-1-swboyd@chromium.org):
+ * Change 'hz' to 'hi-z'
+ * Add property to example
 
-Applied to 5.19/scsi-queue, thanks!
+Stephen Boyd (2):
+  dt-bindings: iio: sx9324: Add CS idle/sleep mode
+  iio: sx9324: Add setting for CS idle mode
 
-[1/1] scsi: ufs: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-      https://git.kernel.org/mkp/scsi/c/75b8715e20a2
+ .../bindings/iio/proximity/semtech,sx9324.yaml   |  9 +++++++++
+ drivers/iio/proximity/sx9324.c                   | 16 ++++++++++++++++
+ 2 files changed, 25 insertions(+)
 
+[1] https://lore.kernel.org/all/20220429220144.1476049-1-gwendal@chromium.org/
+
+
+base-commit: d79478a79cfa393cde46bccb05d52fc7d875d2e2
+prerequisite-patch-id: 05986765e921df4c9725d10a3f51e68b0b5cc211
+prerequisite-patch-id: 5e47b28af046dce1eb7d7ca492c466df0f30e07c
+prerequisite-patch-id: adb59d1a14b74ddfe02c442da8bcca04765e7d15
+prerequisite-patch-id: ec6069ee00463db27826962537ff880e69522f70
+prerequisite-patch-id: e40f2a3048da2ff28bb426b85e41d277f29f18ef
+prerequisite-patch-id: 82077662b97c09014c5b291fe5a42938a29ddbcd
+prerequisite-patch-id: d02f0ec3be1fa9cdbf02a22c700982008d0550bd
+prerequisite-patch-id: a02a8faefc5b7b68b99c0cc326973948c9356b60
+prerequisite-patch-id: 522c808e4b8bf99b8404c01d495526a685e5b97a
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+https://chromeos.dev
+
