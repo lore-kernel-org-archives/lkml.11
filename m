@@ -2,129 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3353C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 22:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2A5EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  3 May 2022 22:28:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243702AbiECWb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 18:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49534 "EHLO
+        id S243716AbiECWcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 18:32:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235020AbiECWby (ORCPT
+        with ESMTP id S230240AbiECWcX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 18:31:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7A02725C5A
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 15:28:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651616900;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XuOARFW3gYZOmM4Y4nSXFBD8lHm6BchzW975izB6OwE=;
-        b=iuBRe20hnQHQVQ0swIUR96GUeNQGJnMv7wv9r87aIyy08tnwLb0gWhiH6ScRw6cLfGiTlX
-        ixMtg4sS1gNcl8V6wmaVoEOP4iJO8bbDfjPo0uzq8Z07JuSMTUwbJQadrNcURt/zwFkhYr
-        ugc9Zrea8eiWpeImx666Qk9IyOfa3KQ=
-Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com
- [209.85.160.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-627-jzvhMj81N7y9tKQjdCVuKQ-1; Tue, 03 May 2022 16:21:09 -0400
-X-MC-Unique: jzvhMj81N7y9tKQjdCVuKQ-1
-Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-e1fa5c533eso6398262fac.19
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 13:21:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=XuOARFW3gYZOmM4Y4nSXFBD8lHm6BchzW975izB6OwE=;
-        b=wtdmET3sB2ox6gIQ/lfvZq/Y5mkOQRZH3N+2zdKkkFrrq6js89hUo6iJ3xlLto5zTY
-         17/HgCsAAeCS9YPcwEGue5mv56Q5//M5W4uxRlTVOJBW0FkQpHoHV+etgIrp9qJdgMVk
-         V5nRz0rwKToxz6UOK95Awa1GDUc0LpReC6MYLcFXYdSjEQ1w9OF0P15nIAFlA38nTOi9
-         HCrdeZwJLjfTqhvOoiLdxkdm3pVNZ8Fgc7kMSaPWTz2uYygAyMpsYnowbbvhV/aSvhvn
-         zVw8y7T59dtqZ/l4miLFQl2ukBdn7wCr9sYX4IbSuIjc9+zSt3owvt8jn+AyiEYmAIhS
-         EL7g==
-X-Gm-Message-State: AOAM532FIK2NE1+gnuuPHx/3jTxo3H2+gCLagQ4T89trf25M6C2D7SBr
-        z0chpbcL3UYe2bL9+8WJim224zQYXZCfVqQK4GgztHfczIGyouBXEPGHT8XQJBLYskAfMYVf6jX
-        vS4iK80cquCcgLa3CCzIoZgsS
-X-Received: by 2002:a05:6808:14d3:b0:325:ed6b:e748 with SMTP id f19-20020a05680814d300b00325ed6be748mr2683340oiw.105.1651609267936;
-        Tue, 03 May 2022 13:21:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwKRbb5OLkMV2UmDQ1VLpoVhTPJwDt2cIVnFXrIsYyzxEIudxX/SPJKn8BJ62U+FH4qM5Vz5Q==
-X-Received: by 2002:a05:6808:14d3:b0:325:ed6b:e748 with SMTP id f19-20020a05680814d300b00325ed6be748mr2683301oiw.105.1651609267392;
-        Tue, 03 May 2022 13:21:07 -0700 (PDT)
-Received: from [10.10.69.234] ([8.34.116.185])
-        by smtp.gmail.com with ESMTPSA id w11-20020a4adecb000000b0035eb4e5a6cesm5328939oou.36.2022.05.03.13.21.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 13:21:06 -0700 (PDT)
-Message-ID: <2bb92a84-18f4-d007-9465-fdc19f6f1c86@redhat.com>
-Date:   Tue, 3 May 2022 22:21:03 +0200
+        Tue, 3 May 2022 18:32:23 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E029F25C5A
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 15:28:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651616929; x=1683152929;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=jYnUsuWUXcm2lFtLpB/9aRz70rXYQDQErDhjecEAo8c=;
+  b=YQst2R2OQbqaYLuvJ/laily+n7lwQKzebrrkpc42Yp2ANgZnmc9dZQ4o
+   OY0cjHb9qx3FRDlCK64tBf1NSuG+14xrCUnR6VzAKyijUUmjHh38TVHw9
+   hXnLKx0WqUx3dUk2nrP7KNnQ74bfHkCLSnE2SHpD/bNBbNRC+oNls/yF6
+   NUr7YByBa5GFmMw8uCmUGQw/Ohz5YRIoYX6eZaQZ46YV3eM0dObDgwb5h
+   m5/9BufupYYE3+TnedSQCvXuqCt4SGsbiVZWUwJUx/mLLS+8DPtcmcW87
+   Tc6ukRuiWG9gQQC0HkinRNH5SpOt0eePjv+uHgy8K5OhDFXJTW8cTJdJA
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="354044356"
+X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
+   d="scan'208";a="354044356"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 15:28:49 -0700
+X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
+   d="scan'208";a="734120033"
+Received: from gxu1-mobl3.amr.corp.intel.com (HELO [10.212.251.19]) ([10.212.251.19])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 15:28:48 -0700
+Message-ID: <cc8d777a-3f09-f439-69ac-2d4d4cd5fca9@linux.intel.com>
+Date:   Tue, 3 May 2022 15:28:47 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCHv5 02/12] mm: Add support for unaccepted memory
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [PATCH v5 3/3] x86/tdx: Add Quote generation support
 Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Mike Rapoport <rppt@kernel.org>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@linux.ibm.com>
-References: <20220425033934.68551-1-kirill.shutemov@linux.intel.com>
- <20220425033934.68551-3-kirill.shutemov@linux.intel.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220425033934.68551-3-kirill.shutemov@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Dave Hansen <dave.hansen@intel.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Kai Huang <kai.huang@intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+References: <20220501183500.2242828-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220501183500.2242828-4-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <243e918c523320ba3d216cbe22d24fe5ce33f370.camel@intel.com>
+ <20220503012721.ok7fbvxmnvsr6qny@box.shutemov.name>
+ <58d07b2d-cef5-17ed-9c57-e12fe5665e04@intel.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <58d07b2d-cef5-17ed-9c57-e12fe5665e04@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
->  
-> +/*
-> + * Page acceptance can be very slow. Do not call under critical locks.
-> + */
-> +static void accept_page(struct page *page, unsigned int order)
-> +{
-> +	phys_addr_t start = page_to_phys(page);
-> +	int i;
-> +
-> +	accept_memory(start, start + (PAGE_SIZE << order));
-> +
-> +	for (i = 0; i < (1 << order); i++) {
-> +		if (PageUnaccepted(page + i))
-> +			__ClearPageUnaccepted(page + i);
-> +	}
-> +}
 
-What was the rationale of leaving PageUnaccepted() set on sub-pages when
-merging pages?
+On 5/3/22 3:24 PM, Dave Hansen wrote:
+> On 5/2/22 18:27, Kirill A. Shutemov wrote:
+>>> Again, Dave and Andi already commented you should use vmap() to avoid breaking
+>>> up the direct-mapping.  Please use vmap() instead.
+>>>
+>>> https://lore.kernel.org/all/ce0feeec-a949-35f8-3010-b0d69acbbc2e@linux.intel.com/
+>>>
+>>> Will review the rest later.
+>> I would rather convert it to use DMA API for memory allocation. It will
+>> tap into swiotlb buffer that already converted and there's no need to
+>> touch direct mapping. Both allocation and freeing such memory is cheaper
+>> because of that.
+> 
+> Sathya, I don't quite understand why you are so forcefully declining to
+> incorporate review feedback on this point.  I gave very specific
+> feedback about the kind of mapping you need and that you should avoid
+> fragmenting the direct map if at all possible.
+> 
+> Why is this code still fragmenting the direct map?
 
-I'd just clear the flag when merging and avoid the loop here. You could
-even assert here that we don't have any PageUnaccepted() on tail pages.
+I have already implemented it and testing it now.
+
+In this discussion, we are comparing the use of DMA API for memory
+allocation vs vmap/sharing it in driver itself.
 
 -- 
-Thanks,
-
-David / dhildenb
-
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
