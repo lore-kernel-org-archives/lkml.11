@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D060C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:03:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E63C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354587AbiEDRHT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:07:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38238 "EHLO
+        id S239034AbiEDRH0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:07:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355297AbiEDQ7w (ORCPT
+        with ESMTP id S1355507AbiEDRAG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:59:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5B2496AD;
-        Wed,  4 May 2022 09:51:29 -0700 (PDT)
+        Wed, 4 May 2022 13:00:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6054B1E5;
+        Wed,  4 May 2022 09:51:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF957617E7;
-        Wed,  4 May 2022 16:51:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45BB8C385A5;
-        Wed,  4 May 2022 16:51:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB8216187C;
+        Wed,  4 May 2022 16:51:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01709C385A4;
+        Wed,  4 May 2022 16:51:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683085;
-        bh=1NXmhjDJG8sVMXeuR7P7595+33BQJhz9J+Aca7pXwWs=;
+        s=korg; t=1651683099;
+        bh=vrXHUeiBGCc1SZvHym5m4/ZjOsgwzIuFcFfu5qMi3QY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bqJG6Rl3LrJzhG/CRDPc4E2jhUKvt/FSyjSD/a6tDtA71mL697TsILmw7qKwZGi8C
-         lj/gK4wJz3smLx5ea9HEA10vBVjpiO1x43mK4xCM/rvUt2ZbO5u6bCT+dAW+m2jPLc
-         9q173br2Y5JEpm/oLlKdg7DmbRSY+fTnXmpslBwc=
+        b=NtaonSGc9lUzIJmOOijGueFLtogW94Jv15MxG3XkC0+xhxGYAYQ+87jqN8RZJ/Bsd
+         I7MABiijs9ahJydNZm6dVyi3Fbezz0uVKj9vchw7PbGJfxjUz2Ecbx/ZK+V/5FZ5OO
+         QOo9hRKI4C2+9GhOIuv20NAdwvDFpGPh4gMS4sHA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Ceresoli <luca.ceresoli@bootlin.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Peilin Ye <peilin.ye@bytedance.com>,
+        William Tu <u9012063@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 066/129] pinctrl: rockchip: fix RK3308 pinmux bits
-Date:   Wed,  4 May 2022 18:44:18 +0200
-Message-Id: <20220504153026.508369870@linuxfoundation.org>
+Subject: [PATCH 5.10 081/129] ip6_gre: Make o_seqno start from 0 in native mode
+Date:   Wed,  4 May 2022 18:44:33 +0200
+Message-Id: <20220504153027.510923900@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,160 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Ceresoli <luca.ceresoli@bootlin.com>
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-[ Upstream commit 1f3e25a068832f8892a5ff71467622d012f5bc9f ]
+[ Upstream commit fde98ae91f79cab4e020f40c35ed23cbdc59661c ]
 
-Some of the pinmuxing bits described in rk3308_mux_recalced_data are wrong,
-pointing to non-existing registers.
+For IP6GRE and IP6GRETAP devices, currently o_seqno starts from 1 in
+native mode.  According to RFC 2890 2.2., "The first datagram is sent
+with a sequence number of 0."  Fix it.
 
-Fix the entire table.
+It is worth mentioning that o_seqno already starts from 0 in collect_md
+mode, see the "if (tunnel->parms.collect_md)" clause in __gre6_xmit(),
+where tunnel->o_seqno is passed to gre_build_header() before getting
+incremented.
 
-Also add a comment in front of each entry with the same string that appears
-in the datasheet to make the table easier to compare with the docs.
-
-This fix has been tested on real hardware for the gpio3b3_sel entry.
-
-Fixes: 7825aeb7b208 ("pinctrl: rockchip: add rk3308 SoC support")
-Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://lore.kernel.org/r/20220420142432.248565-1-luca.ceresoli@bootlin.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: c12b395a4664 ("gre: Support GRE over IPv6")
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Acked-by: William Tu <u9012063@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-rockchip.c | 45 ++++++++++++++++++++----------
- 1 file changed, 30 insertions(+), 15 deletions(-)
+ net/ipv6/ip6_gre.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
-index 9df48e0cf4cb..07b1204174bf 100644
---- a/drivers/pinctrl/pinctrl-rockchip.c
-+++ b/drivers/pinctrl/pinctrl-rockchip.c
-@@ -663,95 +663,110 @@ static  struct rockchip_mux_recalced_data rk3128_mux_recalced_data[] = {
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index 1f6c752f13b4..09262adf004e 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -724,6 +724,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ {
+ 	struct ip6_tnl *tunnel = netdev_priv(dev);
+ 	__be16 protocol;
++	__be16 flags;
  
- static struct rockchip_mux_recalced_data rk3308_mux_recalced_data[] = {
- 	{
-+		/* gpio1b6_sel */
- 		.num = 1,
- 		.pin = 14,
- 		.reg = 0x28,
- 		.bit = 12,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1b7_sel */
- 		.num = 1,
- 		.pin = 15,
- 		.reg = 0x2c,
- 		.bit = 0,
- 		.mask = 0x3
- 	}, {
-+		/* gpio1c2_sel */
- 		.num = 1,
- 		.pin = 18,
- 		.reg = 0x30,
- 		.bit = 4,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c3_sel */
- 		.num = 1,
- 		.pin = 19,
- 		.reg = 0x30,
- 		.bit = 8,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c4_sel */
- 		.num = 1,
- 		.pin = 20,
- 		.reg = 0x30,
- 		.bit = 12,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c5_sel */
- 		.num = 1,
- 		.pin = 21,
- 		.reg = 0x34,
- 		.bit = 0,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c6_sel */
- 		.num = 1,
- 		.pin = 22,
- 		.reg = 0x34,
- 		.bit = 4,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c7_sel */
- 		.num = 1,
- 		.pin = 23,
- 		.reg = 0x34,
- 		.bit = 8,
- 		.mask = 0xf
- 	}, {
-+		/* gpio3b4_sel */
- 		.num = 3,
- 		.pin = 12,
- 		.reg = 0x68,
- 		.bit = 8,
- 		.mask = 0xf
- 	}, {
-+		/* gpio3b5_sel */
- 		.num = 3,
- 		.pin = 13,
- 		.reg = 0x68,
- 		.bit = 12,
- 		.mask = 0xf
- 	}, {
-+		/* gpio2a2_sel */
- 		.num = 2,
- 		.pin = 2,
--		.reg = 0x608,
--		.bit = 0,
--		.mask = 0x7
-+		.reg = 0x40,
-+		.bit = 4,
-+		.mask = 0x3
- 	}, {
-+		/* gpio2a3_sel */
- 		.num = 2,
- 		.pin = 3,
--		.reg = 0x608,
--		.bit = 4,
--		.mask = 0x7
-+		.reg = 0x40,
-+		.bit = 6,
-+		.mask = 0x3
- 	}, {
-+		/* gpio2c0_sel */
- 		.num = 2,
- 		.pin = 16,
--		.reg = 0x610,
--		.bit = 8,
--		.mask = 0x7
-+		.reg = 0x50,
-+		.bit = 0,
-+		.mask = 0x3
- 	}, {
-+		/* gpio3b2_sel */
- 		.num = 3,
- 		.pin = 10,
--		.reg = 0x610,
--		.bit = 0,
--		.mask = 0x7
-+		.reg = 0x68,
-+		.bit = 4,
-+		.mask = 0x3
- 	}, {
-+		/* gpio3b3_sel */
- 		.num = 3,
- 		.pin = 11,
--		.reg = 0x610,
--		.bit = 4,
--		.mask = 0x7
-+		.reg = 0x68,
-+		.bit = 6,
-+		.mask = 0x3
- 	},
- };
+ 	if (dev->type == ARPHRD_ETHER)
+ 		IPCB(skb)->flags = 0;
+@@ -739,7 +740,6 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 	if (tunnel->parms.collect_md) {
+ 		struct ip_tunnel_info *tun_info;
+ 		const struct ip_tunnel_key *key;
+-		__be16 flags;
+ 		int tun_hlen;
  
+ 		tun_info = skb_tunnel_info_txcheck(skb);
+@@ -770,15 +770,14 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 						      : 0);
+ 
+ 	} else {
+-		if (tunnel->parms.o_flags & TUNNEL_SEQ)
+-			tunnel->o_seqno++;
+-
+ 		if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
+ 			return -ENOMEM;
+ 
+-		gre_build_header(skb, tunnel->tun_hlen, tunnel->parms.o_flags,
++		flags = tunnel->parms.o_flags;
++
++		gre_build_header(skb, tunnel->tun_hlen, flags,
+ 				 protocol, tunnel->parms.o_key,
+-				 htonl(tunnel->o_seqno));
++				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
+ 	}
+ 
+ 	return ip6_tnl_xmit(skb, dev, dsfield, fl6, encap_limit, pmtu,
 -- 
 2.35.1
 
