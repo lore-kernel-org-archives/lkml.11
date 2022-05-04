@@ -2,130 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C395C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:52:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E0D5C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377020AbiEDRzd (ORCPT
+        id S1359694AbiEDRxn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:55:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37800 "EHLO
+        Wed, 4 May 2022 13:53:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359299AbiEDRf4 (ORCPT
+        with ESMTP id S1357861AbiEDRPY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:35:56 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E34D65C670
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:04:15 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id i1so1954823plg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 10:04:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Uj6YMBCZWAjWY8ro19VauUXc0fzSyeDEeGTwnyspmvk=;
-        b=jFw/YtuAuY8zOu6CBZwrP8/qTS38T5FgjRy6M7i4aX08fnI6fVbU4nJp+GZWb2X/Oi
-         5jA20ZVdF1pc2KkJPGk1ZQI0ASmLV2xvybvi+wq5eEX1tHfMhwWyCaaMegbUUXPvCMid
-         XmP2uUvXaBb+17kdYgA8aF5HDIHfLFUmZvBEQbJmOVOQFNnEjIWtfcTF/0h2q0y9h7xv
-         etMVkh8gaL5cLlgEAODxlKfUa9G8mG51A5Nu5ItKpNLHd9AyJ6QmM+CijTcIlU/TJt8/
-         yDHWs26N40Nz6YMgWLFMJQ+5fI/lH5MVmOp0CMxNNdVYu/al9dbglBGJTaQ5ewqoYy9v
-         J2xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Uj6YMBCZWAjWY8ro19VauUXc0fzSyeDEeGTwnyspmvk=;
-        b=dcUfhNzALtg/0UBhBKVVQEr8xFXkzhJy2DHDdhxrDy52czREFJUCA0LTLVqfcMEMjb
-         FohGV5i+ttuSLxc5GudrbuAMzned2uYuYj52FuiFVVHXTCk7/4D7Ti9lRAbzM1Vc2sMW
-         n10u1LgX/WH+BWwr8JsMTgmuK7SPm4BEHrxNt5ThUOAeTtsK53oFSeriMx+2wOxUf3oN
-         lP9So6L58Qe8JzAZzi+tJ0RzPicgxPCGyiXNWfbOlmJj5CUPGWfyq1CvlIOnHTEGtrmS
-         Ogfbhr9Llo/aLEGQq0dvXzDVtf75mL3wFn7uWqp8CHzTaI/faqV4pvie9gwP0zZmFFjs
-         80Xw==
-X-Gm-Message-State: AOAM533IBZOYgEzeINz/l1KQk3bFODCjZU6QisbI2lFHM+3eV7esK3N/
-        65FCAsWUXbg5Ek57GE7RjA5z7A==
-X-Google-Smtp-Source: ABdhPJwQhJX1Wntu7nztS9/CKxmjFCDWW3e5W7Ktqn6IS03XXkrCVf3vv40N8CYVtf+Hw6G24CphUQ==
-X-Received: by 2002:a17:90b:1bc3:b0:1dc:61fd:7ea4 with SMTP id oa3-20020a17090b1bc300b001dc61fd7ea4mr473665pjb.31.1651683852263;
-        Wed, 04 May 2022 10:04:12 -0700 (PDT)
-Received: from google.com ([2620:15c:2ce:200:c1b7:7a5:89b8:a6c6])
-        by smtp.gmail.com with ESMTPSA id t9-20020a17090340c900b0015e8d4eb222sm8437874pld.108.2022.05.04.10.04.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 10:04:11 -0700 (PDT)
-Date:   Wed, 4 May 2022 10:04:02 -0700
-From:   Peter Collingbourne <pcc@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        andrew.cooper3@citrix.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com, hjl.tools@gmail.com,
-        alyssa.milburn@linux.intel.com, ndesaulniers@google.com,
-        gabriel.gomes@linux.intel.com, rick.p.edgecombe@intel.com
-Subject: Re: [RFC PATCH 01/11] x86: kernel FineIBT
-Message-ID: <YnKx5a9WvJ1UhWPm@google.com>
-References: <20220420004241.2093-1-joao@overdrivepizza.com>
- <20220420004241.2093-2-joao@overdrivepizza.com>
- <20220429013704.4n4lmadpstdioe7a@treble>
- <d82459b887bcaf9181ad836051e2d16b@overdrivepizza.com>
- <20220503220244.vyz5flk3gg3y6rbw@treble>
- <YnJTYzralOhGGmED@hirez.programming.kicks-ass.net>
+        Wed, 4 May 2022 13:15:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9192B554B4;
+        Wed,  4 May 2022 09:59:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA2ED61770;
+        Wed,  4 May 2022 16:59:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A43CFC385A4;
+        Wed,  4 May 2022 16:59:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651683543;
+        bh=QsbfSUtuE/rLYIXT6Iqtf1hrjl1h8nMpkg8dsxIdisc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HXTJjvhQHoq2iKohn/+yZze9HQDW9pBRZOhV+W1pKIe6vcTAi+Czxb4bFcFViVAld
+         14W/YGe7gQoYFkyOs/ObPFP4hQ9Hbq7mCfLzlWr1kuyDDyQnfEA2nHog9MgDiGmool
+         B3xaaCVkNHE42chyF4jOIwFBXJiM9H5Ok/ovziJQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.17 214/225] tty: n_gsm: fix wrong signal octets encoding in MSC
+Date:   Wed,  4 May 2022 18:47:32 +0200
+Message-Id: <20220504153129.063028650@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
+References: <20220504153110.096069935@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnJTYzralOhGGmED@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 12:20:19PM +0200, Peter Zijlstra wrote:
-> On Tue, May 03, 2022 at 03:02:44PM -0700, Josh Poimboeuf wrote:
-> 
-> > I'm not really qualified to comment on this too directly since I haven't
-> > looked very much at the variations on FineIBT/CFI/KCFI, and what the
-> > protections and drawbacks are for each approach, and when it might even
-> > make sense to combine them for a "paranoid user".
-> > 
-> > Since we have multiple similar and possibly competing technologies being
-> > discussed, one thing I do want to warn against is that we as kernel
-> > developers tend to err on the side of giving people too many choices and
-> > combinations which *never* get used.
-> 
-> So I don't think there's going to be a user choice here. If there's
-> hardware support, FineIBT makes more sense. That also means that kCFI no
-> longer needs to worry about IBT.
-> 
-> If we do something like:
-> 
-> 
->         kCFI                                            FineIBT
-> 
-> __cfi_\sym:                                     __cfi_\sym:
->         endbr                           # 4             endbr                   # 4
->         sub $hash, %r10                 # 7             sub $hash, %r10         # 7
->         je \sym                         # 2             je \sym                 # 2
->         ud2                             # 2             ud2                     # 2
-> \sym:                                           \sym:
-> 
-> 
-> caller:                                         caller:
->         cmpl $hash, -8(%r11)            # 8             movl $hash, %r10d       # 6
->         je 1f                           # 2             sub 15, %r11            # 4
->         ud2                             # 2             call *%r11              # 3
-> 1:      call __x86_indirect_thunk_r11   # 5             .nop 4                  # 4 (could even fix up r11 again)
-> 
-> 
-> Then, all that's required is a slight tweak to apply_retpolines() to
-> rewrite a little more text.
-> 
-> Note that this also does away with having to fix up the linker, since
-> all direct call will already point at \sym. It's just the IBT indirect
-> calls that need to frob the pointer in order to hit the ENDBR.
-> 
-> On top of that, we no longer have to special case the objtool
-> instruction decoder, the prelude are proper instructions now.
+From: Daniel Starke <daniel.starke@siemens.com>
 
-For kCFI this brings back the gadget problem that I mentioned here:
-https://lore.kernel.org/all/Yh7fLRYl8KgMcOe5@google.com/
+commit 317f86af7f5d19f286ed2d181cbaef4a188c7f19 upstream.
 
-because the hash at the call site is 8 bytes before the call
-instruction.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. The value of the modem status command (MSC) frame
+contains an address field, control signal and optional break signal octet.
+The address field is encoded as described in chapter 5.2.1.2 with only one
+octet (may be extended to more in future versions of the standard). Whereas
+the control signal and break signal octet are always one byte each. This is
+strange at first glance as it makes the EA bit redundant. However, the same
+two octets are also encoded as header in convergence layer type 2 as
+described in chapter 5.5.2. No header length field is given and the only
+way to test if there is an optional break signal octet is via the EA flag
+which extends the control signal octet with a break signal octet. Now it
+becomes obvious how the EA bit for those two octets shall be encoded in the
+MSC frame. The current implementation treats the signal octet different for
+MSC frame and convergence layer type 2 header even though the standard
+describes it for both in the same way.
+Use the EA bit to encode the signal octets not only in the convergence
+layer type 2 header but also in the MSC frame in the same way with either
+1 or 2 bytes in case of an optional break signal. Adjust the receiving path
+accordingly in gsm_control_modem().
 
-Peter
+Fixes: 3ac06b905655 ("tty: n_gsm: Fix for modems with brk in modem status control")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-13-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/n_gsm.c |   18 +++++-------------
+ 1 file changed, 5 insertions(+), 13 deletions(-)
+
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1094,7 +1094,6 @@ static void gsm_control_modem(struct gsm
+ {
+ 	unsigned int addr = 0;
+ 	unsigned int modem = 0;
+-	unsigned int brk = 0;
+ 	struct gsm_dlci *dlci;
+ 	int len = clen;
+ 	int slen;
+@@ -1124,17 +1123,8 @@ static void gsm_control_modem(struct gsm
+ 			return;
+ 	}
+ 	len--;
+-	if (len > 0) {
+-		while (gsm_read_ea(&brk, *dp++) == 0) {
+-			len--;
+-			if (len == 0)
+-				return;
+-		}
+-		modem <<= 7;
+-		modem |= (brk & 0x7f);
+-	}
+ 	tty = tty_port_tty_get(&dlci->port);
+-	gsm_process_modem(tty, dlci, modem, slen);
++	gsm_process_modem(tty, dlci, modem, slen - len);
+ 	if (tty) {
+ 		tty_wakeup(tty);
+ 		tty_kref_put(tty);
+@@ -2963,8 +2953,10 @@ static int gsmtty_modem_update(struct gs
+ 	int len = 2;
+ 
+ 	modembits[0] = (dlci->addr << 2) | 2 | EA;  /* DLCI, Valid, EA */
+-	modembits[1] = (gsm_encode_modem(dlci) << 1) | EA;
+-	if (brk) {
++	if (!brk) {
++		modembits[1] = (gsm_encode_modem(dlci) << 1) | EA;
++	} else {
++		modembits[1] = gsm_encode_modem(dlci) << 1;
+ 		modembits[2] = (brk << 4) | 2 | EA; /* Length, Break, EA */
+ 		len++;
+ 	}
+
+
