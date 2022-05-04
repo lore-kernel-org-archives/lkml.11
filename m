@@ -2,221 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0159C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:53:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21DCCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:55:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378379AbiEDU4k (ORCPT
+        id S1357905AbiEDU6e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:56:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43954 "EHLO
+        Wed, 4 May 2022 16:58:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357266AbiEDU4e (ORCPT
+        with ESMTP id S230058AbiEDU6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:56:34 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B563515A6;
-        Wed,  4 May 2022 13:52:57 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id j6so5110149ejc.13;
-        Wed, 04 May 2022 13:52:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=pRe2tTAP4iLVD9RQ1l2haGJ7VnUp8txM+9KQIOzBu28=;
-        b=jILl5MWmUcKv0gRrOEGVXQoMprsX6370Dpkgt5Gb6buyuJg/ZvaC2KanQpr95fUdC5
-         UvKWiCaITL8lsYFF5ONDpgubS/9ThEle+ooWtsY4Fx4Ui6VIfovfQec+SQih7RZsljCq
-         atbMUdd8/iW0Dv4Sobelt7Me5zPNywDn/PB0wLbmDVnG1AggdVP8O9ZVGyB1kM9f7HdN
-         Um9VQRIGzVsKCD6PqVvkByd2VEkmn8bzOVUSLg8HnCJGp0HbxWnQpZP/Lx4ejndyyKDC
-         deU+oM7GjcvGCDZkjbJB5HMlzUMPqryXKCHp9XiJI3cZoWHC1EBzoZ1osAngBZat2lNm
-         lHvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=pRe2tTAP4iLVD9RQ1l2haGJ7VnUp8txM+9KQIOzBu28=;
-        b=WMC4Dm/xwpmtncCCbHcUwwYMfN9fOL4K35dvMqeMTMJIVZGIn5otPRR8gFNiaJSAKB
-         eL8KjzloRYS0osL+5B1ryfZXoH7Io8n/J4daGy9PixQ7fNF/WEod7Wh0bHld/PTLAVW7
-         8LGm2A7bzd+FW8PaKAeIkV4AaJLT81cJlkKYtEoZWTtdxR++JZl/kGnH2PaAGCD8iw60
-         7M7V2kftqxx6aYmaQRD7YWlyXCoey/MN4jOFd5ZkCTr0r0FFAjwoIV+QDsnyCQ+eTLNk
-         xgwD7fKlMuEcyV2yuneGt3MtJLGGajiIwPK5OQXROT2zqvtA4cTIncoq1tTfj2LgE/Yu
-         cESg==
-X-Gm-Message-State: AOAM533Sm7vhU6V4KQOu/7x5bBxgwqHcGDfcIk5ojNe1D66OWX6PVOrY
-        IE+BC0fqDkwNNRokOheMviw=
-X-Google-Smtp-Source: ABdhPJzUPx5ca3YpEtyRn/Ia/vQI0/QOeBYo6/fu7vmJIzscOdsk6y5HMvEUfYIdkeTSLTjLrQf50Q==
-X-Received: by 2002:a17:907:7247:b0:6f4:ed49:cd3f with SMTP id ds7-20020a170907724700b006f4ed49cd3fmr418987ejc.172.1651697575554;
-        Wed, 04 May 2022 13:52:55 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id ml13-20020a170906cc0d00b006f3ef214e08sm6052832ejb.110.2022.05.04.13.52.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 13:52:55 -0700 (PDT)
-Message-ID: <6272e7a7.1c69fb81.dae8f.70aa@mx.google.com>
-X-Google-Original-Message-ID: <YnLnpZhibOjDxC4g@Ansuel-xps.>
-Date:   Wed, 4 May 2022 22:52:53 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RESEND PATCH v3 1/2] dt-bindings: mtd: partitions: Document new
- partition-dynamic nodes
-References: <20220429124825.21477-1-ansuelsmth@gmail.com>
- <20220429124825.21477-2-ansuelsmth@gmail.com>
- <b2d90156-f29d-88a0-58b8-7fb32c08c837@gmail.com>
+        Wed, 4 May 2022 16:58:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12328515AD;
+        Wed,  4 May 2022 13:54:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5DACB82988;
+        Wed,  4 May 2022 20:54:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F09C8C385A5;
+        Wed,  4 May 2022 20:54:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651697693;
+        bh=iA5vkbIA9NTfenOG2m2/vpIGFQLXt9XVSFrGul7+NgI=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=QzjTRmMLh9jv8SZCbzxSgPezaKMtprLp22u3Hq1AbYlF/cRxSdYeyG5TX6gIEZir/
+         jVZoqB4db39gbYZPUAaKOR2oB95eElBP9TxLQSns0Q8+pAwx+uO/to8MvjYaVEp1Wf
+         g6SyOQM31v0iR7NoZBao5GJQNu1w4CkZoirb6YHZQWW0bHImIjQRs5q5pOxJZraf54
+         akKEK7YagoBToxv3YjwBiSJq75EaI1rcnlpdR8dcCFbOBrJLs5qwg/dBoWqq07ueRu
+         50YHU6IhIbBIjt+3bu+KSGjic89FHXJuuwrKkFXbFYTYpIRK0kgCtEoobRMrU0HXPO
+         3KMFh04Ed13yg==
+From:   Mark Brown <broonie@kernel.org>
+To:     robh+dt@kernel.org, lgirdwood@gmail.com,
+        krzysztof.kozlowski+dt@linaro.org, zev@bewilderbeest.net
+Cc:     devicetree@vger.kernel.org, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org
+In-Reply-To: <20220504065252.6955-1-zev@bewilderbeest.net>
+References: <20220504065252.6955-1-zev@bewilderbeest.net>
+Subject: Re: (subset) [PATCH 1/6] dt-bindings: regulator: Add regulator-external-output property
+Message-Id: <165169769164.1749555.12170259506910526602.b4-ty@kernel.org>
+Date:   Wed, 04 May 2022 21:54:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <b2d90156-f29d-88a0-58b8-7fb32c08c837@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 10:39:14PM +0200, Rafał Miłecki wrote:
-> On 29.04.2022 14:48, Ansuel Smith wrote:
-> > Document new partition-dynamic nodes used to provide an OF node for
-> > partition registred at runtime by parsers. This is required for nvmem
-> > system to declare and detect nvmem-cells.
-> > 
-> > With these special partitions, the reg / offset is not required.
-> > The node name must be in the form of "partition name"-dynamic.
-> > If the partition can't be displayed using the node name, it's possible
-> > to use the label binding that will be used instead of the node name.
-> > The node name or the label binding is used to match the partition
-> > allocated by the parser at runtime and the parser will provide reg
-> > and offset of the mtd.
-> > 
-> > NVMEM will use the data from the parser and provide the NVMEM cells
-> > declared in the DTS, "connecting" the dynamic partition with a
-> > static declaration of cells in them.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > ---
-> >   .../mtd/partitions/partition-dynamic.yaml     | 56 +++++++++++++++++++
-> >   .../mtd/partitions/qcom,smem-part.yaml        |  4 ++
-> >   2 files changed, 60 insertions(+)
-> >   create mode 100644 Documentation/devicetree/bindings/mtd/partitions/partition-dynamic.yaml
-> > 
-> > diff --git a/Documentation/devicetree/bindings/mtd/partitions/partition-dynamic.yaml b/Documentation/devicetree/bindings/mtd/partitions/partition-dynamic.yaml
-> > new file mode 100644
-> > index 000000000000..e0efa58e4fac
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/mtd/partitions/partition-dynamic.yaml
-> > @@ -0,0 +1,56 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/mtd/partitions/partition-dynamic.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Dynamic Partition
+On Tue, 3 May 2022 23:52:47 -0700, Zev Weiss wrote:
+> Some regulators do not provide power to anything within the system
+> described by a device tree, and simply supply an external output.  The
+> regulator-external-output property can now be used to mark such
+> regulators.
 > 
-> I'm not native but that "Dynamic Partition" sounds pretty natural and
-> I'm wondering if you shouldn't make that binding dynamic-partition.yaml
-> 
-> Any natives to comment on this? :)
-> 
->
-
-The naming for the file is used to keep the standard of
-[parser]-partition.yaml. Agree that we should find a better naming for
-all of this.
-
-> > +description: |
-> > +  This binding describes a single flash partition that is dynamically allocated
-> > +  by a dedicated parser that is not a fixed-partition parser.
-> > +
-> > +  A dynamic partition require the node ending with the "-dynamic" tag and if the
-> > +  dynamic partition name can't be displayed using the node name, the label
-> > +  properties can be used. The node name or the label have to match the dynamic
-> > +  partition allocated by the parser.
-> > +
-> > +  These special partition definition can be used to give a dynamic partition
-> > +  an OF node to declare NVMEM cells. An example is declaring the partition
-> > +  label and all the NVMEM cells in it. The parser will detect the correct reg
-> > +  and offset and the NVMEM will register the cells in it based on the data
-> > +  extracted by the parser.
-> > +
-> > +maintainers:
-> > +  - Ansuel Smith <ansuelsmth@gmail.com>
-> > +
-> > +properties:
-> > +  label:
-> > +    description: The label / name for the partition assigned by the parser at
-> > +      runtime. This is needed for sybsystem like NVMEM to define cells and
-> > +      register with this OF node.
-> > +
-> > +additionalProperties: true
-> > +
-> > +examples:
-> > +  - |
-> > +    flash {
-> > +      partitions {
-> > +        compatible = "qcom,smem-part";
-> > +
-> > +        art-dynamic {
-> > +          compatible = "nvmem-cells";
-> > +          #address-cells = <1>;
-> > +          #size-cells = <1>;
-> > +          label = "0:art";
-> > +
-> > +          macaddr_art_0: macaddr@0 {
-> > +            reg = <0x0 0x6>;
-> > +          };
-> > +
-> > +          macaddr_art_6: macaddr@6 {
-> > +            reg = <0x6 0x6>;
-> > +          };
-> > +        };
-> > +      };
-> > +    };
-> 
-> I see that we need a property (like "label") for storing partition name
-> as it may contain characters not allowed in $nodename.
-> 
-> Is there a reason to play with all that foo-dynamic $nodename then? With
-> fallback from "label" to extracting foo from *-dynamic pattern?
 > 
 
-Honestly the "-dynamic" thing is to correctly handle this ""strange""
-Documentation. At times using the pattern caused tons of problems with
-pattern so I had this bright idea of using the suffix "-dynamic" to
-cleary differentiate these special partition from fixed one.
+Applied to
 
-> Could we just be lazy, keep things simple and require "label" property?
-> 
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
 
-This is problematic to correctly assign a patternProperties to any user
-or this parser.
+Thanks!
 
-> Then we could e.g. require $nodename to be pattern ^partition-[0-9a-f]+$
-> It's what leds-gpio.yaml does for reference.
-> 
+[3/6] regulator: core: Add error flags to sysfs attributes
+      commit: 0f2d636e7d1fd76f704dd3ea5089ce29a8aee049
 
-Mhhh ok I can totally make this change. My concern is that someone would
-get confused thinking they are fixed partition declared on top of the
-parser. But yhea this can also work... It's really a similar
-implementation of what I already to with dynamic. If you want I can do
-this change and send a v4.
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-> Example:
-> 
-> partitions {
-> 	compatible = "foo";
-> 
-> 	partition-1 {
-> 		label = "bootloader";
-> 	};
-> 
-> 	partition-2 {
-> 		label = "0:art";
-> 	};
-> };
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
--- 
-	Ansuel
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
