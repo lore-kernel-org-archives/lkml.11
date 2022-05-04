@@ -2,56 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EDD9C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359082AbiEDRns (ORCPT
+        id S1359224AbiEDRn7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38888 "EHLO
+        Wed, 4 May 2022 13:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356056AbiEDRJA (ORCPT
+        with ESMTP id S1355967AbiEDRI5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:00 -0400
+        Wed, 4 May 2022 13:08:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E54527F5;
-        Wed,  4 May 2022 09:54:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433E5522FD;
+        Wed,  4 May 2022 09:54:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB9F5B827A7;
-        Wed,  4 May 2022 16:54:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66AC6C385A4;
-        Wed,  4 May 2022 16:54:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6DD6B82795;
+        Wed,  4 May 2022 16:54:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8905AC385AA;
+        Wed,  4 May 2022 16:54:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683290;
-        bh=lxOCNLhoXuv1p/yYbOt/qn66HbF114gIdpkYgvRyQOI=;
+        s=korg; t=1651683283;
+        bh=D393BtSYLwAHXD0I165NpZZJKw/jq3qoPsQLyLfQj3U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qhugop2ZMxygL+Em7/qjYMYiJOi0gP8Lrzo/NxHRyuLDqn87sb3lNq3o3xQlBRjQg
-         LfqmzgaK4PrIHJ82jVhCz8nvl+N2I9402RotlOQ+CCBn9iUSPEIvfLOKFD9l3V9zb4
-         17/7pJUHll/pO9fSV2a7SxhUQeWGsfPv701glhSk=
+        b=uAcpCgZhwWUPI1AWEfpcBejEv+Nrv6wNwIikBNm14p+3zkme+5OnNGULiuhcfEAHK
+         517qUEalIo17qgZoIuNV4fKFpuvzMSzn+sOGTWShBmlqW5MGFhyOh3bVXAmmSg6X2D
+         JosxiN8dbC6gdHY+xv5Tx7yZAcowYrpZOw7olkw0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Ingo Molnar <mingo@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Song Liu <songliubraving@fb.com>,
-        Will Deacon <will@kernel.org>, linux-s390@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.15 156/177] perf symbol: Update symbols__fixup_end()
-Date:   Wed,  4 May 2022 18:45:49 +0200
-Message-Id: <20220504153107.383498779@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 136/177] drivers: net: hippi: Fix deadlock in rr_close()
+Date:   Wed,  4 May 2022 18:45:29 +0200
+Message-Id: <20220504153105.388616683@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -63,85 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namhyung Kim <namhyung@kernel.org>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit 8799ebce84d672aae1dc3170510f6a3e66f96b11 upstream.
+[ Upstream commit bc6de2878429e85c1f1afaa566f7b5abb2243eef ]
 
-Now arch-specific functions all do the same thing.  When it fixes the
-symbol address it needs to check the boundary between the kernel image
-and modules.  For the last symbol in the previous region, it cannot
-know the exact size as it's discarded already.  Thus it just uses a
-small page size (4096) and rounds it up like the last symbol.
+There is a deadlock in rr_close(), which is shown below:
 
-Fixes: 3cf6a32f3f2a4594 ("perf symbols: Fix symbol size calculation condition")
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-Acked-by: Ian Rogers <irogers@google.com>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Garry <john.garry@huawei.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Michael Petlan <mpetlan@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: linux-s390@vger.kernel.org
-Cc: linuxppc-dev@lists.ozlabs.org
-Link: https://lore.kernel.org/r/20220416004048.1514900-3-namhyung@kernel.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+   (Thread 1)                |      (Thread 2)
+                             | rr_open()
+rr_close()                   |  add_timer()
+ spin_lock_irqsave() //(1)   |  (wait a time)
+ ...                         | rr_timer()
+ del_timer_sync()            |  spin_lock_irqsave() //(2)
+ (wait timer to stop)        |  ...
+
+We hold rrpriv->lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need rrpriv->lock in position (2) of thread 2.
+As a result, rr_close() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417125519.82618-1-duoming@zju.edu.cn
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/symbol.c |   29 +++++++++++++++++++++++++----
- 1 file changed, 25 insertions(+), 4 deletions(-)
+ drivers/net/hippi/rrunner.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/tools/perf/util/symbol.c
-+++ b/tools/perf/util/symbol.c
-@@ -217,8 +217,8 @@ again:
- 	}
- }
+diff --git a/drivers/net/hippi/rrunner.c b/drivers/net/hippi/rrunner.c
+index 7661dbb31162..50e4bea46d67 100644
+--- a/drivers/net/hippi/rrunner.c
++++ b/drivers/net/hippi/rrunner.c
+@@ -1353,7 +1353,9 @@ static int rr_close(struct net_device *dev)
  
--void symbols__fixup_end(struct rb_root_cached *symbols,
--			bool is_kallsyms __maybe_unused)
-+/* Update zero-sized symbols using the address of the next symbol */
-+void symbols__fixup_end(struct rb_root_cached *symbols, bool is_kallsyms)
- {
- 	struct rb_node *nd, *prevnd = rb_first_cached(symbols);
- 	struct symbol *curr, *prev;
-@@ -232,8 +232,29 @@ void symbols__fixup_end(struct rb_root_c
- 		prev = curr;
- 		curr = rb_entry(nd, struct symbol, rb_node);
+ 	rrpriv->fw_running = 0;
  
--		if (prev->end == prev->start || prev->end != curr->start)
--			arch__symbols__fixup_end(prev, curr);
-+		/*
-+		 * On some architecture kernel text segment start is located at
-+		 * some low memory address, while modules are located at high
-+		 * memory addresses (or vice versa).  The gap between end of
-+		 * kernel text segment and beginning of first module's text
-+		 * segment is very big.  Therefore do not fill this gap and do
-+		 * not assign it to the kernel dso map (kallsyms).
-+		 *
-+		 * In kallsyms, it determines module symbols using '[' character
-+		 * like in:
-+		 *   ffffffffc1937000 T hdmi_driver_init  [snd_hda_codec_hdmi]
-+		 */
-+		if (prev->end == prev->start) {
-+			/* Last kernel/module symbol mapped to end of page */
-+			if (is_kallsyms && (!strchr(prev->name, '[') !=
-+					    !strchr(curr->name, '[')))
-+				prev->end = roundup(prev->end + 4096, 4096);
-+			else
-+				prev->end = curr->start;
-+
-+			pr_debug4("%s sym:%s end:%#" PRIx64 "\n",
-+				  __func__, prev->name, prev->end);
-+		}
- 	}
++	spin_unlock_irqrestore(&rrpriv->lock, flags);
+ 	del_timer_sync(&rrpriv->timer);
++	spin_lock_irqsave(&rrpriv->lock, flags);
  
- 	/* Last entry */
+ 	writel(0, &regs->TxPi);
+ 	writel(0, &regs->IpRxPi);
+-- 
+2.35.1
+
 
 
