@@ -2,43 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:34:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26B1FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:34:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356970AbiEDRho (ORCPT
+        id S1357830AbiEDRht (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40662 "EHLO
+        Wed, 4 May 2022 13:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356876AbiEDRJr (ORCPT
+        with ESMTP id S1356869AbiEDRJr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2406C44747;
-        Wed,  4 May 2022 09:56:15 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D12743AF0;
+        Wed,  4 May 2022 09:56:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6ADBB827A1;
-        Wed,  4 May 2022 16:56:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E75AC385A4;
-        Wed,  4 May 2022 16:56:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AFE2617DE;
+        Wed,  4 May 2022 16:56:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B7FEC385B0;
+        Wed,  4 May 2022 16:56:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683372;
-        bh=z8W341Ff4rmUGeYvixTSXtHcgH7Y0qDlJv67ciz3vJg=;
+        s=korg; t=1651683369;
+        bh=6KisIebj9lDcZTp40DXBowgWsCa5Vj0P7bVBz0IGuAw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D9TTw3vbD59G6y9KEer/ON4X3aaNkHwCPf9wgPOqFt/tRhv2G5fE6g+aCpiWZcGWe
-         Ri9AEtO1+frDCfiSBvdIdGGumBliIGWRgzUdA93vyR8rgCMMXtkD34JLMM2oEHufMn
-         MlaCnRhDqQfJ4GwBAFOBbbek1E+IuLF1dys7V5Do=
+        b=elDDmn+sQLcqtvqofd8iMPnjDvp6qB9EkHxkaR0/9xyQMExayXcQ3iEP+PbmL7OFA
+         VEuAjwvXGCoSoGNOb6tMAkv+y7PJTohNVWqN0KZPxl53zFd4mOr4RDpL6XzU74ZnpS
+         lg/8CrGXAh4w/4lGn+HVEqBuOuHusqRatP9wOkLQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bhaumik Vasav Bhatt <quic_bbhatt@quicinc.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 5.17 043/225] bus: mhi: host: pci_generic: Flush recovery worker during freeze
-Date:   Wed,  4 May 2022 18:44:41 +0200
-Message-Id: <20220504153113.980245250@linuxfoundation.org>
+        stable@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "D. Scott Phillips" <scott@os.amperecomputing.com>,
+        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Darren Hart <darren@os.amperecomputing.com>
+Subject: [PATCH 5.17 040/225] topology: make core_mask include at least cluster_siblings
+Date:   Wed,  4 May 2022 18:44:38 +0200
+Message-Id: <20220504153113.747830165@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,37 +58,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+From: Darren Hart <darren@os.amperecomputing.com>
 
-commit c38f83bae4037023827c85e045841d0421f85034 upstream.
+commit db1e59483dfd8d4e956575302520bb8f7e20c79b upstream.
 
-It is possible that the recovery work might be running while the freeze
-gets executed (during hibernation etc.,). Currently, we don't powerdown
-the stack if it is not up but if the recovery work completes after freeze,
-then the device will be up afterwards. This will not be a sane situation.
+Ampere Altra defines CPU clusters in the ACPI PPTT. They share a Snoop
+Control Unit, but have no shared CPU-side last level cache.
 
-So let's flush the recovery worker before trying to powerdown the device.
+cpu_coregroup_mask() will return a cpumask with weight 1, while
+cpu_clustergroup_mask() will return a cpumask with weight 2.
 
-Cc: stable@vger.kernel.org
-Fixes: 5f0c2ee1fe8d ("bus: mhi: pci-generic: Fix hibernation")
-Reported-by: Bhaumik Vasav Bhatt <quic_bbhatt@quicinc.com>
-Reviewed-by: Bhaumik Vasav Bhatt <quic_bbhatt@quicinc.com>
-Link: https://lore.kernel.org/r/20220408150039.17297-1-manivannan.sadhasivam@linaro.org
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+As a result, build_sched_domain() will BUG() once per CPU with:
+
+BUG: arch topology borken
+the CLS domain not a subset of the MC domain
+
+The MC level cpumask is then extended to that of the CLS child, and is
+later removed entirely as redundant. This sched domain topology is an
+improvement over previous topologies, or those built without
+SCHED_CLUSTER, particularly for certain latency sensitive workloads.
+With the current scheduler model and heuristics, this is a desirable
+default topology for Ampere Altra and Altra Max system.
+
+Rather than create a custom sched domains topology structure and
+introduce new logic in arch/arm64 to detect these systems, update the
+core_mask so coregroup is never a subset of clustergroup, extending it
+to cluster_siblings if necessary. Only do this if CONFIG_SCHED_CLUSTER
+is enabled to avoid also changing the topology (MC) when
+CONFIG_SCHED_CLUSTER is disabled.
+
+This has the added benefit over a custom topology of working for both
+symmetric and asymmetric topologies. It does not address systems where
+the CLUSTER topology is above a populated MC topology, but these are not
+considered today and can be addressed separately if and when they
+appear.
+
+The final sched domain topology for a 2 socket Ampere Altra system is
+unchanged with or without CONFIG_SCHED_CLUSTER, and the BUG is avoided:
+
+For CPU0:
+
+CONFIG_SCHED_CLUSTER=y
+CLS  [0-1]
+DIE  [0-79]
+NUMA [0-159]
+
+CONFIG_SCHED_CLUSTER is not set
+DIE  [0-79]
+NUMA [0-159]
+
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Vincent Guittot <vincent.guittot@linaro.org>
+Cc: D. Scott Phillips <scott@os.amperecomputing.com>
+Cc: Ilkka Koskinen <ilkka@os.amperecomputing.com>
+Cc: <stable@vger.kernel.org> # 5.16.x
+Suggested-by: Barry Song <song.bao.hua@hisilicon.com>
+Reviewed-by: Barry Song <song.bao.hua@hisilicon.com>
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Acked-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
+Link: https://lore.kernel.org/r/c8fe9fce7c86ed56b4c455b8c902982dc2303868.1649696956.git.darren@os.amperecomputing.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bus/mhi/pci_generic.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/base/arch_topology.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/drivers/bus/mhi/pci_generic.c
-+++ b/drivers/bus/mhi/pci_generic.c
-@@ -1060,6 +1060,7 @@ static int __maybe_unused mhi_pci_freeze
- 	 * the intermediate restore kernel reinitializes MHI device with new
- 	 * context.
- 	 */
-+	flush_work(&mhi_pdev->recovery_work);
- 	if (test_and_clear_bit(MHI_PCI_DEV_STARTED, &mhi_pdev->status)) {
- 		mhi_power_down(mhi_cntrl, true);
- 		mhi_unprepare_after_power_down(mhi_cntrl);
+--- a/drivers/base/arch_topology.c
++++ b/drivers/base/arch_topology.c
+@@ -628,6 +628,15 @@ const struct cpumask *cpu_coregroup_mask
+ 			core_mask = &cpu_topology[cpu].llc_sibling;
+ 	}
+ 
++	/*
++	 * For systems with no shared cpu-side LLC but with clusters defined,
++	 * extend core_mask to cluster_siblings. The sched domain builder will
++	 * then remove MC as redundant with CLS if SCHED_CLUSTER is enabled.
++	 */
++	if (IS_ENABLED(CONFIG_SCHED_CLUSTER) &&
++	    cpumask_subset(core_mask, &cpu_topology[cpu].cluster_sibling))
++		core_mask = &cpu_topology[cpu].cluster_sibling;
++
+ 	return core_mask;
+ }
+ 
 
 
