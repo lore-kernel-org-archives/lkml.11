@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E69C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47AB6C4167E
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358423AbiEDRaT (ORCPT
+        id S1358498AbiEDRaj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38888 "EHLO
+        Wed, 4 May 2022 13:30:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356763AbiEDRJl (ORCPT
+        with ESMTP id S1356800AbiEDRJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E26A18E2B;
-        Wed,  4 May 2022 09:55:32 -0700 (PDT)
+        Wed, 4 May 2022 13:09:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D259D1E3CC;
+        Wed,  4 May 2022 09:55:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E235B617D5;
-        Wed,  4 May 2022 16:55:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34B98C385A5;
-        Wed,  4 May 2022 16:55:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AA5BB8278E;
+        Wed,  4 May 2022 16:55:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3950BC385A5;
+        Wed,  4 May 2022 16:55:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683331;
-        bh=9E39mHLbOPtkiWOEOKFy56IbZL3g5wvMyD0A5kF6R7k=;
+        s=korg; t=1651683340;
+        bh=/ORMeW9VdrfrZbrInu4dInEhj+vzKcGEl2Q1Sgw3Yvc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W6z051L+RsxOeNgthxEwD3IcEBYJPy9RbK9qqobnaGAjW3a6FHcJVUi/RD5TscSi7
-         XTA5+hB6EjyMKkG7dUefzK/8l/HMzaX4QSjiyZ0E94k5vVPcyN1hkhCZDlE//5XC+h
-         F6W6at5AjmEUdj5gc0x9Px6EMQfFPbfjOcGJIvuo=
+        b=DGaecDNyc3mCqeJb9vlR3HCRQrKUVsVkxjccA1E5fWqJOrhC8OhTEQiJp3MoLBhEW
+         05Yn8bphvOfebgA0F4H0srKq18OfS/nMXFI3xddQKJW2AE4JG1+hpkNNpNWMlINjBB
+         3eYVCeVGKOfwIm4ghKh1OesUn64dJHOok2uyo5YY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH 5.17 018/225] usb: misc: fix improper handling of refcount in uss720_probe()
-Date:   Wed,  4 May 2022 18:44:16 +0200
-Message-Id: <20220504153111.913625937@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.17 015/225] iio: dac: ad5446: Fix read_raw not returning set value
+Date:   Wed,  4 May 2022 18:44:13 +0200
+Message-Id: <20220504153111.613317044@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,52 +52,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-commit 0a96fa640dc928da9eaa46a22c46521b037b78ad upstream.
+commit 89a01cd688d3c0ac983ef0b0e5f40018ab768317 upstream.
 
-usb_put_dev shouldn't be called when uss720_probe succeeds because of
-priv->usbdev. At the same time, priv->usbdev shouldn't be set to NULL
-before destroy_priv in uss720_disconnect because usb_put_dev is in
-destroy_priv.
+read_raw should return the un-scaled value.
 
-Fix this by moving priv->usbdev = NULL after usb_put_dev.
-
-Fixes: dcb4b8ad6a44 ("misc/uss720: fix memory leak in uss720_probe")
-Cc: stable <stable@kernel.org>
-Reviewed-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220407024001.11761-1-hbh25y@gmail.com
+Fixes: 5e06bdfb46e8b ("staging:iio:dac:ad5446: Return cached value for 'raw' attribute")
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+Link: https://lore.kernel.org/r/20220406105620.1171340-1-michael.hennerich@analog.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/misc/uss720.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iio/dac/ad5446.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/misc/uss720.c
-+++ b/drivers/usb/misc/uss720.c
-@@ -71,6 +71,7 @@ static void destroy_priv(struct kref *kr
+--- a/drivers/iio/dac/ad5446.c
++++ b/drivers/iio/dac/ad5446.c
+@@ -178,7 +178,7 @@ static int ad5446_read_raw(struct iio_de
  
- 	dev_dbg(&priv->usbdev->dev, "destroying priv datastructure\n");
- 	usb_put_dev(priv->usbdev);
-+	priv->usbdev = NULL;
- 	kfree(priv);
- }
- 
-@@ -736,7 +737,6 @@ static int uss720_probe(struct usb_inter
- 	parport_announce_port(pp);
- 
- 	usb_set_intfdata(intf, pp);
--	usb_put_dev(usbdev);
- 	return 0;
- 
- probe_abort:
-@@ -754,7 +754,6 @@ static void uss720_disconnect(struct usb
- 	usb_set_intfdata(intf, NULL);
- 	if (pp) {
- 		priv = pp->private_data;
--		priv->usbdev = NULL;
- 		priv->pp = NULL;
- 		dev_dbg(&intf->dev, "parport_remove_port\n");
- 		parport_remove_port(pp);
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+-		*val = st->cached_val;
++		*val = st->cached_val >> chan->scan_type.shift;
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		*val = st->vref_mv;
 
 
