@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 07:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F43BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 07:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345537AbiEDHfu (ORCPT
+        id S1345567AbiEDHf4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 03:35:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56136 "EHLO
+        Wed, 4 May 2022 03:35:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345271AbiEDHfb (ORCPT
+        with ESMTP id S1345479AbiEDHfc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 03:35:31 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2054.outbound.protection.outlook.com [40.107.100.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2383E167DC;
-        Wed,  4 May 2022 00:31:56 -0700 (PDT)
+        Wed, 4 May 2022 03:35:32 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2045.outbound.protection.outlook.com [40.107.243.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EDFF167CF;
+        Wed,  4 May 2022 00:31:55 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZOB2r2O5CnqCsrtnBd/GYVFKiit0rkCq/atTQYEeng6x0oEZV1o5iZU5NwtSj/ve7zlaQA8uRWOjtN9q6AkK+jQZLaaSAxX7dr+KFc2YzoFPhsyYKPACLHexu1qqhJBJR8RzVqc6fVr+pEtL1MajQBCOdje+JyKMECeyV0pOlmmDrsfI5EPUOK4v9I5ILAkMysIdif/HjiP0bK48rZKMOj3ajiNsRTKZ4qkxrpLmdoSxaO7D4mAk+3RFw+Xz2D1xFbDkgBGMh9H6RQdkokDmztkESHsGTbZ4HViHM6UOasXJHon4q10RLk4sI1A70imB6W+eKZ66qP7Hw+ajYjHgYw==
+ b=Al5lswkaM1ioc7SAOTQTJFeaubPNSU6xgAF04uBdc+xoNln12eqQZ+MKd7FIpTpW5IUCwv2fvFU0j8e/7kKg6uizhmP6uajWlJdf/UA2atjRRY0yPwOjVpzLoFWr2EPugkNiZ9mkSwywUQuKVPxjmajbtHznzta6w+Ed8RCuY5hR20HoMCNELeHJIqdcYAC2WNvtLmG8KD5Ts0QGYZfZchfMwgjhPp++LGySYa8/THeowiCJYDWNHph4tGMRWcO4tCChRMtCk4F/a8Tt1GJcDG0uJIHcwZJqrXXPi0/AZrvJ92td9hAk6Wy4HN967Op4ZU+ubR1ItV/0YnC3HOzv/w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VV3Z5LtFVKWONo8RBpJqojzZpm2/QHjyX/ZscgGf0tc=;
- b=KFNunjSNWSuwQblvpzQm6fTX3TVW4eAy9naVbKeMurJFSaBWb6iJp6MogC8Zp/cdQzqRnnyTb/15RfnVDjEDkNV6MaImCGEve2t4azl+5A/NrNeXSZ2hSpT/oPrUaISt89FwGDEfFitQok8ENRsGyT4s1A5QG9UW0P0wGloPnmwDtrDMYWya4veGrt2LhWA4IxCJJghqii5mcvRTqDH01Apftwevju4J4wQy9UaDGRZfqR9xM4gC2g+wXBQjlHM0yqf3iWIT1Gj60GrCFevM13FnwV1Qeezv9l1BJutj8x9qEOggbdZk2M7eXKVn5ZJqA4eVXdDP5NruwsFtrmbVqQ==
+ bh=LVw3Kw/l6ZaeJGRkLmevcFKwNXvx8XknQ9mOAv3S6L4=;
+ b=Dm7KaucNoX6htSGh/2jIMyNCQEsuC1s72iqMnm1bBeM3r9HSBxMrrKcNtA09M5SmeniUnL1UQZrCW6wTH9fVV+ssAM7ZdHmpsiqp+9k48xRyVU8ATKVcgDJbML4uEYbS4M/Ej9ymi5+WgLB8fpX9vAC5146drueqNj3/Jm24bvLJJi7B6aaAEMM6i6CwvlyLoopoPUkaH9J1QJyu2PrTxXgMY28op7WTxC4mT3Eb90jdcD/T59dvG2ibOtTZSLcAz1QzvgyDpfdj7gtlsk45JEB1rPZ56bGjujolzNlUji0J7hFiFwX0Abp6QdmvRBKhWPdjAagzSKXqbw/3mw5H9w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VV3Z5LtFVKWONo8RBpJqojzZpm2/QHjyX/ZscgGf0tc=;
- b=Ke4TR5TrQ3/xOaz1doc2mOv3SZutgMfCeoSOL9UVNAv54xAMt3XcFPNAWRFf7RAM5xQe0u1itHgRF6Cu7Y0SkgsZLLD7us1OIQ40IVLcjMpDw06UQz8MRe4YqjfuXH8GjwPWjDUnzeseUXQ8cyDxuwayDgFS128HybBOxDoPpAM=
-Received: from BN0PR07CA0004.namprd07.prod.outlook.com (2603:10b6:408:141::22)
- by SN6PR12MB4767.namprd12.prod.outlook.com (2603:10b6:805:e5::32) with
+ bh=LVw3Kw/l6ZaeJGRkLmevcFKwNXvx8XknQ9mOAv3S6L4=;
+ b=d+O36Qn7BRZJpnLYG0wfREOGPntuD4cv3OesAcq7DiKaVE3hOEyXdUUoMvKYd/MnXNKgz6ceDnLkdxCZdXhT+vvh0NqxJhRNdxVtmQLrKYVON1V1leA/8ZB9H1+GsgQX13d7iA8rnfM1YBmV9B1qns+YUiyMhQlbr90fF/HfAbI=
+Received: from BN9PR03CA0118.namprd03.prod.outlook.com (2603:10b6:408:fd::33)
+ by DM6PR12MB4827.namprd12.prod.outlook.com (2603:10b6:5:1d6::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Wed, 4 May
- 2022 07:31:53 +0000
-Received: from BN8NAM11FT027.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:141:cafe::30) by BN0PR07CA0004.outlook.office365.com
- (2603:10b6:408:141::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13 via Frontend
- Transport; Wed, 4 May 2022 07:31:53 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.25; Wed, 4 May
+ 2022 07:31:49 +0000
+Received: from BN8NAM11FT022.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:fd:cafe::ee) by BN9PR03CA0118.outlook.office365.com
+ (2603:10b6:408:fd::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.23 via Frontend
+ Transport; Wed, 4 May 2022 07:31:48 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,191 +48,127 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT027.mail.protection.outlook.com (10.13.177.96) with Microsoft SMTP
+ BN8NAM11FT022.mail.protection.outlook.com (10.13.176.112) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5227.15 via Frontend Transport; Wed, 4 May 2022 07:31:52 +0000
+ 15.20.5227.15 via Frontend Transport; Wed, 4 May 2022 07:31:48 +0000
 Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 4 May
- 2022 02:31:50 -0500
+ 2022 02:31:47 -0500
 From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
 CC:     <pbonzini@redhat.com>, <mlevitsk@redhat.com>, <seanjc@google.com>,
         <joro@8bytes.org>, <jon.grimm@amd.com>, <wei.huang2@amd.com>,
         <terry.bowman@amd.com>,
         Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v3 03/14] KVM: SVM: Detect X2APIC virtualization (x2AVIC) support
-Date:   Wed, 4 May 2022 02:31:17 -0500
-Message-ID: <20220504073128.12031-4-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v3 00/14] Introducing AMD x2AVIC and hybrid-AVIC modes
+Date:   Wed, 4 May 2022 02:31:14 -0500
+Message-ID: <20220504073128.12031-1-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220504073128.12031-1-suravee.suthikulpanit@amd.com>
-References: <20220504073128.12031-1-suravee.suthikulpanit@amd.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-Originating-IP: [10.180.168.240]
 X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 54bd0db4-07ab-4a5a-f1b0-08da2da028a9
-X-MS-TrafficTypeDiagnostic: SN6PR12MB4767:EE_
-X-Microsoft-Antispam-PRVS: <SN6PR12MB4767B5D59930813E49E82CC9F3C39@SN6PR12MB4767.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 07fd20b2-6b78-41d4-8659-08da2da0265b
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4827:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB482747F32FF1F43AF0223954F3C39@DM6PR12MB4827.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wEYneZGOPRztG8gQ32L08UWSumOZbYSDxPSM3Kbk5DMtJ7AKAUs8GscjV9ujkJtNG/LGpjHATcsP51jGiNe/L9I51ar756NQfo2iyrPP7/mV0CKLCgJG1/cHoxtvbn0q0VtJaeS+ZwVFMRMZhOf+p3mxfj7M/oh/PcGf4euklSQuAgoZsYDT9a9bqBj+xMEGMsRbOGuKDmxRop5Pf6P1pEoaQQqTZAYATqYo7PWik7J9y+Y8418GJYcHsYqcNH4Sy/5Sg9/5sVohKQ3lBRleNaXndTruMpgI2iBbpJ/9HnRdWTZCgBjCAQR8ACyGMMYySPXx5/2VEjGxVNM7POAllWxghGjU8di7ZG8NTuM2APRRSLLi9/o0TJ3JIGAl2all6FuHUyq1OpcgLJBZjutXaw1uB6xfieu9z2rjPN7e/6NV9FkLcaEAJp12jsJc347FmG+5vPDS/BAk4Es9R7mlVYm7L/QQSa5FNWoe42GQKSmNtOqbEJ7gFJSDB0qKHI+/AXpwBBljIR5t/ejxf1kpjQv0n7qCPcCOjSTazGts4/XgyGMW2GBDm1vu20UaXN+JJOIyacDSH9ZrH8KUqts0tccYiR5Z+vxH1a4BRSPIEsucqpJG/o6PCkDn6dKcYHXFKLtMntqt4ife6y6jCyO8R8txWAfUQ9EPEACG65y6bQtRmNtExOTpeoz0lrqrLngHOCagekS0+XHzE2coVB0jOG/R8ihNsTIliFByAQe2bx/HOtV0DxSrlrpEWlHlm8Cw
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(70206006)(47076005)(336012)(4326008)(426003)(40460700003)(81166007)(70586007)(83380400001)(8676002)(36860700001)(110136005)(54906003)(2616005)(16526019)(1076003)(186003)(316002)(82310400005)(86362001)(2906002)(26005)(36756003)(6666004)(356005)(44832011)(5660300002)(7696005)(8936002)(508600001)(36900700001)(309714004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Iy+dyTO7AN1ytoi7AIBOx/+mEbwF2AFGQFP8R6EjZH6Wpt1cJzRNupZkgSK1TQc91Enm7RGZ7ixqxkXhLrdnMBbKuLiwFq4E9o2iHYsk4WzyUlSKQYeWI94PVjMngN/TeMrkjoIz5eba9+1nh896RllMfOvVRlekdfvGK9lF8actpeTr6cKmXds75dH/oy+Wh87UGD2mda4MgFmojBqhpVTQYEL8r+TCgTvi++Oan+E+SIibXyzv4CseejkXqu9lqOOCkhYUQbuiNHeu4LING3CEBR4/PmkIqTDjiYCVKVlCMuns1vI4USmX3ZzM4RFPrTa/y3OIhpI8R0BQsBwfpdcUP16mQDChN2c+2EVL3qXwwiUT+4PA5zayYjRUjUlGIalX7KM9BsIXBJOSedHz83Iq4hGddFbUHjfULr6geallJAdAoz9d6YOgBcpY3C7McI9tPL1MAA3qNAeHzPu+mXwkxjM9/uo+NuSWQvjCNPkqkoB9Tyf18JwrHiXKrNkLcu0697YKwUnOSWW3DbVHxLb63pw8dTPgDe65mbKvQNW7ObqCuFqVmw9J3hqCWMKXNHGWV+KTDqupLJFfqpVX1UixIqKRNZxVTYV/4g+nBuA34TEeU+HA+imbsOw5oyUXMFoGtIQy8Em0ah3R8ZQ7BPKQbolA7vD6FADYCcUim/IBW6B+/na+WrQqSZ5qiZsARUHa3oV5umcMW8eA+kktURS+f+gRgt8csxA5bq1cC2BdUhi3JaPxWjmljzu/zS1G3sVqiAwL/6LWAbZcJbOxGQzS61qAK7LMV7OyDv/rc1g=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(47076005)(426003)(16526019)(336012)(1076003)(186003)(26005)(6666004)(7696005)(2616005)(356005)(81166007)(40460700003)(86362001)(83380400001)(82310400005)(36860700001)(44832011)(110136005)(5660300002)(54906003)(508600001)(316002)(70586007)(8676002)(4326008)(70206006)(8936002)(36756003)(2906002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:31:52.5808
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:31:48.7271
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 54bd0db4-07ab-4a5a-f1b0-08da2da028a9
+X-MS-Exchange-CrossTenant-Network-Message-Id: 07fd20b2-6b78-41d4-8659-08da2da0265b
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT027.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT022.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB4767
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4827
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add CPUID check for the x2APIC virtualization (x2AVIC) feature.
-If available, the SVM driver can support both AVIC and x2AVIC modes
-when load the kvm_amd driver with avic=1. The operating mode will be
-determined at runtime depending on the guest APIC mode.
+Introducing support for AMD x2APIC virtualization. This feature is
+indicated by the CPUID Fn8000_000A EDX[14], and it can be activated
+by setting bit 31 (enable AVIC) and bit 30 (x2APIC mode) of VMCB
+offset 60h.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- arch/x86/include/asm/svm.h |  3 +++
- arch/x86/kvm/svm/avic.c    | 40 ++++++++++++++++++++++++++++++++++++++
- arch/x86/kvm/svm/svm.c     | 15 ++------------
- arch/x86/kvm/svm/svm.h     |  1 +
- 4 files changed, 46 insertions(+), 13 deletions(-)
+With x2AVIC support, the guest local APIC can be fully virtualized in
+both xAPIC and x2APIC modes, and the mode can be changed during runtime.
+For example, when AVIC is enabled, the hypervisor set VMCB bit 31
+to activate AVIC for each vCPU. Then, it keeps track of each vCPU's
+APIC mode, and updates VMCB bit 30 to enable/disable x2APIC
+virtualization mode accordingly.
 
-diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
-index f70a5108d464..2c2a104b777e 100644
---- a/arch/x86/include/asm/svm.h
-+++ b/arch/x86/include/asm/svm.h
-@@ -195,6 +195,9 @@ struct __attribute__ ((__packed__)) vmcb_control_area {
- #define AVIC_ENABLE_SHIFT 31
- #define AVIC_ENABLE_MASK (1 << AVIC_ENABLE_SHIFT)
- 
-+#define X2APIC_MODE_SHIFT 30
-+#define X2APIC_MODE_MASK (1 << X2APIC_MODE_SHIFT)
-+
- #define LBR_CTL_ENABLE_MASK BIT_ULL(0)
- #define VIRTUAL_VMLOAD_VMSAVE_ENABLE_MASK BIT_ULL(1)
- 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index a8f514212b87..fc3ba6071482 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -40,6 +40,15 @@
- #define AVIC_GATAG_TO_VMID(x)		((x >> AVIC_VCPU_ID_BITS) & AVIC_VM_ID_MASK)
- #define AVIC_GATAG_TO_VCPUID(x)		(x & AVIC_VCPU_ID_MASK)
- 
-+enum avic_modes {
-+	AVIC_MODE_NONE = 0,
-+	AVIC_MODE_X1,
-+	AVIC_MODE_X2,
-+};
-+
-+static bool force_avic;
-+module_param_unsafe(force_avic, bool, 0444);
-+
- /* Note:
-  * This hash table is used to map VM_ID to a struct kvm_svm,
-  * when handling AMD IOMMU GALOG notification to schedule in
-@@ -50,6 +59,7 @@ static DEFINE_HASHTABLE(svm_vm_data_hash, SVM_VM_DATA_HASH_BITS);
- static u32 next_vm_id = 0;
- static bool next_vm_id_wrapped = 0;
- static DEFINE_SPINLOCK(svm_vm_data_hash_lock);
-+static enum avic_modes avic_mode;
- 
- /*
-  * This is a wrapper of struct amd_iommu_ir_data.
-@@ -1077,3 +1087,33 @@ void avic_vcpu_unblocking(struct kvm_vcpu *vcpu)
- 
- 	avic_vcpu_load(vcpu);
- }
-+
-+/*
-+ * Note:
-+ * - The module param avic enable both xAPIC and x2APIC mode.
-+ * - Hypervisor can support both xAVIC and x2AVIC in the same guest.
-+ * - The mode can be switched at run-time.
-+ */
-+bool avic_hardware_setup(struct kvm_x86_ops *x86_ops)
-+{
-+	if (!npt_enabled)
-+		return false;
-+
-+	if (boot_cpu_has(X86_FEATURE_AVIC)) {
-+		avic_mode = AVIC_MODE_X1;
-+		pr_info("AVIC enabled\n");
-+	} else if (force_avic) {
-+		pr_warn("AVIC is not supported in CPUID but force enabled");
-+		pr_warn("Your system might crash and burn");
-+	}
-+
-+	if (boot_cpu_has(X86_FEATURE_X2AVIC)) {
-+		avic_mode = AVIC_MODE_X2;
-+		pr_info("x2AVIC enabled\n");
-+	}
-+
-+	if (avic_mode != AVIC_MODE_NONE)
-+		amd_iommu_register_ga_log_notifier(&avic_ga_log_notifier);
-+
-+	return !!avic_mode;
-+}
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 3b49337998ec..74e6f86f5dc3 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -188,9 +188,6 @@ module_param(tsc_scaling, int, 0444);
- static bool avic;
- module_param(avic, bool, 0444);
- 
--static bool force_avic;
--module_param_unsafe(force_avic, bool, 0444);
--
- bool __read_mostly dump_invalid_vmcb;
- module_param(dump_invalid_vmcb, bool, 0644);
- 
-@@ -4913,17 +4910,9 @@ static __init int svm_hardware_setup(void)
- 			nrips = false;
- 	}
- 
--	enable_apicv = avic = avic && npt_enabled && (boot_cpu_has(X86_FEATURE_AVIC) || force_avic);
-+	enable_apicv = avic = avic && avic_hardware_setup(&svm_x86_ops);
- 
--	if (enable_apicv) {
--		if (!boot_cpu_has(X86_FEATURE_AVIC)) {
--			pr_warn("AVIC is not supported in CPUID but force enabled");
--			pr_warn("Your system might crash and burn");
--		} else
--			pr_info("AVIC enabled\n");
--
--		amd_iommu_register_ga_log_notifier(&avic_ga_log_notifier);
--	} else {
-+	if (!enable_apicv) {
- 		svm_x86_ops.vcpu_blocking = NULL;
- 		svm_x86_ops.vcpu_unblocking = NULL;
- 		svm_x86_ops.vcpu_get_apicv_inhibit_reasons = NULL;
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 32220a1b0ea2..678fc7757fe4 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -603,6 +603,7 @@ extern struct kvm_x86_nested_ops svm_nested_ops;
- 
- /* avic.c */
- 
-+bool avic_hardware_setup(struct kvm_x86_ops *ops);
- int avic_ga_log_notifier(u32 ga_tag);
- void avic_vm_destroy(struct kvm *kvm);
- int avic_vm_init(struct kvm *kvm);
+Besides setting bit VMCB bit 30 and 31, for x2AVIC, kvm_amd driver needs
+to disable interception for the x2APIC MSR range to allow AVIC hardware
+to virtualize register accesses.
+
+This series also introduce a partial APIC virtualization (hybrid-AVIC)
+mode, where APIC register accesses are trapped (i.e. not virtualized
+by hardware), but leverage AVIC doorbell for interrupt injection.
+This eliminates need to disable x2APIC in the guest on system without
+x2AVIC support. (Note: suggested by Maxim)
+
+Regards,
+Suravee
+
+Testing for v3:
+  * Tested booting a Linux VM with x2APIC physical and logical modes upto 512 vCPUs.
+  * Test enable AVIC in L0 with xAPIC and x2AVIC modes in L1 and launch L2 guest
+  * Test partial AVIC mode by launching a VM with x2APIC mode
+
+Changes from v2
+(https://lore.kernel.org/all/20220412115822.14351-1-suravee.suthikulpanit@amd.com/)
+  * Rebase to kvm/queue
+  * Patch  3: Moving force_avic option declaration to avic.c
+  * Patch  7: Change to only setup x2APIC msrs supported by x2AVIC in svm_direct_access_msrs.
+  * Patch  8: Add back avic_refresh_apicv_exec_ctrl() in avic_set_virtual_apic_mode()
+  * Patch  9: Update avic_set_x2apic_msr_interception() logic
+  * Patch 11: Introduce hybrid-AVIC mode (NEW)
+  * Patch 12: Modify warning to check for vcpu with xAPIC or x2APIC mode only.
+  * Patch 13: Add support for avic_kick_target_vcpus_fast() (NEW)
+  * Patch 14: Add doorbell tracepoint (NEW)
+
+Suravee Suthikulpanit (14):
+  x86/cpufeatures: Introduce x2AVIC CPUID bit
+  KVM: x86: lapic: Rename [GET/SET]_APIC_DEST_FIELD to
+    [GET/SET]_XAPIC_DEST_FIELD
+  KVM: SVM: Detect X2APIC virtualization (x2AVIC) support
+  KVM: SVM: Update max number of vCPUs supported for x2AVIC mode
+  KVM: SVM: Update avic_kick_target_vcpus to support 32-bit APIC ID
+  KVM: SVM: Do not support updating APIC ID when in x2APIC mode
+  KVM: SVM: Adding support for configuring x2APIC MSRs interception
+  KVM: SVM: Update AVIC settings when changing APIC mode
+  KVM: SVM: Introduce helper functions to (de)activate AVIC and x2AVIC
+  KVM: SVM: Do not throw warning when calling avic_vcpu_load on a
+    running vcpu
+  KVM: SVM: Introduce hybrid-AVIC mode
+  kvm/x86: Warning APICv inconsistency only when vcpu APIC mode is valid
+  KVM: SVM: Use target APIC ID to complete x2AVIC IRQs when possible
+  KVM: SVM: Add AVIC doorbell tracepoint
+
+ arch/x86/hyperv/hv_apic.c          |   2 +-
+ arch/x86/include/asm/apicdef.h     |   4 +-
+ arch/x86/include/asm/cpufeatures.h |   1 +
+ arch/x86/include/asm/svm.h         |  21 +++-
+ arch/x86/kernel/apic/apic.c        |   2 +-
+ arch/x86/kernel/apic/ipi.c         |   2 +-
+ arch/x86/kvm/lapic.c               |   2 +-
+ arch/x86/kvm/svm/avic.c            | 181 ++++++++++++++++++++++++++---
+ arch/x86/kvm/svm/svm.c             |  56 ++++-----
+ arch/x86/kvm/svm/svm.h             |   6 +-
+ arch/x86/kvm/trace.h               |  18 +++
+ arch/x86/kvm/x86.c                 |   8 +-
+ 12 files changed, 251 insertions(+), 52 deletions(-)
+
 -- 
 2.25.1
 
