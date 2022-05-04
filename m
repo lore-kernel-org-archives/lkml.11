@@ -2,80 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E79C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:35:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B22C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:36:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347668AbiEDVj2 (ORCPT
+        id S1378816AbiEDVjk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 17:39:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
+        Wed, 4 May 2022 17:39:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379039AbiEDVip (ORCPT
+        with ESMTP id S1379266AbiEDVjO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 17:38:45 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEDF85418C
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 14:34:34 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id fv2so2372584pjb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 14:34:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tj4W99hLVPdShLj3ivywhTM+79BMdoNrQwhHTBQPL60=;
-        b=PVamEZrJJCDwaxtHGTAAYvOZIi8UQmCSyPPQlhRvy0qI2AcamsQO+9Uif9UK676ik9
-         VuBt6UWvLd4ybzGl2kzwvvKaHsDPF/iWEP9fnbiBjcP+2WVOTVGX4IOQv/vVEKygcbRf
-         YoFFYFN/cv+kb2lT0fh+N6/D0CtCD8oT9vqo0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tj4W99hLVPdShLj3ivywhTM+79BMdoNrQwhHTBQPL60=;
-        b=NSA8nsaQLhalQtXUb9B9+28E3n1j2V9uK82XG/BoaZO+dcNtb2fWD5/NFYQ3f9LOg2
-         gARNzOvsaCOh/Ar56vBiC5VbFHuPn1MyjS0FK72o6CupO+7WFIC5eyT/UmhRbP1d16gl
-         +jyvULxjxHLOL+n4w1T1kE1rp0SQSgRumkp/IQWCDbmj1+ZYcf4JKEm5Rxjzc4rST3lQ
-         ZvIJetPq128kYPmIQmd5Ac7tJpaJed1cYo91KXrz+pdg8gOuXYF0e99aqDIbTw2cYdtq
-         NENTOvg3C1ruc8E3ZUSgSMrfk5d6sZDQ8zS5+gxlPUuvalyXOlOsv0aybuRA99Ss+zaW
-         AZNg==
-X-Gm-Message-State: AOAM532Ftz3bAy28E3CATedtZWme8SwBIVvVRbRcnmWeJRSkFRFU5VgD
-        /8975EZ41vB52JvvgRwFqMjGrg==
-X-Google-Smtp-Source: ABdhPJz+XfOgnd0Tn7aSzaVP1xEyiS4vAsaU5I1pl+k5tp1OEQTp0UcNdMFI42xg1QoQoQiOvZhntw==
-X-Received: by 2002:a17:90b:3806:b0:1d2:6e95:f5cc with SMTP id mq6-20020a17090b380600b001d26e95f5ccmr1888211pjb.23.1651700072771;
-        Wed, 04 May 2022 14:34:32 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:35b6:c77b:be04:3bd5])
-        by smtp.gmail.com with UTF8SMTPSA id w1-20020a1709026f0100b0015e8d4eb22fsm8721322plk.121.2022.05.04.14.34.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 May 2022 14:34:32 -0700 (PDT)
-Date:   Wed, 4 May 2022 14:34:31 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
-        srinivas.kandagatla@linaro.org, dianders@chromium.org,
-        swboyd@chromium.org, judyhsiao@chromium.org,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Subject: Re: [PATCH v11 05/12] arm64: dts: qcom: sc7280: Add wcd9385 codec
- node for CRD 3.0/3.1
-Message-ID: <YnLxZ1YoGv2UqNxV@google.com>
-References: <1651664649-25290-1-git-send-email-quic_srivasam@quicinc.com>
- <1651664649-25290-6-git-send-email-quic_srivasam@quicinc.com>
+        Wed, 4 May 2022 17:39:14 -0400
+Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07117532DE;
+        Wed,  4 May 2022 14:35:12 -0700 (PDT)
+Received: from hatter.bewilderbeest.net (174-21-163-222.tukw.qwest.net [174.21.163.222])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: zev)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 2D00F368;
+        Wed,  4 May 2022 14:35:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
+        s=thorn; t=1651700112;
+        bh=TG2ba4y/RDwlDe7aExNpDRvQBRZU2FOjp8nvEg6cd1I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lugkWU3M8aQidzPUa+dHs6yMf6mvFols8gAAPjnxADbicqw7Vawf0nVlFXHAKBXIM
+         oej/qo8TkXReRDIV5f3qpZy/xJTgR1zzWwIArKgcTxibjps/HdiiWmdyDMmeHgXhOx
+         0Ap6n1nxdYp9bGIwkgIA2fQ2KqdNfVf/7Aa4Bgnw=
+Date:   Wed, 4 May 2022 14:35:08 -0700
+From:   Zev Weiss <zev@bewilderbeest.net>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        openbmc@lists.ozlabs.org, MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>
+Subject: Re: [PATCH 2/6] dt-bindings: regulator: Add reg-external-output
+ binding
+Message-ID: <YnLxjJI8Vu3LqAnL@hatter.bewilderbeest.net>
+References: <20220504065252.6955-1-zev@bewilderbeest.net>
+ <20220504065252.6955-2-zev@bewilderbeest.net>
+ <YnJ32bG4IkSrRtHV@sirena.org.uk>
+ <YnLjNn9WVhvd4izZ@hatter.bewilderbeest.net>
+ <YnLmyHwMGnRL18LD@sirena.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <1651664649-25290-6-git-send-email-quic_srivasam@quicinc.com>
+In-Reply-To: <YnLmyHwMGnRL18LD@sirena.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 05:14:02PM +0530, Srinivasa Rao Mandadapu wrote:
-> Add wcd9385 codec node for audio use case on CRD rev5+ (aka CRD 3.0/3.1)
-> boards. Add tlmm gpio property for switching CTIA/OMTP Headset.
-> 
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+[Adding extcon maintainers...]
 
-Carrying over from v10:
+On Wed, May 04, 2022 at 01:49:12PM PDT, Mark Brown wrote:
+>On Wed, May 04, 2022 at 01:33:58PM -0700, Zev Weiss wrote:
+>> On Wed, May 04, 2022 at 05:55:53AM PDT, Mark Brown wrote:
+>
+>> > I think at a minimum anything like this would need some sort of
+>> > representation of how the output physically appears so that people can
+>> > work out how outputs are mapped to the hardware they see.
+>
+>> I don't quite understand what you're describing here -- could you elaborate
+>> on what you mean by "how the output physically appears", and what that might
+>> look like in a DT binding?
+>
+>For example if the output comes out on a socket then that socket should
+>be described.
+>
 
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Okay -- in the case of an Open19 power shelf like the ahe-50dc, there 
+are 50 instances of this, 48 of which are in four ganged connectors each 
+with 12 pairs of pins, but two of which have their own dedicated little 
+individual sockets.  The connectors are physically different, but 
+they're all identical as far as software is concerned, so I'm not clear 
+on why it would need to be expressed in any DT properties or the like.  
+Or did you just mean explanatory free-form text in the description 
+field?
+
+>> > However we
+>> > already have a subsystem for external connectors - extcon.  Perhaps this
+>> > should be a regulator client in the extcon API?  It's common for
+>> > connectors to include some sort of power provision so it seems like this
+>> > would fit right in.
+>
+>> Interesting -- I wasn't previously aware of the extcon subsystem, thanks for
+>> the pointer.  However, after looking at it a bit, I'm not sure I see how
+>> it'd be applicable here, since it looks like it's built to handle hardware
+>> that's at least sophisticated enough for software to tell whether or not
+>> something's plugged in, which isn't the case here.  The connector is just a
+>> ground pin and +12VDC pin, no presence-detection mechanism or anything else.
+>> Outside of the regulator itself there's really no "device" there for
+>> software to talk to or otherwise interact with at all.
+>
+>Sure, but there's no reason why it can't scale down to something
+>simpler.  It's easier to support something simpler than have to extend
+>to support something more complicated.
+
+Alright, so would you suggest creating something like 
+drivers/extcon/extcon-regulator-output.c, and just having its extcon 
+functionality be something of a stub for now?
+
+
+Thanks,
+Zev
+
