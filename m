@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B03C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:48:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B416C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:48:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359421AbiEDRwU (ORCPT
+        id S1359468AbiEDRwX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58654 "EHLO
+        Wed, 4 May 2022 13:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357699AbiEDRPL (ORCPT
+        with ESMTP id S1358179AbiEDRPo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE3155367;
-        Wed,  4 May 2022 09:58:52 -0700 (PDT)
+        Wed, 4 May 2022 13:15:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EDA356422;
+        Wed,  4 May 2022 09:59:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62AB661744;
-        Wed,  4 May 2022 16:58:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B39BCC385A5;
-        Wed,  4 May 2022 16:58:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E666AB82737;
+        Wed,  4 May 2022 16:59:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ECBBC385A5;
+        Wed,  4 May 2022 16:59:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683531;
-        bh=7HP96qjk9PvmbCCTHdMjGWvz+8Yhk8M/QPjWnUSKpgM=;
+        s=korg; t=1651683563;
+        bh=1uPF9iPeVnkugtdDgv3+RKTt3xBCZr5qK5UDqcizsRk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iksL/Wrki3z4HVnJcZ5wcNzD6pZLzTFm9N1BJcd991jeMBEv7wmTN8v0uupqffGXW
-         MW0NIGF8sv+j+Q5KmZuWxTbW68/NgRKHFYAYAiYTBaOwUTe7cYEgshq/Ss763vqKg2
-         J5jiaiSq4f1JJ8wdWVcFQHkh+w+VVPZKWXh91T3E=
+        b=nocz6JQgrPRNrDySsJMCrC4fItPrMolqyT1lgWQzz0ZN5sGSXku6Ql05oKAVtkx5J
+         GTv8lHkxiDDdykJmsqlM17rvPttXAUKgzTwK4QAnS5LPIZOmlJOUyJqivS6BVCwhNO
+         b3PTlCiQM9ofPz4eqyf4yylkQIe1knli8f4e49bY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Woody Suwalski <wsuwalski@gmail.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.17 189/225] ACPI: processor: idle: Avoid falling back to C3 type C-states
-Date:   Wed,  4 May 2022 18:47:07 +0200
-Message-Id: <20220504153127.166101213@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.17 217/225] tty: n_gsm: fix incorrect UA handling
+Date:   Wed,  4 May 2022 18:47:35 +0200
+Message-Id: <20220504153129.286283053@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -52,48 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ville Syrjälä <ville.syrjala@linux.intel.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit fc45e55ebc58dbf622cb89ddbf797589c7a5510b upstream.
+commit ff9166c623704337bd6fe66fce2838d9768a6634 upstream.
 
-The "safe state" index is used by acpi_idle_enter_bm() to avoid
-entering a C-state that may require bus mastering to be disabled
-on entry in the cases when this is not going to happen.  For this
-reason, it should not be set to point to C3 type of C-states, because
-they may require bus mastering to be disabled on entry in principle.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.4.2 states that any received unnumbered
+acknowledgment (UA) with its poll/final (PF) bit set to 0 shall be
+discarded. Currently, all UA frame are handled in the same way regardless
+of the PF bit. This does not comply with the standard.
+Remove the UA case in gsm_queue() to process only UA frames with PF bit set
+to 1 to abide the standard.
 
-This was broken by commit d6b88ce2eb9d ("ACPI: processor idle: Allow
-playing dead in C3 state") which inadvertently allowed the "safe
-state" index to point to C3 type of C-states.
-
-This results in a machine that won't boot past the point when it first
-enters C3. Restore the correct behaviour (either demote to C1/C2, or
-use C3 but also set ARB_DIS=1).
-
-I hit this on a Fujitsu Siemens Lifebook S6010 (P3) machine.
-
-Fixes: d6b88ce2eb9d ("ACPI: processor idle: Allow playing dead in C3 state")
-Cc: 5.16+ <stable@vger.kernel.org> # 5.16+
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Tested-by: Woody Suwalski <wsuwalski@gmail.com>
-[ rjw: Subject and changelog adjustments ]
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-20-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/processor_idle.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/acpi/processor_idle.c
-+++ b/drivers/acpi/processor_idle.c
-@@ -790,7 +790,8 @@ static int acpi_processor_setup_cstates(
- 		if (cx->type == ACPI_STATE_C1 || cx->type == ACPI_STATE_C2 ||
- 		    cx->type == ACPI_STATE_C3) {
- 			state->enter_dead = acpi_idle_play_dead;
--			drv->safe_state_index = count;
-+			if (cx->type != ACPI_STATE_C3)
-+				drv->safe_state_index = count;
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1865,7 +1865,6 @@ static void gsm_queue(struct gsm_mux *gs
+ 			}
  		}
- 		/*
- 		 * Halt-induced C1 is not good for ->enter_s2idle, because it
+ 		break;
+-	case UA:
+ 	case UA|PF:
+ 		if (cr == 0 || dlci == NULL)
+ 			break;
 
 
