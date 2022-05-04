@@ -2,160 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 496B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:41:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFB25C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:41:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244629AbiEDWpG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59392 "EHLO
+        id S1379049AbiEDWpL (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 18:45:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359096AbiEDWo6 (ORCPT
+        with ESMTP id S1376474AbiEDWo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:44:58 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D4E4888C;
+        Wed, 4 May 2022 18:44:59 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD79548893;
         Wed,  4 May 2022 15:41:20 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:51426)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmNgN-002E0L-Io; Wed, 04 May 2022 16:41:19 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37004 helo=localhost.localdomain)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmNgL-00GI0k-Cs; Wed, 04 May 2022 16:41:19 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     rjw@rjwysocki.net, Oleg Nesterov <oleg@redhat.com>,
-        mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
-        tj@kernel.org, linux-pm@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Date:   Wed,  4 May 2022 17:40:49 -0500
-Message-Id: <20220504224058.476193-2-ebiederm@xmission.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
-References: <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651704081; x=1683240081;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=vo98koW8xOZpXvkfJZ26bs6YvtqqcceUyFD7sOeeXGI=;
+  b=QARAiMKcBxMxlkyw4T73MEiVXW+ANS56eY0oZYG5t9YP1XT2TTUe6dpD
+   2XHKLbJsb8/bjbZhpw335BBAcRuArgCbzriJwBTrmj7fseynGcnhRZYVW
+   5s0J06AUDha6sKC2sY/6nxP+Xm5yM3v1g47NFDB3Tw+DozxXdJEyKPJGs
+   veh0F0MmYzYJODxOoUncxVx+G2fBkVykNqBtYu+JV7zGGAuYDWhB6m8R3
+   2i7mMujC/D8SnNNTOlNmTkYh1zRgl1wZdn1D+ejq/02I8KgCErrMQwLcZ
+   2+AyNQaiMTAZsuldSHLdPU7a8U/MdZ64tEs6Sz+x/23z2QKfkpVMYuHQJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="267803170"
+X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
+   d="scan'208";a="267803170"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 15:41:20 -0700
+X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
+   d="scan'208";a="549071723"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 15:41:20 -0700
+Date:   Wed, 4 May 2022 15:41:20 -0700 (PDT)
+From:   matthew.gerlach@linux.intel.com
+X-X-Sender: mgerlach@rhweight-WRK1
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+cc:     dinguyen@kernel.org, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Subject: Re: [PATCH v2 1/3] dt-bindings: misc: add bindings for Intel HPS
+ Copy Engine
+In-Reply-To: <17407fe7-b11d-2ba8-acca-3e71cf1a3b2f@linaro.org>
+Message-ID: <alpine.DEB.2.22.394.2205041425230.2669897@rhweight-WRK1>
+References: <20220503194546.1287679-1-matthew.gerlach@linux.intel.com> <20220503194546.1287679-2-matthew.gerlach@linux.intel.com> <17407fe7-b11d-2ba8-acca-3e71cf1a3b2f@linaro.org>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-XM-SPF: eid=1nmNgL-00GI0k-Cs;;;mid=<20220504224058.476193-2-ebiederm@xmission.com>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+I3B3Phfe901q7rSV+YmjQsf+bVs/3azg=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH v3 02/11] signal: Replace __group_send_sig_info with send_signal_locked
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function __group_send_sig_info is just a light wrapper around
-send_signal_locked with one parameter fixed to a constant value.  As
-the wrapper adds no real value update the code to directly call the
-wrapped function.
 
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
----
- drivers/tty/tty_jobctrl.c      | 4 ++--
- include/linux/signal.h         | 1 -
- kernel/signal.c                | 8 +-------
- kernel/time/posix-cpu-timers.c | 6 +++---
- 4 files changed, 6 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/tty/tty_jobctrl.c b/drivers/tty/tty_jobctrl.c
-index 80b86a7992b5..0d04287da098 100644
---- a/drivers/tty/tty_jobctrl.c
-+++ b/drivers/tty/tty_jobctrl.c
-@@ -215,8 +215,8 @@ int tty_signal_session_leader(struct tty_struct *tty, int exit_session)
- 				spin_unlock_irq(&p->sighand->siglock);
- 				continue;
- 			}
--			__group_send_sig_info(SIGHUP, SEND_SIG_PRIV, p);
--			__group_send_sig_info(SIGCONT, SEND_SIG_PRIV, p);
-+			send_signal_locked(SIGHUP, SEND_SIG_PRIV, p, PIDTYPE_TGID);
-+			send_signal_locked(SIGCONT, SEND_SIG_PRIV, p, PIDTYPE_TGID);
- 			put_pid(p->signal->tty_old_pgrp);  /* A noop */
- 			spin_lock(&tty->ctrl.lock);
- 			tty_pgrp = get_pid(tty->ctrl.pgrp);
-diff --git a/include/linux/signal.h b/include/linux/signal.h
-index 55605bdf5ce9..3b98e7a28538 100644
---- a/include/linux/signal.h
-+++ b/include/linux/signal.h
-@@ -282,7 +282,6 @@ extern int do_send_sig_info(int sig, struct kernel_siginfo *info,
- 				struct task_struct *p, enum pid_type type);
- extern int group_send_sig_info(int sig, struct kernel_siginfo *info,
- 			       struct task_struct *p, enum pid_type type);
--extern int __group_send_sig_info(int, struct kernel_siginfo *, struct task_struct *);
- extern int send_signal_locked(int sig, struct kernel_siginfo *info,
- 			      struct task_struct *p, enum pid_type type);
- extern int sigprocmask(int, sigset_t *, sigset_t *);
-diff --git a/kernel/signal.c b/kernel/signal.c
-index b0403197b0ad..72d96614effc 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -1281,12 +1281,6 @@ static int __init setup_print_fatal_signals(char *str)
- 
- __setup("print-fatal-signals=", setup_print_fatal_signals);
- 
--int
--__group_send_sig_info(int sig, struct kernel_siginfo *info, struct task_struct *p)
--{
--	return send_signal_locked(sig, info, p, PIDTYPE_TGID);
--}
--
- int do_send_sig_info(int sig, struct kernel_siginfo *info, struct task_struct *p,
- 			enum pid_type type)
- {
-@@ -2173,7 +2167,7 @@ static void do_notify_parent_cldstop(struct task_struct *tsk,
- 	spin_lock_irqsave(&sighand->siglock, flags);
- 	if (sighand->action[SIGCHLD-1].sa.sa_handler != SIG_IGN &&
- 	    !(sighand->action[SIGCHLD-1].sa.sa_flags & SA_NOCLDSTOP))
--		__group_send_sig_info(SIGCHLD, &info, parent);
-+		send_signal_locked(SIGCHLD, &info, parent, PIDTYPE_TGID);
- 	/*
- 	 * Even if SIGCHLD is not generated, we must wake up wait4 calls.
- 	 */
-diff --git a/kernel/time/posix-cpu-timers.c b/kernel/time/posix-cpu-timers.c
-index 0a97193984db..cb925e8ef9a8 100644
---- a/kernel/time/posix-cpu-timers.c
-+++ b/kernel/time/posix-cpu-timers.c
-@@ -870,7 +870,7 @@ static inline void check_dl_overrun(struct task_struct *tsk)
- {
- 	if (tsk->dl.dl_overrun) {
- 		tsk->dl.dl_overrun = 0;
--		__group_send_sig_info(SIGXCPU, SEND_SIG_PRIV, tsk);
-+		send_signal_locked(SIGXCPU, SEND_SIG_PRIV, tsk, PIDTYPE_TGID);
- 	}
- }
- 
-@@ -884,7 +884,7 @@ static bool check_rlimit(u64 time, u64 limit, int signo, bool rt, bool hard)
- 			rt ? "RT" : "CPU", hard ? "hard" : "soft",
- 			current->comm, task_pid_nr(current));
- 	}
--	__group_send_sig_info(signo, SEND_SIG_PRIV, current);
-+	send_signal_locked(signo, SEND_SIG_PRIV, current, PIDTYPE_TGID);
- 	return true;
- }
- 
-@@ -958,7 +958,7 @@ static void check_cpu_itimer(struct task_struct *tsk, struct cpu_itimer *it,
- 		trace_itimer_expire(signo == SIGPROF ?
- 				    ITIMER_PROF : ITIMER_VIRTUAL,
- 				    task_tgid(tsk), cur_time);
--		__group_send_sig_info(signo, SEND_SIG_PRIV, tsk);
-+		send_signal_locked(signo, SEND_SIG_PRIV, tsk, PIDTYPE_TGID);
- 	}
- 
- 	if (it->expires && it->expires < *expires)
--- 
-2.35.3
+On Wed, 4 May 2022, Krzysztof Kozlowski wrote:
 
+> On 03/05/2022 21:45, matthew.gerlach@linux.intel.com wrote:
+>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>
+>> Add device tree bindings documentation for the Intel Hard
+>> Processor System (HPS) Copy Engine.
+>>
+>> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>> ---
+>>  .../bindings/misc/intel,hps-copy-engine.yaml  | 48 +++++++++++++++++++
+>>  1 file changed, 48 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/misc/intel,hps-copy-engine.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/misc/intel,hps-copy-engine.yaml b/Documentation/devicetree/bindings/misc/intel,hps-copy-engine.yaml
+>> new file mode 100644
+>> index 000000000000..74e7da9002f4
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/misc/intel,hps-copy-engine.yaml
+>
+> Please find appropriate directory matching this hardware, not "misc". As
+> a fallback SoC related bindings end up in "soc".
+
+I thought misc seemed appropriate because it is a very specific IP block 
+in the FPGA connected to the HPS.  It does perform a simple DMA function; 
+so I considered putting it in the dma directory, but it also has some
+hand-shaking registers between the HPS and a host processor connected to the
+FPGA via PCIe; so I thought misc.  Since the HPS "soc" accesses the 
+component, I can put it in the "soc" directory, unless there is a better 
+suggestion.
+
+>
+>> @@ -0,0 +1,48 @@
+>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+>> +# Copyright (C) 2022, Intel Corporation
+>> +%YAML 1.2
+>> +---
+>> +$id: "http://devicetree.org/schemas/misc/intel,hps-copy-engine.yaml#"
+>> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+>> +
+>> +title: Intel HPS Copy Engine
+>> +
+>> +maintainers:
+>> +  - Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>> +
+>> +description: |
+>> +  The Intel Hard Processor System (HPS) Copy Engine is an IP block used to copy
+>> +  a bootable image from host memory to HPS DDR.  Additionally, there is a
+>> +  register the HPS can use to indicate the state of booting the copied image as
+>> +  well as a keep-a-live indication to the host.
+>> +
+>> +properties:
+>> +  compatible:
+>> +    items:
+>
+> No "items", you have just one item.
+
+Got it.  I will change it in v3.
+>
+>> +      - const: intel,hps-copy-engine
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +
+>> +additionalProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +    agilex_hps_bridges: bus@80000000 {
+>
+> Unused label...
+
+I will remove unused label in v3.
+
+>
+>> +        compatible = "simple-bus";
+>> +        reg = <0x80000000 0x60000000>,
+>> +              <0xf9000000 0x00100000>;
+>> +        reg-names = "axi_h2f", "axi_h2f_lw";
+>> +        #address-cells = <0x2>;
+>
+> $ git grep address-cell
+> Do not use inconsistent coding. The same applies to your DTS.
+
+Is the inconsistency the use of '0x' in the values of #address-cells and 
+#size-cells, or is the consistency having different values for 
+#address-cells and #size-cells or both?
+
+>
+>> +        #size-cells = <0x1>;
+>> +        ranges = <0x00000000 0x00000000 0xf9000000 0x00001000>;
+>
+> Why do you even need the simple-bus above and cannot put the device
+> directly on the bus?
+
+On an Agilex chip, the HPS is connected to the FPGA via two bridges, 
+referred as the "HPS to FPGA bridge" and the "Lightweight HPS to FPGA 
+bridge".  An IP block in the FPGA could be connected to one or both of 
+these bridges.  I am anticipating device tree overlays being applied for 
+other IP blocks instantiated in the FPGA.
+
+>
+>> +
+>> +        hps_cp_eng@0 {
+>
+> No underscores in node names. Generic node name.
+
+I understand.  I am considering dma@0 for the generic node name.
+
+>
+>> +            compatible = "intel,hps-copy-engine";
+>> +            reg = <0x00000000 0x00000000 0x00001000>;
+>> +        };
+>> +    };
+>
+>
+> Best regards,
+> Krzysztof
+>
+
+Thank you for the review,
+Matthew
