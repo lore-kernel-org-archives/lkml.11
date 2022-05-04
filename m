@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A466FC43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:06:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30936C41535
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:06:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356560AbiEDRJ1 (ORCPT
+        id S1357074AbiEDRJ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:09:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38292 "EHLO
+        Wed, 4 May 2022 13:09:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355544AbiEDRAO (ORCPT
+        with ESMTP id S1355578AbiEDRAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2674F4B849;
-        Wed,  4 May 2022 09:51:49 -0700 (PDT)
+        Wed, 4 May 2022 13:00:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF7FB4B863;
+        Wed,  4 May 2022 09:51:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7018AB8279F;
-        Wed,  4 May 2022 16:51:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06BE9C385AA;
-        Wed,  4 May 2022 16:51:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B06CF6183C;
+        Wed,  4 May 2022 16:51:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0664CC385AF;
+        Wed,  4 May 2022 16:51:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683102;
-        bh=Q47rXhNzfck/KPKdxhbKGRwmlg2Gb/udeLwxXi3qXtk=;
+        s=korg; t=1651683097;
+        bh=yO22JTJPFr6ZaCHoLYMRnKdDl+PCHcWxrh1cz0yCKGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HBZj4PHHrugEh2SRi34FqcW/b8hmkp+FEI5UGzszFLb2b8QkA2RXDng6HNIscQziP
-         lQQjnH5EjkCVZDjwDC2f0El7xCzHC0mFzMANoOc3zjVogqqiGTpcE5hNomoxpwadpe
-         kxnHZSpVK7rlexTa2c6e/Jfea3VmOS+mF2zYsOoY=
+        b=K07X7Nkiq5I7+mxDzNX0Y+VGEMDDOSRCe/aHD6Tfo8EFpCNwp7seXlKTkFncC5pgi
+         e4ULBU71UXSqLRe3p47BVxFz7MAw6PSKE7f5WyGR0APSe8tRFV1Fje45hu4FG5jgBb
+         bduwYmpIxr7XC2dq91ttWVw8yyP8HU0x5xtKWpWo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Hans Holmberg <hans.holmberg@wdc.com>
-Subject: [PATCH 5.10 106/129] zonefs: Fix management of open zones
-Date:   Wed,  4 May 2022 18:44:58 +0200
-Message-Id: <20220504153029.412540267@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Hoffmann <jan@3e8.eu>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 089/129] net: dsa: lantiq_gswip: Dont set GSWIP_MII_CFG_RMII_CLK
+Date:   Wed,  4 May 2022 18:44:41 +0200
+Message-Id: <20220504153028.060546749@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,126 +52,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-commit 1da18a296f5ba4f99429e62a7cf4fdbefa598902 upstream.
+[ Upstream commit 71cffebf6358a7f5031f5b208bbdc1cb4db6e539 ]
 
-The mount option "explicit_open" manages the device open zone
-resources to ensure that if an application opens a sequential file for
-writing, the file zone can always be written by explicitly opening
-the zone and accounting for that state with the s_open_zones counter.
+Commit 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining
+GSWIP_MII_CFG bits") added all known bits in the GSWIP_MII_CFGp
+register. It helped bring this register into a well-defined state so the
+driver has to rely less on the bootloader to do things right.
+Unfortunately it also sets the GSWIP_MII_CFG_RMII_CLK bit without any
+possibility to configure it. Upon further testing it turns out that all
+boards which are supported by the GSWIP driver in OpenWrt which use an
+RMII PHY have a dedicated oscillator on the board which provides the
+50MHz RMII reference clock.
 
-However, if some zones are already open when mounting, the device open
-zone resource usage status will be larger than the initial s_open_zones
-value of 0. Ensure that this inconsistency does not happen by closing
-any sequential zone that is open when mounting.
+Don't set the GSWIP_MII_CFG_RMII_CLK bit (but keep the code which always
+clears it) to fix support for the Fritz!Box 7362 SL in OpenWrt. This is
+a board with two Atheros AR8030 RMII PHYs. With the "RMII clock" bit set
+the MAC also generates the RMII reference clock whose signal then
+conflicts with the signal from the oscillator on the board. This results
+in a constant cycle of the PHY detecting link up/down (and as a result
+of that: the two ports using the AR8030 PHYs are not working).
 
-Furthermore, with ZNS drives, closing an explicitly open zone that has
-not been written will change the zone state to "closed", that is, the
-zone will remain in an active state. Since this can then cause failures
-of explicit open operations on other zones if the drive active zone
-resources are exceeded, we need to make sure that the zone is not
-active anymore by resetting it instead of closing it. To address this,
-zonefs_zone_mgmt() is modified to change a REQ_OP_ZONE_CLOSE request
-into a REQ_OP_ZONE_RESET for sequential zones that have not been
-written.
+At the time of writing this patch there's no known board where the MAC
+(GSWIP) has to generate the RMII reference clock. If needed this can be
+implemented in future by providing a device-tree flag so the
+GSWIP_MII_CFG_RMII_CLK bit can be toggled per port.
 
-Fixes: b5c00e975779 ("zonefs: open/close zone on file open/close")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Reviewed-by: Hans Holmberg <hans.holmberg@wdc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining GSWIP_MII_CFG bits")
+Tested-by: Jan Hoffmann <jan@3e8.eu>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
+Link: https://lore.kernel.org/r/20220425152027.2220750-1-martin.blumenstingl@googlemail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/zonefs/super.c |   45 ++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 40 insertions(+), 5 deletions(-)
+ drivers/net/dsa/lantiq_gswip.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/fs/zonefs/super.c
-+++ b/fs/zonefs/super.c
-@@ -32,6 +32,17 @@ static inline int zonefs_zone_mgmt(struc
- 
- 	lockdep_assert_held(&zi->i_truncate_mutex);
- 
-+	/*
-+	 * With ZNS drives, closing an explicitly open zone that has not been
-+	 * written will change the zone state to "closed", that is, the zone
-+	 * will remain active. Since this can then cause failure of explicit
-+	 * open operation on other zones if the drive active zone resources
-+	 * are exceeded, make sure that the zone does not remain active by
-+	 * resetting it.
-+	 */
-+	if (op == REQ_OP_ZONE_CLOSE && !zi->i_wpoffset)
-+		op = REQ_OP_ZONE_RESET;
-+
- 	ret = blkdev_zone_mgmt(inode->i_sb->s_bdev, op, zi->i_zsector,
- 			       zi->i_zone_size >> SECTOR_SHIFT, GFP_NOFS);
- 	if (ret) {
-@@ -1306,12 +1317,13 @@ static void zonefs_init_dir_inode(struct
- 	inc_nlink(parent);
- }
- 
--static void zonefs_init_file_inode(struct inode *inode, struct blk_zone *zone,
--				   enum zonefs_ztype type)
-+static int zonefs_init_file_inode(struct inode *inode, struct blk_zone *zone,
-+				  enum zonefs_ztype type)
- {
- 	struct super_block *sb = inode->i_sb;
- 	struct zonefs_sb_info *sbi = ZONEFS_SB(sb);
- 	struct zonefs_inode_info *zi = ZONEFS_I(inode);
-+	int ret = 0;
- 
- 	inode->i_ino = zone->start >> sbi->s_zone_sectors_shift;
- 	inode->i_mode = S_IFREG | sbi->s_perm;
-@@ -1336,6 +1348,22 @@ static void zonefs_init_file_inode(struc
- 	sb->s_maxbytes = max(zi->i_max_size, sb->s_maxbytes);
- 	sbi->s_blocks += zi->i_max_size >> sb->s_blocksize_bits;
- 	sbi->s_used_blocks += zi->i_wpoffset >> sb->s_blocksize_bits;
-+
-+	/*
-+	 * For sequential zones, make sure that any open zone is closed first
-+	 * to ensure that the initial number of open zones is 0, in sync with
-+	 * the open zone accounting done when the mount option
-+	 * ZONEFS_MNTOPT_EXPLICIT_OPEN is used.
-+	 */
-+	if (type == ZONEFS_ZTYPE_SEQ &&
-+	    (zone->cond == BLK_ZONE_COND_IMP_OPEN ||
-+	     zone->cond == BLK_ZONE_COND_EXP_OPEN)) {
-+		mutex_lock(&zi->i_truncate_mutex);
-+		ret = zonefs_zone_mgmt(inode, REQ_OP_ZONE_CLOSE);
-+		mutex_unlock(&zi->i_truncate_mutex);
-+	}
-+
-+	return ret;
- }
- 
- static struct dentry *zonefs_create_inode(struct dentry *parent,
-@@ -1345,6 +1373,7 @@ static struct dentry *zonefs_create_inod
- 	struct inode *dir = d_inode(parent);
- 	struct dentry *dentry;
- 	struct inode *inode;
-+	int ret;
- 
- 	dentry = d_alloc_name(parent, name);
- 	if (!dentry)
-@@ -1355,10 +1384,16 @@ static struct dentry *zonefs_create_inod
- 		goto dput;
- 
- 	inode->i_ctime = inode->i_mtime = inode->i_atime = dir->i_ctime;
--	if (zone)
--		zonefs_init_file_inode(inode, zone, type);
--	else
-+	if (zone) {
-+		ret = zonefs_init_file_inode(inode, zone, type);
-+		if (ret) {
-+			iput(inode);
-+			goto dput;
-+		}
-+	} else {
- 		zonefs_init_dir_inode(dir, inode, type);
-+	}
-+
- 	d_add(dentry, inode);
- 	dir->i_size++;
- 
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index 80ef7ea77954..4abae06499a9 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -1629,9 +1629,6 @@ static void gswip_phylink_mac_config(struct dsa_switch *ds, int port,
+ 		break;
+ 	case PHY_INTERFACE_MODE_RMII:
+ 		miicfg |= GSWIP_MII_CFG_MODE_RMIIM;
+-
+-		/* Configure the RMII clock as output: */
+-		miicfg |= GSWIP_MII_CFG_RMII_CLK;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
+-- 
+2.35.1
+
 
 
