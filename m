@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDC7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B93C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356264AbiEDRrj (ORCPT
+        id S1355918AbiEDRrr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:47:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54134 "EHLO
+        Wed, 4 May 2022 13:47:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356745AbiEDROF (ORCPT
+        with ESMTP id S1357042AbiEDROp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:14:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852B453B75;
-        Wed,  4 May 2022 09:58:14 -0700 (PDT)
+        Wed, 4 May 2022 13:14:45 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B07653E32;
+        Wed,  4 May 2022 09:58:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23F01618E8;
-        Wed,  4 May 2022 16:58:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D1E4C385AF;
-        Wed,  4 May 2022 16:58:13 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 86278CE28AD;
+        Wed,  4 May 2022 16:58:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B889EC385AA;
+        Wed,  4 May 2022 16:57:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683493;
-        bh=lZSgcARiKu563cMVPF9TLhAYaBQcnyIOkxgPX0ZQyPk=;
+        s=korg; t=1651683478;
+        bh=jzTDHvzUt0+FK1GCavcbHjEPmG6peMf7tUCHzlPx87o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UIAonYcqcjz9dO3vVTkQOVVA4faMdQfVuDuG1nqYcH0dG+lB37NyNl1Q/XgEjR4/X
-         tB62SyHqG5wF4TxV9Fd6QEOPCYyBefN2hJLweP8AW45nSsuTDvA3G5F2OCUN1ALcLY
-         x0ql/x85ET8IDWE29dvZ99mEYG3J4INAnnLjff34=
+        b=a7JSNgphiT42PL/67mkslWNgPtNEQ5LhxoSGv7itkLxaSo+uHT9AtKXsXqFtMdquy
+         jtd5qdtRrKd+P8nhN1ue0MX23ZmCG8CFbH/G3y/45oje9BkOPSoshYaacurc4bm4px
+         9Szpt0Ictm5zP8bAza7/MfqkE+KjAP0PCJcxBsQI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hongyu Jin <hongyu.jin@unisoc.com>,
-        Gao Xiang <hsiangkao@linux.alibaba.com>,
-        Chao Yu <chao@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 168/225] erofs: fix use-after-free of on-stack io[]
-Date:   Wed,  4 May 2022 18:46:46 +0200
-Message-Id: <20220504153125.086107183@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 140/225] netfilter: conntrack: fix udp offload timeout sysctl
+Date:   Wed,  4 May 2022 18:46:18 +0200
+Message-Id: <20220504153122.718432261@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,104 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hongyu Jin <hongyu.jin@unisoc.com>
+From: Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
 
-[ Upstream commit 60b30050116c0351b90154044345c1b53ae1f323 ]
+[ Upstream commit 626873c446f7559d5af8b48cefad903ffd85cf4e ]
 
-The root cause is the race as follows:
-Thread #1                              Thread #2(irq ctx)
+`nf_flowtable_udp_timeout` sysctl option is available only
+if CONFIG_NFT_FLOW_OFFLOAD enabled. But infra for this flow
+offload UDP timeout was added under CONFIG_NF_FLOW_TABLE
+config option. So, if you have CONFIG_NFT_FLOW_OFFLOAD
+disabled and CONFIG_NF_FLOW_TABLE enabled, the
+`nf_flowtable_udp_timeout` is not present in sysfs.
+Please note, that TCP flow offload timeout sysctl option
+is present even CONFIG_NFT_FLOW_OFFLOAD is disabled.
 
-z_erofs_runqueue()
-  struct z_erofs_decompressqueue io_A[];
-  submit bio A
-  z_erofs_decompress_kickoff(,,1)
-                                       z_erofs_decompressqueue_endio(bio A)
-                                       z_erofs_decompress_kickoff(,,-1)
-                                       spin_lock_irqsave()
-                                       atomic_add_return()
-  io_wait_event()	-> pending_bios is already 0
-  [end of function]
-                                       wake_up_locked(io_A[]) // crash
+I suppose it was a typo in commit that adds UDP flow offload
+timeout and CONFIG_NF_FLOW_TABLE should be used instead.
 
-Referenced backtrace in kernel 5.4:
-
-[   10.129422] Unable to handle kernel paging request at virtual address eb0454a4
-[   10.364157] CPU: 0 PID: 709 Comm: getprop Tainted: G        WC O      5.4.147-ab09225 #1
-[   11.556325] [<c01b33b8>] (__wake_up_common) from [<c01b3300>] (__wake_up_locked+0x40/0x48)
-[   11.565487] [<c01b3300>] (__wake_up_locked) from [<c044c8d0>] (z_erofs_vle_unzip_kickoff+0x6c/0xc0)
-[   11.575438] [<c044c8d0>] (z_erofs_vle_unzip_kickoff) from [<c044c854>] (z_erofs_vle_read_endio+0x16c/0x17c)
-[   11.586082] [<c044c854>] (z_erofs_vle_read_endio) from [<c06a80e8>] (clone_endio+0xb4/0x1d0)
-[   11.595428] [<c06a80e8>] (clone_endio) from [<c04a1280>] (blk_update_request+0x150/0x4dc)
-[   11.604516] [<c04a1280>] (blk_update_request) from [<c06dea28>] (mmc_blk_cqe_complete_rq+0x144/0x15c)
-[   11.614640] [<c06dea28>] (mmc_blk_cqe_complete_rq) from [<c04a5d90>] (blk_done_softirq+0xb0/0xcc)
-[   11.624419] [<c04a5d90>] (blk_done_softirq) from [<c010242c>] (__do_softirq+0x184/0x56c)
-[   11.633419] [<c010242c>] (__do_softirq) from [<c01051e8>] (irq_exit+0xd4/0x138)
-[   11.641640] [<c01051e8>] (irq_exit) from [<c010c314>] (__handle_domain_irq+0x94/0xd0)
-[   11.650381] [<c010c314>] (__handle_domain_irq) from [<c04fde70>] (gic_handle_irq+0x50/0xd4)
-[   11.659641] [<c04fde70>] (gic_handle_irq) from [<c0101b70>] (__irq_svc+0x70/0xb0)
-
-Signed-off-by: Hongyu Jin <hongyu.jin@unisoc.com>
-Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Link: https://lore.kernel.org/r/20220401115527.4935-1-hongyu.jin.cn@gmail.com
-Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Fixes: 975c57504da1 ("netfilter: conntrack: Introduce udp offload timeout configuration")
+Signed-off-by: Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/erofs/zdata.c | 12 ++++--------
- fs/erofs/zdata.h |  2 +-
- 2 files changed, 5 insertions(+), 9 deletions(-)
+ net/netfilter/nf_conntrack_standalone.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/erofs/zdata.c b/fs/erofs/zdata.c
-index 423bc1a61da5..a1b48bcafe63 100644
---- a/fs/erofs/zdata.c
-+++ b/fs/erofs/zdata.c
-@@ -1073,12 +1073,9 @@ static void z_erofs_decompress_kickoff(struct z_erofs_decompressqueue *io,
- 
- 	/* wake up the caller thread for sync decompression */
- 	if (sync) {
--		unsigned long flags;
--
--		spin_lock_irqsave(&io->u.wait.lock, flags);
- 		if (!atomic_add_return(bios, &io->pending_bios))
--			wake_up_locked(&io->u.wait);
--		spin_unlock_irqrestore(&io->u.wait.lock, flags);
-+			complete(&io->u.done);
-+
- 		return;
- 	}
- 
-@@ -1224,7 +1221,7 @@ jobqueue_init(struct super_block *sb,
- 	} else {
- fg_out:
- 		q = fgq;
--		init_waitqueue_head(&fgq->u.wait);
-+		init_completion(&fgq->u.done);
- 		atomic_set(&fgq->pending_bios, 0);
- 	}
- 	q->sb = sb;
-@@ -1428,8 +1425,7 @@ static void z_erofs_runqueue(struct super_block *sb,
- 		return;
- 
- 	/* wait until all bios are completed */
--	io_wait_event(io[JQ_SUBMIT].u.wait,
--		      !atomic_read(&io[JQ_SUBMIT].pending_bios));
-+	wait_for_completion_io(&io[JQ_SUBMIT].u.done);
- 
- 	/* handle synchronous decompress queue in the caller context */
- 	z_erofs_decompress_queue(&io[JQ_SUBMIT], pagepool);
-diff --git a/fs/erofs/zdata.h b/fs/erofs/zdata.h
-index e043216b545f..800b11c53f57 100644
---- a/fs/erofs/zdata.h
-+++ b/fs/erofs/zdata.h
-@@ -97,7 +97,7 @@ struct z_erofs_decompressqueue {
- 	z_erofs_next_pcluster_t head;
- 
- 	union {
--		wait_queue_head_t wait;
-+		struct completion done;
- 		struct work_struct work;
- 	} u;
- };
+diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
+index 3e1afd10a9b6..55aa55b252b2 100644
+--- a/net/netfilter/nf_conntrack_standalone.c
++++ b/net/netfilter/nf_conntrack_standalone.c
+@@ -823,7 +823,7 @@ static struct ctl_table nf_ct_sysctl_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_jiffies,
+ 	},
+-#if IS_ENABLED(CONFIG_NFT_FLOW_OFFLOAD)
++#if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
+ 	[NF_SYSCTL_CT_PROTO_TIMEOUT_UDP_OFFLOAD] = {
+ 		.procname	= "nf_flowtable_udp_timeout",
+ 		.maxlen		= sizeof(unsigned int),
 -- 
 2.35.1
 
