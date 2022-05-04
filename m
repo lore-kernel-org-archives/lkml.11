@@ -2,105 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D887AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:40:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 872D8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:40:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378289AbiEDUoW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:44:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56654 "EHLO
+        id S237248AbiEDUo1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 16:44:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378391AbiEDUoC (ORCPT
+        with ESMTP id S1378446AbiEDUoM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:44:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC311277E;
-        Wed,  4 May 2022 13:40:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82D12B82949;
-        Wed,  4 May 2022 20:40:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EA24C385A5;
-        Wed,  4 May 2022 20:40:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651696821;
-        bh=aXVyvWfDxf+r8P4NAgCnCJj/TrGjcm2Y20m+/fpSGRE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BXAZGtq/xcyCjYbAM605e+7L+PSL5pLriw5XZVhsNnocxU+8ZegluRgXL8dw73rdv
-         8c7Kt3udXccgQ2l+Z1ZNyWD5JoavY80wRMTMUpc8lXwkvngiq4c0iZTOTlQ1I5UvHN
-         EXijxrkT7j+NzjesFJjzcC3x7dEKzGHrot2GKCy0BJeuj86rQiJRKuwaHvfkP1U4Fn
-         uYKjY1CpJJI9ejJ7RJqHVxNNkSr4De7QkoeC11gfKivn3hW0yf1+H98BAKkewt6eBS
-         hCoaQNK8pU56uL5BnZmHizfWppbVmffeLKkqjDkM126S+9jL5I/A44IC0nRYZO1NX8
-         wjUJeeR20e/xA==
-Date:   Wed, 4 May 2022 21:48:40 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Cc:     Rob Herring <robh@kernel.org>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 3/3] dt-bindings: iio: accel: add dt-binding schema
- for msa311 accel driver
-Message-ID: <20220504214840.1ad32bff@jic23-huawei>
-In-Reply-To: <20220504183716.shhpi5adcxz4ufvj@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220419154555.24191-1-ddrokosov@sberdevices.ru>
-        <20220419154555.24191-4-ddrokosov@sberdevices.ru>
-        <YmhWic3rG8ERtCYY@robh.at.kernel.org>
-        <20220504183716.shhpi5adcxz4ufvj@CAB-WSD-L081021.sigma.sbrf.ru>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Wed, 4 May 2022 16:44:12 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E13F2CE2B
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 13:40:32 -0700 (PDT)
+Received: from mail.ispras.ru (unknown [83.149.199.84])
+        by mail.ispras.ru (Postfix) with ESMTPSA id 63FAF4076248;
+        Wed,  4 May 2022 20:40:26 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Date:   Wed, 04 May 2022 23:40:26 +0300
+From:   baskov@ispras.ru
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] x86: Parse CONFIG_CMDLINE in compressed kernel
+In-Reply-To: <YnJAYOHBjipBfdm3@zn.tnic>
+References: <20220407024014.6916-1-baskov@ispras.ru>
+ <YnJAYOHBjipBfdm3@zn.tnic>
+User-Agent: Roundcube Webmail/1.4.4
+Message-ID: <3d0a8b229544ef879d05fee74849619d@ispras.ru>
+X-Sender: baskov@ispras.ru
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 4 May 2022 18:36:33 +0000
-Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+On 2022-05-04 11:59, Borislav Petkov wrote:
+> On Thu, Apr 07, 2022 at 05:40:14AM +0300, Baskov Evgeniy wrote:
+>> CONFIG_CMDLINE_BOOL and CONFIG_CMDLINE_OVERRIDE was ignored
+>> during options lookup in compressed kernel, including
+>> earlyprintk option, so it was impossible to get earlyprintk
+>> messages from that stage of boot process via command line
+>> provided at compile time. Being able to enable earlyprintk
+>> via compile-time option might be desirable for booting
+>> on systems with broken UEFI command line arguments via EFISTUB.
+>> 
+>> Parse CONFIG_CMDLINE-related options correctly in compressed
+>> kernel code.
+>> 
+>> Signed-off-by: Baskov Evgeniy <baskov@ispras.ru>
+>> 
+>> diff --git a/arch/x86/boot/compressed/cmdline.c 
+>> b/arch/x86/boot/compressed/cmdline.c
+>> index f1add5d85da9..dd8cbbe61dff 100644
+>> --- a/arch/x86/boot/compressed/cmdline.c
+>> +++ b/arch/x86/boot/compressed/cmdline.c
+>> @@ -22,9 +22,49 @@ unsigned long get_cmd_line_ptr(void)
+>>  }
+>>  int cmdline_find_option(const char *option, char *buffer, int 
+>> bufsize)
+>>  {
+>> -	return __cmdline_find_option(get_cmd_line_ptr(), option, buffer, 
+>> bufsize);
+>> +	int len = -1;
+>> +	unsigned long cmdline_ptr;
+>> +
+>> +	/*
+>> +	 * First try command line string provided by user,
+>> +	 * then try command line string configured at comple time.
+>> +	 * Skip first step if CONFIG_CMDLINE_OVERRIDE is enabled
+>> +	 * and parse only compile time command line.
+>> +	 */
+>> +
+>> +	if (!IS_ENABLED(CONFIG_CMDLINE_OVERRIDE)) {
+>> +		cmdline_ptr = get_cmd_line_ptr();
+>> +		len = __cmdline_find_option(cmdline_ptr, option,
+>> +					    buffer, bufsize);
+>> +	}
+>> +
+>> +#ifdef CONFIG_CMDLINE_BOOL
+>> +	if (len < 0) {
+>> +		cmdline_ptr = (unsigned long)CONFIG_CMDLINE;
+>> +		len = __cmdline_find_option(cmdline_ptr, option,
+>> +					    buffer, bufsize);
+>> +	}
+>> +#endif
+> 
+> Do I see it correctly that all this logic boils down to returning the
+> proper cmdline ptr and so you can do that once in get_cmd_line_ptr()
+> instead of duplicating the ifdeffery?
 
-> Hello Rob,
-> 
-> I've missed one note below, please check if possible.
-> 
-> On Tue, Apr 26, 2022 at 03:31:05PM -0500, Rob Herring wrote:
-> > On Tue, Apr 19, 2022 at 03:45:58PM +0000, Rokosov Dmitry Dmitrievich wrote:  
-> > > +  "#address-cells":
-> > > +    const: 1
-> > > +
-> > > +  "#size-cells":
-> > > +    const: 0  
-> > 
-> > These apply to 'reg' in a child node, but you don't have child nodes so 
-> > drop them.
-> >   
-> 
-> I'm afraid, I made a mistake in the previous reply. Here I applied
-> address-cells and size-cells to show which type accelerometer's reg
-> property has, like this one:
-> 
->     i2c {
->         #address-cells = <1>;
->         #size-cells = <0>;
->     
->         accelerometer@62 {
->             compatible = "memsensing,msa311";
->             reg = <0x62>;
-> 
-> Above accelerometer@62 is child node for i2c bus node, so address and
-> size cells mean accelerometer reg format. Am I missing something?
+Yes, it can be done by returning either concatenation of build-time
+and run-time command line strings or only the build-time one,
+depending on the kernel configuration.
 
-They are characteristics of the i2c master and hence
-are listed in those binding docs, not the one for the accelerometer.
+Actually, it is implemented this way in arch/x86/kernel/setup.c.
+I thought it's better to avoid imposing restrictions on kernel
+command line length, but since it is already done, I guess,
+I will do the same way in v2.
 
 Thanks,
-
-Jonathan
-> 
-
+Baskov Evgeniy
