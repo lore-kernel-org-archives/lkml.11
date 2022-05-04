@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A55C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 887D5C35294
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376881AbiEDRpZ (ORCPT
+        id S1377060AbiEDRph (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:45:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39254 "EHLO
+        Wed, 4 May 2022 13:45:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355918AbiEDRMH (ORCPT
+        with ESMTP id S1356214AbiEDRMH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:12:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67394BBB3;
-        Wed,  4 May 2022 09:57:50 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B884BFC2;
+        Wed,  4 May 2022 09:57:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D59961929;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 385B6B8278E;
+        Wed,  4 May 2022 16:57:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDE14C385AF;
         Wed,  4 May 2022 16:57:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8919C385A5;
-        Wed,  4 May 2022 16:57:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683469;
-        bh=uwsVagE2WLpVNfyJ8wiHvUZu5rZnzEZ8D1mBiEydAUk=;
+        s=korg; t=1651683470;
+        bh=FC9DjzQV9hBsv5/eiTjlSjGGc3F9HI+yaL5So1/yfBU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mAZPd/hSY23woyLL0lzo/T1dUMu2FHQYhd6h1j403s7bsBmhizWpXK8fVCGGm2az5
-         fNQoLIZ17CpIe3ASVJHIUE3HmqOIMNkqmmZ/fewU7o3X4chYgC7dFlSnj7QakkEbkS
-         1xYYGnWCYgE8iqcJ7aGPFJwD/ogJIl7QNCxXm1pM=
+        b=CQXT048VMd3QYP23KLrc1rJ9/0mbLzCpLdD/ccsUlzA3SJZ7lfmRjK2B9T59ceo3X
+         9HNrJl1Ek9EHt3NEGWm8nIrPoFZ9KSR0tLmqoFVXQPUr8UAw50I04TSzdi8pTcSciH
+         3pqxr0Tt+LkJDlyHhT3DHBCNu/RWR1QxfiAVThQU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Hoffmann <jan@3e8.eu>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 136/225] net: dsa: lantiq_gswip: Dont set GSWIP_MII_CFG_RMII_CLK
-Date:   Wed,  4 May 2022 18:46:14 +0200
-Message-Id: <20220504153122.415829502@linuxfoundation.org>
+Subject: [PATCH 5.17 145/225] tls: Skip tls_append_frag on zero copy size
+Date:   Wed,  4 May 2022 18:46:23 +0200
+Message-Id: <20220504153123.114142016@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -52,58 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit 71cffebf6358a7f5031f5b208bbdc1cb4db6e539 ]
+[ Upstream commit a0df71948e9548de819a6f1da68f5f1742258a52 ]
 
-Commit 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining
-GSWIP_MII_CFG bits") added all known bits in the GSWIP_MII_CFGp
-register. It helped bring this register into a well-defined state so the
-driver has to rely less on the bootloader to do things right.
-Unfortunately it also sets the GSWIP_MII_CFG_RMII_CLK bit without any
-possibility to configure it. Upon further testing it turns out that all
-boards which are supported by the GSWIP driver in OpenWrt which use an
-RMII PHY have a dedicated oscillator on the board which provides the
-50MHz RMII reference clock.
+Calling tls_append_frag when max_open_record_len == record->len might
+add an empty fragment to the TLS record if the call happens to be on the
+page boundary. Normally tls_append_frag coalesces the zero-sized
+fragment to the previous one, but not if it's on page boundary.
 
-Don't set the GSWIP_MII_CFG_RMII_CLK bit (but keep the code which always
-clears it) to fix support for the Fritz!Box 7362 SL in OpenWrt. This is
-a board with two Atheros AR8030 RMII PHYs. With the "RMII clock" bit set
-the MAC also generates the RMII reference clock whose signal then
-conflicts with the signal from the oscillator on the board. This results
-in a constant cycle of the PHY detecting link up/down (and as a result
-of that: the two ports using the AR8030 PHYs are not working).
+If a resync happens then, the mlx5 driver posts dump WQEs in
+tx_post_resync_dump, and the empty fragment may become a data segment
+with byte_count == 0, which will confuse the NIC and lead to a CQE
+error.
 
-At the time of writing this patch there's no known board where the MAC
-(GSWIP) has to generate the RMII reference clock. If needed this can be
-implemented in future by providing a device-tree flag so the
-GSWIP_MII_CFG_RMII_CLK bit can be toggled per port.
+This commit fixes the described issue by skipping tls_append_frag on
+zero size to avoid adding empty fragments. The fix is not in the driver,
+because an empty fragment is hardly the desired behavior.
 
-Fixes: 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining GSWIP_MII_CFG bits")
-Tested-by: Jan Hoffmann <jan@3e8.eu>
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
-Link: https://lore.kernel.org/r/20220425152027.2220750-1-martin.blumenstingl@googlemail.com
+Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Link: https://lore.kernel.org/r/20220426154949.159055-1-maximmi@nvidia.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/lantiq_gswip.c | 3 ---
- 1 file changed, 3 deletions(-)
+ net/tls/tls_device.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 8a7a8093a156..8acec33a4702 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -1637,9 +1637,6 @@ static void gswip_phylink_mac_config(struct dsa_switch *ds, int port,
- 		break;
- 	case PHY_INTERFACE_MODE_RMII:
- 		miicfg |= GSWIP_MII_CFG_MODE_RMIIM;
--
--		/* Configure the RMII clock as output: */
--		miicfg |= GSWIP_MII_CFG_RMII_CLK;
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII:
- 	case PHY_INTERFACE_MODE_RGMII_ID:
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index b932469ee69c..a40553e83f8b 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -483,11 +483,13 @@ static int tls_push_data(struct sock *sk,
+ 		copy = min_t(size_t, size, (pfrag->size - pfrag->offset));
+ 		copy = min_t(size_t, copy, (max_open_record_len - record->len));
+ 
+-		rc = tls_device_copy_data(page_address(pfrag->page) +
+-					  pfrag->offset, copy, msg_iter);
+-		if (rc)
+-			goto handle_error;
+-		tls_append_frag(record, pfrag, copy);
++		if (copy) {
++			rc = tls_device_copy_data(page_address(pfrag->page) +
++						  pfrag->offset, copy, msg_iter);
++			if (rc)
++				goto handle_error;
++			tls_append_frag(record, pfrag, copy);
++		}
+ 
+ 		size -= copy;
+ 		if (!size) {
 -- 
 2.35.1
 
