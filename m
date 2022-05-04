@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6486C38A2C
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C77BC38A05
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384146AbiEDXHp (ORCPT
+        id S1383391AbiEDXHK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:07:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45384 "EHLO
+        Wed, 4 May 2022 19:07:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380250AbiEDW7w (ORCPT
+        with ESMTP id S1380412AbiEDW77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:59:52 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B2956F90
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:53:06 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id q143-20020a632a95000000b003c1c3490dfbso1331796pgq.20
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:53:06 -0700 (PDT)
+        Wed, 4 May 2022 18:59:59 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18715717D
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:53:20 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id k2-20020a170902ba8200b0015613b12004so1368536pls.22
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:53:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=5DAJlGNKe8aX3EmZHon3SRjMD9ccYXNvX9H64hVT1+A=;
-        b=Hki4o5RLSB468iQLRnZhCPLw3xUA6dR+tqQVMGQ6ypwvf23CSxeip172ChxT/i/8Bq
-         TqJIOFJERX1LDyvx4aytdMe3PfI8OItrhsFwK7SSjoR4Nx8sTndPHqvvnUE3+n7kGJ8z
-         cZFFEgBH6HB5idGJT9aa28lcBArxAOnn2BzrFUP5QFbTe5MlVuLNOxqkSJwb2b23UUjr
-         +Z9sMbMboDUDZBptZf0LCIZPJC43jgzCI8l9jx4EwA+KAVjmUivvoDcKqThp+jDgY8yk
-         oivXUMvjFmUTKb5a1Uh4mzvdVXMTZ7d1nfkDHk3gO0N8YB/+ToA9H6R1KQ2+TuiHDIqK
-         9ZPA==
+        bh=+CNWUluVgfE7BKVDZQOZnHYJi4lcccfQxqQd/SjNgbE=;
+        b=oZupDN2DKwB5oVgymTvsHW5Hf1NhUapq7YbEKSPLCfMyWiKxFju9RjbCx4aiYKf/4T
+         BFxw9vcPPGu+DCqX4nOHfdXgl4T0v1m9GzMo0hO3eflzXK/1gJxUhvsgYVA65Rrf9x1f
+         wJb4+WzanxTzRUL/s2q3uv/Ux3s16RG3475MF+kJp8TGGgZjyDUMFJJzvn2oo/6Owa+u
+         +P82jgbcHu2iI5DlntlhvpQBUSlKDkUGSszkF0YeQIvRx2qbSohxYW1oDDnowck64Zin
+         WNPsTiGFMaxxgSzlAZkWga79TAFCUKFp5dY0WSqffKcPwNG+/jcBTPPOGgeb02oK4r6d
+         ZkNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=5DAJlGNKe8aX3EmZHon3SRjMD9ccYXNvX9H64hVT1+A=;
-        b=ZzBxdpbYLZkJp1kY4k5fKvXoRern3PgIW+k5tg/6g+DSLyU3FlzOlT455xnn8UlxQm
-         DHX0AAUNOGa7+2DqYPvPH6qAgRJzQGu6v9QIYRetd1kzOCGHL7TakYP5fIzYARt9lb4S
-         atK4cNMYwNze35dA23ciFl9zG4/3dx2g7Nmrg/qAVRolgF6eQc6/p9NRV7T4Mwon1qH/
-         2+h1TxWyI10nR0xcVABaZYzgdTTxkNly+nVNuHVmn0UZTG40Ngp13LElpe3fANMhMDih
-         3RFA0l6LsQsygdHpvUOpmA4BwZQhaZpk/Xwin05fyMD4Jy6847YG+8YqVnOhE7KpUuou
-         F0HA==
-X-Gm-Message-State: AOAM532v/ViOPddI1nNfiF7kYreDCXnbTUWH8VsdH5E50MjDwjbOZ8MF
-        t1FjJdYX0V1HE1p+7S2idbTAG0B8CQA=
-X-Google-Smtp-Source: ABdhPJyzfctc2eyR5HnXUMoP63671DjI9Rgwc3rmUeZUs2u9V++XpkQ3kve8+q3f5fZc1hZakHSoPzkEnkU=
+        bh=+CNWUluVgfE7BKVDZQOZnHYJi4lcccfQxqQd/SjNgbE=;
+        b=A/KWRvBI3U93JlWSdhk9FMS/eS2nWZLT07nnzrmbHoeHfcW4w/AEqi7syHdvrVfQH/
+         IOaHnQyx9mkiR9rmTWZ1aVTN46pXeV/kzX0jGSkNyU23p+OGaTILBeB5UoCCZBbEWtQH
+         kTkD3bUWGZIpeRAluS8+Y5NAaOx00oxjs6g3CZtJJMvL/su6cn4MnYtWU1QPE5FAI4sT
+         0OlWSXsa4poKS4G9ORiKONYEjw1SuBzfTZOMSCNCaVeYiEagBkJbG2q0dvkLjkjhEMrr
+         HAYYMdyNWqLSF625JXv2sEcr1ePwfd2IGChmb5y3ZLwmR6AwE3TfSg/EipRYFf2iIuRG
+         SzbA==
+X-Gm-Message-State: AOAM532GFpPhspCFuL3HjN8HyNTCpma5B9AS8RLiN1Ip/k27bm+fEJuC
+        rGz+wzfQy5ZP6YLTOBBiC9VPAZJzSvo=
+X-Google-Smtp-Source: ABdhPJyJvttlOkABk04uej8Mc89kBy2o6rz1jLup7YqfoTJcxS0m2k22OZQRN+HbqY/nWqK2C9gcEIn60Nk=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90b:3ecd:b0:1dc:945e:41b1 with SMTP id
- rm13-20020a17090b3ecd00b001dc945e41b1mr2212660pjb.208.1651704757437; Wed, 04
- May 2022 15:52:37 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a62:d155:0:b0:50d:3c4e:37ec with SMTP id
+ t21-20020a62d155000000b0050d3c4e37ecmr22808296pfl.60.1651704769699; Wed, 04
+ May 2022 15:52:49 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:48:54 +0000
+Date:   Wed,  4 May 2022 22:49:01 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-109-seanjc@google.com>
+Message-Id: <20220504224914.1654036-116-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 108/128] KVM: selftests: Convert tprot away from VCPU_ID
+Subject: [PATCH 115/128] KVM: selftests: Convert get-reg-list away from its "VCPU_ID"
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -69,88 +69,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert tprot to use vm_create_with_vcpus() and pass around a
-'struct kvm_vcpu' object instead of passing around vCPU IDs.  Note, this is
-a "functional" change in the sense that the test now creates a vCPU with
-vcpu_id==0 instead of vcpu_id==1.  The non-zero VCPU_ID was 100% arbitrary
-and added little to no validation coverage.  If testing non-zero vCPU IDs
-is desirable for generic tests, that can be done in the future by tweaking
-the VM creation helpers.
+Track the vCPU's 'struct kvm_vcpu' object in get-reg-list instead of
+hardcoding '0' everywhere.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/s390x/tprot.c | 25 +++++++++++------------
- 1 file changed, 12 insertions(+), 13 deletions(-)
+ tools/testing/selftests/kvm/aarch64/get-reg-list.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/s390x/tprot.c b/tools/testing/selftests/kvm/s390x/tprot.c
-index c097b9db495e..4caa77388033 100644
---- a/tools/testing/selftests/kvm/s390x/tprot.c
-+++ b/tools/testing/selftests/kvm/s390x/tprot.c
-@@ -14,8 +14,6 @@
- #define CR0_FETCH_PROTECTION_OVERRIDE	(1UL << (63 - 38))
- #define CR0_STORAGE_PROTECTION_OVERRIDE	(1UL << (63 - 39))
- 
--#define VCPU_ID 1
--
- static __aligned(PAGE_SIZE) uint8_t pages[2][PAGE_SIZE];
- static uint8_t *const page_store_prot = pages[0];
- static uint8_t *const page_fetch_prot = pages[1];
-@@ -182,14 +180,14 @@ static void guest_code(void)
- 	GUEST_SYNC(perform_next_stage(&i, mapped_0));
- }
- 
--#define HOST_SYNC(vmp, stage)							\
-+#define HOST_SYNC(vcpup, stage)							\
- ({										\
--	struct kvm_vm *__vm = (vmp);						\
-+	struct kvm_vcpu *__vcpu = (vcpup);					\
- 	struct ucall uc;							\
- 	int __stage = (stage);							\
- 										\
--	vcpu_run(__vm, VCPU_ID);						\
--	get_ucall(__vm, VCPU_ID, &uc);						\
-+	vcpu_run(__vcpu->vm, __vcpu->id);					\
-+	get_ucall(__vcpu->vm, __vcpu->id, &uc);					\
- 	if (uc.cmd == UCALL_ABORT) {						\
- 		TEST_FAIL("line %lu: %s, hints: %lu, %lu", uc.args[1],		\
- 			  (const char *)uc.args[0], uc.args[2], uc.args[3]);	\
-@@ -200,28 +198,29 @@ static void guest_code(void)
- 
- int main(int argc, char *argv[])
- {
+diff --git a/tools/testing/selftests/kvm/aarch64/get-reg-list.c b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
+index 8283a62e16e4..dae6d5704519 100644
+--- a/tools/testing/selftests/kvm/aarch64/get-reg-list.c
++++ b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
+@@ -406,6 +406,7 @@ static void run_test(struct vcpu_config *c)
+ 	struct kvm_vcpu_init init = { .target = -1, };
+ 	int new_regs = 0, missing_regs = 0, i, n;
+ 	int failed_get = 0, failed_set = 0, failed_reject = 0;
 +	struct kvm_vcpu *vcpu;
  	struct kvm_vm *vm;
- 	struct kvm_run *run;
- 	vm_vaddr_t guest_0_page;
+ 	struct reg_sublist *s;
  
--	vm = vm_create_default(VCPU_ID, 0, guest_code);
--	run = vcpu_state(vm, VCPU_ID);
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-+	run = vcpu->run;
+@@ -413,10 +414,10 @@ static void run_test(struct vcpu_config *c)
  
--	HOST_SYNC(vm, STAGE_INIT_SIMPLE);
-+	HOST_SYNC(vcpu, STAGE_INIT_SIMPLE);
- 	mprotect(addr_gva2hva(vm, (vm_vaddr_t)pages), PAGE_SIZE * 2, PROT_READ);
--	HOST_SYNC(vm, TEST_SIMPLE);
-+	HOST_SYNC(vcpu, TEST_SIMPLE);
+ 	vm = vm_create_barebones();
+ 	prepare_vcpu_init(c, &init);
+-	aarch64_vcpu_add(vm, 0, &init, NULL);
+-	finalize_vcpu(vm, 0, c);
++	vcpu = aarch64_vcpu_add(vm, 0, &init, NULL);
++	finalize_vcpu(vm, vcpu->id, c);
  
- 	guest_0_page = vm_vaddr_alloc(vm, PAGE_SIZE, 0);
- 	if (guest_0_page != 0)
- 		print_skip("Did not allocate page at 0 for fetch protection override tests");
--	HOST_SYNC(vm, STAGE_INIT_FETCH_PROT_OVERRIDE);
-+	HOST_SYNC(vcpu, STAGE_INIT_FETCH_PROT_OVERRIDE);
- 	if (guest_0_page == 0)
- 		mprotect(addr_gva2hva(vm, (vm_vaddr_t)0), PAGE_SIZE, PROT_READ);
- 	run->s.regs.crs[0] |= CR0_FETCH_PROTECTION_OVERRIDE;
- 	run->kvm_dirty_regs = KVM_SYNC_CRS;
--	HOST_SYNC(vm, TEST_FETCH_PROT_OVERRIDE);
-+	HOST_SYNC(vcpu, TEST_FETCH_PROT_OVERRIDE);
+-	reg_list = vcpu_get_reg_list(vm, 0);
++	reg_list = vcpu_get_reg_list(vm, vcpu->id);
  
- 	run->s.regs.crs[0] |= CR0_STORAGE_PROTECTION_OVERRIDE;
- 	run->kvm_dirty_regs = KVM_SYNC_CRS;
--	HOST_SYNC(vm, TEST_STORAGE_PROT_OVERRIDE);
-+	HOST_SYNC(vcpu, TEST_STORAGE_PROT_OVERRIDE);
- }
+ 	if (fixup_core_regs)
+ 		core_reg_fixup();
+@@ -452,7 +453,7 @@ static void run_test(struct vcpu_config *c)
+ 		bool reject_reg = false;
+ 		int ret;
+ 
+-		ret = __vcpu_ioctl(vm, 0, KVM_GET_ONE_REG, &reg);
++		ret = __vcpu_ioctl(vm, vcpu->id, KVM_GET_ONE_REG, &reg);
+ 		if (ret) {
+ 			printf("%s: Failed to get ", config_name(c));
+ 			print_reg(c, reg.id);
+@@ -464,7 +465,7 @@ static void run_test(struct vcpu_config *c)
+ 		for_each_sublist(c, s) {
+ 			if (s->rejects_set && find_reg(s->rejects_set, s->rejects_set_n, reg.id)) {
+ 				reject_reg = true;
+-				ret = __vcpu_ioctl(vm, 0, KVM_SET_ONE_REG, &reg);
++				ret = __vcpu_ioctl(vm, vcpu->id, KVM_SET_ONE_REG, &reg);
+ 				if (ret != -1 || errno != EPERM) {
+ 					printf("%s: Failed to reject (ret=%d, errno=%d) ", config_name(c), ret, errno);
+ 					print_reg(c, reg.id);
+@@ -476,7 +477,7 @@ static void run_test(struct vcpu_config *c)
+ 		}
+ 
+ 		if (!reject_reg) {
+-			ret = __vcpu_ioctl(vm, 0, KVM_SET_ONE_REG, &reg);
++			ret = __vcpu_ioctl(vm, vcpu->id, KVM_SET_ONE_REG, &reg);
+ 			if (ret) {
+ 				printf("%s: Failed to set ", config_name(c));
+ 				print_reg(c, reg.id);
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
