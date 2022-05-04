@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E37C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:39:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B61B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229753AbiEDRnI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:43:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40674 "EHLO
+        id S1358796AbiEDRnQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:43:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356195AbiEDRL1 (ORCPT
+        with ESMTP id S1356230AbiEDRL3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:11:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567794B410;
-        Wed,  4 May 2022 09:57:30 -0700 (PDT)
+        Wed, 4 May 2022 13:11:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62CBD4B431;
+        Wed,  4 May 2022 09:57:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1539B827A1;
-        Wed,  4 May 2022 16:57:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97253C385A5;
-        Wed,  4 May 2022 16:57:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BD62618AC;
+        Wed,  4 May 2022 16:57:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0D67C385A4;
+        Wed,  4 May 2022 16:57:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683448;
-        bh=EhPme3Fm74FYoNwPGq+P4J38yUvRFTbwq3ETX9RbL5s=;
+        s=korg; t=1651683450;
+        bh=IiuLVqn+41hK/TvtV51P7ny7tLaJWsoNCR7nCU1SY98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VvsDsZZLpztMB7CN1LMWcLJT9g68fowUfQ64oi8UsCnnMaT5l7biQv0DOByHFzYYy
-         zqhBzPM6s7PX0723N1bG+tF6YOjN3MtXJ3kl4CMH0CrRBdWBv+gkY84qiweiNIrPiS
-         92aXKIh8vnaT9MDGOPjkzKPRnT0cqMos/wHvk42Q=
+        b=rJG7haIl1c1cit9JvOezP85IoWJ/JlnrR7VwymNVZGr+wl4abq4gsq8veHig68K2V
+         2yPGGtp39tkrAZAuzzSQ+bvdOKryvbpbQi+M0QzL9czgAS+6Z/6ZfpiVN8H35vV+Cw
+         q4VEKp/Y96ACP9QUSCMwJhlnzG3tc8n+s7gAFkQ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Xiaobing Luo <luoxiaobing0926@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 111/225] arm64: dts: imx8mn-ddr4-evk: Describe the 32.768 kHz PMIC clock
-Date:   Wed,  4 May 2022 18:45:49 +0200
-Message-Id: <20220504153120.503966212@linuxfoundation.org>
+Subject: [PATCH 5.17 113/225] cpufreq: fix memory leak in sun50i_cpufreq_nvmem_probe
+Date:   Wed,  4 May 2022 18:45:51 +0200
+Message-Id: <20220504153120.671649468@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,43 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+From: Xiaobing Luo <luoxiaobing0926@gmail.com>
 
-[ Upstream commit 0310b5aa0656a94102344f1e9ae2892e342a665d ]
+[ Upstream commit 1aa24a8f3b5133dae4bc1e57427e345445f3e902 ]
 
-The ROHM BD71847 PMIC has a 32.768 kHz clock.
+--------------------------------------------
+unreferenced object 0xffff000010742a00 (size 128):
+  comm "swapper/0", pid 1, jiffies 4294902015 (age 1187.652s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<00000000b4dfebaa>] __kmalloc+0x338/0x474
+    [<00000000d6e716db>] sun50i_cpufreq_nvmem_probe+0xc4/0x36c
+    [<000000007d6082a0>] platform_probe+0x98/0x11c
+    [<00000000c990f549>] really_probe+0x234/0x5a0
+    [<000000002d9fecc6>] __driver_probe_device+0x194/0x224
+    [<00000000cf0b94fa>] driver_probe_device+0x64/0x13c
+    [<00000000f238e4cf>] __device_attach_driver+0xf8/0x180
+    [<000000006720e418>] bus_for_each_drv+0xf8/0x160
+    [<00000000df4f14f6>] __device_attach+0x174/0x29c
+    [<00000000782002fb>] device_initial_probe+0x20/0x30
+    [<00000000c2681b06>] bus_probe_device+0xfc/0x110
+    [<00000000964cf3bd>] device_add+0x5f0/0xcd0
+    [<000000004b9264e3>] platform_device_add+0x198/0x390
+    [<00000000fa82a9d0>] platform_device_register_full+0x178/0x210
+    [<000000009a5daf13>] sun50i_cpufreq_init+0xf8/0x168
+    [<000000000377cc7c>] do_one_initcall+0xe4/0x570
+--------------------------------------------
 
-Describe the PMIC clock to fix the following boot errors:
+if sun50i_cpufreq_get_efuse failed, then opp_tables leak.
 
-bd718xx-clk bd71847-clk.1.auto: No parent clk found
-bd718xx-clk: probe of bd71847-clk.1.auto failed with error -22
-
-Based on the same fix done for imx8mm-evk as per commit
-a6a355ede574 ("arm64: dts: imx8mm-evk: Add 32.768 kHz clock to PMIC")
-
-Fixes: 3e44dd09736d ("arm64: dts: imx8mn-ddr4-evk: Add rohm,bd71847 PMIC support")
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: f328584f7bff ("cpufreq: Add sun50i nvmem based CPU scaling driver")
+Signed-off-by: Xiaobing Luo <luoxiaobing0926@gmail.com>
+Reviewed-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/cpufreq/sun50i-cpufreq-nvmem.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts b/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts
-index 7dfee715a2c4..d8ce217c6016 100644
---- a/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts
-@@ -59,6 +59,10 @@ pmic@4b {
- 		interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
- 		rohm,reset-snvs-powered;
+diff --git a/drivers/cpufreq/sun50i-cpufreq-nvmem.c b/drivers/cpufreq/sun50i-cpufreq-nvmem.c
+index 2deed8d8773f..75e1bf3a08f7 100644
+--- a/drivers/cpufreq/sun50i-cpufreq-nvmem.c
++++ b/drivers/cpufreq/sun50i-cpufreq-nvmem.c
+@@ -98,8 +98,10 @@ static int sun50i_cpufreq_nvmem_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
  
-+		#clock-cells = <0>;
-+		clocks = <&osc_32k 0>;
-+		clock-output-names = "clk-32k-out";
-+
- 		regulators {
- 			buck1_reg: BUCK1 {
- 				regulator-name = "buck1";
+ 	ret = sun50i_cpufreq_get_efuse(&speed);
+-	if (ret)
++	if (ret) {
++		kfree(opp_tables);
+ 		return ret;
++	}
+ 
+ 	snprintf(name, MAX_NAME_LEN, "speed%d", speed);
+ 
 -- 
 2.35.1
 
