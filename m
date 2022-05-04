@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E1DC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41515C35275
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:06:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356951AbiEDRJv (ORCPT
+        id S1357250AbiEDRKD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:09:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35590 "EHLO
+        Wed, 4 May 2022 13:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355579AbiEDRAQ (ORCPT
+        with ESMTP id S1355605AbiEDRAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693994B869;
-        Wed,  4 May 2022 09:51:52 -0700 (PDT)
+        Wed, 4 May 2022 13:00:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B8F4B438;
+        Wed,  4 May 2022 09:51:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B52DE617C2;
-        Wed,  4 May 2022 16:51:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E602C385A5;
-        Wed,  4 May 2022 16:51:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABFCA617E7;
+        Wed,  4 May 2022 16:51:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1041C385A4;
+        Wed,  4 May 2022 16:51:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683111;
-        bh=Fibnfz6UKMUBj//0u9tJTPvRAWqgcl6ZhEU2wPNikR0=;
+        s=korg; t=1651683103;
+        bh=nMML2so8EdmjRvi1bx9EPmflZxJh2Wa6JT2EQtbEGSM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uU6RIg1vbcC5VqVVgvlxX8+7uyiXV80bq0xyxhBlXcjgBCfqsrVBw5yTDQO4medRb
-         XfMz8INGhGpqLUQUL2+woImTCJmaZZwBJMVcyrPpwUBqDaNk5sLeG3YTRp7sa9oShJ
-         +trmrIQPP8D2sYlkdB33YFQW1SB5MhJ6TVYAU2yI=
+        b=UbPSuXLmJDgNKokLWmxznFZr4zbgadgp2EL9e67IgrlyFW5Lgm9ZF+GixH8cZZUPo
+         hZAAk7yjYrwDMCGHs6UtLWGiC1JpltmnzZCvjh+AoYXKXpOWXa4cyeRbXNR4j7ownf
+         WfUAgHlwDJuHWqHYk4KQtUdQr+VLRNxKteLIcodk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoli Feng <xifeng@redhat.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 103/129] cifs: destage any unwritten data to the server before calling copychunk_write
-Date:   Wed,  4 May 2022 18:44:55 +0200
-Message-Id: <20220504153029.123978567@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Hans Holmberg <hans.holmberg@wdc.com>
+Subject: [PATCH 5.10 107/129] zonefs: Clear inode information flags on inode creation
+Date:   Wed,  4 May 2022 18:44:59 +0200
+Message-Id: <20220504153029.503397862@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,58 +52,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit f5d0f921ea362636e4a2efb7c38d1ead373a8700 ]
+commit 694852ead287a3433126e7ebda397b242dc99624 upstream.
 
-because the copychunk_write might cover a region of the file that has not yet
-been sent to the server and thus fail.
+Ensure that the i_flags field of struct zonefs_inode_info is cleared to
+0 when initializing a zone file inode, avoiding seeing the flag
+ZONEFS_ZONE_OPEN being incorrectly set.
 
-A simple way to reproduce this is:
-truncate -s 0 /mnt/testfile; strace -f -o x -ttT xfs_io -i -f -c 'pwrite 0k 128k' -c 'fcollapse 16k 24k' /mnt/testfile
-
-the issue is that the 'pwrite 0k 128k' becomes rearranged on the wire with
-the 'fcollapse 16k 24k' due to write-back caching.
-
-fcollapse is implemented in cifs.ko as a SMB2 IOCTL(COPYCHUNK_WRITE) call
-and it will fail serverside since the file is still 0b in size serverside
-until the writes have been destaged.
-To avoid this we must ensure that we destage any unwritten data to the
-server before calling COPYCHUNK_WRITE.
-
-Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1997373
-Reported-by: Xiaoli Feng <xifeng@redhat.com>
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b5c00e975779 ("zonefs: open/close zone on file open/close")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Hans Holmberg <hans.holmberg@wdc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/smb2ops.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ fs/zonefs/super.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
-index 0e8f484031da..c758ff41b638 100644
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -1744,9 +1744,17 @@ smb2_copychunk_range(const unsigned int xid,
- 	int chunks_copied = 0;
- 	bool chunk_sizes_updated = false;
- 	ssize_t bytes_written, total_bytes_written = 0;
-+	struct inode *inode;
+--- a/fs/zonefs/super.c
++++ b/fs/zonefs/super.c
+@@ -1163,6 +1163,7 @@ static struct inode *zonefs_alloc_inode(
+ 	mutex_init(&zi->i_truncate_mutex);
+ 	init_rwsem(&zi->i_mmap_sem);
+ 	zi->i_wr_refcnt = 0;
++	zi->i_flags = 0;
  
- 	pcchunk = kmalloc(sizeof(struct copychunk_ioctl), GFP_KERNEL);
- 
-+	/*
-+	 * We need to flush all unwritten data before we can send the
-+	 * copychunk ioctl to the server.
-+	 */
-+	inode = d_inode(trgtfile->dentry);
-+	filemap_write_and_wait(inode->i_mapping);
-+
- 	if (pcchunk == NULL)
- 		return -ENOMEM;
- 
--- 
-2.35.1
-
+ 	return &zi->i_vnode;
+ }
 
 
