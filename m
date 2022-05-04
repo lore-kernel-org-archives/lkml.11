@@ -2,94 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE15C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22CBCC43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380419AbiEDXrx (ORCPT
+        id S1349865AbiEDXsE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:47:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40574 "EHLO
+        Wed, 4 May 2022 19:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385186AbiEDXYF (ORCPT
+        with ESMTP id S1379752AbiEDXZO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 19:24:05 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B552270F
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 16:20:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651706428; x=1683242428;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=1KdGYDHVnzH8cofyIFaIPHGTf567vUqKFjQ/0YIzyc4=;
-  b=Yy5YEuDhprDVzeeUPfUrQkgoTTWshx+zAvB1AT7uknEWySsQyKjJqgrR
-   NnTCvA2Tw3KJem2sh//OKLzXdeipQ54L3nP2ZFA5UX8Fx/A4cwPZkBXzn
-   XiqxfY3mW7BOgfLVsVDe9AGx39L66/2BKKQ+Zyh2HIpc8/fLu2jLA4+CD
-   cqUe2X/RPkbM+u7OA2xSptMQWlroiy28SJ3s52u7fEERN7vs6p1B1t6zf
-   DxjHBdrDScSsVgfQBdGCsGfsCqjydNkhxjD1qw9b/7xPgd2V4itKrBkuu
-   02t9/TQ90BLpy+TBOLxeU0q+p7S0zWPheEMoWTHli0e58h/2jOhGw07i7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="249910676"
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="249910676"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 16:20:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="549084317"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 04 May 2022 16:20:18 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmOI5-000Bt5-Kw;
-        Wed, 04 May 2022 23:20:17 +0000
-Date:   Thu, 5 May 2022 07:19:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [kees:flexcpy/next-20220502 31/34] WARNING: modpost:
- vmlinux.o(.text+0xe79f2a): Section mismatch in reference from the function
- ieee80211_find_sta() to the variable .init.text:.L0
-Message-ID: <202205050704.5LotcLcz-lkp@intel.com>
+        Wed, 4 May 2022 19:25:14 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CA94DF61
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 16:21:36 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id z5-20020a17090a468500b001d2bc2743c4so2589443pjf.0
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 16:21:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=oSCDp+BlWHOAe2tqoHinPSSzUxabaz3SWirbYWgZ7iE=;
+        b=AK96nFD2jq9As8QRqe4ZZgrKB3muSxd4UKPDu0PiPgxZCEkF09YM3a/lbxSE2Aolhc
+         8/11YUs8xGSuIa13K4FNjPmrXP32NRaFX2/fqhw5ycNjYisg1PBFJZiM4dKkwgF7l4SI
+         8V/qwibG9N2Kolpq0e2PDsUZD0WN7jb8AqoT4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=oSCDp+BlWHOAe2tqoHinPSSzUxabaz3SWirbYWgZ7iE=;
+        b=rMmY4HYmRpOAFdD5blgSZYu97KO2qsOT3f3nMSySOo2C5ZEeIGXtKPAE2hJo8JOoaZ
+         UL5dO2hUMT20CyWVcbbNs4UpsUfBqrQd+WCLW7/sLXg1MCDU2B1KPqrwq4Yv+cJntyPN
+         rhJKxB5c+cInYx2gLb+CQQEaru/ZUxDqPcn6uKrQNpvhcjTL3aAh7dlLjk47sICC6ALW
+         IjnVi6r4sGK95AIYE2g5/FW8flqnP44c8XQLMgW0QBuUQwhmtaq/h9g/Kt/sRW8wzp35
+         oV9TLrSiv7SxjFtfGbd6SUstbqDIpx4mVrDJkvnTJPaPeEA3SqIQ0sk91NY6neCRx87P
+         ndlg==
+X-Gm-Message-State: AOAM53217xxEgdojSEN7yk3TVwzBvZ4bRkUqMcvDf8awtaGQ0l2ms+zS
+        VrJruGXRRrMPst8Lz0suFxymNKnMKY4KPb8x
+X-Google-Smtp-Source: ABdhPJyWCNX/I16qyW4fvcathhxcuAgJ0GjSbW0c5vLuKr3I6Bnp2rIZfhNKLxSoEtDyFcQM2HOpmw==
+X-Received: by 2002:a17:902:7e01:b0:15e:caea:d6 with SMTP id b1-20020a1709027e0100b0015ecaea00d6mr4372912plm.33.1651706495884;
+        Wed, 04 May 2022 16:21:35 -0700 (PDT)
+Received: from evgreen-glaptop.lan ([98.47.98.87])
+        by smtp.gmail.com with ESMTPSA id q12-20020a170902f78c00b0015e8d4eb2d6sm1901pln.288.2022.05.04.16.21.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 16:21:35 -0700 (PDT)
+From:   Evan Green <evgreen@chromium.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Matthew Garrett <mgarrett@aurora.tech>, dlunev@google.com,
+        zohar@linux.ibm.com, jejb@linux.ibm.com,
+        linux-integrity@vger.kernel.org, corbet@lwn.net, rjw@rjwysocki.net,
+        gwendal@chromium.org, jarkko@kernel.org, linux-pm@vger.kernel.org,
+        Matthew Garrett <matthewgarrett@google.com>,
+        Matthew Garrett <mjg59@google.com>,
+        Evan Green <evgreen@chromium.org>,
+        David Howells <dhowells@redhat.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>, keyrings@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: [PATCH 04/10] security: keys: trusted: Allow storage of PCR values in creation data
+Date:   Wed,  4 May 2022 16:20:56 -0700
+Message-Id: <20220504161439.4.I32591db064b6cdc91850d777f363c9d05c985b39@changeid>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220504232102.469959-1-evgreen@chromium.org>
+References: <20220504232102.469959-1-evgreen@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git flexcpy/next-20220502
-head:   1dbd8181297512b190aca23477043ac635daba4e
-commit: b0fdcfe7030e00d582776443aabf76d8653104dc [31/34] xtensa: Use mem_to_flex_dup() with struct property
-config: riscv-randconfig-r023-20220501 (https://download.01.org/0day-ci/archive/20220505/202205050704.5LotcLcz-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git/commit/?id=b0fdcfe7030e00d582776443aabf76d8653104dc
-        git remote add kees https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git
-        git fetch --no-tags kees flexcpy/next-20220502
-        git checkout b0fdcfe7030e00d582776443aabf76d8653104dc
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+From: Matthew Garrett <matthewgarrett@google.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+When TPMs generate keys, they can also generate some information
+describing the state of the PCRs at creation time. This data can then
+later be certified by the TPM, allowing verification of the PCR values.
+This allows us to determine the state of the system at the time a key
+was generated. Add an additional argument to the trusted key creation
+options, allowing the user to provide the set of PCRs that should have
+their values incorporated into the creation data.
 
-All warnings (new ones prefixed by >>, old ones prefixed by <<):
+From: Matthew Garrett <mjg59@google.com>
+Signed-off-by: Matthew Garrett <mjg59@google.com>
 
->> WARNING: modpost: vmlinux.o(.text+0xe79f2a): Section mismatch in reference from the function ieee80211_find_sta() to the variable .init.text:.L0
-The function ieee80211_find_sta() references
-the variable __init .L0 .
-This is often because ieee80211_find_sta lacks a __init
-annotation or the annotation of .L0 is wrong.
+Signed-off-by: Evan Green <evgreen@chromium.org>
+---
+Matthew's original version of this patch is at:
+https://patchwork.kernel.org/patch/12096503/
 
-Note: the below error/warnings can be found in parent commit:
-<< WARNING: modpost: vmlinux.o(.text+0xc57482): Section mismatch in reference from the function snd_soc_jack_report() to the function .init.text:oom_init()
-<< WARNING: modpost: vmlinux.o(.text+0xc574aa): Section mismatch in reference from the function snd_soc_jack_add_zones() to the variable .init.text:$x
-<< WARNING: modpost: vmlinux.o(.text+0xe56854): Section mismatch in reference from the function cfg80211_report_obss_beacon_khz() to the function .init.text:mt7621_pci_phy_driver_init()
-<< WARNING: modpost: vmlinux.o(__ex_table+0x11a0): Section mismatch in reference from the variable .L0 to the variable .debug_str:.LASF2051
+ .../security/keys/trusted-encrypted.rst       |  4 +++
+ include/keys/trusted-type.h                   |  1 +
+ security/keys/trusted-keys/trusted_tpm1.c     |  9 +++++++
+ security/keys/trusted-keys/trusted_tpm2.c     | 25 +++++++++++++++++--
+ 4 files changed, 37 insertions(+), 2 deletions(-)
 
+diff --git a/Documentation/security/keys/trusted-encrypted.rst b/Documentation/security/keys/trusted-encrypted.rst
+index f614dad7de12f9..7215b067bf128f 100644
+--- a/Documentation/security/keys/trusted-encrypted.rst
++++ b/Documentation/security/keys/trusted-encrypted.rst
+@@ -170,6 +170,10 @@ Usage::
+        policyhandle= handle to an authorization policy session that defines the
+                      same policy and with the same hash algorithm as was used to
+                      seal the key.
++       creationpcrs= hex integer representing the set of PCR values to be
++                     included in the PCR creation data. The bit corresponding
++		     to each PCR should be 1 to be included, 0 to be ignored.
++		     TPM2 only.
+ 
+ "keyctl print" returns an ascii hex copy of the sealed key, which is in standard
+ TPM_STORED_DATA format.  The key length for new keys are always in bytes.
+diff --git a/include/keys/trusted-type.h b/include/keys/trusted-type.h
+index 8a793ae1ad9f70..b3ac4afe8ba987 100644
+--- a/include/keys/trusted-type.h
++++ b/include/keys/trusted-type.h
+@@ -54,6 +54,7 @@ struct trusted_key_options {
+ 	uint32_t policydigest_len;
+ 	unsigned char policydigest[MAX_DIGEST_SIZE];
+ 	uint32_t policyhandle;
++	uint32_t creation_pcrs;
+ };
+ 
+ struct trusted_key_ops {
+diff --git a/security/keys/trusted-keys/trusted_tpm1.c b/security/keys/trusted-keys/trusted_tpm1.c
+index aa108bea6739b3..2975827c01bec0 100644
+--- a/security/keys/trusted-keys/trusted_tpm1.c
++++ b/security/keys/trusted-keys/trusted_tpm1.c
+@@ -713,6 +713,7 @@ enum {
+ 	Opt_hash,
+ 	Opt_policydigest,
+ 	Opt_policyhandle,
++	Opt_creationpcrs,
+ };
+ 
+ static const match_table_t key_tokens = {
+@@ -725,6 +726,7 @@ static const match_table_t key_tokens = {
+ 	{Opt_hash, "hash=%s"},
+ 	{Opt_policydigest, "policydigest=%s"},
+ 	{Opt_policyhandle, "policyhandle=%s"},
++	{Opt_creationpcrs, "creationpcrs=%s"},
+ 	{Opt_err, NULL}
+ };
+ 
+@@ -858,6 +860,13 @@ static int getoptions(char *c, struct trusted_key_payload *pay,
+ 				return -EINVAL;
+ 			opt->policyhandle = handle;
+ 			break;
++		case Opt_creationpcrs:
++			if (!tpm2)
++				return -EINVAL;
++			res = kstrtoint(args[0].from, 16, &opt->creation_pcrs);
++			if (res < 0)
++				return -EINVAL;
++			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
+diff --git a/security/keys/trusted-keys/trusted_tpm2.c b/security/keys/trusted-keys/trusted_tpm2.c
+index 296a00f872ba40..b7ddb78e644d17 100644
+--- a/security/keys/trusted-keys/trusted_tpm2.c
++++ b/security/keys/trusted-keys/trusted_tpm2.c
+@@ -290,7 +290,7 @@ int tpm2_seal_trusted(struct tpm_chip *chip,
+ 	struct tpm_buf buf;
+ 	u32 hash;
+ 	u32 flags;
+-	int i;
++	int i, j;
+ 	int rc;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(tpm2_hash_map); i++) {
+@@ -359,7 +359,28 @@ int tpm2_seal_trusted(struct tpm_chip *chip,
+ 	tpm_buf_append_u16(&buf, 0);
+ 
+ 	/* creation PCR */
+-	tpm_buf_append_u32(&buf, 0);
++	if (options->creation_pcrs) {
++		/* One bank */
++		tpm_buf_append_u32(&buf, 1);
++		/* Which bank to use */
++		tpm_buf_append_u16(&buf, hash);
++		/* Length of the PCR bitmask */
++		tpm_buf_append_u8(&buf, 3);
++		/* PCR bitmask */
++		for (i = 0; i < 3; i++) {
++			char tmp = 0;
++
++			for (j = 0; j < 8; j++) {
++				char bit = (i * 8) + j;
++
++				if (options->creation_pcrs & (1 << bit))
++					tmp |= (1 << j);
++			}
++			tpm_buf_append_u8(&buf, tmp);
++		}
++	} else {
++		tpm_buf_append_u32(&buf, 0);
++	}
+ 
+ 	if (buf.flags & TPM_BUF_OVERFLOW) {
+ 		rc = -E2BIG;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.31.0
+
