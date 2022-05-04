@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 774AAC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 600ECC4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358587AbiEDRQG (ORCPT
+        id S1358516AbiEDRQC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:16:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
+        Wed, 4 May 2022 13:16:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355701AbiEDREj (ORCPT
+        with ESMTP id S1355707AbiEDREj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:04:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F18864F44B;
-        Wed,  4 May 2022 09:53:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70D54EDDB;
+        Wed,  4 May 2022 09:53:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EFF4617BD;
-        Wed,  4 May 2022 16:53:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD0FCC385A5;
-        Wed,  4 May 2022 16:53:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 566E361866;
+        Wed,  4 May 2022 16:53:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A35DCC385AA;
+        Wed,  4 May 2022 16:53:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683193;
-        bh=GZgX069Xig3QT1ywx3SlIJvq+f8nwWelsRS134k74wo=;
+        s=korg; t=1651683195;
+        bh=Za0VdiC3YL/IFH8GD9TAZhUplfNPPkWz+O8jG/yfWG4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M0FgI3ZGbGGeMbkRleVSSq2JTEhUKJ5xLirHLK8rRpi4q1D+xE3zDae5ixXoBrGdX
-         NtQtdGEy4sf4RVTfAlVB1+VvbOJcIGDorSvuYMC4mGfb9KKecPwFP1IdzJu5vFci+h
-         rmmf/5+DZI3Jdq6wwGEAqvjlF11lreRPL8Cft66o=
+        b=Mc/I83SpP/ojGvWEk8t+5jtGrmlXVYOpg+ViWngffrkvQ793WJydgY2+ex2ahiKE/
+         wHz6cQQPAZnCnHKTH/dxbXqwHwrrHoFNvvFaZuFEAniXXlkTcZnKeGcnwdi9RiBYCP
+         j8pcW54kdJFX1lhfpEXVVj+L/e9py6kbcM2p4GZE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 046/177] cpufreq: qcom-cpufreq-hw: Fix throttle frequency value on EPSS platforms
-Date:   Wed,  4 May 2022 18:43:59 +0200
-Message-Id: <20220504153057.045373689@linuxfoundation.org>
+Subject: [PATCH 5.15 048/177] arm64: dts: meson: remove CPU opps below 1GHz for G12B boards
+Date:   Wed,  4 May 2022 18:44:01 +0200
+Message-Id: <20220504153057.229727054@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -52,83 +51,144 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+From: Christian Hewitt <christianshewitt@gmail.com>
 
-[ Upstream commit f84ccad5f5660f86a642a3d7e2bfdc4e7a8a2d49 ]
+[ Upstream commit 6c4d636bc00dc17c63ffb2a73a0da850240e26e3 ]
 
-On QCOM platforms with EPSS flavour of cpufreq IP a throttled frequency is
-obtained from another register REG_DOMAIN_STATE, thus the helper function
-qcom_lmh_get_throttle_freq() should be modified accordingly, as for now
-it returns gibberish since .reg_current_vote is unset for EPSS hardware.
+Amlogic G12B devices experience CPU stalls and random board wedges when
+the system idles and CPU cores clock down to lower opp points. Recent
+vendor kernels include a change to remove 100-250MHz and other distro
+sources also remove the 500/667MHz points. Unless all 100-667Mhz opps
+are removed or the CPU governor forced to performance stalls are still
+observed, so let's remove them to improve stability and uptime.
 
-To exclude a hardcoded magic number 19200 it is replaced by "xo" clock rate
-in KHz.
-
-Fixes: 275157b367f4 ("cpufreq: qcom-cpufreq-hw: Add dcvs interrupt support")
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Fixes: b96d4e92709b ("arm64: dts: meson-g12b: support a311d and s922x cpu operating points")
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220210100638.19130-2-christianshewitt@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/qcom-cpufreq-hw.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ .../boot/dts/amlogic/meson-g12b-a311d.dtsi    | 40 -------------------
+ .../boot/dts/amlogic/meson-g12b-s922x.dtsi    | 40 -------------------
+ 2 files changed, 80 deletions(-)
 
-diff --git a/drivers/cpufreq/qcom-cpufreq-hw.c b/drivers/cpufreq/qcom-cpufreq-hw.c
-index dfe72d82858f..e73ecab23c85 100644
---- a/drivers/cpufreq/qcom-cpufreq-hw.c
-+++ b/drivers/cpufreq/qcom-cpufreq-hw.c
-@@ -28,6 +28,7 @@
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi
+index d61f43052a34..8e9ad1e51d66 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi
+@@ -11,26 +11,6 @@ cpu_opp_table_0: opp-table-0 {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
  
- struct qcom_cpufreq_soc_data {
- 	u32 reg_enable;
-+	u32 reg_domain_state;
- 	u32 reg_freq_lut;
- 	u32 reg_volt_lut;
- 	u32 reg_current_vote;
-@@ -266,11 +267,16 @@ static void qcom_get_related_cpus(int index, struct cpumask *m)
- 	}
- }
+-		opp-100000000 {
+-			opp-hz = /bits/ 64 <100000000>;
+-			opp-microvolt = <731000>;
+-		};
+-
+-		opp-250000000 {
+-			opp-hz = /bits/ 64 <250000000>;
+-			opp-microvolt = <731000>;
+-		};
+-
+-		opp-500000000 {
+-			opp-hz = /bits/ 64 <500000000>;
+-			opp-microvolt = <731000>;
+-		};
+-
+-		opp-667000000 {
+-			opp-hz = /bits/ 64 <667000000>;
+-			opp-microvolt = <731000>;
+-		};
+-
+ 		opp-1000000000 {
+ 			opp-hz = /bits/ 64 <1000000000>;
+ 			opp-microvolt = <761000>;
+@@ -71,26 +51,6 @@ cpub_opp_table_1: opp-table-1 {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
  
--static unsigned int qcom_lmh_get_throttle_freq(struct qcom_cpufreq_data *data)
-+static unsigned long qcom_lmh_get_throttle_freq(struct qcom_cpufreq_data *data)
- {
--	unsigned int val = readl_relaxed(data->base + data->soc_data->reg_current_vote);
-+	unsigned int lval;
+-		opp-100000000 {
+-			opp-hz = /bits/ 64 <100000000>;
+-			opp-microvolt = <731000>;
+-		};
+-
+-		opp-250000000 {
+-			opp-hz = /bits/ 64 <250000000>;
+-			opp-microvolt = <731000>;
+-		};
+-
+-		opp-500000000 {
+-			opp-hz = /bits/ 64 <500000000>;
+-			opp-microvolt = <731000>;
+-		};
+-
+-		opp-667000000 {
+-			opp-hz = /bits/ 64 <667000000>;
+-			opp-microvolt = <731000>;
+-		};
+-
+ 		opp-1000000000 {
+ 			opp-hz = /bits/ 64 <1000000000>;
+ 			opp-microvolt = <731000>;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi
+index 1e5d0ee5d541..44c23c984034 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi
+@@ -11,26 +11,6 @@ cpu_opp_table_0: opp-table-0 {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
  
--	return (val & 0x3FF) * 19200;
-+	if (data->soc_data->reg_current_vote)
-+		lval = readl_relaxed(data->base + data->soc_data->reg_current_vote) & 0x3ff;
-+	else
-+		lval = readl_relaxed(data->base + data->soc_data->reg_domain_state) & 0xff;
-+
-+	return lval * xo_rate;
- }
+-		opp-100000000 {
+-			opp-hz = /bits/ 64 <100000000>;
+-			opp-microvolt = <731000>;
+-		};
+-
+-		opp-250000000 {
+-			opp-hz = /bits/ 64 <250000000>;
+-			opp-microvolt = <731000>;
+-		};
+-
+-		opp-500000000 {
+-			opp-hz = /bits/ 64 <500000000>;
+-			opp-microvolt = <731000>;
+-		};
+-
+-		opp-667000000 {
+-			opp-hz = /bits/ 64 <667000000>;
+-			opp-microvolt = <731000>;
+-		};
+-
+ 		opp-1000000000 {
+ 			opp-hz = /bits/ 64 <1000000000>;
+ 			opp-microvolt = <731000>;
+@@ -76,26 +56,6 @@ cpub_opp_table_1: opp-table-1 {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
  
- static void qcom_lmh_dcvs_notify(struct qcom_cpufreq_data *data)
-@@ -280,14 +286,12 @@ static void qcom_lmh_dcvs_notify(struct qcom_cpufreq_data *data)
- 	int cpu = cpumask_first(policy->related_cpus);
- 	struct device *dev = get_cpu_device(cpu);
- 	struct dev_pm_opp *opp;
--	unsigned int freq;
- 
- 	/*
- 	 * Get the h/w throttled frequency, normalize it using the
- 	 * registered opp table and use it to calculate thermal pressure.
- 	 */
--	freq = qcom_lmh_get_throttle_freq(data);
--	freq_hz = freq * HZ_PER_KHZ;
-+	freq_hz = qcom_lmh_get_throttle_freq(data);
- 
- 	opp = dev_pm_opp_find_freq_floor(dev, &freq_hz);
- 	if (IS_ERR(opp) && PTR_ERR(opp) == -ERANGE)
-@@ -359,6 +363,7 @@ static const struct qcom_cpufreq_soc_data qcom_soc_data = {
- 
- static const struct qcom_cpufreq_soc_data epss_soc_data = {
- 	.reg_enable = 0x0,
-+	.reg_domain_state = 0x20,
- 	.reg_freq_lut = 0x100,
- 	.reg_volt_lut = 0x200,
- 	.reg_perf_state = 0x320,
+-		opp-100000000 {
+-			opp-hz = /bits/ 64 <100000000>;
+-			opp-microvolt = <751000>;
+-		};
+-
+-		opp-250000000 {
+-			opp-hz = /bits/ 64 <250000000>;
+-			opp-microvolt = <751000>;
+-		};
+-
+-		opp-500000000 {
+-			opp-hz = /bits/ 64 <500000000>;
+-			opp-microvolt = <751000>;
+-		};
+-
+-		opp-667000000 {
+-			opp-hz = /bits/ 64 <667000000>;
+-			opp-microvolt = <751000>;
+-		};
+-
+ 		opp-1000000000 {
+ 			opp-hz = /bits/ 64 <1000000000>;
+ 			opp-microvolt = <771000>;
 -- 
 2.35.1
 
