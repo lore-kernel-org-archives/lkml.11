@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D565C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:48:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F4EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:48:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359320AbiEDRwA (ORCPT
+        id S1353156AbiEDRwI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:52:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54994 "EHLO
+        Wed, 4 May 2022 13:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357361AbiEDRPA (ORCPT
+        with ESMTP id S1357459AbiEDRPD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF19541A0;
-        Wed,  4 May 2022 09:58:28 -0700 (PDT)
+        Wed, 4 May 2022 13:15:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E2D54F85;
+        Wed,  4 May 2022 09:58:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC584B827B3;
-        Wed,  4 May 2022 16:58:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B739C385B3;
-        Wed,  4 May 2022 16:58:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0B23B8279A;
+        Wed,  4 May 2022 16:58:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82217C385AF;
+        Wed,  4 May 2022 16:58:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683505;
-        bh=/1yeXMa6uf99VEUn8qt+TxYPCMGa6OAgd4dvwWp1OYA=;
+        s=korg; t=1651683509;
+        bh=S9CG5PrKilja1DC3IfHXSacjvDyPgN6Ugi5V3mCrnCM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u2zb+CrrBKNVkTXD2iOjzHmYL9C0usj0lInp78q2ZEDnyDXlGMV1TcePzUu4iDuSZ
-         ojRUwy0GpTXvw/dD6YGdjXCzIZDxhsTmGBJ1BX1kuteRQpJ9OulCRUQlq01sCluHyM
-         C52slhzlgpzhT83bzkKTmsjnrh9ZYXcyPTMMOOd0=
+        b=fwfOWJ41ph5R3q58XU9rO5/I+rJEU3zXoP2+KLgp4GtMjQEvOd9U8oAMIOFtMASaJ
+         DOJZ8OBqdY0p+RpQLwZ3lKJ5+0pZ5cLbgb/8/dc6ga2hisDf1z9LDgH4mCpK3oY7Wc
+         Vmclr7M/2V1g4DwM5X4eDMi7oGNZvTB9eCN8lXIo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Hans Holmberg <hans.holmberg@wdc.com>
-Subject: [PATCH 5.17 180/225] zonefs: Fix management of open zones
-Date:   Wed,  4 May 2022 18:46:58 +0200
-Message-Id: <20220504153126.579432514@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 172/225] drivers: net: hippi: Fix deadlock in rr_close()
+Date:   Wed,  4 May 2022 18:46:50 +0200
+Message-Id: <20220504153125.594738261@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,126 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit 1da18a296f5ba4f99429e62a7cf4fdbefa598902 upstream.
+[ Upstream commit bc6de2878429e85c1f1afaa566f7b5abb2243eef ]
 
-The mount option "explicit_open" manages the device open zone
-resources to ensure that if an application opens a sequential file for
-writing, the file zone can always be written by explicitly opening
-the zone and accounting for that state with the s_open_zones counter.
+There is a deadlock in rr_close(), which is shown below:
 
-However, if some zones are already open when mounting, the device open
-zone resource usage status will be larger than the initial s_open_zones
-value of 0. Ensure that this inconsistency does not happen by closing
-any sequential zone that is open when mounting.
+   (Thread 1)                |      (Thread 2)
+                             | rr_open()
+rr_close()                   |  add_timer()
+ spin_lock_irqsave() //(1)   |  (wait a time)
+ ...                         | rr_timer()
+ del_timer_sync()            |  spin_lock_irqsave() //(2)
+ (wait timer to stop)        |  ...
 
-Furthermore, with ZNS drives, closing an explicitly open zone that has
-not been written will change the zone state to "closed", that is, the
-zone will remain in an active state. Since this can then cause failures
-of explicit open operations on other zones if the drive active zone
-resources are exceeded, we need to make sure that the zone is not
-active anymore by resetting it instead of closing it. To address this,
-zonefs_zone_mgmt() is modified to change a REQ_OP_ZONE_CLOSE request
-into a REQ_OP_ZONE_RESET for sequential zones that have not been
-written.
+We hold rrpriv->lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need rrpriv->lock in position (2) of thread 2.
+As a result, rr_close() will block forever.
 
-Fixes: b5c00e975779 ("zonefs: open/close zone on file open/close")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Reviewed-by: Hans Holmberg <hans.holmberg@wdc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417125519.82618-1-duoming@zju.edu.cn
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/zonefs/super.c |   45 ++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 40 insertions(+), 5 deletions(-)
+ drivers/net/hippi/rrunner.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/zonefs/super.c
-+++ b/fs/zonefs/super.c
-@@ -35,6 +35,17 @@ static inline int zonefs_zone_mgmt(struc
+diff --git a/drivers/net/hippi/rrunner.c b/drivers/net/hippi/rrunner.c
+index 16105292b140..74e845fa2e07 100644
+--- a/drivers/net/hippi/rrunner.c
++++ b/drivers/net/hippi/rrunner.c
+@@ -1355,7 +1355,9 @@ static int rr_close(struct net_device *dev)
  
- 	lockdep_assert_held(&zi->i_truncate_mutex);
+ 	rrpriv->fw_running = 0;
  
-+	/*
-+	 * With ZNS drives, closing an explicitly open zone that has not been
-+	 * written will change the zone state to "closed", that is, the zone
-+	 * will remain active. Since this can then cause failure of explicit
-+	 * open operation on other zones if the drive active zone resources
-+	 * are exceeded, make sure that the zone does not remain active by
-+	 * resetting it.
-+	 */
-+	if (op == REQ_OP_ZONE_CLOSE && !zi->i_wpoffset)
-+		op = REQ_OP_ZONE_RESET;
-+
- 	trace_zonefs_zone_mgmt(inode, op);
- 	ret = blkdev_zone_mgmt(inode->i_sb->s_bdev, op, zi->i_zsector,
- 			       zi->i_zone_size >> SECTOR_SHIFT, GFP_NOFS);
-@@ -1295,12 +1306,13 @@ static void zonefs_init_dir_inode(struct
- 	inc_nlink(parent);
- }
++	spin_unlock_irqrestore(&rrpriv->lock, flags);
+ 	del_timer_sync(&rrpriv->timer);
++	spin_lock_irqsave(&rrpriv->lock, flags);
  
--static void zonefs_init_file_inode(struct inode *inode, struct blk_zone *zone,
--				   enum zonefs_ztype type)
-+static int zonefs_init_file_inode(struct inode *inode, struct blk_zone *zone,
-+				  enum zonefs_ztype type)
- {
- 	struct super_block *sb = inode->i_sb;
- 	struct zonefs_sb_info *sbi = ZONEFS_SB(sb);
- 	struct zonefs_inode_info *zi = ZONEFS_I(inode);
-+	int ret = 0;
- 
- 	inode->i_ino = zone->start >> sbi->s_zone_sectors_shift;
- 	inode->i_mode = S_IFREG | sbi->s_perm;
-@@ -1325,6 +1337,22 @@ static void zonefs_init_file_inode(struc
- 	sb->s_maxbytes = max(zi->i_max_size, sb->s_maxbytes);
- 	sbi->s_blocks += zi->i_max_size >> sb->s_blocksize_bits;
- 	sbi->s_used_blocks += zi->i_wpoffset >> sb->s_blocksize_bits;
-+
-+	/*
-+	 * For sequential zones, make sure that any open zone is closed first
-+	 * to ensure that the initial number of open zones is 0, in sync with
-+	 * the open zone accounting done when the mount option
-+	 * ZONEFS_MNTOPT_EXPLICIT_OPEN is used.
-+	 */
-+	if (type == ZONEFS_ZTYPE_SEQ &&
-+	    (zone->cond == BLK_ZONE_COND_IMP_OPEN ||
-+	     zone->cond == BLK_ZONE_COND_EXP_OPEN)) {
-+		mutex_lock(&zi->i_truncate_mutex);
-+		ret = zonefs_zone_mgmt(inode, REQ_OP_ZONE_CLOSE);
-+		mutex_unlock(&zi->i_truncate_mutex);
-+	}
-+
-+	return ret;
- }
- 
- static struct dentry *zonefs_create_inode(struct dentry *parent,
-@@ -1334,6 +1362,7 @@ static struct dentry *zonefs_create_inod
- 	struct inode *dir = d_inode(parent);
- 	struct dentry *dentry;
- 	struct inode *inode;
-+	int ret;
- 
- 	dentry = d_alloc_name(parent, name);
- 	if (!dentry)
-@@ -1344,10 +1373,16 @@ static struct dentry *zonefs_create_inod
- 		goto dput;
- 
- 	inode->i_ctime = inode->i_mtime = inode->i_atime = dir->i_ctime;
--	if (zone)
--		zonefs_init_file_inode(inode, zone, type);
--	else
-+	if (zone) {
-+		ret = zonefs_init_file_inode(inode, zone, type);
-+		if (ret) {
-+			iput(inode);
-+			goto dput;
-+		}
-+	} else {
- 		zonefs_init_dir_inode(dir, inode, type);
-+	}
-+
- 	d_add(dentry, inode);
- 	dir->i_size++;
- 
+ 	writel(0, &regs->TxPi);
+ 	writel(0, &regs->IpRxPi);
+-- 
+2.35.1
+
 
 
