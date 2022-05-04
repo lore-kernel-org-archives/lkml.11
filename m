@@ -2,112 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F188CC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:44:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8422C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:45:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350783AbiEDNsT (ORCPT
+        id S1350795AbiEDNtV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 09:48:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35968 "EHLO
+        Wed, 4 May 2022 09:49:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350775AbiEDNsH (ORCPT
+        with ESMTP id S1350791AbiEDNs6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 09:48:07 -0400
-X-Greylist: delayed 79480 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 06:44:30 PDT
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160BF27156;
-        Wed,  4 May 2022 06:44:29 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 836C924000C;
-        Wed,  4 May 2022 13:44:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651671868;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rk72OOOdZSUj/t0ck9GUkQrJCm6OvviM5pEqmXGfJr4=;
-        b=GAjLy704dfosoxU9eAdGTyyj8HAuQP8NWeOEuRGQ8M0aC3aXtC4Z/+0wzc3MpPCNpazLqs
-        sqlSOuSZ6E7OfjEh41ItNsnvAA5BxHa65iDBnypdHxt0BXP1A3CRsej8eMwM2b4fFkFuYm
-        eqTfzkGfgZHCKC2EK18B8yQalmXLzMRS1WCKPc68XwGexWOYo+13s9ra5xfpAfeRdggkuW
-        Qub8s2GnqY2eWh1s/GD7d4ckd9MGOF29XRakpcsqC74GCJBSbd/9vNgAN1oXHmChv6Pbmc
-        g4QS/5UYg5Fm56SNbfpJkQ/Tv6k70XROwA7nHj0ThHUcgAPCMn6XmDh2rwu3gQ==
-Date:   Wed, 4 May 2022 15:43:03 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Pantelis Antoniou <pantelis.antoniou@konsulko.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Thomas Petazzoni <thomas.petazonni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 2/3] PCI: of: create DT nodes for PCI devices if they do
- not exists
-Message-ID: <20220504154303.5cdf8cc2@fixe.home>
-In-Reply-To: <20220503225353.GA415393@bhelgaas>
-References: <20220427094502.456111-3-clement.leger@bootlin.com>
-        <20220503225353.GA415393@bhelgaas>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Wed, 4 May 2022 09:48:58 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C2756254
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 06:45:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651671919; x=1683207919;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=KZ4vphBXVfB/HfWb5Clb91wOAr0PLx69sTjqh3lXPSw=;
+  b=G/Z8EAzW/+vTzORVkEw10dP4dpdesc47Y/8Tv7n7ZHJwzK5Pg2/08yjX
+   5vNSXOsLCAwLmN3X+Ip5vlWBaEYnRAGU0/KknNnxyxdNGYGjlc/CY5UEm
+   04S6jlkrMi9SctZzLGXwN85jjJh/XeuZA+I0q2O3yutmkz5A5Ve9hAR3v
+   VGueUiaNgh0Q/XRuOknLYJUMhgD30G0AJI47s1p8jWF2cm5pPSpa2kGhG
+   JCVqn3H1qyyybXSxasx0vghJH61ELfix6rvTO4aSWZr/k4u34li3Gk8Ip
+   A5AkJvWOO6LuLA5Iq6FVWzZ/xViaaGjozFWVkZpLjU1zGVaajSKagq8Pa
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="255235853"
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="255235853"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 06:45:19 -0700
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="734403682"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 06:45:16 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nmFJZ-00Btne-Fp;
+        Wed, 04 May 2022 16:45:13 +0300
+Date:   Wed, 4 May 2022 16:45:13 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Scott Wood <oss@buserror.net>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: Re: [PATCH v1 1/1] powerpc/83xx/mpc8349emitx: Get rid of of_node
+ assignment
+Message-ID: <YnKDaTVDoqgFeQHz@smile.fi.intel.com>
+References: <20220323174342.56187-1-andriy.shevchenko@linux.intel.com>
+ <CACRpkdbUWE8knM=9uUVLTX792Y8_J1aPj4KtFh=yJxaKi+ZqRw@mail.gmail.com>
+ <Yk2PE7+oEEtGri95@smile.fi.intel.com>
+ <CACRpkdbqfNiWQG6ayqMXACby4xkW0pY6JhdYE-x+pWkSxJU5TQ@mail.gmail.com>
+ <87fsm7fkbt.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87fsm7fkbt.fsf@mpe.ellerman.id.au>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Tue, 3 May 2022 17:53:53 -0500,
-Bjorn Helgaas <helgaas@kernel.org> a =C3=A9crit :
+On Thu, Apr 21, 2022 at 08:42:30AM +1000, Michael Ellerman wrote:
+> Linus Walleij <linus.walleij@linaro.org> writes:
+> > On Wed, Apr 6, 2022 at 3:02 PM Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com> wrote:
+> >> On Mon, Mar 28, 2022 at 03:16:08PM +0200, Linus Walleij wrote:
+> >> > On Wed, Mar 23, 2022 at 6:43 PM Andy Shevchenko
+> >> > <andriy.shevchenko@linux.intel.com> wrote:
+> >> >
+> >> > > Let GPIO library to assign of_node from the parent device.
+> >> > > This allows to move GPIO library and drivers to use fwnode
+> >> > > APIs instead of being stuck with OF-only interfaces.
+> >> > >
+> >> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> >> >
+> >> > That's a nice patch.
+> >> > Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> >>
+> >> Thanks!
+> >>
+> >> Can we have this applied now?
+> >
+> > I think Michael Ellerman could help with this?
+> >
+> > Michael?
+> 
+> Yep, I'll pick it up when I start putting things into next.
+> 
+> That's usually the week after rc2, but I had a break for Easter.
 
-> In subject:
->=20
->   PCI: of: Create DT nodes ... if they do not exist
->=20
-> The subject could be read as saying that you're going to create DT
-> nodes before the PCI devices exist, but I think you mean that when we
-> enumerate a PCI devices, we're *always* going to create a DT node for
-> it, even if the DT didn't mention it.
+Any new on this? I haven't seen it yet in Linux Next.
 
-Hi Bjorn,
-
-Indeed ! I'll modify that.
-
->=20
-> Maybe something like:
->=20
->   PCI: of: Create DT node for every PCI device
->=20
-> although I see Rob thinks this should be done on demand instead of
-> doing it for every device, which sounds sensible to me.
-
-Agreed, I'll rework this series.
-
-Thanks,
-
->=20
-> On Wed, Apr 27, 2022 at 11:45:01AM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
-> > In order to apply overlays to PCI device nodes, the nodes must first
-> > exist. This commit add support to populate a skeleton tree for PCI bus
-> > and devices. These nodes can then be used by drivers to apply overlays.=
- =20
->=20
-> s/This commit add support/Add support/
->=20
-> Bjorn
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
