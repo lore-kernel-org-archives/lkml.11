@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0563C352A8
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EAF8C3A59E
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353395AbiEDRUx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:20:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55550 "EHLO
+        id S233396AbiEDRVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355150AbiEDREK (ORCPT
+        with ESMTP id S1355146AbiEDREK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:04:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFF674E3A4;
-        Wed,  4 May 2022 09:52:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C80E4E398;
+        Wed,  4 May 2022 09:52:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2927B6187C;
-        Wed,  4 May 2022 16:52:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CC9EC385A5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AA8861866;
         Wed,  4 May 2022 16:52:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 656B4C385A4;
+        Wed,  4 May 2022 16:52:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683159;
-        bh=MdhV4vMP/Ag3QWOmc6UiTASLX41bGZ/YGwSwW6Adsdc=;
+        s=korg; t=1651683158;
+        bh=i7xwsbu5TwVV7LEcO/fxEVPFFz50UckmDWfEvZRy3mo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1JN1PfqvSWbocZqesd6RLRPhJ7hpNeJMgm5o9vXIYpc0ohcoO1qoL5XrBj+Twi0vC
-         Eb8VEKsKIX66zvuZL7dKGwV22vf9702FQwqdKfHPuL8i2vxQxEGid0W/0/J7AB9YvD
-         /WEyOIW8Cb54nXmzhg63eWNpZKa3h3OtVDpvorDM=
+        b=PSW6ZVtI+IVVO5Srz0WwCWJX40WO7P0dlQgdxtT4/gF1YmvwMCSg/lq730tSXWxUU
+         ay3n+/JVr7EsnHjGZ+z+UNZBwUSgDUTPr03XJAUH9Rt8wYUgRwS6tV+FRMzOUfESRU
+         P5JXnN8ezFDKRWS9biZ3lcM2u4W8jpzkY8AsHCuQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.15 011/177] xhci: increase usb U3 -> U0 link resume timeout from 100ms to 500ms
-Date:   Wed,  4 May 2022 18:43:24 +0200
-Message-Id: <20220504153054.555154510@linuxfoundation.org>
+        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH 5.15 023/177] usb: dwc3: core: Fix tx/rx threshold settings
+Date:   Wed,  4 May 2022 18:43:36 +0200
+Message-Id: <20220504153055.283856732@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -49,37 +47,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Nyman <mathias.nyman@linux.intel.com>
+From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 
-commit 33597f0c48be0836854d43c577e35c8f8a765a7d upstream.
+commit f28ad9069363dec7deb88032b70612755eed9ee6 upstream.
 
-The first U3 wake signal by the host may be lost if the USB 3 connection is
-tunneled over USB4, with a runtime suspended USB4 host, and firmware
-implemented connection manager.
+The current driver logic checks against 0 to determine whether the
+periodic tx/rx threshold settings are set, but we may get bogus values
+from uninitialized variables if no device property is set. Properly
+default these variables to 0.
 
-Specs state the host must wait 100ms (tU3WakeupRetryDelay) before
-resending a U3 wake signal if device doesn't respond, leading to U3 -> U0
-link transition times around 270ms in the tunneled case.
-
-Fixes: 0200b9f790b0 ("xhci: Wait until link state trainsits to U0 after setting USB_SS_PORT_LS_U0")
-Cc: stable@vger.kernel.org
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220408134823.2527272-4-mathias.nyman@linux.intel.com
+Fixes: 938a5ad1d305 ("usb: dwc3: Check for ESS TX/RX threshold config")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Link: https://lore.kernel.org/r/cccfce990b11b730b0dae42f9d217dc6fb988c90.1649727139.git.Thinh.Nguyen@synopsys.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci-hub.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/dwc3/core.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/usb/host/xhci-hub.c
-+++ b/drivers/usb/host/xhci-hub.c
-@@ -1434,7 +1434,7 @@ int xhci_hub_control(struct usb_hcd *hcd
- 				}
- 				spin_unlock_irqrestore(&xhci->lock, flags);
- 				if (!wait_for_completion_timeout(&bus_state->u3exit_done[wIndex],
--								 msecs_to_jiffies(100)))
-+								 msecs_to_jiffies(500)))
- 					xhci_dbg(xhci, "missing U0 port change event for port %d-%d\n",
- 						 hcd->self.busnum, wIndex + 1);
- 				spin_lock_irqsave(&xhci->lock, flags);
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -1268,10 +1268,10 @@ static void dwc3_get_properties(struct d
+ 	u8			lpm_nyet_threshold;
+ 	u8			tx_de_emphasis;
+ 	u8			hird_threshold;
+-	u8			rx_thr_num_pkt_prd;
+-	u8			rx_max_burst_prd;
+-	u8			tx_thr_num_pkt_prd;
+-	u8			tx_max_burst_prd;
++	u8			rx_thr_num_pkt_prd = 0;
++	u8			rx_max_burst_prd = 0;
++	u8			tx_thr_num_pkt_prd = 0;
++	u8			tx_max_burst_prd = 0;
+ 	u8			tx_fifo_resize_max_num;
+ 	const char		*usb_psy_name;
+ 	int			ret;
 
 
