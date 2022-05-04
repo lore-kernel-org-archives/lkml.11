@@ -2,786 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ABCDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:48:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1CF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377319AbiEDSwH (ORCPT
+        id S1377351AbiEDSwa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49992 "EHLO
+        Wed, 4 May 2022 14:52:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377315AbiEDSvs (ORCPT
+        with ESMTP id S1377340AbiEDSwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:51:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E762A15FC8
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 11:48:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651690090;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=IhgVURhgbuNXOQlJlrqsFaU1eyQ9iz5LQpBl+7wTZ04=;
-        b=Y5X6xlGFr3jIg+rCCiNj5dUIgPGUOEJON08cdpiylPsA2+9eLknwxn0QzSw+jfmblVlEiY
-        dxUqmqPDXf5yYqVgbIbD9hrqkBzQzYgTPnepNKaxlJ9MQZrqIdfNWoLEwTWR0YU4Sl/ZJ9
-        pEpGeQQ6yM6ytHi6mcCtQV94/viy6ZA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-294-clMFzeFROLy4H3wqdXuBhA-1; Wed, 04 May 2022 14:48:02 -0400
-X-MC-Unique: clMFzeFROLy4H3wqdXuBhA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 34FE0833966;
-        Wed,  4 May 2022 18:48:02 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.10.95])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 469B52166B1A;
-        Wed,  4 May 2022 18:48:01 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Long Xin <lxin@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2] bond: add mac filter option for balance-xor
-Date:   Wed,  4 May 2022 14:47:50 -0400
-Message-Id: <6227427ef3b57d7de6d4d95e9dd7c9b222a37bf6.1651689665.git.jtoppins@redhat.com>
+        Wed, 4 May 2022 14:52:04 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0359186EB
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 11:48:19 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 244HhSWw026258;
+        Wed, 4 May 2022 18:47:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=m9rwKxqP1ONGdO9g7F1rz5Rv0ubxo7oLf4mfjIL9cXA=;
+ b=boalj2ZSOw7C53mZ/ry9rnsjYUMavXL5Ed5zjA0Lk8KbLRExACdBqBYcN4ENOphC3siD
+ pGBAreW0gEOOirvBpSASm5sP4zJ91kVqHwtqQFP7n8YthGjafX6y3yt2+87uLIEbX52p
+ ukr610wUfBf60lNVLc4yzX0ut/y1VqnMkkPWnbKKocVRkxvoPg+MiZURYNvuquY9gZYZ
+ 80YaBrbucWpyNNc0ztic5LUpnsS4in9eHExBFalvRKnYtrWJC/OcBaNLnFJro6p3Vtb4
+ za9hE1gRr0G5zgCfpIkUa/2SqCS+Sx8L9fq6MlQha3Miabnhs8JJIMC40iD1/NvbFhpp vQ== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fruhc96xs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 04 May 2022 18:47:56 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 244IkVVT028714;
+        Wed, 4 May 2022 18:47:56 GMT
+Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam07lp2042.outbound.protection.outlook.com [104.47.56.42])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fus8x2g7b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 04 May 2022 18:47:56 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IjXwTmW07al44UTDPaSZjtiFXPw/3ODt/4QITzsRetjTfQcVL5tGXHz+Q0LvehXP4IGtLRjooVy9DWSsUWiSIWtLxlSSOTXZxSaa8iClnPk4DeKl6Cv7Zl7x77dgVhb/HQjhth6rZjBOQziFjmJH1gbslBVXWjTTVDhq31Wb9ZXp21n8PVRstroIxc6UXfwuz9Yp8DZ3HXDdBj6GRxPR6Y684LcG7WlAfKQeezHn1IeucTcQh9tVrcVTjKz23dGtBnX5nqR1TIRXwR91fJBZRTV9kwE8jqMPJphfJ7uax4+2Vo1N/Qngz9j20MRun83ENQTjeMZDyYO5Nv2rK8HkoA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=m9rwKxqP1ONGdO9g7F1rz5Rv0ubxo7oLf4mfjIL9cXA=;
+ b=ZoIb+5VWNMn3k3rPTVb79AWY/ssHjlD04bRppZyEuwgbUkRYx9d3lrK/SuNyvJtKkOhgaOyQQVnF9Z9y9UPdM86oQkPy3/pCZrxBd4pOZKDpHVeOHDIrxZ2j/nkIfxYYl/Ug9fBBoS5rZAQDKCRKgonDoA0UZhtA0gLaHS21YT8W2UqtGIan3QIjxOHpos6kKJp9GSsGB2XZ5tWgI/7Dm7wBXo6zU9dsHUrJGoU0gdMClSUMPiM4ARSpvolx4IJbZpMDRv2W8LMQXvL3pX4/6KGFXB8XF6RkOOC9oEwETPnLS269gtycR9X+8diQMjeCOnQcW7F7hx/RKRzbcbjWBw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=m9rwKxqP1ONGdO9g7F1rz5Rv0ubxo7oLf4mfjIL9cXA=;
+ b=J0lCrSB9FTyxnD6fbaCCuMIftgXiiZxGjkYI4+xRJGpWoYKDAy1YinR0Vi7YRJQlaZjFyQ9pM1rHfmzGx9CFeBiuA+rjowobQyCOQAeBqKi+e+Oet/pBKh6DhxO4IbnvocsoRgVZOmc3rz5AOqs4uDFd/Tj7r8IaMz/JfVI8qB4=
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
+ by MN2PR10MB4288.namprd10.prod.outlook.com (2603:10b6:208:1dc::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.14; Wed, 4 May
+ 2022 18:47:54 +0000
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::318c:d02:2280:c2c]) by SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::318c:d02:2280:c2c%7]) with mapi id 15.20.5206.024; Wed, 4 May 2022
+ 18:47:54 +0000
+From:   Liam Howlett <liam.howlett@oracle.com>
+To:     David Hildenbrand <david@redhat.com>
+CC:     Janosch Frank <frankja@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Yu Zhao <yuzhao@google.com>, Juergen Gross <jgross@suse.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andreas Krebbel <krebbel@linux.ibm.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Thomas Huth <thuth@redhat.com>
+Subject: Re: [PATCH v8 23/70] mm/mmap: change do_brk_flags() to expand
+ existing VMA and add do_brk_munmap()
+Thread-Topic: [PATCH v8 23/70] mm/mmap: change do_brk_flags() to expand
+ existing VMA and add do_brk_munmap()
+Thread-Index: AQHYWX84+45146fpu0iPsmgBhR+6Va0Fx52AgABIVoCAAAqGgIAEpZEAgAAC3ACAAKX0AIAANdQAgABZMgCAAaLGgIAAI1IAgACiwgCAALaWAIAABJUA
+Date:   Wed, 4 May 2022 18:47:54 +0000
+Message-ID: <20220504184746.sr7lzv44oflkf3cf@revolver>
+References: <20220428181621.636487e753422ad0faf09bd6@linux-foundation.org>
+ <20220502001358.s2azy37zcc27vgdb@revolver>
+ <20220501172412.50268e7b217d0963293e7314@linux-foundation.org>
+ <Ym+v4lfU5IyxkGc4@osiris> <20220502133050.kuy2kjkzv6msokeb@revolver>
+ <YnAn3FI9aVCi/xKd@osiris> <YnGHJ7oroqF+v1u+@osiris>
+ <20220503215520.qpaukvjq55o7qwu3@revolver>
+ <60a3bc3f-5cd6-79ac-a7a8-4ecc3d7fd3db@linux.ibm.com>
+ <15f5f8d6-dc92-d491-d455-dd6b22b34bc3@redhat.com>
+In-Reply-To: <15f5f8d6-dc92-d491-d455-dd6b22b34bc3@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 67c1a90c-165d-4813-d0d3-08da2dfe9941
+x-ms-traffictypediagnostic: MN2PR10MB4288:EE_
+x-microsoft-antispam-prvs: <MN2PR10MB4288596CB911373DBFDF474DFDC39@MN2PR10MB4288.namprd10.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: IKbqPv/h3Rzl8FavlFsy/goIcOrtf5zumtb4FWSdrb2vYUzgyREtepGAGItjHCpi6u6Jw7/6V89E93qVVEWkvgm75seicH0w+w25LN1lj5fYcAdazdwQhh0hQGB7B/c+5k8KvIB+E7UUOcooPfxwYuh4lEAMqUgimxdF3MHB0CWJXZbh2J3Aex0nH5I8Ya92t0WEu0unbIoexS/sVg90iGAYlSiwmGBhy5fCO0R1onJiHzao7zZS3nRMFDXYqDY+WWIgSf8p9zieQIAVcQ90QS88I+1jEBV8okOmzldajtLL0VGtm51BxTAqzAkRm34t9sgVlFUQCPEfiQsBO4Wwd3L5vAJipmMUPQwu+GIJFM654grmeR1XqGD1kk3yC6jBm/N2oIdQSGmlzcU/5oM2x4HHrG7B07nukdztw7clxIN3Vrd+KKIvKsFey+ddGXPzcA3mGyYpJ6M7lGEP9yDdRWt9SQqyYiYqrdn+ioIGGTzTUbnzwod7rkC5qRDKxhCOgD+QeQR4XKB+jDpz5+GT6ZYeMNq5EMM3t4n8CXgdCcROCOgl5G4D0+71HbAwAY6y7U1PSsSUT9ZIJubSI+kBBFrrvkcU/uM6pKlLnOvFgDMi73Y5Uf8hXpwC1QZwD1hGT7892NPpJKTkQMD+sTMq3T60+H2GOFEG2FnJ68MfBkTJxwwkoa4oX4hUObZ1x+TC+YNNfzaAE1UnQ71VKDYcjQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(7416002)(66476007)(33716001)(64756008)(8676002)(5660300002)(4326008)(66556008)(66946007)(6506007)(54906003)(186003)(66446008)(6916009)(1076003)(316002)(83380400001)(38100700002)(508600001)(8936002)(38070700005)(6512007)(86362001)(26005)(122000001)(9686003)(76116006)(44832011)(2906002)(53546011)(71200400001)(6486002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?J3GFSwMiekrBnYg5uvhM4DWUiTEVS60pWOuqEDxh3/WLwy685hofGGTIN50+?=
+ =?us-ascii?Q?bLdjMRxPy1qp05T4fFX6eDtwjh7omh/s5qX72punW2qzudYI7lsr/Bs6h3XG?=
+ =?us-ascii?Q?gJwhilTIkDTcUmy3JvEdxBjMDvIyKID2x8RP7uKWnzBx10TZuhqI4uLDAkKg?=
+ =?us-ascii?Q?3k1KZtFkqcTJsXyTjx9feljIFV/lL049cPFLoWkCBz8pC9J3V2iMdDhojQo9?=
+ =?us-ascii?Q?Hj2vglokeVw+qGyO7mboCgYP/b8anhdnXDNJyfVCaQzIquE9w2Ox+ifftDvR?=
+ =?us-ascii?Q?AvOVts9pl0J9PzgCfoIqlYzwttGGBALIiE2+tz/F2R22NYaOlBhsJ2UXAPWT?=
+ =?us-ascii?Q?ElGAlJAr8z5f3QlN2uvf7Dx4YQkK4ZUS+XQpjwy3mg6AuyHyaQfqe7hXVUhK?=
+ =?us-ascii?Q?UUQlbIYS9WTzwklJmfekvKKOSpQw54grqhmpPWI+0qwwUF5raZcH4pTi14su?=
+ =?us-ascii?Q?6T4Sp4ICL7pqSbYwUUze2DLkiEG+V/+nSDafm4oIrZxCeHJw3SFq3eMEzUCo?=
+ =?us-ascii?Q?WcMUtDb20CpLMV98wyLaI2R94OfwdXiWa45VqiRAAZXwulXyvig21csKU5h/?=
+ =?us-ascii?Q?SVpv/kAGRS9HZepZ6U/uUENbTXnJ3wslPHzHcTRZ6gffp3HKnQuP9CuqfINl?=
+ =?us-ascii?Q?4ycWZy+NTOZJoJDX9WwzTK1hohpXxEBXM1tw5ZyX+CTcvddx6NytStV1J0Ye?=
+ =?us-ascii?Q?XUxNBz+3s78zNbU3CVc6rShqKqB+2ogAg10fXsRRP7mnTaNe6lcivNn8DyaT?=
+ =?us-ascii?Q?5DcBJPrCQOYlkChWRMszciI/cRHGjRW3nb8/06rxWH7L5JW5JaXRXjqey0vM?=
+ =?us-ascii?Q?RwcI4+NtIyCixLeckcAVAo1fjHrcOO0OiWjiH/skuFTcsinW4ljsK+PWvWLl?=
+ =?us-ascii?Q?6si6oyJoqZ90RM8iWBQ23BGQpykePueoK0cpogc9sAXIn6Tv+V8J3QSddbQ8?=
+ =?us-ascii?Q?Fckk/Ze/dz6rEOxyv2d5imc4VuHeRqxBWxJ/WgH+Bky0lttfYTP+QCrwdI7M?=
+ =?us-ascii?Q?snHWnnmL728N0/Gc1BDZ5BS0i47qmsx0BpkMAaJtgQaNK6trfIi3JM7iGydb?=
+ =?us-ascii?Q?FoYntQGxJRAKdzrGC/lguAt616FTm4WuVZ2zNidgeqgtKvtRWcfa0bKEc+Nw?=
+ =?us-ascii?Q?Ejpp+jDlf2pDAzC2qJ9h7gSTZWLCs9KAJReHzYHlKoUjxMvmjulQ7W6wCR2p?=
+ =?us-ascii?Q?atm1y7ukyxIV42Pqy/uf9TrNrD731WI6oM/DDYxFflI4IBdIjoPWxaULt0NG?=
+ =?us-ascii?Q?Ccb72GqqZPEAqVFqWN4MpprwbEV3aDwdfSWkoUgMSbVv4aCsiQzozoGvY9If?=
+ =?us-ascii?Q?oCVgbNqtYqckp8+mcLxNoIbDApTRU39MdLLngYYRLpk5Ab6WmEMA0mFzNOhX?=
+ =?us-ascii?Q?JPy3Y5Shg7MrQY3qg7txxf3Y8kRnEetaYKXEVUKy3svvQX/Mt9hw1IOfIJFI?=
+ =?us-ascii?Q?AEquYiAFwjpAxES4l6hGqQPcS6BiJoygiEJu+oquV5xh/CKIPk7+gArlTsFK?=
+ =?us-ascii?Q?gEXC3ZyiWtQuvj8WaTAm0ORqei0S+XLJyU8o91W1GVliptAqKL5TO8r4Twx8?=
+ =?us-ascii?Q?UxhoSg7S8O/GAOv+F3VP9MBzbDaWUp69QWZtxtNvFVUwdZo/POKhFk55+jUN?=
+ =?us-ascii?Q?/GVJIBKvCI3pAkrSqRkc/fc4Qh3RpZJGR0oerj09AP2iln3CPw4V3W42HIel?=
+ =?us-ascii?Q?BpCUjLYoUl+MtU66glnyladEnAi7b4wpaadfvrfsBNV5d6oEyAmFKitVv9jg?=
+ =?us-ascii?Q?ShyNeCNmmD24PY2O8lrj3Vtv51lMuxQ=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <B85708E3B3299A47AAF9AD7E6B6D1A8A@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 67c1a90c-165d-4813-d0d3-08da2dfe9941
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 May 2022 18:47:54.2204
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: XlBc6Q+3L55FsbCXQDe7p3+T0oY7kfomxtXtggt21BpPe1q1H4GFkOjbJ2Eh5uNvZ8rzqHsGg0T6d2Slj5Kb8w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB4288
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
+ definitions=2022-05-04_05:2022-05-04,2022-05-04 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0
+ mlxlogscore=999 adultscore=0 mlxscore=0 spamscore=0 malwarescore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205040110
+X-Proofpoint-GUID: E3hkN3HI5SN8bJZLm-j-JLMsrlKlY5i2
+X-Proofpoint-ORIG-GUID: E3hkN3HI5SN8bJZLm-j-JLMsrlKlY5i2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Implement a MAC filter that prevents duplicate frame delivery when
-handling BUM traffic. This attempts to partially replicate OvS SLB
-Bonding[1] like functionality without requiring significant change
-in the Linux bridging code.
+* David Hildenbrand <david@redhat.com> [220504 11:31]:
+> On 04.05.22 09:37, Janosch Frank wrote:
+> > On 5/3/22 23:55, Liam Howlett wrote:
+> >> * Heiko Carstens <hca@linux.ibm.com> [220503 15:49]:
+> >>> On Mon, May 02, 2022 at 08:50:04PM +0200, Heiko Carstens wrote:
+> >>>> On Mon, May 02, 2022 at 01:31:00PM +0000, Liam Howlett wrote:
+> >>>>> * Heiko Carstens <hca@linux.ibm.com> [220502 06:18]:
+> >>>>>> On Sun, May 01, 2022 at 05:24:12PM -0700, Andrew Morton wrote:
+> >>>>>>> (cc S390 maintainers)
+> >>>>>>> (cc stable & Greg)
+> >>> ...
+> >>>>>>>> booting.  The last thing I see is:
+> >>>>>>>>
+> >>>>>>>> "[    4.668916] Spectre V2 mitigation: execute trampolines"
+> >>>>>>>>
+> >>>>>>>> I've bisected back to commit e553f62f10d9 (mm, page_alloc: fix
+> >>>>>>>> build_zonerefs_node())
+> >>>>>>>>
+> >>>>>>>> With the this commit, I am unable to boot one out of three times=
+.  When
+> >>>>>>>> using the previous commit I was not able to get it to hang after=
+ trying
+> >>>>>>>> 10+ times.  This is a qemu s390 install with KASAN on and I see =
+no error
+> >>>>>>>> messages.  I think it's likely it is this patch, but no guarante=
+ed.
+> >>> ...
+> >>>>>> Liam, could you share your kernel config?
+> >>>>>
+> >>>>> Sure thing.  See attached.
+> >>>>
+> >>>> So, I can reproduce the hanging system now. However this looks like =
+a
+> >>>> qemu problem on s390, since I can reproduce this only with Qemu+TCG.
+> >>>> Qemu with kvm works without any problems (same if I use z/VM as
+> >>>> hypervisor).
+> >>>>
+> >>>> Janosch, Claudio, can you have a look at this please?
+> >>>
+> >>> So, at least for me this problem also exists with plain v5.17.
+> >>> Switching off KASAN, or alternatively switching to KASAN_INLINE
+> >>> "fixes" it for me with Qemu+TCG.
+> >>>
+> >>> Liam, could you please also try to disable KASAN in your config? With
+> >>> that I think we can be almost sure this could be some bug in Qemu.
+> >>
+> >> With KASAN, my tree fails 100% of the time (mm-stable + my maple tree
+> >> patches)
+> >>
+> >> Without KASAN, it boots 100% of the time.
+> >>
+> >> I think this verifies with you say above?
+> >>
+> >> Thanks,
+> >> Liam
+> >=20
+> > I had a short look yesterday and the boot usually hangs in the raid6=20
+> > code. Disabling vector instructions didn't make a difference but a few=
+=20
+> > interruptions via GDB solve the problem for some reason.
+> >=20
+> > CCing David and Thomas for TCG
+> >=20
+>=20
+> I somehow recall that KASAN was always disabled under TCG, I might be
+> wrong (I thought we'd get a message early during boot that the HW
+> doesn't support KASAN).
+>=20
+> I recall that raid code is a heavy user of vector instructions.
+>=20
+> How can I reproduce? Compile upstream (or -next?) with kasan support and
+> run it under TCG?
 
-A typical network setup for this feature would be:
+Initially, I found that e553f62f10d9 in mm-stable had this issue.  This
+looks to be in v5.18-rc5, at least.
 
-            .--------------------------------------------.
-            |         .--------------------.             |
-            |         |                    |             |
-       .-------------------.               |             |
-       |    | Bond 0  |    |               |             |
-       | .--'---. .---'--. |               |             |
-  .----|-| eth0 |-| eth1 |-|----.    .-----+----.   .----+------.
-  |    | '------' '------' |    |    | Switch 1 |   | Switch 2  |
-  |    '---,---------------'    |    |          +---+           |
-  |       /                     |    '----+-----'   '----+------'
-  |  .---'---.    .------.      |         |              |
-  |  |  br0  |----| VM 1 |      |      ~~~~~~~~~~~~~~~~~~~~~
-  |  '-------'    '------'      |     (                     )
-  |      |        .------.      |     ( Rest of Network     )
-  |      '--------| VM # |      |     (_____________________)
-  |               '------'      |
-  |  Host 1                     |
-  '-----------------------------'
+So upstream + kasan should work afaik - but I was using qemu and not
+TCG.
 
-Where 'VM1' and 'VM#' are hosts connected to a Linux bridge, br0, with
-bond0 and its associated links, eth0 & eth1, provide ingress/egress. One
-can assume bond0, br1, and hosts VM1 to VM# are all contained in a
-single box, as depicted. Interfaces eth0 and eth1 provide redundant
-connections to the data center with the requirement to use all bandwidth
-when the system is functioning normally. Switch 1 and Switch 2 are
-physical switches that do not implement any advanced L2 management
-features such as MLAG, Cisco's VPC, or LACP.
-
-Combining this feature with vlan+srcmac hash policy allows a user to
-create an access network without the need to use expensive switches that
-support features like Cisco's VCP.
-
-[1] https://docs.openvswitch.org/en/latest/topics/bonding/#slb-bonding
-
-Co-developed-by: Long Xin <lxin@redhat.com>
-Signed-off-by: Long Xin <lxin@redhat.com>
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
----
-
-Notes:
-    v2:
-     * dropped needless abstraction functions and put code in module init
-     * renamed variable "rc" to "ret" to stay consistent with most of the
-       code
-     * fixed parameter setting management, when arp-monitor is turned on
-       this feature will be turned off similar to how miimon and arp-monitor
-       interact
-     * renamed bond_xor_recv to bond_mac_filter_recv for a little more
-       clarity
-     * it appears the implied default return code for any bonding recv probe
-       must be `RX_HANDLER_ANOTHER`. Changed the default return code of
-       bond_mac_filter_recv to use this return value to not break skb
-       processing when the skb dev is switched to the bond dev:
-         `skb->dev = bond->dev`
-
- Documentation/networking/bonding.rst  |  19 +++
- drivers/net/bonding/Makefile          |   2 +-
- drivers/net/bonding/bond_mac_filter.c | 201 ++++++++++++++++++++++++++
- drivers/net/bonding/bond_mac_filter.h |  39 +++++
- drivers/net/bonding/bond_main.c       |  27 ++++
- drivers/net/bonding/bond_netlink.c    |  13 ++
- drivers/net/bonding/bond_options.c    |  86 ++++++++++-
- drivers/net/bonding/bonding_priv.h    |   1 +
- include/net/bond_options.h            |   1 +
- include/net/bonding.h                 |   3 +
- include/uapi/linux/if_link.h          |   1 +
- 11 files changed, 390 insertions(+), 3 deletions(-)
- create mode 100644 drivers/net/bonding/bond_mac_filter.c
- create mode 100644 drivers/net/bonding/bond_mac_filter.h
-
-diff --git a/Documentation/networking/bonding.rst b/Documentation/networking/bonding.rst
-index 43be3782e5df..8786ce7eaacb 100644
---- a/Documentation/networking/bonding.rst
-+++ b/Documentation/networking/bonding.rst
-@@ -550,6 +550,25 @@ lacp_rate
- 
- 	The default is slow.
- 
-+mac_filter
-+
-+	Tells the bonding device to drop frames received who's source MAC
-+	address	matches entries in a filter table. The filter table is
-+	populated when the bond transmits frames. This is similar in
-+	concept to the MAC learning table implemented in the bridge code.
-+
-+	This filtering is only enabled for the balance-xor bonding mode.
-+
-+	off or 0
-+		Turns the feature off
-+
-+	number
-+		A number greater than zero turns the feature on and sets
-+		the maximum number of MAC addresses to store in the hash
-+		table.
-+
-+	The default is off.
-+
- max_bonds
- 
- 	Specifies the number of bonding devices to create for this
-diff --git a/drivers/net/bonding/Makefile b/drivers/net/bonding/Makefile
-index 30e8ae3da2da..5dbc360a8522 100644
---- a/drivers/net/bonding/Makefile
-+++ b/drivers/net/bonding/Makefile
-@@ -5,7 +5,7 @@
- 
- obj-$(CONFIG_BONDING) += bonding.o
- 
--bonding-objs := bond_main.o bond_3ad.o bond_alb.o bond_sysfs.o bond_sysfs_slave.o bond_debugfs.o bond_netlink.o bond_options.o
-+bonding-objs := bond_main.o bond_3ad.o bond_alb.o bond_sysfs.o bond_sysfs_slave.o bond_debugfs.o bond_netlink.o bond_options.o bond_mac_filter.o
- 
- proc-$(CONFIG_PROC_FS) += bond_procfs.o
- bonding-objs += $(proc-y)
-diff --git a/drivers/net/bonding/bond_mac_filter.c b/drivers/net/bonding/bond_mac_filter.c
-new file mode 100644
-index 000000000000..e86b2b475df3
---- /dev/null
-+++ b/drivers/net/bonding/bond_mac_filter.c
-@@ -0,0 +1,201 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Filter received frames based on MAC addresses "behind" the bond.
-+ */
-+
-+#include "bonding_priv.h"
-+
-+static const struct rhashtable_params bond_rht_params = {
-+	.head_offset         = offsetof(struct bond_mac_cache_entry, rhnode),
-+	.key_offset          = offsetof(struct bond_mac_cache_entry, key),
-+	.key_len             = sizeof(struct mac_addr),
-+	.automatic_shrinking = true,
-+};
-+
-+static inline unsigned long hold_time(const struct bonding *bond)
-+{
-+	return msecs_to_jiffies(5000);
-+}
-+
-+static bool has_expired(const struct bonding *bond,
-+			struct bond_mac_cache_entry *mac)
-+{
-+	return time_before_eq(mac->used + hold_time(bond), jiffies);
-+}
-+
-+static void mac_delete_rcu(struct callback_head *head)
-+{
-+	kmem_cache_free(bond_mac_cache,
-+			container_of(head, struct bond_mac_cache_entry, rcu));
-+}
-+
-+static int mac_delete(struct bonding *bond,
-+		      struct bond_mac_cache_entry *entry)
-+{
-+	int ret;
-+
-+	ret = rhashtable_remove_fast(bond->mac_filter_tbl,
-+				     &entry->rhnode,
-+				     bond->mac_filter_tbl->p);
-+	set_bit(BOND_MAC_DEAD, &entry->flags);
-+	call_rcu(&entry->rcu, mac_delete_rcu);
-+	return ret;
-+}
-+
-+void bond_mac_hash_release_entries(struct work_struct *work)
-+{
-+	struct bonding *bond = container_of(work, struct bonding,
-+				mac_work.work);
-+	struct rhashtable_iter iter;
-+	struct bond_mac_cache_entry *entry;
-+	unsigned long flags;
-+
-+	rhashtable_walk_enter(bond->mac_filter_tbl, &iter);
-+	rhashtable_walk_start(&iter);
-+	while ((entry = rhashtable_walk_next(&iter)) != NULL) {
-+		if (IS_ERR(entry))
-+			continue;
-+
-+		spin_lock_irqsave(&entry->lock, flags);
-+		if (has_expired(bond, entry))
-+			mac_delete(bond, entry);
-+		spin_unlock_irqrestore(&entry->lock, flags);
-+	}
-+	rhashtable_walk_stop(&iter);
-+	rhashtable_walk_exit(&iter);
-+	queue_delayed_work(bond->wq, &bond->mac_work,
-+			   msecs_to_jiffies(5 * 60 * 1000));
-+}
-+
-+int bond_mac_hash_init(struct bonding *bond)
-+{
-+	int ret;
-+
-+	netdev_dbg(bond->dev, "mac_filter: alloc memory for hash table\n");
-+	bond->mac_filter_tbl = kzalloc(sizeof(*bond->mac_filter_tbl),
-+				       GFP_KERNEL);
-+	if (!bond->mac_filter_tbl)
-+		return -ENOMEM;
-+
-+	ret = rhashtable_init(bond->mac_filter_tbl, &bond_rht_params);
-+	if (ret)
-+		kfree(bond->mac_filter_tbl);
-+
-+	return ret;
-+}
-+
-+static void bond_mac_free_entry(void *entry, void *ctx)
-+{
-+	kmem_cache_free((struct kmem_cache *)ctx, entry);
-+}
-+
-+void bond_mac_hash_destroy(struct bonding *bond)
-+{
-+	if (bond->mac_filter_tbl) {
-+		rhashtable_free_and_destroy(bond->mac_filter_tbl,
-+					    bond_mac_free_entry,
-+					    bond_mac_cache);
-+		kfree(bond->mac_filter_tbl);
-+		bond->mac_filter_tbl = NULL;
-+	}
-+}
-+
-+static int mac_create(struct bonding *bond, const u8 *addr)
-+{
-+	struct bond_mac_cache_entry *entry;
-+	int ret;
-+
-+	entry = kmem_cache_alloc(bond_mac_cache, GFP_ATOMIC);
-+	if (!entry)
-+		return -ENOMEM;
-+	spin_lock_init(&entry->lock);
-+	memcpy(&entry->key, addr, sizeof(entry->key));
-+	entry->used = jiffies;
-+	ret = rhashtable_lookup_insert_fast(bond->mac_filter_tbl,
-+					    &entry->rhnode,
-+					    bond->mac_filter_tbl->p);
-+	if (ret) {
-+		kmem_cache_free(bond_mac_cache, entry);
-+		entry = NULL;
-+		if (ret == -EEXIST)
-+			return 0;
-+		pr_err_once("Failed to insert mac entry %d\n", ret);
-+	}
-+	return ret;
-+}
-+
-+static struct bond_mac_cache_entry *mac_find(struct bonding *bond,
-+					     const u8 *addr)
-+{
-+	struct mac_addr key;
-+
-+	memcpy(&key, addr, sizeof(key));
-+	return rhashtable_lookup(bond->mac_filter_tbl, &key,
-+				 bond->mac_filter_tbl->p);
-+}
-+
-+inline void mac_update(struct bond_mac_cache_entry *entry)
-+{
-+	entry->used = jiffies;
-+}
-+
-+int bond_mac_insert(struct bonding *bond, const u8 *addr)
-+{
-+	struct bond_mac_cache_entry *entry;
-+	int ret = 0;
-+
-+	if (!is_valid_ether_addr(addr))
-+		return -EINVAL;
-+
-+	rcu_read_lock();
-+	entry = mac_find(bond, addr);
-+	if (entry) {
-+		unsigned long flags;
-+
-+		spin_lock_irqsave(&entry->lock, flags);
-+		if (!test_bit(BOND_MAC_DEAD, &entry->flags)) {
-+			mac_update(entry);
-+			spin_unlock_irqrestore(&entry->lock, flags);
-+			goto out;
-+		}
-+		spin_unlock_irqrestore(&entry->lock, flags);
-+	}
-+
-+	ret = mac_create(bond, addr);
-+
-+out:
-+	rcu_read_unlock();
-+	return ret;
-+}
-+
-+int bond_mac_filter_recv(const struct sk_buff *skb, struct bonding *bond,
-+			 struct slave *slave)
-+{
-+	const struct ethhdr *mac_hdr;
-+	struct bond_mac_cache_entry *entry;
-+	int ret = RX_HANDLER_ANOTHER;
-+
-+	mac_hdr = (struct ethhdr *)skb_mac_header(skb);
-+	rcu_read_lock();
-+	if (is_multicast_ether_addr(mac_hdr->h_dest) &&
-+	    slave != rcu_dereference(bond->curr_active_slave)) {
-+		ret = RX_HANDLER_CONSUMED;
-+		goto out;
-+	}
-+
-+	entry = mac_find(bond, mac_hdr->h_source);
-+	if (entry) {
-+		unsigned long flags;
-+		bool expired;
-+
-+		spin_lock_irqsave(&entry->lock, flags);
-+		expired = has_expired(bond, entry);
-+		spin_unlock_irqrestore(&entry->lock, flags);
-+		if (!expired)
-+			ret = RX_HANDLER_CONSUMED;
-+	}
-+
-+out:
-+	rcu_read_unlock();
-+	return ret;
-+}
-diff --git a/drivers/net/bonding/bond_mac_filter.h b/drivers/net/bonding/bond_mac_filter.h
-new file mode 100644
-index 000000000000..7c968d41b456
---- /dev/null
-+++ b/drivers/net/bonding/bond_mac_filter.h
-@@ -0,0 +1,39 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ *
-+ * Filter received frames based on MAC addresses "behind" the bond.
-+ */
-+
-+#ifndef _BOND_MAC_FILTER_H
-+#define _BOND_MAC_FILTER_H
-+#include <net/bonding.h>
-+#include <linux/spinlock.h>
-+#include <linux/rhashtable.h>
-+
-+enum {
-+	BOND_MAC_DEAD,
-+	BOND_MAC_LOCKED,
-+	BOND_MAC_STATIC,
-+};
-+
-+struct bond_mac_cache_entry {
-+	struct rhash_head	rhnode;
-+	struct mac_addr		key;
-+
-+	spinlock_t		lock; /* protects used member */
-+	unsigned long		flags;
-+	unsigned long		used;
-+	struct rcu_head		rcu;
-+};
-+
-+extern struct kmem_cache *bond_mac_cache;
-+
-+void bond_mac_hash_release_entries(struct work_struct *work);
-+int bond_mac_hash_init(struct bonding *bond);
-+void bond_mac_hash_destroy(struct bonding *bond);
-+
-+int bond_mac_insert(struct bonding *bond, const u8 *addr);
-+int bond_mac_filter_recv(const struct sk_buff *skb,
-+			 struct bonding *bond,
-+			 struct slave *slave);
-+
-+#endif
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index c9e75a9de282..0e3b4e271c58 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -207,6 +207,7 @@ MODULE_PARM_DESC(lp_interval, "The number of seconds between instances where "
- atomic_t netpoll_block_tx = ATOMIC_INIT(0);
- #endif
- 
-+struct kmem_cache *bond_mac_cache __read_mostly;
- unsigned int bond_net_id __read_mostly;
- 
- static const struct flow_dissector_key flow_keys_bonding_keys[] = {
-@@ -4122,6 +4123,7 @@ void bond_work_init_all(struct bonding *bond)
- 	INIT_DELAYED_WORK(&bond->arp_work, bond_arp_monitor);
- 	INIT_DELAYED_WORK(&bond->ad_work, bond_3ad_state_machine_handler);
- 	INIT_DELAYED_WORK(&bond->slave_arr_work, bond_slave_arr_handler);
-+	INIT_DELAYED_WORK(&bond->mac_work, bond_mac_hash_release_entries);
- }
- 
- static void bond_work_cancel_all(struct bonding *bond)
-@@ -4132,6 +4134,7 @@ static void bond_work_cancel_all(struct bonding *bond)
- 	cancel_delayed_work_sync(&bond->ad_work);
- 	cancel_delayed_work_sync(&bond->mcast_work);
- 	cancel_delayed_work_sync(&bond->slave_arr_work);
-+	cancel_delayed_work_sync(&bond->mac_work);
- }
- 
- static int bond_open(struct net_device *bond_dev)
-@@ -4179,6 +4182,11 @@ static int bond_open(struct net_device *bond_dev)
- 		bond_3ad_initiate_agg_selection(bond, 1);
- 	}
- 
-+	if (BOND_MODE(bond) == BOND_MODE_XOR && bond->params.mac_filter) {
-+		bond->recv_probe = bond_mac_filter_recv;
-+		queue_delayed_work(bond->wq, &bond->mac_work, 0);
-+	}
-+
- 	if (bond_mode_can_use_xmit_hash(bond))
- 		bond_update_slave_arr(bond, NULL);
- 
-@@ -5048,6 +5056,13 @@ static struct slave *bond_xmit_3ad_xor_slave_get(struct bonding *bond,
- 	if (unlikely(!count))
- 		return NULL;
- 
-+	if (BOND_MODE(bond) == BOND_MODE_XOR && bond->params.mac_filter) {
-+		const struct ethhdr *mac_hdr;
-+
-+		mac_hdr = (struct ethhdr *)skb_mac_header(skb);
-+		if (bond_mac_insert(bond, mac_hdr->h_source))
-+			return NULL;
-+	}
- 	slave = slaves->arr[hash % count];
- 	return slave;
- }
-@@ -5665,6 +5680,8 @@ static void bond_destructor(struct net_device *bond_dev)
- 
- 	if (bond->rr_tx_counter)
- 		free_percpu(bond->rr_tx_counter);
-+
-+	bond_mac_hash_destroy(bond);
- }
- 
- void bond_setup(struct net_device *bond_dev)
-@@ -6120,6 +6137,7 @@ static int bond_check_params(struct bond_params *params)
- 	params->downdelay = downdelay;
- 	params->peer_notif_delay = 0;
- 	params->use_carrier = use_carrier;
-+	params->mac_filter = 0;
- 	params->lacp_active = 1;
- 	params->lacp_fast = lacp_fast;
- 	params->primary[0] = 0;
-@@ -6322,6 +6340,14 @@ static int __init bonding_init(void)
- 			goto err;
- 	}
- 
-+	bond_mac_cache = kmem_cache_create("bond_mac_cache",
-+					   sizeof(struct bond_mac_cache_entry),
-+					   0, SLAB_HWCACHE_ALIGN, NULL);
-+	if (!bond_mac_cache) {
-+		res = -ENOMEM;
-+		goto err;
-+	}
-+
- 	skb_flow_dissector_init(&flow_keys_bonding,
- 				flow_keys_bonding_keys,
- 				ARRAY_SIZE(flow_keys_bonding_keys));
-@@ -6351,6 +6377,7 @@ static void __exit bonding_exit(void)
- 	/* Make sure we don't have an imbalance on our netpoll blocking */
- 	WARN_ON(atomic_read(&netpoll_block_tx));
- #endif
-+	kmem_cache_destroy(bond_mac_cache);
- }
- 
- module_init(bonding_init);
-diff --git a/drivers/net/bonding/bond_netlink.c b/drivers/net/bonding/bond_netlink.c
-index f427fa1737c7..249d79b6e21a 100644
---- a/drivers/net/bonding/bond_netlink.c
-+++ b/drivers/net/bonding/bond_netlink.c
-@@ -113,6 +113,7 @@ static const struct nla_policy bond_policy[IFLA_BOND_MAX + 1] = {
- 	[IFLA_BOND_PEER_NOTIF_DELAY]    = { .type = NLA_U32 },
- 	[IFLA_BOND_MISSED_MAX]		= { .type = NLA_U8 },
- 	[IFLA_BOND_NS_IP6_TARGET]	= { .type = NLA_NESTED },
-+	[IFLA_BOND_MAC_FILTER]		= { .type = NLA_U8 },
- };
- 
- static const struct nla_policy bond_slave_policy[IFLA_BOND_SLAVE_MAX + 1] = {
-@@ -498,6 +499,14 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
- 		if (err)
- 			return err;
- 	}
-+	if (data[IFLA_BOND_MAC_FILTER]) {
-+		u8 mac_filter = nla_get_u8(data[IFLA_BOND_MAC_FILTER]);
-+
-+		bond_opt_initval(&newval, mac_filter);
-+		err = __bond_opt_set(bond, BOND_OPT_MAC_FILTER, &newval);
-+		if (err)
-+			return err;
-+	}
- 
- 	return 0;
- }
-@@ -565,6 +574,7 @@ static size_t bond_get_size(const struct net_device *bond_dev)
- 						/* IFLA_BOND_NS_IP6_TARGET */
- 		nla_total_size(sizeof(struct nlattr)) +
- 		nla_total_size(sizeof(struct in6_addr)) * BOND_MAX_NS_TARGETS +
-+		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_MAC_FILTER */
- 		0;
- }
- 
-@@ -723,6 +733,9 @@ static int bond_fill_info(struct sk_buff *skb,
- 	if (nla_put_u8(skb, IFLA_BOND_MISSED_MAX,
- 		       bond->params.missed_max))
- 		goto nla_put_failure;
-+	if (nla_put_u8(skb, IFLA_BOND_MAC_FILTER,
-+		       bond->params.mac_filter))
-+		goto nla_put_failure;
- 
- 	if (BOND_MODE(bond) == BOND_MODE_8023AD) {
- 		struct ad_info info;
-diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
-index 64f7db2627ce..d295903a525b 100644
---- a/drivers/net/bonding/bond_options.c
-+++ b/drivers/net/bonding/bond_options.c
-@@ -15,6 +15,7 @@
- #include <linux/sched/signal.h>
- 
- #include <net/bonding.h>
-+#include "bonding_priv.h"
- 
- static int bond_option_active_slave_set(struct bonding *bond,
- 					const struct bond_opt_value *newval);
-@@ -84,7 +85,8 @@ static int bond_option_ad_user_port_key_set(struct bonding *bond,
- 					    const struct bond_opt_value *newval);
- static int bond_option_missed_max_set(struct bonding *bond,
- 				      const struct bond_opt_value *newval);
--
-+static int bond_option_mac_filter_set(struct bonding *bond,
-+				      const struct bond_opt_value *newval);
- 
- static const struct bond_opt_value bond_mode_tbl[] = {
- 	{ "balance-rr",    BOND_MODE_ROUNDROBIN,   BOND_VALFLAG_DEFAULT},
-@@ -226,6 +228,14 @@ static const struct bond_opt_value bond_missed_max_tbl[] = {
- 	{ NULL,		-1,	0},
- };
- 
-+static const struct bond_opt_value bond_mac_filter_tbl[] = {
-+	{ "off",	0,	BOND_VALFLAG_MIN | BOND_VALFLAG_DEFAULT},
-+	{ "maxval",	18,	BOND_VALFLAG_MAX},
-+	{ NULL,		-1,	0}
-+};
-+
-+static const struct bond_opt_value *macfilteroff = &bond_mac_filter_tbl[0];
-+
- static const struct bond_option bond_opts[BOND_OPT_LAST] = {
- 	[BOND_OPT_MODE] = {
- 		.id = BOND_OPT_MODE,
-@@ -482,7 +492,16 @@ static const struct bond_option bond_opts[BOND_OPT_LAST] = {
- 		.desc = "Delay between each peer notification on failover event, in milliseconds",
- 		.values = bond_intmax_tbl,
- 		.set = bond_option_peer_notif_delay_set
--	}
-+	},
-+	[BOND_OPT_MAC_FILTER] = {
-+		.id = BOND_OPT_MAC_FILTER,
-+		.name = "mac_filter",
-+		.unsuppmodes = BOND_MODE_ALL_EX(BIT(BOND_MODE_XOR)),
-+		.desc = "filter received frames based on MAC addresses that have transmitted from the bond, number of MAC addresses to track",
-+		.flags = BOND_OPTFLAG_NOSLAVES | BOND_OPTFLAG_IFDOWN,
-+		.values = bond_mac_filter_tbl,
-+		.set = bond_option_mac_filter_set
-+	},
- };
- 
- /* Searches for an option by name */
-@@ -832,6 +851,16 @@ static bool bond_set_tls_features(struct bonding *bond)
- static int bond_option_mode_set(struct bonding *bond,
- 				const struct bond_opt_value *newval)
- {
-+	int ret;
-+
-+	if (bond->params.mac_filter && newval->value != BOND_MODE_XOR) {
-+		netdev_dbg(bond->dev, "%s mode is incompatiable with mac filtering, disabling\n",
-+			   newval->string);
-+		ret = bond_option_mac_filter_set(bond, macfilteroff);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	if (!bond_mode_uses_arp(newval->value)) {
- 		if (bond->params.arp_interval) {
- 			netdev_dbg(bond->dev, "%s mode is incompatible with arp monitoring, start mii monitoring\n",
-@@ -840,6 +869,17 @@ static int bond_option_mode_set(struct bonding *bond,
- 			bond->params.arp_interval = 0;
- 		}
- 
-+		if (!bond->params.miimon) {
-+			/* set miimon to default value */
-+			bond->params.miimon = BOND_DEFAULT_MIIMON;
-+			netdev_dbg(bond->dev, "Setting MII monitoring interval to %d\n",
-+				   bond->params.miimon);
-+		}
-+	} else if (bond->params.mac_filter && bond->params.arp_interval) {
-+		netdev_dbg(bond->dev, "mac filtering is incompatible with arp monitoring, start mii monitoring\n");
-+		/* disable arp monitoring */
-+		bond->params.arp_interval = 0;
-+
- 		if (!bond->params.miimon) {
- 			/* set miimon to default value */
- 			bond->params.miimon = BOND_DEFAULT_MIIMON;
-@@ -1035,6 +1075,44 @@ static int bond_option_use_carrier_set(struct bonding *bond,
- 	return 0;
- }
- 
-+static int bond_option_mac_filter_set(struct bonding *bond,
-+				      const struct bond_opt_value *newval)
-+{
-+	int rc = 0;
-+	u8 prev = bond->params.mac_filter;
-+
-+	if (newval->value && bond->params.arp_interval) {
-+		netdev_err(bond->dev, "ARP monitoring cannot be used with MAC Filtering.\n");
-+		rc = -EPERM;
-+		goto err;
-+	}
-+
-+	netdev_dbg(bond->dev, "Setting mac_filter to %llu\n", newval->value);
-+	bond->params.mac_filter = newval->value;
-+
-+	if (prev == 0 && bond->params.mac_filter > 0) {
-+		rc = bond_mac_hash_init(bond);
-+		if (rc)
-+			goto err;
-+	} else if (prev > 0 && bond->params.mac_filter == 0) {
-+		bond_mac_hash_destroy(bond);
-+	}
-+
-+	if (bond->mac_filter_tbl) {
-+		bond->mac_filter_tbl->p.max_size =
-+			1 << bond->params.mac_filter;
-+		netdev_dbg(bond->dev, "mac_filter hash table size: %d\n",
-+			   bond->mac_filter_tbl->p.max_size);
-+	}
-+
-+out:
-+	return rc;
-+
-+err:
-+	bond->params.mac_filter = 0;
-+	goto out;
-+}
-+
- /* There are two tricky bits here.  First, if ARP monitoring is activated, then
-  * we must disable MII monitoring.  Second, if the ARP timer isn't running,
-  * we must start it.
-@@ -1050,6 +1128,10 @@ static int bond_option_arp_interval_set(struct bonding *bond,
- 			netdev_dbg(bond->dev, "ARP monitoring cannot be used with MII monitoring. Disabling MII monitoring\n");
- 			bond->params.miimon = 0;
- 		}
-+		if (bond->params.mac_filter) {
-+			netdev_dbg(bond->dev, "mac filtering cannot be used with ARP monitoring. Disabling mac filtering\n");
-+			bond_option_mac_filter_set(bond, macfilteroff);
-+		}
- 		if (!bond->params.arp_targets[0])
- 			netdev_dbg(bond->dev, "ARP monitoring has been set up, but no ARP targets have been specified\n");
- 	}
-diff --git a/drivers/net/bonding/bonding_priv.h b/drivers/net/bonding/bonding_priv.h
-index 48cdf3a49a7d..0299f8bcb5fd 100644
---- a/drivers/net/bonding/bonding_priv.h
-+++ b/drivers/net/bonding/bonding_priv.h
-@@ -15,6 +15,7 @@
- #ifndef _BONDING_PRIV_H
- #define _BONDING_PRIV_H
- #include <generated/utsrelease.h>
-+#include "bond_mac_filter.h"
- 
- #define DRV_NAME	"bonding"
- #define DRV_DESCRIPTION	"Ethernet Channel Bonding Driver"
-diff --git a/include/net/bond_options.h b/include/net/bond_options.h
-index 61b49063791c..42e3e676b9c2 100644
---- a/include/net/bond_options.h
-+++ b/include/net/bond_options.h
-@@ -67,6 +67,7 @@ enum {
- 	BOND_OPT_LACP_ACTIVE,
- 	BOND_OPT_MISSED_MAX,
- 	BOND_OPT_NS_TARGETS,
-+	BOND_OPT_MAC_FILTER,
- 	BOND_OPT_LAST
- };
- 
-diff --git a/include/net/bonding.h b/include/net/bonding.h
-index b14f4c0b4e9e..5bc3e7b5a2af 100644
---- a/include/net/bonding.h
-+++ b/include/net/bonding.h
-@@ -125,6 +125,7 @@ struct bond_params {
- 	int miimon;
- 	u8 num_peer_notif;
- 	u8 missed_max;
-+	u8 mac_filter;
- 	int arp_interval;
- 	int arp_validate;
- 	int arp_all_targets;
-@@ -248,6 +249,7 @@ struct bonding {
- 	struct   delayed_work alb_work;
- 	struct   delayed_work ad_work;
- 	struct   delayed_work mcast_work;
-+	struct   delayed_work mac_work;
- 	struct   delayed_work slave_arr_work;
- #ifdef CONFIG_DEBUG_FS
- 	/* debugging support via debugfs */
-@@ -260,6 +262,7 @@ struct bonding {
- 	spinlock_t ipsec_lock;
- #endif /* CONFIG_XFRM_OFFLOAD */
- 	struct bpf_prog *xdp_prog;
-+	struct rhashtable *mac_filter_tbl;
- };
- 
- #define bond_slave_get_rcu(dev) \
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index d1e600816b82..55e54d54f358 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -934,6 +934,7 @@ enum {
- 	IFLA_BOND_AD_LACP_ACTIVE,
- 	IFLA_BOND_MISSED_MAX,
- 	IFLA_BOND_NS_IP6_TARGET,
-+	IFLA_BOND_MAC_FILTER,
- 	__IFLA_BOND_MAX,
- };
- 
--- 
-2.27.0
-
+Thanks,
+Liam=
