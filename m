@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB57C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354119AbiEDR1v (ORCPT
+        id S1355637AbiEDR1z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38690 "EHLO
+        Wed, 4 May 2022 13:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355768AbiEDRIu (ORCPT
+        with ESMTP id S1355765AbiEDRIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:08:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74D651E5D;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3640351E58;
         Wed,  4 May 2022 09:54:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53E6561852;
-        Wed,  4 May 2022 16:54:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E698C385A5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56472617A6;
         Wed,  4 May 2022 16:54:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2DCAC385A4;
+        Wed,  4 May 2022 16:54:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683272;
-        bh=uU32vsAIlQhNOwiz7baeDmqduhS8jWk8Pq/Li7uhVgw=;
+        s=korg; t=1651683271;
+        bh=8Qi40GuCBKO27M31PrwFafaGgFmNjpZ7xGl1tBazvkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=loGFp8N1zl16aS2O2slP2NLm6Z+oA9woLfHTQoJUMa82d7GQA0Hx22ZHrwMvcqT8z
-         176GBZCwvPhyOL5pUVsMxHlsEUld4wcS52Iu2gHV4IkTiBKPLsu18Rj7AaWdob1hmo
-         y2g581J/WrBq7KRsRPnSlCfb0ybMMnyPJ7Inc9Qg=
+        b=ykR28OFLgbcYeFD/I1Y505tda8JJZPxXcbNQvwlQvnU1CMLIHnJLeB4MyD91hgKKd
+         XpHzfjIvbWPnGBMe/EeuEFGXjk3OuGzK4a2sn21WHteP0aRYnWH4rSXAqS4kn9thDm
+         QNRv08b/pJ+UlbGaUIiL6heU26MMj//s7NtAWte0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sidhartha Kumar <sidhartha.kumar@oracle.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 138/177] selftest/vm: verify mmap addr in mremap_test
-Date:   Wed,  4 May 2022 18:45:31 +0200
-Message-Id: <20220504153105.576914812@linuxfoundation.org>
+        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
+        Jan Kara <jack@suse.cz>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 129/177] ext4: fix bug_on in start_this_handle during umount filesystem
+Date:   Wed,  4 May 2022 18:45:22 +0200
+Message-Id: <20220504153104.684482994@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -53,107 +51,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+From: Ye Bin <yebin10@huawei.com>
 
-[ Upstream commit 9c85a9bae267f6b5e5e374d0d023bbbe9db096d3 ]
+[ Upstream commit b98535d091795a79336f520b0708457aacf55c67 ]
 
-Avoid calling mmap with requested addresses that are less than the
-system's mmap_min_addr.  When run as root, mmap returns EACCES when
-trying to map addresses < mmap_min_addr.  This is not one of the error
-codes for the condition to retry the mmap in the test.
+We got issue as follows:
+------------[ cut here ]------------
+kernel BUG at fs/jbd2/transaction.c:389!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+CPU: 9 PID: 131 Comm: kworker/9:1 Not tainted 5.17.0-862.14.0.6.x86_64-00001-g23f87daf7d74-dirty #197
+Workqueue: events flush_stashed_error_work
+RIP: 0010:start_this_handle+0x41c/0x1160
+RSP: 0018:ffff888106b47c20 EFLAGS: 00010202
+RAX: ffffed10251b8400 RBX: ffff888128dc204c RCX: ffffffffb52972ac
+RDX: 0000000000000200 RSI: 0000000000000004 RDI: ffff888128dc2050
+RBP: 0000000000000039 R08: 0000000000000001 R09: ffffed10251b840a
+R10: ffff888128dc204f R11: ffffed10251b8409 R12: ffff888116d78000
+R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888128dc2000
+FS:  0000000000000000(0000) GS:ffff88839d680000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000001620068 CR3: 0000000376c0e000 CR4: 00000000000006e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ jbd2__journal_start+0x38a/0x790
+ jbd2_journal_start+0x19/0x20
+ flush_stashed_error_work+0x110/0x2b3
+ process_one_work+0x688/0x1080
+ worker_thread+0x8b/0xc50
+ kthread+0x26f/0x310
+ ret_from_fork+0x22/0x30
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
 
-Rather than arbitrarily retrying on EACCES, don't attempt an mmap until
-addr > vm.mmap_min_addr.
+Above issue may happen as follows:
+      umount            read procfs            error_work
+ext4_put_super
+  flush_work(&sbi->s_error_work);
 
-Add a munmap call after an alignment check as the mappings are retained
-after the retry and can reach the vm.max_map_count sysctl.
+                      ext4_mb_seq_groups_show
+	                ext4_mb_load_buddy_gfp
+			  ext4_mb_init_group
+			    ext4_mb_init_cache
+	                      ext4_read_block_bitmap_nowait
+			        ext4_validate_block_bitmap
+				  ext4_error
+			            ext4_handle_error
+			              schedule_work(&EXT4_SB(sb)->s_error_work);
 
-Link: https://lkml.kernel.org/r/20220420215721.4868-1-sidhartha.kumar@oracle.com
-Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+  ext4_unregister_sysfs(sb);
+  jbd2_journal_destroy(sbi->s_journal);
+    journal_kill_thread
+      journal->j_flags |= JBD2_UNMOUNT;
+
+                                          flush_stashed_error_work
+				            jbd2_journal_start
+					      start_this_handle
+					        BUG_ON(journal->j_flags & JBD2_UNMOUNT);
+
+To solve this issue, we call 'ext4_unregister_sysfs() before flushing
+s_error_work in ext4_put_super().
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220322012419.725457-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/vm/mremap_test.c | 41 +++++++++++++++++++++++-
- 1 file changed, 40 insertions(+), 1 deletion(-)
+ fs/ext4/super.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/tools/testing/selftests/vm/mremap_test.c b/tools/testing/selftests/vm/mremap_test.c
-index 0624d1bd71b5..2b3b4f15185f 100644
---- a/tools/testing/selftests/vm/mremap_test.c
-+++ b/tools/testing/selftests/vm/mremap_test.c
-@@ -6,6 +6,7 @@
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index fa21d8180319..d12f11c6fbf2 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -1167,20 +1167,25 @@ static void ext4_put_super(struct super_block *sb)
+ 	int aborted = 0;
+ 	int i, err;
  
- #include <errno.h>
- #include <stdlib.h>
-+#include <stdio.h>
- #include <string.h>
- #include <sys/mman.h>
- #include <time.h>
-@@ -64,6 +65,35 @@ enum {
- 	.expect_failure = should_fail				\
- }
- 
-+/* Returns mmap_min_addr sysctl tunable from procfs */
-+static unsigned long long get_mmap_min_addr(void)
-+{
-+	FILE *fp;
-+	int n_matched;
-+	static unsigned long long addr;
-+
-+	if (addr)
-+		return addr;
-+
-+	fp = fopen("/proc/sys/vm/mmap_min_addr", "r");
-+	if (fp == NULL) {
-+		ksft_print_msg("Failed to open /proc/sys/vm/mmap_min_addr: %s\n",
-+			strerror(errno));
-+		exit(KSFT_SKIP);
-+	}
-+
-+	n_matched = fscanf(fp, "%llu", &addr);
-+	if (n_matched != 1) {
-+		ksft_print_msg("Failed to read /proc/sys/vm/mmap_min_addr: %s\n",
-+			strerror(errno));
-+		fclose(fp);
-+		exit(KSFT_SKIP);
-+	}
-+
-+	fclose(fp);
-+	return addr;
-+}
-+
- /*
-  * Returns the start address of the mapping on success, else returns
-  * NULL on failure.
-@@ -72,8 +102,15 @@ static void *get_source_mapping(struct config c)
- {
- 	unsigned long long addr = 0ULL;
- 	void *src_addr = NULL;
-+	unsigned long long mmap_min_addr;
-+
-+	mmap_min_addr = get_mmap_min_addr();
-+
- retry:
- 	addr += c.src_alignment;
-+	if (addr < mmap_min_addr)
-+		goto retry;
-+
- 	src_addr = mmap((void *) addr, c.region_size, PROT_READ | PROT_WRITE,
- 			MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
- 			-1, 0);
-@@ -91,8 +128,10 @@ static void *get_source_mapping(struct config c)
- 	 * alignment in the tests.
+-	ext4_unregister_li_request(sb);
+-	ext4_quota_off_umount(sb);
+-
+-	flush_work(&sbi->s_error_work);
+-	destroy_workqueue(sbi->rsv_conversion_wq);
+-	ext4_release_orphan_info(sb);
+-
+ 	/*
+ 	 * Unregister sysfs before destroying jbd2 journal.
+ 	 * Since we could still access attr_journal_task attribute via sysfs
+ 	 * path which could have sbi->s_journal->j_task as NULL
++	 * Unregister sysfs before flush sbi->s_error_work.
++	 * Since user may read /proc/fs/ext4/xx/mb_groups during umount, If
++	 * read metadata verify failed then will queue error work.
++	 * flush_stashed_error_work will call start_this_handle may trigger
++	 * BUG_ON.
  	 */
- 	if (((unsigned long long) src_addr & (c.src_alignment - 1)) ||
--			!((unsigned long long) src_addr & c.src_alignment))
-+			!((unsigned long long) src_addr & c.src_alignment)) {
-+		munmap(src_addr, c.region_size);
- 		goto retry;
-+	}
+ 	ext4_unregister_sysfs(sb);
  
- 	if (!src_addr)
- 		goto error;
++	ext4_unregister_li_request(sb);
++	ext4_quota_off_umount(sb);
++
++	flush_work(&sbi->s_error_work);
++	destroy_workqueue(sbi->rsv_conversion_wq);
++	ext4_release_orphan_info(sb);
++
+ 	if (sbi->s_journal) {
+ 		aborted = is_journal_aborted(sbi->s_journal);
+ 		err = jbd2_journal_destroy(sbi->s_journal);
 -- 
 2.35.1
 
