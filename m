@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 760B3C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FD1CC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356444AbiEDRFN (ORCPT
+        id S1356358AbiEDRFJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:05:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38270 "EHLO
+        Wed, 4 May 2022 13:05:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354574AbiEDQ6w (ORCPT
+        with ESMTP id S1354743AbiEDQ7D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:58:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7941B2F6;
-        Wed,  4 May 2022 09:50:31 -0700 (PDT)
+        Wed, 4 May 2022 12:59:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A2A24739D;
+        Wed,  4 May 2022 09:50:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1635F617A6;
-        Wed,  4 May 2022 16:50:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61814C385A4;
-        Wed,  4 May 2022 16:50:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6228B8279F;
+        Wed,  4 May 2022 16:50:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EDA4C385AA;
+        Wed,  4 May 2022 16:50:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683030;
-        bh=TW+tLajINuALHiqaZSD6oWUXC8S4zqwWT6d+B+LzzUY=;
+        s=korg; t=1651683054;
+        bh=7KnIS43fRzW4v33swcWxyFG+3AR+OEqaZoJf2FShrEw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i0DLRnpgVXuMx8KtZ8G09qBkze7N202x5eqIOcbOWtI9qd99TVOoiN0eMmxZ01qNH
-         3JBErEA2qpHRUuf7Dauwu/ElU/u1+wOKEAF+S34jX4IAWy1e+CA+iN6TYyeEJ+ekm+
-         I3MVB25CXHPjxrpZcOQjCwPbhP0MtL+zZZvtL6kI=
+        b=b6wOzisbpfWTkozeLK873wNDmSfSGnoMhpJ0DfPsTKbyeQ4EL5jIPhaNpEwGck3dq
+         /6lAdDv1h7Y18o3rdZRnJl66TVubipgN60vnL7PDUJlL3ixBnR6v5t+hbZQ/1rn9zw
+         EEtfv2bYD//JWA9MpFpJCk8ZYb5xrH/PfvAFMMjM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vijayavardhan Vennapusa <vvreddy@codeaurora.org>,
-        Dan Vacura <w36195@motorola.com>, stable <stable@kernel.org>
-Subject: [PATCH 5.10 021/129] usb: gadget: configfs: clear deactivation flag in configfs_composite_unbind()
-Date:   Wed,  4 May 2022 18:43:33 +0200
-Message-Id: <20220504153022.962851172@linuxfoundation.org>
+        stable@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 058/129] pinctrl: mediatek: moore: Fix build error
+Date:   Wed,  4 May 2022 18:44:10 +0200
+Message-Id: <20220504153025.764537484@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,37 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vijayavardhan Vennapusa <vvreddy@codeaurora.org>
+From: YueHaibing <yuehaibing@huawei.com>
 
-commit bf95c4d4630c7a2c16e7b424fdea5177d9ce0864 upstream.
+[ Upstream commit 87950929e2ff2236207bdbe14bff8230558b541b ]
 
-If any function like UVC is deactivating gadget as part of composition
-switch which results in not calling pullup enablement, it is not getting
-enabled after switch to new composition due to this deactivation flag
-not cleared. This results in USB enumeration not happening after switch
-to new USB composition. Hence clear deactivation flag inside gadget
-structure in configfs_composite_unbind() before switch to new USB
-composition.
+If EINT_MTK is m and PINCTRL_MTK_V2 is y, build fails:
 
-Signed-off-by: Vijayavardhan Vennapusa <vvreddy@codeaurora.org>
-Signed-off-by: Dan Vacura <w36195@motorola.com>
-Cc: stable <stable@kernel.org>
-Link: https://lore.kernel.org/r/20220413211038.72797-1-w36195@motorola.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+drivers/pinctrl/mediatek/pinctrl-moore.o: In function `mtk_gpio_set_config':
+pinctrl-moore.c:(.text+0xa6c): undefined reference to `mtk_eint_set_debounce'
+drivers/pinctrl/mediatek/pinctrl-moore.o: In function `mtk_gpio_to_irq':
+pinctrl-moore.c:(.text+0xacc): undefined reference to `mtk_eint_find_irq'
+
+Select EINT_MTK for PINCTRL_MTK_V2 to fix this.
+
+Fixes: 8174a8512e3e ("pinctrl: mediatek: make MediaTek pinctrl v2 driver ready for buidling loadable module")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Link: https://lore.kernel.org/r/20220409105958.37412-1-yuehaibing@huawei.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/configfs.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/pinctrl/mediatek/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/gadget/configfs.c
-+++ b/drivers/usb/gadget/configfs.c
-@@ -1443,6 +1443,8 @@ static void configfs_composite_unbind(st
- 	usb_ep_autoconfig_reset(cdev->gadget);
- 	spin_lock_irqsave(&gi->spinlock, flags);
- 	cdev->gadget = NULL;
-+	cdev->deactivations = 0;
-+	gadget->deactivated = false;
- 	set_gadget_data(gadget, NULL);
- 	spin_unlock_irqrestore(&gi->spinlock, flags);
- }
+diff --git a/drivers/pinctrl/mediatek/Kconfig b/drivers/pinctrl/mediatek/Kconfig
+index eef17f228669..4ed41d361589 100644
+--- a/drivers/pinctrl/mediatek/Kconfig
++++ b/drivers/pinctrl/mediatek/Kconfig
+@@ -30,6 +30,7 @@ config PINCTRL_MTK_MOORE
+ 	select GENERIC_PINMUX_FUNCTIONS
+ 	select GPIOLIB
+ 	select OF_GPIO
++	select EINT_MTK
+ 	select PINCTRL_MTK_V2
+ 
+ config PINCTRL_MTK_PARIS
+-- 
+2.35.1
+
 
 
