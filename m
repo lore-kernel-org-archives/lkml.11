@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73396C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B49A4C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357520AbiEDRYg (ORCPT
+        id S1357668AbiEDRYw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:24:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55100 "EHLO
+        Wed, 4 May 2022 13:24:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355412AbiEDRET (ORCPT
+        with ESMTP id S1355356AbiEDRER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F1F4EDC0;
-        Wed,  4 May 2022 09:53:02 -0700 (PDT)
+        Wed, 4 May 2022 13:04:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D3D4ECD0;
+        Wed,  4 May 2022 09:52:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74FE361794;
-        Wed,  4 May 2022 16:53:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C694BC385A5;
-        Wed,  4 May 2022 16:53:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC04FB82792;
+        Wed,  4 May 2022 16:52:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 912D3C385A5;
+        Wed,  4 May 2022 16:52:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683181;
-        bh=GqXocJ5EJAhLTU16Rx/GrEiSpEnAcl5XCgho8hZgfqM=;
+        s=korg; t=1651683171;
+        bh=50t13TWnJkWNJqSYvgR68ZzAcfdUER8rrkJF4QqlJCI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ip1JqS5UqQog1mjHa5ozY7oCaG2Nrne0N5ck8ul5+Q+Mc5plt7+sKSTyco3W1sPGx
-         fdahs9sfcTDP2UBX60eZZpFHmi8OoABrsFDPPkigGcPkfy+pxoCJmhZ9WaFaGWc/y9
-         fBN1gl1b0i9uCYrm1biRg3Lq+0J7SmT0o0nij6ac=
+        b=dgCb10JE1oABvSPJJld3Zq+/VbLzgWBP71vAfJBhMHE7PIEw1mRojZJGrSVlUCRIJ
+         sBoKhb5fHfvPG8/4mmPH1YIMMMbjoY/zxgZ4DlG1PZSaHB2mR8kThS2JbdUZot9C9I
+         eNQJmnWu4TEdwLpI4RdjX783j40ishixaKJ0ykgk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
-        Wang Qing <wangqing@vivo.com>
-Subject: [PATCH 5.15 033/177] arch_topology: Do not set llc_sibling if llc_id is invalid
-Date:   Wed,  4 May 2022 18:43:46 +0200
-Message-Id: <20220504153055.948533399@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bhaumik Vasav Bhatt <quic_bbhatt@quicinc.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 5.15 036/177] bus: mhi: host: pci_generic: Flush recovery worker during freeze
+Date:   Wed,  4 May 2022 18:43:49 +0200
+Message-Id: <20220504153056.192191908@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -49,35 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Qing <wangqing@vivo.com>
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-commit 1dc9f1a66e1718479e1c4f95514e1750602a3cb9 upstream.
+commit c38f83bae4037023827c85e045841d0421f85034 upstream.
 
-When ACPI is not enabled, cpuid_topo->llc_id = cpu_topo->llc_id = -1, which
-will set llc_sibling 0xff(...), this is misleading.
+It is possible that the recovery work might be running while the freeze
+gets executed (during hibernation etc.,). Currently, we don't powerdown
+the stack if it is not up but if the recovery work completes after freeze,
+then the device will be up afterwards. This will not be a sane situation.
 
-Don't set llc_sibling(default 0) if we don't know the cache topology.
+So let's flush the recovery worker before trying to powerdown the device.
 
-Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Wang Qing <wangqing@vivo.com>
-Fixes: 37c3ec2d810f ("arm64: topology: divorce MC scheduling domain from core_siblings")
-Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/1649644580-54626-1-git-send-email-wangqing@vivo.com
+Cc: stable@vger.kernel.org
+Fixes: 5f0c2ee1fe8d ("bus: mhi: pci-generic: Fix hibernation")
+Reported-by: Bhaumik Vasav Bhatt <quic_bbhatt@quicinc.com>
+Reviewed-by: Bhaumik Vasav Bhatt <quic_bbhatt@quicinc.com>
+Link: https://lore.kernel.org/r/20220408150039.17297-1-manivannan.sadhasivam@linaro.org
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/base/arch_topology.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/bus/mhi/pci_generic.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/base/arch_topology.c
-+++ b/drivers/base/arch_topology.c
-@@ -609,7 +609,7 @@ void update_siblings_masks(unsigned int
- 	for_each_online_cpu(cpu) {
- 		cpu_topo = &cpu_topology[cpu];
- 
--		if (cpuid_topo->llc_id == cpu_topo->llc_id) {
-+		if (cpu_topo->llc_id != -1 && cpuid_topo->llc_id == cpu_topo->llc_id) {
- 			cpumask_set_cpu(cpu, &cpuid_topo->llc_sibling);
- 			cpumask_set_cpu(cpuid, &cpu_topo->llc_sibling);
- 		}
+--- a/drivers/bus/mhi/pci_generic.c
++++ b/drivers/bus/mhi/pci_generic.c
+@@ -1020,6 +1020,7 @@ static int __maybe_unused mhi_pci_freeze
+ 	 * the intermediate restore kernel reinitializes MHI device with new
+ 	 * context.
+ 	 */
++	flush_work(&mhi_pdev->recovery_work);
+ 	if (test_and_clear_bit(MHI_PCI_DEV_STARTED, &mhi_pdev->status)) {
+ 		mhi_power_down(mhi_cntrl, true);
+ 		mhi_unprepare_after_power_down(mhi_cntrl);
 
 
