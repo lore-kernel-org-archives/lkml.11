@@ -2,129 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21CF1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 06:34:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BBBDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 06:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344971AbiEDGhh (ORCPT
+        id S1344983AbiEDGiF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 02:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60992 "EHLO
+        Wed, 4 May 2022 02:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238996AbiEDGhf (ORCPT
+        with ESMTP id S1344981AbiEDGiC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 02:37:35 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 729D326D5
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 23:34:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651646040; x=1683182040;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=TwHQSjU1r77aWxN/rt0iMIRTOmxL1JDibeYx3vm4ORg=;
-  b=esf6O78eksAhqHEKyogm9tMZjI4U8zuq/2QnlREof0RM+KkXhzEE/emZ
-   xbMtH3MG7BMRKHQuV0ZoEpDf9CP4s5/w8R2m4W3kp8NwTm/a/bGRNDnHA
-   e4jKtFzM6AgLScO/eKkyNBrnvjOEctW9IezfM1TO+aaN4sDPoLt4+/e/E
-   sDOhgAafHWt2vPhKk1+Xu1MBDWcUi6nG5fPqhW3Bk+ZaDMClKoi5IlfJb
-   DAUzV91mbABGC9Kk8X8h3NalwhemnyEY9XFwXXcSXM8aERVV8rNJpRgNQ
-   7lZd1axric0J1u1MKEy9hfL2M49s/JaVokPvKQRu0rWq84m8qkKj34BnJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="247588003"
-X-IronPort-AV: E=Sophos;i="5.91,197,1647327600"; 
-   d="scan'208";a="247588003"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 23:31:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,197,1647327600"; 
-   d="scan'208";a="536692166"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 03 May 2022 23:31:53 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nm8YC-000B8d-B8;
-        Wed, 04 May 2022 06:31:52 +0000
-Date:   Wed, 4 May 2022 14:31:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [lunn:v5.18-rc4-stacked-bridges 2/2] net/bridge/br_input.c:45:12:
- error: 'struct sk_buff' has no member named 'offload_fwd_mark'
-Message-ID: <202205041457.Jo1Z7eif-lkp@intel.com>
+        Wed, 4 May 2022 02:38:02 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C814F101CB
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 23:34:27 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nm8aO-0007Ou-Jp; Wed, 04 May 2022 08:34:08 +0200
+Received: from pengutronix.de (unknown [IPv6:2a00:20:7058:1382:cdf5:b54c:dde5:a5a5])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 9022575640;
+        Wed,  4 May 2022 06:34:03 +0000 (UTC)
+Date:   Wed, 4 May 2022 08:34:02 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-can@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
+        Drew Fustini <pdp7pdp7@gmail.com>
+Subject: Re: [PATCH v8 5/7] can: ctucanfd: CTU CAN FD open-source IP core -
+ platform/SoC support.
+Message-ID: <20220504063402.deowqy5lnmgg2mfy@pengutronix.de>
+References: <cover.1647904780.git.pisa@cmp.felk.cvut.cz>
+ <4d5c53499bafe7717815f948801bd5aedaa05c12.1647904780.git.pisa@cmp.felk.cvut.cz>
+ <CAMuHMdXY_sHw4W8_y+r1LMhGM+CF7RQtRFQzEC8wYKYSR98Daw@mail.gmail.com>
+ <202205031707.21405.pisa@cmp.felk.cvut.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="mnhfuo3af4c2bg3a"
 Content-Disposition: inline
+In-Reply-To: <202205031707.21405.pisa@cmp.felk.cvut.cz>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/lunn/linux.git v5.18-rc4-stacked-bridges
-head:   eab6004bc4f6b012db3b6e1fac75f4911662baf5
-commit: eab6004bc4f6b012db3b6e1fac75f4911662baf5 [2/2] net: bridge: Clear offload_fwd_mark when passing frame up bridge interface.
-config: m68k-randconfig-r031-20220501 (https://download.01.org/0day-ci/archive/20220504/202205041457.Jo1Z7eif-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/lunn/linux/commit/eab6004bc4f6b012db3b6e1fac75f4911662baf5
-        git remote add lunn https://github.com/lunn/linux.git
-        git fetch --no-tags lunn v5.18-rc4-stacked-bridges
-        git checkout eab6004bc4f6b012db3b6e1fac75f4911662baf5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash net/bridge/
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+--mnhfuo3af4c2bg3a
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-All errors (new ones prefixed by >>):
+On 03.05.2022 17:07:21, Pavel Pisa wrote:
+> Hello Geert,
+>=20
+> On Tuesday 03 of May 2022 13:37:46 Geert Uytterhoeven wrote:
+> > Hi Pavel,
+> > > --- /dev/null
+> > > +++ b/drivers/net/can/ctucanfd/ctucanfd_platform.c
+> > >
+> > > +/* Match table for OF platform binding */
+> > > +static const struct of_device_id ctucan_of_match[] =3D {
+> > > +       { .compatible =3D "ctu,ctucanfd-2", },
+> >
+> > Do you need to match on the above compatible value?
+> > The driver seems to treat the hardware the same, and the DT
+> > bindings state the compatible value below should always be present.
+>=20
+> I would keep it because there will be newer revisions and releases
+> of the core and I consider "ctu,ctucanfd" as the match to generic
+> one with maximal attempt to adjust to the version from provided
+> info registers but identification with the fixed version
+> "ctu,ctucanfd-2" ensures that some old hardware which is
+> in the wild is directly recognized even at /sys level
+> and if we need to do some workarounds for autodetection
+> etc. it can be recognized.
 
-   net/bridge/br_input.c: In function 'br_pass_frame_up':
->> net/bridge/br_input.c:45:12: error: 'struct sk_buff' has no member named 'offload_fwd_mark'
-      45 |         skb->offload_fwd_mark = false;
-         |            ^~
+As Geert said:
+- There are 2 bindings in the driver which are (currently) treated the
+  same.
+- The binding documentation says devices must always have the
+  ctu,ctucanfd compatible.
 
+This means (currently) the ctu,ctucanfd-2 is not needed in the driver.
+We can add it back once we need it.
 
-vim +45 net/bridge/br_input.c
+Or are there devices that have a compatible of ctu,ctucanfd-2 without
+stating to be compatible with ctu,ctucanfd?
 
-    32	
-    33	static int br_pass_frame_up(struct sk_buff *skb)
-    34	{
-    35		struct net_device *indev, *brdev = BR_INPUT_SKB_CB(skb)->brdev;
-    36		struct net_bridge *br = netdev_priv(brdev);
-    37		struct net_bridge_vlan_group *vg;
-    38	
-    39		dev_sw_netstats_rx_add(brdev, skb->len);
-    40	
-    41		vg = br_vlan_group_rcu(br);
-    42	
-    43		/* Reset the offload_fwd_mark because there could be a stacked bridge
-    44		 * above. */
-  > 45		skb->offload_fwd_mark = false;
-    46	
-    47		/* Bridge is just like any other port.  Make sure the
-    48		 * packet is allowed except in promisc mode when someone
-    49		 * may be running packet capture.
-    50		 */
-    51		if (!(brdev->flags & IFF_PROMISC) &&
-    52		    !br_allowed_egress(vg, skb)) {
-    53			kfree_skb(skb);
-    54			return NET_RX_DROP;
-    55		}
-    56	
-    57		indev = skb->dev;
-    58		skb->dev = brdev;
-    59		skb = br_handle_vlan(br, NULL, vg, skb);
-    60		if (!skb)
-    61			return NET_RX_DROP;
-    62		/* update the multicast stats if the packet is IGMP/MLD */
-    63		br_multicast_count(br, NULL, skb, br_multicast_igmp_type(skb),
-    64				   BR_MCAST_DIR_TX);
-    65	
-    66		return NF_HOOK(NFPROTO_BRIDGE, NF_BR_LOCAL_IN,
-    67			       dev_net(indev), NULL, skb, indev, NULL,
-    68			       br_netif_receive_skb);
-    69	}
-    70	
+regards,
+Marc
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--mnhfuo3af4c2bg3a
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJyHlcACgkQrX5LkNig
+0137/wf7Bt5X5J7njOAv8Nj3JgmHyfGQNLtw4QwMPQ8+F3y8I/rihTthe/4ua7sp
+pDDRiRFpzJQXgfKv6oE70VLug2RxISnRQ1jW9rNqX2yf0xGn82U2QFG9qjoJEkiG
+5lLNpaQG9E+xMO7OcN07MnB5UNnJ568AmhMtUf5JZInvpvzdr85/+1U6bP4Wo87m
+IZgjGn9sioBCOvl+13MUEW9YwWQRgS+7snjJ4c4Mnvc1T/no5DbK9nFViNs2Z78X
+qD6TwtJ2E/G0KGbtr8wR8+nY3vvlJLOLZHBhecyx1/996NxFe5OQsBDKmbDAG0d3
+6P9hP95RDc65hCOLyBX5N+q35qaVkg==
+=kcsI
+-----END PGP SIGNATURE-----
+
+--mnhfuo3af4c2bg3a--
