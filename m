@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B2ABC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73396C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357479AbiEDRYa (ORCPT
+        id S1357520AbiEDRYg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55294 "EHLO
+        Wed, 4 May 2022 13:24:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355451AbiEDRE2 (ORCPT
+        with ESMTP id S1355412AbiEDRET (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413354EDD5;
-        Wed,  4 May 2022 09:53:03 -0700 (PDT)
+        Wed, 4 May 2022 13:04:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F1F4EDC0;
+        Wed,  4 May 2022 09:53:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A11A6187C;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74FE361794;
+        Wed,  4 May 2022 16:53:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C694BC385A5;
         Wed,  4 May 2022 16:53:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2462C385A4;
-        Wed,  4 May 2022 16:53:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
         s=korg; t=1651683181;
-        bh=x8G22Ng7RWDsPwQOr8gdim+d/zY5BI66fM3f1eXtDCU=;
+        bh=GqXocJ5EJAhLTU16Rx/GrEiSpEnAcl5XCgho8hZgfqM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=te/gJSen7R7IQSovytYODXXweBgSMkD9pWPQIlIk3xzDIx2O4c1JLb7c1g1DwpySI
-         Qhhpf37I21y43H3g9kEvWN4OeqAX0pFWwaWuf0D4vP4HXkIMd0YwatXKedYQuqcj9e
-         vR/qQb1TvhlUtVbhlilQkzmVgqmOMRBswLc4iQU4=
+        b=Ip1JqS5UqQog1mjHa5ozY7oCaG2Nrne0N5ck8ul5+Q+Mc5plt7+sKSTyco3W1sPGx
+         fdahs9sfcTDP2UBX60eZZpFHmi8OoABrsFDPPkigGcPkfy+pxoCJmhZ9WaFaGWc/y9
+         fBN1gl1b0i9uCYrm1biRg3Lq+0J7SmT0o0nij6ac=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        stable <stable@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH 5.15 032/177] serial: 8250: Correct the clock for EndRun PTP/1588 PCIe device
-Date:   Wed,  4 May 2022 18:43:45 +0200
-Message-Id: <20220504153055.859411631@linuxfoundation.org>
+        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
+        Wang Qing <wangqing@vivo.com>
+Subject: [PATCH 5.15 033/177] arch_topology: Do not set llc_sibling if llc_id is invalid
+Date:   Wed,  4 May 2022 18:43:46 +0200
+Message-Id: <20220504153055.948533399@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,63 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Wang Qing <wangqing@vivo.com>
 
-commit 637674fa40059cddcc3ad2212728965072f62ea3 upstream.
+commit 1dc9f1a66e1718479e1c4f95514e1750602a3cb9 upstream.
 
-The EndRun PTP/1588 dual serial port device is based on the Oxford
-Semiconductor OXPCIe952 UART device with the PCI vendor:device ID set
-for EndRun Technologies and is therefore driven by a fixed 62.5MHz clock
-input derived from the 100MHz PCI Express clock.  The clock rate is
-divided by the oversampling rate of 16 as it is supplied to the baud
-rate generator, yielding the baud base of 3906250.
+When ACPI is not enabled, cpuid_topo->llc_id = cpu_topo->llc_id = -1, which
+will set llc_sibling 0xff(...), this is misleading.
 
-Replace the incorrect baud base of 4000000 with the right value of
-3906250 then, complementing commit 6cbe45d8ac93 ("serial: 8250: Correct
-the clock for OxSemi PCIe devices").
+Don't set llc_sibling(default 0) if we don't know the cache topology.
 
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Cc: stable <stable@kernel.org>
-Fixes: 1bc8cde46a159 ("8250_pci: Added driver for Endrun Technologies PTP PCIe card.")
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181515270.9383@angie.orcam.me.uk
+Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Wang Qing <wangqing@vivo.com>
+Fixes: 37c3ec2d810f ("arm64: topology: divorce MC scheduling domain from core_siblings")
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/1649644580-54626-1-git-send-email-wangqing@vivo.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_pci.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/base/arch_topology.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -2940,7 +2940,7 @@ enum pci_board_num_t {
- 	pbn_panacom2,
- 	pbn_panacom4,
- 	pbn_plx_romulus,
--	pbn_endrun_2_4000000,
-+	pbn_endrun_2_3906250,
- 	pbn_oxsemi,
- 	pbn_oxsemi_1_3906250,
- 	pbn_oxsemi_2_3906250,
-@@ -3472,10 +3472,10 @@ static struct pciserial_board pci_boards
- 	* signal now many ports are available
- 	* 2 port 952 Uart support
- 	*/
--	[pbn_endrun_2_4000000] = {
-+	[pbn_endrun_2_3906250] = {
- 		.flags		= FL_BASE0,
- 		.num_ports	= 2,
--		.base_baud	= 4000000,
-+		.base_baud	= 3906250,
- 		.uart_offset	= 0x200,
- 		.first_offset	= 0x1000,
- 	},
-@@ -4418,7 +4418,7 @@ static const struct pci_device_id serial
- 	*/
- 	{	PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_endrun_2_4000000 },
-+		pbn_endrun_2_3906250 },
- 	/*
- 	 * Quatech cards. These actually have configurable clocks but for
- 	 * now we just use the default.
+--- a/drivers/base/arch_topology.c
++++ b/drivers/base/arch_topology.c
+@@ -609,7 +609,7 @@ void update_siblings_masks(unsigned int
+ 	for_each_online_cpu(cpu) {
+ 		cpu_topo = &cpu_topology[cpu];
+ 
+-		if (cpuid_topo->llc_id == cpu_topo->llc_id) {
++		if (cpu_topo->llc_id != -1 && cpuid_topo->llc_id == cpu_topo->llc_id) {
+ 			cpumask_set_cpu(cpu, &cpuid_topo->llc_sibling);
+ 			cpumask_set_cpu(cpuid, &cpu_topo->llc_sibling);
+ 		}
 
 
