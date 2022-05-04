@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61EC8C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 471B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356331AbiEDRsI (ORCPT
+        id S1358875AbiEDRsN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
+        Wed, 4 May 2022 13:48:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357179AbiEDROw (ORCPT
+        with ESMTP id S1357204AbiEDROz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:14:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 236AD541B5;
-        Wed,  4 May 2022 09:58:23 -0700 (PDT)
+        Wed, 4 May 2022 13:14:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76AC54682;
+        Wed,  4 May 2022 09:58:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44A04617D5;
-        Wed,  4 May 2022 16:58:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 924F6C385A4;
-        Wed,  4 May 2022 16:58:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6809B827B1;
+        Wed,  4 May 2022 16:58:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C9DBC385A5;
+        Wed,  4 May 2022 16:58:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683487;
-        bh=0wa8R2ae7L5HvBja6cgYpwoZNRFRA5di92a2dlL7/Zo=;
+        s=korg; t=1651683501;
+        bh=fkKBag7PPVPmosOz09eZsWq1ZvVA46uXSUgjhv12iXU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HZmx8dLKHRPBEAa1mru26cd9X7A5jc5jiMit9YTKnS9Oppjv+t1N7vfD+33AqsHQA
-         EVc03MmN3TvsaMSufzpw39nX0EpFRR0jHp6YPoj9cLGQc+X6tKBj4v/gIpEX9B+W3u
-         oaQVPxsN69j7qd2dxovvSzYWrvCtFpqv/LdGQ3zw=
+        b=V3KB8XtfZWOCSYKun/HSvdQMMU+V4T6h9x3GpNr1k6lJK1QWVQBk/3QeZ9l0vVbk3
+         EirQ9lpUNxYy9meqQYbKGAdENTGt63wCVxb6S8DTmlalNjPkFVFBepikL2OVqEb+LJ
+         cAf4sz7KaVSUd8Yhk/H7TR1lQPi/i3nmfNo1IUS4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org,
         Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 162/225] ASoC: Intel: sof_es8336: Add a quirk for Huawei Matebook D15
-Date:   Wed,  4 May 2022 18:46:40 +0200
-Message-Id: <20220504153124.439720094@linuxfoundation.org>
+Subject: [PATCH 5.17 159/225] ASoC: rt711/5682: check if bus is active before deferred jack detection
+Date:   Wed,  4 May 2022 18:46:37 +0200
+Message-Id: <20220504153124.208111899@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,47 +53,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab@kernel.org>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit c7cb4717f641db68e8117635bfcf62a9c27dc8d3 ]
+[ Upstream commit 770f3d992a3f7330f801dfeee98429b2885c9fdb ]
 
-Based on experimental tests, Huawei Matebook D15 actually uses
-both gpio0 and gpio1: the first one controls the speaker, while
-the other one controls the headphone.
+This patch takes a defensive programming and paranoid approach in case
+the parent device (SoundWire) is pm_runtime resumed but the rt711
+device is not. In that case, during the attachment and initialization,
+a jack detection workqueue can be scheduled. Since the pm_runtime
+suspend routines will not be invoked, the sequence to cancel all
+deferred work is not executed, and the jack detection could happen
+after the bus stops operating, leading to a timeout.
 
-Also, the headset is mapped as MIC1, instead of MIC2.
+This patch applies the same solution to rt5682, based on the
+similarities between codec drivers. The race condition with rt5682 was
+not detected experimentally though.
 
-So, add a quirk for it.
-
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/d678aef9fc9a07aced611aa7cb8c9b800c649e5a.1649357263.git.mchehab@kernel.org
+BugLink: https://github.com/thesofproject/linux/issues/3459
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Link: https://lore.kernel.org/r/20220406192005.262996-1-pierre-louis.bossart@linux.intel.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/boards/sof_es8336.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ sound/soc/codecs/rt5682.c | 9 +++++++++
+ sound/soc/codecs/rt711.c  | 7 +++++++
+ 2 files changed, 16 insertions(+)
 
-diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
-index 28d7670b8f8f..b18951a8f309 100644
---- a/sound/soc/intel/boards/sof_es8336.c
-+++ b/sound/soc/intel/boards/sof_es8336.c
-@@ -252,6 +252,15 @@ static const struct dmi_system_id sof_es8336_quirk_table[] = {
- 					SOF_ES8336_TGL_GPIO_QUIRK |
- 					SOF_ES8336_ENABLE_DMIC)
- 	},
-+	{
-+		.callback = sof_es8336_quirk_cb,
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "HUAWEI"),
-+			DMI_MATCH(DMI_BOARD_NAME, "BOHB-WAX9-PCB-B2"),
-+		},
-+		.driver_data = (void *)(SOF_ES8336_HEADPHONE_GPIO |
-+					SOC_ES8336_HEADSET_MIC1)
-+	},
- 	{}
- };
+diff --git a/sound/soc/codecs/rt5682.c b/sound/soc/codecs/rt5682.c
+index c9ff9c89adf7..2b6c6d6b9771 100644
+--- a/sound/soc/codecs/rt5682.c
++++ b/sound/soc/codecs/rt5682.c
+@@ -1100,6 +1100,15 @@ void rt5682_jack_detect_handler(struct work_struct *work)
+ 		return;
+ 	}
  
++	if (rt5682->is_sdw) {
++		if (pm_runtime_status_suspended(rt5682->slave->dev.parent)) {
++			dev_dbg(&rt5682->slave->dev,
++				"%s: parent device is pm_runtime_status_suspended, skipping jack detection\n",
++				__func__);
++			return;
++		}
++	}
++
+ 	dapm = snd_soc_component_get_dapm(rt5682->component);
+ 
+ 	snd_soc_dapm_mutex_lock(dapm);
+diff --git a/sound/soc/codecs/rt711.c b/sound/soc/codecs/rt711.c
+index 6770825d037a..ea25fd58d43a 100644
+--- a/sound/soc/codecs/rt711.c
++++ b/sound/soc/codecs/rt711.c
+@@ -245,6 +245,13 @@ static void rt711_jack_detect_handler(struct work_struct *work)
+ 	if (!rt711->component->card->instantiated)
+ 		return;
+ 
++	if (pm_runtime_status_suspended(rt711->slave->dev.parent)) {
++		dev_dbg(&rt711->slave->dev,
++			"%s: parent device is pm_runtime_status_suspended, skipping jack detection\n",
++			__func__);
++		return;
++	}
++
+ 	reg = RT711_VERB_GET_PIN_SENSE | RT711_HP_OUT;
+ 	ret = regmap_read(rt711->regmap, reg, &jack_status);
+ 	if (ret < 0)
 -- 
 2.35.1
 
