@@ -2,209 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4717FC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A20E9C41535
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356155AbiEDXEu (ORCPT
+        id S1381570AbiEDXFK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45536 "EHLO
+        Wed, 4 May 2022 19:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235475AbiEDW5m (ORCPT
+        with ESMTP id S1379754AbiEDW5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:57:42 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C9B53722
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:52:00 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id r16-20020a17090b051000b001db302efed7so1089297pjz.2
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:52:00 -0700 (PDT)
+        Wed, 4 May 2022 18:57:43 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF22D53A64;
+        Wed,  4 May 2022 15:52:00 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id c125so3053592iof.9;
+        Wed, 04 May 2022 15:52:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=Hx8sCbhJvCh5cLdAhmGu8wLUB1jVDA/mxGjlfX4jDqM=;
-        b=tfLtI6sfhovJRsf3jGIwzoV9D3TJaeV+YvUAEkJIwJSxaewRMzz53Llw7lmWCI0j4K
-         eUOSQ31RJ6XLelenIebss22NvfTU3D+X7Tt0X81MZenpjuKsgQulvOZP7MJ9UYP+Y6zr
-         3Lx1LOG1Aldt32RQMvbzPmu8gFeqV4vTHHkLlrKDG0dZLMgc4WHpXI9qVGdJW2zX7XAi
-         3gqd340xVwC3KBfYI3zro5OT4LTZKR5gbWOSuAHlA9FaoheMSe6OA62TW0rRctwSVvYm
-         XMGsPLfguqtHE6tKbO5tUvlN8G5KWIGfOtrKXLvTm6AAdIgd2OmOnR/Qh23Vku0QYZrr
-         h1Ew==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/yECAIQpVJu3JU/pGNaIuw7xSCvhNujVf2mLOqXUlas=;
+        b=CGY48g7LDIwrxmADUwlOZtS9Wuf0SYUAqOrZ9BasTt7ZJ9tTTeIkGuUxAO5Sl/sIn1
+         y9Y6irebmgIp4PCpAzz0jinfWLs5g/gj2VoqFRQw4S4nv7LddF4l8pTVg/BQ9cpPfpDd
+         LmjOfVPFvivNNPAwCZdjSqYKZcTorfM9FDpwz5MjLcr3cSWx0l7cRoQnBLZtAMyxAZQA
+         Xk4aWCWPzwNhKnUYPeZ2eAv6Je1OV9XzLhddTQ5nvUA3+qMjHo2B++HZSH7VkU/BZlYb
+         XK9KRk5mRLuex9xxjgpx6OFr8x9SiKEooCF8ARWGi24rvvel+jXdlrnCwIskIu13hAVF
+         Ku6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=Hx8sCbhJvCh5cLdAhmGu8wLUB1jVDA/mxGjlfX4jDqM=;
-        b=Uljrx8FoO9FcHeO9YIKmHqMAK08SwhbqIBlokQixOU62Jew2MON7IPMdLPFZ1yvQ+V
-         U5NO7AGKSRFdSGjn+KeZgvkSjAK0YbzMnIMzC0gfHh49hkLKWCd/rqSNGtaljNtn/Rrf
-         f0RS5iqXJM7notRcqqR6WCetMf+SCoWKbGEfld/PXjIWpar2SyfYk3ujk9fGcStADGr7
-         nKXBbx/RaXheHKzvtWU718J0yk7YNXndiTW7+Wr7lpHYFbUZZ/ZsUnbntvNp6Di+AFOv
-         /5vA1CD8hvzPE280qS5mBc8AWb2hU6eW5updoKIn1VkpNJ8vqAJadu/irIa8gNy4b5zP
-         +f+A==
-X-Gm-Message-State: AOAM5331b9Q+AL/SIzgvXH2d3+4etOyNkijtM2sU4PVZ8fRoU+OK+Jyr
-        GjNTD9IoFrhtfF+2vRvzYEIXiJors7w=
-X-Google-Smtp-Source: ABdhPJyQwjqPyAPUvRIzb7J6XsuFaPqeZRZSGX1w+CRJDk08taZEW9zNDQzFxttZ7zMLtPTHM+ir5HkkoEU=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:1784:b0:50d:d8cb:7a4f with SMTP id
- s4-20020a056a00178400b0050dd8cb7a4fmr19715916pfg.23.1651704719268; Wed, 04
- May 2022 15:51:59 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:48:32 +0000
-In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-87-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220504224914.1654036-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 086/128] KVM: selftests: Convert xapic_state_test away from
- hardcoded vCPU ID
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Andrew Jones <drjones@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Oliver Upton <oupton@google.com>,
-        Sean Christopherson <seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/yECAIQpVJu3JU/pGNaIuw7xSCvhNujVf2mLOqXUlas=;
+        b=G6cfWq5YXhYQ/MgmYEXD5Yne8wdakgLRzseRR2pYJPaQ4OCwkov26L4QA1A0G1Wptb
+         hsHGiPGXEo+Tl23Q62u9X0LP8M9Xs6aDxHc74tF2S84iri1c2QZev/lgGiPEdx/KEsM7
+         lIc6k2KU3oEDp2YDy82z6xYRge7tvdPzv3ThocqRiQmFGhAVxKHanlOyLo5AjsZAkd0b
+         LkNNkw6Ds+Tf+kB5HckQdKB25tFsB0SkTzSFdgggMDVi3iChCW13rSgeExnKPUGCmLdQ
+         JDSC9Bo0UME3W8/WgQkBXetC5xH74NRiXNaDPv5T9qSWWQUjyGnp2pr41jS9IXtZtRWu
+         RLQA==
+X-Gm-Message-State: AOAM532/8lWmPkvSjz0edacOpgQKiQM1UwontEAe709RCtspyaA1Zx1g
+        zhiWqr0CmUodFiG87E7xqIA=
+X-Google-Smtp-Source: ABdhPJxnAWQpfsmSZqFrknjlSk2A6xtbXqmlrrzpyFWqHtAyHnWVW1cVZBGNUO0IuuNuZ/Wee5QP0Q==
+X-Received: by 2002:a05:6602:2d0d:b0:659:aa9e:95a0 with SMTP id c13-20020a0566022d0d00b00659aa9e95a0mr9104400iow.106.1651704719875;
+        Wed, 04 May 2022 15:51:59 -0700 (PDT)
+Received: from xps8900.attlocal.net ([2600:1700:2442:6db0:94d4:5fe2:e117:e7c3])
+        by smtp.gmail.com with ESMTPSA id i25-20020a02b699000000b0032b608e2926sm66372jam.9.2022.05.04.15.51.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 15:51:59 -0700 (PDT)
+From:   frowand.list@gmail.com
+To:     Frank Rowand <frowand.list@gmail.com>,
+        David Gow <davidgow@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>, Tim.Bird@sony.com,
+        Brendan Higgins <brendanhiggins@google.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>, rmr167@gmail.com,
+        guillaume.tucker@collabora.com, dlatypov@google.com,
+        kernelci@groups.io, kunit-dev@googlegroups.com,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/2] begin KTAP spec v2 process
+Date:   Wed,  4 May 2022 17:51:50 -0500
+Message-Id: <20220504225152.1451440-1-frowand.list@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert xapic_state_test to use vm_create_with_one_vcpu() and pass around
-a 'struct kvm_vcpu' object instead of the raw vCPU ID.
+From: Frank Rowand <frank.rowand@sony.com>
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- .../selftests/kvm/x86_64/xapic_state_test.c   | 48 ++++++++++---------
- 1 file changed, 25 insertions(+), 23 deletions(-)
+The process to create version 2 of the KTAP Specification is documented
+in email discussions.  I am attempting to capture this information at
 
-diff --git a/tools/testing/selftests/kvm/x86_64/xapic_state_test.c b/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
-index 9d8393b6ec75..56301ee1adee 100644
---- a/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
-@@ -12,7 +12,7 @@
- #include "test_util.h"
- 
- struct xapic_vcpu {
--	uint32_t id;
-+	struct kvm_vcpu *vcpu;
- 	bool is_x2apic;
- };
- 
-@@ -47,8 +47,9 @@ static void x2apic_guest_code(void)
- 	} while (1);
- }
- 
--static void ____test_icr(struct kvm_vm *vm, struct xapic_vcpu *vcpu, uint64_t val)
-+static void ____test_icr(struct kvm_vm *vm, struct xapic_vcpu *x, uint64_t val)
- {
-+	struct kvm_vcpu *vcpu = x->vcpu;
- 	struct kvm_lapic_state xapic;
- 	struct ucall uc;
- 	uint64_t icr;
-@@ -70,28 +71,29 @@ static void ____test_icr(struct kvm_vm *vm, struct xapic_vcpu *vcpu, uint64_t va
- 	vcpu_ioctl(vm, vcpu->id, KVM_GET_LAPIC, &xapic);
- 	icr = (u64)(*((u32 *)&xapic.regs[APIC_ICR])) |
- 	      (u64)(*((u32 *)&xapic.regs[APIC_ICR2])) << 32;
--	if (!vcpu->is_x2apic)
-+	if (!x->is_x2apic)
- 		val &= (-1u | (0xffull << (32 + 24)));
- 	ASSERT_EQ(icr, val & ~APIC_ICR_BUSY);
- }
- 
--static void __test_icr(struct kvm_vm *vm, struct xapic_vcpu *vcpu, uint64_t val)
-+static void __test_icr(struct kvm_vm *vm, struct xapic_vcpu *x, uint64_t val)
- {
--	____test_icr(vm, vcpu, val | APIC_ICR_BUSY);
--	____test_icr(vm, vcpu, val & ~(u64)APIC_ICR_BUSY);
-+	____test_icr(vm, x, val | APIC_ICR_BUSY);
-+	____test_icr(vm, x, val & ~(u64)APIC_ICR_BUSY);
- }
- 
--static void test_icr(struct kvm_vm *vm, struct xapic_vcpu *vcpu)
-+static void test_icr(struct kvm_vm *vm, struct xapic_vcpu *x)
- {
-+	struct kvm_vcpu *vcpu = x->vcpu;
- 	uint64_t icr, i, j;
- 
- 	icr = APIC_DEST_SELF | APIC_INT_ASSERT | APIC_DM_FIXED;
- 	for (i = 0; i <= 0xff; i++)
--		__test_icr(vm, vcpu, icr | i);
-+		__test_icr(vm, x, icr | i);
- 
- 	icr = APIC_INT_ASSERT | APIC_DM_FIXED;
- 	for (i = 0; i <= 0xff; i++)
--		__test_icr(vm, vcpu, icr | i);
-+		__test_icr(vm, x, icr | i);
- 
- 	/*
- 	 * Send all flavors of IPIs to non-existent vCPUs.  TODO: use number of
-@@ -100,32 +102,32 @@ static void test_icr(struct kvm_vm *vm, struct xapic_vcpu *vcpu)
- 	icr = APIC_INT_ASSERT | 0xff;
- 	for (i = vcpu->id + 1; i < 0xff; i++) {
- 		for (j = 0; j < 8; j++)
--			__test_icr(vm, vcpu, i << (32 + 24) | APIC_INT_ASSERT | (j << 8));
-+			__test_icr(vm, x, i << (32 + 24) | APIC_INT_ASSERT | (j << 8));
- 	}
- 
- 	/* And again with a shorthand destination for all types of IPIs. */
- 	icr = APIC_DEST_ALLBUT | APIC_INT_ASSERT;
- 	for (i = 0; i < 8; i++)
--		__test_icr(vm, vcpu, icr | (i << 8));
-+		__test_icr(vm, x, icr | (i << 8));
- 
- 	/* And a few garbage value, just make sure it's an IRQ (blocked). */
--	__test_icr(vm, vcpu, 0xa5a5a5a5a5a5a5a5 & ~APIC_DM_FIXED_MASK);
--	__test_icr(vm, vcpu, 0x5a5a5a5a5a5a5a5a & ~APIC_DM_FIXED_MASK);
--	__test_icr(vm, vcpu, -1ull & ~APIC_DM_FIXED_MASK);
-+	__test_icr(vm, x, 0xa5a5a5a5a5a5a5a5 & ~APIC_DM_FIXED_MASK);
-+	__test_icr(vm, x, 0x5a5a5a5a5a5a5a5a & ~APIC_DM_FIXED_MASK);
-+	__test_icr(vm, x, -1ull & ~APIC_DM_FIXED_MASK);
- }
- 
- int main(int argc, char *argv[])
- {
--	struct xapic_vcpu vcpu = {
--		.id = 0,
-+	struct xapic_vcpu x = {
-+		.vcpu = NULL,
- 		.is_x2apic = true,
- 	};
- 	struct kvm_cpuid2 *cpuid;
- 	struct kvm_vm *vm;
- 	int i;
- 
--	vm = vm_create_default(vcpu.id, 0, x2apic_guest_code);
--	test_icr(vm, &vcpu);
-+	vm = vm_create_with_one_vcpu(&x.vcpu, x2apic_guest_code);
-+	test_icr(vm, &x);
- 	kvm_vm_free(vm);
- 
- 	/*
-@@ -133,18 +135,18 @@ int main(int argc, char *argv[])
- 	 * the guest in order to test AVIC.  KVM disallows changing CPUID after
- 	 * KVM_RUN and AVIC is disabled if _any_ vCPU is allowed to use x2APIC.
- 	 */
--	vm = vm_create_default(vcpu.id, 0, xapic_guest_code);
--	vcpu.is_x2apic = false;
-+	vm = vm_create_with_one_vcpu(&x.vcpu, xapic_guest_code);
-+	x.is_x2apic = false;
- 
--	cpuid = vcpu_get_cpuid(vm, vcpu.id);
-+	cpuid = vcpu_get_cpuid(vm, x.vcpu->id);
- 	for (i = 0; i < cpuid->nent; i++) {
- 		if (cpuid->entries[i].function == 1)
- 			break;
- 	}
- 	cpuid->entries[i].ecx &= ~BIT(21);
--	vcpu_set_cpuid(vm, vcpu.id, cpuid);
-+	vcpu_set_cpuid(vm, x.vcpu->id, cpuid);
- 
- 	virt_pg_map(vm, APIC_DEFAULT_GPA, APIC_DEFAULT_GPA);
--	test_icr(vm, &vcpu);
-+	test_icr(vm, &x);
- 	kvm_vm_free(vm);
- }
+   https://elinux.org/Test_Results_Format_Notes#KTAP_version_2
+
+I am already not following the suggested process, which says:
+"...please try to follow this principal of one major topic per email
+thread."  I think that is ok in this case because the two patches
+are related and (hopefully) not controversial.
+
+Changes since patch version 1:
+   - drop patch 1/2.  Jonathan Corbet has already applied this patch
+     into version 1 of the Specification
+   - rename patch 2/2 to patch 1/2, with updated patch comment
+   - add new patch 2/2
+
+Frank Rowand (2):
+  ktap_v2: change version to 2-rc in KTAP specification
+  ktap_v2: change "version 1" to "version 2" in examples
+
+ Documentation/dev-tools/ktap.rst | 25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
+
 -- 
-2.36.0.464.gb9c8b46e94-goog
+Frank Rowand <frank.rowand@sony.com>
 
