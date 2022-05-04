@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0965C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55FD2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:33:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351397AbiEDRgK (ORCPT
+        id S1350359AbiEDRgb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:36:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39254 "EHLO
+        Wed, 4 May 2022 13:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356958AbiEDRJv (ORCPT
+        with ESMTP id S1356948AbiEDRJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9BBB473B2;
-        Wed,  4 May 2022 09:56:43 -0700 (PDT)
+        Wed, 4 May 2022 13:09:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98354739D;
+        Wed,  4 May 2022 09:56:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44A72617A6;
-        Wed,  4 May 2022 16:56:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FFBCC385AA;
-        Wed,  4 May 2022 16:56:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1F7BB82552;
+        Wed,  4 May 2022 16:56:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F8B9C385A5;
+        Wed,  4 May 2022 16:56:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683402;
-        bh=++xBQbxL3Ke9frkNEa1dCEr1e2uSlVluJFZQcYF6dU8=;
+        s=korg; t=1651683393;
+        bh=gsJsR9hIHdRHIG5DHXKcbKlv++R5++gW2cCn58NuCvM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T1yTxdlaBQQzDiNH5xScP2UbOnT5vXiBf2Gwc3rXKktqMm2Q2ssVsCxVLDyO8eNXv
-         4UHczNnVXthGuuRpb02YA6isLCdol9rbfSx8IEO9C6hciCUVKSmbj3hR/l9cOn2cbc
-         6vvp162vz7NJLmLk1IMr2uLBWN2Tgcz/Bjqh3J4w=
+        b=WR69ga17PI0ux+FhMuExGxgg5vvvAVD0Ea1bCPQJRY9Q8PWymjiv9oDVFUkLB6SQA
+         DbJU9aVtWeB6OnfWMphtuX4lz/ZQvr4GS/A+T/IA95PLTUjnbj8Ch4fkNTiSg6JtrY
+         KIq3SoBsnKBN3AgfgS/vvWFWD1gZD1FEWWNKRt7o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 073/225] arm64: dts: imx8mq-tqma8mq: change the spi-nor tx
-Date:   Wed,  4 May 2022 18:45:11 +0200
-Message-Id: <20220504153117.948907197@linuxfoundation.org>
+Subject: [PATCH 5.17 070/225] soc: imx: imx8m-blk-ctrl: Fix IMX8MN_DISPBLK_PD_ISI hang
+Date:   Wed,  4 May 2022 18:45:08 +0200
+Message-Id: <20220504153117.783718798@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,34 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+From: Adam Ford <aford173@gmail.com>
 
-[ Upstream commit c7b45c79fb279e539346919a5c196e417925719e ]
+[ Upstream commit e2aa165cd0163cef83cb295eb572aa9fb1604cf4 ]
 
-This fixes the qspi read command by importing the changes from commit
-04aa946d57b2 ("arm64: dts: imx8: change the spi-nor tx").
+The imx8mn clock list for the ISI lists four clocks, but DOMAIN_MAX_CLKS
+was set to 3.  Because of this, attempts to enable the fourth clock failed,
+threw some splat, and ultimately hung.
 
-Fixes: b186b8b6e770 ("arm64: dts: freescale: add initial device tree for TQMa8Mx with i.MX8M")
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Fixes: 7f511d514e8c ("soc: imx: imx8m-blk-ctrl: add i.MX8MN DISP blk-ctrl")
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
 Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mq-tqma8mq.dtsi | 2 +-
+ drivers/soc/imx/imx8m-blk-ctrl.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mq-tqma8mq.dtsi b/arch/arm64/boot/dts/freescale/imx8mq-tqma8mq.dtsi
-index 8aedcddfeab8..2c63b01e93e0 100644
---- a/arch/arm64/boot/dts/freescale/imx8mq-tqma8mq.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mq-tqma8mq.dtsi
-@@ -253,7 +253,7 @@ flash0: flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		spi-max-frequency = <84000000>;
--		spi-tx-bus-width = <4>;
-+		spi-tx-bus-width = <1>;
- 		spi-rx-bus-width = <4>;
- 	};
+diff --git a/drivers/soc/imx/imx8m-blk-ctrl.c b/drivers/soc/imx/imx8m-blk-ctrl.c
+index 511e74f0db8a..e096cca9f18a 100644
+--- a/drivers/soc/imx/imx8m-blk-ctrl.c
++++ b/drivers/soc/imx/imx8m-blk-ctrl.c
+@@ -49,7 +49,7 @@ struct imx8m_blk_ctrl_domain_data {
+ 	u32 mipi_phy_rst_mask;
  };
+ 
+-#define DOMAIN_MAX_CLKS 3
++#define DOMAIN_MAX_CLKS 4
+ 
+ struct imx8m_blk_ctrl_domain {
+ 	struct generic_pm_domain genpd;
 -- 
 2.35.1
 
