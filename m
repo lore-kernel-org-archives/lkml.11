@@ -2,112 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64669C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F78EC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381947AbiEDXFf (ORCPT
+        id S1381871AbiEDXFc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
+        Wed, 4 May 2022 19:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379520AbiEDW6J (ORCPT
+        with ESMTP id S1379676AbiEDW6J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 18:58:09 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E13053A7F;
-        Wed,  4 May 2022 15:52:03 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id o190so3054250iof.10;
-        Wed, 04 May 2022 15:52:03 -0700 (PDT)
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3198753B49
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:52:04 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id y17-20020a637d11000000b003ab06870074so1336701pgc.15
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:52:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=N4IM2LeuBxLjZOXI4Ac+itNTVFMU+JztF68jOZmjG9Q=;
-        b=q1aYKbBjaX3cEmdXnV9RE0f59cZqJopxNNmkQ5+M5CRU4vjlKL22zb2e66ZDJSSDFs
-         tyBFpf7BAhvO2MyJ3tdgS392YiOk1hKSAHozAX6LDrjXtxZgXTM9adnM8/qANvw37Z2n
-         NwkTxHvFAOV5ej3T0RHCBg60hUWy9Sspo4sN1XEZmCGbeuArKLs5DTejC/hnhJcd7juj
-         R4uqcOs5S5EJuyz6rJhRxGylwpsbYjAs9kV4HesTFG1rL6Fxhh2pqpSxGq76c4Jtb736
-         JpFQQI/R36/PglqCbmi9cEJf/K1woE2fMPRws/QkX2LKmHubgkt8V+yGytyhk19Rj4si
-         70GA==
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=JuSB6I15ZhVqlzJm9dB6xmEsKq4c3QIfjVdXnbIX1uc=;
+        b=f+sE+6mGX/smmSPNXPjARqw/YAoc+kPcExZzb7PZZ4ZLPERBNyRyt4chK9qVK0Mq2G
+         R27dsT7UAp9Amh4eZyMdMptcUg+PzehAOVisNmgAoWTFINhBSwisJQF305pONj0zqLez
+         c07e2v63pE3qtdgT7uxg5QJnhQF1gZV2D/9Oq20pS2bvZm3w8LZ7SOXbGTn4REB3tQAQ
+         K2n8pn7yjiuc7Ghf10qYjVvj4F3/LMlGDZCaAiaQMyiw6R8YoA9xwmhkOL58Q/18SmTt
+         kgTbD/mEbe5oTDMaa5IXb0oo8SZ+cDfERJsQAI0n88w1xxtEyA9tpbcCev9d4ZHha5wH
+         2hxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=N4IM2LeuBxLjZOXI4Ac+itNTVFMU+JztF68jOZmjG9Q=;
-        b=k+0QvcsJ4m7oUNeRklPa+DWCf0yJKdumVsYI1R9YJgbvCbFTxNsOq/P6ly9KZI/9qZ
-         6cRyu0Uiofrd+BPXRMiAcbpEyeaBhwZwPqPYArvPyGdMMbu6KQzrSUetBS2lpK9SXfuc
-         lNoXxegZzfGQYdudD4wV9OOVNcUkHlrSARcH59GvARrFY9LpnEjMfomC9cKvyh5n1A+U
-         crWygdaAaxBe+K1S4dVywsmaVRQSDOXcfJbOA+DhC2xK2KjcF9zfpooPgtqRcEhXpZ5m
-         IBVpkEOB//bVmxkzNbdbUnlW24dX2AayBSRKkDI+TC+vWPdHQRXHE45zNPUNBDcCEVIe
-         6EeA==
-X-Gm-Message-State: AOAM531xmqqszg/REhLjGuZEIL3HhxirICPnudpAh0oKZK5Hw2yj4YXQ
-        4EDvfgo9TH1Xeg1KnIHztBY=
-X-Google-Smtp-Source: ABdhPJzriMH8Zg3BqmSxGLS9g9rQRt9WUwBzLpDDk8CXMJ4QPnos7XK8RBHz2OynQMhHnhCCZz/2IQ==
-X-Received: by 2002:a05:6638:24d2:b0:32a:caa9:e679 with SMTP id y18-20020a05663824d200b0032acaa9e679mr10419338jat.41.1651704720842;
-        Wed, 04 May 2022 15:52:00 -0700 (PDT)
-Received: from xps8900.attlocal.net ([2600:1700:2442:6db0:94d4:5fe2:e117:e7c3])
-        by smtp.gmail.com with ESMTPSA id i25-20020a02b699000000b0032b608e2926sm66372jam.9.2022.05.04.15.52.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 15:52:00 -0700 (PDT)
-From:   frowand.list@gmail.com
-To:     Frank Rowand <frowand.list@gmail.com>,
-        David Gow <davidgow@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Kees Cook <keescook@chromium.org>, Tim.Bird@sony.com,
-        Brendan Higgins <brendanhiggins@google.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>, rmr167@gmail.com,
-        guillaume.tucker@collabora.com, dlatypov@google.com,
-        kernelci@groups.io, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/2] ktap_v2: change version to 2-rc in KTAP specification
-Date:   Wed,  4 May 2022 17:51:51 -0500
-Message-Id: <20220504225152.1451440-2-frowand.list@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220504225152.1451440-1-frowand.list@gmail.com>
-References: <20220504225152.1451440-1-frowand.list@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=JuSB6I15ZhVqlzJm9dB6xmEsKq4c3QIfjVdXnbIX1uc=;
+        b=GonmXAysmqwGa44RQtfG4fnhWrnjCHfJgkcTDhTRjS1mHgF5MLEZMQbUNZvoVMcl56
+         eQ3/vmuMyrSsBT7xbTZSBNsU1iK8XR82RZrOx3grpG39eB4rxirEyOM0dnNEd+05rybB
+         33nNIac8ixKCr/yG8vNAsUFlADYHYwv/Dj44CnzWpYUx8R1wxleVD7ZF0vWxiURL5Vqi
+         zecYRP/XZqewMPdF7Itzc2boFiPjU0iN1u9Ng+cle5ien870pDee2pYAwGfOqeyQ+ZmA
+         rNPB7XO+wioBG+Bur01SzH9W1IGCOM0uAAyQKP3cE8SrL+z+Dx0n5sTugMUAIIkUve7Q
+         8xbw==
+X-Gm-Message-State: AOAM530ESnHAbm7OPwVCkJ4SJDUu4788lBN+u4YEXurQDuMuKzLhLT9Q
+        xUV5gd015KbufbSBi9lppfGI3bZ+Jyo=
+X-Google-Smtp-Source: ABdhPJxruw3LauMi/kdqcd0a1xbkf42wJZ3sPtgbnfUtrwW4m7ceco7H0S2yw+oYuIIOwZ56ISyiBqA0Dus=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a17:90a:e510:b0:1d9:ee23:9fa1 with SMTP id
+ t16-20020a17090ae51000b001d9ee239fa1mr140465pjy.0.1651704720721; Wed, 04 May
+ 2022 15:52:00 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Wed,  4 May 2022 22:48:33 +0000
+In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
+Message-Id: <20220504224914.1654036-88-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220504224914.1654036-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+Subject: [PATCH 087/128] KVM: selftests: Convert debug-exceptions away from VCPU_ID
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Andrew Jones <drjones@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Sean Christopherson <seanjc@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Rowand <frank.rowand@sony.com>
+Convert debug-exceptions to use vm_create_with_one_vcpu() and pass around
+a 'struct kvm_vcpu' object instead of using a global VCPU_ID.
 
-Prepare KTAP Specification for the process of creating version 2.
-
-The version will remain "2-rc" until the final commit to complete
-Version 2.  Adding the "-rc" ensures that none of the development
-versions will be mistaken for the completed version 2.
-
-After this commit, Sphinx complains that we now need more '=' signs:
-
-  Documentation/dev-tools/ktap.rst:3: WARNING: Title overline too short.
-  ===================================================
-  The Kernel Test Anything Protocol (KTAP), version 2-rc
-  ===================================================
-
-This warning will disappear in the final commit for the release of
-version 2, when the "-rc" is removed.
-
-Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- Documentation/dev-tools/ktap.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../selftests/kvm/aarch64/debug-exceptions.c    | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/Documentation/dev-tools/ktap.rst b/Documentation/dev-tools/ktap.rst
-index 5ee735c6687f..37b5dc61bfb8 100644
---- a/Documentation/dev-tools/ktap.rst
-+++ b/Documentation/dev-tools/ktap.rst
-@@ -1,7 +1,7 @@
- .. SPDX-License-Identifier: GPL-2.0
+diff --git a/tools/testing/selftests/kvm/aarch64/debug-exceptions.c b/tools/testing/selftests/kvm/aarch64/debug-exceptions.c
+index 63b2178210c4..b69db0942169 100644
+--- a/tools/testing/selftests/kvm/aarch64/debug-exceptions.c
++++ b/tools/testing/selftests/kvm/aarch64/debug-exceptions.c
+@@ -3,8 +3,6 @@
+ #include <kvm_util.h>
+ #include <processor.h>
  
- ===================================================
--The Kernel Test Anything Protocol (KTAP), version 1
-+The Kernel Test Anything Protocol (KTAP), version 2-rc
- ===================================================
+-#define VCPU_ID 0
+-
+ #define MDSCR_KDE	(1 << 13)
+ #define MDSCR_MDE	(1 << 15)
+ #define MDSCR_SS	(1 << 0)
+@@ -240,27 +238,28 @@ static void guest_svc_handler(struct ex_regs *regs)
+ 	svc_addr = regs->pc;
+ }
  
- TAP, or the Test Anything Protocol is a format for specifying test results used
+-static int debug_version(struct kvm_vm *vm)
++static int debug_version(struct kvm_vcpu *vcpu)
+ {
+ 	uint64_t id_aa64dfr0;
+ 
+-	get_reg(vm, VCPU_ID, KVM_ARM64_SYS_REG(SYS_ID_AA64DFR0_EL1), &id_aa64dfr0);
++	get_reg(vcpu->vm, vcpu->id, KVM_ARM64_SYS_REG(SYS_ID_AA64DFR0_EL1), &id_aa64dfr0);
+ 	return id_aa64dfr0 & 0xf;
+ }
+ 
+ int main(int argc, char *argv[])
+ {
++	struct kvm_vcpu *vcpu;
+ 	struct kvm_vm *vm;
+ 	struct ucall uc;
+ 	int stage;
+ 
+-	vm = vm_create_default(VCPU_ID, 0, guest_code);
++	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
+ 	ucall_init(vm, NULL);
+ 
+ 	vm_init_descriptor_tables(vm);
+-	vcpu_init_descriptor_tables(vm, VCPU_ID);
++	vcpu_init_descriptor_tables(vm, vcpu->id);
+ 
+-	if (debug_version(vm) < 6) {
++	if (debug_version(vcpu) < 6) {
+ 		print_skip("Armv8 debug architecture not supported.");
+ 		kvm_vm_free(vm);
+ 		exit(KSFT_SKIP);
+@@ -278,9 +277,9 @@ int main(int argc, char *argv[])
+ 				ESR_EC_SVC64, guest_svc_handler);
+ 
+ 	for (stage = 0; stage < 11; stage++) {
+-		vcpu_run(vm, VCPU_ID);
++		vcpu_run(vm, vcpu->id);
+ 
+-		switch (get_ucall(vm, VCPU_ID, &uc)) {
++		switch (get_ucall(vm, vcpu->id, &uc)) {
+ 		case UCALL_SYNC:
+ 			TEST_ASSERT(uc.args[1] == stage,
+ 				"Stage %d: Unexpected sync ucall, got %lx",
 -- 
-Frank Rowand <frank.rowand@sony.com>
+2.36.0.464.gb9c8b46e94-goog
 
