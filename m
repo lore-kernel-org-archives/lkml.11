@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3FDDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:07:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62BA8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353231AbiEDRKk (ORCPT
+        id S1345517AbiEDRKp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37696 "EHLO
+        Wed, 4 May 2022 13:10:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355458AbiEDRAE (ORCPT
+        with ESMTP id S1355449AbiEDRAD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:04 -0400
+        Wed, 4 May 2022 13:00:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BE174B424;
-        Wed,  4 May 2022 09:51:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D189D4B41B;
+        Wed,  4 May 2022 09:51:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7AFB9B827A3;
-        Wed,  4 May 2022 16:51:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33A70C385AA;
-        Wed,  4 May 2022 16:51:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9CB7EB827A5;
+        Wed,  4 May 2022 16:51:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45182C385A5;
+        Wed,  4 May 2022 16:51:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683092;
-        bh=2/P9BSgP4jmFv2ajiKKGThefmhS71JiU4FEDG/IDIsk=;
+        s=korg; t=1651683086;
+        bh=MqJvWmbwug2SkXstXXEDsrTMt85TRcrWnBTzLiAds1s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m0wqlQefPwLC/LSHY2xB0g8rBhoA2agkjYqlLl3wpCqUC+mSgKtk7PvHT40XxPwVD
-         aKqj7frVfHhD0izgOLdIXOEJJqjq3xu1MBdsUB6pU2vcpqDtMYmr2y21Xp3hZL21J7
-         DY6i+X7KQUudzuppUIOw2vTA4VfYhIf2DhE4Ka/E=
+        b=W8fg19CqsAH5Mg624ZWXpNnhT1xEhnwhKedfgMnjSX7cZa0/5Gu1bRdJ9DbwPXYQG
+         lPu3ijEw9YVt+YouGPaCbDymZG4xA02DhXT3rrsGM3uQf1Jhv+9eUnoxS7j28O3mSo
+         iBBm4tBTqFrKdrzOW2MZhKApuvEc2Ib/Ga4f1u1k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        William Tu <u9012063@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 084/129] tcp: make sure treq->af_specific is initialized
-Date:   Wed,  4 May 2022 18:44:36 +0200
-Message-Id: <20220504153027.723669944@linuxfoundation.org>
+Subject: [PATCH 5.10 082/129] ip_gre, ip6_gre: Fix race condition on o_seqno in collect_md mode
+Date:   Wed,  4 May 2022 18:44:34 +0200
+Message-Id: <20220504153027.594805386@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,143 +52,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-[ Upstream commit ba5a4fdd63ae0c575707030db0b634b160baddd7 ]
+[ Upstream commit 31c417c948d7f6909cb63f0ac3298f3c38f8ce20 ]
 
-syzbot complained about a recent change in TCP stack,
-hitting a NULL pointer [1]
+As pointed out by Jakub Kicinski, currently using TUNNEL_SEQ in
+collect_md mode is racy for [IP6]GRE[TAP] devices.  Consider the
+following sequence of events:
 
-tcp request sockets have an af_specific pointer, which
-was used before the blamed change only for SYNACK generation
-in non SYNCOOKIE mode.
+1. An [IP6]GRE[TAP] device is created in collect_md mode using "ip link
+   add ... external".  "ip" ignores "[o]seq" if "external" is specified,
+   so TUNNEL_SEQ is off, and the device is marked as NETIF_F_LLTX (i.e.
+   it uses lockless TX);
+2. Someone sets TUNNEL_SEQ on outgoing skb's, using e.g.
+   bpf_skb_set_tunnel_key() in an eBPF program attached to this device;
+3. gre_fb_xmit() or __gre6_xmit() processes these skb's:
 
-tcp requests sockets momentarily created when third packet
-coming from client in SYNCOOKIE mode were not using
-treq->af_specific.
+	gre_build_header(skb, tun_hlen,
+			 flags, protocol,
+			 tunnel_id_to_key32(tun_info->key.tun_id),
+			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++)
+					      : 0);   ^^^^^^^^^^^^^^^^^
 
-Make sure this field is populated, in the same way normal
-TCP requests sockets do in tcp_conn_request().
+Since we are not using the TX lock (&txq->_xmit_lock), multiple CPUs may
+try to do this tunnel->o_seqno++ in parallel, which is racy.  Fix it by
+making o_seqno atomic_t.
 
-[1]
-TCP: request_sock_TCPv6: Possible SYN flooding on port 20002. Sending cookies.  Check SNMP counters.
-general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 1 PID: 3695 Comm: syz-executor864 Not tainted 5.18.0-rc3-syzkaller-00224-g5fd1fe4807f9 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:tcp_create_openreq_child+0xe16/0x16b0 net/ipv4/tcp_minisocks.c:534
-Code: 48 c1 ea 03 80 3c 02 00 0f 85 e5 07 00 00 4c 8b b3 28 01 00 00 48 b8 00 00 00 00 00 fc ff df 49 8d 7e 08 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 c9 07 00 00 48 8b 3c 24 48 89 de 41 ff 56 08 48
-RSP: 0018:ffffc90000de0588 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff888076490330 RCX: 0000000000000100
-RDX: 0000000000000001 RSI: ffffffff87d67ff0 RDI: 0000000000000008
-RBP: ffff88806ee1c7f8 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff87d67f00 R11: 0000000000000000 R12: ffff88806ee1bfc0
-R13: ffff88801b0e0368 R14: 0000000000000000 R15: 0000000000000000
-FS:  00007f517fe58700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffcead76960 CR3: 000000006f97b000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <IRQ>
- tcp_v6_syn_recv_sock+0x199/0x23b0 net/ipv6/tcp_ipv6.c:1267
- tcp_get_cookie_sock+0xc9/0x850 net/ipv4/syncookies.c:207
- cookie_v6_check+0x15c3/0x2340 net/ipv6/syncookies.c:258
- tcp_v6_cookie_check net/ipv6/tcp_ipv6.c:1131 [inline]
- tcp_v6_do_rcv+0x1148/0x13b0 net/ipv6/tcp_ipv6.c:1486
- tcp_v6_rcv+0x3305/0x3840 net/ipv6/tcp_ipv6.c:1725
- ip6_protocol_deliver_rcu+0x2e9/0x1900 net/ipv6/ip6_input.c:422
- ip6_input_finish+0x14c/0x2c0 net/ipv6/ip6_input.c:464
- NF_HOOK include/linux/netfilter.h:307 [inline]
- NF_HOOK include/linux/netfilter.h:301 [inline]
- ip6_input+0x9c/0xd0 net/ipv6/ip6_input.c:473
- dst_input include/net/dst.h:461 [inline]
- ip6_rcv_finish net/ipv6/ip6_input.c:76 [inline]
- NF_HOOK include/linux/netfilter.h:307 [inline]
- NF_HOOK include/linux/netfilter.h:301 [inline]
- ipv6_rcv+0x27f/0x3b0 net/ipv6/ip6_input.c:297
- __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5405
- __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5519
- process_backlog+0x3a0/0x7c0 net/core/dev.c:5847
- __napi_poll+0xb3/0x6e0 net/core/dev.c:6413
- napi_poll net/core/dev.c:6480 [inline]
- net_rx_action+0x8ec/0xc60 net/core/dev.c:6567
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
- invoke_softirq kernel/softirq.c:432 [inline]
- __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
- sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
+As mentioned by Eric Dumazet in commit b790e01aee74 ("ip_gre: lockless
+xmit"), making o_seqno atomic_t increases "chance for packets being out
+of order at receiver" when NETIF_F_LLTX is on.
 
-Fixes: 5b0b9e4c2c89 ("tcp: md5: incorrect tcp_header_len for incoming connections")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Francesco Ruggeri <fruggeri@arista.com>
+Maybe a better fix would be:
+
+1. Do not ignore "oseq" in external mode.  Users MUST specify "oseq" if
+   they want the kernel to allow sequencing of outgoing packets;
+2. Reject all outgoing TUNNEL_SEQ packets if the device was not created
+   with "oseq".
+
+Unfortunately, that would break userspace.
+
+We could now make [IP6]GRE[TAP] devices always NETIF_F_LLTX, but let us
+do it in separate patches to keep this fix minimal.
+
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 77a5196a804e ("gre: add sequence number for collect md mode.")
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Acked-by: William Tu <u9012063@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/tcp.h     | 1 +
- net/ipv4/syncookies.c | 8 +++++++-
- net/ipv6/syncookies.c | 3 ++-
- 3 files changed, 10 insertions(+), 2 deletions(-)
+ include/net/ip6_tunnel.h | 2 +-
+ include/net/ip_tunnels.h | 2 +-
+ net/ipv4/ip_gre.c        | 6 +++---
+ net/ipv6/ip6_gre.c       | 7 ++++---
+ 4 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 263f6eb417d5..2a28e0925573 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -460,6 +460,7 @@ int __cookie_v4_check(const struct iphdr *iph, const struct tcphdr *th,
- 		      u32 cookie);
- struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb);
- struct request_sock *cookie_tcp_reqsk_alloc(const struct request_sock_ops *ops,
-+					    const struct tcp_request_sock_ops *af_ops,
- 					    struct sock *sk, struct sk_buff *skb);
- #ifdef CONFIG_SYN_COOKIES
+diff --git a/include/net/ip6_tunnel.h b/include/net/ip6_tunnel.h
+index 028eaea1c854..42d50856fcf2 100644
+--- a/include/net/ip6_tunnel.h
++++ b/include/net/ip6_tunnel.h
+@@ -57,7 +57,7 @@ struct ip6_tnl {
  
-diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
-index 00dc3f943c80..0b616094e794 100644
---- a/net/ipv4/syncookies.c
-+++ b/net/ipv4/syncookies.c
-@@ -283,6 +283,7 @@ bool cookie_ecn_ok(const struct tcp_options_received *tcp_opt,
- EXPORT_SYMBOL(cookie_ecn_ok);
+ 	/* These fields used only by GRE */
+ 	__u32 i_seqno;	/* The last seen seqno	*/
+-	__u32 o_seqno;	/* The last output seqno */
++	atomic_t o_seqno;	/* The last output seqno */
+ 	int hlen;       /* tun_hlen + encap_hlen */
+ 	int tun_hlen;	/* Precalculated header length */
+ 	int encap_hlen; /* Encap header length (FOU,GUE) */
+diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
+index 61620677b034..c3e55a9ae585 100644
+--- a/include/net/ip_tunnels.h
++++ b/include/net/ip_tunnels.h
+@@ -113,7 +113,7 @@ struct ip_tunnel {
  
- struct request_sock *cookie_tcp_reqsk_alloc(const struct request_sock_ops *ops,
-+					    const struct tcp_request_sock_ops *af_ops,
- 					    struct sock *sk,
- 					    struct sk_buff *skb)
- {
-@@ -299,6 +300,10 @@ struct request_sock *cookie_tcp_reqsk_alloc(const struct request_sock_ops *ops,
- 		return NULL;
+ 	/* These four fields used only by GRE */
+ 	u32		i_seqno;	/* The last seen seqno	*/
+-	u32		o_seqno;	/* The last output seqno */
++	atomic_t	o_seqno;	/* The last output seqno */
+ 	int		tun_hlen;	/* Precalculated header length */
  
- 	treq = tcp_rsk(req);
-+
-+	/* treq->af_specific might be used to perform TCP_MD5 lookup */
-+	treq->af_specific = af_ops;
-+
- 	treq->syn_tos = TCP_SKB_CB(skb)->ip_dsfield;
- #if IS_ENABLED(CONFIG_MPTCP)
- 	treq->is_mptcp = sk_is_mptcp(sk);
-@@ -366,7 +371,8 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb)
- 		goto out;
+ 	/* These four fields used only by ERSPAN */
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index 801c540db33e..2a80038575d2 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -459,7 +459,7 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
+ 	/* Push GRE header. */
+ 	gre_build_header(skb, tunnel->tun_hlen,
+ 			 flags, proto, tunnel->parms.o_key,
+-			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
++			 (flags & TUNNEL_SEQ) ? htonl(atomic_fetch_inc(&tunnel->o_seqno)) : 0);
  
- 	ret = NULL;
--	req = cookie_tcp_reqsk_alloc(&tcp_request_sock_ops, sk, skb);
-+	req = cookie_tcp_reqsk_alloc(&tcp_request_sock_ops,
-+				     &tcp_request_sock_ipv4_ops, sk, skb);
- 	if (!req)
- 		goto out;
+ 	ip_tunnel_xmit(skb, dev, tnl_params, tnl_params->protocol);
+ }
+@@ -497,7 +497,7 @@ static void gre_fb_xmit(struct sk_buff *skb, struct net_device *dev,
+ 		(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
+ 	gre_build_header(skb, tunnel_hlen, flags, proto,
+ 			 tunnel_id_to_key32(tun_info->key.tun_id),
+-			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
++			 (flags & TUNNEL_SEQ) ? htonl(atomic_fetch_inc(&tunnel->o_seqno)) : 0);
  
-diff --git a/net/ipv6/syncookies.c b/net/ipv6/syncookies.c
-index 9b6cae1e49d9..5fa791cf39ca 100644
---- a/net/ipv6/syncookies.c
-+++ b/net/ipv6/syncookies.c
-@@ -170,7 +170,8 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
- 		goto out;
+ 	ip_md_tunnel_xmit(skb, dev, IPPROTO_GRE, tunnel_hlen);
  
- 	ret = NULL;
--	req = cookie_tcp_reqsk_alloc(&tcp6_request_sock_ops, sk, skb);
-+	req = cookie_tcp_reqsk_alloc(&tcp6_request_sock_ops,
-+				     &tcp_request_sock_ipv6_ops, sk, skb);
- 	if (!req)
- 		goto out;
+@@ -574,7 +574,7 @@ static void erspan_fb_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	}
  
+ 	gre_build_header(skb, 8, TUNNEL_SEQ,
+-			 proto, 0, htonl(tunnel->o_seqno++));
++			 proto, 0, htonl(atomic_fetch_inc(&tunnel->o_seqno)));
+ 
+ 	ip_md_tunnel_xmit(skb, dev, IPPROTO_GRE, tunnel_hlen);
+ 
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index 09262adf004e..3f88ba6555ab 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -766,7 +766,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 		gre_build_header(skb, tun_hlen,
+ 				 flags, protocol,
+ 				 tunnel_id_to_key32(tun_info->key.tun_id),
+-				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++)
++				 (flags & TUNNEL_SEQ) ? htonl(atomic_fetch_inc(&tunnel->o_seqno))
+ 						      : 0);
+ 
+ 	} else {
+@@ -777,7 +777,8 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 
+ 		gre_build_header(skb, tunnel->tun_hlen, flags,
+ 				 protocol, tunnel->parms.o_key,
+-				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
++				 (flags & TUNNEL_SEQ) ? htonl(atomic_fetch_inc(&tunnel->o_seqno))
++						      : 0);
+ 	}
+ 
+ 	return ip6_tnl_xmit(skb, dev, dsfield, fl6, encap_limit, pmtu,
+@@ -1055,7 +1056,7 @@ static netdev_tx_t ip6erspan_tunnel_xmit(struct sk_buff *skb,
+ 	/* Push GRE header. */
+ 	proto = (t->parms.erspan_ver == 1) ? htons(ETH_P_ERSPAN)
+ 					   : htons(ETH_P_ERSPAN2);
+-	gre_build_header(skb, 8, TUNNEL_SEQ, proto, 0, htonl(t->o_seqno++));
++	gre_build_header(skb, 8, TUNNEL_SEQ, proto, 0, htonl(atomic_fetch_inc(&t->o_seqno)));
+ 
+ 	/* TooBig packet may have updated dst->dev's mtu */
+ 	if (!t->parms.collect_md && dst && dst_mtu(dst) > dst->dev->mtu)
 -- 
 2.35.1
 
