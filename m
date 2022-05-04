@@ -2,59 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06DA4C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B0CC38A04
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383701AbiEDXHV (ORCPT
+        id S1383311AbiEDXHG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:07:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58718 "EHLO
+        Wed, 4 May 2022 19:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380440AbiEDXAA (ORCPT
+        with ESMTP id S1379865AbiEDW7P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 19:00:00 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3444854F8A
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:53:22 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id s68-20020a637747000000b003aaff19b95bso1354951pgc.1
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:53:22 -0700 (PDT)
+        Wed, 4 May 2022 18:59:15 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A36C754BD1
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:52:32 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id l5-20020a170902ec0500b0015cf1cfa4eeso1367893pld.17
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:52:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=f5f/LLx9WhINchyLZxvs4xznbsCcXbPaUrDUqVFjwOU=;
-        b=M+Z2YfuAplTjHTdRLuuiglVwyDuuBa3aYjRTFeA9f5WBoigc1/JlpdXMASISCWzJ6Z
-         VynBbIB7Fmn66vT1RcrtV8TzY5MoBCtVaNTGTMhgRlsnLOdcr6p4/AXpxj3f/rZgJLxT
-         xky171nhvkrXxfGTVjA4n25+ujd7r5bWfi9Msr2Ij/H5vSsot4qMraRxnHv+lW65bTHg
-         RaXf4igJyGhunqyasLkrRvv/FMFZ3ZyurZ2bIckhZorOXe7jiGk/NPcjm/bT7/hL+qpl
-         +JwIJ2djcYF18cH5iB9rM8AdhPo9j5781ZmsAhCa/IuM6UizayOoUKV9Sxu6PUjm1JGa
-         F0ZA==
+        bh=UTDAzzugAKRqfKqJrZIH/IoYzHByuOdUPAxmATSKiTI=;
+        b=rPiXZxY9Drt4UlQiJqVDmGBvE/HflKVSziywhLwdekQJkNQszfFBXTP0dGF02xDOiy
+         6DIgghypxyKNFUGeHpmIKXQg3EYuwYjwi/BF0LtPWCnROC4HdUBSYAK4I8Q9Ifh9OSTx
+         GZburL02vNPxAqVJBEHtWEwbL909D3Vvk5VSEXrv884U5oo4KH/Y6+SBKiK8RMOHsdAE
+         EL5OKKAMFsSCo+XzZGZsYqaI/5EKdtnNM7rVCU3Ar2JdF9SYny9pgO1VjkWpzGroDVuZ
+         SD6ob1pGbB8xnBrKHLF6sD3kIplyFlAPRggU9Zrd/GkFwBIjcH1lRZl5fM84vBb9WK1u
+         kpVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=f5f/LLx9WhINchyLZxvs4xznbsCcXbPaUrDUqVFjwOU=;
-        b=uGTKxORsv5YRa4wQ609tbKN1mE4kuKUATX9W0BWrub3cEapF2iGO6zs8FV8NNhFsKf
-         9dN6OP8l5C+2QUgGe/hrqBB6IpX0yvb1A565SDtFAZpwbEQV8ofClKjq5H4q51DQ0oiv
-         jjTitOvdea40SISM6FWrdY3wFzPf+iI46fdsuVTv0gXpHcKMI9OFwHItuFNAYUTGB1xj
-         nZuu8sXuiw/X8vrlC3DyorDhAo7z+jRpDRn4u3exAyLBzCrECpw951tDbv5TF1sw9/X2
-         Ye/4+8YBVhNfyjGk2d6SaUlJ21FF/pUgl8it0JGjCdmuxKFr56auqk4S/TKZhA072GgH
-         WzrA==
-X-Gm-Message-State: AOAM5304aT6hCkmztD4EQaQn4itbQd4EIUqMNkm5bSvKgolPbj0DAUhg
-        LFKrtuDHC/Erxn4rx4DRgFk3edWNCrI=
-X-Google-Smtp-Source: ABdhPJzCDtyBxpndtkFGHjTkVZEIuNBNo3OWmesmo2laDtlePxcjYHM4V5SFKJrcjTl62Up63NckZYRIi2A=
+        bh=UTDAzzugAKRqfKqJrZIH/IoYzHByuOdUPAxmATSKiTI=;
+        b=wwnxJoytpt6sBME1CoI784SJC6vfoEu4xHvhNslCJAOPY1Cti2PiznYYTUsz80Xuyb
+         NQNBZgSA7erXcdhJGevvi5ciZuVnAt/MEnAQ4eIFhYdznYPn2W8sfOoxrqHOvdXC1Hjc
+         YOMm6WCmGNicPDyDQK5m6KDQwKeCq8gGaaQKmqQ6Bj3D0blpkne8E8w40cYY5SjDDkAC
+         SkNXYepHCWzGiGXHY7K+oAEVSYwDYZG8WsvDE509OfCYcLIFbLDnIAP5CQkEx4SshAh9
+         GnPcxPvfNsAhZXSJXoaEx+8PQAbFJ7ffQXz7XaKWojXXEhdDrL2rW8n4tHBSrUWjygGm
+         HEsA==
+X-Gm-Message-State: AOAM5334I/PnVYt7QdrdYX2k+SP8YfpSc+Tl9i1xsh9GSLwWh2jIG7D8
+        lJwQelYRXFv8BsiDWI+yOGNAYEZ/c5w=
+X-Google-Smtp-Source: ABdhPJyUsCpZRiADmS9XSR+E80A84NjTgBzy50rGR/Fr7VTw8WmyGZKnE+RolUDwK6+0n2aIBUaR5EGyoi8=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90b:3ec7:b0:1dc:b008:3cd3 with SMTP id
- rm7-20020a17090b3ec700b001dcb0083cd3mr2232406pjb.226.1651704771485; Wed, 04
- May 2022 15:52:51 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90a:b395:b0:1dc:a402:bd4 with SMTP id
+ e21-20020a17090ab39500b001dca4020bd4mr2245297pjr.238.1651704737681; Wed, 04
+ May 2022 15:52:17 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:49:02 +0000
+Date:   Wed,  4 May 2022 22:48:43 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-117-seanjc@google.com>
+Message-Id: <20220504224914.1654036-98-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 116/128] KVM: selftests: Stop hardcoding vCPU IDs in vcpu_width_config
+Subject: [PATCH 097/128] KVM: selftests: Convert hardware_disable_test to pass
+ around vCPU objects
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -69,154 +70,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation for taking a vCPU pointer in vCPU-scoped functions, grab
-the vCPU(s) created by __vm_vcpu_add() and use the ID from the vCPU
-object instead of hardcoding the ID in ioctl() invocations.
-
-Rename init1/init2 => init0/init1 to avoid having odd/confusing code
-where vcpu0 consumes init1 and vcpu1 consumes init2.
-
-Note, this change could easily be done when the functions are converted
-in the future, and/or the vcpu{0,1} vs. init{1,2} discrepancy could be
-ignored, but then there would be no opportunity to poke fun at the
-1-based counting scheme.
+Pass around 'struct kvm_vcpu' objects in hardware_disable_test instead of
+the VM+vcpu_id (called "index" by the test).
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/aarch64/vcpu_width_config.c | 60 ++++++++++---------
- 1 file changed, 31 insertions(+), 29 deletions(-)
+ .../selftests/kvm/hardware_disable_test.c     | 25 ++++++-------------
+ 1 file changed, 8 insertions(+), 17 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c b/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c
-index 1dd856a58f5d..e4e66632f05c 100644
---- a/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c
-+++ b/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c
-@@ -15,24 +15,25 @@
+diff --git a/tools/testing/selftests/kvm/hardware_disable_test.c b/tools/testing/selftests/kvm/hardware_disable_test.c
+index 31f6d408419f..b522610f0ba4 100644
+--- a/tools/testing/selftests/kvm/hardware_disable_test.c
++++ b/tools/testing/selftests/kvm/hardware_disable_test.c
+@@ -27,12 +27,6 @@
  
+ sem_t *sem;
  
- /*
-- * Add a vCPU, run KVM_ARM_VCPU_INIT with @init1, and then
-- * add another vCPU, and run KVM_ARM_VCPU_INIT with @init2.
-+ * Add a vCPU, run KVM_ARM_VCPU_INIT with @init0, and then
-+ * add another vCPU, and run KVM_ARM_VCPU_INIT with @init1.
-  */
--static int add_init_2vcpus(struct kvm_vcpu_init *init1,
--			   struct kvm_vcpu_init *init2)
-+static int add_init_2vcpus(struct kvm_vcpu_init *init0,
-+			   struct kvm_vcpu_init *init1)
+-/* Arguments for the pthreads */
+-struct payload {
+-	struct kvm_vm *vm;
+-	uint32_t index;
+-};
+-
+ static void guest_code(void)
  {
-+	struct kvm_vcpu *vcpu0, *vcpu1;
- 	struct kvm_vm *vm;
- 	int ret;
+ 	for (;;)
+@@ -42,14 +36,14 @@ static void guest_code(void)
  
- 	vm = vm_create_barebones();
+ static void *run_vcpu(void *arg)
+ {
+-	struct payload *payload = (struct payload *)arg;
+-	struct kvm_run *state = vcpu_state(payload->vm, payload->index);
++	struct kvm_vcpu *vcpu = arg;
++	struct kvm_run *run = vcpu->run;
  
--	__vm_vcpu_add(vm, 0);
--	ret = __vcpu_ioctl(vm, 0, KVM_ARM_VCPU_INIT, init1);
-+	vcpu0 = __vm_vcpu_add(vm, 0);
-+	ret = __vcpu_ioctl(vm, vcpu0->id, KVM_ARM_VCPU_INIT, init0);
- 	if (ret)
- 		goto free_exit;
+-	vcpu_run(payload->vm, payload->index);
++	vcpu_run(vcpu->vm, vcpu->id);
  
--	__vm_vcpu_add(vm, 1);
--	ret = __vcpu_ioctl(vm, 1, KVM_ARM_VCPU_INIT, init2);
-+	vcpu1 = __vm_vcpu_add(vm, 1);
-+	ret = __vcpu_ioctl(vm, vcpu1->id, KVM_ARM_VCPU_INIT, init1);
- 
- free_exit:
- 	kvm_vm_free(vm);
-@@ -40,25 +41,26 @@ static int add_init_2vcpus(struct kvm_vcpu_init *init1,
+ 	TEST_ASSERT(false, "%s: exited with reason %d: %s\n",
+-		    __func__, state->exit_reason,
+-		    exit_reason_str(state->exit_reason));
++		    __func__, run->exit_reason,
++		    exit_reason_str(run->exit_reason));
+ 	pthread_exit(NULL);
  }
  
- /*
-- * Add two vCPUs, then run KVM_ARM_VCPU_INIT for one vCPU with @init1,
-- * and run KVM_ARM_VCPU_INIT for another vCPU with @init2.
-+ * Add two vCPUs, then run KVM_ARM_VCPU_INIT for one vCPU with @init0,
-+ * and run KVM_ARM_VCPU_INIT for another vCPU with @init1.
-  */
--static int add_2vcpus_init_2vcpus(struct kvm_vcpu_init *init1,
--				  struct kvm_vcpu_init *init2)
-+static int add_2vcpus_init_2vcpus(struct kvm_vcpu_init *init0,
-+				  struct kvm_vcpu_init *init1)
+@@ -92,11 +86,11 @@ static inline void check_join(pthread_t thread, void **retval)
+ 
+ static void run_test(uint32_t run)
  {
-+	struct kvm_vcpu *vcpu0, *vcpu1;
++	struct kvm_vcpu *vcpu;
  	struct kvm_vm *vm;
- 	int ret;
+ 	cpu_set_t cpu_set;
+ 	pthread_t threads[VCPU_NUM];
+ 	pthread_t throw_away;
+-	struct payload payloads[VCPU_NUM];
+ 	void *b;
+ 	uint32_t i, j;
  
- 	vm = vm_create_barebones();
+@@ -108,12 +102,9 @@ static void run_test(uint32_t run)
  
--	__vm_vcpu_add(vm, 0);
--	__vm_vcpu_add(vm, 1);
-+	vcpu0 = __vm_vcpu_add(vm, 0);
-+	vcpu1 = __vm_vcpu_add(vm, 1);
+ 	pr_debug("%s: [%d] start vcpus\n", __func__, run);
+ 	for (i = 0; i < VCPU_NUM; ++i) {
+-		vm_vcpu_add(vm, i, guest_code);
+-		payloads[i].vm = vm;
+-		payloads[i].index = i;
++		vcpu = vm_vcpu_add(vm, i, guest_code);
  
--	ret = __vcpu_ioctl(vm, 0, KVM_ARM_VCPU_INIT, init1);
-+	ret = __vcpu_ioctl(vm, vcpu0->id, KVM_ARM_VCPU_INIT, init0);
- 	if (ret)
- 		goto free_exit;
+-		check_create_thread(&threads[i], NULL, run_vcpu,
+-				    (void *)&payloads[i]);
++		check_create_thread(&threads[i], NULL, run_vcpu, vcpu);
+ 		check_set_affinity(threads[i], &cpu_set);
  
--	ret = __vcpu_ioctl(vm, 1, KVM_ARM_VCPU_INIT, init2);
-+	ret = __vcpu_ioctl(vm, vcpu1->id, KVM_ARM_VCPU_INIT, init1);
- 
- free_exit:
- 	kvm_vm_free(vm);
-@@ -76,7 +78,7 @@ static int add_2vcpus_init_2vcpus(struct kvm_vcpu_init *init1,
-  */
- int main(void)
- {
--	struct kvm_vcpu_init init1, init2;
-+	struct kvm_vcpu_init init0, init1;
- 	struct kvm_vm *vm;
- 	int ret;
- 
-@@ -85,36 +87,36 @@ int main(void)
- 		exit(KSFT_SKIP);
- 	}
- 
--	/* Get the preferred target type and copy that to init2 for later use */
-+	/* Get the preferred target type and copy that to init1 for later use */
- 	vm = vm_create_barebones();
--	vm_ioctl(vm, KVM_ARM_PREFERRED_TARGET, &init1);
-+	vm_ioctl(vm, KVM_ARM_PREFERRED_TARGET, &init0);
- 	kvm_vm_free(vm);
--	init2 = init1;
-+	init1 = init0;
- 
- 	/* Test with 64bit vCPUs */
--	ret = add_init_2vcpus(&init1, &init1);
-+	ret = add_init_2vcpus(&init0, &init0);
- 	TEST_ASSERT(ret == 0,
- 		    "Configuring 64bit EL1 vCPUs failed unexpectedly");
--	ret = add_2vcpus_init_2vcpus(&init1, &init1);
-+	ret = add_2vcpus_init_2vcpus(&init0, &init0);
- 	TEST_ASSERT(ret == 0,
- 		    "Configuring 64bit EL1 vCPUs failed unexpectedly");
- 
- 	/* Test with 32bit vCPUs */
--	init1.features[0] = (1 << KVM_ARM_VCPU_EL1_32BIT);
--	ret = add_init_2vcpus(&init1, &init1);
-+	init0.features[0] = (1 << KVM_ARM_VCPU_EL1_32BIT);
-+	ret = add_init_2vcpus(&init0, &init0);
- 	TEST_ASSERT(ret == 0,
- 		    "Configuring 32bit EL1 vCPUs failed unexpectedly");
--	ret = add_2vcpus_init_2vcpus(&init1, &init1);
-+	ret = add_2vcpus_init_2vcpus(&init0, &init0);
- 	TEST_ASSERT(ret == 0,
- 		    "Configuring 32bit EL1 vCPUs failed unexpectedly");
- 
- 	/* Test with mixed-width vCPUs  */
--	init1.features[0] = 0;
--	init2.features[0] = (1 << KVM_ARM_VCPU_EL1_32BIT);
--	ret = add_init_2vcpus(&init1, &init2);
-+	init0.features[0] = 0;
-+	init1.features[0] = (1 << KVM_ARM_VCPU_EL1_32BIT);
-+	ret = add_init_2vcpus(&init0, &init1);
- 	TEST_ASSERT(ret != 0,
- 		    "Configuring mixed-width vCPUs worked unexpectedly");
--	ret = add_2vcpus_init_2vcpus(&init1, &init2);
-+	ret = add_2vcpus_init_2vcpus(&init0, &init1);
- 	TEST_ASSERT(ret != 0,
- 		    "Configuring mixed-width vCPUs worked unexpectedly");
- 
+ 		for (j = 0; j < SLEEPING_THREAD_NUM; ++j) {
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
