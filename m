@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09848C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30470C35275
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355362AbiEDQ7z (ORCPT
+        id S1355472AbiEDRAF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:59:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51928 "EHLO
+        Wed, 4 May 2022 13:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354378AbiEDQyT (ORCPT
+        with ESMTP id S1354404AbiEDQyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:54:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B403C48E65;
-        Wed,  4 May 2022 09:49:25 -0700 (PDT)
+        Wed, 4 May 2022 12:54:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B799F49249;
+        Wed,  4 May 2022 09:49:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23088B82554;
-        Wed,  4 May 2022 16:49:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97C74C385A4;
-        Wed,  4 May 2022 16:49:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A6AE6179D;
+        Wed,  4 May 2022 16:49:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83B3CC385A5;
+        Wed,  4 May 2022 16:49:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682962;
-        bh=7UGrPbkL3mYLsjzscYcZE/zfktti2BswDX5yf8bg4RM=;
+        s=korg; t=1651682967;
+        bh=puxZb8keBI0MxGWFKEJg7XUlq5HvNRAXuB4e6S/Tg5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2MJMpZ+JP8qk6wRFR4KHBJRMtSdLl4LUHagS+EX42joG0SoFGkG7MjFUfl51YX7gO
-         KsRlo9cwm29Ne0Oc2DZCs2KPhpKWO7cN3DaIjuKi4irjJu3Ngj00tElDIe5xJHkeRY
-         J6qDUDLaWkOX+w+vkXcOWG57o5iBOZMX7QDFyIyU=
+        b=uRX0KRgDseBXe11G1to8Ou87bjJV8+HIob7Di+COKXKrxQ/wfh/BphX1TfjCgCdGS
+         49FGNd1hM6wJprGHhlQlVTLR4v7UOBVYLcZpBllf01HnfjygwwVbxjDfMg8mwmm7f7
+         NP6etgEE9155+a/g7sNLcQ4TSW8ERqXSSoubQUfo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 64/84] tls: Skip tls_append_frag on zero copy size
-Date:   Wed,  4 May 2022 18:44:45 +0200
-Message-Id: <20220504152932.352464759@linuxfoundation.org>
+        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 73/84] net: ethernet: stmmac: fix write to sgmii_adapter_base
+Date:   Wed,  4 May 2022 18:44:54 +0200
+Message-Id: <20220504152933.142928480@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -51,59 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Dinh Nguyen <dinguyen@kernel.org>
 
-[ Upstream commit a0df71948e9548de819a6f1da68f5f1742258a52 ]
+commit 5fd1fe4807f91ea0cca043114d929faa11bd4190 upstream.
 
-Calling tls_append_frag when max_open_record_len == record->len might
-add an empty fragment to the TLS record if the call happens to be on the
-page boundary. Normally tls_append_frag coalesces the zero-sized
-fragment to the previous one, but not if it's on page boundary.
+I made a mistake with the commit a6aaa0032424 ("net: ethernet: stmmac:
+fix altr_tse_pcs function when using a fixed-link"). I should have
+tested against both scenario of having a SGMII interface and one
+without.
 
-If a resync happens then, the mlx5 driver posts dump WQEs in
-tx_post_resync_dump, and the empty fragment may become a data segment
-with byte_count == 0, which will confuse the NIC and lead to a CQE
-error.
+Without the SGMII PCS TSE adpater, the sgmii_adapter_base address is
+NULL, thus a write to this address will fail.
 
-This commit fixes the described issue by skipping tls_append_frag on
-zero size to avoid adding empty fragments. The fix is not in the driver,
-because an empty fragment is hardly the desired behavior.
-
-Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Link: https://lore.kernel.org/r/20220426154949.159055-1-maximmi@nvidia.com
+Cc: stable@vger.kernel.org
+Fixes: a6aaa0032424 ("net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link")
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Link: https://lore.kernel.org/r/20220420152345.27415-1-dinguyen@kernel.org
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/tls/tls_device.c | 12 +++++++-----
+ drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c |   12 +++++++-----
  1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index 0f034c3bc37d..abb93f7343c5 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -470,11 +470,13 @@ static int tls_push_data(struct sock *sk,
- 		copy = min_t(size_t, size, (pfrag->size - pfrag->offset));
- 		copy = min_t(size_t, copy, (max_open_record_len - record->len));
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+@@ -65,8 +65,9 @@ static void socfpga_dwmac_fix_mac_speed(
+ 	struct phy_device *phy_dev = ndev->phydev;
+ 	u32 val;
  
--		rc = tls_device_copy_data(page_address(pfrag->page) +
--					  pfrag->offset, copy, msg_iter);
--		if (rc)
--			goto handle_error;
--		tls_append_frag(record, pfrag, copy);
-+		if (copy) {
-+			rc = tls_device_copy_data(page_address(pfrag->page) +
-+						  pfrag->offset, copy, msg_iter);
-+			if (rc)
-+				goto handle_error;
-+			tls_append_frag(record, pfrag, copy);
-+		}
+-	writew(SGMII_ADAPTER_DISABLE,
+-	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
++	if (sgmii_adapter_base)
++		writew(SGMII_ADAPTER_DISABLE,
++		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
  
- 		size -= copy;
- 		if (!size) {
--- 
-2.35.1
-
+ 	if (splitter_base) {
+ 		val = readl(splitter_base + EMAC_SPLITTER_CTRL_REG);
+@@ -88,10 +89,11 @@ static void socfpga_dwmac_fix_mac_speed(
+ 		writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
+ 	}
+ 
+-	writew(SGMII_ADAPTER_ENABLE,
+-	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+-	if (phy_dev)
++	if (phy_dev && sgmii_adapter_base) {
++		writew(SGMII_ADAPTER_ENABLE,
++		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+ 		tse_pcs_fix_mac_speed(&dwmac->pcs, phy_dev, speed);
++	}
+ }
+ 
+ static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *dev)
 
 
