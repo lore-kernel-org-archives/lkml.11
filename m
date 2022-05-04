@@ -2,789 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B3BCC3527D
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B5A2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358216AbiEDRZp (ORCPT
+        id S1357288AbiEDRXx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
+        Wed, 4 May 2022 13:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354699AbiEDRDA (ORCPT
+        with ESMTP id S1355660AbiEDREd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:03:00 -0400
+        Wed, 4 May 2022 13:04:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C493D4D627;
-        Wed,  4 May 2022 09:52:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A805C4EF6E;
+        Wed,  4 May 2022 09:53:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C84F6181D;
-        Wed,  4 May 2022 16:52:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9BCBC385A4;
-        Wed,  4 May 2022 16:52:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88B0F61505;
+        Wed,  4 May 2022 16:53:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C45BAC385AA;
+        Wed,  4 May 2022 16:53:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683152;
-        bh=ZEbexuUv4vyhiqFVyE78qtwvVj+vmjanblDPoxQON68=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YPal6ndBiOoWxCibmsa6wYSCMF6sLWS422Axud8vlAmRvonxOxKn5Ic19Gmns0+ON
-         F7htR2bUakhU86Hf4VqAbCBf8+JEfe387bEJDHotY52jOH7dK6OdConkCXrhMbxMzl
-         mCqOxRrHY0fwYf5nvyTAX54VamgtDrzcR+ScKtts=
+        s=korg; t=1651683192;
+        bh=4gt+y1PCHKSei6GnmF7KoD8IRKUwjNCP6hoEu5OsRQ0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cOppEur+RJ7vLGbUmrMDyb47qc8wARncJHOIfV8FNXwrtVTj1U7UOuaQcE2nO0ffL
+         xDrDmxhtcGVs1sXrPhtcPW2gfEVd6GiFmbWJONH30kXDVHLfKZRl+mhwqE1W4ExhHX
+         jqqMiXLd1d0dCvmagCQUtgg6LlSUTndoPvkx6Rxs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.15 000/177] 5.15.38-rc1 review
-Date:   Wed,  4 May 2022 18:43:13 +0200
-Message-Id: <20220504153053.873100034@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.15 044/177] virtio_net: fix wrong buf address calculation when using xdp
+Date:   Wed,  4 May 2022 18:43:57 +0200
+Message-Id: <20220504153056.874474113@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-MIME-Version: 1.0
+In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
+References: <20220504153053.873100034@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.38-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.15.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.15.38-rc1
-X-KernelTest-Deadline: 2022-05-06T15:31+00:00
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.15.38 release.
-There are 177 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
-
-Responses should be made by Fri, 06 May 2022 15:25:19 +0000.
-Anything received after that time might be too late.
-
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.38-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-and the diffstat can be found below.
-
-thanks,
-
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.15.38-rc1
-
-Alexey Kardashevskiy <aik@ozlabs.ru>
-    powerpc/64: Add UADDR64 relocation support
-
-Peter Zijlstra <peterz@infradead.org>
-    objtool: Fix type of reloc::addend
-
-Peter Zijlstra <peterz@infradead.org>
-    objtool: Fix code relocs vs weak symbols
-
-Christophe Leroy <christophe.leroy@csgroup.eu>
-    eeprom: at25: Use DMA safe buffers
-
-Namhyung Kim <namhyung@kernel.org>
-    perf symbol: Remove arch__symbols__fixup_end()
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix software flow control handling
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix incorrect UA handling
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix reset fifo race condition
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix missing tty wakeup in convergence layer type 2
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix wrong signal octets encoding in MSC
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix wrong command frame length field encoding
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix wrong command retry handling
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix missing explicit ldisc flush
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix wrong DLCI release order
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix insufficient txframe size
-
-Florian Westphal <fw@strlen.de>
-    netfilter: nft_socket: only do sk lookups when indev is available
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix malformed counter for out of frame data
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix wrong signal octet encoding in convergence layer type 2
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix mux cleanup after unregister tty device
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix decoupled mux resource
-
-Daniel Starke <daniel.starke@siemens.com>
-    tty: n_gsm: fix restart handling via CLD command
-
-Namhyung Kim <namhyung@kernel.org>
-    perf symbol: Update symbols__fixup_end()
-
-Namhyung Kim <namhyung@kernel.org>
-    perf symbol: Pass is_kallsyms to symbols__fixup_end()
-
-Borislav Petkov <bp@suse.de>
-    x86/cpu: Load microcode during restore_processor_state()
-
-Tim Harvey <tharvey@gateworks.com>
-    ARM: dts: imx8mm-venice-gw{71xx,72xx,73xx}: fix OTG controller OC mode
-
-Eugen Hristev <eugen.hristev@microchip.com>
-    ARM: dts: at91: sama7g5ek: enable pull-up on flexcom3 console lines
-
-Filipe Manana <fdmanana@suse.com>
-    btrfs: fix leaked plug after failure syncing log on zoned filesystems
-
-Kees Cook <keescook@chromium.org>
-    thermal: int340x: Fix attr.show callback prototype
-
-Ville Syrjälä <ville.syrjala@linux.intel.com>
-    ACPI: processor: idle: Avoid falling back to C3 type C-states
-
-Dinh Nguyen <dinguyen@kernel.org>
-    net: ethernet: stmmac: fix write to sgmii_adapter_base
-
-Imre Deak <imre.deak@intel.com>
-    drm/i915: Fix SEL_FETCH_PLANE_*(PIPE_B+) register addresses
-
-Jouni Högander <jouni.hogander@intel.com>
-    drm/i915: Check EDID for HDR static metadata when choosing blc
-
-Martin Willi <martin@strongswan.org>
-    netfilter: Update ip6_route_me_harder to consider L3 domain
-
-Md Sadre Alam <quic_mdalam@quicinc.com>
-    mtd: rawnand: qcom: fix memory corruption that causes panic
-
-Zqiang <qiang1.zhang@intel.com>
-    kasan: prevent cpu_quarantine corruption when CPU offline and cache shrink occur at same time
-
-Damien Le Moal <damien.lemoal@opensource.wdc.com>
-    zonefs: Clear inode information flags on inode creation
-
-Damien Le Moal <damien.lemoal@opensource.wdc.com>
-    zonefs: Fix management of open zones
-
-Ville Syrjälä <ville.syrjala@linux.intel.com>
-    Revert "ACPI: processor: idle: fix lockup regression on 32-bit ThinkPad T40"
-
-Sidhartha Kumar <sidhartha.kumar@oracle.com>
-    selftest/vm: verify remap destination address in mremap_test
-
-Sidhartha Kumar <sidhartha.kumar@oracle.com>
-    selftest/vm: verify mmap addr in mremap_test
-
-Alexey Kardashevskiy <aik@ozlabs.ru>
-    powerpc/perf: Fix 32bit compile
-
-Duoming Zhou <duoming@zju.edu.cn>
-    drivers: net: hippi: Fix deadlock in rr_close()
-
-Ronnie Sahlberg <lsahlber@redhat.com>
-    cifs: destage any unwritten data to the server before calling copychunk_write
-
-Mikulas Patocka <mpatocka@redhat.com>
-    x86: __memcpy_flushcache: fix wrong alignment if size > 2^32
-
-suresh kumar <suresh2514@gmail.com>
-    bonding: do not discard lowest hash bit for non layer3+4 hashing
-
-Namjae Jeon <linkinjeon@kernel.org>
-    ksmbd: set fixed sector size to FS_SECTOR_SIZE_INFORMATION
-
-Namjae Jeon <linkinjeon@kernel.org>
-    ksmbd: increment reference count of parent fp
-
-Duoming Zhou <duoming@zju.edu.cn>
-    arch: xtensa: platforms: Fix deadlock in rs_close()
-
-Ye Bin <yebin10@huawei.com>
-    ext4: fix bug_on in start_this_handle during umount filesystem
-
-Zheyu Ma <zheyuma97@gmail.com>
-    ASoC: wm8731: Disable the regulator when probing fails
-
-Chao Song <chao.song@linux.intel.com>
-    ASoC: Intel: soc-acpi: correct device endpoints for max98373
-
-Pengcheng Yang <yangpc@wangsu.com>
-    tcp: fix F-RTO may not work correctly when receiving DSACK
-
-Dany Madden <drt@linux.ibm.com>
-    Revert "ibmvnic: Add ethtool private flag for driver-defined queue limits"
-
-Leon Romanovsky <leon@kernel.org>
-    ixgbe: ensure IPsec VF<->PF compatibility
-
-Timothy Hayes <timothy.hayes@arm.com>
-    perf arm-spe: Fix addresses of synthesized SPE events
-
-Andreas Gruenbacher <agruenba@redhat.com>
-    gfs2: No short reads or writes upon glock contention
-
-Andreas Gruenbacher <agruenba@redhat.com>
-    gfs2: Make sure not to return short direct writes
-
-Andreas Gruenbacher <agruenba@redhat.com>
-    gfs2: Minor retry logic cleanup
-
-Andreas Gruenbacher <agruenba@redhat.com>
-    gfs2: Prevent endless loops in gfs2_file_buffered_write
-
-Yang Yingliang <yangyingliang@huawei.com>
-    net: fec: add missing of_node_put() in fec_enet_init_stop_mode()
-
-Manish Chopra <manishc@marvell.com>
-    bnx2x: fix napi API usage sequence
-
-Maxim Mikityanskiy <maximmi@nvidia.com>
-    tls: Skip tls_append_frag on zero copy size
-
-Miaoqian Lin <linmq006@gmail.com>
-    drm/amd/display: Fix memory leak in dcn21_clock_source_create
-
-David Yat Sin <david.yatsin@amd.com>
-    drm/amdkfd: Fix GWS queue count
-
-Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
-    netfilter: conntrack: fix udp offload timeout sysctl
-
-Jens Axboe <axboe@kernel.dk>
-    io_uring: check reserved fields for recv/recvmsg
-
-Jens Axboe <axboe@kernel.dk>
-    io_uring: check reserved fields for send/sendmsg
-
-Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-    net: dsa: lantiq_gswip: Don't set GSWIP_MII_CFG_RMII_CLK
-
-Samuel Holland <samuel@sholland.org>
-    drm/sun4i: Remove obsolete references to PHYS_OFFSET
-
-Nathan Rossi <nathan@nathanrossi.com>
-    net: dsa: mv88e6xxx: Fix port_hidden_wait to account for port_base_addr
-
-Baruch Siach <baruch.siach@siklu.com>
-    net: phy: marvell10g: fix return value on error
-
-Jonathan Lemon <jonathan.lemon@gmail.com>
-    net: bcmgenet: hide status block before TX timestamping
-
-Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-    cpufreq: qcom-cpufreq-hw: Clear dcvs interrupts
-
-Yang Yingliang <yangyingliang@huawei.com>
-    clk: sunxi: sun9i-mmc: check return value after calling platform_get_resource()
-
-Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-    bus: sunxi-rsb: Fix the return value of sunxi_rsb_device_create()
-
-Eric Dumazet <edumazet@google.com>
-    tcp: make sure treq->af_specific is initialized
-
-Eric Dumazet <edumazet@google.com>
-    tcp: fix potential xmit stalls caused by TCP_NOTSENT_LOWAT
-
-Peilin Ye <peilin.ye@bytedance.com>
-    ip_gre, ip6_gre: Fix race condition on o_seqno in collect_md mode
-
-Peilin Ye <peilin.ye@bytedance.com>
-    ip6_gre: Make o_seqno start from 0 in native mode
-
-Peilin Ye <peilin.ye@bytedance.com>
-    ip_gre: Make o_seqno start from 0 in native mode
-
-liuyacan <liuyacan@corp.netease.com>
-    net/smc: sync err code when tcp connection was refused
-
-Jian Shen <shenjian15@huawei.com>
-    net: hns3: add return value for mailbox handling in PF
-
-Jian Shen <shenjian15@huawei.com>
-    net: hns3: add validity check for message data length
-
-Jie Wang <wangjie125@huawei.com>
-    net: hns3: modify the return code of hclge_get_ring_chain_from_mbx
-
-Jian Shen <shenjian15@huawei.com>
-    net: hns3: clear inited state and stop client after failed to register netdev
-
-Xiaobing Luo <luoxiaobing0926@gmail.com>
-    cpufreq: fix memory leak in sun50i_cpufreq_nvmem_probe
-
-Lv Ruyi <lv.ruyi@zte.com.cn>
-    pinctrl: pistachio: fix use of irq_of_parse_and_map()
-
-Fabio Estevam <festevam@denx.de>
-    arm64: dts: imx8mn-ddr4-evk: Describe the 32.768 kHz PMIC clock
-
-Max Krummenacher <max.krummenacher@toradex.com>
-    ARM: dts: imx6ull-colibri: fix vqmmc regulator
-
-Xin Long <lucien.xin@gmail.com>
-    sctp: check asoc strreset_chunk in sctp_generate_reconf_event
-
-Nikolay Aleksandrov <razor@blackwall.org>
-    wireguard: device: check for metadata_dst with skb_valid_dst()
-
-Pengcheng Yang <yangpc@wangsu.com>
-    tcp: ensure to use the most recently sent skb when filling the rate sample
-
-Marek Vasut <marex@denx.de>
-    pinctrl: stm32: Keep pinctrl block clock enabled when LEVEL IRQ requested
-
-Francesco Ruggeri <fruggeri@arista.com>
-    tcp: md5: incorrect tcp_header_len for incoming connections
-
-Luca Ceresoli <luca.ceresoli@bootlin.com>
-    pinctrl: rockchip: fix RK3308 pinmux bits
-
-Eyal Birger <eyal.birger@gmail.com>
-    bpf, lwt: Fix crash when using bpf_skb_set_tunnel_key() from bpf_xmit lwt hook
-
-Pablo Neira Ayuso <pablo@netfilter.org>
-    netfilter: nft_set_rbtree: overlap detection with element re-addition after deletion
-
-Miaoqian Lin <linmq006@gmail.com>
-    net: dsa: Add missing of_node_put() in dsa_port_link_register_of
-
-Geert Uytterhoeven <geert+renesas@glider.be>
-    memory: renesas-rpc-if: Fix HF/OSPI data transfer in Manual Mode
-
-Marek Vasut <marex@denx.de>
-    pinctrl: stm32: Do not call stm32_gpio_get() for edge triggered IRQs in EOI
-
-Oleksandr Ocheretnyi <oocheret@cisco.com>
-    mtd: fix 'part' field data corruption in mtd_info
-
-Miaoqian Lin <linmq006@gmail.com>
-    mtd: rawnand: Fix return value check of wait_for_completion_timeout
-
-YueHaibing <yuehaibing@huawei.com>
-    pinctrl: mediatek: moore: Fix build error
-
-Heiner Kallweit <hkallweit1@gmail.com>
-    phy: amlogic: fix error path in phy_g12a_usb3_pcie_probe()
-
-Pengcheng Yang <yangpc@wangsu.com>
-    ipvs: correctly print the memory size of ip_vs_conn_tab
-
-Adam Ford <aford173@gmail.com>
-    ARM: dts: logicpd-som-lv: Fix wrong pinmuxing on OMAP35
-
-Adam Ford <aford173@gmail.com>
-    ARM: dts: am3517-evm: Fix misc pinmuxing
-
-H. Nikolaus Schaller <hns@goldelico.com>
-    ARM: dts: Fix mmc order for omap3-gta04
-
-Stephen Boyd <swboyd@chromium.org>
-    interconnect: qcom: sdx55: Drop IP0 interconnects
-
-Miaoqian Lin <linmq006@gmail.com>
-    phy: ti: Add missing pm_runtime_disable() in serdes_am654_probe
-
-Miaoqian Lin <linmq006@gmail.com>
-    phy: mapphone-mdm6600: Fix PM error handling in phy_mdm6600_probe
-
-Claudiu Beznea <claudiu.beznea@microchip.com>
-    ARM: dts: at91: fix pinctrl phandles
-
-Claudiu Beznea <claudiu.beznea@microchip.com>
-    ARM: dts: at91: sama5d4_xplained: fix pinctrl phandle name
-
-Mark Brown <broonie@kernel.org>
-    ARM: dts: at91: Map MCLK for wm8731 on at91sam9g20ek
-
-Miaoqian Lin <linmq006@gmail.com>
-    phy: ti: omap-usb2: Fix error handling in omap_usb2_enable_clocks
-
-Tony Lindgren <tony@atomide.com>
-    ARM: dts: dra7: Fix suspend warning for vpe powerdomain
-
-Tony Lindgren <tony@atomide.com>
-    bus: ti-sysc: Make omap3 gpt12 quirk handling SoC specific
-
-Miaoqian Lin <linmq006@gmail.com>
-    ARM: OMAP2+: Fix refcount leak in omap_gic_of_init
-
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-    phy: samsung: exynos5250-sata: fix missing device put in probe error paths
-
-Miaoqian Lin <linmq006@gmail.com>
-    phy: samsung: Fix missing of_node_put() in exynos_sata_phy_probe
-
-Guillaume Giraudon <ggiraudon@prism19.com>
-    arm64: dts: meson-sm1-bananapi-m5: fix wrong GPIO pin labeling for CON1
-
-Marek Vasut <marex@denx.de>
-    arm64: dts: imx8mn: Fix SAI nodes
-
-Fabio Estevam <festevam@gmail.com>
-    ARM: dts: imx6qdl-apalis: Fix sgtl5000 detection issue
-
-Weitao Wang <WeitaoWang-oc@zhaoxin.com>
-    USB: Fix xhci event ring dequeue pointer ERDP update issue
-
-Liu Ying <victor.liu@nxp.com>
-    arm64: dts: imx8qm: Correct SCU clock controller's compatible property
-
-Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-    xsk: Fix l2fwd for copy mode + busy poll combo
-
-Chuanhong Guo <gch981213@gmail.com>
-    mtd: rawnand: fix ecc parameters for mt7622
-
-Tong Zhang <ztong0001@gmail.com>
-    iio:imu:bmi160: disable regulator in error path
-
-Christian Hewitt <christianshewitt@gmail.com>
-    arm64: dts: meson: remove CPU opps below 1GHz for SM1 boards
-
-Christian Hewitt <christianshewitt@gmail.com>
-    arm64: dts: meson: remove CPU opps below 1GHz for G12B boards
-
-Pavel Skripkin <paskripkin@gmail.com>
-    video: fbdev: udlfb: properly check endpoint type
-
-Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-    cpufreq: qcom-cpufreq-hw: Fix throttle frequency value on EPSS platforms
-
-Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-    cpufreq: qcom-hw: fix the race between LMH worker and cpuhp
-
-Nikolay Aleksandrov <razor@blackwall.org>
-    virtio_net: fix wrong buf address calculation when using xdp
-
-Tejun Heo <tj@kernel.org>
-    iocost: don't reset the inuse weight of under-weighted debtors
-
-Thomas Gleixner <tglx@linutronix.de>
-    x86/pci/xen: Disable PCI/MSI[-X] masking for XEN_HVM guests
-
-Guo Ren <guoren@linux.alibaba.com>
-    riscv: patch_text: Fixup last cpu should be master
-
-Mikulas Patocka <mpatocka@redhat.com>
-    hex2bin: fix access beyond string end
-
-Mikulas Patocka <mpatocka@redhat.com>
-    hex2bin: make the function hex_to_bin constant-time
-
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-    pinctrl: samsung: fix missing GPIOLIB on ARM64 Exynos config
-
-Johan Hovold <johan@kernel.org>
-    arm64: dts: imx8mm-venice: fix spi2 pin configuration
-
-Manivannan Sadhasivam <mani@kernel.org>
-    bus: mhi: host: pci_generic: Flush recovery worker during freeze
-
-Manivannan Sadhasivam <mani@kernel.org>
-    bus: mhi: host: pci_generic: Add missing poweroff() PM callback
-
-Xiubo Li <xiubli@redhat.com>
-    ceph: fix possible NULL pointer dereference for req->r_session
-
-Wang Qing <wangqing@vivo.com>
-    arch_topology: Do not set llc_sibling if llc_id is invalid
-
-Maciej W. Rozycki <macro@orcam.me.uk>
-    serial: 8250: Correct the clock for EndRun PTP/1588 PCIe device
-
-Maciej W. Rozycki <macro@orcam.me.uk>
-    serial: 8250: Also set sticky MCR bits in console restoration
-
-Lino Sanfilippo <LinoSanfilippo@gmx.de>
-    serial: amba-pl011: do not time out prematurely when draining tx fifo
-
-Johan Hovold <johan@kernel.org>
-    serial: imx: fix overrun interrupts in DMA mode
-
-Sean Anderson <sean.anderson@seco.com>
-    usb: phy: generic: Get the vbus supply
-
-Pawel Laszczak <pawell@cadence.com>
-    usb: cdns3: Fix issue for clear halt endpoint
-
-Heikki Krogerus <heikki.krogerus@linux.intel.com>
-    usb: dwc3: pci: add support for the Intel Meteor Lake-P
-
-Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-    usb: dwc3: gadget: Return proper request status
-
-Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-    usb: dwc3: core: Only handle soft-reset in DCTL
-
-Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-    usb: dwc3: core: Fix tx/rx threshold settings
-
-Sven Peter <sven@svenpeter.dev>
-    usb: dwc3: Try usb-role-switch first in dwc3_drd_init
-
-Vijayavardhan Vennapusa <vvreddy@codeaurora.org>
-    usb: gadget: configfs: clear deactivation flag in configfs_composite_unbind()
-
-Dan Vacura <w36195@motorola.com>
-    usb: gadget: uvc: Fix crash when encoding data for usb request
-
-Heikki Krogerus <heikki.krogerus@linux.intel.com>
-    usb: typec: ucsi: Fix role swapping
-
-Heikki Krogerus <heikki.krogerus@linux.intel.com>
-    usb: typec: ucsi: Fix reuse of completion structure
-
-Tasos Sahanidis <tasos@tasossah.com>
-    usb: core: Don't hold the device lock while sleeping in do_proc_control()
-
-Hangyu Hua <hbh25y@gmail.com>
-    usb: misc: fix improper handling of refcount in uss720_probe()
-
-Fawzi Khaber <fawzi.khaber@tdk.com>
-    iio: imu: inv_icm42600: Fix I2C init possible nack
-
-Zheyu Ma <zheyuma97@gmail.com>
-    iio: magnetometer: ak8975: Fix the error handling in ak8975_power_on()
-
-Michael Hennerich <michael.hennerich@analog.com>
-    iio: dac: ad5446: Fix read_raw not returning set value
-
-Zizhuang Deng <sunsetdzz@gmail.com>
-    iio: dac: ad5592r: Fix the missing return value.
-
-Mathias Nyman <mathias.nyman@linux.intel.com>
-    xhci: increase usb U3 -> U0 link resume timeout from 100ms to 500ms
-
-Henry Lin <henryl@nvidia.com>
-    xhci: stop polling roothubs after shutdown
-
-Evan Green <evgreen@chromium.org>
-    xhci: Enable runtime PM on second Alderlake controller
-
-zhangqilong <zhangqilong3@huawei.com>
-    usb: xhci: tegra:Fix PM usage reference leak of tegra_xusb_unpowergate_partitions
-
-Daniele Palmas <dnlplm@gmail.com>
-    USB: serial: option: add Telit 0x1057, 0x1058, 0x1075 compositions
-
-Slark Xiao <slark_xiao@163.com>
-    USB: serial: option: add support for Cinterion MV32-WA/MV32-WB
-
-Bruno Thomsen <bruno.thomsen@gmail.com>
-    USB: serial: cp210x: add PIDs for Kamstrup USB Meter Reader
-
-Kees Cook <keescook@chromium.org>
-    USB: serial: whiteheat: fix heap overflow in WHITEHEAT_GET_DTR_RTS
-
-Oliver Neukum <oneukum@suse.com>
-    USB: quirks: add STRING quirk for VCOM device
-
-Oliver Neukum <oneukum@suse.com>
-    USB: quirks: add a Realtek card reader
-
-Macpaul Lin <macpaul.lin@mediatek.com>
-    usb: mtu3: fix USB 3.0 dual-role-switch from device to host
-
-
--------------
-
-Diffstat:
-
- Makefile                                           |   4 +-
- arch/arm/boot/dts/am3517-evm.dts                   |  45 ++++-
- arch/arm/boot/dts/am3517-som.dtsi                  |   9 +
- arch/arm/boot/dts/at91-sama5d3_xplained.dts        |   8 +-
- arch/arm/boot/dts/at91-sama5d4_xplained.dts        |   6 +-
- arch/arm/boot/dts/at91-sama7g5ek.dts               |   2 +-
- arch/arm/boot/dts/at91sam9g20ek_common.dtsi        |   6 +
- arch/arm/boot/dts/dra7-l4.dtsi                     |   4 +-
- arch/arm/boot/dts/imx6qdl-apalis.dtsi              |  10 +-
- arch/arm/boot/dts/imx6ull-colibri.dtsi             |   2 +-
- arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts   |  15 ++
- arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts   |  15 ++
- arch/arm/boot/dts/logicpd-som-lv.dtsi              |  15 --
- arch/arm/boot/dts/omap3-gta04.dtsi                 |   2 +
- arch/arm/mach-exynos/Kconfig                       |   1 -
- arch/arm/mach-omap2/omap4-common.c                 |   2 +
- arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi  |  40 ----
- arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi  |  40 ----
- .../boot/dts/amlogic/meson-sm1-bananapi-m5.dts     |   1 +
- arch/arm64/boot/dts/amlogic/meson-sm1.dtsi         |  20 --
- .../boot/dts/freescale/imx8mm-venice-gw71xx.dtsi   |   4 +-
- .../boot/dts/freescale/imx8mm-venice-gw72xx.dtsi   |   4 +-
- .../boot/dts/freescale/imx8mm-venice-gw73xx.dtsi   |   4 +-
- arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts  |   4 +
- arch/arm64/boot/dts/freescale/imx8mn.dtsi          |  10 +-
- arch/arm64/boot/dts/freescale/imx8qm.dtsi          |   2 +-
- arch/powerpc/kernel/reloc_64.S                     |  67 +++++--
- arch/powerpc/kernel/vmlinux.lds.S                  |   2 -
- arch/powerpc/perf/Makefile                         |   4 +-
- arch/powerpc/tools/relocs_check.sh                 |   7 +-
- arch/riscv/kernel/patch.c                          |   2 +-
- arch/x86/include/asm/microcode.h                   |   2 +
- arch/x86/kernel/cpu/microcode/core.c               |   6 +-
- arch/x86/lib/usercopy_64.c                         |   2 +-
- arch/x86/pci/xen.c                                 |   6 +-
- arch/x86/power/cpu.c                               |  10 +-
- arch/xtensa/platforms/iss/console.c                |   8 -
- block/blk-iocost.c                                 |  12 +-
- drivers/acpi/processor_idle.c                      |   8 +-
- drivers/base/arch_topology.c                       |   2 +-
- drivers/bus/mhi/pci_generic.c                      |   2 +
- drivers/bus/sunxi-rsb.c                            |   2 +
- drivers/bus/ti-sysc.c                              |  16 +-
- drivers/clk/sunxi/clk-sun9i-mmc.c                  |   2 +
- drivers/cpufreq/qcom-cpufreq-hw.c                  |  27 ++-
- drivers/cpufreq/sun50i-cpufreq-nvmem.c             |   4 +-
- .../gpu/drm/amd/amdkfd/kfd_device_queue_manager.c  |  83 ++++----
- .../gpu/drm/amd/display/dc/dcn21/dcn21_resource.c  |   1 +
- .../gpu/drm/i915/display/intel_dp_aux_backlight.c  |  34 +++-
- drivers/gpu/drm/i915/i915_reg.h                    |   2 +-
- drivers/gpu/drm/sun4i/sun4i_frontend.c             |   3 -
- drivers/iio/dac/ad5446.c                           |   2 +-
- drivers/iio/dac/ad5592r-base.c                     |   2 +-
- drivers/iio/imu/bmi160/bmi160_core.c               |  20 +-
- drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c    |  15 +-
- drivers/iio/magnetometer/ak8975.c                  |   1 +
- drivers/interconnect/qcom/sdx55.c                  |  21 ---
- drivers/memory/renesas-rpc-if.c                    |  60 ++++--
- drivers/misc/eeprom/at25.c                         |  19 +-
- drivers/mtd/nand/raw/mtk_ecc.c                     |  12 +-
- drivers/mtd/nand/raw/qcom_nandc.c                  |  24 +--
- drivers/mtd/nand/raw/sh_flctl.c                    |  14 +-
- drivers/net/bonding/bond_main.c                    |  13 +-
- drivers/net/dsa/lantiq_gswip.c                     |   3 -
- drivers/net/dsa/mv88e6xxx/port_hidden.c            |   5 +-
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c   |   9 +-
- drivers/net/ethernet/broadcom/genet/bcmgenet.c     |   7 +
- drivers/net/ethernet/freescale/fec_main.c          |   2 +-
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |   9 +
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c |  31 +--
- drivers/net/ethernet/ibm/ibmvnic.c                 | 129 ++++---------
- drivers/net/ethernet/ibm/ibmvnic.h                 |   6 -
- drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c     |   3 +-
- .../net/ethernet/stmicro/stmmac/dwmac-socfpga.c    |  12 +-
- drivers/net/hippi/rrunner.c                        |   2 +
- drivers/net/phy/marvell10g.c                       |   2 +-
- drivers/net/virtio_net.c                           |  20 +-
- drivers/net/wireguard/device.c                     |   3 +-
- drivers/phy/amlogic/phy-meson-g12a-usb3-pcie.c     |  20 +-
- drivers/phy/motorola/phy-mapphone-mdm6600.c        |   3 +-
- drivers/phy/samsung/phy-exynos5250-sata.c          |  21 ++-
- drivers/phy/ti/phy-am654-serdes.c                  |   2 +-
- drivers/phy/ti/phy-omap-usb2.c                     |   2 +-
- drivers/pinctrl/mediatek/Kconfig                   |   1 +
- drivers/pinctrl/pinctrl-pistachio.c                |   6 +-
- drivers/pinctrl/pinctrl-rockchip.c                 |  45 +++--
- drivers/pinctrl/samsung/Kconfig                    |  11 +-
- drivers/pinctrl/stm32/pinctrl-stm32.c              |  23 ++-
- .../intel/int340x_thermal/int3400_thermal.c        |   4 +-
- drivers/tty/n_gsm.c                                | 209 +++++++++++----------
- drivers/tty/serial/8250/8250_pci.c                 |   8 +-
- drivers/tty/serial/8250/8250_port.c                |   2 +-
- drivers/tty/serial/amba-pl011.c                    |   9 +-
- drivers/tty/serial/imx.c                           |   2 +-
- drivers/usb/cdns3/cdns3-gadget.c                   |   7 +-
- drivers/usb/core/devio.c                           |  14 +-
- drivers/usb/core/quirks.c                          |   6 +
- drivers/usb/dwc3/core.c                            |  11 +-
- drivers/usb/dwc3/drd.c                             |  11 +-
- drivers/usb/dwc3/dwc3-pci.c                        |   8 +
- drivers/usb/dwc3/gadget.c                          |  31 ++-
- drivers/usb/gadget/configfs.c                      |   2 +
- drivers/usb/gadget/function/uvc_queue.c            |   2 +
- drivers/usb/host/xhci-hub.c                        |   2 +-
- drivers/usb/host/xhci-pci.c                        |   4 +-
- drivers/usb/host/xhci-ring.c                       |   1 +
- drivers/usb/host/xhci-tegra.c                      |   4 +-
- drivers/usb/host/xhci.c                            |  11 ++
- drivers/usb/misc/uss720.c                          |   3 +-
- drivers/usb/mtu3/mtu3_dr.c                         |   6 +-
- drivers/usb/phy/phy-generic.c                      |   7 +
- drivers/usb/serial/cp210x.c                        |   2 +
- drivers/usb/serial/option.c                        |  12 ++
- drivers/usb/serial/whiteheat.c                     |   5 +-
- drivers/usb/typec/ucsi/ucsi.c                      |  24 ++-
- drivers/video/fbdev/udlfb.c                        |  14 +-
- fs/btrfs/tree-log.c                                |   1 +
- fs/ceph/caps.c                                     |   4 +
- fs/cifs/smb2ops.c                                  |   8 +
- fs/ext4/super.c                                    |  19 +-
- fs/gfs2/file.c                                     |  33 ++--
- fs/io_uring.c                                      |   4 +
- fs/ksmbd/smb2pdu.c                                 |  13 +-
- fs/ksmbd/vfs_cache.c                               |   1 +
- fs/zonefs/super.c                                  |  46 ++++-
- include/linux/kernel.h                             |   2 +-
- include/linux/mtd/mtd.h                            |   6 +-
- include/memory/renesas-rpc-if.h                    |   1 +
- include/net/ip6_tunnel.h                           |   2 +-
- include/net/ip_tunnels.h                           |   2 +-
- include/net/tcp.h                                  |   8 +
- lib/hexdump.c                                      |  41 +++-
- mm/kasan/quarantine.c                              |   7 +
- net/core/lwt_bpf.c                                 |   7 +-
- net/dsa/port.c                                     |   2 +
- net/ipv4/ip_gre.c                                  |  12 +-
- net/ipv4/syncookies.c                              |   8 +-
- net/ipv4/tcp_input.c                               |  15 +-
- net/ipv4/tcp_minisocks.c                           |   2 +-
- net/ipv4/tcp_output.c                              |   1 +
- net/ipv4/tcp_rate.c                                |  11 +-
- net/ipv6/ip6_gre.c                                 |  16 +-
- net/ipv6/netfilter.c                               |  10 +-
- net/ipv6/syncookies.c                              |   3 +-
- net/netfilter/ipvs/ip_vs_conn.c                    |   2 +-
- net/netfilter/nf_conntrack_standalone.c            |   2 +-
- net/netfilter/nft_set_rbtree.c                     |   6 +-
- net/netfilter/nft_socket.c                         |  52 +++--
- net/sctp/sm_sideeffect.c                           |   4 +
- net/smc/af_smc.c                                   |   2 +
- net/tls/tls_device.c                               |  12 +-
- net/xdp/xsk.c                                      |   2 +-
- sound/soc/codecs/wm8731.c                          |  19 +-
- sound/soc/intel/common/soc-acpi-intel-tgl-match.c  |   4 +-
- tools/objtool/check.c                              |   8 +-
- tools/objtool/elf.c                                | 189 ++++++++++++++++---
- tools/objtool/include/objtool/elf.h                |   4 +-
- tools/perf/arch/arm64/util/Build                   |   1 -
- tools/perf/arch/arm64/util/machine.c               |  28 ---
- tools/perf/arch/powerpc/util/Build                 |   1 -
- tools/perf/arch/powerpc/util/machine.c             |  25 ---
- tools/perf/arch/s390/util/machine.c                |  16 --
- tools/perf/util/arm-spe.c                          |   3 +-
- tools/perf/util/symbol-elf.c                       |   2 +-
- tools/perf/util/symbol.c                           |  37 +++-
- tools/perf/util/symbol.h                           |   3 +-
- tools/testing/selftests/vm/mremap_test.c           |  83 +++++++-
- 167 files changed, 1477 insertions(+), 903 deletions(-)
+From: Nikolay Aleksandrov <razor@blackwall.org>
+
+commit acb16b395c3f3d7502443e0c799c2b42df645642 upstream.
+
+We received a report[1] of kernel crashes when Cilium is used in XDP
+mode with virtio_net after updating to newer kernels. After
+investigating the reason it turned out that when using mergeable bufs
+with an XDP program which adjusts xdp.data or xdp.data_meta page_to_buf()
+calculates the build_skb address wrong because the offset can become less
+than the headroom so it gets the address of the previous page (-X bytes
+depending on how lower offset is):
+ page_to_skb: page addr ffff9eb2923e2000 buf ffff9eb2923e1ffc offset 252 headroom 256
+
+This is a pr_err() I added in the beginning of page_to_skb which clearly
+shows offset that is less than headroom by adding 4 bytes of metadata
+via an xdp prog. The calculations done are:
+ receive_mergeable():
+ headroom = VIRTIO_XDP_HEADROOM; // VIRTIO_XDP_HEADROOM == 256 bytes
+ offset = xdp.data - page_address(xdp_page) -
+          vi->hdr_len - metasize;
+
+ page_to_skb():
+ p = page_address(page) + offset;
+ ...
+ buf = p - headroom;
+
+Now buf goes -4 bytes from the page's starting address as can be seen
+above which is set as skb->head and skb->data by build_skb later. Depending
+on what's done with the skb (when it's freed most often) we get all kinds
+of corruptions and BUG_ON() triggers in mm[2]. We have to recalculate
+the new headroom after the xdp program has run, similar to how offset
+and len are recalculated. Headroom is directly related to
+data_hard_start, data and data_meta, so we use them to get the new size.
+The result is correct (similar pr_err() in page_to_skb, one case of
+xdp_page and one case of virtnet buf):
+ a) Case with 4 bytes of metadata
+ [  115.949641] page_to_skb: page addr ffff8b4dcfad2000 offset 252 headroom 252
+ [  121.084105] page_to_skb: page addr ffff8b4dcf018000 offset 20732 headroom 252
+ b) Case of pushing data +32 bytes
+ [  153.181401] page_to_skb: page addr ffff8b4dd0c4d000 offset 288 headroom 288
+ [  158.480421] page_to_skb: page addr ffff8b4dd00b0000 offset 24864 headroom 288
+ c) Case of pushing data -33 bytes
+ [  835.906830] page_to_skb: page addr ffff8b4dd3270000 offset 223 headroom 223
+ [  840.839910] page_to_skb: page addr ffff8b4dcdd68000 offset 12511 headroom 223
+
+Offset and headroom are equal because offset points to the start of
+reserved bytes for the virtio_net header which are at buf start +
+headroom, while data points at buf start + vnet hdr size + headroom so
+when data or data_meta are adjusted by the xdp prog both the headroom size
+and the offset change equally. We can use data_hard_start to compute the
+new headroom after the xdp prog (linearized / page start case, the
+virtnet buf case is similar just with bigger base offset):
+ xdp.data_hard_start = page_address + vnet_hdr
+ xdp.data = page_address + vnet_hdr + headroom
+ new headroom after xdp prog = xdp.data - xdp.data_hard_start - metasize
+
+An example reproducer xdp prog[3] is below.
+
+[1] https://github.com/cilium/cilium/issues/19453
+
+[2] Two of the many traces:
+ [   40.437400] BUG: Bad page state in process swapper/0  pfn:14940
+ [   40.916726] BUG: Bad page state in process systemd-resolve  pfn:053b7
+ [   41.300891] kernel BUG at include/linux/mm.h:720!
+ [   41.301801] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+ [   41.302784] CPU: 1 PID: 1181 Comm: kubelet Kdump: loaded Tainted: G    B   W         5.18.0-rc1+ #37
+ [   41.304458] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.15.0-1.fc35 04/01/2014
+ [   41.306018] RIP: 0010:page_frag_free+0x79/0xe0
+ [   41.306836] Code: 00 00 75 ea 48 8b 07 a9 00 00 01 00 74 e0 48 8b 47 48 48 8d 50 ff a8 01 48 0f 45 fa eb d0 48 c7 c6 18 b8 30 a6 e8 d7 f8 fc ff <0f> 0b 48 8d 78 ff eb bc 48 8b 07 a9 00 00 01 00 74 3a 66 90 0f b6
+ [   41.310235] RSP: 0018:ffffac05c2a6bc78 EFLAGS: 00010292
+ [   41.311201] RAX: 000000000000003e RBX: 0000000000000000 RCX: 0000000000000000
+ [   41.312502] RDX: 0000000000000001 RSI: ffffffffa6423004 RDI: 00000000ffffffff
+ [   41.313794] RBP: ffff993c98823600 R08: 0000000000000000 R09: 00000000ffffdfff
+ [   41.315089] R10: ffffac05c2a6ba68 R11: ffffffffa698ca28 R12: ffff993c98823600
+ [   41.316398] R13: ffff993c86311ebc R14: 0000000000000000 R15: 000000000000005c
+ [   41.317700] FS:  00007fe13fc56740(0000) GS:ffff993cdd900000(0000) knlGS:0000000000000000
+ [   41.319150] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ [   41.320152] CR2: 000000c00008a000 CR3: 0000000014908000 CR4: 0000000000350ee0
+ [   41.321387] Call Trace:
+ [   41.321819]  <TASK>
+ [   41.322193]  skb_release_data+0x13f/0x1c0
+ [   41.322902]  __kfree_skb+0x20/0x30
+ [   41.343870]  tcp_recvmsg_locked+0x671/0x880
+ [   41.363764]  tcp_recvmsg+0x5e/0x1c0
+ [   41.384102]  inet_recvmsg+0x42/0x100
+ [   41.406783]  ? sock_recvmsg+0x1d/0x70
+ [   41.428201]  sock_read_iter+0x84/0xd0
+ [   41.445592]  ? 0xffffffffa3000000
+ [   41.462442]  new_sync_read+0x148/0x160
+ [   41.479314]  ? 0xffffffffa3000000
+ [   41.496937]  vfs_read+0x138/0x190
+ [   41.517198]  ksys_read+0x87/0xc0
+ [   41.535336]  do_syscall_64+0x3b/0x90
+ [   41.551637]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ [   41.568050] RIP: 0033:0x48765b
+ [   41.583955] Code: e8 4a 35 fe ff eb 88 cc cc cc cc cc cc cc cc e8 fb 7a fe ff 48 8b 7c 24 10 48 8b 74 24 18 48 8b 54 24 20 48 8b 44 24 08 0f 05 <48> 3d 01 f0 ff ff 76 20 48 c7 44 24 28 ff ff ff ff 48 c7 44 24 30
+ [   41.632818] RSP: 002b:000000c000a2f5b8 EFLAGS: 00000212 ORIG_RAX: 0000000000000000
+ [   41.664588] RAX: ffffffffffffffda RBX: 000000c000062000 RCX: 000000000048765b
+ [   41.681205] RDX: 0000000000005e54 RSI: 000000c000e66000 RDI: 0000000000000016
+ [   41.697164] RBP: 000000c000a2f608 R08: 0000000000000001 R09: 00000000000001b4
+ [   41.713034] R10: 00000000000000b6 R11: 0000000000000212 R12: 00000000000000e9
+ [   41.728755] R13: 0000000000000001 R14: 000000c000a92000 R15: ffffffffffffffff
+ [   41.744254]  </TASK>
+ [   41.758585] Modules linked in: br_netfilter bridge veth netconsole virtio_net
+
+ and
+
+ [   33.524802] BUG: Bad page state in process systemd-network  pfn:11e60
+ [   33.528617] page ffffe05dc0147b00 ffffe05dc04e7a00 ffff8ae9851ec000 (1) len 82 offset 252 metasize 4 hroom 0 hdr_len 12 data ffff8ae9851ec10c data_meta ffff8ae9851ec108 data_end ffff8ae9851ec14e
+ [   33.529764] page:000000003792b5ba refcount:0 mapcount:-512 mapping:0000000000000000 index:0x0 pfn:0x11e60
+ [   33.532463] flags: 0xfffffc0000000(node=0|zone=1|lastcpupid=0x1fffff)
+ [   33.532468] raw: 000fffffc0000000 0000000000000000 dead000000000122 0000000000000000
+ [   33.532470] raw: 0000000000000000 0000000000000000 00000000fffffdff 0000000000000000
+ [   33.532471] page dumped because: nonzero mapcount
+ [   33.532472] Modules linked in: br_netfilter bridge veth netconsole virtio_net
+ [   33.532479] CPU: 0 PID: 791 Comm: systemd-network Kdump: loaded Not tainted 5.18.0-rc1+ #37
+ [   33.532482] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.15.0-1.fc35 04/01/2014
+ [   33.532484] Call Trace:
+ [   33.532496]  <TASK>
+ [   33.532500]  dump_stack_lvl+0x45/0x5a
+ [   33.532506]  bad_page.cold+0x63/0x94
+ [   33.532510]  free_pcp_prepare+0x290/0x420
+ [   33.532515]  free_unref_page+0x1b/0x100
+ [   33.532518]  skb_release_data+0x13f/0x1c0
+ [   33.532524]  kfree_skb_reason+0x3e/0xc0
+ [   33.532527]  ip6_mc_input+0x23c/0x2b0
+ [   33.532531]  ip6_sublist_rcv_finish+0x83/0x90
+ [   33.532534]  ip6_sublist_rcv+0x22b/0x2b0
+
+[3] XDP program to reproduce(xdp_pass.c):
+ #include <linux/bpf.h>
+ #include <bpf/bpf_helpers.h>
+
+ SEC("xdp_pass")
+ int xdp_pkt_pass(struct xdp_md *ctx)
+ {
+          bpf_xdp_adjust_head(ctx, -(int)32);
+          return XDP_PASS;
+ }
+
+ char _license[] SEC("license") = "GPL";
+
+ compile: clang -O2 -g -Wall -target bpf -c xdp_pass.c -o xdp_pass.o
+ load on virtio_net: ip link set enp1s0 xdpdrv obj xdp_pass.o sec xdp_pass
+
+CC: stable@vger.kernel.org
+CC: Jason Wang <jasowang@redhat.com>
+CC: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+CC: Daniel Borkmann <daniel@iogearbox.net>
+CC: "Michael S. Tsirkin" <mst@redhat.com>
+CC: virtualization@lists.linux-foundation.org
+Fixes: 8fb7da9e9907 ("virtio_net: get build_skb() buf by data ptr")
+Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
+Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Link: https://lore.kernel.org/r/20220425103703.3067292-1-razor@blackwall.org
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/virtio_net.c |   20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -965,6 +965,24 @@ static struct sk_buff *receive_mergeable
+ 			 * xdp.data_meta were adjusted
+ 			 */
+ 			len = xdp.data_end - xdp.data + vi->hdr_len + metasize;
++
++			/* recalculate headroom if xdp.data or xdp_data_meta
++			 * were adjusted, note that offset should always point
++			 * to the start of the reserved bytes for virtio_net
++			 * header which are followed by xdp.data, that means
++			 * that offset is equal to the headroom (when buf is
++			 * starting at the beginning of the page, otherwise
++			 * there is a base offset inside the page) but it's used
++			 * with a different starting point (buf start) than
++			 * xdp.data (buf start + vnet hdr size). If xdp.data or
++			 * data_meta were adjusted by the xdp prog then the
++			 * headroom size has changed and so has the offset, we
++			 * can use data_hard_start, which points at buf start +
++			 * vnet hdr size, to calculate the new headroom and use
++			 * it later to compute buf start in page_to_skb()
++			 */
++			headroom = xdp.data - xdp.data_hard_start - metasize;
++
+ 			/* We can only create skb based on xdp_page. */
+ 			if (unlikely(xdp_page != page)) {
+ 				rcu_read_unlock();
+@@ -972,7 +990,7 @@ static struct sk_buff *receive_mergeable
+ 				head_skb = page_to_skb(vi, rq, xdp_page, offset,
+ 						       len, PAGE_SIZE, false,
+ 						       metasize,
+-						       VIRTIO_XDP_HEADROOM);
++						       headroom);
+ 				return head_skb;
+ 			}
+ 			break;
 
 
