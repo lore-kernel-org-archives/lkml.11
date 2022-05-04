@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D94C352A7
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D88E1C352A1
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359268AbiEDRfz (ORCPT
+        id S1359433AbiEDRgA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
+        Wed, 4 May 2022 13:36:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356972AbiEDRJw (ORCPT
+        with ESMTP id S1356961AbiEDRJv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599CC47552;
-        Wed,  4 May 2022 09:56:47 -0700 (PDT)
+        Wed, 4 May 2022 13:09:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A590A47064;
+        Wed,  4 May 2022 09:56:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 114F5B82737;
-        Wed,  4 May 2022 16:56:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CAFCC385A4;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4107061808;
         Wed,  4 May 2022 16:56:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B8C1C385A5;
+        Wed,  4 May 2022 16:56:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683404;
-        bh=vZgK6Y9PLhjhFdFkYNeKjuquI8/FQ9aIPBNEBrVREaw=;
+        s=korg; t=1651683403;
+        bh=BQI/BWu84cGIr7wcJBUztzbUZxXOZxMAvC14UpLb+8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FJHOABncIv1ezM4Et75KGOMDb1IRIEmbxWt+g1IPx5VP8SvtWVGhC28pch9mPV8UH
-         iK17QHvhaim6gqVbqxYWe1h8IrPOjPBf7b0D8xzgPBRCpX9s8I+MocyuAc9tpST8tb
-         KxksHYmOB54yAYKOPXUcffWJ507n8GcMUaL+6BYw=
+        b=BUICga2oEMWDUXYCMYCl38HKVxngh+WHFIDklI0dx7nJLuonOm9Q1ZrdtNVKjJU58
+         lMHz+3jDDAgLZ92d9xuX+bEFJjXKaceQ7cwJDrGr+CMax32xTBiDNwWzwXNMyu3QCM
+         rPVeq18C4ag5AGU2a4mUzN8+4Gxx1I7jLv58z0Rc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Giraudon <ggiraudon@prism19.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Adam Ford <aford173@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Peng Fan <peng.fan@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 075/225] arm64: dts: meson-sm1-bananapi-m5: fix wrong GPIO pin labeling for CON1
-Date:   Wed,  4 May 2022 18:45:13 +0200
-Message-Id: <20220504153118.060255320@linuxfoundation.org>
+Subject: [PATCH 5.17 074/225] arm64: dts: imx8mn: Fix SAI nodes
+Date:   Wed,  4 May 2022 18:45:12 +0200
+Message-Id: <20220504153118.004201715@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,39 +53,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Giraudon <ggiraudon@prism19.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 962dd65e575dde950ef0844568edc37cfb39f302 ]
+[ Upstream commit 574518b7ccbaef74cb89eb1a1a0da88afa1e0113 ]
 
-The labels for lines 61 through 84 on the periphs-banks were offset by 2.
-2 lines are missing in the BOOT GPIO lines (contains 14, should be 16)
-Added 2 empty entries in BOOT to realigned the rest of GPIO labels
-to match the Banana Pi M5 schematics.
+The most specific compatible string element should be "fsl,imx8mn-sai"
+on i.MX8M Nano, fix it from current "fsl,imx8mm-sai" (two Ms, likely
+due to copy-paste error from i.MX8M Mini).
 
-(Thanks to Neil Armstrong for the heads up on the position of the missing pins)
-
-Fixes: 976e920183e4 ("arm64: dts: meson-sm1: add Banana PI BPI-M5 board dts")
-Signed-off-by: Guillaume Giraudon <ggiraudon@prism19.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220411144427.874-1-ggiraudon@prism19.com
+Fixes: 9e9860069725f ("arm64: dts: imx8mn: Add SAI nodes")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Adam Ford <aford173@gmail.com>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: Peng Fan <peng.fan@nxp.com>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+To: linux-arm-kernel@lists.infradead.org
+Reviewed-by: Adam Ford <aford173@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/freescale/imx8mn.dtsi | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
-index 5751c48620ed..cadba194b149 100644
---- a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
-+++ b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
-@@ -437,6 +437,7 @@ &gpio {
- 		"",
- 		"eMMC_RST#", /* BOOT_12 */
- 		"eMMC_DS", /* BOOT_13 */
-+		"", "",
- 		/* GPIOC */
- 		"SD_D0_B", /* GPIOC_0 */
- 		"SD_D1_B", /* GPIOC_1 */
+diff --git a/arch/arm64/boot/dts/freescale/imx8mn.dtsi b/arch/arm64/boot/dts/freescale/imx8mn.dtsi
+index b8d49d5f2668..98bfb53491fc 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mn.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mn.dtsi
+@@ -291,7 +291,7 @@ spba2: spba-bus@30000000 {
+ 				ranges;
+ 
+ 				sai2: sai@30020000 {
+-					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
++					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
+ 					reg = <0x30020000 0x10000>;
+ 					interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+ 					clocks = <&clk IMX8MN_CLK_SAI2_IPG>,
+@@ -305,7 +305,7 @@ sai2: sai@30020000 {
+ 				};
+ 
+ 				sai3: sai@30030000 {
+-					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
++					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
+ 					reg = <0x30030000 0x10000>;
+ 					interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>;
+ 					clocks = <&clk IMX8MN_CLK_SAI3_IPG>,
+@@ -319,7 +319,7 @@ sai3: sai@30030000 {
+ 				};
+ 
+ 				sai5: sai@30050000 {
+-					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
++					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
+ 					reg = <0x30050000 0x10000>;
+ 					interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
+ 					clocks = <&clk IMX8MN_CLK_SAI5_IPG>,
+@@ -335,7 +335,7 @@ sai5: sai@30050000 {
+ 				};
+ 
+ 				sai6: sai@30060000 {
+-					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
++					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
+ 					reg = <0x30060000  0x10000>;
+ 					interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
+ 					clocks = <&clk IMX8MN_CLK_SAI6_IPG>,
+@@ -392,7 +392,7 @@ spdif1: spdif@30090000 {
+ 				};
+ 
+ 				sai7: sai@300b0000 {
+-					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
++					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
+ 					reg = <0x300b0000 0x10000>;
+ 					interrupts = <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>;
+ 					clocks = <&clk IMX8MN_CLK_SAI7_IPG>,
 -- 
 2.35.1
 
