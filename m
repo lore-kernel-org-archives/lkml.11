@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFE4DC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C4DC4167E
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376310AbiEDRoo (ORCPT
+        id S1376375AbiEDRos (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:44:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38868 "EHLO
+        Wed, 4 May 2022 13:44:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355839AbiEDRIw (ORCPT
+        with ESMTP id S1355612AbiEDRLn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:08:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49793517CC;
-        Wed,  4 May 2022 09:54:38 -0700 (PDT)
+        Wed, 4 May 2022 13:11:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71DA24B850;
+        Wed,  4 May 2022 09:57:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CAAD616B8;
-        Wed,  4 May 2022 16:54:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACD40C385A4;
-        Wed,  4 May 2022 16:54:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46E84618B4;
+        Wed,  4 May 2022 16:57:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96ADAC385A5;
+        Wed,  4 May 2022 16:57:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683276;
-        bh=io5qK08uf7Ho5pIz2sIZ6RVCb9Wt3d3tyHRZDjUXifg=;
+        s=korg; t=1651683456;
+        bh=UENWpMK2j0GaH55wcuPVhfFipYceSV+SOq3v7+THSbo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RdcALzLWeslAp+WWAav1mfycDQ8m5dnsur+/Z15ddv3cAYqiNLZ8WRzpeOa6bKN6R
-         tBAdSvIulzO9DlsZu1KPvytNCk5eXesVTnEjHIpNtwF4fUwlr5lvSOurdYC8r0sVDE
-         XF5XVNcmDbfruvGcQce8mYZJ6pA+ymXVJU1z1n34=
+        b=zGCrdOOUVn5qMC0j9uXLVUupBcHcvOOPz9yaFez+HZQ8oudKI53gExA4CpDTRbv2A
+         OHHp9aY7eh5Xz2DjfpEsFQM1AQg68GhigTEayMv+a4fBpancZzYcGCW+CCLEDRYrO0
+         svyEDsjsoRlpHPsqHYm7397MY2zCwLJzQNCEhdPU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Hans Holmberg <hans.holmberg@wdc.com>
-Subject: [PATCH 5.15 142/177] zonefs: Clear inode information flags on inode creation
-Date:   Wed,  4 May 2022 18:45:35 +0200
-Message-Id: <20220504153105.971831088@linuxfoundation.org>
+        stable@vger.kernel.org, Baruch Siach <baruch.siach@siklu.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 131/225] net: phy: marvell10g: fix return value on error
+Date:   Wed,  4 May 2022 18:46:09 +0200
+Message-Id: <20220504153122.034933314@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
-References: <20220504153053.873100034@linuxfoundation.org>
+In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
+References: <20220504153110.096069935@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,34 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Baruch Siach <baruch.siach@siklu.com>
 
-commit 694852ead287a3433126e7ebda397b242dc99624 upstream.
+[ Upstream commit 0ed9704b660b259b54743cad8a84a11148f60f0a ]
 
-Ensure that the i_flags field of struct zonefs_inode_info is cleared to
-0 when initializing a zone file inode, avoiding seeing the flag
-ZONEFS_ZONE_OPEN being incorrectly set.
+Return back the error value that we get from phy_read_mmd().
 
-Fixes: b5c00e975779 ("zonefs: open/close zone on file open/close")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Hans Holmberg <hans.holmberg@wdc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c84786fa8f91 ("net: phy: marvell10g: read copper results from CSSR1")
+Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
+Reviewed-by: Marek Behún <kabel@kernel.org>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Link: https://lore.kernel.org/r/f47cb031aeae873bb008ba35001607304a171a20.1650868058.git.baruch@tkos.co.il
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/zonefs/super.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/phy/marvell10g.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/zonefs/super.c
-+++ b/fs/zonefs/super.c
-@@ -1155,6 +1155,7 @@ static struct inode *zonefs_alloc_inode(
- 	inode_init_once(&zi->i_vnode);
- 	mutex_init(&zi->i_truncate_mutex);
- 	zi->i_wr_refcnt = 0;
-+	zi->i_flags = 0;
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index b6fea119fe13..2b7d0720720b 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
+@@ -880,7 +880,7 @@ static int mv3310_read_status_copper(struct phy_device *phydev)
  
- 	return &zi->i_vnode;
- }
+ 	cssr1 = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_CSSR1);
+ 	if (cssr1 < 0)
+-		return val;
++		return cssr1;
+ 
+ 	/* If the link settings are not resolved, mark the link down */
+ 	if (!(cssr1 & MV_PCS_CSSR1_RESOLVED)) {
+-- 
+2.35.1
+
 
 
