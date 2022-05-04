@@ -2,153 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E90CC35275
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4842EC46467
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345272AbiEDXsl (ORCPT
+        id S1382361AbiEDXsy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:48:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48316 "EHLO
+        Wed, 4 May 2022 19:48:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380748AbiEDXcu (ORCPT
+        with ESMTP id S1383949AbiEDXZR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 19:32:50 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0A384EA0A;
-        Wed,  4 May 2022 16:29:13 -0700 (PDT)
+        Wed, 4 May 2022 19:25:17 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C35914EF54
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 16:21:39 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id x18so2823786plg.6
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 16:21:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651706953; x=1683242953;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=2EKl1pLEHQIzxhFCcd9eEsheg+eBfByZIiGcnxTBPkI=;
-  b=LlbiymG4KdKBun/oGJ8TjpqJBzKywHS5jbC1HhXtOrY2V/QJ4HOqsnlM
-   L1AGsX5+Noxgha8vcRNQIah3yE0C+WUc/UUKjRDi2ySXxIYRk8tMyU6oz
-   7II1J36AbwA1evTCslACAeXPMusgsGqGYpcu6SCG0xmmy6uD7trzB7kPw
-   Y=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 04 May 2022 16:29:13 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 16:29:12 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 4 May 2022 16:29:12 -0700
-Received: from [10.38.244.235] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 4 May 2022
- 16:29:07 -0700
-Message-ID: <62426006-b5a1-cbe7-9c3a-16f94334208f@quicinc.com>
-Date:   Wed, 4 May 2022 16:29:05 -0700
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=NCPgvpZcA0uAt4aHPP7BYpOEKu3u65fsur79lcM7RCY=;
+        b=Zs2UVopnaRBcMqzeWwdu3RMSHFGCRemyVLw1Wiq1qURH8sHjtfDVQfZbSeFcEHO3yo
+         3A1MC5oNYk09WmKFCtVeexkI58hzjqDiFLj3wo1aQ2A7txkNgN7GmMK0k3LRqjZKN7OW
+         Ejffr5D3JC4siZtEiGZt/YgD+39nWwRmq2VxY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NCPgvpZcA0uAt4aHPP7BYpOEKu3u65fsur79lcM7RCY=;
+        b=ievlUr3X4YrSs41pUDF+OmQwZBVczvM2bPpRD7dpAQ9mFcZK27oWpaxMNUtNNrNx8+
+         E4q7pVnTWS15ndAxidscXc3rJA3q0ksgBppdvd0qrjxYqpahlIhQtp5aQlXClKnBWol7
+         fxlvyu1AwzS4JffZ9xEPcEAVBjkvRT9h/D07s2lD/K8fPFBJgQcwK/BoHjKzGCyFb+fT
+         JXB9Oi0Q856fJra1ZKW4nEzlsc690MwVQs98TeRtONBhtuPKOn87yrsWcSvgRGGTBJrE
+         BBr3/BB3RBYNXcCnEu++Y81L9n7CvjGNYPcSpLptAjZu3TOf3eIkrtzSMmSypQSmMbEc
+         TguA==
+X-Gm-Message-State: AOAM533L89UtlSsxM3i5A9baoPPOyHSYboR2NTQbAT1zefvM578MSipG
+        hApslFb8gaCl36SqHO3dcYYdRi8JX1HxxNUz
+X-Google-Smtp-Source: ABdhPJx2TPK/nouqDF1yYzVVWJk+thRPtu2hPJrJDWbQ1tzdLDmA68Nrl8oQvHeptfCEiB4Lsu9xWQ==
+X-Received: by 2002:a17:903:2d0:b0:14d:8a8d:cb1 with SMTP id s16-20020a17090302d000b0014d8a8d0cb1mr24121633plk.50.1651706499061;
+        Wed, 04 May 2022 16:21:39 -0700 (PDT)
+Received: from evgreen-glaptop.lan ([98.47.98.87])
+        by smtp.gmail.com with ESMTPSA id q12-20020a170902f78c00b0015e8d4eb2d6sm1901pln.288.2022.05.04.16.21.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 16:21:38 -0700 (PDT)
+From:   Evan Green <evgreen@chromium.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Matthew Garrett <mgarrett@aurora.tech>, dlunev@google.com,
+        zohar@linux.ibm.com, jejb@linux.ibm.com,
+        linux-integrity@vger.kernel.org, corbet@lwn.net, rjw@rjwysocki.net,
+        gwendal@chromium.org, jarkko@kernel.org, linux-pm@vger.kernel.org,
+        Evan Green <evgreen@chromium.org>,
+        David Howells <dhowells@redhat.com>,
+        Hao Wu <hao.wu@rubrik.com>, James Morris <jmorris@namei.org>,
+        Matthew Garrett <matthewgarrett@google.com>,
+        "Serge E. Hallyn" <serge@hallyn.com>, axelj <axelj@axis.com>,
+        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: [PATCH 05/10] security: keys: trusted: Verify creation data
+Date:   Wed,  4 May 2022 16:20:57 -0700
+Message-Id: <20220504161439.5.I6cdb522cb5ea28fcd1e35b4cd92cbd067f99269a@changeid>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220504232102.469959-1-evgreen@chromium.org>
+References: <20220504232102.469959-1-evgreen@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH] drm/msm: Fix shutdown
-Content-Language: en-US
-To:     Douglas Anderson <dianders@chromium.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-CC:     Stephen Boyd <swboyd@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Sean Paul <sean@poorly.run>,
-        Vinod Polimera <quic_vpolimer@quicinc.com>,
-        Xu Wang <vulab@iscas.ac.cn>, <dri-devel@lists.freedesktop.org>,
-        <freedreno@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220504154909.1.Iaebd35e60160fc0f2a50fac3a0bf3b298c0637c8@changeid>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <20220504154909.1.Iaebd35e60160fc0f2a50fac3a0bf3b298c0637c8@changeid>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+If a loaded key contains creation data, ask the TPM to verify that
+creation data. This allows users like encrypted hibernate to know that
+the loaded and parsed creation data has not been tampered with.
 
+Partially-sourced-from: Matthew Garrett <mjg59@google.com>
+Signed-off-by: Evan Green <evgreen@chromium.org>
 
-On 5/4/2022 3:49 PM, Douglas Anderson wrote:
-> When rebooting on my sc7280-herobrine based device, I got a
-> crash. Upon debugging, I found that I was in msm_drv_shutdown() and my
-> "pdev" was the one associated with mdss_probe().
-> 
->  From source, I found that mdss_probe() has the line:
->    platform_set_drvdata(pdev, mdss);
-> ...where "mdss" is of type "struct msm_mdss *".
-> 
-> Also from source, I saw that in msm_drv_shutdown() we have the line:
->    struct msm_drm_private *priv = platform_get_drvdata(pdev);
-> 
-> This is a mismatch and is the root of the problem.
-> 
-> Further digging made it apparent that msm_drv_shutdown() is only
-> supposed to be used for parts of the msm display framework that also
-> call msm_drv_probe() but mdss_probe() doesn't call
-> msm_drv_probe(). Let's remove the shutdown functon from msm_mdss.c.
-> 
-> Digging a little further, code inspection found that two drivers that
-> use msm_drv_probe() weren't calling msm_drv_shutdown(). Let's add it
-> to them.
-> 
-> Fixes: ecb23f2e3009 ("drm/msm: split the main platform driver")
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+---
+Source material for this change is at:
+https://patchwork.kernel.org/project/linux-pm/patch/20210220013255.1083202-9-matthewgarrett@google.com/
 
-Makes sense to me, and issue should happen everytime we shutdown so not 
-sure how it didnt hit?
+ include/linux/tpm.h                       |  1 +
+ security/keys/trusted-keys/trusted_tpm2.c | 72 ++++++++++++++++++++++-
+ 2 files changed, 72 insertions(+), 1 deletion(-)
 
-> ---
-> 
->   drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c  | 1 +
->   drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c | 1 +
->   drivers/gpu/drm/msm/msm_mdss.c           | 1 -
->   3 files changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> index 143d6643be53..2b9d931474e0 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> @@ -1350,6 +1350,7 @@ MODULE_DEVICE_TABLE(of, dpu_dt_match);
->   static struct platform_driver dpu_driver = {
->   	.probe = dpu_dev_probe,
->   	.remove = dpu_dev_remove,
-> +	.shutdown = msm_drv_shutdown,
->   	.driver = {
->   		.name = "msm_dpu",
->   		.of_match_table = dpu_dt_match,
-> diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-> index 9b7bbc3adb97..3d5621a68f85 100644
-> --- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-> +++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-> @@ -1009,6 +1009,7 @@ MODULE_DEVICE_TABLE(of, mdp5_dt_match);
->   static struct platform_driver mdp5_driver = {
->   	.probe = mdp5_dev_probe,
->   	.remove = mdp5_dev_remove,
-> +	.shutdown = msm_drv_shutdown,
->   	.driver = {
->   		.name = "msm_mdp",
->   		.of_match_table = mdp5_dt_match,
-> diff --git a/drivers/gpu/drm/msm/msm_mdss.c b/drivers/gpu/drm/msm/msm_mdss.c
-> index 20f154dda9cf..0454a571adf7 100644
-> --- a/drivers/gpu/drm/msm/msm_mdss.c
-> +++ b/drivers/gpu/drm/msm/msm_mdss.c
-> @@ -397,7 +397,6 @@ MODULE_DEVICE_TABLE(of, mdss_dt_match);
->   static struct platform_driver mdss_platform_driver = {
->   	.probe      = mdss_probe,
->   	.remove     = mdss_remove,
-> -	.shutdown   = msm_drv_shutdown,
+diff --git a/include/linux/tpm.h b/include/linux/tpm.h
+index 8320cbac6f4009..438f8bc0a50582 100644
+--- a/include/linux/tpm.h
++++ b/include/linux/tpm.h
+@@ -224,6 +224,7 @@ enum tpm2_command_codes {
+ 	TPM2_CC_SELF_TEST	        = 0x0143,
+ 	TPM2_CC_STARTUP		        = 0x0144,
+ 	TPM2_CC_SHUTDOWN	        = 0x0145,
++	TPM2_CC_CERTIFYCREATION	        = 0x014A,
+ 	TPM2_CC_NV_READ                 = 0x014E,
+ 	TPM2_CC_CREATE		        = 0x0153,
+ 	TPM2_CC_LOAD		        = 0x0157,
+diff --git a/security/keys/trusted-keys/trusted_tpm2.c b/security/keys/trusted-keys/trusted_tpm2.c
+index b7ddb78e644d17..6db30a5fc320c0 100644
+--- a/security/keys/trusted-keys/trusted_tpm2.c
++++ b/security/keys/trusted-keys/trusted_tpm2.c
+@@ -600,6 +600,69 @@ static int tpm2_unseal_cmd(struct tpm_chip *chip,
+ 	return rc;
+ }
+ 
++/**
++ * tpm2_certify_creation() - execute a TPM2_CertifyCreation command
++ *
++ * @chip: TPM chip to use
++ * @payload: the key data in clear and encrypted form
++ * @blob_handle: the loaded TPM handle of the key
++ *
++ * Return: 0 on success
++ *         -EINVAL on tpm error status
++ *         < 0 error from tpm_send or tpm_buf_init
++ */
++static int tpm2_certify_creation(struct tpm_chip *chip,
++				 struct trusted_key_payload *payload,
++				 u32 blob_handle)
++{
++	struct tpm_header *head;
++	struct tpm_buf buf;
++	int rc;
++
++	rc = tpm_buf_init(&buf, TPM2_ST_SESSIONS, TPM2_CC_CERTIFYCREATION);
++	if (rc)
++		return rc;
++
++	/* Use TPM_RH_NULL for signHandle */
++	tpm_buf_append_u32(&buf, 0x40000007);
++
++	/* Object handle */
++	tpm_buf_append_u32(&buf, blob_handle);
++
++	/* Auth */
++	tpm_buf_append_u32(&buf, 9);
++	tpm_buf_append_u32(&buf, TPM2_RS_PW);
++	tpm_buf_append_u16(&buf, 0);
++	tpm_buf_append_u8(&buf, 0);
++	tpm_buf_append_u16(&buf, 0);
++
++	/* Qualifying data */
++	tpm_buf_append_u16(&buf, 0);
++
++	/* Creation data hash */
++	tpm_buf_append_u16(&buf, payload->creation_hash_len);
++	tpm_buf_append(&buf, payload->creation_hash,
++		       payload->creation_hash_len);
++
++	/* signature scheme */
++	tpm_buf_append_u16(&buf, TPM_ALG_NULL);
++
++	/* creation ticket */
++	tpm_buf_append(&buf, payload->tk, payload->tk_len);
++
++	rc = tpm_transmit_cmd(chip, &buf, 6, "certifying creation data");
++	if (rc)
++		goto out;
++
++	head = (struct tpm_header *)buf.data;
++
++	if (head->return_code != 0)
++		rc = -EINVAL;
++out:
++	tpm_buf_destroy(&buf);
++	return rc;
++}
++
+ /**
+  * tpm2_unseal_trusted() - unseal the payload of a trusted key
+  *
+@@ -625,8 +688,15 @@ int tpm2_unseal_trusted(struct tpm_chip *chip,
+ 		goto out;
+ 
+ 	rc = tpm2_unseal_cmd(chip, payload, options, blob_handle);
+-	tpm2_flush_context(chip, blob_handle);
++	if (rc)
++		goto flush;
++
++	if (payload->creation_len)
++		rc = tpm2_certify_creation(chip, payload, blob_handle);
+ 
++
++flush:
++	tpm2_flush_context(chip, blob_handle);
+ out:
+ 	tpm_put_ops(chip);
+ 
+-- 
+2.31.0
 
-Question to doug/dmitry:
-
-Now that we removed msm_drv_shutdown, perhaps we should have a 
-mdss_shutdown instead and call msm_mdss_destroy() internally?
-
->   	.driver     = {
->   		.name   = "msm-mdss",
->   		.of_match_table = mdss_dt_match,
