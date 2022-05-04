@@ -2,193 +2,329 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 715BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C64ABC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:04:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351021AbiEDOGh (ORCPT
+        id S1351057AbiEDOHz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 10:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53038 "EHLO
+        Wed, 4 May 2022 10:07:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349009AbiEDOGc (ORCPT
+        with ESMTP id S1349009AbiEDOHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 10:06:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5DE2C28992
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 07:02:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651672975;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NWK4ZOfJVM6RjQ4Lfcqx7f0iXv4BQ56O8KCQMl4QeHw=;
-        b=ev160W64NtDRItaio2AQvWWpAA4AnkAk23EvSPnl70s9iQ/bVMl4MLf4iGnQ9Ua0w5QFEE
-        FFVbWd28UQqxqkVhdI0hoHDVm229bDYKLtPinu5P5g5vAPVtd2L2QMeDYGyFrl4xlazIAM
-        FwoKksFn/Ts0g7RrfxZxOEsPElOW3Ws=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-671-lLC0nUZAP4mgPBTEv5ytUg-1; Wed, 04 May 2022 10:02:47 -0400
-X-MC-Unique: lLC0nUZAP4mgPBTEv5ytUg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1EF9D1C3E988;
-        Wed,  4 May 2022 14:02:46 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.152])
-        by smtp.corp.redhat.com (Postfix) with SMTP id CDC8BC52C8A;
-        Wed,  4 May 2022 14:02:40 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Wed,  4 May 2022 16:02:44 +0200 (CEST)
-Date:   Wed, 4 May 2022 16:02:38 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
-Subject: Re: [PATCH v2 07/12] ptrace: Don't change __state
-Message-ID: <20220504140210.GA24581@redhat.com>
-References: <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
- <20220429214837.386518-7-ebiederm@xmission.com>
- <20220502153934.GD17276@redhat.com>
- <87levjrixl.fsf@email.froward.int.ebiederm.org>
- <20220503134149.GA22999@redhat.com>
- <877d72l50n.fsf@email.froward.int.ebiederm.org>
+        Wed, 4 May 2022 10:07:53 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F69928998;
+        Wed,  4 May 2022 07:04:16 -0700 (PDT)
+Received: from relay4-d.mail.gandi.net (unknown [217.70.183.196])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id E971BC5C9D;
+        Wed,  4 May 2022 13:56:00 +0000 (UTC)
+Received: (Authenticated sender: foss@0leil.net)
+        by mail.gandi.net (Postfix) with ESMTPSA id AEE04E0013;
+        Wed,  4 May 2022 13:55:54 +0000 (UTC)
+From:   Quentin Schulz <foss+kernel@0leil.net>
+Cc:     shawnx.tu@intel.com, mchehab@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
+        Quentin Schulz <foss+kernel@0leil.net>
+Subject: [PATCH v2 2/3] media: ov5675: add device-tree support
+Date:   Wed,  4 May 2022 15:55:42 +0200
+Message-Id: <20220504135543.59522-2-foss+kernel@0leil.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220504135543.59522-1-foss+kernel@0leil.net>
+References: <20220504135543.59522-1-foss+kernel@0leil.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <877d72l50n.fsf@email.froward.int.ebiederm.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/03, Eric W. Biederman wrote:
->
-> Oleg Nesterov <oleg@redhat.com> writes:
->
-> > But why is it bad if the tracee doesn't sleep in schedule ? If it races
-> > with SIGKILL. I still can't understand this.
-> >
-> > Yes, wait_task_inactive() can fail, so you need to remove WARN_ON_ONCE()
-> > in 11/12.
->
-> >
-> > Why is removing TASK_WAKEKILL from TASK_TRACED and complicating
-> > *signal_wake_up() better?
->
-> Not changing __state is better because it removes special cases
-> from the scheduler that only apply to ptrace.
+From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 
-Hmm. But I didn't argue with that? I like the idea of JOBCTL_TASK_FROZEN.
+Until now, this driver only supported ACPI. This adds support for
+Device Tree too.
 
-I meant, I do not think that removing KILLABLE from TASK_TRACED (not
-from __state) and complicating *signal_wake_up() (I mean, compared
-to your previous version) is a good idea.
+This is heavily inspired by device tree support addition to OV8856
+driver. The differentiation between ACPI and DT mode is done through an
+is_acpi_node check.
 
-And. At least in context of this series it is fine if the JOBCTL_TASK_FROZEN
-tracee do not block in schedule(), just you need to remove WARN_ON_ONCE()
-around wait_task_inactive().
+Cc: Quentin Schulz <foss+kernel@0leil.net>
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+---
 
-> > And even if we need to ensure the tracee will always block after
-> > ptrace_freeze_traced(), we can change signal_pending_state() to
-> > return false if JOBCTL_PTRACE_FROZEN. Much simpler, imo. But still
-> > looks unnecessary to me.
->
-> We still need to change signal_wake_up in that case.  Possibly
-> signal_wake_up_state.
+v2:
+ - fixed unused-const-variable warning by removing of_match_ptr in
+ of_match_table, reported by kernel test robot,
 
-Of course. See above.
+ drivers/media/i2c/ov5675.c | 134 +++++++++++++++++++++++++++++++++----
+ 1 file changed, 121 insertions(+), 13 deletions(-)
 
-> >> if we depend on wait_task_inactive failing if the process is in the
-> >> wrong state.
-> >
-> > OK, I guess this is what I do not understand. Could you spell please?
-> >
-> > And speaking of RT, wait_task_inactive() still can fail because
-> > cgroup_enter_frozen() takes css_set_lock? And it is called under
-> > preempt_disable() ? I don't understand the plan :/
->
-> Let me describe his freezer change as that is much easier to get to the
-> final result.  RT has more problems as it turns all spin locks into
-> sleeping locks.  When a task is frozen
-
-[...snip...]
-
-Oh, thanks Eric, but I understand this part. But I still can't understand
-why is it that critical to block in schedule... OK, I need to think about
-it. Lets assume this is really necessary.
-
-Anyway. I'd suggest to not change TASK_TRACED in this series and not
-complicate signal_wake_up() more than you did in your previous version:
-
-	static inline void signal_wake_up(struct task_struct *t, bool resume)
-	{
-		bool wakekill = resume && !(t->jobctl & JOBCTL_DELAY_WAKEKILL);
-		signal_wake_up_state(t, wakekill ? TASK_WAKEKILL : 0);
-	}
-
-JOBCTL_PTRACE_FROZEN is fine.
-
-ptrace_check_attach() can do
-
-	if (!ret && !ignore_state &&
-	    /*
-	     * This can only fail if the frozen tracee races with
-	     * SIGKILL and enters schedule() with fatal_signal_pending
-	     */
-	    !wait_task_inactive(child, __TASK_TRACED))
-		ret = -ESRCH;
-
-	return ret;
-
-
-Now. If/when we really need to ensure that the frozen tracee always
-blocks and wait_task_inactive() never fails, we can just do
-
-	- add the fatal_signal_pending() check into ptrace_stop()
-	  (like this patch does)
-
-	- say, change signal_pending_state:
-
-	static inline int signal_pending_state(unsigned int state, struct task_struct *p)
-	{
-		if (!(state & (TASK_INTERRUPTIBLE | TASK_WAKEKILL)))
-			return 0;
-		if (!signal_pending(p))
-			return 0;
-		if (p->jobctl & JOBCTL_TASK_FROZEN)
-			return 0;
-		return (state & TASK_INTERRUPTIBLE) || __fatal_signal_pending(p);
-	}
-
-in a separate patch which should carefully document the need for this
-change.
-
-> > I didn't look at JOBCTL_PTRACE_SIGNR yet. But this looks minor to me,
-> > I mean, I am not sure it worth the trouble.
->
-> The immediate problem the JOBCTL_PTRACE_SIGNR patch solves is:
-> - stopping in ptrace_report_syscall.
-> - Not having PT_TRACESYSGOOD set.
-> - The tracee being killed with a fatal signal
-        ^^^^^^
-        tracer ?
-> - The tracee sending SIGTRAP to itself.
-
-Oh, but this is clear. But do we really care? If the tracer exits
-unexpectedly, the tracee can have a lot more problems, I don't think
-that this particular one is that important.
-
-Oleg.
+diff --git a/drivers/media/i2c/ov5675.c b/drivers/media/i2c/ov5675.c
+index 82ba9f56baec..ccbc8dc506ff 100644
+--- a/drivers/media/i2c/ov5675.c
++++ b/drivers/media/i2c/ov5675.c
+@@ -3,10 +3,13 @@
+ 
+ #include <asm/unaligned.h>
+ #include <linux/acpi.h>
++#include <linux/clk.h>
+ #include <linux/delay.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/i2c.h>
+ #include <linux/module.h>
+ #include <linux/pm_runtime.h>
++#include <linux/regulator/consumer.h>
+ #include <media/v4l2-ctrls.h>
+ #include <media/v4l2-device.h>
+ #include <media/v4l2-fwnode.h>
+@@ -17,7 +20,7 @@
+ 
+ #define OV5675_LINK_FREQ_450MHZ		450000000ULL
+ #define OV5675_SCLK			90000000LL
+-#define OV5675_MCLK			19200000
++#define OV5675_XVCLK_19_2		19200000
+ #define OV5675_DATA_LANES		2
+ #define OV5675_RGB_DEPTH		10
+ 
+@@ -76,6 +79,14 @@
+ 
+ #define to_ov5675(_sd)			container_of(_sd, struct ov5675, sd)
+ 
++static const char * const ov5675_supply_names[] = {
++	"avdd",		/* Analog power */
++	"dovdd",	/* Digital I/O power */
++	"dvdd",		/* Digital core power */
++};
++
++#define OV5675_NUM_SUPPLIES	ARRAY_SIZE(ov5675_supply_names)
++
+ enum {
+ 	OV5675_LINK_FREQ_900MBPS,
+ };
+@@ -484,6 +495,9 @@ struct ov5675 {
+ 	struct v4l2_subdev sd;
+ 	struct media_pad pad;
+ 	struct v4l2_ctrl_handler ctrl_handler;
++	struct clk		*xvclk;
++	struct gpio_desc	*reset_gpio;
++	struct regulator_bulk_data supplies[OV5675_NUM_SUPPLIES];
+ 
+ 	/* V4L2 Controls */
+ 	struct v4l2_ctrl *link_freq;
+@@ -944,6 +958,52 @@ static int ov5675_set_stream(struct v4l2_subdev *sd, int enable)
+ 	return ret;
+ }
+ 
++static void __ov5675_power_off(struct ov5675 *ov5675)
++{
++	struct i2c_client *client = v4l2_get_subdevdata(&ov5675->sd);
++
++	if (is_acpi_node(dev_fwnode(&client->dev)))
++		return;
++
++	gpiod_set_value_cansleep(ov5675->reset_gpio, 1);
++	usleep_range(1000, 1200);
++
++	regulator_bulk_disable(OV5675_NUM_SUPPLIES, ov5675->supplies);
++	clk_disable_unprepare(ov5675->xvclk);
++}
++
++static int __ov5675_power_on(struct ov5675 *ov5675)
++{
++	struct i2c_client *client = v4l2_get_subdevdata(&ov5675->sd);
++	int ret;
++
++	if (is_acpi_node(dev_fwnode(&client->dev)))
++		return 0;
++
++	ret = clk_prepare_enable(ov5675->xvclk);
++	if (ret < 0) {
++		dev_err(&client->dev, "failed to enable xvclk: %d\n", ret);
++		return ret;
++	}
++
++	gpiod_set_value_cansleep(ov5675->reset_gpio, 1);
++
++	/* Reset pulse should be at least 2ms */
++	usleep_range(2000, 2200);
++
++	ret = regulator_bulk_enable(OV5675_NUM_SUPPLIES, ov5675->supplies);
++	if (ret) {
++		clk_disable_unprepare(ov5675->xvclk);
++		return ret;
++	}
++
++	gpiod_set_value_cansleep(ov5675->reset_gpio, 0);
++
++	usleep_range(1000, 1200);
++
++	return 0;
++}
++
+ static int __maybe_unused ov5675_suspend(struct device *dev)
+ {
+ 	struct v4l2_subdev *sd = dev_get_drvdata(dev);
+@@ -953,6 +1013,7 @@ static int __maybe_unused ov5675_suspend(struct device *dev)
+ 	if (ov5675->streaming)
+ 		ov5675_stop_streaming(ov5675);
+ 
++	__ov5675_power_off(ov5675);
+ 	mutex_unlock(&ov5675->mutex);
+ 
+ 	return 0;
+@@ -965,6 +1026,8 @@ static int __maybe_unused ov5675_resume(struct device *dev)
+ 	int ret;
+ 
+ 	mutex_lock(&ov5675->mutex);
++
++	__ov5675_power_on(ov5675);
+ 	if (ov5675->streaming) {
+ 		ret = ov5675_start_streaming(ov5675);
+ 		if (ret) {
+@@ -1106,32 +1169,60 @@ static const struct v4l2_subdev_internal_ops ov5675_internal_ops = {
+ 	.open = ov5675_open,
+ };
+ 
+-static int ov5675_check_hwcfg(struct device *dev)
++static int ov5675_get_hwcfg(struct ov5675 *ov5675, struct device *dev)
+ {
+ 	struct fwnode_handle *ep;
+ 	struct fwnode_handle *fwnode = dev_fwnode(dev);
+ 	struct v4l2_fwnode_endpoint bus_cfg = {
+ 		.bus_type = V4L2_MBUS_CSI2_DPHY
+ 	};
+-	u32 mclk;
++	u32 xvclk_rate;
+ 	int ret;
+ 	unsigned int i, j;
+ 
+ 	if (!fwnode)
+ 		return -ENXIO;
+ 
+-	ret = fwnode_property_read_u32(fwnode, "clock-frequency", &mclk);
++	ret = fwnode_property_read_u32(fwnode, "clock-frequency", &xvclk_rate);
+ 
+ 	if (ret) {
+ 		dev_err(dev, "can't get clock frequency");
+ 		return ret;
+ 	}
+ 
+-	if (mclk != OV5675_MCLK) {
+-		dev_err(dev, "external clock %d is not supported", mclk);
++	if (!is_acpi_node(fwnode)) {
++		ov5675->xvclk = devm_clk_get(dev, "xvclk");
++		if (IS_ERR(ov5675->xvclk)) {
++			ret = PTR_ERR(ov5675->xvclk);
++			dev_err(dev, "failed to get xvclk: %d\n", ret);
++			return ret;
++		}
++
++		clk_set_rate(ov5675->xvclk, xvclk_rate);
++		xvclk_rate = clk_get_rate(ov5675->xvclk);
++	}
++
++	if (xvclk_rate != OV5675_XVCLK_19_2) {
++		dev_err(dev, "external clock rate %u is unsupported", xvclk_rate);
+ 		return -EINVAL;
+ 	}
+ 
++	ov5675->reset_gpio = devm_gpiod_get_optional(dev, "reset",
++						     GPIOD_OUT_HIGH);
++	if (IS_ERR(ov5675->reset_gpio)) {
++		ret = PTR_ERR(ov5675->reset_gpio);
++		dev_err(dev, "failed to get reset-gpios: %d\n", ret);
++		return ret;
++	}
++
++	for (i = 0; i < OV5675_NUM_SUPPLIES; i++)
++		ov5675->supplies[i].supply = ov5675_supply_names[i];
++
++	ret = devm_regulator_bulk_get(dev, OV5675_NUM_SUPPLIES,
++				      ov5675->supplies);
++	if (ret)
++		return ret;
++
+ 	ep = fwnode_graph_get_next_endpoint(fwnode, NULL);
+ 	if (!ep)
+ 		return -ENXIO;
+@@ -1186,6 +1277,8 @@ static int ov5675_remove(struct i2c_client *client)
+ 	pm_runtime_disable(&client->dev);
+ 	mutex_destroy(&ov5675->mutex);
+ 
++	__ov5675_power_off(ov5675);
++
+ 	return 0;
+ }
+ 
+@@ -1195,25 +1288,31 @@ static int ov5675_probe(struct i2c_client *client)
+ 	bool full_power;
+ 	int ret;
+ 
+-	ret = ov5675_check_hwcfg(&client->dev);
++	ov5675 = devm_kzalloc(&client->dev, sizeof(*ov5675), GFP_KERNEL);
++	if (!ov5675)
++		return -ENOMEM;
++
++	ret = ov5675_get_hwcfg(ov5675, &client->dev);
+ 	if (ret) {
+-		dev_err(&client->dev, "failed to check HW configuration: %d",
++		dev_err(&client->dev, "failed to get HW configuration: %d",
+ 			ret);
+ 		return ret;
+ 	}
+ 
+-	ov5675 = devm_kzalloc(&client->dev, sizeof(*ov5675), GFP_KERNEL);
+-	if (!ov5675)
+-		return -ENOMEM;
+-
+ 	v4l2_i2c_subdev_init(&ov5675->sd, client, &ov5675_subdev_ops);
+ 
++	ret = __ov5675_power_on(ov5675);
++	if (ret) {
++		dev_err(&client->dev, "failed to power on: %d\n", ret);
++		return ret;
++	}
++
+ 	full_power = acpi_dev_state_d0(&client->dev);
+ 	if (full_power) {
+ 		ret = ov5675_identify_module(ov5675);
+ 		if (ret) {
+ 			dev_err(&client->dev, "failed to find sensor: %d", ret);
+-			return ret;
++			goto probe_power_off;
+ 		}
+ 	}
+ 
+@@ -1262,6 +1361,8 @@ static int ov5675_probe(struct i2c_client *client)
+ probe_error_v4l2_ctrl_handler_free:
+ 	v4l2_ctrl_handler_free(ov5675->sd.ctrl_handler);
+ 	mutex_destroy(&ov5675->mutex);
++probe_power_off:
++	__ov5675_power_off(ov5675);
+ 
+ 	return ret;
+ }
+@@ -1279,11 +1380,18 @@ static const struct acpi_device_id ov5675_acpi_ids[] = {
+ MODULE_DEVICE_TABLE(acpi, ov5675_acpi_ids);
+ #endif
+ 
++static const struct of_device_id ov5675_of_match[] = {
++	{ .compatible = "ovti,ov5675", },
++	{ /* sentinel */ },
++};
++MODULE_DEVICE_TABLE(of, ov5675_of_match);
++
+ static struct i2c_driver ov5675_i2c_driver = {
+ 	.driver = {
+ 		.name = "ov5675",
+ 		.pm = &ov5675_pm_ops,
+ 		.acpi_match_table = ACPI_PTR(ov5675_acpi_ids),
++		.of_match_table = ov5675_of_match,
+ 	},
+ 	.probe_new = ov5675_probe,
+ 	.remove = ov5675_remove,
+-- 
+2.35.1
 
