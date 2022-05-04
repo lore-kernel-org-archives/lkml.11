@@ -2,138 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:24:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 593C8C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:24:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353415AbiEDQ1u (ORCPT
+        id S1353423AbiEDQ2b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:27:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60620 "EHLO
+        Wed, 4 May 2022 12:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353447AbiEDQ1s (ORCPT
+        with ESMTP id S233593AbiEDQ23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:27:48 -0400
-Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A07D46B30
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:24:04 -0700 (PDT)
-Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-e5e433d66dso1676245fac.5
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 09:24:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Zo3O6tVQd44QV+x14eWm1UztwGioRdt6e/ffaJNkFVk=;
-        b=liDHjBfLPT03qcEt5udttgxkBTlhkRj9QEnRjXqeDsGrQRYS1FSPoazeSWJPZLAMyU
-         a2MeQW559qQu9bBU+g4rBc/O0nKIqVUQN5/Ui9Hen7gD/IO8KpywTphZ5lsDcONdNwkI
-         zYhhfKc+0TUPOH7cURTrnodrtzKw/QPWLStxtEsHd7oXucjnz1GF+sbU5Hwl4q3kqLAf
-         xmtAu6IGgFQH2e+fVzpCcTSyT/ldQjVs2SQJ6CX0NhnyRoE46sKAw2GcQPPXz6AZl0mj
-         vQbi3DLL+yebcIQV/Offd+ZatlVFtrMtzhDuonkUXXfcprfyRjjGJnYyL0Yf1glmjGZK
-         NMBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Zo3O6tVQd44QV+x14eWm1UztwGioRdt6e/ffaJNkFVk=;
-        b=dGu4AZy0ImFdyKVq1UUIxpz2YhhilTfDDeFQdDqq1o/ZtLzQBdgRmxrwlCMqfmMmtM
-         a/1096qB6S0qlxE8j22Zv7kYwHfe+zRGJMa5iy4W6yrvuABKhVYDpGRdkA6LkE+bV+id
-         /1mjsp8NTNeod1xoT0Er6q00IXzvlY1r+g3vR1zv6FBfs3XzA/KP52NExuN3AuC5hPDA
-         z6WXGF0JajuS+9npGbOpGMYKDPMWHOQBDV6QncM0HYWi32zjQts4HmLvd0O6u/C+0ocA
-         L97gjnVXzfL5oBtShJxo/Z1jjqR1bM8CYQZXotOEpGv4rq9qCmljLZl5EK+mKBMcFI5H
-         /quA==
-X-Gm-Message-State: AOAM5319n/Z/sCzI1rGMcgF+CTnPJTK+YDtV+l+cGPitzWlCXTZD3laz
-        UUHKNKOSujKBDSuNMaTz+YYYRQ==
-X-Google-Smtp-Source: ABdhPJxvTbJfQYVVkk06vmzUGhiMMpd6Af2yf8dg0IE6RS4vB2z6lPNUei0kcgWWXLi3e5slxqg8vg==
-X-Received: by 2002:a05:6870:5708:b0:db:2ef8:f220 with SMTP id k8-20020a056870570800b000db2ef8f220mr131572oap.198.1651681443863;
-        Wed, 04 May 2022 09:24:03 -0700 (PDT)
-Received: from localhost ([8.34.116.185])
-        by smtp.gmail.com with ESMTPSA id b21-20020a056870b25500b000eba4901e57sm5699113oam.17.2022.05.04.09.24.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 09:24:03 -0700 (PDT)
-Date:   Wed, 4 May 2022 09:23:14 -0700
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Michal Hocko <mhocko@suse.com>,
-        "Liam R. Howlett" <liam.howlett@oracle.com>,
-        Michel Lespinasse <walken.cr@gmail.com>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>
-Subject: Re: Memory allocation on speculative fastpaths
-Message-ID: <YnKocgiWrupyFki3@cmpxchg.org>
-References: <20220503155913.GA1187610@paulmck-ThinkPad-P17-Gen-1>
- <YnFSfc8BR8CadOtw@dhcp22.suse.cz>
- <20220503163905.GM1790663@paulmck-ThinkPad-P17-Gen-1>
- <YnF0RyBaBSC1mdKo@casper.infradead.org>
- <CAJuCfpG8mBCV8O=FWwTJj8zfoh68fH9kBraMEjxKUvCyEw2MFw@mail.gmail.com>
+        Wed, 4 May 2022 12:28:29 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6F146675;
+        Wed,  4 May 2022 09:24:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651681492; x=1683217492;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=lIZS8L9hUURotYWnPIQEjJsG5uiWV1waq7GDXPVIqcc=;
+  b=gExUBy8e2Cihm/6XjCUMw7vxfEqmclF77qKJoR3k0GbAblzfMm/VX3tV
+   /19mYH11fGepyzx0wbCkvWVz5xyctii3eWJRWkPexTyqaQ+bRuB3I3myr
+   c8qCIvrF/joHyr83Dp2czBNZi7aFDdIL97M+z70Sd/kpflcfYqP4N8dvz
+   5u/lUA5aL3ZnbNNW5iMSrdr5+Q6ny72G4RLl7tU/viLk8YWYTmj9+vmNm
+   2O/4dn6QpnfD/JgsfHSzUWCyzSFc4cnUfRaSW8L9+57c09WNGsg6V+ROn
+   uMNCF/8nOPidkU69grdbB7RPngkIzbZoINEfsmkt171pb/mPVFAS4VofM
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="293004702"
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="293004702"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 09:24:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="599597736"
+Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
+  by orsmga001.jf.intel.com with ESMTP; 04 May 2022 09:24:51 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 4 May 2022 09:24:51 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 4 May 2022 09:24:50 -0700
+Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
+ fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.2308.027;
+ Wed, 4 May 2022 09:24:50 -0700
+From:   "Luck, Tony" <tony.luck@intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        "hdegoede@redhat.com" <hdegoede@redhat.com>,
+        "markgross@kernel.org" <markgross@kernel.org>
+CC:     "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "Joseph, Jithu" <jithu.joseph@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>,
+        "patches@lists.linux.dev" <patches@lists.linux.dev>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>
+Subject: RE: [PATCH v5 03/10] platform/x86/intel/ifs: Add stub driver for
+ In-Field Scan
+Thread-Topic: [PATCH v5 03/10] platform/x86/intel/ifs: Add stub driver for
+ In-Field Scan
+Thread-Index: AQHYWxYWmJjf7gsCY0aglBAPDxFRY60PBIYA///pJDA=
+Date:   Wed, 4 May 2022 16:24:50 +0000
+Message-ID: <eedc3fa9ec47494590be66ad66f90bb7@intel.com>
+References: <20220422200219.2843823-1-tony.luck@intel.com>
+ <20220428153849.295779-1-tony.luck@intel.com>
+ <20220428153849.295779-4-tony.luck@intel.com> <87zgjxk2kt.ffs@tglx>
+In-Reply-To: <87zgjxk2kt.ffs@tglx>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.401.20
+x-originating-ip: [10.1.200.100]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJuCfpG8mBCV8O=FWwTJj8zfoh68fH9kBraMEjxKUvCyEw2MFw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 04:15:46PM -0700, Suren Baghdasaryan wrote:
-> On Tue, May 3, 2022 at 11:28 AM Matthew Wilcox <willy@infradead.org> wrote:
-> >
-> > On Tue, May 03, 2022 at 09:39:05AM -0700, Paul E. McKenney wrote:
-> > > On Tue, May 03, 2022 at 06:04:13PM +0200, Michal Hocko wrote:
-> > > > On Tue 03-05-22 08:59:13, Paul E. McKenney wrote:
-> > > > > Hello!
-> > > > >
-> > > > > Just following up from off-list discussions yesterday.
-> > > > >
-> > > > > The requirements to allocate on an RCU-protected speculative fastpath
-> > > > > seem to be as follows:
-> > > > >
-> > > > > 1.        Never sleep.
-> > > > > 2.        Never reclaim.
-> > > > > 3.        Leave emergency pools alone.
-> > > > >
-> > > > > Any others?
-> > > > >
-> > > > > If those rules suffice, and if my understanding of the GFP flags is
-> > > > > correct (ha!!!), then the following GFP flags should cover this:
-> > > > >
-> > > > >   __GFP_NOMEMALLOC | __GFP_NOWARN
-> > > >
-> > > > GFP_NOWAIT | __GFP_NOMEMALLOC | __GFP_NOWARN
-> > >
-> > > Ah, good point on GFP_NOWAIT, thank you!
-> >
-> > Johannes (I think it was?) made the point to me that if we have another
-> > task very slowly freeing memory, a task in this path can take advantage
-> > of that other task's hard work and never go into reclaim.  So the
-> > approach we should take is:
+>> +static const struct x86_cpu_id ifs_cpu_ids[] __initconst =3D {
+>> +	X86_MATCH(SAPPHIRERAPIDS_X),
+>
+> Why do we need a model match here? The core capabilities MSR is only
+> available when X86_FEATURE_CORE_CAPABILITIES is set:
+>
+>    "If CPUID.(EAX=3D07H, ECX=3D0):EDX[30] =3D 1.
+>     This MSR provides an architectural enumeration
+>     function for model-specific behavior."
+>
+> So checking for Intel Fam6 ANYMODEL and X86_FEATURE_CORE_CAPABILITIES is
+> sufficient, no?
 
-Right, GFP_NOWAIT can starve out other allocations. It can clear out
-the freelists without the burden of having to do reclaim like
-everybody else wanting memory during a shortage. Including GFP_KERNEL.
+IA32_CORE_CAPABILITES is a nightmare. Although it is an architectural
+register, the bits inside it are model specific.
 
-In smaller doses and/or for privileged purposes (e.g. single-argument
-kfree_rcu ;)), those allocations are fine. But because the context is
-page tables specifically, it would mean that userspace could trigger a
-large number of those and DOS other applications and the kernel.
+In particular bit 2 (which we check here for the existence of the INTEGRITY
+MSR) has been assigned for other use on other models. See SDM volume 4
+table 2-45 where bit 2 means FUSA supported on 06_8C and 06_8D (Tigerlake
+mobile and desktop). Ditto in table 2-46 (Alderlake and Raptorlake).
 
-> > p4d_alloc(GFP_NOWAIT | __GFP_NOMEMALLOC | __GFP_NOWARN);
-> > pud_alloc(GFP_NOWAIT | __GFP_NOMEMALLOC | __GFP_NOWARN);
-> > pmd_alloc(GFP_NOWAIT | __GFP_NOMEMALLOC | __GFP_NOWARN);
-> >
-> > if (failure) {
-> >   rcu_read_unlock();
-> >   do_reclaim();
-> >   return FAULT_FLAG_RETRY;
-> > }
-> >
-> > ... but all this is now moot since the approach we agreed to yesterday
-> > is:
-> 
-> I think the discussion was about the above approach and Johannes
-> suggested to fallback to the normal pagefault handling with mmap_lock
-> locked if PMD does not exist. Please correct me if I misunderstood
-> here.
+> We really don't need more match id tables with gazillions of CPU models.
 
-Yeah. Either way works, as long as the task is held accountable.
+Sadly we do :-(
+
+-Tony
