@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D67C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B4AAC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358280AbiEDR3z (ORCPT
+        id S1358255AbiEDR3w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40222 "EHLO
+        Wed, 4 May 2022 13:29:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356664AbiEDRJh (ORCPT
+        with ESMTP id S1356649AbiEDRJh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC34AE02E;
-        Wed,  4 May 2022 09:55:22 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7A4949FB4;
+        Wed,  4 May 2022 09:55:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A59A8617DE;
-        Wed,  4 May 2022 16:55:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 023CFC385A4;
-        Wed,  4 May 2022 16:55:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50C8BB8278E;
+        Wed,  4 May 2022 16:55:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04212C385A5;
+        Wed,  4 May 2022 16:55:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683321;
-        bh=qyER8K2QxBFIr0Kc3Q6zgBJENfDJNyjEhU0emb+6CjQ=;
+        s=korg; t=1651683315;
+        bh=DusKGaS4SC6aIyCCQNClYmGsE+SaM+XUOsobTQzBos4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jVZHXcvdpg2n3ZwSCIVWNhODwboPdPBjgFVRPsDKfzQOy2O2BJPWiEaK6Ervo1Hbd
-         Ww8FR+S+Oz9h4tmdC9btAI9iQDOvQpBe0Qk6O8Oc3j+rtw9mvqITpjDaB7D/qU5HrY
-         0NYthd7yEoL5O0a822m0TwpYEgVX5LrW6QfevKtU=
+        b=Z6++IPWzKz1v8EpfFpf3fKwhph+ZpHHQUDCAwm136qaAmiZSyYi799/2EDwzLx9Df
+         1YMbEa1t5YQblrS5uX4pzSVpI/1cPJ5A+t1H6qEwSz5BHPh6SW7ntG1eovWjMbN21s
+         Jz+tGDImWCqV7o3uvq/kUx8+y6xXpJ+KiXdiLcd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.15 172/177] tty: n_gsm: fix software flow control handling
-Date:   Wed,  4 May 2022 18:46:05 +0200
-Message-Id: <20220504153109.013429794@linuxfoundation.org>
+Subject: [PATCH 5.15 157/177] tty: n_gsm: fix restart handling via CLD command
+Date:   Wed,  4 May 2022 18:45:50 +0200
+Message-Id: <20220504153107.482892453@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,84 +50,163 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-commit f4f7d63287217ba25e5c80f5faae5e4f7118790e upstream.
+commit aa371e96f05dcb36a88298f5cb70aa7234d5e8b8 upstream.
 
 n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
 See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
 The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.4.8.1 states that XON/XOFF characters
-shall be used instead of Fcon/Fcoff command in advanced option mode to
-handle flow control. Chapter 5.4.8.2 describes how XON/XOFF characters
-shall be handled. Basic option mode only used Fcon/Fcoff commands and no
-XON/XOFF characters. These are treated as data bytes here.
-The current implementation uses the gsm_mux field 'constipated' to handle
-flow control from the remote peer and the gsm_dlci field 'constipated' to
-handle flow control from each DLCI. The later is unrelated to this patch.
-The gsm_mux field is correctly set for Fcon/Fcoff commands in
-gsm_control_message(). However, the same is not true for XON/XOFF
-characters in gsm1_receive().
-Disable software flow control handling in the tty to allow explicit
-handling by n_gsm.
-Add the missing handling in advanced option mode for gsm_mux in
-gsm1_receive() to comply with the standard.
+the newer 27.010 here. Chapter 5.8.2 states that both sides will revert to
+the non-multiplexed mode via a close-down message (CLD). The usual program
+flow is as following:
+- start multiplex mode by sending AT+CMUX to the mobile
+- establish the control channel (DLCI 0)
+- establish user channels (DLCI >0)
+- terminate user channels
+- send close-down message (CLD)
+- revert to AT protocol (i.e. leave multiplexed mode)
 
-This patch depends on the following commit:
-Commit 8838b2af23ca ("tty: n_gsm: fix SW flow control encoding/handling")
+The AT protocol is out of scope of the n_gsm driver. However,
+gsm_disconnect() sends CLD if gsm_config() detects that the requested
+parameters require the mux protocol to restart. The next immediate action
+is to start the mux protocol by opening DLCI 0 again. Any responder side
+which handles CLD commands correctly forces us to fail at this point
+because AT+CMUX needs to be sent to the mobile to start the mux again.
+Therefore, remove the CLD command in this phase and keep both sides in
+multiplexed mode.
+Remove the gsm_disconnect() function as it become unnecessary and merge the
+remaining parts into gsm_cleanup_mux() to handle the termination order and
+locking correctly.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Fixes: 71e077915396 ("tty: n_gsm: do not send/receive in ldisc close path")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220422071025.5490-3-daniel.starke@siemens.com
+Link: https://lore.kernel.org/r/20220414094225.4527-2-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |   16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/tty/n_gsm.c |   68 +++++++++++++++-------------------------------------
+ 1 file changed, 20 insertions(+), 48 deletions(-)
 
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -233,6 +233,7 @@ struct gsm_mux {
- 	int initiator;			/* Did we initiate connection */
- 	bool dead;			/* Has the mux been shut down */
- 	struct gsm_dlci *dlci[NUM_DLCI];
-+	int old_c_iflag;		/* termios c_iflag value before attach */
- 	bool constipated;		/* Asked by remote to shut up */
+@@ -2048,49 +2048,35 @@ static void gsm_error(struct gsm_mux *gs
+ 	gsm->io_error++;
+ }
  
- 	spinlock_t tx_lock;
-@@ -1959,6 +1960,16 @@ static void gsm0_receive(struct gsm_mux
+-static int gsm_disconnect(struct gsm_mux *gsm)
+-{
+-	struct gsm_dlci *dlci = gsm->dlci[0];
+-	struct gsm_control *gc;
+-
+-	if (!dlci)
+-		return 0;
+-
+-	/* In theory disconnecting DLCI 0 is sufficient but for some
+-	   modems this is apparently not the case. */
+-	gc = gsm_control_send(gsm, CMD_CLD, NULL, 0);
+-	if (gc)
+-		gsm_control_wait(gsm, gc);
+-
+-	del_timer_sync(&gsm->t2_timer);
+-	/* Now we are sure T2 has stopped */
+-
+-	gsm_dlci_begin_close(dlci);
+-	wait_event_interruptible(gsm->event,
+-				dlci->state == DLCI_CLOSED);
+-
+-	if (signal_pending(current))
+-		return -EINTR;
+-
+-	return 0;
+-}
+-
+ /**
+  *	gsm_cleanup_mux		-	generic GSM protocol cleanup
+  *	@gsm: our mux
++ *	@disc: disconnect link?
+  *
+  *	Clean up the bits of the mux which are the same for all framing
+  *	protocols. Remove the mux from the mux table, stop all the timers
+  *	and then shut down each device hanging up the channels as we go.
+  */
  
- static void gsm1_receive(struct gsm_mux *gsm, unsigned char c)
+-static void gsm_cleanup_mux(struct gsm_mux *gsm)
++static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
  {
-+	/* handle XON/XOFF */
-+	if ((c & ISO_IEC_646_MASK) == XON) {
-+		gsm->constipated = true;
-+		return;
-+	} else if ((c & ISO_IEC_646_MASK) == XOFF) {
-+		gsm->constipated = false;
-+		/* Kick the link in case it is idling */
-+		gsm_data_kick(gsm, NULL);
-+		return;
-+	}
- 	if (c == GSM1_SOF) {
- 		/* EOF is only valid in frame if we have got to the data state
- 		   and received at least one byte (the FCS) */
-@@ -2377,6 +2388,9 @@ static int gsmld_attach_gsm(struct tty_s
- 	int ret, i;
+ 	int i;
+ 	struct gsm_dlci *dlci = gsm->dlci[0];
+ 	struct gsm_msg *txq, *ntxq;
  
- 	gsm->tty = tty_kref_get(tty);
-+	/* Turn off tty XON/XOFF handling to handle it explicitly. */
-+	gsm->old_c_iflag = tty->termios.c_iflag;
-+	tty->termios.c_iflag &= (IXON | IXOFF);
- 	ret =  gsm_activate_mux(gsm);
- 	if (ret != 0)
- 		tty_kref_put(gsm->tty);
-@@ -2417,6 +2431,8 @@ static void gsmld_detach_gsm(struct tty_
+ 	gsm->dead = true;
++	mutex_lock(&gsm->mutex);
++
++	if (dlci) {
++		if (disc && dlci->state != DLCI_CLOSED) {
++			gsm_dlci_begin_close(dlci);
++			wait_event(gsm->event, dlci->state == DLCI_CLOSED);
++		}
++		dlci->dead = true;
++	}
++
++	/* Finish outstanding timers, making sure they are done */
++	del_timer_sync(&gsm->t2_timer);
+ 
+ 	spin_lock(&gsm_mux_lock);
+ 	for (i = 0; i < MAX_MUX; i++) {
+@@ -2104,13 +2090,7 @@ static void gsm_cleanup_mux(struct gsm_m
+ 	if (i == MAX_MUX)
+ 		return;
+ 
+-	del_timer_sync(&gsm->t2_timer);
+-	/* Now we are sure T2 has stopped */
+-	if (dlci)
+-		dlci->dead = true;
+-
+ 	/* Free up any link layer users */
+-	mutex_lock(&gsm->mutex);
+ 	for (i = 0; i < NUM_DLCI; i++)
+ 		if (gsm->dlci[i])
+ 			gsm_dlci_release(gsm->dlci[i]);
+@@ -2312,19 +2292,11 @@ static int gsm_config(struct gsm_mux *gs
+ 
+ 	/*
+ 	 * Close down what is needed, restart and initiate the new
+-	 * configuration
++	 * configuration. On the first time there is no DLCI[0]
++	 * and closing or cleaning up is not necessary.
+ 	 */
+-
+-	if (need_close || need_restart) {
+-		int ret;
+-
+-		ret = gsm_disconnect(gsm);
+-
+-		if (ret)
+-			return ret;
+-	}
+-	if (need_restart)
+-		gsm_cleanup_mux(gsm);
++	if (need_close || need_restart)
++		gsm_cleanup_mux(gsm, true);
+ 
+ 	gsm->initiator = c->initiator;
+ 	gsm->mru = c->mru;
+@@ -2433,7 +2405,7 @@ static void gsmld_detach_gsm(struct tty_
  	WARN_ON(tty != gsm->tty);
  	for (i = 1; i < NUM_DLCI; i++)
  		tty_unregister_device(gsm_tty_driver, base + i);
-+	/* Restore tty XON/XOFF handling. */
-+	gsm->tty->termios.c_iflag = gsm->old_c_iflag;
+-	gsm_cleanup_mux(gsm);
++	gsm_cleanup_mux(gsm, false);
  	tty_kref_put(gsm->tty);
  	gsm->tty = NULL;
  }
+@@ -2536,7 +2508,7 @@ static int gsmld_open(struct tty_struct
+ 
+ 	ret = gsmld_attach_gsm(tty, gsm);
+ 	if (ret != 0) {
+-		gsm_cleanup_mux(gsm);
++		gsm_cleanup_mux(gsm, false);
+ 		mux_put(gsm);
+ 	}
+ 	return ret;
 
 
