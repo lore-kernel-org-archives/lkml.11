@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4178C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:14:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F4AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:14:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356605AbiEDRSJ (ORCPT
+        id S1356629AbiEDRSW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
+        Wed, 4 May 2022 13:18:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356087AbiEDREw (ORCPT
+        with ESMTP id S1356099AbiEDREx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9397F50450;
-        Wed,  4 May 2022 09:53:47 -0700 (PDT)
+        Wed, 4 May 2022 13:04:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B7E50455;
+        Wed,  4 May 2022 09:53:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3380561896;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5679B8279F;
+        Wed,  4 May 2022 16:53:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78E1FC385A5;
         Wed,  4 May 2022 16:53:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81186C385A5;
-        Wed,  4 May 2022 16:53:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683226;
-        bh=vAIc1uurf7tCoXg8ZlsD2kbeWm6s3yVfceQCPAEYxTE=;
+        s=korg; t=1651683227;
+        bh=IiuLVqn+41hK/TvtV51P7ny7tLaJWsoNCR7nCU1SY98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mTSGT0KYXGCnWlKkYtaBzg/uXc/lSLm8uk+225OdysS+OyJXpk9z9jR3kFX8/qtPp
-         Fuxv8FDXAEj0sv/PGcyKekuF5QkuKUIeC4DqS5dYD7E8VkixL2COvClsfIGn3ajNZ+
-         VvHH4ozcBlb7gjSKbpVV1cVhVtKtdOT/p9Y8hKrM=
+        b=KukplC2U0TZ6FMtV794VfOiEzd24mYzXeww5Q/J43MsDrY29RDxevypEHk3Nujlct
+         njDZF0qq3t7U0sQuPWfa/Jgh25c695dXl92GtHeD0YoFJPt88hfG0K+4zyaXC7lFOG
+         zyQvRT+JVTNOK0806JdvnsaLNXJbKsP1R0winnUk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Ceresoli <luca.ceresoli@bootlin.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Xiaobing Luo <luoxiaobing0926@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 083/177] pinctrl: rockchip: fix RK3308 pinmux bits
-Date:   Wed,  4 May 2022 18:44:36 +0200
-Message-Id: <20220504153100.481207487@linuxfoundation.org>
+Subject: [PATCH 5.15 092/177] cpufreq: fix memory leak in sun50i_cpufreq_nvmem_probe
+Date:   Wed,  4 May 2022 18:44:45 +0200
+Message-Id: <20220504153101.347699471@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,159 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Ceresoli <luca.ceresoli@bootlin.com>
+From: Xiaobing Luo <luoxiaobing0926@gmail.com>
 
-[ Upstream commit 1f3e25a068832f8892a5ff71467622d012f5bc9f ]
+[ Upstream commit 1aa24a8f3b5133dae4bc1e57427e345445f3e902 ]
 
-Some of the pinmuxing bits described in rk3308_mux_recalced_data are wrong,
-pointing to non-existing registers.
+--------------------------------------------
+unreferenced object 0xffff000010742a00 (size 128):
+  comm "swapper/0", pid 1, jiffies 4294902015 (age 1187.652s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<00000000b4dfebaa>] __kmalloc+0x338/0x474
+    [<00000000d6e716db>] sun50i_cpufreq_nvmem_probe+0xc4/0x36c
+    [<000000007d6082a0>] platform_probe+0x98/0x11c
+    [<00000000c990f549>] really_probe+0x234/0x5a0
+    [<000000002d9fecc6>] __driver_probe_device+0x194/0x224
+    [<00000000cf0b94fa>] driver_probe_device+0x64/0x13c
+    [<00000000f238e4cf>] __device_attach_driver+0xf8/0x180
+    [<000000006720e418>] bus_for_each_drv+0xf8/0x160
+    [<00000000df4f14f6>] __device_attach+0x174/0x29c
+    [<00000000782002fb>] device_initial_probe+0x20/0x30
+    [<00000000c2681b06>] bus_probe_device+0xfc/0x110
+    [<00000000964cf3bd>] device_add+0x5f0/0xcd0
+    [<000000004b9264e3>] platform_device_add+0x198/0x390
+    [<00000000fa82a9d0>] platform_device_register_full+0x178/0x210
+    [<000000009a5daf13>] sun50i_cpufreq_init+0xf8/0x168
+    [<000000000377cc7c>] do_one_initcall+0xe4/0x570
+--------------------------------------------
 
-Fix the entire table.
+if sun50i_cpufreq_get_efuse failed, then opp_tables leak.
 
-Also add a comment in front of each entry with the same string that appears
-in the datasheet to make the table easier to compare with the docs.
-
-This fix has been tested on real hardware for the gpio3b3_sel entry.
-
-Fixes: 7825aeb7b208 ("pinctrl: rockchip: add rk3308 SoC support")
-Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://lore.kernel.org/r/20220420142432.248565-1-luca.ceresoli@bootlin.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: f328584f7bff ("cpufreq: Add sun50i nvmem based CPU scaling driver")
+Signed-off-by: Xiaobing Luo <luoxiaobing0926@gmail.com>
+Reviewed-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-rockchip.c | 45 ++++++++++++++++++++----------
- 1 file changed, 30 insertions(+), 15 deletions(-)
+ drivers/cpufreq/sun50i-cpufreq-nvmem.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
-index 923ff21a44c0..543a4991cf70 100644
---- a/drivers/pinctrl/pinctrl-rockchip.c
-+++ b/drivers/pinctrl/pinctrl-rockchip.c
-@@ -455,95 +455,110 @@ static  struct rockchip_mux_recalced_data rk3128_mux_recalced_data[] = {
+diff --git a/drivers/cpufreq/sun50i-cpufreq-nvmem.c b/drivers/cpufreq/sun50i-cpufreq-nvmem.c
+index 2deed8d8773f..75e1bf3a08f7 100644
+--- a/drivers/cpufreq/sun50i-cpufreq-nvmem.c
++++ b/drivers/cpufreq/sun50i-cpufreq-nvmem.c
+@@ -98,8 +98,10 @@ static int sun50i_cpufreq_nvmem_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
  
- static struct rockchip_mux_recalced_data rk3308_mux_recalced_data[] = {
- 	{
-+		/* gpio1b6_sel */
- 		.num = 1,
- 		.pin = 14,
- 		.reg = 0x28,
- 		.bit = 12,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1b7_sel */
- 		.num = 1,
- 		.pin = 15,
- 		.reg = 0x2c,
- 		.bit = 0,
- 		.mask = 0x3
- 	}, {
-+		/* gpio1c2_sel */
- 		.num = 1,
- 		.pin = 18,
- 		.reg = 0x30,
- 		.bit = 4,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c3_sel */
- 		.num = 1,
- 		.pin = 19,
- 		.reg = 0x30,
- 		.bit = 8,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c4_sel */
- 		.num = 1,
- 		.pin = 20,
- 		.reg = 0x30,
- 		.bit = 12,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c5_sel */
- 		.num = 1,
- 		.pin = 21,
- 		.reg = 0x34,
- 		.bit = 0,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c6_sel */
- 		.num = 1,
- 		.pin = 22,
- 		.reg = 0x34,
- 		.bit = 4,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c7_sel */
- 		.num = 1,
- 		.pin = 23,
- 		.reg = 0x34,
- 		.bit = 8,
- 		.mask = 0xf
- 	}, {
-+		/* gpio3b4_sel */
- 		.num = 3,
- 		.pin = 12,
- 		.reg = 0x68,
- 		.bit = 8,
- 		.mask = 0xf
- 	}, {
-+		/* gpio3b5_sel */
- 		.num = 3,
- 		.pin = 13,
- 		.reg = 0x68,
- 		.bit = 12,
- 		.mask = 0xf
- 	}, {
-+		/* gpio2a2_sel */
- 		.num = 2,
- 		.pin = 2,
--		.reg = 0x608,
--		.bit = 0,
--		.mask = 0x7
-+		.reg = 0x40,
-+		.bit = 4,
-+		.mask = 0x3
- 	}, {
-+		/* gpio2a3_sel */
- 		.num = 2,
- 		.pin = 3,
--		.reg = 0x608,
--		.bit = 4,
--		.mask = 0x7
-+		.reg = 0x40,
-+		.bit = 6,
-+		.mask = 0x3
- 	}, {
-+		/* gpio2c0_sel */
- 		.num = 2,
- 		.pin = 16,
--		.reg = 0x610,
--		.bit = 8,
--		.mask = 0x7
-+		.reg = 0x50,
-+		.bit = 0,
-+		.mask = 0x3
- 	}, {
-+		/* gpio3b2_sel */
- 		.num = 3,
- 		.pin = 10,
--		.reg = 0x610,
--		.bit = 0,
--		.mask = 0x7
-+		.reg = 0x68,
-+		.bit = 4,
-+		.mask = 0x3
- 	}, {
-+		/* gpio3b3_sel */
- 		.num = 3,
- 		.pin = 11,
--		.reg = 0x610,
--		.bit = 4,
--		.mask = 0x7
-+		.reg = 0x68,
-+		.bit = 6,
-+		.mask = 0x3
- 	},
- };
+ 	ret = sun50i_cpufreq_get_efuse(&speed);
+-	if (ret)
++	if (ret) {
++		kfree(opp_tables);
+ 		return ret;
++	}
+ 
+ 	snprintf(name, MAX_NAME_LEN, "speed%d", speed);
  
 -- 
 2.35.1
