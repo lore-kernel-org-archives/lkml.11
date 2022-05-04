@@ -2,141 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 973A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45021C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:59:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350115AbiEDNBO (ORCPT
+        id S1350124AbiEDNDG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 09:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45078 "EHLO
+        Wed, 4 May 2022 09:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235988AbiEDNBK (ORCPT
+        with ESMTP id S235988AbiEDNDE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 09:01:10 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBE13BA50;
-        Wed,  4 May 2022 05:57:34 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id u3so1920051wrg.3;
-        Wed, 04 May 2022 05:57:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:subject:to:cc:message-id:in-reply-to:references
-         :mime-version;
-        bh=kZZv9mgu5CwmRiMWt33fgzODsP/Bo5LczhPKHEYKI2g=;
-        b=P8vaQY9TUngwqCpijFd2d4LAeqJbERfj96ozEtY4mzt2p/c1Ywp7QSOfCTgTq+FJOO
-         Gbr4t70Tgv4ll5c1Q9qyQD+7wVYumYk6crLyqkNjC/HrTBPf8y2ybrG0cvsu2Ik5SRN/
-         JIP5BUgHCTVfVFcWhysaVBqlUCqdySDe929u/WByEhUtpO4obfaVaYFn3OgPodqJv5M8
-         sawCqySWh+/b8sbZwqH1cH7YPpXnGYwTbiE+WimD5cwoH5r5656z1snH0h6R4lvfm5X+
-         u/RD95dKWlF3dInYCUqun/LQgeX0c5ledhTrLWy1Wv6DMggWNPELirWNJGplpXEX0imC
-         RW6w==
+        Wed, 4 May 2022 09:03:04 -0400
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC703BFBF;
+        Wed,  4 May 2022 05:59:28 -0700 (PDT)
+Received: by mail-yb1-f170.google.com with SMTP id f38so2233591ybi.3;
+        Wed, 04 May 2022 05:59:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:subject:to:cc:message-id:in-reply-to
-         :references:mime-version;
-        bh=kZZv9mgu5CwmRiMWt33fgzODsP/Bo5LczhPKHEYKI2g=;
-        b=dSqeIUgMzWOpYh8MeLR21bxQdsYCJTXriodewfggnBXZ8sOOMEMGMo4WVZUoBcJlCC
-         eSfaUWSA2Yr0L9fAShFkLJ5Il+lLymQgMo3lQiEqQyimm/uQjCkP2k5r+eGsSn95drhA
-         9BiPGXov2vAD8+ANR1IEoMK90DTRSQrcyk4NAPBzOx1oGuIyAOhAldWCzkhn+U4DMrCA
-         brMD6XrmIu9D6ti+z8YAKoidWABdE3KGdAsF2zzl8sAqKtwxIbpvZqax9IsR6NFhdSrS
-         +Ra3pMXxX2yt5s6xT0K/8ANuqlYM5hLGaIXUbx65lnYN+M42E9i08aOAugx0MCq2ouQR
-         Z1dQ==
-X-Gm-Message-State: AOAM530/EGim4anPESUL5NBpiZmG6AkLL1ELRbEcbbyfB9c61wEvOzHe
-        54+3CrqC/JtzlKGH6X9H9W8=
-X-Google-Smtp-Source: ABdhPJyg2nw7z5umMABTaNhWVzD3nqvwRSbwwdit8bqaZZDXTjb6FZqLpoDfrj9rWMr0ZmKS70ECbw==
-X-Received: by 2002:a5d:510a:0:b0:20c:4452:3161 with SMTP id s10-20020a5d510a000000b0020c44523161mr16584044wrt.31.1651669053295;
-        Wed, 04 May 2022 05:57:33 -0700 (PDT)
-Received: from [192.168.98.247] (185-177-124-12.hosted-by-worldstream.net. [185.177.124.12])
-        by smtp.gmail.com with ESMTPSA id e13-20020adf9bcd000000b0020c5253d8basm11723098wrc.6.2022.05.04.05.57.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 05:57:32 -0700 (PDT)
-Date:   Wed, 04 May 2022 16:55:08 +0400
-From:   Yassine Oudjana <yassine.oudjana@gmail.com>
-Subject: Re: [PATCH 09/13] clk: mediatek: reset: Export
- mtk_register_reset_controller symbols
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Yassine Oudjana <y.oudjana@protonmail.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Weiyi Lu <weiyi.lu@mediatek.com>,
-        Ikjoon Jang <ikjn@chromium.org>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Sam Shih <sam.shih@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Message-Id: <WVZCBR.JP1KZVF249S43@gmail.com>
-In-Reply-To: <fda797664ad3cde1143838bdf63cc587459b2c2f.camel@mediatek.com>
-References: <20220504122601.335495-1-y.oudjana@protonmail.com>
-        <20220504122601.335495-10-y.oudjana@protonmail.com>
-        <fda797664ad3cde1143838bdf63cc587459b2c2f.camel@mediatek.com>
-X-Mailer: geary/40.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gmvxIQHG/ljLt51DjNy57CzPAA1TYfJjkUMDlKRN2cw=;
+        b=SfjjF1dfuEKuRJMWiDZvsj94oyQ0i+I3oOECAT+stn1MnUhZRhDjizIDBibra7sN00
+         DJy1I347O5t54FAyuZ0gkLt5XfITqcKgkxi5aa+78E5xEhFv0HFh/oiaYrO4Yzv8LGf9
+         uApgEeoLrvNEutl0ZluIcIUGwXR87rXKjefJgFmmQQJrKRa+8TXhjleNWnSl+MnTpOqq
+         Jis9meyBZCE9k/UyqSxKFgf6aXFgrIYO2zuzx9CJUjZHVWB7ZPO6NgmZyAnqhertr63X
+         7T+2vzXOpt0crXgvoOKa71bVjssawjhMruTTKL5goxc+X8p6XDWHbW67aIDHI/9+3cMe
+         FyeA==
+X-Gm-Message-State: AOAM531vXSJO8DITv5b9o+tCxMoR2VnX5qDuSD4/R5LgIThCKpvt5j4/
+        I4eb+7d4y3KMGWSs5NFd4bIFlh0IstzvUFYrr1B21oZ39L8=
+X-Google-Smtp-Source: ABdhPJzXVZ/1w3GPYeCO2dkamDxMnp8QXC2QHFPATCMzTrRgP9tKaW861v6nF7Uy5dyU4a+K22nPQzaM4JHk+ZqMOW8=
+X-Received: by 2002:a05:6902:100e:b0:649:7385:5e68 with SMTP id
+ w14-20020a056902100e00b0064973855e68mr11693394ybt.622.1651669167783; Wed, 04
+ May 2022 05:59:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+References: <4419002.LvFx2qVVIh@kreacher> <11975904.O9o76ZdvQC@kreacher>
+ <5838942.lOV4Wx5bFT@kreacher> <3687697.kQq0lBPeGt@kreacher> <YnFtjzGYwe28tVAA@dev-arch.thelio-3990X>
+In-Reply-To: <YnFtjzGYwe28tVAA@dev-arch.thelio-3990X>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 4 May 2022 14:59:17 +0200
+Message-ID: <CAJZ5v0i1Ynt54yb7aMJorkYUvqkxhxOqvQJb8AdA7Ps1aBO5tg@mail.gmail.com>
+Subject: Re: [PATCH v3 4/9] PCI/PM: Rework changing power states of PCI devices
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, May 3, 2022 at 7:59 PM Nathan Chancellor <nathan@kernel.org> wrote:
+>
+> Hi Rafael,
+>
+> On Thu, Apr 14, 2022 at 03:11:21PM +0200, Rafael J. Wysocki wrote:
+> > From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> >
+> > There are some issues related to changing power states of PCI
+> > devices, mostly related to carrying out unnecessary actions in some
+> > places, and the code is generally hard to follow.
+> >
+> >  1. pci_power_up() has two callers, pci_set_power_state() and
+> >     pci_pm_default_resume_early().  The latter updates the current
+> >     power state of the device right after calling pci_power_up()
+> >     and it restores the entire config space of the device right
+> >     after that, so pci_power_up() itself need not read the
+> >     PCI_PM_CTRL register or restore the BARs after programming the
+> >     device into D0 in that case.
+> >
+> >  2. It is generally hard to get a clear view of the pci_power_up()
+> >     code flow, especially in some corner cases, due to all of the
+> >     involved PCI_PM_CTRL register reads and writes occurring in
+> >     pci_platform_power_transition() and in pci_raw_set_power_state(),
+> >     some of which are redundant.
+> >
+> >  3. The transitions from low-power states to D0 and the other way
+> >     around are unnecessarily tangled in pci_raw_set_power_state()
+> >     which causes it to use a redundant local variable and makes it
+> >     rather hard to follow.
+> >
+> > To address the above shortcomings, make the following changes:
+> >
+> >  a. Remove the code handling transitions into D0
+> >     from pci_raw_set_power_state() and rename it as
+> >     pci_set_low_power_state().
+> >
+> >  b. Add the code handling transitions into D0 directly
+> >     to pci_power_up() and to a new wrapper function
+> >     pci_set_full_power_state() calling it internally that is
+> >     only used in pci_set_power_state().
+> >
+> >  c. Make pci_power_up() avoid redundant PCI_PM_CTRL register reads
+> >     and make it work in the same way for transitions from any
+> >     low-power states (transitions from D1 and D2 are handled
+> >     slightly differently before the change).
+> >
+> >  d. Put the restoration of the BARs and the PCI_PM_CTRL
+> >     register read confirming the power state change into
+> >     pci_set_full_power_state() to avoid doing that in
+> >     pci_pm_default_resume_early() unnecessarily.
+> >
+> > Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+>
+> This change as commit 5bffe4c611f5 ("PCI/PM: Rework changing power
+> states of PCI devices") causes my AMD-based system to fail to fully
+> boot. As far as I can tell, this might be NVMe related, which might make
+> getting a full log difficult, as journalctl won't have anywhere to save
+> it. I see:
+>
+> nvme nvme0: I/O 8 QID 0 timeout, completion polled
+>
+> then shortly afterwards:
+>
+> nvme nvme0: I/O 24 QID 0 timeout, completion polled
+> nvme nvme0: missing or invalid SUBNQN field
+>
+> then I am dropped into an emergency shell.
 
-On Wed, May 4 2022 at 20:46:22 +0800, Rex-BC Chen 
-<rex-bc.chen@mediatek.com> wrote:
-> On Wed, 2022-05-04 at 16:25 +0400, Yassine Oudjana wrote:
->>  From: Yassine Oudjana <y.oudjana@protonmail.com>
->> 
->>  Export mtk_register_reset_controller and
->>  mtk_register_reset_controller_set_clr to support building reset
->>  drivers as modules.
->> 
->>  Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
->>  ---
->>   drivers/clk/mediatek/reset.c | 2 ++
->>   1 file changed, 2 insertions(+)
->> 
->>  diff --git a/drivers/clk/mediatek/reset.c
->>  b/drivers/clk/mediatek/reset.c
->>  index bcec4b89f449..6c2effe6afef 100644
->>  --- a/drivers/clk/mediatek/reset.c
->>  +++ b/drivers/clk/mediatek/reset.c
->>  @@ -129,6 +129,7 @@ void mtk_register_reset_controller(struct
->>  device_node *np,
->>   	mtk_register_reset_controller_common(np, num_regs, regofs,
->>   		&mtk_reset_ops);
->>   }
->>  +EXPORT_SYMBOL_GPL(mtk_register_reset_controller);
->> 
->>   void mtk_register_reset_controller_set_clr(struct device_node *np,
->>   	unsigned int num_regs, int regofs)
->>  @@ -136,5 +137,6 @@ void 
->> mtk_register_reset_controller_set_clr(struct
->>  device_node *np,
->>   	mtk_register_reset_controller_common(np, num_regs, regofs,
->>   		&mtk_reset_ops_set_clr);
->>   }
->>  +EXPORT_SYMBOL_GPL(mtk_register_reset_controller_set_clr);
->> 
->>   MODULE_LICENSE("GPL");
-> 
-> Hello Yassine,
-> 
-> Thanks for your patch for mediatek clk reset.
-> But I have another series to cleanup mediatek clk reset drivers and
-> most of my patches are reviewed.
-> Please refer to
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=637849
+Thanks for the report!
 
-Great! In that case I'll rebase my patches onto your series and see
-if anything is missing.
+> This is a log from the previous commit, which may give some hints about
+> the configuration of this particular system.
+>
+> https://gist.github.com/nathanchance/8a56f0939410cb187896e904c72e41e7/raw/b47b2620bdd32d43c7a3b209fcfd9e3d4668f058/good-boot.log
+>
+> If there is any additional debugging information I can provide or
+> patches I can try, please let me know!
 
-Thanks,
-Yassine
-
-
+Please see what happens if the "if (dev->current_state == PCI_D0)"
+check and the following "return 0" statement in pci_power_up() are
+commented out.
