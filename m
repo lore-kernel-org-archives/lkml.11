@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EAF8C3A59E
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A36BAC35275
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233396AbiEDRVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51470 "EHLO
+        id S1356376AbiEDRVK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:21:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355146AbiEDREK (ORCPT
+        with ESMTP id S1355118AbiEDREI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C80E4E398;
-        Wed,  4 May 2022 09:52:46 -0700 (PDT)
+        Wed, 4 May 2022 13:04:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551E74DF75;
+        Wed,  4 May 2022 09:52:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AA8861866;
-        Wed,  4 May 2022 16:52:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 656B4C385A4;
-        Wed,  4 May 2022 16:52:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E05D61896;
+        Wed,  4 May 2022 16:52:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 718D9C385BD;
+        Wed,  4 May 2022 16:52:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683158;
-        bh=i7xwsbu5TwVV7LEcO/fxEVPFFz50UckmDWfEvZRy3mo=;
+        s=korg; t=1651683163;
+        bh=T3taqKNS4GW6ujjq9vOvlKK0jXWPRH8z2xtSBaw/epo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PSW6ZVtI+IVVO5Srz0WwCWJX40WO7P0dlQgdxtT4/gF1YmvwMCSg/lq730tSXWxUU
-         ay3n+/JVr7EsnHjGZ+z+UNZBwUSgDUTPr03XJAUH9Rt8wYUgRwS6tV+FRMzOUfESRU
-         P5JXnN8ezFDKRWS9biZ3lcM2u4W8jpzkY8AsHCuQ=
+        b=AbCcbNCAsFuo7FxTtdqEMWYceH7yupglk/KkhOShfhsz5C3NNQz0iPOoMHTEQhazO
+         Uy1UxROVqG7ezDoZd/DmQwlzs4RkV8Mq7hI768ZT5YPhtZTBakr6jL71JlQ7MbHl3w
+         adtrkV6s/SvagCumiDoASBl1mP0ySN5WbkjAJ+P8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Subject: [PATCH 5.15 023/177] usb: dwc3: core: Fix tx/rx threshold settings
-Date:   Wed,  4 May 2022 18:43:36 +0200
-Message-Id: <20220504153055.283856732@linuxfoundation.org>
+        stable@vger.kernel.org, Fawzi Khaber <fawzi.khaber@tdk.com>,
+        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.15 015/177] iio: imu: inv_icm42600: Fix I2C init possible nack
+Date:   Wed,  4 May 2022 18:43:28 +0200
+Message-Id: <20220504153054.799071848@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -47,40 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+From: Fawzi Khaber <fawzi.khaber@tdk.com>
 
-commit f28ad9069363dec7deb88032b70612755eed9ee6 upstream.
+commit b5d6ba09b10d2ccb865ed9bc45941db0a41c6756 upstream.
 
-The current driver logic checks against 0 to determine whether the
-periodic tx/rx threshold settings are set, but we may get bogus values
-from uninitialized variables if no device property is set. Properly
-default these variables to 0.
+This register write to REG_INTF_CONFIG6 enables a spike filter that
+is impacting the line and can prevent the I2C ACK to be seen by the
+controller. So we don't test the return value.
 
-Fixes: 938a5ad1d305 ("usb: dwc3: Check for ESS TX/RX threshold config")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Link: https://lore.kernel.org/r/cccfce990b11b730b0dae42f9d217dc6fb988c90.1649727139.git.Thinh.Nguyen@synopsys.com
+Fixes: 7297ef1e261672b8 ("iio: imu: inv_icm42600: add I2C driver")
+Signed-off-by: Fawzi Khaber <fawzi.khaber@tdk.com>
+Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Link: https://lore.kernel.org/r/20220411111533.5826-1-jmaneyrol@invensense.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/core.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c |   15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
---- a/drivers/usb/dwc3/core.c
-+++ b/drivers/usb/dwc3/core.c
-@@ -1268,10 +1268,10 @@ static void dwc3_get_properties(struct d
- 	u8			lpm_nyet_threshold;
- 	u8			tx_de_emphasis;
- 	u8			hird_threshold;
--	u8			rx_thr_num_pkt_prd;
--	u8			rx_max_burst_prd;
--	u8			tx_thr_num_pkt_prd;
--	u8			tx_max_burst_prd;
-+	u8			rx_thr_num_pkt_prd = 0;
-+	u8			rx_max_burst_prd = 0;
-+	u8			tx_thr_num_pkt_prd = 0;
-+	u8			tx_max_burst_prd = 0;
- 	u8			tx_fifo_resize_max_num;
- 	const char		*usb_psy_name;
- 	int			ret;
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+@@ -18,12 +18,15 @@ static int inv_icm42600_i2c_bus_setup(st
+ 	unsigned int mask, val;
+ 	int ret;
+ 
+-	/* setup interface registers */
+-	ret = regmap_update_bits(st->map, INV_ICM42600_REG_INTF_CONFIG6,
+-				 INV_ICM42600_INTF_CONFIG6_MASK,
+-				 INV_ICM42600_INTF_CONFIG6_I3C_EN);
+-	if (ret)
+-		return ret;
++	/*
++	 * setup interface registers
++	 * This register write to REG_INTF_CONFIG6 enables a spike filter that
++	 * is impacting the line and can prevent the I2C ACK to be seen by the
++	 * controller. So we don't test the return value.
++	 */
++	regmap_update_bits(st->map, INV_ICM42600_REG_INTF_CONFIG6,
++			   INV_ICM42600_INTF_CONFIG6_MASK,
++			   INV_ICM42600_INTF_CONFIG6_I3C_EN);
+ 
+ 	ret = regmap_update_bits(st->map, INV_ICM42600_REG_INTF_CONFIG4,
+ 				 INV_ICM42600_INTF_CONFIG4_I3C_BUS_ONLY, 0);
 
 
