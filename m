@@ -2,56 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ED25C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C93E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357189AbiEDR0y (ORCPT
+        id S1356489AbiEDR1A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
+        Wed, 4 May 2022 13:27:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355112AbiEDRFi (ORCPT
+        with ESMTP id S1355175AbiEDRGI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:05:38 -0400
+        Wed, 4 May 2022 13:06:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA9D47555;
-        Wed,  4 May 2022 09:54:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964CA50E25;
+        Wed,  4 May 2022 09:54:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9412C618A8;
-        Wed,  4 May 2022 16:54:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2686C385A4;
-        Wed,  4 May 2022 16:54:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 651B9617A6;
+        Wed,  4 May 2022 16:54:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3728C385A4;
+        Wed,  4 May 2022 16:54:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683258;
-        bh=+3exiSTvH1RziwAzmzXEO9NmF8jkw7MocJUim/2IhpA=;
+        s=korg; t=1651683261;
+        bh=nkHXMlkQYvJ0VAZul9wxWujXNsFjkiphNohHPwXVGtE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MQgFuPvd8NCKZon2sTow+Z/Z8B5a/gEQMQwTrml/nlqgSJr0SsrGZZevAln58Q33u
-         sj2PlUq17387Hgbf5wdcVoeI6ilW9SlvaAbWaBgz1HQ4g0sUW2hhtZl03CWh6QaZ8A
-         gk6EsclaLwAFF7Fqs1MFW3MtQmB7hB34Z1q1V7/4=
+        b=iSF8e2Hn8fegFNxMHQ7DFE/V+TjJ//O9Q4jugEErWniNXr//nLGHvZSZmn17hlAzn
+         tz1Agklp/xGiwhid/wzIo6BObjx2PIryQ+3B2HOh3USO/YPDCSAoa4d/RoKpfNXspw
+         5VfJb2vgFWDCwQ4+uX32TjzT2o6HSWOmvu0FVwZ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
-        Timothy Hayes <timothy.hayes@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        bpf@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        John Garry <john.garry@huawei.com>,
-        KP Singh <kpsingh@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Namhyung Kim <namhyung@kernel.org>, netdev@vger.kernel.org,
-        Song Liu <songliubraving@fb.com>,
-        Will Deacon <will@kernel.org>, Yonghong Song <yhs@fb.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Chao Song <chao.song@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 123/177] perf arm-spe: Fix addresses of synthesized SPE events
-Date:   Wed,  4 May 2022 18:45:16 +0200
-Message-Id: <20220504153104.142014535@linuxfoundation.org>
+Subject: [PATCH 5.15 127/177] ASoC: Intel: soc-acpi: correct device endpoints for max98373
+Date:   Wed,  4 May 2022 18:45:20 +0200
+Message-Id: <20220504153104.485909751@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -63,53 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Timothy Hayes <timothy.hayes@arm.com>
+From: Chao Song <chao.song@linux.intel.com>
 
-[ Upstream commit 4e13f6706d5aee1a6b835a44f6cf4971a921dcb8 ]
+[ Upstream commit 97326be14df7bacc6ba5c62c0556298c27ea0432 ]
 
-This patch corrects a bug whereby synthesized events from SPE
-samples are missing virtual addresses.
+The left speaker of max98373 uses spk_r_endpoint, and right
+speaker uses spk_l_endpoint, this is obviously wrong.
 
-Fixes: 54f7815efef7fad9 ("perf arm-spe: Fill address info for samples")
-Reviewed-by: Leo Yan <leo.yan@linaro.org>
-Signed-off-by: Timothy Hayes <timothy.hayes@arm.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: bpf@vger.kernel.org
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: John Garry <john.garry@huawei.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/r/20220421165205.117662-2-timothy.hayes@arm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+This patch corrects the endpoints for max98373 codec.
+
+Signed-off-by: Chao Song <chao.song@linux.intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220406192341.271465-1-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/arm-spe.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/soc/intel/common/soc-acpi-intel-tgl-match.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/util/arm-spe.c b/tools/perf/util/arm-spe.c
-index 7054f23150e1..235549bb28b9 100644
---- a/tools/perf/util/arm-spe.c
-+++ b/tools/perf/util/arm-spe.c
-@@ -927,7 +927,8 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
- 	attr.type = PERF_TYPE_HARDWARE;
- 	attr.sample_type = evsel->core.attr.sample_type & PERF_SAMPLE_MASK;
- 	attr.sample_type |= PERF_SAMPLE_IP | PERF_SAMPLE_TID |
--			    PERF_SAMPLE_PERIOD | PERF_SAMPLE_DATA_SRC;
-+			    PERF_SAMPLE_PERIOD | PERF_SAMPLE_DATA_SRC |
-+			    PERF_SAMPLE_ADDR;
- 	if (spe->timeless_decoding)
- 		attr.sample_type &= ~(u64)PERF_SAMPLE_TIME;
- 	else
+diff --git a/sound/soc/intel/common/soc-acpi-intel-tgl-match.c b/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
+index 11801b905ecc..c93d8019b0e5 100644
+--- a/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
++++ b/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
+@@ -127,13 +127,13 @@ static const struct snd_soc_acpi_adr_device mx8373_1_adr[] = {
+ 	{
+ 		.adr = 0x000123019F837300ull,
+ 		.num_endpoints = 1,
+-		.endpoints = &spk_l_endpoint,
++		.endpoints = &spk_r_endpoint,
+ 		.name_prefix = "Right"
+ 	},
+ 	{
+ 		.adr = 0x000127019F837300ull,
+ 		.num_endpoints = 1,
+-		.endpoints = &spk_r_endpoint,
++		.endpoints = &spk_l_endpoint,
+ 		.name_prefix = "Left"
+ 	}
+ };
 -- 
 2.35.1
 
